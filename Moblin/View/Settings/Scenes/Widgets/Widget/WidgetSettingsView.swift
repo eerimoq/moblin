@@ -49,6 +49,8 @@ struct WidgetSettingsView: View {
                                        fontSize: Float(widget.text.fontSize!),
                                        fontDesign: widget.text.fontDesign!.toString(),
                                        fontWeight: widget.text.fontWeight!.toString(),
+                                       horizontalAlignment: widget.text.horizontalAlignment!.toString(),
+                                       verticalAlignment: widget.text.verticalAlignment!.toString(),
                                        delay: widget.text.delay!)
             case .crop:
                 WidgetCropSettingsView(widget: widget)
@@ -63,7 +65,10 @@ struct WidgetSettingsView: View {
             case .videoSource:
                 WidgetVideoSourceSettingsView(widget: widget,
                                               cornerRadius: widget.videoSource!.cornerRadius,
-                                              selectedRotation: widget.videoSource!.rotation!)
+                                              selectedRotation: widget.videoSource!.rotation!,
+                                              zoom: widget.videoSource!.trackFaceZoom!,
+                                              borderWidth: widget.videoSource!.borderWidth!,
+                                              background: widget.videoSource!.borderColor!.color())
             case .scoreboard:
                 WidgetScoreboardSettingsView(widget: widget, type: widget.scoreboard!.type.rawValue)
             }

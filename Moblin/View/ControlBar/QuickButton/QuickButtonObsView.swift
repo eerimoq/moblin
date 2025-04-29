@@ -269,9 +269,10 @@ struct QuickButtonObsView: View {
                     Section {
                         ValueEditView(
                             title: "Delay",
+                            number: Float(model.obsAudioDelay),
                             value: "\(model.obsAudioDelay)",
-                            minimum: Double(obsMinimumAudioDelay),
-                            maximum: Double(min(obsMaximumAudioDelay, 9999)),
+                            minimum: Float(obsMinimumAudioDelay),
+                            maximum: Float(min(obsMaximumAudioDelay, 9999)),
                             onSubmit: submitAudioDelay,
                             increment: 10,
                             unit: "ms"

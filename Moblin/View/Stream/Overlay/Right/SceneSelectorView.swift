@@ -24,10 +24,13 @@ struct StreamOverlayRightSceneSelectorView: View {
                     width: min(sceneSegmentWidth, (width - 20) / CGFloat(model.enabledScenes.count)),
                     height: segmentHeight
                 )
+        } onLongPress: { index in
+            if index < model.enabledScenes.count {
+                model.showSceneSettings(scene: model.enabledScenes[index])
+            }
         }
         .onChange(of: model.sceneIndex) { tag in
-            model.setSceneId(id: model.enabledScenes[tag].id)
-            model.sceneUpdated(attachCamera: true)
+            model.selectScene(id: model.enabledScenes[tag].id)
         }
         .background(pickerBackgroundColor)
         .foregroundColor(.white)

@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct CatPrinterScannerSettingsView: View {
-    private let scanner: CatPrinterScanner = .shared
+    @ObservedObject private var scanner = catPrinterScanner
     @Environment(\.dismiss) var dismiss
     var onChange: (String) -> Void
     @State var selectedId: String
@@ -9,16 +9,16 @@ struct CatPrinterScannerSettingsView: View {
     var body: some View {
         Form {
             Section {
-                if scanner.discoveredDevices.isEmpty {
+                if scanner.discoveredPeripherals.isEmpty {
                     HCenter {
                         ProgressView()
                     }
                 } else {
                     List {
-                        ForEach(scanner.discoveredDevices.map { discoveredDevice in
+                        ForEach(scanner.discoveredPeripherals.map { peripheral in
                             InlinePickerItem(
-                                id: discoveredDevice.peripheral.identifier.uuidString,
-                                text: discoveredDevice.peripheral.name ?? String(localized: "Unknown")
+                                id: peripheral.identifier.uuidString,
+                                text: peripheral.name ?? String(localized: "Unknown")
                             )
                         }) { item in
                             Button {

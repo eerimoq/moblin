@@ -4,13 +4,16 @@ enum TextFormatPart {
     case text(String)
     case newLine
     case clock
+    case shortClock
     case date
     case fullDate
     case bitrateAndTotal
     case debugOverlay
     case speed
+    case averageSpeed
     case altitude
     case distance
+    case slope
     case timer
     case conditions
     case temperature
@@ -21,7 +24,7 @@ enum TextFormatPart {
     case rating
     case subtitles
     case muted
-    case heartRate
+    case heartRate(String)
     case activeEnergyBurned
     case power
     case stepCount
@@ -29,6 +32,10 @@ enum TextFormatPart {
     case teslaBatteryLevel
     case teslaDrive
     case teslaMedia
+    case cyclingPower
+    case cyclingCadence
+    case lapTimes
+    case browserTitle
 }
 
 class TextFormatLoader {
@@ -48,6 +55,8 @@ class TextFormatLoader {
                 let formatFromIndex = format[index ..< format.endIndex].lowercased()
                 if formatFromIndex.hasPrefix("{time}") {
                     loadItem(part: .clock, offsetBy: 6)
+                } else if formatFromIndex.hasPrefix("{shorttime}") {
+                    loadItem(part: .shortClock, offsetBy: 11)
                 } else if formatFromIndex.hasPrefix("{date}") {
                     loadItem(part: .date, offsetBy: 6)
                 } else if formatFromIndex.hasPrefix("{fulldate}") {
@@ -58,10 +67,14 @@ class TextFormatLoader {
                     loadItem(part: .debugOverlay, offsetBy: 14)
                 } else if formatFromIndex.hasPrefix("{speed}") {
                     loadItem(part: .speed, offsetBy: 7)
+                } else if formatFromIndex.hasPrefix("{averagespeed}") {
+                    loadItem(part: .averageSpeed, offsetBy: 14)
                 } else if formatFromIndex.hasPrefix("{altitude}") {
                     loadItem(part: .altitude, offsetBy: 10)
                 } else if formatFromIndex.hasPrefix("{distance}") {
                     loadItem(part: .distance, offsetBy: 10)
+                } else if formatFromIndex.hasPrefix("{slope}") {
+                    loadItem(part: .slope, offsetBy: 7)
                 } else if formatFromIndex.hasPrefix("{timer}") {
                     loadItem(part: .timer, offsetBy: 7)
                 } else if formatFromIndex.hasPrefix("{conditions}") {
@@ -82,8 +95,7 @@ class TextFormatLoader {
                     loadItem(part: .subtitles, offsetBy: 11)
                 } else if formatFromIndex.hasPrefix("{muted}") {
                     loadItem(part: .muted, offsetBy: 7)
-                } else if isPhone(), formatFromIndex.hasPrefix("{heartrate}") {
-                    loadItem(part: .heartRate, offsetBy: 11)
+                } else if appendHeartRateIfPresent(formatFromIndex: formatFromIndex) {
                 } else if isPhone(), formatFromIndex.hasPrefix("{activeenergyburned}") {
                     loadItem(part: .activeEnergyBurned, offsetBy: 20)
                 } else if isPhone(), formatFromIndex.hasPrefix("{power}") {
@@ -98,6 +110,14 @@ class TextFormatLoader {
                     loadItem(part: .teslaDrive, offsetBy: 12)
                 } else if formatFromIndex.hasPrefix("{teslamedia}") {
                     loadItem(part: .teslaMedia, offsetBy: 12)
+                } else if formatFromIndex.hasPrefix("{cyclingpower}") {
+                    loadItem(part: .cyclingPower, offsetBy: 14)
+                } else if formatFromIndex.hasPrefix("{cyclingcadence}") {
+                    loadItem(part: .cyclingCadence, offsetBy: 16)
+                } else if formatFromIndex.hasPrefix("{laptimes}") {
+                    loadItem(part: .lapTimes, offsetBy: 10)
+                } else if formatFromIndex.hasPrefix("{browsertitle}") {
+                    loadItem(part: .browserTitle, offsetBy: 14)
                 } else {
                     index = format.index(after: index)
                 }
@@ -109,6 +129,19 @@ class TextFormatLoader {
         }
         appendTextIfPresent()
         return parts
+    }
+
+    private func appendHeartRateIfPresent(formatFromIndex: String) -> Bool {
+        if formatFromIndex.hasPrefix("{heartrate}") {
+            loadItem(part: .heartRate(""), offsetBy: 11)
+            return true
+        } else if let match = formatFromIndex.prefixMatch(of: /{heartrate:([^}]+)}/) {
+            let deviceName = String(match.output.1)
+            loadItem(part: .heartRate(deviceName), offsetBy: match.output.0.count)
+            return true
+        } else {
+            return false
+        }
     }
 
     private func appendTextIfPresent() {

@@ -71,6 +71,7 @@ private struct RecordingsSettingsRecordingsView: View {
                         }
                         recordingsStorage.database.recordings.remove(atOffsets: indexSet)
                         recordingsStorage.store()
+                        model.objectWillChange.send()
                     })
                 }
             } footer: {

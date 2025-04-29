@@ -111,7 +111,7 @@ struct QuickButtonsInnerView: View {
     private func videoEffectAction(state: ButtonState, type: SettingsButtonType) {
         state.button.isOn.toggle()
         model.setGlobalButtonState(type: type, isOn: state.button.isOn)
-        model.sceneUpdated()
+        model.sceneUpdated(updateRemoteScene: false)
         model.updateButtonStates()
     }
 
@@ -135,6 +135,10 @@ struct QuickButtonsInnerView: View {
         videoEffectAction(state: state, type: .triple)
     }
 
+    private func twinAction(state: ButtonState) {
+        videoEffectAction(state: state, type: .twin)
+    }
+
     private func pixellateAction(state: ButtonState) {
         videoEffectAction(state: state, type: .pixellate)
         model.showingPixellate.toggle()
@@ -147,7 +151,7 @@ struct QuickButtonsInnerView: View {
     private func gridAction(state: ButtonState) {
         state.button.isOn.toggle()
         model.showingGrid.toggle()
-        model.sceneUpdated()
+        model.sceneUpdated(updateRemoteScene: false)
         model.updateButtonStates()
     }
 
@@ -236,6 +240,9 @@ struct QuickButtonsInnerView: View {
         model.setGlobalButtonState(type: .interactiveChat, isOn: state.button.isOn)
         model.updateButtonStates()
         model.interactiveChat = state.button.isOn
+        if !state.button.isOn {
+            model.disableInteractiveChat()
+        }
     }
 
     private func micAction(state _: ButtonState) {
@@ -264,11 +271,33 @@ struct QuickButtonsInnerView: View {
 
     private func djiDevicesAction(state _: ButtonState) {
         model.toggleShowingPanel(type: .djiDevices, panel: .djiDevices)
-        model.updateLutsButtonState()
     }
 
     private func portraitAction(state _: ButtonState) {
         model.setDisplayPortrait(portrait: !model.database.portrait!)
+    }
+
+    private func goProAction(state _: ButtonState) {
+        model.toggleShowingPanel(type: .goPro, panel: .goPro)
+    }
+
+    private func replayAction(state: ButtonState) {
+        model.showingReplay.toggle()
+        state.button.isOn.toggle()
+        model.setGlobalButtonState(type: .replay, isOn: state.button.isOn)
+        model.updateButtonStates()
+    }
+
+    private func instantReplayAction(state _: ButtonState) {
+        if model.isRecording {
+            model.instantReplay()
+        } else {
+            model.makeToast(title: String(localized: "Can only replay when recording"))
+        }
+    }
+
+    private func connectionPrioritiesAction(state _: ButtonState) {
+        model.toggleShowingPanel(type: .connectionPriorities, panel: .connectionPriorities)
     }
 
     var body: some View {
@@ -384,6 +413,12 @@ struct QuickButtonsInnerView: View {
             case .triple:
                 Button(action: {
                     tripleAction(state: state)
+                }, label: {
+                    QuickButtonImage(state: state, buttonSize: size)
+                })
+            case .twin:
+                Button(action: {
+                    twinAction(state: state)
                 }, label: {
                     QuickButtonImage(state: state, buttonSize: size)
                 })
@@ -552,6 +587,30 @@ struct QuickButtonsInnerView: View {
             case .portrait:
                 Button(action: {
                     portraitAction(state: state)
+                }, label: {
+                    QuickButtonImage(state: state, buttonSize: size)
+                })
+            case .goPro:
+                Button(action: {
+                    goProAction(state: state)
+                }, label: {
+                    QuickButtonImage(state: state, buttonSize: size)
+                })
+            case .replay:
+                Button(action: {
+                    replayAction(state: state)
+                }, label: {
+                    QuickButtonImage(state: state, buttonSize: size)
+                })
+            case .instantReplay:
+                Button(action: {
+                    instantReplayAction(state: state)
+                }, label: {
+                    QuickButtonImage(state: state, buttonSize: size)
+                })
+            case .connectionPriorities:
+                Button(action: {
+                    connectionPrioritiesAction(state: state)
                 }, label: {
                     QuickButtonImage(state: state, buttonSize: size)
                 })

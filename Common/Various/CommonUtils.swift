@@ -275,20 +275,20 @@ extension Duration {
 
 private var speedFormatter: MeasurementFormatter {
     let formatter = MeasurementFormatter()
-    formatter.numberFormatter.maximumFractionDigits = 1
+    formatter.numberFormatter.maximumFractionDigits = 0
     return formatter
 }
 
 func format(speed: Double) -> String {
     return speedFormatter.string(from: NSMeasurement(
-        doubleValue: speed,
+        doubleValue: max(speed, 0),
         unit: UnitSpeed.metersPerSecond
     ) as Measurement<Unit>)
 }
 
 private var distanceFormatter: LengthFormatter {
     let formatter = LengthFormatter()
-    formatter.numberFormatter.maximumFractionDigits = 2
+    formatter.numberFormatter.maximumFractionDigits = 1
     return formatter
 }
 
@@ -646,6 +646,10 @@ extension String {
             fatalError("Not UTF-8")
         }
         return text
+    }
+
+    var utf8Data: Data {
+        return Data(utf8)
     }
 }
 

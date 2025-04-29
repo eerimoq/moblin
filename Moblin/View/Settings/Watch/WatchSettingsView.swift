@@ -33,6 +33,6 @@ struct WatchSettingsView: View {
                 """)
             }
         }
-        .navigationTitle("Watch")
+        .navigationTitle("Apple Watch")
     }
 }

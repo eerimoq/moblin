@@ -368,7 +368,7 @@ class RtmpServerChunkStream {
                 audioBuffer = AVAudioCompressedBuffer(
                     format: audioFormat,
                     packetCapacity: 1,
-                    maximumPacketSize: 1024 * Int(audioFormat.channelCount)
+                    maximumPacketSize: 4096 * Int(audioFormat.channelCount)
                 )
                 pcmAudioFormat = AVAudioFormat(
                     commonFormat: .pcmFormatInt16,
@@ -397,6 +397,13 @@ class RtmpServerChunkStream {
             return
         }
         let length = messageBody.count - codec.headerSize
+        guard length > 0 else {
+            return
+        }
+        guard length <= audioBuffer.maximumPacketSize else {
+            logger.info("rtmp-server: Audio packet too long (\(length) > \(audioBuffer.maximumPacketSize))")
+            return
+        }
         messageBody.withUnsafeBytes { (buffer: UnsafeRawBufferPointer) in
             guard let baseAddress = buffer.baseAddress else {
                 return
@@ -422,7 +429,7 @@ class RtmpServerChunkStream {
             return self.audioBuffer
         }
         if let error {
-            logger.info("rtmp-server: client: Error \(error)")
+            logger.info("rtmp-server: client: Audio decode error of packet with length \(length): \(error)")
         } else if let sampleBuffer = makeAudioSampleBuffer(client: client, audioBuffer: outputBuffer) {
             client.targetLatenciesSynchronizer
                 .setLatestAudioPresentationTimeStamp(sampleBuffer.presentationTimeStamp.seconds)
@@ -451,11 +458,11 @@ class RtmpServerChunkStream {
             return
         }
         guard let format = FlvVideoCodec(rawValue: control & 0xF) else {
-            client.stopInternal(reason: "Unsupported video format \(control & 0xF)")
+            client.stopInternal(reason: "Unsupported video codec \(control & 0xF)")
             return
         }
         guard format == .avc else {
-            client.stopInternal(reason: "Unsupported video format \(format). Only AVC is supported.")
+            client.stopInternal(reason: "Unsupported video codec \(format.toString()). Only H.264/AVC is supported.")
             return
         }
         switch FlvAvcPacketType(rawValue: messageBody[1]) {
@@ -464,7 +471,7 @@ class RtmpServerChunkStream {
         case .nal:
             processMessageVideoTypeNal(client: client)
         default:
-            client.stopInternal(reason: "Unsupported video AVC packet type \(messageBody[1])")
+            client.stopInternal(reason: "Unsupported video H.264/AVC packet type \(messageBody[1])")
         }
     }
 

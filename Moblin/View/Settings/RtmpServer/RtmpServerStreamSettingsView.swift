@@ -60,10 +60,7 @@ struct RtmpServerStreamSettingsView: View {
         guard let latency = Int32(value) else {
             return
         }
-        guard latency > 0 else {
-            return
-        }
-        stream.latency = latency
+        stream.latency = max(latency, 250)
         model.reloadRtmpServer()
         model.objectWillChange.send()
     }
@@ -84,17 +81,21 @@ struct RtmpServerStreamSettingsView: View {
                     onSubmit: submitStreamKey
                 )
                 .disabled(model.rtmpServerEnabled())
+            } footer: {
+                Text("The stream name is shown in the list of cameras in scene settings.")
+            }
+            Section {
                 TextEditNavigationView(
                     title: String(localized: "Latency"),
                     value: String(stream.latency!),
                     onSubmit: submitLatency,
-                    footers: [String(localized: "Zero or more milliseconds.")],
+                    footers: [String(localized: "250 or more milliseconds. 2000 ms by default.")],
                     keyboardType: .numbersAndPunctuation,
                     valueFormat: { "\($0) ms" }
                 )
                 .disabled(model.rtmpServerEnabled())
             } footer: {
-                Text("The stream name is shown in the list of cameras in scene settings.")
+                Text("The higher, the lower risk of stuttering.")
             }
             Section {
                 Toggle("Auto select mic", isOn: Binding(get: {

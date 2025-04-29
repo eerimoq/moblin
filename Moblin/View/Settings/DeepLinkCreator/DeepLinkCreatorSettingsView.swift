@@ -2,17 +2,6 @@ import SwiftUI
 
 private let defaultDeepLink = "moblin://?{}"
 
-private func generateQRCode(from string: String) -> UIImage {
-    let data = string.data(using: String.Encoding.ascii)
-    let filter = CIFilter.qrCodeGenerator()
-    filter.message = data!
-    filter.correctionLevel = "M"
-    let output = filter.outputImage!.transformed(by: CGAffineTransform(scaleX: 5, y: 5))
-    let context = CIContext()
-    let cgImage = context.createCGImage(output, from: output.extent)
-    return UIImage(cgImage: cgImage!)
-}
-
 struct DeepLinkCreatorSettingsView: View {
     @EnvironmentObject var model: Model
     @State var deepLink = defaultDeepLink
@@ -180,7 +169,7 @@ struct DeepLinkCreatorSettingsView: View {
                     Section {
                         HStack {
                             Spacer()
-                            Image(uiImage: generateQRCode(from: deepLink))
+                            Image(uiImage: generateQrCode(from: deepLink)!)
                                 .resizable()
                                 .interpolation(.none)
                                 .scaledToFit()

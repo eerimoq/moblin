@@ -110,7 +110,7 @@ private struct PasswordView: View {
 }
 
 private struct RelayStreamerServerView: View {
-    var server: MoblinkScannerServer
+    var server: MoblinkScannerStreamer
     @Binding var streamerUrl: String
     var submitUrl: (String) -> Void
 
@@ -142,7 +142,7 @@ private struct RelayStreamerUrlView: View {
             return
         }
         model.database.moblink!.client.url = value
-        model.reloadMoblinkClient()
+        model.reloadMoblinkRelay()
         dismiss()
     }
 
@@ -168,12 +168,6 @@ private struct RelayStreamerUrlView: View {
                 }
             }
         }
-        .onAppear {
-            model.reloadMoblinkScanner()
-        }
-        .onDisappear {
-            model.stopMoblinkScanner()
-        }
         .navigationTitle("Streamer URL")
     }
 }
@@ -182,6 +176,7 @@ private struct RelayView: View {
     @EnvironmentObject var model: Model
     @State var name: String
     @State var streamerUrl: String
+    @State var manual: Bool
 
     var body: some View {
         Section {
@@ -189,7 +184,8 @@ private struct RelayView: View {
                 model.database.moblink!.client.enabled
             }, set: { value in
                 model.database.moblink!.client.enabled = value
-                model.reloadMoblinkClient()
+                model.reloadMoblinkRelay()
+                model.objectWillChange.send()
             })) {
                 Text("Enabled")
             }
@@ -200,12 +196,22 @@ private struct RelayView: View {
             }
             .onChange(of: name) { name in
                 model.database.moblink!.client.name = name
-                model.reloadMoblinkClient()
+                model.reloadMoblinkRelay()
             }
-            NavigationLink {
-                RelayStreamerUrlView(streamerUrl: $streamerUrl)
-            } label: {
-                TextItemView(name: String(localized: "Streamer URL"), value: model.database.moblink!.client.url)
+            Toggle(isOn: $manual) {
+                Text("Manual")
+            }
+            .onChange(of: manual) { value in
+                model.database.moblink!.client.manual = value
+                model.reloadMoblinkRelay()
+            }
+            .disabled(model.isLive)
+            if manual {
+                NavigationLink {
+                    RelayStreamerUrlView(streamerUrl: $streamerUrl)
+                } label: {
+                    TextItemView(name: String(localized: "Streamer URL"), value: model.database.moblink!.client.url)
+                }
             }
         } header: {
             Text("Relay")
@@ -227,7 +233,7 @@ private struct StreamerView: View {
             return
         }
         model.database.moblink!.server.port = port
-        model.reloadMoblinkServer()
+        model.reloadMoblinkStreamer()
     }
 
     var body: some View {
@@ -237,7 +243,8 @@ private struct StreamerView: View {
             }
             .onChange(of: enabled) { value in
                 model.database.moblink!.server.enabled = value
-                model.reloadMoblinkServer()
+                model.reloadMoblinkStreamer()
+                model.objectWillChange.send()
             }
             .disabled(model.isLive)
             TextEditNavigationView(
@@ -262,8 +269,8 @@ struct MoblinkSettingsView: View {
 
     private func submitPassword(value: String) {
         model.database.moblink!.password = value.trim()
-        model.reloadMoblinkClient()
-        model.reloadMoblinkServer()
+        model.reloadMoblinkRelay()
+        model.reloadMoblinkStreamer()
     }
 
     var body: some View {
@@ -283,13 +290,18 @@ struct MoblinkSettingsView: View {
                 } label: {
                     TextItemView(
                         name: String(localized: "Password"),
-                        value: model.database.moblink!.password
+                        value: model.database.moblink!.password,
+                        sensitive: true
                     )
                 }
             } footer: {
                 Text("Used by both relay and streamer devices. Copy the streamer's password to the relay device.")
             }
-            RelayView(name: model.database.moblink!.client.name, streamerUrl: model.database.moblink!.client.url)
+            RelayView(
+                name: model.database.moblink!.client.name,
+                streamerUrl: model.database.moblink!.client.url,
+                manual: model.database.moblink!.client.manual!
+            )
             StreamerView(enabled: $streamerEnabled)
             if streamerEnabled {
                 Section {

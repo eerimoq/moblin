@@ -1,5 +1,6 @@
 import AVFoundation
 import Collections
+import ImagePlayground
 import MetalPetal
 import SDWebImage
 import SwiftUI
@@ -74,7 +75,7 @@ enum AlertsEffectAlert {
     case twitchResubscribe(TwitchEventSubNotificationChannelSubscriptionMessageEvent)
     case twitchRaid(TwitchEventSubChannelRaidEvent)
     case twitchCheer(TwitchEventSubChannelCheerEvent)
-    case chatBotCommand(String, String)
+    case chatBotCommand(String, String, String)
     case speechToTextString(UUID)
 }
 
@@ -85,6 +86,7 @@ protocol AlertsEffectDelegate: AnyObject {
 private enum MediaItem {
     case bundledName(String)
     case customUrl(URL)
+    case image(CIImage)
 }
 
 private struct GifImage {
@@ -92,7 +94,7 @@ private struct GifImage {
     let timeOffset: Double
 }
 
-private class Medias {
+private class Medias: @unchecked Sendable {
     var images: Deque<GifImage> = []
     var soundUrl: URL?
 
@@ -106,6 +108,8 @@ private class Medias {
             } else {
                 soundUrl = nil
             }
+        case .image:
+            break
         }
     }
 
@@ -119,6 +123,8 @@ private class Medias {
                 }
             case let .customUrl(url):
                 images = self.loadImages(url: url, loopCount: loopCount)
+            case let .image(image):
+                images = self.loadImages(image: image, loopCount: loopCount)
             }
             lockQueue.sync {
                 self.images = images
@@ -141,6 +147,16 @@ private class Medias {
         }
         return images
     }
+
+    private func loadImages(image: CIImage, loopCount: Int) -> Deque<GifImage> {
+        var timeOffset = 0.0
+        var images: Deque<GifImage> = []
+        for _ in 0 ..< loopCount {
+            timeOffset += 1
+            images.append(GifImage(image: image, timeOffset: timeOffset))
+        }
+        return images
+    }
 }
 
 private enum FaceLandmark {
@@ -157,7 +173,7 @@ private struct LandmarkSettings {
     let centerY: Double
 }
 
-final class AlertsEffect: VideoEffect {
+final class AlertsEffect: VideoEffect, @unchecked Sendable {
     private var images: Deque<GifImage> = []
     private var basePresentationTimeStamp: Double?
     private var messageImage: CIImage?
@@ -297,8 +313,8 @@ final class AlertsEffect: VideoEffect {
             playTwitchRaid(event: event)
         case let .twitchCheer(event):
             playTwitchCheer(event: event)
-        case let .chatBotCommand(command, name):
-            playChatBotCommand(command: command, name: name)
+        case let .chatBotCommand(command, name, prompt):
+            playChatBotCommand(command: command, name: name, prompt: prompt)
         case let .speechToTextString(id):
             playSpeechToTextString(id: id)
         }
@@ -402,7 +418,7 @@ final class AlertsEffect: VideoEffect {
     }
 
     @MainActor
-    private func playChatBotCommand(command: String, name: String) {
+    private func playChatBotCommand(command: String, name: String, prompt: String) {
         guard let commandIndex = settings.chatBot!.commands
             .firstIndex(where: { command == $0.name && $0.alert.enabled })
         else {
@@ -411,12 +427,67 @@ final class AlertsEffect: VideoEffect {
         guard commandIndex < chatBotCommands.count else {
             return
         }
-        play(
-            medias: chatBotCommands[commandIndex],
-            username: name,
-            message: command,
-            settings: settings.chatBot!.commands[commandIndex].alert
-        )
+        let medias = chatBotCommands[commandIndex]
+        let settings = settings.chatBot!.commands[commandIndex]
+        switch settings.imageType! {
+        case .file:
+            play(
+                medias: medias,
+                username: name,
+                message: command,
+                settings: settings.alert
+            )
+        case .imagePlayground:
+            createImagePlaygroundImage(soundUrl: medias.soundUrl, settings: settings, name: name, prompt: prompt)
+        }
+    }
+
+    private func createImagePlaygroundImage(
+        soundUrl: URL?,
+        settings: SettingsWidgetAlertsChatBotCommand,
+        name: String,
+        prompt: String
+    ) {
+        guard #available(iOS 18.4, *) else {
+            return
+        }
+        let imageUrl = mediaStorage.makePath(id: settings.imagePlaygroundImageId!)
+        DispatchQueue.global().async {
+            Task {
+                do {
+                    let creator = try await ImageCreator()
+                    var concepts: [ImagePlaygroundConcept] = [.extracted(from: prompt, title: nil)]
+                    if (try? imageUrl.checkResourceIsReachable()) == true {
+                        if let image = ImagePlaygroundConcept.image(imageUrl) {
+                            concepts.append(image)
+                        }
+                    }
+                    for try await image in creator.images(for: concepts, style: .animation, limit: 1) {
+                        let medias = Medias()
+                        let factor = 0.35
+                        var image = CIImage(cgImage: image.cgImage).transformed(by: CGAffineTransform(
+                            scaleX: factor,
+                            y: factor
+                        ))
+                        if settings.alert.positionType == .face {
+                            image = makeCircle(image)
+                        }
+                        medias.updateImages(image: .image(image), loopCount: 10)
+                        medias.soundUrl = soundUrl
+                        DispatchQueue.main.async {
+                            self.play(
+                                medias: medias,
+                                username: name,
+                                message: String(localized: "created \(prompt)"),
+                                settings: settings.alert
+                            )
+                        }
+                    }
+                } catch {
+                    logger.info("alert: Image playground error: \(error.localizedDescription)")
+                }
+            }
+        }
     }
 
     @MainActor
@@ -575,8 +646,8 @@ final class AlertsEffect: VideoEffect {
         return "Alert widget"
     }
 
-    override func needsFaceDetections() -> Bool {
-        return landmarkSettings != nil
+    override func needsFaceDetections(_: Double) -> (Bool, UUID?) {
+        return (landmarkSettings != nil, nil)
     }
 
     private func getNext(_ presentationTimeStamp: Double) -> (CIImage?, CIImage?, Double, Double, LandmarkSettings?) {
@@ -629,24 +700,6 @@ final class AlertsEffect: VideoEffect {
         return -atan(deltaX / deltaY)
     }
 
-    private func rotateFace(allPoints: [CGPoint], rotationAngle: CGFloat) -> [CGPoint] {
-        return allPoints.map { rotatePoint(point: $0, alpha: rotationAngle) }
-    }
-
-    private func rotatePoint(point: CGPoint, alpha: CGFloat) -> CGPoint {
-        let z = sqrt(pow(point.x, 2) + pow(point.y, 2))
-        let beta = atan(point.y / point.x)
-        return CGPoint(x: z * cos(alpha + beta), y: z * sin(alpha + beta))
-    }
-
-    private func getFacePoints(detection: VNFaceObservation, imageSize: CGSize) -> [CGPoint] {
-        var points: [CGPoint] = []
-        points += detection.landmarks?.medianLine?.pointsInImage(imageSize: imageSize) ?? []
-        points += detection.landmarks?.leftEyebrow?.pointsInImage(imageSize: imageSize) ?? []
-        points += detection.landmarks?.rightEyebrow?.pointsInImage(imageSize: imageSize) ?? []
-        return points
-    }
-
     private func executePositionFace(
         _ image: CIImage,
         _ faceDetections: [VNFaceObservation]?,
@@ -661,25 +714,16 @@ final class AlertsEffect: VideoEffect {
             guard let rotationAngle = calcFaceAngle(detection: detection, imageSize: image.extent.size) else {
                 continue
             }
-            let allPoints = rotateFace(
-                allPoints: getFacePoints(detection: detection, imageSize: image.extent.size),
-                rotationAngle: -rotationAngle
-            )
-            guard let firstPoint = allPoints.first else {
+            guard let boundingBox = detection.stableBoundingBox(
+                imageSize: image.extent.size,
+                rotationAngle: rotationAngle
+            ) else {
                 continue
             }
-            var faceMinX = firstPoint.x
-            var faceMaxX = firstPoint.x
-            var faceMinY = firstPoint.y
-            var faceMaxY = firstPoint.y
-            for point in allPoints {
-                faceMinX = min(point.x, faceMinX)
-                faceMaxX = max(point.x, faceMaxX)
-                faceMinY = min(point.y, faceMinY)
-                faceMaxY = max(point.y, faceMaxY)
-            }
-            let faceWidth = faceMaxX - faceMinX
-            let faceHeight = faceMaxY - faceMinY
+            let faceMinX = boundingBox.minX
+            let faceMaxY = boundingBox.maxY
+            let faceWidth = boundingBox.width
+            let faceHeight = boundingBox.height
             let alertImageHeight = faceHeight * landmarkSettings.height
             var centerX: Double
             var centerY: Double
@@ -766,7 +810,7 @@ final class AlertsEffect: VideoEffect {
             return image
         }
         if let landmarkSettings {
-            return executePositionFace(image, info.faceDetections, alertImage, landmarkSettings)
+            return executePositionFace(image, info.sceneFaceDetections(), alertImage, landmarkSettings)
         } else {
             return executePositionScene(image, alertImage, messageImage, x, y)
         }
@@ -791,4 +835,28 @@ final class AlertsEffect: VideoEffect {
             }
         }
     }
+}
+
+private func makeRoundedRectangleMask(_ image: CIImage) -> CIImage? {
+    let roundedRectangleGenerator = CIFilter.roundedRectangleGenerator()
+    roundedRectangleGenerator.color = .green
+    // Slightly smaller to remove ~1px black line around image.
+    var extent = image.extent
+    extent.origin.x += 1
+    extent.origin.y += 1
+    extent.size.width -= 2
+    extent.size.height -= 2
+    roundedRectangleGenerator.extent = extent
+    var radiusPixels = Float(min(image.extent.height, image.extent.width))
+    radiusPixels /= 2
+    radiusPixels *= 100
+    roundedRectangleGenerator.radius = radiusPixels
+    return roundedRectangleGenerator.outputImage
+}
+
+private func makeCircle(_ image: CIImage) -> CIImage {
+    let roundedCornersBlender = CIFilter.blendWithMask()
+    roundedCornersBlender.inputImage = image
+    roundedCornersBlender.maskImage = makeRoundedRectangleMask(image)
+    return roundedCornersBlender.outputImage ?? image
 }

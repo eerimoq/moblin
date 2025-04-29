@@ -58,6 +58,7 @@ struct ChatUsernamesToIgnoreSettingsView: View {
                 }
                 AddButtonView(action: {
                     model.database.chat.usernamesToIgnore!.append(SettingsChatUsername())
+                    model.objectWillChange.send()
                 })
             } footer: {
                 SwipeLeftToRemoveHelpView(kind: String(localized: "a username"))

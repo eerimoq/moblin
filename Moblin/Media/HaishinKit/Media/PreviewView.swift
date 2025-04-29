@@ -3,7 +3,7 @@ import Foundation
 import UIKit
 
 class PreviewView: UIView {
-    static var defaultBackgroundColor: UIColor = .black
+    private static let defaultBackgroundColor: UIColor = .black
 
     override class var layerClass: AnyClass {
         AVSampleBufferDisplayLayer.self
@@ -25,12 +25,6 @@ class PreviewView: UIView {
         }
     }
 
-    var videoOrientation: AVCaptureVideoOrientation = .portrait {
-        didSet {
-            currentStream?.setVideoOrientation(value: videoOrientation)
-        }
-    }
-
     var isPortrait = false {
         didSet {
             applyIsMirrored()
@@ -43,14 +37,8 @@ class PreviewView: UIView {
         layer.setAffineTransform(CGAffineTransformMakeScale(isMirrored ? -1.0 : 1.0, 1.0))
     }
 
-    private weak var currentStream: NetStream? {
-        didSet {
-            oldValue?.mixer.video.drawable = nil
-        }
-    }
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    init() {
+        super.init(frame: .zero)
         awakeFromNib()
     }
 
@@ -63,20 +51,6 @@ class PreviewView: UIView {
         backgroundColor = Self.defaultBackgroundColor
         layer.backgroundColor = Self.defaultBackgroundColor.cgColor
         layer.videoGravity = videoGravity
-    }
-}
-
-extension PreviewView {
-    func attachStream(_ stream: NetStream?) {
-        guard let stream else {
-            currentStream = nil
-            return
-        }
-        netStreamLockQueue.async {
-            stream.mixer.video.drawable = self
-            self.currentStream = stream
-            stream.mixer.startRunning()
-        }
     }
 
     func enqueue(_ sampleBuffer: CMSampleBuffer?, isFirstAfterAttach: Bool) {

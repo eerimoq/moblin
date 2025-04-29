@@ -33,6 +33,7 @@ struct BitratePresetsSettingsView: View {
                         id: UUID(),
                         bitrate: 1_000_000
                     ))
+                    model.objectWillChange.send()
                 }
             } footer: {
                 SwipeLeftToDeleteHelpView(kind: String(localized: "a preset"))

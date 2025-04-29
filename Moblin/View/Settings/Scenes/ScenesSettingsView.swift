@@ -12,7 +12,12 @@ private struct ScenesListView: View {
             List {
                 ForEach(database.scenes) { scene in
                     NavigationLink {
-                        SceneSettingsView(scene: scene, name: scene.name, selectedRotation: scene.videoSourceRotation!)
+                        SceneSettingsView(
+                            scene: scene,
+                            name: scene.name,
+                            selectedRotation: scene.videoSourceRotation!,
+                            numericInput: model.database.sceneNumericInput!
+                        )
                     } label: {
                         HStack {
                             DraggableItemPrefixView()
@@ -65,15 +70,56 @@ private struct ScenesSwitchTransition: View {
     @State var sceneSwitchTransition: String
 
     var body: some View {
-        Picker("Scene switch transition", selection: $sceneSwitchTransition) {
-            ForEach(sceneSwitchTransitions, id: \.self) { transition in
-                Text(transition)
+        Section {
+            Picker("Scene switch transition", selection: $sceneSwitchTransition) {
+                ForEach(sceneSwitchTransitions, id: \.self) { transition in
+                    Text(transition)
+                }
             }
+            .onChange(of: sceneSwitchTransition) { _ in
+                model.database.sceneSwitchTransition = SettingsSceneSwitchTransition
+                    .fromString(value: sceneSwitchTransition)
+                model.setSceneSwitchTransition()
+            }
+            Toggle("Force scene switch transition", isOn: Binding(get: {
+                model.database.forceSceneSwitchTransition!
+            }, set: { value in
+                model.database.forceSceneSwitchTransition = value
+            }))
+        } footer: {
+            Text("""
+            RTMP, SRT(LA), screen capture and media player video sources can instantly be switched \
+            to, but if you want consistency you can force scene switch transitions to these as well.
+            """)
         }
-        .onChange(of: sceneSwitchTransition) { _ in
-            model.database.sceneSwitchTransition = SettingsSceneSwitchTransition
-                .fromString(value: sceneSwitchTransition)
-            model.setSceneSwitchTransition()
+    }
+}
+
+private struct RemoteSceneView: View {
+    @EnvironmentObject var model: Model
+    @State var selectedSceneId: UUID?
+
+    var body: some View {
+        Section {
+            Picker(selection: $selectedSceneId) {
+                Text("-- None --")
+                    .tag(nil as UUID?)
+                ForEach(model.database.scenes) { scene in
+                    Text(scene.name)
+                        .tag(scene.id as UUID?)
+                }
+            } label: {
+                Text("Remote scene")
+            }
+            .onChange(of: selectedSceneId) { _ in
+                model.database.remoteSceneId = selectedSceneId
+                model.remoteSceneSettingsUpdated()
+            }
+        } footer: {
+            Text("""
+            Widgets in selected scene will be shown on the Moblin device the remote control \
+            assistant is connected to.
+            """)
         }
     }
 }
@@ -104,6 +150,7 @@ struct ScenesSettingsView: View {
             ScenesListView()
             WidgetsSettingsView()
             ScenesSwitchTransition(sceneSwitchTransition: model.database.sceneSwitchTransition!.toString())
+            RemoteSceneView(selectedSceneId: model.database.remoteSceneId)
             ReloadBrowserSources()
         }
         .navigationTitle("Scenes")

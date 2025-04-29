@@ -1,7 +1,11 @@
 import Foundation
 import SwiftUI
 
-private let recordingsDirectory = URL.documentsDirectory.appending(component: "Recordings")
+private func getRecordingsDirectory() -> URL {
+    let recordingsDirectory = URL.documentsDirectory.appending(component: "Recordings")
+    try? FileManager.default.createDirectory(at: recordingsDirectory, withIntermediateDirectories: true)
+    return recordingsDirectory
+}
 
 class RecordingSettings: Codable {
     var resolution: SettingsStreamResolution
@@ -80,8 +84,13 @@ class Recording: Identifiable, Codable {
         )
     }
 
+    func currentLength() -> Double {
+        // Not perfect as segments are not written that often.
+        return Date().timeIntervalSince(startTime)
+    }
+
     func url() -> URL {
-        return recordingsDirectory.appending(component: name())
+        return getRecordingsDirectory().appending(component: name())
     }
 
     func shareUrl() -> URL {
@@ -117,17 +126,6 @@ final class RecordingsStorage {
 
     @AppStorage("recordings") var storage = ""
 
-    init() {
-        do {
-            try FileManager.default.createDirectory(
-                at: recordingsDirectory,
-                withIntermediateDirectories: true
-            )
-        } catch {
-            logger.error("Failed to create recordings directory with error \(error.localizedDescription)")
-        }
-    }
-
     func load() {
         do {
             try tryLoadAndMigrate(settings: storage)
@@ -140,7 +138,7 @@ final class RecordingsStorage {
 
     private func cleanup() {
         guard let enumerator = FileManager.default.enumerator(
-            at: recordingsDirectory,
+            at: getRecordingsDirectory(),
             includingPropertiesForKeys: nil
         ) else {
             return

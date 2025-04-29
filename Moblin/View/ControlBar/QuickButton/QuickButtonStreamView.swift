@@ -17,14 +17,14 @@ struct QuickButtonStreamView: View {
                     model.stopRecording()
                     if model.setCurrentStream(streamId: model.currentStreamId) {
                         model.reloadStream()
-                        model.sceneUpdated(attachCamera: true)
+                        model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
                         model.setIsLive(value: true)
                         DispatchQueue.main
                             .asyncAfter(deadline: .now() + 3) {
                                 model.startStream(delayed: true)
                             }
                     } else {
-                        model.makeErrorToast(title: "Failed to switch scene")
+                        model.makeErrorToast(title: "Failed to switch stream")
                     }
                 }
                 .pickerStyle(.inline)

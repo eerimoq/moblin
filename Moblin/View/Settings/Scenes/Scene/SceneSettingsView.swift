@@ -16,7 +16,7 @@ private struct VideoStabilizationView: View {
             }
             .onChange(of: mode) {
                 scene.videoStabilizationMode = SettingsVideoStabilizationMode.fromString(value: $0)
-                model.sceneUpdated(attachCamera: true)
+                model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
             }
         }
     }
@@ -29,35 +29,10 @@ struct SceneSettingsView: View {
     var scene: SettingsScene
     @State var name: String
     @State var selectedRotation: Double
+    @State var numericInput: Bool
 
     var widgets: [SettingsWidget] {
         model.database.widgets
-    }
-
-    private let widgetsWithPosition: [SettingsWidgetType] = [
-        .image, .browser, .text, .crop, .map, .qrCode, .alerts, .videoSource,
-    ]
-
-    private func widgetHasPosition(id: UUID) -> Bool {
-        if let widget = model.findWidget(id: id) {
-            return widgetsWithPosition.contains(widget.type)
-        } else {
-            logger.error("Unable to find widget type")
-            return false
-        }
-    }
-
-    private let widgetsWithSize: [SettingsWidgetType] = [
-        .image, .qrCode, .map, .videoSource,
-    ]
-
-    private func widgetHasSize(id: UUID) -> Bool {
-        if let widget = model.findWidget(id: id) {
-            return widgetsWithSize.contains(widget.type)
-        } else {
-            logger.error("Unable to find widget type")
-            return false
-        }
     }
 
     private func createSceneWidget(widget: SettingsWidget) -> SettingsSceneWidget {
@@ -87,11 +62,7 @@ struct SceneSettingsView: View {
 
     private func onCameraChange(cameraId: String) {
         scene.updateCameraId(settingsCameraId: model.cameraIdToSettingsCameraId(cameraId: cameraId))
-        model.sceneUpdated(attachCamera: true)
-    }
-
-    private func canWidgetExpand(widget: SettingsWidget) -> Bool {
-        return widgetHasPosition(id: widget.id) || widgetHasSize(id: widget.id)
+        model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
     }
 
     var body: some View {
@@ -141,18 +112,26 @@ struct SceneSettingsView: View {
                 VideoSourceRotationView(selectedRotation: $selectedRotation)
                     .onChange(of: selectedRotation) { rotation in
                         scene.videoSourceRotation = rotation
-                        model.sceneUpdated()
+                        model.sceneUpdated(updateRemoteScene: false)
                     }
                 Toggle(isOn: Binding(get: {
                     scene.overrideVideoStabilizationMode!
                 }, set: { value in
                     scene.overrideVideoStabilizationMode = value
-                    model.sceneUpdated(attachCamera: true)
+                    model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
                 })) {
                     Text("Override video stabilization")
                 }
                 if scene.overrideVideoStabilizationMode! {
                     VideoStabilizationView(scene: scene, mode: scene.videoStabilizationMode!.toString())
+                }
+                Toggle(isOn: Binding(get: {
+                    scene.fillFrame!
+                }, set: { value in
+                    scene.fillFrame = value
+                    model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
+                })) {
+                    Text("Fill frame")
                 }
             } header: {
                 Text("Video source")
@@ -164,54 +143,60 @@ struct SceneSettingsView: View {
             }
             Section {
                 List {
-                    let forEach = ForEach(scene.widgets) { widget in
-                        if let realWidget = widgets
-                            .first(where: { item in item.id == widget.widgetId })
-                        {
-                            let expanded = expandedWidget === widget && canWidgetExpand(widget: realWidget)
-                            Button(action: {
-                                if expandedWidget !== widget {
-                                    expandedWidget = widget
-                                } else {
-                                    expandedWidget = nil
-                                }
-                            }, label: {
-                                HStack {
-                                    DraggableItemPrefixView()
-                                    HStack {
-                                        Text("")
-                                        Image(systemName: widgetImage(widget: realWidget))
-                                        Text(realWidget.name)
-                                    }
-                                    Spacer()
-                                    if canWidgetExpand(widget: realWidget) {
-                                        Image(systemName: expanded ? "chevron.down" : "chevron.right")
-                                    }
-                                }
-                            })
-                            .foregroundColor(.primary)
-                            if expanded {
+                    ForEach(scene.widgets) { sceneWidget in
+                        if let widget = widgets.first(where: { item in item.id == sceneWidget.widgetId }) {
+                            NavigationLink {
                                 SceneWidgetSettingsView(
-                                    hasPosition: widgetHasPosition(id: realWidget.id),
-                                    hasSize: widgetHasSize(id: realWidget.id),
-                                    widget: widget
+                                    sceneWidget: sceneWidget,
+                                    widget: widget,
+                                    numericInput: $numericInput,
+                                    x: sceneWidget.x,
+                                    y: sceneWidget.y,
+                                    width: sceneWidget.width,
+                                    height: sceneWidget.height,
+                                    xString: String(sceneWidget.x),
+                                    yString: String(sceneWidget.y),
+                                    widthString: String(sceneWidget.width),
+                                    heightString: String(sceneWidget.height)
                                 )
+                            } label: {
+                                Toggle(isOn: Binding(get: {
+                                    widget.enabled!
+                                }, set: { value in
+                                    widget.enabled = value
+                                    model
+                                        .sceneUpdated(attachCamera: model
+                                            .isCaptureDeviceVideoSoureWidget(widget: widget))
+                                })) {
+                                    HStack {
+                                        DraggableItemPrefixView()
+                                        HStack {
+                                            Text("")
+                                            Image(systemName: widgetImage(widget: widget))
+                                            Text(widget.name)
+                                        }
+                                        Spacer()
+                                    }
+                                }
                             }
                         }
                     }
-                    if expandedWidget == nil {
-                        forEach
-                            .onMove(perform: { froms, to in
-                                scene.widgets.move(fromOffsets: froms, toOffset: to)
-                                model.sceneUpdated()
-                            })
-                            .onDelete(perform: { offsets in
-                                scene.widgets.remove(atOffsets: offsets)
-                                model.sceneUpdated()
-                            })
-                    } else {
-                        forEach
-                    }
+                    .onMove(perform: { froms, to in
+                        scene.widgets.move(fromOffsets: froms, toOffset: to)
+                        model.sceneUpdated()
+                    })
+                    .onDelete(perform: { offsets in
+                        var attachCamera = false
+                        if scene.id == model.getSelectedScene()?.id {
+                            for offset in offsets {
+                                if let widget = model.findWidget(id: scene.widgets[offset].widgetId) {
+                                    attachCamera = model.isCaptureDeviceVideoSoureWidget(widget: widget)
+                                }
+                            }
+                        }
+                        scene.widgets.remove(atOffsets: offsets)
+                        model.sceneUpdated(attachCamera: attachCamera)
+                    })
                 }
                 AddButtonView(action: {
                     showingAddWidget = true
@@ -239,9 +224,16 @@ struct SceneSettingsView: View {
                                 Section("Widget name") {
                                     ForEach(widgets) { widget in
                                         Button(action: {
-                                            scene.widgets
-                                                .append(createSceneWidget(widget: widget))
-                                            model.sceneUpdated(imageEffectChanged: true)
+                                            scene.widgets.append(createSceneWidget(widget: widget))
+                                            var attachCamera = false
+                                            if scene.id == model.getSelectedScene()?.id {
+                                                attachCamera = model.isCaptureDeviceVideoSoureWidget(widget: widget)
+                                            }
+                                            model.sceneUpdated(
+                                                imageEffectChanged: true,
+                                                attachCamera: attachCamera
+                                            )
+                                            model.objectWillChange.send()
                                             showingAddWidget = false
                                         }, label: {
                                             IconAndTextView(

@@ -9,7 +9,7 @@ struct AudioSettingsView: View {
         }
         model.database.audio!.audioOutputToInputChannelsMap!.channel1 = max(channel - 1, -1)
         model.reloadStream()
-        model.sceneUpdated()
+        model.sceneUpdated(updateRemoteScene: false)
     }
 
     private func submitOutputChannel2(value: String) {
@@ -18,11 +18,28 @@ struct AudioSettingsView: View {
         }
         model.database.audio!.audioOutputToInputChannelsMap!.channel2 = max(channel - 1, -1)
         model.reloadStream()
-        model.sceneUpdated()
+        model.sceneUpdated(updateRemoteScene: false)
     }
 
     var body: some View {
         Form {
+            if model.database.showAllSettings! {
+                Section {
+                    NavigationLink {
+                        StreamAudioSettingsView(
+                            stream: model.stream,
+                            bitrate: Float(model.stream.audioBitrate! / 1000)
+                        )
+                    } label: {
+                        IconAndTextView(
+                            image: "dot.radiowaves.left.and.right",
+                            text: String(localized: "Audio")
+                        )
+                    }
+                } header: {
+                    Text("Shortcut")
+                }
+            }
             Section {
                 Toggle("Bluetooth output only", isOn: Binding(get: {
                     model.database.debug.bluetoothOutputOnly!

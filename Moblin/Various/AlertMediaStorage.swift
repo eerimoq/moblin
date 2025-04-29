@@ -25,16 +25,7 @@ class AlertMediaStorage {
     }
 
     func ids() -> [UUID] {
-        do {
-            var ids: [UUID] = []
-            for file in try fileManager.contentsOfDirectory(atPath: mediasUrl.path) {
-                if let id = UUID(uuidString: file) {
-                    ids.append(id)
-                }
-            }
-            return ids
-        } catch {}
-        return []
+        return fileManager.ids(directory: mediasUrl.path)
     }
 
     func add(id: UUID, url: URL) {
@@ -52,6 +43,14 @@ class AlertMediaStorage {
             try fileManager.removeItem(at: makePath(id: id))
         } catch {
             logger.error("alert-media-storage: Remove failed with error \(error)")
+        }
+    }
+
+    func write(id: UUID, data: Data) {
+        do {
+            try data.write(to: makePath(id: id))
+        } catch {
+            logger.error("image-storage: Write failed with error \(error)")
         }
     }
 

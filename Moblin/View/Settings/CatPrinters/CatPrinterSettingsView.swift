@@ -16,8 +16,9 @@ private func formatCatPrinterState(state: CatPrinterState?) -> String {
 
 struct CatPrinterSettingsView: View {
     @EnvironmentObject var model: Model
-    private let scanner: CatPrinterScanner = .shared
+    @ObservedObject private var scanner = catPrinterScanner
     var device: SettingsCatPrinter
+    @Binding var name: String
 
     func state() -> String {
         return formatCatPrinterState(state: model.catPrinterState)
@@ -34,19 +35,18 @@ struct CatPrinterSettingsView: View {
         guard let deviceId = UUID(uuidString: value) else {
             return
         }
-        guard let catPrinterDevice = scanner.discoveredDevices
-            .first(where: { $0.peripheral.identifier == deviceId })
-        else {
+        guard let peripheral = scanner.discoveredPeripherals.first(where: { $0.identifier == deviceId }) else {
             return
         }
-        device.bluetoothPeripheralName = catPrinterDevice.peripheral.name
+        device.bluetoothPeripheralName = peripheral.name
         device.bluetoothPeripheralId = deviceId
     }
 
     var body: some View {
         Form {
             Section {
-                TextEditNavigationView(title: "Name", value: device.name, onSubmit: { value in
+                TextEditNavigationView(title: "Name", value: name, onSubmit: { value in
+                    self.name = value
                     device.name = value
                 })
             }
@@ -87,6 +87,15 @@ struct CatPrinterSettingsView: View {
                     device.printChat = value
                 }), label: {
                     Text("Print chat")
+                })
+            }
+            Section {
+                Toggle(isOn: Binding(get: {
+                    device.printSnapshots!
+                }, set: { value in
+                    device.printSnapshots = value
+                }), label: {
+                    Text("Print snapshots")
                 })
             }
             Section {

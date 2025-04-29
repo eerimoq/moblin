@@ -1,9 +1,11 @@
 import AVFAudio
+import PhotosUI
 import SDWebImageSwiftUI
 import SwiftUI
 import UniformTypeIdentifiers
 
-private let testNames: [String] = ["Mark", "Natasha", "Pedro", "Anna"]
+private let testNames = ["Mark", "Natasha", "Pedro", "Anna"]
+private let testPrompts = ["crown", "sunglasses", "fireworks"]
 
 struct AlertPickerView: UIViewControllerRepresentable {
     @EnvironmentObject var model: Model
@@ -69,19 +71,19 @@ private struct AlertTextToSpeechView: View {
     }
 }
 
+private func getImageName(model: Model, id: UUID?) -> String {
+    return model.getAllAlertImages().first(where: { $0.id == id })?.name ?? ""
+}
+
+private func getSoundName(model: Model, id: UUID?) -> String {
+    return model.getAllAlertSounds().first(where: { $0.id == id })?.name ?? ""
+}
+
 private struct AlertMediaView: View {
     @EnvironmentObject var model: Model
     var alert: SettingsWidgetAlertsAlert
     @State var imageId: UUID
     @State var soundId: UUID
-
-    private func getImageName(id: UUID?) -> String {
-        return model.getAllAlertImages().first(where: { $0.id == id })?.name ?? ""
-    }
-
-    private func getSoundName(id: UUID?) -> String {
-        return model.getAllAlertSounds().first(where: { $0.id == id })?.name ?? ""
-    }
 
     var body: some View {
         Section {
@@ -92,12 +94,12 @@ private struct AlertMediaView: View {
                     loopCount: Float(alert.imageLoopCount!)
                 )
             } label: {
-                TextItemView(name: "Image", value: getImageName(id: imageId))
+                TextItemView(name: "Image", value: getImageName(model: model, id: imageId))
             }
             NavigationLink {
                 AlertSoundSelectorView(alert: alert, soundId: $soundId)
             } label: {
-                TextItemView(name: "Sound", value: getSoundName(id: soundId))
+                TextItemView(name: "Sound", value: getSoundName(model: model, id: soundId))
             }
         } header: {
             Text("Media")
@@ -621,6 +623,10 @@ private struct ChatBotCommandView: View {
     @EnvironmentObject var model: Model
     var command: SettingsWidgetAlertsChatBotCommand
     @State var name: String
+    // @State var imageType: String
+    // @State var imageId: UUID
+    // @State var soundId: UUID
+    // @State var imagePlaygroundImageType: UUID
 
     private var alert: SettingsWidgetAlertsAlert {
         command.alert
@@ -654,6 +660,52 @@ private struct ChatBotCommandView: View {
                 } footer: {
                     Text("Trigger with chat message '!moblin alert \(name)'")
                 }
+                // Section {
+                //     Picker(selection: $imageType) {
+                //         ForEach(chatBotCommandImageTypes, id: \.self) { type in
+                //             Text(type)
+                //         }
+                //     } label: {
+                //         Text("Type")
+                //     }
+                //     .onChange(of: imageType) { value in
+                //         command.imageType = SettingsWidgetAlertsChatBotCommandImageType.fromString(value: value)
+                //         model.updateAlertsSettings()
+                //     }
+                //     switch SettingsWidgetAlertsChatBotCommandImageType.fromString(value: imageType) {
+                //     case .file:
+                //         NavigationLink {
+                //             AlertImageSelectorView(
+                //                 alert: alert,
+                //                 imageId: $imageId,
+                //                 loopCount: Float(alert.imageLoopCount!)
+                //             )
+                //         } label: {
+                //             TextItemView(
+                //                 name: String(localized: "File"),
+                //                 value: getImageName(model: model, id: imageId)
+                //             )
+                //         }
+                //     case .imagePlayground:
+                //         NavigationLink {
+                //             AlertImagePlaygroundSelectorView(command: command, imageId:
+                //             command.imagePlaygroundImageId!)
+                //         } label: {
+                //             Text("Image Playground")
+                //         }
+                //     }
+                // } header: {
+                //     Text("Image")
+                // }
+                // Section {
+                //     NavigationLink {
+                //         AlertSoundSelectorView(alert: alert, soundId: $soundId)
+                //     } label: {
+                //         TextItemView(name: "Sound", value: getSoundName(model: model, id: soundId))
+                //     }
+                // } header: {
+                //     Text("Sound")
+                // }
                 AlertMediaView(alert: alert, imageId: alert.imageId, soundId: alert.soundId)
                 AlertPositionView(alert: alert, positionType: alert.positionType!.toString())
                 AlertColorsView(
@@ -670,7 +722,11 @@ private struct ChatBotCommandView: View {
                 AlertTextToSpeechView(alert: alert, ttsDelay: alert.textToSpeechDelay!)
                 Section {
                     Button(action: {
-                        model.testAlert(alert: .chatBotCommand(name, testNames.randomElement()!))
+                        model.testAlert(alert: .chatBotCommand(
+                            name,
+                            testNames.randomElement()!,
+                            testPrompts.randomElement()!
+                        ))
                     }, label: {
                         HCenter {
                             Text("Test")
@@ -694,7 +750,14 @@ private struct WidgetAlertsSettingsChatBotView: View {
             Section {
                 List {
                     ForEach(chatBot.commands) { command in
-                        ChatBotCommandView(command: command, name: command.name)
+                        ChatBotCommandView(
+                            command: command,
+                            name: command.name /* ,
+                             imageType: command.imageType!.toString(),
+                             imageId: command.alert.imageId,
+                             soundId: command.alert.soundId,
+                             imagePlaygroundImageType: command.imagePlaygroundImageId! */
+                        )
                     }
                     .onDelete(perform: { indexes in
                         chatBot.commands.remove(atOffsets: indexes)

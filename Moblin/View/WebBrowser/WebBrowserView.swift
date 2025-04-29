@@ -22,6 +22,7 @@ private struct UrlView: View {
             .textInputAutocapitalization(.never)
             .autocorrectionDisabled()
             .onSubmit {
+                model.webBrowserUrl = model.webBrowserUrl.trim()
                 model.loadWebBrowserUrl()
             }
     }

@@ -26,7 +26,16 @@
 | !moblin filter sepia off | Turn off the sepia filter. |
 | !moblin filter triple on | Turn on the triple filter. |
 | !moblin filter triple off | Turn off the triple filter. |
+| !moblin filter twin on | Turn on the twin filter. |
+| !moblin filter twin off | Turn off the twin filter. |
 | !moblin filter pixellate on | Turn on the pixellate filter. |
 | !moblin filter pixellate off | Turn off the pixellate filter. |
 | !moblin filter 4:3 on | Turn on the 4:3 filter. |
 | !moblin filter 4:3 off | Turn off the 4:3 filter. |
+| !moblin scene \<name> | Change scene. |
+| !moblin reaction fireworks | Trigger Apple fireworks reaction. |
+| !moblin reaction balloons | Trigger Apple balloons reaction. |
+| !moblin reaction heart | Trigger Apple heart reaction. |
+| !moblin reaction confetti | Trigger Apple confetti reaction. |
+| !moblin reaction lasers | Trigger Apple lasers reaction. |
+| !moblin reaction rain | Trigger Apple rain reaction. |

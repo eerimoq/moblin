@@ -34,7 +34,7 @@ func formatDjiDeviceState(state: DjiDeviceState?) -> String {
 
 private struct DjiDeviceSelectDeviceSettingsView: View {
     @EnvironmentObject var model: Model
-    private let djiScanner: DjiDeviceScanner = .shared
+    @ObservedObject private var djiScanner: DjiDeviceScanner = .shared
     var device: SettingsDjiDevice
 
     private func onDeviceChange(value: String) {
@@ -210,6 +210,15 @@ private struct DjiDeviceRtmpSettingsView: View {
                 }
             }
         }
+        Section {
+            NavigationLink {
+                RtmpServerSettingsView()
+            } label: {
+                Text("RTMP server")
+            }
+        } header: {
+            Text("Shortcut")
+        }
     }
 }
 
@@ -270,6 +279,8 @@ private struct DjiDeviceSettingsSettingsView: View {
                 }
                 .disabled(model.isDjiDeviceStarted(device: device))
             }
+        } header: {
+            Text("Settings")
         } footer: {
             Text("High bitrates may be unstable.")
         }
@@ -335,6 +346,7 @@ private struct DjiDeviceStartStopButtonSettingsView: View {
 struct DjiDeviceSettingsView: View {
     @EnvironmentObject var model: Model
     var device: SettingsDjiDevice
+    @Binding var name: String
 
     func state() -> String {
         return formatDjiDeviceState(state: model.djiDeviceStreamingState)
@@ -344,6 +356,7 @@ struct DjiDeviceSettingsView: View {
         Form {
             Section {
                 TextEditNavigationView(title: "Name", value: device.name, onSubmit: { value in
+                    name = value
                     device.name = value
                 })
             }

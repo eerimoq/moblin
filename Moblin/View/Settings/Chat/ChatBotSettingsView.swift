@@ -13,39 +13,57 @@ private struct PermissionsSettingsView: View {
 
     var body: some View {
         Form {
-            Toggle(isOn: Binding(get: {
-                permissions.moderatorsEnabled
-            }, set: { value in
-                permissions.moderatorsEnabled = value
-            }), label: {
-                Text("Moderators")
-            })
-            Toggle(isOn: Binding(get: {
-                permissions.subscribersEnabled!
-            }, set: { value in
-                permissions.subscribersEnabled = value
-            }), label: {
-                Text("Subscribers")
-            })
-            Picker(selection: $minimumSubscriberTier) {
-                ForEach([3, 2, 1], id: \.self) { tier in
-                    Text(String(tier))
+            Section {
+                Toggle(isOn: Binding(get: {
+                    permissions.moderatorsEnabled
+                }, set: { value in
+                    permissions.moderatorsEnabled = value
+                }), label: {
+                    Text("Moderators")
+                })
+                Toggle(isOn: Binding(get: {
+                    permissions.subscribersEnabled!
+                }, set: { value in
+                    permissions.subscribersEnabled = value
+                }), label: {
+                    Text("Subscribers")
+                })
+                Picker(selection: $minimumSubscriberTier) {
+                    ForEach([3, 2, 1], id: \.self) { tier in
+                        Text(String(tier))
+                    }
+                } label: {
+                    Text("Minimum subscriber tier")
                 }
-            } label: {
-                Text("Minimum subscriber tier")
+                .onChange(of: minimumSubscriberTier) { value in
+                    permissions.minimumSubscriberTier = value
+                }
+                Toggle(isOn: Binding(get: {
+                    permissions.othersEnabled
+                }, set: { value in
+                    permissions.othersEnabled = value
+                }), label: {
+                    Text("Others")
+                })
+            } header: {
+                Text("Permissions")
             }
-            .onChange(of: minimumSubscriberTier) { value in
-                permissions.minimumSubscriberTier = value
+            Section {
+                Toggle(isOn: Binding(get: {
+                    permissions.sendChatMessages!
+                }, set: { value in
+                    permissions.sendChatMessages! = value
+                }), label: {
+                    Text("Send chat responses")
+                })
+            } footer: {
+                Text("""
+                Typically sends a chat message if the user is not allowed to execute the command. Some \
+                commands responds on success as well.
+                """)
             }
-            Toggle(isOn: Binding(get: {
-                permissions.othersEnabled
-            }, set: { value in
-                permissions.othersEnabled = value
-            }), label: {
-                Text("Others")
-            })
         }
-        .navigationTitle("Permissions")
+        .navigationTitle("Command")
     }
 }
 
@@ -96,6 +114,19 @@ struct ChatBotCommandsSettingsView: View {
             }
             Section {
                 NavigationLink {
+                    PermissionsSettingsView(permissions: permissions.reaction!)
+                } label: {
+                    Text("!moblin reaction <reaction>")
+                }
+            } footer: {
+                VStack(alignment: .leading) {
+                    Text("Perform Apple reaction.")
+                    Text("")
+                    Text("<reaction> is hearts, fireworks, balloons, confetti or lasers.")
+                }
+            }
+            Section {
+                NavigationLink {
                     PermissionsSettingsView(permissions: permissions.filter!)
                 } label: {
                     Text("!moblin filter <filter> <on/off>")
@@ -108,6 +139,15 @@ struct ChatBotCommandsSettingsView: View {
                     Text("")
                     Text("<on/off> is on or off.")
                 }
+            }
+            Section {
+                NavigationLink {
+                    PermissionsSettingsView(permissions: permissions.scene!)
+                } label: {
+                    Text("!moblin scene <name>")
+                }
+            } footer: {
+                Text("Switch to given scene.")
             }
             Section {
                 NavigationLink {

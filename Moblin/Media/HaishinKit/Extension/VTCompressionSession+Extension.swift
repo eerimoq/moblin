@@ -3,12 +3,9 @@ import VideoToolbox
 
 extension VTCompressionSession {
     func prepareToEncodeFrames() -> OSStatus {
-        VTCompressionSessionPrepareToEncodeFrames(self)
+        return VTCompressionSessionPrepareToEncodeFrames(self)
     }
-}
 
-extension VTCompressionSession: VTSessionConvertible {
-    @discardableResult
     @inline(__always)
     func encodeFrame(
         _ imageBuffer: CVImageBuffer,
@@ -27,13 +24,21 @@ extension VTCompressionSession: VTSessionConvertible {
         )
     }
 
-    @discardableResult
-    @inline(__always)
-    func decodeFrame(_: CMSampleBuffer, outputHandler _: @escaping VTDecompressionOutputHandler) -> OSStatus {
-        return noErr
-    }
-
     func invalidate() {
         VTCompressionSessionInvalidate(self)
+    }
+
+    func setProperty(_ property: VTSessionProperty) -> OSStatus {
+        return VTSessionSetProperty(self, key: property.key.value, value: property.value)
+    }
+
+    func setProperties(_ properties: [VTSessionProperty]) -> OSStatus {
+        for property in properties {
+            let err = setProperty(property)
+            if err != noErr {
+                return err
+            }
+        }
+        return noErr
     }
 }

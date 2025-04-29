@@ -86,6 +86,17 @@ struct StreamTwitchSettingsView: View {
                     )
                 }
             }
+            Section {
+                Toggle(isOn: Binding(get: {
+                    stream.twitchShowFollows!
+                }, set: { value in
+                    stream.twitchShowFollows = value
+                })) {
+                    Text("Show follows")
+                }
+            } footer: {
+                Text("Show follows in chat, as toast and in alert widgets.")
+            }
             if false {
                 Section {
                     Toggle("Multi track", isOn: Binding(get: {

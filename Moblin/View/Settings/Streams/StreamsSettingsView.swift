@@ -22,7 +22,6 @@ struct StreamsSettingsView: View {
                                 }, set: { _ in
                                     model.setCurrentStream(stream: stream)
                                     model.reloadStream()
-                                    model.sceneUpdated(attachCamera: true)
                                     model.resetSelectedScene(changeScene: false)
                                     model.updateOrientation()
                                 }))

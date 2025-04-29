@@ -8,7 +8,6 @@ struct MpegTsPacket {
     static let fixedHeaderSize = 4
     static let syncByte: UInt8 = 0x47
     static let programAssociationTableId: UInt16 = 0
-    static let nullId: UInt16 = 0x1FFF
     var payloadUnitStartIndicator = false
     var id: UInt16 = 0
     var continuityCounter: UInt8 = 0

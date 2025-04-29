@@ -2,18 +2,16 @@ import AVFoundation
 import UIKit
 
 protocol NetStreamDelegate: AnyObject {
-    func stream(
-        _ stream: NetStream,
-        audioLevel: Float,
-        numberOfAudioChannels: Int,
-        presentationTimestamp: Double
-    )
+    func stream(_ stream: NetStream, audioLevel: Float, numberOfAudioChannels: Int)
     func streamVideo(_ stream: NetStream, presentationTimestamp: Double)
     func streamVideo(_ stream: NetStream, failedEffect: String?)
     func streamVideo(_ stream: NetStream, lowFpsImage: Data?, frameNumber: UInt64)
     func streamVideo(_ stream: NetStream, findVideoFormatError: String, activeFormat: String)
+    func streamVideoAttachCameraError(_ stream: NetStream)
+    func streamVideoCaptureSessionError(_ stream: NetStream, _ message: String)
+    func streamRecorderInitSegment(data: Data)
+    func streamRecorderDataSegment(segment: RecorderDataSegment)
     func streamRecorderFinished()
-    func streamRecorderError()
     func streamAudio(_ stream: NetStream, sampleBuffer: CMSampleBuffer)
     func streamNoTorch()
     func streamSetZoomX(x: Float)
@@ -82,34 +80,20 @@ open class NetStream: NSObject {
         }
     }
 
-    func setVideoEncoderSettings(settings: VideoCodecSettings) {
+    func setVideoEncoderSettings(settings: VideoEncoderSettings) {
         netStreamLockQueue.async {
             self.mixer.video.getEncoders().first!.settings.mutate { $0 = settings }
         }
     }
 
     func attachCamera(
-        _ device: AVCaptureDevice?,
-        _ cameraPreviewLayer: AVCaptureVideoPreviewLayer?,
-        _ showCameraPreview: Bool,
-        _ preferredVideoStabilizationMode: AVCaptureVideoStabilizationMode,
-        _ isVideoMirrored: Bool,
-        _ ignoreFramesAfterAttachSeconds: Double,
+        params: VideoUnitAttachParams,
         onError: ((_ error: Error) -> Void)? = nil,
-        onSuccess: (() -> Void)? = nil,
-        replaceVideoCameraId: UUID? = nil
+        onSuccess: (() -> Void)? = nil
     ) {
         netStreamLockQueue.async {
             do {
-                try self.mixer.attachCamera(
-                    device,
-                    cameraPreviewLayer,
-                    showCameraPreview,
-                    replaceVideoCameraId,
-                    preferredVideoStabilizationMode,
-                    isVideoMirrored,
-                    ignoreFramesAfterAttachSeconds
-                )
+                try self.mixer.attachCamera(params: params)
                 onSuccess?()
             } catch {
                 onError?(error)
@@ -169,12 +153,12 @@ open class NetStream: NSObject {
         mixer.audio.setReplaceAudioTargetLatency(cameraId: cameraId, latency: latency)
     }
 
-    func videoCapture() -> VideoUnit? {
-        return mixer.video
-    }
-
     func registerVideoEffect(_ effect: VideoEffect) {
         mixer.video.registerEffect(effect)
+    }
+
+    func registerVideoEffectBack(_ effect: VideoEffect) {
+        mixer.video.registerEffectBack(effect)
     }
 
     func unregisterVideoEffect(_ effect: VideoEffect) {
@@ -197,8 +181,20 @@ open class NetStream: NSObject {
         mixer.video.setSceneSwitchTransition(sceneSwitchTransition: sceneSwitchTransition)
     }
 
-    func takeSnapshot(age: Float, onComplete: @escaping (UIImage, UIImage?) -> Void) {
+    func takeSnapshot(age: Float, onComplete: @escaping (UIImage, CIImage) -> Void) {
         mixer.video.takeSnapshot(age: age, onComplete: onComplete)
+    }
+
+    func setCleanRecordings(enabled: Bool) {
+        mixer.video.setCleanRecordings(enabled: enabled)
+    }
+
+    func setCleanSnapshots(enabled: Bool) {
+        mixer.video.setCleanSnapshots(enabled: enabled)
+    }
+
+    func setCleanExternalDisplay(enabled: Bool) {
+        mixer.video.setCleanExternalDisplay(enabled: enabled)
     }
 
     func setAudioChannelsMap(map: [Int: Int]) {
@@ -225,13 +221,8 @@ open class NetStream: NSObject {
 }
 
 extension NetStream: MixerDelegate {
-    func mixer(audioLevel: Float, numberOfAudioChannels: Int, presentationTimestamp: Double) {
-        delegate?.stream(
-            self,
-            audioLevel: audioLevel,
-            numberOfAudioChannels: numberOfAudioChannels,
-            presentationTimestamp: presentationTimestamp
-        )
+    func mixer(audioLevel: Float, numberOfAudioChannels: Int) {
+        delegate?.stream(self, audioLevel: audioLevel, numberOfAudioChannels: numberOfAudioChannels)
     }
 
     func mixerVideo(presentationTimestamp: Double) {
@@ -250,12 +241,24 @@ extension NetStream: MixerDelegate {
         delegate?.streamVideo(self, findVideoFormatError: findVideoFormatError, activeFormat: activeFormat)
     }
 
-    func mixerRecorderFinished() {
-        delegate?.streamRecorderFinished()
+    func mixerAttachCameraError() {
+        delegate?.streamVideoAttachCameraError(self)
     }
 
-    func mixerRecorderError() {
-        delegate?.streamRecorderError()
+    func mixerCaptureSessionError(message: String) {
+        delegate?.streamVideoCaptureSessionError(self, message)
+    }
+
+    func mixerRecorderInitSegment(data: Data) {
+        delegate?.streamRecorderInitSegment(data: data)
+    }
+
+    func mixerRecorderDataSegment(segment: RecorderDataSegment) {
+        delegate?.streamRecorderDataSegment(segment: segment)
+    }
+
+    func mixerRecorderFinished() {
+        delegate?.streamRecorderFinished()
     }
 
     func mixer(audioSampleBuffer: CMSampleBuffer) {

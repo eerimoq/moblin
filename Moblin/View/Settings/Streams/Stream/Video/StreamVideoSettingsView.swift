@@ -123,9 +123,9 @@ struct StreamVideoSettingsView: View {
                         stream.autoFps!
                     }, set: { value in
                         stream.autoFps = value
-                        model.storeAndReloadStreamIfEnabled(stream: stream)
+                        model.setStreamPreferAutoFps()
+                        model.objectWillChange.send()
                     }))
-                    .disabled(stream.enabled && (model.isLive || model.isRecording))
                 } footer: {
                     Text("""
                     Enable low light boost to make builtin cameras automatically \
@@ -207,10 +207,16 @@ struct StreamVideoSettingsView: View {
                     }))
                     .disabled(stream.enabled && model.isLive)
                 } footer: {
-                    Text("""
-                    Automatically lower resolution when the available bandwidth is \
-                    low. Generally gives better image quality at low (<750 Kbps) bitrates.
-                    """)
+                    VStack(alignment: .leading) {
+                        Text("""
+                        Automatically lower resolution when the available bandwidth is \
+                        low. Generally gives better image quality at low (<750 Kbps) bitrates.
+                        """)
+                        Text("")
+                        Text("""
+                        Warning: OBS typically requires hardware decoding not to crash when enabled.
+                        """)
+                    }
                 }
                 if model.database.debug.timecodesEnabled! {
                     Section {

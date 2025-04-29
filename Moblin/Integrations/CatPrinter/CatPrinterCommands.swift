@@ -100,7 +100,7 @@ enum CatPrinterCommand {
             data = Data([mode.rawValue])
         case let .drawRow(imageRow):
             command = .drawRow
-            data = Self.encodeImageRow(imageRow)
+            data = catPrinterEncodeImageRow(imageRow)
         case let .lattice(latticeData):
             command = .lattice
             data = latticeData
@@ -147,18 +147,6 @@ enum CatPrinterCommand {
             throw "Wrong last byte"
         }
         return (command, data)
-    }
-
-    private static func encodeImageRow(_ imageRow: [Bool]) -> Data {
-        var data = Data(count: imageRow.count / 8)
-        for byteIndex in 0 ..< data.count {
-            var byte: UInt8 = 0
-            for bitIndex in 0 ..< 8 where imageRow[8 * byteIndex + bitIndex] {
-                byte |= (1 << bitIndex)
-            }
-            data[byteIndex] = byte
-        }
-        return data
     }
 }
 

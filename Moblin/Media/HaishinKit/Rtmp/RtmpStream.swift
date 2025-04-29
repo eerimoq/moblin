@@ -273,7 +273,6 @@ class RtmpStream: NetStream {
         baseTimeStamp = -1.0
         prevRebasedAudioTimeStamp = -1.0
         prevRebasedVideoTimeStamp = -1.0
-        mixer.startRunning()
         videoChunkType = .zero
         audioChunkType = .zero
         dataTimeStamps.removeAll()
@@ -405,7 +404,7 @@ class RtmpStream: NetStream {
     }
 
     private func videoCodecOutputFormatInner(
-        _ format: VideoCodecSettings.Format,
+        _ format: VideoEncoderSettings.Format,
         _ formatDescription: CMFormatDescription
     ) {
         var buffer: Data
@@ -427,7 +426,7 @@ class RtmpStream: NetStream {
         handleEncodedVideoBuffer(buffer, 0)
     }
 
-    private func videoCodecOutputSampleBufferInner(_ format: VideoCodecSettings.Format,
+    private func videoCodecOutputSampleBufferInner(_ format: VideoEncoderSettings.Format,
                                                    _ sampleBuffer: CMSampleBuffer)
     {
         let decodeTimeStamp: Double

@@ -25,11 +25,7 @@ class LogsStorage {
     }
 
     func ids() -> [UUID] {
-        do {
-            let files = try fileManager.contentsOfDirectory(atPath: logsUrl.path)
-            return files.map { UUID(uuidString: $0.components(separatedBy: ".")[0])! }
-        } catch {}
-        return []
+        return fileManager.idsBeforeDot(directory: logsUrl.path)
     }
 
     func write(id: UUID, data: Data) {

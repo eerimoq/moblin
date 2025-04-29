@@ -11,7 +11,6 @@ let defaultAudioLevel: Float = -160.0
 private let maxBars = "||||||||||||||||||||"
 
 struct AudioLevelView: View {
-    var showBar: Bool
     var level: Float
     var channels: Int?
 
@@ -73,26 +72,21 @@ struct AudioLevelView: View {
                             .foregroundColor(.white)
                     }
                 } else {
-                    if showBar {
-                        HStack(spacing: 0) {
-                            if isClipping() {
-                                Text(clippingText())
-                                    .foregroundColor(.red)
-                            } else {
-                                Text(redText())
-                                    .foregroundColor(.red)
-                                Text(yellowText())
-                                    .foregroundColor(.yellow)
-                                Text(greenText())
-                                    .foregroundColor(.green)
-                            }
+                    HStack(spacing: 0) {
+                        if isClipping() {
+                            Text(clippingText())
+                                .foregroundColor(.red)
+                        } else {
+                            Text(redText())
+                                .foregroundColor(.red)
+                            Text(yellowText())
+                                .foregroundColor(.yellow)
+                            Text(greenText())
+                                .foregroundColor(.green)
                         }
-                        .padding([.bottom], 2)
-                        .bold()
-                    } else {
-                        Text(formatAudioLevelDb(level: level))
-                            .foregroundColor(.white)
                     }
+                    .padding([.bottom], 2)
+                    .bold()
                 }
                 if let channels {
                     Text(formatAudioLevelChannels(channels: channels))
@@ -107,7 +101,7 @@ struct AudioLevelView: View {
                 .frame(width: 17, height: 17)
                 .font(smallFont)
                 .padding([.leading, .trailing], 2)
-                .padding([.bottom], showBar ? 2 : 0)
+                .padding([.bottom], 2)
                 .foregroundColor(.white)
                 .background(backgroundColor)
                 .cornerRadius(5)

@@ -177,6 +177,7 @@ private var previousOffset = 0.0
 
 struct StreamOverlayChatView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var chat: ChatProvider
     private let spaceName = "scroll"
     @State var wholeSize: CGSize = .zero
     @State var scrollViewSize: CGSize = .zero
@@ -224,7 +225,7 @@ struct StreamOverlayChatView: View {
                         ChildSizeReader(size: $scrollViewSize) {
                             VStack {
                                 LazyVStack(alignment: .leading, spacing: 1) {
-                                    ForEach(model.chatPosts) { post in
+                                    ForEach(chat.posts) { post in
                                         if post.user != nil {
                                             if let highlight = post.highlight {
                                                 HStack(spacing: 0) {
@@ -274,13 +275,16 @@ struct StreamOverlayChatView: View {
                             .onPreferenceChange(
                                 ViewOffsetKey.self,
                                 perform: { scrollViewOffsetFromTop in
+                                    guard model.interactiveChat else {
+                                        return
+                                    }
                                     let offset = max(scrollViewOffsetFromTop, 0)
                                     if isCloseToStart(offset: offset) {
-                                        if model.chatPaused, offset >= previousOffset {
+                                        if chat.paused, offset >= previousOffset {
                                             model.endOfChatReachedWhenPaused()
                                         }
-                                    } else if !model.chatPaused {
-                                        if !model.chatPosts.isEmpty {
+                                    } else if !chat.paused {
+                                        if !chat.posts.isEmpty {
                                             model.pauseChat()
                                         }
                                     }

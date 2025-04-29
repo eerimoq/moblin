@@ -13,11 +13,18 @@ struct SegmentedPicker<T: Equatable, Content: View>: View {
     @Binding var selectedItem: T?
     private let items: [T]
     private let content: (T) -> Content
+    private let onLongPress: ((Int) -> Void)?
 
-    init(_ items: [T], selectedItem: Binding<T?>, @ViewBuilder content: @escaping (T) -> Content) {
+    init(
+        _ items: [T],
+        selectedItem: Binding<T?>,
+        @ViewBuilder content: @escaping (T) -> Content,
+        onLongPress: ((Int) -> Void)? = nil
+    ) {
         _selectedItem = selectedItem
         self.items = items
         self.content = content
+        self.onLongPress = onLongPress
     }
 
     @ViewBuilder func overlay(for item: T) -> some View {
@@ -36,15 +43,14 @@ struct SegmentedPicker<T: Equatable, Content: View>: View {
                     Rectangle()
                         .overlay(self.overlay(for: self.items[index]))
                         .foregroundColor(.black.opacity(0.1))
-                    Button(action: {
-                        withAnimation(.linear.speed(1.5)) {
-                            self.selectedItem = self.items[index]
-                        }
-                    }, label: {
-                        self.content(self.items[index])
-                            .contentShape(Rectangle())
-                    })
-                    .buttonStyle(.plain)
+                    self.content(self.items[index])
+                        .contentShape(Rectangle())
+                }
+                .onTapGesture {
+                    self.selectedItem = self.items[index]
+                }
+                .onLongPressGesture {
+                    onLongPress?(index)
                 }
                 Divider()
                     .background(pickerBorderColor)

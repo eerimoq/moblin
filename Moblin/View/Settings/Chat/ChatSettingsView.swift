@@ -30,7 +30,25 @@ struct ChatSettingsView: View {
                 }, set: { value in
                     model.database.chat.enabled = value
                     model.reloadChats()
+                    model.objectWillChange.send()
                 }))
+            }
+            if let stream = model.findStream(id: model.currentStreamId) {
+                Section {
+                    NavigationLink {
+                        Form {
+                            StreamPlatformsSettingsView(stream: stream)
+                        }
+                        .navigationTitle("Streaming platforms")
+                    } label: {
+                        IconAndTextView(
+                            image: "dot.radiowaves.left.and.right",
+                            text: String(localized: "Streaming platforms")
+                        )
+                    }
+                } header: {
+                    Text("Shortcut")
+                }
             }
             Section {
                 HStack {

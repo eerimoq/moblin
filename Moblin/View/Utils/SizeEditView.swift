@@ -1,9 +1,10 @@
 import SwiftUI
 
 struct SizeEditView: View {
-    var title: String
-    var value: Double
+    @Binding var number: Double
+    @Binding var value: String
     var onSubmit: (Double) -> Void
+    @Binding var numericInput: Bool
 
     func submit(value: String) -> String {
         if var value = Double(value) {
@@ -15,12 +16,16 @@ struct SizeEditView: View {
     }
 
     var body: some View {
-        ValueEditView(
-            title: title,
-            value: String(value),
+        ValueEditCompactView(
+            number: $number,
+            value: $value,
             minimum: 1,
             maximum: 100,
-            onSubmit: submit
+            onSubmit: submit,
+            numericInput: $numericInput,
+            incrementImageName: "plus.circle",
+            decrementImageName: "minus.circle",
+            increment: 0.125
         )
     }
 }

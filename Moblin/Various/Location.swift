@@ -45,15 +45,7 @@ class Location: NSObject {
         guard let latestLocation else {
             return ""
         }
-        let latitude = formatOneDecimal(Float(latestLocation.coordinate.latitude))
-        let longitude = formatOneDecimal(Float(latestLocation.coordinate.longitude))
-        let formatter = MeasurementFormatter()
-        formatter.numberFormatter.maximumFractionDigits = 1
-        let speed = formatter.string(from: NSMeasurement(
-            doubleValue: max(latestLocation.speed, 0),
-            unit: UnitSpeed.metersPerSecond
-        ) as Measurement<Unit>)
-        return "\(latitude) N \(longitude) W, \(speed)"
+        return format(speed: latestLocation.speed)
     }
 
     func getLatestKnownLocation() -> CLLocation? {

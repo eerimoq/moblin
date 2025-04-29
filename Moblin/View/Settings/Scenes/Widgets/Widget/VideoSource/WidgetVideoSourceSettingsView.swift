@@ -218,11 +218,14 @@ struct WidgetVideoSourceSettingsView: View {
     var widget: SettingsWidget
     @State var cornerRadius: Float
     @State var selectedRotation: Double
+    @State var zoom: Double
+    @State var borderWidth: Double
+    @State var background: Color
 
     private func onCameraChange(cameraId: String) {
         widget.videoSource!
             .updateCameraId(settingsCameraId: model.cameraIdToSettingsCameraId(cameraId: cameraId))
-        model.sceneUpdated(attachCamera: true)
+        model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
     }
 
     private func setEffectSettings() {
@@ -280,21 +283,77 @@ struct WidgetVideoSourceSettingsView: View {
                     widget.videoSource!.rotation = rotation
                     setEffectSettings()
                 }
+            Toggle(isOn: Binding(get: {
+                widget.videoSource!.mirror!
+            }, set: { value in
+                widget.videoSource!.mirror = value
+                setEffectSettings()
+            })) {
+                Text("Mirror")
+            }
+        }
+        Section {
+            HStack {
+                Text("Width")
+                Slider(
+                    value: $borderWidth,
+                    in: 0 ... 1.0,
+                    step: 0.01
+                )
+                .onChange(of: borderWidth) { value in
+                    widget.videoSource!.borderWidth = value
+                    setEffectSettings()
+                }
+            }
+            ColorPicker("Background", selection: $background, supportsOpacity: false)
+                .onChange(of: background) { _ in
+                    widget.videoSource!.borderColor = background.toRgb()
+                    setEffectSettings()
+                }
+        } header: {
+            Text("Border")
         }
         Section {
             Toggle(isOn: Binding(get: {
-                widget.videoSource!.cropEnabled!
+                widget.videoSource!.trackFaceEnabled!
             }, set: { value in
-                widget.videoSource!.cropEnabled = value
+                widget.videoSource!.trackFaceEnabled = value
                 setEffectSettings()
+                model.objectWillChange.send()
             })) {
                 Text("Enabled")
             }
+            HStack {
+                Text("Zoom")
+                Slider(
+                    value: $zoom,
+                    in: 0 ... 1,
+                    step: 0.01
+                )
+                .onChange(of: zoom) {
+                    widget.videoSource!.trackFaceZoom = $0
+                    setEffectSettings()
+                }
+            }
         } header: {
-            Text("Crop")
+            Text("Face tracking")
         }
-        Section {
-            CropView(widgetId: widget.id, widget: widget.videoSource!)
+        if !widget.videoSource!.trackFaceEnabled! {
+            Section {
+                Toggle(isOn: Binding(get: {
+                    widget.videoSource!.cropEnabled!
+                }, set: { value in
+                    widget.videoSource!.cropEnabled = value
+                    setEffectSettings()
+                })) {
+                    Text("Enabled")
+                }
+            } header: {
+                Text("Crop")
+            }
+            Section {
+                CropView(widgetId: widget.id, widget: widget.videoSource!)
+            }
         }
     }
 }

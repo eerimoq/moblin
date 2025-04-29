@@ -75,6 +75,21 @@ struct TeslaSettingsView: View {
     var body: some View {
         Form {
             Section {
+                HCenter {
+                    Image("Tesla")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                }
+            }
+            Section {
+                Toggle(isOn: Binding(get: {
+                    model.database.tesla!.enabled!
+                }, set: {
+                    model.database.tesla!.enabled = $0
+                    model.reloadTeslaVehicle()
+                })) {
+                    Text("Enabled")
+                }
                 NavigationLink {
                     TeslaSettingsConfigurationView()
                 } label: {

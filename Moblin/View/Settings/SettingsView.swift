@@ -142,6 +142,11 @@ struct SettingsView: View {
                         IconAndTextView(image: "appletvremote.gen1", text: String(localized: "DJI devices"))
                     }
                     NavigationLink {
+                        GoProSettingsView()
+                    } label: {
+                        IconAndTextView(image: "appletvremote.gen1", text: String(localized: "GoPro"))
+                    }
+                    NavigationLink {
                         CatPrintersSettingsView()
                     } label: {
                         IconAndTextView(image: "pawprint", text: String(localized: "Cat printers"))
@@ -150,6 +155,16 @@ struct SettingsView: View {
                         TeslaSettingsView()
                     } label: {
                         IconAndTextView(image: "car.side", text: String(localized: "Tesla"))
+                    }
+                    NavigationLink {
+                        CyclingPowerDevicesSettingsView()
+                    } label: {
+                        IconAndTextView(image: "bicycle", text: String(localized: "Cycling power devices"))
+                    }
+                    NavigationLink {
+                        HeartRateDevicesSettingsView()
+                    } label: {
+                        IconAndTextView(image: "heart", text: String(localized: "Heart rate devices"))
                     }
                 }
             }
@@ -184,7 +199,7 @@ struct SettingsView: View {
                     NavigationLink {
                         WatchSettingsView()
                     } label: {
-                        IconAndTextView(image: "applewatch", text: String(localized: "Watch"))
+                        IconAndTextView(image: "applewatch", text: String(localized: "Apple Watch"))
                     }
                 }
             }
@@ -203,7 +218,8 @@ struct SettingsView: View {
                     NavigationLink {
                         DebugSettingsView(
                             cameraSwitchRemoveBlackish: model.database.debug.cameraSwitchRemoveBlackish!,
-                            dataRateLimitFactor: model.database.debug.dataRateLimitFactor!
+                            dataRateLimitFactor: model.database.debug.dataRateLimitFactor!,
+                            recordSegmentLength: model.database.debug.recordSegmentLength!
                         )
                     } label: {
                         IconAndTextView(image: "ladybug", text: String(localized: "Debug"))

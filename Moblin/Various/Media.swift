@@ -2,8 +2,6 @@ import AVFoundation
 import Network
 import SwiftUI
 
-let mediaDispatchQueue = DispatchQueue(label: "com.eerimoq.stream")
-
 private func isMuted(level: Float) -> Bool {
     return level.isNaN
 }
@@ -27,8 +25,11 @@ protocol MediaDelegate: AnyObject {
     func mediaOnAudioBuffer(_ sampleBuffer: CMSampleBuffer)
     func mediaOnLowFpsImage(_ lowFpsImage: Data?, _ frameNumber: UInt64)
     func mediaOnFindVideoFormatError(_ findVideoFormatError: String, _ activeFormat: String)
+    func mediaOnAttachCameraError()
+    func mediaOnCaptureSessionError(_ message: String)
+    func mediaOnRecorderInitSegment(data: Data)
+    func mediaOnRecorderDataSegment(segment: RecorderDataSegment)
     func mediaOnRecorderFinished()
-    func mediaOnRecorderError()
     func mediaOnNoTorch()
     func mediaStrlaRelayDestinationAddress(address: String, port: UInt16)
     func mediaSetZoomX(x: Float)
@@ -38,7 +39,6 @@ protocol MediaDelegate: AnyObject {
 
 final class Media: NSObject {
     private var rtmpConnection = RtmpConnection()
-    private var srtConnection = SrtConnection()
     private var rtmpStream: RtmpStream?
     private var srtStream: SrtStream?
     private var ristStream: RistStream?
@@ -48,7 +48,6 @@ final class Media: NSObject {
     private var srtTotalByteCount: Int64 = 0
     private var srtPreviousTotalByteCount: Int64 = 0
     private var srtSpeed: Int64 = 0
-    private var srtConnectedObservation: NSKeyValueObservation?
     private var currentAudioLevel: Float = defaultAudioLevel
     private var numberOfAudioChannels: Int = 0
     private var srtUrl: String = ""
@@ -59,11 +58,12 @@ final class Media: NSObject {
     private var adaptiveBitrate: AdaptiveBitrate?
     private var failedVideoEffect: String?
     var srtDroppedPacketsTotal: Int32 = 0
-    private var videoEncoderSettings = VideoCodecSettings()
+    private var videoEncoderSettings = VideoEncoderSettings()
     private var audioEncoderSettings = AudioCodecOutputSettings()
     private var multiplier: UInt32 = 0
     private var updateTickCount: UInt64 = 0
     private var belaLinesAndActions: ([String], [String])?
+    private var srtConnected = false
 
     func logStatistics() {
         srtlaClient?.logStatistics()
@@ -113,7 +113,7 @@ final class Media: NSObject {
             irlStream = nil
             netStream = rtmpStream
         case .srt:
-            srtStream = SrtStream(srtConnection, timecodesEnabled: timecodesEnabled)
+            srtStream = SrtStream(timecodesEnabled: timecodesEnabled, delegate: self)
             rtmpStream = nil
             ristStream = nil
             irlStream = nil
@@ -133,7 +133,7 @@ final class Media: NSObject {
         }
         netStream!.delegate = self
         netStream!.setVideoOrientation(value: portrait ? .portrait : .landscapeRight)
-        attachAudio(device: AVCaptureDevice.default(for: .audio))
+        attachDefaultAudioDevice()
     }
 
     func getAudioLevel() -> Float {
@@ -184,6 +184,7 @@ final class Media: NSObject {
         networkInterfaceNames: [SettingsNetworkInterfaceName],
         connectionPriorities: SettingsStreamSrtConnectionPriorities
     ) {
+        srtConnected = false
         self.latency = latency
         self.overheadBandwidth = overheadBandwidth
         self.maximumBandwidthFollowInput = maximumBandwidthFollowInput
@@ -205,10 +206,9 @@ final class Media: NSObject {
     }
 
     func srtStopStream() {
-        srtConnection.close()
+        srtStream?.close()
         srtlaClient?.stop()
         srtlaClient = nil
-        srtConnectedObservation = nil
         adaptiveBitrate = nil
     }
 
@@ -265,14 +265,22 @@ final class Media: NSObject {
     }
 
     private func updateAdaptiveBitrateSrtBela(overlay: Bool, relaxed: Bool) -> ([String], [String])? {
-        let stats = srtConnection.performanceData
+        guard srtConnected else {
+            return nil
+        }
+        guard let stats = srtStream?.getPerformanceData() else {
+            return nil
+        }
         srtDroppedPacketsTotal = stats.pktSndDropTotal
         guard let adaptiveBitrate else {
             return nil
         }
-        let sndData = srtConnection.socket?.sndData() ?? 0
+        // This one blocks if srt_connect() has not returned.
+        guard let sndData = srtStream?.getSndData() else {
+            return nil
+        }
         adaptiveBitrate.update(stats: StreamStats(
-            rttMs: stats.msRTT,
+            rttMs: stats.msRtt,
             packetsInFlight: Double(sndData),
             transportBitrate: streamSpeed(),
             latency: latency,
@@ -283,10 +291,10 @@ final class Media: NSObject {
             if is200MsTick() {
                 belaLinesAndActions = ([
                     """
-                    R: \(stats.pktRetransTotal) N: \(stats.pktRecvNAKTotal) \
+                    R: \(stats.pktRetransTotal) N: \(stats.pktRecvNakTotal) \
                     D: \(stats.pktSndDropTotal) E: \(numberOfFailedEncodings)
                     """,
-                    "msRTT: \(stats.msRTT)",
+                    "msRTT: \(stats.msRtt)",
                     "sndData: \(sndData)",
                     "B: \(adaptiveBitrate.getCurrentBitrateInKbps())",
                 ], adaptiveBitrate.getActionsTaken())
@@ -301,10 +309,12 @@ final class Media: NSObject {
         guard is200MsTick() else {
             return nil
         }
-        let stats = srtConnection.performanceData
+        guard let stats = srtStream?.getPerformanceData() else {
+            return nil
+        }
         srtDroppedPacketsTotal = stats.pktSndDropTotal
         adaptiveBitrate?.update(stats: StreamStats(
-            rttMs: stats.msRTT,
+            rttMs: stats.msRtt,
             packetsInFlight: Double(stats.pktFlightSize),
             transportBitrate: streamSpeed(),
             latency: latency,
@@ -317,10 +327,10 @@ final class Media: NSObject {
         if let adaptiveBitrate {
             return ([
                 """
-                R: \(stats.pktRetransTotal) N: \(stats.pktRecvNAKTotal) \
+                R: \(stats.pktRetransTotal) N: \(stats.pktRecvNakTotal) \
                 D: \(stats.pktSndDropTotal) E: \(numberOfFailedEncodings)
                 """,
-                "msRTT: \(stats.msRTT)",
+                "msRTT: \(stats.msRtt)",
                 """
                 pktFlightSize: \(stats.pktFlightSize)   \
                 \(adaptiveBitrate.getFastPif())   \
@@ -334,9 +344,9 @@ final class Media: NSObject {
         } else {
             return ([
                 "pktRetransTotal: \(stats.pktRetransTotal)",
-                "pktRecvNAKTotal: \(stats.pktRecvNAKTotal)",
+                "pktRecvNAKTotal: \(stats.pktRecvNakTotal)",
                 "pktSndDropTotal: \(stats.pktSndDropTotal)",
-                "msRTT: \(stats.msRTT)",
+                "msRTT: \(stats.msRtt)",
                 "pktFlightSize: \(stats.pktFlightSize)",
                 "pktSndBuf: \(stats.pktSndBuf)",
             ], [])
@@ -451,24 +461,6 @@ final class Media: NSObject {
         }
     }
 
-    func setupSrtConnectionStateListener() {
-        srtConnectedObservation = srtConnection.observe(\.connected, options: [
-            .new,
-            .old,
-        ]) { [weak self] _, connected in
-            guard let self else {
-                return
-            }
-            DispatchQueue.main.async {
-                if connected.newValue! {
-                    self.delegate?.mediaOnSrtConnected()
-                } else {
-                    self.delegate?.mediaOnSrtDisconnected(String(localized: "SRT disconnected"))
-                }
-            }
-        }
-    }
-
     private func queryContains(queryItems: [URLQueryItem], name: String) -> Bool {
         return queryItems.contains(where: { parameter in parameter.name == name })
     }
@@ -542,7 +534,7 @@ final class Media: NSObject {
         adaptiveBitrate = nil
     }
 
-    func rtmpMultiTrackStartStream(_ url: String, _ videoEncoderSettings: [VideoCodecSettings]) {
+    func rtmpMultiTrackStartStream(_ url: String, _ videoEncoderSettings: [VideoEncoderSettings]) {
         logger.info("stream: Multi track URL \(url)")
         for videoEncoderSetting in videoEncoderSettings {
             logger.info("stream: Multi track video encoder config \(videoEncoderSetting)")
@@ -611,6 +603,10 @@ final class Media: NSObject {
         netStream?.registerVideoEffect(effect)
     }
 
+    func registerEffectBack(_ effect: VideoEffect) {
+        netStream?.registerVideoEffectBack(effect)
+    }
+
     func unregisterEffect(_ effect: VideoEffect) {
         netStream?.unregisterVideoEffect(effect)
     }
@@ -635,8 +631,20 @@ final class Media: NSObject {
         netStream?.setCameraControls(enabled: enabled)
     }
 
-    func takeSnapshot(age: Float, onComplete: @escaping (UIImage, UIImage?) -> Void) {
+    func takeSnapshot(age: Float, onComplete: @escaping (UIImage, CIImage) -> Void) {
         netStream?.takeSnapshot(age: age, onComplete: onComplete)
+    }
+
+    func setCleanRecordings(enabled: Bool) {
+        netStream?.setCleanRecordings(enabled: enabled)
+    }
+
+    func setCleanSnapshots(enabled: Bool) {
+        netStream?.setCleanSnapshots(enabled: enabled)
+    }
+
+    func setCleanExternalDisplay(enabled: Bool) {
+        netStream?.setCleanExternalDisplay(enabled: enabled)
     }
 
     func setVideoSize(capture: CGSize, output: CGSize) {
@@ -739,8 +747,12 @@ final class Media: NSObject {
         netStream?.setSpeechToText(enabled: enabled)
     }
 
-    func setCameraZoomLevel(level: Float, rate: Float?) -> Float? {
-        guard let device = netStream?.videoCapture()?.device else {
+    func setVideoOrientation(value: AVCaptureVideoOrientation) {
+        netStream?.setVideoOrientation(value: value)
+    }
+
+    func setCameraZoomLevel(device: AVCaptureDevice?, level: Float, rate: Float?) -> Float? {
+        guard let device else {
             logger.warning("Device not ready to zoom")
             return nil
         }
@@ -759,8 +771,8 @@ final class Media: NSObject {
         return level
     }
 
-    func stopCameraZoomLevel() -> Float? {
-        guard let device = netStream?.videoCapture()?.device else {
+    func stopCameraZoomLevel(device: AVCaptureDevice?) -> Float? {
+        guard let device else {
             logger.warning("Device not ready to zoom")
             return nil
         }
@@ -774,24 +786,11 @@ final class Media: NSObject {
         return Float(device.videoZoomFactor)
     }
 
-    func attachCamera(
-        device: AVCaptureDevice?,
-        cameraPreviewLayer: AVCaptureVideoPreviewLayer?,
-        showCameraPreview: Bool,
-        videoStabilizationMode: AVCaptureVideoStabilizationMode,
-        videoMirrored: Bool,
-        ignoreFramesAfterAttachSeconds: Double,
-        onSuccess: (() -> Void)? = nil
-    ) {
+    func attachCamera(params: VideoUnitAttachParams, onSuccess: (() -> Void)? = nil) {
         netStream?.attachCamera(
-            device,
-            cameraPreviewLayer,
-            showCameraPreview,
-            videoStabilizationMode,
-            videoMirrored,
-            ignoreFramesAfterAttachSeconds,
-            onError: { error in
-                logger.error("stream: Attach camera error: \(error)")
+            params: params,
+            onError: {
+                logger.error("stream: Attach camera error: \($0)")
             },
             onSuccess: {
                 DispatchQueue.main.async {
@@ -802,20 +801,23 @@ final class Media: NSObject {
     }
 
     func attachReplaceCamera(
-        device: AVCaptureDevice?,
-        cameraPreviewLayer: AVCaptureVideoPreviewLayer?,
-        showCameraPreview _: Bool,
-        cameraId: UUID
+        devices: CaptureDevices,
+        cameraPreviewLayer: AVCaptureVideoPreviewLayer,
+        externalDisplayPreview: Bool,
+        cameraId: UUID,
+        ignoreFramesAfterAttachSeconds: Double,
+        fillFrame: Bool
     ) {
-        netStream?.attachCamera(
-            device,
-            cameraPreviewLayer,
-            false,
-            .off,
-            false,
-            0.0,
-            replaceVideoCameraId: cameraId
-        )
+        let params = VideoUnitAttachParams(devices: devices,
+                                           cameraPreviewLayer: cameraPreviewLayer,
+                                           showCameraPreview: false,
+                                           externalDisplayPreview: externalDisplayPreview,
+                                           replaceVideo: cameraId,
+                                           preferredVideoStabilizationMode: .off,
+                                           isVideoMirrored: false,
+                                           ignoreFramesAfterAttachSeconds: ignoreFramesAfterAttachSeconds,
+                                           fillFrame: fillFrame)
+        netStream?.attachCamera(params: params)
     }
 
     func attachReplaceAudio(cameraId: UUID?) {
@@ -854,8 +856,8 @@ final class Media: NSObject {
         netStream?.setReplaceVideoTargetLatency(cameraId: cameraId, latency)
     }
 
-    func attachAudio(device: AVCaptureDevice?) {
-        netStream?.attachAudio(device) { error in
+    func attachDefaultAudioDevice() {
+        netStream?.attachAudio(AVCaptureDevice.default(for: .audio)) { error in
             logger.error("stream: Attach audio error: \(error)")
         }
     }
@@ -931,7 +933,7 @@ final class Media: NSObject {
 }
 
 extension Media: NetStreamDelegate {
-    func stream(_: NetStream, audioLevel: Float, numberOfAudioChannels: Int, presentationTimestamp _: Double) {
+    func stream(_: NetStream, audioLevel: Float, numberOfAudioChannels: Int) {
         DispatchQueue.main.async {
             if becameMuted(old: self.currentAudioLevel, new: audioLevel) || becameUnmuted(
                 old: self.currentAudioLevel,
@@ -962,16 +964,28 @@ extension Media: NetStreamDelegate {
         delegate?.mediaOnFindVideoFormatError(findVideoFormatError, activeFormat)
     }
 
+    func streamVideoAttachCameraError(_: NetStream) {
+        delegate?.mediaOnAttachCameraError()
+    }
+
+    func streamVideoCaptureSessionError(_: NetStream, _ message: String) {
+        delegate?.mediaOnCaptureSessionError(message)
+    }
+
     func streamAudio(_: NetStream, sampleBuffer: CMSampleBuffer) {
         delegate?.mediaOnAudioBuffer(sampleBuffer)
     }
 
-    func streamRecorderFinished() {
-        delegate?.mediaOnRecorderFinished()
+    func streamRecorderInitSegment(data: Data) {
+        delegate?.mediaOnRecorderInitSegment(data: data)
     }
 
-    func streamRecorderError() {
-        delegate?.mediaOnRecorderError()
+    func streamRecorderDataSegment(segment: RecorderDataSegment) {
+        delegate?.mediaOnRecorderDataSegment(segment: segment)
+    }
+
+    func streamRecorderFinished() {
+        delegate?.mediaOnRecorderFinished()
     }
 
     func streamNoTorch() {
@@ -993,31 +1007,34 @@ extension Media: NetStreamDelegate {
 
 extension Media: SrtlaDelegate {
     func srtlaReady(port: UInt16) {
-        DispatchQueue.main.async {
-            self.setupSrtConnectionStateListener()
-            mediaDispatchQueue.async {
-                do {
-                    try self.srtConnection.open(self.makeLocalhostSrtUrl(
-                        url: self.srtUrl,
-                        port: port,
-                        latency: self.latency,
-                        overheadBandwidth: self.overheadBandwidth,
-                        maximumBandwidthFollowInput: self.maximumBandwidthFollowInput
-                    )) { data in
-                        if let srtla = self.srtlaClient {
-                            srtlaClientQueue.async {
-                                srtla.handleLocalPacket(packet: data)
-                            }
+        netStreamLockQueue.async {
+            do {
+                try self.srtStream?.open(self.makeLocalhostSrtUrl(
+                    url: self.srtUrl,
+                    port: port,
+                    latency: self.latency,
+                    overheadBandwidth: self.overheadBandwidth,
+                    maximumBandwidthFollowInput: self.maximumBandwidthFollowInput
+                )) { [weak self] data in
+                    guard let self else {
+                        return false
+                    }
+                    if let srtla = self.srtlaClient {
+                        srtlaClientQueue.async {
+                            srtla.handleLocalPacket(packet: data)
                         }
-                        return true
                     }
-                    self.srtStream?.publish()
-                } catch {
-                    DispatchQueue.main.async {
-                        self.delegate?.mediaOnSrtDisconnected(
-                            String(localized: "SRT connect failed with \(error.localizedDescription)")
-                        )
-                    }
+                    return true
+                }
+                DispatchQueue.main.async {
+                    self.srtConnected = true
+                    self.delegate?.mediaOnSrtConnected()
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    self.delegate?.mediaOnSrtDisconnected(
+                        String(localized: "SRT connect failed with \(error.localizedDescription)")
+                    )
                 }
             }
         }
@@ -1030,7 +1047,7 @@ extension Media: SrtlaDelegate {
         }
     }
 
-    func moblinkServerDestinationAddress(address: String, port: UInt16) {
+    func moblinkStreamerDestinationAddress(address: String, port: UInt16) {
         DispatchQueue.main.async {
             self.delegate?.mediaStrlaRelayDestinationAddress(address: address, port: port)
         }
@@ -1057,5 +1074,14 @@ extension Media: RistStreamDelegate {
         DispatchQueue.main.async {
             self.delegate?.mediaStrlaRelayDestinationAddress(address: address, port: port)
         }
+    }
+}
+
+extension Media: SrtStreamDelegate {
+    func srtStreamError() {
+        DispatchQueue.main.async {
+            self.srtConnected = false
+        }
+        srtlaError(message: String(localized: "SRT disconnected"))
     }
 }

@@ -51,6 +51,9 @@ enum ShowingPanel {
     case cosmetics
     case chat
     case djiDevices
+    case sceneSettings
+    case goPro
+    case connectionPriorities
 }
 
 class Browser: Identifiable {
@@ -73,7 +76,6 @@ class DjiDeviceWrapper {
 
 private let maximumNumberOfChatMessages = 50
 private let maximumNumberOfInteractiveChatMessages = 100
-private let secondsSuffix = String(localized: "/sec")
 private let fallbackStream = SettingsStream(name: "Fallback")
 let fffffMessage = String(localized: "😢 FFFFF 😢")
 let lowBitrateMessage = String(localized: "Low bitrate")
@@ -120,8 +122,13 @@ struct Icon: Identifiable {
 }
 
 private let screenCaptureCameraId = UUID(uuidString: "00000000-cafe-babe-beef-000000000000")!
-let builtinCameraId = UUID(uuidString: "00000000-cafe-dead-beef-000000000000")!
-let screenCaptureCamera = "Screen capture"
+let builtinBackCameraId = UUID(uuidString: "00000000-cafe-dead-beef-000000000000")!
+let builtinFrontCameraId = UUID(uuidString: "00000000-cafe-dead-beef-000000000001")!
+let externalCameraId = UUID(uuidString: "00000000-cafe-dead-beef-000000000002")!
+private let screenCaptureCamera = "Screen capture"
+private let backTripleLowEnergyCamera = "Back Triple (low energy)"
+private let backDualLowEnergyCamera = "Back Dual (low energy)"
+private let backWideDualLowEnergyCamera = "Back Wide dual (low energy)"
 
 let plainIcon = Icon(name: "Plain", id: "AppIcon", price: "")
 private let noMic = Mic(name: "", inputUid: "")
@@ -309,6 +316,62 @@ struct ObsSceneInput: Identifiable {
     var muted: Bool?
 }
 
+class AudioProvider: ObservableObject {
+    @Published var showing = false
+    @Published var level: Float = defaultAudioLevel
+    @Published var numberOfChannels: Int = 0
+}
+
+class ChatProvider: ObservableObject {
+    var newPosts: Deque<ChatPost> = []
+    var pausedPosts: Deque<ChatPost> = []
+    @Published var posts: Deque<ChatPost> = []
+    @Published var pausedPostsCount: Int = 0
+    @Published var paused = false
+    private let maximumNumberOfMessages: Int
+
+    init(maximumNumberOfMessages: Int) {
+        self.maximumNumberOfMessages = maximumNumberOfMessages
+    }
+
+    func reset() {
+        posts = []
+        pausedPosts = []
+        newPosts = []
+    }
+
+    func appendMessage(post: ChatPost) {
+        if paused {
+            if pausedPosts.count < 2 * maximumNumberOfMessages {
+                pausedPosts.append(post)
+            }
+        } else {
+            newPosts.append(post)
+        }
+    }
+
+    func update() {
+        if paused {
+            pausedPostsCount = max(pausedPosts.count - 1, 0)
+        } else {
+            while let post = newPosts.popFirst() {
+                if posts.count > maximumNumberOfMessages - 1 {
+                    posts.removeLast()
+                }
+                posts.prepend(post)
+            }
+        }
+    }
+}
+
+class StreamUptimeProvider: ObservableObject {
+    @Published var uptime = noValue
+}
+
+class RecordingProvider: ObservableObject {
+    @Published var length = noValue
+}
+
 final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private let media = Media()
     var streamState = StreamState.disconnected {
@@ -316,6 +379,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             logger.info("stream: State \(oldValue) -> \(streamState)")
         }
     }
+
+    @Published var goProLaunchLiveStreamSelection: UUID?
+    @Published var goProWifiCredentialsSelection: UUID?
+    @Published var goProRtmpUrlSelection: UUID?
 
     @Published var scrollQuickButtons: Int = 0
     @Published var bias: Float = 0.0
@@ -360,21 +427,24 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var isRecording = false
     private var workoutType: WatchProtocolWorkoutType?
     private var currentRecording: Recording?
-    @Published var recordingLength = noValue
+    let recording = RecordingProvider()
     @Published var browserWidgetsStatus = noValue
+    @Published var catPrinterStatus = noValue
+    @Published var cyclingPowerDeviceStatus = noValue
+    @Published var heartRateDeviceStatus = noValue
     private var browserWidgetsStatusChanged = false
     private var subscriptions = Set<AnyCancellable>()
-    @Published var uptime = noValue
+    var streamUptime = StreamUptimeProvider()
     @Published var bondingStatistics = noValue
     @Published var bondingRtts = noValue
     private var bondingStatisticsFormatter = BondingStatisticsFormatter()
-    @Published var audioLevel: Float = defaultAudioLevel
-    @Published var numberOfAudioChannels: Int = 0
+    let audio = AudioProvider()
     var settings = Settings()
     @Published var digitalClock = noValue
+    @Published var statusEventsText = noValue
+    @Published var statusChatText = noValue
     private var selectedSceneId = UUID()
     private var twitchChat: TwitchChatMoblin!
-    private var twitchPubSub: TwitchPubSub?
     private var twitchEventSub: TwitchEventSub?
     private var kickPusher: KickPusher?
     private var kickViewers: KickViewers?
@@ -384,34 +454,22 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var obsWebSocket: ObsWebSocket?
     private var chatPostId = 0
     @Published var interactiveChat = false
-    @Published var chatPosts: Deque<ChatPost> = []
-    @Published var pausedChatPostsCount: Int = 0
-    @Published var chatPaused = false
-    private var newChatPosts: Deque<ChatPost> = []
-    private var pausedChatPosts: Deque<ChatPost> = []
+    var chat = ChatProvider(maximumNumberOfMessages: maximumNumberOfChatMessages)
+    var quickButtonChat = ChatProvider(maximumNumberOfMessages: maximumNumberOfInteractiveChatMessages)
+    var externalDisplayChat = ChatProvider(maximumNumberOfMessages: 50)
+    @Published var externalDisplayChatEnabled = false
+    private var externalDisplayWindow: UIWindow?
     private var chatBotMessages: Deque<ChatBotMessage> = []
-    private var numberOfChatPostsPerTick = 0
-    private var chatPostsRatePerSecond = 0.0
-    private var chatPostsRatePerMinute = 0.0
-    private var numberOfChatPostsPerMinute = 0
-    @Published var chatPostsRate = String(localized: "0.0/min")
-    @Published var chatPostsTotal: Int = 0
-    @Published var interactiveChatPosts: Deque<ChatPost> = []
-    private var newInteractiveChatPosts: Deque<ChatPost> = []
-    private var pausedInteractiveChatPosts: Deque<ChatPost> = []
-    @Published var pausedInteractiveChatPostsCount: Int = 0
-    @Published var interactiveChatPaused = false
-    @Published var showAllInteractiveChatMessage = true
+    @Published var showAllQuickButtonChatMessage = true
     @Published var showFirstTimeChatterMessage = true
     @Published var showNewFollowerMessage = true
-    @Published var interactiveChatAlertsPosts: Deque<ChatPost> = []
-    private var newInteractiveChatAlertsPosts: Deque<ChatPost> = []
-    private var pausedInteractiveChatAlertsPosts: Deque<ChatPost> = []
-    @Published var pausedInteractiveChatAlertsPostsCount: Int = 0
-    @Published var interactiveChatAlertsPaused = false
+    @Published var quickButtonChatAlertsPosts: Deque<ChatPost> = []
+    private var newQuickButtonChatAlertsPosts: Deque<ChatPost> = []
+    private var pausedQuickButtonChatAlertsPosts: Deque<ChatPost> = []
+    @Published var pausedQuickButtonChatAlertsPostsCount: Int = 0
+    @Published var quickButtonChatAlertsPaused = false
     private var watchChatPosts: Deque<WatchProtocolChatMessage> = []
     private var nextWatchChatPostId = 1
-    private var chatSpeedTicks = 0
     @Published var numberOfViewers = noValue
     @Published var batteryLevel = Double(UIDevice.current.batteryLevel)
     private var batteryLevelLowCounter = -1
@@ -419,10 +477,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var speedAndTotal = noValue
     @Published var speedMbpsOneDecimal = noValue
     @Published var bitrateStatusColor: Color = .white
+    @Published var bitrateStatusIconColor: Color = .clear
     private var previousBitrateStatusColorSrtDroppedPacketsTotal: Int32 = 0
     private var previousBitrateStatusNumberOfFailedEncodings = 0
     @Published var thermalState = ProcessInfo.processInfo.thermalState
-    let streamPreviewView = PreviewView(frame: .zero)
+    let streamPreviewView = PreviewView()
+    let externalDisplayStreamPreviewView = PreviewView()
     let cameraPreviewView = CameraPreviewUiView()
     var cameraPreviewLayer: AVCaptureVideoPreviewLayer?
     @Published var remoteControlPreview: UIImage?
@@ -472,7 +532,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var hypeTrainTimer = SimpleTimer(queue: .main)
     var urlSession = URLSession.shared
 
-    private var workoutHeartRate: Int?
+    private var heartRates: [String: Int?] = [:]
     private var workoutActiveEnergyBurned: Int?
     private var workoutDistance: Int?
     private var workoutPower: Int?
@@ -488,6 +548,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var mediaPlayerSeeking = false
 
     @Published var showingCamera = false
+    @Published var showingReplay = false
     @Published var showingCameraBias = false
     @Published var showingCameraWhiteBalance = false
     @Published var showingCameraIso = false
@@ -499,6 +560,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var obsSceneInputs: [ObsSceneInput] = []
     @Published var obsAudioVolume: String = noValue
     @Published var obsAudioDelay: Int = 0
+    @Published var portraitVideoOffsetFromTop = 0.0
     private var obsAudioVolumeLatest: String = ""
     @Published var obsCurrentScenePicker: String = ""
     @Published var obsCurrentScene: String = ""
@@ -536,6 +598,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     let twitchAuth = TwitchAuth()
     private var twitchAuthOnComplete: ((_ accessToken: String) -> Void)?
 
+    private var numberOfTwitchViewers: Int?
+
     @Published var bondingPieChartPercentages: [BondingPercentage] = []
 
     @Published var verboseStatuses = false
@@ -552,6 +616,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var drawOnStreamSize: CGSize = .zero
     @Published var webBrowserUrl: String = ""
     private var webBrowser: WKWebView?
+    let webBrowserController = WebBrowserController()
     private var lowFpsImageFps: UInt64 = 1
 
     @Published var isPresentingWizard = false
@@ -629,9 +694,23 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var currentDjiDeviceSettings: SettingsDjiDevice?
     private var djiDeviceWrappers: [UUID: DjiDeviceWrapper] = [:]
 
+    @Published var djiGimbalDeviceStreamingState: DjiGimbalDeviceState?
+    private var currentDjiGimbalDeviceSettings: SettingsDjiGimbalDevice?
+    private var djiGimbalDevices: [UUID: DjiGimbalDevice] = [:]
+
     @Published var catPrinterState: CatPrinterState?
     private var currentCatPrinterSettings: SettingsCatPrinter?
     private var catPrinters: [UUID: CatPrinter] = [:]
+
+    @Published var cyclingPowerDeviceState: CyclingPowerDeviceState?
+    private var currentCyclingPowerDeviceSettings: SettingsCyclingPowerDevice?
+    private var cyclingPowerDevices: [UUID: CyclingPowerDevice] = [:]
+    private var cyclingPower = 0
+    private var cyclingCadence = 0
+
+    @Published var heartRateDeviceState: HeartRateDeviceState?
+    private var currentHeartRateDeviceSettings: SettingsHeartRateDevice?
+    private var heartRateDevices: [UUID: HeartRateDevice] = [:]
 
     var cameraDevice: AVCaptureDevice?
     var cameraZoomLevelToXScale: Float = 1.0
@@ -651,14 +730,21 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     var recordingsStorage = RecordingsStorage()
     private var latestLowBitrateTime = ContinuousClock.now
+    var replaysStorage = ReplaysStorage()
+    var replaySettings: ReplaySettings?
+    @Published var selectedReplayId: UUID?
+    @Published var replayIsSaving = false
 
     private var rtmpServer: RtmpServer?
     @Published var serversSpeedAndTotal = noValue
-    @Published var moblinkClientState: MoblinkClientState = .none
-    @Published var moblinkServerOk = true
+    private var moblinkRelayState: MoblinkRelayState = .waitingForStreamers
+    @Published var moblinkStreamerOk = true
     @Published var moblinkStatus = noValue
     @Published var djiDevicesStatus = noValue
-    @Published var moblinkScannerDiscoveredStreamers: [MoblinkScannerServer] = []
+    @Published var moblinkScannerDiscoveredStreamers: [MoblinkScannerStreamer] = []
+
+    var sceneSettingsPanelScene = SettingsScene(name: "")
+    @Published var sceneSettingsPanelSceneId = 1
 
     @Published var snapshotCountdown = 0
     @Published var currentSnapshotJob: SnapshotJob?
@@ -672,8 +758,22 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var location = noValue
     @Published var showLoadSettingsFailed = false
 
-    private var distance = 0.0
     private var latestKnownLocation: CLLocation?
+    private var slopePercent = 0.0
+    private var previousSlopeAltitude: Double? = 0.0
+    private var previousSlopeDistance = 0.0
+    private var averageSpeed = 0.0
+    private var averageSpeedStartTime: ContinuousClock.Instant = .now
+    private var averageSpeedStartDistance = 0.0
+
+    private var replayFrameExtractor: ReplayFrameExtractor?
+    @Published var replayImage: UIImage?
+    private var replayVideo: ReplayBufferFile?
+    @Published var replayPlaying = false
+    private var replayBuffer = ReplayBuffer()
+    @Published var replayStartFromEnd = 10.0
+    @Published var replaySpeed: SettingsReplaySpeed? = .one
+    @Published var instantReplayCountdown = 0
 
     @Published var remoteControlStatus = noValue
 
@@ -681,17 +781,27 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private let faxReceiver = FaxReceiver()
 
-    private var moblinkServer: MoblinkServer?
-    private var moblinkClient: MoblinkClient?
+    private var moblinkStreamer: MoblinkStreamer?
+    private var moblinkRelays: [MoblinkRelay] = []
     private var moblinkScanner: MoblinkScanner?
 
     @Published var cameraControlEnabled = false
+    private var twitchStreamUpdateTime = ContinuousClock.now
+
+    var externalDisplayPreview = false
+
+    private var remoteSceneScenes: [SettingsScene] = []
+    private var remoteSceneWidgets: [SettingsWidget] = []
+    private var remoteSceneData = RemoteControlRemoteSceneData(textStats: nil, location: nil)
+    private var remoteSceneSettingsUpdateRequested = false
+    private var remoteSceneSettingsUpdating = false
 
     override init() {
         super.init()
         showLoadSettingsFailed = !settings.load()
         streamingHistory.load()
         recordingsStorage.load()
+        replaysStorage.load()
     }
 
     var stream: SettingsStream {
@@ -752,8 +862,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var grayScaleEffect = GrayScaleEffect()
     private var sepiaEffect = SepiaEffect()
     private var tripleEffect = TripleEffect()
+    private var twinEffect = TwinEffect()
     private var pixellateEffect = PixellateEffect(strength: 0.0)
     private var pollEffect = PollEffect()
+    private var replayEffect: ReplayEffect?
     private var locationManager = Location()
     private var realtimeIrl: RealtimeIrl?
     private var failedVideoEffect: String?
@@ -828,6 +940,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             SettingsButtonType.stream,
             SettingsButtonType.obs,
             SettingsButtonType.djiDevices,
+            SettingsButtonType.goPro,
+            SettingsButtonType.connectionPriorities,
         ].contains(type)
     }
 
@@ -862,6 +976,29 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                     self.makeErrorToast(title: String(localized: "Failed to create stream marker"))
                 }
             }
+    }
+
+    private func getStream() {
+        TwitchApi(stream.twitchAccessToken!, urlSession)
+            .getStream(userId: stream.twitchChannelId) { data in
+                guard let data else {
+                    self.numberOfTwitchViewers = nil
+                    return
+                }
+                self.numberOfTwitchViewers = data.viewer_count
+            }
+    }
+
+    private func updateTwitchStream(monotonicNow: ContinuousClock.Instant) {
+        guard isLive, isTwitchViewersConfigured() else {
+            numberOfTwitchViewers = nil
+            return
+        }
+        guard twitchStreamUpdateTime.duration(to: monotonicNow) > .seconds(25) else {
+            return
+        }
+        twitchStreamUpdateTime = monotonicNow
+        getStream()
     }
 
     @MainActor
@@ -1040,19 +1177,121 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return showCameraPreview
     }
 
+    func saveReplay(completion: ((ReplaySettings) -> Void)? = nil) -> Bool {
+        guard !replayIsSaving else {
+            return false
+        }
+        replayIsSaving = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(5)) {
+            self.replayBuffer.createFile { file in
+                DispatchQueue.main.async {
+                    self.replayIsSaving = false
+                    guard let file else {
+                        return
+                    }
+                    let replaySettings = self.replaysStorage.createReplay()
+                    replaySettings.start = self.database.replay!.start!
+                    replaySettings.stop = self.database.replay!.stop!
+                    replaySettings.duration = file.duration
+                    try? FileManager.default.copyItem(at: file.url, to: replaySettings.url())
+                    self.replaysStorage.append(replay: replaySettings)
+                    completion?(replaySettings)
+                }
+            }
+        }
+        return true
+    }
+
+    func loadReplay(video: ReplaySettings, completion: (() -> Void)? = nil) {
+        replaySettings = video
+        replayStartFromEnd = video.startFromEnd()
+        selectedReplayId = video.id
+        replayFrameExtractor = ReplayFrameExtractor(
+            video: ReplayBufferFile(url: video.url(), duration: video.duration, remove: false),
+            offset: video.thumbnailOffset(),
+            delegate: self,
+            completion: completion
+        )
+    }
+
+    func replaySpeedChanged() {
+        database.replay!.speed = replaySpeed ?? .one
+    }
+
+    func instantReplay() {
+        guard instantReplayCountdown == 0 else {
+            return
+        }
+        let savingStarted = saveReplay { video in
+            self.loadReplay(video: video) {
+                self.replayPlaying = true
+                if !self.replayPlay() {
+                    self.replayPlaying = false
+                }
+            }
+        }
+        if savingStarted {
+            instantReplayCountdown = 6
+            instantReplayCountdownTick()
+        }
+    }
+
+    private func instantReplayCountdownTick() {
+        guard instantReplayCountdown != 0 else {
+            return
+        }
+        instantReplayCountdown -= 1
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
+            self.instantReplayCountdownTick()
+        }
+    }
+
+    func setReplayPosition(start: Double) {
+        guard let replaySettings else {
+            return
+        }
+        replaySettings.start = start
+        replaySettings.stop = 30
+        database.replay!.start = start
+        replayFrameExtractor?.seek(offset: replaySettings.thumbnailOffset())
+    }
+
+    func replayPlay() -> Bool {
+        replayCancel()
+        guard let replayVideo, let replaySettings else {
+            return false
+        }
+        replayEffect = ReplayEffect(
+            video: replayVideo,
+            start: replaySettings.startFromVideoStart(),
+            stop: replaySettings.stopFromVideoStart(),
+            speed: database.replay!.speed.toNumber(),
+            size: stream.resolution.dimensions(),
+            delegate: self
+        )
+        media.registerEffectBack(replayEffect!)
+        return true
+    }
+
+    func replayCancel() {
+        guard let replayEffect else {
+            return
+        }
+        media.unregisterEffect(replayEffect)
+        self.replayEffect = nil
+    }
+
     func takeSnapshot(isChatBot: Bool = false, message: String? = nil, noDelay: Bool = false) {
         let age = (isChatBot && !noDelay) ? stream.estimatedViewerDelay! : 0.0
-        media.takeSnapshot(age: age) { image, prettyImage in
+        media.takeSnapshot(age: age) { image, portraitImage in
             guard let imageJpeg = image.jpegData(compressionQuality: 0.9) else {
                 return
             }
             DispatchQueue.main.async {
                 UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
-                if self.database.debug.prettySnapshot!, let prettyImage {
-                    UIImageWriteToSavedPhotosAlbum(prettyImage, nil, nil, nil)
-                }
                 self.makeToast(title: String(localized: "Snapshot saved to Photos"))
                 self.tryUploadSnapshotToDiscord(imageJpeg, message, isChatBot)
+                self.printSnapshotCatPrinters(image: portraitImage)
             }
         }
     }
@@ -1128,6 +1367,20 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
+    private func printAllCatPrinters(image: CIImage, feedPaperDelay: Double? = nil) {
+        for catPrinter in catPrinters.values {
+            catPrinter.print(image: image, feedPaperDelay: feedPaperDelay)
+        }
+    }
+
+    private func printSnapshotCatPrinters(image: CIImage) {
+        for catPrinter in catPrinters.values where
+            getCatPrinterSettings(catPrinter: catPrinter)?.printSnapshots! == true
+        {
+            catPrinter.print(image: image, feedPaperDelay: nil)
+        }
+    }
+
     private func debugLog(message: String) {
         DispatchQueue.main.async {
             if self.log.count > self.database.debug.maximumLogLines! {
@@ -1151,11 +1404,15 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         log = []
     }
 
-    func formatLog(log: Deque<LogEntry>) -> String {
+    func formatLog(log: Deque<LogEntry>) -> URL {
         var data = "Version: \(appVersion())\n"
         data += "Debug: \(logger.debugEnabled)\n\n"
         data += log.map { e in e.message }.joined(separator: "\n")
-        return data
+        let url = FileManager.default.temporaryDirectory
+            .appendingPathComponent("Moblin-log-\(Date())")
+            .appendingPathExtension("txt")
+        try? data.write(to: url, atomically: true, encoding: .utf8)
+        return url
     }
 
     func setAllowHapticsAndSystemSoundsDuringRecording() {
@@ -1298,6 +1555,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         fixAlertMedias()
         setAllowVideoRangePixelFormat()
         setSrtlaBatchSend()
+        setExternalDisplayContent()
+        portraitVideoOffsetFromTop = database.portraitVideoOffsetFromTop!
         audioUnitRemoveWindNoise = database.debug.removeWindNoise!
         showFirstTimeChatterMessage = database.chat.showFirstTimeChatterMessage!
         showNewFollowerMessage = database.chat.showNewFollowerMessage!
@@ -1331,11 +1590,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         frontZoomPresetId = database.zoom.front[0].id
         streamPreviewView.videoGravity = .resizeAspect
+        externalDisplayStreamPreviewView.videoGravity = .resizeAspect
         updateDigitalClock(now: Date())
         twitchChat = TwitchChatMoblin(delegate: self)
+        setMic()
         reloadStream()
         resetSelectedScene()
-        setMic()
         setupPeriodicTimers()
         setupThermalState()
         updateButtonStates()
@@ -1425,7 +1685,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         initMediaPlayers()
         removeUnusedLogs()
         autoStartDjiDevices()
+        autoStartDjiGimbalDevices()
         autoStartCatPrinters()
+        autoStartCyclingPowerDevices()
+        autoStartHeartRateDevices()
         startWeatherManager()
         startGeographyManager()
         twitchAuth.setOnAccessToken(onAccessToken: handleTwitchAccessToken)
@@ -1435,16 +1698,22 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         updateFaceFilterButtonState()
         updateLutsButtonState()
         reloadNtpClient()
-        reloadMoblinkClient()
-        reloadMoblinkServer()
+        reloadMoblinkRelay()
+        reloadMoblinkStreamer()
         setCameraControlsEnabled()
+        resetAverageSpeed()
+        resetSlope()
+        goProLaunchLiveStreamSelection = database.goPro!.selectedLaunchLiveStream
+        goProWifiCredentialsSelection = database.goPro!.selectedWifiCredentials
+        goProRtmpUrlSelection = database.goPro!.selectedRtmpUrl
+        replaySpeed = database.replay!.speed
     }
 
     func setBitrateDropFix() {
         if database.debug.bitrateDropFix! {
-            videoCodecDataRateLimitFactor = Double(database.debug.dataRateLimitFactor!)
+            videoEncoderDataRateLimitFactor = Double(database.debug.dataRateLimitFactor!)
         } else {
-            videoCodecDataRateLimitFactor = 1.2
+            videoEncoderDataRateLimitFactor = 1.2
         }
     }
 
@@ -1455,51 +1724,92 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return cameraDevice != nil
     }
 
-    func reloadMoblinkServer() {
-        stopMoblinkServer()
-        if isMoblinkServerConfigured() {
-            moblinkServer = MoblinkServer(
+    func stopMoblinkStreamer() {
+        moblinkStreamer?.stop()
+        moblinkStreamer = nil
+    }
+
+    func reloadMoblinkStreamer() {
+        stopMoblinkStreamer()
+        if isMoblinkStreamerConfigured() {
+            moblinkStreamer = MoblinkStreamer(
                 port: database.moblink!.server.port,
                 password: database.moblink!.password
             )
-            moblinkServer?.start(delegate: self)
+            moblinkStreamer?.start(delegate: self)
         }
     }
 
-    func stopMoblinkServer() {
-        moblinkServer?.stop()
-        moblinkServer = nil
-    }
-
-    func isMoblinkServerConfigured() -> Bool {
+    func isMoblinkStreamerConfigured() -> Bool {
         let server = database.moblink!.server
         return server.enabled && server.port > 0 && !database.moblink!.password.isEmpty
     }
 
-    func reloadMoblinkClient() {
-        stopMoblinkClient()
-        if isMoblinkClientConfigured() {
-            guard let url = URL(string: database.moblink!.client.url) else {
-                return
+    func reloadMoblinkRelay() {
+        stopMoblinkRelay()
+        stopMoblinkScanner()
+        if isMoblinkRelayConfigured() {
+            reloadMoblinkScanner()
+            if database.moblink!.client.manual! {
+                startMoblinkRelayManual()
+            } else {
+                startMoblinkRelayAutomatic()
             }
-            moblinkClient = MoblinkClient(
-                name: database.moblink!.client.name,
-                clientUrl: url,
-                password: database.moblink!.password,
-                delegate: self
-            )
-            moblinkClient?.start()
         }
     }
 
-    func isMoblinkClientConfigured() -> Bool {
-        let client = database.moblink!.client
-        return client.enabled && !client.url.isEmpty && !database.moblink!.password.isEmpty
+    private func startMoblinkRelayManual() {
+        guard let streamerUrl = URL(string: database.moblink!.client.url) else {
+            return
+        }
+        addMoblinkRelay(streamerUrl: streamerUrl)
     }
 
-    func stopMoblinkClient() {
-        moblinkClient?.stop()
-        moblinkClient = nil
+    private func startMoblinkRelayAutomatic() {
+        for streamer in moblinkScannerDiscoveredStreamers {
+            guard let url = streamer.urls.first, let streamerUrl = URL(string: url) else {
+                return
+            }
+            addMoblinkRelay(streamerUrl: streamerUrl)
+        }
+    }
+
+    private func addMoblinkRelay(streamerUrl: URL) {
+        guard !moblinkRelays.contains(where: { $0.streamerUrl == streamerUrl }) else {
+            return
+        }
+        let relay = MoblinkRelay(
+            name: database.moblink!.client.name,
+            streamerUrl: streamerUrl,
+            password: database.moblink!.password,
+            delegate: self
+        )
+        relay.start()
+        moblinkRelays.append(relay)
+    }
+
+    func isMoblinkRelayConfigured() -> Bool {
+        let client = database.moblink!.client
+        if !client.enabled {
+            return false
+        }
+        if client.manual! {
+            return !client.url.isEmpty && !database.moblink!.password.isEmpty
+        } else {
+            return true
+        }
+    }
+
+    func areMoblinkRelaysOk() -> Bool {
+        return moblinkRelayState == .connected || moblinkRelayState == .waitingForStreamers
+    }
+
+    func stopMoblinkRelay() {
+        for relay in moblinkRelays {
+            relay.stop()
+        }
+        moblinkRelays.removeAll()
+        stopMoblinkScanner()
     }
 
     func reloadMoblinkScanner() {
@@ -1517,14 +1827,14 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private func updateMoblinkStatus() {
         var status: String
         var serverOk = true
-        if isMoblinkClientConfigured(), isMoblinkServerConfigured() {
-            let (serverStatus, ok) = moblinkServerStatus()
-            status = "\(serverStatus), \(moblinkClientState.rawValue)"
+        if isMoblinkRelayConfigured(), isMoblinkStreamerConfigured() {
+            let (serverStatus, ok) = moblinkStreamerStatus()
+            status = "\(serverStatus), \(moblinkRelayState.rawValue)"
             serverOk = ok
-        } else if isMoblinkClientConfigured() {
-            status = moblinkClientState.rawValue
-        } else if isMoblinkServerConfigured() {
-            let (serverStatus, ok) = moblinkServerStatus()
+        } else if isMoblinkRelayConfigured() {
+            status = moblinkRelayState.rawValue
+        } else if isMoblinkStreamerConfigured() {
+            let (serverStatus, ok) = moblinkStreamerStatus()
             status = serverStatus
             serverOk = ok
         } else {
@@ -1533,28 +1843,41 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if status != moblinkStatus {
             moblinkStatus = status
         }
-        if serverOk != moblinkServerOk {
-            moblinkServerOk = serverOk
+        if serverOk != moblinkStreamerOk {
+            moblinkStreamerOk = serverOk
         }
     }
 
-    private func moblinkServerStatus() -> (String, Bool) {
-        guard let moblinkServer else {
+    private func moblinkStreamerStatus() -> (String, Bool) {
+        guard let moblinkStreamer else {
             return ("", true)
         }
         var statuses: [String] = []
         var ok = true
-        for (name, batteryPercentage) in moblinkServer.getStatuses() {
-            if let batteryPercentage {
-                statuses.append("\(name) \(batteryPercentage)%")
-                if batteryPercentage < 10 {
-                    ok = false
-                }
-            } else {
-                statuses.append("\(name) -")
+        for (name, batteryPercentage) in moblinkStreamer.getStatuses() {
+            let (status, deviceOk) = formatDeviceStatus(name: name, batteryPercentage: batteryPercentage)
+            if !deviceOk {
+                ok = false
             }
+            statuses.append(status)
         }
-        return (statuses.joined(separator: " "), ok)
+        return (statuses.joined(separator: ", "), ok)
+    }
+
+    private func formatDeviceStatus(name: String, batteryPercentage: Int?) -> (String, Bool) {
+        var ok = true
+        var status: String
+        if let batteryPercentage {
+            if batteryPercentage <= 10 {
+                status = "\(name)🪫\(batteryPercentage)%"
+                ok = false
+            } else {
+                status = "\(name)🔋\(batteryPercentage)%"
+            }
+        } else {
+            status = name
+        }
+        return (status, ok)
     }
 
     func reloadNtpClient() {
@@ -1573,7 +1896,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func reloadTeslaVehicle() {
         stopTeslaVehicle()
         let tesla = database.tesla!
-        if tesla.vin != "", tesla.privateKey != "" {
+        if tesla.enabled!, tesla.vin != "", tesla.privateKey != "" {
             teslaVehicle = TeslaVehicle(vin: tesla.vin, privateKeyPem: tesla.privateKey)
             teslaVehicle?.delegate = self
             teslaVehicle?.start()
@@ -1698,12 +2021,27 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func setSrtlaBatchSend() {
-        srtlaBatchSend = database.debug.srtlaBatchSend!
+        srtlaBatchSend = database.debug.srtlaBatchSendEnabled!
+    }
+
+    func setExternalDisplayContent() {
+        switch database.externalDisplayContent! {
+        case .stream:
+            externalDisplayChatEnabled = false
+        case .cleanStream:
+            externalDisplayChatEnabled = false
+        case .chat:
+            externalDisplayChatEnabled = true
+        case .mirror:
+            externalDisplayChatEnabled = false
+        }
+        setCleanExternalDisplay()
+        updateExternalMonitorWindow()
     }
 
     func setCameraControlsEnabled() {
-        cameraControlEnabled = database.debug.cameraControlsEnabled!
-        media.setCameraControls(enabled: database.debug.cameraControlsEnabled!)
+        cameraControlEnabled = database.cameraControlsEnabled!
+        media.setCameraControls(enabled: database.cameraControlsEnabled!)
     }
 
     private func setupSampleBufferReceiver() {
@@ -1811,12 +2149,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func handleGameControllerButtonZoom(pressed: Bool, x: Float) {
         if pressed {
-            if let x = setCameraZoomX(x: x, rate: database.zoom.speed!) {
-                setZoomX(x: x)
-            }
+            setZoomX(x: x, rate: database.zoom.speed!)
         } else {
             if let x = stopCameraZoom() {
-                setZoomX(x: x)
+                setZoomXWhenInRange(x: x)
             }
         }
     }
@@ -2000,6 +2336,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     @objc func handleDidEnterBackgroundNotification() {
         store()
+        replaysStorage.store()
         guard !ProcessInfo().isiOSAppOnMac else {
             return
         }
@@ -2020,8 +2357,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             stopWorkout(showToast: false)
             stopTeslaVehicle()
             stopNtpClient()
-            stopMoblinkClient()
-            stopMoblinkServer()
+            stopMoblinkRelay()
+            stopMoblinkStreamer()
+            stopCatPrinters()
+            stopCyclingPowerDevices()
+            stopHeartRateDevices()
+            stopRemoteControlAssistant()
+            stopDjiGimbalDevices()
         }
     }
 
@@ -2030,10 +2372,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             return
         }
         if !shouldStreamInBackground() {
+            clearRemoteSceneSettingsAndData()
             reloadStream(continueRecording: isRecording)
-            sceneUpdated(attachCamera: true)
+            sceneUpdated(attachCamera: true, updateRemoteScene: false)
             setupAudioSession()
-            media.attachAudio(device: AVCaptureDevice.default(for: .audio))
+            media.attachDefaultAudioDevice()
             reloadRtmpServer()
             reloadDjiDevices()
             reloadSrtlaServer()
@@ -2045,9 +2388,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             }
             reloadSpeechToText()
             reloadTeslaVehicle()
-            reloadMoblinkClient()
-            reloadMoblinkServer()
+            reloadMoblinkRelay()
+            reloadMoblinkStreamer()
             updateOrientation()
+            autoStartCatPrinters()
+            autoStartCyclingPowerDevices()
+            autoStartHeartRateDevices()
+            autoStartDjiGimbalDevices()
         }
     }
 
@@ -2057,6 +2404,39 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         if !showLoadSettingsFailed {
             store()
+            replaysStorage.store()
+        }
+    }
+
+    func externalMonitorConnected(windowScene: UIWindowScene) {
+        let window = UIWindow(windowScene: windowScene)
+        window.rootViewController = UIHostingController(rootView: ExternalScreenContentView())
+        externalDisplayWindow = window
+        updateExternalMonitorWindow()
+        externalDisplayPreview = true
+        reattachCamera()
+    }
+
+    func externalMonitorDisconnected() {
+        externalDisplayWindow = nil
+        externalDisplayPreview = false
+        reattachCamera()
+    }
+
+    private func updateExternalMonitorWindow() {
+        guard let externalDisplayWindow else {
+            return
+        }
+        switch database.externalDisplayContent! {
+        case .stream:
+            externalDisplayWindow.makeKeyAndVisible()
+        case .cleanStream:
+            externalDisplayWindow.makeKeyAndVisible()
+        case .chat:
+            externalDisplayWindow.makeKeyAndVisible()
+        case .mirror:
+            externalDisplayWindow.resignKey()
+            externalDisplayWindow.isHidden = true
         }
     }
 
@@ -2067,7 +2447,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if isLive || isRecording {
             return false
         }
-        return database.moblink!.client.enabled
+        return database.moblink!.client.enabled || database.catPrinters!.backgroundPrinting!
     }
 
     @objc func handleBatteryStateDidChangeNotification() {
@@ -2163,7 +2543,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             if isRtmpStreamConnected(streamKey: stream.streamKey) {
                 let micId = "\(stream.id.uuidString) 0"
                 let isLastMic = (currentMic.id == micId)
-                handleRtmpServerPublishStop(streamKey: stream.streamKey)
+                handleRtmpServerPublishStop(streamKey: stream.streamKey, reason: nil)
                 handleRtmpServerPublishStart(streamKey: stream.streamKey)
                 if currentMic.id != micId, isLastMic {
                     selectMicById(id: micId)
@@ -2192,18 +2572,18 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    func handleRtmpServerPublishStop(streamKey: String) {
+    func handleRtmpServerPublishStop(streamKey: String, reason: String? = nil) {
         DispatchQueue.main.async {
             guard let stream = self.getRtmpStream(streamKey: streamKey) else {
                 return
             }
-            self.stopRtmpServerStream(stream: stream, showToast: true)
+            self.stopRtmpServerStream(stream: stream, showToast: true, reason: reason)
         }
     }
 
-    private func stopRtmpServerStream(stream: SettingsRtmpServerStream, showToast: Bool) {
+    private func stopRtmpServerStream(stream: SettingsRtmpServerStream, showToast: Bool, reason: String? = nil) {
         if showToast {
-            makeToast(title: String(localized: "\(stream.camera()) disconnected"))
+            makeToast(title: String(localized: "\(stream.camera()) disconnected"), subTitle: reason)
         }
         media.removeReplaceVideo(cameraId: stream.id)
         media.removeReplaceAudio(cameraId: stream.id)
@@ -2326,13 +2706,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func updateOrientation() {
         if stream.portrait! {
-            streamPreviewView.videoOrientation = .portrait
+            media.setVideoOrientation(value: .portrait)
         } else {
             switch UIDevice.current.orientation {
             case .landscapeLeft:
-                streamPreviewView.videoOrientation = .landscapeRight
+                media.setVideoOrientation(value: .landscapeRight)
             case .landscapeRight:
-                streamPreviewView.videoOrientation = .landscapeLeft
+                media.setVideoOrientation(value: .landscapeLeft)
             default:
                 break
             }
@@ -2506,9 +2886,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         })
         Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true, block: { _ in
             let monotonicNow = ContinuousClock.now
-            if self.database.show.audioBar {
-                self.updateAudioLevel()
-            }
+            self.updateAudioLevel()
             self.updateChat()
             self.executeChatBotMessage()
             if self.isWatchLocal() {
@@ -2531,16 +2909,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
             let now = Date()
             let monotonicNow = ContinuousClock.now
-            self.updateUptime(now: monotonicNow)
+            self.updateStreamUptime(now: monotonicNow)
             self.updateRecordingLength(now: now)
             self.updateDigitalClock(now: now)
-            self.updateChatSpeed()
             self.media.updateSrtSpeed()
             self.updateSpeed(now: monotonicNow)
             self.updateServersSpeed()
-            if !self.database.show.audioBar {
-                self.updateAudioLevel()
-            }
             self.updateBondingStatistics()
             self.removeOldChatMessages(now: monotonicNow)
             self.updateLocation()
@@ -2550,6 +2924,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             self.logStatus()
             self.updateFailedVideoEffects()
             self.updateAdaptiveBitrateDebug()
+            self.updateDistance()
+            self.updateSlope()
+            self.updateAverageSpeed(now: monotonicNow)
             self.updateTextEffects(now: now, timestamp: monotonicNow)
             self.updateMapEffects()
             self.updatePoll()
@@ -2563,6 +2940,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 self.cpuUsage = getCpuUsage()
             }
             self.updateMoblinkStatus()
+            self.updateStatusEventsText()
+            self.updateStatusChatText()
         })
         Timer.scheduledTimer(withTimeInterval: 3, repeats: true, block: { _ in
             self.teslaGetDriveState()
@@ -2575,6 +2954,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             self.teslaGetMediaState()
         })
         Timer.scheduledTimer(withTimeInterval: 10, repeats: true, block: { _ in
+            let monotonicNow = ContinuousClock.now
             self.updateBatteryLevel()
             self.media.logStatistics()
             self.updateObsStatus()
@@ -2586,8 +2966,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             self.updateCurrentSsid()
             self.rtmpServerInfo()
             self.teslaGetChargeState()
-            self.moblinkServer?.updateStatus()
+            self.moblinkStreamer?.updateStatus()
             self.updateDjiDevicesStatus()
+            self.updateTwitchStream(monotonicNow: monotonicNow)
         })
     }
 
@@ -2711,9 +3092,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             media.unregisterEffect(lutEffect)
             return
         }
-        lutEffect
-            .setLut(lut: lut.clone(), imageStorage: imageStorage) { message in self.makeErrorToastMain(title: message)
-            }
+        lutEffect.setLut(lut: lut.clone(), imageStorage: imageStorage) { title, subTitle in
+            self.makeErrorToastMain(title: title, subTitle: subTitle)
+        }
     }
 
     func addLutCube(url: URL) {
@@ -2809,10 +3190,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private func updateViewers() {
         var newNumberOfViewers = 0
         var hasInfo = false
-        if isTwitchViewersConfigured(), let twitchPubSub, twitchPubSub.isConnected(),
-           let numberOfViewers = twitchPubSub.numberOfViewers
-        {
-            newNumberOfViewers += numberOfViewers
+        if let numberOfTwitchViewers {
+            newNumberOfViewers += numberOfTwitchViewers
             hasInfo = true
         }
         if isKickViewersConfigured(), let numberOfViewers = kickViewers?.numberOfViewers {
@@ -2835,20 +3214,23 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func updateAudioLevel() {
+        if database.show.audioLevel != audio.showing {
+            audio.showing = database.show.audioLevel
+        }
         let newAudioLevel = media.getAudioLevel()
         let newNumberOfAudioChannels = media.getNumberOfAudioChannels()
-        if newNumberOfAudioChannels != numberOfAudioChannels {
-            numberOfAudioChannels = newNumberOfAudioChannels
+        if newNumberOfAudioChannels != audio.numberOfChannels {
+            audio.numberOfChannels = newNumberOfAudioChannels
         }
-        if newAudioLevel == audioLevel {
+        if newAudioLevel == audio.level {
             return
         }
-        if abs(audioLevel - newAudioLevel) > 5 || newAudioLevel
-            .isNaN || newAudioLevel == .infinity || audioLevel.isNaN || audioLevel == .infinity
+        if abs(audio.level - newAudioLevel) > 5 || newAudioLevel
+            .isNaN || newAudioLevel == .infinity || audio.level.isNaN || audio.level == .infinity
         {
-            audioLevel = newAudioLevel
+            audio.level = newAudioLevel
             if isWatchLocal() {
-                sendAudioLevelToWatch(audioLevel: audioLevel)
+                sendAudioLevelToWatch(audioLevel: audio.level)
             }
         }
     }
@@ -2888,9 +3270,14 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func pauseChat() {
-        chatPaused = true
-        pausedChatPostsCount = 0
-        pausedChatPosts = [createRedLineChatPost()]
+        chat.paused = true
+        chat.pausedPostsCount = 0
+        chat.pausedPosts = [createRedLineChatPost()]
+    }
+
+    func disableInteractiveChat() {
+        _ = appendPausedChatPosts(maximumNumberOfPostsToAppend: Int.max)
+        chat.paused = false
     }
 
     private func createRedLineChatPost() -> ChatPost {
@@ -2913,93 +3300,97 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         )
     }
 
-    func pauseInteractiveChat() {
-        interactiveChatPaused = true
-        pausedInteractiveChatPostsCount = 0
-        pausedInteractiveChatPosts = [createRedLineChatPost()]
+    func pauseQuickButtonChat() {
+        quickButtonChat.paused = true
+        quickButtonChat.pausedPostsCount = 0
+        quickButtonChat.pausedPosts = [createRedLineChatPost()]
     }
 
-    func endOfInteractiveChatReachedWhenPaused() {
+    func endOfQuickButtonChatReachedWhenPaused() {
         var numberOfPostsAppended = 0
-        while numberOfPostsAppended < 5, let post = pausedInteractiveChatPosts.popFirst() {
+        while numberOfPostsAppended < 5, let post = quickButtonChat.pausedPosts.popFirst() {
             if post.user == nil {
-                if let lastPost = interactiveChatPosts.first, lastPost.user == nil {
+                if let lastPost = quickButtonChat.posts.first, lastPost.user == nil {
                     continue
                 }
-                if pausedInteractiveChatPosts.isEmpty {
+                if quickButtonChat.pausedPosts.isEmpty {
                     continue
                 }
             }
-            if interactiveChatPosts.count > maximumNumberOfInteractiveChatMessages - 1 {
-                interactiveChatPosts.removeLast()
+            if quickButtonChat.posts.count > maximumNumberOfInteractiveChatMessages - 1 {
+                quickButtonChat.posts.removeLast()
             }
-            interactiveChatPosts.prepend(post)
+            quickButtonChat.posts.prepend(post)
             numberOfPostsAppended += 1
         }
         if numberOfPostsAppended == 0 {
-            interactiveChatPaused = false
+            quickButtonChat.paused = false
         }
     }
 
     func endOfChatReachedWhenPaused() {
-        var numberOfPostsAppended = 0
-        while numberOfPostsAppended < 5, let post = pausedChatPosts.popFirst() {
-            if post.user == nil {
-                if let lastPost = chatPosts.first, lastPost.user == nil {
-                    continue
-                }
-                if pausedChatPosts.isEmpty {
-                    continue
-                }
-            }
-            if chatPosts.count > maximumNumberOfChatMessages - 1 {
-                chatPosts.removeLast()
-            }
-            chatPosts.prepend(post)
-            numberOfPostsAppended += 1
-        }
-        if numberOfPostsAppended == 0 {
-            chatPaused = false
+        if appendPausedChatPosts(maximumNumberOfPostsToAppend: 5) == 0 {
+            chat.paused = false
         }
     }
 
-    func pauseInteractiveChatAlerts() {
-        interactiveChatAlertsPaused = true
-        pausedInteractiveChatAlertsPostsCount = 0
+    private func appendPausedChatPosts(maximumNumberOfPostsToAppend: Int) -> Int {
+        var numberOfPostsAppended = 0
+        while numberOfPostsAppended < maximumNumberOfPostsToAppend, let post = chat.pausedPosts.popFirst() {
+            if post.user == nil {
+                if let lastPost = chat.posts.first, lastPost.user == nil {
+                    continue
+                }
+                if chat.pausedPosts.isEmpty {
+                    continue
+                }
+            }
+            if chat.posts.count > maximumNumberOfChatMessages - 1 {
+                chat.posts.removeLast()
+            }
+            chat.posts.prepend(post)
+            numberOfPostsAppended += 1
+        }
+        return numberOfPostsAppended
     }
 
-    func endOfInteractiveChatAlertsReachedWhenPaused() {
+    func pauseQuickButtonChatAlerts() {
+        quickButtonChatAlertsPaused = true
+        pausedQuickButtonChatAlertsPostsCount = 0
+    }
+
+    func endOfQuickButtonChatAlertsReachedWhenPaused() {
         var numberOfPostsAppended = 0
-        while numberOfPostsAppended < 5, let post = pausedInteractiveChatAlertsPosts.popFirst() {
+        while numberOfPostsAppended < 5, let post = pausedQuickButtonChatAlertsPosts.popFirst() {
             if post.user == nil {
-                if let lastPost = interactiveChatAlertsPosts.first, lastPost.user == nil {
+                if let lastPost = quickButtonChatAlertsPosts.first, lastPost.user == nil {
                     continue
                 }
-                if pausedInteractiveChatAlertsPosts.isEmpty {
+                if pausedQuickButtonChatAlertsPosts.isEmpty {
                     continue
                 }
             }
-            if interactiveChatAlertsPosts.count > maximumNumberOfInteractiveChatMessages - 1 {
-                interactiveChatAlertsPosts.removeLast()
+            if quickButtonChatAlertsPosts.count > maximumNumberOfInteractiveChatMessages - 1 {
+                quickButtonChatAlertsPosts.removeLast()
             }
-            interactiveChatAlertsPosts.prepend(post)
+            quickButtonChatAlertsPosts.prepend(post)
             numberOfPostsAppended += 1
         }
         if numberOfPostsAppended == 0 {
-            interactiveChatAlertsPaused = false
+            quickButtonChatAlertsPaused = false
         }
     }
 
     private func removeOldChatMessages(now: ContinuousClock.Instant) {
-        if interactiveChatPaused {
+        if quickButtonChat.paused {
             return
         }
         guard database.chat.maximumAgeEnabled! else {
             return
         }
-        while let post = chatPosts.last {
+        while let post = chat.posts.last {
             if now > post.timestampTime + .seconds(database.chat.maximumAge!) {
-                chatPosts.removeLast()
+                chat.posts.removeLast()
             } else {
                 break
             }
@@ -3007,11 +3398,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func updateChat() {
-        while let post = newChatPosts.popFirst() {
-            if chatPosts.count > maximumNumberOfChatMessages - 1 {
-                chatPosts.removeLast()
+        while let post = chat.newPosts.popFirst() {
+            if chat.posts.count > maximumNumberOfChatMessages - 1 {
+                chat.posts.removeLast()
             }
-            chatPosts.prepend(post)
+            chat.posts.prepend(post)
             if isWatchLocal() {
                 sendChatMessageToWatch(post: post)
             }
@@ -3024,39 +3415,22 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             if isAnyConnectedCatPrinterPrintingChat() {
                 printChatMessage(post: post)
             }
-            numberOfChatPostsPerTick += 1
             streamTotalChatMessages += 1
         }
-        if chatPaused {
-            pausedChatPostsCount = max(pausedChatPosts.count - 1, 0)
-        } else {
-            while let post = newChatPosts.popFirst() {
-                if chatPosts.count > maximumNumberOfChatMessages - 1 {
-                    chatPosts.removeLast()
-                }
-                chatPosts.prepend(post)
-            }
+        chat.update()
+        quickButtonChat.update()
+        if externalDisplayChatEnabled {
+            externalDisplayChat.update()
         }
-        if interactiveChatPaused {
+        if quickButtonChatAlertsPaused {
             // The red line is one post.
-            pausedInteractiveChatPostsCount = max(pausedInteractiveChatPosts.count - 1, 0)
+            pausedQuickButtonChatAlertsPostsCount = max(pausedQuickButtonChatAlertsPosts.count - 1, 0)
         } else {
-            while let post = newInteractiveChatPosts.popFirst() {
-                if interactiveChatPosts.count > maximumNumberOfInteractiveChatMessages - 1 {
-                    interactiveChatPosts.removeLast()
+            while let post = newQuickButtonChatAlertsPosts.popFirst() {
+                if quickButtonChatAlertsPosts.count > maximumNumberOfInteractiveChatMessages - 1 {
+                    quickButtonChatAlertsPosts.removeLast()
                 }
-                interactiveChatPosts.prepend(post)
-            }
-        }
-        if interactiveChatAlertsPaused {
-            // The red line is one post.
-            pausedInteractiveChatAlertsPostsCount = max(pausedInteractiveChatAlertsPosts.count - 1, 0)
-        } else {
-            while let post = newInteractiveChatAlertsPosts.popFirst() {
-                if interactiveChatAlertsPosts.count > maximumNumberOfInteractiveChatMessages - 1 {
-                    interactiveChatAlertsPosts.removeLast()
-                }
-                interactiveChatAlertsPosts.prepend(post)
+                quickButtonChatAlertsPosts.prepend(post)
             }
         }
     }
@@ -3225,6 +3599,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         media.unregisterEffect(grayScaleEffect)
         media.unregisterEffect(sepiaEffect)
         media.unregisterEffect(tripleEffect)
+        media.unregisterEffect(twinEffect)
         media.unregisterEffect(pixellateEffect)
         media.unregisterEffect(pollEffect)
         faceEffect = FaceEffect(fps: Float(stream.fps), onFindFaceChanged: handleFindFaceChanged(value:))
@@ -3233,6 +3608,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         grayScaleEffect = GrayScaleEffect()
         sepiaEffect = SepiaEffect()
         tripleEffect = TripleEffect()
+        twinEffect = TwinEffect()
         pixellateEffect = PixellateEffect(strength: database.pixellateStrength!)
         pollEffect = PollEffect()
     }
@@ -3270,8 +3646,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if isGlobalButtonOn(type: .triple) {
             effects.append(tripleEffect)
         }
+        if isGlobalButtonOn(type: .twin) {
+            effects.append(twinEffect)
+        }
         if isGlobalButtonOn(type: .pixellate) {
-            pixellateEffect = PixellateEffect(strength: database.pixellateStrength!)
+            pixellateEffect.strength.mutate { $0 = database.pixellateStrength! }
             effects.append(pixellateEffect)
         }
         return effects
@@ -3332,6 +3711,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             if database.alertsMediaGallery!.customSounds.contains(where: { $0.id == mediaId }) {
                 found = true
             }
+            for widget in database.widgets where widget.type == .alerts {
+                for command in widget.alerts!.chatBot!.commands where command.imagePlaygroundImageId! == mediaId {
+                    found = true
+                    break
+                }
+            }
             if !found {
                 alertMediaStorage.remove(id: mediaId)
             }
@@ -3353,47 +3738,124 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return nil
     }
 
-    private func updateTextEffects(now: Date, timestamp: ContinuousClock.Instant) {
-        guard !textEffects.isEmpty else {
-            return
-        }
+    private func updateDistance() {
         let location = locationManager.getLatestKnownLocation()
         if let latestKnownLocation {
             let distance = location?.distance(from: latestKnownLocation) ?? 0
             if distance > latestKnownLocation.horizontalAccuracy {
-                self.distance += distance
+                database.location!.distance! += distance
                 self.latestKnownLocation = location
             }
         } else {
             latestKnownLocation = location
         }
-        let weather = weatherManager.getLatestWeather()
-        let placemark = geographyManager.getLatestPlacemark()
-        let stats = TextEffectStats(
-            timestamp: timestamp,
-            bitrateAndTotal: speedAndTotal,
-            date: now,
-            debugOverlayLines: debugLines,
-            speed: format(speed: max(location?.speed ?? 0, 0)),
-            altitude: format(altitude: location?.altitude ?? 0),
-            distance: getDistance(),
-            conditions: weather?.currentWeather.symbolName,
-            temperature: weather?.currentWeather.temperature,
-            country: placemark?.country ?? "",
-            countryFlag: emojiFlag(country: placemark?.isoCountryCode ?? ""),
-            city: placemark?.locality,
-            muted: isMuteOn,
-            heartRate: workoutHeartRate,
-            activeEnergyBurned: workoutActiveEnergyBurned,
-            workoutDistance: workoutDistance,
-            power: workoutPower,
-            stepCount: workoutStepCount,
-            teslaBatteryLevel: textEffectTeslaBatteryLevel(),
-            teslaDrive: textEffectTeslaDrive(),
-            teslaMedia: textEffectTeslaMedia()
-        )
+    }
+
+    private func resetSlope() {
+        slopePercent = 0.0
+        previousSlopeAltitude = nil
+        previousSlopeDistance = database.location!.distance!
+    }
+
+    private func updateSlope() {
+        guard let location = locationManager.getLatestKnownLocation() else {
+            return
+        }
+        let deltaDistance = database.location!.distance! - previousSlopeDistance
+        guard deltaDistance != 0 else {
+            return
+        }
+        previousSlopeDistance = database.location!.distance!
+        let deltaAltitude = location.altitude - (previousSlopeAltitude ?? location.altitude)
+        previousSlopeAltitude = location.altitude
+        slopePercent = 0.7 * slopePercent + 0.3 * (100 * deltaAltitude / deltaDistance)
+    }
+
+    private func resetAverageSpeed() {
+        averageSpeed = 0.0
+        averageSpeedStartTime = .now
+        averageSpeedStartDistance = database.location!.distance!
+    }
+
+    private func updateAverageSpeed(now: ContinuousClock.Instant) {
+        let distance = database.location!.distance! - averageSpeedStartDistance
+        let elapsed = averageSpeedStartTime.duration(to: now)
+        averageSpeed = distance / elapsed.seconds
+    }
+
+    func getDistance() -> String {
+        return format(distance: database.location!.distance!)
+    }
+
+    private func updateTextWidgetsLapTimes(now: Date) {
+        for widget in database.widgets where widget.type == .text {
+            guard !widget.text.lapTimes!.isEmpty else {
+                continue
+            }
+            let now = now.timeIntervalSince1970
+            for lapTimes in widget.text.lapTimes! {
+                let lastIndex = lapTimes.lapTimes.endIndex - 1
+                guard lastIndex >= 0, let currentLapStartTime = lapTimes.currentLapStartTime else {
+                    continue
+                }
+                lapTimes.lapTimes[lastIndex] = now - currentLapStartTime
+            }
+            getTextEffect(id: widget.id)?.setLapTimes(lapTimes: widget.text.lapTimes!.map { $0.lapTimes })
+        }
+    }
+
+    private func updateTextEffects(now: Date, timestamp: ContinuousClock.Instant) {
+        guard !textEffects.isEmpty else {
+            return
+        }
+        var stats: TextEffectStats
+        if let textStats = remoteSceneData.textStats {
+            stats = textStats.toStats()
+        } else {
+            updateTextWidgetsLapTimes(now: now)
+            let location = locationManager.getLatestKnownLocation()
+            let weather = weatherManager.getLatestWeather()
+            let placemark = geographyManager.getLatestPlacemark()
+            stats = TextEffectStats(
+                timestamp: timestamp,
+                bitrateAndTotal: speedAndTotal,
+                date: now,
+                debugOverlayLines: debugLines,
+                speed: format(speed: location?.speed ?? 0),
+                averageSpeed: format(speed: averageSpeed),
+                altitude: format(altitude: location?.altitude ?? 0),
+                distance: getDistance(),
+                slope: "\(Int(slopePercent)) %",
+                conditions: weather?.currentWeather.symbolName,
+                temperature: weather?.currentWeather.temperature,
+                country: placemark?.country ?? "",
+                countryFlag: emojiFlag(country: placemark?.isoCountryCode ?? ""),
+                city: placemark?.locality,
+                muted: isMuteOn,
+                heartRates: heartRates,
+                activeEnergyBurned: workoutActiveEnergyBurned,
+                workoutDistance: workoutDistance,
+                power: workoutPower,
+                stepCount: workoutStepCount,
+                teslaBatteryLevel: textEffectTeslaBatteryLevel(),
+                teslaDrive: textEffectTeslaDrive(),
+                teslaMedia: textEffectTeslaMedia(),
+                cyclingPower: "\(cyclingPower) W",
+                cyclingCadence: "\(cyclingCadence)",
+                browserTitle: getBrowserTitle()
+            )
+            remoteControlAssistantSetRemoteSceneDataTextStats(stats: stats)
+        }
         for textEffect in textEffects.values {
             textEffect.updateStats(stats: stats)
+        }
+    }
+
+    private func getBrowserTitle() -> String {
+        if showBrowser {
+            return getWebBrowser().title ?? ""
+        } else {
+            return ""
         }
     }
 
@@ -3464,19 +3926,22 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         guard !mapEffects.isEmpty else {
             return
         }
-        guard var location = locationManager.getLatestKnownLocation() else {
-            return
-        }
-        if isLocationInPrivacyRegion(location: location) {
-            location = .init()
+        let location: CLLocation
+        if let remoteSceneLocation = remoteSceneData.location {
+            location = remoteSceneLocation.toLocation()
+        } else {
+            guard var latestKnownLocation = locationManager.getLatestKnownLocation() else {
+                return
+            }
+            if isLocationInPrivacyRegion(location: latestKnownLocation) {
+                latestKnownLocation = .init()
+            }
+            remoteControlAssistantSetRemoteSceneDataLocation(location: latestKnownLocation)
+            location = latestKnownLocation
         }
         for mapEffect in mapEffects.values {
             mapEffect.updateLocation(location: location)
         }
-    }
-
-    func getDistance() -> String {
-        return format(distance: distance)
     }
 
     func togglePoll() {
@@ -3520,17 +3985,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    func resetSelectedScene(changeScene: Bool = true) {
-        if !enabledScenes.isEmpty, changeScene {
-            setSceneId(id: enabledScenes[0].id)
-            sceneIndex = 0
-        }
+    private func resetVideoEffects(widgets: [SettingsWidget]) {
         unregisterGlobalVideoEffects()
         for textEffect in textEffects.values {
             media.unregisterEffect(textEffect)
         }
         textEffects.removeAll()
-        for widget in database.widgets where widget.type == .text {
+        for widget in widgets where widget.type == .text {
             textEffects[widget.id] = TextEffect(
                 format: widget.text.formatString,
                 backgroundColor: widget.text.backgroundColor!,
@@ -3538,13 +3999,17 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 fontSize: CGFloat(widget.text.fontSize!),
                 fontDesign: widget.text.fontDesign!.toSystem(),
                 fontWeight: widget.text.fontWeight!.toSystem(),
+                fontMonospacedDigits: widget.text.fontMonospacedDigits!,
+                horizontalAlignment: widget.text.horizontalAlignment!.toSystem(),
+                verticalAlignment: widget.text.verticalAlignment!.toSystem(),
                 settingName: widget.name,
                 delay: widget.text.delay!,
                 timersEndTime: widget.text.timers!.map {
                     .now.advanced(by: .seconds(utcTimeDeltaFromNow(to: $0.endTime)))
                 },
                 checkboxes: widget.text.checkboxes!.map { $0.checked },
-                ratings: widget.text.ratings!.map { $0.rating }
+                ratings: widget.text.ratings!.map { $0.rating },
+                lapTimes: widget.text.lapTimes!.map { $0.lapTimes }
             )
         }
         for browserEffect in browserEffects.values {
@@ -3552,7 +4017,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             browserEffect.stop()
         }
         browserEffects.removeAll()
-        for widget in database.widgets where widget.type == .browser {
+        for widget in widgets where widget.type == .browser {
             let videoSize = media.getVideoSize()
             guard let url = URL(string: widget.browser.url) else {
                 continue
@@ -3569,35 +4034,35 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             media.unregisterEffect(mapEffect)
         }
         mapEffects.removeAll()
-        for widget in database.widgets where widget.type == .map {
+        for widget in widgets where widget.type == .map {
             mapEffects[widget.id] = MapEffect(widget: widget.map!)
         }
         for qrCodeEffect in qrCodeEffects.values {
             media.unregisterEffect(qrCodeEffect)
         }
         qrCodeEffects.removeAll()
-        for widget in database.widgets where widget.type == .qrCode {
+        for widget in widgets where widget.type == .qrCode {
             qrCodeEffects[widget.id] = QrCodeEffect(widget: widget.qrCode!)
         }
         for videoSourceEffect in videoSourceEffects.values {
             media.unregisterEffect(videoSourceEffect)
         }
         videoSourceEffects.removeAll()
-        for widget in database.widgets where widget.type == .videoSource {
+        for widget in widgets where widget.type == .videoSource {
             videoSourceEffects[widget.id] = VideoSourceEffect()
         }
         for padelScoreboardEffect in padelScoreboardEffects.values {
             media.unregisterEffect(padelScoreboardEffect)
         }
         padelScoreboardEffects.removeAll()
-        for widget in database.widgets where widget.type == .scoreboard {
+        for widget in widgets where widget.type == .scoreboard {
             padelScoreboardEffects[widget.id] = PadelScoreboardEffect()
         }
         for alertsEffect in alertsEffects.values {
             media.unregisterEffect(alertsEffect)
         }
         alertsEffects.removeAll()
-        for widget in database.widgets where widget.type == .alerts {
+        for widget in widgets where widget.type == .alerts {
             alertsEffects[widget.id] = AlertsEffect(
                 settings: widget.alerts!.clone(),
                 delegate: self,
@@ -3609,6 +4074,42 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         browsers = browserEffects.map { _, browser in
             Browser(browserEffect: browser)
         }
+    }
+
+    func remoteSceneSettingsUpdated() {
+        remoteSceneSettingsUpdateRequested = true
+        updateRemoteSceneSettings()
+    }
+
+    private func updateRemoteSceneSettings() {
+        guard !remoteSceneSettingsUpdating else {
+            return
+        }
+        remoteSceneSettingsUpdating = true
+        remoteControlAssistantSetRemoteSceneSettings()
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
+            self.remoteSceneSettingsUpdating = false
+            if self.remoteSceneSettingsUpdateRequested {
+                self.remoteSceneSettingsUpdateRequested = false
+                self.updateRemoteSceneSettings()
+            }
+        }
+    }
+
+    private func getLocalAndRemoteScenes() -> [SettingsScene] {
+        return database.scenes + remoteSceneScenes
+    }
+
+    private func getLocalAndRemoteWidgets() -> [SettingsWidget] {
+        return database.widgets + remoteSceneWidgets
+    }
+
+    func resetSelectedScene(changeScene: Bool = true) {
+        if !enabledScenes.isEmpty, changeScene {
+            setSceneId(id: enabledScenes[0].id)
+            sceneIndex = 0
+        }
+        resetVideoEffects(widgets: getLocalAndRemoteWidgets())
         drawOnStreamEffect.updateOverlay(
             videoSize: media.getVideoSize(),
             size: drawOnStreamSize,
@@ -3621,10 +4122,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         lutEffects.removeAll()
         for lut in allLuts() {
             let lutEffect = LutEffect()
-            lutEffect
-                .setLut(lut: lut.clone(), imageStorage: imageStorage) { message in
-                    self.makeErrorToastMain(title: message)
-                }
+            lutEffect.setLut(lut: lut.clone(), imageStorage: imageStorage) { title, subTitle in
+                self.makeErrorToastMain(title: title, subTitle: subTitle)
+            }
             lutEffects[lut.id] = lutEffect
         }
         sceneUpdated(imageEffectChanged: true, attachCamera: true)
@@ -3666,12 +4166,15 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if stream.portrait! {
             AppDelegate.orientationLock = .portrait
             streamPreviewView.isPortrait = true
+            externalDisplayStreamPreviewView.isPortrait = true
         } else if database.portrait! {
             AppDelegate.orientationLock = .portrait
             streamPreviewView.isPortrait = false
+            externalDisplayStreamPreviewView.isPortrait = false
         } else {
             AppDelegate.orientationLock = .landscape
             streamPreviewView.isPortrait = false
+            externalDisplayStreamPreviewView.isPortrait = false
         }
         updateCameraPreviewRotation()
     }
@@ -3704,6 +4207,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         guard isRecording else {
             return
         }
+        replayBuffer = ReplayBuffer()
         setIsRecording(value: false)
         if showToast {
             makeToast(title: String(localized: "Recording stopped"))
@@ -3874,6 +4378,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             )
             return
         }
+        if database.location!.resetWhenGoingLive! {
+            resetLocationData()
+        }
         streamLog.removeAll()
         setIsLive(value: true)
         streaming = true
@@ -3935,7 +4442,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private func startNetStream() {
         streamState = .connecting
         latestLowBitrateTime = .now
-        moblinkServer?.stopTunnels()
+        moblinkStreamer?.stopTunnels()
         if stream.twitchMultiTrackEnabled! {
             startNetStreamMultiTrack()
         } else {
@@ -3978,11 +4485,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private func createMultiTrackVideoCodecSettings(
         encoderConfigurations: [TwitchMultiTrackGetClientConfigurationEncoderContiguration]
     )
-        -> [VideoCodecSettings]?
+        -> [VideoEncoderSettings]?
     {
-        var videoEncoderSettings: [VideoCodecSettings] = []
+        var videoEncoderSettings: [VideoEncoderSettings] = []
         for encoderConfiguration in encoderConfigurations {
-            var settings = VideoCodecSettings()
+            var settings = VideoEncoderSettings()
             let bitrate = encoderConfiguration.settings.bitrate
             guard bitrate >= 100, bitrate <= 50000 else {
                 return nil
@@ -4054,13 +4561,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func stopNetStream(reconnect: Bool = false) {
-        moblinkServer?.stopTunnels()
+        moblinkStreamer?.stopTunnels()
         reconnectTimer?.invalidate()
         media.rtmpStopStream()
         media.srtStopStream()
         media.ristStopStream()
         streamStartTime = nil
-        updateUptime(now: .now)
+        updateStreamUptime(now: .now)
         updateSpeed(now: .now)
         updateAudioLevel()
         bondingStatistics = noValue
@@ -4086,7 +4593,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return true
     }
 
-    private func findStream(id: UUID) -> SettingsStream? {
+    func findStream(id: UUID) -> SettingsStream? {
         return database.streams.first { stream in
             stream.id == id
         }
@@ -4130,7 +4637,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func reloadConnections() {
         useRemoteControlForChatAndEvents = false
         reloadChats()
-        reloadTwitchPubSub()
         reloadTwitchEventSub()
         reloadObsWebSocket()
         reloadRemoteControlStreamer()
@@ -4148,7 +4654,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         store()
         if stream.enabled {
             reloadStream()
-            sceneUpdated(attachCamera: true)
+            sceneUpdated(attachCamera: true, updateRemoteScene: false)
         }
     }
 
@@ -4161,10 +4667,32 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         )
         updateTorch()
         updateMute()
-        streamPreviewView.attachStream(media.getNetStream())
+        attachStream()
         setLowFpsImage()
         setSceneSwitchTransition()
+        setCleanSnapshots()
+        setCleanRecordings()
+        setCleanExternalDisplay()
         updateCameraControls()
+    }
+
+    private weak var currentStream: NetStream? {
+        didSet {
+            oldValue?.mixer.video.drawable = nil
+        }
+    }
+
+    private func attachStream() {
+        guard let stream = media.getNetStream() else {
+            currentStream = nil
+            return
+        }
+        netStreamLockQueue.async {
+            stream.mixer.video.drawable = self.streamPreviewView
+            stream.mixer.video.externalDisplayDrawable = self.externalDisplayStreamPreviewView
+            self.currentStream = stream
+            stream.mixer.startRunning()
+        }
     }
 
     private func isTimecodesEnabled() -> Bool {
@@ -4248,7 +4776,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         media.setColorSpace(colorSpace: colorSpace, onComplete: {
             DispatchQueue.main.async {
                 if let x = self.setCameraZoomX(x: self.zoomX) {
-                    self.setZoomX(x: x)
+                    self.setZoomXWhenInRange(x: x)
                 }
                 self.lutEnabledUpdated()
             }
@@ -4356,7 +4884,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func isTwitchViewersConfigured() -> Bool {
-        return stream.twitchChannelId != ""
+        return stream.twitchChannelId != "" && isTwitchAccessTokenConfigured()
     }
 
     func isTwitchChatConfigured() -> Bool {
@@ -4373,10 +4901,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func hasTwitchChatEmotes() -> Bool {
         return twitchChat?.hasEmotes() ?? false
-    }
-
-    func isTwitchPubSubConnected() -> Bool {
-        return twitchPubSub?.isConnected() ?? false
     }
 
     func isKickPusherConfigured() -> Bool {
@@ -4465,22 +4989,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func resetChat() {
-        chatPostsRate = "0.0/min"
-        chatPostsTotal = 0
-        chatSpeedTicks = 0
-        chatPosts = []
-        newChatPosts = []
+        chat.reset()
+        quickButtonChat.reset()
+        externalDisplayChat.reset()
+        quickButtonChatAlertsPosts = []
+        pausedQuickButtonChatAlertsPosts = []
+        newQuickButtonChatAlertsPosts = []
         chatBotMessages = []
-        numberOfChatPostsPerTick = 0
-        chatPostsRatePerSecond = 0
-        chatPostsRatePerMinute = 0
-        numberOfChatPostsPerMinute = 0
-        interactiveChatPosts = []
-        pausedInteractiveChatPosts = []
-        newInteractiveChatPosts = []
-        interactiveChatAlertsPosts = []
-        pausedInteractiveChatAlertsPosts = []
-        newInteractiveChatAlertsPosts = []
         chatTextToSpeech.reset(running: true)
         remoteControlStreamerLatestReceivedChatMessageId = -1
     }
@@ -4502,14 +5017,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func httpProxy() -> HttpProxy? {
         return settings.database.debug.httpProxy!.toHttpProxy()
-    }
-
-    private func reloadTwitchPubSub() {
-        twitchPubSub?.stop()
-        if isTwitchViewersConfigured() {
-            twitchPubSub = TwitchPubSub(channelId: stream.twitchChannelId)
-            twitchPubSub!.start()
-        }
     }
 
     private func reloadTwitchEventSub() {
@@ -4683,7 +5190,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func twitchChannelIdUpdated() {
         reloadTwitchEventSub()
-        reloadTwitchPubSub()
         reloadTwitchChat()
         resetChat()
     }
@@ -4717,6 +5223,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func openStreamingPlatformRoomUpdated() {
         reloadOpenStreamingPlatformChat()
         resetChat()
+    }
+
+    func setObsRemoteControlEnabled(enabled: Bool) {
+        stream.obsWebSocketEnabled = enabled
+        if stream.enabled {
+            obsWebSocketEnabledUpdated()
+        }
     }
 
     func obsWebSocketEnabledUpdated() {
@@ -4848,7 +5361,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func logStatus() {
         if logger.debugEnabled, isLive {
-            logger.debug("Status: Bitrate: \(speedAndTotal), Uptime: \(uptime)")
+            logger.debug("Status: Bitrate: \(speedAndTotal), Uptime: \(streamUptime.uptime)")
         }
     }
 
@@ -4876,6 +5389,18 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func setSceneSwitchTransition() {
         media.setSceneSwitchTransition(sceneSwitchTransition: database.sceneSwitchTransition!.toVideoUnit())
+    }
+
+    func setCleanRecordings() {
+        media.setCleanRecordings(enabled: stream.recording!.cleanRecordings!)
+    }
+
+    func setCleanSnapshots() {
+        media.setCleanSnapshots(enabled: stream.recording!.cleanSnapshots!)
+    }
+
+    func setCleanExternalDisplay() {
+        media.setCleanExternalDisplay(enabled: database.externalDisplayContent == .cleanStream)
     }
 
     func toggleLocalOverlays() {
@@ -4983,6 +5508,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 handleChatBotMessageTesla(command: command)
             case "snapshot":
                 handleChatBotMessageSnapshotWithMessage(command: command)
+            case "reaction":
+                handleChatBotMessageReaction(command: command)
+            case "scene":
+                handleChatBotMessageScene(command: command)
             default:
                 break
             }
@@ -5076,29 +5605,53 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return String(localized: "Snapshot taken by \(user).")
     }
 
+    private func formatSnapshotTakenSuccessfully(user: String) -> String {
+        return String(localized: "\(user), thanks for bringing our photo album to life. 🎉")
+    }
+
+    private func formatSnapshotTakenNotAllowed(user: String) -> String {
+        return String(localized: " \(user), you are not allowed to take snapshots, sorry. 😢")
+    }
+
     private func handleChatBotMessageSnapshot(command: ChatBotCommand) {
+        let permissions = database.chat.botCommandPermissions!.snapshot!
         executeIfUserAllowedToUseChatBot(
-            permissions: database.chat.botCommandPermissions!.snapshot!,
+            permissions: permissions,
             command: command
         ) {
             if let user = command.user() {
+                if permissions.sendChatMessages! {
+                    self.sendChatMessage(message: self.formatSnapshotTakenSuccessfully(user: user))
+                }
                 self.takeSnapshot(isChatBot: true, message: self.formatSnapshotTakenBy(user: user))
             } else {
                 self.takeSnapshot(isChatBot: true)
+            }
+        } onNotAllowed: {
+            if permissions.sendChatMessages!, let user = command.user() {
+                self.sendChatMessage(message: self.formatSnapshotTakenNotAllowed(user: user))
             }
         }
     }
 
     private func handleChatBotMessageSnapshotWithMessage(command: ChatBotCommand) {
+        let permissions = database.chat.botCommandPermissions!.snapshot!
         executeIfUserAllowedToUseChatBot(
-            permissions: database.chat.botCommandPermissions!.snapshot!,
+            permissions: permissions,
             command: command
         ) {
+            if permissions.sendChatMessages!, let user = command.user() {
+                self.sendChatMessage(message: self.formatSnapshotTakenSuccessfully(user: user))
+            }
             self.takeSnapshotWithCountdown(
                 isChatBot: true,
                 message: command.rest(),
                 user: command.user()
             )
+        } onNotAllowed: {
+            if permissions.sendChatMessages!, let user = command.user() {
+                self.sendChatMessage(message: self.formatSnapshotTakenNotAllowed(user: user))
+            }
         }
     }
 
@@ -5138,6 +5691,54 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
+    private func handleChatBotMessageReaction(command: ChatBotCommand) {
+        guard #available(iOS 17, *) else {
+            return
+        }
+        executeIfUserAllowedToUseChatBot(
+            permissions: database.chat.botCommandPermissions!.reaction!,
+            command: command
+        ) {
+            let reaction: AVCaptureReactionType
+            switch command.popFirst() {
+            case "fireworks":
+                reaction = .fireworks
+            case "balloons":
+                reaction = .balloons
+            case "hearts":
+                reaction = .heart
+            case "confetti":
+                reaction = .confetti
+            case "lasers":
+                reaction = .lasers
+            case "rain":
+                reaction = .rain
+            default:
+                return
+            }
+            guard let scene = self.getSelectedScene() else {
+                return
+            }
+            for device in self.getBuiltinCameraDevices(scene: scene, sceneDevice: self.cameraDevice).devices
+                where device.device?.availableReactionTypes.contains(reaction) == true
+            {
+                device.device?.performEffect(for: reaction)
+            }
+        }
+    }
+
+    private func handleChatBotMessageScene(command: ChatBotCommand) {
+        guard let sceneName = command.popFirst() else {
+            return
+        }
+        executeIfUserAllowedToUseChatBot(
+            permissions: database.chat.botCommandPermissions!.scene!,
+            command: command
+        ) {
+            self.selectSceneByName(name: sceneName)
+        }
+    }
+
     private func handleChatBotMessageAlert(command: ChatBotCommand) {
         executeIfUserAllowedToUseChatBot(
             permissions: database.chat.botCommandPermissions!.alert!,
@@ -5146,8 +5747,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             guard let alert = command.popFirst() else {
                 return
             }
+            let prompt = command.rest()
             DispatchQueue.main.async {
-                self.playAlert(alert: .chatBotCommand(alert, command.user() ?? "Unknown"))
+                self.playAlert(alert: .chatBotCommand(alert, command.user() ?? "Unknown", prompt))
             }
         }
     }
@@ -5157,10 +5759,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             permissions: database.chat.botCommandPermissions!.fax!,
             command: command
         ) {
-            guard let url = command.popFirst() else {
-                return
+            if let url = command.peekFirst(), let url = URL(string: url) {
+                self.faxReceiver.add(url: url)
             }
-            self.faxReceiver.add(url: url)
         }
     }
 
@@ -5182,6 +5783,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 type = .sepia
             case "triple":
                 type = .triple
+            case "twin":
+                type = .twin
             case "pixellate":
                 type = .pixellate
             case "4:3":
@@ -5190,7 +5793,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 return
             }
             self.setGlobalButtonState(type: type, isOn: state == "on")
-            self.sceneUpdated()
+            self.sceneUpdated(updateRemoteScene: false)
             self.updateButtonStates()
         }
     }
@@ -5238,8 +5841,22 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private func executeIfUserAllowedToUseChatBot(
         permissions: SettingsChatBotPermissionsCommand,
         command: ChatBotCommand,
-        onCompleted: @escaping () -> Void
+        onCompleted: @escaping () -> Void,
+        onNotAllowed: (() -> Void)? = nil
     ) {
+        var onNotAllowed = onNotAllowed
+        if permissions.sendChatMessages!, onNotAllowed == nil {
+            onNotAllowed = {
+                if permissions.sendChatMessages!, let user = command.user() {
+                    self
+                        .sendChatMessage(
+                            message: String(
+                                localized: "\(user) Sorry, you are not allowed to use this chat bot command 😢"
+                            )
+                        )
+                }
+            }
+        }
         if command.message.isModerator, permissions.moderatorsEnabled {
             onCompleted()
             return
@@ -5262,7 +5879,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                                 self.executeIfUserAllowedToUseChatBotAfterSubscribeCheck(
                                     permissions: permissions,
                                     command: command,
-                                    onCompleted: onCompleted
+                                    onCompleted: onCompleted,
+                                    onNotAllowed: onNotAllowed
                                 )
                             }
                         }
@@ -5280,14 +5898,16 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         executeIfUserAllowedToUseChatBotAfterSubscribeCheck(
             permissions: permissions,
             command: command,
-            onCompleted: onCompleted
+            onCompleted: onCompleted,
+            onNotAllowed: onNotAllowed
         )
     }
 
     private func executeIfUserAllowedToUseChatBotAfterSubscribeCheck(
         permissions: SettingsChatBotPermissionsCommand,
         command: ChatBotCommand,
-        onCompleted: @escaping () -> Void
+        onCompleted: @escaping () -> Void,
+        onNotAllowed: (() -> Void)?
     ) {
         guard let user = command.user() else {
             return
@@ -5296,14 +5916,17 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         case .twitch:
             if isTwitchUserAllowedToUseChatBot(permissions: permissions, user: user) {
                 onCompleted()
+                return
             }
         case .kick:
             if isKickUserAllowedToUseChatBot(permissions: permissions, user: user) {
                 onCompleted()
+                return
             }
         default:
             break
         }
+        onNotAllowed?()
     }
 
     private func isTwitchUserAllowedToUseChatBot(permissions: SettingsChatBotPermissionsCommand,
@@ -5373,35 +5996,27 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             live: live
         )
         chatPostId += 1
-        if chatPaused {
-            if pausedChatPosts.count < 2 * maximumNumberOfChatMessages {
-                pausedChatPosts.append(post)
-            }
-        } else {
-            newChatPosts.append(post)
-        }
-        if interactiveChatPaused {
-            if pausedInteractiveChatPosts.count < 2 * maximumNumberOfInteractiveChatMessages {
-                pausedInteractiveChatPosts.append(post)
-            }
-        } else {
-            newInteractiveChatPosts.append(post)
+        chat.appendMessage(post: post)
+        quickButtonChat.appendMessage(post: post)
+        if externalDisplayChatEnabled {
+            externalDisplayChat.appendMessage(post: post)
         }
         if highlight != nil {
-            if interactiveChatAlertsPaused {
-                if pausedInteractiveChatAlertsPosts.count < 2 * maximumNumberOfInteractiveChatMessages {
-                    pausedInteractiveChatAlertsPosts.append(post)
+            if quickButtonChatAlertsPaused {
+                if pausedQuickButtonChatAlertsPosts.count < 2 * maximumNumberOfInteractiveChatMessages {
+                    pausedQuickButtonChatAlertsPosts.append(post)
                 }
             } else {
-                newInteractiveChatAlertsPosts.append(post)
+                newQuickButtonChatAlertsPosts.append(post)
             }
         }
     }
 
     func reloadChatMessages() {
-        chatPosts = newPostIds(posts: chatPosts)
-        interactiveChatPosts = newPostIds(posts: interactiveChatPosts)
-        interactiveChatAlertsPosts = newPostIds(posts: interactiveChatAlertsPosts)
+        chat.posts = newPostIds(posts: chat.posts)
+        quickButtonChat.posts = newPostIds(posts: quickButtonChat.posts)
+        externalDisplayChat.posts = newPostIds(posts: externalDisplayChat.posts)
+        quickButtonChatAlertsPosts = newPostIds(posts: quickButtonChatAlertsPosts)
     }
 
     private func newPostIds(posts: Deque<ChatPost>) -> Deque<ChatPost> {
@@ -5434,7 +6049,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func findWidget(id: UUID) -> SettingsWidget? {
-        for widget in database.widgets where widget.id == id {
+        for widget in getLocalAndRemoteWidgets() where widget.id == id {
             return widget
         }
         return nil
@@ -5445,6 +6060,28 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             return scene
         }
         return nil
+    }
+
+    func isCaptureDeviceVideoSoureWidget(widget: SettingsWidget) -> Bool {
+        guard widget.type == .videoSource else {
+            return false
+        }
+        switch widget.videoSource!.cameraPosition {
+        case .back:
+            return true
+        case .backWideDualLowEnergy:
+            return true
+        case .backDualLowEnergy:
+            return true
+        case .backTripleLowEnergy:
+            return true
+        case .front:
+            return true
+        case .external:
+            return true
+        default:
+            return false
+        }
     }
 
     func getSceneName(id: UUID) -> String {
@@ -5488,41 +6125,88 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             attachCamera(scene: scene, position: .front)
             isFrontCameraSelected = true
         case .rtmp:
-            attachReplaceCamera(cameraId: scene.rtmpCameraId!)
+            attachReplaceCamera(cameraId: scene.rtmpCameraId!, scene: scene)
         case .srtla:
-            attachReplaceCamera(cameraId: scene.srtlaCameraId!)
+            attachReplaceCamera(cameraId: scene.srtlaCameraId!, scene: scene)
         case .mediaPlayer:
             mediaPlayers[scene.mediaPlayerCameraId!]?.activate()
-            attachReplaceCamera(cameraId: scene.mediaPlayerCameraId!)
+            attachReplaceCamera(cameraId: scene.mediaPlayerCameraId!, scene: scene)
         case .external:
             attachExternalCamera(scene: scene)
         case .screenCapture:
-            attachReplaceCamera(cameraId: screenCaptureCameraId)
+            attachReplaceCamera(cameraId: screenCaptureCameraId, scene: scene)
+        case .backTripleLowEnergy:
+            attachBackTripleLowEnergyCamera()
+        case .backDualLowEnergy:
+            attachBackDualLowEnergyCamera()
+        case .backWideDualLowEnergy:
+            attachBackWideDualLowEnergyCamera()
         }
     }
 
-    private func getVideoSourceBuiltinCameraDevice() -> AVCaptureDevice? {
-        for widgetId in videoSourceEffects.keys {
-            guard let widget = getVideoSourceSettings(id: widgetId) else {
+    private var builtinCameraIds: [String: UUID] = [:]
+
+    private func getBuiltinCameraId(_ uniqueId: String) -> UUID {
+        if let id = builtinCameraIds[uniqueId] {
+            return id
+        }
+        let id = UUID()
+        builtinCameraIds[uniqueId] = id
+        return id
+    }
+
+    private func makeCaptureDevice(device: AVCaptureDevice) -> CaptureDevice {
+        return CaptureDevice(device: device, id: getBuiltinCameraId(device.uniqueID))
+    }
+
+    private func getBuiltinCameraDevices(scene: SettingsScene, sceneDevice: AVCaptureDevice?) -> CaptureDevices {
+        var devices = CaptureDevices(hasSceneDevice: false, devices: [])
+        if let sceneDevice {
+            devices.hasSceneDevice = true
+            devices.devices.append(makeCaptureDevice(device: sceneDevice))
+        }
+        for sceneWidget in scene.widgets {
+            guard let widget = findWidget(id: sceneWidget.widgetId) else {
                 continue
             }
+            guard widget.enabled! else {
+                continue
+            }
+            guard widget.type == .videoSource else {
+                continue
+            }
+            let cameraId: String?
             switch widget.videoSource!.cameraPosition! {
             case .back:
-                return AVCaptureDevice(uniqueID: widget.videoSource!.backCameraId!)
+                cameraId = widget.videoSource!.backCameraId!
             case .front:
-                return AVCaptureDevice(uniqueID: widget.videoSource!.frontCameraId!)
+                cameraId = widget.videoSource!.frontCameraId!
             case .external:
-                return AVCaptureDevice(uniqueID: widget.videoSource!.externalCameraId!)
+                cameraId = widget.videoSource!.externalCameraId!
             default:
-                break
+                cameraId = nil
+            }
+            if let cameraId, let device = AVCaptureDevice(uniqueID: cameraId) {
+                if !devices.devices.contains(where: { $0.device == device }) {
+                    devices.devices.append(makeCaptureDevice(device: device))
+                }
             }
         }
-        return nil
+        return devices
     }
 
     func listCameraPositions(excludeBuiltin: Bool = false) -> [(String, String)] {
         var cameras: [(String, String)] = []
         if !excludeBuiltin {
+            if hasTripleBackCamera() {
+                cameras.append((backTripleLowEnergyCamera, backTripleLowEnergyCamera))
+            }
+            if hasDualBackCamera() {
+                cameras.append((backDualLowEnergyCamera, backDualLowEnergyCamera))
+            }
+            if hasWideDualBackCamera() {
+                cameras.append((backWideDualLowEnergyCamera, backWideDualLowEnergyCamera))
+            }
             cameras += backCameras.map {
                 ($0.id, "Back \($0.name)")
             }
@@ -5558,6 +6242,18 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return cameraId == screenCaptureCamera
     }
 
+    func isBackTripleLowEnergyAutoCamera(cameraId: String) -> Bool {
+        return cameraId == backTripleLowEnergyCamera
+    }
+
+    func isBackDualLowEnergyAutoCamera(cameraId: String) -> Bool {
+        return cameraId == backDualLowEnergyCamera
+    }
+
+    func isBackWideDualLowEnergyAutoCamera(cameraId: String) -> Bool {
+        return cameraId == backWideDualLowEnergyCamera
+    }
+
     func getCameraPositionId(scene: SettingsScene?) -> String {
         return getCameraPositionId(settingsCameraId: scene?.toCameraId())
     }
@@ -5579,6 +6275,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             return .front(id: cameraId)
         } else if isScreenCaptureCamera(cameraId: cameraId) {
             return .screenCapture
+        } else if isBackTripleLowEnergyAutoCamera(cameraId: cameraId) {
+            return .backTripleLowEnergy
+        } else if isBackDualLowEnergyAutoCamera(cameraId: cameraId) {
+            return .backDualLowEnergy
+        } else if isBackWideDualLowEnergyAutoCamera(cameraId: cameraId) {
+            return .backWideDualLowEnergy
         } else {
             return .external(id: cameraId, name: getExternalCameraName(cameraId: cameraId))
         }
@@ -5603,6 +6305,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             return id
         case .screenCapture:
             return screenCaptureCamera
+        case .backTripleLowEnergy:
+            return backTripleLowEnergyCamera
+        case .backDualLowEnergy:
+            return backDualLowEnergyCamera
+        case .backWideDualLowEnergy:
+            return backWideDualLowEnergyCamera
         }
     }
 
@@ -5645,6 +6353,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             }
         case .screenCapture:
             return screenCaptureCamera
+        case .backTripleLowEnergy:
+            return backTripleLowEnergyCamera
+        case .backDualLowEnergy:
+            return backDualLowEnergyCamera
+        case .backWideDualLowEnergy:
+            return backWideDualLowEnergyCamera
         }
     }
 
@@ -5717,6 +6431,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         var addedScenes: [SettingsScene] = []
         var needsSpeechToText = false
         enabledAlertsEffects = []
+        var scene = scene
+        if let remoteSceneWidget = remoteSceneWidgets.first {
+            scene = scene.clone()
+            scene.widgets.append(SettingsSceneWidget(widgetId: remoteSceneWidget.id))
+        }
         addSceneEffects(
             scene,
             &effects,
@@ -5819,9 +6538,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             case .videoEffect:
                 break
             case .browser:
-                if let browserEffect = browserEffects[widget.id],
-                   !usedBrowserEffects.contains(browserEffect)
-                {
+                if let browserEffect = browserEffects[widget.id], !usedBrowserEffects.contains(browserEffect) {
                     browserEffect.setSceneWidget(
                         sceneWidget: sceneWidget,
                         crops: findWidgetCrops(scene: scene, sourceWidgetId: widget.id)
@@ -5851,7 +6568,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                     usedMapEffects.append(mapEffect)
                 }
             case .scene:
-                if let sceneWidgetScene = database.scenes.first(where: { $0.id == widget.scene!.sceneId }) {
+                if let sceneWidgetScene = getLocalAndRemoteScenes().first(where: { $0.id == widget.scene!.sceneId }) {
                     addSceneEffects(
                         sceneWidgetScene,
                         &effects,
@@ -5937,8 +6654,18 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             return id
         case .screenCapture:
             return screenCaptureCameraId
-        default:
-            return builtinCameraId
+        case let .back(id: id):
+            return getBuiltinCameraId(id)
+        case let .front(id: id):
+            return getBuiltinCameraId(id)
+        case let .external(id: id, name: _):
+            return getBuiltinCameraId(id)
+        case .backDualLowEnergy:
+            return nil
+        case .backTripleLowEnergy:
+            return nil
+        case .backWideDualLowEnergy:
+            return nil
         }
     }
 
@@ -5967,7 +6694,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return crops
     }
 
-    func setSceneId(id: UUID) {
+    private func setSceneId(id: UUID) {
         selectedSceneId = id
         remoteControlStreamer?.stateChanged(state: RemoteControlState(scene: id))
         if isWatchLocal() {
@@ -5982,12 +6709,29 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return findEnabledScene(id: selectedSceneId)
     }
 
-    private func selectScene(id: UUID) {
+    func showSceneSettings(scene: SettingsScene) {
+        sceneSettingsPanelScene = scene
+        sceneSettingsPanelSceneId += 1
+        toggleShowingPanel(type: nil, panel: .none)
+        toggleShowingPanel(type: nil, panel: .sceneSettings)
+    }
+
+    private func selectSceneByName(name: String) {
+        if let scene = enabledScenes.first(where: { $0.name.lowercased() == name.lowercased() }) {
+            selectScene(id: scene.id)
+        }
+    }
+
+    func selectScene(id: UUID) {
+        guard id != selectedSceneId else {
+            return
+        }
         if let index = enabledScenes.firstIndex(where: { scene in
             scene.id == id
         }) {
             sceneIndex = index
             setSceneId(id: id)
+            sceneUpdated(attachCamera: true, updateRemoteScene: false)
         }
     }
 
@@ -6000,7 +6744,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         sceneUpdated()
     }
 
-    func sceneUpdated(imageEffectChanged: Bool = false, attachCamera: Bool = false) {
+    func sceneUpdated(imageEffectChanged: Bool = false, attachCamera: Bool = false, updateRemoteScene: Bool = true) {
         if imageEffectChanged {
             reloadImageEffects()
         }
@@ -6011,14 +6755,17 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         sceneUpdatedOn(scene: scene, attachCamera: attachCamera)
         startWeatherManager()
         startGeographyManager()
+        if updateRemoteScene {
+            remoteSceneSettingsUpdated()
+        }
     }
 
-    private func updateUptime(now: ContinuousClock.Instant) {
+    private func updateStreamUptime(now: ContinuousClock.Instant) {
         if let streamStartTime, isStreamConnected() {
             let elapsed = now - streamStartTime
-            uptime = uptimeFormatter.string(from: Double(elapsed.components.seconds))!
-        } else if uptime != noValue {
-            uptime = noValue
+            streamUptime.uptime = uptimeFormatter.string(from: Double(elapsed.components.seconds))!
+        } else if streamUptime.uptime != noValue {
+            streamUptime.uptime = noValue
         }
     }
 
@@ -6026,14 +6773,14 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if let currentRecording {
             let elapsed = uptimeFormatter.string(from: now.timeIntervalSince(currentRecording.startTime))!
             let size = currentRecording.url().fileSize.formatBytes()
-            recordingLength = "\(elapsed) (\(size))"
+            recording.length = "\(elapsed) (\(size))"
             if isWatchLocal() {
-                sendRecordingLengthToWatch(recordingLength: recordingLength)
+                sendRecordingLengthToWatch(recordingLength: recording.length)
             }
-        } else if recordingLength != noValue {
-            recordingLength = noValue
+        } else if recording.length != noValue {
+            recording.length = noValue
             if isWatchLocal() {
-                sendRecordingLengthToWatch(recordingLength: recordingLength)
+                sendRecordingLengthToWatch(recordingLength: recording.length)
             }
         }
     }
@@ -6130,33 +6877,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return batteryState == .charging || batteryState == .full
     }
 
-    private func updateChatSpeed() {
-        if numberOfChatPostsPerTick != 0 {
-            chatPostsTotal += numberOfChatPostsPerTick
-        }
-        chatPostsRatePerSecond = chatPostsRatePerSecond * 0.8 +
-            Double(numberOfChatPostsPerTick) * 0.2
-        numberOfChatPostsPerMinute += numberOfChatPostsPerTick
-        if chatSpeedTicks % 60 == 0 {
-            chatPostsRatePerMinute = chatPostsRatePerMinute * 0.5 +
-                Double(numberOfChatPostsPerMinute) * 0.5
-            numberOfChatPostsPerMinute = 0
-        }
-        let newChatPostsRate: String
-        if chatPostsRatePerSecond > 0.5 ||
-            (chatPostsRatePerSecond > 0.05 && chatPostsRate.hasSuffix(secondsSuffix))
-        {
-            newChatPostsRate = String(format: "%.1f", chatPostsRatePerSecond) + secondsSuffix
-        } else {
-            newChatPostsRate = String(format: String(localized: "%.1f/min"), chatPostsRatePerMinute)
-        }
-        if chatPostsRate != newChatPostsRate {
-            chatPostsRate = newChatPostsRate
-        }
-        numberOfChatPostsPerTick = 0
-        chatSpeedTicks += 1
-    }
-
     private func checkLowBitrate(speed: Int64, now: ContinuousClock.Instant) {
         guard database.lowBitrateWarning! else {
             return
@@ -6179,6 +6899,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             let speedString = formatBytesPerSecond(speed: speed)
             let total = sizeFormatter.string(fromByteCount: media.streamTotal())
             speedAndTotal = String(localized: "\(speedString) (\(total))")
+            if speed < stream.bitrate / 5 {
+                bitrateStatusIconColor = .red
+            } else if speed < stream.bitrate / 2 {
+                bitrateStatusIconColor = .orange
+            } else {
+                bitrateStatusIconColor = .clear
+            }
             if isWatchLocal() {
                 sendSpeedAndTotalToWatch(speedAndTotal: speedAndTotal)
             }
@@ -6290,14 +7017,16 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func detachCamera() {
-        media.attachCamera(
-            device: nil,
-            cameraPreviewLayer: nil,
-            showCameraPreview: false,
-            videoStabilizationMode: .off,
-            videoMirrored: false,
-            ignoreFramesAfterAttachSeconds: 0.0
-        )
+        let params = VideoUnitAttachParams(devices: CaptureDevices(hasSceneDevice: false, devices: []),
+                                           cameraPreviewLayer: cameraPreviewLayer!,
+                                           showCameraPreview: false,
+                                           externalDisplayPreview: false,
+                                           replaceVideo: nil,
+                                           preferredVideoStabilizationMode: .off,
+                                           isVideoMirrored: false,
+                                           ignoreFramesAfterAttachSeconds: 0.0,
+                                           fillFrame: false)
+        media.attachCamera(params: params)
     }
 
     func attachCamera() {
@@ -6365,6 +7094,132 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return false
     }
 
+    private func lowEnergyCameraUpdateBackZoom(force: Bool) {
+        if force {
+            updateBackZoomSwitchTo()
+        }
+    }
+
+    private func updateBackZoomPresetId() {
+        for preset in database.zoom.back where preset.x == backZoomX {
+            backZoomPresetId = preset.id
+        }
+    }
+
+    private func updateFrontZoomPresetId() {
+        for preset in database.zoom.front where preset.x == frontZoomX {
+            frontZoomPresetId = preset.id
+        }
+    }
+
+    private func updateBackZoomSwitchTo() {
+        if database.zoom.switchToBack.enabled {
+            clearZoomPresetId()
+            backZoomX = database.zoom.switchToBack.x!
+            updateBackZoomPresetId()
+        }
+    }
+
+    private func updateFrontZoomSwitchTo() {
+        if database.zoom.switchToFront.enabled {
+            clearZoomPresetId()
+            frontZoomX = database.zoom.switchToFront.x!
+            updateFrontZoomPresetId()
+        }
+    }
+
+    private func attachBackTripleLowEnergyCamera(force: Bool = true) {
+        cameraPosition = .back
+        lowEnergyCameraUpdateBackZoom(force: force)
+        zoomX = backZoomX
+        guard let bestDevice = AVCaptureDevice.default(.builtInTripleCamera, for: .video, position: .back),
+              let lastZoomFactor = bestDevice.virtualDeviceSwitchOverVideoZoomFactors.last
+        else {
+            return
+        }
+        let scale = bestDevice.getZoomFactorScale(hasUltraWideCamera: hasUltraWideBackCamera())
+        let x = (Float(truncating: lastZoomFactor) * scale).rounded()
+        var device: AVCaptureDevice?
+        if backZoomX < 1.0 {
+            device = AVCaptureDevice.default(.builtInUltraWideCamera, for: .video, position: .back)
+        } else if backZoomX < x {
+            device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back)
+        } else {
+            device = AVCaptureDevice.default(.builtInTelephotoCamera, for: .video, position: .back)
+        }
+        guard let device, let scene = getSelectedScene() else {
+            return
+        }
+        if !force, device == cameraDevice {
+            return
+        }
+        cameraDevice = device
+        cameraZoomLevelToXScale = device.getZoomFactorScale(hasUltraWideCamera: hasUltraWideBackCamera())
+        (cameraZoomXMinimum, cameraZoomXMaximum) = bestDevice
+            .getUIZoomRange(hasUltraWideCamera: hasUltraWideBackCamera())
+        attachCameraFinalize(scene: scene)
+    }
+
+    private func attachBackDualLowEnergyCamera(force: Bool = true) {
+        cameraPosition = .back
+        lowEnergyCameraUpdateBackZoom(force: force)
+        zoomX = backZoomX
+        guard let bestDevice = AVCaptureDevice.default(.builtInDualCamera, for: .video, position: .back),
+              let lastZoomFactor = bestDevice.virtualDeviceSwitchOverVideoZoomFactors.last
+        else {
+            return
+        }
+        let scale = bestDevice.getZoomFactorScale(hasUltraWideCamera: hasUltraWideBackCamera())
+        let x = (Float(truncating: lastZoomFactor) * scale).rounded()
+        var device: AVCaptureDevice?
+        if backZoomX < x {
+            device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back)
+        } else {
+            device = AVCaptureDevice.default(.builtInTelephotoCamera, for: .video, position: .back)
+        }
+        guard let device, let scene = getSelectedScene() else {
+            return
+        }
+        if !force, device == cameraDevice {
+            return
+        }
+        cameraDevice = device
+        cameraZoomLevelToXScale = device.getZoomFactorScale(hasUltraWideCamera: hasUltraWideBackCamera())
+        (cameraZoomXMinimum, cameraZoomXMaximum) = bestDevice
+            .getUIZoomRange(hasUltraWideCamera: hasUltraWideBackCamera())
+        attachCameraFinalize(scene: scene)
+    }
+
+    private func attachBackWideDualLowEnergyCamera(force: Bool = true) {
+        cameraPosition = .back
+        lowEnergyCameraUpdateBackZoom(force: force)
+        zoomX = backZoomX
+        guard let bestDevice = AVCaptureDevice.default(.builtInDualWideCamera, for: .video, position: .back),
+              let lastZoomFactor = bestDevice.virtualDeviceSwitchOverVideoZoomFactors.last
+        else {
+            return
+        }
+        let scale = bestDevice.getZoomFactorScale(hasUltraWideCamera: hasUltraWideBackCamera())
+        let x = (Float(truncating: lastZoomFactor) * scale).rounded()
+        var device: AVCaptureDevice?
+        if backZoomX < x {
+            device = AVCaptureDevice.default(.builtInUltraWideCamera, for: .video, position: .back)
+        } else {
+            device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back)
+        }
+        guard let device, let scene = getSelectedScene() else {
+            return
+        }
+        if !force, device == cameraDevice {
+            return
+        }
+        cameraDevice = device
+        cameraZoomLevelToXScale = device.getZoomFactorScale(hasUltraWideCamera: hasUltraWideBackCamera())
+        (cameraZoomXMinimum, cameraZoomXMaximum) = bestDevice
+            .getUIZoomRange(hasUltraWideCamera: hasUltraWideBackCamera())
+        attachCameraFinalize(scene: scene)
+    }
+
     private func attachCamera(scene: SettingsScene, position: AVCaptureDevice.Position) {
         cameraDevice = preferredCamera(position: position)
         setFocusAfterCameraAttach()
@@ -6374,33 +7229,36 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         cameraPosition = position
         switch position {
         case .back:
-            if database.zoom.switchToBack.enabled {
-                clearZoomId()
-                backZoomX = database.zoom.switchToBack.x!
-            }
+            updateBackZoomSwitchTo()
             zoomX = backZoomX
         case .front:
-            if database.zoom.switchToFront.enabled {
-                clearZoomId()
-                frontZoomX = database.zoom.switchToFront.x!
-            }
+            updateFrontZoomSwitchTo()
             zoomX = frontZoomX
         default:
             break
         }
+        attachCameraFinalize(scene: scene)
+    }
+
+    private func attachCameraFinalize(scene: SettingsScene) {
         lastAttachCompletedTime = nil
         let isMirrored = getVideoMirroredOnScreen()
+        let params = VideoUnitAttachParams(devices: getBuiltinCameraDevices(scene: scene, sceneDevice: cameraDevice),
+                                           cameraPreviewLayer: cameraPreviewLayer!,
+                                           showCameraPreview: updateShowCameraPreview(),
+                                           externalDisplayPreview: externalDisplayPreview,
+                                           replaceVideo: nil,
+                                           preferredVideoStabilizationMode: getVideoStabilizationMode(scene: scene),
+                                           isVideoMirrored: getVideoMirroredOnStream(),
+                                           ignoreFramesAfterAttachSeconds: getIgnoreFramesAfterAttachSeconds(),
+                                           fillFrame: getFillFrame(scene: scene))
         media.attachCamera(
-            device: cameraDevice,
-            cameraPreviewLayer: cameraPreviewLayer,
-            showCameraPreview: updateShowCameraPreview(),
-            videoStabilizationMode: getVideoStabilizationMode(scene: scene),
-            videoMirrored: getVideoMirroredOnStream(),
-            ignoreFramesAfterAttachSeconds: getIgnoreFramesAfterAttachSeconds(),
+            params: params,
             onSuccess: {
                 self.streamPreviewView.isMirrored = isMirrored
+                self.externalDisplayStreamPreviewView.isMirrored = isMirrored
                 if let x = self.setCameraZoomX(x: self.zoomX) {
-                    self.setZoomX(x: x)
+                    self.setZoomXWhenInRange(x: x)
                 }
                 if let device = self.cameraDevice {
                     self.setIsoAfterCameraAttach(device: device)
@@ -6421,16 +7279,31 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return Double(database.debug.cameraSwitchRemoveBlackish!)
     }
 
-    private func attachReplaceCamera(cameraId: UUID) {
+    private func getFillFrame(scene: SettingsScene) -> Bool {
+        return scene.fillFrame!
+    }
+
+    private func getIgnoreFramesAfterAttachSecondsReplaceCamera() -> Double {
+        if database.forceSceneSwitchTransition! {
+            return Double(database.debug.cameraSwitchRemoveBlackish!)
+        } else {
+            return 0.0
+        }
+    }
+
+    private func attachReplaceCamera(cameraId: UUID, scene: SettingsScene) {
         cameraDevice = nil
         cameraPosition = nil
         streamPreviewView.isMirrored = false
+        externalDisplayStreamPreviewView.isMirrored = false
         hasZoom = false
         media.attachReplaceCamera(
-            device: getVideoSourceBuiltinCameraDevice(),
-            cameraPreviewLayer: cameraPreviewLayer,
-            showCameraPreview: updateShowCameraPreview(),
-            cameraId: cameraId
+            devices: getBuiltinCameraDevices(scene: scene, sceneDevice: nil),
+            cameraPreviewLayer: cameraPreviewLayer!,
+            externalDisplayPreview: externalDisplayPreview,
+            cameraId: cameraId,
+            ignoreFramesAfterAttachSeconds: getIgnoreFramesAfterAttachSecondsReplaceCamera(),
+            fillFrame: getFillFrame(scene: scene)
         )
         media.usePendingAfterAttachEffects()
     }
@@ -6440,19 +7313,22 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func setCameraZoomX(x: Float, rate: Float? = nil) -> Float? {
-        let level = media.setCameraZoomLevel(level: x / cameraZoomLevelToXScale, rate: rate)
-        if let level {
-            return level * cameraZoomLevelToXScale
-        }
-        return level
+        return cameraZoomLevelToX(media.setCameraZoomLevel(
+            device: cameraDevice,
+            level: x / cameraZoomLevelToXScale,
+            rate: rate
+        ))
     }
 
     private func stopCameraZoom() -> Float? {
-        let level = media.stopCameraZoomLevel()
+        return cameraZoomLevelToX(media.stopCameraZoomLevel(device: cameraDevice))
+    }
+
+    private func cameraZoomLevelToX(_ level: Float?) -> Float? {
         if let level {
             return level * cameraZoomLevelToXScale
         }
-        return level
+        return nil
     }
 
     func setExposureBias(bias: Float) {
@@ -6538,10 +7414,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func updateCameraControls() {
-        media.setCameraControls(enabled: database.debug.cameraControlsEnabled!)
+        media.setCameraControls(enabled: database.cameraControlsEnabled!)
     }
 
-    func setCameraZoomPreset(id: UUID) {
+    func setZoomPreset(id: UUID) {
         switch cameraPosition {
         case .back:
             backZoomPresetId = id
@@ -6552,22 +7428,41 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         if let preset = findZoomPreset(id: id) {
             if setCameraZoomX(x: preset.x!, rate: database.zoom.speed!) != nil {
-                setZoomX(x: preset.x!)
+                setZoomXWhenInRange(x: preset.x!)
+                switch getSelectedScene()?.cameraPosition {
+                case .backTripleLowEnergy:
+                    attachBackTripleLowEnergyCamera(force: false)
+                case .backDualLowEnergy:
+                    attachBackDualLowEnergyCamera(force: false)
+                case .backWideDualLowEnergy:
+                    attachBackWideDualLowEnergyCamera(force: false)
+                default:
+                    break
+                }
             }
             if isWatchLocal() {
                 sendZoomPresetToWatch()
             }
         } else {
-            clearZoomId()
+            clearZoomPresetId()
         }
     }
 
-    func setZoomX(x: Float, setPinch: Bool = true) {
+    func setZoomX(x: Float, rate: Float? = nil, setPinch: Bool = true) {
+        clearZoomPresetId()
+        if let x = setCameraZoomX(x: x, rate: rate) {
+            setZoomXWhenInRange(x: x, setPinch: setPinch)
+        }
+    }
+
+    private func setZoomXWhenInRange(x: Float, setPinch: Bool = true) {
         switch cameraPosition {
         case .back:
             backZoomX = x
+            updateBackZoomPresetId()
         case .front:
             frontZoomX = x
+            updateFrontZoomPresetId()
         default:
             break
         }
@@ -6585,23 +7480,17 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         guard hasZoom else {
             return
         }
-        clearZoomId()
-        if let x = setCameraZoomX(x: zoomXPinch * amount, rate: rate) {
-            setZoomX(x: x, setPinch: false)
-        }
+        setZoomX(x: zoomXPinch * amount, rate: rate, setPinch: false)
     }
 
     func commitZoomX(amount: Float, rate: Float? = nil) {
         guard hasZoom else {
             return
         }
-        clearZoomId()
-        if let x = setCameraZoomX(x: zoomXPinch * amount, rate: rate) {
-            setZoomX(x: x)
-        }
+        setZoomX(x: zoomXPinch * amount, rate: rate)
     }
 
-    private func clearZoomId() {
+    private func clearZoomPresetId() {
         switch cameraPosition {
         case .back:
             backZoomPresetId = noBackZoomPresetId
@@ -6665,37 +7554,29 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func handleFindVideoFormatError(findVideoFormatError: String, activeFormat: String) {
-        DispatchQueue.main.async {
-            self.makeErrorToast(title: findVideoFormatError, subTitle: activeFormat)
-        }
+        makeErrorToastMain(title: findVideoFormatError, subTitle: activeFormat)
+    }
+
+    private func handleAttachCameraError() {
+        makeErrorToastMain(
+            title: String(localized: "Camera capture setup error"),
+            subTitle: videoCaptureError()
+        )
+    }
+
+    private func handleCaptureSessionError(message: String) {
+        makeErrorToastMain(title: message, subTitle: videoCaptureError())
+    }
+
+    private func handleRecorderInitSegment(data: Data) {
+        replayBuffer.setInitSegment(data: data)
+    }
+
+    private func handleRecorderDataSegment(segment: RecorderDataSegment) {
+        replayBuffer.appendDataSegment(segment: segment)
     }
 
     private func handleRecorderFinished() {}
-
-    private var latestRecordingErrorRestart: ContinuousClock.Instant = .now
-
-    private func handleRecorderError() {
-        DispatchQueue.main.async { [self] in
-            guard isRecording else {
-                return
-            }
-            if self.latestRecordingErrorRestart.duration(to: .now) > .seconds(60) {
-                makeErrorToast(
-                    title: String(localized: "Recording error"),
-                    subTitle: String(localized: "Starting a new recording")
-                )
-                suspendRecording()
-                startRecording()
-            } else {
-                stopRecording(showToast: false)
-                makeErrorToast(
-                    title: String(localized: "Recording error"),
-                    subTitle: String(localized: "Recording stopped")
-                )
-            }
-            self.latestRecordingErrorRestart = .now
-        }
-    }
 
     private func handleNoTorch() {
         DispatchQueue.main.async { [self] in
@@ -6712,7 +7593,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         makeYouAreLiveToast()
         streamStartTime = .now
         streamState = .connected
-        updateUptime(now: .now)
+        updateStreamUptime(now: .now)
     }
 
     private func onDisconnected(reason: String) {
@@ -6751,7 +7632,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }) {
             backZoomPresetId = database.zoom.back[0].id
         }
-        sceneUpdated()
+        sceneUpdated(updateRemoteScene: false)
     }
 
     func frontZoomUpdated() {
@@ -6760,7 +7641,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }) {
             frontZoomPresetId = database.zoom.front[0].id
         }
-        sceneUpdated()
+        sceneUpdated(updateRemoteScene: false)
     }
 
     private func makeConnectFailureToast(subTitle: String) {
@@ -6830,7 +7711,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         motionManager.stopDeviceMotionUpdates()
     }
 
-    func preferredCamera(position: AVCaptureDevice.Position) -> AVCaptureDevice? {
+    private func preferredCamera(position: AVCaptureDevice.Position) -> AVCaptureDevice? {
         if let scene = findEnabledScene(id: selectedSceneId) {
             if position == .back {
                 return AVCaptureDevice(uniqueID: scene.backCameraId!)
@@ -6947,45 +7828,45 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    func statusEventsText() -> String {
+    private func updateStatusEventsText() {
+        let status: String
         if !isEventsConfigured() {
-            return String(localized: "Not configured")
+            status = String(localized: "Not configured")
         } else if isEventsRemoteControl() {
             if isRemoteControlStreamerConnected() {
-                return String(localized: "Connected (remote control)")
+                status = String(localized: "Connected (remote control)")
             } else {
-                return String(localized: "Disconnected (remote control)")
+                status = String(localized: "Disconnected (remote control)")
             }
         } else {
             if isEventsConnected() {
-                return String(localized: "Connected")
+                status = String(localized: "Connected")
             } else {
-                return String(localized: "Disconnected")
+                status = String(localized: "Disconnected")
             }
+        }
+        if status != statusEventsText {
+            statusEventsText = status
         }
     }
 
-    func statusChatText() -> String {
+    private func updateStatusChatText() {
+        let status: String
         if !isChatConfigured() {
-            return String(localized: "Not configured")
+            status = String(localized: "Not configured")
         } else if isChatRemoteControl() {
             if isRemoteControlStreamerConnected() {
-                return String(
-                    format: String(localized: "%@ (%@ total) (remote control)"),
-                    chatPostsRate,
-                    countFormatter.format(chatPostsTotal)
-                )
+                status = String(localized: "Connected (remote control)")
             } else {
-                return String(localized: "Disconnected (remote control)")
+                status = String(localized: "Disconnected (remote control)")
             }
         } else if isChatConnected() {
-            return String(
-                format: String(localized: "%@ (%@ total)"),
-                chatPostsRate,
-                countFormatter.format(chatPostsTotal)
-            )
+            status = String(localized: "Connected")
         } else {
-            return String(localized: "Disconnected")
+            status = String(localized: "Disconnected")
+        }
+        if status != statusChatText {
+            statusChatText = status
         }
     }
 
@@ -6995,10 +7876,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         } else {
             return String(localized: "Not configured")
         }
-    }
-
-    func isShowingStatusAudioLevel() -> Bool {
-        return database.show.audioLevel
     }
 
     func isShowingStatusHypeTrain() -> Bool {
@@ -7022,7 +7899,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func isAnyMoblinkConfigured() -> Bool {
-        return isMoblinkClientConfigured() || isMoblinkServerConfigured()
+        return isMoblinkRelayConfigured() || isMoblinkStreamerConfigured()
     }
 
     func isShowingStatusRemoteControl() -> Bool {
@@ -7045,7 +7922,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return database.show.speed && isLive
     }
 
-    func isShowingStatusUptime() -> Bool {
+    func isShowingStatusStreamUptime() -> Bool {
         return database.show.uptime && isLive
     }
 
@@ -7075,6 +7952,18 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func isShowingStatusBrowserWidgets() -> Bool {
         return database.show.browserWidgets! && isStatusBrowserWidgetsActive()
+    }
+
+    func isShowingStatusCatPrinter() -> Bool {
+        return database.show.catPrinter! && isAnyCatPrinterConfigured()
+    }
+
+    func isShowingStatusCyclingPowerDevice() -> Bool {
+        return database.show.cyclingPowerDevice! && isAnyCyclingPowerDeviceConfigured()
+    }
+
+    func isShowingStatusHeartRateDevice() -> Bool {
+        return database.show.heartRateDevice! && isAnyHeartRateDeviceConfigured()
     }
 
     private func isStatusBrowserWidgetsActive() -> Bool {
@@ -7154,28 +8043,28 @@ extension Model: RemoteControlStreamerDelegate {
             topLeft.obs = RemoteControlStatusItem(message: statusObsText())
         }
         if isEventsConfigured() {
-            topLeft.events = RemoteControlStatusItem(message: statusEventsText())
+            topLeft.events = RemoteControlStatusItem(message: statusEventsText)
         }
         if isChatConfigured() {
-            topLeft.chat = RemoteControlStatusItem(message: statusChatText())
+            topLeft.chat = RemoteControlStatusItem(message: statusChatText)
         }
         if isViewersConfigured() && isLive {
             topLeft.viewers = RemoteControlStatusItem(message: statusViewersText())
         }
         var topRight = RemoteControlStatusTopRight()
-        let level = formatAudioLevel(level: audioLevel) +
-            formatAudioLevelChannels(channels: numberOfAudioChannels)
+        let level = formatAudioLevel(level: audio.level) +
+            formatAudioLevelChannels(channels: audio.numberOfChannels)
         topRight.audioLevel = RemoteControlStatusItem(message: level)
         topRight.audioInfo = .init(
             audioLevel: .unknown,
-            numberOfAudioChannels: numberOfAudioChannels
+            numberOfAudioChannels: audio.numberOfChannels
         )
-        if audioLevel.isNaN {
+        if audio.level.isNaN {
             topRight.audioInfo!.audioLevel = .muted
-        } else if audioLevel.isInfinite {
+        } else if audio.level.isInfinite {
             topRight.audioInfo!.audioLevel = .unknown
         } else {
-            topRight.audioInfo!.audioLevel = .value(audioLevel)
+            topRight.audioInfo!.audioLevel = .value(audio.level)
         }
         if isServersConfigured() {
             topRight.rtmpServer = RemoteControlStatusItem(message: serversSpeedAndTotal)
@@ -7190,7 +8079,7 @@ extension Model: RemoteControlStreamerDelegate {
             topRight.bitrate = RemoteControlStatusItem(message: speedAndTotal)
         }
         if isLive {
-            topRight.uptime = RemoteControlStatusItem(message: uptime)
+            topRight.uptime = RemoteControlStatusItem(message: streamUptime.uptime)
         }
         if isLocationEnabled() {
             topRight.location = RemoteControlStatusItem(message: location)
@@ -7202,7 +8091,7 @@ extension Model: RemoteControlStreamerDelegate {
             topRight.srtlaRtts = RemoteControlStatusItem(message: bondingRtts)
         }
         if isRecording {
-            topRight.recording = RemoteControlStatusItem(message: recordingLength)
+            topRight.recording = RemoteControlStatusItem(message: recording.length)
         }
         if isStatusBrowserWidgetsActive() {
             topRight.browserWidgets = RemoteControlStatusItem(message: browserWidgetsStatus)
@@ -7296,9 +8185,7 @@ extension Model: RemoteControlStreamerDelegate {
     }
 
     func remoteControlStreamerSetZoom(x: Float, onComplete: @escaping () -> Void) {
-        if let x = setCameraZoomX(x: x, rate: database.zoom.speed!) {
-            setZoomX(x: x)
-        }
+        setZoomX(x: x, rate: database.zoom.speed!)
         onComplete()
     }
 
@@ -7401,6 +8288,38 @@ extension Model: RemoteControlStreamerDelegate {
         isRemoteControlAssistantRequestingPreview = false
         setLowFpsImage()
     }
+
+    func remoteControlStreamerSetRemoteSceneSettings(data: RemoteControlRemoteSceneSettings) {
+        let (scenes, widgets, selectedSceneId) = data.toSettings()
+        if let selectedSceneId {
+            let widget = SettingsWidget(name: "")
+            widget.type = .scene
+            widget.scene!.sceneId = selectedSceneId
+            remoteSceneScenes = scenes
+            remoteSceneWidgets = [widget] + widgets
+            resetSelectedScene(changeScene: false)
+        } else if !remoteSceneScenes.isEmpty {
+            remoteSceneScenes = []
+            remoteSceneWidgets = []
+            resetSelectedScene(changeScene: false)
+        }
+    }
+
+    func remoteControlStreamerSetRemoteSceneData(data: RemoteControlRemoteSceneData) {
+        if let textStats = data.textStats {
+            remoteSceneData.textStats = textStats
+        }
+        if let location = data.location {
+            remoteSceneData.location = location
+        }
+    }
+
+    private func clearRemoteSceneSettingsAndData() {
+        remoteSceneScenes = []
+        remoteSceneWidgets = []
+        remoteSceneData.textStats = nil
+        remoteSceneData.location = nil
+    }
 }
 
 extension Model {
@@ -7473,9 +8392,13 @@ extension Model {
         return remoteControlStreamer?.isConnected() ?? false
     }
 
-    func reloadRemoteControlAssistant() {
+    func stopRemoteControlAssistant() {
         remoteControlAssistant?.stop()
         remoteControlAssistant = nil
+    }
+
+    func reloadRemoteControlAssistant() {
+        stopRemoteControlAssistant()
         guard isRemoteControlAssistantConfigured() else {
             return
         }
@@ -7548,6 +8471,35 @@ extension Model {
     func isRemoteControlAssistantConfigured() -> Bool {
         let client = database.remoteControl!.client
         return client.enabled && client.port > 0 && !database.remoteControl!.password!.isEmpty
+    }
+
+    private func remoteControlAssistantSetRemoteSceneSettings() {
+        let data = RemoteControlRemoteSceneSettings(
+            scenes: database.scenes,
+            widgets: database.widgets,
+            selectedSceneId: database.remoteSceneId
+        )
+        remoteControlAssistant?.setRemoteSceneSettings(data: data) {}
+    }
+
+    private func shouldSendRemoteScene() -> Bool {
+        return database.remoteSceneId != nil && remoteControlAssistant?.isConnected() == true
+    }
+
+    func remoteControlAssistantSetRemoteSceneDataTextStats(stats: TextEffectStats) {
+        guard shouldSendRemoteScene() else {
+            return
+        }
+        let data = RemoteControlRemoteSceneData(textStats: RemoteControlRemoteSceneDataTextStats(stats: stats))
+        remoteControlAssistant?.setRemoteSceneData(data: data) {}
+    }
+
+    func remoteControlAssistantSetRemoteSceneDataLocation(location: CLLocation) {
+        guard shouldSendRemoteScene() else {
+            return
+        }
+        let data = RemoteControlRemoteSceneData(location: RemoteControlRemoteSceneDataLocation(location: location))
+        remoteControlAssistant?.setRemoteSceneData(data: data) {}
     }
 
     func remoteControlAssistantSetStream(on: Bool) {
@@ -7672,6 +8624,7 @@ extension Model: RemoteControlAssistantDelegate {
         makeToast(title: String(localized: "Remote control streamer connected"))
         updateRemoteControlStatus()
         updateRemoteControlAssistantStatus()
+        remoteControlAssistantSetRemoteSceneSettings()
     }
 
     func remoteControlAssistantDisconnected() {
@@ -7767,7 +8720,7 @@ extension Model {
             sendWorkoutToWatch()
             resetWorkoutStats()
             trySendNextChatPostToWatch()
-            sendAudioLevelToWatch(audioLevel: audioLevel)
+            sendAudioLevelToWatch(audioLevel: audio.level)
             sendThermalStateToWatch(thermalState: thermalState)
             sendIsLiveToWatch(isLive: isLive)
             sendIsRecordingToWatch(isRecording: isRecording)
@@ -7901,7 +8854,7 @@ extension Model {
     }
 
     private func resetWorkoutStats() {
-        workoutHeartRate = nil
+        heartRates.removeAll()
         workoutActiveEnergyBurned = nil
         workoutDistance = nil
         workoutPower = nil
@@ -8194,10 +9147,7 @@ extension Model: WCSessionDelegate {
         }
         DispatchQueue.main.async {
             if self.isWatchLocal() {
-                self.clearZoomId()
-                if let x = self.setCameraZoomX(x: x, rate: self.database.zoom.speed!) {
-                    self.setZoomX(x: x)
-                }
+                self.setZoomX(x: x, rate: self.database.zoom.speed!)
             } else {
                 self.remoteControlAssistantSetZoom(x: x)
             }
@@ -8213,7 +9163,7 @@ extension Model: WCSessionDelegate {
         }
         DispatchQueue.main.async {
             if self.isWatchLocal() {
-                self.setCameraZoomPreset(id: zoomPresetId)
+                self.setZoomPreset(id: zoomPresetId)
             }
         }
     }
@@ -8244,7 +9194,7 @@ extension Model: WCSessionDelegate {
         DispatchQueue.main.async {
             if self.isWatchLocal() {
                 if let heartRate = stats.heartRate {
-                    self.workoutHeartRate = heartRate
+                    self.heartRates[""] = heartRate
                 }
                 if let activeEnergyBurned = stats.activeEnergyBurned {
                     self.workoutActiveEnergyBurned = activeEnergyBurned
@@ -8476,7 +9426,7 @@ extension Model {
         database.streams.append(stream)
         setCurrentStream(stream: stream)
         reloadStream()
-        sceneUpdated(attachCamera: true)
+        sceneUpdated(attachCamera: true, updateRemoteScene: false)
     }
 
     func resetWizard() {
@@ -8526,7 +9476,7 @@ extension Model {
     func reloadAudioSession() {
         teardownAudioSession()
         setupAudioSession()
-        media.attachAudio(device: AVCaptureDevice.default(for: .audio))
+        media.attachDefaultAudioDevice()
     }
 
     private func setupAudioSession() {
@@ -8595,7 +9545,6 @@ extension Model {
             makeToast(title: newMic.name)
         }
         if newMic != currentMic {
-            logger.info("Switching to external mic from RTMP/SRT(LA)/... mic")
             selectMicDefault(mic: newMic)
         }
         logger.info("Mic: \(newMic.name)")
@@ -8681,7 +9630,7 @@ extension Model {
     }
 
     func setMic() {
-        var wantedOrientation: AVAudioSession.Orientation
+        let wantedOrientation: AVAudioSession.Orientation
         switch database.mic {
         case .bottom:
             wantedOrientation = .bottom
@@ -8701,17 +9650,13 @@ extension Model {
                 }
                 if let dataSources = inputPort.dataSources, !dataSources.isEmpty {
                     for dataSource in dataSources where dataSource.orientation == wantedOrientation {
-                        do {
-                            try self.setBuiltInMicAudioMode(dataSource: dataSource, preferStereoMic: preferStereoMic)
-                            try inputPort.setPreferredDataSource(dataSource)
-                        } catch {
-                            logger.error("Failed to set mic as preferred with error \(error)")
-                        }
+                        try? self.setBuiltInMicAudioMode(dataSource: dataSource, preferStereoMic: preferStereoMic)
+                        try? inputPort.setPreferredDataSource(dataSource)
                     }
                 }
             }
         }
-        media.attachAudio(device: AVCaptureDevice.default(for: .audio))
+        media.attachDefaultAudioDevice()
     }
 
     func setMicFromSettings() {
@@ -8812,7 +9757,7 @@ extension Model {
                 }
             }
         }
-        media.attachAudio(device: AVCaptureDevice.default(for: .audio))
+        media.attachDefaultAudioDevice()
         currentMic = mic
         saveSelectedMic(mic: mic)
         remoteControlStreamer?.stateChanged(state: RemoteControlState(mic: mic.id))
@@ -8849,6 +9794,13 @@ extension Model {
         }
     }
 
+    func setRealtimeIrlEnabled(enabled: Bool) {
+        stream.realtimeIrlEnabled = enabled
+        if stream.enabled {
+            reloadLocation()
+        }
+    }
+
     func reloadLocation() {
         locationManager.stop()
         if isLocationEnabled() {
@@ -8857,9 +9809,15 @@ extension Model {
         reloadRealtimeIrl()
     }
 
-    func resetDistance() {
-        distance = 0.0
+    private func resetDistance() {
+        database.location!.distance = 0.0
         latestKnownLocation = nil
+    }
+
+    func resetLocationData() {
+        resetDistance()
+        resetAverageSpeed()
+        resetSlope()
     }
 
     func isLocationEnabled() -> Bool {
@@ -8985,6 +9943,8 @@ extension Model {
         if webBrowser == nil {
             webBrowser = WKWebView()
             webBrowser?.navigationDelegate = self
+            webBrowser?.uiDelegate = webBrowserController
+            webBrowser?.configuration.preferences.javaScriptCanOpenWindowsAutomatically = true
             DispatchQueue.main.async {
                 self.loadWebBrowserHome()
             }
@@ -9345,8 +10305,8 @@ extension Model: RtmpServerDelegate {
         handleRtmpServerPublishStart(streamKey: streamKey)
     }
 
-    func rtmpServerOnPublishStop(streamKey: String) {
-        handleRtmpServerPublishStop(streamKey: streamKey)
+    func rtmpServerOnPublishStop(streamKey: String, reason: String) {
+        handleRtmpServerPublishStop(streamKey: streamKey, reason: reason)
     }
 
     func rtmpServerOnVideoBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
@@ -9783,13 +10743,108 @@ extension Model {
             guard getDjiDeviceState(device: device) == .streaming else {
                 continue
             }
-            if let batteryPercentage = djiDeviceWrapper.device.getBatteryPercentage() {
-                statuses.append("\(device.name) \(batteryPercentage) %")
-            } else {
-                statuses.append("\(device.name) -")
+            let (status, _) = formatDeviceStatus(
+                name: device.name,
+                batteryPercentage: djiDeviceWrapper.device.getBatteryPercentage()
+            )
+            statuses.append(status)
+        }
+        let status = statuses.joined(separator: ", ")
+        if status != djiDevicesStatus {
+            djiDevicesStatus = status
+        }
+    }
+}
+
+extension Model {
+    func isDjiGimbalDeviceEnabled(device: SettingsDjiGimbalDevice) -> Bool {
+        return device.enabled
+    }
+
+    func enableDjiGimbalDevice(device: SettingsDjiGimbalDevice) {
+        if !djiGimbalDevices.keys.contains(device.id) {
+            let djiDevice = DjiGimbalDevice()
+            djiDevice.delegate = self
+            djiGimbalDevices[device.id] = djiDevice
+        }
+        djiGimbalDevices[device.id]?.start(deviceId: device.bluetoothPeripheralId, model: device.model)
+    }
+
+    func disableDjiGimbalDevice(device: SettingsDjiGimbalDevice) {
+        djiGimbalDevices[device.id]?.stop()
+    }
+
+    func setCurrentDjiGimbalDevice(device: SettingsDjiGimbalDevice) {
+        currentDjiGimbalDeviceSettings = device
+        djiGimbalDeviceStreamingState = getDjiGimbalDeviceState(device: device)
+    }
+
+    private func getDjiGimbalDeviceSettings(djiDevice: DjiGimbalDevice) -> SettingsDjiGimbalDevice? {
+        return database.djiGimbalDevices!.devices.first(where: { djiGimbalDevices[$0.id] === djiDevice })
+    }
+
+    func getDjiGimbalDeviceState(device: SettingsDjiGimbalDevice) -> DjiGimbalDeviceState? {
+        return djiGimbalDevices[device.id]?.getState()
+    }
+
+    private func autoStartDjiGimbalDevices() {
+        for device in database.djiGimbalDevices!.devices where device.enabled {
+            enableDjiGimbalDevice(device: device)
+        }
+    }
+
+    private func stopDjiGimbalDevices() {
+        for djiDevice in djiGimbalDevices.values {
+            djiDevice.stop()
+        }
+    }
+
+    func removeDjiGimbalDevices(offsets: IndexSet) {
+        for offset in offsets {
+            let device = database.djiGimbalDevices!.devices[offset]
+            djiGimbalDevices.removeValue(forKey: device.id)
+        }
+        database.djiGimbalDevices!.devices.remove(atOffsets: offsets)
+    }
+}
+
+extension Model: DjiGimbalDeviceDelegate {
+    func djiGimbalDeviceStateChange(_ device: DjiGimbalDevice, state: DjiGimbalDeviceState) {
+        DispatchQueue.main.async {
+            guard let device = self.getDjiGimbalDeviceSettings(djiDevice: device) else {
+                return
+            }
+            if device === self.currentDjiGimbalDeviceSettings {
+                self.djiGimbalDeviceStreamingState = state
             }
         }
-        djiDevicesStatus = statuses.joined(separator: " ")
+    }
+
+    func djiGimbalDeviceTriggerButtonPressed(_: DjiGimbalDevice, press: DjiGimbalTriggerButtonPress) {
+        DispatchQueue.main.async {
+            switch press {
+            case .single:
+                self.makeToast(title: "Gimbal trigger button single press")
+            case .double:
+                self.makeToast(title: "Gimbal trigger button double press")
+            case .triple:
+                self.makeToast(title: "Gimbal trigger button triple press")
+            case .long:
+                self.makeToast(title: "Gimbal trigger button long press")
+            }
+        }
+    }
+
+    func djiGimbalDeviceSwitchSceneButtonPressed(_: DjiGimbalDevice) {
+        DispatchQueue.main.async {
+            self.makeToast(title: "Gimbal switch scene button pressed")
+        }
+    }
+
+    func djiGimbalDeviceRecordButtonPressed(_: DjiGimbalDevice) {
+        DispatchQueue.main.async {
+            self.toggleRecording()
+        }
     }
 }
 
@@ -9840,6 +10895,9 @@ extension Model: TwitchEventSubDelegate {
 
     func twitchEventSubChannelFollow(event: TwitchEventSubNotificationChannelFollowEvent) {
         DispatchQueue.main.async {
+            guard self.stream.twitchShowFollows! else {
+                return
+            }
             let text = String(localized: "just followed!")
             self.makeToast(title: "\(event.user_name) \(text)")
             self.playAlert(alert: .twitchFollow(event))
@@ -10229,9 +11287,25 @@ extension Model {
         }
     }
 
+    private func stopCatPrinters() {
+        for catPrinter in catPrinters.values {
+            catPrinter.stop()
+        }
+    }
+
     private func isAnyConnectedCatPrinterPrintingChat() -> Bool {
         return catPrinters.values.contains(where: {
             $0.getState() == .connected && getCatPrinterSettings(catPrinter: $0)?.printChat == true
+        })
+    }
+
+    func isAnyCatPrinterConfigured() -> Bool {
+        return database.catPrinters!.devices.contains(where: { $0.enabled })
+    }
+
+    func areAllCatPrintersConnected() -> Bool {
+        return !catPrinters.values.contains(where: {
+            getCatPrinterSettings(catPrinter: $0)?.enabled == true && $0.getState() != .connected
         })
     }
 }
@@ -10249,12 +11323,161 @@ extension Model: CatPrinterDelegate {
     }
 }
 
+extension Model {
+    func isCyclingPowerDeviceEnabled(device: SettingsCyclingPowerDevice) -> Bool {
+        return device.enabled
+    }
+
+    func enableCyclingPowerDevice(device: SettingsCyclingPowerDevice) {
+        if !cyclingPowerDevices.keys.contains(device.id) {
+            let cyclingPowerDevice = CyclingPowerDevice()
+            cyclingPowerDevice.delegate = self
+            cyclingPowerDevices[device.id] = cyclingPowerDevice
+        }
+        cyclingPowerDevices[device.id]?.start(deviceId: device.bluetoothPeripheralId)
+    }
+
+    func disableCyclingPowerDevice(device: SettingsCyclingPowerDevice) {
+        cyclingPowerDevices[device.id]?.stop()
+    }
+
+    private func getCyclingPowerDeviceSettings(device: CyclingPowerDevice) -> SettingsCyclingPowerDevice? {
+        return database.cyclingPowerDevices!.devices.first(where: { cyclingPowerDevices[$0.id] === device })
+    }
+
+    func setCurrentCyclingPowerDevice(device: SettingsCyclingPowerDevice) {
+        currentCyclingPowerDeviceSettings = device
+        cyclingPowerDeviceState = getCyclingPowerDeviceState(device: device)
+    }
+
+    func getCyclingPowerDeviceState(device: SettingsCyclingPowerDevice) -> CyclingPowerDeviceState {
+        return cyclingPowerDevices[device.id]?.getState() ?? .disconnected
+    }
+
+    private func autoStartCyclingPowerDevices() {
+        for device in database.cyclingPowerDevices!.devices where device.enabled {
+            enableCyclingPowerDevice(device: device)
+        }
+    }
+
+    private func stopCyclingPowerDevices() {
+        for device in cyclingPowerDevices.values {
+            device.stop()
+        }
+    }
+
+    func isAnyCyclingPowerDeviceConfigured() -> Bool {
+        return database.cyclingPowerDevices!.devices.contains(where: { $0.enabled })
+    }
+
+    func areAllCyclingPowerDevicesConnected() -> Bool {
+        return !cyclingPowerDevices.values.contains(where: {
+            getCyclingPowerDeviceSettings(device: $0)?.enabled == true && $0.getState() != .connected
+        })
+    }
+}
+
+extension Model: CyclingPowerDeviceDelegate {
+    func cyclingPowerDeviceState(_ device: CyclingPowerDevice, state: CyclingPowerDeviceState) {
+        DispatchQueue.main.async {
+            guard let device = self.getCyclingPowerDeviceSettings(device: device) else {
+                return
+            }
+            if device === self.currentCyclingPowerDeviceSettings {
+                self.cyclingPowerDeviceState = state
+            }
+        }
+    }
+
+    func cyclingPowerStatus(_: CyclingPowerDevice, power: Int, cadence: Int) {
+        DispatchQueue.main.async {
+            self.cyclingPower = power
+            self.cyclingCadence = cadence
+        }
+    }
+}
+
+extension Model {
+    func isHeartRateDeviceEnabled(device: SettingsHeartRateDevice) -> Bool {
+        return device.enabled
+    }
+
+    func enableHeartRateDevice(device: SettingsHeartRateDevice) {
+        if !heartRateDevices.keys.contains(device.id) {
+            let heartRateDevice = HeartRateDevice()
+            heartRateDevice.delegate = self
+            heartRateDevices[device.id] = heartRateDevice
+        }
+        heartRateDevices[device.id]?.start(deviceId: device.bluetoothPeripheralId)
+    }
+
+    func disableHeartRateDevice(device: SettingsHeartRateDevice) {
+        heartRateDevices[device.id]?.stop()
+    }
+
+    private func getHeartRateDeviceSettings(device: HeartRateDevice) -> SettingsHeartRateDevice? {
+        return database.heartRateDevices!.devices.first(where: { heartRateDevices[$0.id] === device })
+    }
+
+    func setCurrentHeartRateDevice(device: SettingsHeartRateDevice) {
+        currentHeartRateDeviceSettings = device
+        heartRateDeviceState = getHeartRateDeviceState(device: device)
+    }
+
+    func getHeartRateDeviceState(device: SettingsHeartRateDevice) -> HeartRateDeviceState {
+        return heartRateDevices[device.id]?.getState() ?? .disconnected
+    }
+
+    private func autoStartHeartRateDevices() {
+        for device in database.heartRateDevices!.devices where device.enabled {
+            enableHeartRateDevice(device: device)
+        }
+    }
+
+    private func stopHeartRateDevices() {
+        for device in heartRateDevices.values {
+            device.stop()
+        }
+    }
+
+    func isAnyHeartRateDeviceConfigured() -> Bool {
+        return database.heartRateDevices!.devices.contains(where: { $0.enabled })
+    }
+
+    func areAllHeartRateDevicesConnected() -> Bool {
+        return !heartRateDevices.values.contains(where: {
+            getHeartRateDeviceSettings(device: $0)?.enabled == true && $0.getState() != .connected
+        })
+    }
+}
+
+extension Model: HeartRateDeviceDelegate {
+    func heartRateDeviceState(_ device: HeartRateDevice, state: HeartRateDeviceState) {
+        DispatchQueue.main.async {
+            guard let device = self.getHeartRateDeviceSettings(device: device) else {
+                return
+            }
+            self.heartRates.removeValue(forKey: device.name.lowercased())
+            if device === self.currentHeartRateDeviceSettings {
+                self.heartRateDeviceState = state
+            }
+        }
+    }
+
+    func heartRateStatus(_ device: HeartRateDevice, heartRate: Int) {
+        DispatchQueue.main.async {
+            guard let device = self.getHeartRateDeviceSettings(device: device) else {
+                return
+            }
+            self.heartRates[device.name.lowercased()] = heartRate
+        }
+    }
+}
+
 extension Model: FaxReceiverDelegate {
     func faxReceiverPrint(image: CIImage) {
         DispatchQueue.main.async {
-            for catPrinter in self.catPrinters.values {
-                catPrinter.print(image: image, feedPaperDelay: nil)
-            }
+            self.printAllCatPrinters(image: image)
         }
     }
 }
@@ -10300,12 +11523,24 @@ extension Model: MediaDelegate {
         handleFindVideoFormatError(findVideoFormatError: findVideoFormatError, activeFormat: activeFormat)
     }
 
-    func mediaOnRecorderFinished() {
-        handleRecorderFinished()
+    func mediaOnAttachCameraError() {
+        handleAttachCameraError()
     }
 
-    func mediaOnRecorderError() {
-        handleRecorderError()
+    func mediaOnCaptureSessionError(_ message: String) {
+        handleCaptureSessionError(message: message)
+    }
+
+    func mediaOnRecorderInitSegment(data: Data) {
+        handleRecorderInitSegment(data: data)
+    }
+
+    func mediaOnRecorderDataSegment(segment: RecorderDataSegment) {
+        handleRecorderDataSegment(segment: segment)
+    }
+
+    func mediaOnRecorderFinished() {
+        handleRecorderFinished()
     }
 
     func mediaOnNoTorch() {
@@ -10313,14 +11548,11 @@ extension Model: MediaDelegate {
     }
 
     func mediaStrlaRelayDestinationAddress(address: String, port: UInt16) {
-        moblinkServer?.startTunnels(address: address, port: port)
+        moblinkStreamer?.startTunnels(address: address, port: port)
     }
 
     func mediaSetZoomX(x: Float) {
-        clearZoomId()
-        if let x = setCameraZoomX(x: x) {
-            setZoomX(x: x)
-        }
+        setZoomX(x: x)
     }
 
     func mediaSetExposureBias(bias: Float) {
@@ -10398,8 +11630,8 @@ extension Model: KickOusherDelegate {
     }
 }
 
-extension Model: MoblinkServerDelegate {
-    func moblinkServerTunnelAdded(endpoint: Network.NWEndpoint, relayId: UUID, relayName: String) {
+extension Model: MoblinkStreamerDelegate {
+    func moblinkStreamerTunnelAdded(endpoint: Network.NWEndpoint, relayId: UUID, relayName: String) {
         let connectionPriorities = stream.srt.connectionPriorities!
         if let priority = connectionPriorities.priorities.first(where: { $0.relayId == relayId }) {
             priority.name = relayName
@@ -10411,23 +11643,51 @@ extension Model: MoblinkServerDelegate {
         media.addMoblink(endpoint: endpoint, id: relayId, name: relayName)
     }
 
-    func moblinkServerTunnelRemoved(endpoint: Network.NWEndpoint) {
+    func moblinkStreamerTunnelRemoved(endpoint: Network.NWEndpoint) {
         media.removeMoblink(endpoint: endpoint)
     }
 }
 
-extension Model: MoblinkClientDelegate {
-    func moblinkClientNewState(state: MoblinkClientState) {
-        moblinkClientState = state
+extension Model: MoblinkRelayDelegate {
+    func moblinkRelayNewState(state: MoblinkRelayState) {
+        moblinkRelayState = state
     }
 
-    func moblinkClientGetBatteryPercentage() -> Int {
+    func moblinkRelayGetBatteryPercentage() -> Int {
         return Int(100 * batteryLevel)
     }
 }
 
 extension Model: MoblinkScannerDelegate {
-    func moblinkScannerDiscoveredServers(servers: [MoblinkScannerServer]) {
-        moblinkScannerDiscoveredStreamers = servers
+    func moblinkScannerDiscoveredStreamers(streamers: [MoblinkScannerStreamer]) {
+        moblinkScannerDiscoveredStreamers = streamers
+        if !database.moblink!.client.manual! {
+            startMoblinkRelayAutomatic()
+        }
+    }
+}
+
+private func videoCaptureError() -> String {
+    return [
+        String(localized: "Try to use single or low-energy cameras."),
+        String(localized: "Try to lower stream FPS and resolution."),
+    ].joined(separator: "\n")
+}
+
+extension Model: ReplayDelegate {
+    func replayOutputFrame(image: UIImage, offset _: Double, video: ReplayBufferFile, completion: (() -> Void)?) {
+        DispatchQueue.main.async {
+            self.replayImage = image
+            self.replayVideo = video
+            completion?()
+        }
+    }
+}
+
+extension Model: ReplayEffectDelegate {
+    func replayEffectCompleted() {
+        DispatchQueue.main.async {
+            self.replayPlaying = false
+        }
     }
 }

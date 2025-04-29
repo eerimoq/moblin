@@ -5,10 +5,32 @@ import MetalPetal
 import UIKit
 import Vision
 
+struct VideoUnitAttachParams {
+    var devices: CaptureDevices
+    var cameraPreviewLayer: AVCaptureVideoPreviewLayer
+    var showCameraPreview: Bool
+    var externalDisplayPreview: Bool
+    var replaceVideo: UUID?
+    var preferredVideoStabilizationMode: AVCaptureVideoStabilizationMode
+    var isVideoMirrored: Bool
+    var ignoreFramesAfterAttachSeconds: Double
+    var fillFrame: Bool
+}
+
 enum SceneSwitchTransition {
     case blur
     case freeze
     case blurAndZoom
+}
+
+struct CaptureDevice {
+    let device: AVCaptureDevice?
+    let id: UUID
+}
+
+struct CaptureDevices {
+    var hasSceneDevice: Bool
+    var devices: [CaptureDevice]
 }
 
 var pixelFormatType = kCVPixelFormatType_420YpCbCr8BiPlanarFullRange
@@ -32,13 +54,29 @@ private func setOrientation(
     }
 }
 
-private struct FaceDetectionsCompletion {
+private class FaceDetectionsCompletion {
     // periphery:ignore
     let sequenceNumber: UInt64
     let sampleBuffer: CMSampleBuffer
     let isFirstAfterAttach: Bool
     let isSceneSwitchTransition: Bool
-    var faceDetections: [VNFaceObservation]?
+    let videoSourceIds: Int
+    var faceDetections: [UUID: [VNFaceObservation]]
+
+    init(
+        sequenceNumber: UInt64,
+        sampleBuffer: CMSampleBuffer,
+        isFirstAfterAttach: Bool,
+        isSceneSwitchTransition: Bool,
+        videoSourceIds: Int
+    ) {
+        self.sequenceNumber = sequenceNumber
+        self.sampleBuffer = sampleBuffer
+        self.isFirstAfterAttach = isFirstAfterAttach
+        self.isSceneSwitchTransition = isSceneSwitchTransition
+        self.videoSourceIds = videoSourceIds
+        faceDetections = [:]
+    }
 }
 
 private class ReplaceVideo {
@@ -157,43 +195,71 @@ private class ReplaceVideo {
     }
 }
 
+private struct CaptureSessionDevice {
+    var device: AVCaptureDevice
+    var input: AVCaptureInput
+    var output: AVCaptureVideoDataOutput
+    var connection: AVCaptureConnection
+}
+
+private func makeCaptureSession() -> AVCaptureSession {
+    let session = AVCaptureMultiCamSession()
+    if session.isMultitaskingCameraAccessSupported {
+        session.isMultitaskingCameraAccessEnabled = true
+    }
+    return session
+}
+
 final class VideoUnit: NSObject {
     static let defaultFrameRate: Float64 = 30
-    private(set) var device: AVCaptureDevice?
-    private var input: AVCaptureInput?
-    private var output: AVCaptureVideoDataOutput?
-    private var connection: AVCaptureConnection?
+    private var device: AVCaptureDevice?
+    private var captureSessionDevices: [CaptureSessionDevice] = []
     private let context = CIContext()
     private let metalPetalContext: MTIContext?
     weak var drawable: PreviewView?
+    weak var externalDisplayDrawable: PreviewView?
     private var nextFaceDetectionsSequenceNumber: UInt64 = 0
     private var nextCompletedFaceDetectionsSequenceNumber: UInt64 = 0
     private var completedFaceDetections: [UInt64: FaceDetectionsCompletion] = [:]
     private var captureSize = CGSize(width: 1920, height: 1080)
     private var outputSize = CGSize(width: 1920, height: 1080)
+    private var fillFrame = true
     let session = makeCaptureSession()
     private var encoders = [VideoEncoder(lockQueue: mixerLockQueue)]
     weak var mixer: Mixer?
     private var effects: [VideoEffect] = []
     private var pendingAfterAttachEffects: [VideoEffect]?
     private var pendingAfterAttachRotation: Double?
+    private var videoUnitBuiltinDevice: VideoUnitBuiltinDevice!
+    private var sceneVideoSourceId = UUID()
 
     var frameRate = VideoUnit.defaultFrameRate {
         didSet {
-            setDeviceFormat(frameRate: frameRate, preferAutoFrameRate: preferAutoFrameRate, colorSpace: colorSpace)
+            updateDevicesFormat()
             startFrameTimer()
         }
     }
 
     var preferAutoFrameRate = false {
         didSet {
-            setDeviceFormat(frameRate: frameRate, preferAutoFrameRate: preferAutoFrameRate, colorSpace: colorSpace)
+            updateDevicesFormat()
         }
     }
 
     var colorSpace: AVCaptureColorSpace = .sRGB {
         didSet {
-            setDeviceFormat(frameRate: frameRate, preferAutoFrameRate: preferAutoFrameRate, colorSpace: colorSpace)
+            updateDevicesFormat()
+        }
+    }
+
+    private func updateDevicesFormat() {
+        for device in captureSessionDevices {
+            setDeviceFormat(
+                device: device.device,
+                frameRate: frameRate,
+                preferAutoFrameRate: preferAutoFrameRate,
+                colorSpace: colorSpace
+            )
         }
     }
 
@@ -202,9 +268,13 @@ final class VideoUnit: NSObject {
             guard videoOrientation != oldValue else {
                 return
             }
-            for connection in output?.connections.filter({ $0.isVideoOrientationSupported }) ?? [] {
-                setOrientation(device: device, connection: connection, orientation: videoOrientation)
+            session.beginConfiguration()
+            for device in captureSessionDevices {
+                for connection in device.output.connections.filter({ $0.isVideoOrientationSupported }) {
+                    setOrientation(device: device.device, connection: connection, orientation: videoOrientation)
+                }
             }
+            session.commitConfiguration()
         }
     }
 
@@ -221,7 +291,8 @@ final class VideoUnit: NSObject {
     }
 
     private var selectedReplaceVideoCameraId: UUID?
-    private var replaceVideos: [UUID: ReplaceVideo] = [:]
+    fileprivate var replaceVideos: [UUID: ReplaceVideo] = [:]
+    fileprivate var replaceVideoBuiltins: [AVCaptureDevice?: ReplaceVideo] = [:]
     private var blackImageBuffer: CVPixelBuffer?
     private var blackFormatDescription: CMVideoFormatDescription?
     private var blackPixelBufferPool: CVPixelBufferPool?
@@ -239,14 +310,18 @@ final class VideoUnit: NSObject {
     private var lowFpsImageLatest: Double = 0.0
     private var lowFpsImageFrameNumber: UInt64 = 0
     private var takeSnapshotAge: Float = 0.0
-    private var takeSnapshotComplete: ((UIImage, UIImage?) -> Void)?
+    private var takeSnapshotComplete: ((UIImage, CIImage) -> Void)?
     private var takeSnapshotSampleBuffers: Deque<CMSampleBuffer> = []
+    private var cleanRecordings = false
+    private var cleanSnapshots = false
+    private var cleanExternalDisplay = false
     private var pool: CVPixelBufferPool?
     private var poolColorSpace: CGColorSpace?
     private var poolFormatDescriptionExtension: CFDictionary?
     private var cameraControlsEnabled = false
     private var isRunning = false
     private var showCameraPreview = false
+    private var externalDisplayPreview = false
     private var sceneSwitchTransition: SceneSwitchTransition = .blur
 
     override init() {
@@ -255,18 +330,13 @@ final class VideoUnit: NSObject {
         } else {
             metalPetalContext = nil
         }
+        videoUnitBuiltinDevice = nil
         super.init()
+        videoUnitBuiltinDevice = VideoUnitBuiltinDevice(videoUnit: self)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(handleSessionRuntimeError),
                                                name: .AVCaptureSessionRuntimeError,
                                                object: session)
-        replaceVideos[builtinCameraId] = ReplaceVideo(
-            cameraId: builtinCameraId,
-            name: "Builtin",
-            update: false,
-            latency: 0.0,
-            mixer: mixer
-        )
         startFrameTimer()
     }
 
@@ -279,11 +349,9 @@ final class VideoUnit: NSObject {
         guard let error = notification.userInfo?[AVCaptureSessionErrorKey] as? AVError else {
             return
         }
-        logger.error("Video session error: \(error.code)")
-        guard error.code == .mediaServicesWereReset else {
-            return
-        }
-        netStreamLockQueue.async {
+        let message = error._nsError.localizedFailureReason ?? "\(error.code)"
+        mixer?.delegate?.mixerCaptureSessionError(message: message)
+        netStreamLockQueue.asyncAfter(deadline: .now() + .milliseconds(500)) {
             if self.isRunning {
                 self.session.startRunning()
             }
@@ -314,79 +382,140 @@ final class VideoUnit: NSObject {
     }
 
     func getCIImage(_ videoSourceId: UUID, _ presentationTimeStamp: CMTime) -> CIImage? {
-        guard let sampleBuffer = replaceVideos[videoSourceId]?.getSampleBuffer(presentationTimeStamp) else {
-            return nil
-        }
-        guard let imageBuffer = sampleBuffer.imageBuffer else {
+        guard let sampleBuffer = replaceVideos[videoSourceId]?.getSampleBuffer(presentationTimeStamp),
+              let imageBuffer = sampleBuffer.imageBuffer
+        else {
             return nil
         }
         return CIImage(cvPixelBuffer: imageBuffer)
     }
 
-    func attach(
-        _ device: AVCaptureDevice?,
-        _ cameraPreviewLayer: AVCaptureVideoPreviewLayer?,
-        _ showCameraPreview: Bool,
-        _ replaceVideo: UUID?,
-        _ preferredVideoStabilizationMode: AVCaptureVideoStabilizationMode,
-        _ isVideoMirrored: Bool,
-        _ ignoreFramesAfterAttachSeconds: Double
-    ) throws {
-        output?.setSampleBufferDelegate(nil, queue: mixerLockQueue)
+    func attach(params: VideoUnitAttachParams) throws {
+        for device in captureSessionDevices {
+            device.output.setSampleBufferDelegate(nil, queue: mixerLockQueue)
+        }
         mixerLockQueue.async {
-            self.configuredIgnoreFramesAfterAttachSeconds = ignoreFramesAfterAttachSeconds
-            self.selectedReplaceVideoCameraId = replaceVideo
+            self.configuredIgnoreFramesAfterAttachSeconds = params.ignoreFramesAfterAttachSeconds
+            self.selectedReplaceVideoCameraId = params.replaceVideo
             self.prepareFirstFrame()
-            self.showCameraPreview = showCameraPreview
+            self.showCameraPreview = params.showCameraPreview
+            self.externalDisplayPreview = params.externalDisplayPreview
+            self.fillFrame = params.fillFrame
+            if let replaceVideo = params.replaceVideo {
+                self.sceneVideoSourceId = replaceVideo
+            } else if params.devices.hasSceneDevice, let id = params.devices.devices.first?.id {
+                self.sceneVideoSourceId = id
+            } else {
+                self.sceneVideoSourceId = UUID()
+            }
+            self.replaceVideoBuiltins.removeAll()
+            for device in params.devices.devices {
+                let replaceVideo = ReplaceVideo(
+                    cameraId: device.id,
+                    name: "",
+                    update: false,
+                    latency: 0.0,
+                    mixer: self.mixer
+                )
+                self.replaceVideos[device.id] = replaceVideo
+                self.replaceVideoBuiltins[device.device] = replaceVideo
+            }
+            if self.pendingAfterAttachEffects == nil {
+                self.pendingAfterAttachEffects = self.effects
+            }
+            for effect in self.effects where effect is VideoSourceEffect {
+                self.unregisterEffectInner(effect)
+            }
+        }
+        for device in params.devices.devices {
+            setDeviceFormat(
+                device: device.device,
+                frameRate: frameRate,
+                preferAutoFrameRate: preferAutoFrameRate,
+                colorSpace: colorSpace
+            )
         }
         session.beginConfiguration()
         defer {
             session.commitConfiguration()
         }
-        try attachDevice(device, session)
-        self.device = device
-        for connection in output?.connections ?? [] {
-            if connection.isVideoMirroringSupported {
-                connection.isVideoMirrored = isVideoMirrored
-            }
-            if connection.isVideoOrientationSupported {
-                setOrientation(device: device, connection: connection, orientation: videoOrientation)
-            }
-            if connection.isVideoStabilizationSupported {
-                connection.preferredVideoStabilizationMode = preferredVideoStabilizationMode
+        try removeDevices(session)
+        for device in params.devices.devices {
+            try attachDevice(device.device, session)
+        }
+        session.automaticallyConfiguresCaptureDeviceForWideColor = false
+        device = params.devices.hasSceneDevice ? params.devices.devices.first?.device : nil
+        for device in captureSessionDevices {
+            for connection in device.output.connections {
+                if connection.isVideoMirroringSupported {
+                    connection.isVideoMirrored = params.isVideoMirrored
+                }
+                if connection.isVideoOrientationSupported {
+                    setOrientation(device: device.device, connection: connection, orientation: videoOrientation)
+                }
+                if connection.isVideoStabilizationSupported {
+                    connection.preferredVideoStabilizationMode = params.preferredVideoStabilizationMode
+                }
             }
         }
-        setDeviceFormat(frameRate: frameRate, preferAutoFrameRate: preferAutoFrameRate, colorSpace: colorSpace)
-        output?.setSampleBufferDelegate(self, queue: mixerLockQueue)
+        for (i, device) in captureSessionDevices.enumerated() {
+            if params.devices.hasSceneDevice, i == 0 {
+                device.output.setSampleBufferDelegate(self, queue: mixerLockQueue)
+            } else {
+                device.output.setSampleBufferDelegate(videoUnitBuiltinDevice, queue: mixerLockQueue)
+            }
+        }
         updateCameraControls()
-        session.commitConfiguration()
-        cameraPreviewLayer?.session = nil
-        if showCameraPreview {
-            cameraPreviewLayer?.session = session
+        params.cameraPreviewLayer.session = nil
+        if params.showCameraPreview {
+            params.cameraPreviewLayer.session = session
+        }
+    }
+
+    private func getReplaceVideoForDevice(device: CaptureDevice?) -> ReplaceVideo? {
+        switch device?.device?.position {
+        case .back:
+            return replaceVideos[builtinBackCameraId]!
+        case .front:
+            return replaceVideos[builtinFrontCameraId]!
+        case .unspecified:
+            return replaceVideos[externalCameraId]!
+        default:
+            return nil
         }
     }
 
     func registerEffect(_ effect: VideoEffect) {
-        mixerLockQueue.sync {
+        mixerLockQueue.async {
             self.registerEffectInner(effect)
         }
     }
 
+    func registerEffectBack(_ effect: VideoEffect) {
+        mixerLockQueue.async {
+            self.registerEffectBackInner(effect)
+        }
+    }
+
     func unregisterEffect(_ effect: VideoEffect) {
-        mixerLockQueue.sync {
+        mixerLockQueue.async {
             self.unregisterEffectInner(effect)
         }
     }
 
     func setPendingAfterAttachEffects(effects: [VideoEffect], rotation: Double) {
-        mixerLockQueue.sync {
-            self.setPendingAfterAttachEffectsInner(effects: effects, rotation: rotation)
+        netStreamLockQueue.async {
+            mixerLockQueue.async {
+                self.setPendingAfterAttachEffectsInner(effects: effects, rotation: rotation)
+            }
         }
     }
 
     func usePendingAfterAttachEffects() {
-        mixerLockQueue.sync {
-            self.usePendingAfterAttachEffectsInner()
+        netStreamLockQueue.async {
+            mixerLockQueue.async {
+                self.usePendingAfterAttachEffectsInner()
+            }
         }
     }
 
@@ -402,10 +531,28 @@ final class VideoUnit: NSObject {
         }
     }
 
-    func takeSnapshot(age: Float, onComplete: @escaping (UIImage, UIImage?) -> Void) {
+    func takeSnapshot(age: Float, onComplete: @escaping (UIImage, CIImage) -> Void) {
         mixerLockQueue.async {
             self.takeSnapshotAge = age
             self.takeSnapshotComplete = onComplete
+        }
+    }
+
+    func setCleanRecordings(enabled: Bool) {
+        mixerLockQueue.async {
+            self.cleanRecordings = enabled
+        }
+    }
+
+    func setCleanSnapshots(enabled: Bool) {
+        mixerLockQueue.async {
+            self.cleanSnapshots = enabled
+        }
+    }
+
+    func setCleanExternalDisplay(enabled: Bool) {
+        mixerLockQueue.async {
+            self.cleanExternalDisplay = enabled
         }
     }
 
@@ -608,12 +755,13 @@ final class VideoUnit: NSObject {
 
     private func applyEffects(_ imageBuffer: CVImageBuffer,
                               _ sampleBuffer: CMSampleBuffer,
-                              _ faceDetections: [VNFaceObservation]?,
+                              _ faceDetections: [UUID: [VNFaceObservation]],
                               _ isSceneSwitchTransition: Bool,
                               _ isFirstAfterAttach: Bool) -> (CVImageBuffer?, CMSampleBuffer?)
     {
         let info = VideoEffectInfo(
             isFirstAfterAttach: isFirstAfterAttach,
+            sceneVideoSourceId: sceneVideoSourceId,
             faceDetections: faceDetections,
             presentationTimeStamp: sampleBuffer.presentationTimeStamp,
             videoUnit: self
@@ -667,7 +815,7 @@ final class VideoUnit: NSObject {
         var scaleFactor: Double
         var x: Double
         var y: Double
-        if outputRatio > imageRatio {
+        if (fillFrame && (outputRatio < imageRatio)) || (!fillFrame && (outputRatio > imageRatio)) {
             scaleFactor = Double(outputSize.width) / image.extent.width
             x = 0
             y = (Double(outputSize.height) - image.extent.height * scaleFactor) / 2
@@ -679,6 +827,7 @@ final class VideoUnit: NSObject {
         return image
             .transformed(by: CGAffineTransform(scaleX: scaleFactor, y: scaleFactor))
             .transformed(by: CGAffineTransform(translationX: x, y: y))
+            .cropped(to: CGRect(x: 0, y: 0, width: outputSize.width, height: outputSize.height))
             .composited(over: getBlackImage(
                 width: Double(outputSize.width),
                 height: Double(outputSize.height)
@@ -890,6 +1039,12 @@ final class VideoUnit: NSObject {
         }
     }
 
+    private func registerEffectBackInner(_ effect: VideoEffect) {
+        if !effects.contains(effect) {
+            effects.insert(effect, at: 0)
+        }
+    }
+
     private func unregisterEffectInner(_ effect: VideoEffect) {
         effect.removed()
         if let index = effects.firstIndex(of: effect) {
@@ -904,9 +1059,6 @@ final class VideoUnit: NSObject {
 
     private func usePendingAfterAttachEffectsInner() {
         if let pendingAfterAttachEffects {
-            for effect in effects where !pendingAfterAttachEffects.contains(effect) {
-                effect.removed()
-            }
             effects = pendingAfterAttachEffects
             self.pendingAfterAttachEffects = nil
         }
@@ -1002,41 +1154,53 @@ final class VideoUnit: NSObject {
             return false
         }
         latestSampleBufferAppendTime = sampleBuffer.presentationTimeStamp
-        mixer?.delegate?.mixerVideo(
-            presentationTimestamp: sampleBuffer.presentationTimeStamp.seconds
+        let presentationTimeStamp = sampleBuffer.presentationTimeStamp.seconds
+        mixer?.delegate?.mixerVideo(presentationTimestamp: presentationTimeStamp)
+        let faceDetectionVideoSourceIds = needsFaceDetections(presentationTimeStamp)
+        let faceDetectionJobs = prepareFaceDetectionJobs(
+            faceDetectionVideoSourceIds,
+            sampleBuffer.presentationTimeStamp,
+            imageBuffer
         )
-        var completion = FaceDetectionsCompletion(
+        let completion = FaceDetectionsCompletion(
             sequenceNumber: nextFaceDetectionsSequenceNumber,
             sampleBuffer: sampleBuffer,
             isFirstAfterAttach: isFirstAfterAttach,
-            isSceneSwitchTransition: isSceneSwitchTransition
+            isSceneSwitchTransition: isSceneSwitchTransition,
+            videoSourceIds: faceDetectionJobs.count
         )
         nextFaceDetectionsSequenceNumber += 1
-        if anyEffectNeedsFaceDetections() {
-            detectionsQueue.async {
-                let imageRequestHandler = VNImageRequestHandler(cvPixelBuffer: imageBuffer)
-                let faceLandmarksRequest = VNDetectFaceLandmarksRequest { request, error in
-                    mixerLockQueue.async {
-                        guard error == nil else {
+        if !faceDetectionJobs.isEmpty {
+            for (videoSourceId, imageBuffer) in faceDetectionJobs {
+                detectionsQueue.async {
+                    let imageRequestHandler = VNImageRequestHandler(cvPixelBuffer: imageBuffer)
+                    let faceLandmarksRequest = VNDetectFaceLandmarksRequest { request, error in
+                        mixerLockQueue.async {
+                            guard error == nil else {
+                                completion.faceDetections[videoSourceId] = []
+                                self.faceDetectionsComplete(completion)
+                                return
+                            }
+                            // Only use 5 biggest to limit processing.
+                            if let results = (request as? VNDetectFaceLandmarksRequest)?
+                                .results?
+                                .sorted(by: { a, b in a.boundingBox.height > b.boundingBox.height })
+                                .prefix(5)
+                            {
+                                completion.faceDetections[videoSourceId] = Array(results)
+                            } else {
+                                completion.faceDetections[videoSourceId] = []
+                            }
                             self.faceDetectionsComplete(completion)
-                            return
                         }
-                        // Only use 5 biggest to limit processing.
-                        if let results = (request as? VNDetectFaceLandmarksRequest)?
-                            .results?
-                            .sorted(by: { a, b in a.boundingBox.height > b.boundingBox.height })
-                            .prefix(5)
-                        {
-                            completion.faceDetections = Array(results)
-                        }
-                        self.faceDetectionsComplete(completion)
                     }
-                }
-                do {
-                    try imageRequestHandler.perform([faceLandmarksRequest])
-                } catch {
-                    mixerLockQueue.async {
-                        self.faceDetectionsComplete(completion)
+                    do {
+                        try imageRequestHandler.perform([faceLandmarksRequest])
+                    } catch {
+                        mixerLockQueue.async {
+                            completion.faceDetections[videoSourceId] = []
+                            self.faceDetectionsComplete(completion)
+                        }
                     }
                 }
             }
@@ -1047,6 +1211,9 @@ final class VideoUnit: NSObject {
     }
 
     private func faceDetectionsComplete(_ completion: FaceDetectionsCompletion) {
+        guard completion.faceDetections.count == completion.videoSourceIds else {
+            return
+        }
         completedFaceDetections[completion.sequenceNumber] = completion
         while let completion = completedFaceDetections
             .removeValue(forKey: nextCompletedFaceDetectionsSequenceNumber)
@@ -1065,7 +1232,7 @@ final class VideoUnit: NSObject {
         _ sampleBuffer: CMSampleBuffer,
         _ isFirstAfterAttach: Bool,
         _ isSceneSwitchTransition: Bool,
-        _ faceDetections: [VNFaceObservation]?
+        _ faceDetections: [UUID: [VNFaceObservation]]
     ) {
         guard let imageBuffer = sampleBuffer.imageBuffer else {
             return
@@ -1087,9 +1254,23 @@ final class VideoUnit: NSObject {
         }
         let modImageBuffer = newImageBuffer ?? imageBuffer
         let modSampleBuffer = newSampleBuffer ?? sampleBuffer
+        // Recordings seems to randomly fail if moved after live stream encoding. Maybe because the
+        // sample buffer is copied in appendVideo()
+        if cleanRecordings {
+            mixer?.recorder.appendVideo(sampleBuffer)
+        } else {
+            mixer?.recorder.appendVideo(modSampleBuffer)
+        }
         modSampleBuffer.setAttachmentDisplayImmediately()
         if !showCameraPreview {
             drawable?.enqueue(modSampleBuffer, isFirstAfterAttach: isFirstAfterAttach)
+        }
+        if externalDisplayPreview {
+            if cleanExternalDisplay {
+                externalDisplayDrawable?.enqueue(sampleBuffer, isFirstAfterAttach: isFirstAfterAttach)
+            } else {
+                externalDisplayDrawable?.enqueue(modSampleBuffer, isFirstAfterAttach: isFirstAfterAttach)
+            }
         }
         for encoder in encoders {
             encoder.encodeImageBuffer(
@@ -1098,10 +1279,13 @@ final class VideoUnit: NSObject {
                 duration: modSampleBuffer.duration
             )
         }
-        mixer?.recorder.appendVideo(modSampleBuffer)
         let presentationTimeStamp = sampleBuffer.presentationTimeStamp.seconds
         handleLowFpsImage(modImageBuffer, presentationTimeStamp)
-        handleTakeSnapshot(modSampleBuffer, presentationTimeStamp)
+        if cleanSnapshots {
+            handleTakeSnapshot(sampleBuffer, presentationTimeStamp)
+        } else {
+            handleTakeSnapshot(modSampleBuffer, presentationTimeStamp)
+        }
     }
 
     private func handleLowFpsImage(_ imageBuffer: CVImageBuffer, _ presentationTimeStamp: Double) {
@@ -1159,10 +1343,10 @@ final class VideoUnit: NSObject {
                                   _ sampleBuffers: Deque<CMSampleBuffer>,
                                   _ presentationTimeStamp: Double,
                                   _ age: Float,
-                                  _ onCompleted: @escaping (CVImageBuffer?, CVImageBuffer?) -> Void)
+                                  _ onCompleted: @escaping (CVImageBuffer?) -> Void)
     {
         if age == 0.0 {
-            onCompleted(sampleBuffer.imageBuffer, nil)
+            onCompleted(sampleBuffer.imageBuffer)
         } else {
             let requestedPresentationTimeStamp = presentationTimeStamp - Double(age)
             let sampleBufferAtAge = sampleBuffers.last(where: {
@@ -1173,7 +1357,7 @@ final class VideoUnit: NSObject {
                 sampleBuffers.append(sampleBuffer)
                 findBestSnapshotUsingAesthetics(sampleBufferAtAge, sampleBuffers, onCompleted)
             } else {
-                onCompleted(sampleBufferAtAge.imageBuffer, nil)
+                onCompleted(sampleBufferAtAge.imageBuffer)
             }
         }
     }
@@ -1181,7 +1365,7 @@ final class VideoUnit: NSObject {
     @available(iOS 18, *)
     private func findBestSnapshotUsingAesthetics(_ preferredSampleBuffer: CMSampleBuffer,
                                                  _ sampleBuffers: Deque<CMSampleBuffer>,
-                                                 _ onComplete: @escaping (CVImageBuffer?, CVImageBuffer?) -> Void)
+                                                 _ onComplete: @escaping (CVImageBuffer?) -> Void)
     {
         Task {
             var bestSampleBuffer = preferredSampleBuffer
@@ -1195,7 +1379,7 @@ final class VideoUnit: NSObject {
                     bestResult = result
                 }
             }
-            onComplete(preferredSampleBuffer.imageBuffer, bestSampleBuffer.imageBuffer)
+            onComplete(bestSampleBuffer.imageBuffer)
         }
     }
 
@@ -1203,34 +1387,59 @@ final class VideoUnit: NSObject {
                               _ sampleBuffers: Deque<CMSampleBuffer>,
                               _ presentationTimeStamp: Double,
                               _ age: Float,
-                              _ onComplete: @escaping (UIImage, UIImage?) -> Void)
+                              _ onComplete: @escaping (UIImage, CIImage) -> Void)
     {
-        findBestSnapshot(sampleBuffer, sampleBuffers, presentationTimeStamp, age) { imageBuffer, prettyImageBuffer in
+        findBestSnapshot(sampleBuffer, sampleBuffers, presentationTimeStamp, age) { imageBuffer in
             guard let imageBuffer else {
                 return
             }
             let ciImage = CIImage(cvPixelBuffer: imageBuffer)
             let cgImage = self.context.createCGImage(ciImage, from: ciImage.extent)!
             let image = UIImage(cgImage: cgImage)
-            var prettyImage: UIImage?
-            if let prettyImageBuffer {
-                var ciImage = CIImage(cvPixelBuffer: prettyImageBuffer)
-                ciImage = CIImage.black.cropped(to: .init(
-                    origin: .zero,
-                    size: .init(width: 50, height: 50)
-                )).composited(over: ciImage)
-                let cgImage = self.context.createCGImage(ciImage, from: ciImage.extent)!
-                prettyImage = UIImage(cgImage: cgImage)
+            var portraitImage = ciImage
+            if !imageBuffer.isPortrait() {
+                portraitImage = portraitImage.oriented(.left)
             }
-            onComplete(image, prettyImage)
+            onComplete(image, portraitImage)
         }
     }
 
-    private func anyEffectNeedsFaceDetections() -> Bool {
-        for effect in effects where effect.needsFaceDetections() {
-            return true
+    private func needsFaceDetections(_ presentationTimeStamp: Double) -> Set<UUID> {
+        var ids: Set<UUID> = []
+        for effect in effects {
+            let (needsFaceDetections, videoSource) = effect.needsFaceDetections(presentationTimeStamp)
+            if needsFaceDetections {
+                if let videoSource {
+                    ids.insert(videoSource)
+                } else {
+                    ids.insert(sceneVideoSourceId)
+                }
+            }
         }
-        return false
+        return ids
+    }
+
+    private func prepareFaceDetectionJobs(
+        _ faceDetectionVideoSourceIds: Set<UUID>,
+        _ presentationTimeStamp: CMTime,
+        _ imageBuffer: CVImageBuffer
+    ) -> [(UUID, CVPixelBuffer)] {
+        var faceDetectionVideoSources: [(UUID, CVPixelBuffer)] = []
+        for videoSourceId in faceDetectionVideoSourceIds {
+            var videoSourceImageBuffer: CVPixelBuffer?
+            if videoSourceId == sceneVideoSourceId {
+                videoSourceImageBuffer = imageBuffer
+            } else {
+                videoSourceImageBuffer = replaceVideos[videoSourceId]?.getSampleBuffer(presentationTimeStamp)?
+                    .imageBuffer
+            }
+            guard let videoSourceImageBuffer else {
+                faceDetectionVideoSources.removeAll()
+                break
+            }
+            faceDetectionVideoSources.append((videoSourceId, videoSourceImageBuffer))
+        }
+        return faceDetectionVideoSources
     }
 
     private func addSessionObservers() {
@@ -1330,7 +1539,12 @@ final class VideoUnit: NSObject {
         }
     }
 
-    private func setDeviceFormat(frameRate: Float64, preferAutoFrameRate: Bool, colorSpace: AVCaptureColorSpace) {
+    private func setDeviceFormat(
+        device: AVCaptureDevice?,
+        frameRate: Float64,
+        preferAutoFrameRate: Bool,
+        colorSpace: AVCaptureColorSpace
+    ) {
         guard let device else {
             return
         }
@@ -1370,40 +1584,70 @@ final class VideoUnit: NSObject {
     }
 
     private func attachDevice(_ device: AVCaptureDevice?, _ session: AVCaptureSession) throws {
+        guard let device else {
+            return
+        }
+        let input = try AVCaptureDeviceInput(device: device)
+        let output = AVCaptureVideoDataOutput()
+        output.videoSettings = [
+            kCVPixelBufferPixelFormatTypeKey as String: pixelFormatType,
+        ]
+        var connection: AVCaptureConnection?
+        if let port = input.ports.first(where: { $0.mediaType == .video }) {
+            connection = AVCaptureConnection(inputPorts: [port], output: output)
+        }
+        var failed = false
+        if session.canAddInput(input) {
+            session.addInputWithNoConnections(input)
+        } else {
+            failed = true
+        }
+        if session.canAddOutput(output) {
+            session.addOutputWithNoConnections(output)
+        } else {
+            failed = true
+        }
+        if let connection, session.canAddConnection(connection) {
+            session.addConnection(connection)
+        } else {
+            failed = true
+        }
+        if failed {
+            mixer?.delegate?.mixerAttachCameraError()
+        } else {
+            captureSessionDevices.append(CaptureSessionDevice(
+                device: device,
+                input: input,
+                output: output,
+                connection: connection!
+            ))
+        }
+    }
+
+    private func removeDevices(_ session: AVCaptureSession) throws {
+        for device in captureSessionDevices {
+            try removeConnection(session, device.connection)
+            try removeInput(session, device.input)
+            try removeOutput(session, device.output)
+        }
+        captureSessionDevices.removeAll()
+    }
+
+    private func removeConnection(_ session: AVCaptureSession, _ connection: AVCaptureConnection?) throws {
         if let connection, session.connections.contains(connection) {
             session.removeConnection(connection)
         }
+    }
+
+    private func removeInput(_ session: AVCaptureSession, _ input: AVCaptureInput?) throws {
         if let input, session.inputs.contains(input) {
             session.removeInput(input)
         }
+    }
+
+    private func removeOutput(_ session: AVCaptureSession, _ output: AVCaptureOutput?) throws {
         if let output, session.outputs.contains(output) {
             session.removeOutput(output)
-        }
-        if let device {
-            input = try AVCaptureDeviceInput(device: device)
-            output = AVCaptureVideoDataOutput()
-            output!.videoSettings = [
-                kCVPixelBufferPixelFormatTypeKey as String: pixelFormatType,
-            ]
-            if let port = input?.ports.first(where: { $0.mediaType == .video }) {
-                connection = AVCaptureConnection(inputPorts: [port], output: output!)
-            } else {
-                connection = nil
-            }
-            if session.canAddInput(input!) {
-                session.addInputWithNoConnections(input!)
-            }
-            if session.canAddOutput(output!) {
-                session.addOutputWithNoConnections(output!)
-            }
-            if let connection, session.canAddConnection(connection) {
-                session.addConnection(connection)
-            }
-            session.automaticallyConfiguresCaptureDeviceForWideColor = false
-        } else {
-            input = nil
-            output = nil
-            connection = nil
         }
     }
 
@@ -1482,13 +1726,37 @@ extension VideoUnit: AVCaptureVideoDataOutputSampleBufferDelegate {
     func captureOutput(
         _: AVCaptureOutput,
         didOutput sampleBuffer: CMSampleBuffer,
-        from _: AVCaptureConnection
+        from connection: AVCaptureConnection
     ) {
-        replaceVideos[builtinCameraId]?.setLatestSampleBuffer(sampleBuffer: sampleBuffer)
+        guard let input = connection.inputPorts.first?.input as? AVCaptureDeviceInput else {
+            return
+        }
+        replaceVideoBuiltins[input.device]?.setLatestSampleBuffer(sampleBuffer: sampleBuffer)
         guard selectedReplaceVideoCameraId == nil else {
             return
         }
         appendNewSampleBuffer(sampleBuffer: sampleBuffer)
+    }
+}
+
+class VideoUnitBuiltinDevice: NSObject {
+    weak var videoUnit: VideoUnit?
+
+    init(videoUnit: VideoUnit) {
+        self.videoUnit = videoUnit
+    }
+}
+
+extension VideoUnitBuiltinDevice: AVCaptureVideoDataOutputSampleBufferDelegate {
+    func captureOutput(
+        _: AVCaptureOutput,
+        didOutput sampleBuffer: CMSampleBuffer,
+        from connection: AVCaptureConnection
+    ) {
+        guard let input = connection.inputPorts.first?.input as? AVCaptureDeviceInput else {
+            return
+        }
+        videoUnit?.replaceVideoBuiltins[input.device]?.setLatestSampleBuffer(sampleBuffer: sampleBuffer)
     }
 }
 

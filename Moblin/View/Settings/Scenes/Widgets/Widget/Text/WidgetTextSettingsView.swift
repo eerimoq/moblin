@@ -13,7 +13,7 @@ private let suggestionMovement = "📏 {distance} 💨 {speed} 🏔️ {altitude
 private let suggestionHeartRate = "♥️ {heartRate}"
 private let suggestionSubtitles = "{subtitles}"
 private let suggestionMuted = "{muted}"
-private let suggestionTime = "🕑 {time}"
+private let suggestionTime = "🕑 {shortTime}"
 private let suggestionDate = "📅 {date}"
 private let suggestionFullDate = "📅 {fullDate}"
 private let suggestionTimer = "⏳ {timer}"
@@ -23,6 +23,7 @@ private let suggestionTravel =
 private let suggestionDebug = "{time}\n{bitrateAndTotal}\n{debugOverlay}"
 private let suggestionWorkoutTest = "{activeEnergyBurned} {power} {stepCount} {workoutDistance}"
 private let suggestionTesla = "🚗 Tesla\n⚙️ {teslaDrive}\n🔋 {teslaBatteryLevel}\n🔈 {teslaMedia}"
+private let suggestionRacing = "🏎️ Racing 🏎️\n{lapTimes}"
 
 private let suggestions = createSuggestions()
 
@@ -49,6 +50,7 @@ private func createSuggestions() -> [Suggestion] {
         Suggestion(id: 12, name: String(localized: "Debug"), text: suggestionDebug),
         Suggestion(id: 13, name: String(localized: "Workout test"), text: suggestionWorkoutTest),
         Suggestion(id: 14, name: String(localized: "Tesla"), text: suggestionTesla),
+        Suggestion(id: 15, name: String(localized: "Racing"), text: suggestionRacing),
     ]
     return suggestions
 }
@@ -76,6 +78,26 @@ private struct SuggestionsView: View {
             }
         }
         .navigationTitle("Suggestions")
+    }
+}
+
+private struct FormatView: View {
+    @EnvironmentObject var model: Model
+    let title: String
+    let description: String
+    @Binding var text: String
+
+    var body: some View {
+        VStack(alignment: .leading) {
+            Button {
+                text += title
+                model.makeToast(title: "Appended \(title) to widget text")
+            } label: {
+                Text(title)
+                    .font(.title3)
+            }
+            Text(description)
+        }
     }
 }
 
@@ -142,6 +164,24 @@ private struct TextSelectionView: View {
         textEffect?.setRatings(ratings: widget.text.ratings!.map { $0.rating })
     }
 
+    private func updateLapTimes(_ textEffect: TextEffect?, _ parts: [TextFormatPart]) {
+        let numberOfLapTimes = parts.filter { value in
+            switch value {
+            case .lapTimes:
+                return true
+            default:
+                return false
+            }
+        }.count
+        for index in 0 ..< numberOfLapTimes where index >= widget.text.lapTimes!.count {
+            widget.text.lapTimes!.append(.init())
+        }
+        while widget.text.lapTimes!.count > numberOfLapTimes {
+            widget.text.lapTimes!.removeLast()
+        }
+        textEffect?.setLapTimes(lapTimes: widget.text.lapTimes!.map { $0.lapTimes })
+    }
+
     private func updateNeedsWeather(_ parts: [TextFormatPart]) {
         widget.text.needsWeather = !parts.filter { value in
             switch value {
@@ -192,6 +232,7 @@ private struct TextSelectionView: View {
         updateTimers(textEffect, parts)
         updateCheckboxes(textEffect, parts)
         updateRatings(textEffect, parts)
+        updateLapTimes(textEffect, parts)
         updateNeedsWeather(parts)
         updateNeedsGeography(parts)
         updateNeedsSubtitles(parts)
@@ -212,40 +253,105 @@ private struct TextSelectionView: View {
                 } label: {
                     Text("Suggestions")
                 }
-            } footer: {
-                VStack(alignment: .leading) {
-                    Text("")
-                    Text("General").bold()
-                    Text("{time} - Show time as HH:MM:SS")
-                    Text("{date} - Show date")
-                    Text("{fullDate} - Show full date")
-                    Text("{timer} - Show a timer")
-                    Text("{checkbox} - Show a checkbox")
-                    Text("{rating} - Show a 0-5 rating")
-                    Text("{subtitles} - Show subtitles")
-                    Text("{muted} - Show muted")
-                    Text("")
-                    Text("Location (if Settings -> Location is enabled)").bold()
-                    Text("{speed} - Show speed")
-                    Text("{altitude} - Show altitude")
-                    Text("{distance} - Show distance")
-                    Text("")
-                    Text("Weather (if Settings -> Location is enabled)").bold()
-                    Text("{conditions} - Show conditions")
-                    Text("{temperature} - Show temperature")
-                    if isPhone() {
-                        Text("")
-                        Text("Workout (requires Apple Watch)").bold()
-                        Text("{heartRate} - Show heart rate")
-                    }
-                    Text("")
-                    Text("Tesla (requires a Tesla)").bold()
-                    Text("{teslaBatteryLevel} - Tesla battery level")
-                    Text("")
-                    Text("Debug").bold()
-                    Text("{bitrateAndTotal} - Show bitrate and total number of bytes sent")
-                    Text("{debugOverlay} - Show debug overlay (if enabled)")
+            }
+            Section {
+                Text("Tap on items below to append them to the widget text.")
+            }
+            Section {
+                FormatView(title: "{time}", description: String(localized: "Show time as HH:MM:SS"), text: $value)
+                FormatView(title: "{shortTime}", description: String(localized: "Show time as HH:MM"), text: $value)
+                FormatView(title: "{date}", description: String(localized: "Show date"), text: $value)
+                FormatView(title: "{fullDate}", description: String(localized: "Show full date"), text: $value)
+                FormatView(title: "{timer}", description: String(localized: "Show a timer"), text: $value)
+                FormatView(title: "{checkbox}", description: String(localized: "Show a checkbox"), text: $value)
+                FormatView(title: "{rating}", description: String(localized: "Show a 0-5 rating"), text: $value)
+                FormatView(title: "{subtitles}", description: String(localized: "Show subtitles"), text: $value)
+                FormatView(title: "{lapTimes}", description: String(localized: "Show lap times"), text: $value)
+                FormatView(title: "{muted}", description: String(localized: "Show muted"), text: $value)
+                FormatView(title: "{browserTitle}", description: String(localized: "Show browser title"), text: $value)
+            } header: {
+                Text("General")
+            }
+            Section {
+                FormatView(title: "{country}", description: String(localized: "Show country"), text: $value)
+                FormatView(title: "{countryFlag}", description: String(localized: "Show country flag"), text: $value)
+                FormatView(title: "{city}", description: String(localized: "Show city"), text: $value)
+                FormatView(title: "{speed}", description: String(localized: "Show speed"), text: $value)
+                FormatView(title: "{averageSpeed}", description: String(localized: "Show average speed"), text: $value)
+                FormatView(title: "{altitude}", description: String(localized: "Show altitude"), text: $value)
+                FormatView(title: "{distance}", description: String(localized: "Show distance"), text: $value)
+                FormatView(title: "{slope}", description: String(localized: "Show slope"), text: $value)
+            } header: {
+                Text("Location (if Settings -> Location is enabled)")
+            }
+            Section {
+                FormatView(title: "{conditions}", description: String(localized: "Show conditions"), text: $value)
+                FormatView(title: "{temperature}", description: String(localized: "Show temperature"), text: $value)
+            } header: {
+                Text("Weather (if Settings -> Location is enabled)")
+            }
+            Section {
+                if isPhone() {
+                    FormatView(
+                        title: "{heartRate}",
+                        description: String(localized: "Show Apple Watch heart rate"),
+                        text: $value
+                    )
                 }
+                ForEach(model.database.heartRateDevices!.devices) { device in
+                    FormatView(
+                        title: "{heartRate:\(device.name)}",
+                        description: String(
+                            localized: "Show heart rate for heart rate device called \"\(device.name)\""
+                        ),
+                        text: $value
+                    )
+                }
+            } header: {
+                Text("Workout")
+            }
+            Section {
+                FormatView(
+                    title: "{teslaBatteryLevel}",
+                    description: String(localized: "Show Tesla battery level"),
+                    text: $value
+                )
+                FormatView(
+                    title: "{teslaDrive}",
+                    description: String(localized: "Show Tesla drive information"),
+                    text: $value
+                )
+                FormatView(
+                    title: "{teslaMedia}",
+                    description: String(localized: "Show Tesla media information"),
+                    text: $value
+                )
+            } header: {
+                Text("Tesla (requires a Tesla)")
+            }
+            Section {
+                FormatView(title: "{cyclingPower}", description: String(localized: "Show cycling power"), text: $value)
+                FormatView(
+                    title: "{cyclingCadence}",
+                    description: String(localized: "Show cycling cadence"),
+                    text: $value
+                )
+            } header: {
+                Text("Cycling (requires a compatible bike)")
+            }
+            Section {
+                FormatView(
+                    title: "{bitrateAndTotal}",
+                    description: String(localized: "Show bitrate and total number of bytes sent"),
+                    text: $value
+                )
+                FormatView(
+                    title: "{debugOverlay}",
+                    description: String(localized: "Show debug overlay (if enabled)"),
+                    text: $value
+                )
+            } header: {
+                Text("Debug")
             }
         }
         .onChange(of: value) { _ in
@@ -263,6 +369,8 @@ struct WidgetTextSettingsView: View {
     @State var fontSize: Float
     @State var fontDesign: String
     @State var fontWeight: String
+    @State var horizontalAlignment: String
+    @State var verticalAlignment: String
     @State var delay: Double
 
     var body: some View {
@@ -328,6 +436,24 @@ struct WidgetTextSettingsView: View {
                 }
             }
         }
+        if !widget.text.lapTimes!.isEmpty {
+            if let textEffect = model.getTextEffect(id: widget.id) {
+                Section {
+                    ForEach(widget.text.lapTimes!) { lapTimes in
+                        let index = widget.text.lapTimes!.firstIndex(where: { $0 === lapTimes }) ?? 0
+                        LapTimesWidgetView(
+                            name: "Lap times \(index + 1)",
+                            lapTimes: lapTimes,
+                            index: index,
+                            textEffect: textEffect,
+                            indented: false
+                        )
+                    }
+                } header: {
+                    Text("Lap times")
+                }
+            }
+        }
         Section {
             ColorPicker("Background", selection: $backgroundColor, supportsOpacity: true)
                 .onChange(of: backgroundColor) { _ in
@@ -336,6 +462,7 @@ struct WidgetTextSettingsView: View {
                     }
                     widget.text.backgroundColor = color
                     model.getTextEffect(id: widget.id)?.setBackgroundColor(color: color)
+                    model.remoteSceneSettingsUpdated()
                 }
             ColorPicker("Foreground", selection: $foregroundColor, supportsOpacity: true)
                 .onChange(of: foregroundColor) { _ in
@@ -344,6 +471,7 @@ struct WidgetTextSettingsView: View {
                     }
                     widget.text.foregroundColor = color
                     model.getTextEffect(id: widget.id)?.setForegroundColor(color: color)
+                    model.remoteSceneSettingsUpdated()
                 }
         } header: {
             Text("Colors")
@@ -361,6 +489,7 @@ struct WidgetTextSettingsView: View {
                         }
                         widget.text.fontSize = Int(fontSize)
                         model.getTextEffect(id: widget.id)?.setFontSize(size: CGFloat(fontSize))
+                        model.remoteSceneSettingsUpdated()
                     }
                 )
                 Text(String(Int(fontSize)))
@@ -378,6 +507,7 @@ struct WidgetTextSettingsView: View {
                     widget.text.fontDesign = SettingsFontDesign.fromString(value: $0)
                     model.getTextEffect(id: widget.id)?
                         .setFontDesign(design: widget.text.fontDesign!.toSystem())
+                    model.remoteSceneSettingsUpdated()
                 }
             }
             HStack {
@@ -392,10 +522,54 @@ struct WidgetTextSettingsView: View {
                     widget.text.fontWeight = SettingsFontWeight.fromString(value: $0)
                     model.getTextEffect(id: widget.id)?
                         .setFontWeight(weight: widget.text.fontWeight!.toSystem())
+                    model.remoteSceneSettingsUpdated()
                 }
+            }
+            Toggle(isOn: Binding(get: {
+                widget.text.fontMonospacedDigits!
+            }, set: { value in
+                widget.text.fontMonospacedDigits = value
+                model.getTextEffect(id: widget.id)?.setFontMonospacedDigits(enabled: widget.text.fontMonospacedDigits!)
+                model.remoteSceneSettingsUpdated()
+            })) {
+                Text("Monospaced digits")
             }
         } header: {
             Text("Font")
+        }
+        Section {
+            HStack {
+                Text("Horizontal")
+                Spacer()
+                Picker("", selection: $horizontalAlignment) {
+                    ForEach(textWidgetHorizontalAlignments, id: \.self) {
+                        Text($0)
+                    }
+                }
+                .onChange(of: horizontalAlignment) {
+                    widget.text.horizontalAlignment = SettingsHorizontalAlignment.fromString(value: $0)
+                    model.getTextEffect(id: widget.id)?
+                        .setHorizontalAlignment(alignment: widget.text.horizontalAlignment!.toSystem())
+                    model.remoteSceneSettingsUpdated()
+                }
+            }
+            HStack {
+                Text("Vertical")
+                Spacer()
+                Picker("", selection: $verticalAlignment) {
+                    ForEach(textWidgetVerticalAlignments, id: \.self) {
+                        Text($0)
+                    }
+                }
+                .onChange(of: verticalAlignment) {
+                    widget.text.verticalAlignment = SettingsVerticalAlignment.fromString(value: $0)
+                    model.getTextEffect(id: widget.id)?
+                        .setVerticalAlignment(alignment: widget.text.verticalAlignment!.toSystem())
+                    model.remoteSceneSettingsUpdated()
+                }
+            }
+        } header: {
+            Text("Alignment")
         }
         Section {
             HStack {

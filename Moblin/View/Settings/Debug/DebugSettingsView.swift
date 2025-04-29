@@ -5,6 +5,7 @@ struct DebugSettingsView: View {
     @EnvironmentObject var model: Model
     @State var cameraSwitchRemoveBlackish: Float
     @State var dataRateLimitFactor: Float
+    @State var recordSegmentLength: Double
 
     private func submitLogLines(value: String) {
         guard let lines = Int(value) else {
@@ -17,11 +18,7 @@ struct DebugSettingsView: View {
         Form {
             Section {
                 NavigationLink {
-                    DebugLogSettingsView(
-                        log: model.log,
-                        formatLog: { model.formatLog(log: model.log) },
-                        clearLog: { model.clearLog() }
-                    )
+                    DebugLogSettingsView(log: model.log, clearLog: { model.clearLog() })
                 } label: {
                     Text("Log")
                 }
@@ -119,11 +116,6 @@ struct DebugSettingsView: View {
                 } label: {
                     Text("HTTP proxy")
                 }
-                Toggle("Pretty snapshot", isOn: Binding(get: {
-                    model.database.debug.prettySnapshot!
-                }, set: { value in
-                    model.database.debug.prettySnapshot = value
-                }))
                 Toggle("Reliable chat", isOn: Binding(get: {
                     model.database.debug.reliableChat!
                 }, set: { value in
@@ -137,17 +129,16 @@ struct DebugSettingsView: View {
                     model.reloadSrtlaServer()
                 }))
                 Toggle("SRT(LA) batch send", isOn: Binding(get: {
-                    model.database.debug.srtlaBatchSend!
+                    model.database.debug.srtlaBatchSendEnabled!
                 }, set: { value in
-                    model.database.debug.srtlaBatchSend = value
+                    model.database.debug.srtlaBatchSendEnabled = value
                     model.setSrtlaBatchSend()
                 }))
-                Toggle("Camera controls", isOn: Binding(get: {
-                    model.database.debug.cameraControlsEnabled!
-                }, set: { value in
-                    model.database.debug.cameraControlsEnabled = value
-                    model.setCameraControlsEnabled()
-                }))
+                NavigationLink {
+                    DjiGimbalDevicesSettingsView()
+                } label: {
+                    IconAndTextView(image: "appletvremote.gen1", text: String(localized: "DJI gimbals"))
+                }
             } header: {
                 Text("Experimental")
             }

@@ -1,4 +1,5 @@
 import AVFAudio
+import PhotosUI
 import SDWebImageSwiftUI
 import SwiftUI
 
@@ -179,5 +180,71 @@ struct AlertImageSelectorView: View {
             }
         }
         .navigationTitle("Image")
+    }
+}
+
+struct AlertImagePlaygroundSelectorView: View {
+    @EnvironmentObject var model: Model
+    var command: SettingsWidgetAlertsChatBotCommand
+    @State var selectedImageItem: PhotosPickerItem?
+    @State var imageId: UUID
+
+    func loadImage() -> UIImage? {
+        if let data = model.alertMediaStorage.tryRead(id: imageId) {
+            return UIImage(data: data)
+        } else {
+            return nil
+        }
+    }
+
+    var body: some View {
+        Form {
+            Section {
+                Text("Use Image Playground to create an image from a photo and/or prompt written by your viewers.")
+            }
+            Section {
+                PhotosPicker(selection: $selectedImageItem, matching: .images) {
+                    if let image = loadImage() {
+                        HCenter {
+                            Image(uiImage: image)
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 1920 / 6, height: 1080 / 6)
+                        }
+                    } else {
+                        HCenter {
+                            Text("Select photo")
+                        }
+                    }
+                }
+                .onChange(of: selectedImageItem) { imageItem in
+                    imageItem?.loadTransferable(type: Data.self) { result in
+                        switch result {
+                        case let .success(data?):
+                            model.alertMediaStorage.write(id: imageId, data: data)
+                            DispatchQueue.main.async {
+                                selectedImageItem = nil
+                            }
+                        case .success(nil):
+                            logger.error("alert-widget: Seleted image is nil")
+                        case let .failure(error):
+                            logger.error("alert-widget: Selected image error: \(error)")
+                        }
+                    }
+                }
+            }
+            Section {
+                Button(role: .destructive) {
+                    command.imagePlaygroundImageId = .init()
+                    imageId = command.imagePlaygroundImageId!
+                    model.updateAlertsSettings()
+                } label: {
+                    HCenter {
+                        Text("Delete")
+                    }
+                }
+            }
+        }
+        .navigationTitle("Image Playground")
     }
 }

@@ -1,28 +1,29 @@
 import AVFoundation
 import libsrt
 
-private let srtServerQueue = DispatchQueue(label: "com.eerimoq.srtla-srt-server", qos: .userInteractive)
-
 class SrtServer {
     weak var srtlaServer: SrtlaServer?
     private var listenerSocket: SRTSOCKET = SRT_INVALID_SOCK
     var acceptedStreamId: Atomic<String> = .init("")
-    var connectedStreamIds: Atomic<[String]> = .init(.init())
     var running: Bool = false
     private let timecodesEnabled: Bool
+    private let port: UInt16
+    private let srtlaPatches: Bool
 
-    init(timecodesEnabled: Bool) {
+    init(timecodesEnabled: Bool, port: UInt16, srtlaPatches: Bool) {
         self.timecodesEnabled = timecodesEnabled
+        self.port = port
+        self.srtlaPatches = srtlaPatches
     }
 
     func start() {
         srt_startup()
         running = true
-        srtServerQueue.async {
+        DispatchQueue(label: "com.eerimoq.srtla-srt-server", qos: .userInteractive).async {
             do {
                 try self.main()
             } catch {
-                logger.info("srt-server: \(error)")
+                logger.info("srt-server: \(self.port): \(error)")
             }
         }
     }
@@ -36,31 +37,34 @@ class SrtServer {
 
     private func main() throws {
         try open()
-        try setSrtlaPatchesOption()
-        try setLossMaxTtlOption()
+        if srtlaPatches {
+            logger.info("srt-server: \(port): Enabling SRTLA patches.")
+            try setSrtlaPatchesOption()
+            try setLossMaxTtlOption()
+        }
         try bind()
         try listen()
         while true {
-            logger.info("srt-server: Waiting for client to connect.")
+            logger.info("srt-server: \(port): Waiting for client to connect.")
             let clientSocket = try accept()
-            guard let stream = srtlaServer?.settings.streams
-                .first(where: { $0.streamId == acceptedStreamId.value }),
-                !connectedStreamIds.value.contains(acceptedStreamId.value)
+            guard let srtlaServer,
+                  let stream = srtlaServer.settings.streams.first(where: { $0.streamId == acceptedStreamId.value }),
+                  !srtlaServer.connectedStreamIds.value.contains(acceptedStreamId.value)
             else {
                 srt_close(clientSocket)
-                logger.info("srt-server: Client with stream id \(acceptedStreamId) denied.")
+                logger.info("srt-server: \(port): Client with stream id \(acceptedStreamId) denied.")
                 continue
             }
-            logger.info("srt-server: Accepted client \(stream.name).")
+            logger.info("srt-server: \(port): Accepted client \(stream.name).")
             let streamId = acceptedStreamId.value
             DispatchQueue(label: "com.eerimoq.Moblin.SrtClient").async {
-                self.connectedStreamIds.mutate { $0.append(streamId) }
+                self.srtlaServer?.connectedStreamIds.mutate { $0.append(streamId) }
                 self.srtlaServer?.clientConnected(streamId: streamId)
                 SrtServerClient(server: self, streamId: streamId, timecodesEnabled: self.timecodesEnabled)
                     .run(clientSocket: clientSocket)
                 self.srtlaServer?.clientDisconnected(streamId: streamId)
-                logger.info("srt-server: Closed client.")
-                self.connectedStreamIds.mutate { $0.removeAll(where: { $0 == streamId }) }
+                logger.info("srt-server: \(self.port): Closed client.")
+                self.srtlaServer?.connectedStreamIds.mutate { $0.removeAll(where: { $0 == streamId }) }
             }
             acceptedStreamId.mutate { $0 = "" }
         }
@@ -84,7 +88,7 @@ class SrtServer {
         // Makes NAK too slow?
         let option = SrtSocketOption(rawValue: "lossmaxttl")!
         if !option.setOption(listenerSocket, value: "30") {
-            logger.error("srt-server: Failed to set lossmaxttl option.")
+            logger.error("srt-server: \(port): Failed to set lossmaxttl option.")
         }
     }
 
@@ -93,7 +97,7 @@ class SrtServer {
         addr.sin_len = UInt8(MemoryLayout.size(ofValue: addr))
         addr.sin_family = sa_family_t(AF_INET)
         addr.sin_addr.s_addr = inet_addr("0.0.0.0")
-        addr.sin_port = in_port_t(bigEndian: srtlaServer?.settings.srtPort ?? 4000)
+        addr.sin_port = in_port_t(bigEndian: port)
         let addrSize = MemoryLayout.size(ofValue: addr)
         let res = withUnsafePointer(to: &addr) {
             $0.withMemoryRebound(to: sockaddr.self, capacity: 1) {

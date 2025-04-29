@@ -19,6 +19,15 @@ struct WidgetMapSettingsView: View {
             Text("The map will rotate based of movement direction if disabled.")
         }
         Section {
+            NavigationLink {
+                LocationSettingsView()
+            } label: {
+                IconAndTextView(image: "location", text: String(localized: "Location"))
+            }
+        } header: {
+            Text("Shortcut")
+        }
+        Section {
             HStack {
                 Slider(
                     value: $delay,

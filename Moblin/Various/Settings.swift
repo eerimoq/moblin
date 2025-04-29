@@ -137,23 +137,23 @@ class SettingsStreamSrtConnectionPriorities: Codable {
 }
 
 enum SettingsStreamSrtAdaptiveBitrateAlgorithm: Codable, CaseIterable {
+    case belabox
     case fastIrl
     case slowIrl
     case customIrl
-    case belabox
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        if container.contains(CodingKeys.fastIrl) {
+        if container.contains(CodingKeys.belabox) {
+            self = .belabox
+        } else if container.contains(CodingKeys.fastIrl) {
             self = .fastIrl
         } else if container.contains(CodingKeys.slowIrl) {
             self = .slowIrl
         } else if container.contains(CodingKeys.customIrl) {
             self = .customIrl
-        } else if container.contains(CodingKeys.belabox) {
-            self = .belabox
         } else {
-            self = .fastIrl
+            self = .belabox
         }
     }
 
@@ -174,14 +174,14 @@ enum SettingsStreamSrtAdaptiveBitrateAlgorithm: Codable, CaseIterable {
 
     func toString() -> String {
         switch self {
+        case .belabox:
+            return String(localized: "BELABOX")
         case .fastIrl:
             return String(localized: "Fast IRL")
         case .slowIrl:
             return String(localized: "Slow IRL")
         case .customIrl:
             return String(localized: "Custom IRL")
-        case .belabox:
-            return String(localized: "BELABOX")
         }
     }
 }
@@ -231,7 +231,7 @@ class SettingsStreamSrtAdaptiveBitrateBelaboxSettings: Codable {
 }
 
 class SettingsStreamSrtAdaptiveBitrate: Codable {
-    var algorithm: SettingsStreamSrtAdaptiveBitrateAlgorithm = .fastIrl
+    var algorithm: SettingsStreamSrtAdaptiveBitrateAlgorithm = .belabox
     var fastIrlSettings: SettingsStreamSrtAdaptiveBitrateFastIrlSettings? = .init()
     var customSettings: SettingsStreamSrtAdaptiveBitrateCustomSettings = .init()
     var belaboxSettings: SettingsStreamSrtAdaptiveBitrateBelaboxSettings? = .init()
@@ -331,6 +331,8 @@ class SettingsStreamRecording: Codable {
     var audioBitrate: UInt32? = 128_000
     var autoStartRecording: Bool? = false
     var autoStopRecording: Bool? = false
+    var cleanRecordings: Bool? = false
+    var cleanSnapshots: Bool? = false
 
     func clone() -> SettingsStreamRecording {
         let new = SettingsStreamRecording()
@@ -340,6 +342,8 @@ class SettingsStreamRecording: Codable {
         new.audioBitrate = audioBitrate
         new.autoStartRecording = autoStartRecording
         new.autoStopRecording = autoStopRecording
+        new.cleanRecordings = cleanRecordings
+        new.cleanSnapshots = cleanSnapshots
         return new
     }
 
@@ -397,6 +401,7 @@ class SettingsStream: Codable, Identifiable, Equatable {
     var url: String = defaultStreamUrl
     var twitchChannelName: String = ""
     var twitchChannelId: String = ""
+    var twitchShowFollows: Bool? = true
     var twitchAccessToken: String? = ""
     var twitchLoggedIn: Bool? = false
     var twitchRewards: [SettingsStreamTwitchReward]? = []
@@ -623,6 +628,9 @@ enum SettingsSceneCameraPosition: String, Codable, CaseIterable {
     case srtla = "SRT(LA)"
     case mediaPlayer = "Media player"
     case screenCapture = "Screen capture"
+    case backTripleLowEnergy = "Back triple"
+    case backDualLowEnergy = "Back dual"
+    case backWideDualLowEnergy = "Back wide dual"
 
     public init(from decoder: Decoder) throws {
         self = try SettingsSceneCameraPosition(rawValue: decoder.singleValueContainer()
@@ -638,6 +646,9 @@ enum SettingsCameraId {
     case mediaPlayer(id: UUID)
     case external(id: String, name: String)
     case screenCapture
+    case backTripleLowEnergy
+    case backDualLowEnergy
+    case backWideDualLowEnergy
 }
 
 class SettingsScene: Codable, Identifiable, Equatable {
@@ -657,6 +668,7 @@ class SettingsScene: Codable, Identifiable, Equatable {
     var videoSourceRotation: Double? = 0.0
     var videoStabilizationMode: SettingsVideoStabilizationMode? = .off
     var overrideVideoStabilizationMode: Bool? = false
+    var fillFrame: Bool? = false
 
     init(name: String) {
         self.name = name
@@ -701,6 +713,12 @@ class SettingsScene: Codable, Identifiable, Equatable {
             return .mediaPlayer(id: mediaPlayerCameraId!)
         case .screenCapture:
             return .screenCapture
+        case .backTripleLowEnergy:
+            return .backTripleLowEnergy
+        case .backDualLowEnergy:
+            return .backDualLowEnergy
+        case .backWideDualLowEnergy:
+            return .backWideDualLowEnergy
         }
     }
 
@@ -727,6 +745,12 @@ class SettingsScene: Codable, Identifiable, Equatable {
             externalCameraName = name
         case .screenCapture:
             cameraPosition = .screenCapture
+        case .backTripleLowEnergy:
+            cameraPosition = .backTripleLowEnergy
+        case .backDualLowEnergy:
+            cameraPosition = .backDualLowEnergy
+        case .backWideDualLowEnergy:
+            cameraPosition = .backWideDualLowEnergy
         }
     }
 }
@@ -834,6 +858,88 @@ enum SettingsFontWeight: String, Codable, CaseIterable {
 
 let textWidgetFontWeights = SettingsFontWeight.allCases.map { $0.toString() }
 
+enum SettingsHorizontalAlignment: String, Codable, CaseIterable {
+    case leading = "Leading"
+    case trailing = "Trailing"
+
+    public init(from decoder: Decoder) throws {
+        self = try SettingsHorizontalAlignment(rawValue: decoder.singleValueContainer()
+            .decode(RawValue.self)) ?? .leading
+    }
+
+    static func fromString(value: String) -> SettingsHorizontalAlignment {
+        switch value {
+        case String(localized: "Leading"):
+            return .leading
+        case String(localized: "Trailing"):
+            return .trailing
+        default:
+            return .leading
+        }
+    }
+
+    func toString() -> String {
+        switch self {
+        case .leading:
+            return String(localized: "Leading")
+        case .trailing:
+            return String(localized: "Trailing")
+        }
+    }
+
+    func toSystem() -> HorizontalAlignment {
+        switch self {
+        case .leading:
+            return .leading
+        case .trailing:
+            return .trailing
+        }
+    }
+}
+
+let textWidgetHorizontalAlignments = SettingsHorizontalAlignment.allCases.map { $0.toString() }
+
+enum SettingsVerticalAlignment: String, Codable, CaseIterable {
+    case top = "Top"
+    case bottom = "Bottom"
+
+    public init(from decoder: Decoder) throws {
+        self = try SettingsVerticalAlignment(rawValue: decoder.singleValueContainer()
+            .decode(RawValue.self)) ?? .top
+    }
+
+    static func fromString(value: String) -> SettingsVerticalAlignment {
+        switch value {
+        case String(localized: "Top"):
+            return .top
+        case String(localized: "Bottom"):
+            return .bottom
+        default:
+            return .top
+        }
+    }
+
+    func toString() -> String {
+        switch self {
+        case .top:
+            return String(localized: "Top")
+        case .bottom:
+            return String(localized: "Bottom")
+        }
+    }
+
+    func toSystem() -> VerticalAlignment {
+        switch self {
+        case .top:
+            return .top
+        case .bottom:
+            return .bottom
+        }
+    }
+}
+
+let textWidgetVerticalAlignments = SettingsVerticalAlignment.allCases.map { $0.toString() }
+
 class SettingsWidgetTextTimer: Codable, Identifiable {
     var id: UUID = .init()
     var delta: Int = 5
@@ -850,8 +956,14 @@ class SettingsWidgetTextRating: Codable, Identifiable {
     var rating: Int = 0
 }
 
+class SettingsWidgetTextLapTimes: Codable, Identifiable {
+    var id: UUID = .init()
+    var currentLapStartTime: Double?
+    var lapTimes: [Double] = []
+}
+
 class SettingsWidgetText: Codable {
-    var formatString: String = "{time}"
+    var formatString: String = "{shortTime}"
     var backgroundColor: RgbColor? = .init(red: 0, green: 0, blue: 0, opacity: 0.75)
     var clearBackgroundColor: Bool? = false
     var foregroundColor: RgbColor? = .init(red: 255, green: 255, blue: 255)
@@ -859,6 +971,10 @@ class SettingsWidgetText: Codable {
     var fontSize: Int? = 30
     var fontDesign: SettingsFontDesign? = .default
     var fontWeight: SettingsFontWeight? = .regular
+    var fontMonospacedDigits: Bool? = false
+    var alignment: SettingsHorizontalAlignment? = .leading
+    var horizontalAlignment: SettingsHorizontalAlignment? = .leading
+    var verticalAlignment: SettingsVerticalAlignment? = .top
     var delay: Double? = 0.0
     var timers: [SettingsWidgetTextTimer]? = []
     var needsWeather: Bool? = false
@@ -866,6 +982,7 @@ class SettingsWidgetText: Codable {
     var needsSubtitles: Bool? = false
     var checkboxes: [SettingsWidgetTextCheckbox]? = []
     var ratings: [SettingsWidgetTextRating]? = []
+    var lapTimes: [SettingsWidgetTextLapTimes]? = []
 }
 
 class SettingsWidgetCrop: Codable {
@@ -1050,15 +1167,52 @@ class SettingsWidgetAlertsTwitch: Codable {
     }
 }
 
-class SettingsWidgetAlertsChatBotCommand: Codable, Identifiable {
+enum SettingsWidgetAlertsChatBotCommandImageType: String, Codable, CaseIterable {
+    case file = "File"
+    case imagePlayground = "Image Playground"
+
+    public init(from decoder: Decoder) throws {
+        self = try SettingsWidgetAlertsChatBotCommandImageType(rawValue: decoder.singleValueContainer()
+            .decode(RawValue.self)) ??
+            .file
+    }
+
+    static func fromString(value: String) -> SettingsWidgetAlertsChatBotCommandImageType {
+        switch value {
+        case String(localized: "File"):
+            return .file
+        case String(localized: "Image Playground"):
+            return .imagePlayground
+        default:
+            return .file
+        }
+    }
+
+    func toString() -> String {
+        switch self {
+        case .file:
+            return String(localized: "File")
+        case .imagePlayground:
+            return String(localized: "Image Playground")
+        }
+    }
+}
+
+let chatBotCommandImageTypes = SettingsWidgetAlertsChatBotCommandImageType.allCases.map { $0.toString() }
+
+class SettingsWidgetAlertsChatBotCommand: Codable, Identifiable, @unchecked Sendable {
     var id: UUID = .init()
     var name: String = "myname"
     var alert: SettingsWidgetAlertsAlert = .init()
+    var imageType: SettingsWidgetAlertsChatBotCommandImageType? = .file
+    var imagePlaygroundImageId: UUID? = .init()
 
     func clone() -> SettingsWidgetAlertsChatBotCommand {
         let new = SettingsWidgetAlertsChatBotCommand()
         new.name = name
         new.alert = alert.clone()
+        new.imageType = imageType!
+        new.imagePlaygroundImageId = imagePlaygroundImageId!
         return new
     }
 }
@@ -1156,6 +1310,11 @@ class SettingsWidgetVideoSource: Codable {
     var cropWidth: Double? = 0.5
     var cropHeight: Double? = 1.0
     var rotation: Double? = 0.0
+    var trackFaceEnabled: Bool? = false
+    var trackFaceZoom: Double? = 0.75
+    var mirror: Bool? = false
+    var borderWidth: Double? = 0
+    var borderColor: RgbColor? = .init(red: 0, green: 0, blue: 0)
 
     func toEffectSettings() -> VideoSourceEffectSettings {
         return .init(cornerRadius: cornerRadius,
@@ -1164,7 +1323,16 @@ class SettingsWidgetVideoSource: Codable {
                      cropY: cropY!,
                      cropWidth: cropWidth!,
                      cropHeight: cropHeight!,
-                     rotation: rotation!)
+                     rotation: rotation!,
+                     trackFaceEnabled: trackFaceEnabled!,
+                     trackFaceZoom: 1.5 + (1 - trackFaceZoom!) * 4,
+                     mirror: mirror!,
+                     borderWidth: borderWidth!,
+                     borderColor: CIColor(
+                         red: Double(borderColor!.red) / 255,
+                         green: Double(borderColor!.green) / 255,
+                         blue: Double(borderColor!.blue) / 255
+                     ))
     }
 
     func toCameraId() -> SettingsCameraId {
@@ -1183,6 +1351,12 @@ class SettingsWidgetVideoSource: Codable {
             return .mediaPlayer(id: mediaPlayerCameraId!)
         case .screenCapture:
             return .screenCapture
+        case .backTripleLowEnergy:
+            return .backTripleLowEnergy
+        case .backDualLowEnergy:
+            return .backDualLowEnergy
+        case .backWideDualLowEnergy:
+            return .backWideDualLowEnergy
         }
     }
 
@@ -1209,6 +1383,12 @@ class SettingsWidgetVideoSource: Codable {
             externalCameraName = name
         case .screenCapture:
             cameraPosition = .screenCapture
+        case .backTripleLowEnergy:
+            cameraPosition = .backTripleLowEnergy
+        case .backDualLowEnergy:
+            cameraPosition = .backDualLowEnergy
+        case .backWideDualLowEnergy:
+            cameraPosition = .backWideDualLowEnergy
         }
     }
 }
@@ -1433,6 +1613,7 @@ enum SettingsButtonType: String, Codable, CaseIterable {
     case grayScale = "Gray scale"
     case sepia = "Sepia"
     case triple = "Triple"
+    case twin = "Twin"
     case pixellate = "Pixellate"
     case stream = "Stream"
     case grid = "Grid"
@@ -1458,6 +1639,10 @@ enum SettingsButtonType: String, Codable, CaseIterable {
     case lockScreen = "Lock screen"
     case djiDevices = "DJI devices"
     case portrait = "Portrait"
+    case goPro = "GoPro"
+    case replay = "Replay"
+    case connectionPriorities = "Connection priorities"
+    case instantReplay = "Instant replay"
 
     public init(from decoder: Decoder) throws {
         var value = try decoder.singleValueContainer().decode(RawValue.self)
@@ -1567,7 +1752,8 @@ class SettingsShow: Codable {
     var zoom: Bool = false
     var zoomPresets: Bool = true
     var microphone: Bool = false
-    var audioBar: Bool = true
+    // periphery:ignore
+    var audioBar: Bool? = true
     var cameras: Bool? = false
     var obsStatus: Bool? = true
     var rtmpSpeed: Bool? = true
@@ -1580,6 +1766,9 @@ class SettingsShow: Codable {
     var djiDevices: Bool? = true
     var bondingRtts: Bool? = false
     var moblink: Bool? = true
+    var catPrinter: Bool? = true
+    var cyclingPowerDevice: Bool? = true
+    var heartRateDevice: Bool? = true
 }
 
 class SettingsZoomPreset: Codable, Identifiable, Equatable {
@@ -1684,6 +1873,7 @@ class SettingsChatBotPermissionsCommand: Codable {
     var subscribersEnabled: Bool? = false
     var minimumSubscriberTier: Int? = 1
     var othersEnabled: Bool = false
+    var sendChatMessages: Bool? = false
 }
 
 class SettingsChatBotPermissions: Codable {
@@ -1696,6 +1886,8 @@ class SettingsChatBotPermissions: Codable {
     var filter: SettingsChatBotPermissionsCommand? = .init()
     var tesla: SettingsChatBotPermissionsCommand? = .init()
     var audio: SettingsChatBotPermissionsCommand? = .init()
+    var reaction: SettingsChatBotPermissionsCommand? = .init()
+    var scene: SettingsChatBotPermissionsCommand? = .init()
 }
 
 class SettingsChat: Codable {
@@ -1805,6 +1997,7 @@ class SettingsHttpProxy: Codable {
 class SettingsTesla: Codable {
     var vin: String = ""
     var privateKey: String = ""
+    var enabled: Bool? = true
 }
 
 enum SettingsDnsLookupStrategy: String, Codable, CaseIterable {
@@ -1841,15 +2034,19 @@ class SettingsDebug: Codable {
     var removeWindNoise: Bool? = false
     var httpProxy: SettingsHttpProxy? = .init()
     var tesla: SettingsTesla? = .init()
-    var prettySnapshot: Bool? = false
     var reliableChat: Bool? = false
     var timecodesEnabled: Bool? = false
     var dnsLookupStrategy: SettingsDnsLookupStrategy? = .system
     var srtlaBatchSend: Bool? = false
-    var cameraControlsEnabled: Bool? = false
+    var cameraControlsEnabled: Bool? = true
     var dataRateLimitFactor: Float? = 2.0
     var bitrateDropFix: Bool? = false
     var relaxedBitrate: Bool? = false
+    var externalDisplayChat: Bool? = false
+    var videoSourceWidgetTrackFace: Bool? = false
+    var srtlaBatchSendEnabled: Bool? = true
+    var replay: Bool? = false
+    var recordSegmentLength: Double? = 5.0
 }
 
 class SettingsRtmpServerStream: Codable, Identifiable {
@@ -1924,6 +2121,10 @@ class SettingsSrtlaServer: Codable {
             new.streams.append(stream.clone())
         }
         return new
+    }
+
+    func srtlaSrtPort() -> UInt16 {
+        return srtlaPort + 1
     }
 }
 
@@ -2109,6 +2310,87 @@ class SettingsDjiDevices: Codable {
     var devices: [SettingsDjiDevice] = []
 }
 
+enum SettingsDjiGimbalDeviceModel: String, Codable {
+    case osmoMobile7P
+    case unknown
+
+    public init(from decoder: Decoder) throws {
+        self = try SettingsDjiGimbalDeviceModel(rawValue: decoder.singleValueContainer()
+            .decode(RawValue.self)) ?? .unknown
+    }
+}
+
+class SettingsDjiGimbalDevice: Codable, Identifiable {
+    var id: UUID = .init()
+    var name: String = ""
+    var enabled: Bool = false
+    var bluetoothPeripheralName: String?
+    var bluetoothPeripheralId: UUID?
+    var model: SettingsDjiGimbalDeviceModel = .unknown
+}
+
+class SettingsDjiGimbalDevices: Codable {
+    var devices: [SettingsDjiGimbalDevice] = []
+}
+
+class SettingsGoProWifiCredentials: Codable, Identifiable {
+    var id: UUID = .init()
+    var name = "My SSID"
+    var ssid = ""
+    var password = ""
+}
+
+class SettingsGoProRtmpUrl: Codable, Identifiable {
+    var id: UUID = .init()
+    var name = "My URL"
+    var type: SettingsDjiDeviceUrlType = .server
+    var serverStreamId: UUID = .init()
+    var serverUrl = ""
+    var customUrl = ""
+}
+
+class SettingsGoProLaunchLiveStream: Codable, Identifiable {
+    var id: UUID = .init()
+    var name = "1080p"
+    var isHero12Or13: Bool? = true
+}
+
+class SettingsGoPro: Codable {
+    var launchLiveStream: [SettingsGoProLaunchLiveStream] = []
+    var selectedLaunchLiveStream: UUID?
+    var wifiCredentials: [SettingsGoProWifiCredentials] = []
+    var selectedWifiCredentials: UUID?
+    var rtmpUrls: [SettingsGoProRtmpUrl] = []
+    var selectedRtmpUrl: UUID?
+}
+
+enum SettingsReplaySpeed: String, Codable, CaseIterable {
+    case oneHalf = "0.5x"
+    case one = "1x"
+
+    public init(from decoder: Decoder) throws {
+        self = try SettingsReplaySpeed(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
+            .one
+    }
+
+    func toNumber() -> Double {
+        switch self {
+        case .oneHalf:
+            return 0.5
+        case .one:
+            return 1.0
+        }
+    }
+}
+
+class SettingsReplay: Codable {
+    // periphery:ignore
+    var position: Double? = 10.0
+    var start: Double? = 20.0
+    var stop: Double? = 30.0
+    var speed: SettingsReplaySpeed = .one
+}
+
 class SettingsCatPrinter: Codable, Identifiable {
     var id: UUID = .init()
     var name: String = ""
@@ -2117,10 +2399,36 @@ class SettingsCatPrinter: Codable, Identifiable {
     var bluetoothPeripheralId: UUID?
     var printChat: Bool? = true
     var faxMeowSound: Bool? = true
+    var printSnapshots: Bool? = true
 }
 
 class SettingsCatPrinters: Codable {
     var devices: [SettingsCatPrinter] = []
+    var backgroundPrinting: Bool? = false
+}
+
+class SettingsCyclingPowerDevice: Codable, Identifiable {
+    var id: UUID = .init()
+    var name: String = ""
+    var enabled: Bool = false
+    var bluetoothPeripheralName: String?
+    var bluetoothPeripheralId: UUID?
+}
+
+class SettingsCyclingPowerDevices: Codable {
+    var devices: [SettingsCyclingPowerDevice] = []
+}
+
+class SettingsHeartRateDevice: Codable, Identifiable {
+    var id: UUID = .init()
+    var name: String = ""
+    var enabled: Bool = false
+    var bluetoothPeripheralName: String?
+    var bluetoothPeripheralId: UUID?
+}
+
+class SettingsHeartRateDevices: Codable {
+    var devices: [SettingsHeartRateDevice] = []
 }
 
 class SettingsQuickButtons: Codable {
@@ -2425,20 +2733,21 @@ class SettingsRemoteControl: Codable {
     var password: String? = randomGoodPassword()
 }
 
-class SettingsMoblinkServer: Codable {
+class SettingsMoblinkStreamer: Codable {
     var enabled: Bool = false
     var port: UInt16 = 7777
 }
 
-class SettingsMoblinkClient: Codable {
+class SettingsMoblinkRelay: Codable {
     var enabled: Bool = false
     var name: String = randomName()
     var url: String = ""
+    var manual: Bool? = false
 }
 
-class SettingsMoblinkRelay: Codable {
-    var server: SettingsMoblinkServer = .init()
-    var client: SettingsMoblinkClient = .init()
+class SettingsMoblink: Codable {
+    var server: SettingsMoblinkStreamer = .init()
+    var client: SettingsMoblinkRelay = .init()
     var password = "1234"
 }
 
@@ -2490,6 +2799,48 @@ enum SettingsSceneSwitchTransition: String, Codable, CaseIterable {
 
 let sceneSwitchTransitions = SettingsSceneSwitchTransition.allCases.map { $0.toString() }
 
+enum SettingsExternalDisplayContent: String, Codable, CaseIterable {
+    case stream = "Stream"
+    case cleanStream = "Clean stream"
+    case chat = "Chat"
+    case mirror = "Mirror"
+
+    public init(from decoder: Decoder) throws {
+        self = try SettingsExternalDisplayContent(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
+            .stream
+    }
+
+    static func fromString(value: String) -> SettingsExternalDisplayContent {
+        switch value {
+        case String(localized: "Stream"):
+            return .stream
+        case String(localized: "Clean stream"):
+            return .cleanStream
+        case String(localized: "Chat"):
+            return .chat
+        case String(localized: "Mirror"):
+            return .mirror
+        default:
+            return .stream
+        }
+    }
+
+    func toString() -> String {
+        switch self {
+        case .stream:
+            return String(localized: "Stream")
+        case .cleanStream:
+            return String(localized: "Clean stream")
+        case .chat:
+            return String(localized: "Chat")
+        case .mirror:
+            return String(localized: "Mirror")
+        }
+    }
+}
+
+let externalDisplayContents = SettingsExternalDisplayContent.allCases.map { $0.toString() }
+
 class SettingsPrivacyRegion: Codable, Identifiable {
     var id: UUID = .init()
     var latitude: Double = 0
@@ -2501,6 +2852,8 @@ class SettingsPrivacyRegion: Codable, Identifiable {
 class SettingsLocation: Codable {
     var enabled: Bool = false
     var privacyRegions: [SettingsPrivacyRegion] = []
+    var distance: Double? = 0.0
+    var resetWhenGoingLive: Bool? = false
 }
 
 class SettingsAudioOutputToInputChannelsMap: Codable {
@@ -2673,10 +3026,21 @@ class Database: Codable {
     var scoreboardPlayers: [SettingsWidgetScoreboardPlayer]? = .init()
     var keyboard: SettingsKeyboard? = .init()
     var tesla: SettingsTesla? = .init()
-    var srtlaRelay: SettingsMoblinkRelay? = .init()
+    var srtlaRelay: SettingsMoblink? = .init()
     var pixellateStrength: Float? = 0.3
-    var moblink: SettingsMoblinkRelay? = .init()
+    var moblink: SettingsMoblink? = .init()
     var sceneSwitchTransition: SettingsSceneSwitchTransition? = .blur
+    var forceSceneSwitchTransition: Bool? = false
+    var cameraControlsEnabled: Bool? = true
+    var externalDisplayContent: SettingsExternalDisplayContent? = .stream
+    var cyclingPowerDevices: SettingsCyclingPowerDevices? = .init()
+    var heartRateDevices: SettingsHeartRateDevices? = .init()
+    var djiGimbalDevices: SettingsDjiGimbalDevices? = .init()
+    var remoteSceneId: UUID?
+    var sceneNumericInput: Bool? = false
+    var goPro: SettingsGoPro? = .init()
+    var replay: SettingsReplay? = .init()
+    var portraitVideoOffsetFromTop: Double? = 0.0
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -2692,12 +3056,13 @@ class Database: Codable {
         if database.bitratePresets.isEmpty {
             addDefaultBitratePresets(database: database)
         }
-        addMissingGlobalButtons(database: database)
+        addMissingQuickButtons(database: database)
         for button in database.globalButtons! where button.type != .interactiveChat && button.type != .cameraPreview {
             button.isOn = false
         }
         addMissingDeepLinkQuickButtons(database: database)
         addMissingBundledLuts(database: database)
+        addMissingGoPro(database: database)
         return database
     }
 
@@ -2786,7 +3151,7 @@ private func addDefaultBitratePresets(database: Database) {
     ]
 }
 
-private func updateGlobalButton(database: Database, button: SettingsButton) {
+private func updateQuickButton(database: Database, button: SettingsButton) {
     let existingButton = database.globalButtons!.first(where: { globalButton in
         globalButton.type == button.type
     })
@@ -2799,7 +3164,7 @@ private func updateGlobalButton(database: Database, button: SettingsButton) {
     }
 }
 
-private func addMissingGlobalButtons(database: Database) {
+private func addMissingQuickButtons(database: Database) {
     if database.globalButtons == nil {
         database.globalButtons = []
     }
@@ -2809,7 +3174,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "flashlight.on.fill"
     button.systemImageNameOff = "flashlight.off.fill"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Mute"))
     button.id = UUID()
@@ -2817,7 +3182,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "mic.slash"
     button.systemImageNameOff = "mic"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Bitrate"))
     button.id = UUID()
@@ -2825,7 +3190,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "speedometer"
     button.systemImageNameOff = "speedometer"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Mic"))
     button.id = UUID()
@@ -2833,7 +3198,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "music.mic"
     button.systemImageNameOff = "music.mic"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Chat"))
     button.id = UUID()
@@ -2841,7 +3206,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "message.fill"
     button.systemImageNameOff = "message"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Interactive chat"))
     button.id = UUID()
@@ -2849,7 +3214,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "arrow.up.message.fill"
     button.systemImageNameOff = "arrow.up.message"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Black screen"))
     button.id = UUID()
@@ -2857,7 +3222,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "sunset.fill"
     button.systemImageNameOff = "sunset"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Lock screen"))
     button.id = UUID()
@@ -2865,7 +3230,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "lock.fill"
     button.systemImageNameOff = "lock"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Record"))
     button.id = UUID()
@@ -2873,7 +3238,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "record.circle.fill"
     button.systemImageNameOff = "record.circle"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Stream"))
     button.id = UUID()
@@ -2881,7 +3246,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "dot.radiowaves.left.and.right"
     button.systemImageNameOff = "dot.radiowaves.left.and.right"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Recordings"))
     button.id = UUID()
@@ -2889,7 +3254,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "photo.on.rectangle.angled.fill"
     button.systemImageNameOff = "photo.on.rectangle.angled"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Snapshot"))
     button.id = UUID()
@@ -2897,7 +3262,23 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "camera.aperture"
     button.systemImageNameOff = "camera.aperture"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
+
+    button = SettingsButton(name: String(localized: "Replay"))
+    button.id = UUID()
+    button.type = .replay
+    button.imageType = "System name"
+    button.systemImageNameOn = "play.fill"
+    button.systemImageNameOff = "play"
+    updateQuickButton(database: database, button: button)
+
+    button = SettingsButton(name: String(localized: "Instant replay"))
+    button.id = UUID()
+    button.type = .instantReplay
+    button.imageType = "System name"
+    button.systemImageNameOn = "memories"
+    button.systemImageNameOff = "memories"
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "OBS"))
     button.id = UUID()
@@ -2905,7 +3286,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "xserve"
     button.systemImageNameOff = "xserve"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Remote"))
     button.id = UUID()
@@ -2913,7 +3294,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "appletvremote.gen1.fill"
     button.systemImageNameOff = "appletvremote.gen1"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Widgets"))
     button.id = UUID()
@@ -2921,7 +3302,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "photo.on.rectangle.fill"
     button.systemImageNameOff = "photo.on.rectangle"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Draw"))
     button.id = UUID()
@@ -2929,7 +3310,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "pencil.line"
     button.systemImageNameOff = "pencil.line"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Camera"))
     button.id = UUID()
@@ -2937,7 +3318,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "camera.fill"
     button.systemImageNameOff = "camera"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Browser"))
     button.id = UUID()
@@ -2945,7 +3326,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "globe"
     button.systemImageNameOff = "globe"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Grid"))
     button.id = UUID()
@@ -2953,7 +3334,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "grid"
     button.systemImageNameOff = "grid"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Face"))
     button.id = UUID()
@@ -2961,7 +3342,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "theatermask.and.paintbrush.fill"
     button.systemImageNameOff = "theatermask.and.paintbrush"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Movie"))
     button.id = UUID()
@@ -2969,7 +3350,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "film.fill"
     button.systemImageNameOff = "film"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "4:3"))
     button.id = UUID()
@@ -2977,7 +3358,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "square.fill"
     button.systemImageNameOff = "square"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Gray scale"))
     button.id = UUID()
@@ -2985,7 +3366,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "moon.fill"
     button.systemImageNameOff = "moon"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Sepia"))
     button.id = UUID()
@@ -2993,7 +3374,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "moonphase.waxing.crescent.inverse"
     button.systemImageNameOff = "moonphase.waning.crescent"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Triple"))
     button.id = UUID()
@@ -3001,7 +3382,15 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "person.3.fill"
     button.systemImageNameOff = "person.3"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
+
+    button = SettingsButton(name: String(localized: "Twin"))
+    button.id = UUID()
+    button.type = .twin
+    button.imageType = "System name"
+    button.systemImageNameOn = "person.2.fill"
+    button.systemImageNameOff = "person.2"
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Pixellate"))
     button.id = UUID()
@@ -3009,7 +3398,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "squareshape.split.2x2"
     button.systemImageNameOff = "squareshape.split.2x2"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Local overlays"))
     button.id = UUID()
@@ -3017,7 +3406,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "square.stack.3d.up.slash.fill"
     button.systemImageNameOff = "square.stack.3d.up.slash"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Poll"))
     button.id = UUID()
@@ -3025,7 +3414,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "chart.bar.xaxis"
     button.systemImageNameOff = "chart.bar.xaxis"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "LUTs"))
     button.id = UUID()
@@ -3033,7 +3422,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "camera.filters"
     button.systemImageNameOff = "camera.filters"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Workout"))
     button.id = UUID()
@@ -3041,7 +3430,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "figure.run"
     button.systemImageNameOff = "figure.run"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Skip current TTS"))
     button.id = UUID()
@@ -3049,7 +3438,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "waveform.slash"
     button.systemImageNameOff = "waveform.slash"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Ads"))
     button.id = UUID()
@@ -3057,7 +3446,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "cup.and.saucer.fill"
     button.systemImageNameOff = "cup.and.saucer"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Stream marker"))
     button.id = UUID()
@@ -3065,7 +3454,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "bookmark.fill"
     button.systemImageNameOff = "bookmark"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Reload browser widgets"))
     button.id = UUID()
@@ -3073,7 +3462,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "arrow.clockwise"
     button.systemImageNameOff = "arrow.clockwise"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "DJI devices"))
     button.id = UUID()
@@ -3081,7 +3470,15 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "appletvremote.gen1.fill"
     button.systemImageNameOff = "appletvremote.gen1"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
+
+    button = SettingsButton(name: String(localized: "GoPro"))
+    button.id = UUID()
+    button.type = .goPro
+    button.imageType = "System name"
+    button.systemImageNameOn = "appletvremote.gen1.fill"
+    button.systemImageNameOff = "appletvremote.gen1"
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Camera preview"))
     button.id = UUID()
@@ -3089,7 +3486,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "camera.rotate.fill"
     button.systemImageNameOff = "camera.rotate"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Portrait"))
     button.id = UUID()
@@ -3097,7 +3494,15 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "rectangle.portrait.rotate"
     button.systemImageNameOff = "rectangle.portrait.rotate"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
+
+    button = SettingsButton(name: String(localized: "Connection priorities"))
+    button.id = UUID()
+    button.type = .connectionPriorities
+    button.imageType = "System name"
+    button.systemImageNameOn = "phone.connection.fill"
+    button.systemImageNameOff = "phone.connection"
+    updateQuickButton(database: database, button: button)
 
     database.globalButtons = database.globalButtons!.filter { button in
         if button.type == .unknown {
@@ -3121,13 +3526,13 @@ private func addMissingDeepLinkQuickButtons(database: Database) {
         database.deepLinkCreator!.quickButtons = .init()
     }
     let quickButtons = database.deepLinkCreator!.quickButtons!
-    for globalButton in database.globalButtons! where globalButton.type != .lut {
+    for quickButton in database.globalButtons! where quickButton.type != .lut {
         let button = DeepLinkCreatorQuickButton()
         let buttonExists = quickButtons.buttons.contains(where: { button in
-            globalButton.type == button.type
+            quickButton.type == button.type
         })
         if !buttonExists {
-            button.type = globalButton.type
+            button.type = quickButton.type
             quickButtons.buttons.append(button)
         }
     }
@@ -3149,6 +3554,17 @@ private func addMissingBundledLuts(database: Database) {
         }
     }
     database.color!.bundledLuts = bundledLuts
+}
+
+private func addMissingGoPro(database: Database) {
+    if database.goPro == nil {
+        database.goPro = .init()
+    }
+    let goPro = database.goPro!
+    if goPro.launchLiveStream.isEmpty {
+        goPro.launchLiveStream = [.init()]
+        goPro.selectedLaunchLiveStream = goPro.launchLiveStream.first?.id
+    }
 }
 
 private func updateBundledAlertsMediaGallery(database: Database) {
@@ -3212,7 +3628,7 @@ private func createDefault() -> Database {
     addDefaultScenes(database: database)
     addDefaultZoomPresets(database: database)
     addDefaultBitratePresets(database: database)
-    addMissingGlobalButtons(database: database)
+    addMissingQuickButtons(database: database)
     addMissingDeepLinkQuickButtons(database: database)
     addScenesToGameController(database: database)
     addMissingBundledLuts(database: database)
@@ -4479,10 +4895,6 @@ final class Settings {
             realDatabase.chat.botCommandPermissions!.audio = .init()
             store()
         }
-        if realDatabase.debug.prettySnapshot == nil {
-            realDatabase.debug.prettySnapshot = false
-            store()
-        }
         if realDatabase.tesla == nil {
             realDatabase.tesla = .init()
             realDatabase.tesla!.vin = realDatabase.debug.tesla!.vin
@@ -4550,7 +4962,7 @@ final class Settings {
             store()
         }
         if realDatabase.debug.cameraControlsEnabled == nil {
-            realDatabase.debug.cameraControlsEnabled = false
+            realDatabase.debug.cameraControlsEnabled = true
             store()
         }
         if realDatabase.show.djiDevices == nil {
@@ -4607,6 +5019,240 @@ final class Settings {
         }
         if realDatabase.sceneSwitchTransition == nil {
             realDatabase.sceneSwitchTransition = realDatabase.debug.blurSceneSwitch! ? .blur : .freeze
+            store()
+        }
+        if realDatabase.forceSceneSwitchTransition == nil {
+            realDatabase.forceSceneSwitchTransition = false
+            store()
+        }
+        if realDatabase.location!.distance == nil {
+            realDatabase.location!.distance = 0.0
+            store()
+        }
+        if realDatabase.catPrinters!.backgroundPrinting == nil {
+            realDatabase.catPrinters!.backgroundPrinting = false
+            store()
+        }
+        if realDatabase.show.catPrinter == nil {
+            realDatabase.show.catPrinter = true
+            store()
+        }
+        if realDatabase.moblink!.client.manual == nil {
+            realDatabase.moblink!.client.manual = !realDatabase.moblink!.client.url.isEmpty
+            store()
+        }
+        if realDatabase.cameraControlsEnabled == nil {
+            realDatabase.cameraControlsEnabled = realDatabase.debug.cameraControlsEnabled!
+            store()
+        }
+        for widget in realDatabase.widgets where widget.text.alignment == nil {
+            widget.text.alignment = .leading
+            store()
+        }
+        if realDatabase.debug.externalDisplayChat == nil {
+            realDatabase.debug.externalDisplayChat = false
+            store()
+        }
+        if realDatabase.externalDisplayContent == nil {
+            if realDatabase.debug.externalDisplayChat! {
+                realDatabase.externalDisplayContent = .chat
+            } else {
+                realDatabase.externalDisplayContent = .stream
+            }
+            store()
+        }
+        for stream in realDatabase.streams where stream.recording!.cleanRecordings == nil {
+            stream.recording!.cleanRecordings = false
+            store()
+        }
+        for stream in realDatabase.streams where stream.recording!.cleanSnapshots == nil {
+            stream.recording!.cleanSnapshots = false
+            store()
+        }
+        for widget in realDatabase.widgets where widget.text.horizontalAlignment == nil {
+            widget.text.horizontalAlignment = widget.text.alignment!
+            store()
+        }
+        for widget in realDatabase.widgets where widget.text.verticalAlignment == nil {
+            widget.text.verticalAlignment = .top
+            store()
+        }
+        if realDatabase.cyclingPowerDevices == nil {
+            realDatabase.cyclingPowerDevices = .init()
+            store()
+        }
+        if realDatabase.heartRateDevices == nil {
+            realDatabase.heartRateDevices = .init()
+            store()
+        }
+        if realDatabase.show.cyclingPowerDevice == nil {
+            realDatabase.show.cyclingPowerDevice = true
+            store()
+        }
+        if realDatabase.show.heartRateDevice == nil {
+            realDatabase.show.heartRateDevice = true
+            store()
+        }
+        if realDatabase.djiGimbalDevices == nil {
+            realDatabase.djiGimbalDevices = .init()
+            store()
+        }
+        for widget in database.widgets where widget.text.lapTimes == nil {
+            widget.text.lapTimes = []
+            store()
+        }
+        for widget in realDatabase.widgets where widget.text.fontMonospacedDigits == nil {
+            widget.text.fontMonospacedDigits = false
+            store()
+        }
+        for scene in realDatabase.scenes where scene.fillFrame == nil {
+            scene.fillFrame = false
+            store()
+        }
+        if realDatabase.chat.botCommandPermissions!.reaction == nil {
+            realDatabase.chat.botCommandPermissions!.reaction = .init()
+            store()
+        }
+        if realDatabase.chat.botCommandPermissions!.scene == nil {
+            realDatabase.chat.botCommandPermissions!.scene = .init()
+            store()
+        }
+        if realDatabase.location!.resetWhenGoingLive == nil {
+            realDatabase.location!.resetWhenGoingLive = false
+            store()
+        }
+        if realDatabase.debug.videoSourceWidgetTrackFace == nil {
+            realDatabase.debug.videoSourceWidgetTrackFace = false
+            store()
+        }
+        for widget in realDatabase.widgets where widget.videoSource!.trackFaceEnabled == nil {
+            widget.videoSource!.trackFaceEnabled = false
+            store()
+        }
+        if realDatabase.chat.botCommandPermissions!.tts.sendChatMessages == nil {
+            realDatabase.chat.botCommandPermissions!.tts.sendChatMessages = false
+            store()
+        }
+        if realDatabase.chat.botCommandPermissions!.fix.sendChatMessages == nil {
+            realDatabase.chat.botCommandPermissions!.fix.sendChatMessages = false
+            store()
+        }
+        if realDatabase.chat.botCommandPermissions!.map.sendChatMessages == nil {
+            realDatabase.chat.botCommandPermissions!.map.sendChatMessages = false
+            store()
+        }
+        if realDatabase.chat.botCommandPermissions!.alert!.sendChatMessages == nil {
+            realDatabase.chat.botCommandPermissions!.alert!.sendChatMessages = false
+            store()
+        }
+        if realDatabase.chat.botCommandPermissions!.fax!.sendChatMessages == nil {
+            realDatabase.chat.botCommandPermissions!.fax!.sendChatMessages = false
+            store()
+        }
+        if realDatabase.chat.botCommandPermissions!.snapshot!.sendChatMessages == nil {
+            realDatabase.chat.botCommandPermissions!.snapshot!.sendChatMessages = false
+            store()
+        }
+        if realDatabase.chat.botCommandPermissions!.filter!.sendChatMessages == nil {
+            realDatabase.chat.botCommandPermissions!.filter!.sendChatMessages = false
+            store()
+        }
+        if realDatabase.chat.botCommandPermissions!.tesla!.sendChatMessages == nil {
+            realDatabase.chat.botCommandPermissions!.tesla!.sendChatMessages = false
+            store()
+        }
+        if realDatabase.chat.botCommandPermissions!.audio!.sendChatMessages == nil {
+            realDatabase.chat.botCommandPermissions!.audio!.sendChatMessages = false
+            store()
+        }
+        if realDatabase.chat.botCommandPermissions!.reaction!.sendChatMessages == nil {
+            realDatabase.chat.botCommandPermissions!.reaction!.sendChatMessages = false
+            store()
+        }
+        if realDatabase.chat.botCommandPermissions!.scene!.sendChatMessages == nil {
+            realDatabase.chat.botCommandPermissions!.scene!.sendChatMessages = false
+            store()
+        }
+        for device in realDatabase.catPrinters!.devices where device.printSnapshots == nil {
+            device.printSnapshots = true
+            store()
+        }
+        for widget in realDatabase.widgets where widget.videoSource!.mirror == nil {
+            widget.videoSource!.mirror = false
+            store()
+        }
+        for widget in realDatabase.widgets where widget.videoSource!.trackFaceZoom == nil {
+            widget.videoSource!.trackFaceZoom = 0.75
+            store()
+        }
+        if realDatabase.sceneNumericInput == nil {
+            realDatabase.sceneNumericInput = false
+            store()
+        }
+        for widget in realDatabase.widgets {
+            for command in widget.alerts!.chatBot!.commands where command.imageType == nil {
+                command.imageType = .file
+                store()
+            }
+            for command in widget.alerts!.chatBot!.commands where command.imagePlaygroundImageId == nil {
+                command.imagePlaygroundImageId = .init()
+                store()
+            }
+        }
+        if realDatabase.debug.srtlaBatchSendEnabled == nil {
+            realDatabase.debug.srtlaBatchSendEnabled = true
+            store()
+        }
+        if realDatabase.goPro == nil {
+            realDatabase.goPro = .init()
+            store()
+        }
+        for launchLiveStream in realDatabase.goPro!.launchLiveStream where launchLiveStream.isHero12Or13 == nil {
+            launchLiveStream.isHero12Or13 = true
+            store()
+        }
+        for widget in realDatabase.widgets where widget.videoSource!.borderWidth == nil {
+            widget.videoSource!.borderWidth = 0
+            store()
+        }
+        for widget in realDatabase.widgets where widget.videoSource!.borderColor == nil {
+            widget.videoSource!.borderColor = .init(red: 0, green: 0, blue: 0)
+            store()
+        }
+        if realDatabase.tesla!.enabled == nil {
+            realDatabase.tesla!.enabled = true
+            store()
+        }
+        if realDatabase.debug.replay == nil {
+            realDatabase.debug.replay = false
+            store()
+        }
+        if realDatabase.debug.recordSegmentLength == nil {
+            realDatabase.debug.recordSegmentLength = 5.0
+            store()
+        }
+        for stream in realDatabase.streams where stream.twitchShowFollows == nil {
+            stream.twitchShowFollows = true
+            store()
+        }
+        if realDatabase.replay == nil {
+            realDatabase.replay = .init()
+            store()
+        }
+        if realDatabase.replay!.position == nil {
+            realDatabase.replay!.position = 10.0
+            store()
+        }
+        if realDatabase.replay!.start == nil {
+            realDatabase.replay!.start = 20.0
+            store()
+        }
+        if realDatabase.replay!.stop == nil {
+            realDatabase.replay!.stop = 30.0
+            store()
+        }
+        if realDatabase.portraitVideoOffsetFromTop == nil {
+            realDatabase.portraitVideoOffsetFromTop = 0.0
             store()
         }
     }

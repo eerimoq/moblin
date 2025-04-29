@@ -21,7 +21,7 @@ struct WidgetsSettingsView: View {
                         widget.enabled!
                     }, set: { value in
                         widget.enabled = value
-                        model.sceneUpdated()
+                        model.sceneUpdated(attachCamera: model.isCaptureDeviceVideoSoureWidget(widget: widget))
                     })) {
                         HStack {
                             DraggableItemPrefixView()

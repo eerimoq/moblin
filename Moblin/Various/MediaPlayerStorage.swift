@@ -25,11 +25,7 @@ class MediaPlayerStorage {
     }
 
     func ids() -> [UUID] {
-        do {
-            let files = try fileManager.contentsOfDirectory(atPath: mediasUrl.path)
-            return files.map { file in UUID(uuidString: file.components(separatedBy: ".")[0])! }
-        } catch {}
-        return []
+        return fileManager.idsBeforeDot(directory: mediasUrl.path)
     }
 
     func add(id: UUID, url: URL) {

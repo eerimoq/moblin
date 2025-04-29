@@ -1,7 +1,9 @@
 import AVKit
 import MapKit
 import MetalPetal
+import Network
 import SwiftUI
+import Vision
 import WeatherKit
 
 extension UIImage {
@@ -208,6 +210,18 @@ func hasUltraWideBackCamera() -> Bool {
     return AVCaptureDevice.default(.builtInUltraWideCamera, for: .video, position: .back) != nil
 }
 
+func hasTripleBackCamera() -> Bool {
+    return AVCaptureDevice.default(.builtInTripleCamera, for: .video, position: .back) != nil
+}
+
+func hasDualBackCamera() -> Bool {
+    return AVCaptureDevice.default(.builtInDualCamera, for: .video, position: .back) != nil
+}
+
+func hasWideDualBackCamera() -> Bool {
+    return AVCaptureDevice.default(.builtInDualWideCamera, for: .video, position: .back) != nil
+}
+
 func getBestBackCameraDevice() -> AVCaptureDevice? {
     var device = AVCaptureDevice.default(.builtInTripleCamera, for: .video, position: .back)
     if device == nil {
@@ -275,7 +289,7 @@ extension URL {
 
 private var thumbnails: [URL: UIImage] = [:]
 
-func createThumbnail(path: URL) -> UIImage? {
+func createThumbnail(path: URL, offset: Double = 0) -> UIImage? {
     if let thumbnail = thumbnails[path] {
         return thumbnail
     }
@@ -283,7 +297,10 @@ func createThumbnail(path: URL) -> UIImage? {
         let asset = AVURLAsset(url: path, options: nil)
         let imgGenerator = AVAssetImageGenerator(asset: asset)
         imgGenerator.appliesPreferredTrackTransform = true
-        let cgImage = try imgGenerator.copyCGImage(at: CMTimeMake(value: 0, timescale: 1), actualTime: nil)
+        let cgImage = try imgGenerator.copyCGImage(
+            at: CMTime(seconds: offset, preferredTimescale: 1000),
+            actualTime: nil
+        )
         let thumbnail = UIImage(cgImage: cgImage)
         thumbnails[path] = thumbnail
         return thumbnail
@@ -542,4 +559,122 @@ func getCpuUsage() -> Float {
         let isIdle = threadInfo.flags == TH_FLAGS_IDLE
         return !isIdle ? (Float(threadInfo.cpu_usage) / Float(TH_USAGE_SCALE)) * 100 : nil
     }.reduce(0, +)
+}
+
+extension FileManager {
+    func ids(directory: String) -> [UUID] {
+        var ids: [UUID] = []
+        for file in (try? contentsOfDirectory(atPath: directory)) ?? [] {
+            guard let id = UUID(uuidString: file) else {
+                continue
+            }
+            ids.append(id)
+        }
+        return ids
+    }
+
+    func idsBeforeDot(directory: String) -> [UUID] {
+        var ids: [UUID] = []
+        for file in (try? contentsOfDirectory(atPath: directory)) ?? [] {
+            let parts = file.components(separatedBy: ".")
+            guard parts.count > 1, let id = UUID(uuidString: parts[0]) else {
+                continue
+            }
+            ids.append(id)
+        }
+        return ids
+    }
+}
+
+final class NWConnectionWithId: Hashable, Equatable {
+    let id: String
+    let connection: NWConnection
+
+    init(connection: NWConnection) {
+        self.connection = connection
+        id = UUID().uuidString
+    }
+
+    static func == (lhs: NWConnectionWithId, rhs: NWConnectionWithId) -> Bool {
+        lhs.id == rhs.id
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+}
+
+extension NWConnection.ContentContext {
+    func webSocketOperation() -> NWProtocolWebSocket.Opcode? {
+        let definitions = protocolMetadata(definition: NWProtocolWebSocket.definition) as? Network.NWProtocolWebSocket
+            .Metadata
+        return definitions?.opcode
+    }
+}
+
+extension NWConnection {
+    func sendWebSocket(data: Data?, opcode: NWProtocolWebSocket.Opcode) {
+        let metadata = NWProtocolWebSocket.Metadata(opcode: opcode)
+        let context = NWConnection.ContentContext(identifier: "context", metadata: [metadata])
+        send(content: data, contentContext: context, isComplete: true, completion: .idempotent)
+    }
+}
+
+extension VNFaceObservation {
+    func stableBoundingBox(imageSize: CGSize, rotationAngle: Double = 0.0) -> CGRect? {
+        var allPoints = getFacePoints(imageSize: imageSize)
+        if rotationAngle != 0 {
+            allPoints = rotateFace(allPoints: allPoints, rotationAngle: -rotationAngle)
+        }
+        guard let firstPoint = allPoints.first else {
+            return nil
+        }
+        var faceMinX = firstPoint.x
+        var faceMaxX = firstPoint.x
+        var faceMinY = firstPoint.y
+        var faceMaxY = firstPoint.y
+        for point in allPoints {
+            faceMinX = min(point.x, faceMinX)
+            faceMaxX = max(point.x, faceMaxX)
+            faceMinY = min(point.y, faceMinY)
+            faceMaxY = max(point.y, faceMaxY)
+        }
+        let faceWidth = faceMaxX - faceMinX
+        let faceHeight = faceMaxY - faceMinY
+        return CGRect(x: faceMinX, y: faceMinY, width: faceWidth, height: faceHeight)
+    }
+
+    private func getFacePoints(imageSize: CGSize) -> [CGPoint] {
+        var points: [CGPoint] = []
+        points += landmarks?.medianLine?.pointsInImage(imageSize: imageSize) ?? []
+        points += landmarks?.leftEyebrow?.pointsInImage(imageSize: imageSize) ?? []
+        points += landmarks?.rightEyebrow?.pointsInImage(imageSize: imageSize) ?? []
+        return points
+    }
+}
+
+func rotateFace(allPoints: [CGPoint], rotationAngle: CGFloat) -> [CGPoint] {
+    return allPoints.map { rotatePoint(point: $0, alpha: rotationAngle) }
+}
+
+func rotatePoint(point: CGPoint, alpha: CGFloat) -> CGPoint {
+    let z = sqrt(pow(point.x, 2) + pow(point.y, 2))
+    let beta = atan(point.y / point.x)
+    return CGPoint(x: z * cos(alpha + beta), y: z * sin(alpha + beta))
+}
+
+func generateQrCode(from string: String) -> UIImage? {
+    let data = string.data(using: .utf8)
+    let filter = CIFilter.qrCodeGenerator()
+    filter.message = data!
+    filter.correctionLevel = "M"
+    guard let image = filter.outputImage else {
+        return nil
+    }
+    let output = image.transformed(by: CGAffineTransform(scaleX: 5, y: 5))
+    let context = CIContext()
+    guard let cgImage = context.createCGImage(output, from: output.extent) else {
+        return nil
+    }
+    return UIImage(cgImage: cgImage)
 }

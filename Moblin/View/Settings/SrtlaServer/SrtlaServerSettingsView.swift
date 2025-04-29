@@ -59,7 +59,11 @@ struct SrtlaServerSettingsView: View {
                 )
                 .disabled(model.srtlaServerEnabled())
             } footer: {
-                Text("The UDP port the SRT(LA) server listens for SRTLA publishers on.")
+                VStack(alignment: .leading) {
+                    Text("The UDP port the SRT(LA) server listens for SRTLA publishers on.")
+                    Text("")
+                    Text("The UDP port \(model.database.srtlaServer!.srtlaSrtPort()) will also be used.")
+                }
             }
             Section {
                 List {

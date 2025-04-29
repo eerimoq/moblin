@@ -1,5 +1,5 @@
 {
-  "originHash" : "e671b8ad5d542d911ad60805b747f3cb37dd3eb6eec37fd3f405c067fb95e8cf",
+  "originHash" : "479e4432ed781d0fd12328e1b0ecbf4a5bf478622a02a4294b02ef29e0b8d98e",
   "pins" : [
     {
       "identity" : "alerttoast",
@@ -20,24 +20,6 @@
       }
     },
     {
-      "identity" : "binarycodable",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/christophhagen/BinaryCodable",
-      "state" : {
-        "revision" : "f4bdd82c5da4a825634bd32c3b2ef70faa773143",
-        "version" : "3.0.3"
-      }
-    },
-    {
-      "identity" : "cocoaasyncsocket",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/robbiehanson/CocoaAsyncSocket.git",
-      "state" : {
-        "revision" : "dbdc00669c1ced63b27c3c5f052ee4d28f10150c",
-        "version" : "7.6.5"
-      }
-    },
-    {
       "identity" : "crcswift",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/ivanesik/CrcSwift.git",
@@ -52,16 +34,7 @@
       "location" : "https://github.com/devicekit/DeviceKit",
       "state" : {
         "branch" : "master",
-        "revision" : "d3bb693a66cbcf5e7c124af31684493d2e7b6bf2"
-      }
-    },
-    {
-      "identity" : "httpparserc",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/Building42/HTTPParserC.git",
-      "state" : {
-        "revision" : "a32b391977a17c30fceec0f38933a359dfdaf112",
-        "version" : "9.2.0"
+        "revision" : "866ddd8455bf2ecc95c8aa234fb7d695a2d1c3d3"
       }
     },
     {
@@ -69,8 +42,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/SDWebImage/libwebp-Xcode.git",
       "state" : {
-        "revision" : "b2b1d20a90b14d11f6ef4241da6b81c1d3f171e4",
-        "version" : "1.3.2"
+        "revision" : "0d60654eeefd5d7d2bef3835804892c40225e8b2",
+        "version" : "1.5.0"
       }
     },
     {
@@ -78,8 +51,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/cybozu/LicenseList.git",
       "state" : {
-        "revision" : "a74584035935447b81bcfea5319555812487001b",
-        "version" : "1.1.1"
+        "revision" : "4801461b9ca8eee843c19ab8fe88a590ce064e15",
+        "version" : "2.0.1"
       }
     },
     {
@@ -106,7 +79,7 @@
       "location" : "https://github.com/eerimoq/Rist",
       "state" : {
         "branch" : "main",
-        "revision" : "187877e078eb0ada72baa73dad99a6f93aa4bbfa"
+        "revision" : "99e0e251957910d23e699349bdf58626e53c5df6"
       }
     },
     {
@@ -114,8 +87,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/SDWebImage/SDWebImage.git",
       "state" : {
-        "revision" : "10d06f6a33bafae8c164fbfd1f03391f6d4692b3",
-        "version" : "5.20.0"
+        "revision" : "cac9a55a3ae92478a2c95042dcc8d9695d2129ca",
+        "version" : "5.21.0"
       }
     },
     {
@@ -142,7 +115,7 @@
       "location" : "https://github.com/apple/swift-argument-parser",
       "state" : {
         "branch" : "main",
-        "revision" : "5f48a1614f296024df7460b5b91fd07bfb4f3c17"
+        "revision" : "d67151befa39533a6a449136c7992537cbf8ec99"
       }
     },
     {
@@ -159,8 +132,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-protobuf.git",
       "state" : {
-        "revision" : "ebc7251dd5b37f627c93698e4374084d98409633",
-        "version" : "1.28.2"
+        "revision" : "d72aed98f8253ec1aa9ea1141e28150f408cf17f",
+        "version" : "1.29.0"
       }
     },
     {
@@ -169,16 +142,7 @@
       "location" : "https://github.com/eerimoq/SwiftCube",
       "state" : {
         "branch" : "main",
-        "revision" : "a662ab5f5ca8963219fd7ac22cf34ccc88f16ecd"
-      }
-    },
-    {
-      "identity" : "telegraph",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/Building42/Telegraph",
-      "state" : {
-        "revision" : "f56b6726195e271fea397b7dd11c4adc36d5a32d",
-        "version" : "0.40.0"
+        "revision" : "b83b5e6cbebb3a88508facba4a9af571c0499208"
       }
     },
     {

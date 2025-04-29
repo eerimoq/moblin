@@ -15,4 +15,8 @@ extension CMFormatDescription {
     func mediaType() -> CMMediaType {
         return CMFormatDescriptionGetMediaType(self)
     }
+
+    func numberOfAudioChannels() -> UInt32? {
+        return audioStreamBasicDescription?.mChannelsPerFrame
+    }
 }

@@ -186,6 +186,7 @@ private struct RemoteControlSettingsAssistantView: View {
             }, set: { value in
                 model.database.remoteControl!.client.enabled = value
                 model.reloadRemoteControlAssistant()
+                model.objectWillChange.send()
             })) {
                 Text("Enabled")
             }
@@ -275,6 +276,24 @@ struct RemoteControlSettingsView: View {
             }
             Section {
                 NavigationLink {
+                    StreamObsRemoteControlSettingsView(stream: model.stream)
+                } label: {
+                    Toggle(isOn: Binding(get: {
+                        model.stream.obsWebSocketEnabled!
+                    }, set: {
+                        model.setObsRemoteControlEnabled(enabled: $0)
+                    })) {
+                        IconAndTextView(
+                            image: "dot.radiowaves.left.and.right",
+                            text: String(localized: "OBS remote control")
+                        )
+                    }
+                }
+            } header: {
+                Text("Shortcut")
+            }
+            Section {
+                NavigationLink {
                     PasswordView(
                         value: model.database.remoteControl!.password!,
                         onSubmit: submitPassword
@@ -286,6 +305,8 @@ struct RemoteControlSettingsView: View {
                         sensitive: true
                     )
                 }
+            } header: {
+                Text("General")
             } footer: {
                 Text("Used by both streamer and assistant.")
             }

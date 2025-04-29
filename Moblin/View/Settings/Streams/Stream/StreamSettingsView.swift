@@ -1,5 +1,45 @@
 import SwiftUI
 
+struct StreamPlatformsSettingsView: View {
+    var stream: SettingsStream
+
+    var body: some View {
+        NavigationLink {
+            StreamTwitchSettingsView(
+                stream: stream,
+                loggedIn: stream.twitchLoggedIn!
+            )
+        } label: {
+            Text("Twitch")
+        }
+        NavigationLink {
+            StreamKickSettingsView(stream: stream)
+        } label: {
+            Text("Kick")
+        }
+        NavigationLink {
+            StreamYouTubeSettingsView(stream: stream)
+        } label: {
+            Text("YouTube")
+        }
+        NavigationLink {
+            StreamAfreecaTvSettingsView(stream: stream)
+        } label: {
+            Text("AfreecaTV")
+        }
+        NavigationLink {
+            StreamOpenStreamingPlatformSettingsView(stream: stream)
+        } label: {
+            Text("Open Streaming Platform")
+        }
+        NavigationLink {
+            StreamEmotesSettingsView(stream: stream)
+        } label: {
+            Text("Emotes")
+        }
+    }
+}
+
 struct StreamSettingsView: View {
     @EnvironmentObject private var model: Model
     var stream: SettingsStream
@@ -55,6 +95,11 @@ struct StreamSettingsView: View {
                     } label: {
                         Text("Recording")
                     }
+                    NavigationLink {
+                        StreamSnapshotSettingsView(stream: stream)
+                    } label: {
+                        Text("Snapshot")
+                    }
                 }
                 if isPhone() || isPad() {
                     Toggle(isOn: Binding(get: {
@@ -64,7 +109,6 @@ struct StreamSettingsView: View {
                         if stream.enabled {
                             model.setCurrentStream(stream: stream)
                             model.reloadStream()
-                            model.sceneUpdated(attachCamera: true)
                             model.resetSelectedScene(changeScene: false)
                             model.updateOrientation()
                         }
@@ -104,39 +148,9 @@ struct StreamSettingsView: View {
                 Text("Media")
             }
             Section {
-                NavigationLink { StreamTwitchSettingsView(
-                    stream: stream,
-                    loggedIn: stream.twitchLoggedIn!
-                ) } label: {
-                    Text("Twitch")
-                }
-                NavigationLink {
-                    StreamKickSettingsView(stream: stream)
-                } label: {
-                    Text("Kick")
-                }
-                NavigationLink {
-                    StreamYouTubeSettingsView(stream: stream)
-                } label: {
-                    Text("YouTube")
-                }
-                NavigationLink {
-                    StreamAfreecaTvSettingsView(stream: stream)
-                } label: {
-                    Text("AfreecaTV")
-                }
-                NavigationLink {
-                    StreamOpenStreamingPlatformSettingsView(stream: stream)
-                } label: {
-                    Text("Open Streaming Platform")
-                }
-                NavigationLink {
-                    StreamEmotesSettingsView(stream: stream)
-                } label: {
-                    Text("Emotes")
-                }
+                StreamPlatformsSettingsView(stream: stream)
             } header: {
-                Text("Platforms")
+                Text("Streaming platforms")
             }
             Section {
                 NavigationLink {
@@ -144,11 +158,8 @@ struct StreamSettingsView: View {
                 } label: {
                     Toggle("OBS remote control", isOn: Binding(get: {
                         stream.obsWebSocketEnabled!
-                    }, set: { value in
-                        stream.obsWebSocketEnabled = value
-                        if stream.enabled {
-                            model.obsWebSocketEnabledUpdated()
-                        }
+                    }, set: {
+                        model.setObsRemoteControlEnabled(enabled: $0)
                     }))
                 }
                 if model.database.showAllSettings! {
@@ -158,17 +169,9 @@ struct StreamSettingsView: View {
                         Toggle("RealtimeIRL", isOn: Binding(get: {
                             stream.realtimeIrlEnabled!
                         }, set: { value in
-                            stream.realtimeIrlEnabled = value
-                            if stream.enabled {
-                                model.reloadLocation()
-                            }
+                            model.setRealtimeIrlEnabled(enabled: value)
                         }))
                     }
-                }
-                NavigationLink {
-                    StreamDiscordSettingsView(stream: stream)
-                } label: {
-                    Text("Discord")
                 }
             }
             if model.database.showAllSettings! {

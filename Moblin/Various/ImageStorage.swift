@@ -25,11 +25,7 @@ class ImageStorage {
     }
 
     func ids() -> [UUID] {
-        do {
-            let files = try fileManager.contentsOfDirectory(atPath: imagesUrl.path)
-            return files.map { file in UUID(uuidString: file)! }
-        } catch {}
-        return []
+        return fileManager.ids(directory: imagesUrl.path)
     }
 
     func write(id: UUID, data: Data) {

@@ -48,7 +48,7 @@ class IPMonitor {
     }
 
     func start() {
-        monitor.start(queue: DispatchQueue.main)
+        monitor.start(queue: .main)
     }
 
     private func getIpAddresses(interfaceName: String) -> [(String, IPMonitor.IPType)] {

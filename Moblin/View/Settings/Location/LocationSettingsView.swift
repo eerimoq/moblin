@@ -35,16 +35,42 @@ struct LocationSettingsView: View {
                 }))
             }
             Section {
-                Text(model.getDistance())
+                Toggle(isOn: Binding(get: {
+                    model.database.location!.resetWhenGoingLive!
+                }, set: { value in
+                    model.database.location!.resetWhenGoingLive = value
+                })) {
+                    Text("Reset when going live")
+                }
                 Button(action: {
-                    model.resetDistance()
+                    model.resetLocationData()
                 }, label: {
                     HCenter {
                         Text("Reset")
                     }
                 })
             } header: {
-                Text("Distance")
+                Text("Location data")
+            } footer: {
+                Text("Resets distance, average speed and slope.")
+            }
+            Section {
+                NavigationLink {
+                    StreamRealtimeIrlSettingsView(stream: model.stream)
+                } label: {
+                    Toggle(isOn: Binding(get: {
+                        model.stream.realtimeIrlEnabled!
+                    }, set: { value in
+                        model.setRealtimeIrlEnabled(enabled: value)
+                    })) {
+                        IconAndTextView(
+                            image: "dot.radiowaves.left.and.right",
+                            text: String(localized: "RealtimeIRL")
+                        )
+                    }
+                }
+            } header: {
+                Text("Shortcut")
             }
             Section {
                 List {

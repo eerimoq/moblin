@@ -33,4 +33,9 @@ machine-translate:
 	python3 utils/translate.py Common/Localizable.xcstrings
 
 pack-exported-localizations:
-	cd Moblin\ Localizations && for f in * ; do python3 ../utils/xliff.py $$f/Localized\ Contents/*.xliff && zip -r $$f.zip $$f ; done
+	cd Moblin\ Localizations && \
+	for f in * ; do \
+	    python3 ../utils/xliff.py $$f/Localized\ Contents/*.xliff && \
+	    zip -qr $$f.zip $$f && \
+	    rm -rf $$f ; \
+	done

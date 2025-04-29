@@ -14,6 +14,7 @@ struct MoblinApp: App {
     var body: some Scene {
         WindowGroup {
             MainView(
+                webBrowserController: model.webBrowserController,
                 streamView: StreamView(
                     cameraPreviewView: CameraPreviewView(),
                     streamPreviewView: StreamPreviewView()
@@ -25,13 +26,40 @@ struct MoblinApp: App {
     }
 }
 
+struct ExternalScreenContentView: View {
+    @StateObject var model: Model
+
+    init() {
+        _model = StateObject(wrappedValue: MoblinApp.globalModel!)
+    }
+
+    var body: some View {
+        ExternalDisplayView()
+            .ignoresSafeArea()
+            .environmentObject(model)
+    }
+}
+
 class SceneDelegate: NSObject, UIWindowSceneDelegate {
     func scene(
-        _: UIScene,
-        willConnectTo _: UISceneSession,
+        _ scene: UIScene,
+        willConnectTo session: UISceneSession,
         options connectionOptions: UIScene.ConnectionOptions
     ) {
-        MoblinApp.globalModel?.handleSettingsUrls(urls: connectionOptions.urlContexts)
+        guard let model = MoblinApp.globalModel else {
+            return
+        }
+        model.handleSettingsUrls(urls: connectionOptions.urlContexts)
+        if session.role == .windowExternalDisplayNonInteractive, let windowScene = scene as? UIWindowScene {
+            model.externalMonitorConnected(windowScene: windowScene)
+        }
+    }
+
+    func sceneDidDisconnect(_: UIScene) {
+        guard let model = MoblinApp.globalModel else {
+            return
+        }
+        model.externalMonitorDisconnected()
     }
 
     func scene(_: UIScene, openURLContexts urlContexts: Set<UIOpenURLContext>) {
