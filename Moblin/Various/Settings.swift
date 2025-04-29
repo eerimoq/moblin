@@ -2454,6 +2454,7 @@ enum SettingsGameControllerButtonFunction: String, Codable, CaseIterable {
     case blackScreen = "Black screen"
     case chat = "Chat"
     case scene = "Scene"
+    case instantReplay = "Instant replay"
 
     public init(from decoder: Decoder) throws {
         var value = try decoder.singleValueContainer().decode(RawValue.self)
@@ -2485,6 +2486,8 @@ enum SettingsGameControllerButtonFunction: String, Codable, CaseIterable {
             return .chat
         case String(localized: "Scene"):
             return .scene
+        case String(localized: "Instant replay"):
+            return .instantReplay
         default:
             return .unused
         }
@@ -2512,6 +2515,8 @@ enum SettingsGameControllerButtonFunction: String, Codable, CaseIterable {
             return String(localized: "Chat")
         case .scene:
             return String(localized: "Scene")
+        case .instantReplay:
+            return String(localized: "Instant replay")
         }
     }
 }
@@ -2639,6 +2644,7 @@ enum SettingsKeyboardKeyFunction: String, Codable, CaseIterable {
     case blackScreen = "Black screen"
     case scene = "Scene"
     case widget = "Widget"
+    case instantReplay = "Instant replay"
 
     public init(from decoder: Decoder) throws {
         var value = try decoder.singleValueContainer().decode(RawValue.self)
@@ -2666,6 +2672,8 @@ enum SettingsKeyboardKeyFunction: String, Codable, CaseIterable {
             return .scene
         case String(localized: "Widget"):
             return .widget
+        case String(localized: "Instant replay"):
+            return .instantReplay
         default:
             return .unused
         }
@@ -2689,6 +2697,8 @@ enum SettingsKeyboardKeyFunction: String, Codable, CaseIterable {
             return String(localized: "Scene")
         case .widget:
             return String(localized: "Widget")
+        case .instantReplay:
+            return String(localized: "Instant replay")
         }
     }
 }

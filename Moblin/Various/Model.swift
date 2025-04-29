@@ -2218,6 +2218,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             if !pressed {
                 selectScene(id: button.sceneId)
             }
+        case .instantReplay:
+            if !pressed {
+                instantReplay()
+            }
         }
     }
 
@@ -6864,6 +6868,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             selectScene(id: key.sceneId)
         case .widget:
             toggleWidgetOnOff(id: key.widgetId!)
+        case .instantReplay:
+            instantReplay()
         }
         updateButtonStates()
         return .handled
