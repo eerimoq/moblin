@@ -12,7 +12,7 @@ struct StreamOverlayRightZoomPresetSelctorView: View {
                     presets.first { $0.id == model.frontZoomPresetId }
                 }, set: { value in
                     if let value {
-                        model.frontZoomPresetId = value.id
+                        model.setZoomPreset(id: value.id)
                     }
                 })) {
                     Text($0.name)
@@ -21,9 +21,6 @@ struct StreamOverlayRightZoomPresetSelctorView: View {
                             width: min(zoomSegmentWidth, (width - 20) / CGFloat(presets.count)),
                             height: segmentHeight
                         )
-                }
-                .onChange(of: model.frontZoomPresetId) { id in
-                    model.setCameraZoomPreset(id: id)
                 }
                 .background(pickerBackgroundColor)
                 .foregroundColor(.white)
@@ -40,7 +37,7 @@ struct StreamOverlayRightZoomPresetSelctorView: View {
                     presets.first { $0.id == model.backZoomPresetId }
                 }, set: { value in
                     if let value {
-                        model.backZoomPresetId = value.id
+                        model.setZoomPreset(id: value.id)
                     }
                 })) {
                     Text($0.name)
@@ -49,9 +46,6 @@ struct StreamOverlayRightZoomPresetSelctorView: View {
                             width: min(zoomSegmentWidth, (width - 20) / CGFloat(presets.count)),
                             height: segmentHeight
                         )
-                }
-                .onChange(of: model.backZoomPresetId) { id in
-                    model.setCameraZoomPreset(id: id)
                 }
                 .background(pickerBackgroundColor)
                 .foregroundColor(.white)

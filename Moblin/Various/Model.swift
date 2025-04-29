@@ -2149,6 +2149,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func handleGameControllerButtonZoom(pressed: Bool, x: Float) {
         if pressed {
+            clearZoomPresetId()
             if let x = setCameraZoomX(x: x, rate: database.zoom.speed!) {
                 setZoomX(x: x)
             }
@@ -7116,7 +7117,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func updateBackZoomSwitchTo() {
         if database.zoom.switchToBack.enabled {
-            clearZoomId()
+            clearZoomPresetId()
             backZoomX = database.zoom.switchToBack.x!
             updateBackZoomPresetId()
         }
@@ -7124,7 +7125,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func updateFrontZoomSwitchTo() {
         if database.zoom.switchToFront.enabled {
-            clearZoomId()
+            clearZoomPresetId()
             frontZoomX = database.zoom.switchToFront.x!
             updateFrontZoomPresetId()
         }
@@ -7418,8 +7419,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private func updateCameraControls() {
         media.setCameraControls(enabled: database.cameraControlsEnabled!)
     }
-
-    func setCameraZoomPreset(id: UUID) {
+    
+    func setZoomPreset(id: UUID) {
         switch cameraPosition {
         case .back:
             backZoomPresetId = id
@@ -7446,7 +7447,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 sendZoomPresetToWatch()
             }
         } else {
-            clearZoomId()
+            clearZoomPresetId()
         }
     }
 
@@ -7475,7 +7476,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         guard hasZoom else {
             return
         }
-        clearZoomId()
+        clearZoomPresetId()
         if let x = setCameraZoomX(x: zoomXPinch * amount, rate: rate) {
             setZoomX(x: x, setPinch: false)
         }
@@ -7485,13 +7486,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         guard hasZoom else {
             return
         }
-        clearZoomId()
+        clearZoomPresetId()
         if let x = setCameraZoomX(x: zoomXPinch * amount, rate: rate) {
             setZoomX(x: x)
         }
     }
 
-    private func clearZoomId() {
+    private func clearZoomPresetId() {
         switch cameraPosition {
         case .back:
             backZoomPresetId = noBackZoomPresetId
@@ -8186,6 +8187,7 @@ extension Model: RemoteControlStreamerDelegate {
     }
 
     func remoteControlStreamerSetZoom(x: Float, onComplete: @escaping () -> Void) {
+        clearZoomPresetId()
         if let x = setCameraZoomX(x: x, rate: database.zoom.speed!) {
             setZoomX(x: x)
         }
@@ -9150,7 +9152,7 @@ extension Model: WCSessionDelegate {
         }
         DispatchQueue.main.async {
             if self.isWatchLocal() {
-                self.clearZoomId()
+                self.clearZoomPresetId()
                 if let x = self.setCameraZoomX(x: x, rate: self.database.zoom.speed!) {
                     self.setZoomX(x: x)
                 }
@@ -9169,7 +9171,7 @@ extension Model: WCSessionDelegate {
         }
         DispatchQueue.main.async {
             if self.isWatchLocal() {
-                self.setCameraZoomPreset(id: zoomPresetId)
+                self.setZoomPreset(id: zoomPresetId)
             }
         }
     }
@@ -11558,7 +11560,7 @@ extension Model: MediaDelegate {
     }
 
     func mediaSetZoomX(x: Float) {
-        clearZoomId()
+        clearZoomPresetId()
         if let x = setCameraZoomX(x: x) {
             setZoomX(x: x)
         }
