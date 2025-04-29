@@ -323,8 +323,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@, et saa ottaa tilannekuvia, anteeksi. 😢"
+            "state" : "translated",
+            "value" : "%@, sinulla ei ole oikeutta ottaa kuvankaappauksia, anteeksi. 😢"
           }
         },
         "fr" : {
@@ -719,8 +719,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "-Ei mitään-"
+            "state" : "translated",
+            "value" : "- Ei mitään -"
           }
         },
         "fr" : {
@@ -1889,7 +1889,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "!moblin reaction <reaktio>"
           }
         },
@@ -2149,8 +2149,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "!moblin scene <imi>"
+            "state" : "translated",
+            "value" : "!moblin scene <nimi>"
           }
         },
         "fr" : {
@@ -5855,8 +5855,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ Anteeksi, et saa käyttää tätä chat -bot -komentoa 😢"
+            "state" : "translated",
+            "value" : "%@ Anteeksi, sinulla ei ole oikeutta käyttää tätä chatbot -komentoa 😢"
           }
         },
         "fr" : {
@@ -6257,8 +6257,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@Kiitos, että herätit valokuva -albumimme elämään. 🎉"
+            "state" : "translated",
+            "value" : "%@ Kiitos, että toit valokuva-albumiini elämää. 🎉"
           }
         },
         "fr" : {
@@ -6892,7 +6892,14 @@
       }
     },
     "%llds" : {
-
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld s"
+          }
+        }
+      }
     },
     "%llu" : {
       "localizations" : {
@@ -7578,8 +7585,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "<Reaktio> on sydämiä, ilotulitusta, ilmapalloja, konfetti- tai lasereita."
+            "state" : "translated",
+            "value" : "<reaktio> on hearts, fireworks, balloons, confetti tai lasers."
           }
         },
         "fr" : {
@@ -11610,7 +11617,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "250 tai enemmän millisekuntia. 2000 ms oletuksena."
           }
         },
@@ -12680,8 +12687,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "kisko"
+            "state" : "translated",
+            "value" : "gimbal"
           }
         },
         "fr" : {
@@ -15530,8 +15537,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Lisää {heartRate:%@} tekstin widget -sovellukseen, jotta syke näyttää stream."
+            "state" : "translated",
+            "value" : "Lisää {heartRate:%@} teksti-widgetiin näyttääksesi syke lähetyksessä."
           }
         },
         "fr" : {
@@ -16328,8 +16335,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Linjaus"
+            "state" : "translated",
+            "value" : "Tasaus"
           }
         },
         "fr" : {
@@ -16872,8 +16879,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "merkintä"
+            "state" : "translated",
+            "value" : "kohde"
           }
         },
         "fr" : {
@@ -18084,7 +18091,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Apple Watch"
           }
         },
@@ -22270,7 +22277,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Taustatulostus"
           }
         },
@@ -25522,7 +25529,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Sumennus ja zoomaus"
           }
         },
@@ -28348,8 +28355,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Kameran sieppauksen asetusvirhe"
+            "state" : "translated",
+            "value" : "Kameran kaappauksen asetusvirhe"
           }
         },
         "fr" : {
@@ -28865,10 +28872,24 @@
       }
     },
     "Can only replay when recording" : {
-
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pystyt uudelleentoistamaan vain tallentaessa"
+          }
+        }
+      }
     },
     "Can only save replay when recording" : {
-
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pystyt tallentamaan uudelleentoiston vain tallentaessa"
+          }
+        }
+      }
     },
     "Cancel" : {
       "localizations" : {
@@ -30117,7 +30138,7 @@
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Chat-botti"
+            "value" : "Chatbotti"
           }
         },
         "fr" : {
@@ -30252,8 +30273,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Chat bot webhook -URL -osoite"
+            "state" : "translated",
+            "value" : "Chatbot webhook -URL-osoite"
           }
         },
         "fr" : {
@@ -32132,7 +32153,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Puhtaat tallenteet"
           }
         },
@@ -32262,7 +32283,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Puhtaat tilannekuvat"
           }
         },
@@ -32392,8 +32413,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Puhdasvirta"
+            "state" : "translated",
+            "value" : "Puhdas lähetys"
           }
         },
         "fr" : {
@@ -38636,8 +38657,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "luotu %@"
+            "state" : "translated",
+            "value" : "teki %@"
           }
         },
         "fr" : {
@@ -39582,7 +39603,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Pyöräily (vaatii yhteensopivan pyörän)"
           }
         },
@@ -39712,8 +39733,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Pyöräilyvoimalaite"
+            "state" : "translated",
+            "value" : "Pyöräilyteholaite"
           }
         },
         "fr" : {
@@ -39842,8 +39863,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Pyöräilyvoimalaitteet"
+            "state" : "translated",
+            "value" : "Pyöräilyteholaitteet"
           }
         },
         "fr" : {
@@ -43910,8 +43931,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "DJI Gimbal"
+            "state" : "translated",
+            "value" : "DJI-gimbal"
           }
         },
         "fr" : {
@@ -44040,8 +44061,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "DJI Gimbals"
+            "state" : "translated",
+            "value" : "DJI-gimbalit"
           }
         },
         "fr" : {
@@ -44844,8 +44865,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Älä näytä widgetejä nauhoituksissa."
+            "state" : "translated",
+            "value" : "Älä näytä widgetejä tallenteissa."
           }
         },
         "fr" : {
@@ -44974,8 +44995,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Älä näytä widgetejä tilannekuvissa."
+            "state" : "translated",
+            "value" : "Älä näytä widgetejä kuvankaappauksissa."
           }
         },
         "fr" : {
@@ -52152,8 +52173,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ulkoinen näyttösisältö"
+            "state" : "translated",
+            "value" : "Ulkoisen näytön sisältö"
           }
         },
         "fr" : {
@@ -52418,7 +52439,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Kasvojen seuranta"
           }
         },
@@ -56456,8 +56477,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Täyttökehys"
+            "state" : "translated",
+            "value" : "Kehyksen täyttö"
           }
         },
         "fr" : {
@@ -59028,8 +59049,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Pakota kohtauskytkimen siirtyminen"
+            "state" : "translated",
+            "value" : "Pakota näkymävaihdon siirtymä"
           }
         },
         "fr" : {
@@ -59430,8 +59451,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Jäädyttää"
+            "state" : "translated",
+            "value" : "Jäädytetty"
           }
         },
         "fr" : {
@@ -62274,7 +62295,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "GoPro"
           }
         },
@@ -62656,6 +62677,17 @@
     },
     "H.265/HEVC generally requires less bandwidth for same image quality. RTMP generally only supports H.264/AVC." : {
       "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "H.265/HEVC vaatii yleensä vähemmän kaistanleveyttä samaan kuvanlaatuun. RTMP tukee yleensä vain H.264/AVC:tä."
+          }
+        }
+      }
+    },
+    "H.265/HEVC generally reuqires less bandwidth for same image quality. RTMP generally only supports H.264/AVC." : {
+      "extractionState" : "stale",
+      "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -62948,8 +62980,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Sykkeen"
+            "state" : "translated",
+            "value" : "Sykelaite"
           }
         },
         "fr" : {
@@ -63078,7 +63110,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Sykelaitteet"
           }
         },
@@ -63480,8 +63512,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Sankari 12/13"
+            "state" : "translated",
+            "value" : "HERO 12/13"
           }
         },
         "fr" : {
@@ -64686,7 +64718,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Vaakasuora"
           }
         },
@@ -65632,8 +65664,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Kuvan leikkikenttä"
+            "state" : "translated",
+            "value" : "Image Playground"
           }
         },
         "fr" : {
@@ -67101,7 +67133,14 @@
       }
     },
     "Instant replay" : {
-
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Välitön uudelleentoisto"
+          }
+        }
+      }
     },
     "Interactive chat" : {
       "localizations" : {
@@ -68621,7 +68660,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Näppäimistön näppäin"
           }
         },
@@ -68887,8 +68926,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Kierto -aikat"
+            "state" : "translated",
+            "value" : "Kierrosajat"
           }
         },
         "fr" : {
@@ -69153,8 +69192,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Käynnistä live stream"
+            "state" : "translated",
+            "value" : "Käynnistä live-lähetys"
           }
         },
         "fr" : {
@@ -69283,8 +69322,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Käynnistä live -virrat"
+            "state" : "translated",
+            "value" : "Käynnistä live-lähetykset"
           }
         },
         "fr" : {
@@ -69413,8 +69452,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Johtava"
+            "state" : "translated",
+            "value" : "Alussa"
           }
         },
         "fr" : {
@@ -71299,7 +71338,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Sijaintitiedot"
           }
         },
@@ -75077,7 +75116,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Manuaalinen"
           }
         },
@@ -78323,8 +78362,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Peili"
+            "state" : "translated",
+            "value" : "Peilaa"
           }
         },
         "fr" : {
@@ -79943,8 +79982,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Moniseliset numerot"
+            "state" : "translated",
+            "value" : "Tasaleveät numerot"
           }
         },
         "fr" : {
@@ -87523,8 +87562,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Numeerinen tulo"
+            "state" : "translated",
+            "value" : "Numeerinen syöte"
           }
         },
         "fr" : {
@@ -91313,8 +91352,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Suorita omenan reaktio."
+            "state" : "translated",
+            "value" : "Näytä Apple-reaktio."
           }
         },
         "fr" : {
@@ -92368,7 +92407,14 @@
       }
     },
     "Playing instant replay in" : {
-
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Näytetään uudelleentoisto "
+          }
+        }
+      }
     },
     "Playlist" : {
       "localizations" : {
@@ -94290,8 +94336,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Luo käynnistysvirrat painamalla alla olevaa pikakuvaketta."
+            "state" : "translated",
+            "value" : "Luo live-lähetyksen käynnistys painamalla alla olevaa pikakomentoa."
           }
         },
         "fr" : {
@@ -94420,8 +94466,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Luo RTMP -URL -osoitteet painamalla alla olevaa pikakuvaketta."
+            "state" : "translated",
+            "value" : "Luo RTMP -URL-osoitteet painamalla alla olevaa pikakomentoa."
           }
         },
         "fr" : {
@@ -94550,8 +94596,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Luo WiFi -käyttöoikeustiedot paina alla olevaa pikakuvaketta."
+            "state" : "translated",
+            "value" : "Luo WiFi-tunnukset painamalla alla olevaa pikakomentoa."
           }
         },
         "fr" : {
@@ -95360,8 +95406,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Tulosta tilannekuvia"
+            "state" : "translated",
+            "value" : "Tulosta kuvankaappaus"
           }
         },
         "fr" : {
@@ -95490,8 +95536,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Tulosta, kun sovellus on taustatilassa."
+            "state" : "translated",
+            "value" : "Tulosta sovelluksen ollessa taustalla."
           }
         },
         "fr" : {
@@ -96696,8 +96742,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Kilpa"
+            "state" : "translated",
+            "value" : "Kilpailu"
           }
         },
         "fr" : {
@@ -99002,8 +99048,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Rento bittinopeuden lasku kohtauksen vaihdon jälkeen"
+            "state" : "translated",
+            "value" : "Rennompi bittinopeuden lasku näkymän vaihdon jälkeen"
           }
         },
         "fr" : {
@@ -100758,8 +100804,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Etäkohta"
+            "state" : "translated",
+            "value" : "Etänäkymä"
           }
         },
         "fr" : {
@@ -101269,10 +101315,24 @@
       }
     },
     "Replay" : {
-
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uudelleentoisto"
+          }
+        }
+      }
     },
     "REPLAY" : {
-
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "UUDELLEENTOISTO"
+          }
+        }
+      }
     },
     "Reset" : {
       "localizations" : {
@@ -101840,8 +101900,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Nollaa, kun menet elämään"
+            "state" : "translated",
+            "value" : "Nollaa, kun lähetys aloitetaan"
           }
         },
         "fr" : {
@@ -101970,8 +102030,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Nollaa etäisyys, keskimääräinen nopeus ja kaltevuus."
+            "state" : "translated",
+            "value" : "Nollaa etäisyyden, keskimääräinen nopeuden ja kaltevuuden."
           }
         },
         "fr" : {
@@ -102372,8 +102432,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Käynnistä Gimbal uudelleen löytääksesi sen."
+            "state" : "translated",
+            "value" : "Käynnistä gimbal uudelleen löytääksesi sen."
           }
         },
         "fr" : {
@@ -104660,8 +104720,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "RTMP -URL -osoite"
+            "state" : "translated",
+            "value" : "RTMP -URL-osoite"
           }
         },
         "fr" : {
@@ -104790,8 +104850,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "RTMP -URL -osoitteet"
+            "state" : "translated",
+            "value" : "RTMP -URL-osoitteet"
           }
         },
         "fr" : {
@@ -104920,8 +104980,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "RTMP-, SRT(LA), kuvakaappaus- ja mediasoittimen videolähteet voidaan vaihtaa välittömästi, mutta jos haluat johdonmukaisuuden, voit pakottaa kohtauksen vaihtamisen myös näihin."
+            "state" : "translated",
+            "value" : "RTMP-, SRT(LA)-, ruudunkaappaus- ja mediasoitinvideolähteisiin voidaan vaihtaa välittömästi, mutta jos haluat johdonmukaisuuden, voit pakottaa näkymän vaihdon siirtymän myös näihin."
           }
         },
         "fr" : {
@@ -106386,8 +106446,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Kohtauksen kytkimen siirtyminen"
+            "state" : "translated",
+            "value" : "Näkymän vaihtamisen siirtymä"
           }
         },
         "fr" : {
@@ -108024,8 +108084,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Valitse %@ Jos haluat GoPro -kameran suoratoistoa Moblinin RTMP -palvelimelle tässä laitteessa. Valitse %@ tehdäksesi GoPro -kameravirran mihin tahansa määränpäähän."
+            "state" : "translated",
+            "value" : "Valitse %1$@, jos haluat GoPro-kameran suoratoistaa Moblinin RTMP -palvelimelle tässä laitteessa. Valitse %2$@ tehdäksesi GoPro -kameravirran mihin tahansa määränpäähän."
           }
         },
         "fr" : {
@@ -108562,7 +108622,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Valitse valokuva"
           }
         },
@@ -108964,8 +109024,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Lähetä chat -vastauksia"
+            "state" : "translated",
+            "value" : "Lähetä chat-vastauksia"
           }
         },
         "fr" : {
@@ -110998,8 +111058,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Pikakuva"
+            "state" : "translated",
+            "value" : "Pikakomento"
           }
         },
         "fr" : {
@@ -111944,7 +112004,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Näytä Apple Watch -syke"
           }
         },
@@ -112074,7 +112134,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Näytä keskimääräinen nopeus"
           }
         },
@@ -112340,7 +112400,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Näytä selaimen otsikko"
           }
         },
@@ -112470,7 +112530,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Näytä kaupunki"
           }
         },
@@ -112736,8 +112796,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Näyttelymaa"
+            "state" : "translated",
+            "value" : "Näytä maa"
           }
         },
         "fr" : {
@@ -112866,7 +112926,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Näytä maan lippu"
           }
         },
@@ -112996,8 +113056,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Näytä pyöräilypäällys"
+            "state" : "translated",
+            "value" : "Näytä pyöräilytahti"
           }
         },
         "fr" : {
@@ -113126,8 +113186,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Näytä pyöräilyvoima"
+            "state" : "translated",
+            "value" : "Näytä pyöräilyteho"
           }
         },
         "fr" : {
@@ -113643,10 +113703,24 @@
       }
     },
     "Show follows" : {
-
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Näytä uudet seuraajat"
+          }
+        }
+      }
     },
     "Show follows in chat, as toast and in alert widgets." : {
-
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Näytä uudet seuraajat chatissa, ilmoituksena ja widgeteissä."
+          }
+        }
+      }
     },
     "Show full date" : {
       "localizations" : {
@@ -113806,8 +113880,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Näytä syke sykelle \"%@\""
+            "state" : "translated",
+            "value" : "Näytä syke laitteelle \"%@\""
           }
         },
         "fr" : {
@@ -113936,7 +114010,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Näytä kierrosajat"
           }
         },
@@ -114474,7 +114548,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Näytä kaltevuus"
           }
         },
@@ -115012,7 +115086,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Näytä Tesla -akun taso"
           }
         },
@@ -115142,8 +115216,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Näytä Tesla Drive -tiedot"
+            "state" : "translated",
+            "value" : "Näytä Tesla -ajotiedot"
           }
         },
         "fr" : {
@@ -115272,7 +115346,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Näytä Tesla -mediatiedot"
           }
         },
@@ -115402,8 +115476,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Näytä aika HH:MM"
+            "state" : "translated",
+            "value" : "Näytä aika muodossa TT:MM"
           }
         },
         "fr" : {
@@ -124992,8 +125066,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Suoratoistoalustat"
+            "state" : "translated",
+            "value" : "Lähetysalustat"
           }
         },
         "fr" : {
@@ -127162,8 +127236,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Vaihda annettuun kohtaukseen."
+            "state" : "translated",
+            "value" : "Vaihda annettuun näkymään."
           }
         },
         "fr" : {
@@ -128368,8 +128442,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Napauta alla olevia kohteita liittääksesi ne widget -tekstiin."
+            "state" : "translated",
+            "value" : "Napauta alla olevia kohteita liittääksesi ne widgetin tekstiin."
           }
         },
         "fr" : {
@@ -131354,8 +131428,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Mitä korkeampi, sitä pienempi stutteroinnin riski."
+            "state" : "translated",
+            "value" : "Mitä korkeampi, sitä pienempi pätkimisen riski."
           }
         },
         "fr" : {
@@ -132980,7 +133054,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "UDP-porttia %u käytetään myös."
           }
         },
@@ -135552,8 +135626,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ylhäältä"
+            "state" : "translated",
+            "value" : "Yläreuna"
           }
         },
         "fr" : {
@@ -136906,8 +136980,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Jälki"
+            "state" : "translated",
+            "value" : "Lopussa"
           }
         },
         "fr" : {
@@ -138260,8 +138334,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Yritä vähentää FPS: tä ja resoluutiota."
+            "state" : "translated",
+            "value" : "Yritä vähentää FPS:ää ja tarkkuutta."
           }
         },
         "fr" : {
@@ -138390,8 +138464,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Yritä käyttää yksittäisiä tai vähän energiaa koskevia kameroita."
+            "state" : "translated",
+            "value" : "Yritä käyttää yksittäisiä tai vähän energiaa käyttäviä kameroita."
           }
         },
         "fr" : {
@@ -139336,8 +139410,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Kaksois-"
+            "state" : "translated",
+            "value" : "Kaksoset"
           }
         },
         "fr" : {
@@ -140010,8 +140084,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Lähettää tyypillisesti chat -viestin, jos käyttäjä ei saa suorittaa komentoa. Jotkut komennot vastaavat myös menestyksessä."
+            "state" : "translated",
+            "value" : "Lähettää tyypillisesti chat-viestin, jos käyttäjä ei saa suorittaa komentoa. Jotkut komennot vastaavat myös onnistumisista."
           }
         },
         "fr" : {
@@ -143540,8 +143614,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Luo kuva Playground -sovelluksesta kuva valokuvasta ja/tai katsojien kirjoittama kehote."
+            "state" : "translated",
+            "value" : "Luo Image Playground -sovelluksella kuva valokuvasta ja/tai katsojien kirjoittama tekstistä."
           }
         },
         "fr" : {
@@ -145166,7 +145240,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Pystysuora"
           }
         },
@@ -146357,7 +146431,14 @@
       }
     },
     "Video position" : {
-
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Videon sijainti"
+          }
+        }
+      }
     },
     "Video source" : {
       "localizations" : {
@@ -147197,8 +147278,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Varoitus: OBS vaatii yleensä laitteiston dekoodauksen, jotta se ei kaadu, kun se on käytössä."
+            "state" : "translated",
+            "value" : "Varoitus: OBS vaatii yleensä laitteistopohjaisen videon purkamisen välttääkseen kaatumisen, kun tämä on käytössä."
           }
         },
         "fr" : {
@@ -147871,8 +147952,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Webhook -URL -osoite"
+            "state" : "translated",
+            "value" : "Webhook -URL-osoite"
           }
         },
         "fr" : {
@@ -149089,8 +149170,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Valittujen kohtausten widgetit näytetään Moblin -laitteessa, johon kaukosäätimen avustaja on kytketty."
+            "state" : "translated",
+            "value" : "Valittujen näkymien widgetit näytetään Moblin -laitteessa, johon etähallinnan avustaja on yhdistetty."
           }
         },
         "fr" : {
@@ -149491,8 +149572,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "WiFi -valtakirjat"
+            "state" : "translated",
+            "value" : "WiFi-tunnukset"
           }
         },
         "fr" : {
