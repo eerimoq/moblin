@@ -177,11 +177,9 @@ private struct ReplayHistory: View {
         ScrollView(.horizontal) {
             LazyHStack {
                 if model.replaysStorage.database.replays.isEmpty {
-                    Image(systemName: "photo.artframe")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .cornerRadius(5)
-                        .frame(height: 68)
+                    Text("No replays saved")
+                        .padding([.leading], 30)
+                        .foregroundColor(.white)
                 }
                 ForEach(model.replaysStorage.database.replays) { replay in
                     ReplayHistoryItem(replay: replay)
