@@ -292,7 +292,7 @@ struct QuickButtonsInnerView: View {
         if model.isRecording {
             model.instantReplay()
         } else {
-            model.makeToast(title: String(localized: "Can only replay when recording"))
+            model.makeToast(title: String(localized: "Can only use instant replay when recording"))
         }
     }
 

@@ -31,7 +31,6 @@ private struct ReplayControlsInterval: View {
                    model.setReplayPosition(start: 30 - $0)
                }
                .rotationEffect(.degrees(180))
-               .disabled(model.selectedReplayId == nil)
         Text("\(Int(model.replayStartFromEnd))s")
             .frame(width: 30)
             .font(.body)
@@ -106,7 +105,7 @@ private struct ReplayControlsSaveButton: View {
         } else {
             Button {
                 if model.isRecording {
-                    model.saveReplay()
+                    _ = model.saveReplay()
                 } else {
                     model.makeToast(title: String(localized: "Can only save replay when recording"))
                 }

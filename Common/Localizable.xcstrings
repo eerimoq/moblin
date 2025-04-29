@@ -28872,6 +28872,7 @@
       }
     },
     "Can only replay when recording" : {
+      "extractionState" : "stale",
       "localizations" : {
         "fi" : {
           "stringUnit" : {
@@ -28890,6 +28891,9 @@
           }
         }
       }
+    },
+    "Can only use instant replay when recording" : {
+
     },
     "Cancel" : {
       "localizations" : {
