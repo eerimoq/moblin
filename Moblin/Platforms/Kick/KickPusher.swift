@@ -14,9 +14,24 @@ private struct Sender: Decodable {
     var identity: Identity
 }
 
+private struct OriginalSender: Decodable {
+    var username: String
+}
+
+private struct OriginalMessage: Decodable {
+    var content: String
+}
+
+private struct Metadata: Decodable {
+    var original_sender: OriginalSender?
+    var original_message: OriginalMessage?
+}
+
 private struct ChatMessage: Decodable {
+    var type: String?
     var content: String
     var sender: Sender
+    var metadata: Metadata?
 
     func isModerator() -> Bool {
         return sender.identity.badges.contains(where: { $0.type == "moderator" })
@@ -63,7 +78,8 @@ protocol KickOusherDelegate: AnyObject {
         userColor: RgbColor?,
         segments: [ChatPostSegment],
         isSubscriber: Bool,
-        isModerator: Bool
+        isModerator: Bool,
+        highlight: ChatHighlight?
     )
 }
 
@@ -182,9 +198,20 @@ final class KickPusher: NSObject {
 
     private func handleChatMessageEvent(data: String) throws {
         let message = try decodeChatMessage(data: data)
+        delegate?.kickPusherAppendMessage(
+            user: message.sender.username,
+            userColor: RgbColor.fromHex(string: message.sender.identity.color),
+            segments: makeChatPostSegments(content: message.content),
+            isSubscriber: message.isSubscriber(),
+            isModerator: message.isModerator(),
+            highlight: makeHighlight(message: message)
+        )
+    }
+
+    private func makeChatPostSegments(content: String) -> [ChatPostSegment] {
         var segments: [ChatPostSegment] = []
         var id = 0
-        for var segment in createKickSegments(message: message.content, id: &id) {
+        for var segment in createKickSegments(message: content, id: &id) {
             if let text = segment.text {
                 segments += emotes.createSegments(text: text, id: &id)
                 segment.text = nil
@@ -193,13 +220,24 @@ final class KickPusher: NSObject {
                 segments.append(segment)
             }
         }
-        delegate?.kickPusherAppendMessage(
-            user: message.sender.username,
-            userColor: RgbColor.fromHex(string: message.sender.identity.color),
-            segments: segments,
-            isSubscriber: message.isSubscriber(),
-            isModerator: message.isModerator()
-        )
+        return segments
+    }
+
+    private func makeHighlight(message: ChatMessage) -> ChatHighlight? {
+        if message.type == "reply" {
+            if let username = message.metadata?.original_sender?.username,
+               let content = message.metadata?.original_message?.content
+            {
+                var title = "Replying to \(username):"
+                for segment in makeChatPostSegments(content: content) {
+                    if let text = segment.text {
+                        title += " \(text.trim())"
+                    }
+                }
+                return ChatHighlight(kind: .reply, color: .gray, image: "arrowshape.turn.up.left", title: title)
+            }
+        }
+        return nil
     }
 
     private func sendMessage(message: String) {
