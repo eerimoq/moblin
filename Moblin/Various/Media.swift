@@ -867,19 +867,28 @@ final class Media: NSObject {
     }
 
     func startRecording(
-        url: URL,
+        url: URL?, replay: Bool,
         videoCodec: SettingsStreamCodec,
         videoBitrate: Int?,
         keyFrameInterval: Int?,
         audioBitrate: Int?
     ) {
         netStream?.startRecording(url: url,
+                                  replay: replay,
                                   audioSettings: makeAudioCompressionSettings(audioBitrate: audioBitrate),
                                   videoSettings: makeVideoCompressionSettings(
                                       videoCodec: videoCodec,
                                       videoBitrate: videoBitrate,
                                       keyFrameInterval: keyFrameInterval
                                   ))
+    }
+
+    func setRecordUrl(url: URL?) {
+        netStream?.setUrl(url: url)
+    }
+
+    func setReplayBuffering(enabled: Bool) {
+        netStream?.setReplayBuffering(enabled: enabled)
     }
 
     private func makeVideoCompressionSettings(videoCodec: SettingsStreamCodec,

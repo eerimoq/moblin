@@ -381,6 +381,16 @@ class SettingsStreamRecording: Codable {
     }
 }
 
+class SettingsStreamReplay: Codable {
+    var enabled: Bool = false
+
+    func clone() -> SettingsStreamReplay {
+        let new = SettingsStreamReplay()
+        new.enabled = enabled
+        return new
+    }
+}
+
 class SettingsStreamTwitchReward: Codable, Identifiable {
     var id: UUID = .init()
     // periphery:ignore
@@ -452,6 +462,7 @@ class SettingsStream: Codable, Identifiable, Equatable {
     var twitchMultiTrackEnabled: Bool? = false
     var ntpPoolAddress: String? = "time.apple.com"
     var timecodesEnabled: Bool? = false
+    var replay: SettingsStreamReplay? = .init()
 
     init(name: String) {
         self.name = name
@@ -507,6 +518,7 @@ class SettingsStream: Codable, Identifiable, Equatable {
         new.twitchMultiTrackEnabled = twitchMultiTrackEnabled
         new.ntpPoolAddress = ntpPoolAddress
         new.timecodesEnabled = timecodesEnabled
+        new.replay = replay!.clone()
         return new
     }
 
@@ -5263,6 +5275,10 @@ final class Settings {
         }
         if realDatabase.portraitVideoOffsetFromTop == nil {
             realDatabase.portraitVideoOffsetFromTop = 0.0
+            store()
+        }
+        for stream in realDatabase.streams where stream.replay == nil {
+            stream.replay = .init()
             store()
         }
     }

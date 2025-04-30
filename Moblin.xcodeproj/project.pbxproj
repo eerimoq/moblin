@@ -144,6 +144,7 @@
 		0342F1A12C627A70004DD3EA /* MirlClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0342F1A02C627A70004DD3EA /* MirlClient.swift */; };
 		0342F1A32C627A87004DD3EA /* MirlServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0342F1A22C627A87004DD3EA /* MirlServer.swift */; };
 		0342F1A52C627A8F004DD3EA /* MirlCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0342F1A42C627A8F004DD3EA /* MirlCommon.swift */; };
+		034517D02DC1FC22006ECA92 /* StreamReplaySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034517CF2DC1FC1D006ECA92 /* StreamReplaySettingsView.swift */; };
 		0346B5EE2B9AD1BF00999109 /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 0346B5ED2B9AD1BF00999109 /* InfoPlist.xcstrings */; };
 		0346B5F02B9AD1BF00999109 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 0346B5EF2B9AD1BF00999109 /* Localizable.xcstrings */; };
 		0346B5F42B9AF4EE00999109 /* ControlBarRemoteControlAssistantView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0346B5F32B9AF4EE00999109 /* ControlBarRemoteControlAssistantView.swift */; };
@@ -700,6 +701,7 @@
 		0342F1A02C627A70004DD3EA /* MirlClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MirlClient.swift; sourceTree = "<group>"; };
 		0342F1A22C627A87004DD3EA /* MirlServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MirlServer.swift; sourceTree = "<group>"; };
 		0342F1A42C627A8F004DD3EA /* MirlCommon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MirlCommon.swift; sourceTree = "<group>"; };
+		034517CF2DC1FC1D006ECA92 /* StreamReplaySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamReplaySettingsView.swift; sourceTree = "<group>"; };
 		0346B5ED2B9AD1BF00999109 /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
 		0346B5EF2B9AD1BF00999109 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		0346B5F32B9AF4EE00999109 /* ControlBarRemoteControlAssistantView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlBarRemoteControlAssistantView.swift; sourceTree = "<group>"; };
@@ -1293,6 +1295,7 @@
 				03BDE2242B24654E00DF193A /* ObsRemoteControl */,
 				034CE2EA2B4D2E5A00E2C1BD /* RealtimeIrl */,
 				03D3C04F2B452D14006BAEAC /* Recording */,
+				034517CE2DC1FC0E006ECA92 /* Replay */,
 				03A29A242BECA9F300DAA1B1 /* Rist */,
 				03708D132B83C321009C88AA /* Rtmp */,
 				03B82CBF2D7C22F300909B24 /* Snapshot */,
@@ -1606,6 +1609,14 @@
 				03FB42322C68EE6D0009FB26 /* PROTOCOL.md */,
 			);
 			path = Mirl;
+			sourceTree = "<group>";
+		};
+		034517CE2DC1FC0E006ECA92 /* Replay */ = {
+			isa = PBXGroup;
+			children = (
+				034517CF2DC1FC1D006ECA92 /* StreamReplaySettingsView.swift */,
+			);
+			path = Replay;
 			sourceTree = "<group>";
 		};
 		0346B5F22B9AF4D300999109 /* RemoteControlAssistant */ = {
@@ -3569,6 +3580,7 @@
 				03E877F72B2DB27800086355 /* QuickButtonsSettingsView.swift in Sources */,
 				032FDC022B0B11C5007BE85E /* SizeEditView.swift in Sources */,
 				032B4EDE2C34927C00204547 /* SegmentedPicker.swift in Sources */,
+				034517D02DC1FC22006ECA92 /* StreamReplaySettingsView.swift in Sources */,
 				0359F8AE2BD3DA61005BFDA8 /* VideoDecoder.swift in Sources */,
 				031A4DC72B2CED460053F67D /* StreamAudioSettingsView.swift in Sources */,
 				035735822BC6303F00F4E87D /* WatchDisplaySettingsView.swift in Sources */,

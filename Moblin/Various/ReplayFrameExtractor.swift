@@ -95,7 +95,7 @@ private class FrameExtractorJob {
 class ReplayFrameExtractor {
     private let video: ReplayBufferFile
     private weak var delegate: ReplayDelegate?
-    private let completion: (() -> Void)?
+    private var completion: (() -> Void)?
     private var job: FrameExtractorJob?
     private var pendingOffset: Double?
 
@@ -129,6 +129,7 @@ extension ReplayFrameExtractor: JobDelegate {
     func jobCompleted(image: UIImage?, video: ReplayBufferFile, offset: Double) {
         if let image {
             delegate?.replayOutputFrame(image: image, offset: offset, video: video, completion: completion)
+            completion = nil
         }
         job = nil
         tryNextJob()

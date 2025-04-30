@@ -1249,6 +1249,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
+    func makeReplayIsNotEnabledToast() {
+        makeToast(
+            title: String(localized: "Replay is not enabled"),
+            subTitle: String(localized: "Enable in Settings → Streams → \(stream.name) → Replay")
+        )
+    }
+
     func setReplayPosition(start: Double) {
         guard let replaySettings else {
             return
@@ -2381,7 +2388,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         if !shouldStreamInBackground() {
             clearRemoteSceneSettingsAndData()
-            reloadStream(continueRecording: isRecording)
+            reloadStream()
             sceneUpdated(attachCamera: true, updateRemoteScene: false)
             setupAudioSession()
             media.attachDefaultAudioDevice()
@@ -4219,42 +4226,34 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func startRecording() {
         setIsRecording(value: true)
-        resumeRecording()
         var subTitle: String?
         if recordingsStorage.isFull() {
             subTitle = String(localized: "Too many recordings. Deleting oldest recording.")
         }
         makeToast(title: String(localized: "Recording started"), subTitle: subTitle)
+        resumeRecording()
     }
 
     func stopRecording(showToast: Bool = true, toastTitle: String? = nil, toastSubTitle: String? = nil) {
         guard isRecording else {
             return
         }
-        replayBuffer = ReplayBuffer()
         setIsRecording(value: false)
         if showToast {
             makeToast(title: toastTitle ?? String(localized: "Recording stopped"), subTitle: toastSubTitle)
         }
+        media.setRecordUrl(url: nil)
         suspendRecording()
     }
 
     func resumeRecording() {
         currentRecording = recordingsStorage.createRecording(settings: stream.clone())
-        let bitrate = Int(stream.recording!.videoBitrate)
-        let keyFrameInterval = Int(stream.recording!.maxKeyFrameInterval)
-        let audioBitrate = Int(stream.recording!.audioBitrate!)
-        media.startRecording(
-            url: currentRecording!.url(),
-            videoCodec: stream.recording!.videoCodec,
-            videoBitrate: bitrate != 0 ? bitrate : nil,
-            keyFrameInterval: keyFrameInterval != 0 ? keyFrameInterval : nil,
-            audioBitrate: audioBitrate != 0 ? audioBitrate : nil
-        )
+        media.setRecordUrl(url: currentRecording?.url())
+        startRecorderIfNeeded()
     }
 
     private func suspendRecording() {
-        media.stopRecording()
+        stopRecorderIfNeeded()
         if let currentRecording {
             recordingsStorage.append(recording: currentRecording)
             recordingsStorage.store()
@@ -4262,6 +4261,49 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         updateRecordingLength(now: Date())
         currentRecording = nil
     }
+
+    func streamReplayEnabledUpdated() {
+        replayBuffer = ReplayBuffer()
+        media.setReplayBuffering(enabled: stream.replay!.enabled)
+        if stream.replay!.enabled {
+            startRecorderIfNeeded()
+        } else {
+            stopRecorderIfNeeded()
+        }
+    }
+
+    private func startRecorderIfNeeded() {
+        guard !isRecorderRecording else {
+            return
+        }
+        guard isRecording || stream.replay!.enabled else {
+            return
+        }
+        isRecorderRecording = true
+        let bitrate = Int(stream.recording!.videoBitrate)
+        let keyFrameInterval = Int(stream.recording!.maxKeyFrameInterval)
+        let audioBitrate = Int(stream.recording!.audioBitrate!)
+        media.startRecording(
+            url: isRecording ? currentRecording?.url() : nil,
+            replay: stream.replay!.enabled,
+            videoCodec: stream.recording!.videoCodec,
+            videoBitrate: bitrate != 0 ? bitrate : nil,
+            keyFrameInterval: keyFrameInterval != 0 ? keyFrameInterval : nil,
+            audioBitrate: audioBitrate != 0 ? audioBitrate : nil
+        )
+    }
+
+    private func stopRecorderIfNeeded(forceStop: Bool = false) {
+        guard isRecorderRecording else {
+            return
+        }
+        if forceStop || (!isRecording && !stream.replay!.enabled) {
+            media.stopRecording()
+            isRecorderRecording = false
+        }
+    }
+
+    private var isRecorderRecording = false
 
     func startWorkout(type: WatchProtocolWorkoutType) {
         guard WCSession.default.isWatchAppInstalled else {
@@ -4623,11 +4665,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    func reloadStream(continueRecording: Bool = false) {
+    func reloadStream() {
         cameraPosition = nil
-        if !continueRecording {
-            stopRecording()
-        }
+        stopRecorderIfNeeded(forceStop: true)
         stopStream()
         setNetStream()
         setStreamResolution()
@@ -4644,6 +4684,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             0: database.audio!.audioOutputToInputChannelsMap!.channel1,
             1: database.audio!.audioOutputToInputChannelsMap!.channel2,
         ])
+        startRecorderIfNeeded()
         reloadConnections()
         resetChat()
         reloadLocation()

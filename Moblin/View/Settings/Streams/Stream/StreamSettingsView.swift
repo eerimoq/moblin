@@ -96,6 +96,11 @@ struct StreamSettingsView: View {
                         Text("Recording")
                     }
                     NavigationLink {
+                        StreamReplaySettingsView(stream: stream)
+                    } label: {
+                        Text("Replay")
+                    }
+                    NavigationLink {
                         StreamSnapshotSettingsView(stream: stream)
                     } label: {
                         Text("Snapshot")

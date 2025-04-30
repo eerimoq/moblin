@@ -205,12 +205,25 @@ open class NetStream: NSObject {
         mixer.audio.setSpeechToText(enabled: enabled)
     }
 
-    func startRecording(url: URL, audioSettings: [String: Any], videoSettings: [String: Any]) {
-        mixer.recorder.startRunning(url: url, audioOutputSettings: audioSettings, videoOutputSettings: videoSettings)
+    func startRecording(url: URL?, replay: Bool, audioSettings: [String: Any], videoSettings: [String: Any]) {
+        mixer.recorder.startRunning(
+            url: url,
+            replay: replay,
+            audioOutputSettings: audioSettings,
+            videoOutputSettings: videoSettings
+        )
     }
 
     func stopRecording() {
         mixer.recorder.stopRunning()
+    }
+
+    func setUrl(url: URL?) {
+        mixer.recorder.setUrl(url: url)
+    }
+
+    func setReplayBuffering(enabled: Bool) {
+        mixer.recorder.setReplayBuffering(enabled: enabled)
     }
 
     func stopMixer() {

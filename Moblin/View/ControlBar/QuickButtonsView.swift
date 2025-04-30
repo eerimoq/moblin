@@ -289,10 +289,10 @@ struct QuickButtonsInnerView: View {
     }
 
     private func instantReplayAction(state _: ButtonState) {
-        if model.isRecording {
+        if model.stream.replay!.enabled {
             model.instantReplay()
         } else {
-            model.makeToast(title: String(localized: "Can only use instant replay when recording"))
+            model.makeReplayIsNotEnabledToast()
         }
     }
 

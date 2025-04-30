@@ -104,10 +104,10 @@ private struct ReplayControlsSaveButton: View {
                 .tint(.white)
         } else {
             Button {
-                if model.isRecording {
+                if model.stream.replay!.enabled {
                     _ = model.saveReplay()
                 } else {
-                    model.makeToast(title: String(localized: "Can only save replay when recording"))
+                    model.makeReplayIsNotEnabledToast()
                 }
             } label: {
                 Image(systemName: "square.and.arrow.down")
