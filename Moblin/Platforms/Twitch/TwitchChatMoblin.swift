@@ -260,7 +260,7 @@ final class TwitchChatMoblin {
             isSubscriber: message.subscriber,
             isModerator: message.moderator,
             bits: message.bits,
-            highlight: createHighlight(message: message)
+            highlight: createHighlight(message: message, emotes: emotes)
         )
     }
 
@@ -268,7 +268,7 @@ final class TwitchChatMoblin {
         return createSegments(text: text, emotes: [], emotesManager: emotes, bits: bits)
     }
 
-    private func createHighlight(message: ChatMessage) -> ChatHighlight? {
+    private func createHighlight(message: ChatMessage, emotes: [ChatMessageEmote]) -> ChatHighlight? {
         if message.announcement {
             return .init(
                 kind: .other,
@@ -283,6 +283,14 @@ final class TwitchChatMoblin {
                 image: "bubble.left",
                 title: String(localized: "First time chatter")
             )
+        } else if let sender = message.replySender, let text = message.replyText {
+            var title = "Replying to \(sender):"
+            for segment in createSegments(text: text, emotes: emotes, emotesManager: self.emotes, bits: nil) {
+                if let text = segment.text {
+                    title += " \(text.trim())"
+                }
+            }
+            return ChatHighlight(kind: .reply, color: .gray, image: "arrowshape.turn.up.left", title: title)
         } else {
             return nil
         }
