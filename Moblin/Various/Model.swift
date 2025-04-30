@@ -1547,6 +1547,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func setup() {
+        deleteTrash()
         cameraPreviewLayer = cameraPreviewView.previewLayer
         media.delegate = self
         createUrlSession()

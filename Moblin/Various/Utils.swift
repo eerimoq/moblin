@@ -670,6 +670,21 @@ func getAvailableDiskSpace() -> UInt64? {
     return attributes[.systemFreeSize] as? UInt64
 }
 
+func deleteTrash() {
+    let folders = [
+        URL.temporaryDirectory,
+        URL.documentsDirectory.appending(component: ".Trash"),
+    ]
+    for folder in folders {
+        guard let paths = try? FileManager.default.contentsOfDirectory(atPath: folder.path()) else {
+            continue
+        }
+        for path in paths {
+            try? FileManager.default.removeItem(atPath: path)
+        }
+    }
+}
+
 func generateQrCode(from string: String) -> UIImage? {
     let data = string.data(using: .utf8)
     let filter = CIFilter.qrCodeGenerator()
