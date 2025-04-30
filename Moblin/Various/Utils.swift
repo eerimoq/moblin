@@ -663,6 +663,13 @@ func rotatePoint(point: CGPoint, alpha: CGFloat) -> CGPoint {
     return CGPoint(x: z * cos(alpha + beta), y: z * sin(alpha + beta))
 }
 
+func getAvailableDiskSpace() -> UInt64? {
+    guard let attributes = try? FileManager.default.attributesOfFileSystem(forPath: URL.homeDirectory.path()) else {
+        return nil
+    }
+    return attributes[.systemFreeSize] as? UInt64
+}
+
 func generateQrCode(from string: String) -> UIImage? {
     let data = string.data(using: .utf8)
     let filter = CIFilter.qrCodeGenerator()

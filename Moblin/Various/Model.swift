@@ -2973,7 +2973,23 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             self.moblinkStreamer?.updateStatus()
             self.updateDjiDevicesStatus()
             self.updateTwitchStream(monotonicNow: monotonicNow)
+            self.updateAvailableDiskSpace()
         })
+    }
+
+    private func updateAvailableDiskSpace() {
+        guard isRecording, let available = getAvailableDiskSpace() else {
+            return
+        }
+        if available < 1_000_000_000 {
+            stopRecording(toastTitle: String(localized: "‼️ Low on disk. Stopping recording. ‼️"),
+                          toastSubTitle: String(localized: "Please delete recordings and other big files"))
+        } else if available < 2_000_000_000 {
+            makeToast(
+                title: String(localized: "⚠️ Low on disk ⚠️"),
+                subTitle: String(localized: "Please delete recordings and other big files")
+            )
+        }
     }
 
     private func isStreamLikelyBroken(now: ContinuousClock.Instant) -> Bool {
@@ -4207,14 +4223,14 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         makeToast(title: String(localized: "Recording started"), subTitle: subTitle)
     }
 
-    func stopRecording(showToast: Bool = true) {
+    func stopRecording(showToast: Bool = true, toastTitle: String? = nil, toastSubTitle: String? = nil) {
         guard isRecording else {
             return
         }
         replayBuffer = ReplayBuffer()
         setIsRecording(value: false)
         if showToast {
-            makeToast(title: String(localized: "Recording stopped"))
+            makeToast(title: toastTitle ?? String(localized: "Recording stopped"), subTitle: toastSubTitle)
         }
         suspendRecording()
     }
