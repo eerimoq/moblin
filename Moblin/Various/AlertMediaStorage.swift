@@ -6,18 +6,7 @@ class AlertMediaStorage {
 
     init() {
         fileManager = FileManager.default
-        let homeUrl = fileManager.urls(for: .documentDirectory, in: .userDomainMask)
-            .first!
-        mediasUrl = homeUrl.appendingPathComponent("Alerts")
-        do {
-            try fileManager.createDirectory(
-                at: mediasUrl,
-                withIntermediateDirectories: true,
-                attributes: nil
-            )
-        } catch {
-            logger.error("alert-media-storage: Error creating images directory: \(error)")
-        }
+        mediasUrl = createAndGetDirectory(name: "Alerts")
     }
 
     func makePath(id: UUID) -> URL {

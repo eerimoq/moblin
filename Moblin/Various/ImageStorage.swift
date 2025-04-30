@@ -6,18 +6,7 @@ class ImageStorage {
 
     init() {
         fileManager = FileManager.default
-        let homeUrl = fileManager.urls(for: .documentDirectory, in: .userDomainMask)
-            .first!
-        imagesUrl = homeUrl.appendingPathComponent("Images")
-        do {
-            try fileManager.createDirectory(
-                at: imagesUrl,
-                withIntermediateDirectories: true,
-                attributes: nil
-            )
-        } catch {
-            logger.error("image-storage: Error creating images directory: \(error)")
-        }
+        imagesUrl = createAndGetDirectory(name: "Images")
     }
 
     func makePath(id: UUID) -> URL {

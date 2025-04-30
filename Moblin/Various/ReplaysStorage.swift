@@ -2,9 +2,7 @@ import Foundation
 import SwiftUI
 
 private func getReplaysDirectory() -> URL {
-    let replaysDirectory = URL.documentsDirectory.appending(component: "Replays")
-    try? FileManager.default.createDirectory(at: replaysDirectory, withIntermediateDirectories: true)
-    return replaysDirectory
+    return createAndGetDirectory(name: "Replays")
 }
 
 class ReplaySettings: Identifiable, Codable {

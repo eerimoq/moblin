@@ -700,3 +700,9 @@ func generateQrCode(from string: String) -> UIImage? {
     }
     return UIImage(cgImage: cgImage)
 }
+
+func createAndGetDirectory(name: String) -> URL {
+    let directory = URL.documentsDirectory.appending(component: name)
+    try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+    return directory
+}

@@ -6,18 +6,7 @@ class MediaPlayerStorage {
 
     init() {
         fileManager = FileManager.default
-        let homeUrl = fileManager.urls(for: .documentDirectory, in: .userDomainMask)
-            .first!
-        mediasUrl = homeUrl.appendingPathComponent("Medias")
-        do {
-            try fileManager.createDirectory(
-                at: mediasUrl,
-                withIntermediateDirectories: true,
-                attributes: nil
-            )
-        } catch {
-            logger.error("media-player-storage: Error creating images directory: \(error)")
-        }
+        mediasUrl = createAndGetDirectory(name: "Medias")
     }
 
     func makePath(id: UUID) -> URL {

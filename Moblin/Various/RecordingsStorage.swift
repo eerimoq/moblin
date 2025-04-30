@@ -2,9 +2,7 @@ import Foundation
 import SwiftUI
 
 private func getRecordingsDirectory() -> URL {
-    let recordingsDirectory = URL.documentsDirectory.appending(component: "Recordings")
-    try? FileManager.default.createDirectory(at: recordingsDirectory, withIntermediateDirectories: true)
-    return recordingsDirectory
+    return createAndGetDirectory(name: "Recordings")
 }
 
 class RecordingSettings: Codable {

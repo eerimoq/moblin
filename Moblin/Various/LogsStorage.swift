@@ -6,18 +6,7 @@ class LogsStorage {
 
     init() {
         fileManager = FileManager.default
-        let homeUrl = fileManager.urls(for: .documentDirectory, in: .userDomainMask)
-            .first!
-        logsUrl = homeUrl.appendingPathComponent("Logs")
-        do {
-            try fileManager.createDirectory(
-                at: logsUrl,
-                withIntermediateDirectories: true,
-                attributes: nil
-            )
-        } catch {
-            logger.error("logs-storage: Error creating logs directory: \(error)")
-        }
+        logsUrl = createAndGetDirectory(name: "Logs")
     }
 
     func makePath(id: UUID) -> URL {
