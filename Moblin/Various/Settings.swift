@@ -62,23 +62,28 @@ enum SettingsStreamResolution: String, Codable, CaseIterable {
         }
     }
 
-    func dimensions() -> CMVideoDimensions {
+    func dimensions(portrait: Bool) -> CMVideoDimensions {
+        var size: CMVideoDimensions
         switch self {
         case .r3840x2160:
-            return .init(width: 3840, height: 2160)
+            size = .init(width: 3840, height: 2160)
         case .r2560x1440:
-            return .init(width: 2560, height: 1440)
+            size = .init(width: 2560, height: 1440)
         case .r1920x1080:
-            return .init(width: 1920, height: 1080)
+            size = .init(width: 1920, height: 1080)
         case .r1280x720:
-            return .init(width: 1280, height: 720)
+            size = .init(width: 1280, height: 720)
         case .r854x480:
-            return .init(width: 854, height: 480)
+            size = .init(width: 854, height: 480)
         case .r640x360:
-            return .init(width: 640, height: 360)
+            size = .init(width: 640, height: 360)
         case .r426x240:
-            return .init(width: 426, height: 240)
+            size = .init(width: 426, height: 240)
         }
+        if portrait {
+            size = .init(width: size.height, height: size.width)
+        }
+        return size
     }
 }
 
@@ -575,6 +580,10 @@ class SettingsStream: Codable, Identifiable, Equatable {
 
     func resolutionString() -> String {
         return resolution.shortString()
+    }
+
+    func dimensions() -> CMVideoDimensions {
+        return resolution.dimensions(portrait: portrait!)
     }
 
     func codecString() -> String {

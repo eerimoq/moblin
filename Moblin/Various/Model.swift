@@ -1280,7 +1280,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             start: replaySettings.startFromVideoStart(),
             stop: replaySettings.stopFromVideoStart(),
             speed: database.replay!.speed.toNumber(),
-            size: stream.resolution.dimensions(),
+            size: stream.dimensions(),
             delegate: self
         )
         media.registerEffectBack(replayEffect!)
@@ -4523,7 +4523,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private func startNetStreamMultiTrack() {
         twitchMultiTrackGetClientConfiguration(
             url: stream.url,
-            dimensions: stream.resolution.dimensions(),
+            dimensions: stream.dimensions(),
             fps: stream.fps
         ) { response in
             DispatchQueue.main.async {

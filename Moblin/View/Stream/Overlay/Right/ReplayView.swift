@@ -1,14 +1,23 @@
 import SwiftUI
 
 private struct ReplayPreview: View {
+    @EnvironmentObject var model: Model
     @ObservedObject var replay: ReplayProvider
+
+    private func width() -> Double {
+        if model.stream.portrait! {
+            return 200
+        } else {
+            return 300
+        }
+    }
 
     var body: some View {
         if !replay.isPlaying, let image = replay.previewImage {
             Image(uiImage: image)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
-                .frame(width: 300)
+                .frame(width: width())
                 .cornerRadius(7)
                 .onTapGesture {
                     replay.previewImage = nil
@@ -134,7 +143,33 @@ private struct ReplayControls: View {
         }
     }
 
-    var body: some View {
+    private func portrait() -> some View {
+        VStack(alignment: .trailing) {
+            HStack {
+                ReplayControlsInterval(replay: replay)
+            }
+            .padding(4)
+            .padding([.trailing], 4)
+            .font(.title)
+            .frame(height: 45)
+            .background(backgroundColor)
+            .cornerRadius(5)
+            HStack {
+                ReplayControlsSpeedPicker(replay: replay)
+                ReplayControlsPlayPauseButton(replay: replay)
+                Divider().overlay(.white)
+                ReplayControlsSaveButton(replay: replay)
+            }
+            .padding(4)
+            .padding([.leading, .trailing], 4)
+            .font(.title)
+            .frame(height: 45)
+            .background(backgroundColor)
+            .cornerRadius(5)
+        }
+    }
+
+    private func landscape() -> some View {
         HStack {
             ReplayControlsInterval(replay: replay)
             ReplayControlsSpeedPicker(replay: replay)
@@ -149,6 +184,14 @@ private struct ReplayControls: View {
         .background(backgroundColor)
         .cornerRadius(5)
     }
+
+    var body: some View {
+        if model.stream.portrait! {
+            portrait()
+        } else {
+            landscape()
+        }
+    }
 }
 
 private struct ReplayHistoryItem: View {
@@ -156,13 +199,21 @@ private struct ReplayHistoryItem: View {
     @ObservedObject var replay: ReplayProvider
     var video: ReplaySettings
 
+    private func height() -> Double {
+        if model.stream.portrait! {
+            return 118
+        } else {
+            return 68
+        }
+    }
+
     var body: some View {
         if let image = createThumbnail(path: video.url(), offset: video.thumbnailOffset()) {
             Image(uiImage: image)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .cornerRadius(5)
-                .frame(height: 68)
+                .frame(height: height())
                 .onTapGesture {
                     model.loadReplay(video: video)
                 }
@@ -180,6 +231,14 @@ private struct ReplayHistory: View {
     @EnvironmentObject var model: Model
     @ObservedObject var replay: ReplayProvider
 
+    private func height() -> Double {
+        if model.stream.portrait! {
+            return 120
+        } else {
+            return 70
+        }
+    }
+
     var body: some View {
         ScrollView(.horizontal) {
             LazyHStack {
@@ -192,7 +251,7 @@ private struct ReplayHistory: View {
                     ReplayHistoryItem(replay: replay, video: $0)
                 }
             }
-            .frame(height: 70)
+            .frame(height: height())
         }
         .scrollIndicators(.hidden)
         .padding(4)

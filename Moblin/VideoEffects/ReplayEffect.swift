@@ -132,7 +132,7 @@ private class Reader {
 
     @MainActor
     private func createOverlay(size: CMVideoDimensions) -> CIImage? {
-        let scale = Double(size.width) / 1920
+        let scale = Double(size.width) / (size.isPortrait() ? 1080 : 1920)
         let text = HStack {
             ZStack {
                 Circle()
