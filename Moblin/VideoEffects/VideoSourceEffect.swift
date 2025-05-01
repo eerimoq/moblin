@@ -315,9 +315,6 @@ final class VideoSourceEffect: VideoEffect {
         else {
             return backgroundImage
         }
-        if widgetImage.extent.height > widgetImage.extent.width {
-            widgetImage = widgetImage.oriented(.left)
-        }
         if settings.trackFaceEnabled {
             widgetImage = cropFace(
                 widgetImage,
