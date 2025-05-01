@@ -135,6 +135,7 @@ final class RecordingsStorage {
     }
 
     private func cleanup() {
+        database.recordings = database.recordings.filter { FileManager.default.fileExists(atPath: $0.url().path()) }
         guard let enumerator = FileManager.default.enumerator(
             at: getRecordingsDirectory(),
             includingPropertiesForKeys: nil
