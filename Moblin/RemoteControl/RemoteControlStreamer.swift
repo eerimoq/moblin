@@ -36,6 +36,8 @@ protocol RemoteControlStreamerDelegate: AnyObject {
     func remoteControlStreamerStopPreview(onComplete: @escaping () -> Void)
     func remoteControlStreamerSetRemoteSceneSettings(data: RemoteControlRemoteSceneSettings)
     func remoteControlStreamerSetRemoteSceneData(data: RemoteControlRemoteSceneData)
+    func remoteControlStreamerInstantReplay()
+    func remoteControlStreamerSaveReplay()
 }
 
 class RemoteControlStreamer {
@@ -274,6 +276,12 @@ class RemoteControlStreamer {
             send(message: .response(id: id, result: .ok, data: nil))
         case let .setRemoteSceneData(data: data):
             delegate.remoteControlStreamerSetRemoteSceneData(data: data)
+            send(message: .response(id: id, result: .ok, data: nil))
+        case .instantReplay:
+            delegate.remoteControlStreamerInstantReplay()
+            send(message: .response(id: id, result: .ok, data: nil))
+        case .saveReplay:
+            delegate.remoteControlStreamerSaveReplay()
             send(message: .response(id: id, result: .ok, data: nil))
         }
     }

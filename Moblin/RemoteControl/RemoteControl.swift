@@ -25,6 +25,8 @@ enum RemoteControlRequest: Codable {
     case chatMessages(history: Bool, messages: [RemoteControlChatMessage])
     case setRemoteSceneSettings(data: RemoteControlRemoteSceneSettings)
     case setRemoteSceneData(data: RemoteControlRemoteSceneData)
+    case instantReplay
+    case saveReplay
 }
 
 enum RemoteControlResponse: Codable {

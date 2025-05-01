@@ -8391,6 +8391,14 @@ extension Model: RemoteControlStreamerDelegate {
         }
     }
 
+    func remoteControlStreamerInstantReplay() {
+        instantReplay()
+    }
+
+    func remoteControlStreamerSaveReplay() {
+        _ = saveReplay()
+    }
+
     private func clearRemoteSceneSettingsAndData() {
         remoteSceneScenes = []
         remoteSceneWidgets = []
