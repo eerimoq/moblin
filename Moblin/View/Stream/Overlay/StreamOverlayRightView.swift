@@ -107,7 +107,7 @@ private struct CollapsedBitrateView: View {
                     .frame(width: 17, height: 17)
                     .padding([.leading], 2)
                     .foregroundColor(model.bitrateStatusColor)
-                    .background(model.bitrateStatusIconColor)
+                    .background(model.bitrateStatusIconColor ?? .clear)
                 if !model.speedMbpsOneDecimal.isEmpty {
                     Text(model.speedMbpsOneDecimal)
                         .foregroundColor(.white)
@@ -281,7 +281,7 @@ private struct StatusesView: View {
                 text: model.speedAndTotal,
                 textPlacement: textPlacement,
                 color: model.bitrateStatusColor,
-                iconBackgroundColor: model.bitrateStatusIconColor
+                iconBackgroundColor: model.bitrateStatusIconColor ?? backgroundColor
             )
         }
         if textPlacement == .hide {
