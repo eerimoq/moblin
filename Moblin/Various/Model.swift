@@ -375,6 +375,16 @@ class RecordingProvider: ObservableObject {
     @Published var length = noValue
 }
 
+class ReplayProvider: ObservableObject {
+    @Published var selectedId: UUID?
+    @Published var isSaving = false
+    @Published var previewImage: UIImage?
+    @Published var isPlaying = false
+    @Published var startFromEnd = 10.0
+    @Published var speed: SettingsReplaySpeed? = .one
+    @Published var instantReplayCountdown = 0
+}
+
 final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private let media = Media()
     var streamState = StreamState.disconnected {
@@ -733,10 +743,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     var recordingsStorage = RecordingsStorage()
     private var latestLowBitrateTime = ContinuousClock.now
-    var replaysStorage = ReplaysStorage()
-    var replaySettings: ReplaySettings?
-    @Published var selectedReplayId: UUID?
-    @Published var replayIsSaving = false
 
     private var rtmpServer: RtmpServer?
     @Published var serversSpeedAndTotal = noValue
@@ -769,14 +775,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var averageSpeedStartTime: ContinuousClock.Instant = .now
     private var averageSpeedStartDistance = 0.0
 
+    let replaysStorage = ReplaysStorage()
+    private var replaySettings: ReplaySettings?
     private var replayFrameExtractor: ReplayFrameExtractor?
-    @Published var replayImage: UIImage?
     private var replayVideo: ReplayBufferFile?
-    @Published var replayPlaying = false
     private var replayBuffer = ReplayBuffer()
-    @Published var replayStartFromEnd = 10.0
-    @Published var replaySpeed: SettingsReplaySpeed? = .one
-    @Published var instantReplayCountdown = 0
+    let replay = ReplayProvider()
 
     @Published var remoteControlStatus = noValue
 
@@ -1181,14 +1185,14 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func saveReplay(completion: ((ReplaySettings) -> Void)? = nil) -> Bool {
-        guard !replayIsSaving else {
+        guard !replay.isSaving else {
             return false
         }
-        replayIsSaving = true
+        replay.isSaving = true
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(5)) {
             self.replayBuffer.createFile { file in
                 DispatchQueue.main.async {
-                    self.replayIsSaving = false
+                    self.replay.isSaving = false
                     guard let file else {
                         return
                     }
@@ -1207,8 +1211,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func loadReplay(video: ReplaySettings, completion: (() -> Void)? = nil) {
         replaySettings = video
-        replayStartFromEnd = video.startFromEnd()
-        selectedReplayId = video.id
+        replay.startFromEnd = video.startFromEnd()
+        replay.selectedId = video.id
         replayFrameExtractor = ReplayFrameExtractor(
             video: ReplayBufferFile(url: video.url(), duration: video.duration, remove: false),
             offset: video.thumbnailOffset(),
@@ -1218,32 +1222,32 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func replaySpeedChanged() {
-        database.replay!.speed = replaySpeed ?? .one
+        database.replay!.speed = replay.speed ?? .one
     }
 
     func instantReplay() {
-        guard instantReplayCountdown == 0 else {
+        guard replay.instantReplayCountdown == 0 else {
             return
         }
         let savingStarted = saveReplay { video in
             self.loadReplay(video: video) {
-                self.replayPlaying = true
+                self.replay.isPlaying = true
                 if !self.replayPlay() {
-                    self.replayPlaying = false
+                    self.replay.isPlaying = false
                 }
             }
         }
         if savingStarted {
-            instantReplayCountdown = 6
+            replay.instantReplayCountdown = 6
             instantReplayCountdownTick()
         }
     }
 
     private func instantReplayCountdownTick() {
-        guard instantReplayCountdown != 0 else {
+        guard replay.instantReplayCountdown != 0 else {
             return
         }
-        instantReplayCountdown -= 1
+        replay.instantReplayCountdown -= 1
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
             self.instantReplayCountdownTick()
         }
@@ -1717,7 +1721,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         goProLaunchLiveStreamSelection = database.goPro!.selectedLaunchLiveStream
         goProWifiCredentialsSelection = database.goPro!.selectedWifiCredentials
         goProRtmpUrlSelection = database.goPro!.selectedRtmpUrl
-        replaySpeed = database.replay!.speed
+        replay.speed = database.replay!.speed
     }
 
     func setBitrateDropFix() {
@@ -11745,7 +11749,7 @@ private func videoCaptureError() -> String {
 extension Model: ReplayDelegate {
     func replayOutputFrame(image: UIImage, offset _: Double, video: ReplayBufferFile, completion: (() -> Void)?) {
         DispatchQueue.main.async {
-            self.replayImage = image
+            self.replay.previewImage = image
             self.replayVideo = video
             completion?()
         }
@@ -11755,7 +11759,7 @@ extension Model: ReplayDelegate {
 extension Model: ReplayEffectDelegate {
     func replayEffectCompleted() {
         DispatchQueue.main.async {
-            self.replayPlaying = false
+            self.replay.isPlaying = false
         }
     }
 }

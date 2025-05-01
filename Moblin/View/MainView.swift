@@ -179,12 +179,12 @@ private struct SnapshotCountdownView: View {
 }
 
 private struct InstantReplayCountdownView: View {
-    @EnvironmentObject var model: Model
+    @ObservedObject var replay: ReplayProvider
 
     var body: some View {
         VStack {
             Text("Playing instant replay in")
-            Text(String(model.instantReplayCountdown))
+            Text(String(replay.instantReplayCountdown))
                 .font(.title)
         }
         .foregroundColor(.white)
@@ -213,6 +213,7 @@ struct MainView: View {
     var webBrowserView: WebBrowserView
     @State var showAreYouReallySure = false
     @FocusState private var focused: Bool
+    @ObservedObject var replay: ReplayProvider
 
     func drawFocus(context: GraphicsContext, metrics: GeometryProxy, focusPoint: CGPoint) {
         let sideLength = 70.0
@@ -472,8 +473,8 @@ struct MainView: View {
             if let snapshotJob = model.currentSnapshotJob, model.snapshotCountdown > 0 {
                 SnapshotCountdownView(message: snapshotJob.message)
             }
-            if model.instantReplayCountdown != 0 {
-                InstantReplayCountdownView()
+            if replay.instantReplayCountdown != 0 {
+                InstantReplayCountdownView(replay: replay)
             }
         }
         .onAppear {

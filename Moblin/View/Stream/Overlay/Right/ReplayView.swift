@@ -1,17 +1,17 @@
 import SwiftUI
 
 private struct ReplayPreview: View {
-    @EnvironmentObject var model: Model
+    @ObservedObject var replay: ReplayProvider
 
     var body: some View {
-        if !model.replayPlaying, let image = model.replayImage {
+        if !replay.isPlaying, let image = replay.previewImage {
             Image(uiImage: image)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 300)
                 .cornerRadius(7)
                 .onTapGesture {
-                    model.replayImage = nil
+                    replay.previewImage = nil
                 }
         }
     }
@@ -19,19 +19,20 @@ private struct ReplayPreview: View {
 
 private struct ReplayControlsInterval: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var replay: ReplayProvider
 
     var body: some View {
-        Slider(value: $model.replayStartFromEnd,
+        Slider(value: $replay.startFromEnd,
                in: 0 ... 30,
                step: 0.1,
                onEditingChanged: { _ in
                })
                .frame(width: 250)
-               .onChange(of: model.replayStartFromEnd) {
+               .onChange(of: replay.startFromEnd) {
                    model.setReplayPosition(start: 30 - $0)
                }
                .rotationEffect(.degrees(180))
-        Text("\(Int(model.replayStartFromEnd))s")
+        Text("\(Int(replay.startFromEnd))s")
             .frame(width: 30)
             .font(.body)
             .foregroundColor(.white)
@@ -40,9 +41,10 @@ private struct ReplayControlsInterval: View {
 
 private struct ReplayControlsSpeedPicker: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var replay: ReplayProvider
 
     var body: some View {
-        SegmentedPicker(SettingsReplaySpeed.allCases, selectedItem: $model.replaySpeed) {
+        SegmentedPicker(SettingsReplaySpeed.allCases, selectedItem: $replay.speed) {
             Text($0.rawValue)
                 .font(.subheadline)
                 .frame(width: 30, height: 35)
@@ -53,7 +55,7 @@ private struct ReplayControlsSpeedPicker: View {
                 .stroke(pickerBorderColor)
         )
         .frame(width: 90)
-        .onChange(of: model.replaySpeed) { _ in
+        .onChange(of: replay.speed) { _ in
             model.replaySpeedChanged()
         }
         .foregroundColor(.white)
@@ -62,9 +64,10 @@ private struct ReplayControlsSpeedPicker: View {
 
 private struct ReplayControlsPlayPauseButton: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var replay: ReplayProvider
 
     private func playStopImage() -> String {
-        if model.replayPlaying {
+        if replay.isPlaying {
             return "stop"
         } else {
             return "play"
@@ -73,10 +76,10 @@ private struct ReplayControlsPlayPauseButton: View {
 
     var body: some View {
         Button {
-            model.replayPlaying.toggle()
-            if model.replayPlaying {
+            replay.isPlaying.toggle()
+            if replay.isPlaying {
                 if !model.replayPlay() {
-                    model.replayPlaying = false
+                    replay.isPlaying = false
                 }
             } else {
                 model.replayCancel()
@@ -84,21 +87,22 @@ private struct ReplayControlsPlayPauseButton: View {
         } label: {
             let image = Image(systemName: playStopImage())
                 .frame(width: 30)
-            if model.selectedReplayId != nil {
+            if replay.selectedId != nil {
                 image.foregroundColor(.white)
             } else {
                 image
             }
         }
-        .disabled(model.selectedReplayId == nil)
+        .disabled(replay.selectedId == nil)
     }
 }
 
 private struct ReplayControlsSaveButton: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var replay: ReplayProvider
 
     var body: some View {
-        if model.replayIsSaving {
+        if replay.isSaving {
             ProgressView()
                 .frame(width: 30)
                 .tint(.white)
@@ -120,9 +124,10 @@ private struct ReplayControlsSaveButton: View {
 
 private struct ReplayControls: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var replay: ReplayProvider
 
     private func playStopImage() -> String {
-        if model.replayPlaying {
+        if replay.isPlaying {
             return "stop"
         } else {
             return "play"
@@ -131,11 +136,11 @@ private struct ReplayControls: View {
 
     var body: some View {
         HStack {
-            ReplayControlsInterval()
-            ReplayControlsSpeedPicker()
-            ReplayControlsPlayPauseButton()
+            ReplayControlsInterval(replay: replay)
+            ReplayControlsSpeedPicker(replay: replay)
+            ReplayControlsPlayPauseButton(replay: replay)
             Divider().overlay(.white)
-            ReplayControlsSaveButton()
+            ReplayControlsSaveButton(replay: replay)
         }
         .padding(4)
         .padding([.trailing], 4)
@@ -148,20 +153,21 @@ private struct ReplayControls: View {
 
 private struct ReplayHistoryItem: View {
     @EnvironmentObject var model: Model
-    var replay: ReplaySettings
+    @ObservedObject var replay: ReplayProvider
+    var video: ReplaySettings
 
     var body: some View {
-        if let image = createThumbnail(path: replay.url(), offset: replay.thumbnailOffset()) {
+        if let image = createThumbnail(path: video.url(), offset: video.thumbnailOffset()) {
             Image(uiImage: image)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .cornerRadius(5)
                 .frame(height: 68)
                 .onTapGesture {
-                    model.loadReplay(video: replay)
+                    model.loadReplay(video: video)
                 }
                 .overlay {
-                    if replay.id == model.selectedReplayId {
+                    if video.id == replay.selectedId {
                         RoundedRectangle(cornerRadius: 5)
                             .stroke(.white, lineWidth: 2)
                     }
@@ -172,6 +178,7 @@ private struct ReplayHistoryItem: View {
 
 private struct ReplayHistory: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var replay: ReplayProvider
 
     var body: some View {
         ScrollView(.horizontal) {
@@ -181,8 +188,8 @@ private struct ReplayHistory: View {
                         .padding([.leading], 30)
                         .foregroundColor(.white)
                 }
-                ForEach(model.replaysStorage.database.replays) { replay in
-                    ReplayHistoryItem(replay: replay)
+                ForEach(model.replaysStorage.database.replays) {
+                    ReplayHistoryItem(replay: replay, video: $0)
                 }
             }
             .frame(height: 70)
@@ -195,13 +202,13 @@ private struct ReplayHistory: View {
 }
 
 struct StreamOverlayRightReplayView: View {
-    @EnvironmentObject var model: Model
+    @ObservedObject var replay: ReplayProvider
 
     var body: some View {
         VStack(alignment: .trailing) {
-            ReplayPreview()
-            ReplayControls()
-            ReplayHistory()
+            ReplayPreview(replay: replay)
+            ReplayControls(replay: replay)
+            ReplayHistory(replay: replay)
         }
     }
 }
