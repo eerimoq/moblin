@@ -8021,6 +8021,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return isRecording
     }
 
+    func isShowingStatusReplay() -> Bool {
+        return stream.replay!.enabled
+    }
+
     func isShowingStatusBrowserWidgets() -> Bool {
         return database.show.browserWidgets! && isStatusBrowserWidgetsActive()
     }
@@ -8163,6 +8167,9 @@ extension Model: RemoteControlStreamerDelegate {
         }
         if isRecording {
             topRight.recording = RemoteControlStatusItem(message: recording.length)
+        }
+        if stream.replay!.enabled {
+            topRight.replay = RemoteControlStatusItem(message: String(localized: "Enabled"))
         }
         if isStatusBrowserWidgetsActive() {
             topRight.browserWidgets = RemoteControlStatusItem(message: browserWidgetsStatus)

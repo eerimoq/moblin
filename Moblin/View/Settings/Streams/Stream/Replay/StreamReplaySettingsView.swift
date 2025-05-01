@@ -13,6 +13,7 @@ struct StreamReplaySettingsView: View {
                     stream.replay!.enabled = value
                     if stream.enabled {
                         model.streamReplayEnabledUpdated()
+                        model.objectWillChange.send()
                     }
                 }))
             }

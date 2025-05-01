@@ -302,6 +302,12 @@ private struct StatusesView: View {
             textPlacement: textPlacement,
             color: netStreamColor(model: model)
         )
+        StreamOverlayIconAndTextView(
+            show: model.isShowingStatusReplay(),
+            icon: "play",
+            text: String(localized: "Enabled"),
+            textPlacement: textPlacement
+        )
         StreamUptimeStatusView(streamUptime: model.streamUptime, textPlacement: textPlacement)
         StreamOverlayIconAndTextView(
             show: model.isShowingStatusLocation(),

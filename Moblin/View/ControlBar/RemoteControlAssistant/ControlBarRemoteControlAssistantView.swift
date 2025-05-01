@@ -318,6 +318,7 @@ private struct ControlBarRemoteControlAssistantLeftView: View {
                         StatusItemView(icon: "phone.connection", status: status.srtla)
                         StatusItemView(icon: "phone.connection", status: status.srtlaRtts)
                         StatusItemView(icon: "record.circle", status: status.recording)
+                        StatusItemView(icon: "play", status: status.replay)
                         StatusItemView(icon: "globe", status: status.browserWidgets)
                     }
                 } else {
