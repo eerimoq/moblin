@@ -428,6 +428,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var manualFocusMotionAttitude: CMAttitude?
 
     @Published var showingPanel: ShowingPanel = .none
+    @Published var panelHidden = false
     @Published var blackScreen = false
     @Published var lockScreen = false
     @Published var findFace = false
@@ -958,6 +959,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         } else {
             showingPanel = panel
         }
+        panelHidden = false
         for pair in buttonPairs {
             if isShowingPanelGlobalButton(type: pair.first.button.type) {
                 setGlobalButtonState(type: pair.first.button.type, isOn: false)
