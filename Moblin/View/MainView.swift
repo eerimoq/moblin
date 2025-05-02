@@ -41,6 +41,7 @@ private struct HideShowButtonPanelView: View {
 
 private struct PanelButtonsView: View {
     @EnvironmentObject var model: Model
+    var backgroundColor: Color
 
     var body: some View {
         HStack {
@@ -53,6 +54,10 @@ private struct PanelButtonsView: View {
                         model.updateLutsButtonState()
                     }
                 }
+                .padding(-3)
+                .background(backgroundColor)
+                .cornerRadius(7)
+                .padding(3)
                 Spacer()
             }
         }
@@ -134,10 +139,16 @@ private struct CloseButtonRemoteView: View {
     @EnvironmentObject var model: Model
 
     var body: some View {
-        CloseButtonView {
-            model.showingRemoteControl = false
-            model.setGlobalButtonState(type: .remote, isOn: model.showingRemoteControl)
-            model.updateButtonStates()
+        HStack {
+            Spacer()
+            VStack(alignment: .trailing) {
+                CloseButtonView {
+                    model.showingRemoteControl = false
+                    model.setGlobalButtonState(type: .remote, isOn: model.showingRemoteControl)
+                    model.updateButtonStates()
+                }
+                Spacer()
+            }
         }
     }
 }
@@ -371,7 +382,8 @@ struct MainView: View {
                 if model.showingPanel != .none {
                     MenuView()
                         .opacity(model.panelHidden ? 0 : 1)
-                    PanelButtonsView()
+                    let backgroundColor = model.panelHidden ? model.showingPanel.buttonsBackgroundColor() : .clear
+                    PanelButtonsView(backgroundColor: backgroundColor)
                         .padding([.trailing], 10)
                         .padding([.top], -7)
                 }
@@ -445,7 +457,7 @@ struct MainView: View {
                     }
                 }
                 if model.showingPanel != .none, model.panelHidden {
-                    PanelButtonsView()
+                    PanelButtonsView(backgroundColor: model.showingPanel.buttonsBackgroundColor())
                         .padding([.trailing], -1)
                 }
             }
@@ -461,13 +473,13 @@ struct MainView: View {
             if model.showingPanel != .none {
                 ZStack {
                     MenuView()
-                        .frame(width: model.panelHidden ? 1 : settingsHalfWidth)
                         .opacity(model.panelHidden ? 0 : 1)
                         .background(.black)
                     if !model.panelHidden {
-                        PanelButtonsView()
+                        PanelButtonsView(backgroundColor: .clear)
                     }
                 }
+                .frame(width: model.panelHidden ? 1 : settingsHalfWidth)
             }
             ControlBarLandscapeView()
         }

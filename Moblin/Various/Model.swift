@@ -54,6 +54,14 @@ enum ShowingPanel {
     case sceneSettings
     case goPro
     case connectionPriorities
+
+    func buttonsBackgroundColor() -> Color {
+        if self == .chat {
+            return .black
+        } else {
+            return Color(UIColor.secondarySystemBackground)
+        }
+    }
 }
 
 class Browser: Identifiable {
