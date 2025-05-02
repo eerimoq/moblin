@@ -388,10 +388,12 @@ class SettingsStreamRecording: Codable {
 
 class SettingsStreamReplay: Codable {
     var enabled: Bool = false
+    var fade: Bool? = true
 
     func clone() -> SettingsStreamReplay {
         let new = SettingsStreamReplay()
         new.enabled = enabled
+        new.fade = fade
         return new
     }
 }
@@ -5288,6 +5290,10 @@ final class Settings {
         }
         for stream in realDatabase.streams where stream.replay == nil {
             stream.replay = .init()
+            store()
+        }
+        for stream in realDatabase.streams where stream.replay!.fade == nil {
+            stream.replay!.fade = true
             store()
         }
     }

@@ -16,6 +16,11 @@ struct StreamReplaySettingsView: View {
                         model.objectWillChange.send()
                     }
                 }))
+                Toggle("Fade transition", isOn: Binding(get: {
+                    stream.replay!.fade!
+                }, set: { value in
+                    stream.replay!.fade = value
+                }))
             }
         }
         .navigationTitle("Replay")

@@ -1291,6 +1291,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             stop: replaySettings.stopFromVideoStart(),
             speed: database.replay!.speed.toNumber(),
             size: stream.dimensions(),
+            fade: stream.replay!.fade!,
             delegate: self
         )
         media.registerEffectBack(replayEffect!)
@@ -1298,11 +1299,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func replayCancel() {
-        guard let replayEffect else {
-            return
-        }
-        media.unregisterEffect(replayEffect)
-        self.replayEffect = nil
+        replayEffect?.cancel()
+        replayEffect = nil
     }
 
     func takeSnapshot(isChatBot: Bool = false, message: String? = nil, noDelay: Bool = false) {

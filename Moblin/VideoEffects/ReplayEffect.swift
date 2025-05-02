@@ -7,6 +7,7 @@ import Vision
 
 private let replayImagesQueue = DispatchQueue(label: "com.eerimoq.replay-effect-images")
 private let replayQueue = DispatchQueue(label: "com.eerimoq.replay-effect")
+private let transitionLength = 0.3
 
 protocol ReplayEffectDelegate: AnyObject {
     func replayEffectCompleted()
@@ -163,6 +164,11 @@ final class ReplayEffect: VideoEffect {
     private let reader: Reader
     private var startPresentationTimeStamp: Double?
     private weak var delegate: ReplayEffectDelegate?
+    private var lastImageOffset: Double?
+    private var latestImage: CIImage?
+    private var cancelled = false
+    private var cancelledImageOffset: Double?
+    private let fade: Bool
 
     init(
         video: ReplayBufferFile,
@@ -170,11 +176,19 @@ final class ReplayEffect: VideoEffect {
         stop: Double,
         speed: Double,
         size: CMVideoDimensions,
+        fade: Bool,
         delegate: ReplayEffectDelegate
     ) {
         self.speed = speed
+        self.fade = fade
         self.delegate = delegate
         reader = Reader(video: video, start: start, stop: stop, size: size)
+    }
+
+    func cancel() {
+        mixerLockQueue.async {
+            self.cancelled = true
+        }
     }
 
     override func getName() -> String {
@@ -187,14 +201,51 @@ final class ReplayEffect: VideoEffect {
             startPresentationTimeStamp = presentationTimeStamp
         }
         let offset = info.presentationTimeStamp.seconds - startPresentationTimeStamp!
+        if cancelled {
+            if cancelledImageOffset == nil {
+                cancelledImageOffset = offset
+            }
+            return executeEnd(image, offset - cancelledImageOffset!) ?? image
+        } else if let lastImageOffset {
+            return executeEnd(image, offset - lastImageOffset) ?? image
+        } else {
+            return executeBeginAndMiddle(image, offset) ?? image
+        }
+    }
+
+    private func executeBeginAndMiddle(_ image: CIImage, _ offset: Double) -> CIImage? {
         let replayImage = reader.getImage(offset: offset * speed)
+        latestImage = replayImage.image ?? latestImage
         if replayImage.isLast {
-            playbackCompleted = true
-            delegate?.replayEffectCompleted()
+            lastImageOffset = offset
         } else if replayImage.image == nil {
             startPresentationTimeStamp = nil
         }
-        return replayImage.image ?? image
+        if fade, offset <= transitionLength {
+            return applyTransition(image, replayImage.image, offset)
+        } else {
+            return replayImage.image ?? latestImage
+        }
+    }
+
+    private func executeEnd(_ image: CIImage, _ offset: Double) -> CIImage? {
+        if fade, offset <= transitionLength {
+            return applyTransition(latestImage, image, offset)
+        } else {
+            playbackCompleted = true
+            if !cancelled {
+                delegate?.replayEffectCompleted()
+            }
+            return image
+        }
+    }
+
+    private func applyTransition(_ input: CIImage?, _ target: CIImage?, _ offset: Double) -> CIImage? {
+        let filter = CIFilter.dissolveTransition()
+        filter.inputImage = input
+        filter.targetImage = target
+        filter.time = Float(offset / transitionLength)
+        return filter.outputImage
     }
 
     override func shouldRemove() -> Bool {
