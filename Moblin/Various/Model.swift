@@ -6241,6 +6241,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             devices.hasSceneDevice = true
             devices.devices.append(makeCaptureDevice(device: sceneDevice))
         }
+        getBuiltinCameraDevicesInScene(scene: scene, devices: &devices.devices)
+        return devices
+    }
+
+    private func getBuiltinCameraDevicesInScene(scene: SettingsScene, devices: inout [CaptureDevice]) {
         for sceneWidget in scene.widgets {
             guard let widget = findWidget(id: sceneWidget.widgetId) else {
                 continue
@@ -6248,27 +6253,32 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             guard widget.enabled! else {
                 continue
             }
-            guard widget.type == .videoSource else {
-                continue
-            }
-            let cameraId: String?
-            switch widget.videoSource!.cameraPosition! {
-            case .back:
-                cameraId = widget.videoSource!.backCameraId!
-            case .front:
-                cameraId = widget.videoSource!.frontCameraId!
-            case .external:
-                cameraId = widget.videoSource!.externalCameraId!
-            default:
-                cameraId = nil
-            }
-            if let cameraId, let device = AVCaptureDevice(uniqueID: cameraId) {
-                if !devices.devices.contains(where: { $0.device == device }) {
-                    devices.devices.append(makeCaptureDevice(device: device))
+            switch widget.type {
+            case .videoSource:
+                let cameraId: String?
+                switch widget.videoSource!.cameraPosition! {
+                case .back:
+                    cameraId = widget.videoSource!.backCameraId!
+                case .front:
+                    cameraId = widget.videoSource!.frontCameraId!
+                case .external:
+                    cameraId = widget.videoSource!.externalCameraId!
+                default:
+                    cameraId = nil
                 }
+                if let cameraId, let device = AVCaptureDevice(uniqueID: cameraId) {
+                    if !devices.contains(where: { $0.device == device }) {
+                        devices.append(makeCaptureDevice(device: device))
+                    }
+                }
+            case .scene:
+                if let scene = database.scenes.first(where: { $0.id == widget.scene!.sceneId }) {
+                    getBuiltinCameraDevicesInScene(scene: scene, devices: &devices)
+                }
+            default:
+                break
             }
         }
-        return devices
     }
 
     func listCameraPositions(excludeBuiltin: Bool = false) -> [(String, String)] {
