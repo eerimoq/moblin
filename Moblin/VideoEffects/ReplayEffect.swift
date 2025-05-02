@@ -7,7 +7,7 @@ import Vision
 
 private let replayImagesQueue = DispatchQueue(label: "com.eerimoq.replay-effect-images")
 private let replayQueue = DispatchQueue(label: "com.eerimoq.replay-effect")
-private let transitionLength = 0.3
+private let transitionLength = 0.5
 
 protocol ReplayEffectDelegate: AnyObject {
     func replayEffectCompleted()
