@@ -189,7 +189,7 @@ private struct RemoteControlAudioLevelView: View {
     }
 }
 
-private struct ControlBarRemoteControlAssistantLeftView: View {
+private struct ControlBarRemoteControlAssistantStatusView: View {
     @EnvironmentObject var model: Model
 
     private func batteryStatus(status: RemoteControlStatusGeneral) -> RemoteControlStatusItem? {
@@ -507,7 +507,7 @@ private struct DebugLoggingView: View {
     }
 }
 
-private struct ControlBarRemoteControlAssistantRightView: View {
+private struct ControlBarRemoteControlAssistantControlView: View {
     @EnvironmentObject var model: Model
 
     var body: some View {
@@ -597,15 +597,15 @@ struct ControlBarRemoteControlAssistantView: View {
                         }
                     } else if model.stream.portrait! || model.database.portrait! {
                         Form {
-                            ControlBarRemoteControlAssistantLeftView()
-                            ControlBarRemoteControlAssistantRightView()
+                            ControlBarRemoteControlAssistantStatusView()
+                            ControlBarRemoteControlAssistantControlView()
                         }
                     } else {
                         Form {
-                            ControlBarRemoteControlAssistantLeftView()
+                            ControlBarRemoteControlAssistantStatusView()
                         }
                         Form {
-                            ControlBarRemoteControlAssistantRightView()
+                            ControlBarRemoteControlAssistantControlView()
                         }
                     }
                 }
