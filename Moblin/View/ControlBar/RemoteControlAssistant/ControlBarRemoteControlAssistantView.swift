@@ -220,7 +220,6 @@ private struct ControlBarRemoteControlAssistantLeftView: View {
     }
 
     var body: some View {
-        Form {
             Section {
                 if model.remoteControlAssistantShowPreview {
                     if let preview = model.remoteControlPreview {
@@ -328,7 +327,6 @@ private struct ControlBarRemoteControlAssistantLeftView: View {
                 Text("Top right")
             }
         }
-    }
 }
 
 private struct LiveView: View {
@@ -513,7 +511,6 @@ private struct ControlBarRemoteControlAssistantRightView: View {
     @EnvironmentObject var model: Model
 
     var body: some View {
-        Form {
             Section {
                 if model.remoteControlSettings != nil {
                     LiveView()
@@ -568,7 +565,6 @@ private struct ControlBarRemoteControlAssistantRightView: View {
                     Text("Log")
                 }
             }
-        }
     }
 }
 
@@ -599,9 +595,18 @@ struct ControlBarRemoteControlAssistantView: View {
                         Form {
                             Text("Waiting for the remote control streamer to connect...")
                         }
+                    } else if model.stream.portrait! || model.database.portrait! {
+                        Form {
+                            ControlBarRemoteControlAssistantLeftView()
+                            ControlBarRemoteControlAssistantRightView()
+                        }
                     } else {
-                        ControlBarRemoteControlAssistantLeftView()
-                        ControlBarRemoteControlAssistantRightView()
+                        Form {
+                            ControlBarRemoteControlAssistantLeftView()
+                        }
+                        Form {
+                            ControlBarRemoteControlAssistantRightView()
+                        }
                     }
                 }
             }
