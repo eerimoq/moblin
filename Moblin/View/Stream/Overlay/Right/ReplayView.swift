@@ -42,7 +42,7 @@ private struct ReplayControlsInterval: View {
                }
                .rotationEffect(.degrees(180))
         Text("\(Int(replay.startFromEnd))s")
-            .frame(width: 30)
+            .frame(width: 35)
             .font(.body)
             .foregroundColor(.white)
     }
@@ -56,7 +56,7 @@ private struct ReplayControlsSpeedPicker: View {
         SegmentedPicker(SettingsReplaySpeed.allCases, selectedItem: $replay.speed) {
             Text($0.rawValue)
                 .font(.subheadline)
-                .frame(width: 30, height: 35)
+                .frame(height: 35)
         }
         .cornerRadius(7)
         .overlay(
