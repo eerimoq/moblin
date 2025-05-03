@@ -582,7 +582,14 @@ struct QuickButtonsInnerView: View {
                 Button(action: {
                     djiDevicesAction(state: state)
                 }, label: {
-                    QuickButtonImage(state: state, buttonSize: size)
+                    ZStack {
+                        QuickButtonImage(state: state, buttonSize: size)
+                        Text("DJI")
+                            .rotationEffect(.degrees(-90))
+                            .offset(CGSize(width: 10, height: 0))
+                            .font(.system(size: 8))
+                            .foregroundColor(.white)
+                    }
                 })
             case .portrait:
                 Button(action: {
@@ -594,7 +601,14 @@ struct QuickButtonsInnerView: View {
                 Button(action: {
                     goProAction(state: state)
                 }, label: {
-                    QuickButtonImage(state: state, buttonSize: size)
+                    ZStack {
+                        QuickButtonImage(state: state, buttonSize: size)
+                        Text("GoPro")
+                            .rotationEffect(.degrees(-90))
+                            .offset(CGSize(width: 10, height: 0))
+                            .font(.system(size: 8))
+                            .foregroundColor(.white)
+                    }
                 })
             case .replay:
                 Button(action: {
