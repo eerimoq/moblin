@@ -10,6 +10,7 @@ private let replayQueue = DispatchQueue(label: "com.eerimoq.replay-effect")
 private let transitionLength = 0.5
 
 protocol ReplayEffectDelegate: AnyObject {
+    func replayEffectStatus(timeLeft: Int)
     func replayEffectCompleted()
 }
 
@@ -29,7 +30,7 @@ private class Reader {
     private var completed = false
     private var overlay: CIImage?
 
-    init(video: ReplayBufferFile, start: Double, stop: Double, size: CMVideoDimensions) {
+    init(video: ReplayBufferFile, start: Double, duration: Double, size: CMVideoDimensions) {
         self.video = video
         startTime = start
         DispatchQueue.main.async {
@@ -38,7 +39,7 @@ private class Reader {
                 let asset = AVAsset(url: video.url)
                 self.reader = try? AVAssetReader(asset: asset)
                 let startTime = CMTime(seconds: start, preferredTimescale: 1000)
-                let duration = CMTime(seconds: stop - start, preferredTimescale: 1000)
+                let duration = CMTime(seconds: duration, preferredTimescale: 1000)
                 self.reader?.timeRange = CMTimeRange(start: startTime, duration: duration)
                 asset.loadTracks(withMediaType: .video) { [weak self] tracks, error in
                     replayQueue.async {
@@ -169,6 +170,8 @@ final class ReplayEffect: VideoEffect {
     private var cancelled = false
     private var cancelledImageOffset: Double?
     private let fade: Bool
+    private let duration: Double
+    private var latestTimeLeft = Int.max
 
     init(
         video: ReplayBufferFile,
@@ -182,7 +185,8 @@ final class ReplayEffect: VideoEffect {
         self.speed = speed
         self.fade = fade
         self.delegate = delegate
-        reader = Reader(video: video, start: start, stop: stop, size: size)
+        duration = stop - start
+        reader = Reader(video: video, start: start, duration: duration, size: size)
     }
 
     func cancel() {
@@ -207,9 +211,19 @@ final class ReplayEffect: VideoEffect {
             }
             return executeEnd(image, offset - cancelledImageOffset!) ?? image
         } else if let lastImageOffset {
+            updateStatus(offset: offset)
             return executeEnd(image, offset - lastImageOffset) ?? image
         } else {
+            updateStatus(offset: offset)
             return executeBeginAndMiddle(image, offset) ?? image
+        }
+    }
+
+    private func updateStatus(offset: Double) {
+        let timeLeft = max(Int((duration / speed - offset).rounded(.up)), 0)
+        if timeLeft != latestTimeLeft {
+            latestTimeLeft = timeLeft
+            delegate?.replayEffectStatus(timeLeft: timeLeft)
         }
     }
 

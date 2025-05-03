@@ -391,6 +391,7 @@ class ReplayProvider: ObservableObject {
     @Published var startFromEnd = 10.0
     @Published var speed: SettingsReplaySpeed? = .one
     @Published var instantReplayCountdown = 0
+    @Published var timeLeft = 0
 }
 
 final class Model: NSObject, ObservableObject, @unchecked Sendable {
@@ -11789,6 +11790,12 @@ extension Model: ReplayDelegate {
 }
 
 extension Model: ReplayEffectDelegate {
+    func replayEffectStatus(timeLeft: Int) {
+        DispatchQueue.main.async {
+            self.replay.timeLeft = timeLeft
+        }
+    }
+
     func replayEffectCompleted() {
         DispatchQueue.main.async {
             self.replay.isPlaying = false

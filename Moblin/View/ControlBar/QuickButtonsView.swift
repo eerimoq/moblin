@@ -39,6 +39,34 @@ private struct QuickButtonImage: View {
     }
 }
 
+private struct InstantReplayView: View {
+    @EnvironmentObject var model: Model
+    @ObservedObject var replay: ReplayProvider
+    var state: ButtonState
+    var size: CGFloat
+
+    var body: some View {
+        Button(action: {
+            if model.stream.replay!.enabled {
+                model.instantReplay()
+            } else {
+                model.makeReplayIsNotEnabledToast()
+            }
+        }, label: {
+            if replay.isPlaying {
+                Text(String(replay.timeLeft))
+                    .font(.system(size: 25))
+                    .frame(width: size, height: size)
+                    .foregroundColor(.white)
+                    .background(state.button.backgroundColor!.color())
+                    .clipShape(Circle())
+            } else {
+                QuickButtonImage(state: state, buttonSize: size)
+            }
+        })
+    }
+}
+
 struct QuickButtonPlaceholderImage: View {
     var body: some View {
         Button {} label: {
@@ -286,14 +314,6 @@ struct QuickButtonsInnerView: View {
         state.button.isOn.toggle()
         model.setGlobalButtonState(type: .replay, isOn: state.button.isOn)
         model.updateButtonStates()
-    }
-
-    private func instantReplayAction(state _: ButtonState) {
-        if model.stream.replay!.enabled {
-            model.instantReplay()
-        } else {
-            model.makeReplayIsNotEnabledToast()
-        }
     }
 
     private func connectionPrioritiesAction(state _: ButtonState) {
@@ -617,11 +637,7 @@ struct QuickButtonsInnerView: View {
                     QuickButtonImage(state: state, buttonSize: size)
                 })
             case .instantReplay:
-                Button(action: {
-                    instantReplayAction(state: state)
-                }, label: {
-                    QuickButtonImage(state: state, buttonSize: size)
-                })
+                InstantReplayView(replay: model.replay, state: state, size: size)
             case .connectionPriorities:
                 Button(action: {
                     connectionPrioritiesAction(state: state)
