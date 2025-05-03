@@ -29,13 +29,23 @@ struct SimpleEntry: TimelineEntry {
 }
 
 struct MoblinWidgetAppEntryView: View {
+    @Environment(\.widgetRenderingMode) var renderingMode
     var entry: Provider.Entry
 
     var body: some View {
-        Image("AppIcon")
-            .resizable()
-            .aspectRatio(contentMode: .fit)
-            .frame(width: 30, height: 30)
+        switch renderingMode {
+        case .accented:
+            Image("AppIconAccented")
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .padding()
+                .widgetAccentable(true)
+        default:
+            Image("AppIcon")
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .padding()
+        }
     }
 }
 
