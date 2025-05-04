@@ -146,7 +146,7 @@ struct DebugSettingsView: View {
                         Slider(
                             value: $builtinAudioAndVideoDelay,
                             in: 0.0 ... 3.0,
-                            step: 0.1,
+                            step: 0.01,
                             onEditingChanged: { begin in
                                 guard !begin else {
                                     return
@@ -154,7 +154,7 @@ struct DebugSettingsView: View {
                                 model.database.debug.builtinAudioAndVideoDelay = builtinAudioAndVideoDelay
                             }
                         )
-                        Text(formatOneDecimal(Float(builtinAudioAndVideoDelay)))
+                        Text(formatTwoDecimals(builtinAudioAndVideoDelay))
                             .frame(width: 40)
                     }
                 }
