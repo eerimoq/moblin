@@ -490,7 +490,7 @@ struct MainView: View {
 
     var body: some View {
         let all = ZStack {
-            if model.stream.portrait! || model.database.portrait! {
+            if model.isPortrait() {
                 portrait()
             } else {
                 landscape()

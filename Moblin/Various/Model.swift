@@ -847,6 +847,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
+    func isPortrait() -> Bool {
+        return stream.portrait! || database.portrait!
+    }
+
     private func getSceneWidgets(scene: SettingsScene) -> [SettingsWidget] {
         var widgets: [SettingsWidget] = []
         for sceneWidget in scene.widgets {

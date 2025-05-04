@@ -595,7 +595,7 @@ struct ControlBarRemoteControlAssistantView: View {
                         Form {
                             Text("Waiting for the remote control streamer to connect...")
                         }
-                    } else if model.stream.portrait! || model.database.portrait! {
+                    } else if model.isPortrait() {
                         Form {
                             ControlBarRemoteControlAssistantStatusView()
                             ControlBarRemoteControlAssistantControlView()
