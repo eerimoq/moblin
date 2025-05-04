@@ -68,13 +68,17 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
     - Checkboxes.
     - Ratings.
     - Date.
+    - ...
   - Browser widget. Show a web page on stream.
     - Optional style sheet.
   - Map widget with location.
   - QR code widget.
   - Scene widget.
-- Back or front camera.
+  - Video soure widget (for multi cam).
+  - ...
+- Back, front or multi camera.
   - Front camera mirrored on screen for natural experience.
+- Low energy truple and dual cameras.
 - Back, front, top, bottom or external mic.
   - Automatically changes to external mic when connected.
 - Video stabilization.
@@ -148,6 +152,8 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
   - Torch.
   - Mute.
   - ...
+- Moblink for more connection.
+- Low light boost.
 - Cosmetics.
   - Select Moblin icon to show in app and on home screen.
   - Optionally purchase additional Moblin icons to support developers.
@@ -161,6 +167,7 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
   - Change bitrate.
   - Change zoom.
   - Show logs.
+  - ...
 - Torch.
 - Mute audio.
 - Deep link settings (moblin://).
@@ -184,12 +191,14 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
     - Fax.
     - Turn filters on and off.
     - Let chat take snapshot.
+    - ...
   - Send low battery warning to chat periodically.
 - Screen capture as video source.
 - Basic video player as video source and mic.
 - DJI camera Bluetooth controller.
   - Automatically start DJI camera live stream.
   - Tested with OA4, OA3 and OP3.
+- GoPro QR-code creator.
 - Show grid for easier positioning.
 - Camera settings (on some cameras).
   - Exposure bias.
@@ -201,6 +210,11 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
   - Optional meow sound when printing.
 - Take snapshots.
   - And optionally automatically upload to your Discord server.
+- Save and play replays.
+- Tesla vehicle status and control.
+- Cycling power monitor.
+- Heart rate monitor.
+- Show video on external dispaly. Aka clean HDMI out.
 
 ## Apple Watch companion app
 
