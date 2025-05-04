@@ -8,6 +8,7 @@ import Vision
 
 struct VideoUnitAttachParams {
     var devices: CaptureDevices
+    var builtinDelay: Double
     var cameraPreviewLayer: AVCaptureVideoPreviewLayer
     var showCameraPreview: Bool
     var externalDisplayPreview: Bool
@@ -16,7 +17,6 @@ struct VideoUnitAttachParams {
     var isVideoMirrored: Bool
     var ignoreFramesAfterAttachSeconds: Double
     var fillFrame: Bool
-    var latency: Double
 }
 
 enum SceneSwitchTransition {
@@ -423,7 +423,7 @@ final class VideoUnit: NSObject {
                     cameraId: device.id,
                     name: "builtin",
                     update: false,
-                    latency: params.latency,
+                    latency: params.builtinDelay,
                     mixer: self.mixer
                 )
                 self.bufferedVideos[device.id] = bufferedVideo

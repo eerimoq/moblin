@@ -7111,6 +7111,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func detachCamera() {
         let params = VideoUnitAttachParams(devices: CaptureDevices(hasSceneDevice: false, devices: []),
+                                           builtinDelay: 0,
                                            cameraPreviewLayer: cameraPreviewLayer!,
                                            showCameraPreview: false,
                                            externalDisplayPreview: false,
@@ -7118,8 +7119,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                                            preferredVideoStabilizationMode: .off,
                                            isVideoMirrored: false,
                                            ignoreFramesAfterAttachSeconds: 0.0,
-                                           fillFrame: false,
-                                           latency: 0)
+                                           fillFrame: false)
         media.attachCamera(params: params)
     }
 
@@ -7338,6 +7338,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         lastAttachCompletedTime = nil
         let isMirrored = getVideoMirroredOnScreen()
         let params = VideoUnitAttachParams(devices: getBuiltinCameraDevices(scene: scene, sceneDevice: cameraDevice),
+                                           builtinDelay: database.debug.builtinAudioAndVideoDelay!,
                                            cameraPreviewLayer: cameraPreviewLayer!,
                                            showCameraPreview: updateShowCameraPreview(),
                                            externalDisplayPreview: externalDisplayPreview,
@@ -7345,8 +7346,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                                            preferredVideoStabilizationMode: getVideoStabilizationMode(scene: scene),
                                            isVideoMirrored: getVideoMirroredOnStream(),
                                            ignoreFramesAfterAttachSeconds: getIgnoreFramesAfterAttachSeconds(),
-                                           fillFrame: getFillFrame(scene: scene),
-                                           latency: database.debug.builtinAudioAndVideoDelay!)
+                                           fillFrame: getFillFrame(scene: scene))
         media.attachCamera(
             params: params,
             onSuccess: {
@@ -7394,6 +7394,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         hasZoom = false
         media.attachBufferedCamera(
             devices: getBuiltinCameraDevices(scene: scene, sceneDevice: nil),
+            builtinDelay: database.debug.builtinAudioAndVideoDelay!,
             cameraPreviewLayer: cameraPreviewLayer!,
             externalDisplayPreview: externalDisplayPreview,
             cameraId: cameraId,

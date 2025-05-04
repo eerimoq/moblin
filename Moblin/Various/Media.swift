@@ -802,6 +802,7 @@ final class Media: NSObject {
 
     func attachBufferedCamera(
         devices: CaptureDevices,
+        builtinDelay: Double,
         cameraPreviewLayer: AVCaptureVideoPreviewLayer,
         externalDisplayPreview: Bool,
         cameraId: UUID,
@@ -809,6 +810,7 @@ final class Media: NSObject {
         fillFrame: Bool
     ) {
         let params = VideoUnitAttachParams(devices: devices,
+                                           builtinDelay: builtinDelay,
                                            cameraPreviewLayer: cameraPreviewLayer,
                                            showCameraPreview: false,
                                            externalDisplayPreview: externalDisplayPreview,
@@ -816,8 +818,7 @@ final class Media: NSObject {
                                            preferredVideoStabilizationMode: .off,
                                            isVideoMirrored: false,
                                            ignoreFramesAfterAttachSeconds: ignoreFramesAfterAttachSeconds,
-                                           fillFrame: fillFrame,
-                                           latency: 0)
+                                           fillFrame: fillFrame)
         netStream?.attachCamera(params: params)
     }
 
