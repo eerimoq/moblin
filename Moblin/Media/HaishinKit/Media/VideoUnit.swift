@@ -16,6 +16,7 @@ struct VideoUnitAttachParams {
     var isVideoMirrored: Bool
     var ignoreFramesAfterAttachSeconds: Double
     var fillFrame: Bool
+    var latency: Double
 }
 
 enum SceneSwitchTransition {
@@ -90,11 +91,13 @@ private class BufferedVideo {
     private weak var mixer: Mixer?
     private let driftTracker: DriftTracker
     private var hasBufferBeenAppended = false
+    let latency: Double
 
     init(cameraId: UUID, name: String, update: Bool, latency: Double, mixer: Mixer?) {
         self.cameraId = cameraId
         self.name = name
         self.update = update
+        self.latency = latency
         self.mixer = mixer
         driftTracker = DriftTracker(media: "video", name: name, targetFillLevel: latency)
     }
@@ -114,8 +117,8 @@ private class BufferedVideo {
         }
     }
 
-    func updateSampleBuffer(_ outputPresentationTimeStamp: Double) {
-        guard update else {
+    func updateSampleBuffer(_ outputPresentationTimeStamp: Double, _ forceUpdate: Bool = false) {
+        guard update || forceUpdate else {
             return
         }
         var sampleBuffer: CMSampleBuffer?
@@ -183,7 +186,7 @@ private class BufferedVideo {
         }
     }
 
-    func setLatestSampleBuffer(sampleBuffer: CMSampleBuffer?) {
+    func setLatestSampleBuffer(_ sampleBuffer: CMSampleBuffer?) {
         currentSampleBuffer = sampleBuffer
     }
 
@@ -319,13 +322,15 @@ final class VideoUnit: NSObject {
     private var pool: CVPixelBufferPool?
     private var poolColorSpace: CGColorSpace?
     private var poolFormatDescriptionExtension: CFDictionary?
+    private var bufferedPool: CVPixelBufferPool?
+    private var bufferedPoolColorSpace: CGColorSpace?
+    private var bufferedPoolFormatDescriptionExtension: CFDictionary?
     private var cameraControlsEnabled = false
     private var isRunning = false
     private var showCameraPreview = false
     private var externalDisplayPreview = false
     private var sceneSwitchTransition: SceneSwitchTransition = .blur
     private var pixelTransferSession: VTPixelTransferSession?
-    private var copyBuiltinSampleBuffers = false
 
     override init() {
         if let metalDevice = MTLCreateSystemDefaultDevice() {
@@ -416,9 +421,9 @@ final class VideoUnit: NSObject {
             for device in params.devices.devices {
                 let bufferedVideo = BufferedVideo(
                     cameraId: device.id,
-                    name: "",
+                    name: "builtin",
                     update: false,
-                    latency: 0.0,
+                    latency: params.latency,
                     mixer: self.mixer
                 )
                 self.bufferedVideos[device.id] = bufferedVideo
@@ -748,6 +753,79 @@ final class VideoUnit: NSObject {
 
     private func createPixelBuffer(sampleBuffer: CMSampleBuffer) -> CVPixelBuffer? {
         guard let pool = getBufferPool(formatDescription: sampleBuffer.formatDescription!) else {
+            return nil
+        }
+        var outputImageBuffer: CVPixelBuffer?
+        guard CVPixelBufferPoolCreatePixelBuffer(nil, pool, &outputImageBuffer) == kCVReturnSuccess else {
+            return nil
+        }
+        return outputImageBuffer
+    }
+
+    private func getBufferedBufferPool(sampleBuffer: CMSampleBuffer) -> CVPixelBufferPool? {
+        guard let formatDescription = sampleBuffer.formatDescription else {
+            return nil
+        }
+        let formatDescriptionExtension = formatDescription.extensions()
+        if let bufferedPool, formatDescriptionExtension == bufferedPoolFormatDescriptionExtension {
+            return bufferedPool
+        }
+        var attributes: [NSString: AnyObject] = [:]
+        if let imageBuffer = sampleBuffer.imageBuffer {
+            NSDictionary(dictionary: CVPixelBufferCopyCreationAttributes(imageBuffer))
+                .enumerateKeysAndObjects { key, value, _ in
+                    attributes[key as! CFString] = value as AnyObject
+                }
+        }
+        attributes[kCVPixelBufferPixelFormatTypeKey] = NSNumber(value: pixelFormatType)
+        attributes[kCVPixelBufferIOSurfacePropertiesKey] = NSDictionary()
+        attributes[kCVPixelBufferMetalCompatibilityKey] = kCFBooleanTrue
+        attributes[kCVPixelBufferWidthKey] = NSNumber(value: outputSize.width)
+        attributes[kCVPixelBufferHeightKey] = NSNumber(value: outputSize.height)
+        bufferedPoolColorSpace = nil
+        // This is not correct, I'm sure. Colors are not always correct. At least for Apple Log.
+        if let formatDescriptionExtension = formatDescriptionExtension as Dictionary? {
+            let colorPrimaries = formatDescriptionExtension[kCVImageBufferColorPrimariesKey]
+            if let colorPrimaries {
+                var colorSpaceProperties: [NSString: AnyObject] =
+                    [kCVImageBufferColorPrimariesKey: colorPrimaries]
+                if let yCbCrMatrix = formatDescriptionExtension[kCVImageBufferYCbCrMatrixKey] {
+                    colorSpaceProperties[kCVImageBufferYCbCrMatrixKey] = yCbCrMatrix
+                }
+                if let transferFunction = formatDescriptionExtension[kCVImageBufferTransferFunctionKey] {
+                    colorSpaceProperties[kCVImageBufferTransferFunctionKey] = transferFunction
+                }
+                attributes[kCVBufferPropagatedAttachmentsKey] = colorSpaceProperties as AnyObject
+            }
+            if let colorSpace = formatDescriptionExtension[kCVImageBufferCGColorSpaceKey] {
+                bufferedPoolColorSpace = (colorSpace as! CGColorSpace)
+            } else if let colorPrimaries = colorPrimaries as? String {
+                if colorPrimaries == (kCVImageBufferColorPrimaries_P3_D65 as String) {
+                    bufferedPoolColorSpace = CGColorSpace(name: CGColorSpace.displayP3)
+                } else if #available(iOS 17.2, *),
+                          formatDescriptionExtension[kCVImageBufferLogTransferFunctionKey] as? String ==
+                          kCVImageBufferLogTransferFunction_AppleLog as String
+                {
+                    bufferedPoolColorSpace = CGColorSpace(name: CGColorSpace.itur_2020)
+                    // bufferedPoolColorSpace = CGColorSpace(name: CGColorSpace.extendedITUR_2020)
+                    // bufferedPoolColorSpace = CGColorSpace(name: CGColorSpace.displayP3)
+                    // bufferedPoolColorSpace = nil
+                }
+            }
+        }
+        bufferedPoolFormatDescriptionExtension = formatDescriptionExtension
+        bufferedPool = nil
+        CVPixelBufferPoolCreate(
+            nil,
+            nil,
+            attributes as NSDictionary?,
+            &bufferedPool
+        )
+        return bufferedPool
+    }
+
+    private func createBufferedPixelBuffer(sampleBuffer: CMSampleBuffer) -> CVPixelBuffer? {
+        guard let pool = getBufferedBufferPool(sampleBuffer: sampleBuffer) else {
             return nil
         }
         var outputImageBuffer: CVPixelBuffer?
@@ -1686,11 +1764,8 @@ final class VideoUnit: NSObject {
         }
     }
 
-    fileprivate func makeCopy(sampleBuffer: CMSampleBuffer) -> CMSampleBuffer {
-        guard copyBuiltinSampleBuffers else {
-            return sampleBuffer
-        }
-        let imageBufferCopy = createPixelBuffer(sampleBuffer: sampleBuffer)
+    private func makeCopy(sampleBuffer: CMSampleBuffer) -> CMSampleBuffer {
+        let imageBufferCopy = createBufferedPixelBuffer(sampleBuffer: sampleBuffer)
         VTPixelTransferSessionTransferImage(
             pixelTransferSession!,
             from: sampleBuffer.imageBuffer!,
@@ -1743,6 +1818,27 @@ final class VideoUnit: NSObject {
         }
         session.setControlsDelegate(nil, queue: nil)
     }
+
+    fileprivate func appendBufferedBuiltinVideo(sampleBuffer: CMSampleBuffer,
+                                                device: AVCaptureDevice) -> BufferedVideo?
+    {
+        guard let bufferedVideo = bufferedVideoBuiltins[device] else {
+            return nil
+        }
+        if bufferedVideo.latency == 0 {
+            bufferedVideo.setLatestSampleBuffer(sampleBuffer)
+            return nil
+        } else {
+            var sampleBufferCopy = makeCopy(sampleBuffer: sampleBuffer)
+            let latency = CMTime(seconds: bufferedVideo.latency, preferredTimescale: 1000)
+            sampleBufferCopy = sampleBufferCopy
+                .replacePresentationTimeStamp(sampleBufferCopy.presentationTimeStamp + latency) ?? sampleBufferCopy
+            bufferedVideo.appendSampleBuffer(sampleBufferCopy)
+            let presentationTimeStamp = sampleBuffer.presentationTimeStamp
+            bufferedVideo.updateSampleBuffer(presentationTimeStamp.seconds, true)
+            return bufferedVideo
+        }
+    }
 }
 
 extension VideoUnit: AVCaptureVideoDataOutputSampleBufferDelegate {
@@ -1754,11 +1850,14 @@ extension VideoUnit: AVCaptureVideoDataOutputSampleBufferDelegate {
         guard let input = connection.inputPorts.first?.input as? AVCaptureDeviceInput else {
             return
         }
-        bufferedVideoBuiltins[input.device]?.setLatestSampleBuffer(sampleBuffer: sampleBuffer)
+        var sampleBuffer = sampleBuffer
+        if let bufferedVideo = appendBufferedBuiltinVideo(sampleBuffer: sampleBuffer, device: input.device) {
+            sampleBuffer = bufferedVideo.getSampleBuffer(sampleBuffer.presentationTimeStamp) ?? sampleBuffer
+        }
         guard selectedBufferedVideoCameraId == nil else {
             return
         }
-        appendNewSampleBuffer(sampleBuffer: makeCopy(sampleBuffer: sampleBuffer))
+        appendNewSampleBuffer(sampleBuffer: sampleBuffer)
     }
 }
 
@@ -1779,10 +1878,7 @@ extension VideoUnitBuiltinDevice: AVCaptureVideoDataOutputSampleBufferDelegate {
         guard let input = connection.inputPorts.first?.input as? AVCaptureDeviceInput else {
             return
         }
-        guard let videoUnit, let bufferedVideo = videoUnit.bufferedVideoBuiltins[input.device] else {
-            return
-        }
-        bufferedVideo.setLatestSampleBuffer(sampleBuffer: videoUnit.makeCopy(sampleBuffer: sampleBuffer))
+        _ = videoUnit?.appendBufferedBuiltinVideo(sampleBuffer: sampleBuffer, device: input.device)
     }
 }
 

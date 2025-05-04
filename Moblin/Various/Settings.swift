@@ -2070,6 +2070,7 @@ class SettingsDebug: Codable {
     var srtlaBatchSendEnabled: Bool? = true
     var replay: Bool? = false
     var recordSegmentLength: Double? = 5.0
+    var builtinAudioAndVideoDelay: Double? = 0.0
 }
 
 class SettingsRtmpServerStream: Codable, Identifiable {
@@ -5294,6 +5295,10 @@ final class Settings {
         }
         for stream in realDatabase.streams where stream.replay!.fade == nil {
             stream.replay!.fade = true
+            store()
+        }
+        if realDatabase.debug.builtinAudioAndVideoDelay == nil {
+            realDatabase.debug.builtinAudioAndVideoDelay = 0.0
             store()
         }
     }

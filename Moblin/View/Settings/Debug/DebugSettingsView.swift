@@ -6,6 +6,7 @@ struct DebugSettingsView: View {
     @State var cameraSwitchRemoveBlackish: Float
     @State var dataRateLimitFactor: Float
     @State var recordSegmentLength: Double
+    @State var builtinAudioAndVideoDelay: Double
 
     private func submitLogLines(value: String) {
         guard let lines = Int(value) else {
@@ -138,6 +139,24 @@ struct DebugSettingsView: View {
                     DjiGimbalDevicesSettingsView()
                 } label: {
                     IconAndTextView(image: "appletvremote.gen1", text: String(localized: "DJI gimbals"))
+                }
+                VStack(alignment: .leading) {
+                    Text("Builtin audio and video delay")
+                    HStack {
+                        Slider(
+                            value: $builtinAudioAndVideoDelay,
+                            in: 0.0 ... 3.0,
+                            step: 0.1,
+                            onEditingChanged: { begin in
+                                guard !begin else {
+                                    return
+                                }
+                                model.database.debug.builtinAudioAndVideoDelay = builtinAudioAndVideoDelay
+                            }
+                        )
+                        Text(formatOneDecimal(Float(builtinAudioAndVideoDelay)))
+                            .frame(width: 40)
+                    }
                 }
             } header: {
                 Text("Experimental")

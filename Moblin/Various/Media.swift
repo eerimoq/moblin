@@ -816,7 +816,8 @@ final class Media: NSObject {
                                            preferredVideoStabilizationMode: .off,
                                            isVideoMirrored: false,
                                            ignoreFramesAfterAttachSeconds: ignoreFramesAfterAttachSeconds,
-                                           fillFrame: fillFrame)
+                                           fillFrame: fillFrame,
+                                           latency: 0)
         netStream?.attachCamera(params: params)
     }
 

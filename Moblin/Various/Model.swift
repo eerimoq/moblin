@@ -7118,7 +7118,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                                            preferredVideoStabilizationMode: .off,
                                            isVideoMirrored: false,
                                            ignoreFramesAfterAttachSeconds: 0.0,
-                                           fillFrame: false)
+                                           fillFrame: false,
+                                           latency: 0)
         media.attachCamera(params: params)
     }
 
@@ -7344,7 +7345,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                                            preferredVideoStabilizationMode: getVideoStabilizationMode(scene: scene),
                                            isVideoMirrored: getVideoMirroredOnStream(),
                                            ignoreFramesAfterAttachSeconds: getIgnoreFramesAfterAttachSeconds(),
-                                           fillFrame: getFillFrame(scene: scene))
+                                           fillFrame: getFillFrame(scene: scene),
+                                           latency: database.debug.builtinAudioAndVideoDelay!)
         media.attachCamera(
             params: params,
             onSuccess: {
