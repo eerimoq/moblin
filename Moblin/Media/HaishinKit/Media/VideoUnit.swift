@@ -1765,19 +1765,21 @@ final class VideoUnit: NSObject {
     }
 
     private func makeCopy(sampleBuffer: CMSampleBuffer) -> CMSampleBuffer {
-        let imageBufferCopy = createBufferedPixelBuffer(sampleBuffer: sampleBuffer)
+        guard let imageBufferCopy = createBufferedPixelBuffer(sampleBuffer: sampleBuffer) else {
+            return sampleBuffer
+        }
         VTPixelTransferSessionTransferImage(
             pixelTransferSession!,
             from: sampleBuffer.imageBuffer!,
-            to: imageBufferCopy!
+            to: imageBufferCopy
         )
         return CMSampleBuffer.create(
-            imageBufferCopy!,
+            imageBufferCopy,
             sampleBuffer.formatDescription!,
             sampleBuffer.duration,
             sampleBuffer.presentationTimeStamp,
             sampleBuffer.decodeTimeStamp
-        )!
+        ) ?? sampleBuffer
     }
 
     private func updateCameraControls() {
