@@ -800,7 +800,7 @@ final class Media: NSObject {
         )
     }
 
-    func attachReplaceCamera(
+    func attachBufferedCamera(
         devices: CaptureDevices,
         cameraPreviewLayer: AVCaptureVideoPreviewLayer,
         externalDisplayPreview: Bool,
@@ -812,7 +812,7 @@ final class Media: NSObject {
                                            cameraPreviewLayer: cameraPreviewLayer,
                                            showCameraPreview: false,
                                            externalDisplayPreview: externalDisplayPreview,
-                                           replaceVideo: cameraId,
+                                           bufferedVideo: cameraId,
                                            preferredVideoStabilizationMode: .off,
                                            isVideoMirrored: false,
                                            ignoreFramesAfterAttachSeconds: ignoreFramesAfterAttachSeconds,
@@ -820,40 +820,40 @@ final class Media: NSObject {
         netStream?.attachCamera(params: params)
     }
 
-    func attachReplaceAudio(cameraId: UUID?) {
-        netStream?.attachAudio(nil, replaceAudioId: cameraId)
+    func attachBufferedAudio(cameraId: UUID?) {
+        netStream?.attachAudio(nil, bufferedAudioId: cameraId)
     }
 
-    func addReplaceAudio(cameraId: UUID, name: String, latency: Double) {
-        netStream?.addReplaceAudio(cameraId: cameraId, name: name, latency: latency)
+    func addBufferedAudio(cameraId: UUID, name: String, latency: Double) {
+        netStream?.addBufferedAudio(cameraId: cameraId, name: name, latency: latency)
     }
 
-    func removeReplaceAudio(cameraId: UUID) {
-        netStream?.removeReplaceAudio(cameraId: cameraId)
+    func removeBufferedAudio(cameraId: UUID) {
+        netStream?.removeBufferedAudio(cameraId: cameraId)
     }
 
-    func addReplaceAudioSampleBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
-        netStream?.addReplaceAudioSampleBuffer(cameraId: cameraId, sampleBuffer)
+    func addBufferedAudioSampleBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
+        netStream?.addBufferedAudioSampleBuffer(cameraId: cameraId, sampleBuffer)
     }
 
-    func setReplaceAudioTargetLatency(cameraId: UUID, latency: Double) {
-        netStream?.setReplaceAudioTargetLatency(cameraId: cameraId, latency)
+    func setBufferedAudioTargetLatency(cameraId: UUID, latency: Double) {
+        netStream?.setBufferedAudioTargetLatency(cameraId: cameraId, latency)
     }
 
-    func addReplaceVideo(cameraId: UUID, name: String, latency: Double) {
-        netStream?.addReplaceVideo(cameraId: cameraId, name: name, latency: latency)
+    func addBufferedVideo(cameraId: UUID, name: String, latency: Double) {
+        netStream?.addBufferedVideo(cameraId: cameraId, name: name, latency: latency)
     }
 
-    func removeReplaceVideo(cameraId: UUID) {
-        netStream?.removeReplaceVideo(cameraId: cameraId)
+    func removeBufferedVideo(cameraId: UUID) {
+        netStream?.removeBufferedVideo(cameraId: cameraId)
     }
 
-    func addReplaceVideoSampleBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
-        netStream?.addReplaceVideoSampleBuffer(cameraId: cameraId, sampleBuffer)
+    func addBufferedVideoSampleBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
+        netStream?.addBufferedVideoSampleBuffer(cameraId: cameraId, sampleBuffer)
     }
 
-    func setReplaceVideoTargetLatency(cameraId: UUID, latency: Double) {
-        netStream?.setReplaceVideoTargetLatency(cameraId: cameraId, latency)
+    func setBufferedVideoTargetLatency(cameraId: UUID, latency: Double) {
+        netStream?.setBufferedVideoTargetLatency(cameraId: cameraId, latency)
     }
 
     func attachDefaultAudioDevice() {

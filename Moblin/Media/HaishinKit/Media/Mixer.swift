@@ -38,8 +38,8 @@ class Mixer {
         try video.attach(params: params)
     }
 
-    func attachAudio(_ device: AVCaptureDevice?, _ replaceAudio: UUID?) throws {
-        try audio.attach(device, replaceAudio)
+    func attachAudio(_ device: AVCaptureDevice?, _ bufferedAudio: UUID?) throws {
+        try audio.attach(device, bufferedAudio)
     }
 
     func startEncoding(_ delegate: any AudioCodecDelegate & VideoEncoderDelegate) {
@@ -62,12 +62,12 @@ class Mixer {
         audio.stopRunning()
     }
 
-    func setReplaceAudioDrift(cameraId: UUID, drift: Double) {
-        audio.setReplaceAudioDrift(cameraId: cameraId, drift: drift)
+    func setBufferedAudioDrift(cameraId: UUID, drift: Double) {
+        audio.setBufferedAudioDrift(cameraId: cameraId, drift: drift)
     }
 
-    func setReplaceVideoDrift(cameraId: UUID, drift: Double) {
-        video.setReplaceVideoDrift(cameraId: cameraId, drift: drift)
+    func setBufferedVideoDrift(cameraId: UUID, drift: Double) {
+        video.setBufferedVideoDrift(cameraId: cameraId, drift: drift)
     }
 }
 

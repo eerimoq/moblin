@@ -104,11 +104,11 @@ open class NetStream: NSObject {
     func attachAudio(
         _ device: AVCaptureDevice?,
         onError: ((_ error: Error) -> Void)? = nil,
-        replaceAudioId: UUID? = nil
+        bufferedAudioId: UUID? = nil
     ) {
         netStreamLockQueue.async {
             do {
-                try self.mixer.attachAudio(device, replaceAudioId)
+                try self.mixer.attachAudio(device, bufferedAudioId)
             } catch {
                 onError?(error)
             }
@@ -121,36 +121,36 @@ open class NetStream: NSObject {
         }
     }
 
-    func addReplaceVideo(cameraId: UUID, name: String, latency: Double) {
-        mixer.video.addReplaceVideo(cameraId: cameraId, name: name, latency: latency)
+    func addBufferedVideo(cameraId: UUID, name: String, latency: Double) {
+        mixer.video.addBufferedVideo(cameraId: cameraId, name: name, latency: latency)
     }
 
-    func removeReplaceVideo(cameraId: UUID) {
-        mixer.video.removeReplaceVideo(cameraId: cameraId)
+    func removeBufferedVideo(cameraId: UUID) {
+        mixer.video.removeBufferedVideo(cameraId: cameraId)
     }
 
-    func addReplaceVideoSampleBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
-        mixer.video.addReplaceVideoSampleBuffer(cameraId: cameraId, sampleBuffer)
+    func addBufferedVideoSampleBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
+        mixer.video.addBufferedVideoSampleBuffer(cameraId: cameraId, sampleBuffer)
     }
 
-    func setReplaceVideoTargetLatency(cameraId: UUID, _ latency: Double) {
-        mixer.video.setReplaceVideoTargetLatency(cameraId: cameraId, latency: latency)
+    func setBufferedVideoTargetLatency(cameraId: UUID, _ latency: Double) {
+        mixer.video.setBufferedVideoTargetLatency(cameraId: cameraId, latency: latency)
     }
 
-    func addReplaceAudio(cameraId: UUID, name: String, latency: Double) {
-        mixer.audio.addReplaceAudio(cameraId: cameraId, name: name, latency: latency)
+    func addBufferedAudio(cameraId: UUID, name: String, latency: Double) {
+        mixer.audio.addBufferedAudio(cameraId: cameraId, name: name, latency: latency)
     }
 
-    func removeReplaceAudio(cameraId: UUID) {
-        mixer.audio.removeReplaceAudio(cameraId: cameraId)
+    func removeBufferedAudio(cameraId: UUID) {
+        mixer.audio.removeBufferedAudio(cameraId: cameraId)
     }
 
-    func addReplaceAudioSampleBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
-        mixer.audio.addReplaceAudioSampleBuffer(cameraId: cameraId, sampleBuffer)
+    func addBufferedAudioSampleBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
+        mixer.audio.addBufferedAudioSampleBuffer(cameraId: cameraId, sampleBuffer)
     }
 
-    func setReplaceAudioTargetLatency(cameraId: UUID, _ latency: Double) {
-        mixer.audio.setReplaceAudioTargetLatency(cameraId: cameraId, latency: latency)
+    func setBufferedAudioTargetLatency(cameraId: UUID, _ latency: Double) {
+        mixer.audio.setBufferedAudioTargetLatency(cameraId: cameraId, latency: latency)
     }
 
     func registerVideoEffect(_ effect: VideoEffect) {

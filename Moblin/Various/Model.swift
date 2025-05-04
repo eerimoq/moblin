@@ -2593,8 +2593,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             }
             let name = "RTMP \(camera)"
             let latency = Double(stream.latency!) / 1000.0
-            self.media.addReplaceVideo(cameraId: stream.id, name: name, latency: latency)
-            self.media.addReplaceAudio(cameraId: stream.id, name: name, latency: latency)
+            self.media.addBufferedVideo(cameraId: stream.id, name: name, latency: latency)
+            self.media.addBufferedAudio(cameraId: stream.id, name: name, latency: latency)
             if stream.autoSelectMic! {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                     self.selectMicById(id: "\(stream.id) 0")
@@ -2617,8 +2617,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if showToast {
             makeToast(title: String(localized: "\(stream.camera()) disconnected"), subTitle: reason)
         }
-        media.removeReplaceVideo(cameraId: stream.id)
-        media.removeReplaceAudio(cameraId: stream.id)
+        media.removeBufferedVideo(cameraId: stream.id)
+        media.removeBufferedAudio(cameraId: stream.id)
         if currentMic.id == "\(stream.id) 0" {
             setMicFromSettings()
         }
@@ -2631,11 +2631,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func handleRtmpServerFrame(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
-        media.addReplaceVideoSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
+        media.addBufferedVideoSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
     }
 
     func handleRtmpServerAudioBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
-        media.addReplaceAudioSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
+        media.addBufferedAudioSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
     }
 
     private func rtmpServerInfo() {
@@ -6206,16 +6206,16 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             attachCamera(scene: scene, position: .front)
             isFrontCameraSelected = true
         case .rtmp:
-            attachReplaceCamera(cameraId: scene.rtmpCameraId!, scene: scene)
+            attachBufferedCamera(cameraId: scene.rtmpCameraId!, scene: scene)
         case .srtla:
-            attachReplaceCamera(cameraId: scene.srtlaCameraId!, scene: scene)
+            attachBufferedCamera(cameraId: scene.srtlaCameraId!, scene: scene)
         case .mediaPlayer:
             mediaPlayers[scene.mediaPlayerCameraId!]?.activate()
-            attachReplaceCamera(cameraId: scene.mediaPlayerCameraId!, scene: scene)
+            attachBufferedCamera(cameraId: scene.mediaPlayerCameraId!, scene: scene)
         case .external:
             attachExternalCamera(scene: scene)
         case .screenCapture:
-            attachReplaceCamera(cameraId: screenCaptureCameraId, scene: scene)
+            attachBufferedCamera(cameraId: screenCaptureCameraId, scene: scene)
         case .backTripleLowEnergy:
             attachBackTripleLowEnergyCamera()
         case .backDualLowEnergy:
@@ -7114,7 +7114,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                                            cameraPreviewLayer: cameraPreviewLayer!,
                                            showCameraPreview: false,
                                            externalDisplayPreview: false,
-                                           replaceVideo: nil,
+                                           bufferedVideo: nil,
                                            preferredVideoStabilizationMode: .off,
                                            isVideoMirrored: false,
                                            ignoreFramesAfterAttachSeconds: 0.0,
@@ -7340,7 +7340,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                                            cameraPreviewLayer: cameraPreviewLayer!,
                                            showCameraPreview: updateShowCameraPreview(),
                                            externalDisplayPreview: externalDisplayPreview,
-                                           replaceVideo: nil,
+                                           bufferedVideo: nil,
                                            preferredVideoStabilizationMode: getVideoStabilizationMode(scene: scene),
                                            isVideoMirrored: getVideoMirroredOnStream(),
                                            ignoreFramesAfterAttachSeconds: getIgnoreFramesAfterAttachSeconds(),
@@ -7384,13 +7384,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    private func attachReplaceCamera(cameraId: UUID, scene: SettingsScene) {
+    private func attachBufferedCamera(cameraId: UUID, scene: SettingsScene) {
         cameraDevice = nil
         cameraPosition = nil
         streamPreviewView.isMirrored = false
         externalDisplayStreamPreviewView.isMirrored = false
         hasZoom = false
-        media.attachReplaceCamera(
+        media.attachBufferedCamera(
             devices: getBuiltinCameraDevices(scene: scene, sceneDevice: nil),
             cameraPreviewLayer: cameraPreviewLayer!,
             externalDisplayPreview: externalDisplayPreview,
@@ -9826,26 +9826,26 @@ extension Model {
     private func selectMicRtmp(mic: Mic) {
         currentMic = mic
         let cameraId = getRtmpStream(camera: mic.name)?.id ?? .init()
-        media.attachReplaceAudio(cameraId: cameraId)
+        media.attachBufferedAudio(cameraId: cameraId)
         remoteControlStreamer?.stateChanged(state: RemoteControlState(mic: mic.id))
     }
 
     private func selectMicSrtla(mic: Mic) {
         currentMic = mic
         let cameraId = getSrtlaStream(camera: mic.name)?.id ?? .init()
-        media.attachReplaceAudio(cameraId: cameraId)
+        media.attachBufferedAudio(cameraId: cameraId)
         remoteControlStreamer?.stateChanged(state: RemoteControlState(mic: mic.id))
     }
 
     private func selectMicMediaPlayer(mic: Mic) {
         currentMic = mic
         let cameraId = getMediaPlayer(camera: mic.name)?.id ?? .init()
-        media.attachReplaceAudio(cameraId: cameraId)
+        media.attachBufferedAudio(cameraId: cameraId)
         remoteControlStreamer?.stateChanged(state: RemoteControlState(mic: mic.id))
     }
 
     private func selectMicDefault(mic: Mic) {
-        media.attachReplaceAudio(cameraId: nil)
+        media.attachBufferedAudio(cameraId: nil)
         let preferStereoMic = database.debug.preferStereoMic!
         netStreamLockQueue.async {
             let session = AVAudioSession.sharedInstance()
@@ -10386,7 +10386,7 @@ extension Model: SampleBufferReceiverDelegate {
 extension Model {
     private func handleSampleBufferSenderConnected() {
         makeToast(title: String(localized: "Screen capture started"))
-        media.addReplaceVideo(
+        media.addBufferedVideo(
             cameraId: screenCaptureCameraId,
             name: "Screen capture",
             latency: screenRecordingLatency
@@ -10395,13 +10395,13 @@ extension Model {
 
     private func handleSampleBufferSenderDisconnected() {
         makeToast(title: String(localized: "Screen capture stopped"))
-        media.removeReplaceVideo(cameraId: screenCaptureCameraId)
+        media.removeBufferedVideo(cameraId: screenCaptureCameraId)
     }
 
     private func handleSampleBufferSenderBuffer(_ type: RPSampleBufferType, _ sampleBuffer: CMSampleBuffer) {
         switch type {
         case .video:
-            media.addReplaceVideoSampleBuffer(cameraId: screenCaptureCameraId, sampleBuffer: sampleBuffer)
+            media.addBufferedVideoSampleBuffer(cameraId: screenCaptureCameraId, sampleBuffer: sampleBuffer)
         default:
             break
         }
@@ -10430,8 +10430,8 @@ extension Model: RtmpServerDelegate {
         _ videoTargetLatency: Double,
         _ audioTargetLatency: Double
     ) {
-        media.setReplaceVideoTargetLatency(cameraId: cameraId, latency: videoTargetLatency)
-        media.setReplaceAudioTargetLatency(cameraId: cameraId, latency: audioTargetLatency)
+        media.setBufferedVideoTargetLatency(cameraId: cameraId, latency: videoTargetLatency)
+        media.setBufferedAudioTargetLatency(cameraId: cameraId, latency: audioTargetLatency)
     }
 }
 
@@ -10445,8 +10445,8 @@ extension Model: SrtlaServerDelegate {
             }
             let name = "SRTLA \(camera)"
             let latency = srtServerClientLatency
-            self.media.addReplaceVideo(cameraId: stream.id, name: name, latency: latency)
-            self.media.addReplaceAudio(cameraId: stream.id, name: name, latency: latency)
+            self.media.addBufferedVideo(cameraId: stream.id, name: name, latency: latency)
+            self.media.addBufferedAudio(cameraId: stream.id, name: name, latency: latency)
             if stream.autoSelectMic! {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
                     self.selectMicById(id: "\(stream.id) 0")
@@ -10462,8 +10462,8 @@ extension Model: SrtlaServerDelegate {
             guard let stream = self.getSrtlaStream(streamId: streamId) else {
                 return
             }
-            self.media.removeReplaceVideo(cameraId: stream.id)
-            self.media.removeReplaceAudio(cameraId: stream.id)
+            self.media.removeBufferedVideo(cameraId: stream.id)
+            self.media.removeBufferedAudio(cameraId: stream.id)
             if self.currentMic.id == "\(stream.id) 0" {
                 self.setMicFromSettings()
             }
@@ -10474,14 +10474,14 @@ extension Model: SrtlaServerDelegate {
         guard let cameraId = getSrtlaStream(streamId: streamId)?.id else {
             return
         }
-        media.addReplaceAudioSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
+        media.addBufferedAudioSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
     }
 
     func srtlaServerOnVideoBuffer(streamId: String, sampleBuffer: CMSampleBuffer) {
         guard let cameraId = getSrtlaStream(streamId: streamId)?.id else {
             return
         }
-        media.addReplaceVideoSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
+        media.addBufferedVideoSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
     }
 
     func srtlaServerSetTargetLatencies(
@@ -10492,8 +10492,8 @@ extension Model: SrtlaServerDelegate {
         guard let cameraId = getSrtlaStream(streamId: streamId)?.id else {
             return
         }
-        media.setReplaceVideoTargetLatency(cameraId: cameraId, latency: videoTargetLatency)
-        media.setReplaceAudioTargetLatency(cameraId: cameraId, latency: audioTargetLatency)
+        media.setBufferedVideoTargetLatency(cameraId: cameraId, latency: videoTargetLatency)
+        media.setBufferedAudioTargetLatency(cameraId: cameraId, latency: audioTargetLatency)
     }
 }
 
@@ -10585,16 +10585,16 @@ extension Model: MediaPlayerDelegate {
     func mediaPlayerFileLoaded(playerId: UUID, name: String) {
         let name = "Media player file \(name)"
         let latency = mediaPlayerLatency
-        media.addReplaceVideo(cameraId: playerId, name: name, latency: latency)
-        media.addReplaceAudio(cameraId: playerId, name: name, latency: latency)
+        media.addBufferedVideo(cameraId: playerId, name: name, latency: latency)
+        media.addBufferedAudio(cameraId: playerId, name: name, latency: latency)
         // DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
         //     self.selectMicById(id: "\(playerId) 0")
         // }
     }
 
     func mediaPlayerFileUnloaded(playerId: UUID) {
-        media.removeReplaceVideo(cameraId: playerId)
-        media.removeReplaceAudio(cameraId: playerId)
+        media.removeBufferedVideo(cameraId: playerId)
+        media.removeBufferedAudio(cameraId: playerId)
     }
 
     func mediaPlayerStateUpdate(
@@ -10615,11 +10615,11 @@ extension Model: MediaPlayerDelegate {
     }
 
     func mediaPlayerVideoBuffer(playerId: UUID, sampleBuffer: CMSampleBuffer) {
-        media.addReplaceVideoSampleBuffer(cameraId: playerId, sampleBuffer: sampleBuffer)
+        media.addBufferedVideoSampleBuffer(cameraId: playerId, sampleBuffer: sampleBuffer)
     }
 
     func mediaPlayerAudioBuffer(playerId: UUID, sampleBuffer: CMSampleBuffer) {
-        media.addReplaceAudioSampleBuffer(cameraId: playerId, sampleBuffer: sampleBuffer)
+        media.addBufferedAudioSampleBuffer(cameraId: playerId, sampleBuffer: sampleBuffer)
     }
 }
 

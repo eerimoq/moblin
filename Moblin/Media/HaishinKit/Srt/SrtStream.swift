@@ -76,10 +76,10 @@ class SrtStream: NetStream {
     override func attachAudio(
         _ audio: AVCaptureDevice?,
         onError: ((Error) -> Void)? = nil,
-        replaceAudioId: UUID? = nil
+        bufferedAudioId: UUID? = nil
     ) {
         writer.expectedMedias.insert(.audio)
-        super.attachAudio(audio, onError: onError, replaceAudioId: replaceAudioId)
+        super.attachAudio(audio, onError: onError, bufferedAudioId: bufferedAudioId)
     }
 
     func open(_ uri: URL?, sendHook: @escaping (Data) -> Bool) throws {
