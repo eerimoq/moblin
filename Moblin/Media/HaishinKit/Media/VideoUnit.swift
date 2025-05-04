@@ -1832,8 +1832,7 @@ final class VideoUnit: NSObject {
             sampleBufferCopy = sampleBufferCopy
                 .replacePresentationTimeStamp(sampleBufferCopy.presentationTimeStamp + latency) ?? sampleBufferCopy
             bufferedVideo.appendSampleBuffer(sampleBufferCopy)
-            let presentationTimeStamp = sampleBuffer.presentationTimeStamp
-            bufferedVideo.updateSampleBuffer(presentationTimeStamp.seconds, true)
+            bufferedVideo.updateSampleBuffer(sampleBuffer.presentationTimeStamp.seconds, true)
             return bufferedVideo
         } else {
             bufferedVideo.setLatestSampleBuffer(sampleBuffer)
