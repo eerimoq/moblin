@@ -1764,9 +1764,9 @@ final class VideoUnit: NSObject {
         }
     }
 
-    private func makeCopy(sampleBuffer: CMSampleBuffer) -> CMSampleBuffer {
+    private func makeCopy(sampleBuffer: CMSampleBuffer) -> CMSampleBuffer? {
         guard let imageBufferCopy = createBufferedPixelBuffer(sampleBuffer: sampleBuffer) else {
-            return sampleBuffer
+            return nil
         }
         VTPixelTransferSessionTransferImage(
             pixelTransferSession!,
@@ -1779,7 +1779,7 @@ final class VideoUnit: NSObject {
             sampleBuffer.duration,
             sampleBuffer.presentationTimeStamp,
             sampleBuffer.decodeTimeStamp
-        ) ?? sampleBuffer
+        )
     }
 
     private func updateCameraControls() {
@@ -1827,11 +1827,7 @@ final class VideoUnit: NSObject {
         guard let bufferedVideo = bufferedVideoBuiltins[device] else {
             return nil
         }
-        if bufferedVideo.latency == 0 {
-            bufferedVideo.setLatestSampleBuffer(sampleBuffer)
-            return nil
-        } else {
-            var sampleBufferCopy = makeCopy(sampleBuffer: sampleBuffer)
+        if bufferedVideo.latency > 0, var sampleBufferCopy = makeCopy(sampleBuffer: sampleBuffer) {
             let latency = CMTime(seconds: bufferedVideo.latency, preferredTimescale: 1000)
             sampleBufferCopy = sampleBufferCopy
                 .replacePresentationTimeStamp(sampleBufferCopy.presentationTimeStamp + latency) ?? sampleBufferCopy
@@ -1839,6 +1835,9 @@ final class VideoUnit: NSObject {
             let presentationTimeStamp = sampleBuffer.presentationTimeStamp
             bufferedVideo.updateSampleBuffer(presentationTimeStamp.seconds, true)
             return bufferedVideo
+        } else {
+            bufferedVideo.setLatestSampleBuffer(sampleBuffer)
+            return nil
         }
     }
 }
