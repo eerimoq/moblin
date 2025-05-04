@@ -3,6 +3,7 @@ import Collections
 import CoreImage
 import MetalPetal
 import UIKit
+import VideoToolbox
 import Vision
 
 struct VideoUnitAttachParams {
@@ -323,6 +324,8 @@ final class VideoUnit: NSObject {
     private var showCameraPreview = false
     private var externalDisplayPreview = false
     private var sceneSwitchTransition: SceneSwitchTransition = .blur
+    private var pixelTransferSession: VTPixelTransferSession?
+    private var copyBuiltinSampleBuffers = false
 
     override init() {
         if let metalDevice = MTLCreateSystemDefaultDevice() {
@@ -331,6 +334,7 @@ final class VideoUnit: NSObject {
             metalPetalContext = nil
         }
         videoUnitBuiltinDevice = nil
+        VTPixelTransferSessionCreate(allocator: nil, pixelTransferSessionOut: &pixelTransferSession)
         super.init()
         videoUnitBuiltinDevice = VideoUnitBuiltinDevice(videoUnit: self)
         NotificationCenter.default.addObserver(self,
@@ -1682,6 +1686,25 @@ final class VideoUnit: NSObject {
         }
     }
 
+    fileprivate func makeCopy(sampleBuffer: CMSampleBuffer) -> CMSampleBuffer {
+        guard copyBuiltinSampleBuffers else {
+            return sampleBuffer
+        }
+        let imageBufferCopy = createPixelBuffer(sampleBuffer: sampleBuffer)
+        VTPixelTransferSessionTransferImage(
+            pixelTransferSession!,
+            from: sampleBuffer.imageBuffer!,
+            to: imageBufferCopy!
+        )
+        return CMSampleBuffer.create(
+            imageBufferCopy!,
+            sampleBuffer.formatDescription!,
+            sampleBuffer.duration,
+            sampleBuffer.presentationTimeStamp,
+            sampleBuffer.decodeTimeStamp
+        )!
+    }
+
     private func updateCameraControls() {
         guard #available(iOS 18, *) else {
             return
@@ -1735,7 +1758,7 @@ extension VideoUnit: AVCaptureVideoDataOutputSampleBufferDelegate {
         guard selectedReplaceVideoCameraId == nil else {
             return
         }
-        appendNewSampleBuffer(sampleBuffer: sampleBuffer)
+        appendNewSampleBuffer(sampleBuffer: makeCopy(sampleBuffer: sampleBuffer))
     }
 }
 
@@ -1756,7 +1779,10 @@ extension VideoUnitBuiltinDevice: AVCaptureVideoDataOutputSampleBufferDelegate {
         guard let input = connection.inputPorts.first?.input as? AVCaptureDeviceInput else {
             return
         }
-        videoUnit?.replaceVideoBuiltins[input.device]?.setLatestSampleBuffer(sampleBuffer: sampleBuffer)
+        guard let videoUnit, let replaceVideo = videoUnit.replaceVideoBuiltins[input.device] else {
+            return
+        }
+        replaceVideo.setLatestSampleBuffer(sampleBuffer: videoUnit.makeCopy(sampleBuffer: sampleBuffer))
     }
 }
 
