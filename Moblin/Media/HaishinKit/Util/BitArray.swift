@@ -1,11 +1,13 @@
 import Foundation
 
 open class BitArray {
-    private(set) var data = Data()
-    private(set) var byteOffset = 0
+    private(set) var data: Data
+    private var byteOffset = 0
     private(set) var bitOffset = 0
 
-    init() {}
+    init() {
+        data = Data()
+    }
 
     init(data: Data) {
         self.data = data
