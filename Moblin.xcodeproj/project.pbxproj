@@ -1716,6 +1716,7 @@
 				03DAC9382BFE6A1F005EB92C /* AVCaptureColorSpace+Extension.swift */,
 				0359F8192BD3DA5F005BFDA8 /* AVCaptureDevice.Format+Extension.swift */,
 				0359F81C2BD3DA5F005BFDA8 /* AVFrameRateRange+Extension.swift */,
+				032756A22BD81921002DC17F /* Bool+Extension.swift */,
 				033A46EE2CD881A700119CE3 /* CMVideoDimensions+Extension.swift */,
 				03BC90A82BD4F6B000529987 /* CMVideoFormatDescription+Extension.swift */,
 				0359F8212BD3DA5F005BFDA8 /* CVPixelBuffer+Extension.swift */,
@@ -1724,7 +1725,6 @@
 				0359F8252BD3DA5F005BFDA8 /* URL+Extension.swift */,
 				0359F8262BD3DA5F005BFDA8 /* VTCompressionSession+Extension.swift */,
 				0359F8272BD3DA5F005BFDA8 /* VTDecompressionSession+Extension.swift */,
-				032756A22BD81921002DC17F /* Bool+Extension.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -1813,9 +1813,9 @@
 		0359F8752BD3DA5F005BFDA8 /* Util */ = {
 			isa = PBXGroup;
 			children = (
-				03F655F12D16DFD20054D73E /* BitArray.swift */,
 				0359F86D2BD3DA5F005BFDA8 /* AnyUtil.swift */,
 				0359F86E2BD3DA5F005BFDA8 /* Atomic.swift */,
+				03F655F12D16DFD20054D73E /* BitArray.swift */,
 				0359F86F2BD3DA5F005BFDA8 /* ByteArray.swift */,
 				0359F8742BD3DA5F005BFDA8 /* MD5.swift */,
 			);
@@ -2713,8 +2713,8 @@
 			isa = PBXGroup;
 			children = (
 				0359F80D2BD3DA5F005BFDA8 /* AudioEncoder.swift */,
-				0359F80E2BD3DA5F005BFDA8 /* AudioEncoderSettings.swift */,
 				0359F80F2BD3DA5F005BFDA8 /* AudioEncoderRingBuffer.swift */,
+				0359F80E2BD3DA5F005BFDA8 /* AudioEncoderSettings.swift */,
 			);
 			path = Audio;
 			sourceTree = "<group>";
