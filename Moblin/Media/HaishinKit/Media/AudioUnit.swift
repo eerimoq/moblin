@@ -4,6 +4,12 @@ import Collections
 private let deltaLimit = 0.03
 var audioUnitRemoveWindNoise = false
 
+struct AudioUnitAttachParams {
+    var device: AVCaptureDevice?
+    var builtinDelay: Double
+    var bufferedAudio: UUID?
+}
+
 func makeChannelMap(
     numberOfInputChannels: Int,
     numberOfOutputChannels: Int,
@@ -42,11 +48,16 @@ private class BufferedAudio {
     private var isInitialBuffering = true
     weak var delegate: BufferedAudioSampleBufferDelegate?
     private var hasBufferBeenAppended = false
+    let latency: Double
 
-    init(cameraId: UUID, name: String, latency: Double, mixer: Mixer?) {
+    init(cameraId: UUID, name: String, latency: Double, mixer: Mixer?, manualOutput: Bool) {
         self.cameraId = cameraId
         self.name = name
+        self.latency = latency
         self.mixer = mixer
+        if manualOutput {
+            isOutputting = true
+        }
         driftTracker = DriftTracker(media: "audio", name: name, targetFillLevel: latency)
     }
 
@@ -218,6 +229,7 @@ final class AudioUnit: NSObject {
     private var bufferedAudios: [UUID: BufferedAudio] = [:]
     let session = AVCaptureSession()
     private var speechToTextEnabled = false
+    private var bufferedBuiltinAudio: BufferedAudio?
 
     private var inputSourceFormat: AudioStreamBasicDescription? {
         didSet {
@@ -242,11 +254,18 @@ final class AudioUnit: NSObject {
         return encoders
     }
 
-    func attach(_ device: AVCaptureDevice?, _ bufferedAudio: UUID?) throws {
-        mixerLockQueue.sync {
-            self.selectedBufferedAudioId = bufferedAudio
+    func attach(params: AudioUnitAttachParams) throws {
+        mixerLockQueue.async {
+            self.selectedBufferedAudioId = params.bufferedAudio
+            self.bufferedBuiltinAudio = BufferedAudio(
+                cameraId: UUID(),
+                name: "builtin",
+                latency: params.builtinDelay,
+                mixer: self.mixer,
+                manualOutput: true
+            )
         }
-        if let device {
+        if let device = params.device {
             try attachDevice(device)
         }
     }
@@ -342,7 +361,13 @@ final class AudioUnit: NSObject {
     }
 
     private func addBufferedAudioInner(cameraId: UUID, name: String, latency: Double) {
-        let bufferedAudio = BufferedAudio(cameraId: cameraId, name: name, latency: latency, mixer: mixer)
+        let bufferedAudio = BufferedAudio(
+            cameraId: cameraId,
+            name: name,
+            latency: latency,
+            mixer: mixer,
+            manualOutput: false
+        )
         bufferedAudio.delegate = self
         bufferedAudios[cameraId] = bufferedAudio
     }
@@ -382,6 +407,20 @@ final class AudioUnit: NSObject {
         }
         mixer.recorder.appendAudio(sampleBuffer)
     }
+
+    private func appendBufferedBuiltinAudio(sampleBuffer: CMSampleBuffer) -> BufferedAudio? {
+        guard let bufferedBuiltinAudio, bufferedBuiltinAudio.latency > 0 else {
+            return nil
+        }
+        let latency = CMTime(seconds: bufferedBuiltinAudio.latency, preferredTimescale: 1000)
+        guard let sampleBuffer = sampleBuffer
+            .replacePresentationTimeStamp(sampleBuffer.presentationTimeStamp + latency)
+        else {
+            return nil
+        }
+        bufferedBuiltinAudio.appendSampleBuffer(sampleBuffer)
+        return bufferedBuiltinAudio
+    }
 }
 
 extension AudioUnit: AVCaptureAudioDataOutputSampleBufferDelegate {
@@ -390,6 +429,10 @@ extension AudioUnit: AVCaptureAudioDataOutputSampleBufferDelegate {
         didOutput sampleBuffer: CMSampleBuffer,
         from connection: AVCaptureConnection
     ) {
+        var sampleBuffer = sampleBuffer
+        if let bufferedAudio = appendBufferedBuiltinAudio(sampleBuffer: sampleBuffer) {
+            sampleBuffer = bufferedAudio.getSampleBuffer(sampleBuffer.presentationTimeStamp.seconds) ?? sampleBuffer
+        }
         guard selectedBufferedAudioId == nil else {
             return
         }

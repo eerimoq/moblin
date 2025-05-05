@@ -36,8 +36,8 @@ class Mixer {
         try video.attach(params: params)
     }
 
-    func attachAudio(_ device: AVCaptureDevice?, _ bufferedAudio: UUID?) throws {
-        try audio.attach(device, bufferedAudio)
+    func attachAudio(params: AudioUnitAttachParams) throws {
+        try audio.attach(params: params)
     }
 
     func startRunning() {

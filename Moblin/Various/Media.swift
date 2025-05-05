@@ -824,7 +824,8 @@ final class Media: NSObject {
     }
 
     func attachBufferedAudio(cameraId: UUID?) {
-        netStream?.attachAudio(nil, bufferedAudioId: cameraId)
+        let params = AudioUnitAttachParams(device: nil, builtinDelay: 0, bufferedAudio: cameraId)
+        netStream?.attachAudio(params: params)
     }
 
     func addBufferedAudio(cameraId: UUID, name: String, latency: Double) {
@@ -860,7 +861,12 @@ final class Media: NSObject {
     }
 
     func attachDefaultAudioDevice() {
-        netStream?.attachAudio(AVCaptureDevice.default(for: .audio)) {
+        let params = AudioUnitAttachParams(
+            device: AVCaptureDevice.default(for: .audio),
+            builtinDelay: 0,
+            bufferedAudio: nil
+        )
+        netStream?.attachAudio(params: params) {
             self.delegate?.mediaAttachAudioError(error: $0)
         }
     }
