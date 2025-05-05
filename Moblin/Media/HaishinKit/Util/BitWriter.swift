@@ -1,16 +1,12 @@
 import Foundation
 
-open class BitArray {
+final class BitWriter {
     private(set) var data: Data
     private var byteOffset = 0
     private(set) var bitOffset = 0
 
     init() {
         data = Data()
-    }
-
-    init(data: Data) {
-        self.data = data
     }
 
     func writeBit(_ value: Bool) {
@@ -24,20 +20,6 @@ open class BitArray {
         bitOffset %= 8
     }
 
-    func readBit() throws -> Bool {
-        guard byteOffset < data.count else {
-            throw "Out of data"
-        }
-        let mask = UInt8(1 << (7 - bitOffset))
-        let value = (data[byteOffset] & mask) == mask
-        bitOffset += 1
-        if bitOffset == 8 {
-            bitOffset = 0
-            byteOffset += 1
-        }
-        return value
-    }
-
     func writeBits(_ value: UInt8, count: Int) {
         for i in 0 ..< count {
             let mask = UInt8(1 << (count - i - 1))
@@ -45,29 +27,11 @@ open class BitArray {
         }
     }
 
-    func readBits(count: Int) throws -> UInt8 {
-        var value: UInt8 = 0
-        for _ in 0 ..< count {
-            value <<= 1
-            value |= try readBit() ? 1 : 0
-        }
-        return value
-    }
-
     func writeBitsU32(_ value: UInt32, count: Int) {
         for i in 0 ..< count {
             let mask = UInt32(1 << (count - i - 1))
             writeBit((value & mask) == mask)
         }
-    }
-
-    func readBitsU32(count: Int) throws -> UInt32 {
-        var value: UInt32 = 0
-        for _ in 0 ..< count {
-            value <<= 1
-            value |= try readBit() ? 1 : 0
-        }
-        return value
     }
 
     func writeBytes(_ data: Data) {

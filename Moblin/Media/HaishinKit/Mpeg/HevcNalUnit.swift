@@ -110,7 +110,7 @@ struct HevcSeiPayloadTimeCode {
         offset = UInt32((clock.timeIntervalSince1970 * 1000).truncatingRemainder(dividingBy: 1000))
     }
 
-    init?(reader: BitArray) {
+    init?(reader: BitReader) {
         do {
             guard try reader.readBits(count: 2) == 1 else {
                 logger.info("Not exactly one entry")
@@ -152,7 +152,7 @@ struct HevcSeiPayloadTimeCode {
         let unitFieldBasedFlag = true
         let fullTimestampFlag = true
         let numberOfFrames: UInt32 = 0
-        let writer = BitArray()
+        let writer = BitWriter()
         writer.writeBits(numClockTs, count: 2)
         writer.writeBit(clockTimestampFlag)
         writer.writeBit(unitFieldBasedFlag)
@@ -198,7 +198,7 @@ struct HevcSei {
     }
 
     init?(data: Data) {
-        let reader = BitArray(data: data)
+        let reader = BitReader(data: data)
         do {
             let type = try reader.readBits(count: 8)
             guard type != 0xFF else {
@@ -233,7 +233,7 @@ struct HevcSei {
             type = .timeCode
             data = payload.encode()
         }
-        let writer = BitArray()
+        let writer = BitWriter()
         writer.writeBits(type.rawValue, count: 8)
         writer.writeBits(UInt8(data.count), count: 8)
         writer.writeBytes(data)
@@ -242,14 +242,14 @@ struct HevcSei {
     }
 }
 
-private func writeRbspTrailingBits(writer: BitArray) {
+private func writeRbspTrailingBits(writer: BitWriter) {
     writer.writeBit(true)
     while writer.bitOffset != 0 {
         writer.writeBit(false)
     }
 }
 
-private func writeMoreDataInPayload(writer: BitArray) {
+private func writeMoreDataInPayload(writer: BitWriter) {
     var padding = true
     while writer.bitOffset != 0 {
         writer.writeBit(padding)
