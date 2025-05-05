@@ -834,8 +834,8 @@ final class Media: NSObject {
         netStream?.removeBufferedAudio(cameraId: cameraId)
     }
 
-    func addBufferedAudioSampleBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
-        netStream?.addBufferedAudioSampleBuffer(cameraId: cameraId, sampleBuffer)
+    func appendBufferedAudioSampleBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
+        netStream?.appendBufferedAudioSampleBuffer(cameraId: cameraId, sampleBuffer)
     }
 
     func setBufferedAudioTargetLatency(cameraId: UUID, latency: Double) {
@@ -850,8 +850,8 @@ final class Media: NSObject {
         netStream?.removeBufferedVideo(cameraId: cameraId)
     }
 
-    func addBufferedVideoSampleBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
-        netStream?.addBufferedVideoSampleBuffer(cameraId: cameraId, sampleBuffer)
+    func appendBufferedVideoSampleBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
+        netStream?.appendBufferedVideoSampleBuffer(cameraId: cameraId, sampleBuffer)
     }
 
     func setBufferedVideoTargetLatency(cameraId: UUID, latency: Double) {

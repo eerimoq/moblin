@@ -129,8 +129,8 @@ open class NetStream: NSObject {
         mixer.video.removeBufferedVideo(cameraId: cameraId)
     }
 
-    func addBufferedVideoSampleBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
-        mixer.video.addBufferedVideoSampleBuffer(cameraId: cameraId, sampleBuffer)
+    func appendBufferedVideoSampleBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
+        mixer.video.appendBufferedVideoSampleBuffer(cameraId: cameraId, sampleBuffer)
     }
 
     func setBufferedVideoTargetLatency(cameraId: UUID, _ latency: Double) {
@@ -145,8 +145,8 @@ open class NetStream: NSObject {
         mixer.audio.removeBufferedAudio(cameraId: cameraId)
     }
 
-    func addBufferedAudioSampleBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
-        mixer.audio.addBufferedAudioSampleBuffer(cameraId: cameraId, sampleBuffer)
+    func appendBufferedAudioSampleBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
+        mixer.audio.appendBufferedAudioSampleBuffer(cameraId: cameraId, sampleBuffer)
     }
 
     func setBufferedAudioTargetLatency(cameraId: UUID, _ latency: Double) {

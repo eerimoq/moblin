@@ -2631,11 +2631,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func handleRtmpServerFrame(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
-        media.addBufferedVideoSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
+        media.appendBufferedVideoSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
     }
 
     func handleRtmpServerAudioBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
-        media.addBufferedAudioSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
+        media.appendBufferedAudioSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
     }
 
     private func rtmpServerInfo() {
@@ -10404,7 +10404,7 @@ extension Model {
     private func handleSampleBufferSenderBuffer(_ type: RPSampleBufferType, _ sampleBuffer: CMSampleBuffer) {
         switch type {
         case .video:
-            media.addBufferedVideoSampleBuffer(cameraId: screenCaptureCameraId, sampleBuffer: sampleBuffer)
+            media.appendBufferedVideoSampleBuffer(cameraId: screenCaptureCameraId, sampleBuffer: sampleBuffer)
         default:
             break
         }
@@ -10477,14 +10477,14 @@ extension Model: SrtlaServerDelegate {
         guard let cameraId = getSrtlaStream(streamId: streamId)?.id else {
             return
         }
-        media.addBufferedAudioSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
+        media.appendBufferedAudioSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
     }
 
     func srtlaServerOnVideoBuffer(streamId: String, sampleBuffer: CMSampleBuffer) {
         guard let cameraId = getSrtlaStream(streamId: streamId)?.id else {
             return
         }
-        media.addBufferedVideoSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
+        media.appendBufferedVideoSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
     }
 
     func srtlaServerSetTargetLatencies(
@@ -10618,11 +10618,11 @@ extension Model: MediaPlayerDelegate {
     }
 
     func mediaPlayerVideoBuffer(playerId: UUID, sampleBuffer: CMSampleBuffer) {
-        media.addBufferedVideoSampleBuffer(cameraId: playerId, sampleBuffer: sampleBuffer)
+        media.appendBufferedVideoSampleBuffer(cameraId: playerId, sampleBuffer: sampleBuffer)
     }
 
     func mediaPlayerAudioBuffer(playerId: UUID, sampleBuffer: CMSampleBuffer) {
-        media.addBufferedAudioSampleBuffer(cameraId: playerId, sampleBuffer: sampleBuffer)
+        media.appendBufferedAudioSampleBuffer(cameraId: playerId, sampleBuffer: sampleBuffer)
     }
 }
 

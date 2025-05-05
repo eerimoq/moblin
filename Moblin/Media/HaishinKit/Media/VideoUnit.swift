@@ -565,9 +565,9 @@ final class VideoUnit: NSObject {
         }
     }
 
-    func addBufferedVideoSampleBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
+    func appendBufferedVideoSampleBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
         mixerLockQueue.async {
-            self.addBufferedVideoSampleBufferInner(cameraId: cameraId, sampleBuffer)
+            self.appendBufferedVideoSampleBufferInner(cameraId: cameraId, sampleBuffer)
         }
     }
 
@@ -1156,7 +1156,7 @@ final class VideoUnit: NSObject {
         lowFpsImageLatest = 0.0
     }
 
-    private func addBufferedVideoSampleBufferInner(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
+    private func appendBufferedVideoSampleBufferInner(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
         guard let bufferedVideo = bufferedVideos[cameraId] else {
             return
         }
