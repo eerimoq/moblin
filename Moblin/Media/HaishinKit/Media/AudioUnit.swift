@@ -9,16 +9,16 @@ func makeChannelMap(
     numberOfOutputChannels: Int,
     outputToInputChannelsMap: [Int: Int]
 ) -> [NSNumber] {
-    var result = Array(repeating: -1, count: numberOfOutputChannels)
+    var channelMap = Array(repeating: -1, count: numberOfOutputChannels)
     for inputIndex in 0 ..< min(numberOfInputChannels, numberOfOutputChannels) {
-        result[inputIndex] = inputIndex
+        channelMap[inputIndex] = inputIndex
     }
     for outputIndex in 0 ..< numberOfOutputChannels {
         if let inputIndex = outputToInputChannelsMap[outputIndex], inputIndex < numberOfInputChannels {
-            result[outputIndex] = inputIndex
+            channelMap[outputIndex] = inputIndex
         }
     }
-    return result.map { NSNumber(value: $0) }
+    return channelMap.map { NSNumber(value: $0) }
 }
 
 protocol BufferedAudioSampleBufferDelegate: AnyObject {
@@ -166,7 +166,7 @@ private class BufferedAudio {
         outputTimer.stop()
     }
 
-    private func calcPresentationTimeStamp() -> CMTime {
+    private func makePresentationTimeStamp() -> CMTime {
         return CMTime(
             value: Int64(frameLength * Double(outputCounter)),
             timescale: CMTimeScale(sampleRate)
@@ -179,7 +179,7 @@ private class BufferedAudio {
         if startPresentationTimeStamp == .zero {
             startPresentationTimeStamp = currentPresentationTimeStamp
         }
-        var presentationTimeStamp = calcPresentationTimeStamp()
+        var presentationTimeStamp = makePresentationTimeStamp()
         let deltaFromCalculatedToClock = presentationTimeStamp - currentPresentationTimeStamp
         if abs(deltaFromCalculatedToClock.seconds) > deltaLimit {
             if deltaFromCalculatedToClock > .zero {
@@ -189,7 +189,6 @@ private class BufferedAudio {
                 and clock is \(currentPresentationTimeStamp.seconds)
                 """)
                 outputCounter -= 1
-                presentationTimeStamp = calcPresentationTimeStamp()
             } else {
                 logger.info("""
                 buffered-audio: Adjust PTS forward in time. Calculated is \
@@ -197,24 +196,16 @@ private class BufferedAudio {
                 and clock is \(currentPresentationTimeStamp.seconds)
                 """)
                 outputCounter += 1
-                presentationTimeStamp = calcPresentationTimeStamp()
             }
+            presentationTimeStamp = makePresentationTimeStamp()
         }
-        guard let sampleBuffer = getSampleBuffer(presentationTimeStamp.seconds),
-              let sampleBuffer = sampleBuffer.replacePresentationTimeStamp(presentationTimeStamp)
+        guard let sampleBuffer = getSampleBuffer(presentationTimeStamp.seconds)?
+            .replacePresentationTimeStamp(presentationTimeStamp)
         else {
             return
         }
         delegate?.didOutputBufferedSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
     }
-}
-
-private func makeCaptureSession() -> AVCaptureSession {
-    let session = AVCaptureSession()
-    if session.isMultitaskingCameraAccessSupported {
-        session.isMultitaskingCameraAccessEnabled = true
-    }
-    return session
 }
 
 final class AudioUnit: NSObject {
@@ -225,7 +216,7 @@ final class AudioUnit: NSObject {
     weak var mixer: Mixer?
     private var selectedBufferedAudioId: UUID?
     private var bufferedAudios: [UUID: BufferedAudio] = [:]
-    let session = makeCaptureSession()
+    let session = AVCaptureSession()
     private var speechToTextEnabled = false
 
     private var inputSourceFormat: AudioStreamBasicDescription? {
@@ -258,20 +249,6 @@ final class AudioUnit: NSObject {
         if let device {
             try attachDevice(device)
         }
-    }
-
-    func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer, _ presentationTimeStamp: CMTime) {
-        guard let sampleBuffer = sampleBuffer.muted(muted) else {
-            return
-        }
-        if speechToTextEnabled {
-            mixer?.delegate?.mixer(audioSampleBuffer: sampleBuffer)
-        }
-        inputSourceFormat = sampleBuffer.formatDescription?.audioStreamBasicDescription
-        for encoder in encoders {
-            encoder.appendSampleBuffer(sampleBuffer, presentationTimeStamp)
-        }
-        mixer?.recorder.appendAudio(sampleBuffer)
     }
 
     func startEncoding(_ delegate: any AudioCodecDelegate) {
@@ -334,23 +311,13 @@ final class AudioUnit: NSObject {
         session.automaticallyConfiguresApplicationAudioSession = false
     }
 
-    func addBufferedAudioSampleBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
-        mixerLockQueue.async {
-            self.addBufferedAudioSampleBufferInner(cameraId: cameraId, sampleBuffer)
-        }
-    }
-
-    func addBufferedAudioSampleBufferInner(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
-        bufferedAudios[cameraId]?.appendSampleBuffer(sampleBuffer)
-    }
-
     func addBufferedAudio(cameraId: UUID, name: String, latency: Double) {
         mixerLockQueue.async {
             self.addBufferedAudioInner(cameraId: cameraId, name: name, latency: latency)
         }
     }
 
-    func addBufferedAudioInner(cameraId: UUID, name: String, latency: Double) {
+    private func addBufferedAudioInner(cameraId: UUID, name: String, latency: Double) {
         let bufferedAudio = BufferedAudio(cameraId: cameraId, name: name, latency: latency, mixer: mixer)
         bufferedAudio.delegate = self
         bufferedAudios[cameraId] = bufferedAudio
@@ -362,8 +329,18 @@ final class AudioUnit: NSObject {
         }
     }
 
-    func removeBufferedAudioInner(cameraId: UUID) {
+    private func removeBufferedAudioInner(cameraId: UUID) {
         bufferedAudios.removeValue(forKey: cameraId)?.stopOutput()
+    }
+
+    func addBufferedAudioSampleBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
+        mixerLockQueue.async {
+            self.addBufferedAudioSampleBufferInner(cameraId: cameraId, sampleBuffer)
+        }
+    }
+
+    private func addBufferedAudioSampleBufferInner(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
+        bufferedAudios[cameraId]?.appendSampleBuffer(sampleBuffer)
     }
 
     func setBufferedAudioDrift(cameraId: UUID, drift: Double) {
@@ -386,14 +363,24 @@ final class AudioUnit: NSObject {
         bufferedAudios[cameraId]?.setTargetLatency(latency: latency)
     }
 
-    func prepareSampleBuffer(sampleBuffer: CMSampleBuffer, audioLevel: Float, numberOfAudioChannels: Int) {
+    private func appendNewSampleBuffer(sampleBuffer: CMSampleBuffer, audioLevel: Float, numberOfAudioChannels: Int) {
         guard let mixer else {
             return
         }
         // Workaround for audio drift on iPhone 15 Pro Max running iOS 17. Probably issue on more models.
         let presentationTimeStamp = syncTimeToVideo(mixer: mixer, sampleBuffer: sampleBuffer)
         mixer.delegate?.mixer(audioLevel: audioLevel, numberOfAudioChannels: numberOfAudioChannels)
-        appendSampleBuffer(sampleBuffer, presentationTimeStamp)
+        guard let sampleBuffer = sampleBuffer.muted(muted) else {
+            return
+        }
+        if speechToTextEnabled {
+            mixer.delegate?.mixer(audioSampleBuffer: sampleBuffer)
+        }
+        inputSourceFormat = sampleBuffer.formatDescription?.audioStreamBasicDescription
+        for encoder in encoders {
+            encoder.appendSampleBuffer(sampleBuffer, presentationTimeStamp)
+        }
+        mixer.recorder.appendAudio(sampleBuffer)
     }
 }
 
@@ -414,7 +401,7 @@ extension AudioUnit: AVCaptureAudioDataOutputSampleBufferDelegate {
         } else {
             audioLevel = 0.0
         }
-        prepareSampleBuffer(
+        appendNewSampleBuffer(
             sampleBuffer: sampleBuffer,
             audioLevel: audioLevel,
             numberOfAudioChannels: connection.audioChannels.count
@@ -428,7 +415,7 @@ extension AudioUnit: BufferedAudioSampleBufferDelegate {
             return
         }
         let numberOfAudioChannels = Int(sampleBuffer.formatDescription?.numberOfAudioChannels() ?? 0)
-        prepareSampleBuffer(
+        appendNewSampleBuffer(
             sampleBuffer: sampleBuffer,
             audioLevel: .infinity,
             numberOfAudioChannels: numberOfAudioChannels
