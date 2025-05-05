@@ -5,27 +5,15 @@ struct AudioCodecOutputSettings {
     static let maximumNumberOfChannels: UInt32 = 2
 
     enum Format {
-        case pcm
         case aac
         case opus
 
-        func makeAudioBuffer(_ format: AVAudioFormat) -> AVAudioBuffer? {
-            switch self {
-            case .pcm:
-                return AVAudioPCMBuffer(pcmFormat: format, frameCapacity: 1024)
-            case .aac:
-                return AVAudioCompressedBuffer(
-                    format: format,
-                    packetCapacity: 1,
-                    maximumPacketSize: 1024 * Int(format.channelCount)
-                )
-            case .opus:
-                return AVAudioCompressedBuffer(
-                    format: format,
-                    packetCapacity: 1,
-                    maximumPacketSize: 1024 * Int(format.channelCount)
-                )
-            }
+        func makeAudioBuffer(_ format: AVAudioFormat) -> AVAudioBuffer {
+            return AVAudioCompressedBuffer(
+                format: format,
+                packetCapacity: 1,
+                maximumPacketSize: 1024 * Int(format.channelCount)
+            )
         }
 
         func makeAudioFormat(_ inSourceFormat: AudioStreamBasicDescription?) -> AVAudioFormat? {
@@ -33,16 +21,6 @@ struct AudioCodecOutputSettings {
                 return nil
             }
             switch self {
-            case .pcm:
-                return AVAudioFormat(
-                    commonFormat: .pcmFormatFloat32,
-                    sampleRate: inSourceFormat.mSampleRate,
-                    channels: min(
-                        inSourceFormat.mChannelsPerFrame,
-                        AudioCodecOutputSettings.maximumNumberOfChannels
-                    ),
-                    interleaved: true
-                )
             case .aac:
                 var streamDescription = AudioStreamBasicDescription(
                     mSampleRate: inSourceFormat.mSampleRate,

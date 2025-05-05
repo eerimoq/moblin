@@ -77,8 +77,6 @@ class AudioCodec {
             return
         }
         switch settings.format {
-        case .pcm:
-            appendSampleBufferOutputPcm(sampleBuffer, presentationTimeStamp)
         case .aac:
             appendSampleBufferOutputAac(sampleBuffer, presentationTimeStamp)
         case .opus:
@@ -86,44 +84,7 @@ class AudioCodec {
         }
     }
 
-    private func appendSampleBufferOutputPcm(_ sampleBuffer: CMSampleBuffer,
-                                             _ presentationTimeStamp: CMTime)
-    {
-        guard let blockBuffer = sampleBuffer.dataBuffer else {
-            return
-        }
-        var offset = 0
-        var nextPresentationTimeStamp = presentationTimeStamp
-        for i in 0 ..< sampleBuffer.numSamples {
-            guard let buffer = makeInputBuffer() as? AVAudioCompressedBuffer else {
-                continue
-            }
-            let sampleSize = sampleBuffer.getSampleSize(at: i)
-            let byteCount = sampleSize - AdtsHeader.size
-            buffer.packetDescriptions?.pointee = AudioStreamPacketDescription(
-                mStartOffset: 0,
-                mVariableFramesInPacket: 0,
-                mDataByteSize: UInt32(byteCount)
-            )
-            buffer.packetCount = 1
-            buffer.byteLength = UInt32(byteCount)
-            blockBuffer.copyDataBytes(
-                fromOffset: offset + AdtsHeader.size,
-                length: byteCount,
-                to: buffer.data
-            )
-            appendAudioBuffer(buffer, presentationTimeStamp: nextPresentationTimeStamp)
-            nextPresentationTimeStamp = nextPresentationTimeStamp + CMTime(
-                value: CMTimeValue(1024),
-                timescale: presentationTimeStamp.timescale
-            )
-            offset += sampleSize
-        }
-    }
-
-    private func appendSampleBufferOutputAac(_ sampleBuffer: CMSampleBuffer,
-                                             _ presentationTimeStamp: CMTime)
-    {
+    private func appendSampleBufferOutputAac(_ sampleBuffer: CMSampleBuffer, _ presentationTimeStamp: CMTime) {
         guard let audioConverter, let ringBuffer else {
             return
         }
