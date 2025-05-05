@@ -728,7 +728,7 @@ final class Media: NSObject {
     }
 
     func setAudioStreamBitrate(bitrate: Int) {
-        audioEncoderSettings.bitRate = bitrate
+        audioEncoderSettings.bitrate = bitrate
         commitAudioEncoderSettings()
     }
 

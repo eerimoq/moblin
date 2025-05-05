@@ -57,21 +57,21 @@ struct AudioCodecOutputSettings {
         }
     }
 
-    var bitRate = 64 * 1000
+    var bitrate = 64 * 1000
     var channelsMap: [Int: Int] = [0: 0, 1: 1]
     var format: AudioCodecOutputSettings.Format = .aac
 
     func apply(_ converter: AVAudioConverter, oldValue: AudioCodecOutputSettings?) {
-        guard bitRate != oldValue?.bitRate else {
+        guard bitrate != oldValue?.bitrate else {
             return
         }
-        let minAvailableBitRate = converter.applicableEncodeBitRates?.min(by: { a, b in
-            a.intValue < b.intValue
-        })?.intValue ?? bitRate
-        let maxAvailableBitRate = converter.applicableEncodeBitRates?.max(by: { a, b in
-            a.intValue < b.intValue
-        })?.intValue ?? bitRate
-        converter.bitRate = min(maxAvailableBitRate, max(minAvailableBitRate, bitRate))
+        let minAvailableBitRate = converter.applicableEncodeBitRates?.min(by: {
+            $0.intValue < $1.intValue
+        })?.intValue ?? bitrate
+        let maxAvailableBitRate = converter.applicableEncodeBitRates?.max(by: {
+            $0.intValue < $1.intValue
+        })?.intValue ?? bitrate
+        converter.bitRate = min(maxAvailableBitRate, max(minAvailableBitRate, bitrate))
         logger.debug("Audio bitrate: \(converter.bitRate), maximum: \(maxAvailableBitRate)")
     }
 }

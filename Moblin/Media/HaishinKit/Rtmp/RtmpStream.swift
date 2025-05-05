@@ -192,7 +192,7 @@ class RtmpStream: NetStream {
         }
         metadata["videodatarate"] = settings.bitRate / 1000
         metadata["audiocodecid"] = FlvAudioCodec.aac.rawValue
-        metadata["audiodatarate"] = audioEncoder.settings.bitRate / 1000
+        metadata["audiodatarate"] = audioEncoder.settings.bitrate / 1000
         if let sampleRate = audioEncoder.inSourceFormat?.mSampleRate {
             metadata["audiosamplerate"] = sampleRate
         }
