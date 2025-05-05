@@ -1,7 +1,7 @@
 import AVFAudio
 import Foundation
 
-struct AudioCodecOutputSettings {
+struct AudioEncoderSettings {
     private static let maximumNumberOfChannels: UInt32 = 2
 
     enum Format {
@@ -28,7 +28,7 @@ struct AudioCodecOutputSettings {
                     mBytesPerFrame: 0,
                     mChannelsPerFrame: min(
                         inSourceFormat.mChannelsPerFrame,
-                        AudioCodecOutputSettings.maximumNumberOfChannels
+                        AudioEncoderSettings.maximumNumberOfChannels
                     ),
                     mBitsPerChannel: 0,
                     mReserved: 0
@@ -44,7 +44,7 @@ struct AudioCodecOutputSettings {
                     mBytesPerFrame: 0,
                     mChannelsPerFrame: min(
                         inSourceFormat.mChannelsPerFrame,
-                        AudioCodecOutputSettings.maximumNumberOfChannels
+                        AudioEncoderSettings.maximumNumberOfChannels
                     ),
                     mBitsPerChannel: 0,
                     mReserved: 0
@@ -56,9 +56,9 @@ struct AudioCodecOutputSettings {
 
     var bitrate = 64 * 1000
     var channelsMap: [Int: Int] = [0: 0, 1: 1]
-    var format: AudioCodecOutputSettings.Format = .aac
+    var format: AudioEncoderSettings.Format = .aac
 
-    func apply(_ converter: AVAudioConverter, oldValue: AudioCodecOutputSettings?) {
+    func apply(_ converter: AVAudioConverter, oldValue: AudioEncoderSettings?) {
         guard bitrate != oldValue?.bitrate else {
             return
         }

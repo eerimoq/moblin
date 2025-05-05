@@ -168,9 +168,9 @@
 		035735822BC6303F00F4E87D /* WatchDisplaySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035735812BC6303F00F4E87D /* WatchDisplaySettingsView.swift */; };
 		03584BED2BE49B1B007E61F6 /* FaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03584BEC2BE49B1B007E61F6 /* FaceView.swift */; };
 		0358DDD62BE695B70080133B /* DebugVideoSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0358DDD52BE695B70080133B /* DebugVideoSettingsView.swift */; };
-		0359F8AB2BD3DA61005BFDA8 /* AudioCodec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F80D2BD3DA5F005BFDA8 /* AudioCodec.swift */; };
-		0359F8AC2BD3DA61005BFDA8 /* AudioCodecOutputSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F80E2BD3DA5F005BFDA8 /* AudioCodecOutputSettings.swift */; };
-		0359F8AD2BD3DA61005BFDA8 /* AudioCodecRingBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F80F2BD3DA5F005BFDA8 /* AudioCodecRingBuffer.swift */; };
+		0359F8AB2BD3DA61005BFDA8 /* AudioEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F80D2BD3DA5F005BFDA8 /* AudioEncoder.swift */; };
+		0359F8AC2BD3DA61005BFDA8 /* AudioEncoderSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F80E2BD3DA5F005BFDA8 /* AudioEncoderSettings.swift */; };
+		0359F8AD2BD3DA61005BFDA8 /* AudioEncoderRingBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F80F2BD3DA5F005BFDA8 /* AudioEncoderRingBuffer.swift */; };
 		0359F8AE2BD3DA61005BFDA8 /* VideoDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8102BD3DA5F005BFDA8 /* VideoDecoder.swift */; };
 		0359F8AF2BD3DA61005BFDA8 /* VideoEncoderSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8112BD3DA5F005BFDA8 /* VideoEncoderSettings.swift */; };
 		0359F8B22BD3DA61005BFDA8 /* VTSessionProperty.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8142BD3DA5F005BFDA8 /* VTSessionProperty.swift */; };
@@ -726,9 +726,9 @@
 		03584BEC2BE49B1B007E61F6 /* FaceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceView.swift; sourceTree = "<group>"; };
 		0358DDD52BE695B70080133B /* DebugVideoSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugVideoSettingsView.swift; sourceTree = "<group>"; };
 		0358DDD82BE6A7370080133B /* Moblin.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Moblin.entitlements; sourceTree = "<group>"; };
-		0359F80D2BD3DA5F005BFDA8 /* AudioCodec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioCodec.swift; sourceTree = "<group>"; };
-		0359F80E2BD3DA5F005BFDA8 /* AudioCodecOutputSettings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioCodecOutputSettings.swift; sourceTree = "<group>"; };
-		0359F80F2BD3DA5F005BFDA8 /* AudioCodecRingBuffer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioCodecRingBuffer.swift; sourceTree = "<group>"; };
+		0359F80D2BD3DA5F005BFDA8 /* AudioEncoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioEncoder.swift; sourceTree = "<group>"; };
+		0359F80E2BD3DA5F005BFDA8 /* AudioEncoderSettings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioEncoderSettings.swift; sourceTree = "<group>"; };
+		0359F80F2BD3DA5F005BFDA8 /* AudioEncoderRingBuffer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioEncoderRingBuffer.swift; sourceTree = "<group>"; };
 		0359F8102BD3DA5F005BFDA8 /* VideoDecoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoDecoder.swift; sourceTree = "<group>"; };
 		0359F8112BD3DA5F005BFDA8 /* VideoEncoderSettings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoEncoderSettings.swift; sourceTree = "<group>"; };
 		0359F8142BD3DA5F005BFDA8 /* VTSessionProperty.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VTSessionProperty.swift; sourceTree = "<group>"; };
@@ -2712,9 +2712,9 @@
 		03C3573C2D0815AE00B8B29F /* Audio */ = {
 			isa = PBXGroup;
 			children = (
-				0359F80D2BD3DA5F005BFDA8 /* AudioCodec.swift */,
-				0359F80E2BD3DA5F005BFDA8 /* AudioCodecOutputSettings.swift */,
-				0359F80F2BD3DA5F005BFDA8 /* AudioCodecRingBuffer.swift */,
+				0359F80D2BD3DA5F005BFDA8 /* AudioEncoder.swift */,
+				0359F80E2BD3DA5F005BFDA8 /* AudioEncoderSettings.swift */,
+				0359F80F2BD3DA5F005BFDA8 /* AudioEncoderRingBuffer.swift */,
 			);
 			path = Audio;
 			sourceTree = "<group>";
@@ -3248,9 +3248,9 @@
 				0359F8C12BD3DA61005BFDA8 /* ExpressibleByIntegerLiteral+Extension.swift in Sources */,
 				03E972CD2D3AB52700888FAB /* MoblinkScanner.swift in Sources */,
 				0325D0BE2BB3DDD6007EE85B /* KickChannel.swift in Sources */,
-				0359F8AC2BD3DA61005BFDA8 /* AudioCodecOutputSettings.swift in Sources */,
+				0359F8AC2BD3DA61005BFDA8 /* AudioEncoderSettings.swift in Sources */,
 				035D37282AB0EBB500045B92 /* IconAndTextView.swift in Sources */,
-				0359F8AB2BD3DA61005BFDA8 /* AudioCodec.swift in Sources */,
+				0359F8AB2BD3DA61005BFDA8 /* AudioEncoder.swift in Sources */,
 				03BC90B02BD580E300529987 /* StreamWizardNetworkSetupMyServersSrtSettingsView.swift in Sources */,
 				03AD440A2B78A8A700B1B9B9 /* StreamButtonsSettingsView.swift in Sources */,
 				03A9836B2A9A05D7008FF0DB /* StreamOverlayView.swift in Sources */,
@@ -3334,7 +3334,7 @@
 				030EFE782BDADBC6004208B6 /* SwipeLeftToRemoveHelpView.swift in Sources */,
 				03BA3B432C9019D500DEFA3E /* AtkinsonDithering.swift in Sources */,
 				0318D3642CF4FB3100E12F3B /* TeslaVehicle.swift in Sources */,
-				0359F8AD2BD3DA61005BFDA8 /* AudioCodecRingBuffer.swift in Sources */,
+				0359F8AD2BD3DA61005BFDA8 /* AudioEncoderRingBuffer.swift in Sources */,
 				03D3C0512B452D61006BAEAC /* StreamRecordingSettingsView.swift in Sources */,
 				0342F1A52C627A8F004DD3EA /* MirlCommon.swift in Sources */,
 				0325D0B42BB29713007EE85B /* ChatUsernamesToIgnoreSettingsView.swift in Sources */,

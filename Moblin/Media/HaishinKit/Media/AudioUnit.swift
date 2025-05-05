@@ -209,7 +209,7 @@ private class BufferedAudio {
 }
 
 final class AudioUnit: NSObject {
-    private var encoders = [AudioCodec(lockQueue: mixerLockQueue)]
+    private var encoders = [AudioEncoder(lockQueue: mixerLockQueue)]
     private var input: AVCaptureDeviceInput?
     private var output: AVCaptureAudioDataOutput?
     var muted = false
@@ -238,7 +238,7 @@ final class AudioUnit: NSObject {
         session.stopRunning()
     }
 
-    func getEncoders() -> [AudioCodec] {
+    func getEncoders() -> [AudioEncoder] {
         return encoders
     }
 

@@ -59,7 +59,7 @@ final class Media: NSObject {
     private var failedVideoEffect: String?
     var srtDroppedPacketsTotal: Int32 = 0
     private var videoEncoderSettings = VideoEncoderSettings()
-    private var audioEncoderSettings = AudioCodecOutputSettings()
+    private var audioEncoderSettings = AudioEncoderSettings()
     private var multiplier: UInt32 = 0
     private var updateTickCount: UInt64 = 0
     private var belaLinesAndActions: ([String], [String])?
@@ -732,7 +732,7 @@ final class Media: NSObject {
         commitAudioEncoderSettings()
     }
 
-    func setAudioStreamFormat(format: AudioCodecOutputSettings.Format) {
+    func setAudioStreamFormat(format: AudioEncoderSettings.Format) {
         audioEncoderSettings.format = format
         commitAudioEncoderSettings()
     }

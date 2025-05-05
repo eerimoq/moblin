@@ -5,14 +5,14 @@ protocol AudioCodecDelegate: AnyObject {
     func audioCodecOutputBuffer(_ buffer: AVAudioBuffer, _ presentationTimeStamp: CMTime)
 }
 
-class AudioCodec {
+class AudioEncoder {
     weak var delegate: (any AudioCodecDelegate)?
     private var isRunning: Atomic<Bool> = .init(false)
     private let lockQueue: DispatchQueue
-    private var ringBuffer: AudioCodecRingBuffer?
+    private var ringBuffer: AudioEncoderRingBuffer?
     private var audioConverter: AVAudioConverter?
 
-    var settings = AudioCodecOutputSettings() {
+    var settings = AudioEncoderSettings() {
         didSet {
             guard let audioConverter else {
                 return
@@ -99,7 +99,7 @@ class AudioCodec {
             return inputBuffer
         }
         if let error {
-            logger.info("Failed to convert \(error)")
+            logger.info("audio-encoder: Failed to convert \(error)")
         } else {
             delegate?.audioCodecOutputBuffer(outputBuffer, presentationTimeStamp)
         }
@@ -112,10 +112,10 @@ class AudioCodec {
         else {
             return nil
         }
-        logger.debug("inputFormat: \(inputFormat)")
-        logger.debug("outputFormat: \(outputFormat)")
+        logger.debug("audio-encoder: inputFormat: \(inputFormat)")
+        logger.debug("audio-encoder: outputFormat: \(outputFormat)")
         guard let converter = AVAudioConverter(from: inputFormat, to: outputFormat) else {
-            logger.info("Failed to create from \(inputFormat) to \(outputFormat)")
+            logger.info("audio-encoder: Failed to create from \(inputFormat) to \(outputFormat)")
             return nil
         }
         converter.channelMap = makeChannelMap(

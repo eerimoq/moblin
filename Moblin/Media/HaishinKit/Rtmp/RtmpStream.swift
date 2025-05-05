@@ -178,7 +178,7 @@ class RtmpStream: NetStream {
         }
     }
 
-    private func createOnMetaDataLegacy(_ audioEncoder: AudioCodec, _ videoEncoder: VideoEncoder) -> AsObject {
+    private func createOnMetaDataLegacy(_ audioEncoder: AudioEncoder, _ videoEncoder: VideoEncoder) -> AsObject {
         var metadata: [String: Any] = [:]
         let settings = videoEncoder.settings.value
         metadata["width"] = settings.videoSize.width
@@ -199,7 +199,7 @@ class RtmpStream: NetStream {
         return metadata
     }
 
-    private func createOnMetaDataMultiTrack(_ audioEncoders: [AudioCodec],
+    private func createOnMetaDataMultiTrack(_ audioEncoders: [AudioEncoder],
                                             _ videoEncoders: [VideoEncoder]) -> AsObject
     {
         let metadata = createOnMetaDataLegacy(audioEncoders.first!, videoEncoders.first!)

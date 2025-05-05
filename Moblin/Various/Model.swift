@@ -4897,7 +4897,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         media.setAudioStreamBitrate(bitrate: stream.audioBitrate!)
     }
 
-    func setAudioStreamFormat(format: AudioCodecOutputSettings.Format) {
+    func setAudioStreamFormat(format: AudioEncoderSettings.Format) {
         media.setAudioStreamFormat(format: format)
     }
 
