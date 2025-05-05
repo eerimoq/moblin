@@ -97,9 +97,7 @@ class AudioCodec {
         }
     }
 
-    private func appendSampleBufferOutputOpus(_ sampleBuffer: CMSampleBuffer,
-                                              _ presentationTimeStamp: CMTime)
-    {
+    private func appendSampleBufferOutputOpus(_ sampleBuffer: CMSampleBuffer, _ presentationTimeStamp: CMTime) {
         guard let audioConverter, let ringBuffer else {
             return
         }

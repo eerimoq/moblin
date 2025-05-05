@@ -32,7 +32,8 @@ final class AudioCodecRingBuffer {
         self.workingBuffer = workingBuffer
     }
 
-    func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer, _ presentationTimeStamp: CMTime,
+    func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer,
+                            _ presentationTimeStamp: CMTime,
                             _ offset: Int) -> Int
     {
         if latestPresentationTimeStamp == .invalid {

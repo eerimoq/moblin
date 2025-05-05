@@ -2,7 +2,7 @@ import AVFAudio
 import Foundation
 
 struct AudioCodecOutputSettings {
-    static let maximumNumberOfChannels: UInt32 = 2
+    private static let maximumNumberOfChannels: UInt32 = 2
 
     enum Format {
         case aac
