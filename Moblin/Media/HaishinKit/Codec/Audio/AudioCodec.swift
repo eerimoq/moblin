@@ -6,49 +6,12 @@ protocol AudioCodecDelegate: AnyObject {
 }
 
 class AudioCodec {
-    init(lockQueue: DispatchQueue) {
-        self.lockQueue = lockQueue
-    }
-
-    static func makeAudioFormat(_ basicDescription: inout AudioStreamBasicDescription) -> AVAudioFormat? {
-        if basicDescription.mFormatID == kAudioFormatLinearPCM,
-           kLinearPCMFormatFlagIsBigEndian ==
-           (basicDescription.mFormatFlags & kLinearPCMFormatFlagIsBigEndian)
-        {
-            // ReplayKit audioApp.
-            guard basicDescription.mBitsPerChannel == 16 else {
-                return nil
-            }
-            if let layout = makeChannelLayout(basicDescription.mChannelsPerFrame) {
-                return .init(
-                    commonFormat: .pcmFormatInt16,
-                    sampleRate: basicDescription.mSampleRate,
-                    interleaved: true,
-                    channelLayout: layout
-                )
-            }
-            return AVAudioFormat(
-                commonFormat: .pcmFormatInt16,
-                sampleRate: basicDescription.mSampleRate,
-                channels: basicDescription.mChannelsPerFrame,
-                interleaved: true
-            )
-        }
-        if let layout = makeChannelLayout(basicDescription.mChannelsPerFrame) {
-            return .init(streamDescription: &basicDescription, channelLayout: layout)
-        }
-        return .init(streamDescription: &basicDescription)
-    }
-
-    static func makeChannelLayout(_ numberOfChannels: UInt32) -> AVAudioChannelLayout? {
-        guard numberOfChannels > 2 else {
-            return nil
-        }
-        return AVAudioChannelLayout(layoutTag: kAudioChannelLayoutTag_DiscreteInOrder | numberOfChannels)
-    }
-
     weak var delegate: (any AudioCodecDelegate)?
     private var isRunning: Atomic<Bool> = .init(false)
+    private let lockQueue: DispatchQueue
+    private var ringBuffer: AudioCodecRingBuffer?
+    private var audioConverter: AVAudioConverter?
+
     var settings = AudioCodecOutputSettings() {
         didSet {
             guard let audioConverter else {
@@ -58,7 +21,6 @@ class AudioCodec {
         }
     }
 
-    private let lockQueue: DispatchQueue
     var inSourceFormat: AudioStreamBasicDescription? {
         didSet {
             guard var inSourceFormat, inSourceFormat != oldValue else {
@@ -69,8 +31,23 @@ class AudioCodec {
         }
     }
 
-    private var ringBuffer: AudioCodecRingBuffer?
-    private var audioConverter: AVAudioConverter?
+    init(lockQueue: DispatchQueue) {
+        self.lockQueue = lockQueue
+    }
+
+    static func makeAudioFormat(_ basicDescription: inout AudioStreamBasicDescription) -> AVAudioFormat? {
+        return AVAudioFormat(
+            streamDescription: &basicDescription,
+            channelLayout: makeChannelLayout(basicDescription.mChannelsPerFrame)
+        )
+    }
+
+    private static func makeChannelLayout(_ numberOfChannels: UInt32) -> AVAudioChannelLayout? {
+        guard numberOfChannels > 2 else {
+            return nil
+        }
+        return AVAudioChannelLayout(layoutTag: kAudioChannelLayoutTag_DiscreteInOrder | numberOfChannels)
+    }
 
     func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer, _ presentationTimeStamp: CMTime) {
         guard isRunning.value else {
@@ -110,21 +87,12 @@ class AudioCodec {
         }
     }
 
-    func appendAudioBuffer(_ audioBuffer: AVAudioBuffer, presentationTimeStamp: CMTime) {
-        guard isRunning.value, let audioConverter else {
-            return
-        }
-        convertBuffer(audioConverter, audioBuffer, presentationTimeStamp)
-    }
-
     private func convertBuffer(
         _ audioConverter: AVAudioConverter,
         _ inputBuffer: AVAudioBuffer,
         _ presentationTimeStamp: CMTime
     ) {
-        guard let outputBuffer = createOutputBuffer(audioConverter) else {
-            return
-        }
+        let outputBuffer = settings.format.makeAudioBuffer(audioConverter.outputFormat)
         var error: NSError?
         audioConverter.convert(to: outputBuffer, error: &error) { _, status in
             status.pointee = .haveData
@@ -137,25 +105,7 @@ class AudioCodec {
         }
     }
 
-    func makeInputBuffer() -> AVAudioBuffer? {
-        guard let inputFormat = audioConverter?.inputFormat else {
-            return nil
-        }
-        switch inSourceFormat?.mFormatID {
-        case kAudioFormatLinearPCM:
-            return AVAudioPCMBuffer(pcmFormat: inputFormat, frameCapacity: 1024)
-        default:
-            return AVAudioCompressedBuffer(format: inputFormat, packetCapacity: 1, maximumPacketSize: 1024)
-        }
-    }
-
-    private func createOutputBuffer(_ audioConverter: AVAudioConverter) -> AVAudioBuffer? {
-        return settings.format.makeAudioBuffer(audioConverter.outputFormat)
-    }
-
-    private func makeAudioConverter(_ inSourceFormat: inout AudioStreamBasicDescription)
-        -> AVAudioConverter?
-    {
+    private func makeAudioConverter(_ inSourceFormat: inout AudioStreamBasicDescription) -> AVAudioConverter? {
         guard
             let inputFormat = Self.makeAudioFormat(&inSourceFormat),
             let outputFormat = settings.format.makeAudioFormat(inSourceFormat)

@@ -16,10 +16,7 @@ struct AudioCodecOutputSettings {
             )
         }
 
-        func makeAudioFormat(_ inSourceFormat: AudioStreamBasicDescription?) -> AVAudioFormat? {
-            guard let inSourceFormat else {
-                return nil
-            }
+        func makeAudioFormat(_ inSourceFormat: AudioStreamBasicDescription) -> AVAudioFormat? {
             switch self {
             case .aac:
                 var streamDescription = AudioStreamBasicDescription(
