@@ -1,21 +1,8 @@
 import Foundation
 
-class ByteArray {
-    static let sizeOfInt8 = 1
-    static let sizeOfDouble = 8
-
-    enum Error: Swift.Error {
-        case eof
-        case parse
-    }
-
-    init() {}
-
-    init(data: Data) {
-        self.data = data
-    }
-
+class ByteWriter {
     private(set) var data = Data()
+    private var position = 0
 
     var length: Int {
         get {
@@ -30,10 +17,10 @@ class ByteArray {
         }
     }
 
-    var position = 0
+    init() {}
 
-    var bytesAvailable: Int {
-        data.count - position
+    init(data: Data) {
+        self.data = data
     }
 
     subscript(i: Int) -> UInt8 {
@@ -45,23 +32,9 @@ class ByteArray {
         }
     }
 
-    func readUInt8() throws -> UInt8 {
-        guard bytesAvailable >= ByteArray.sizeOfInt8 else {
-            throw ByteArray.Error.eof
-        }
-        defer {
-            position += 1
-        }
-        return data[position]
-    }
-
     @discardableResult
     func writeUInt8(_ value: UInt8) -> Self {
         writeBytes(value.data)
-    }
-
-    func readUInt16() throws -> UInt16 {
-        return try (UInt16(readUInt8()) << 8) | UInt16(readUInt8())
     }
 
     @discardableResult
@@ -69,22 +42,10 @@ class ByteArray {
         writeBytes(value.bigEndian.data)
     }
 
-    func readUInt16Le() throws -> UInt16 {
-        return try UInt16(readUInt8()) | (UInt16(readUInt8()) << 8)
-    }
-
     @discardableResult
     func writeUInt16Le(_ value: UInt16) -> Self {
         writeUInt8(UInt8(value & 0xFF))
         return writeUInt8(UInt8((value >> 8) & 0xFF))
-    }
-
-    func readUInt24() throws -> UInt32 {
-        return try (UInt32(readUInt8()) << 16) | (UInt32(readUInt8()) << 8) | UInt32(readUInt8())
-    }
-
-    func readUInt24Le() throws -> UInt32 {
-        return try UInt32(readUInt8()) | (UInt32(readUInt8()) << 8) | (UInt32(readUInt8()) << 16)
     }
 
     @discardableResult
@@ -99,16 +60,6 @@ class ByteArray {
         writeUInt8(UInt8(value & 0xFF))
         writeUInt8(UInt8((value >> 8) & 0xFF))
         return writeUInt8(UInt8((value >> 16) & 0xFF))
-    }
-
-    func readUInt32() throws -> UInt32 {
-        return try (UInt32(readUInt8()) << 24) | (UInt32(readUInt8()) << 16) | (UInt32(readUInt8()) << 8) |
-            UInt32(readUInt8())
-    }
-
-    func readUInt32Le() throws -> UInt32 {
-        return try UInt32(readUInt8()) | (UInt32(readUInt8()) << 8) | (UInt32(readUInt8()) << 16) |
-            (UInt32(readUInt8()) << 24)
     }
 
     @discardableResult
@@ -129,49 +80,14 @@ class ByteArray {
         writeBytes(value.bigEndian.data)
     }
 
-    func readDouble() throws -> Double {
-        guard bytesAvailable >= ByteArray.sizeOfDouble else {
-            throw ByteArray.Error.eof
-        }
-        position += ByteArray.sizeOfDouble
-        return Double(data: Data(data.subdata(in: position - ByteArray.sizeOfDouble ..< position).reversed()))
-    }
-
     @discardableResult
     func writeDouble(_ value: Double) -> Self {
         writeBytes(Data(value.data.reversed()))
     }
 
     @discardableResult
-    func clear() -> Self {
-        position = 0
-        data.removeAll()
-        return self
-    }
-
-    func readUTF8Bytes(_ length: Int) throws -> String {
-        guard bytesAvailable >= length else {
-            throw ByteArray.Error.eof
-        }
-        position += length
-        guard let result = String(data: data.subdata(in: position - length ..< position), encoding: .utf8)
-        else {
-            throw ByteArray.Error.parse
-        }
-        return result
-    }
-
-    @discardableResult
     func writeUTF8Bytes(_ value: String) -> Self {
         writeBytes(Data(value.utf8))
-    }
-
-    func readBytes(_ length: Int) throws -> Data {
-        guard bytesAvailable >= length else {
-            throw ByteArray.Error.eof
-        }
-        position += length
-        return data.subdata(in: position - length ..< position)
     }
 
     @discardableResult
@@ -190,17 +106,17 @@ class ByteArray {
         return self
     }
 
-    func sequence(_ length: Int, lambda: (ByteArray) -> Void) {
+    func sequence(_ length: Int, lambda: (ByteWriter) -> Void) {
         let r = (data.count - position) % length
         for index in stride(
             from: data.startIndex.advanced(by: position),
             to: data.endIndex.advanced(by: -r),
             by: length
         ) {
-            lambda(ByteArray(data: data.subdata(in: index ..< index.advanced(by: length))))
+            lambda(ByteWriter(data: data.subdata(in: index ..< index.advanced(by: length))))
         }
         if r > 0 {
-            lambda(ByteArray(data: data.advanced(by: data.endIndex - r)))
+            lambda(ByteWriter(data: data.advanced(by: data.endIndex - r)))
         }
     }
 

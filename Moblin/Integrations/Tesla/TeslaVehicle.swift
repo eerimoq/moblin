@@ -445,7 +445,7 @@ class TeslaVehicle: NSObject {
 
     private func handleData(data: Data) throws {
         receiveBuffer += data
-        let reader = ByteArray(data: receiveBuffer)
+        let reader = ByteReader(data: receiveBuffer)
         let size = try reader.readUInt16()
         if reader.bytesAvailable < size {
             return
@@ -476,7 +476,7 @@ class TeslaVehicle: NSObject {
             return
         }
         // logger.info("tesla-vehicle: Sending \(message.hexString())")
-        let writer = ByteArray()
+        let writer = ByteWriter()
         writer.writeUInt16(UInt16(message.count))
         writer.writeBytes(message)
         let data = writer.data
@@ -620,7 +620,7 @@ extension TeslaVehicle: CBPeripheralDelegate {
 }
 
 private class Metadata {
-    private var writer = ByteArray()
+    private var writer = ByteWriter()
     private var lastTag: Signatures_Tag?
 
     func add(tag: Signatures_Tag, _ value: Data) throws {

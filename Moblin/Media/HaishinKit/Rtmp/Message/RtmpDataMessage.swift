@@ -4,8 +4,6 @@ final class RtmpDataMessage: RtmpMessage {
     var handlerName: String = ""
     var arguments: [Any?] = []
 
-    private var serializer = Amf0Serializer()
-
     init(objectEncoding: RtmpObjectEncoding) {
         super.init(type: objectEncoding.dataType)
     }
@@ -36,6 +34,7 @@ final class RtmpDataMessage: RtmpMessage {
             guard super.encoded.isEmpty else {
                 return super.encoded
             }
+            let serializer = Amf0Serializer()
             if type == .amf3Data {
                 serializer.writeUInt8(0)
             }
@@ -44,7 +43,6 @@ final class RtmpDataMessage: RtmpMessage {
                 serializer.serialize(arg)
             }
             super.encoded = serializer.data
-            serializer.clear()
             return super.encoded
         }
         set {
@@ -52,20 +50,18 @@ final class RtmpDataMessage: RtmpMessage {
                 return
             }
             if length == newValue.count {
-                serializer.writeBytes(newValue)
-                serializer.position = 0
+                let deserializer = Amf0Deserializer(data: newValue)
                 if type == .amf3Data {
-                    serializer.position = 1
+                    deserializer.position = 1
                 }
                 do {
-                    handlerName = try serializer.deserialize()
-                    while serializer.bytesAvailable > 0 {
-                        try arguments.append(serializer.deserialize())
+                    handlerName = try deserializer.deserialize()
+                    while deserializer.bytesAvailable > 0 {
+                        try arguments.append(deserializer.deserialize())
                     }
                 } catch {
-                    logger.error("\(serializer)")
+                    logger.error("\(deserializer)")
                 }
-                serializer.clear()
             }
             super.encoded = newValue
         }

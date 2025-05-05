@@ -88,7 +88,7 @@ final class RtmpChunk {
         guard let message else {
             return header
         }
-        let writer = ByteArray()
+        let writer = ByteWriter()
         writer.writeBytes(type.toBasicHeader(chunkStreamId))
         if message.timestamp > RtmpChunk.maxTimestamp {
             writer.writeUInt24(0xFFFFFF)
@@ -107,7 +107,7 @@ final class RtmpChunk {
     }
 
     private func decode(data: Data) throws {
-        let reader = ByteArray(data: data)
+        let reader = ByteReader(data: data)
         chunkStreamId = try UInt16(reader.readUInt8() & 0b0011_1111)
         switch chunkStreamId {
         case 0:
@@ -165,7 +165,7 @@ final class RtmpChunk {
         guard let message else {
             return 0
         }
-        let buffer = ByteArray(data: data)
+        let buffer = ByteReader(data: data)
         buffer.position = basicHeaderSize()
         do {
             self.message = RtmpMessage.create(type: message.type)

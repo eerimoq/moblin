@@ -135,6 +135,7 @@
 		0339F9172CE1C78A00F8D6FC /* AVAudioPCMBuffer+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0339F9142CE1C78800F8D6FC /* AVAudioPCMBuffer+Extension.swift */; };
 		033A46EF2CD881AE00119CE3 /* CMVideoDimensions+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 033A46EE2CD881A700119CE3 /* CMVideoDimensions+Extension.swift */; };
 		033AB2EF2DC8645100B764A9 /* BitWriter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 033AB2EE2DC8644D00B764A9 /* BitWriter.swift */; };
+		033AB2F12DC8659400B764A9 /* ByteReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 033AB2F02DC8658F00B764A9 /* ByteReader.swift */; };
 		033BB53D2D50A45D0071662A /* CMFormatDescription+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 033BB53C2D50A4540071662A /* CMFormatDescription+Extension.swift */; };
 		033BB53E2D50A5510071662A /* CMFormatDescription+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 033BB53C2D50A4540071662A /* CMFormatDescription+Extension.swift */; };
 		033BEAC42C0FCC0B005F4E06 /* NWWebSocket in Frameworks */ = {isa = PBXBuildFile; productRef = 033BEAC32C0FCC0B005F4E06 /* NWWebSocket */; };
@@ -220,7 +221,7 @@
 		0359F8FE2BD3DA61005BFDA8 /* SrtStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8672BD3DA5F005BFDA8 /* SrtStream.swift */; };
 		0359F9002BD3DA61005BFDA8 /* AnyUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F86D2BD3DA5F005BFDA8 /* AnyUtil.swift */; };
 		0359F9012BD3DA61005BFDA8 /* Atomic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F86E2BD3DA5F005BFDA8 /* Atomic.swift */; };
-		0359F9022BD3DA61005BFDA8 /* ByteArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F86F2BD3DA5F005BFDA8 /* ByteArray.swift */; };
+		0359F9022BD3DA61005BFDA8 /* ByteWriter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F86F2BD3DA5F005BFDA8 /* ByteWriter.swift */; };
 		0359F9072BD3DA61005BFDA8 /* MD5.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8742BD3DA5F005BFDA8 /* MD5.swift */; };
 		0359F9082BD3DA61005BFDA8 /* build-xcframework.sh in Resources */ = {isa = PBXBuildFile; fileRef = 0359F8A72BD3DA61005BFDA8 /* build-xcframework.sh */; };
 		0359F9092BD3DA61005BFDA8 /* libsrt.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0359F8A82BD3DA61005BFDA8 /* libsrt.xcframework */; };
@@ -694,6 +695,7 @@
 		0339F9142CE1C78800F8D6FC /* AVAudioPCMBuffer+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AVAudioPCMBuffer+Extension.swift"; sourceTree = "<group>"; };
 		033A46EE2CD881A700119CE3 /* CMVideoDimensions+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CMVideoDimensions+Extension.swift"; sourceTree = "<group>"; };
 		033AB2EE2DC8644D00B764A9 /* BitWriter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitWriter.swift; sourceTree = "<group>"; };
+		033AB2F02DC8658F00B764A9 /* ByteReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ByteReader.swift; sourceTree = "<group>"; };
 		033BB53C2D50A4540071662A /* CMFormatDescription+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CMFormatDescription+Extension.swift"; sourceTree = "<group>"; };
 		033BEAC92C101B52005F4E06 /* NetworkInterfaceTypeSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkInterfaceTypeSelector.swift; sourceTree = "<group>"; };
 		033FD7182CC52E1D0073C6EC /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/AppShortcuts.strings; sourceTree = "<group>"; };
@@ -779,7 +781,7 @@
 		0359F8672BD3DA5F005BFDA8 /* SrtStream.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SrtStream.swift; sourceTree = "<group>"; };
 		0359F86D2BD3DA5F005BFDA8 /* AnyUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnyUtil.swift; sourceTree = "<group>"; };
 		0359F86E2BD3DA5F005BFDA8 /* Atomic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Atomic.swift; sourceTree = "<group>"; };
-		0359F86F2BD3DA5F005BFDA8 /* ByteArray.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ByteArray.swift; sourceTree = "<group>"; };
+		0359F86F2BD3DA5F005BFDA8 /* ByteWriter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ByteWriter.swift; sourceTree = "<group>"; };
 		0359F8742BD3DA5F005BFDA8 /* MD5.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MD5.swift; sourceTree = "<group>"; };
 		0359F8772BD3DA61005BFDA8 /* access_control.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = access_control.h; sourceTree = "<group>"; };
 		0359F8782BD3DA61005BFDA8 /* api.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = api.h; sourceTree = "<group>"; };
@@ -1819,7 +1821,8 @@
 				0359F86E2BD3DA5F005BFDA8 /* Atomic.swift */,
 				03F655F12D16DFD20054D73E /* BitReader.swift */,
 				033AB2EE2DC8644D00B764A9 /* BitWriter.swift */,
-				0359F86F2BD3DA5F005BFDA8 /* ByteArray.swift */,
+				033AB2F02DC8658F00B764A9 /* ByteReader.swift */,
+				0359F86F2BD3DA5F005BFDA8 /* ByteWriter.swift */,
 				0359F8742BD3DA5F005BFDA8 /* MD5.swift */,
 			);
 			path = Util;
@@ -3308,6 +3311,7 @@
 				03161FE22BF308C000E750D6 /* StreamWizardCustomRistSettingsView.swift in Sources */,
 				0359F8ED2BD3DA61005BFDA8 /* RtmpHandshake.swift in Sources */,
 				0391BB3D2B36CAC5004852EA /* AboutVersionHistorySettingsView.swift in Sources */,
+				033AB2F12DC8659400B764A9 /* ByteReader.swift in Sources */,
 				0317646D2DB66CD5000080A5 /* ReplayEffect.swift in Sources */,
 				03A9D1332C0E65A400F0B917 /* SrtlaServer.swift in Sources */,
 				0324CD072BEBFBBA004AA063 /* RistStream.swift in Sources */,
@@ -3513,7 +3517,7 @@
 				0359F8DC2BD3DA61005BFDA8 /* ElementaryStreamSpecificData.swift in Sources */,
 				03CFF9CB2CA82EEF00FEC614 /* StrokeModifier.swift in Sources */,
 				03F655F02D147C0B0054D73E /* VideoSourceRotationView.swift in Sources */,
-				0359F9022BD3DA61005BFDA8 /* ByteArray.swift in Sources */,
+				0359F9022BD3DA61005BFDA8 /* ByteWriter.swift in Sources */,
 				0380D5E52C2CB2C80071C12B /* ChatBotSettingsView.swift in Sources */,
 				0359F8F02BD3DA61005BFDA8 /* RtmpObjectEncoding.swift in Sources */,
 				0379BBAD2AAD964000B718B6 /* AboutSettingsView.swift in Sources */,

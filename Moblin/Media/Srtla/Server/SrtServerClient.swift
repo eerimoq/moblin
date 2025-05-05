@@ -43,7 +43,7 @@ class SrtServerClient {
             }
             packet.count = Int(count)
             server?.srtlaServer?.totalBytesReceived.mutate { $0 += UInt64(count) }
-            let reader = ByteArray(data: packet)
+            let reader = ByteReader(data: packet)
             do {
                 while reader.bytesAvailable >= MpegTsPacket.size {
                     let packet = try MpegTsPacket(reader: reader)

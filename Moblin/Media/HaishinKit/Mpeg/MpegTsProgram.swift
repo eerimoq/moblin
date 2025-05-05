@@ -18,7 +18,7 @@ class MpegTsProgram {
     init() {}
 
     init(data: Data) throws {
-        let reader = ByteArray(data: data)
+        let reader = ByteReader(data: data)
         pointerField = try reader.readUInt8()
         pointerFillerBytes = try reader.readBytes(Int(pointerField))
         tableId = try reader.readUInt8()
@@ -53,7 +53,7 @@ class MpegTsProgram {
         let tableData = encodeTableData()
         let sectionLength = UInt16(tableData.count) + 9
         let sectionSyntaxIndicator = !tableData.isEmpty
-        let encoded = ByteArray()
+        let encoded = ByteWriter()
             .writeUInt8(tableId)
             .writeUInt16(
                 (sectionSyntaxIndicator ? 0x8000 : 0) |
@@ -77,7 +77,7 @@ final class MpegTsProgramAssociation: MpegTsProgram {
     var programs: [UInt16: UInt16] = [:]
 
     override func encodeTableData() -> Data {
-        let encoded = ByteArray()
+        let encoded = ByteWriter()
         for (programNumber, programId) in programs {
             encoded.writeUInt16(programNumber).writeUInt16(programId | 0xE000)
         }
@@ -85,7 +85,7 @@ final class MpegTsProgramAssociation: MpegTsProgram {
     }
 
     override func setTableData(data: Data) throws {
-        let reader = ByteArray(data: data)
+        let reader = ByteReader(data: data)
         while reader.bytesAvailable > 0 {
             let programNumber = try reader.readUInt16()
             let programId = try reader.readUInt16() & 0x1FFF
@@ -119,7 +119,7 @@ final class MpegTsProgramMapping: MpegTsProgram {
         for elementaryStreamSpecificData in elementaryStreamSpecificDatas {
             encoded.append(elementaryStreamSpecificData.encode())
         }
-        return ByteArray()
+        return ByteWriter()
             .writeUInt16(programClockReferencePacketId | 0xE000)
             .writeUInt16(programInfoLength | 0xF000)
             .writeBytes(encoded)
@@ -127,7 +127,7 @@ final class MpegTsProgramMapping: MpegTsProgram {
     }
 
     override func setTableData(data: Data) throws {
-        let reader = ByteArray(data: data)
+        let reader = ByteReader(data: data)
         programClockReferencePacketId = try reader.readUInt16() & 0x1FFF
         programInfoLength = try reader.readUInt16() & 0x03FF
         reader.position += Int(programInfoLength)

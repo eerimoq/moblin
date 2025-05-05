@@ -44,7 +44,7 @@ private class NakPacket {
         guard !sns.isEmpty, let latestNakTimestamp, let latestNakDestinationSrtSocketId else {
             return nil
         }
-        let writer = ByteArray()
+        let writer = ByteWriter()
         writer.writeUInt16(SrtPacketType.nak.rawValue | srtControlPacketTypeBit)
         writer.writeUInt16(0)
         writer.writeUInt32(0)

@@ -8,7 +8,7 @@ private func makeVideoHeader(_ frameType: FlvFrameType,
                              _ avcPacketType: FlvAvcPacketType, // Not part of FLV?
                              _ videoPacketType: FlvVideoPacketType) -> Data
 {
-    let writer = ByteArray()
+    let writer = ByteWriter()
     if trackId == 0 {
         if fourCc == .avc1 {
             writer.writeUInt8((frameType.rawValue << 4) | FlvVideoCodec.avc.rawValue)

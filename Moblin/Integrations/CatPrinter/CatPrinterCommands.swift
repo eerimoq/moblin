@@ -91,10 +91,10 @@ enum CatPrinterCommand {
             data = Data([level])
         case let .setEnergy(energy):
             command = .setEnergy
-            data = ByteArray().writeUInt16Le(energy).data
+            data = ByteWriter().writeUInt16Le(energy).data
         case let .feedPaper(pixels):
             command = .feedPaper
-            data = ByteArray().writeUInt16Le(pixels).data
+            data = ByteWriter().writeUInt16Le(pixels).data
         case let .setDrawMode(mode):
             command = .setDrawMode
             data = Data([mode.rawValue])
@@ -113,7 +113,7 @@ enum CatPrinterCommand {
             logger.info("Command data too big (\(data.count) > 0xFFFF)")
             return Data()
         }
-        return ByteArray()
+        return ByteWriter()
             .writeUInt8(0x51)
             .writeUInt8(0x78)
             .writeUInt8(command.rawValue)
@@ -126,7 +126,7 @@ enum CatPrinterCommand {
     }
 
     private static func unpack(data: Data) throws -> (CatPrinterCommandId, Data) {
-        let reader = ByteArray(data: data)
+        let reader = ByteReader(data: data)
         guard try reader.readUInt8() == 0x51 else {
             throw "Wrong first byte"
         }

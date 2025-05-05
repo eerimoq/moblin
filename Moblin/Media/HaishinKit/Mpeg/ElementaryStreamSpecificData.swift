@@ -25,7 +25,7 @@ struct ElementaryStreamSpecificData {
     init() {}
 
     init(data: Data) throws {
-        let reader = ByteArray(data: data)
+        let reader = ByteReader(data: data)
         streamType = try ElementaryStreamType(rawValue: reader.readUInt8()) ?? .unspecific
         elementaryPacketId = try reader.readUInt16() & 0x0FFF
         esInfoLength = try reader.readUInt16() & 0x01FF
@@ -33,7 +33,7 @@ struct ElementaryStreamSpecificData {
     }
 
     func encode() -> Data {
-        return ByteArray()
+        return ByteWriter()
             .writeUInt8(streamType.rawValue)
             .writeUInt16(elementaryPacketId | 0xE000)
             .writeUInt16(esInfoLength | 0xF000)

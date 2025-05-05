@@ -6,7 +6,7 @@ final class RtmpHandshake {
     private let timestamp: TimeInterval = 0
 
     func createC0C1Packet() -> Data {
-        let packet = ByteArray()
+        let packet = ByteWriter()
             .writeUInt8(RtmpHandshake.protocolVersion)
             .writeInt32(Int32(timestamp))
             .writeBytes(Data([0x00, 0x00, 0x00, 0x00]))
@@ -17,7 +17,7 @@ final class RtmpHandshake {
     }
 
     func createC2Packet(_ s0s1packet: Data) -> Data {
-        ByteArray()
+        ByteWriter()
             .writeBytes(s0s1packet.subdata(in: 1 ..< 5))
             .writeInt32(Int32(Date().timeIntervalSince1970 - timestamp))
             .writeBytes(s0s1packet.subdata(in: 9 ..< RtmpHandshake.sigSize + 1))

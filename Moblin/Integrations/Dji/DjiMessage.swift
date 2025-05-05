@@ -47,7 +47,7 @@ class DjiMessage {
     }
 
     init(data: Data) throws {
-        let reader = ByteArray(data: data)
+        let reader = ByteReader(data: data)
         guard try reader.readUInt8() == 0x55 else {
             throw "Bad first byte"
         }
@@ -76,7 +76,7 @@ class DjiMessage {
     }
 
     func encode() -> Data {
-        let writer = ByteArray()
+        let writer = ByteWriter()
         writer.writeUInt8(0x55)
         writer.writeUInt8(UInt8(13 + payload.count))
         writer.writeUInt8(0x04)

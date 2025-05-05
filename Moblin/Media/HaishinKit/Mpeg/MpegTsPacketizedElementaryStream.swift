@@ -27,7 +27,7 @@ private struct OptionalHeader {
     init() {}
 
     init(data: Data) throws {
-        let reader = ByteArray(data: data)
+        let reader = ByteReader(data: data)
         let bytes = try reader.readBytes(OptionalHeader.fixedSectionSize)
         markerBits = (bytes[0] & 0b1100_0000) >> 6
         scramblingControl = bytes[0] & 0b0011_0000 >> 4
@@ -79,7 +79,7 @@ private struct OptionalHeader {
         bytes[1] |= additionalCopyInfoFlag.uint8 << 2
         bytes[1] |= crcFlag.uint8 << 1
         bytes[1] |= extentionFlag.uint8
-        return ByteArray()
+        return ByteWriter()
             .writeBytes(bytes)
             .writeUInt8(pesHeaderLength)
             .writeBytes(optionalFields)
@@ -212,7 +212,7 @@ struct MpegTsPacketizedElementaryStream {
     }
 
     init(data: Data) throws {
-        let reader = ByteArray(data: data)
+        let reader = ByteReader(data: data)
         startCode = try reader.readBytes(3)
         if startCode != MpegTsPacketizedElementaryStream.startCode {
             throw "Bad PES start code"
@@ -237,7 +237,7 @@ struct MpegTsPacketizedElementaryStream {
     }
 
     private func encode() -> Data {
-        ByteArray()
+        ByteWriter()
             .writeBytes(startCode)
             .writeUInt8(streamId)
             .writeUInt16(packetLength)

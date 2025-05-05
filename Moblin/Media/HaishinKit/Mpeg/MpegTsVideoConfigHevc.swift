@@ -91,12 +91,12 @@ struct MpegTsVideoConfigHevc: MpegTsVideoConfig {
 
     var data: Data {
         get {
-            let buffer = ByteArray()
+            let buffer = ByteWriter()
                 .writeUInt8(configurationVersion)
             return buffer.data
         }
         set {
-            let buffer = ByteArray(data: newValue)
+            let buffer = ByteReader(data: newValue)
             do {
                 configurationVersion = try buffer.readUInt8()
                 let a = try buffer.readUInt8()

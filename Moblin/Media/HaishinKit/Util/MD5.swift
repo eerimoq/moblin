@@ -84,13 +84,13 @@ enum MD5 {
     }
 
     static func calculate(_ message: String) -> Data {
-        calculate(ByteArray().writeUTF8Bytes(message).data)
+        calculate(ByteWriter().writeUTF8Bytes(message).data)
     }
 
     static func calculate(_ data: Data) -> Data {
         var context = Context()
         let count: Data = UInt64(data.count * 8).bigEndian.data
-        let message = ByteArray(data: data + [0x80])
+        let message = ByteWriter(data: data + [0x80])
         message.length += 64 - (message.length % 64)
         message[message.length - 8] = count[7]
         message[message.length - 7] = count[6]

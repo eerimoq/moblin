@@ -8,7 +8,7 @@ struct DjiGimbalZoomMessagePayload {
 
     init?(data: Data) {
         // Three in a row with 0 zoom makes it a button press?
-        let reader = ByteArray(data: data)
+        let reader = ByteReader(data: data)
         do {
             _ = try reader.readBytes(4)
             maybeZoom = try Int16(bitPattern: reader.readUInt16Le())
@@ -33,7 +33,7 @@ struct DjiGimbalButtonsMessagePayload {
     let record: Bool
 
     init?(data: Data) {
-        let reader = ByteArray(data: data)
+        let reader = ByteReader(data: data)
         do {
             _ = try reader.readBytes(4)
             trigger = try DjiGimbalTriggerButtonPress(rawValue: reader.readUInt8() >> 4 & 0x7)

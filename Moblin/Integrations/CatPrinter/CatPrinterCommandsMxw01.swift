@@ -24,7 +24,7 @@ enum CatPrinterCommandMxw01 {
             case .getVersion:
                 self = .getVersionResponse(value: String(bytes: data, encoding: .utf8) ?? "unknown")
             case .status:
-                let reader = ByteArray(data: data)
+                let reader = ByteReader(data: data)
                 do {
                     _ = try reader.readBytes(6)
                     let ok = try reader.readUInt8()
@@ -61,7 +61,7 @@ enum CatPrinterCommandMxw01 {
             data = Data([0x00])
         case let .printRequest(count: count):
             command = .print
-            data = ByteArray()
+            data = ByteWriter()
                 .writeUInt16Le(count)
                 .writeUInt8(0x30)
                 .writeUInt8(0)
@@ -77,7 +77,7 @@ enum CatPrinterCommandMxw01 {
             logger.info("Command data too big (\(data.count) > 0xFFFF)")
             return Data()
         }
-        return ByteArray()
+        return ByteWriter()
             .writeUInt8(0x22)
             .writeUInt8(0x21)
             .writeUInt8(command.rawValue)
@@ -90,7 +90,7 @@ enum CatPrinterCommandMxw01 {
     }
 
     private static func unpack(data: Data) throws -> (CatPrinterCommandId, Data) {
-        let reader = ByteArray(data: data)
+        let reader = ByteReader(data: data)
         guard try reader.readUInt8() == 0x22 else {
             throw "Wrong first byte"
         }

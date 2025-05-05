@@ -85,7 +85,7 @@ struct CyclingPowerMeasurement {
     var accumulatedEnergy: UInt16?
 
     init(value: Data) throws {
-        let reader = ByteArray(data: value)
+        let reader = ByteReader(data: value)
         let flags = try reader.readUInt16Le()
         instantaneousPower = try reader.readUInt16Le()
         if flags.isBitSet(index: measurementPedalPowerBalanceFlagIndex) {
@@ -154,7 +154,7 @@ struct CyclingPowerVector {
     var instantaneousMeasurementDirection: CyclingPowerInstantaneousMeasurementDirection?
 
     init(value: Data) throws {
-        let reader = ByteArray(data: value)
+        let reader = ByteReader(data: value)
         let flags = try reader.readUInt8()
         if flags.isBitSet(index: vectorCrankRevolutionDataFlagIndex) {
             cumulativeCrankRevolutions = try reader.readUInt16Le()

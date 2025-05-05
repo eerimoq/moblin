@@ -23,7 +23,7 @@ struct MpegTsPacket {
         self.id = id
     }
 
-    init(reader: ByteArray) throws {
+    init(reader: ByteReader) throws {
         let startPosition = reader.position
         guard try reader.readUInt8() == MpegTsPacket.syncByte else {
             throw "Invalid sync byte"

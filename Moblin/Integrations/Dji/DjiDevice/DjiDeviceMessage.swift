@@ -15,7 +15,7 @@ class DjiPairMessagePayload {
     }
 
     func encode() -> Data {
-        let writer = ByteArray()
+        let writer = ByteWriter()
         writer.writeBytes(DjiPairMessagePayload.payload)
         writer.writeBytes(djiPackString(value: pairPinCode))
         return writer.data
@@ -40,7 +40,7 @@ class DjiSetupWifiMessagePayload {
     }
 
     func encode() -> Data {
-        let writer = ByteArray()
+        let writer = ByteWriter()
         writer.writeBytes(djiPackString(value: wifiSsid))
         writer.writeBytes(djiPackString(value: wifiPassword))
         return writer.data
@@ -91,7 +91,7 @@ class DjiStartStreamingMessagePayload {
         } else {
             byte1 = 0x2E
         }
-        let writer = ByteArray()
+        let writer = ByteWriter()
         writer.writeBytes(DjiStartStreamingMessagePayload.payload1)
         writer.writeUInt8(byte1)
         writer.writeBytes(DjiStartStreamingMessagePayload.payload2)
@@ -153,7 +153,7 @@ class DjiConfigureMessagePayload {
         } else {
             byte1 = 0x08
         }
-        let writer = ByteArray()
+        let writer = ByteWriter()
         writer.writeBytes(DjiConfigureMessagePayload.payload1)
         writer.writeUInt8(byte1)
         writer.writeBytes(DjiConfigureMessagePayload.payload2)

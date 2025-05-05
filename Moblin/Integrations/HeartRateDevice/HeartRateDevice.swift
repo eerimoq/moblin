@@ -27,7 +27,7 @@ struct HeartRateMeasurement {
     var heartRate: UInt16 = 0
 
     init(value: Data) throws {
-        let reader = ByteArray(data: value)
+        let reader = ByteReader(data: value)
         let flags = try reader.readUInt8()
         if flags.isBitSet(index: measurementHeartRateValueFormatIndex) {
             heartRate = try reader.readUInt16Le()

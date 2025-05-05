@@ -6,8 +6,6 @@ final class RtmpCommandMessage: RtmpMessage {
     var commandObject: AsObject?
     var arguments: [Any?] = []
 
-    private var serializer = Amf0Serializer()
-
     init(objectEncoding: RtmpObjectEncoding) {
         super.init(type: objectEncoding.commandType)
     }
@@ -54,6 +52,7 @@ final class RtmpCommandMessage: RtmpMessage {
             guard super.encoded.isEmpty else {
                 return super.encoded
             }
+            let serializer = Amf0Serializer()
             if type == .amf3Command {
                 serializer.writeUInt8(0)
             }
@@ -65,28 +64,25 @@ final class RtmpCommandMessage: RtmpMessage {
                 serializer.serialize(argument)
             }
             super.encoded = serializer.data
-            serializer.clear()
             return super.encoded
         }
         set {
             if length == newValue.count {
-                serializer.writeBytes(newValue)
-                serializer.position = 0
+                let deserializer = Amf0Deserializer(data: newValue)
                 do {
                     if type == .amf3Command {
-                        serializer.position = 1
+                        deserializer.position = 1
                     }
-                    commandName = try serializer.deserialize()
-                    transactionId = try serializer.deserialize()
-                    commandObject = try serializer.deserialize()
+                    commandName = try deserializer.deserialize()
+                    transactionId = try deserializer.deserialize()
+                    commandObject = try deserializer.deserialize()
                     arguments.removeAll()
-                    if serializer.bytesAvailable > 0 {
-                        try arguments.append(serializer.deserialize())
+                    if deserializer.bytesAvailable > 0 {
+                        try arguments.append(deserializer.deserialize())
                     }
                 } catch {
-                    logger.error("\(serializer)")
+                    logger.error("\(deserializer)")
                 }
-                serializer.clear()
             }
             super.encoded = newValue
         }

@@ -123,7 +123,7 @@ class RtmpServerChunkStream {
         guard let client else {
             return
         }
-        let amf0 = Amf0Serializer(data: messageBody)
+        let amf0 = Amf0Deserializer(data: messageBody)
         let commandName: String
         let transactionId: Int
         let commandObject: AsObject

@@ -104,7 +104,7 @@ func packSeiPictureTiming() -> Data {
 }
 
 private func packSei(payloadType: UInt8, payload: Data) -> Data {
-    let writer = ByteArray()
+    let writer = ByteWriter()
     writer.writeUInt8(payloadType)
     writer.writeUInt8(UInt8(payload.count))
     writer.writeBytes(payload)
