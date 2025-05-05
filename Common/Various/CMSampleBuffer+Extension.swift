@@ -112,37 +112,6 @@ extension CMSampleBuffer {
     }
 
     func replacePresentationTimeStamp(_ presentationTimeStamp: CMTime) -> CMSampleBuffer? {
-        guard let formatDescription else {
-            return nil
-        }
-        switch formatDescription.mediaType() {
-        case kCMMediaType_Audio:
-            return replaceAudioPresentationTimeStamp(presentationTimeStamp)
-        case kCMMediaType_Video:
-            return replaceVideoPresentationTimeStamp(presentationTimeStamp)
-        default:
-            return nil
-        }
-    }
-
-    private func replaceAudioPresentationTimeStamp(_ presentationTimeStamp: CMTime) -> CMSampleBuffer? {
-        var newSampleBuffer: CMSampleBuffer?
-        var timingInfo = CMSampleTimingInfo(
-            duration: duration,
-            presentationTimeStamp: presentationTimeStamp,
-            decodeTimeStamp: .invalid
-        )
-        CMSampleBufferCreateCopyWithNewTiming(
-            allocator: kCFAllocatorDefault,
-            sampleBuffer: self,
-            sampleTimingEntryCount: 1,
-            sampleTimingArray: &timingInfo,
-            sampleBufferOut: &newSampleBuffer
-        )
-        return newSampleBuffer
-    }
-
-    private func replaceVideoPresentationTimeStamp(_ presentationTimeStamp: CMTime) -> CMSampleBuffer? {
         var timingInfo = CMSampleTimingInfo(
             duration: duration,
             presentationTimeStamp: presentationTimeStamp,
@@ -156,7 +125,6 @@ extension CMSampleBuffer {
             sampleTimingArray: &timingInfo,
             sampleBufferOut: &newSampleBuffer
         )
-        newSampleBuffer?.isSync = isSync
         return newSampleBuffer
     }
 }
