@@ -1,7 +1,6 @@
 import UIKit
 
 final class WhirlpoolEffect: VideoEffect {
-
     override func getName() -> String {
         return "whirlpool"
     }

@@ -146,11 +146,11 @@ struct QuickButtonsInnerView: View {
     private func movieAction(state: ButtonState) {
         videoEffectAction(state: state, type: .movie)
     }
-    
+
     private func whirlpoolAction(state: ButtonState) {
         videoEffectAction(state: state, type: .whirlpool)
     }
-    
+
     private func pinchAction(state: ButtonState) {
         videoEffectAction(state: state, type: .pinch)
     }

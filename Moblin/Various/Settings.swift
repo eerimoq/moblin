@@ -3435,7 +3435,7 @@ private func addMissingQuickButtons(database: Database) {
     button.systemImageNameOn = "squareshape.split.2x2"
     button.systemImageNameOff = "squareshape.split.2x2"
     updateQuickButton(database: database, button: button)
-    
+
     button = SettingsButton(name: String(localized: "Whirlpool"))
     button.id = UUID()
     button.type = .whirlpool
@@ -3443,7 +3443,7 @@ private func addMissingQuickButtons(database: Database) {
     button.systemImageNameOn = "tornado"
     button.systemImageNameOff = "tornado"
     updateQuickButton(database: database, button: button)
-    
+
     button = SettingsButton(name: String(localized: "Pinch"))
     button.id = UUID()
     button.type = .pinch

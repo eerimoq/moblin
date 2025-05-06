@@ -1,7 +1,6 @@
 import UIKit
 
 final class PinchEffect: VideoEffect {
-
     override func getName() -> String {
         return "pinch"
     }
