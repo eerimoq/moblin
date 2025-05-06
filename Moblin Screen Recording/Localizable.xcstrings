@@ -105,6 +105,12 @@
             "value" : "URL IRL non valido"
           }
         },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Некорректный URL IRL"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -307,7 +313,7 @@
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Отсутствует порт RIST"
+            "value" : "Не указан порт RIST"
           }
         },
         "zh-Hant" : {
@@ -341,7 +347,7 @@
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Отсутствует имя RTMP стрима"
+            "value" : "Не указано имя RTMP стрима"
           }
         },
         "zh-Hant" : {
@@ -397,7 +403,7 @@
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Порт SRT(LA) не указан"
+            "value" : "Не указан порт SRT(LA)"
           }
         },
         "zh-Hant" : {
@@ -425,7 +431,7 @@
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Протокол не поддерживается: %@"
+            "value" : "Протокол %@ не поддерживается"
           }
         },
         "zh-Hant" : {
