@@ -64,20 +64,6 @@ class SrtStream: NetStream {
         srt_cleanup()
     }
 
-    override func attachCamera(
-        params: VideoUnitAttachParams,
-        onError: ((Error) -> Void)? = nil,
-        onSuccess: (() -> Void)? = nil
-    ) {
-        writer.expectedMedias.insert(.video)
-        super.attachCamera(params: params, onError: onError, onSuccess: onSuccess)
-    }
-
-    override func attachAudio(params: AudioUnitAttachParams, onError: ((Error) -> Void)? = nil) {
-        writer.expectedMedias.insert(.audio)
-        super.attachAudio(params: params, onError: onError)
-    }
-
     func open(_ uri: URL?, sendHook: @escaping (Data) -> Bool) throws {
         guard let uri, uri.scheme == "srt", let host = uri.host, let port = uri.port else {
             return

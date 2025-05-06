@@ -181,8 +181,6 @@ class RistStream: NetStream {
             return
         }
         netStreamLockQueue.async {
-            self.writer.expectedMedias.insert(.video)
-            self.writer.expectedMedias.insert(.audio)
             self.mixer.startEncoding(self.writer)
             self.writer.startRunning()
         }

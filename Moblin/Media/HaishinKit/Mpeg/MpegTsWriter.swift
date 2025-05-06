@@ -19,7 +19,6 @@ class MpegTsWriter {
     private static let segmentDuration: Double = 2
     weak var delegate: (any MpegTsWriterDelegate)?
     private var isRunning: Atomic<Bool> = .init(false)
-    var expectedMedias: Set<AVMediaType> = []
     private var audioContinuityCounter: UInt8 = 0
     private var videoContinuityCounter: UInt8 = 0
     private var patContinuityCounter: UInt8 = 0
@@ -78,8 +77,7 @@ class MpegTsWriter {
     }
 
     private func canWriteFor() -> Bool {
-        return (expectedMedias.contains(.audio) == (audioConfig != nil))
-            && (expectedMedias.contains(.video) == (videoConfig != nil))
+        return (audioConfig != nil) && (videoConfig != nil)
     }
 
     private func encode(_ packetId: UInt16,
@@ -240,7 +238,7 @@ class MpegTsWriter {
     }
 
     private func writeProgramIfNeeded() {
-        guard !expectedMedias.isEmpty, canWriteFor() else {
+        guard canWriteFor() else {
             return
         }
         writeProgram()
