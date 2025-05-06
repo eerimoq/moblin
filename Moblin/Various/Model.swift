@@ -3685,6 +3685,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if isFaceEnabled() {
             effects.append(faceEffect)
         }
+        if isGlobalButtonOn(type: .whirlpool) {
+            effects.append(whirlpoolEffect)
+        }
+        if isGlobalButtonOn(type: .pinch) {
+            effects.append(pinchEffect)
+        }
         if isGlobalButtonOn(type: .movie) {
             effects.append(movieEffect)
         }
@@ -3702,12 +3708,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         if isGlobalButtonOn(type: .twin) {
             effects.append(twinEffect)
-        }
-        if isGlobalButtonOn(type: .whirlpool) {
-            effects.append(whirlpoolEffect)
-        }
-        if isGlobalButtonOn(type: .pinch) {
-            effects.append(pinchEffect)
         }
         if isGlobalButtonOn(type: .pixellate) {
             pixellateEffect.strength.mutate { $0 = database.pixellateStrength! }
