@@ -11715,11 +11715,12 @@ extension Model: MediaDelegate {
         }
     }
 
-    func mediaAttachAudioError(error: any Error) {
-        makeErrorToastMain(
-            title: error.localizedDescription,
-            subTitle: String(localized: "Moblin not allowed to access the mic?")
-        )
+    func mediaAttachAudioError(error: Error) {
+        makeErrorToastMain(title: error.localizedDescription, subTitle: tryGetToastSubTitle(error: error))
+    }
+
+    func mediaAttachVideoError(error: Error) {
+        makeErrorToastMain(title: error.localizedDescription, subTitle: tryGetToastSubTitle(error: error))
     }
 }
 

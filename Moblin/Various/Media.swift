@@ -36,6 +36,7 @@ protocol MediaDelegate: AnyObject {
     func mediaSetExposureBias(bias: Float)
     func mediaSelectedFps(fps: Double, auto: Bool)
     func mediaAttachAudioError(error: Error)
+    func mediaAttachVideoError(error: Error)
 }
 
 final class Media: NSObject {
@@ -791,7 +792,7 @@ final class Media: NSObject {
         netStream?.attachCamera(
             params: params,
             onError: {
-                logger.error("stream: Attach camera error: \($0)")
+                self.delegate?.mediaAttachVideoError(error: $0)
             },
             onSuccess: {
                 DispatchQueue.main.async {

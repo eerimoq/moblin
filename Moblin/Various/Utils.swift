@@ -706,3 +706,11 @@ func createAndGetDirectory(name: String) -> URL {
     try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
     return directory
 }
+
+func tryGetToastSubTitle(error: Error) -> String? {
+    if let error = error as? AVError {
+        return error._nsError.localizedFailureReason
+    } else {
+        return nil
+    }
+}
