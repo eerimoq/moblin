@@ -1666,6 +1666,8 @@ enum SettingsButtonType: String, Codable, CaseIterable {
     case replay = "Replay"
     case connectionPriorities = "Connection priorities"
     case instantReplay = "Instant replay"
+    case pinch = "Pinch"
+    case whirlpool = "Whirlpool"
 
     public init(from decoder: Decoder) throws {
         var value = try decoder.singleValueContainer().decode(RawValue.self)
@@ -3432,6 +3434,22 @@ private func addMissingQuickButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "squareshape.split.2x2"
     button.systemImageNameOff = "squareshape.split.2x2"
+    updateQuickButton(database: database, button: button)
+    
+    button = SettingsButton(name: String(localized: "Whirlpool"))
+    button.id = UUID()
+    button.type = .whirlpool
+    button.imageType = "System name"
+    button.systemImageNameOn = "tornado"
+    button.systemImageNameOff = "tornado"
+    updateQuickButton(database: database, button: button)
+    
+    button = SettingsButton(name: String(localized: "Pinch"))
+    button.id = UUID()
+    button.type = .pinch
+    button.imageType = "System name"
+    button.systemImageNameOn = "hand.pinch.fill"
+    button.systemImageNameOff = "hand.pinch"
     updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Local overlays"))

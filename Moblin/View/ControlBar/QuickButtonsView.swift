@@ -146,6 +146,14 @@ struct QuickButtonsInnerView: View {
     private func movieAction(state: ButtonState) {
         videoEffectAction(state: state, type: .movie)
     }
+    
+    private func whirlpoolAction(state: ButtonState) {
+        videoEffectAction(state: state, type: .whirlpool)
+    }
+    
+    private func pinchAction(state: ButtonState) {
+        videoEffectAction(state: state, type: .pinch)
+    }
 
     private func fourThreeAction(state: ButtonState) {
         videoEffectAction(state: state, type: .fourThree)
@@ -641,6 +649,18 @@ struct QuickButtonsInnerView: View {
             case .connectionPriorities:
                 Button(action: {
                     connectionPrioritiesAction(state: state)
+                }, label: {
+                    QuickButtonImage(state: state, buttonSize: size)
+                })
+            case .whirlpool:
+                Button(action: {
+                    whirlpoolAction(state: state)
+                }, label: {
+                    QuickButtonImage(state: state, buttonSize: size)
+                })
+            case .pinch:
+                Button(action: {
+                    pinchAction(state: state)
                 }, label: {
                     QuickButtonImage(state: state, buttonSize: size)
                 })

@@ -879,6 +879,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var ipStatuses: [IPMonitor.Status] = []
     private var faceEffect = FaceEffect(fps: 30)
     private var movieEffect = MovieEffect()
+    private var whirlpoolEffect = WhirlpoolEffect()
+    private var pinchEffect = PinchEffect()
     private var fourThreeEffect = FourThreeEffect()
     private var grayScaleEffect = GrayScaleEffect()
     private var sepiaEffect = SepiaEffect()
@@ -3650,6 +3652,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         media.unregisterEffect(twinEffect)
         media.unregisterEffect(pixellateEffect)
         media.unregisterEffect(pollEffect)
+        media.unregisterEffect(whirlpoolEffect)
+        media.unregisterEffect(pinchEffect)
         faceEffect = FaceEffect(fps: Float(stream.fps), onFindFaceChanged: handleFindFaceChanged(value:))
         updateFaceFilterSettings()
         movieEffect = MovieEffect()
@@ -3659,6 +3663,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         twinEffect = TwinEffect()
         pixellateEffect = PixellateEffect(strength: database.pixellateStrength!)
         pollEffect = PollEffect()
+        whirlpoolEffect = WhirlpoolEffect()
+        pinchEffect = PinchEffect()
     }
 
     private func isGlobalButtonOn(type: SettingsButtonType) -> Bool {
@@ -3696,6 +3702,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         if isGlobalButtonOn(type: .twin) {
             effects.append(twinEffect)
+        }
+        if isGlobalButtonOn(type: .whirlpool) {
+            effects.append(whirlpoolEffect)
+        }
+        if isGlobalButtonOn(type: .pinch) {
+            effects.append(pinchEffect)
         }
         if isGlobalButtonOn(type: .pixellate) {
             pixellateEffect.strength.mutate { $0 = database.pixellateStrength! }
