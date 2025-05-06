@@ -35,6 +35,7 @@ protocol MediaDelegate: AnyObject {
     func mediaSetZoomX(x: Float)
     func mediaSetExposureBias(bias: Float)
     func mediaSelectedFps(fps: Double, auto: Bool)
+    func mediaAttachAudioError(error: Error)
 }
 
 final class Media: NSObject {
@@ -859,8 +860,8 @@ final class Media: NSObject {
     }
 
     func attachDefaultAudioDevice() {
-        netStream?.attachAudio(AVCaptureDevice.default(for: .audio)) { error in
-            logger.error("stream: Attach audio error: \(error)")
+        netStream?.attachAudio(AVCaptureDevice.default(for: .audio)) {
+            self.delegate?.mediaAttachAudioError(error: $0)
         }
     }
 

@@ -11676,6 +11676,13 @@ extension Model: MediaDelegate {
             self.autoFps = auto
         }
     }
+
+    func mediaAttachAudioError(error: any Error) {
+        makeErrorToastMain(
+            title: error.localizedDescription,
+            subTitle: String(localized: "Moblin not allowed to access the mic?")
+        )
+    }
 }
 
 extension Model: TwitchChatMoblinDelegate {
