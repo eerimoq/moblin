@@ -9359,8 +9359,30 @@ extension Model: WCSessionDelegate {
     }
 
     private func handleCreateStreamMarker() {
-        if isWatchLocal() {
-            createStreamMarker()
+        DispatchQueue.main.async {
+            if self.isWatchLocal() {
+                self.createStreamMarker()
+            }
+        }
+    }
+
+    private func handleInstantReplay() {
+        DispatchQueue.main.async {
+            if self.isWatchLocal() {
+                self.instantReplay()
+            } else {
+                logger.info("Instant replay via remote control not yet supported.")
+            }
+        }
+    }
+
+    private func handleSaveReplay() {
+        DispatchQueue.main.async {
+            if self.isWatchLocal() {
+                _ = self.saveReplay()
+            } else {
+                logger.info("Save replay via remote control not yet supported.")
+            }
         }
     }
 
@@ -9410,7 +9432,11 @@ extension Model: WCSessionDelegate {
             handleUpdatePadelScoreboard(data)
         case .createStreamMarker:
             handleCreateStreamMarker()
-        default:
+        case .instantReplay:
+            handleInstantReplay()
+        case .saveReplay:
+            handleSaveReplay()
+        case .getImage:
             break
         }
     }

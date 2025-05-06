@@ -494,6 +494,16 @@ class Model: NSObject, ObservableObject {
         WCSession.default.sendMessage(message, replyHandler: nil)
     }
 
+    func instantReplay() {
+        let message = WatchMessageFromWatch.pack(type: .instantReplay, data: true)
+        WCSession.default.sendMessage(message, replyHandler: nil)
+    }
+
+    func saveReplay() {
+        let message = WatchMessageFromWatch.pack(type: .saveReplay, data: true)
+        WCSession.default.sendMessage(message, replyHandler: nil)
+    }
+
     func setZoom(x: Double) {
         let message = WatchMessageFromWatch.pack(type: .setZoom, data: Float(x))
         WCSession.default.sendMessage(message, replyHandler: nil)

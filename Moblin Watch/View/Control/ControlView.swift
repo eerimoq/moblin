@@ -72,6 +72,30 @@ private struct ControlSkipCurrentTtsView: View {
     }
 }
 
+private struct ControlInstantReplayView: View {
+    @EnvironmentObject var model: Model
+
+    var body: some View {
+        Button {
+            model.instantReplay()
+        } label: {
+            Text("Instant replay")
+        }
+    }
+}
+
+private struct ControlSaveReplayView: View {
+    @EnvironmentObject var model: Model
+
+    var body: some View {
+        Button {
+            model.saveReplay()
+        } label: {
+            Text("Save replay")
+        }
+    }
+}
+
 private struct ControlCreateStreamMarkersView: View {
     @EnvironmentObject var model: Model
 
@@ -93,6 +117,8 @@ struct ControlView: View {
                 ControlLiveView()
                 ControlRecordingView()
                 ControlMutedView()
+                ControlInstantReplayView()
+                ControlSaveReplayView()
                 if !model.viaRemoteControl {
                     ControlSkipCurrentTtsView()
                     ControlCreateStreamMarkersView()
