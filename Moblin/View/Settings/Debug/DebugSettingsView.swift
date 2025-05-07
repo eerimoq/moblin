@@ -145,7 +145,7 @@ struct DebugSettingsView: View {
                     HStack {
                         Slider(
                             value: $builtinAudioAndVideoDelay,
-                            in: 0.0 ... 3.0,
+                            in: 0.0 ... 4.0,
                             step: 0.01,
                             onEditingChanged: { begin in
                                 guard !begin else {
