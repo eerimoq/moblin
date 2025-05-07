@@ -11716,11 +11716,7 @@ extension Model: MediaDelegate {
         }
     }
 
-    func mediaAttachAudioError(error: Error) {
-        makeErrorToastMain(title: error.localizedDescription, subTitle: tryGetToastSubTitle(error: error))
-    }
-
-    func mediaAttachVideoError(error: Error) {
+    func mediaError(error: Error) {
         makeErrorToastMain(title: error.localizedDescription, subTitle: tryGetToastSubTitle(error: error))
     }
 }
