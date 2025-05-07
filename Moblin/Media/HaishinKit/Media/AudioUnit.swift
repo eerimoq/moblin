@@ -409,7 +409,9 @@ final class AudioUnit: NSObject {
     }
 
     private func appendBufferedBuiltinAudio(sampleBuffer: CMSampleBuffer) -> BufferedAudio? {
-        guard let bufferedBuiltinAudio, bufferedBuiltinAudio.latency > 0 else {
+        guard let bufferedBuiltinAudio, bufferedBuiltinAudio.latency > 0,
+              let sampleBuffer = sampleBuffer.deepCopyAudioSampleBuffer()
+        else {
             return nil
         }
         let latency = CMTime(seconds: bufferedBuiltinAudio.latency, preferredTimescale: 1000)

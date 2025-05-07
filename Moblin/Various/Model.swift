@@ -2410,7 +2410,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             reloadStream()
             sceneUpdated(attachCamera: true, updateRemoteScene: false)
             setupAudioSession()
-            media.attachDefaultAudioDevice()
+            media.attachDefaultAudioDevice(builtinDelay: database.debug.builtinAudioAndVideoDelay!)
             reloadRtmpServer()
             reloadDjiDevices()
             reloadSrtlaServer()
@@ -4757,7 +4757,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         media.setNetStream(
             proto: stream.getProtocol(),
             portrait: stream.portrait!,
-            timecodesEnabled: isTimecodesEnabled()
+            timecodesEnabled: isTimecodesEnabled(),
+            builtinAudioDelay: database.debug.builtinAudioAndVideoDelay!
         )
         updateTorch()
         updateMute()
@@ -9625,7 +9626,7 @@ extension Model {
     func reloadAudioSession() {
         teardownAudioSession()
         setupAudioSession()
-        media.attachDefaultAudioDevice()
+        media.attachDefaultAudioDevice(builtinDelay: database.debug.builtinAudioAndVideoDelay!)
     }
 
     private func setupAudioSession() {
@@ -9805,7 +9806,7 @@ extension Model {
                 }
             }
         }
-        media.attachDefaultAudioDevice()
+        media.attachDefaultAudioDevice(builtinDelay: database.debug.builtinAudioAndVideoDelay!)
     }
 
     func setMicFromSettings() {
@@ -9906,7 +9907,7 @@ extension Model {
                 }
             }
         }
-        media.attachDefaultAudioDevice()
+        media.attachDefaultAudioDevice(builtinDelay: database.debug.builtinAudioAndVideoDelay!)
         currentMic = mic
         saveSelectedMic(mic: mic)
         remoteControlStreamer?.stateChanged(state: RemoteControlState(mic: mic.id))

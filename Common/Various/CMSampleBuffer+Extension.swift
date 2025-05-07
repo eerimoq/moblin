@@ -127,4 +127,25 @@ extension CMSampleBuffer {
         )
         return newSampleBuffer
     }
+
+    func deepCopyAudioSampleBuffer() -> CMSampleBuffer? {
+        guard let formatDescription, let dataBuffer else {
+            return nil
+        }
+        do {
+            let data = try dataBuffer.dataBytes()
+            let dataBufferCopy = try data.withUnsafeBytes { buffer -> CMBlockBuffer in
+                let blockBuffer = try CMBlockBuffer(length: data.count)
+                try blockBuffer.replaceDataBytes(with: buffer)
+                return blockBuffer
+            }
+            return try? CMSampleBuffer(dataBuffer: dataBufferCopy,
+                                       formatDescription: formatDescription,
+                                       numSamples: numSamples,
+                                       presentationTimeStamp: presentationTimeStamp,
+                                       packetDescriptions: [])
+        } catch {
+            return nil
+        }
+    }
 }

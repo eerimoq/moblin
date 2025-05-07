@@ -100,7 +100,9 @@ final class Media: NSObject {
         netStream = nil
     }
 
-    func setNetStream(proto: SettingsStreamProtocol, portrait: Bool, timecodesEnabled: Bool) {
+    func setNetStream(proto: SettingsStreamProtocol, portrait: Bool, timecodesEnabled: Bool,
+                      builtinAudioDelay: Double)
+    {
         netStream?.stopMixer()
         srtStopStream()
         rtmpStopStream()
@@ -135,7 +137,7 @@ final class Media: NSObject {
         }
         netStream!.delegate = self
         netStream!.setVideoOrientation(value: portrait ? .portrait : .landscapeRight)
-        attachDefaultAudioDevice()
+        attachDefaultAudioDevice(builtinDelay: builtinAudioDelay)
     }
 
     func getAudioLevel() -> Float {
@@ -861,10 +863,10 @@ final class Media: NSObject {
         netStream?.setBufferedVideoTargetLatency(cameraId: cameraId, latency)
     }
 
-    func attachDefaultAudioDevice() {
+    func attachDefaultAudioDevice(builtinDelay: Double) {
         let params = AudioUnitAttachParams(
             device: AVCaptureDevice.default(for: .audio),
-            builtinDelay: 0,
+            builtinDelay: builtinDelay,
             bufferedAudio: nil
         )
         netStream?.attachAudio(params: params) {
