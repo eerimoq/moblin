@@ -209,7 +209,7 @@ struct ChatSettingsView: View {
                         model.database.chat.height = value
                     }
                     Text("\(Int(100 * height)) %")
-                        .frame(width: 55)
+                        .frame(width: sliderValuePercentageWidth)
                 }
                 HStack {
                     Text("Width")
@@ -229,7 +229,7 @@ struct ChatSettingsView: View {
                         model.database.chat.width = value
                     }
                     Text("\(Int(100 * width)) %")
-                        .frame(width: 55)
+                        .frame(width: sliderValuePercentageWidth)
                 }
                 HStack {
                     Text("Bottom")
@@ -249,7 +249,7 @@ struct ChatSettingsView: View {
                         model.database.chat.bottom = value
                     }
                     Text("\(Int(100 * bottom)) %")
-                        .frame(width: 55)
+                        .frame(width: sliderValuePercentageWidth)
                 }
             }
             if model.database.showAllSettings! {

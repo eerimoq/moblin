@@ -6,6 +6,8 @@ import SwiftUI
 import Vision
 import WeatherKit
 
+let sliderValuePercentageWidth = 60.0
+
 extension UIImage {
     func scalePreservingAspectRatio(targetSize: CGSize) -> UIImage {
         let widthRatio = targetSize.width / size.width
