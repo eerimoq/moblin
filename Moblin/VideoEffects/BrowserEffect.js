@@ -9,7 +9,7 @@ class Moblin {
 
   handleMessage(message) {
     if (this.onmessage) {
-      this.onmessage(JSON.parse(message));
+      this.onmessage(JSON.parse(message).message);
     }
   }
 

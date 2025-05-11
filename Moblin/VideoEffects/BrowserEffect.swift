@@ -19,7 +19,7 @@ class Moblin {
 
   handleMessage(message) {
     if (this.onmessage) {
-      this.onmessage(JSON.parse(message));
+      this.onmessage(JSON.parse(message).message);
     }
   }
 
@@ -358,11 +358,11 @@ private enum BrowserEffectMessage: Codable {
 
 private struct BrowserEffectChatMessage: Codable {
     var user: String?
-    var segments: [ChatPostSegment]
+    var text: String
 
     init(message: ChatPost) {
         user = message.user
-        segments = message.segments
+        text = message.segments.filter { $0.text != nil }.map { $0.text! }.joined().trim()
     }
 }
 
@@ -422,9 +422,10 @@ private class Client: NSObject {
 
     private func send(message: BrowserEffectMessageToBrowser) {
         do {
-            let message = try message.toJson().utf8Data.base64EncodedString()
+            let message = try message.toJson()
+            let data = message.utf8Data.base64EncodedString()
             webView?.evaluateJavaScript("""
-            moblin.handleMessage(window.atob("\(message)"))
+            moblin.handleMessage(window.atob("\(data)"))
             """)
         } catch {
             logger.info("browser-effect: Encode failed")
