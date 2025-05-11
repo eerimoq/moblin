@@ -164,6 +164,7 @@
 		03507F6B2B45DD5A0075648B /* GameControllersControllerButtonSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03507F6A2B45DD5A0075648B /* GameControllersControllerButtonSettingsView.swift */; };
 		03510DDC2C7661A400FD3A27 /* SpeechToText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03510DDB2C7661A400FD3A27 /* SpeechToText.swift */; };
 		035192E02B53EF2C00B09E3B /* QuickButtonsButtonSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035192DF2B53EF2C00B09E3B /* QuickButtonsButtonSettingsView.swift */; };
+		0351F8F82DD1487E00F37D9C /* BrowserEffectServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0351F8F72DD1486900F37D9C /* BrowserEffectServer.swift */; };
 		0352679E2B99A00C00B49B72 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 03F853B22B151FA700719B89 /* Localizable.xcstrings */; };
 		03559E7E2BDCEB14002D0886 /* FaceEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03559E7D2BDCEB14002D0886 /* FaceEffect.swift */; };
 		035735802BC62FDC00F4E87D /* WatchLocalOverlaysSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0357357F2BC62FDC00F4E87D /* WatchLocalOverlaysSettingsView.swift */; };
@@ -725,6 +726,7 @@
 		03507F6A2B45DD5A0075648B /* GameControllersControllerButtonSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameControllersControllerButtonSettingsView.swift; sourceTree = "<group>"; };
 		03510DDB2C7661A400FD3A27 /* SpeechToText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechToText.swift; sourceTree = "<group>"; };
 		035192DF2B53EF2C00B09E3B /* QuickButtonsButtonSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickButtonsButtonSettingsView.swift; sourceTree = "<group>"; };
+		0351F8F72DD1486900F37D9C /* BrowserEffectServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserEffectServer.swift; sourceTree = "<group>"; };
 		0352DDF22BFFCAA60079AC7B /* SampleBufferCommon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleBufferCommon.swift; sourceTree = "<group>"; };
 		03559E7D2BDCEB14002D0886 /* FaceEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceEffect.swift; sourceTree = "<group>"; };
 		0357357F2BC62FDC00F4E87D /* WatchLocalOverlaysSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchLocalOverlaysSettingsView.swift; sourceTree = "<group>"; };
@@ -1670,6 +1672,15 @@
 			path = RtmpServer;
 			sourceTree = "<group>";
 		};
+		0351F8F62DD1485B00F37D9C /* BrowserEffect */ = {
+			isa = PBXGroup;
+			children = (
+				03EBEA622ACB4A17000DF427 /* BrowserEffect.swift */,
+				0351F8F72DD1486900F37D9C /* BrowserEffectServer.swift */,
+			);
+			path = BrowserEffect;
+			sourceTree = "<group>";
+		};
 		0357357C2BC62FA200F4E87D /* Display */ = {
 			isa = PBXGroup;
 			children = (
@@ -2525,10 +2536,10 @@
 		03B374052AA0EA370028DDD5 /* VideoEffects */ = {
 			isa = PBXGroup;
 			children = (
+				0351F8F62DD1485B00F37D9C /* BrowserEffect */,
 				033235442BFBB71C00B897A5 /* MetalPetal */,
 				033FD7192CC622A60073C6EC /* Scoreboards */,
 				037FE02F2C594CE40067B5AC /* AlertsEffect.swift */,
-				03EBEA622ACB4A17000DF427 /* BrowserEffect.swift */,
 				03A599192B66A94B002E7EE8 /* DrawOnStreamEffect.swift */,
 				03D278732D9050C600BB0502 /* TwinEffect.swift */,
 				030499672C404812003488F4 /* EffectUtils.swift */,
@@ -3558,6 +3569,7 @@
 				03D278742D9050C900BB0502 /* TwinEffect.swift in Sources */,
 				03DEA1F92BFA66DC00154631 /* MetalPetal.swift in Sources */,
 				0359F8DB2BD3DA61005BFDA8 /* Crc32.swift in Sources */,
+				0351F8F82DD1487E00F37D9C /* BrowserEffectServer.swift in Sources */,
 				03987B3C2C82859C00226C03 /* QuickButtonMicView.swift in Sources */,
 				0359F8FE2BD3DA61005BFDA8 /* SrtStream.swift in Sources */,
 				0391D2032CB3000A008AB44B /* MuteIntent.swift in Sources */,
