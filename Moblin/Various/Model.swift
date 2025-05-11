@@ -241,7 +241,7 @@ struct ChatPost: Identifiable, Equatable {
 
     var id: Int
     var user: String?
-    var userColor: RgbColor?
+    var userColor: RgbColor
     var userBadges: [URL]
     var segments: [ChatPostSegment]
     var timestamp: String
@@ -3337,7 +3337,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return ChatPost(
             id: chatPostId,
             user: nil,
-            userColor: nil,
+            userColor: .init(red: 0, green: 0, blue: 0),
             userBadges: [],
             segments: [],
             timestamp: "",
@@ -6079,7 +6079,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         let post = ChatPost(
             id: chatPostId,
             user: user,
-            userColor: userColor?.makeReadableOnDarkBackground(),
+            userColor: userColor?.makeReadableOnDarkBackground() ?? database.chat.usernameColor,
             userBadges: userBadges,
             segments: segments,
             timestamp: timestamp,
@@ -8996,13 +8996,11 @@ extension Model {
         guard let user = post.user else {
             return
         }
-        let userColor: WatchProtocolColor
-        if let color = post.userColor {
-            userColor = WatchProtocolColor(red: color.red, green: color.green, blue: color.blue)
-        } else {
-            let color = database.chat.usernameColor
-            userColor = WatchProtocolColor(red: color.red, green: color.green, blue: color.blue)
-        }
+        let userColor = WatchProtocolColor(
+            red: post.userColor.red,
+            green: post.userColor.green,
+            blue: post.userColor.blue
+        )
         let post = WatchProtocolChatMessage(
             id: nextWatchChatPostId,
             timestamp: post.timestamp,

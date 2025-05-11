@@ -58,11 +58,7 @@ private struct LineView: View {
     var chat: SettingsChat
 
     private func usernameColor() -> Color {
-        if let color = post.userColor {
-            return color.color()
-        } else {
-            return chat.usernameColor.color()
-        }
+        return post.userColor.color()
     }
 
     private func messageColor(usernameColor: Color) -> Color {

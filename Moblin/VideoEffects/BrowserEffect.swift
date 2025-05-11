@@ -357,12 +357,14 @@ private enum BrowserEffectMessage: Codable {
 }
 
 private struct BrowserEffectChatMessage: Codable {
-    var user: String?
-    var text: String
+    var user: String
+    var userColor: RgbColor
+    var segments: [ChatPostSegment]
 
     init(message: ChatPost) {
-        user = message.user
-        text = message.segments.filter { $0.text != nil }.map { $0.text! }.joined().trim()
+        user = message.user ?? "???"
+        userColor = message.userColor
+        segments = message.segments
     }
 }
 
@@ -423,6 +425,7 @@ private class Client: NSObject {
     private func send(message: BrowserEffectMessageToBrowser) {
         do {
             let message = try message.toJson()
+            logger.info("xxx \(message)")
             let data = message.utf8Data.base64EncodedString()
             webView?.evaluateJavaScript("""
             moblin.handleMessage(window.atob("\(data)"))
