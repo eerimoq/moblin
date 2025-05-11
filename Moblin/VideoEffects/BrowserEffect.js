@@ -3,19 +3,13 @@ class Moblin {
     this.onmessage = null;
   }
 
-  subscribe(data) {
-    this.send({ subscribe: { data: data } });
+  subscribe(topic) {
+    this.send({ subscribe: { topic: topic } });
   }
 
   handleMessage(message) {
     if (this.onmessage) {
-      this.onmessage(JSON.parse(message).message);
-    }
-  }
-
-  handleMessageMessage(message) {
-    if (this.onmessage) {
-      this.onmessage(message);
+      this.onmessage(JSON.parse(message).message.data);
     }
   }
 

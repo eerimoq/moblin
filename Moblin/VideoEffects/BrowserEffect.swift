@@ -13,19 +13,13 @@ class Moblin {
     this.onmessage = null;
   }
 
-  subscribe(data) {
-    this.send({ subscribe: { data: data } });
+  subscribe(topic) {
+    this.send({ subscribe: { topic: topic } });
   }
 
   handleMessage(message) {
     if (this.onmessage) {
-      this.onmessage(JSON.parse(message).message);
-    }
-  }
-
-  handleMessageMessage(message) {
-    if (this.onmessage) {
-      this.onmessage(message);
+      this.onmessage(JSON.parse(message).message.data);
     }
   }
 
@@ -367,7 +361,7 @@ private struct BrowserEffectChatMessage: Codable {
 }
 
 private enum BrowserEffectMessageToMoblin: Codable {
-    case subscribe(data: BrowserEffectSubscribe)
+    case subscribe(topic: BrowserEffectSubscribe)
 
     func toJson() -> String? {
         do {
@@ -423,7 +417,6 @@ private class Client: NSObject {
     private func send(message: BrowserEffectMessageToBrowser) {
         do {
             let message = try message.toJson()
-            logger.info("xxx \(message)")
             let data = message.utf8Data.base64EncodedString()
             webView?.evaluateJavaScript("""
             moblin.handleMessage(window.atob("\(data)"))
@@ -436,16 +429,16 @@ private class Client: NSObject {
     private func handleMessage(message: String) throws {
         do {
             switch try BrowserEffectMessageToMoblin.fromJson(data: message) {
-            case let .subscribe(data: data):
-                handleSubscribe(data: data)
+            case let .subscribe(topic: topic):
+                handleSubscribe(topic: topic)
             }
         } catch {
             logger.info("browser-effect: Decode failed with error: \(error)")
         }
     }
 
-    private func handleSubscribe(data: BrowserEffectSubscribe) {
-        switch data {
+    private func handleSubscribe(topic: BrowserEffectSubscribe) {
+        switch topic {
         case let .chat(prefix: prefix):
             chat = true
             chatPrefix = prefix
