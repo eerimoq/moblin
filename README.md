@@ -306,12 +306,12 @@ the JSON blob format. Class members are JSON object keys. Members with
 `?` after the type are optional. Some types are defined in
 [Settings.swift](https://github.com/eerimoq/moblin/blob/main/Moblin/Various/Settings.swift).
 
-# Browser widget Javascript API
+# Browser widget JavaScript API
 
 Get access to various data in your Browser widget.
 
 NOTE: You must enable `Settings -> Scenes -> My browser widget -> Moblin
-access` to give the website access to the Browser widget Javascript
+access` to give the website access to the Browser widget JavaScript
 API.
 
 ## Examples
