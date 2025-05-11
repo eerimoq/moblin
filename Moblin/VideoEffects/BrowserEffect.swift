@@ -358,12 +358,10 @@ private enum BrowserEffectMessage: Codable {
 
 private struct BrowserEffectChatMessage: Codable {
     var user: String
-    var userColor: RgbColor
     var segments: [ChatPostSegment]
 
     init(message: ChatPost) {
         user = message.user ?? "???"
-        userColor = message.userColor
         segments = message.segments
     }
 }
