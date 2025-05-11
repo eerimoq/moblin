@@ -7,6 +7,36 @@ import WebKit
 
 private let browserQueue = DispatchQueue(label: "com.eerimoq.widget.browser")
 
+private let moblinScript = """
+class Moblin {
+  constructor() {
+    this.onmessage = null;
+  }
+
+  subscribe(data) {
+    this.send({ subscribe: { data: data } });
+  }
+
+  handleMessage(message) {
+    if (this.onmessage) {
+      this.onmessage(JSON.parse(message));
+    }
+  }
+
+  handleMessageMessage(message) {
+    if (this.onmessage) {
+      this.onmessage(message);
+    }
+  }
+
+  send(message) {
+    window.webkit.messageHandlers.moblin.postMessage(JSON.stringify(message));
+  }
+}
+
+const moblin = new Moblin();
+"""
+
 private func createStyleSheetSource(styleSheet: String) -> String? {
     guard !styleSheet.isEmpty else {
         return nil
@@ -46,13 +76,15 @@ final class BrowserEffect: VideoEffect {
     private var crops: [WidgetCrop] = []
     private var cropsMetalPetal: [WidgetCrop] = []
     private let settingName: String
+    private let client: Client
 
     init(
         url: URL,
         styleSheet: String,
         widget: SettingsWidgetBrowser,
         videoSize: CGSize,
-        settingName: String
+        settingName: String,
+        moblinAccess: Bool
     ) {
         scaleToFitVideo = widget.scaleToFitVideo!
         self.url = url
@@ -81,6 +113,15 @@ final class BrowserEffect: VideoEffect {
                 forMainFrameOnly: false
             ))
         }
+        client = Client()
+        if moblinAccess {
+            configuration.userContentController.addUserScript(.init(
+                source: moblinScript,
+                injectionTime: .atDocumentStart,
+                forMainFrameOnly: false
+            ))
+            configuration.userContentController.add(client, name: "moblin")
+        }
         webView = WKWebView(frame: CGRect(x: 0, y: 0, width: width, height: height),
                             configuration: configuration)
         webView.isOpaque = false
@@ -89,10 +130,15 @@ final class BrowserEffect: VideoEffect {
         webView.scrollView.showsVerticalScrollIndicator = false
         webView.scrollView.showsHorizontalScrollIndicator = false
         super.init()
+        client.webView = webView
     }
 
     override func getName() -> String {
         return "\(settingName) browser widget"
+    }
+
+    func sendChatMessage(post: ChatPost) {
+        client.sendChatMessage(post: post)
     }
 
     var host: String {
@@ -299,5 +345,120 @@ final class BrowserEffect: VideoEffect {
         filter.inputBackgroundImage = image
         filter.layers = layersMetalPetal
         return filter.outputImage
+    }
+}
+
+private enum BrowserEffectSubscribe: Codable {
+    case chat(prefix: String?)
+}
+
+private enum BrowserEffectMessage: Codable {
+    case chat(message: BrowserEffectChatMessage)
+}
+
+private struct BrowserEffectChatMessage: Codable {
+    var user: String?
+    var segments: [ChatPostSegment]
+
+    init(message: ChatPost) {
+        user = message.user
+        segments = message.segments
+    }
+}
+
+private enum BrowserEffectMessageToMoblin: Codable {
+    case subscribe(data: BrowserEffectSubscribe)
+
+    func toJson() -> String? {
+        do {
+            return try String(bytes: JSONEncoder().encode(self), encoding: .utf8)
+        } catch {
+            return nil
+        }
+    }
+
+    static func fromJson(data: String) throws -> BrowserEffectMessageToMoblin {
+        guard let data = data.data(using: .utf8) else {
+            throw "Not a UTF-8 string"
+        }
+        return try JSONDecoder().decode(BrowserEffectMessageToMoblin.self, from: data)
+    }
+}
+
+private enum BrowserEffectMessageToBrowser: Codable {
+    case message(data: BrowserEffectMessage)
+
+    func toJson() throws -> String {
+        guard let encoded = try String(bytes: JSONEncoder().encode(self), encoding: .utf8) else {
+            throw "Encode failed"
+        }
+        return encoded
+    }
+
+    static func fromJson(data: String) throws -> BrowserEffectMessageToBrowser {
+        guard let data = data.data(using: .utf8) else {
+            throw "Not a UTF-8 string"
+        }
+        return try JSONDecoder().decode(BrowserEffectMessageToBrowser.self, from: data)
+    }
+}
+
+private class Client: NSObject {
+    weak var webView: WKWebView?
+    var chat = false
+    var chatPrefix: String?
+
+    func sendChatMessage(post: ChatPost) {
+        guard chat else {
+            return
+        }
+        if let chatPrefix {
+            guard let text = post.segments.first?.text, text.starts(with: chatPrefix) else {
+                return
+            }
+        }
+        send(message: .message(data: .chat(message: .init(message: post))))
+    }
+
+    private func send(message: BrowserEffectMessageToBrowser) {
+        do {
+            let message = try message.toJson().utf8Data.base64EncodedString()
+            webView?.evaluateJavaScript("""
+            moblin.handleMessage(window.atob("\(message)"))
+            """)
+        } catch {
+            logger.info("browser-effect: Encode failed")
+        }
+    }
+
+    private func handleMessage(message: String) throws {
+        do {
+            switch try BrowserEffectMessageToMoblin.fromJson(data: message) {
+            case let .subscribe(data: data):
+                handleSubscribe(data: data)
+            }
+        } catch {
+            logger.info("browser-effect: Decode failed with error: \(error)")
+        }
+    }
+
+    private func handleSubscribe(data: BrowserEffectSubscribe) {
+        switch data {
+        case let .chat(prefix: prefix):
+            chat = true
+            chatPrefix = prefix
+        }
+    }
+}
+
+extension Client: WKScriptMessageHandler {
+    func userContentController(_: WKUserContentController, didReceive message: WKScriptMessage) {
+        guard let message = message.body as? String else {
+            logger.info("browser-effect: Not a string message")
+            return
+        }
+        DispatchQueue.main.async {
+            try? self.handleMessage(message: message)
+        }
     }
 }

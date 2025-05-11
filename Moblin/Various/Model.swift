@@ -4087,7 +4087,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 styleSheet: widget.browser.styleSheet!,
                 widget: widget.browser,
                 videoSize: videoSize,
-                settingName: widget.name
+                settingName: widget.name,
+                moblinAccess: widget.browser.moblinAccess!
             )
         }
         for mapEffect in mapEffects.values {
@@ -6092,6 +6093,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         chatPostId += 1
         chat.appendMessage(post: post)
         quickButtonChat.appendMessage(post: post)
+        for browserEffect in browserEffects.values {
+            browserEffect.sendChatMessage(post: post)
+        }
         if externalDisplayChatEnabled {
             externalDisplayChat.appendMessage(post: post)
         }

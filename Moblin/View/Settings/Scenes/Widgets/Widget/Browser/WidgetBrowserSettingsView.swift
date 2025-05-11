@@ -97,5 +97,17 @@ struct WidgetBrowserSettingsView: View {
                 }
             }
         }
+        Section {
+            Toggle(isOn: Binding(get: {
+                widget.browser.moblinAccess!
+            }, set: { value in
+                widget.browser.moblinAccess = value
+                model.resetSelectedScene(changeScene: false)
+            })) {
+                Text("Moblin access")
+            }
+        } footer: {
+            Text("Give the webpage access to various data in Moblin, for example chat messages and your location.")
+        }
     }
 }

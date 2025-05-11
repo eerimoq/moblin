@@ -1024,6 +1024,7 @@ class SettingsWidgetBrowser: Codable {
     var scaleToFitVideo: Bool? = false
     var fps: Float? = 5.0
     var styleSheet: String? = ""
+    var moblinAccess: Bool? = false
 }
 
 class SettingsWidgetMap: Codable {
@@ -5317,6 +5318,10 @@ final class Settings {
         }
         if realDatabase.debug.builtinAudioAndVideoDelay == nil {
             realDatabase.debug.builtinAudioAndVideoDelay = 0.0
+            store()
+        }
+        for widget in realDatabase.widgets where widget.browser.moblinAccess == nil {
+            widget.browser.moblinAccess = false
             store()
         }
     }
