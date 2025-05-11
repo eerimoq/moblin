@@ -306,6 +306,35 @@ the JSON blob format. Class members are JSON object keys. Members with
 `?` after the type are optional. Some types are defined in
 [Settings.swift](https://github.com/eerimoq/moblin/blob/main/Moblin/Various/Settings.swift).
 
+# Browser widget Javascript API
+
+Get access to various data in your Browser widget.
+
+NOTE: You must enable `Settings -> Scenes -> My browser widget -> Moblin
+access` to give the website access to the Browser widget Javascript
+API.
+
+## Examples
+
+Add this code to your website to receive chat messages with prefix `!`.
+
+```js
+moblin.subscribe({ chat: { prefix: "!" } });
+moblin.onmessage = (message) => {
+  if (message.chat !== undefined) {
+    console.log(message.chat.message);
+  }
+};
+```
+
+## Specification
+
+Topics to subscribe to are defined by `BrowserEffectSubscribe` in
+[BrowserEffect.swift](https://github.com/eerimoq/moblin/blob/main/Moblin/VideoEffects/BrowserEffect.swift).
+
+Messages passed to `onmessage` are defined by `BrowserEffectMessage` in
+[BrowserEffect.swift](https://github.com/eerimoq/moblin/blob/main/Moblin/VideoEffects/BrowserEffect.swift).
+
 # Similar software
 
 - https://irlpro.app/
