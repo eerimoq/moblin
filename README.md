@@ -314,7 +314,7 @@ NOTE: You must enable `Settings -> Scenes -> My browser widget -> Moblin
 access` to give the website access to the Browser widget JavaScript
 API.
 
-## Examples
+## Example
 
 Add this code to your website to receive chat messages with prefix `!`.
 
