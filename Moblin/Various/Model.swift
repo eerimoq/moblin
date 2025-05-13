@@ -1779,6 +1779,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         reloadTeslaVehicle()
         updateFaceFilterButtonState()
         updateLutsButtonState()
+        updateAutoSceneSwitcherButtonState()
         reloadNtpClient()
         reloadMoblinkRelay()
         reloadMoblinkStreamer()
@@ -2195,6 +2196,18 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             isOn = true
         }
         setGlobalButtonState(type: .luts, isOn: isOn)
+        updateButtonStates()
+    }
+
+    func updateAutoSceneSwitcherButtonState() {
+        var isOn = false
+        if database.autoSceneSwitchers!.switcherId != nil {
+            isOn = true
+        }
+        if showingPanel == .autoSceneSwitcher {
+            isOn = true
+        }
+        setGlobalButtonState(type: .autoSceneSwitcher, isOn: isOn)
         updateButtonStates()
     }
 

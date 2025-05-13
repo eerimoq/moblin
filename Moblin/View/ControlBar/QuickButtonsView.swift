@@ -330,6 +330,7 @@ struct QuickButtonsInnerView: View {
 
     private func autoSceneSwitcherAction(state _: ButtonState) {
         model.toggleShowingPanel(type: .autoSceneSwitcher, panel: .autoSceneSwitcher)
+        model.updateAutoSceneSwitcherButtonState()
     }
 
     var body: some View {

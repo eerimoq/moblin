@@ -52,6 +52,7 @@ private struct PanelButtonsView: View {
                     CloseButtonView {
                         model.toggleShowingPanel(type: nil, panel: .none)
                         model.updateLutsButtonState()
+                        model.updateAutoSceneSwitcherButtonState()
                     }
                 }
                 .padding(-3)
