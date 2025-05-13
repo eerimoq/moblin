@@ -54,6 +54,7 @@ enum ShowingPanel {
     case sceneSettings
     case goPro
     case connectionPriorities
+    case autoSceneSwitcher
 
     func buttonsBackgroundColor() -> Color {
         if self == .chat {
@@ -255,9 +256,9 @@ struct ChatPost: Identifiable, Equatable {
 
 class ButtonState {
     var isOn: Bool
-    var button: SettingsButton
+    var button: SettingsQuickButton
 
-    init(isOn: Bool, button: SettingsButton) {
+    init(isOn: Bool, button: SettingsQuickButton) {
         self.isOn = isOn
         self.button = button
     }
@@ -721,6 +722,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var currentDjiGimbalDeviceSettings: SettingsDjiGimbalDevice?
     private var djiGimbalDevices: [UUID: DjiGimbalDevice] = [:]
 
+    private var autoSceneSwitcherSwitchTime: ContinuousClock.Instant?
+    private var autoSceneSwitcherSceneIds: [UUID] = []
+    private var autoSceneSwitcherCurrentSwitcherSceneId: UUID?
+
     @Published var catPrinterState: CatPrinterState?
     private var currentCatPrinterSettings: SettingsCatPrinter?
     private var catPrinters: [UUID: CatPrinter] = [:]
@@ -952,23 +957,24 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         database.verboseStatuses!.toggle()
     }
 
-    private func isShowingPanelGlobalButton(type: SettingsButtonType) -> Bool {
+    private func isShowingPanelGlobalButton(type: SettingsQuickButtonType) -> Bool {
         return [
-            SettingsButtonType.widgets,
-            SettingsButtonType.luts,
-            SettingsButtonType.chat,
-            SettingsButtonType.mic,
-            SettingsButtonType.bitrate,
-            SettingsButtonType.recordings,
-            SettingsButtonType.stream,
-            SettingsButtonType.obs,
-            SettingsButtonType.djiDevices,
-            SettingsButtonType.goPro,
-            SettingsButtonType.connectionPriorities,
+            SettingsQuickButtonType.widgets,
+            SettingsQuickButtonType.luts,
+            SettingsQuickButtonType.chat,
+            SettingsQuickButtonType.mic,
+            SettingsQuickButtonType.bitrate,
+            SettingsQuickButtonType.recordings,
+            SettingsQuickButtonType.stream,
+            SettingsQuickButtonType.obs,
+            SettingsQuickButtonType.djiDevices,
+            SettingsQuickButtonType.goPro,
+            SettingsQuickButtonType.connectionPriorities,
+            SettingsQuickButtonType.autoSceneSwitcher,
         ].contains(type)
     }
 
-    func toggleShowingPanel(type: SettingsButtonType?, panel: ShowingPanel) {
+    func toggleShowingPanel(type: SettingsQuickButtonType?, panel: ShowingPanel) {
         if showingPanel == panel {
             showingPanel = .none
         } else {
@@ -989,6 +995,49 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             setGlobalButtonState(type: type, isOn: showingPanel == panel)
         }
         updateButtonStates()
+    }
+
+    func setAutoSceneSwitcher(id: UUID?) {
+        database.autoSceneSwitchers!.switcherId = id
+        autoSceneSwitcherSwitchTime = .now
+        autoSceneSwitcherSceneIds.removeAll()
+    }
+
+    private func updateAutoSceneSwitcher(now: ContinuousClock.Instant) {
+        guard let switcherId = database.autoSceneSwitchers!.switcherId else {
+            return
+        }
+        if let autoSceneSwitcherSwitchTime {
+            guard now > autoSceneSwitcherSwitchTime else {
+                return
+            }
+        }
+        guard let autoSwitcher = database.autoSceneSwitchers!.switchers.first(where: { $0.id == switcherId }) else {
+            return
+        }
+        if autoSceneSwitcherSceneIds.isEmpty {
+            autoSceneSwitcherSceneIds = autoSwitcher.scenes.map { $0.id }.reversed()
+            if autoSwitcher.shuffle {
+                autoSceneSwitcherSceneIds.shuffle()
+                if autoSceneSwitcherSceneIds.last == autoSceneSwitcherCurrentSwitcherSceneId {
+                    if let switcherSceneId = autoSceneSwitcherSceneIds.popLast() {
+                        autoSceneSwitcherSceneIds.insert(switcherSceneId, at: 0)
+                    }
+                }
+            }
+        }
+        while let switcherSceneId = autoSceneSwitcherSceneIds.popLast() {
+            guard let switcherScene = autoSwitcher.scenes.first(where: { $0.id == switcherSceneId }) else {
+                continue
+            }
+            guard let sceneId = switcherScene.sceneId else {
+                continue
+            }
+            selectScene(id: sceneId)
+            autoSceneSwitcherSwitchTime = now + .seconds(switcherScene.time)
+            autoSceneSwitcherCurrentSwitcherSceneId = switcherSceneId
+            break
+        }
     }
 
     func createStreamMarker() {
@@ -2976,6 +3025,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             self.updateMoblinkStatus()
             self.updateStatusEventsText()
             self.updateStatusChatText()
+            self.updateAutoSceneSwitcher(now: monotonicNow)
         })
         Timer.scheduledTimer(withTimeInterval: 3, repeats: true, block: { _ in
             self.teslaGetDriveState()
@@ -3667,7 +3717,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         pinchEffect = PinchEffect()
     }
 
-    private func isGlobalButtonOn(type: SettingsButtonType) -> Bool {
+    private func isGlobalButtonOn(type: SettingsQuickButtonType) -> Bool {
         return database.globalButtons?.first(where: { button in
             button.type == type
         })?.isOn ?? false
@@ -4376,7 +4426,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             }
     }
 
-    func setGlobalButtonState(type: SettingsButtonType, isOn: Bool) {
+    func setGlobalButtonState(type: SettingsQuickButtonType, isOn: Bool) {
         for button in database.globalButtons! where button.type == type {
             button.isOn = isOn
         }
@@ -4392,11 +4442,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    func getGlobalButton(type: SettingsButtonType) -> SettingsButton? {
+    func getGlobalButton(type: SettingsQuickButtonType) -> SettingsQuickButton? {
         return database.globalButtons!.first(where: { $0.type == type })
     }
 
-    private func toggleGlobalButton(type: SettingsButtonType) {
+    private func toggleGlobalButton(type: SettingsQuickButtonType) {
         for button in database.globalButtons! where button.type == type {
             button.isOn.toggle()
         }
@@ -5868,7 +5918,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             guard let filter = command.popFirst(), let state = command.popFirst() else {
                 return
             }
-            let type: SettingsButtonType
+            let type: SettingsQuickButtonType
             switch filter {
             case "movie":
                 type = .movie

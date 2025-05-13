@@ -149,6 +149,7 @@ struct ScenesSettingsView: View {
         Form {
             ScenesListView()
             WidgetsSettingsView()
+            AutoSwitchersSettingsView()
             ScenesSwitchTransition(sceneSwitchTransition: model.database.sceneSwitchTransition!.toString())
             RemoteSceneView(selectedSceneId: model.database.remoteSceneId)
             ReloadBrowserSources()

@@ -3,7 +3,7 @@ import SwiftUI
 struct QuickButtonsSettingsView: View {
     @EnvironmentObject var model: Model
 
-    private func onBackgroundColorChange(button: SettingsButton, color: Color) {
+    private func onBackgroundColorChange(button: SettingsQuickButton, color: Color) {
         guard let color = color.toRgb() else {
             return
         }

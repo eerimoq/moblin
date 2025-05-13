@@ -71,10 +71,10 @@ class MoblinSettingsUrlStream: Codable {
 }
 
 class MoblinSettingsButton: Codable {
-    var type: SettingsButtonType
+    var type: SettingsQuickButtonType
     var enabled: Bool?
 
-    init(type: SettingsButtonType) {
+    init(type: SettingsQuickButtonType) {
         self.type = type
     }
 }

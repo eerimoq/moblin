@@ -136,7 +136,7 @@ struct QuickButtonsInnerView: View {
         }
     }
 
-    private func videoEffectAction(state: ButtonState, type: SettingsButtonType) {
+    private func videoEffectAction(state: ButtonState, type: SettingsQuickButtonType) {
         state.button.isOn.toggle()
         model.setGlobalButtonState(type: type, isOn: state.button.isOn)
         model.sceneUpdated(updateRemoteScene: false)
@@ -326,6 +326,10 @@ struct QuickButtonsInnerView: View {
 
     private func connectionPrioritiesAction(state _: ButtonState) {
         model.toggleShowingPanel(type: .connectionPriorities, panel: .connectionPriorities)
+    }
+
+    private func autoSceneSwitcherAction(state _: ButtonState) {
+        model.toggleShowingPanel(type: .autoSceneSwitcher, panel: .autoSceneSwitcher)
     }
 
     var body: some View {
@@ -661,6 +665,12 @@ struct QuickButtonsInnerView: View {
             case .pinch:
                 Button(action: {
                     pinchAction(state: state)
+                }, label: {
+                    QuickButtonImage(state: state, buttonSize: size)
+                })
+            case .autoSceneSwitcher:
+                Button(action: {
+                    autoSceneSwitcherAction(state: state)
                 }, label: {
                     QuickButtonImage(state: state, buttonSize: size)
                 })

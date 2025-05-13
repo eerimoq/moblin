@@ -129,6 +129,10 @@ private struct MenuView: View {
             NavigationStack {
                 QuickButtonConnectionPrioritiesView()
             }
+        case .autoSceneSwitcher:
+            NavigationStack {
+                QuickButtonAutoSceneSwitcherView(switcherId: model.database.autoSceneSwitchers!.switcherId)
+            }
         case .none:
             EmptyView()
         }

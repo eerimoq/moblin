@@ -165,6 +165,8 @@
 		03510DDC2C7661A400FD3A27 /* SpeechToText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03510DDB2C7661A400FD3A27 /* SpeechToText.swift */; };
 		035192E02B53EF2C00B09E3B /* QuickButtonsButtonSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035192DF2B53EF2C00B09E3B /* QuickButtonsButtonSettingsView.swift */; };
 		0351F8F82DD1487E00F37D9C /* BrowserEffectServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0351F8F72DD1486900F37D9C /* BrowserEffectServer.swift */; };
+		0351F8FB2DD2965300F37D9C /* AutoSwitchersSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0351F8FA2DD2964900F37D9C /* AutoSwitchersSettingsView.swift */; };
+		0351F8FD2DD3064400F37D9C /* QuickButtonAutoSceneSwitcherView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0351F8FC2DD3063C00F37D9C /* QuickButtonAutoSceneSwitcherView.swift */; };
 		0352679E2B99A00C00B49B72 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 03F853B22B151FA700719B89 /* Localizable.xcstrings */; };
 		03559E7E2BDCEB14002D0886 /* FaceEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03559E7D2BDCEB14002D0886 /* FaceEffect.swift */; };
 		035735802BC62FDC00F4E87D /* WatchLocalOverlaysSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0357357F2BC62FDC00F4E87D /* WatchLocalOverlaysSettingsView.swift */; };
@@ -727,6 +729,8 @@
 		03510DDB2C7661A400FD3A27 /* SpeechToText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechToText.swift; sourceTree = "<group>"; };
 		035192DF2B53EF2C00B09E3B /* QuickButtonsButtonSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickButtonsButtonSettingsView.swift; sourceTree = "<group>"; };
 		0351F8F72DD1486900F37D9C /* BrowserEffectServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserEffectServer.swift; sourceTree = "<group>"; };
+		0351F8FA2DD2964900F37D9C /* AutoSwitchersSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoSwitchersSettingsView.swift; sourceTree = "<group>"; };
+		0351F8FC2DD3063C00F37D9C /* QuickButtonAutoSceneSwitcherView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickButtonAutoSceneSwitcherView.swift; sourceTree = "<group>"; };
 		0352DDF22BFFCAA60079AC7B /* SampleBufferCommon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleBufferCommon.swift; sourceTree = "<group>"; };
 		03559E7D2BDCEB14002D0886 /* FaceEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceEffect.swift; sourceTree = "<group>"; };
 		0357357F2BC62FDC00F4E87D /* WatchLocalOverlaysSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchLocalOverlaysSettingsView.swift; sourceTree = "<group>"; };
@@ -1681,6 +1685,14 @@
 			path = BrowserEffect;
 			sourceTree = "<group>";
 		};
+		0351F8F92DD2960700F37D9C /* AutoSwitchers */ = {
+			isa = PBXGroup;
+			children = (
+				0351F8FA2DD2964900F37D9C /* AutoSwitchersSettingsView.swift */,
+			);
+			path = AutoSwitchers;
+			sourceTree = "<group>";
+		};
 		0357357C2BC62FA200F4E87D /* Display */ = {
 			isa = PBXGroup;
 			children = (
@@ -2086,6 +2098,7 @@
 		0379BB972AAD802C00B718B6 /* Scenes */ = {
 			isa = PBXGroup;
 			children = (
+				0351F8F92DD2960700F37D9C /* AutoSwitchers */,
 				0379BBB32AAD9B4000B718B6 /* Widgets */,
 				0315A34C2AA3217500295443 /* Scene */,
 				03A9835B2A9A05D7008FF0DB /* ScenesSettingsView.swift */,
@@ -2294,6 +2307,7 @@
 		03987B3A2C8284A500226C03 /* QuickButton */ = {
 			isa = PBXGroup;
 			children = (
+				0351F8FC2DD3063C00F37D9C /* QuickButtonAutoSceneSwitcherView.swift */,
 				035D37362AB230E700045B92 /* QuickButtonBitrateView.swift */,
 				0318B4122C845214002B4F58 /* QuickButtonChatView.swift */,
 				03FC65CA2DBE0BE500743C80 /* QuickButtonConnectionPrioritiesView.swift */,
@@ -3481,6 +3495,7 @@
 				0359F8D32BD3DA61005BFDA8 /* VideoUnit.swift in Sources */,
 				03BBAE9A2B2EB4FD0033D425 /* StreamEmotesSettingsView.swift in Sources */,
 				030E066C2D42A63900563457 /* StreamWizardObsSettingsView.swift in Sources */,
+				0351F8FD2DD3064400F37D9C /* QuickButtonAutoSceneSwitcherView.swift in Sources */,
 				03B7DAB92BA6EE6200CEFC1B /* StreamOpenStreamingPlatformSettingsView.swift in Sources */,
 				0318D3752CF51DEB00E12F3B /* car_server.pb.swift in Sources */,
 				03C3574E2D081CF500B8B29F /* RtmpDataMessage.swift in Sources */,
@@ -3642,6 +3657,7 @@
 				0304A50C2B45ADC300310842 /* GameControllersControllerSettingsView.swift in Sources */,
 				03279CE72B4CD245006CEA5A /* Location.swift in Sources */,
 				03A9300C2C14414800BB9679 /* AvcNalUnit.swift in Sources */,
+				0351F8FB2DD2965300F37D9C /* AutoSwitchersSettingsView.swift in Sources */,
 				03A983662A9A05D7008FF0DB /* AddButtonView.swift in Sources */,
 				0359F9012BD3DA61005BFDA8 /* Atomic.swift in Sources */,
 				03A983612A9A05D7008FF0DB /* StreamsSettingsView.swift in Sources */,
