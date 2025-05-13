@@ -1036,11 +1036,21 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             guard enabledScenes.contains(where: { $0.id == sceneId }) else {
                 continue
             }
+            guard isSceneVideoSourceActive(sceneId: sceneId) else {
+                continue
+            }
             selectScene(id: sceneId)
             autoSceneSwitcherSwitchTime = now + .seconds(switcherScene.time)
             autoSceneSwitcherCurrentSwitcherSceneId = switcherSceneId
             break
         }
+    }
+
+    private func isSceneVideoSourceActive(sceneId: UUID) -> Bool {
+        guard let scene = enabledScenes.first(where: { $0.id == sceneId }) else {
+            return false
+        }
+        return isSceneVideoSourceActive(scene: scene)
     }
 
     func createStreamMarker() {
@@ -2757,7 +2767,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    func isSceneActive(scene: SettingsScene) -> Bool {
+    func isSceneVideoSourceActive(scene: SettingsScene) -> Bool {
         switch scene.cameraPosition {
         case .rtmp:
             if let stream = getRtmpStream(id: scene.rtmpCameraId!) {

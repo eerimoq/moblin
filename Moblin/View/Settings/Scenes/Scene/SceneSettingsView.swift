@@ -101,7 +101,7 @@ struct SceneSettingsView: View {
                     HStack {
                         Text("Name")
                         Spacer()
-                        if !model.isSceneActive(scene: scene) {
+                        if !model.isSceneVideoSourceActive(scene: scene) {
                             Image(systemName: "cable.connector.slash")
                         }
                         Text(model.getCameraPositionName(scene: scene))
