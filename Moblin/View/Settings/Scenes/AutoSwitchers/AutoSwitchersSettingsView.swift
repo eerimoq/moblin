@@ -96,7 +96,7 @@ private struct AutoSwitcherScenesSettingsView: View {
             .onDelete(perform: { offsets in
                 autoSwitcher.scenes.remove(atOffsets: offsets)
             })
-            CreateButtonView {
+            AddButtonView {
                 autoSwitcher.scenes.append(SettingsAutoSceneSwitcherScene())
                 model.objectWillChange.send()
             }

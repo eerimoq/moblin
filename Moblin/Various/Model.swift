@@ -1033,6 +1033,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             guard let sceneId = switcherScene.sceneId else {
                 continue
             }
+            guard enabledScenes.contains(where: { $0.id == sceneId }) else {
+                continue
+            }
             selectScene(id: sceneId)
             autoSceneSwitcherSwitchTime = now + .seconds(switcherScene.time)
             autoSceneSwitcherCurrentSwitcherSceneId = switcherSceneId
