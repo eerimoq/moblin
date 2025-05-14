@@ -328,6 +328,13 @@ struct ObsSceneInput: Identifiable {
     var muted: Bool?
 }
 
+class AutoSceneSwitcherProvider: ObservableObject {
+    fileprivate var switchTime: ContinuousClock.Instant?
+    fileprivate var sceneIds: [UUID] = []
+    fileprivate var currentSwitcherSceneId: UUID?
+    @Published var currentSwitcherId: UUID?
+}
+
 class AudioProvider: ObservableObject {
     @Published var showing = false
     @Published var level: Float = defaultAudioLevel
@@ -722,9 +729,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var currentDjiGimbalDeviceSettings: SettingsDjiGimbalDevice?
     private var djiGimbalDevices: [UUID: DjiGimbalDevice] = [:]
 
-    private var autoSceneSwitcherSwitchTime: ContinuousClock.Instant?
-    private var autoSceneSwitcherSceneIds: [UUID] = []
-    private var autoSceneSwitcherCurrentSwitcherSceneId: UUID?
+    let autoSceneSwitcher = AutoSceneSwitcherProvider()
 
     @Published var catPrinterState: CatPrinterState?
     private var currentCatPrinterSettings: SettingsCatPrinter?
@@ -999,34 +1004,42 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func setAutoSceneSwitcher(id: UUID?) {
         database.autoSceneSwitchers!.switcherId = id
-        autoSceneSwitcherSwitchTime = .now
-        autoSceneSwitcherSceneIds.removeAll()
+        autoSceneSwitcher.switchTime = .now
+        autoSceneSwitcher.sceneIds.removeAll()
+    }
+
+    func deleteAutoSceneSwitchers(offsets: IndexSet) {
+        database.autoSceneSwitchers!.switchers.remove(atOffsets: offsets)
+        if !database.autoSceneSwitchers!.switchers.contains(where: { $0.id == autoSceneSwitcher.currentSwitcherId }) {
+            autoSceneSwitcher.currentSwitcherId = nil
+            setAutoSceneSwitcher(id: nil)
+        }
     }
 
     private func updateAutoSceneSwitcher(now: ContinuousClock.Instant) {
-        guard let switcherId = database.autoSceneSwitchers!.switcherId else {
+        guard let switcherId = autoSceneSwitcher.currentSwitcherId else {
             return
         }
-        if let autoSceneSwitcherSwitchTime {
-            guard now > autoSceneSwitcherSwitchTime else {
+        if let switchTime = autoSceneSwitcher.switchTime {
+            guard now > switchTime else {
                 return
             }
         }
         guard let autoSwitcher = database.autoSceneSwitchers!.switchers.first(where: { $0.id == switcherId }) else {
             return
         }
-        if autoSceneSwitcherSceneIds.isEmpty {
-            autoSceneSwitcherSceneIds = autoSwitcher.scenes.map { $0.id }.reversed()
+        if autoSceneSwitcher.sceneIds.isEmpty {
+            autoSceneSwitcher.sceneIds = autoSwitcher.scenes.map { $0.id }.reversed()
             if autoSwitcher.shuffle {
-                autoSceneSwitcherSceneIds.shuffle()
-                if autoSceneSwitcherSceneIds.last == autoSceneSwitcherCurrentSwitcherSceneId {
-                    if let switcherSceneId = autoSceneSwitcherSceneIds.popLast() {
-                        autoSceneSwitcherSceneIds.insert(switcherSceneId, at: 0)
+                autoSceneSwitcher.sceneIds.shuffle()
+                if autoSceneSwitcher.sceneIds.last == autoSceneSwitcher.currentSwitcherSceneId {
+                    if let switcherSceneId = autoSceneSwitcher.sceneIds.popLast() {
+                        autoSceneSwitcher.sceneIds.insert(switcherSceneId, at: 0)
                     }
                 }
             }
         }
-        while let switcherSceneId = autoSceneSwitcherSceneIds.popLast() {
+        while let switcherSceneId = autoSceneSwitcher.sceneIds.popLast() {
             guard let switcherScene = autoSwitcher.scenes.first(where: { $0.id == switcherSceneId }) else {
                 continue
             }
@@ -1040,8 +1053,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 continue
             }
             selectScene(id: sceneId)
-            autoSceneSwitcherSwitchTime = now + .seconds(switcherScene.time)
-            autoSceneSwitcherCurrentSwitcherSceneId = switcherSceneId
+            autoSceneSwitcher.switchTime = now + .seconds(switcherScene.time)
+            autoSceneSwitcher.currentSwitcherSceneId = switcherSceneId
             break
         }
     }
@@ -1653,6 +1666,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         showFirstTimeChatterMessage = database.chat.showFirstTimeChatterMessage!
         showNewFollowerMessage = database.chat.showNewFollowerMessage!
         verboseStatuses = database.verboseStatuses!
+        autoSceneSwitcher.currentSwitcherId = database.autoSceneSwitchers!.switcherId
         supportsAppleLog = hasAppleLog()
         interactiveChat = getGlobalButton(type: .interactiveChat)?.isOn ?? false
         _ = updateShowCameraPreview()

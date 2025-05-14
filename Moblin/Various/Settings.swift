@@ -784,16 +784,56 @@ class SettingsAutoSceneSwitcherScene: Codable, Identifiable {
     var time: Int = 15
 }
 
-class SettingsAutoSceneSwitcher: Codable, Identifiable {
+class SettingsAutoSceneSwitcher: Codable, Identifiable, ObservableObject {
     var id: UUID = .init()
-    var name: String = "My switcher"
+    @Published var name: String = "My switcher"
     var shuffle: Bool = false
     var scenes: [SettingsAutoSceneSwitcherScene] = []
+
+    enum CodingKeys: CodingKey {
+        case id, name, shuffle, scenes
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(id, forKey: .id)
+        try container.encode(name, forKey: .name)
+        try container.encode(shuffle, forKey: .shuffle)
+        try container.encode(scenes, forKey: .scenes)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(UUID.self, forKey: .id)
+        name = try container.decode(String.self, forKey: .name)
+        shuffle = try container.decode(Bool.self, forKey: .shuffle)
+        scenes = try container.decode([SettingsAutoSceneSwitcherScene].self, forKey: .scenes)
+    }
 }
 
-class SettingsAutoSceneSwitchers: Codable, Identifiable {
-    var switcherId: UUID?
-    var switchers: [SettingsAutoSceneSwitcher] = []
+class SettingsAutoSceneSwitchers: Codable, Identifiable, ObservableObject {
+    @Published var switcherId: UUID?
+    @Published var switchers: [SettingsAutoSceneSwitcher] = []
+
+    enum CodingKeys: CodingKey {
+        case switcherId, switchers
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(switcherId, forKey: .switchers)
+        try container.encode(switchers, forKey: .switchers)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        switcherId = try? container.decode(UUID?.self, forKey: .switcherId)
+        switchers = try container.decode([SettingsAutoSceneSwitcher].self, forKey: .switchers)
+    }
 }
 
 enum SettingsFontDesign: String, Codable, CaseIterable {

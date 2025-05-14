@@ -108,19 +108,15 @@ private struct AutoSwitcherScenesSettingsView: View {
 
 private struct AutoSwitcherSettingsView: View {
     @EnvironmentObject var model: Model
-    var autoSwitcher: SettingsAutoSceneSwitcher
-    @Binding var name: String
+    @ObservedObject var autoSwitcher: SettingsAutoSceneSwitcher
 
     var body: some View {
         Form {
             Section {
                 NavigationLink {
-                    NameEditView(name: $name)
+                    NameEditView(name: $autoSwitcher.name)
                 } label: {
-                    TextItemView(name: String(localized: "Name"), value: name)
-                }
-                .onChange(of: name) { name in
-                    autoSwitcher.name = name
+                    TextItemView(name: String(localized: "Name"), value: autoSwitcher.name)
                 }
             }
             Section {
@@ -140,16 +136,15 @@ private struct AutoSwitcherSettingsView: View {
 
 private struct AutoSwitcherSettingsItemView: View {
     @EnvironmentObject var model: Model
-    var autoSwitcher: SettingsAutoSceneSwitcher
-    @State var name: String
+    @ObservedObject var autoSwitcher: SettingsAutoSceneSwitcher
 
     var body: some View {
         NavigationLink {
-            AutoSwitcherSettingsView(autoSwitcher: autoSwitcher, name: $name)
+            AutoSwitcherSettingsView(autoSwitcher: autoSwitcher)
         } label: {
             HStack {
                 DraggableItemPrefixView()
-                Text(name)
+                Text(autoSwitcher.name)
                 Spacer()
             }
         }
@@ -158,25 +153,21 @@ private struct AutoSwitcherSettingsItemView: View {
 
 struct AutoSwitchersSettingsView: View {
     @EnvironmentObject var model: Model
-
-    var database: Database {
-        model.database
-    }
+    @ObservedObject var autoSceneSwitchers: SettingsAutoSceneSwitchers
 
     var body: some View {
         Section {
-            ForEach(database.autoSceneSwitchers!.switchers) { autoSwitcher in
-                AutoSwitcherSettingsItemView(autoSwitcher: autoSwitcher, name: autoSwitcher.name)
+            ForEach(autoSceneSwitchers.switchers) { autoSwitcher in
+                AutoSwitcherSettingsItemView(autoSwitcher: autoSwitcher)
             }
             .onMove(perform: { froms, to in
-                database.autoSceneSwitchers!.switchers.move(fromOffsets: froms, toOffset: to)
+                autoSceneSwitchers.switchers.move(fromOffsets: froms, toOffset: to)
             })
             .onDelete(perform: { offsets in
-                database.autoSceneSwitchers!.switchers.remove(atOffsets: offsets)
+                model.deleteAutoSceneSwitchers(offsets: offsets)
             })
             CreateButtonView {
-                database.autoSceneSwitchers!.switchers.append(SettingsAutoSceneSwitcher())
-                model.objectWillChange.send()
+                autoSceneSwitchers.switchers.append(SettingsAutoSceneSwitcher())
             }
         } header: {
             Text("Auto scene switchers")
