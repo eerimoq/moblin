@@ -829,6 +829,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         streamingHistory.load()
         recordingsStorage.load()
         replaysStorage.load()
+        if isPortrait() {
+            AppDelegate.orientationLock = .portrait
+        } else {
+            AppDelegate.orientationLock = .landscape
+        }
     }
 
     var stream: SettingsStream {
@@ -1784,7 +1789,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         chatTextToSpeech.setFilter(value: database.chat.textToSpeechFilter!)
         chatTextToSpeech.setFilterMentions(value: database.chat.textToSpeechFilterMentions!)
         setTextToSpeechStreamerMentions()
-        AppDelegate.orientationLock = .landscape
         updateOrientationLock()
         updateFaceFilterSettings()
         setupSampleBufferReceiver()
