@@ -3699,6 +3699,7 @@ private func addMissingQuickButtons(database: Database) {
     button = SettingsQuickButton(name: String(localized: "Movie"))
     button.id = UUID()
     button.type = .movie
+    button.page = 2
     button.imageType = "System name"
     button.systemImageNameOn = "film.fill"
     button.systemImageNameOff = "film"
@@ -3707,6 +3708,7 @@ private func addMissingQuickButtons(database: Database) {
     button = SettingsQuickButton(name: String(localized: "4:3"))
     button.id = UUID()
     button.type = .fourThree
+    button.page = 2
     button.imageType = "System name"
     button.systemImageNameOn = "square.fill"
     button.systemImageNameOff = "square"
@@ -3715,6 +3717,7 @@ private func addMissingQuickButtons(database: Database) {
     button = SettingsQuickButton(name: String(localized: "Gray scale"))
     button.id = UUID()
     button.type = .grayScale
+    button.page = 2
     button.imageType = "System name"
     button.systemImageNameOn = "moon.fill"
     button.systemImageNameOff = "moon"
@@ -3723,6 +3726,7 @@ private func addMissingQuickButtons(database: Database) {
     button = SettingsQuickButton(name: String(localized: "Sepia"))
     button.id = UUID()
     button.type = .sepia
+    button.page = 2
     button.imageType = "System name"
     button.systemImageNameOn = "moonphase.waxing.crescent.inverse"
     button.systemImageNameOff = "moonphase.waning.crescent"
@@ -3731,6 +3735,7 @@ private func addMissingQuickButtons(database: Database) {
     button = SettingsQuickButton(name: String(localized: "Triple"))
     button.id = UUID()
     button.type = .triple
+    button.page = 2
     button.imageType = "System name"
     button.systemImageNameOn = "person.3.fill"
     button.systemImageNameOff = "person.3"
@@ -3739,6 +3744,7 @@ private func addMissingQuickButtons(database: Database) {
     button = SettingsQuickButton(name: String(localized: "Twin"))
     button.id = UUID()
     button.type = .twin
+    button.page = 2
     button.imageType = "System name"
     button.systemImageNameOn = "person.2.fill"
     button.systemImageNameOff = "person.2"
@@ -3755,6 +3761,7 @@ private func addMissingQuickButtons(database: Database) {
     button = SettingsQuickButton(name: String(localized: "Whirlpool"))
     button.id = UUID()
     button.type = .whirlpool
+    button.page = 2
     button.imageType = "System name"
     button.systemImageNameOn = "tornado"
     button.systemImageNameOff = "tornado"
@@ -3763,6 +3770,7 @@ private func addMissingQuickButtons(database: Database) {
     button = SettingsQuickButton(name: String(localized: "Pinch"))
     button.id = UUID()
     button.type = .pinch
+    button.page = 2
     button.imageType = "System name"
     button.systemImageNameOn = "hand.pinch.fill"
     button.systemImageNameOff = "hand.pinch"
