@@ -2,11 +2,12 @@ import SwiftUI
 
 private struct ButtonsPortraitView: View {
     @EnvironmentObject var model: Model
+    var page: Int
     var width: CGFloat
 
     var body: some View {
         HStack {
-            ForEach(model.buttonPairs[0]) { pair in
+            ForEach(model.getButtonPairs(page: page)) { pair in
                 if model.database.quickButtons!.twoColumns {
                     VStack(alignment: .leading) {
                         if let second = pair.second {
@@ -53,6 +54,7 @@ private struct ButtonsPortraitView: View {
 
 private struct ControlBarPortraitQuickButtonsView: View {
     @EnvironmentObject var model: Model
+    var page: Int
 
     var body: some View {
         GeometryReader { metrics in
@@ -60,10 +62,10 @@ private struct ControlBarPortraitQuickButtonsView: View {
                 ScrollViewReader { reader in
                     HStack {
                         Spacer(minLength: 0)
-                        ButtonsPortraitView(width: metrics.size.height)
+                        ButtonsPortraitView(page: page, width: metrics.size.height)
                             .frame(height: metrics.size.height)
                             .onChange(of: model.scrollQuickButtons) { _ in
-                                let id = model.buttonPairs[0].last?.first.button.id ?? model.buttonPairs[0]
+                                let id = model.buttonPairs[page].last?.first.button.id ?? model.buttonPairs[page]
                                     .last?.second?.button.id ?? UUID()
                                 reader.scrollTo(id, anchor: .trailing)
                             }
@@ -78,6 +80,47 @@ private struct ControlBarPortraitQuickButtonsView: View {
             .padding([.top], 5)
         }
         .padding([.leading, .trailing], 0)
+    }
+}
+
+private struct ControlBarPortraitQuickButtonsPagesView: View {
+    @EnvironmentObject var model: Model
+    var height: Double
+    @State private var activeIndex: Int? = 0
+
+    var body: some View {
+        if isPhone() {
+            if #available(iOS 17, *) {
+                VStack {
+                    ScrollView(.vertical) {
+                        VStack {
+                            Group {
+                                ControlBarPortraitQuickButtonsView(page: 0)
+                                    .id(0)
+                                ControlBarPortraitQuickButtonsView(page: 1)
+                                    .id(1)
+                                ControlBarPortraitQuickButtonsView(page: 2)
+                                    .id(2)
+                                ControlBarPortraitQuickButtonsView(page: 3)
+                                    .id(3)
+                                ControlBarPortraitQuickButtonsView(page: 4)
+                                    .id(4)
+                            }
+                            .containerRelativeFrame(.vertical, count: 1, spacing: 0)
+                        }
+                        .scrollTargetLayout()
+                    }
+                    .scrollTargetBehavior(.viewAligned)
+                    .scrollPosition(id: $activeIndex)
+                    .scrollIndicators(.never)
+                    .frame(height: height - 1)
+                }
+            } else {
+                ControlBarPortraitQuickButtonsView(page: 0)
+            }
+        } else {
+            ControlBarPortraitQuickButtonsView(page: 0)
+        }
     }
 }
 
@@ -128,7 +171,7 @@ struct ControlBarPortraitView: View {
 
     var body: some View {
         HStack(spacing: 0) {
-            ControlBarPortraitQuickButtonsView()
+            ControlBarPortraitQuickButtonsPagesView(height: controlBarHeight())
             VStack(spacing: 0) {
                 HStack(spacing: 0) {
                     Spacer(minLength: 0)
@@ -147,5 +190,6 @@ struct ControlBarPortraitView: View {
         }
         .frame(height: controlBarHeight())
         .background(.black)
+        .padding([.bottom], 25)
     }
 }
