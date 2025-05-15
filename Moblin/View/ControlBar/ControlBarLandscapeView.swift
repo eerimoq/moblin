@@ -2,11 +2,12 @@ import SwiftUI
 
 private struct ButtonsLandscapeView: View {
     @EnvironmentObject var model: Model
+    var page: Int
     var width: CGFloat
 
     var body: some View {
         VStack {
-            ForEach(model.buttonPairs) { pair in
+            ForEach(model.getButtonPairs(page: page)) { pair in
                 if model.database.quickButtons!.twoColumns {
                     HStack(alignment: .top) {
                         if let second = pair.second {
@@ -14,7 +15,7 @@ private struct ButtonsLandscapeView: View {
                                 state: second,
                                 size: buttonSize,
                                 nameSize: 10,
-                                nameWidth: buttonSize
+                                nameWidth: buttonSize,
                             )
                         } else {
                             QuickButtonPlaceholderImage()
@@ -23,7 +24,7 @@ private struct ButtonsLandscapeView: View {
                             state: pair.first,
                             size: buttonSize,
                             nameSize: 10,
-                            nameWidth: buttonSize
+                            nameWidth: buttonSize,
                         )
                     }
                     .id(pair.first.button.id)
@@ -33,7 +34,7 @@ private struct ButtonsLandscapeView: View {
                             state: second,
                             size: singleQuickButtonSize,
                             nameSize: 12,
-                            nameWidth: width - 10
+                            nameWidth: width - 10,
                         )
                     } else {
                         EmptyView()
@@ -42,7 +43,7 @@ private struct ButtonsLandscapeView: View {
                         state: pair.first,
                         size: singleQuickButtonSize,
                         nameSize: 12,
-                        nameWidth: width - 10
+                        nameWidth: width - 10,
                     )
                     .id(pair.first.button.id)
                 }
@@ -108,6 +109,7 @@ private struct ControlBarLandscapeIconAndSettingsView: View {
 
 private struct ControlBarLandscapeQuickButtonsView: View {
     @EnvironmentObject var model: Model
+    var page: Int
 
     var body: some View {
         GeometryReader { metrics in
@@ -115,10 +117,10 @@ private struct ControlBarLandscapeQuickButtonsView: View {
                 ScrollViewReader { reader in
                     VStack {
                         Spacer(minLength: 0)
-                        ButtonsLandscapeView(width: metrics.size.width)
+                        ButtonsLandscapeView(page: page, width: metrics.size.width)
                             .frame(width: metrics.size.width)
                             .onChange(of: model.scrollQuickButtons) { _ in
-                                let id = model.buttonPairs.last?.first.button.id ?? model.buttonPairs
+                                let id = model.buttonPairs[page].last?.first.button.id ?? model.buttonPairs[page]
                                     .last?.second?.button.id ?? UUID()
                                 reader.scrollTo(id, anchor: .bottom)
                             }
@@ -133,6 +135,43 @@ private struct ControlBarLandscapeQuickButtonsView: View {
             .padding([.top], 5)
         }
         .padding([.leading, .trailing], 0)
+    }
+}
+
+private struct ControlBarLandscapeQuickButtonsPagesView: View {
+    @EnvironmentObject var model: Model
+    var width: Double
+    @State private var activeIndex: Int? = 0
+
+    var body: some View {
+        if #available(iOS 17, *) {
+            VStack {
+                ScrollView(.horizontal) {
+                    HStack {
+                        Group {
+                            ControlBarLandscapeQuickButtonsView(page: 0)
+                                .id(0)
+                            ControlBarLandscapeQuickButtonsView(page: 1)
+                                .id(1)
+                            ControlBarLandscapeQuickButtonsView(page: 2)
+                                .id(2)
+                            ControlBarLandscapeQuickButtonsView(page: 3)
+                                .id(3)
+                            ControlBarLandscapeQuickButtonsView(page: 4)
+                                .id(4)
+                        }
+                        .containerRelativeFrame(.horizontal, count: 1, spacing: 0)
+                    }
+                    .scrollTargetLayout()
+                }
+                .scrollTargetBehavior(.viewAligned)
+                .scrollPosition(id: $activeIndex)
+                .scrollIndicators(.never)
+                .frame(width: width - 1)
+            }
+        } else {
+            ControlBarLandscapeQuickButtonsView(page: 1)
+        }
     }
 }
 
@@ -153,7 +192,7 @@ struct ControlBarLandscapeView: View {
         VStack(spacing: 0) {
             ControlBarLandscapeStatusView()
             ControlBarLandscapeIconAndSettingsView()
-            ControlBarLandscapeQuickButtonsView()
+            ControlBarLandscapeQuickButtonsPagesView(width: controlBarWidth())
             StreamButton()
                 .padding([.top], 10)
                 .padding([.leading, .trailing], 5)

@@ -1799,6 +1799,7 @@ class SettingsQuickButton: Codable, Identifiable, Equatable, Hashable {
     var isOn: Bool = false
     var enabled: Bool? = true
     var backgroundColor: RgbColor? = defaultQuickButtonColor
+    var page: Int? = 1
 
     init(name: String) {
         self.name = name
@@ -5640,6 +5641,10 @@ final class Settings {
         }
         if realDatabase.autoSceneSwitchers == nil {
             realDatabase.autoSceneSwitchers = .init()
+            store()
+        }
+        for button in realDatabase.globalButtons! where button.page == nil {
+            button.page = 1
             store()
         }
     }

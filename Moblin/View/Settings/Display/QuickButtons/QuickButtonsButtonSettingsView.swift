@@ -5,6 +5,8 @@ struct QuickButtonsButtonSettingsView: View {
     @State var background: Color
     let onChange: (Color) -> Void
     let onSubmit: () -> Void
+    @State var page: Int
+    let onPage: (Int) -> Void
 
     var body: some View {
         Form {
@@ -27,6 +29,18 @@ struct QuickButtonsButtonSettingsView: View {
                 })
             } header: {
                 Text("Color")
+            }
+            Section {
+                Picker(selection: $page) {
+                    ForEach([1, 2, 3, 4, 5], id: \.self) { page in
+                        Text(String(page))
+                    }
+                } label: {
+                    Text("Page")
+                }
+                .onChange(of: page) { _ in
+                    onPage(page)
+                }
             }
         }
         .navigationTitle(name)

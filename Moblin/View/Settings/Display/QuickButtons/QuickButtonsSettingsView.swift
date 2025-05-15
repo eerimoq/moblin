@@ -55,7 +55,11 @@ struct QuickButtonsSettingsView: View {
                                     onChange: { color in
                                         onBackgroundColorChange(button: button, color: color)
                                     },
-                                    onSubmit: onBackgroundColorSubmit
+                                    onSubmit: onBackgroundColorSubmit,
+                                    page: button.page!,
+                                    onPage: { page in
+                                        button.page = page
+                                    }
                                 )
                             } label: {
                                 Toggle(isOn: Binding(get: {

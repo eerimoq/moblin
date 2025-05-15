@@ -6,7 +6,7 @@ private struct ButtonsPortraitView: View {
 
     var body: some View {
         HStack {
-            ForEach(model.buttonPairs) { pair in
+            ForEach(model.buttonPairs[0]) { pair in
                 if model.database.quickButtons!.twoColumns {
                     VStack(alignment: .leading) {
                         if let second = pair.second {
@@ -14,7 +14,7 @@ private struct ButtonsPortraitView: View {
                                 state: second,
                                 size: buttonSize,
                                 nameSize: 10,
-                                nameWidth: buttonSize
+                                nameWidth: buttonSize,
                             )
                         } else {
                             QuickButtonPlaceholderImage()
@@ -23,7 +23,7 @@ private struct ButtonsPortraitView: View {
                             state: pair.first,
                             size: buttonSize,
                             nameSize: 10,
-                            nameWidth: buttonSize
+                            nameWidth: buttonSize,
                         )
                     }
                     .id(pair.first.button.id)
@@ -33,7 +33,7 @@ private struct ButtonsPortraitView: View {
                             state: second,
                             size: singleQuickButtonSize,
                             nameSize: 12,
-                            nameWidth: width - 10
+                            nameWidth: width - 10,
                         )
                     } else {
                         EmptyView()
@@ -42,7 +42,7 @@ private struct ButtonsPortraitView: View {
                         state: pair.first,
                         size: singleQuickButtonSize,
                         nameSize: 12,
-                        nameWidth: width - 10
+                        nameWidth: width - 10,
                     )
                     .id(pair.first.button.id)
                 }
@@ -63,7 +63,7 @@ private struct ControlBarPortraitQuickButtonsView: View {
                         ButtonsPortraitView(width: metrics.size.height)
                             .frame(height: metrics.size.height)
                             .onChange(of: model.scrollQuickButtons) { _ in
-                                let id = model.buttonPairs.last?.first.button.id ?? model.buttonPairs
+                                let id = model.buttonPairs[0].last?.first.button.id ?? model.buttonPairs[0]
                                     .last?.second?.button.id ?? UUID()
                                 reader.scrollTo(id, anchor: .trailing)
                             }
