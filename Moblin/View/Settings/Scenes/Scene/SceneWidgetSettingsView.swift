@@ -10,7 +10,7 @@ private struct SceneSettings: Codable {
 struct SceneWidgetSettingsView: View {
     @EnvironmentObject private var model: Model
     var sceneWidget: SettingsSceneWidget
-    var widget: SettingsWidget
+    @ObservedObject var widget: SettingsWidget
     @Binding var numericInput: Bool
     @State var x: Double
     @State var y: Double
@@ -153,11 +153,7 @@ struct SceneWidgetSettingsView: View {
             }
             Section {
                 NavigationLink {
-                    WidgetSettingsView(
-                        widget: widget,
-                        type: widget.type.toString(),
-                        name: widget.name
-                    )
+                    WidgetSettingsView(widget: widget)
                 } label: {
                     Text("Widget")
                 }

@@ -2,20 +2,15 @@ import SwiftUI
 
 struct WidgetSettingsView: View {
     @EnvironmentObject var model: Model
-    var widget: SettingsWidget
-    @State var type: String
-    @State var name: String
+    @ObservedObject var widget: SettingsWidget
 
     var body: some View {
         Form {
             Section {
                 NavigationLink {
-                    NameEditView(name: $name)
+                    NameEditView(name: $widget.name)
                 } label: {
-                    TextItemView(name: String(localized: "Name"), value: name)
-                }
-                .onChange(of: name) { name in
-                    widget.name = name
+                    TextItemView(name: String(localized: "Name"), value: widget.name)
                 }
                 NavigationLink {
                     InlinePickerView(title: String(localized: "Type"),

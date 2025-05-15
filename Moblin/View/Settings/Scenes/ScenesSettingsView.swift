@@ -148,7 +148,7 @@ struct ScenesSettingsView: View {
     var body: some View {
         Form {
             ScenesListView()
-            WidgetsSettingsView()
+            WidgetsSettingsView(database: model.database)
             AutoSwitchersSettingsView(autoSceneSwitchers: model.database.autoSceneSwitchers!)
             ScenesSwitchTransition(sceneSwitchTransition: model.database.sceneSwitchTransition!.toString())
             RemoteSceneView(selectedSceneId: model.database.remoteSceneId)

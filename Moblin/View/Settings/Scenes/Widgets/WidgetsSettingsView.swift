@@ -1,39 +1,41 @@
 import SwiftUI
 
+private struct WidgetsSettingsItemView: View {
+    @EnvironmentObject var model: Model
+    @ObservedObject var widget: SettingsWidget
+
+    var body: some View {
+        NavigationLink {
+            WidgetSettingsView(widget: widget)
+        } label: {
+            Toggle(isOn: Binding(get: {
+                widget.enabled!
+            }, set: { value in
+                widget.enabled = value
+                model.sceneUpdated(attachCamera: model.isCaptureDeviceVideoSoureWidget(widget: widget))
+            })) {
+                HStack {
+                    DraggableItemPrefixView()
+                    IconAndTextView(
+                        image: widgetImage(widget: widget),
+                        text: widget.name,
+                        longDivider: true
+                    )
+                    Spacer()
+                }
+            }
+        }
+    }
+}
+
 struct WidgetsSettingsView: View {
     @EnvironmentObject var model: Model
-
-    var database: Database {
-        model.database
-    }
+    @ObservedObject var database: Database
 
     var body: some View {
         Section {
             ForEach(database.widgets) { widget in
-                NavigationLink {
-                    WidgetSettingsView(
-                        widget: widget,
-                        type: widget.type.toString(),
-                        name: widget.name
-                    )
-                } label: {
-                    Toggle(isOn: Binding(get: {
-                        widget.enabled!
-                    }, set: { value in
-                        widget.enabled = value
-                        model.sceneUpdated(attachCamera: model.isCaptureDeviceVideoSoureWidget(widget: widget))
-                    })) {
-                        HStack {
-                            DraggableItemPrefixView()
-                            IconAndTextView(
-                                image: widgetImage(widget: widget),
-                                text: widget.name,
-                                longDivider: true
-                            )
-                            Spacer()
-                        }
-                    }
-                }
+                WidgetsSettingsItemView(widget: widget)
             }
             .onMove(perform: { froms, to in
                 database.widgets.move(fromOffsets: froms, toOffset: to)
@@ -46,7 +48,6 @@ struct WidgetsSettingsView: View {
             CreateButtonView {
                 database.widgets.append(SettingsWidget(name: String(localized: "My widget")))
                 model.fixAlertMedias()
-                model.objectWillChange.send()
             }
         } header: {
             Text("Widgets")

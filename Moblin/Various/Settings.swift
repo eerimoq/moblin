@@ -1655,8 +1655,8 @@ let widgetTypes = SettingsWidgetType.allCases
     .filter { $0 != .videoEffect }
     .map { $0.toString() }
 
-class SettingsWidget: Codable, Identifiable, Equatable {
-    var name: String
+class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject {
+    @Published var name: String
     var id: UUID = .init()
     var type: SettingsWidgetType = .browser
     var text: SettingsWidgetText = .init()
@@ -1676,6 +1676,56 @@ class SettingsWidget: Codable, Identifiable, Equatable {
 
     static func == (lhs: SettingsWidget, rhs: SettingsWidget) -> Bool {
         return lhs.id == rhs.id
+    }
+
+    enum CodingKeys: CodingKey {
+        case name,
+             id,
+             type,
+             text,
+             browser,
+             crop,
+             map,
+             scene,
+             qrCode,
+             alerts,
+             videoSource,
+             scoreboard,
+             enabled
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(name, forKey: .name)
+        try container.encode(id, forKey: .id)
+        try container.encode(type, forKey: .type)
+        try container.encode(text, forKey: .text)
+        try container.encode(browser, forKey: .browser)
+        try container.encode(crop, forKey: .crop)
+        try container.encode(map, forKey: .map)
+        try container.encode(scene, forKey: .scene)
+        try container.encode(qrCode, forKey: .qrCode)
+        try container.encode(alerts, forKey: .alerts)
+        try container.encode(videoSource, forKey: .videoSource)
+        try container.encode(scoreboard, forKey: .scoreboard)
+        try container.encode(enabled, forKey: .enabled)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        name = try container.decode(String.self, forKey: .name)
+        id = try container.decode(UUID.self, forKey: .id)
+        type = try container.decode(SettingsWidgetType.self, forKey: .type)
+        text = try container.decode(SettingsWidgetText.self, forKey: .text)
+        browser = try container.decode(SettingsWidgetBrowser.self, forKey: .browser)
+        crop = try? container.decode(SettingsWidgetCrop?.self, forKey: .crop)
+        map = try? container.decode(SettingsWidgetMap?.self, forKey: .map)
+        scene = try? container.decode(SettingsWidgetScene?.self, forKey: .scene)
+        qrCode = try? container.decode(SettingsWidgetQrCode?.self, forKey: .qrCode)
+        alerts = try? container.decode(SettingsWidgetAlerts?.self, forKey: .alerts)
+        videoSource = try? container.decode(SettingsWidgetVideoSource?.self, forKey: .videoSource)
+        scoreboard = try? container.decode(SettingsWidgetScoreboard?.self, forKey: .scoreboard)
+        enabled = try? container.decode(Bool?.self, forKey: .enabled)
     }
 }
 
@@ -3080,10 +3130,10 @@ class SettingsAlertsMediaGallery: Codable {
     var customSounds: [SettingsAlertsMediaGalleryItem] = []
 }
 
-class Database: Codable {
+class Database: Codable, ObservableObject {
     var streams: [SettingsStream] = []
     var scenes: [SettingsScene] = []
-    var widgets: [SettingsWidget] = []
+    @Published var widgets: [SettingsWidget] = []
     var show: SettingsShow = .init()
     var zoom: SettingsZoom = .init()
     var tapToFocus: Bool = false
@@ -3165,6 +3215,202 @@ class Database: Codable {
 
     func toString() throws -> String {
         return try String.fromUtf8(data: JSONEncoder().encode(self))
+    }
+
+    enum CodingKeys: CodingKey {
+        case streams,
+             scenes,
+             widgets,
+             show,
+             zoom,
+             tapToFocus,
+             bitratePresets,
+             iconImage,
+             videoStabilizationMode,
+             chat,
+             batteryPercentage,
+             mic,
+             debug,
+             quickButtons,
+             globalButtons,
+             rtmpServer,
+             networkInterfaceNames,
+             lowBitrateWarning,
+             vibrate,
+             gameControllers,
+             remoteControl,
+             startStopRecordingConfirmations,
+             color,
+             mirrorFrontCameraOnStream,
+             streamButtonColor,
+             location,
+             watch,
+             audio,
+             webBrowser,
+             deepLinkCreator,
+             srtlaServer,
+             mediaPlayers,
+             showAllSettings,
+             portrait,
+             djiDevices,
+             alertsMediaGallery,
+             catPrinters,
+             verboseStatuses,
+             scoreboardPlayers,
+             keyboard,
+             tesla,
+             srtlaRelay,
+             pixellateStrength,
+             moblink,
+             sceneSwitchTransition,
+             forceSceneSwitchTransition,
+             cameraControlsEnabled,
+             externalDisplayContent,
+             cyclingPowerDevices,
+             heartRateDevices,
+             djiGimbalDevices,
+             remoteSceneId,
+             sceneNumericInput,
+             goPro,
+             replay,
+             portraitVideoOffsetFromTop,
+             autoSceneSwitchers
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(streams, forKey: .streams)
+        try container.encode(scenes, forKey: .scenes)
+        try container.encode(widgets, forKey: .widgets)
+        try container.encode(show, forKey: .show)
+        try container.encode(zoom, forKey: .zoom)
+        try container.encode(tapToFocus, forKey: .tapToFocus)
+        try container.encode(bitratePresets, forKey: .bitratePresets)
+        try container.encode(iconImage, forKey: .iconImage)
+        try container.encode(videoStabilizationMode, forKey: .videoStabilizationMode)
+        try container.encode(chat, forKey: .chat)
+        try container.encode(batteryPercentage, forKey: .batteryPercentage)
+        try container.encode(mic, forKey: .mic)
+        try container.encode(debug, forKey: .debug)
+        try container.encode(quickButtons, forKey: .quickButtons)
+        try container.encode(globalButtons, forKey: .globalButtons)
+        try container.encode(rtmpServer, forKey: .rtmpServer)
+        try container.encode(networkInterfaceNames, forKey: .networkInterfaceNames)
+        try container.encode(lowBitrateWarning, forKey: .lowBitrateWarning)
+        try container.encode(vibrate, forKey: .vibrate)
+        try container.encode(gameControllers, forKey: .gameControllers)
+        try container.encode(remoteControl, forKey: .remoteControl)
+        try container.encode(startStopRecordingConfirmations, forKey: .startStopRecordingConfirmations)
+        try container.encode(color, forKey: .color)
+        try container.encode(mirrorFrontCameraOnStream, forKey: .mirrorFrontCameraOnStream)
+        try container.encode(streamButtonColor, forKey: .streamButtonColor)
+        try container.encode(location, forKey: .location)
+        try container.encode(watch, forKey: .watch)
+        try container.encode(audio, forKey: .audio)
+        try container.encode(webBrowser, forKey: .webBrowser)
+        try container.encode(deepLinkCreator, forKey: .deepLinkCreator)
+        try container.encode(srtlaServer, forKey: .srtlaServer)
+        try container.encode(mediaPlayers, forKey: .mediaPlayers)
+        try container.encode(showAllSettings, forKey: .showAllSettings)
+        try container.encode(portrait, forKey: .portrait)
+        try container.encode(djiDevices, forKey: .djiDevices)
+        try container.encode(alertsMediaGallery, forKey: .alertsMediaGallery)
+        try container.encode(catPrinters, forKey: .catPrinters)
+        try container.encode(verboseStatuses, forKey: .verboseStatuses)
+        try container.encode(scoreboardPlayers, forKey: .scoreboardPlayers)
+        try container.encode(keyboard, forKey: .keyboard)
+        try container.encode(tesla, forKey: .tesla)
+        try container.encode(srtlaRelay, forKey: .srtlaRelay)
+        try container.encode(pixellateStrength, forKey: .pixellateStrength)
+        try container.encode(moblink, forKey: .moblink)
+        try container.encode(sceneSwitchTransition, forKey: .sceneSwitchTransition)
+        try container.encode(forceSceneSwitchTransition, forKey: .forceSceneSwitchTransition)
+        try container.encode(cameraControlsEnabled, forKey: .cameraControlsEnabled)
+        try container.encode(externalDisplayContent, forKey: .externalDisplayContent)
+        try container.encode(cyclingPowerDevices, forKey: .cyclingPowerDevices)
+        try container.encode(heartRateDevices, forKey: .heartRateDevices)
+        try container.encode(djiGimbalDevices, forKey: .djiGimbalDevices)
+        try container.encode(remoteSceneId, forKey: .remoteSceneId)
+        try container.encode(sceneNumericInput, forKey: .sceneNumericInput)
+        try container.encode(goPro, forKey: .goPro)
+        try container.encode(replay, forKey: .replay)
+        try container.encode(portraitVideoOffsetFromTop, forKey: .portraitVideoOffsetFromTop)
+        try container.encode(autoSceneSwitchers, forKey: .autoSceneSwitchers)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        streams = try container.decode([SettingsStream].self, forKey: .streams)
+        scenes = try container.decode([SettingsScene].self, forKey: .scenes)
+        widgets = try container.decode([SettingsWidget].self, forKey: .widgets)
+        show = try container.decode(SettingsShow.self, forKey: .show)
+        zoom = try container.decode(SettingsZoom.self, forKey: .zoom)
+        tapToFocus = try container.decode(Bool.self, forKey: .tapToFocus)
+        bitratePresets = try container.decode([SettingsBitratePreset].self, forKey: .bitratePresets)
+        iconImage = try container.decode(String.self, forKey: .iconImage)
+        videoStabilizationMode = try container.decode(
+            SettingsVideoStabilizationMode.self,
+            forKey: .videoStabilizationMode
+        )
+        chat = try container.decode(SettingsChat.self, forKey: .chat)
+        batteryPercentage = try container.decode(Bool.self, forKey: .batteryPercentage)
+        mic = try container.decode(SettingsMic.self, forKey: .mic)
+        debug = try container.decode(SettingsDebug.self, forKey: .debug)
+        quickButtons = try? container.decode(SettingsQuickButtons?.self, forKey: .quickButtons)
+        globalButtons = try? container.decode([SettingsQuickButton]?.self, forKey: .globalButtons)
+        rtmpServer = try? container.decode(SettingsRtmpServer?.self, forKey: .rtmpServer)
+        networkInterfaceNames = try? container.decode(
+            [SettingsNetworkInterfaceName]?.self,
+            forKey: .networkInterfaceNames
+        )
+        lowBitrateWarning = try? container.decode(Bool?.self, forKey: .lowBitrateWarning)
+        vibrate = try? container.decode(Bool?.self, forKey: .vibrate)
+        gameControllers = try? container.decode([SettingsGameController]?.self, forKey: .gameControllers)
+        remoteControl = try? container.decode(SettingsRemoteControl?.self, forKey: .remoteControl)
+        startStopRecordingConfirmations = try? container.decode(Bool?.self, forKey: .startStopRecordingConfirmations)
+        color = try? container.decode(SettingsColor?.self, forKey: .color)
+        mirrorFrontCameraOnStream = try? container.decode(Bool?.self, forKey: .mirrorFrontCameraOnStream)
+        streamButtonColor = try? container.decode(RgbColor?.self, forKey: .streamButtonColor)
+        location = try? container.decode(SettingsLocation?.self, forKey: .location)
+        watch = try? container.decode(WatchSettings?.self, forKey: .watch)
+        audio = try? container.decode(AudioSettings?.self, forKey: .audio)
+        webBrowser = try? container.decode(WebBrowserSettings?.self, forKey: .webBrowser)
+        deepLinkCreator = try? container.decode(DeepLinkCreator?.self, forKey: .deepLinkCreator)
+        srtlaServer = try? container.decode(SettingsSrtlaServer?.self, forKey: .srtlaServer)
+        mediaPlayers = try? container.decode(SettingsMediaPlayers?.self, forKey: .mediaPlayers)
+        showAllSettings = try? container.decode(Bool?.self, forKey: .showAllSettings)
+        portrait = try? container.decode(Bool?.self, forKey: .portrait)
+        djiDevices = try? container.decode(SettingsDjiDevices?.self, forKey: .djiDevices)
+        alertsMediaGallery = try? container.decode(SettingsAlertsMediaGallery?.self, forKey: .alertsMediaGallery)
+        catPrinters = try? container.decode(SettingsCatPrinters?.self, forKey: .catPrinters)
+        verboseStatuses = try? container.decode(Bool?.self, forKey: .verboseStatuses)
+        scoreboardPlayers = try? container.decode([SettingsWidgetScoreboardPlayer]?.self, forKey: .scoreboardPlayers)
+        keyboard = try? container.decode(SettingsKeyboard?.self, forKey: .keyboard)
+        tesla = try? container.decode(SettingsTesla?.self, forKey: .tesla)
+        srtlaRelay = try? container.decode(SettingsMoblink?.self, forKey: .srtlaRelay)
+        pixellateStrength = try? container.decode(Float?.self, forKey: .pixellateStrength)
+        moblink = try? container.decode(SettingsMoblink?.self, forKey: .moblink)
+        sceneSwitchTransition = try? container.decode(
+            SettingsSceneSwitchTransition?.self,
+            forKey: .sceneSwitchTransition
+        )
+        forceSceneSwitchTransition = try? container.decode(Bool?.self, forKey: .forceSceneSwitchTransition)
+        cameraControlsEnabled = try? container.decode(Bool?.self, forKey: .cameraControlsEnabled)
+        externalDisplayContent = try? container.decode(
+            SettingsExternalDisplayContent?.self,
+            forKey: .externalDisplayContent
+        )
+        cyclingPowerDevices = try? container.decode(SettingsCyclingPowerDevices?.self, forKey: .cyclingPowerDevices)
+        heartRateDevices = try? container.decode(SettingsHeartRateDevices?.self, forKey: .heartRateDevices)
+        djiGimbalDevices = try? container.decode(SettingsDjiGimbalDevices?.self, forKey: .djiGimbalDevices)
+        remoteSceneId = try? container.decode(UUID?.self, forKey: .remoteSceneId)
+        sceneNumericInput = try? container.decode(Bool?.self, forKey: .sceneNumericInput)
+        goPro = try? container.decode(SettingsGoPro?.self, forKey: .goPro)
+        replay = try? container.decode(SettingsReplay?.self, forKey: .replay)
+        portraitVideoOffsetFromTop = try? container.decode(Double?.self, forKey: .portraitVideoOffsetFromTop)
+        autoSceneSwitchers = try? container.decode(SettingsAutoSceneSwitchers?.self, forKey: .autoSceneSwitchers)
     }
 }
 
