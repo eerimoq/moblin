@@ -59,6 +59,7 @@ struct QuickButtonsSettingsView: View {
                                     page: button.page!,
                                     onPage: { page in
                                         button.page = page
+                                        model.updateButtonStates()
                                     }
                                 )
                             } label: {
