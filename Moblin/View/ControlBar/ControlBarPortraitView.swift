@@ -86,38 +86,25 @@ private struct ControlBarPortraitQuickButtonsView: View {
 private struct ControlBarPortraitQuickButtonsPagesView: View {
     @EnvironmentObject var model: Model
     var height: Double
-    @State private var activeIndex: Int? = 0
 
     var body: some View {
-        if isPhone() {
-            if #available(iOS 17, *) {
-                VStack {
-                    ScrollView(.vertical) {
-                        VStack {
-                            Group {
-                                ControlBarPortraitQuickButtonsView(page: 0)
-                                    .id(0)
-                                ControlBarPortraitQuickButtonsView(page: 1)
-                                    .id(1)
-                                ControlBarPortraitQuickButtonsView(page: 2)
-                                    .id(2)
-                                ControlBarPortraitQuickButtonsView(page: 3)
-                                    .id(3)
-                                ControlBarPortraitQuickButtonsView(page: 4)
-                                    .id(4)
-                            }
-                            .containerRelativeFrame(.vertical, count: 1, spacing: 0)
-                        }
-                        .scrollTargetLayout()
+        if #available(iOS 17, *) {
+            ScrollView(.vertical) {
+                LazyVStack {
+                    Group {
+                        ControlBarPortraitQuickButtonsView(page: 0)
+                        ControlBarPortraitQuickButtonsView(page: 1)
+                        ControlBarPortraitQuickButtonsView(page: 2)
+                        ControlBarPortraitQuickButtonsView(page: 3)
+                        ControlBarPortraitQuickButtonsView(page: 4)
                     }
-                    .scrollTargetBehavior(.viewAligned)
-                    .scrollPosition(id: $activeIndex)
-                    .scrollIndicators(.never)
-                    .frame(height: height - 1)
+                    .containerRelativeFrame(.vertical, count: 1, spacing: 0)
                 }
-            } else {
-                ControlBarPortraitQuickButtonsView(page: 0)
+                .scrollTargetLayout()
             }
+            .scrollTargetBehavior(.viewAligned(limitBehavior: .always))
+            .scrollIndicators(.never)
+            .frame(height: height - 1)
         } else {
             ControlBarPortraitQuickButtonsView(page: 0)
         }

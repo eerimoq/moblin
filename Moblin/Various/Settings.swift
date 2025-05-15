@@ -3211,11 +3211,6 @@ class Database: Codable, ObservableObject {
         addMissingDeepLinkQuickButtons(database: database)
         addMissingBundledLuts(database: database)
         addMissingGoPro(database: database)
-        if !isPhone() {
-            for button in database.globalButtons! {
-                button.page = 1
-            }
-        }
         return database
     }
 

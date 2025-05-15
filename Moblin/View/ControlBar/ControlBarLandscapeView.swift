@@ -141,37 +141,26 @@ private struct ControlBarLandscapeQuickButtonsView: View {
 private struct ControlBarLandscapeQuickButtonsPagesView: View {
     @EnvironmentObject var model: Model
     var width: Double
-    @State private var activeIndex: Int? = 0
 
     var body: some View {
-        if isPhone() {
-            if #available(iOS 17, *) {
-                VStack {
-                    ScrollView(.horizontal) {
-                        HStack {
-                            Group {
-                                ControlBarLandscapeQuickButtonsView(page: 0)
-                                    .id(0)
-                                ControlBarLandscapeQuickButtonsView(page: 1)
-                                    .id(1)
-                                ControlBarLandscapeQuickButtonsView(page: 2)
-                                    .id(2)
-                                ControlBarLandscapeQuickButtonsView(page: 3)
-                                    .id(3)
-                                ControlBarLandscapeQuickButtonsView(page: 4)
-                                    .id(4)
-                            }
-                            .containerRelativeFrame(.horizontal, count: 1, spacing: 0)
+        if #available(iOS 17, *) {
+            VStack {
+                ScrollView(.horizontal) {
+                    HStack {
+                        Group {
+                            ControlBarLandscapeQuickButtonsView(page: 0)
+                            ControlBarLandscapeQuickButtonsView(page: 1)
+                            ControlBarLandscapeQuickButtonsView(page: 2)
+                            ControlBarLandscapeQuickButtonsView(page: 3)
+                            ControlBarLandscapeQuickButtonsView(page: 4)
                         }
-                        .scrollTargetLayout()
+                        .containerRelativeFrame(.horizontal, count: 1, spacing: 0)
                     }
-                    .scrollTargetBehavior(.viewAligned)
-                    .scrollPosition(id: $activeIndex)
-                    .scrollIndicators(.never)
-                    .frame(width: width - 1)
+                    .scrollTargetLayout()
                 }
-            } else {
-                ControlBarLandscapeQuickButtonsView(page: 0)
+                .scrollTargetBehavior(.viewAligned(limitBehavior: .always))
+                .scrollIndicators(.never)
+                .frame(width: width - 1)
             }
         } else {
             ControlBarLandscapeQuickButtonsView(page: 0)

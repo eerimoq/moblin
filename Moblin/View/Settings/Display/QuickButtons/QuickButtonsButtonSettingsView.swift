@@ -30,18 +30,16 @@ struct QuickButtonsButtonSettingsView: View {
             } header: {
                 Text("Color")
             }
-            if isPhone() {
-                Section {
-                    Picker(selection: $page) {
-                        ForEach([1, 2, 3, 4, 5], id: \.self) { page in
-                            Text(String(page))
-                        }
-                    } label: {
-                        Text("Page")
+            Section {
+                Picker(selection: $page) {
+                    ForEach([1, 2, 3, 4, 5], id: \.self) { page in
+                        Text(String(page))
                     }
-                    .onChange(of: page) { _ in
-                        onPage(page)
-                    }
+                } label: {
+                    Text("Page")
+                }
+                .onChange(of: page) { _ in
+                    onPage(page)
                 }
             }
         }
