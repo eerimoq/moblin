@@ -80,34 +80,6 @@ private struct ControlBarPortraitQuickButtonsView: View {
     }
 }
 
-private struct ControlBarPortraitQuickButtonsPagesView: View {
-    @EnvironmentObject var model: Model
-    var height: Double
-
-    var body: some View {
-        if #available(iOS 17, *) {
-            ScrollView(.vertical) {
-                LazyVStack {
-                    Group {
-                        ControlBarPortraitQuickButtonsView(page: 0)
-                        ControlBarPortraitQuickButtonsView(page: 1)
-                        ControlBarPortraitQuickButtonsView(page: 2)
-                        ControlBarPortraitQuickButtonsView(page: 3)
-                        ControlBarPortraitQuickButtonsView(page: 4)
-                    }
-                    .containerRelativeFrame(.vertical, count: 1, spacing: 0)
-                }
-                .scrollTargetLayout()
-            }
-            .scrollTargetBehavior(.viewAligned(limitBehavior: .always))
-            .scrollIndicators(.never)
-            .frame(height: height - 1)
-        } else {
-            ControlBarPortraitQuickButtonsView(page: 0)
-        }
-    }
-}
-
 private struct ControlBarPortraitIconAndSettingsView: View {
     @EnvironmentObject var model: Model
 
@@ -140,22 +112,13 @@ private struct ControlBarPortraitIconAndSettingsView: View {
     }
 }
 
-struct ControlBarPortraitView: View {
+private struct ControlBarPortraitMainPageView: View {
     @EnvironmentObject var model: Model
-    @Environment(\.accessibilityShowButtonShapes)
-    private var accessibilityShowButtonShapes
-
-    private func controlBarHeight() -> CGFloat {
-        if accessibilityShowButtonShapes {
-            return 150
-        } else {
-            return 100
-        }
-    }
+    var height: Double
 
     var body: some View {
         HStack(spacing: 0) {
-            ControlBarPortraitQuickButtonsPagesView(height: controlBarHeight())
+            ControlBarPortraitQuickButtonsView(page: 0)
             VStack(spacing: 0) {
                 HStack(spacing: 0) {
                     Spacer(minLength: 0)
@@ -170,9 +133,55 @@ struct ControlBarPortraitView: View {
                     .padding([.top], 10)
                     .padding([.leading, .trailing], 5)
             }
-            .frame(width: controlBarHeight())
+            .frame(width: height)
         }
-        .frame(height: controlBarHeight())
-        .background(.black)
+    }
+}
+
+private struct ControlBarPortraitPagesView: View {
+    @EnvironmentObject var model: Model
+    var height: Double
+
+    var body: some View {
+        if #available(iOS 17, *) {
+            ScrollView(.vertical) {
+                LazyVStack {
+                    Group {
+                        ControlBarPortraitMainPageView(height: height)
+                        ControlBarPortraitQuickButtonsView(page: 1)
+                        ControlBarPortraitQuickButtonsView(page: 2)
+                        ControlBarPortraitQuickButtonsView(page: 3)
+                        ControlBarPortraitQuickButtonsView(page: 4)
+                    }
+                    .containerRelativeFrame(.vertical, count: 1, spacing: 0)
+                }
+                .scrollTargetLayout()
+            }
+            .scrollTargetBehavior(.viewAligned(limitBehavior: .always))
+            .scrollIndicators(.never)
+            .frame(height: height - 1)
+        } else {
+            ControlBarPortraitMainPageView(height: height)
+        }
+    }
+}
+
+struct ControlBarPortraitView: View {
+    @EnvironmentObject var model: Model
+    @Environment(\.accessibilityShowButtonShapes)
+    private var accessibilityShowButtonShapes
+
+    private func controlBarHeight() -> CGFloat {
+        if accessibilityShowButtonShapes {
+            return 150
+        } else {
+            return 100
+        }
+    }
+
+    var body: some View {
+        ControlBarPortraitPagesView(height: controlBarHeight())
+            .frame(height: controlBarHeight())
+            .background(.black)
     }
 }

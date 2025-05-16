@@ -135,7 +135,19 @@ private struct ControlBarLandscapeQuickButtonsView: View {
     }
 }
 
-private struct ControlBarLandscapeQuickButtonsPagesView: View {
+private struct ControlBarLandscapeMainPageView: View {
+    var body: some View {
+        VStack(spacing: 0) {
+            ControlBarLandscapeIconAndSettingsView()
+            ControlBarLandscapeQuickButtonsView(page: 0)
+            StreamButton()
+                .padding([.top], 10)
+                .padding([.leading, .trailing], 5)
+        }
+    }
+}
+
+private struct ControlBarLandscapePagesView: View {
     @EnvironmentObject var model: Model
     var width: Double
 
@@ -145,7 +157,7 @@ private struct ControlBarLandscapeQuickButtonsPagesView: View {
                 ScrollView(.horizontal) {
                     HStack {
                         Group {
-                            ControlBarLandscapeQuickButtonsView(page: 0)
+                            ControlBarLandscapeMainPageView()
                             ControlBarLandscapeQuickButtonsView(page: 1)
                             ControlBarLandscapeQuickButtonsView(page: 2)
                             ControlBarLandscapeQuickButtonsView(page: 3)
@@ -160,7 +172,7 @@ private struct ControlBarLandscapeQuickButtonsPagesView: View {
                 .frame(width: width - 1)
             }
         } else {
-            ControlBarLandscapeQuickButtonsView(page: 0)
+            ControlBarLandscapeMainPageView()
         }
     }
 }
@@ -181,11 +193,7 @@ struct ControlBarLandscapeView: View {
     var body: some View {
         VStack(spacing: 0) {
             ControlBarLandscapeStatusView()
-            ControlBarLandscapeIconAndSettingsView()
-            ControlBarLandscapeQuickButtonsPagesView(width: controlBarWidth())
-            StreamButton()
-                .padding([.top], 10)
-                .padding([.leading, .trailing], 5)
+            ControlBarLandscapePagesView(width: controlBarWidth())
         }
         .padding([.top, .bottom], 0)
         .frame(width: controlBarWidth())
