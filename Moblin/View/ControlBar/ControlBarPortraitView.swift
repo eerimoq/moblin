@@ -71,9 +71,6 @@ private struct ControlBarPortraitQuickButtonsView: View {
                             }
                     }
                     .frame(minWidth: metrics.size.width)
-                    .onChange(of: metrics.size) { _ in
-                        model.scrollQuickButtonsToBottom()
-                    }
                 }
             }
             .scrollDisabled(!model.database.quickButtons!.enableScroll)
