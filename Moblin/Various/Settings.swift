@@ -1788,7 +1788,7 @@ enum SettingsQuickButtonType: String, Codable, CaseIterable {
     }
 }
 
-class SettingsQuickButton: Codable, Identifiable, Equatable, Hashable {
+class SettingsQuickButton: Codable, Identifiable, Equatable, Hashable, ObservableObject {
     var name: String
     var id: UUID = .init()
     var type: SettingsQuickButtonType = .widget
@@ -1799,7 +1799,8 @@ class SettingsQuickButton: Codable, Identifiable, Equatable, Hashable {
     var isOn: Bool = false
     var enabled: Bool? = true
     var backgroundColor: RgbColor? = defaultQuickButtonColor
-    var page: Int? = 1
+    @Published var page: Int? = 1
+    @Published var color: Color = defaultQuickButtonColor.color()
 
     init(name: String) {
         self.name = name
@@ -1811,6 +1812,48 @@ class SettingsQuickButton: Codable, Identifiable, Equatable, Hashable {
 
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
+    }
+
+    enum CodingKeys: CodingKey {
+        case name,
+             id,
+             type,
+             imageType,
+             systemImageNameOn,
+             systemImageNameOff,
+             isOn,
+             enabled,
+             backgroundColor,
+             page
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(name, forKey: .name)
+        try container.encode(id, forKey: .id)
+        try container.encode(type, forKey: .type)
+        try container.encode(imageType, forKey: .imageType)
+        try container.encode(systemImageNameOn, forKey: .systemImageNameOn)
+        try container.encode(systemImageNameOff, forKey: .systemImageNameOff)
+        try container.encode(isOn, forKey: .isOn)
+        try container.encode(enabled, forKey: .enabled)
+        try container.encode(backgroundColor, forKey: .backgroundColor)
+        try container.encode(page, forKey: .page)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        name = try container.decode(String.self, forKey: .name)
+        id = try container.decode(UUID.self, forKey: .id)
+        type = try container.decode(SettingsQuickButtonType.self, forKey: .type)
+        imageType = try? container.decode(String?.self, forKey: .imageType)
+        systemImageNameOn = try container.decode(String.self, forKey: .systemImageNameOn)
+        systemImageNameOff = try container.decode(String.self, forKey: .systemImageNameOff)
+        isOn = try container.decode(Bool.self, forKey: .isOn)
+        enabled = try? container.decode(Bool?.self, forKey: .enabled)
+        backgroundColor = try? container.decode(RgbColor?.self, forKey: .backgroundColor)
+        page = try? container.decode(Int?.self, forKey: .page)
+        color = backgroundColor!.color()
     }
 }
 
