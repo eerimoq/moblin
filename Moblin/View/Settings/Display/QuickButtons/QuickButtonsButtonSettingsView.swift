@@ -17,6 +17,7 @@ struct QuickButtonsButtonSettingsView: View {
     let onChange: (Color) -> Void
     let onSubmit: () -> Void
     let onPage: (Int) -> Void
+    let shortcut: Bool
 
     var body: some View {
         Form {
@@ -51,6 +52,20 @@ struct QuickButtonsButtonSettingsView: View {
                 }
                 .onChange(of: button.page) { _ in
                     onPage(button.page!)
+                }
+            }
+            if shortcut {
+                Section {
+                    NavigationLink {
+                        QuickButtonsSettingsView()
+                    } label: {
+                        IconAndTextView(
+                            image: "rectangle.inset.topright.fill",
+                            text: String(localized: "Quick buttons")
+                        )
+                    }
+                } header: {
+                    Text("Shortcut")
                 }
             }
         }

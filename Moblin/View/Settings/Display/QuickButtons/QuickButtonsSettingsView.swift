@@ -58,7 +58,8 @@ struct QuickButtonsSettingsView: View {
                                     onPage: { page in
                                         button.page = page
                                         model.updateButtonStates()
-                                    }
+                                    },
+                                    shortcut: false
                                 )
                             } label: {
                                 Toggle(isOn: Binding(get: {

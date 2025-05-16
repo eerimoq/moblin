@@ -153,7 +153,8 @@ private struct MenuView: View {
                         onPage: { page in
                             button.page = page
                             model.updateButtonStates()
-                        }
+                        },
+                        shortcut: true
                     )
                 }
             }
