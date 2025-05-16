@@ -137,6 +137,28 @@ private struct MenuView: View {
                     autoSceneSwitchers: model.database.autoSceneSwitchers!
                 )
             }
+        case .quickButtonSettings:
+            NavigationStack {
+                if let button = model.quickButtonSettingsButton {
+                    QuickButtonsButtonSettingsView(
+                        name: button.name,
+                        background: button.backgroundColor!.color(),
+                        onChange: { color in
+                            guard let color = color.toRgb() else {
+                                return
+                            }
+                            button.backgroundColor = color
+                            model.updateButtonStates()
+                        },
+                        onSubmit: {},
+                        page: button.page!,
+                        onPage: { page in
+                            button.page = page
+                            model.updateButtonStates()
+                        }
+                    )
+                }
+            }
         case .none:
             EmptyView()
         }

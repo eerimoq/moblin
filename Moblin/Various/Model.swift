@@ -55,6 +55,7 @@ enum ShowingPanel {
     case goPro
     case connectionPriorities
     case autoSceneSwitcher
+    case quickButtonSettings
 
     func buttonsBackgroundColor() -> Color {
         if self == .chat {
@@ -709,6 +710,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var remoteControlBitrate = UUID()
     @Published var remoteControlZoom = ""
     @Published var remoteControlDebugLogging = false
+
+    @Published var quickButtonSettingsButton: SettingsQuickButton?
 
     private var remoteControlStreamer: RemoteControlStreamer?
     private var remoteControlAssistant: RemoteControlAssistant?
@@ -4498,6 +4501,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func getGlobalButton(type: SettingsQuickButtonType) -> SettingsQuickButton? {
         return database.globalButtons!.first(where: { $0.type == type })
+    }
+
+    func showQuickButtonSettings(type: SettingsQuickButtonType) {
+        quickButtonSettingsButton = getGlobalButton(type: type)
+        toggleShowingPanel(type: nil, panel: .none)
+        toggleShowingPanel(type: nil, panel: .quickButtonSettings)
     }
 
     private func toggleGlobalButton(type: SettingsQuickButtonType) {

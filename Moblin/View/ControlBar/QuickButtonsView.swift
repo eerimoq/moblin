@@ -4,8 +4,10 @@ import SwiftUI
 let singleQuickButtonSize: CGFloat = 45
 
 private struct QuickButtonImage: View {
+    @EnvironmentObject var model: Model
     var state: ButtonState
     var buttonSize: CGFloat
+    var onTapGesture: () -> Void
 
     private func getImage(state: ButtonState) -> String {
         if state.isOn {
@@ -35,6 +37,11 @@ private struct QuickButtonImage: View {
             } else {
                 image
             }
+        }.onTapGesture {
+            onTapGesture()
+        }
+        .onLongPressGesture {
+            model.showQuickButtonSettings(type: state.button.type)
         }
     }
 }
@@ -46,24 +53,32 @@ private struct InstantReplayView: View {
     var size: CGFloat
 
     var body: some View {
-        Button(action: {
-            if model.stream.replay!.enabled {
-                model.instantReplay()
-            } else {
-                model.makeReplayIsNotEnabledToast()
+        if replay.isPlaying {
+            Text(String(replay.timeLeft))
+                .font(.system(size: 25))
+                .frame(width: size, height: size)
+                .foregroundColor(.white)
+                .background(state.button.backgroundColor!.color())
+                .clipShape(Circle())
+                .onTapGesture {
+                    if model.stream.replay!.enabled {
+                        model.instantReplay()
+                    } else {
+                        model.makeReplayIsNotEnabledToast()
+                    }
+                }
+                .onLongPressGesture {
+                    model.showQuickButtonSettings(type: .instantReplay)
+                }
+        } else {
+            QuickButtonImage(state: state, buttonSize: size) {
+                if model.stream.replay!.enabled {
+                    model.instantReplay()
+                } else {
+                    model.makeReplayIsNotEnabledToast()
+                }
             }
-        }, label: {
-            if replay.isPlaying {
-                Text(String(replay.timeLeft))
-                    .font(.system(size: 25))
-                    .frame(width: size, height: size)
-                    .foregroundColor(.white)
-                    .background(state.button.backgroundColor!.color())
-                    .clipShape(Circle())
-            } else {
-                QuickButtonImage(state: state, buttonSize: size)
-            }
-        })
+        }
     }
 }
 
@@ -339,228 +354,158 @@ struct QuickButtonsInnerView: View {
             case .unknown:
                 QuickButtonPlaceholderImage()
             case .torch:
-                Button(action: {
+                QuickButtonImage(state: state, buttonSize: size) {
                     torchAction(state: state)
-                }, label: {
-                    QuickButtonImage(state: state, buttonSize: size)
-                })
+                }
             case .mute:
-                Button(action: {
+                QuickButtonImage(state: state, buttonSize: size) {
                     muteAction(state: state)
-                }, label: {
-                    QuickButtonImage(state: state, buttonSize: size)
-                })
+                }
             case .bitrate:
-                Button(action: {
+                QuickButtonImage(state: state, buttonSize: size) {
                     bitrateAction(state: state)
-                }, label: {
-                    QuickButtonImage(state: state, buttonSize: size)
-                })
+                }
             case .widget:
-                Button(action: {
+                QuickButtonImage(state: state, buttonSize: size) {
                     widgetAction(state: state)
-                }, label: {
-                    QuickButtonImage(state: state, buttonSize: size)
-                })
+                }
             case .mic:
-                Button(action: {
+                QuickButtonImage(state: state, buttonSize: size) {
                     micAction(state: state)
-                }, label: {
-                    QuickButtonImage(state: state, buttonSize: size)
-                })
+                }
             case .chat:
-                Button(action: {
+                QuickButtonImage(state: state, buttonSize: size) {
                     chatAction(state: state)
-                }, label: {
-                    QuickButtonImage(state: state, buttonSize: size)
-                })
+                }
             case .interactiveChat:
-                Button(action: {
+                QuickButtonImage(state: state, buttonSize: size) {
                     interactiveChatAction(state: state)
-                }, label: {
-                    QuickButtonImage(state: state, buttonSize: size)
-                })
+                }
             case .blackScreen:
-                Button(action: {
+                QuickButtonImage(state: state, buttonSize: size) {
                     blackScreenAction()
-                }, label: {
-                    QuickButtonImage(state: state, buttonSize: size)
-                })
+                }
             case .lockScreen:
-                Button(action: {
+                QuickButtonImage(state: state, buttonSize: size) {
                     lockScreenAction()
-                }, label: {
-                    QuickButtonImage(state: state, buttonSize: size)
-                })
+                }
             case .record:
-                Button(action: {
+                QuickButtonImage(state: state, buttonSize: size) {
                     if model.database.startStopRecordingConfirmations! {
                         isPresentingRecordConfirm = true
                     } else {
                         recordAction()
                     }
-                }, label: {
-                    QuickButtonImage(state: state, buttonSize: size)
-                })
+                }
                 .confirmationDialog("", isPresented: $isPresentingRecordConfirm) {
                     Button(startStopText(button: state)) {
                         recordAction()
                     }
                 }
             case .recordings:
-                Button(action: {
+                QuickButtonImage(state: state, buttonSize: size) {
                     recordingsAction(state: state)
-                }, label: {
-                    QuickButtonImage(state: state, buttonSize: size)
-                })
+                }
             case .image:
-                Button(action: {
+                QuickButtonImage(state: state, buttonSize: size) {
                     imageAction(state: state)
-                }, label: {
-                    QuickButtonImage(state: state, buttonSize: size)
-                })
+                }
             case .movie:
-                Button(action: {
+                QuickButtonImage(state: state, buttonSize: size) {
                     movieAction(state: state)
-                }, label: {
-                    QuickButtonImage(state: state, buttonSize: size)
-                })
+                }
             case .fourThree:
-                Button(action: {
+                QuickButtonImage(state: state, buttonSize: size) {
                     fourThreeAction(state: state)
-                }, label: {
-                    QuickButtonImage(state: state, buttonSize: size)
-                })
+                }
             case .grayScale:
-                Button(action: {
+                QuickButtonImage(state: state, buttonSize: size) {
                     grayScaleAction(state: state)
-                }, label: {
-                    QuickButtonImage(state: state, buttonSize: size)
-                })
+                }
             case .sepia:
-                Button(action: {
+                QuickButtonImage(state: state, buttonSize: size) {
                     sepiaAction(state: state)
-                }, label: {
-                    QuickButtonImage(state: state, buttonSize: size)
-                })
+                }
             case .triple:
-                Button(action: {
+                QuickButtonImage(state: state, buttonSize: size) {
                     tripleAction(state: state)
-                }, label: {
-                    QuickButtonImage(state: state, buttonSize: size)
-                })
+                }
             case .twin:
-                Button(action: {
+                QuickButtonImage(state: state, buttonSize: size) {
                     twinAction(state: state)
-                }, label: {
-                    QuickButtonImage(state: state, buttonSize: size)
-                })
+                }
             case .pixellate:
-                Button(action: {
+                QuickButtonImage(state: state, buttonSize: size) {
                     pixellateAction(state: state)
-                }, label: {
-                    QuickButtonImage(state: state, buttonSize: size)
-                })
+                }
             case .stream:
-                Button(action: {
+                QuickButtonImage(state: state, buttonSize: size) {
                     streamAction(state: state)
-                }, label: {
-                    QuickButtonImage(state: state, buttonSize: size)
-                })
+                }
             case .grid:
-                Button(action: {
+                QuickButtonImage(state: state, buttonSize: size) {
                     gridAction(state: state)
-                }, label: {
-                    QuickButtonImage(state: state, buttonSize: size)
-                })
+                }
             case .obs:
-                Button(action: {
+                QuickButtonImage(state: state, buttonSize: size) {
                     obsAction(state: state)
-                }, label: {
-                    QuickButtonImage(state: state, buttonSize: size)
-                })
+                }
             case .remote:
-                Button(action: {
+                QuickButtonImage(state: state, buttonSize: size) {
                     remoteAction(state: state)
-                }, label: {
-                    QuickButtonImage(state: state, buttonSize: size)
-                })
+                }
             case .draw:
-                Button(action: {
+                QuickButtonImage(state: state, buttonSize: size) {
                     drawAction(state: state)
-                }, label: {
-                    QuickButtonImage(state: state, buttonSize: size)
-                })
+                }
             case .localOverlays:
-                Button(action: {
+                QuickButtonImage(state: state, buttonSize: size) {
                     localOverlaysAction(state: state)
-                }, label: {
-                    QuickButtonImage(state: state, buttonSize: size)
-                })
+                }
             case .browser:
-                Button(action: {
+                QuickButtonImage(state: state, buttonSize: size) {
                     browserAction(state: state)
-                }, label: {
-                    QuickButtonImage(state: state, buttonSize: size)
-                })
+                }
             case .lut:
-                Button(action: {}, label: {
-                    QuickButtonImage(state: state, buttonSize: size)
-                })
+                QuickButtonImage(state: state, buttonSize: size) {}
             case .cameraPreview:
-                Button(action: {
+                QuickButtonImage(state: state, buttonSize: size) {
                     cameraPreviewAction(state: state)
-                }, label: {
-                    QuickButtonImage(state: state, buttonSize: size)
-                })
+                }
             case .face:
-                Button(action: {
+                QuickButtonImage(state: state, buttonSize: size) {
                     faceAction(state: state)
-                }, label: {
-                    QuickButtonImage(state: state, buttonSize: size)
-                })
+                }
             case .poll:
-                Button(action: {
+                QuickButtonImage(state: state, buttonSize: size) {
                     pollAction(state: state)
-                }, label: {
-                    QuickButtonImage(state: state, buttonSize: size)
-                })
+                }
             case .snapshot:
-                Button(action: {
+                QuickButtonImage(state: state, buttonSize: size) {
                     snapshotAction(state: state)
-                }, label: {
-                    QuickButtonImage(state: state, buttonSize: size)
-                })
+                }
             case .widgets:
-                Button(action: {
+                QuickButtonImage(state: state, buttonSize: size) {
                     widgetsAction(state: state)
-                }, label: {
-                    QuickButtonImage(state: state, buttonSize: size)
-                })
+                }
             case .luts:
-                Button(action: {
+                QuickButtonImage(state: state, buttonSize: size) {
                     lutsAction(state: state)
-                }, label: {
-                    QuickButtonImage(state: state, buttonSize: size)
-                })
+                }
             case .workout:
                 if state.isOn {
-                    Button(action: {
+                    QuickButtonImage(state: state, buttonSize: size) {
                         isPresentingStopWorkoutConfirm = true
-                    }, label: {
-                        QuickButtonImage(state: state, buttonSize: size)
-                    })
+                    }
                     .confirmationDialog("", isPresented: $isPresentingStopWorkoutConfirm) {
                         Button("End workout") {
                             model.stopWorkout()
                         }
                     }
                 } else {
-                    Button(action: {
+                    QuickButtonImage(state: state, buttonSize: size) {
                         isPresentingStartWorkoutTypePicker = true
-                    }, label: {
-                        QuickButtonImage(state: state, buttonSize: size)
-                    })
+                    }
                     .confirmationDialog("", isPresented: $isPresentingStartWorkoutTypePicker) {
                         Button("Start walking workout") {
                             model.startWorkout(type: .walking)
@@ -574,11 +519,9 @@ struct QuickButtonsInnerView: View {
                     }
                 }
             case .ads:
-                Button(action: {
+                QuickButtonImage(state: state, buttonSize: size) {
                     isPresentingAdsTimePicker = true
-                }, label: {
-                    QuickButtonImage(state: state, buttonSize: size)
-                })
+                }
                 .confirmationDialog("", isPresented: $isPresentingAdsTimePicker) {
                     Button("30 seconds") {
                         model.startAds(seconds: 30)
@@ -594,87 +537,65 @@ struct QuickButtonsInnerView: View {
                     }
                 }
             case .skipCurrentTts:
-                Button(action: {
+                QuickButtonImage(state: state, buttonSize: size) {
                     skipCurrentTtsAction(state: state)
-                }, label: {
-                    QuickButtonImage(state: state, buttonSize: size)
-                })
+                }
             case .streamMarker:
-                Button(action: {
+                QuickButtonImage(state: state, buttonSize: size) {
                     streamMarkerAction(state: state)
-                }, label: {
-                    QuickButtonImage(state: state, buttonSize: size)
-                })
+                }
             case .reloadBrowserWidgets:
-                Button(action: {
+                QuickButtonImage(state: state, buttonSize: size) {
                     reloadBrowserWidgetsAction(state: state)
-                }, label: {
-                    QuickButtonImage(state: state, buttonSize: size)
-                })
+                }
             case .djiDevices:
-                Button(action: {
-                    djiDevicesAction(state: state)
-                }, label: {
-                    ZStack {
-                        QuickButtonImage(state: state, buttonSize: size)
-                        Text("DJI")
-                            .rotationEffect(.degrees(-90))
-                            .offset(CGSize(width: 10, height: 0))
-                            .font(.system(size: 8))
-                            .foregroundColor(.white)
+                ZStack {
+                    QuickButtonImage(state: state, buttonSize: size) {
+                        djiDevicesAction(state: state)
                     }
-                })
+                    Text("DJI")
+                        .rotationEffect(.degrees(-90))
+                        .offset(CGSize(width: 10, height: 0))
+                        .font(.system(size: 8))
+                        .foregroundColor(.white)
+                }
             case .portrait:
-                Button(action: {
+                QuickButtonImage(state: state, buttonSize: size) {
                     portraitAction(state: state)
-                }, label: {
-                    QuickButtonImage(state: state, buttonSize: size)
-                })
+                }
             case .goPro:
-                Button(action: {
-                    goProAction(state: state)
-                }, label: {
-                    ZStack {
-                        QuickButtonImage(state: state, buttonSize: size)
-                        Text("GoPro")
-                            .rotationEffect(.degrees(-90))
-                            .offset(CGSize(width: 10, height: 0))
-                            .font(.system(size: 8))
-                            .foregroundColor(.white)
+                ZStack {
+                    QuickButtonImage(state: state, buttonSize: size) {
+                        goProAction(state: state)
                     }
-                })
+                    Text("GoPro")
+                        .rotationEffect(.degrees(-90))
+                        .offset(CGSize(width: 10, height: 0))
+                        .font(.system(size: 8))
+                        .foregroundColor(.white)
+                }
             case .replay:
-                Button(action: {
+                QuickButtonImage(state: state, buttonSize: size) {
                     replayAction(state: state)
-                }, label: {
-                    QuickButtonImage(state: state, buttonSize: size)
-                })
+                }
             case .instantReplay:
                 InstantReplayView(replay: model.replay, state: state, size: size)
             case .connectionPriorities:
-                Button(action: {
+                QuickButtonImage(state: state, buttonSize: size) {
                     connectionPrioritiesAction(state: state)
-                }, label: {
-                    QuickButtonImage(state: state, buttonSize: size)
-                })
+                }
             case .whirlpool:
-                Button(action: {
+                QuickButtonImage(state: state, buttonSize: size) {
                     whirlpoolAction(state: state)
-                }, label: {
-                    QuickButtonImage(state: state, buttonSize: size)
-                })
+                }
             case .pinch:
-                Button(action: {
+                QuickButtonImage(state: state, buttonSize: size) {
                     pinchAction(state: state)
-                }, label: {
-                    QuickButtonImage(state: state, buttonSize: size)
-                })
+                }
             case .autoSceneSwitcher:
-                Button(action: {
+                QuickButtonImage(state: state, buttonSize: size) {
                     autoSceneSwitcherAction(state: state)
-                }, label: {
-                    QuickButtonImage(state: state, buttonSize: size)
-                })
+                }
             }
             if model.database.quickButtons!.showName && !model.isPortrait() {
                 Text(state.button.name)
