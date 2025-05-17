@@ -8,7 +8,7 @@ private struct QuickButtonsView: View {
         VStack {
             ForEach(model.getButtonPairs(page: page)) { pair in
                 if model.database.quickButtons!.twoColumns {
-                    HStack(alignment: .top) {
+                    HStack(alignment: .bottom) {
                         if let second = pair.second {
                             QuickButtonsInnerView(
                                 state: second,
