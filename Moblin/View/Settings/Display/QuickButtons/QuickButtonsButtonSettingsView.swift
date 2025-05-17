@@ -31,17 +31,19 @@ struct QuickButtonsButtonSettingsView: View {
             } header: {
                 Text("Color")
             }
-            Section {
-                Picker(selection: $button.page) {
-                    ForEach([1, 2, 3, 4, 5], id: \.self) { page in
-                        Text(String(page))
-                            .tag(page as Int?)
+            if #available(iOS 17, *) {
+                Section {
+                    Picker(selection: $button.page) {
+                        ForEach([1, 2, 3, 4, 5], id: \.self) { page in
+                            Text(String(page))
+                                .tag(page as Int?)
+                        }
+                    } label: {
+                        Text("Page")
                     }
-                } label: {
-                    Text("Page")
-                }
-                .onChange(of: button.page) { _ in
-                    model.updateButtonStates()
+                    .onChange(of: button.page) { _ in
+                        model.updateButtonStates()
+                    }
                 }
             }
             if shortcut {
