@@ -107,7 +107,7 @@ private struct ControlBarLandscapeIconAndSettingsView: View {
     }
 }
 
-private struct ControlBarLandscapeQuickButtonsView: View {
+private struct QuickButtonsPageView: View {
     @EnvironmentObject var model: Model
     var page: Int
 
@@ -139,7 +139,7 @@ private struct ControlBarLandscapeMainPageView: View {
     var body: some View {
         VStack(spacing: 0) {
             ControlBarLandscapeIconAndSettingsView()
-            ControlBarLandscapeQuickButtonsView(page: 0)
+            QuickButtonsPageView(page: 0)
             StreamButton()
                 .padding([.top], 10)
                 .padding([.leading, .trailing], 5)
@@ -158,10 +158,10 @@ private struct ControlBarLandscapePagesView: View {
                     HStack {
                         Group {
                             ControlBarLandscapeMainPageView()
-                            ControlBarLandscapeQuickButtonsView(page: 1)
-                            ControlBarLandscapeQuickButtonsView(page: 2)
-                            ControlBarLandscapeQuickButtonsView(page: 3)
-                            ControlBarLandscapeQuickButtonsView(page: 4)
+                            QuickButtonsPageView(page: 1)
+                            QuickButtonsPageView(page: 2)
+                            QuickButtonsPageView(page: 3)
+                            QuickButtonsPageView(page: 4)
                         }
                         .containerRelativeFrame(.horizontal, count: 1, spacing: 0)
                     }

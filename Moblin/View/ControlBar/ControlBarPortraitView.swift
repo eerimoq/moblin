@@ -52,7 +52,7 @@ private struct ButtonsPortraitView: View {
     }
 }
 
-private struct ControlBarPortraitQuickButtonsView: View {
+private struct QuickButtonsPageView: View {
     @EnvironmentObject var model: Model
     var page: Int
 
@@ -118,7 +118,7 @@ private struct ControlBarPortraitMainPageView: View {
 
     var body: some View {
         HStack(spacing: 0) {
-            ControlBarPortraitQuickButtonsView(page: 0)
+            QuickButtonsPageView(page: 0)
             VStack(spacing: 0) {
                 HStack(spacing: 0) {
                     Spacer(minLength: 0)
@@ -148,10 +148,10 @@ private struct ControlBarPortraitPagesView: View {
                 LazyVStack {
                     Group {
                         ControlBarPortraitMainPageView(height: height)
-                        ControlBarPortraitQuickButtonsView(page: 1)
-                        ControlBarPortraitQuickButtonsView(page: 2)
-                        ControlBarPortraitQuickButtonsView(page: 3)
-                        ControlBarPortraitQuickButtonsView(page: 4)
+                        QuickButtonsPageView(page: 1)
+                        QuickButtonsPageView(page: 2)
+                        QuickButtonsPageView(page: 3)
+                        QuickButtonsPageView(page: 4)
                     }
                     .containerRelativeFrame(.vertical, count: 1, spacing: 0)
                 }
