@@ -1,6 +1,6 @@
 import SwiftUI
 
-private struct ButtonsPortraitView: View {
+private struct QuickButtonsView: View {
     @EnvironmentObject var model: Model
     var page: Int
     var width: CGFloat
@@ -62,7 +62,7 @@ private struct QuickButtonsPageView: View {
                 ScrollViewReader { reader in
                     HStack {
                         Spacer(minLength: 0)
-                        ButtonsPortraitView(page: page, width: metrics.size.height)
+                        QuickButtonsView(page: page, width: metrics.size.height)
                             .frame(height: metrics.size.height)
                             .onChange(of: model.scrollQuickButtons) { _ in
                                 let id = model.buttonPairs[page].last?.first.button.id ?? model.buttonPairs[page]
@@ -80,7 +80,7 @@ private struct QuickButtonsPageView: View {
     }
 }
 
-private struct ControlBarPortraitIconAndSettingsView: View {
+private struct                 IconAndSettingsView: View {
     @EnvironmentObject var model: Model
 
     var body: some View {
@@ -112,7 +112,7 @@ private struct ControlBarPortraitIconAndSettingsView: View {
     }
 }
 
-private struct ControlBarPortraitMainPageView: View {
+private struct MainPageView: View {
     @EnvironmentObject var model: Model
     var height: Double
 
@@ -128,7 +128,7 @@ private struct ControlBarPortraitMainPageView: View {
                 .padding([.bottom], 5)
                 .padding([.leading], 0)
                 .padding([.trailing], 5)
-                ControlBarPortraitIconAndSettingsView()
+                                IconAndSettingsView()
                 StreamButton()
                     .padding([.top], 10)
                     .padding([.leading, .trailing], 5)
@@ -138,7 +138,7 @@ private struct ControlBarPortraitMainPageView: View {
     }
 }
 
-private struct ControlBarPortraitPagesView: View {
+private struct PagesView: View {
     @EnvironmentObject var model: Model
     var height: Double
 
@@ -147,7 +147,7 @@ private struct ControlBarPortraitPagesView: View {
             ScrollView(.vertical) {
                 LazyVStack {
                     Group {
-                        ControlBarPortraitMainPageView(height: height)
+                        MainPageView(height: height)
                         QuickButtonsPageView(page: 1)
                         QuickButtonsPageView(page: 2)
                         QuickButtonsPageView(page: 3)
@@ -161,7 +161,7 @@ private struct ControlBarPortraitPagesView: View {
             .scrollIndicators(.never)
             .frame(height: height - 1)
         } else {
-            ControlBarPortraitMainPageView(height: height)
+            MainPageView(height: height)
         }
     }
 }
@@ -180,7 +180,7 @@ struct ControlBarPortraitView: View {
     }
 
     var body: some View {
-        ControlBarPortraitPagesView(height: controlBarHeight())
+        PagesView(height: controlBarHeight())
             .frame(height: controlBarHeight())
             .background(.black)
     }

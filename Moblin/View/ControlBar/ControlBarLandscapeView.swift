@@ -1,6 +1,6 @@
 import SwiftUI
 
-private struct ButtonsLandscapeView: View {
+private struct QuickButtonsView: View {
     @EnvironmentObject var model: Model
     var page: Int
     var width: CGFloat
@@ -52,7 +52,7 @@ private struct ButtonsLandscapeView: View {
     }
 }
 
-private struct ControlBarLandscapeStatusView: View {
+private struct StatusView: View {
     @EnvironmentObject var model: Model
 
     var body: some View {
@@ -75,7 +75,7 @@ private struct ControlBarLandscapeStatusView: View {
     }
 }
 
-private struct ControlBarLandscapeIconAndSettingsView: View {
+private struct IconAndSettingsView: View {
     @EnvironmentObject var model: Model
 
     var body: some View {
@@ -117,7 +117,7 @@ private struct QuickButtonsPageView: View {
                 ScrollViewReader { reader in
                     VStack {
                         Spacer(minLength: 0)
-                        ButtonsLandscapeView(page: page, width: metrics.size.width)
+                        QuickButtonsView(page: page, width: metrics.size.width)
                             .frame(width: metrics.size.width)
                             .onChange(of: model.scrollQuickButtons) { _ in
                                 let id = model.buttonPairs[page].last?.first.button.id ?? model.buttonPairs[page]
@@ -135,10 +135,10 @@ private struct QuickButtonsPageView: View {
     }
 }
 
-private struct ControlBarLandscapeMainPageView: View {
+private struct MainPageView: View {
     var body: some View {
         VStack(spacing: 0) {
-            ControlBarLandscapeIconAndSettingsView()
+            IconAndSettingsView()
             QuickButtonsPageView(page: 0)
             StreamButton()
                 .padding([.top], 10)
@@ -147,7 +147,7 @@ private struct ControlBarLandscapeMainPageView: View {
     }
 }
 
-private struct ControlBarLandscapePagesView: View {
+private struct PagesView: View {
     @EnvironmentObject var model: Model
     var width: Double
 
@@ -157,7 +157,7 @@ private struct ControlBarLandscapePagesView: View {
                 ScrollView(.horizontal) {
                     HStack {
                         Group {
-                            ControlBarLandscapeMainPageView()
+                            MainPageView()
                             QuickButtonsPageView(page: 1)
                             QuickButtonsPageView(page: 2)
                             QuickButtonsPageView(page: 3)
@@ -172,7 +172,7 @@ private struct ControlBarLandscapePagesView: View {
                 .frame(width: width - 1)
             }
         } else {
-            ControlBarLandscapeMainPageView()
+            MainPageView()
         }
     }
 }
@@ -192,8 +192,8 @@ struct ControlBarLandscapeView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            ControlBarLandscapeStatusView()
-            ControlBarLandscapePagesView(width: controlBarWidth())
+            StatusView()
+            PagesView(width: controlBarWidth())
         }
         .padding([.top, .bottom], 0)
         .frame(width: controlBarWidth())
