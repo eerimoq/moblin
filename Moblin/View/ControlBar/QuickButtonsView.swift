@@ -1,8 +1,6 @@
 import AVFoundation
 import SwiftUI
 
-let singleQuickButtonSize: CGFloat = 45
-
 private struct QuickButtonImage: View {
     @EnvironmentObject var model: Model
     var state: ButtonState

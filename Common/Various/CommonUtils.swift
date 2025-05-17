@@ -5,7 +5,12 @@ import Network
 import SwiftUI
 
 let iconWidth = 32.0
-let buttonSize: CGFloat = 40
+let buttonSize = 40.0
+let controlBarWidthAccessibility = 150.0
+let controlBarWidthDefault = 100.0
+let controlBarQuickButtonNameSize = 10.0
+let controlBarQuickButtonNameSingleColumnSize = 12.0
+let controlBarQuickButtonSingleQuickButtonSize = 60.0
 let maximumNumberOfWatchChatMessages = 50
 let personalHotspotLocalAddress = "172.20.10.1"
 let backgroundColor = Color(white: 0, opacity: 0.4)

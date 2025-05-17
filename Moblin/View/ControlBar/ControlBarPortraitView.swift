@@ -13,7 +13,7 @@ private struct QuickButtonsView: View {
                             QuickButtonsInnerView(
                                 state: second,
                                 size: buttonSize,
-                                nameSize: 10,
+                                nameSize: controlBarQuickButtonNameSize,
                                 nameWidth: buttonSize,
                             )
                         } else {
@@ -22,29 +22,27 @@ private struct QuickButtonsView: View {
                         QuickButtonsInnerView(
                             state: pair.first,
                             size: buttonSize,
-                            nameSize: 10,
+                            nameSize: controlBarQuickButtonNameSize,
                             nameWidth: buttonSize,
                         )
                     }
-                    .id(pair.first.button.id)
                 } else {
                     if let second = pair.second {
                         QuickButtonsInnerView(
                             state: second,
-                            size: singleQuickButtonSize,
-                            nameSize: 12,
-                            nameWidth: singleQuickButtonSize,
+                            size: controlBarQuickButtonSingleQuickButtonSize,
+                            nameSize: controlBarQuickButtonNameSingleColumnSize,
+                            nameWidth: controlBarQuickButtonSingleQuickButtonSize,
                         )
                     } else {
                         EmptyView()
                     }
                     QuickButtonsInnerView(
                         state: pair.first,
-                        size: singleQuickButtonSize,
-                        nameSize: 12,
-                        nameWidth: singleQuickButtonSize,
+                        size: controlBarQuickButtonSingleQuickButtonSize,
+                        nameSize: controlBarQuickButtonNameSingleColumnSize,
+                        nameWidth: controlBarQuickButtonSingleQuickButtonSize,
                     )
-                    .id(pair.first.button.id)
                 }
             }
         }

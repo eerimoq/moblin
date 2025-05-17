@@ -1,8 +1,5 @@
 import SwiftUI
 
-let controlBarWidthAccessibility = 150.0
-let controlBarWidthDefault = 100.0
-
 private struct QuickButtonsView: View {
     @EnvironmentObject var model: Model
     var page: Int
@@ -17,7 +14,7 @@ private struct QuickButtonsView: View {
                             QuickButtonsInnerView(
                                 state: second,
                                 size: buttonSize,
-                                nameSize: 10,
+                                nameSize: controlBarQuickButtonNameSize,
                                 nameWidth: buttonSize,
                             )
                         } else {
@@ -26,17 +23,16 @@ private struct QuickButtonsView: View {
                         QuickButtonsInnerView(
                             state: pair.first,
                             size: buttonSize,
-                            nameSize: 10,
+                            nameSize: controlBarQuickButtonNameSize,
                             nameWidth: buttonSize,
                         )
                     }
-                    .id(pair.first.button.id)
                 } else {
                     if let second = pair.second {
                         QuickButtonsInnerView(
                             state: second,
-                            size: singleQuickButtonSize,
-                            nameSize: 12,
+                            size: controlBarQuickButtonSingleQuickButtonSize,
+                            nameSize: controlBarQuickButtonNameSingleColumnSize,
                             nameWidth: width - 10,
                         )
                     } else {
@@ -44,11 +40,10 @@ private struct QuickButtonsView: View {
                     }
                     QuickButtonsInnerView(
                         state: pair.first,
-                        size: singleQuickButtonSize,
-                        nameSize: 12,
+                        size: controlBarQuickButtonSingleQuickButtonSize,
+                        nameSize: controlBarQuickButtonNameSingleColumnSize,
                         nameWidth: width - 10,
                     )
-                    .id(pair.first.button.id)
                 }
             }
         }
@@ -72,9 +67,8 @@ private struct StatusView: View {
                     .font(smallFont)
             }
         }
-        .padding([.bottom], 5)
         .padding([.leading], 0)
-        .padding([.trailing], 5)
+        .padding([.trailing, .bottom], 5)
     }
 }
 
