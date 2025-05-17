@@ -49,7 +49,7 @@ private struct CosmeticsSettingsIconsInStoreView: View {
                         Image(icon.imageNoBackground())
                             .resizable()
                             .aspectRatio(contentMode: .fit)
-                            .frame(width: buttonSize, height: buttonSize)
+                            .frame(width: controlBarButtonSize, height: controlBarButtonSize)
                         Spacer()
                         Text(icon.name)
                         ZStack {
@@ -112,7 +112,7 @@ private struct CosmeticsSettingsMyIconsView: View {
                         Image(icon.imageNoBackground())
                             .resizable()
                             .aspectRatio(contentMode: .fit)
-                            .frame(width: buttonSize, height: buttonSize)
+                            .frame(width: controlBarButtonSize, height: controlBarButtonSize)
                         Spacer()
                         Text(icon.name)
                     }

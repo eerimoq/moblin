@@ -12,18 +12,18 @@ private struct QuickButtonsView: View {
                         if let second = pair.second {
                             QuickButtonsInnerView(
                                 state: second,
-                                size: buttonSize,
+                                size: controlBarButtonSize,
                                 nameSize: controlBarQuickButtonNameSize,
-                                nameWidth: buttonSize,
+                                nameWidth: controlBarButtonSize,
                             )
                         } else {
                             QuickButtonPlaceholderImage()
                         }
                         QuickButtonsInnerView(
                             state: pair.first,
-                            size: buttonSize,
+                            size: controlBarButtonSize,
                             nameSize: controlBarQuickButtonNameSize,
-                            nameWidth: buttonSize,
+                            nameWidth: controlBarButtonSize,
                         )
                     }
                 } else {
@@ -75,13 +75,13 @@ private struct IconAndSettingsView: View {
                     .aspectRatio(contentMode: .fit)
                     .padding([.bottom], 4)
                     .offset(x: 2)
-                    .frame(width: buttonSize, height: buttonSize)
+                    .frame(width: controlBarButtonSize, height: controlBarButtonSize)
             }
             Button {
                 model.toggleShowingPanel(type: nil, panel: .settings)
             } label: {
                 Image(systemName: "gearshape")
-                    .frame(width: buttonSize, height: buttonSize)
+                    .frame(width: controlBarButtonSize, height: controlBarButtonSize)
                     .overlay(
                         Circle()
                             .stroke(.secondary)

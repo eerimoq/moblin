@@ -84,7 +84,7 @@ struct QuickButtonPlaceholderImage: View {
     var body: some View {
         Button {} label: {
             Image(systemName: "pawprint")
-                .frame(width: buttonSize, height: buttonSize)
+                .frame(width: controlBarButtonSize, height: controlBarButtonSize)
                 .foregroundColor(.black)
         }
         .opacity(0.0)
@@ -104,7 +104,7 @@ private struct ButtonTextOverlayView: View {
             .offset(CGSize(width: 10, height: 0))
             .font(.system(size: 8))
             .foregroundColor(.white)
-            .frame(width: buttonSize, height: buttonSize)
+            .frame(width: controlBarButtonSize, height: controlBarButtonSize)
     }
 }
 
