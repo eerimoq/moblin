@@ -52,7 +52,7 @@ private struct QuickButtonsView: View {
     }
 }
 
-private struct QuickButtonsPageView: View {
+private struct PageView: View {
     @EnvironmentObject var model: Model
     var page: Int
 
@@ -80,7 +80,7 @@ private struct QuickButtonsPageView: View {
     }
 }
 
-private struct                 IconAndSettingsView: View {
+private struct IconAndSettingsView: View {
     @EnvironmentObject var model: Model
 
     var body: some View {
@@ -118,7 +118,7 @@ private struct MainPageView: View {
 
     var body: some View {
         HStack(spacing: 0) {
-            QuickButtonsPageView(page: 0)
+            PageView(page: 0)
             VStack(spacing: 0) {
                 HStack(spacing: 0) {
                     Spacer(minLength: 0)
@@ -128,7 +128,7 @@ private struct MainPageView: View {
                 .padding([.bottom], 5)
                 .padding([.leading], 0)
                 .padding([.trailing], 5)
-                                IconAndSettingsView()
+                IconAndSettingsView()
                 StreamButton()
                     .padding([.top], 10)
                     .padding([.leading, .trailing], 5)
@@ -148,10 +148,11 @@ private struct PagesView: View {
                 LazyVStack {
                     Group {
                         MainPageView(height: height)
-                        QuickButtonsPageView(page: 1)
-                        QuickButtonsPageView(page: 2)
-                        QuickButtonsPageView(page: 3)
-                        QuickButtonsPageView(page: 4)
+                        ForEach([1, 2, 3, 4], id: \.self) { page in
+                            if !model.buttonPairs[page].isEmpty {
+                                PageView(page: page)
+                            }
+                        }
                     }
                     .containerRelativeFrame(.vertical, count: 1, spacing: 0)
                 }

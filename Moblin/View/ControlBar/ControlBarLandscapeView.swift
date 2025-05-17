@@ -158,10 +158,11 @@ private struct PagesView: View {
                     HStack {
                         Group {
                             MainPageView()
-                            QuickButtonsPageView(page: 1)
-                            QuickButtonsPageView(page: 2)
-                            QuickButtonsPageView(page: 3)
-                            QuickButtonsPageView(page: 4)
+                            ForEach([1, 2, 3, 4], id: \.self) { page in
+                                if !model.buttonPairs[page].isEmpty {
+                                    QuickButtonsPageView(page: page)
+                                }
+                            }
                         }
                         .containerRelativeFrame(.horizontal, count: 1, spacing: 0)
                     }
