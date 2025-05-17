@@ -20,14 +20,14 @@ struct QuickButtonsButtonSettingsView: View {
                     .onChange(of: button.color) { _ in
                         onColorChange(color: button.color)
                     }
-                Button(action: {
+                Button {
                     button.color = defaultQuickButtonColor.color()
                     onColorChange(color: button.color)
-                }, label: {
+                } label: {
                     HCenter {
                         Text("Reset")
                     }
-                })
+                }
             } header: {
                 Text("Color")
             }

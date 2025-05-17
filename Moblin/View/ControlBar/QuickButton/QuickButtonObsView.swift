@@ -3,19 +3,19 @@ import SwiftUI
 
 private struct ObsStartStopStreamingView: View {
     @EnvironmentObject var model: Model
-    @State private var isPresentingStartStreamingConfirm: Bool = false
-    @State private var isPresentingStopStreamingConfirm: Bool = false
+    @State private var isPresentingStartStreamingConfirm = false
+    @State private var isPresentingStopStreamingConfirm = false
 
     var body: some View {
         if model.obsStreamingState == .stopped {
             Section {
                 HStack {
                     Spacer()
-                    Button(action: {
+                    Button {
                         isPresentingStartStreamingConfirm = true
-                    }, label: {
+                    } label: {
                         Text("Start streaming")
-                    })
+                    }
                     .confirmationDialog("", isPresented: $isPresentingStartStreamingConfirm) {
                         Button("Start") {
                             model.obsStartStream()
@@ -42,11 +42,11 @@ private struct ObsStartStopStreamingView: View {
             Section {
                 HStack {
                     Spacer()
-                    Button(action: {
+                    Button {
                         isPresentingStopStreamingConfirm = true
-                    }, label: {
+                    } label: {
                         Text("Stop streaming")
-                    })
+                    }
                     .confirmationDialog("", isPresented: $isPresentingStopStreamingConfirm) {
                         Button("Stop") {
                             model.obsStopStream()
@@ -89,11 +89,11 @@ private struct ObsStartStopRecordingView: View {
             Section {
                 HStack {
                     Spacer()
-                    Button(action: {
+                    Button {
                         isPresentingStartRecordingConfirm = true
-                    }, label: {
+                    } label: {
                         Text("Start recording")
-                    })
+                    }
                     .confirmationDialog("", isPresented: $isPresentingStartRecordingConfirm) {
                         Button("Start") {
                             model.obsStartRecording()
@@ -120,11 +120,11 @@ private struct ObsStartStopRecordingView: View {
             Section {
                 HStack {
                     Spacer()
-                    Button(action: {
+                    Button {
                         isPresentingStopRecordingConfirm = true
-                    }, label: {
+                    } label: {
                         Text("Stop recording")
-                    })
+                    }
                     .confirmationDialog("", isPresented: $isPresentingStopRecordingConfirm) {
                         Button("Stop") {
                             model.obsStopRecording()
@@ -233,11 +233,11 @@ struct QuickButtonObsView: View {
                         Section {
                             HStack {
                                 Spacer()
-                                Button(action: {
+                                Button {
                                     model.obsFixStream()
-                                }, label: {
+                                } label: {
                                     Text("Fix \(model.stream.obsSourceName!) source")
-                                })
+                                }
                                 Spacer()
                             }
                         } footer: {

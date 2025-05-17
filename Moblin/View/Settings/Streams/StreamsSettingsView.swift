@@ -30,30 +30,30 @@ struct StreamsSettingsView: View {
                         }
                         if stream.enabled && (model.isLive || model.isRecording) {
                             item.swipeActions(edge: .trailing) {
-                                Button(action: {
+                                Button {
                                     database.streams.append(stream.clone())
-                                }, label: {
+                                } label: {
                                     Text("Duplicate")
-                                })
+                                }
                                 .tint(.blue)
                             }
                         } else {
                             item.swipeActions(edge: .trailing) {
-                                Button(action: {
+                                Button {
                                     database.streams.removeAll { $0 == stream }
                                     model.reloadStream()
                                     model.sceneUpdated(attachCamera: true)
-                                }, label: {
+                                } label: {
                                     Text("Delete")
-                                })
+                                }
                                 .tint(.red)
                             }
                             .swipeActions(edge: .trailing) {
-                                Button(action: {
+                                Button {
                                     database.streams.append(stream.clone())
-                                }, label: {
+                                } label: {
                                     Text("Duplicate")
-                                })
+                                }
                                 .tint(.blue)
                             }
                         }

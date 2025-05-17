@@ -30,21 +30,21 @@ private struct ScenesListView: View {
                         }
                     }
                     .swipeActions(edge: .trailing) {
-                        Button(action: {
+                        Button {
                             database.scenes.removeAll { $0 == scene }
                             model.resetSelectedScene()
-                        }, label: {
+                        } label: {
                             Text("Delete")
-                        })
+                        }
                         .tint(.red)
                     }
                     .swipeActions(edge: .trailing) {
-                        Button(action: {
+                        Button {
                             database.scenes.append(scene.clone())
                             model.resetSelectedScene()
-                        }, label: {
+                        } label: {
                             Text("Duplicate")
-                        })
+                        }
                         .tint(.blue)
                     }
                 }

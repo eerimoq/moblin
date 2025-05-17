@@ -101,15 +101,15 @@ private struct ImageGalleryView: View {
                         imageId = alert.imageId
                     })
                 }
-                Button(action: {
+                Button {
                     let image = SettingsAlertsMediaGalleryItem(name: "My image")
                     model.database.alertsMediaGallery!.customImages.append(image)
                     model.objectWillChange.send()
-                }, label: {
+                } label: {
                     HCenter {
                         Text("Add")
                     }
-                })
+                }
             } footer: {
                 SwipeLeftToDeleteHelpView(kind: String(localized: "an image"))
             }

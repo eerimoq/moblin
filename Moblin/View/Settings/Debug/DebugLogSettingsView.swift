@@ -11,12 +11,12 @@ struct DebugLogSettingsView: View {
             HStack(spacing: 15) {
                 Spacer()
                 ShareLink(item: model.formatLog(log: log))
-                Button(action: {
+                Button {
                     clearLog()
                     model.objectWillChange.send()
-                }, label: {
+                } label: {
                     Image(systemName: "trash")
-                })
+                }
             }
             .padding([.top], 10)
             .padding([.trailing], 15)

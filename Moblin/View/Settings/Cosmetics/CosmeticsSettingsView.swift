@@ -53,7 +53,7 @@ private struct CosmeticsSettingsIconsInStoreView: View {
                         Spacer()
                         Text(icon.name)
                         ZStack {
-                            Button(action: {
+                            Button {
                                 disabledPurchaseButtons.insert(icon.id)
                                 disabledPurchaseButtons = disabledPurchaseButtons
                                 Task {
@@ -68,9 +68,9 @@ private struct CosmeticsSettingsIconsInStoreView: View {
                                     disabledPurchaseButtons.remove(icon.id)
                                     disabledPurchaseButtons = disabledPurchaseButtons
                                 }
-                            }, label: {
+                            } label: {
                                 Text(icon.price)
-                            })
+                            }
                             .padding([.leading], 10)
                             .disabled(disabledPurchaseButtons.contains(icon.id))
                             .opacity(disabledPurchaseButtons.contains(icon.id) ? 0.0 : 1.0)

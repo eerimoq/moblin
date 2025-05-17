@@ -115,15 +115,15 @@ struct CatPrinterSettingsView: View {
                     }
                 }
                 Section {
-                    Button(action: {
+                    Button {
                         model.catPrinterPrintTestImage(device: device)
-                    }, label: {
+                    } label: {
                         HStack {
                             Spacer()
                             Text("Test")
                             Spacer()
                         }
-                    })
+                    }
                 }
             }
         }

@@ -23,15 +23,15 @@ struct StreamButton: View {
 
     var body: some View {
         if model.isLive {
-            Button(action: {
+            Button {
                 isPresentingStopConfirm = true
-            }, label: {
+            } label: {
                 StreamButtonText(text: String(localized: "End"))
                     .overlay(
                         RoundedRectangle(cornerRadius: 10)
                             .stroke(.white)
                     )
-            })
+            }
             .confirmationDialog("", isPresented: $isPresentingStopConfirm) {
                 if model.stream.obsAutoStopStream! && model.stream.obsAutoStopRecording! {
                     Button("End but leave OBS streaming and recording") {
@@ -51,23 +51,23 @@ struct StreamButton: View {
                 }
             }
         } else if model.isStreamConfigured() {
-            Button(action: {
+            Button {
                 isPresentingGoLiveConfirm = true
-            }, label: {
+            } label: {
                 StreamButtonText(text: String(localized: "Go Live"))
-            })
+            }
             .confirmationDialog("", isPresented: $isPresentingGoLiveConfirm) {
                 Button("Go Live") {
                     model.startStream()
                 }
             }
         } else {
-            Button(action: {
+            Button {
                 model.resetWizard()
                 model.isPresentingSetupWizard = true
-            }, label: {
+            } label: {
                 StreamButtonText(text: String(localized: "Setup"))
-            })
+            }
             .sheet(isPresented: $model.isPresentingSetupWizard) {
                 NavigationStack {
                     StreamWizardSettingsView()

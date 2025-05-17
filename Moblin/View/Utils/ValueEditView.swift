@@ -40,25 +40,25 @@ struct ValueEditView: View {
                     Text(unit)
                 }
                 Divider()
-                Button(action: {
+                Button {
                     add(offset: -increment)
                     value = onSubmit(value.trim())
                     add(offset: 0)
-                }, label: {
+                } label: {
                     Text("-")
                         .frame(width: 40)
                         .font(.system(size: 25))
-                })
+                }
                 Divider()
-                Button(action: {
+                Button {
                     add(offset: increment)
                     value = onSubmit(value.trim())
                     add(offset: 0)
-                }, label: {
+                } label: {
                     Text("+")
                         .frame(width: 40)
                         .font(.system(size: 25))
-                })
+                }
                 Divider()
             }
             .buttonStyle(BorderlessButtonStyle())
@@ -116,22 +116,22 @@ struct ValueEditCompactView: View {
                     value = onSubmit("\(number)")
                 }
             }
-            Button(action: {
+            Button {
                 add(offset: -increment)
                 value = onSubmit(value.trim())
                 add(offset: 0)
-            }, label: {
+            } label: {
                 Image(systemName: decrementImageName)
                     .font(.title)
-            })
-            Button(action: {
+            }
+            Button {
                 add(offset: increment)
                 value = onSubmit(value.trim())
                 add(offset: 0)
-            }, label: {
+            } label: {
                 Image(systemName: incrementImageName)
                     .font(.title)
-            })
+            }
         }
         .buttonStyle(BorderlessButtonStyle())
     }

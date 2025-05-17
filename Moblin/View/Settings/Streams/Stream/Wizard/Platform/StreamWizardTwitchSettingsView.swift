@@ -87,11 +87,11 @@ struct StreamWizardTwitchSettingsView: View {
             VStack {
                 HStack {
                     Spacer()
-                    Button(action: {
+                    Button {
                         model.wizardShowTwitchAuth = false
-                    }, label: {
+                    } label: {
                         Text("Close").padding()
-                    })
+                    }
                 }
                 ScrollView {
                     TwitchAuthView(twitchAuth: model.twitchAuth)

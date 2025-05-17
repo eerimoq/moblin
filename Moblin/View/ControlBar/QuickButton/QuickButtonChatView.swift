@@ -475,14 +475,14 @@ private struct ControlAlertsButtonView: View {
     @EnvironmentObject var model: Model
 
     var body: some View {
-        Button(action: {
+        Button {
             model.showAllQuickButtonChatMessage.toggle()
-        }, label: {
+        } label: {
             Image(systemName: model
                 .showAllQuickButtonChatMessage ? "megaphone" : "megaphone.fill")
                 .font(.title)
                 .padding(5)
-        })
+        }
     }
 }
 
@@ -513,23 +513,23 @@ private struct AlertsControlView: View {
     @State var message: String = ""
 
     var body: some View {
-        Button(action: {
+        Button {
             model.showFirstTimeChatterMessage.toggle()
             model.database.chat.showFirstTimeChatterMessage = model.showFirstTimeChatterMessage
-        }, label: {
+        } label: {
             Image(systemName: model
                 .showFirstTimeChatterMessage ? "bubble.left.fill" : "bubble.left")
                 .font(.title)
                 .padding(5)
-        })
-        Button(action: {
+        }
+        Button {
             model.showNewFollowerMessage.toggle()
             model.database.chat.showNewFollowerMessage = model.showNewFollowerMessage
-        }, label: {
+        } label: {
             Image(systemName: model.showNewFollowerMessage ? "medal.fill" : "medal")
                 .font(.title)
                 .padding(5)
-        })
+        }
         Spacer()
         ControlAlertsButtonView()
     }

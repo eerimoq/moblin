@@ -25,12 +25,12 @@ private struct InterfaceView: View {
             Image(systemName: image)
             Text(streamUrl())
             Spacer()
-            Button(action: {
+            Button {
                 UIPasteboard.general.string = streamUrl()
                 model.makeToast(title: "URL copied to clipboard")
-            }, label: {
+            } label: {
                 Image(systemName: "doc.on.doc")
-            })
+            }
             .disabled(streamId.isEmpty)
         }
     }

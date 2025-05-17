@@ -547,11 +547,11 @@ struct MainView: View {
             VStack {
                 HStack {
                     Spacer()
-                    Button(action: {
+                    Button {
                         model.showTwitchAuth = false
-                    }, label: {
+                    } label: {
                         Text("Close").padding()
-                    })
+                    }
                 }
                 ScrollView {
                     TwitchAuthView(twitchAuth: model.twitchAuth)

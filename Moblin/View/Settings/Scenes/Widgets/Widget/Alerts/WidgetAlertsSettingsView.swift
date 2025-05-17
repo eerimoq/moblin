@@ -259,16 +259,16 @@ private struct TwitchFollowsView: View {
             )
             AlertTextToSpeechView(alert: alert, ttsDelay: alert.textToSpeechDelay!)
             Section {
-                Button(action: {
+                Button {
                     let event = TwitchEventSubNotificationChannelFollowEvent(
                         user_name: testNames.randomElement()!
                     )
                     model.testAlert(alert: .twitchFollow(event))
-                }, label: {
+                } label: {
                     HCenter {
                         Text("Test")
                     }
-                })
+                }
             }
         }
         .navigationTitle("Follows")
@@ -306,18 +306,18 @@ private struct TwitchSubscriptionsView: View {
             )
             AlertTextToSpeechView(alert: alert, ttsDelay: alert.textToSpeechDelay!)
             Section {
-                Button(action: {
+                Button {
                     let event = TwitchEventSubNotificationChannelSubscribeEvent(
                         user_name: testNames.randomElement()!,
                         tier: "2000",
                         is_gift: false
                     )
                     model.testAlert(alert: .twitchSubscribe(event))
-                }, label: {
+                } label: {
                     HCenter {
                         Text("Test")
                     }
-                })
+                }
             }
         }
         .navigationTitle("Subscriptions")
@@ -355,17 +355,17 @@ private struct TwitchRaidsView: View {
             )
             AlertTextToSpeechView(alert: alert, ttsDelay: alert.textToSpeechDelay!)
             Section {
-                Button(action: {
+                Button {
                     let event = TwitchEventSubChannelRaidEvent(
                         from_broadcaster_user_name: testNames.randomElement()!,
                         viewers: .random(in: 1 ..< 1000)
                     )
                     model.testAlert(alert: .twitchRaid(event))
-                }, label: {
+                } label: {
                     HCenter {
                         Text("Test")
                     }
-                })
+                }
             }
         }
         .navigationTitle("Raids")
@@ -450,18 +450,18 @@ private struct TwitchCheerView: View {
             )
             AlertTextToSpeechView(alert: alert, ttsDelay: alert.textToSpeechDelay!)
             Section {
-                Button(action: {
+                Button {
                     let event = TwitchEventSubChannelCheerEvent(
                         user_name: testNames.randomElement()!,
                         message: "A test message!",
                         bits: cheerBit.bits
                     )
                     model.testAlert(alert: .twitchCheer(event))
-                }, label: {
+                } label: {
                     HCenter {
                         Text("Test")
                     }
-                })
+                }
             }
         }
         .navigationTitle(formatTitle(cheerBit.bits, cheerBit.comparisonOperator.rawValue))
@@ -721,17 +721,17 @@ private struct ChatBotCommandView: View {
                 )
                 AlertTextToSpeechView(alert: alert, ttsDelay: alert.textToSpeechDelay!)
                 Section {
-                    Button(action: {
+                    Button {
                         model.testAlert(alert: .chatBotCommand(
                             name,
                             testNames.randomElement()!,
                             testPrompts.randomElement()!
                         ))
-                    }, label: {
+                    } label: {
                         HCenter {
                             Text("Test")
                         }
-                    })
+                    }
                 }
             }
             .navigationTitle("Command")
@@ -819,13 +819,13 @@ private struct SpeechToTextStringView: View {
                 AlertMediaView(alert: alert, imageId: alert.imageId, soundId: alert.soundId)
                 AlertPositionView(alert: alert, positionType: alert.positionType!.toString())
                 Section {
-                    Button(action: {
+                    Button {
                         model.testAlert(alert: .speechToTextString(string.id))
-                    }, label: {
+                    } label: {
                         HCenter {
                             Text("Test")
                         }
-                    })
+                    }
                 }
             }
             .navigationTitle("String")

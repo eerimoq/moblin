@@ -100,15 +100,15 @@ private struct SoundGalleryView: View {
                         soundId = alert.soundId
                     })
                 }
-                Button(action: {
+                Button {
                     let sound = SettingsAlertsMediaGalleryItem(name: "My sound")
                     model.database.alertsMediaGallery!.customSounds.append(sound)
                     model.objectWillChange.send()
-                }, label: {
+                } label: {
                     HCenter {
                         Text("Add")
                     }
-                })
+                }
             } footer: {
                 SwipeLeftToDeleteHelpView(kind: String(localized: "a sound"))
             }
@@ -132,12 +132,12 @@ struct AlertSoundSelectorView: View {
                         HStack {
                             Text(sound.name)
                             Spacer()
-                            Button(action: {
+                            Button {
                                 player = loadSound(model: model, soundId: sound.id)
                                 player?.play()
-                            }, label: {
+                            } label: {
                                 Image(systemName: "play.fill")
-                            })
+                            }
                         }
                     }
                 }

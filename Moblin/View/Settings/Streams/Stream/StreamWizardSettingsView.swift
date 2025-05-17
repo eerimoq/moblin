@@ -28,12 +28,12 @@ struct CreateStreamWizardToolbar: ToolbarContent {
     var body: some ToolbarContent {
         ToolbarItem(placement: .navigationBarTrailing) {
             HStack {
-                Button(action: {
+                Button {
                     model.isPresentingWizard = false
                     model.isPresentingSetupWizard = false
-                }, label: {
+                } label: {
                     Text("Close")
-                })
+                }
             }
         }
     }

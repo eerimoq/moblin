@@ -314,13 +314,13 @@ private struct DjiDeviceStartStopButtonSettingsView: View {
     var body: some View {
         if !model.isDjiDeviceStarted(device: device) {
             Section {
-                Button(action: {
+                Button {
                     model.startDjiDeviceLiveStream(device: device)
-                }, label: {
+                } label: {
                     HCenter {
                         Text("Start live stream")
                     }
-                })
+                }
             }
             .listRowBackground(RoundedRectangle(cornerRadius: 10)
                 .foregroundColor(Color(uiColor: .secondarySystemGroupedBackground))
@@ -330,11 +330,11 @@ private struct DjiDeviceStartStopButtonSettingsView: View {
         } else {
             Section {
                 HCenter {
-                    Button(action: {
+                    Button {
                         model.stopDjiDeviceLiveStream(device: device)
-                    }, label: {
+                    } label: {
                         Text("Stop live stream")
-                    })
+                    }
                 }
             }
             .foregroundColor(.white)

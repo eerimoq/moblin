@@ -206,13 +206,13 @@ struct SceneSettingsView: View {
                         if isPhone() {
                             HStack {
                                 Spacer()
-                                Button(action: {
+                                Button {
                                     showingAddWidget = false
-                                }, label: {
+                                } label: {
                                     Text("Cancel")
                                         .padding(5)
                                         .foregroundColor(.blue)
-                                })
+                                }
                             }
                         }
                         let form = Form {
@@ -223,7 +223,7 @@ struct SceneSettingsView: View {
                             } else {
                                 Section("Widget name") {
                                     ForEach(widgets) { widget in
-                                        Button(action: {
+                                        Button {
                                             scene.widgets.append(createSceneWidget(widget: widget))
                                             var attachCamera = false
                                             if scene.id == model.getSelectedScene()?.id {
@@ -235,13 +235,13 @@ struct SceneSettingsView: View {
                                             )
                                             model.objectWillChange.send()
                                             showingAddWidget = false
-                                        }, label: {
+                                        } label: {
                                             IconAndTextView(
                                                 image: widgetImage(widget: widget),
                                                 text: widget.name,
                                                 longDivider: true
                                             )
-                                        })
+                                        }
                                     }
                                 }
                             }

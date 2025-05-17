@@ -42,13 +42,13 @@ struct LocationSettingsView: View {
                 })) {
                     Text("Reset when going live")
                 }
-                Button(action: {
+                Button {
                     model.resetLocationData()
-                }, label: {
+                } label: {
                     HCenter {
                         Text("Reset")
                     }
-                })
+                }
             } header: {
                 Text("Location data")
             } footer: {

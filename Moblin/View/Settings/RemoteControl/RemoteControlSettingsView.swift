@@ -10,12 +10,12 @@ private struct InterfaceViewUrl: View {
             Image(systemName: image)
             Text(url)
             Spacer()
-            Button(action: {
+            Button {
                 UIPasteboard.general.string = url
                 model.makeToast(title: "URL copied to clipboard")
-            }, label: {
+            } label: {
                 Image(systemName: "doc.on.doc")
-            })
+            }
         }
     }
 }
