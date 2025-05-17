@@ -97,6 +97,19 @@ private func startStopText(button: ButtonState) -> String {
     return button.isOn ? String(localized: "Stop") : String(localized: "Start")
 }
 
+private struct ButtonTextOverlayView: View {
+    let text: String
+
+    var body: some View {
+        Text(text)
+            .rotationEffect(.degrees(-90))
+            .offset(CGSize(width: 10, height: 0))
+            .font(.system(size: 8))
+            .foregroundColor(.white)
+            .frame(width: buttonSize, height: buttonSize)
+    }
+}
+
 struct QuickButtonsInnerView: View {
     @EnvironmentObject var model: Model
     var state: ButtonState
@@ -553,11 +566,7 @@ struct QuickButtonsInnerView: View {
                     QuickButtonImage(state: state, buttonSize: size) {
                         djiDevicesAction(state: state)
                     }
-                    Text("DJI")
-                        .rotationEffect(.degrees(-90))
-                        .offset(CGSize(width: 10, height: 0))
-                        .font(.system(size: 8))
-                        .foregroundColor(.white)
+                    ButtonTextOverlayView(text: String(localized: "DJI"))
                 }
             case .portrait:
                 QuickButtonImage(state: state, buttonSize: size) {
@@ -568,11 +577,7 @@ struct QuickButtonsInnerView: View {
                     QuickButtonImage(state: state, buttonSize: size) {
                         goProAction(state: state)
                     }
-                    Text("GoPro")
-                        .rotationEffect(.degrees(-90))
-                        .offset(CGSize(width: 10, height: 0))
-                        .font(.system(size: 8))
-                        .foregroundColor(.white)
+                    ButtonTextOverlayView(text: String(localized: "GoPro"))
                 }
             case .replay:
                 QuickButtonImage(state: state, buttonSize: size) {
