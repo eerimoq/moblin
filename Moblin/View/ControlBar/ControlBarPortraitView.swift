@@ -161,9 +161,9 @@ struct ControlBarPortraitView: View {
 
     private func controlBarHeight() -> CGFloat {
         if accessibilityShowButtonShapes {
-            return 150
+            return controlBarWidthAccessibility
         } else {
-            return 100
+            return controlBarWidthDefault
         }
     }
 

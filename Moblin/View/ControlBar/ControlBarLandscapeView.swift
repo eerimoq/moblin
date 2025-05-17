@@ -1,8 +1,12 @@
 import SwiftUI
 
+let controlBarWidthAccessibility = 150.0
+let controlBarWidthDefault = 100.0
+
 private struct QuickButtonsView: View {
     @EnvironmentObject var model: Model
     var page: Int
+    let width: Double
 
     var body: some View {
         VStack {
@@ -33,7 +37,7 @@ private struct QuickButtonsView: View {
                             state: second,
                             size: singleQuickButtonSize,
                             nameSize: 12,
-                            nameWidth: 90,
+                            nameWidth: width - 10,
                         )
                     } else {
                         EmptyView()
@@ -42,7 +46,7 @@ private struct QuickButtonsView: View {
                         state: pair.first,
                         size: singleQuickButtonSize,
                         nameSize: 12,
-                        nameWidth: 90,
+                        nameWidth: width - 10,
                     )
                     .id(pair.first.button.id)
                 }
@@ -110,10 +114,11 @@ private struct IconAndSettingsView: View {
 private struct PageView: View {
     @EnvironmentObject var model: Model
     var page: Int
+    let width: Double
 
     var body: some View {
         ScrollView(showsIndicators: false) {
-            QuickButtonsView(page: page)
+            QuickButtonsView(page: page, width: width)
         }
         .scrollDisabled(!model.database.quickButtons!.enableScroll)
         .rotationEffect(.degrees(180))
@@ -122,10 +127,12 @@ private struct PageView: View {
 }
 
 private struct MainPageView: View {
+    let width: Double
+
     var body: some View {
         VStack(spacing: 0) {
             IconAndSettingsView()
-            PageView(page: 0)
+            PageView(page: 0, width: width)
             StreamButton()
                 .padding([.top], 10)
                 .padding([.leading, .trailing], 5)
@@ -143,10 +150,10 @@ private struct PagesView: View {
                 ScrollView(.horizontal) {
                     HStack {
                         Group {
-                            MainPageView()
+                            MainPageView(width: width)
                             ForEach([1, 2, 3, 4], id: \.self) { page in
                                 if !model.buttonPairs[page].isEmpty {
-                                    PageView(page: page)
+                                    PageView(page: page, width: width)
                                 }
                             }
                         }
@@ -159,7 +166,7 @@ private struct PagesView: View {
                 .frame(width: width - 1)
             }
         } else {
-            MainPageView()
+            MainPageView(width: width)
         }
     }
 }
@@ -169,11 +176,11 @@ struct ControlBarLandscapeView: View {
     @Environment(\.accessibilityShowButtonShapes)
     private var accessibilityShowButtonShapes
 
-    private func controlBarWidth() -> CGFloat {
+    private func controlBarWidth() -> Double {
         if accessibilityShowButtonShapes {
-            return 150
+            return controlBarWidthAccessibility
         } else {
-            return 100
+            return controlBarWidthDefault
         }
     }
 
