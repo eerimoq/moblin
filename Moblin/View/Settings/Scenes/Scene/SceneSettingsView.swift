@@ -161,7 +161,7 @@ struct SceneSettingsView: View {
                                 )
                             } label: {
                                 Toggle(isOn: Binding(get: {
-                                    widget.enabled!
+                                    widget.enabled
                                 }, set: { value in
                                     widget.enabled = value
                                     model

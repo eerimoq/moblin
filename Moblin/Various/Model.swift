@@ -1652,11 +1652,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         for widget in database.widgets {
             switch widget.type {
             case .text:
-                if widget.enabled!, widget.text.needsSubtitles! {
+                if widget.enabled, widget.text.needsSubtitles! {
                     return true
                 }
             case .alerts:
-                if widget.enabled!, widget.alerts!.needsSubtitles! {
+                if widget.enabled, widget.alerts!.needsSubtitles! {
                     return true
                 }
             default:
@@ -2093,7 +2093,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             guard widget.type == .text else {
                 continue
             }
-            guard widget.enabled! else {
+            guard widget.enabled else {
                 continue
             }
             guard widget.text.needsWeather! else {
@@ -2114,7 +2114,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             guard widget.type == .text else {
                 continue
             }
-            guard widget.enabled! else {
+            guard widget.enabled else {
                 continue
             }
             guard widget.text.needsGeography! else {
@@ -6387,7 +6387,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             guard let widget = findWidget(id: sceneWidget.widgetId) else {
                 continue
             }
-            guard widget.enabled! else {
+            guard widget.enabled else {
                 continue
             }
             switch widget.type {
@@ -6742,7 +6742,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             guard let widget = findWidget(id: sceneWidget.widgetId) else {
                 continue
             }
-            guard widget.enabled! else {
+            guard widget.enabled else {
                 continue
             }
             switch widget.type {
@@ -6962,7 +6962,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         guard let widget = findWidget(id: id) else {
             return
         }
-        widget.enabled!.toggle()
+        widget.enabled.toggle()
         reloadSpeechToText()
         sceneUpdated()
     }

@@ -262,7 +262,7 @@ struct QuickButtonWidgetsView: View {
                 List {
                     ForEach(model.widgetsInCurrentScene) { widget in
                         Toggle(isOn: Binding(get: {
-                            widget.enabled!
+                            widget.enabled
                         }, set: { value in
                             widget.enabled = value
                             model.reloadSpeechToText()

@@ -132,7 +132,7 @@ struct RemoteControlRemoteSceneSettingsWidget: Codable {
 
     init?(widget: SettingsWidget) {
         id = widget.id
-        enabled = widget.enabled!
+        enabled = widget.enabled
         switch widget.type {
         case .browser:
             type = .browser(data: RemoteControlRemoteSceneSettingsWidgetTypeBrowser(browser: widget.browser))

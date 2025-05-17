@@ -8,12 +8,7 @@ private struct WidgetsSettingsItemView: View {
         NavigationLink {
             WidgetSettingsView(widget: widget)
         } label: {
-            Toggle(isOn: Binding(get: {
-                widget.enabled!
-            }, set: { value in
-                widget.enabled = value
-                model.sceneUpdated(attachCamera: model.isCaptureDeviceVideoSoureWidget(widget: widget))
-            })) {
+            Toggle(isOn: $widget.enabled) {
                 HStack {
                     DraggableItemPrefixView()
                     IconAndTextView(
@@ -23,6 +18,9 @@ private struct WidgetsSettingsItemView: View {
                     )
                     Spacer()
                 }
+            }
+            .onChange(of: widget.enabled) { _ in
+                model.sceneUpdated(attachCamera: model.isCaptureDeviceVideoSoureWidget(widget: widget))
             }
         }
     }

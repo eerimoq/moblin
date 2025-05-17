@@ -1668,7 +1668,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject {
     var alerts: SettingsWidgetAlerts? = .init()
     var videoSource: SettingsWidgetVideoSource? = .init()
     var scoreboard: SettingsWidgetScoreboard? = .init()
-    var enabled: Bool? = true
+    @Published var enabled: Bool = true
 
     init(name: String) {
         self.name = name
@@ -1725,7 +1725,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject {
         alerts = try? container.decode(SettingsWidgetAlerts?.self, forKey: .alerts)
         videoSource = try? container.decode(SettingsWidgetVideoSource?.self, forKey: .videoSource)
         scoreboard = try? container.decode(SettingsWidgetScoreboard?.self, forKey: .scoreboard)
-        enabled = try? container.decode(Bool?.self, forKey: .enabled)
+        enabled = (try? container.decode(Bool.self, forKey: .enabled)) ?? true
     }
 }
 
@@ -4868,10 +4868,6 @@ final class Settings {
         }
         for widget in database.widgets where widget.map!.delay == nil {
             widget.map!.delay = 0.0
-            store()
-        }
-        for widget in database.widgets where widget.enabled == nil {
-            widget.enabled = true
             store()
         }
         for widget in database.widgets where widget.text.timers == nil {
