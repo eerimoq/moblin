@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct StreamButtonText: View {
+private struct StreamButtonText: View {
     @EnvironmentObject var model: Model
     var text: String
 
@@ -18,8 +18,8 @@ struct StreamButtonText: View {
 
 struct StreamButton: View {
     @EnvironmentObject var model: Model
-    @State private var isPresentingGoLiveConfirm: Bool = false
-    @State private var isPresentingStopConfirm: Bool = false
+    @State private var isPresentingGoLiveConfirm = false
+    @State private var isPresentingStopConfirm = false
 
     var body: some View {
         if model.isLive {
