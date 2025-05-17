@@ -1,38 +1,28 @@
 import SwiftUI
 
-private struct A: View {
-    @State var background: Color
-    let onChange: (Color) -> Void
-
-    var body: some View {
-        ColorPicker("Background", selection: $background, supportsOpacity: false)
-            .onChange(of: background) { _ in
-                onChange(background)
-            }
-    }
-}
-
 struct QuickButtonsButtonSettingsView: View {
+    @EnvironmentObject var model: Model
     @ObservedObject var button: SettingsQuickButton
-    let onChange: (Color) -> Void
-    let onSubmit: () -> Void
-    let onPage: (Int) -> Void
     let shortcut: Bool
+
+    private func onColorChange(color: Color) {
+        guard let color = color.toRgb() else {
+            return
+        }
+        button.backgroundColor = color
+        model.updateButtonStates()
+    }
 
     var body: some View {
         Form {
             Section {
                 ColorPicker("Background", selection: $button.color, supportsOpacity: false)
                     .onChange(of: button.color) { _ in
-                        onChange(button.color)
-                    }
-                    .onDisappear {
-                        onSubmit()
+                        onColorChange(color: button.color)
                     }
                 Button(action: {
                     button.color = defaultQuickButtonColor.color()
-                    onChange(button.color)
-                    onSubmit()
+                    onColorChange(color: button.color)
                 }, label: {
                     HCenter {
                         Text("Reset")
@@ -51,7 +41,7 @@ struct QuickButtonsButtonSettingsView: View {
                     Text("Page")
                 }
                 .onChange(of: button.page) { _ in
-                    onPage(button.page!)
+                    model.updateButtonStates()
                 }
             }
             if shortcut {

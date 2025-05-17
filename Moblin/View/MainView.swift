@@ -142,18 +142,6 @@ private struct MenuView: View {
                 if let button = model.quickButtonSettingsButton {
                     QuickButtonsButtonSettingsView(
                         button: button,
-                        onChange: { color in
-                            guard let color = color.toRgb() else {
-                                return
-                            }
-                            button.backgroundColor = color
-                            model.updateButtonStates()
-                        },
-                        onSubmit: {},
-                        onPage: { page in
-                            button.page = page
-                            model.updateButtonStates()
-                        },
                         shortcut: true
                     )
                 }

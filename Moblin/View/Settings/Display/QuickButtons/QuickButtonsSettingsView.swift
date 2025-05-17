@@ -3,16 +3,6 @@ import SwiftUI
 struct QuickButtonsSettingsView: View {
     @EnvironmentObject var model: Model
 
-    private func onBackgroundColorChange(button: SettingsQuickButton, color: Color) {
-        guard let color = color.toRgb() else {
-            return
-        }
-        button.backgroundColor = color
-        model.updateButtonStates()
-    }
-
-    private func onBackgroundColorSubmit() {}
-
     var body: some View {
         Form {
             Section {
@@ -51,14 +41,6 @@ struct QuickButtonsSettingsView: View {
                             NavigationLink {
                                 QuickButtonsButtonSettingsView(
                                     button: button,
-                                    onChange: { color in
-                                        onBackgroundColorChange(button: button, color: color)
-                                    },
-                                    onSubmit: onBackgroundColorSubmit,
-                                    onPage: { page in
-                                        button.page = page
-                                        model.updateButtonStates()
-                                    },
                                     shortcut: false
                                 )
                             } label: {
