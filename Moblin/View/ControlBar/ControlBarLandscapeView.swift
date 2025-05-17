@@ -145,7 +145,7 @@ private struct PagesView: View {
                     HStack {
                         Group {
                             MainPageView(width: width)
-                            ForEach([1, 2, 3, 4], id: \.self) { page in
+                            ForEach(1 ..< controlBarPages, id: \.self) { page in
                                 if !model.buttonPairs[page].isEmpty {
                                     PageView(page: page, width: width)
                                 }

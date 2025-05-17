@@ -1,6 +1,8 @@
 import AVFoundation
 import SwiftUI
 
+let controlBarPages = 5
+
 private struct QuickButtonImage: View {
     @EnvironmentObject var model: Model
     var state: ButtonState

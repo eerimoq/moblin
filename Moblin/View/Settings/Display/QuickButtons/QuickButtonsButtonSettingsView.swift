@@ -34,7 +34,7 @@ struct QuickButtonsButtonSettingsView: View {
             if #available(iOS 17, *) {
                 Section {
                     Picker(selection: $button.page) {
-                        ForEach([1, 2, 3, 4, 5], id: \.self) { page in
+                        ForEach(1 ... controlBarPages, id: \.self) { page in
                             Text(String(page))
                                 .tag(page as Int?)
                         }

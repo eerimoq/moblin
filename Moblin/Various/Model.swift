@@ -543,7 +543,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var logsStorage = LogsStorage()
     var mediaStorage = MediaPlayerStorage()
     var alertMediaStorage = AlertMediaStorage()
-    @Published var buttonPairs: [[ButtonPair]] = [[], [], [], [], []]
+    @Published var buttonPairs: [[ButtonPair]] = Array(repeating: [], count: controlBarPages)
     private var reconnectTimer: Timer?
     private var logId = 1
     @Published var showingToast = false
@@ -1261,7 +1261,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func updateButtonStates() {
-        for page in 0 ..< 5 {
+        for page in 0 ..< controlBarPages {
             let states = database.globalButtons!.filter { button in
                 button.enabled! && button.page == page + 1
             }.map { button in

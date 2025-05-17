@@ -132,7 +132,7 @@ private struct PagesView: View {
                 LazyVStack {
                     Group {
                         MainPageView(height: height)
-                        ForEach([1, 2, 3, 4], id: \.self) { page in
+                        ForEach(1 ..< controlBarPages, id: \.self) { page in
                             if !model.buttonPairs[page].isEmpty {
                                 PageView(page: page)
                                     .padding([.top, .leading, .trailing], 5)
