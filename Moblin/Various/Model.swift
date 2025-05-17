@@ -1272,14 +1272,14 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 if states.count - index > 1 {
                     pairs.append(ButtonPair(
                         id: UUID(),
-                        first: states[index],
-                        second: states[index + 1]
+                        first: states[index + 1],
+                        second: states[index]
                     ))
                 } else {
                     pairs.append(ButtonPair(id: UUID(), first: states[index]))
                 }
             }
-            buttonPairs[page] = pairs.reversed()
+            buttonPairs[page] = pairs
         }
     }
 

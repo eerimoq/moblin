@@ -3,7 +3,6 @@ import SwiftUI
 private struct QuickButtonsView: View {
     @EnvironmentObject var model: Model
     var page: Int
-    var width: CGFloat
 
     var body: some View {
         VStack {
@@ -34,7 +33,7 @@ private struct QuickButtonsView: View {
                             state: second,
                             size: singleQuickButtonSize,
                             nameSize: 12,
-                            nameWidth: width - 10,
+                            nameWidth: 90,
                         )
                     } else {
                         EmptyView()
@@ -43,7 +42,7 @@ private struct QuickButtonsView: View {
                         state: pair.first,
                         size: singleQuickButtonSize,
                         nameSize: 12,
-                        nameWidth: width - 10,
+                        nameWidth: 90,
                     )
                     .id(pair.first.button.id)
                 }
@@ -104,33 +103,20 @@ private struct IconAndSettingsView: View {
             .padding([.leading], 10)
         }
         .padding([.leading, .trailing], 10)
+        .padding([.bottom], 5)
     }
 }
 
-private struct QuickButtonsPageView: View {
+private struct PageView: View {
     @EnvironmentObject var model: Model
     var page: Int
 
     var body: some View {
-        GeometryReader { metrics in
-            ScrollView(showsIndicators: false) {
-                ScrollViewReader { reader in
-                    VStack {
-                        Spacer(minLength: 0)
-                        QuickButtonsView(page: page, width: metrics.size.width)
-                            .frame(width: metrics.size.width)
-                            .onChange(of: model.scrollQuickButtons) { _ in
-                                let id = model.buttonPairs[page].last?.first.button.id ?? model.buttonPairs[page]
-                                    .last?.second?.button.id ?? UUID()
-                                reader.scrollTo(id, anchor: .bottom)
-                            }
-                    }
-                    .frame(minHeight: metrics.size.height)
-                }
-            }
-            .scrollDisabled(!model.database.quickButtons!.enableScroll)
-            .padding([.top], 5)
+        ScrollView(showsIndicators: false) {
+            QuickButtonsView(page: page)
         }
+        .scrollDisabled(!model.database.quickButtons!.enableScroll)
+        .rotationEffect(.degrees(180))
         .padding([.leading, .trailing], 0)
     }
 }
@@ -139,7 +125,7 @@ private struct MainPageView: View {
     var body: some View {
         VStack(spacing: 0) {
             IconAndSettingsView()
-            QuickButtonsPageView(page: 0)
+            PageView(page: 0)
             StreamButton()
                 .padding([.top], 10)
                 .padding([.leading, .trailing], 5)
@@ -160,7 +146,7 @@ private struct PagesView: View {
                             MainPageView()
                             ForEach([1, 2, 3, 4], id: \.self) { page in
                                 if !model.buttonPairs[page].isEmpty {
-                                    QuickButtonsPageView(page: page)
+                                    PageView(page: page)
                                 }
                             }
                         }
