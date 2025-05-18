@@ -10,18 +10,15 @@ private struct AppearenceSettingsView: View {
                 Toggle("Scroll", isOn: $quickButtons.enableScroll)
                     .onChange(of: quickButtons.enableScroll) { _ in
                         model.updateQuickButtonStates()
-                        model.scrollQuickButtonsToBottom()
                     }
                 Toggle("Two columns", isOn: $quickButtons.twoColumns)
                     .onChange(of: quickButtons.twoColumns) { _ in
                         model.updateQuickButtonStates()
-                        model.scrollQuickButtonsToBottom()
                     }
             }
             Toggle("Show name", isOn: $quickButtons.showName)
                 .onChange(of: quickButtons.showName) { _ in
                     model.updateQuickButtonStates()
-                    model.scrollQuickButtonsToBottom()
                 }
         } header: {
             Text("Appearence")

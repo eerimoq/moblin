@@ -415,7 +415,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var goProWifiCredentialsSelection: UUID?
     @Published var goProRtmpUrlSelection: UUID?
 
-    @Published var scrollQuickButtons: Int = 0
     @Published var bias: Float = 0.0
 
     private var selectedFps: Int?
@@ -1257,10 +1256,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    func scrollQuickButtonsToBottom() {
-        scrollQuickButtons += 1
-    }
-
     func updateQuickButtonStates() {
         for page in 0 ..< controlBarPages {
             let states = database.globalButtons.filter { button in
@@ -1722,7 +1717,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         setupPeriodicTimers()
         setupThermalState()
         updateQuickButtonStates()
-        scrollQuickButtonsToBottom()
         removeUnusedImages()
         removeUnusedAlertMedias()
         NotificationCenter.default.addObserver(self,
