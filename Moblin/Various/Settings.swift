@@ -3206,9 +3206,9 @@ class Database: Codable, ObservableObject {
     var webBrowser: WebBrowserSettings = .init()
     var deepLinkCreator: DeepLinkCreator = .init()
     var srtlaServer: SettingsSrtlaServer = .init()
-    var mediaPlayers: SettingsMediaPlayers? = .init()
-    var showAllSettings: Bool? = false
-    var portrait: Bool? = false
+    var mediaPlayers: SettingsMediaPlayers = .init()
+    var showAllSettings: Bool = false
+    var portrait: Bool = false
     var djiDevices: SettingsDjiDevices? = .init()
     var alertsMediaGallery: SettingsAlertsMediaGallery? = .init()
     var catPrinters: SettingsCatPrinters? = .init()
@@ -3427,9 +3427,9 @@ class Database: Codable, ObservableObject {
         webBrowser = (try? container.decode(WebBrowserSettings.self, forKey: .webBrowser)) ?? .init()
         deepLinkCreator = (try? container.decode(DeepLinkCreator.self, forKey: .deepLinkCreator)) ?? .init()
         srtlaServer = (try? container.decode(SettingsSrtlaServer.self, forKey: .srtlaServer)) ?? .init()
-        mediaPlayers = try? container.decode(SettingsMediaPlayers?.self, forKey: .mediaPlayers)
-        showAllSettings = try? container.decode(Bool?.self, forKey: .showAllSettings)
-        portrait = try? container.decode(Bool?.self, forKey: .portrait)
+        mediaPlayers = (try? container.decode(SettingsMediaPlayers.self, forKey: .mediaPlayers)) ?? .init()
+        showAllSettings = (try? container.decode(Bool.self, forKey: .showAllSettings)) ?? false
+        portrait = (try? container.decode(Bool.self, forKey: .portrait)) ?? false
         djiDevices = try? container.decode(SettingsDjiDevices?.self, forKey: .djiDevices)
         alertsMediaGallery = try? container.decode(SettingsAlertsMediaGallery?.self, forKey: .alertsMediaGallery)
         catPrinters = try? container.decode(SettingsCatPrinters?.self, forKey: .catPrinters)
@@ -4645,24 +4645,12 @@ final class Settings {
             stream.audio = .init()
             store()
         }
-        if realDatabase.mediaPlayers == nil {
-            realDatabase.mediaPlayers = .init()
-            store()
-        }
-        if realDatabase.showAllSettings == nil {
-            realDatabase.showAllSettings = true
-            store()
-        }
         for stream in realDatabase.streams where stream.obsBrbScene == nil {
             stream.obsBrbScene = ""
             store()
         }
         for widget in realDatabase.widgets where widget.map.northUp == nil {
             widget.map.northUp = false
-            store()
-        }
-        if realDatabase.portrait == nil {
-            realDatabase.portrait = false
             store()
         }
         for widget in realDatabase.widgets where widget.text.backgroundColor == nil {

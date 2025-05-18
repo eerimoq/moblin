@@ -73,7 +73,7 @@ struct StreamObsRemoteControlSettingsView: View {
                 likely broken, and back to the main scene once everything seems to work again.
                 """)
             }
-            if model.database.showAllSettings! {
+            if model.database.showAllSettings {
                 Section {
                     Toggle("BRB scene when video source is broken", isOn: Binding(get: {
                         stream.obsBrbSceneVideoSourceBroken!
@@ -99,7 +99,7 @@ struct StreamObsRemoteControlSettingsView: View {
             } footer: {
                 Text("The name of the Source in OBS that receives the stream from Moblin.")
             }
-            if model.database.showAllSettings! {
+            if model.database.showAllSettings {
                 Section {
                     Toggle("Auto start streaming when going live", isOn: Binding(get: {
                         stream.obsAutoStartStream!

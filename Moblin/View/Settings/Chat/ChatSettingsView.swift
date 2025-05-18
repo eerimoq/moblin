@@ -72,7 +72,7 @@ struct ChatSettingsView: View {
                     Text(String(Int(fontSize)))
                         .frame(width: 25)
                 }
-                if model.database.showAllSettings! {
+                if model.database.showAllSettings {
                     Toggle(isOn: Binding(get: {
                         model.database.chat.timestampColorEnabled
                     }, set: { value in
@@ -252,7 +252,7 @@ struct ChatSettingsView: View {
                         .frame(width: sliderValuePercentageWidth)
                 }
             }
-            if model.database.showAllSettings! {
+            if model.database.showAllSettings {
                 Section {
                     ColorPicker("Timestamp", selection: $timestampColor, supportsOpacity: false)
                         .onChange(of: timestampColor) { _ in

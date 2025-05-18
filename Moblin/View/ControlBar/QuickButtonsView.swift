@@ -340,7 +340,7 @@ struct QuickButtonsInnerView: View {
     }
 
     private func portraitAction() {
-        model.setDisplayPortrait(portrait: !model.database.portrait!)
+        model.setDisplayPortrait(portrait: !model.database.portrait)
     }
 
     private func goProAction() {

@@ -16,7 +16,7 @@ struct MediaPlayersSettingsView: View {
             }
             Section {
                 List {
-                    ForEach(model.database.mediaPlayers!.players) { player in
+                    ForEach(model.database.mediaPlayers.players) { player in
                         NavigationLink {
                             MediaPlayerSettingsView(player: player)
                         } label: {
@@ -28,14 +28,14 @@ struct MediaPlayersSettingsView: View {
                     }
                     .onDelete(perform: { indexes in
                         for index in indexes {
-                            model.deleteMediaPlayer(playerId: model.database.mediaPlayers!.players[index].id)
+                            model.deleteMediaPlayer(playerId: model.database.mediaPlayers.players[index].id)
                         }
-                        model.database.mediaPlayers!.players.remove(atOffsets: indexes)
+                        model.database.mediaPlayers.players.remove(atOffsets: indexes)
                     })
                 }
                 CreateButtonView {
                     let settings = SettingsMediaPlayer()
-                    model.database.mediaPlayers!.players.append(settings)
+                    model.database.mediaPlayers.players.append(settings)
                     model.objectWillChange.send()
                     model.addMediaPlayer(settings: settings)
                 }

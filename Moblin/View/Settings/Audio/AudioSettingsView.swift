@@ -23,7 +23,7 @@ struct AudioSettingsView: View {
 
     var body: some View {
         Form {
-            if model.database.showAllSettings! {
+            if model.database.showAllSettings {
                 Section {
                     NavigationLink {
                         StreamAudioSettingsView(

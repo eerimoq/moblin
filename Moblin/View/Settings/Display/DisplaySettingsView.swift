@@ -32,7 +32,7 @@ struct DisplaySettingsView: View {
                 } label: {
                     Text("Quick buttons")
                 }
-                if model.database.showAllSettings! {
+                if model.database.showAllSettings {
                     NavigationLink {
                         StreamButtonsSettingsView(background: model.database.streamButtonColor.color())
                     } label: {
@@ -89,13 +89,13 @@ struct DisplaySettingsView: View {
                     Text("Make sure silent mode is off for vibrations to work.")
                 }
             }
-            if model.database.showAllSettings! {
+            if model.database.showAllSettings {
                 if !ProcessInfo().isiOSAppOnMac {
                     Section {
                         Toggle(isOn: Binding(get: {
-                            model.database.portrait!
+                            model.database.portrait
                         }, set: { _ in
-                            model.setDisplayPortrait(portrait: !model.database.portrait!)
+                            model.setDisplayPortrait(portrait: !model.database.portrait)
                         })) {
                             Text("Portrait")
                         }

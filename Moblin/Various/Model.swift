@@ -867,7 +867,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func isPortrait() -> Bool {
-        return stream.portrait! || database.portrait!
+        return stream.portrait! || database.portrait
     }
 
     private func getSceneWidgets(scene: SettingsScene) -> [SettingsWidget] {
@@ -1687,7 +1687,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         supportsAppleLog = hasAppleLog()
         interactiveChat = getGlobalButton(type: .interactiveChat)?.isOn ?? false
         _ = updateShowCameraPreview()
-        setDisplayPortrait(portrait: database.portrait!)
+        setDisplayPortrait(portrait: database.portrait)
         setBitrateDropFix()
         let webPCoder = SDImageWebPCoder.shared
         SDImageCodersManager.shared.addCoder(webPCoder)
@@ -2655,23 +2655,23 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func playerCameras() -> [String] {
-        return database.mediaPlayers!.players.map { $0.camera() }
+        return database.mediaPlayers.players.map { $0.camera() }
     }
 
     func getMediaPlayer(camera: String) -> SettingsMediaPlayer? {
-        return database.mediaPlayers!.players.first {
+        return database.mediaPlayers.players.first {
             $0.camera() == camera
         }
     }
 
     func getMediaPlayer(id: UUID) -> SettingsMediaPlayer? {
-        return database.mediaPlayers!.players.first {
+        return database.mediaPlayers.players.first {
             $0.id == id
         }
     }
 
     private func mediaPlayerCameras() -> [String] {
-        return database.mediaPlayers!.players.map { $0.camera() }
+        return database.mediaPlayers.players.map { $0.camera() }
     }
 
     func reloadRtmpStreams() {
@@ -4334,7 +4334,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             AppDelegate.orientationLock = .portrait
             streamPreviewView.isPortrait = true
             externalDisplayStreamPreviewView.isPortrait = true
-        } else if database.portrait! {
+        } else if database.portrait {
             AppDelegate.orientationLock = .portrait
             streamPreviewView.isPortrait = false
             externalDisplayStreamPreviewView.isPortrait = false
@@ -10659,7 +10659,7 @@ extension Model: SrtlaServerDelegate {
 
 extension Model {
     private func initMediaPlayers() {
-        for settings in database.mediaPlayers!.players {
+        for settings in database.mediaPlayers.players {
             addMediaPlayer(settings: settings)
         }
         removeUnusedMediaPlayerFiles()
@@ -10668,7 +10668,7 @@ extension Model {
     private func removeUnusedMediaPlayerFiles() {
         for mediaId in mediaStorage.ids() {
             var found = false
-            for player in database.mediaPlayers!.players
+            for player in database.mediaPlayers.players
                 where player.playlist.contains(where: { $0.id == mediaId })
             {
                 found = true

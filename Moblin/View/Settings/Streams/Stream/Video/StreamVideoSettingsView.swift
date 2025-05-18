@@ -133,7 +133,7 @@ struct StreamVideoSettingsView: View {
                     """)
                 }
             }
-            if model.database.showAllSettings! {
+            if model.database.showAllSettings {
                 Section {
                     HStack {
                         Text("Codec")

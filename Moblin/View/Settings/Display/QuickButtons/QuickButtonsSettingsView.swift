@@ -6,7 +6,7 @@ struct QuickButtonsSettingsView: View {
     var body: some View {
         Form {
             Section {
-                if model.database.showAllSettings! {
+                if model.database.showAllSettings {
                     Toggle("Scroll", isOn: Binding(get: {
                         model.database.quickButtons.enableScroll
                     }, set: { value in
@@ -37,7 +37,7 @@ struct QuickButtonsSettingsView: View {
             Section {
                 List {
                     ForEach(model.database.globalButtons) { button in
-                        if model.database.showAllSettings! {
+                        if model.database.showAllSettings {
                             NavigationLink {
                                 QuickButtonsButtonSettingsView(
                                     button: button,

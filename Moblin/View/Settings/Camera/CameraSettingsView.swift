@@ -213,7 +213,7 @@ struct CameraSettingsView: View {
                 Text("Shortcut")
             }
             Section {
-                if model.database.showAllSettings! {
+                if model.database.showAllSettings {
                     NavigationLink {
                         ZoomSettingsView(speed: model.database.zoom.speed!)
                     } label: {
@@ -221,7 +221,7 @@ struct CameraSettingsView: View {
                     }
                 }
                 VideoStabilizationSettingsView(mode: model.database.videoStabilizationMode.toString())
-                if model.database.showAllSettings! {
+                if model.database.showAllSettings {
                     TapScreenToFocusSettingsView()
                     Toggle("Camera controls", isOn: Binding(get: {
                         model.database.cameraControlsEnabled!
@@ -236,7 +236,7 @@ struct CameraSettingsView: View {
                     "\"Mirror front camera on stream\" is only supported when streaming in landscape, not portrait."
                 )
             }
-            if model.database.showAllSettings! {
+            if model.database.showAllSettings {
                 if model.supportsAppleLog {
                     Section {
                         Picker("Color space", selection: Binding(get: {
