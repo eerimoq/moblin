@@ -36,11 +36,7 @@ struct DebugSettingsView: View {
                     value: String(debug.maximumLogLines),
                     onSubmit: submitLogLines
                 )
-                Toggle("Debug overlay", isOn: Binding(get: {
-                    debug.srtOverlay
-                }, set: { value in
-                    debug.srtOverlay = value
-                }))
+                Toggle("Debug overlay", isOn: $debug.srtOverlay)
             }
             Section {
                 NavigationLink {
@@ -69,12 +65,10 @@ struct DebugSettingsView: View {
                     Text("\(formatOneDecimal(cameraSwitchRemoveBlackish)) s")
                         .frame(width: 40)
                 }
-                Toggle("Bitrate drop fix", isOn: Binding(get: {
-                    debug.bitrateDropFix
-                }, set: { value in
-                    debug.bitrateDropFix = value
-                    model.setBitrateDropFix()
-                }))
+                Toggle("Bitrate drop fix", isOn: $debug.bitrateDropFix)
+                    .onChange(of: debug.bitrateDropFix) { _ in
+                        model.setBitrateDropFix()
+                    }
                 HStack {
                     Text("Data rate limit")
                     Slider(
@@ -92,50 +86,33 @@ struct DebugSettingsView: View {
                     Text(formatOneDecimal(dataRateLimitFactor))
                         .frame(width: 40)
                 }
-                Toggle("Relaxed bitrate decrement after scene switch", isOn: Binding(get: {
-                    debug.relaxedBitrate
-                }, set: { value in
-                    debug.relaxedBitrate = value
-                }))
+                Toggle("Relaxed bitrate decrement after scene switch", isOn: $debug.relaxedBitrate)
                 Toggle("Global tone mapping", isOn: Binding(get: {
                     model.getGlobalToneMappingOn()
                 }, set: { value in
                     model.setGlobalToneMapping(on: value)
                 }))
-                Toggle("MetalPetal filters", isOn: Binding(get: {
-                    debug.metalPetalFilters
-                }, set: { value in
-                    debug.metalPetalFilters = value
-                    model.setMetalPetalFilters()
-                }))
-                Toggle("Twitch rewards", isOn: Binding(get: {
-                    debug.twitchRewards
-                }, set: { value in
-                    debug.twitchRewards = value
-                }))
+                Toggle("MetalPetal filters", isOn: $debug.metalPetalFilters)
+                    .onChange(of: debug.metalPetalFilters) { _ in
+                        model.setMetalPetalFilters()
+                    }
+                Toggle("Twitch rewards", isOn: $debug.twitchRewards)
                 NavigationLink {
                     DebugHttpProxySettingsView()
                 } label: {
                     Text("HTTP proxy")
                 }
-                Toggle("Reliable chat", isOn: Binding(get: {
-                    debug.reliableChat
-                }, set: { value in
-                    debug.reliableChat = value
-                }))
-                Toggle("Timecodes", isOn: Binding(get: {
-                    debug.timecodesEnabled
-                }, set: { value in
-                    debug.timecodesEnabled = value
-                    model.reloadNtpClient()
-                    model.reloadSrtlaServer()
-                }))
-                Toggle("SRT(LA) batch send", isOn: Binding(get: {
-                    debug.srtlaBatchSendEnabled
-                }, set: { value in
-                    debug.srtlaBatchSendEnabled = value
-                    model.setSrtlaBatchSend()
-                }))
+                Toggle("Reliable chat", isOn: $debug.reliableChat)
+                Toggle("Timecodes", isOn: $debug.timecodesEnabled)
+                    .onChange(of: debug.timecodesEnabled) { _ in
+                        model.reloadNtpClient()
+                        model.reloadSrtlaServer()
+                    }
+                Toggle("SRT(LA) batch send", isOn: $debug.srtlaBatchSendEnabled)
+                    .onChange(of: debug.srtlaBatchSendEnabled) { _ in
+                        logger.info("xxx")
+                        model.setSrtlaBatchSend()
+                    }
                 NavigationLink {
                     DjiGimbalDevicesSettingsView()
                 } label: {
