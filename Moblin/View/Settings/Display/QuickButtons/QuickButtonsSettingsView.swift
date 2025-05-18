@@ -8,24 +8,24 @@ struct QuickButtonsSettingsView: View {
             Section {
                 if model.database.showAllSettings! {
                     Toggle("Scroll", isOn: Binding(get: {
-                        model.database.quickButtons!.enableScroll
+                        model.database.quickButtons.enableScroll
                     }, set: { value in
-                        model.database.quickButtons!.enableScroll = value
+                        model.database.quickButtons.enableScroll = value
                         model.updateButtonStates()
                         model.scrollQuickButtonsToBottom()
                     }))
                     Toggle("Two columns", isOn: Binding(get: {
-                        model.database.quickButtons!.twoColumns
+                        model.database.quickButtons.twoColumns
                     }, set: { value in
-                        model.database.quickButtons!.twoColumns = value
+                        model.database.quickButtons.twoColumns = value
                         model.updateButtonStates()
                         model.scrollQuickButtonsToBottom()
                     }))
                 }
                 Toggle("Show name", isOn: Binding(get: {
-                    model.database.quickButtons!.showName
+                    model.database.quickButtons.showName
                 }, set: { value in
-                    model.database.quickButtons!.showName = value
+                    model.database.quickButtons.showName = value
                     model.updateButtonStates()
                     model.scrollQuickButtonsToBottom()
                 }))
@@ -36,7 +36,7 @@ struct QuickButtonsSettingsView: View {
             }
             Section {
                 List {
-                    ForEach(model.database.globalButtons!) { button in
+                    ForEach(model.database.globalButtons) { button in
                         if model.database.showAllSettings! {
                             NavigationLink {
                                 QuickButtonsButtonSettingsView(
@@ -81,7 +81,7 @@ struct QuickButtonsSettingsView: View {
                         }
                     }
                     .onMove(perform: { froms, to in
-                        model.database.globalButtons!.move(fromOffsets: froms, toOffset: to)
+                        model.database.globalButtons.move(fromOffsets: froms, toOffset: to)
                         model.updateButtonStates()
                         model.sceneUpdated(updateRemoteScene: false)
                     })

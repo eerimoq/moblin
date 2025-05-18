@@ -3188,9 +3188,9 @@ class Database: Codable, ObservableObject {
     var batteryPercentage: Bool = true
     var mic: SettingsMic = getDefaultMic()
     var debug: SettingsDebug = .init()
-    var quickButtons: SettingsQuickButtons? = .init()
-    var globalButtons: [SettingsQuickButton]? = []
-    var rtmpServer: SettingsRtmpServer? = .init()
+    var quickButtons: SettingsQuickButtons = .init()
+    var globalButtons: [SettingsQuickButton] = []
+    var rtmpServer: SettingsRtmpServer = .init()
     var networkInterfaceNames: [SettingsNetworkInterfaceName]? = []
     var lowBitrateWarning: Bool? = true
     var vibrate: Bool? = false
@@ -3248,7 +3248,7 @@ class Database: Codable, ObservableObject {
             addDefaultBitratePresets(database: database)
         }
         addMissingQuickButtons(database: database)
-        for button in database.globalButtons! where button.type != .interactiveChat && button.type != .cameraPreview {
+        for button in database.globalButtons where button.type != .interactiveChat && button.type != .cameraPreview {
             button.isOn = false
         }
         addMissingDeepLinkQuickButtons(database: database)
@@ -3402,9 +3402,9 @@ class Database: Codable, ObservableObject {
         batteryPercentage = try container.decode(Bool.self, forKey: .batteryPercentage)
         mic = try container.decode(SettingsMic.self, forKey: .mic)
         debug = try container.decode(SettingsDebug.self, forKey: .debug)
-        quickButtons = try? container.decode(SettingsQuickButtons?.self, forKey: .quickButtons)
-        globalButtons = try? container.decode([SettingsQuickButton]?.self, forKey: .globalButtons)
-        rtmpServer = try? container.decode(SettingsRtmpServer?.self, forKey: .rtmpServer)
+        quickButtons = (try? container.decode(SettingsQuickButtons.self, forKey: .quickButtons)) ?? .init()
+        globalButtons = (try? container.decode([SettingsQuickButton].self, forKey: .globalButtons)) ?? []
+        rtmpServer = (try? container.decode(SettingsRtmpServer.self, forKey: .rtmpServer)) ?? .init()
         networkInterfaceNames = try? container.decode(
             [SettingsNetworkInterfaceName]?.self,
             forKey: .networkInterfaceNames
@@ -3539,7 +3539,7 @@ private func addDefaultBitratePresets(database: Database) {
 }
 
 private func updateQuickButton(database: Database, button: SettingsQuickButton) {
-    let existingButton = database.globalButtons!.first(where: { globalButton in
+    let existingButton = database.globalButtons.first(where: { globalButton in
         globalButton.type == button.type
     })
     if let existingButton {
@@ -3547,7 +3547,7 @@ private func updateQuickButton(database: Database, button: SettingsQuickButton) 
         existingButton.systemImageNameOn = button.systemImageNameOn
         existingButton.systemImageNameOff = button.systemImageNameOff
     } else {
-        database.globalButtons!.append(button)
+        database.globalButtons.append(button)
     }
 }
 
@@ -3560,9 +3560,6 @@ private func quickButtonPageTwo() -> Int {
 }
 
 private func addMissingQuickButtons(database: Database) {
-    if database.globalButtons == nil {
-        database.globalButtons = []
-    }
     var button = SettingsQuickButton(name: String(localized: "Torch"))
     button.id = UUID()
     button.type = .torch
@@ -3931,7 +3928,7 @@ private func addMissingQuickButtons(database: Database) {
     button.systemImageNameOff = "phone.connection"
     updateQuickButton(database: database, button: button)
 
-    database.globalButtons = database.globalButtons!.filter { button in
+    database.globalButtons = database.globalButtons.filter { button in
         if button.type == .unknown {
             return false
         }
@@ -3953,7 +3950,7 @@ private func addMissingDeepLinkQuickButtons(database: Database) {
         database.deepLinkCreator!.quickButtons = .init()
     }
     let quickButtons = database.deepLinkCreator!.quickButtons!
-    for quickButton in database.globalButtons! where quickButton.type != .lut {
+    for quickButton in database.globalButtons where quickButton.type != .lut {
         let button = DeepLinkCreatorQuickButton()
         let buttonExists = quickButtons.buttons.contains(where: { button in
             quickButton.type == button.type
@@ -4233,20 +4230,12 @@ final class Settings {
             stream.audioBitrate = 128_000
             store()
         }
-        if realDatabase.quickButtons == nil {
-            realDatabase.quickButtons = .init()
-            store()
-        }
         for stream in realDatabase.streams where stream.chat == nil {
             stream.chat = .init()
             store()
         }
         for stream in realDatabase.streams where stream.bFrames == nil {
             stream.bFrames = false
-            store()
-        }
-        if realDatabase.rtmpServer == nil {
-            realDatabase.rtmpServer = .init()
             store()
         }
         for scene in realDatabase.scenes where scene.rtmpCameraId == nil {
@@ -4265,7 +4254,7 @@ final class Settings {
             realDatabase.lowBitrateWarning = true
             store()
         }
-        for stream in realDatabase.rtmpServer!.streams where stream.latency == nil {
+        for stream in realDatabase.rtmpServer.streams where stream.latency == nil {
             stream.latency = defaultRtmpLatency
             store()
         }
@@ -4307,7 +4296,7 @@ final class Settings {
             realDatabase.show.location = true
             store()
         }
-        for button in realDatabase.globalButtons! where button.type == .image {
+        for button in realDatabase.globalButtons where button.type == .image {
             if button.name != String(localized: "Camera") {
                 button.name = String(localized: "Camera")
                 store()
@@ -4666,7 +4655,7 @@ final class Settings {
             scene.srtlaCameraId = .init()
             store()
         }
-        for stream in realDatabase.rtmpServer!.streams where stream.autoSelectMic == nil {
+        for stream in realDatabase.rtmpServer.streams where stream.autoSelectMic == nil {
             stream.autoSelectMic = true
             store()
         }
@@ -5033,15 +5022,15 @@ final class Settings {
         }
         let allLuts = realDatabase.color!.bundledLuts + (realDatabase.color!.diskLuts ?? [])
         for lut in allLuts where lut.enabled == nil {
-            if let button = realDatabase.globalButtons!.first(where: { $0.id == lut.buttonId }) {
+            if let button = realDatabase.globalButtons.first(where: { $0.id == lut.buttonId }) {
                 lut.enabled = button.isOn
             } else {
                 lut.enabled = false
             }
             store()
         }
-        let newButtons = realDatabase.globalButtons!.filter { $0.type != .lut }
-        if realDatabase.globalButtons!.count != newButtons.count {
+        let newButtons = realDatabase.globalButtons.filter { $0.type != .lut }
+        if realDatabase.globalButtons.count != newButtons.count {
             realDatabase.globalButtons = newButtons
             store()
         }
@@ -5666,7 +5655,7 @@ final class Settings {
             realDatabase.autoSceneSwitchers = .init()
             store()
         }
-        for button in realDatabase.globalButtons! where button.page == nil {
+        for button in realDatabase.globalButtons where button.page == nil {
             button.page = 1
             store()
         }

@@ -1263,7 +1263,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func updateButtonStates() {
         for page in 0 ..< controlBarPages {
-            let states = database.globalButtons!.filter { button in
+            let states = database.globalButtons.filter { button in
                 button.enabled && button.page == page + 1
             }.map { button in
                 ButtonState(isOn: button.isOn, button: button)
@@ -2601,8 +2601,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func reloadRtmpServer() {
         stopRtmpServer()
-        if database.rtmpServer!.enabled {
-            rtmpServer = RtmpServer(settings: database.rtmpServer!.clone())
+        if database.rtmpServer.enabled {
+            rtmpServer = RtmpServer(settings: database.rtmpServer.clone())
             rtmpServer?.delegate = self
             rtmpServer!.start()
         }
@@ -2749,7 +2749,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         guard let rtmpServer, logger.debugEnabled else {
             return
         }
-        for stream in database.rtmpServer!.streams {
+        for stream in database.rtmpServer.streams {
             guard let info = rtmpServer.streamInfo(streamKey: stream.streamKey) else {
                 continue
             }
@@ -2945,21 +2945,21 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private func handleSettingsUrlsDefaultQuickButtons(settings: MoblinSettingsUrl) {
         if let quickButtons = settings.quickButtons {
             if let twoColumns = quickButtons.twoColumns {
-                database.quickButtons!.twoColumns = twoColumns
+                database.quickButtons.twoColumns = twoColumns
             }
             if let showName = quickButtons.showName {
-                database.quickButtons!.showName = showName
+                database.quickButtons.showName = showName
             }
             if let enableScroll = quickButtons.enableScroll {
-                database.quickButtons!.enableScroll = enableScroll
+                database.quickButtons.enableScroll = enableScroll
             }
             if quickButtons.disableAllButtons == true {
-                for globalButton in database.globalButtons! {
+                for globalButton in database.globalButtons {
                     globalButton.enabled = false
                 }
             }
             for button in quickButtons.buttons ?? [] {
-                for globalButton in database.globalButtons! {
+                for globalButton in database.globalButtons {
                     guard button.type == globalButton.type else {
                         continue
                     }
@@ -3774,7 +3774,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func isGlobalButtonOn(type: SettingsQuickButtonType) -> Bool {
-        return database.globalButtons?.first(where: { button in
+        return database.globalButtons.first(where: { button in
             button.type == type
         })?.isOn ?? false
     }
@@ -4483,7 +4483,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func setGlobalButtonState(type: SettingsQuickButtonType, isOn: Bool) {
-        for button in database.globalButtons! where button.type == type {
+        for button in database.globalButtons where button.type == type {
             button.isOn = isOn
         }
         for pageButtonPairs in buttonPairs {
@@ -4501,7 +4501,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func getGlobalButton(type: SettingsQuickButtonType) -> SettingsQuickButton? {
-        return database.globalButtons!.first(where: { $0.type == type })
+        return database.globalButtons.first(where: { $0.type == type })
     }
 
     func showQuickButtonSettings(type: SettingsQuickButtonType) {
@@ -4511,7 +4511,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func toggleGlobalButton(type: SettingsQuickButtonType) {
-        for button in database.globalButtons! where button.type == type {
+        for button in database.globalButtons where button.type == type {
             button.isOn.toggle()
         }
         for pageButtonPairs in buttonPairs {
@@ -6597,31 +6597,31 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func rtmpCameras() -> [String] {
-        return database.rtmpServer!.streams.map { stream in
+        return database.rtmpServer.streams.map { stream in
             stream.camera()
         }
     }
 
     func getRtmpStream(id: UUID) -> SettingsRtmpServerStream? {
-        return database.rtmpServer!.streams.first { stream in
+        return database.rtmpServer.streams.first { stream in
             stream.id == id
         }
     }
 
     func getRtmpStream(camera: String) -> SettingsRtmpServerStream? {
-        return database.rtmpServer!.streams.first { stream in
+        return database.rtmpServer.streams.first { stream in
             camera == stream.camera()
         }
     }
 
     func getRtmpStream(streamKey: String) -> SettingsRtmpServerStream? {
-        return database.rtmpServer!.streams.first { stream in
+        return database.rtmpServer.streams.first { stream in
             stream.streamKey == streamKey
         }
     }
 
     private func stopAllRtmpStreams() {
-        for stream in database.rtmpServer!.streams {
+        for stream in database.rtmpServer.streams {
             stopRtmpServerStream(stream: stream, showToast: false)
         }
     }

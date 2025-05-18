@@ -187,19 +187,19 @@ private struct GoProRtmpUrlView: View {
         for status in model.ipStatuses.filter({ $0.ipType == .ipv4 }) {
             serverUrls.append(rtmpStreamUrl(
                 address: status.ipType.formatAddress(status.ip),
-                port: model.database.rtmpServer!.port,
+                port: model.database.rtmpServer.port,
                 streamKey: stream.streamKey
             ))
         }
         serverUrls.append(rtmpStreamUrl(
             address: personalHotspotLocalAddress,
-            port: model.database.rtmpServer!.port,
+            port: model.database.rtmpServer.port,
             streamKey: stream.streamKey
         ))
         for status in model.ipStatuses.filter({ $0.ipType == .ipv6 }) {
             serverUrls.append(rtmpStreamUrl(
                 address: status.ipType.formatAddress(status.ip),
-                port: model.database.rtmpServer!.port,
+                port: model.database.rtmpServer.port,
                 streamKey: stream.streamKey
             ))
         }
@@ -215,11 +215,11 @@ private struct GoProRtmpUrlView: View {
                 }
             }
             if type == .server {
-                if model.database.rtmpServer!.streams.isEmpty {
+                if model.database.rtmpServer.streams.isEmpty {
                     Text("No RTMP server streams exists")
                 } else {
                     Picker("Stream", selection: $serverStreamId) {
-                        ForEach(model.database.rtmpServer!.streams) { stream in
+                        ForEach(model.database.rtmpServer.streams) { stream in
                             Text(stream.name)
                                 .tag(stream.id)
                         }
@@ -233,7 +233,7 @@ private struct GoProRtmpUrlView: View {
                                 .tag($0)
                         }
                     }
-                    if !model.database.rtmpServer!.enabled {
+                    if !model.database.rtmpServer.enabled {
                         Text("⚠️ The RTMP server is not enabled")
                     }
                 }
@@ -256,7 +256,7 @@ private struct GoProRtmpUrlView: View {
             """)
         }
         .onAppear {
-            let streams = model.database.rtmpServer!.streams
+            let streams = model.database.rtmpServer.streams
             if !streams.isEmpty {
                 if !streams.contains(where: { $0.id == serverStreamId }) {
                     serverStreamId = streams.first!.id

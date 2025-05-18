@@ -20,7 +20,7 @@ private struct QuickButtonsView: View {
     var body: some View {
         HStack {
             ForEach(model.getButtonPairs(page: page)) { pair in
-                if model.database.quickButtons!.twoColumns {
+                if model.database.quickButtons.twoColumns {
                     VStack(alignment: .leading) {
                         if let second = pair.second {
                             QuickButtonsInnerView(
@@ -70,7 +70,7 @@ private struct PageView: View {
         ScrollView(.horizontal, showsIndicators: false) {
             QuickButtonsView(page: page)
         }
-        .scrollDisabled(!model.database.quickButtons!.enableScroll)
+        .scrollDisabled(!model.database.quickButtons.enableScroll)
         .rotationEffect(.degrees(180))
     }
 }
