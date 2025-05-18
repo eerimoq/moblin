@@ -2205,12 +2205,12 @@ class SettingsDebug: Codable, ObservableObject {
     var pixelFormat: String = pixelFormats[1]
     var beautyFilter: Bool = false
     var beautyFilterSettings: SettingsDebugBeautyFilter = .init()
-    var allowVideoRangePixelFormat: Bool = false
+    @Published var allowVideoRangePixelFormat: Bool = false
     var blurSceneSwitch: Bool = true
     @Published var metalPetalFilters: Bool = false
     var preferStereoMic: Bool = false
     @Published var twitchRewards: Bool = false
-    var removeWindNoise: Bool = false
+    @Published var removeWindNoise: Bool = false
     var httpProxy: SettingsHttpProxy = .init()
     var tesla: SettingsTesla = .init()
     @Published var reliableChat: Bool = false

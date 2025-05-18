@@ -36,12 +36,12 @@ struct DebugSettingsView: View {
             }
             Section {
                 NavigationLink {
-                    DebugAudioSettingsView()
+                    DebugAudioSettingsView(debug: debug)
                 } label: {
                     Text("Audio")
                 }
                 NavigationLink {
-                    DebugVideoSettingsView()
+                    DebugVideoSettingsView(debug: debug)
                 } label: {
                     Text("Video")
                 }
