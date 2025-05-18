@@ -11684,7 +11684,7 @@ extension Model {
     }
 
     private func getHeartRateDeviceSettings(device: HeartRateDevice) -> SettingsHeartRateDevice? {
-        return database.heartRateDevices!.devices.first(where: { heartRateDevices[$0.id] === device })
+        return database.heartRateDevices.devices.first(where: { heartRateDevices[$0.id] === device })
     }
 
     func setCurrentHeartRateDevice(device: SettingsHeartRateDevice) {
@@ -11697,7 +11697,7 @@ extension Model {
     }
 
     private func autoStartHeartRateDevices() {
-        for device in database.heartRateDevices!.devices where device.enabled {
+        for device in database.heartRateDevices.devices where device.enabled {
             enableHeartRateDevice(device: device)
         }
     }
@@ -11709,7 +11709,7 @@ extension Model {
     }
 
     func isAnyHeartRateDeviceConfigured() -> Bool {
-        return database.heartRateDevices!.devices.contains(where: { $0.enabled })
+        return database.heartRateDevices.devices.contains(where: { $0.enabled })
     }
 
     func areAllHeartRateDevicesConnected() -> Bool {

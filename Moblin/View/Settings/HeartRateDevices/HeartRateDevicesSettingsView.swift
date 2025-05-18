@@ -33,17 +33,17 @@ struct HeartRateDevicesSettingsView: View {
             }
             Section {
                 List {
-                    ForEach(model.database.heartRateDevices!.devices) { device in
+                    ForEach(model.database.heartRateDevices.devices) { device in
                         HeartRateDeviceSettingsWrapperView(device: device, name: device.name)
                     }
                     .onDelete(perform: { offsets in
-                        model.database.heartRateDevices!.devices.remove(atOffsets: offsets)
+                        model.database.heartRateDevices.devices.remove(atOffsets: offsets)
                     })
                 }
                 CreateButtonView {
                     let device = SettingsHeartRateDevice()
                     device.name = "My device"
-                    model.database.heartRateDevices!.devices.append(device)
+                    model.database.heartRateDevices.devices.append(device)
                     model.objectWillChange.send()
                 }
             } footer: {

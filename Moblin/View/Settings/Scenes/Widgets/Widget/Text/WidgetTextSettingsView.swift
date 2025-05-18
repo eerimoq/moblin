@@ -298,7 +298,7 @@ private struct TextSelectionView: View {
                         text: $value
                     )
                 }
-                ForEach(model.database.heartRateDevices!.devices) { device in
+                ForEach(model.database.heartRateDevices.devices) { device in
                     FormatView(
                         title: "{heartRate:\(device.name)}",
                         description: String(
