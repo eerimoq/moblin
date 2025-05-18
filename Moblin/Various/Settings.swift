@@ -3216,9 +3216,9 @@ class Database: Codable, ObservableObject {
     var scoreboardPlayers: [SettingsWidgetScoreboardPlayer] = .init()
     var keyboard: SettingsKeyboard = .init()
     var tesla: SettingsTesla = .init()
-    var srtlaRelay: SettingsMoblink? = .init()
+    var srtlaRelay: SettingsMoblink = .init()
     var pixellateStrength: Float? = 0.3
-    var moblink: SettingsMoblink? = .init()
+    var moblink: SettingsMoblink = .init()
     var sceneSwitchTransition: SettingsSceneSwitchTransition? = .blur
     var forceSceneSwitchTransition: Bool? = false
     var cameraControlsEnabled: Bool? = true
@@ -3441,9 +3441,9 @@ class Database: Codable, ObservableObject {
             .init()
         keyboard = (try? container.decode(SettingsKeyboard.self, forKey: .keyboard)) ?? .init()
         tesla = (try? container.decode(SettingsTesla.self, forKey: .tesla)) ?? .init()
-        srtlaRelay = try? container.decode(SettingsMoblink?.self, forKey: .srtlaRelay)
+        srtlaRelay = (try? container.decode(SettingsMoblink?.self, forKey: .srtlaRelay)) ?? .init()
         pixellateStrength = try? container.decode(Float?.self, forKey: .pixellateStrength)
-        moblink = try? container.decode(SettingsMoblink?.self, forKey: .moblink)
+        moblink = (try? container.decode(SettingsMoblink.self, forKey: .moblink)) ?? srtlaRelay
         sceneSwitchTransition = try? container.decode(
             SettingsSceneSwitchTransition?.self,
             forKey: .sceneSwitchTransition
@@ -5205,10 +5205,6 @@ final class Settings {
             realDatabase.debug.timecodesEnabled = false
             store()
         }
-        if realDatabase.srtlaRelay == nil {
-            realDatabase.srtlaRelay = .init()
-            store()
-        }
         if realDatabase.debug.dnsLookupStrategy == nil {
             realDatabase.debug.dnsLookupStrategy = .system
             store()
@@ -5231,10 +5227,6 @@ final class Settings {
         }
         if realDatabase.pixellateStrength == nil {
             realDatabase.pixellateStrength = 0.3
-            store()
-        }
-        if realDatabase.moblink == nil {
-            realDatabase.moblink = realDatabase.srtlaRelay
             store()
         }
         if realDatabase.debug.cameraControlsEnabled == nil {
@@ -5313,8 +5305,8 @@ final class Settings {
             realDatabase.show.catPrinter = true
             store()
         }
-        if realDatabase.moblink!.client.manual == nil {
-            realDatabase.moblink!.client.manual = !realDatabase.moblink!.client.url.isEmpty
+        if realDatabase.moblink.client.manual == nil {
+            realDatabase.moblink.client.manual = !realDatabase.moblink.client.url.isEmpty
             store()
         }
         if realDatabase.cameraControlsEnabled == nil {

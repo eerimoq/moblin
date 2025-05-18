@@ -1856,16 +1856,16 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         stopMoblinkStreamer()
         if isMoblinkStreamerConfigured() {
             moblinkStreamer = MoblinkStreamer(
-                port: database.moblink!.server.port,
-                password: database.moblink!.password
+                port: database.moblink.server.port,
+                password: database.moblink.password
             )
             moblinkStreamer?.start(delegate: self)
         }
     }
 
     func isMoblinkStreamerConfigured() -> Bool {
-        let server = database.moblink!.server
-        return server.enabled && server.port > 0 && !database.moblink!.password.isEmpty
+        let server = database.moblink.server
+        return server.enabled && server.port > 0 && !database.moblink.password.isEmpty
     }
 
     func reloadMoblinkRelay() {
@@ -1873,7 +1873,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         stopMoblinkScanner()
         if isMoblinkRelayConfigured() {
             reloadMoblinkScanner()
-            if database.moblink!.client.manual! {
+            if database.moblink.client.manual! {
                 startMoblinkRelayManual()
             } else {
                 startMoblinkRelayAutomatic()
@@ -1882,7 +1882,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func startMoblinkRelayManual() {
-        guard let streamerUrl = URL(string: database.moblink!.client.url) else {
+        guard let streamerUrl = URL(string: database.moblink.client.url) else {
             return
         }
         addMoblinkRelay(streamerUrl: streamerUrl)
@@ -1902,9 +1902,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             return
         }
         let relay = MoblinkRelay(
-            name: database.moblink!.client.name,
+            name: database.moblink.client.name,
             streamerUrl: streamerUrl,
-            password: database.moblink!.password,
+            password: database.moblink.password,
             delegate: self
         )
         relay.start()
@@ -1912,12 +1912,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func isMoblinkRelayConfigured() -> Bool {
-        let client = database.moblink!.client
+        let client = database.moblink.client
         if !client.enabled {
             return false
         }
         if client.manual! {
-            return !client.url.isEmpty && !database.moblink!.password.isEmpty
+            return !client.url.isEmpty && !database.moblink.password.isEmpty
         } else {
             return true
         }
@@ -2586,7 +2586,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if isLive || isRecording {
             return false
         }
-        return database.moblink!.client.enabled || database.catPrinters.backgroundPrinting!
+        return database.moblink.client.enabled || database.catPrinters.backgroundPrinting!
     }
 
     @objc func handleBatteryStateDidChangeNotification() {
@@ -11934,7 +11934,7 @@ extension Model: MoblinkRelayDelegate {
 extension Model: MoblinkScannerDelegate {
     func moblinkScannerDiscoveredStreamers(streamers: [MoblinkScannerStreamer]) {
         moblinkScannerDiscoveredStreamers = streamers
-        if !database.moblink!.client.manual! {
+        if !database.moblink.client.manual! {
             startMoblinkRelayAutomatic()
         }
     }

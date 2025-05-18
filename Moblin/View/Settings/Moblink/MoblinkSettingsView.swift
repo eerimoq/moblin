@@ -141,7 +141,7 @@ private struct RelayStreamerUrlView: View {
         guard isValidWebSocketUrl(url: value) == nil else {
             return
         }
-        model.database.moblink!.client.url = value
+        model.database.moblink.client.url = value
         model.reloadMoblinkRelay()
         dismiss()
     }
@@ -181,9 +181,9 @@ private struct RelayView: View {
     var body: some View {
         Section {
             Toggle(isOn: Binding(get: {
-                model.database.moblink!.client.enabled
+                model.database.moblink.client.enabled
             }, set: { value in
-                model.database.moblink!.client.enabled = value
+                model.database.moblink.client.enabled = value
                 model.reloadMoblinkRelay()
                 model.objectWillChange.send()
             })) {
@@ -195,14 +195,14 @@ private struct RelayView: View {
                 TextItemView(name: String(localized: "Name"), value: name)
             }
             .onChange(of: name) { name in
-                model.database.moblink!.client.name = name
+                model.database.moblink.client.name = name
                 model.reloadMoblinkRelay()
             }
             Toggle(isOn: $manual) {
                 Text("Manual")
             }
             .onChange(of: manual) { value in
-                model.database.moblink!.client.manual = value
+                model.database.moblink.client.manual = value
                 model.reloadMoblinkRelay()
             }
             .disabled(model.isLive)
@@ -210,7 +210,7 @@ private struct RelayView: View {
                 NavigationLink {
                     RelayStreamerUrlView(streamerUrl: $streamerUrl)
                 } label: {
-                    TextItemView(name: String(localized: "Streamer URL"), value: model.database.moblink!.client.url)
+                    TextItemView(name: String(localized: "Streamer URL"), value: model.database.moblink.client.url)
                 }
             }
         } header: {
@@ -232,7 +232,7 @@ private struct StreamerView: View {
         guard let port = UInt16(value.trim()) else {
             return
         }
-        model.database.moblink!.server.port = port
+        model.database.moblink.server.port = port
         model.reloadMoblinkStreamer()
     }
 
@@ -242,14 +242,14 @@ private struct StreamerView: View {
                 Text("Enabled")
             }
             .onChange(of: enabled) { value in
-                model.database.moblink!.server.enabled = value
+                model.database.moblink.server.enabled = value
                 model.reloadMoblinkStreamer()
                 model.objectWillChange.send()
             }
             .disabled(model.isLive)
             TextEditNavigationView(
                 title: String(localized: "Server port"),
-                value: String(model.database.moblink!.server.port),
+                value: String(model.database.moblink.server.port),
                 onSubmit: submitPort,
                 keyboardType: .numbersAndPunctuation,
                 placeholder: "7777"
@@ -268,7 +268,7 @@ struct MoblinkSettingsView: View {
     @State var streamerEnabled: Bool
 
     private func submitPassword(value: String) {
-        model.database.moblink!.password = value.trim()
+        model.database.moblink.password = value.trim()
         model.reloadMoblinkRelay()
         model.reloadMoblinkStreamer()
     }
@@ -284,13 +284,13 @@ struct MoblinkSettingsView: View {
             Section {
                 NavigationLink {
                     PasswordView(
-                        value: model.database.moblink!.password,
+                        value: model.database.moblink.password,
                         onSubmit: submitPassword
                     )
                 } label: {
                     TextItemView(
                         name: String(localized: "Password"),
-                        value: model.database.moblink!.password,
+                        value: model.database.moblink.password,
                         sensitive: true
                     )
                 }
@@ -298,9 +298,9 @@ struct MoblinkSettingsView: View {
                 Text("Used by both relay and streamer devices. Copy the streamer's password to the relay device.")
             }
             RelayView(
-                name: model.database.moblink!.client.name,
-                streamerUrl: model.database.moblink!.client.url,
-                manual: model.database.moblink!.client.manual!
+                name: model.database.moblink.client.name,
+                streamerUrl: model.database.moblink.client.url,
+                manual: model.database.moblink.client.manual!
             )
             StreamerView(enabled: $streamerEnabled)
             if streamerEnabled {
@@ -309,19 +309,19 @@ struct MoblinkSettingsView: View {
                         ForEach(model.ipStatuses.filter { $0.ipType == .ipv4 }) { status in
                             InterfaceView(
                                 ip: status.ipType.formatAddress(status.ip),
-                                port: model.database.moblink!.server.port,
+                                port: model.database.moblink.server.port,
                                 image: urlImage(interfaceType: status.interfaceType)
                             )
                         }
                         InterfaceView(
                             ip: personalHotspotLocalAddress,
-                            port: model.database.moblink!.server.port,
+                            port: model.database.moblink.server.port,
                             image: "personalhotspot"
                         )
                         ForEach(model.ipStatuses.filter { $0.ipType == .ipv6 }) { status in
                             InterfaceView(
                                 ip: status.ipType.formatAddress(status.ip),
-                                port: model.database.moblink!.server.port,
+                                port: model.database.moblink.server.port,
                                 image: urlImage(interfaceType: status.interfaceType)
                             )
                         }

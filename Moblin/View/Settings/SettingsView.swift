@@ -103,7 +103,7 @@ struct SettingsView: View {
                     }
                 }
                 NavigationLink {
-                    MoblinkSettingsView(streamerEnabled: model.database.moblink!.server.enabled)
+                    MoblinkSettingsView(streamerEnabled: model.database.moblink.server.enabled)
                 } label: {
                     IconAndTextView(image: "app.connected.to.app.below.fill", text: String(localized: "Moblink"))
                 }
