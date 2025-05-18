@@ -3212,7 +3212,7 @@ class Database: Codable, ObservableObject {
     var djiDevices: SettingsDjiDevices = .init()
     var alertsMediaGallery: SettingsAlertsMediaGallery = .init()
     var catPrinters: SettingsCatPrinters = .init()
-    var verboseStatuses: Bool? = false
+    var verboseStatuses: Bool = false
     var scoreboardPlayers: [SettingsWidgetScoreboardPlayer]? = .init()
     var keyboard: SettingsKeyboard? = .init()
     var tesla: SettingsTesla? = .init()
@@ -3430,11 +3430,11 @@ class Database: Codable, ObservableObject {
         mediaPlayers = (try? container.decode(SettingsMediaPlayers.self, forKey: .mediaPlayers)) ?? .init()
         showAllSettings = (try? container.decode(Bool.self, forKey: .showAllSettings)) ?? false
         portrait = (try? container.decode(Bool.self, forKey: .portrait)) ?? false
-        djiDevices = (try? container.decode(SettingsDjiDevices?.self, forKey: .djiDevices)) ?? .init()
-        alertsMediaGallery = (try? container.decode(SettingsAlertsMediaGallery?.self, forKey: .alertsMediaGallery)) ??
+        djiDevices = (try? container.decode(SettingsDjiDevices.self, forKey: .djiDevices)) ?? .init()
+        alertsMediaGallery = (try? container.decode(SettingsAlertsMediaGallery.self, forKey: .alertsMediaGallery)) ??
             .init()
-        catPrinters = (try? container.decode(SettingsCatPrinters?.self, forKey: .catPrinters)) ?? .init()
-        verboseStatuses = try? container.decode(Bool?.self, forKey: .verboseStatuses)
+        catPrinters = (try? container.decode(SettingsCatPrinters.self, forKey: .catPrinters)) ?? .init()
+        verboseStatuses = (try? container.decode(Bool.self, forKey: .verboseStatuses)) ?? false
         scoreboardPlayers = try? container.decode([SettingsWidgetScoreboardPlayer]?.self, forKey: .scoreboardPlayers)
         keyboard = try? container.decode(SettingsKeyboard?.self, forKey: .keyboard)
         tesla = try? container.decode(SettingsTesla?.self, forKey: .tesla)
@@ -4947,10 +4947,6 @@ final class Settings {
         }
         for stream in realDatabase.streams where stream.obsMainScene == nil {
             stream.obsMainScene = ""
-            store()
-        }
-        if realDatabase.verboseStatuses == nil {
-            realDatabase.verboseStatuses = false
             store()
         }
         for widget in database.widgets where widget.alerts.twitch!.raids == nil {

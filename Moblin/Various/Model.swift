@@ -968,7 +968,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func toggleVerboseStatuses() {
         verboseStatuses.toggle()
-        database.verboseStatuses!.toggle()
+        database.verboseStatuses.toggle()
     }
 
     private func isShowingPanelGlobalButton(type: SettingsQuickButtonType) -> Bool {
@@ -1682,7 +1682,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         audioUnitRemoveWindNoise = database.debug.removeWindNoise!
         showFirstTimeChatterMessage = database.chat.showFirstTimeChatterMessage!
         showNewFollowerMessage = database.chat.showNewFollowerMessage!
-        verboseStatuses = database.verboseStatuses!
+        verboseStatuses = database.verboseStatuses
         autoSceneSwitcher.currentSwitcherId = database.autoSceneSwitchers!.switcherId
         supportsAppleLog = hasAppleLog()
         interactiveChat = getGlobalButton(type: .interactiveChat)?.isOn ?? false
