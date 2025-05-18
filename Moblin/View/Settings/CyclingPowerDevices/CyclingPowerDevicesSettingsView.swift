@@ -28,17 +28,17 @@ struct CyclingPowerDevicesSettingsView: View {
             }
             Section {
                 List {
-                    ForEach(model.database.cyclingPowerDevices!.devices) { device in
+                    ForEach(model.database.cyclingPowerDevices.devices) { device in
                         CyclingPowerDeviceSettingsWrapperView(device: device, name: device.name)
                     }
                     .onDelete(perform: { offsets in
-                        model.database.cyclingPowerDevices!.devices.remove(atOffsets: offsets)
+                        model.database.cyclingPowerDevices.devices.remove(atOffsets: offsets)
                     })
                 }
                 CreateButtonView {
                     let device = SettingsCyclingPowerDevice()
                     device.name = "My device"
-                    model.database.cyclingPowerDevices!.devices.append(device)
+                    model.database.cyclingPowerDevices.devices.append(device)
                     model.objectWillChange.send()
                 }
             } footer: {

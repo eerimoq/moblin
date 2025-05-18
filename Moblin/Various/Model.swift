@@ -11610,7 +11610,7 @@ extension Model {
     }
 
     private func getCyclingPowerDeviceSettings(device: CyclingPowerDevice) -> SettingsCyclingPowerDevice? {
-        return database.cyclingPowerDevices!.devices.first(where: { cyclingPowerDevices[$0.id] === device })
+        return database.cyclingPowerDevices.devices.first(where: { cyclingPowerDevices[$0.id] === device })
     }
 
     func setCurrentCyclingPowerDevice(device: SettingsCyclingPowerDevice) {
@@ -11623,7 +11623,7 @@ extension Model {
     }
 
     private func autoStartCyclingPowerDevices() {
-        for device in database.cyclingPowerDevices!.devices where device.enabled {
+        for device in database.cyclingPowerDevices.devices where device.enabled {
             enableCyclingPowerDevice(device: device)
         }
     }
@@ -11635,7 +11635,7 @@ extension Model {
     }
 
     func isAnyCyclingPowerDeviceConfigured() -> Bool {
-        return database.cyclingPowerDevices!.devices.contains(where: { $0.enabled })
+        return database.cyclingPowerDevices.devices.contains(where: { $0.enabled })
     }
 
     func areAllCyclingPowerDevicesConnected() -> Bool {
