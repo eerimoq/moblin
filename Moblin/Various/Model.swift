@@ -1218,7 +1218,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func setAllowVideoRangePixelFormat() {
-        allowVideoRangePixelFormat = database.debug.allowVideoRangePixelFormat!
+        allowVideoRangePixelFormat = database.debug.allowVideoRangePixelFormat
     }
 
     func makeToast(title: String, subTitle: String? = nil) {
@@ -1499,7 +1499,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func debugLog(message: String) {
         DispatchQueue.main.async {
-            if self.log.count > self.database.debug.maximumLogLines! {
+            if self.log.count > self.database.debug.maximumLogLines {
                 self.log.removeFirst()
             }
             self.log.append(LogEntry(id: self.logId, message: message))
@@ -1674,7 +1674,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         setSrtlaBatchSend()
         setExternalDisplayContent()
         portraitVideoOffsetFromTop = database.portraitVideoOffsetFromTop
-        audioUnitRemoveWindNoise = database.debug.removeWindNoise!
+        audioUnitRemoveWindNoise = database.debug.removeWindNoise
         showFirstTimeChatterMessage = database.chat.showFirstTimeChatterMessage!
         showNewFollowerMessage = database.chat.showNewFollowerMessage!
         verboseStatuses = database.verboseStatuses
@@ -1827,8 +1827,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func setBitrateDropFix() {
-        if database.debug.bitrateDropFix! {
-            videoEncoderDataRateLimitFactor = Double(database.debug.dataRateLimitFactor!)
+        if database.debug.bitrateDropFix {
+            videoEncoderDataRateLimitFactor = Double(database.debug.dataRateLimitFactor)
         } else {
             videoEncoderDataRateLimitFactor = 1.2
         }
@@ -2134,11 +2134,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func setMetalPetalFilters() {
-        ioVideoUnitMetalPetal = database.debug.metalPetalFilters!
+        ioVideoUnitMetalPetal = database.debug.metalPetalFilters
     }
 
     func setSrtlaBatchSend() {
-        srtlaBatchSend = database.debug.srtlaBatchSendEnabled!
+        srtlaBatchSend = database.debug.srtlaBatchSendEnabled
     }
 
     func setExternalDisplayContent() {
@@ -2167,9 +2167,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func updateFaceFilterSettings() {
-        let settings = database.debug.beautyFilterSettings!
+        let settings = database.debug.beautyFilterSettings
         faceEffect.safeSettings.mutate { $0 = FaceEffectSettings(
-            showCrop: database.debug.beautyFilter!,
+            showCrop: database.debug.beautyFilter,
             showBlur: settings.showBlur,
             showBlurBackground: settings.showBlurBackground!,
             showMouth: settings.showMoblin,
@@ -2187,19 +2187,19 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if showFace, !showDrawOnStream {
             isOn = true
         }
-        if database.debug.beautyFilter! {
+        if database.debug.beautyFilter {
             isOn = true
         }
-        if database.debug.beautyFilterSettings!.showBeauty! {
+        if database.debug.beautyFilterSettings.showBeauty! {
             isOn = true
         }
-        if database.debug.beautyFilterSettings!.showBlur {
+        if database.debug.beautyFilterSettings.showBlur {
             isOn = true
         }
-        if database.debug.beautyFilterSettings!.showBlurBackground! {
+        if database.debug.beautyFilterSettings.showBlurBackground! {
             isOn = true
         }
-        if database.debug.beautyFilterSettings!.showMoblin {
+        if database.debug.beautyFilterSettings.showMoblin {
             isOn = true
         }
         setGlobalButtonState(type: .face, isOn: isOn)
@@ -2509,7 +2509,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             reloadStream()
             sceneUpdated(attachCamera: true, updateRemoteScene: false)
             setupAudioSession()
-            media.attachDefaultAudioDevice(builtinDelay: database.debug.builtinAudioAndVideoDelay!)
+            media.attachDefaultAudioDevice(builtinDelay: database.debug.builtinAudioAndVideoDelay)
             reloadRtmpServer()
             reloadDjiDevices()
             reloadSrtlaServer()
@@ -3774,10 +3774,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func isFaceEnabled() -> Bool {
-        let settings = database.debug.beautyFilterSettings!
-        return database.debug.beautyFilter! || settings.showBlur || settings.showBlurBackground! || settings
-            .showMoblin || settings
-            .showBeauty!
+        let settings = database.debug.beautyFilterSettings
+        return database.debug.beautyFilter || settings.showBlur || settings.showBlurBackground! || settings
+            .showMoblin || settings.showBeauty!
     }
 
     private func registerGlobalVideoEffects() -> [VideoEffect] {
@@ -4746,8 +4745,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 adaptiveBitrateAlgorithm: stream.srt.adaptiveBitrateEnabled! ? stream.srt.adaptiveBitrate!
                     .algorithm : nil,
                 latency: stream.srt.latency,
-                overheadBandwidth: database.debug.srtOverheadBandwidth!,
-                maximumBandwidthFollowInput: database.debug.maximumBandwidthFollowInput!,
+                overheadBandwidth: database.debug.srtOverheadBandwidth,
+                maximumBandwidthFollowInput: database.debug.maximumBandwidthFollowInput,
                 mpegtsPacketsPerPacket: stream.srt.mpegtsPacketsPerPacket,
                 networkInterfaceNames: database.networkInterfaceNames,
                 connectionPriorities: stream.srt.connectionPriorities!,
@@ -4869,7 +4868,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             proto: stream.getProtocol(),
             portrait: stream.portrait!,
             timecodesEnabled: isTimecodesEnabled(),
-            builtinAudioDelay: database.debug.builtinAudioAndVideoDelay!
+            builtinAudioDelay: database.debug.builtinAudioAndVideoDelay
         )
         updateTorch()
         updateMute()
@@ -4902,7 +4901,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func isTimecodesEnabled() -> Bool {
-        return database.debug.timecodesEnabled! && stream.timecodesEnabled! && !stream.ntpPoolAddress!.isEmpty
+        return database.debug.timecodesEnabled && stream.timecodesEnabled! && !stream.ntpPoolAddress!.isEmpty
     }
 
     private func showPreset(preset: SettingsZoomPreset) -> Bool {
@@ -5082,7 +5081,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func isChatRemoteControl() -> Bool {
-        return useRemoteControlForChatAndEvents && database.debug.reliableChat!
+        return useRemoteControlForChatAndEvents && database.debug.reliableChat
     }
 
     func isViewersConfigured() -> Bool {
@@ -5222,7 +5221,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func httpProxy() -> HttpProxy? {
-        return settings.database.debug.httpProxy!.toHttpProxy()
+        return settings.database.debug.httpProxy.toHttpProxy()
     }
 
     private func reloadTwitchEventSub() {
@@ -7465,7 +7464,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         lastAttachCompletedTime = nil
         let isMirrored = getVideoMirroredOnScreen()
         let params = VideoUnitAttachParams(devices: getBuiltinCameraDevices(scene: scene, sceneDevice: cameraDevice),
-                                           builtinDelay: database.debug.builtinAudioAndVideoDelay!,
+                                           builtinDelay: database.debug.builtinAudioAndVideoDelay,
                                            cameraPreviewLayer: cameraPreviewLayer!,
                                            showCameraPreview: updateShowCameraPreview(),
                                            externalDisplayPreview: externalDisplayPreview,
@@ -7489,7 +7488,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 }
                 self.lastAttachCompletedTime = .now
                 self.relaxedBitrateStartTime = self.lastAttachCompletedTime
-                self.relaxedBitrate = self.database.debug.relaxedBitrate!
+                self.relaxedBitrate = self.database.debug.relaxedBitrate
                 self.updateCameraPreviewRotation()
             }
         )
@@ -7498,7 +7497,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func getIgnoreFramesAfterAttachSeconds() -> Double {
-        return Double(database.debug.cameraSwitchRemoveBlackish!)
+        return Double(database.debug.cameraSwitchRemoveBlackish)
     }
 
     private func getFillFrame(scene: SettingsScene) -> Bool {
@@ -7507,7 +7506,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func getIgnoreFramesAfterAttachSecondsReplaceCamera() -> Double {
         if database.forceSceneSwitchTransition {
-            return Double(database.debug.cameraSwitchRemoveBlackish!)
+            return Double(database.debug.cameraSwitchRemoveBlackish)
         } else {
             return 0.0
         }
@@ -7521,7 +7520,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         hasZoom = false
         media.attachBufferedCamera(
             devices: getBuiltinCameraDevices(scene: scene, sceneDevice: nil),
-            builtinDelay: database.debug.builtinAudioAndVideoDelay!,
+            builtinDelay: database.debug.builtinAudioAndVideoDelay,
             cameraPreviewLayer: cameraPreviewLayer!,
             externalDisplayPreview: externalDisplayPreview,
             cameraId: cameraId,
@@ -8593,7 +8592,7 @@ extension Model {
 
     private func remoteControlStreamerSendTwitchStart() {
         remoteControlStreamer?.twitchStart(
-            channelName: database.debug.reliableChat! ? stream.twitchChannelName : nil,
+            channelName: database.debug.reliableChat ? stream.twitchChannelName : nil,
             channelId: stream.twitchChannelId,
             accessToken: stream.twitchAccessToken!
         )
@@ -9738,11 +9737,11 @@ extension Model {
     func reloadAudioSession() {
         teardownAudioSession()
         setupAudioSession()
-        media.attachDefaultAudioDevice(builtinDelay: database.debug.builtinAudioAndVideoDelay!)
+        media.attachDefaultAudioDevice(builtinDelay: database.debug.builtinAudioAndVideoDelay)
     }
 
     private func setupAudioSession() {
-        let bluetoothOutputOnly = database.debug.bluetoothOutputOnly!
+        let bluetoothOutputOnly = database.debug.bluetoothOutputOnly
         netStreamLockQueue.async {
             let session = AVAudioSession.sharedInstance()
             do {
@@ -9903,7 +9902,7 @@ extension Model {
         case .top:
             wantedOrientation = .top
         }
-        let preferStereoMic = database.debug.preferStereoMic!
+        let preferStereoMic = database.debug.preferStereoMic
         netStreamLockQueue.async {
             let session = AVAudioSession.sharedInstance()
             for inputPort in session.availableInputs ?? [] {
@@ -9918,7 +9917,7 @@ extension Model {
                 }
             }
         }
-        media.attachDefaultAudioDevice(builtinDelay: database.debug.builtinAudioAndVideoDelay!)
+        media.attachDefaultAudioDevice(builtinDelay: database.debug.builtinAudioAndVideoDelay)
     }
 
     func setMicFromSettings() {
@@ -10000,7 +9999,7 @@ extension Model {
 
     private func selectMicDefault(mic: Mic) {
         media.attachBufferedAudio(cameraId: nil)
-        let preferStereoMic = database.debug.preferStereoMic!
+        let preferStereoMic = database.debug.preferStereoMic
         netStreamLockQueue.async {
             let session = AVAudioSession.sharedInstance()
             for inputPort in session.availableInputs ?? [] {
@@ -10019,7 +10018,7 @@ extension Model {
                 }
             }
         }
-        media.attachDefaultAudioDevice(builtinDelay: database.debug.builtinAudioAndVideoDelay!)
+        media.attachDefaultAudioDevice(builtinDelay: database.debug.builtinAudioAndVideoDelay)
         currentMic = mic
         saveSelectedMic(mic: mic)
         remoteControlStreamer?.stateChanged(state: RemoteControlState(mic: mic.id))

@@ -18,16 +18,16 @@ struct DebugVideoSettingsView: View {
                         title: String(localized: "Pixel format"),
                         onChange: onPixelFormatChange,
                         items: InlinePickerItem.fromStrings(values: pixelFormats),
-                        selectedId: model.database.debug.pixelFormat!
+                        selectedId: model.database.debug.pixelFormat
                     )
                 } label: {
                     TextItemView(
                         name: String(localized: "Pixel format"),
-                        value: model.database.debug.pixelFormat!
+                        value: model.database.debug.pixelFormat
                     )
                 }
                 Toggle("Allow video range pixel format", isOn: Binding(get: {
-                    model.database.debug.allowVideoRangePixelFormat!
+                    model.database.debug.allowVideoRangePixelFormat
                 }, set: { value in
                     model.database.debug.allowVideoRangePixelFormat = value
                     model.setAllowVideoRangePixelFormat()

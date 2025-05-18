@@ -217,10 +217,10 @@ struct SettingsView: View {
                     }
                     NavigationLink {
                         DebugSettingsView(
-                            cameraSwitchRemoveBlackish: model.database.debug.cameraSwitchRemoveBlackish!,
-                            dataRateLimitFactor: model.database.debug.dataRateLimitFactor!,
-                            recordSegmentLength: model.database.debug.recordSegmentLength!,
-                            builtinAudioAndVideoDelay: model.database.debug.builtinAudioAndVideoDelay!
+                            cameraSwitchRemoveBlackish: model.database.debug.cameraSwitchRemoveBlackish,
+                            dataRateLimitFactor: model.database.debug.dataRateLimitFactor,
+                            recordSegmentLength: model.database.debug.recordSegmentLength,
+                            builtinAudioAndVideoDelay: model.database.debug.builtinAudioAndVideoDelay
                         )
                     } label: {
                         IconAndTextView(image: "ladybug", text: String(localized: "Debug"))

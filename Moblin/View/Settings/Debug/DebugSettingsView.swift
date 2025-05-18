@@ -32,7 +32,7 @@ struct DebugSettingsView: View {
                 }
                 TextEditNavigationView(
                     title: "Maximum log lines",
-                    value: String(model.database.debug.maximumLogLines!),
+                    value: String(model.database.debug.maximumLogLines),
                     onSubmit: submitLogLines
                 )
                 Toggle("Debug overlay", isOn: Binding(get: {
@@ -69,7 +69,7 @@ struct DebugSettingsView: View {
                         .frame(width: 40)
                 }
                 Toggle("Bitrate drop fix", isOn: Binding(get: {
-                    model.database.debug.bitrateDropFix!
+                    model.database.debug.bitrateDropFix
                 }, set: { value in
                     model.database.debug.bitrateDropFix = value
                     model.setBitrateDropFix()
@@ -92,7 +92,7 @@ struct DebugSettingsView: View {
                         .frame(width: 40)
                 }
                 Toggle("Relaxed bitrate decrement after scene switch", isOn: Binding(get: {
-                    model.database.debug.relaxedBitrate!
+                    model.database.debug.relaxedBitrate
                 }, set: { value in
                     model.database.debug.relaxedBitrate = value
                 }))
@@ -102,13 +102,13 @@ struct DebugSettingsView: View {
                     model.setGlobalToneMapping(on: value)
                 }))
                 Toggle("MetalPetal filters", isOn: Binding(get: {
-                    model.database.debug.metalPetalFilters!
+                    model.database.debug.metalPetalFilters
                 }, set: { value in
                     model.database.debug.metalPetalFilters = value
                     model.setMetalPetalFilters()
                 }))
                 Toggle("Twitch rewards", isOn: Binding(get: {
-                    model.database.debug.twitchRewards!
+                    model.database.debug.twitchRewards
                 }, set: { value in
                     model.database.debug.twitchRewards = value
                 }))
@@ -118,19 +118,19 @@ struct DebugSettingsView: View {
                     Text("HTTP proxy")
                 }
                 Toggle("Reliable chat", isOn: Binding(get: {
-                    model.database.debug.reliableChat!
+                    model.database.debug.reliableChat
                 }, set: { value in
                     model.database.debug.reliableChat = value
                 }))
                 Toggle("Timecodes", isOn: Binding(get: {
-                    model.database.debug.timecodesEnabled!
+                    model.database.debug.timecodesEnabled
                 }, set: { value in
                     model.database.debug.timecodesEnabled = value
                     model.reloadNtpClient()
                     model.reloadSrtlaServer()
                 }))
                 Toggle("SRT(LA) batch send", isOn: Binding(get: {
-                    model.database.debug.srtlaBatchSendEnabled!
+                    model.database.debug.srtlaBatchSendEnabled
                 }, set: { value in
                     model.database.debug.srtlaBatchSendEnabled = value
                     model.setSrtlaBatchSend()

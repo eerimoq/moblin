@@ -62,7 +62,7 @@ private struct FaceViewBeautyShape: View {
     @EnvironmentObject var model: Model
 
     private var settings: SettingsDebugBeautyFilter {
-        return model.database.debug.beautyFilterSettings!
+        return model.database.debug.beautyFilterSettings
     }
 
     var body: some View {
@@ -103,7 +103,7 @@ private struct FaceViewBeautySmooth: View {
     @EnvironmentObject var model: Model
 
     private var settings: SettingsDebugBeautyFilter {
-        return model.database.debug.beautyFilterSettings!
+        return model.database.debug.beautyFilterSettings
     }
 
     var body: some View {
@@ -143,7 +143,7 @@ private struct FaceViewBeautyButtons: View {
             } label: {
                 FaceButtonView(title: String(localized: "Shape"), on: model.showFaceBeautyShape)
             }
-            if model.database.color.space != .appleLog && model.database.debug.metalPetalFilters! {
+            if model.database.color.space != .appleLog && model.database.debug.metalPetalFilters {
                 Button {
                     model.showFaceBeautyShape = false
                     model.showFaceBeautySmooth.toggle()
@@ -153,10 +153,10 @@ private struct FaceViewBeautyButtons: View {
                 }
             }
             Button {
-                model.database.debug.beautyFilterSettings!.showBeauty!.toggle()
+                model.database.debug.beautyFilterSettings.showBeauty!.toggle()
                 model.sceneUpdated(updateRemoteScene: false)
                 model.updateFaceFilterSettings()
-                beauty = model.database.debug.beautyFilterSettings!.showBeauty!
+                beauty = model.database.debug.beautyFilterSettings.showBeauty!
                 model.updateFaceFilterButtonState()
             } label: {
                 FaceButtonView(title: String(localized: "Enabled"), on: beauty)
@@ -175,7 +175,7 @@ struct FaceView: View {
     @State var mouth: Bool
 
     private var settings: SettingsDebugBeautyFilter {
-        return model.database.debug.beautyFilterSettings!
+        return model.database.debug.beautyFilterSettings
     }
 
     var body: some View {
@@ -187,7 +187,7 @@ struct FaceView: View {
                     if model.showFaceBeautyShape {
                         FaceViewBeautyShape()
                     } else if model.showFaceBeautySmooth && model.database.color.space != .appleLog && model.database
-                        .debug.metalPetalFilters!
+                        .debug.metalPetalFilters
                     {
                         FaceViewBeautySmooth()
                     }
@@ -195,10 +195,10 @@ struct FaceView: View {
                 }
                 HStack {
                     Button {
-                        model.database.debug.beautyFilter!.toggle()
+                        model.database.debug.beautyFilter.toggle()
                         model.sceneUpdated(updateRemoteScene: false)
                         model.updateFaceFilterSettings()
-                        crop = model.database.debug.beautyFilter!
+                        crop = model.database.debug.beautyFilter
                         model.updateFaceFilterButtonState()
                     } label: {
                         FaceButtonView(

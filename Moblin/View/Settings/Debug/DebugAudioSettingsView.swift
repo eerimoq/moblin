@@ -7,7 +7,7 @@ struct DebugAudioSettingsView: View {
         Form {
             Section {
                 Toggle("Remove wind noise", isOn: Binding(get: {
-                    model.database.debug.removeWindNoise!
+                    model.database.debug.removeWindNoise
                 }, set: { value in
                     model.database.debug.removeWindNoise = value
                 }))

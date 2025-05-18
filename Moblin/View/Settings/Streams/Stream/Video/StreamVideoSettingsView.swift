@@ -218,7 +218,7 @@ struct StreamVideoSettingsView: View {
                         """)
                     }
                 }
-                if model.database.debug.timecodesEnabled! {
+                if model.database.debug.timecodesEnabled {
                     Section {
                         NavigationLink {
                             StreamTimecodesSettingsView(stream: stream)
