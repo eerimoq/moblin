@@ -1,5 +1,19 @@
 import SwiftUI
 
+func controlBarScrollTargetBehavior(model: Model, containerWidth: Double, targetPosition: Double) -> Double {
+    let spacing = 8.0
+    let originalPagePosition = Double(model.controlBarPage - 1) * (containerWidth + spacing)
+    let distance = targetPosition - originalPagePosition
+    if distance > 15 {
+        model.controlBarPage += 1
+    } else if distance < -15 {
+        model.controlBarPage -= 1
+    }
+    let pages = model.buttonPairs.filter { !$0.isEmpty }.count
+    model.controlBarPage = model.controlBarPage.clamped(to: 1 ... pages)
+    return Double(model.controlBarPage - 1) * (containerWidth + spacing)
+}
+
 private struct QuickButtonsView: View {
     @EnvironmentObject var model: Model
     var page: Int
@@ -134,6 +148,19 @@ private struct MainPageView: View {
     }
 }
 
+@available(iOS 17, *)
+private struct ControlBarPageScrollTargetBehavior: ScrollTargetBehavior {
+    var model: Model
+
+    func updateTarget(_ target: inout ScrollTarget, context: TargetContext) {
+        target.rect.origin.x = controlBarScrollTargetBehavior(
+            model: model,
+            containerWidth: context.containerSize.width,
+            targetPosition: target.rect.minX
+        )
+    }
+}
+
 private struct PagesView: View {
     @EnvironmentObject var model: Model
     var width: Double
@@ -155,7 +182,7 @@ private struct PagesView: View {
                     }
                     .scrollTargetLayout()
                 }
-                .scrollTargetBehavior(.viewAligned(limitBehavior: .always))
+                .scrollTargetBehavior(ControlBarPageScrollTargetBehavior(model: model))
                 .scrollIndicators(.never)
                 .frame(width: width - 1)
             }

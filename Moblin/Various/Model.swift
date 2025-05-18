@@ -544,6 +544,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var mediaStorage = MediaPlayerStorage()
     var alertMediaStorage = AlertMediaStorage()
     @Published var buttonPairs: [[ButtonPair]] = Array(repeating: [], count: controlBarPages)
+    var controlBarPage = 1
     private var reconnectTimer: Timer?
     private var logId = 1
     @Published var showingToast = false

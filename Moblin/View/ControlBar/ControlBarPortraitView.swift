@@ -1,5 +1,18 @@
 import SwiftUI
 
+@available(iOS 17, *)
+private struct ControlBarPageScrollTargetBehavior: ScrollTargetBehavior {
+    var model: Model
+
+    func updateTarget(_ target: inout ScrollTarget, context: TargetContext) {
+        target.rect.origin.y = controlBarScrollTargetBehavior(
+            model: model,
+            containerWidth: context.containerSize.height,
+            targetPosition: target.rect.minY
+        )
+    }
+}
+
 private struct QuickButtonsView: View {
     @EnvironmentObject var model: Model
     var page: Int
@@ -143,7 +156,7 @@ private struct PagesView: View {
                 }
                 .scrollTargetLayout()
             }
-            .scrollTargetBehavior(.viewAligned(limitBehavior: .always))
+            .scrollTargetBehavior(ControlBarPageScrollTargetBehavior(model: model))
             .scrollIndicators(.never)
             .frame(height: height - 1)
         } else {
