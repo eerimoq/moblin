@@ -122,6 +122,8 @@ class ChatTextToSpeech: NSObject {
     func skipCurrentMessage() {
         textToSpeechDispatchQueue.async {
             self.synthesizer.stopSpeaking(at: .word)
+            self.synthesizer = AVSpeechSynthesizer()
+            self.synthesizer.delegate = self
             self.trySayNextMessage()
         }
     }
@@ -246,8 +248,7 @@ class ChatTextToSpeech: NSObject {
         let utterance = AVSpeechUtterance(string: text)
         utterance.rate = rate
         utterance.pitchMultiplier = 0.8
-        utterance.preUtteranceDelay = 0.05
-        utterance.postUtteranceDelay = pauseBetweenMessages
+        utterance.preUtteranceDelay = pauseBetweenMessages
         utterance.volume = volume
         utterance.voice = voice
         synthesizer.speak(utterance)
