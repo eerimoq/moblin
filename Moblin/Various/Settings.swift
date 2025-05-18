@@ -2070,7 +2070,7 @@ class SettingsChatBotPermissions: Codable {
 }
 
 class SettingsChat: Codable, ObservableObject {
-    var fontSize: Float = 19.0
+    @Published var fontSize: Float = 19.0
     var usernameColor: RgbColor = .init(red: 255, green: 163, blue: 0)
     var messageColor: RgbColor = .init(red: 255, green: 255, blue: 255)
     var backgroundColor: RgbColor = .init(red: 0, green: 0, blue: 0)
@@ -2082,8 +2082,8 @@ class SettingsChat: Codable, ObservableObject {
     var animatedEmotes: Bool = false
     var timestampColor: RgbColor = .init(red: 180, green: 180, blue: 180)
     var timestampColorEnabled: Bool = false
-    var height: Double = 0.7
-    var width: Double = 1.0
+    @Published var height: Double = 0.7
+    @Published var width: Double = 1.0
     var maximumAge: Int = 30
     var maximumAgeEnabled: Bool = false
     var meInUsernameColor: Bool = true
@@ -2105,7 +2105,7 @@ class SettingsChat: Codable, ObservableObject {
     var badges: Bool = true
     var showFirstTimeChatterMessage: Bool = true
     var showNewFollowerMessage: Bool = true
-    var bottom: Double = 0.0
+    @Published var bottom: Double = 0.0
     var newMessagesAtTop: Bool = false
     var textToSpeechPauseBetweenMessages: Double = 1.0
 

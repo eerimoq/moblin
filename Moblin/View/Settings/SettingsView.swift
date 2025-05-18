@@ -38,15 +38,12 @@ struct SettingsView: View {
                 }
                 NavigationLink {
                     ChatSettingsView(
+                        chat: model.database.chat,
                         timestampColor: chat.timestampColor.color(),
                         usernameColor: chat.usernameColor.color(),
                         messageColor: chat.messageColor.color(),
                         backgroundColor: chat.backgroundColor.color(),
-                        shadowColor: chat.shadowColor.color(),
-                        height: chat.height,
-                        width: chat.width,
-                        bottom: chat.bottom,
-                        fontSize: chat.fontSize
+                        shadowColor: chat.shadowColor.color()
                     )
                 } label: {
                     IconAndTextView(image: "message", text: String(localized: "Chat"))
