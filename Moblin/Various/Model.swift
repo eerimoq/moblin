@@ -3767,7 +3767,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         sepiaEffect = SepiaEffect()
         tripleEffect = TripleEffect()
         twinEffect = TwinEffect()
-        pixellateEffect = PixellateEffect(strength: database.pixellateStrength!)
+        pixellateEffect = PixellateEffect(strength: database.pixellateStrength)
         pollEffect = PollEffect()
         whirlpoolEffect = WhirlpoolEffect()
         pinchEffect = PinchEffect()
@@ -3816,7 +3816,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             effects.append(twinEffect)
         }
         if isGlobalButtonOn(type: .pixellate) {
-            pixellateEffect.strength.mutate { $0 = database.pixellateStrength! }
+            pixellateEffect.strength.mutate { $0 = database.pixellateStrength }
             effects.append(pixellateEffect)
         }
         return effects

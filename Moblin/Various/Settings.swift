@@ -3217,7 +3217,7 @@ class Database: Codable, ObservableObject {
     var keyboard: SettingsKeyboard = .init()
     var tesla: SettingsTesla = .init()
     var srtlaRelay: SettingsMoblink = .init()
-    var pixellateStrength: Float? = 0.3
+    var pixellateStrength: Float = 0.3
     var moblink: SettingsMoblink = .init()
     var sceneSwitchTransition: SettingsSceneSwitchTransition = .blur
     var forceSceneSwitchTransition: Bool = false
@@ -3442,7 +3442,7 @@ class Database: Codable, ObservableObject {
         keyboard = (try? container.decode(SettingsKeyboard.self, forKey: .keyboard)) ?? .init()
         tesla = (try? container.decode(SettingsTesla.self, forKey: .tesla)) ?? .init()
         srtlaRelay = (try? container.decode(SettingsMoblink?.self, forKey: .srtlaRelay)) ?? .init()
-        pixellateStrength = try? container.decode(Float?.self, forKey: .pixellateStrength)
+        pixellateStrength = (try? container.decode(Float.self, forKey: .pixellateStrength)) ?? 0.3
         moblink = (try? container.decode(SettingsMoblink.self, forKey: .moblink)) ?? srtlaRelay
         sceneSwitchTransition = (try? container.decode(
             SettingsSceneSwitchTransition.self,
@@ -5221,10 +5221,6 @@ final class Settings {
         }
         if realDatabase.chat.bottom == nil {
             realDatabase.chat.bottom = 0.0
-            store()
-        }
-        if realDatabase.pixellateStrength == nil {
-            realDatabase.pixellateStrength = 0.3
             store()
         }
         if realDatabase.debug.cameraControlsEnabled == nil {
