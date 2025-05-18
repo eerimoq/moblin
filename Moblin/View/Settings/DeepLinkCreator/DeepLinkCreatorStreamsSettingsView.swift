@@ -4,7 +4,7 @@ struct DeepLinkCreatorStreamsSettingsView: View {
     @EnvironmentObject var model: Model
 
     private var deepLinkCreator: DeepLinkCreator {
-        return model.database.deepLinkCreator!
+        return model.database.deepLinkCreator
     }
 
     var body: some View {

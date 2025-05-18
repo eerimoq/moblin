@@ -3203,9 +3203,9 @@ class Database: Codable, ObservableObject {
     var location: SettingsLocation = .init()
     var watch: WatchSettings = .init()
     var audio: AudioSettings = .init()
-    var webBrowser: WebBrowserSettings? = .init()
-    var deepLinkCreator: DeepLinkCreator? = .init()
-    var srtlaServer: SettingsSrtlaServer? = .init()
+    var webBrowser: WebBrowserSettings = .init()
+    var deepLinkCreator: DeepLinkCreator = .init()
+    var srtlaServer: SettingsSrtlaServer = .init()
     var mediaPlayers: SettingsMediaPlayers? = .init()
     var showAllSettings: Bool? = false
     var portrait: Bool? = false
@@ -3424,9 +3424,9 @@ class Database: Codable, ObservableObject {
         location = (try? container.decode(SettingsLocation.self, forKey: .location)) ?? .init()
         watch = (try? container.decode(WatchSettings.self, forKey: .watch)) ?? .init()
         audio = (try? container.decode(AudioSettings.self, forKey: .audio)) ?? .init()
-        webBrowser = try? container.decode(WebBrowserSettings?.self, forKey: .webBrowser)
-        deepLinkCreator = try? container.decode(DeepLinkCreator?.self, forKey: .deepLinkCreator)
-        srtlaServer = try? container.decode(SettingsSrtlaServer?.self, forKey: .srtlaServer)
+        webBrowser = (try? container.decode(WebBrowserSettings.self, forKey: .webBrowser)) ?? .init()
+        deepLinkCreator = (try? container.decode(DeepLinkCreator.self, forKey: .deepLinkCreator)) ?? .init()
+        srtlaServer = (try? container.decode(SettingsSrtlaServer.self, forKey: .srtlaServer)) ?? .init()
         mediaPlayers = try? container.decode(SettingsMediaPlayers?.self, forKey: .mediaPlayers)
         showAllSettings = try? container.decode(Bool?.self, forKey: .showAllSettings)
         portrait = try? container.decode(Bool?.self, forKey: .portrait)
@@ -3947,13 +3947,10 @@ private func addMissingQuickButtons(database: Database) {
 }
 
 private func addMissingDeepLinkQuickButtons(database: Database) {
-    if database.deepLinkCreator == nil {
-        database.deepLinkCreator = .init()
+    if database.deepLinkCreator.quickButtons == nil {
+        database.deepLinkCreator.quickButtons = .init()
     }
-    if database.deepLinkCreator!.quickButtons == nil {
-        database.deepLinkCreator!.quickButtons = .init()
-    }
-    let quickButtons = database.deepLinkCreator!.quickButtons!
+    let quickButtons = database.deepLinkCreator.quickButtons!
     for quickButton in database.globalButtons where quickButton.type != .lut {
         let button = DeepLinkCreatorQuickButton()
         let buttonExists = quickButtons.buttons.contains(where: { button in
@@ -4455,10 +4452,6 @@ final class Settings {
             stream.portrait = false
             store()
         }
-        if realDatabase.webBrowser == nil {
-            realDatabase.webBrowser = .init()
-            store()
-        }
         if realDatabase.chat.textToSpeechFilter == nil {
             realDatabase.chat.textToSpeechFilter = true
             store()
@@ -4566,28 +4559,20 @@ final class Settings {
             stream.srt.adaptiveBitrate!.customSettings.minimumBitrate = 250
             store()
         }
-        if realDatabase.deepLinkCreator == nil {
-            realDatabase.deepLinkCreator = .init()
+        if realDatabase.deepLinkCreator.webBrowser == nil {
+            realDatabase.deepLinkCreator.webBrowser = .init()
             store()
         }
-        if realDatabase.deepLinkCreator!.webBrowser == nil {
-            realDatabase.deepLinkCreator!.webBrowser = .init()
+        if realDatabase.deepLinkCreator.quickButtons == nil {
+            realDatabase.deepLinkCreator.quickButtons = .init()
             store()
         }
-        if realDatabase.deepLinkCreator!.quickButtons == nil {
-            realDatabase.deepLinkCreator!.quickButtons = .init()
+        if realDatabase.deepLinkCreator.quickButtonsEnabled == nil {
+            realDatabase.deepLinkCreator.quickButtonsEnabled = false
             store()
         }
-        if realDatabase.deepLinkCreator!.quickButtonsEnabled == nil {
-            realDatabase.deepLinkCreator!.quickButtonsEnabled = false
-            store()
-        }
-        if realDatabase.deepLinkCreator!.webBrowserEnabled == nil {
-            realDatabase.deepLinkCreator!.webBrowserEnabled = false
-            store()
-        }
-        if realDatabase.srtlaServer == nil {
-            realDatabase.srtlaServer = .init()
+        if realDatabase.deepLinkCreator.webBrowserEnabled == nil {
+            realDatabase.deepLinkCreator.webBrowserEnabled = false
             store()
         }
         for stream in realDatabase.streams
@@ -4608,7 +4593,7 @@ final class Settings {
             stream.autoSelectMic = true
             store()
         }
-        for stream in realDatabase.srtlaServer!.streams where stream.autoSelectMic == nil {
+        for stream in realDatabase.srtlaServer.streams where stream.autoSelectMic == nil {
             stream.autoSelectMic = true
             store()
         }
@@ -4624,15 +4609,15 @@ final class Settings {
             stream.srt.adaptiveBitrate!.belaboxSettings = .init()
             store()
         }
-        for stream in realDatabase.deepLinkCreator!.streams where stream.video.bFrames == nil {
+        for stream in realDatabase.deepLinkCreator.streams where stream.video.bFrames == nil {
             stream.video.bFrames = false
             store()
         }
-        for stream in realDatabase.deepLinkCreator!.streams where stream.twitch == nil {
+        for stream in realDatabase.deepLinkCreator.streams where stream.twitch == nil {
             stream.twitch = .init()
             store()
         }
-        for stream in realDatabase.deepLinkCreator!.streams where stream.kick == nil {
+        for stream in realDatabase.deepLinkCreator.streams where stream.kick == nil {
             stream.kick = .init()
             store()
         }
@@ -4640,23 +4625,23 @@ final class Settings {
             realDatabase.chat.botEnabled = false
             store()
         }
-        for stream in realDatabase.deepLinkCreator!.streams where stream.video.resolution == nil {
+        for stream in realDatabase.deepLinkCreator.streams where stream.video.resolution == nil {
             stream.video.resolution = .r1920x1080
             store()
         }
-        for stream in realDatabase.deepLinkCreator!.streams where stream.video.fps == nil {
+        for stream in realDatabase.deepLinkCreator.streams where stream.video.fps == nil {
             stream.video.fps = 30
             store()
         }
-        for stream in realDatabase.deepLinkCreator!.streams where stream.video.bitrate == nil {
+        for stream in realDatabase.deepLinkCreator.streams where stream.video.bitrate == nil {
             stream.video.bitrate = 5_000_000
             store()
         }
-        for stream in realDatabase.deepLinkCreator!.streams where stream.video.maxKeyFrameInterval == nil {
+        for stream in realDatabase.deepLinkCreator.streams where stream.video.maxKeyFrameInterval == nil {
             stream.video.maxKeyFrameInterval = 2
             store()
         }
-        for stream in realDatabase.deepLinkCreator!.streams where stream.audio == nil {
+        for stream in realDatabase.deepLinkCreator.streams where stream.audio == nil {
             stream.audio = .init()
             store()
         }
@@ -5270,7 +5255,7 @@ final class Settings {
             stream.srt.dnsLookupStrategy = .system
             store()
         }
-        for stream in realDatabase.deepLinkCreator!.streams where stream.srt.dnsLookupStrategy == nil {
+        for stream in realDatabase.deepLinkCreator.streams where stream.srt.dnsLookupStrategy == nil {
             stream.srt.dnsLookupStrategy = .system
             store()
         }

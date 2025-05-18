@@ -7,7 +7,7 @@ struct DeepLinkCreatorSettingsView: View {
     @State var deepLink = defaultDeepLink
 
     private var deepLinkCreator: DeepLinkCreator {
-        return model.database.deepLinkCreator!
+        return model.database.deepLinkCreator
     }
 
     private func createDeepLinkStream(stream: DeepLinkCreatorStream) -> MoblinSettingsUrlStream {

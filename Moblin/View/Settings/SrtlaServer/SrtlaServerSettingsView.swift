@@ -7,7 +7,7 @@ struct SrtlaServerSettingsView: View {
         guard let port = UInt16(value.trim()) else {
             return
         }
-        model.database.srtlaServer!.srtPort = port
+        model.database.srtlaServer.srtPort = port
         model.reloadSrtlaServer()
     }
 
@@ -15,7 +15,7 @@ struct SrtlaServerSettingsView: View {
         guard let port = UInt16(value.trim()) else {
             return
         }
-        model.database.srtlaServer!.srtlaPort = port
+        model.database.srtlaServer.srtlaPort = port
         model.reloadSrtlaServer()
     }
 
@@ -23,9 +23,9 @@ struct SrtlaServerSettingsView: View {
         Form {
             Section {
                 Toggle("Enabled", isOn: Binding(get: {
-                    model.database.srtlaServer!.enabled
+                    model.database.srtlaServer.enabled
                 }, set: { value in
-                    model.database.srtlaServer!.enabled = value
+                    model.database.srtlaServer.enabled = value
                     model.reloadSrtlaServer()
                     model.objectWillChange.send()
                 }))
@@ -42,7 +42,7 @@ struct SrtlaServerSettingsView: View {
             Section {
                 TextEditNavigationView(
                     title: String(localized: "SRT port"),
-                    value: String(model.database.srtlaServer!.srtPort),
+                    value: String(model.database.srtlaServer.srtPort),
                     onSubmit: submitSrtPort,
                     keyboardType: .numbersAndPunctuation
                 )
@@ -53,7 +53,7 @@ struct SrtlaServerSettingsView: View {
             Section {
                 TextEditNavigationView(
                     title: String(localized: "SRTLA port"),
-                    value: String(model.database.srtlaServer!.srtlaPort),
+                    value: String(model.database.srtlaServer.srtlaPort),
                     onSubmit: submitSrtlaPort,
                     keyboardType: .numbersAndPunctuation
                 )
@@ -62,15 +62,15 @@ struct SrtlaServerSettingsView: View {
                 VStack(alignment: .leading) {
                     Text("The UDP port the SRT(LA) server listens for SRTLA publishers on.")
                     Text("")
-                    Text("The UDP port \(model.database.srtlaServer!.srtlaSrtPort()) will also be used.")
+                    Text("The UDP port \(model.database.srtlaServer.srtlaSrtPort()) will also be used.")
                 }
             }
             Section {
                 List {
-                    let list = ForEach(model.database.srtlaServer!.streams) { stream in
+                    let list = ForEach(model.database.srtlaServer.streams) { stream in
                         NavigationLink {
                             SrtlaServerStreamSettingsView(
-                                srtlaPort: model.database.srtlaServer!.srtlaPort,
+                                srtlaPort: model.database.srtlaServer.srtlaPort,
                                 stream: stream
                             )
                         } label: {
@@ -87,7 +87,7 @@ struct SrtlaServerSettingsView: View {
                     }
                     if !model.srtlaServerEnabled() {
                         list.onDelete(perform: { indexes in
-                            model.database.srtlaServer!.streams.remove(atOffsets: indexes)
+                            model.database.srtlaServer.streams.remove(atOffsets: indexes)
                             model.reloadSrtlaServer()
                         })
                     } else {
@@ -102,7 +102,7 @@ struct SrtlaServerSettingsView: View {
                             break
                         }
                     }
-                    model.database.srtlaServer!.streams.append(stream)
+                    model.database.srtlaServer.streams.append(stream)
                     model.objectWillChange.send()
                 }
                 .disabled(model.srtlaServerEnabled())

@@ -2615,8 +2615,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func reloadSrtlaServer() {
         stopSrtlaServer()
-        if database.srtlaServer!.enabled {
-            srtlaServer = SrtlaServer(settings: database.srtlaServer!, timecodesEnabled: isTimecodesEnabled())
+        if database.srtlaServer.enabled {
+            srtlaServer = SrtlaServer(settings: database.srtlaServer, timecodesEnabled: isTimecodesEnabled())
             srtlaServer!.delegate = self
             srtlaServer!.start()
         }
@@ -2627,25 +2627,25 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func srtlaCameras() -> [String] {
-        return database.srtlaServer!.streams.map { stream in
+        return database.srtlaServer.streams.map { stream in
             stream.camera()
         }
     }
 
     func getSrtlaStream(id: UUID) -> SettingsSrtlaServerStream? {
-        return database.srtlaServer!.streams.first { stream in
+        return database.srtlaServer.streams.first { stream in
             stream.id == id
         }
     }
 
     func getSrtlaStream(camera: String) -> SettingsSrtlaServerStream? {
-        return database.srtlaServer!.streams.first { stream in
+        return database.srtlaServer.streams.first { stream in
             camera == stream.camera()
         }
     }
 
     func getSrtlaStream(streamId: String) -> SettingsSrtlaServerStream? {
-        return database.srtlaServer!.streams.first { stream in
+        return database.srtlaServer.streams.first { stream in
             stream.streamId == streamId
         }
     }
@@ -2974,7 +2974,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private func handleSettingsUrlsDefaultWebBrowser(settings: MoblinSettingsUrl) {
         if let webBrowser = settings.webBrowser {
             if let home = webBrowser.home {
-                database.webBrowser!.home = home
+                database.webBrowser.home = home
             }
         }
     }
@@ -10203,7 +10203,7 @@ extension Model {
     }
 
     func loadWebBrowserHome() {
-        webBrowserUrl = database.webBrowser!.home
+        webBrowserUrl = database.webBrowser.home
         loadWebBrowserUrl()
     }
 
