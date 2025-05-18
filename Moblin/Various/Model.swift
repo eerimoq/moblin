@@ -2805,7 +2805,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 return false
             }
         case .srtla:
-            if let stream = getSrtlaStream(id: scene.rtmpCameraId!) {
+            if let stream = getSrtlaStream(id: scene.srtlaCameraId!) {
                 return isSrtlaStreamConnected(streamId: stream.streamId)
             } else {
                 return false
