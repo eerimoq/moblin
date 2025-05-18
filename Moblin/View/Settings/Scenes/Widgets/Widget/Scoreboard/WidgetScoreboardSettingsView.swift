@@ -82,7 +82,7 @@ struct WidgetScoreboardSettingsView: View {
     init(widget: SettingsWidget, type: String) {
         self.widget = widget
         self.type = type
-        let padel = widget.scoreboard!.padel
+        let padel = widget.scoreboard.padel
         gameType = padel.type.toString()
         homePlayer1 = padel.homePlayer1
         homePlayer2 = padel.homePlayer2
@@ -101,7 +101,7 @@ struct WidgetScoreboardSettingsView: View {
                     }
                 }
                 .onChange(of: type) {
-                    widget.scoreboard!.type = SettingsWidgetScoreboardType.fromString(value: $0)
+                    widget.scoreboard.type = SettingsWidgetScoreboardType.fromString(value: $0)
                     model.resetSelectedScene(changeScene: false)
                 }
             }
@@ -114,7 +114,7 @@ struct WidgetScoreboardSettingsView: View {
                     }
                 }
                 .onChange(of: gameType) {
-                    widget.scoreboard!.padel.type = SettingsWidgetPadelScoreboardGameType
+                    widget.scoreboard.padel.type = SettingsWidgetPadelScoreboardGameType
                         .fromString(value: $0)
                     model.resetSelectedScene(changeScene: false)
                 }
@@ -125,13 +125,13 @@ struct WidgetScoreboardSettingsView: View {
         Section {
             PlayerView(playerId: $homePlayer1)
                 .onChange(of: homePlayer1) { _ in
-                    widget.scoreboard!.padel.homePlayer1 = homePlayer1
+                    widget.scoreboard.padel.homePlayer1 = homePlayer1
                     model.resetSelectedScene(changeScene: false)
                 }
             if SettingsWidgetPadelScoreboardGameType.fromString(value: gameType) == .doubles {
                 PlayerView(playerId: $homePlayer2)
                     .onChange(of: homePlayer2) { _ in
-                        widget.scoreboard!.padel.homePlayer2 = homePlayer2
+                        widget.scoreboard.padel.homePlayer2 = homePlayer2
                         model.resetSelectedScene(changeScene: false)
                     }
             }
@@ -141,13 +141,13 @@ struct WidgetScoreboardSettingsView: View {
         Section {
             PlayerView(playerId: $awayPlayer1)
                 .onChange(of: awayPlayer1) { _ in
-                    widget.scoreboard!.padel.awayPlayer1 = awayPlayer1
+                    widget.scoreboard.padel.awayPlayer1 = awayPlayer1
                     model.resetSelectedScene(changeScene: false)
                 }
             if SettingsWidgetPadelScoreboardGameType.fromString(value: gameType) == .doubles {
                 PlayerView(playerId: $awayPlayer2)
                     .onChange(of: awayPlayer2) { _ in
-                        widget.scoreboard!.padel.awayPlayer2 = awayPlayer2
+                        widget.scoreboard.padel.awayPlayer2 = awayPlayer2
                         model.resetSelectedScene(changeScene: false)
                     }
             }

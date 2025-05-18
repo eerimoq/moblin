@@ -6,7 +6,7 @@ struct WidgetQrCodeSettingsView: View {
     var widget: SettingsWidget
 
     private func submitMessage(value: String) {
-        widget.qrCode!.message = value
+        widget.qrCode.message = value
         model.resetSelectedScene(changeScene: false)
     }
 
@@ -14,7 +14,7 @@ struct WidgetQrCodeSettingsView: View {
         Section {
             TextEditNavigationView(
                 title: "Message",
-                value: widget.qrCode!.message,
+                value: widget.qrCode.message,
                 onSubmit: submitMessage
             )
         }

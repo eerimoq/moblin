@@ -1663,11 +1663,11 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject {
     var browser: SettingsWidgetBrowser = .init()
     var crop: SettingsWidgetCrop = .init()
     var map: SettingsWidgetMap = .init()
-    var scene: SettingsWidgetScene? = .init()
-    var qrCode: SettingsWidgetQrCode? = .init()
-    var alerts: SettingsWidgetAlerts? = .init()
-    var videoSource: SettingsWidgetVideoSource? = .init()
-    var scoreboard: SettingsWidgetScoreboard? = .init()
+    var scene: SettingsWidgetScene = .init()
+    var qrCode: SettingsWidgetQrCode = .init()
+    var alerts: SettingsWidgetAlerts = .init()
+    var videoSource: SettingsWidgetVideoSource = .init()
+    var scoreboard: SettingsWidgetScoreboard = .init()
     @Published var enabled: Bool = true
 
     init(name: String) {
@@ -1720,11 +1720,11 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject {
         browser = try container.decode(SettingsWidgetBrowser.self, forKey: .browser)
         crop = (try? container.decode(SettingsWidgetCrop.self, forKey: .crop)) ?? .init()
         map = (try? container.decode(SettingsWidgetMap.self, forKey: .map)) ?? .init()
-        scene = try? container.decode(SettingsWidgetScene?.self, forKey: .scene)
-        qrCode = try? container.decode(SettingsWidgetQrCode?.self, forKey: .qrCode)
-        alerts = try? container.decode(SettingsWidgetAlerts?.self, forKey: .alerts)
-        videoSource = try? container.decode(SettingsWidgetVideoSource?.self, forKey: .videoSource)
-        scoreboard = try? container.decode(SettingsWidgetScoreboard?.self, forKey: .scoreboard)
+        scene = (try? container.decode(SettingsWidgetScene.self, forKey: .scene)) ?? .init()
+        qrCode = (try? container.decode(SettingsWidgetQrCode.self, forKey: .qrCode)) ?? .init()
+        alerts = (try? container.decode(SettingsWidgetAlerts.self, forKey: .alerts)) ?? .init()
+        videoSource = (try? container.decode(SettingsWidgetVideoSource.self, forKey: .videoSource)) ?? .init()
+        scoreboard = (try? container.decode(SettingsWidgetScoreboard.self, forKey: .scoreboard)) ?? .init()
         enabled = (try? container.decode(Bool.self, forKey: .enabled)) ?? true
     }
 }
@@ -4746,14 +4746,6 @@ final class Settings {
             realDatabase.portrait = false
             store()
         }
-        for widget in realDatabase.widgets where widget.scene == nil {
-            widget.scene = .init()
-            store()
-        }
-        for widget in realDatabase.widgets where widget.qrCode == nil {
-            widget.qrCode = .init()
-            store()
-        }
         for widget in realDatabase.widgets where widget.text.backgroundColor == nil {
             widget.text.backgroundColor = .init(red: 0, green: 0, blue: 0, opacity: 0.75)
             store()
@@ -4888,65 +4880,61 @@ final class Settings {
             widget.text.checkboxes = []
             store()
         }
-        for widget in realDatabase.widgets where widget.alerts == nil {
-            widget.alerts = .init()
-            store()
-        }
         for stream in realDatabase.streams where stream.twitchAccessToken == nil {
             stream.twitchAccessToken = ""
             store()
         }
-        for widget in realDatabase.widgets where widget.alerts!.twitch == nil {
-            widget.alerts!.twitch = .init()
+        for widget in realDatabase.widgets where widget.alerts.twitch == nil {
+            widget.alerts.twitch = .init()
             store()
         }
         for widget in realDatabase.widgets {
-            if widget.alerts!.twitch!.follows.textToSpeechEnabled == nil {
-                widget.alerts!.twitch!.follows.textToSpeechEnabled = true
+            if widget.alerts.twitch!.follows.textToSpeechEnabled == nil {
+                widget.alerts.twitch!.follows.textToSpeechEnabled = true
                 store()
             }
-            if widget.alerts!.twitch!.follows.textToSpeechDelay == nil {
-                widget.alerts!.twitch!.follows.textToSpeechDelay = 1.5
+            if widget.alerts.twitch!.follows.textToSpeechDelay == nil {
+                widget.alerts.twitch!.follows.textToSpeechDelay = 1.5
                 store()
             }
-            if widget.alerts!.twitch!.follows.textToSpeechLanguageVoices == nil {
-                widget.alerts!.twitch!.follows.textToSpeechLanguageVoices = .init()
+            if widget.alerts.twitch!.follows.textToSpeechLanguageVoices == nil {
+                widget.alerts.twitch!.follows.textToSpeechLanguageVoices = .init()
                 store()
             }
-            if widget.alerts!.twitch!.follows.imageLoopCount == nil {
-                widget.alerts!.twitch!.follows.imageLoopCount = 1
+            if widget.alerts.twitch!.follows.imageLoopCount == nil {
+                widget.alerts.twitch!.follows.imageLoopCount = 1
                 store()
             }
-            if widget.alerts!.twitch!.follows.positionType == nil {
-                widget.alerts!.twitch!.follows.positionType = .scene
+            if widget.alerts.twitch!.follows.positionType == nil {
+                widget.alerts.twitch!.follows.positionType = .scene
                 store()
             }
-            if widget.alerts!.twitch!.follows.facePosition == nil {
-                widget.alerts!.twitch!.follows.facePosition = .init()
+            if widget.alerts.twitch!.follows.facePosition == nil {
+                widget.alerts.twitch!.follows.facePosition = .init()
                 store()
             }
-            if widget.alerts!.twitch!.subscriptions.textToSpeechEnabled == nil {
-                widget.alerts!.twitch!.subscriptions.textToSpeechEnabled = true
+            if widget.alerts.twitch!.subscriptions.textToSpeechEnabled == nil {
+                widget.alerts.twitch!.subscriptions.textToSpeechEnabled = true
                 store()
             }
-            if widget.alerts!.twitch!.subscriptions.textToSpeechDelay == nil {
-                widget.alerts!.twitch!.subscriptions.textToSpeechDelay = 1.5
+            if widget.alerts.twitch!.subscriptions.textToSpeechDelay == nil {
+                widget.alerts.twitch!.subscriptions.textToSpeechDelay = 1.5
                 store()
             }
-            if widget.alerts!.twitch!.subscriptions.textToSpeechLanguageVoices == nil {
-                widget.alerts!.twitch!.subscriptions.textToSpeechLanguageVoices = .init()
+            if widget.alerts.twitch!.subscriptions.textToSpeechLanguageVoices == nil {
+                widget.alerts.twitch!.subscriptions.textToSpeechLanguageVoices = .init()
                 store()
             }
-            if widget.alerts!.twitch!.subscriptions.imageLoopCount == nil {
-                widget.alerts!.twitch!.subscriptions.imageLoopCount = 1
+            if widget.alerts.twitch!.subscriptions.imageLoopCount == nil {
+                widget.alerts.twitch!.subscriptions.imageLoopCount = 1
                 store()
             }
-            if widget.alerts!.twitch!.subscriptions.positionType == nil {
-                widget.alerts!.twitch!.subscriptions.positionType = .scene
+            if widget.alerts.twitch!.subscriptions.positionType == nil {
+                widget.alerts.twitch!.subscriptions.positionType = .scene
                 store()
             }
-            if widget.alerts!.twitch!.subscriptions.facePosition == nil {
-                widget.alerts!.twitch!.subscriptions.facePosition = .init()
+            if widget.alerts.twitch!.subscriptions.facePosition == nil {
+                widget.alerts.twitch!.subscriptions.facePosition = .init()
                 store()
             }
         }
@@ -5027,8 +5015,8 @@ final class Settings {
             widget.text.needsSubtitles = false
             store()
         }
-        for widget in realDatabase.widgets where widget.alerts!.chatBot == nil {
-            widget.alerts!.chatBot = .init()
+        for widget in realDatabase.widgets where widget.alerts.chatBot == nil {
+            widget.alerts.chatBot = .init()
             store()
         }
         if realDatabase.chat.botCommandPermissions!.alert == nil {
@@ -5069,8 +5057,8 @@ final class Settings {
             realDatabase.verboseStatuses = false
             store()
         }
-        for widget in database.widgets where widget.alerts!.twitch!.raids == nil {
-            widget.alerts!.twitch!.raids = .init()
+        for widget in database.widgets where widget.alerts.twitch!.raids == nil {
+            widget.alerts.twitch!.raids = .init()
             store()
         }
         for device in realDatabase.catPrinters!.devices where device.printChat == nil {
@@ -5153,8 +5141,8 @@ final class Settings {
             realDatabase.chat.botCommandPermissions!.filter!.minimumSubscriberTier = 1
             store()
         }
-        for widget in database.widgets where widget.alerts!.twitch!.cheers == nil {
-            widget.alerts!.twitch!.cheers = .init()
+        for widget in database.widgets where widget.alerts.twitch!.cheers == nil {
+            widget.alerts.twitch!.cheers = .init()
             store()
         }
         if realDatabase.debug.beautyFilterSettings!.showBlurBackground == nil {
@@ -5173,97 +5161,89 @@ final class Settings {
             realDatabase.chat.showNewFollowerMessage = true
             store()
         }
-        for widget in realDatabase.widgets where widget.videoSource == nil {
-            widget.videoSource = .init()
+        for widget in realDatabase.widgets where widget.videoSource.cameraPosition == nil {
+            widget.videoSource.cameraPosition = .screenCapture
             store()
         }
-        for widget in realDatabase.widgets where widget.videoSource!.cameraPosition == nil {
-            widget.videoSource!.cameraPosition = .screenCapture
+        for widget in realDatabase.widgets where widget.videoSource.backCameraId == nil {
+            widget.videoSource.backCameraId = getBestBackCameraId()
             store()
         }
-        for widget in realDatabase.widgets where widget.videoSource!.backCameraId == nil {
-            widget.videoSource!.backCameraId = getBestBackCameraId()
+        for widget in realDatabase.widgets where widget.videoSource.frontCameraId == nil {
+            widget.videoSource.frontCameraId = getBestFrontCameraId()
             store()
         }
-        for widget in realDatabase.widgets where widget.videoSource!.frontCameraId == nil {
-            widget.videoSource!.frontCameraId = getBestFrontCameraId()
+        for widget in realDatabase.widgets where widget.videoSource.rtmpCameraId == nil {
+            widget.videoSource.rtmpCameraId = .init()
             store()
         }
-        for widget in realDatabase.widgets where widget.videoSource!.rtmpCameraId == nil {
-            widget.videoSource!.rtmpCameraId = .init()
+        for widget in realDatabase.widgets where widget.videoSource.srtlaCameraId == nil {
+            widget.videoSource.srtlaCameraId = .init()
             store()
         }
-        for widget in realDatabase.widgets where widget.videoSource!.srtlaCameraId == nil {
-            widget.videoSource!.srtlaCameraId = .init()
+        for widget in realDatabase.widgets where widget.videoSource.mediaPlayerCameraId == nil {
+            widget.videoSource.mediaPlayerCameraId = .init()
             store()
         }
-        for widget in realDatabase.widgets where widget.videoSource!.mediaPlayerCameraId == nil {
-            widget.videoSource!.mediaPlayerCameraId = .init()
+        for widget in realDatabase.widgets where widget.videoSource.externalCameraId == nil {
+            widget.videoSource.externalCameraId = ""
             store()
         }
-        for widget in realDatabase.widgets where widget.videoSource!.externalCameraId == nil {
-            widget.videoSource!.externalCameraId = ""
+        for widget in realDatabase.widgets where widget.videoSource.externalCameraName == nil {
+            widget.videoSource.externalCameraName = ""
             store()
         }
-        for widget in realDatabase.widgets where widget.videoSource!.externalCameraName == nil {
-            widget.videoSource!.externalCameraName = ""
+        for widget in realDatabase.widgets where widget.videoSource.cropEnabled == nil {
+            widget.videoSource.cropEnabled = false
             store()
         }
-        for widget in realDatabase.widgets where widget.videoSource!.cropEnabled == nil {
-            widget.videoSource!.cropEnabled = false
+        for widget in realDatabase.widgets where widget.videoSource.cropX == nil {
+            widget.videoSource.cropX = 0.25
             store()
         }
-        for widget in realDatabase.widgets where widget.videoSource!.cropX == nil {
-            widget.videoSource!.cropX = 0.25
+        for widget in realDatabase.widgets where widget.videoSource.cropY == nil {
+            widget.videoSource.cropY = 0.0
             store()
         }
-        for widget in realDatabase.widgets where widget.videoSource!.cropY == nil {
-            widget.videoSource!.cropY = 0.0
+        for widget in realDatabase.widgets where widget.videoSource.cropWidth == nil {
+            widget.videoSource.cropWidth = 0.5
             store()
         }
-        for widget in realDatabase.widgets where widget.videoSource!.cropWidth == nil {
-            widget.videoSource!.cropWidth = 0.5
+        for widget in realDatabase.widgets where widget.videoSource.cropHeight == nil {
+            widget.videoSource.cropHeight = 1.0
             store()
         }
-        for widget in realDatabase.widgets where widget.videoSource!.cropHeight == nil {
-            widget.videoSource!.cropHeight = 1.0
+        for widget in realDatabase.widgets where widget.videoSource.cropX! > 1.0 {
+            widget.videoSource.cropX = 0.0
             store()
         }
-        for widget in realDatabase.widgets where widget.videoSource!.cropX! > 1.0 {
-            widget.videoSource!.cropX = 0.0
+        for widget in realDatabase.widgets where widget.videoSource.cropY! > 1.0 {
+            widget.videoSource.cropY = 0.0
             store()
         }
-        for widget in realDatabase.widgets where widget.videoSource!.cropY! > 1.0 {
-            widget.videoSource!.cropY = 0.0
+        for widget in realDatabase.widgets where widget.videoSource.cropWidth! > 1.0 {
+            widget.videoSource.cropWidth = 1.0
             store()
         }
-        for widget in realDatabase.widgets where widget.videoSource!.cropWidth! > 1.0 {
-            widget.videoSource!.cropWidth = 1.0
+        for widget in realDatabase.widgets where widget.videoSource.cropHeight! > 1.0 {
+            widget.videoSource.cropHeight = 1.0
             store()
         }
-        for widget in realDatabase.widgets where widget.videoSource!.cropHeight! > 1.0 {
-            widget.videoSource!.cropHeight = 1.0
-            store()
-        }
-        for widget in realDatabase.widgets where widget.videoSource!.rotation == nil {
-            widget.videoSource!.rotation = 0.0
+        for widget in realDatabase.widgets where widget.videoSource.rotation == nil {
+            widget.videoSource.rotation = 0.0
             store()
         }
         if realDatabase.debug.removeWindNoise == nil {
             realDatabase.debug.removeWindNoise = false
             store()
         }
-        for widget in realDatabase.widgets where widget.scoreboard == nil {
-            widget.scoreboard = .init()
-            store()
-        }
         if realDatabase.scoreboardPlayers == nil {
             realDatabase.scoreboardPlayers = .init()
             store()
         }
-        for widget in database.widgets where widget.alerts!.twitch!.cheerBits == nil {
-            widget.alerts!.twitch!.cheerBits = createDefaultCheerBits()
-            widget.alerts!.twitch!.cheerBits![0].alert = widget.alerts!.twitch!.cheers!.clone()
+        for widget in database.widgets where widget.alerts.twitch!.cheerBits == nil {
+            widget.alerts.twitch!.cheerBits = createDefaultCheerBits()
+            widget.alerts.twitch!.cheerBits![0].alert = widget.alerts.twitch!.cheers!.clone()
             store()
         }
         for stream in database.streams where stream.adaptiveEncoderResolution == nil {
@@ -5324,12 +5304,12 @@ final class Settings {
             scene.videoSourceRotation = 0.0
             store()
         }
-        for widget in realDatabase.widgets where widget.alerts!.speechToText == nil {
-            widget.alerts!.speechToText = .init()
+        for widget in realDatabase.widgets where widget.alerts.speechToText == nil {
+            widget.alerts.speechToText = .init()
             store()
         }
-        for widget in realDatabase.widgets where widget.alerts!.needsSubtitles == nil {
-            widget.alerts!.needsSubtitles = false
+        for widget in realDatabase.widgets where widget.alerts.needsSubtitles == nil {
+            widget.alerts.needsSubtitles = false
             store()
         }
         for stream in realDatabase.streams where stream.ntpPoolAddress == nil {
@@ -5540,8 +5520,8 @@ final class Settings {
             realDatabase.debug.videoSourceWidgetTrackFace = false
             store()
         }
-        for widget in realDatabase.widgets where widget.videoSource!.trackFaceEnabled == nil {
-            widget.videoSource!.trackFaceEnabled = false
+        for widget in realDatabase.widgets where widget.videoSource.trackFaceEnabled == nil {
+            widget.videoSource.trackFaceEnabled = false
             store()
         }
         if realDatabase.chat.botCommandPermissions!.tts.sendChatMessages == nil {
@@ -5592,12 +5572,12 @@ final class Settings {
             device.printSnapshots = true
             store()
         }
-        for widget in realDatabase.widgets where widget.videoSource!.mirror == nil {
-            widget.videoSource!.mirror = false
+        for widget in realDatabase.widgets where widget.videoSource.mirror == nil {
+            widget.videoSource.mirror = false
             store()
         }
-        for widget in realDatabase.widgets where widget.videoSource!.trackFaceZoom == nil {
-            widget.videoSource!.trackFaceZoom = 0.75
+        for widget in realDatabase.widgets where widget.videoSource.trackFaceZoom == nil {
+            widget.videoSource.trackFaceZoom = 0.75
             store()
         }
         if realDatabase.sceneNumericInput == nil {
@@ -5605,11 +5585,11 @@ final class Settings {
             store()
         }
         for widget in realDatabase.widgets {
-            for command in widget.alerts!.chatBot!.commands where command.imageType == nil {
+            for command in widget.alerts.chatBot!.commands where command.imageType == nil {
                 command.imageType = .file
                 store()
             }
-            for command in widget.alerts!.chatBot!.commands where command.imagePlaygroundImageId == nil {
+            for command in widget.alerts.chatBot!.commands where command.imagePlaygroundImageId == nil {
                 command.imagePlaygroundImageId = .init()
                 store()
             }
@@ -5626,12 +5606,12 @@ final class Settings {
             launchLiveStream.isHero12Or13 = true
             store()
         }
-        for widget in realDatabase.widgets where widget.videoSource!.borderWidth == nil {
-            widget.videoSource!.borderWidth = 0
+        for widget in realDatabase.widgets where widget.videoSource.borderWidth == nil {
+            widget.videoSource.borderWidth = 0
             store()
         }
-        for widget in realDatabase.widgets where widget.videoSource!.borderColor == nil {
-            widget.videoSource!.borderColor = .init(red: 0, green: 0, blue: 0)
+        for widget in realDatabase.widgets where widget.videoSource.borderColor == nil {
+            widget.videoSource.borderColor = .init(red: 0, green: 0, blue: 0)
             store()
         }
         if realDatabase.tesla!.enabled == nil {

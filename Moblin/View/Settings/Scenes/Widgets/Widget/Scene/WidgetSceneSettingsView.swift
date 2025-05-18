@@ -14,7 +14,7 @@ struct WidgetSceneSettingsView: View {
                 }
             }
             .onChange(of: selectedSceneId) { sceneId in
-                widget.scene!.sceneId = sceneId
+                widget.scene.sceneId = sceneId
             }
             .pickerStyle(.inline)
             .labelsHidden()

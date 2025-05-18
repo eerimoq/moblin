@@ -147,7 +147,7 @@ struct RemoteControlRemoteSceneSettingsWidget: Codable {
         case .map:
             type = .map(data: RemoteControlRemoteSceneSettingsWidgetTypeMap(map: widget.map))
         case .scene:
-            type = .scene(data: RemoteControlRemoteSceneSettingsWidgetTypeScene(scene: widget.scene!))
+            type = .scene(data: RemoteControlRemoteSceneSettingsWidgetTypeScene(scene: widget.scene))
         case .qrCode:
             return nil
         case .alerts:

@@ -158,7 +158,7 @@ struct SceneWidgetSettingsView: View {
                     Text("Widget")
                 }
                 if widget.type == .scene,
-                   let scene = model.database.scenes.first(where: { $0.id == widget.scene!.sceneId })
+                   let scene = model.database.scenes.first(where: { $0.id == widget.scene.sceneId })
                 {
                     NavigationLink {
                         SceneSettingsView(

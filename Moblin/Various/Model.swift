@@ -880,7 +880,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             guard widget.type == .scene else {
                 continue
             }
-            if let scene = database.scenes.first(where: { $0.id == widget.scene!.sceneId }) {
+            if let scene = database.scenes.first(where: { $0.id == widget.scene.sceneId }) {
                 widgets += getSceneWidgets(scene: scene)
             }
         }
@@ -1657,7 +1657,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                     return true
                 }
             case .alerts:
-                if widget.enabled, widget.alerts!.needsSubtitles! {
+                if widget.enabled, widget.alerts.needsSubtitles! {
                     return true
                 }
             default:
@@ -3859,9 +3859,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func fixAlertMedias() {
         for widget in database.widgets {
-            fixAlert(alert: widget.alerts!.twitch!.follows)
-            fixAlert(alert: widget.alerts!.twitch!.subscriptions)
-            for command in widget.alerts!.chatBot!.commands {
+            fixAlert(alert: widget.alerts.twitch!.follows)
+            fixAlert(alert: widget.alerts.twitch!.subscriptions)
+            for command in widget.alerts.chatBot!.commands {
                 fixAlert(alert: command.alert)
             }
         }
@@ -3878,7 +3878,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 found = true
             }
             for widget in database.widgets where widget.type == .alerts {
-                for command in widget.alerts!.chatBot!.commands where command.imagePlaygroundImageId! == mediaId {
+                for command in widget.alerts.chatBot!.commands where command.imagePlaygroundImageId! == mediaId {
                     found = true
                     break
                 }
@@ -4209,7 +4209,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         qrCodeEffects.removeAll()
         for widget in widgets where widget.type == .qrCode {
-            qrCodeEffects[widget.id] = QrCodeEffect(widget: widget.qrCode!)
+            qrCodeEffects[widget.id] = QrCodeEffect(widget: widget.qrCode)
         }
         for videoSourceEffect in videoSourceEffects.values {
             media.unregisterEffect(videoSourceEffect)
@@ -4231,7 +4231,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         alertsEffects.removeAll()
         for widget in widgets where widget.type == .alerts {
             alertsEffects[widget.id] = AlertsEffect(
-                settings: widget.alerts!.clone(),
+                settings: widget.alerts.clone(),
                 delegate: self,
                 mediaStorage: alertMediaStorage,
                 bundledImages: database.alertsMediaGallery!.bundledImages,
@@ -4320,8 +4320,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func updateAlertsSettings() {
         for widget in database.widgets where widget.type == .alerts {
-            widget.alerts!.needsSubtitles = !widget.alerts!.speechToText!.strings.filter { $0.alert.enabled }.isEmpty
-            getAlertsEffect(id: widget.id)?.setSettings(settings: widget.alerts!.clone())
+            widget.alerts.needsSubtitles = !widget.alerts.speechToText!.strings.filter { $0.alert.enabled }.isEmpty
+            getAlertsEffect(id: widget.id)?.setSettings(settings: widget.alerts.clone())
         }
         if isSpeechToTextNeeded() {
             reloadSpeechToText()
@@ -6280,7 +6280,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         guard widget.type == .videoSource else {
             return false
         }
-        switch widget.videoSource!.cameraPosition {
+        switch widget.videoSource.cameraPosition {
         case .back:
             return true
         case .backWideDualLowEnergy:
@@ -6394,13 +6394,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             switch widget.type {
             case .videoSource:
                 let cameraId: String?
-                switch widget.videoSource!.cameraPosition! {
+                switch widget.videoSource.cameraPosition! {
                 case .back:
-                    cameraId = widget.videoSource!.backCameraId!
+                    cameraId = widget.videoSource.backCameraId!
                 case .front:
-                    cameraId = widget.videoSource!.frontCameraId!
+                    cameraId = widget.videoSource.frontCameraId!
                 case .external:
-                    cameraId = widget.videoSource!.externalCameraId!
+                    cameraId = widget.videoSource.externalCameraId!
                 default:
                     cameraId = nil
                 }
@@ -6410,7 +6410,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                     }
                 }
             case .scene:
-                if let scene = database.scenes.first(where: { $0.id == widget.scene!.sceneId }) {
+                if let scene = database.scenes.first(where: { $0.id == widget.scene.sceneId }) {
                     getBuiltinCameraDevicesInScene(scene: scene, devices: &devices)
                 }
             default:
@@ -6792,7 +6792,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                     usedMapEffects.append(mapEffect)
                 }
             case .scene:
-                if let sceneWidgetScene = getLocalAndRemoteScenes().first(where: { $0.id == widget.scene!.sceneId }) {
+                if let sceneWidgetScene = getLocalAndRemoteScenes().first(where: { $0.id == widget.scene.sceneId }) {
                     addSceneEffects(
                         sceneWidgetScene,
                         &effects,
@@ -6816,23 +6816,23 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                     }
                     alertsEffect.setPosition(x: sceneWidget.x, y: sceneWidget.y)
                     enabledAlertsEffects.append(alertsEffect)
-                    if widget.alerts!.needsSubtitles! {
+                    if widget.alerts.needsSubtitles! {
                         needsSpeechToText = true
                     }
                 }
             case .videoSource:
                 if let videoSourceEffect = videoSourceEffects[widget.id] {
-                    if let videoSourceId = getVideoSourceId(cameraId: widget.videoSource!.toCameraId()) {
+                    if let videoSourceId = getVideoSourceId(cameraId: widget.videoSource.toCameraId()) {
                         videoSourceEffect.setVideoSourceId(videoSourceId: videoSourceId)
                     }
                     videoSourceEffect.setSceneWidget(sceneWidget: sceneWidget.clone())
-                    videoSourceEffect.setSettings(settings: widget.videoSource!.toEffectSettings())
+                    videoSourceEffect.setSettings(settings: widget.videoSource.toEffectSettings())
                     effects.append(videoSourceEffect)
                 }
             case .scoreboard:
                 if let padelScoreboardEffect = padelScoreboardEffects[widget.id] {
                     padelScoreboardEffect.setSceneWidget(sceneWidget: sceneWidget.clone())
-                    let scoreboard = widget.scoreboard!
+                    let scoreboard = widget.scoreboard
                     padelScoreboardEffect
                         .update(scoreboard: padelScoreboardSettingsToEffect(scoreboard.padel))
                     if isWatchLocal() {
@@ -8530,7 +8530,7 @@ extension Model: RemoteControlStreamerDelegate {
         if let selectedSceneId {
             let widget = SettingsWidget(name: "")
             widget.type = .scene
-            widget.scene!.sceneId = selectedSceneId
+            widget.scene.sceneId = selectedSceneId
             remoteSceneScenes = scenes
             remoteSceneWidgets = [widget] + widgets
             resetSelectedScene(changeScene: false)
@@ -9466,25 +9466,25 @@ extension Model: WCSessionDelegate {
                 guard let widget = self.findWidget(id: scoreboard.id) else {
                     return
                 }
-                widget.scoreboard!.padel.score = scoreboard.score.map {
+                widget.scoreboard.padel.score = scoreboard.score.map {
                     let score = SettingsWidgetScoreboardScore()
                     score.home = $0.home
                     score.away = $0.away
                     return score
                 }
-                widget.scoreboard!.padel.homePlayer1 = scoreboard.home[0]
+                widget.scoreboard.padel.homePlayer1 = scoreboard.home[0]
                 if scoreboard.home.count > 1 {
-                    widget.scoreboard!.padel.homePlayer2 = scoreboard.home[1]
+                    widget.scoreboard.padel.homePlayer2 = scoreboard.home[1]
                 }
-                widget.scoreboard!.padel.awayPlayer1 = scoreboard.away[0]
+                widget.scoreboard.padel.awayPlayer1 = scoreboard.away[0]
                 if scoreboard.away.count > 1 {
-                    widget.scoreboard!.padel.awayPlayer2 = scoreboard.away[1]
+                    widget.scoreboard.padel.awayPlayer2 = scoreboard.away[1]
                 }
                 guard let padelScoreboardEffect = self.padelScoreboardEffects[scoreboard.id] else {
                     return
                 }
                 padelScoreboardEffect
-                    .update(scoreboard: self.padelScoreboardSettingsToEffect(widget.scoreboard!.padel))
+                    .update(scoreboard: self.padelScoreboardSettingsToEffect(widget.scoreboard.padel))
             }
         }
     }

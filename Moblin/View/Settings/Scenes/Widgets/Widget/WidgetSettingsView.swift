@@ -52,20 +52,20 @@ struct WidgetSettingsView: View {
             case .map:
                 WidgetMapSettingsView(widget: widget, delay: widget.map.delay!)
             case .scene:
-                WidgetSceneSettingsView(widget: widget, selectedSceneId: widget.scene!.sceneId)
+                WidgetSceneSettingsView(widget: widget, selectedSceneId: widget.scene.sceneId)
             case .qrCode:
                 WidgetQrCodeSettingsView(widget: widget)
             case .alerts:
                 WidgetAlertsSettingsView(widget: widget)
             case .videoSource:
                 WidgetVideoSourceSettingsView(widget: widget,
-                                              cornerRadius: widget.videoSource!.cornerRadius,
-                                              selectedRotation: widget.videoSource!.rotation!,
-                                              zoom: widget.videoSource!.trackFaceZoom!,
-                                              borderWidth: widget.videoSource!.borderWidth!,
-                                              background: widget.videoSource!.borderColor!.color())
+                                              cornerRadius: widget.videoSource.cornerRadius,
+                                              selectedRotation: widget.videoSource.rotation!,
+                                              zoom: widget.videoSource.trackFaceZoom!,
+                                              borderWidth: widget.videoSource.borderWidth!,
+                                              background: widget.videoSource.borderColor!.color())
             case .scoreboard:
-                WidgetScoreboardSettingsView(widget: widget, type: widget.scoreboard!.type.rawValue)
+                WidgetScoreboardSettingsView(widget: widget, type: widget.scoreboard.type.rawValue)
             }
         }
         .navigationTitle("Widget")
