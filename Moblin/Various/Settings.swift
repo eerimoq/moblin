@@ -2227,6 +2227,123 @@ class SettingsDebug: Codable {
     var replay: Bool? = false
     var recordSegmentLength: Double? = 5.0
     var builtinAudioAndVideoDelay: Double? = 0.0
+
+    enum CodingKeys: CodingKey {
+        case logLevel,
+             srtOverlay,
+             srtOverheadBandwidth,
+             cameraSwitchRemoveBlackish,
+             maximumBandwidthFollowInput,
+             audioOutputToInputChannelsMap,
+             bluetoothOutputOnly,
+             maximumLogLines,
+             pixelFormat,
+             beautyFilter,
+             beautyFilterSettings,
+             allowVideoRangePixelFormat,
+             blurSceneSwitch,
+             metalPetalFilters,
+             preferStereoMic,
+             twitchRewards,
+             removeWindNoise,
+             httpProxy,
+             tesla,
+             reliableChat,
+             timecodesEnabled,
+             dnsLookupStrategy,
+             srtlaBatchSend,
+             cameraControlsEnabled,
+             dataRateLimitFactor,
+             bitrateDropFix,
+             relaxedBitrate,
+             externalDisplayChat,
+             videoSourceWidgetTrackFace,
+             srtlaBatchSendEnabled,
+             replay,
+             recordSegmentLength,
+             builtinAudioAndVideoDelay
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(logLevel, forKey: .logLevel)
+        try container.encode(srtOverlay, forKey: .srtOverlay)
+        try container.encode(srtOverheadBandwidth, forKey: .srtOverheadBandwidth)
+        try container.encode(cameraSwitchRemoveBlackish, forKey: .cameraSwitchRemoveBlackish)
+        try container.encode(maximumBandwidthFollowInput, forKey: .maximumBandwidthFollowInput)
+        try container.encode(audioOutputToInputChannelsMap, forKey: .audioOutputToInputChannelsMap)
+        try container.encode(bluetoothOutputOnly, forKey: .bluetoothOutputOnly)
+        try container.encode(maximumLogLines, forKey: .maximumLogLines)
+        try container.encode(pixelFormat, forKey: .pixelFormat)
+        try container.encode(beautyFilter, forKey: .beautyFilter)
+        try container.encode(beautyFilterSettings, forKey: .beautyFilterSettings)
+        try container.encode(allowVideoRangePixelFormat, forKey: .allowVideoRangePixelFormat)
+        try container.encode(blurSceneSwitch, forKey: .blurSceneSwitch)
+        try container.encode(metalPetalFilters, forKey: .metalPetalFilters)
+        try container.encode(preferStereoMic, forKey: .preferStereoMic)
+        try container.encode(twitchRewards, forKey: .twitchRewards)
+        try container.encode(removeWindNoise, forKey: .removeWindNoise)
+        try container.encode(httpProxy, forKey: .httpProxy)
+        try container.encode(tesla, forKey: .tesla)
+        try container.encode(reliableChat, forKey: .reliableChat)
+        try container.encode(timecodesEnabled, forKey: .timecodesEnabled)
+        try container.encode(dnsLookupStrategy, forKey: .dnsLookupStrategy)
+        try container.encode(srtlaBatchSend, forKey: .srtlaBatchSend)
+        try container.encode(cameraControlsEnabled, forKey: .cameraControlsEnabled)
+        try container.encode(dataRateLimitFactor, forKey: .dataRateLimitFactor)
+        try container.encode(bitrateDropFix, forKey: .bitrateDropFix)
+        try container.encode(relaxedBitrate, forKey: .relaxedBitrate)
+        try container.encode(externalDisplayChat, forKey: .externalDisplayChat)
+        try container.encode(videoSourceWidgetTrackFace, forKey: .videoSourceWidgetTrackFace)
+        try container.encode(srtlaBatchSendEnabled, forKey: .srtlaBatchSendEnabled)
+        try container.encode(replay, forKey: .replay)
+        try container.encode(recordSegmentLength, forKey: .recordSegmentLength)
+        try container.encode(builtinAudioAndVideoDelay, forKey: .builtinAudioAndVideoDelay)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        logLevel = try container.decode(SettingsLogLevel.self, forKey: .logLevel)
+        srtOverlay = try container.decode(Bool.self, forKey: .srtOverlay)
+        srtOverheadBandwidth = (try? container.decode(Int32.self, forKey: .srtOverheadBandwidth)) ?? 25
+        cameraSwitchRemoveBlackish = (try? container.decode(Float.self, forKey: .cameraSwitchRemoveBlackish)) ?? 0.3
+        maximumBandwidthFollowInput = (try? container.decode(Bool.self, forKey: .maximumBandwidthFollowInput)) ?? true
+        audioOutputToInputChannelsMap = (try? container.decode(
+            SettingsDebugAudioOutputToInputChannelsMap.self,
+            forKey: .audioOutputToInputChannelsMap
+        )) ?? .init()
+        bluetoothOutputOnly = (try? container.decode(Bool.self, forKey: .bluetoothOutputOnly)) ?? true
+        maximumLogLines = (try? container.decode(Int.self, forKey: .maximumLogLines)) ?? 500
+        pixelFormat = (try? container.decode(String.self, forKey: .pixelFormat)) ?? pixelFormats[1]
+        beautyFilter = (try? container.decode(Bool.self, forKey: .beautyFilter)) ?? false
+        beautyFilterSettings = (try? container.decode(SettingsDebugBeautyFilter.self, forKey: .beautyFilterSettings)) ??
+            .init()
+        allowVideoRangePixelFormat = (try? container.decode(Bool.self, forKey: .allowVideoRangePixelFormat)) ?? false
+        blurSceneSwitch = (try? container.decode(Bool.self, forKey: .blurSceneSwitch)) ?? true
+        metalPetalFilters = (try? container.decode(Bool.self, forKey: .metalPetalFilters)) ?? false
+        preferStereoMic = (try? container.decode(Bool.self, forKey: .preferStereoMic)) ?? false
+        twitchRewards = (try? container.decode(Bool.self, forKey: .twitchRewards)) ?? false
+        removeWindNoise = (try? container.decode(Bool.self, forKey: .removeWindNoise)) ?? false
+        httpProxy = (try? container.decode(SettingsHttpProxy.self, forKey: .httpProxy)) ?? .init()
+        tesla = (try? container.decode(SettingsTesla.self, forKey: .tesla)) ?? .init()
+        reliableChat = (try? container.decode(Bool.self, forKey: .reliableChat)) ?? false
+        timecodesEnabled = (try? container.decode(Bool.self, forKey: .timecodesEnabled)) ?? false
+        dnsLookupStrategy = (try? container.decode(SettingsDnsLookupStrategy.self, forKey: .dnsLookupStrategy)) ??
+            .system
+        srtlaBatchSend = (try? container.decode(Bool.self, forKey: .srtlaBatchSend)) ?? false
+        cameraControlsEnabled = (try? container.decode(Bool.self, forKey: .cameraControlsEnabled)) ?? true
+        dataRateLimitFactor = (try? container.decode(Float.self, forKey: .dataRateLimitFactor)) ?? 2.0
+        bitrateDropFix = (try? container.decode(Bool.self, forKey: .bitrateDropFix)) ?? false
+        relaxedBitrate = (try? container.decode(Bool.self, forKey: .relaxedBitrate)) ?? false
+        externalDisplayChat = (try? container.decode(Bool.self, forKey: .externalDisplayChat)) ?? false
+        videoSourceWidgetTrackFace = (try? container.decode(Bool.self, forKey: .videoSourceWidgetTrackFace)) ?? false
+        srtlaBatchSendEnabled = (try? container.decode(Bool.self, forKey: .srtlaBatchSendEnabled)) ?? true
+        replay = (try? container.decode(Bool.self, forKey: .replay)) ?? false
+        recordSegmentLength = (try? container.decode(Double.self, forKey: .recordSegmentLength)) ?? 5.0
+        builtinAudioAndVideoDelay = (try? container.decode(Double.self, forKey: .builtinAudioAndVideoDelay)) ?? 0.0
+    }
 }
 
 class SettingsRtmpServerStream: Codable, Identifiable {
