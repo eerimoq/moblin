@@ -1306,8 +1306,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                         return
                     }
                     let replaySettings = self.replaysStorage.createReplay()
-                    replaySettings.start = self.database.replay!.start!
-                    replaySettings.stop = self.database.replay!.stop!
+                    replaySettings.start = self.database.replay.start!
+                    replaySettings.stop = self.database.replay.stop!
                     replaySettings.duration = file.duration
                     try? FileManager.default.copyItem(at: file.url, to: replaySettings.url())
                     self.replaysStorage.append(replay: replaySettings)
@@ -1331,7 +1331,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func replaySpeedChanged() {
-        database.replay!.speed = replay.speed ?? .one
+        database.replay.speed = replay.speed ?? .one
     }
 
     func instantReplay() {
@@ -1375,7 +1375,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         replaySettings.start = start
         replaySettings.stop = 30
-        database.replay!.start = start
+        database.replay.start = start
         replayFrameExtractor?.seek(offset: replaySettings.thumbnailOffset())
     }
 
@@ -1388,7 +1388,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             video: replayVideo,
             start: replaySettings.startFromVideoStart(),
             stop: replaySettings.stopFromVideoStart(),
-            speed: database.replay!.speed.toNumber(),
+            speed: database.replay.speed.toNumber(),
             size: stream.dimensions(),
             fade: stream.replay!.fade!,
             delegate: self
@@ -1829,7 +1829,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         goProLaunchLiveStreamSelection = database.goPro!.selectedLaunchLiveStream
         goProWifiCredentialsSelection = database.goPro!.selectedWifiCredentials
         goProRtmpUrlSelection = database.goPro!.selectedRtmpUrl
-        replay.speed = database.replay!.speed
+        replay.speed = database.replay.speed
     }
 
     func setBitrateDropFix() {

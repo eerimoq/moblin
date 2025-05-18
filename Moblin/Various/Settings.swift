@@ -3229,7 +3229,7 @@ class Database: Codable, ObservableObject {
     var remoteSceneId: UUID?
     var sceneNumericInput: Bool? = false
     var goPro: SettingsGoPro? = .init()
-    var replay: SettingsReplay? = .init()
+    var replay: SettingsReplay = .init()
     var portraitVideoOffsetFromTop: Double = 0.0
     var autoSceneSwitchers: SettingsAutoSceneSwitchers? = .init()
 
@@ -3461,7 +3461,7 @@ class Database: Codable, ObservableObject {
         remoteSceneId = try? container.decode(UUID?.self, forKey: .remoteSceneId)
         sceneNumericInput = try? container.decode(Bool?.self, forKey: .sceneNumericInput)
         goPro = try? container.decode(SettingsGoPro?.self, forKey: .goPro)
-        replay = try? container.decode(SettingsReplay?.self, forKey: .replay)
+        replay = (try? container.decode(SettingsReplay.self, forKey: .replay)) ?? .init()
         portraitVideoOffsetFromTop = (try? container.decode(Double.self, forKey: .portraitVideoOffsetFromTop)) ?? 0.0
         autoSceneSwitchers = try? container.decode(SettingsAutoSceneSwitchers?.self, forKey: .autoSceneSwitchers)
     }
@@ -5480,20 +5480,16 @@ final class Settings {
             stream.twitchShowFollows = true
             store()
         }
-        if realDatabase.replay == nil {
-            realDatabase.replay = .init()
+        if realDatabase.replay.position == nil {
+            realDatabase.replay.position = 10.0
             store()
         }
-        if realDatabase.replay!.position == nil {
-            realDatabase.replay!.position = 10.0
+        if realDatabase.replay.start == nil {
+            realDatabase.replay.start = 20.0
             store()
         }
-        if realDatabase.replay!.start == nil {
-            realDatabase.replay!.start = 20.0
-            store()
-        }
-        if realDatabase.replay!.stop == nil {
-            realDatabase.replay!.stop = 30.0
+        if realDatabase.replay.stop == nil {
+            realDatabase.replay.stop = 30.0
             store()
         }
         for stream in realDatabase.streams where stream.replay == nil {
