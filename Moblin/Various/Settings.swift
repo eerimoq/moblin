@@ -3225,7 +3225,7 @@ class Database: Codable, ObservableObject {
     var externalDisplayContent: SettingsExternalDisplayContent = .stream
     var cyclingPowerDevices: SettingsCyclingPowerDevices = .init()
     var heartRateDevices: SettingsHeartRateDevices? = .init()
-    var djiGimbalDevices: SettingsDjiGimbalDevices? = .init()
+    var djiGimbalDevices: SettingsDjiGimbalDevices = .init()
     var remoteSceneId: UUID?
     var sceneNumericInput: Bool = false
     var goPro: SettingsGoPro = .init()
@@ -3457,7 +3457,7 @@ class Database: Codable, ObservableObject {
         cyclingPowerDevices = (try? container.decode(SettingsCyclingPowerDevices.self, forKey: .cyclingPowerDevices)) ??
             .init()
         heartRateDevices = try? container.decode(SettingsHeartRateDevices?.self, forKey: .heartRateDevices)
-        djiGimbalDevices = try? container.decode(SettingsDjiGimbalDevices?.self, forKey: .djiGimbalDevices)
+        djiGimbalDevices = (try? container.decode(SettingsDjiGimbalDevices.self, forKey: .djiGimbalDevices)) ?? .init()
         remoteSceneId = try? container.decode(UUID?.self, forKey: .remoteSceneId)
         sceneNumericInput = (try? container.decode(Bool.self, forKey: .sceneNumericInput)) ?? false
         goPro = (try? container.decode(SettingsGoPro.self, forKey: .goPro)) ?? .init()
@@ -5333,10 +5333,6 @@ final class Settings {
         }
         if realDatabase.show.heartRateDevice == nil {
             realDatabase.show.heartRateDevice = true
-            store()
-        }
-        if realDatabase.djiGimbalDevices == nil {
-            realDatabase.djiGimbalDevices = .init()
             store()
         }
         for widget in database.widgets where widget.text.lapTimes == nil {

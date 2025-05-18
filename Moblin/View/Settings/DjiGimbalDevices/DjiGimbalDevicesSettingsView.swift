@@ -35,11 +35,11 @@ struct DjiGimbalDevicesSettingsView: View {
             }
             Section {
                 List {
-                    ForEach(model.database.djiGimbalDevices!.devices) { device in
+                    ForEach(model.database.djiGimbalDevices.devices) { device in
                         DjiGimbalDeviceSettingsWrapperView(device: device, name: device.name)
                     }
                     .onMove(perform: { froms, to in
-                        model.database.djiGimbalDevices!.devices.move(fromOffsets: froms, toOffset: to)
+                        model.database.djiGimbalDevices.devices.move(fromOffsets: froms, toOffset: to)
                     })
                     .onDelete(perform: { offsets in
                         model.removeDjiGimbalDevices(offsets: offsets)
@@ -48,7 +48,7 @@ struct DjiGimbalDevicesSettingsView: View {
                 CreateButtonView {
                     let device = SettingsDjiGimbalDevice()
                     device.name = "My gimbal"
-                    model.database.djiGimbalDevices!.devices.append(device)
+                    model.database.djiGimbalDevices.devices.append(device)
                     model.objectWillChange.send()
                 }
             } footer: {

@@ -11048,7 +11048,7 @@ extension Model {
     }
 
     private func getDjiGimbalDeviceSettings(djiDevice: DjiGimbalDevice) -> SettingsDjiGimbalDevice? {
-        return database.djiGimbalDevices!.devices.first(where: { djiGimbalDevices[$0.id] === djiDevice })
+        return database.djiGimbalDevices.devices.first(where: { djiGimbalDevices[$0.id] === djiDevice })
     }
 
     func getDjiGimbalDeviceState(device: SettingsDjiGimbalDevice) -> DjiGimbalDeviceState? {
@@ -11056,7 +11056,7 @@ extension Model {
     }
 
     private func autoStartDjiGimbalDevices() {
-        for device in database.djiGimbalDevices!.devices where device.enabled {
+        for device in database.djiGimbalDevices.devices where device.enabled {
             enableDjiGimbalDevice(device: device)
         }
     }
@@ -11069,10 +11069,10 @@ extension Model {
 
     func removeDjiGimbalDevices(offsets: IndexSet) {
         for offset in offsets {
-            let device = database.djiGimbalDevices!.devices[offset]
+            let device = database.djiGimbalDevices.devices[offset]
             djiGimbalDevices.removeValue(forKey: device.id)
         }
-        database.djiGimbalDevices!.devices.remove(atOffsets: offsets)
+        database.djiGimbalDevices.devices.remove(atOffsets: offsets)
     }
 }
 
