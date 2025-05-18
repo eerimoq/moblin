@@ -2193,7 +2193,7 @@ enum SettingsDnsLookupStrategy: String, Codable, CaseIterable {
 
 let dnsLookupStrategies = SettingsDnsLookupStrategy.allCases.map { $0.rawValue }
 
-class SettingsDebug: Codable {
+class SettingsDebug: Codable, ObservableObject {
     var logLevel: SettingsLogLevel = .error
     var srtOverlay: Bool = false
     var srtOverheadBandwidth: Int32 = 25

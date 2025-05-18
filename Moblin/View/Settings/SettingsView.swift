@@ -217,6 +217,7 @@ struct SettingsView: View {
                     }
                     NavigationLink {
                         DebugSettingsView(
+                            debug: model.database.debug,
                             cameraSwitchRemoveBlackish: model.database.debug.cameraSwitchRemoveBlackish,
                             dataRateLimitFactor: model.database.debug.dataRateLimitFactor,
                             recordSegmentLength: model.database.debug.recordSegmentLength,

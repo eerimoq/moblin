@@ -3,6 +3,7 @@ import WebKit
 
 struct DebugSettingsView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var debug: SettingsDebug
     @State var cameraSwitchRemoveBlackish: Float
     @State var dataRateLimitFactor: Float
     @State var recordSegmentLength: Double
@@ -12,7 +13,7 @@ struct DebugSettingsView: View {
         guard let lines = Int(value) else {
             return
         }
-        model.database.debug.maximumLogLines = min(max(1, lines), 100_000)
+        debug.maximumLogLines = min(max(1, lines), 100_000)
     }
 
     var body: some View {
@@ -24,7 +25,7 @@ struct DebugSettingsView: View {
                     Text("Log")
                 }
                 Toggle(isOn: Binding(get: {
-                    model.database.debug.logLevel == .debug
+                    debug.logLevel == .debug
                 }, set: { value in
                     model.setDebugLogging(on: value)
                 })) {
@@ -32,13 +33,13 @@ struct DebugSettingsView: View {
                 }
                 TextEditNavigationView(
                     title: "Maximum log lines",
-                    value: String(model.database.debug.maximumLogLines),
+                    value: String(debug.maximumLogLines),
                     onSubmit: submitLogLines
                 )
                 Toggle("Debug overlay", isOn: Binding(get: {
-                    model.database.debug.srtOverlay
+                    debug.srtOverlay
                 }, set: { value in
-                    model.database.debug.srtOverlay = value
+                    debug.srtOverlay = value
                 }))
             }
             Section {
@@ -62,16 +63,16 @@ struct DebugSettingsView: View {
                             guard !begin else {
                                 return
                             }
-                            model.database.debug.cameraSwitchRemoveBlackish = cameraSwitchRemoveBlackish
+                            debug.cameraSwitchRemoveBlackish = cameraSwitchRemoveBlackish
                         }
                     )
                     Text("\(formatOneDecimal(cameraSwitchRemoveBlackish)) s")
                         .frame(width: 40)
                 }
                 Toggle("Bitrate drop fix", isOn: Binding(get: {
-                    model.database.debug.bitrateDropFix
+                    debug.bitrateDropFix
                 }, set: { value in
-                    model.database.debug.bitrateDropFix = value
+                    debug.bitrateDropFix = value
                     model.setBitrateDropFix()
                 }))
                 HStack {
@@ -84,7 +85,7 @@ struct DebugSettingsView: View {
                             guard !begin else {
                                 return
                             }
-                            model.database.debug.dataRateLimitFactor = dataRateLimitFactor
+                            debug.dataRateLimitFactor = dataRateLimitFactor
                             model.setBitrateDropFix()
                         }
                     )
@@ -92,9 +93,9 @@ struct DebugSettingsView: View {
                         .frame(width: 40)
                 }
                 Toggle("Relaxed bitrate decrement after scene switch", isOn: Binding(get: {
-                    model.database.debug.relaxedBitrate
+                    debug.relaxedBitrate
                 }, set: { value in
-                    model.database.debug.relaxedBitrate = value
+                    debug.relaxedBitrate = value
                 }))
                 Toggle("Global tone mapping", isOn: Binding(get: {
                     model.getGlobalToneMappingOn()
@@ -102,15 +103,15 @@ struct DebugSettingsView: View {
                     model.setGlobalToneMapping(on: value)
                 }))
                 Toggle("MetalPetal filters", isOn: Binding(get: {
-                    model.database.debug.metalPetalFilters
+                    debug.metalPetalFilters
                 }, set: { value in
-                    model.database.debug.metalPetalFilters = value
+                    debug.metalPetalFilters = value
                     model.setMetalPetalFilters()
                 }))
                 Toggle("Twitch rewards", isOn: Binding(get: {
-                    model.database.debug.twitchRewards
+                    debug.twitchRewards
                 }, set: { value in
-                    model.database.debug.twitchRewards = value
+                    debug.twitchRewards = value
                 }))
                 NavigationLink {
                     DebugHttpProxySettingsView()
@@ -118,21 +119,21 @@ struct DebugSettingsView: View {
                     Text("HTTP proxy")
                 }
                 Toggle("Reliable chat", isOn: Binding(get: {
-                    model.database.debug.reliableChat
+                    debug.reliableChat
                 }, set: { value in
-                    model.database.debug.reliableChat = value
+                    debug.reliableChat = value
                 }))
                 Toggle("Timecodes", isOn: Binding(get: {
-                    model.database.debug.timecodesEnabled
+                    debug.timecodesEnabled
                 }, set: { value in
-                    model.database.debug.timecodesEnabled = value
+                    debug.timecodesEnabled = value
                     model.reloadNtpClient()
                     model.reloadSrtlaServer()
                 }))
                 Toggle("SRT(LA) batch send", isOn: Binding(get: {
-                    model.database.debug.srtlaBatchSendEnabled
+                    debug.srtlaBatchSendEnabled
                 }, set: { value in
-                    model.database.debug.srtlaBatchSendEnabled = value
+                    debug.srtlaBatchSendEnabled = value
                     model.setSrtlaBatchSend()
                 }))
                 NavigationLink {
@@ -151,7 +152,7 @@ struct DebugSettingsView: View {
                                 guard !begin else {
                                     return
                                 }
-                                model.database.debug.builtinAudioAndVideoDelay = builtinAudioAndVideoDelay
+                                debug.builtinAudioAndVideoDelay = builtinAudioAndVideoDelay
                             }
                         )
                         Text(formatTwoDecimals(builtinAudioAndVideoDelay))
