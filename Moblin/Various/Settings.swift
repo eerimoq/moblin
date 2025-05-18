@@ -3221,7 +3221,7 @@ class Database: Codable, ObservableObject {
     var moblink: SettingsMoblink = .init()
     var sceneSwitchTransition: SettingsSceneSwitchTransition = .blur
     var forceSceneSwitchTransition: Bool = false
-    var cameraControlsEnabled: Bool? = true
+    var cameraControlsEnabled: Bool = true
     var externalDisplayContent: SettingsExternalDisplayContent? = .stream
     var cyclingPowerDevices: SettingsCyclingPowerDevices? = .init()
     var heartRateDevices: SettingsHeartRateDevices? = .init()
@@ -3449,7 +3449,7 @@ class Database: Codable, ObservableObject {
             forKey: .sceneSwitchTransition
         )) ?? .blur
         forceSceneSwitchTransition = (try? container.decode(Bool.self, forKey: .forceSceneSwitchTransition)) ?? false
-        cameraControlsEnabled = try? container.decode(Bool?.self, forKey: .cameraControlsEnabled)
+        cameraControlsEnabled = (try? container.decode(Bool.self, forKey: .cameraControlsEnabled)) ?? true
         externalDisplayContent = try? container.decode(
             SettingsExternalDisplayContent?.self,
             forKey: .externalDisplayContent
@@ -5299,10 +5299,6 @@ final class Settings {
         }
         if realDatabase.moblink.client.manual == nil {
             realDatabase.moblink.client.manual = !realDatabase.moblink.client.url.isEmpty
-            store()
-        }
-        if realDatabase.cameraControlsEnabled == nil {
-            realDatabase.cameraControlsEnabled = realDatabase.debug.cameraControlsEnabled!
             store()
         }
         for widget in realDatabase.widgets where widget.text.alignment == nil {

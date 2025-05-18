@@ -224,7 +224,7 @@ struct CameraSettingsView: View {
                 if model.database.showAllSettings {
                     TapScreenToFocusSettingsView()
                     Toggle("Camera controls", isOn: Binding(get: {
-                        model.database.cameraControlsEnabled!
+                        model.database.cameraControlsEnabled
                     }, set: { value in
                         model.database.cameraControlsEnabled = value
                         model.setCameraControlsEnabled()
