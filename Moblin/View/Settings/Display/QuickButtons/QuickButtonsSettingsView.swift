@@ -45,7 +45,7 @@ struct QuickButtonsSettingsView: View {
                                 )
                             } label: {
                                 Toggle(isOn: Binding(get: {
-                                    button.enabled!
+                                    button.enabled
                                 }, set: { value in
                                     button.enabled = value
                                     model.updateButtonStates()
@@ -63,7 +63,7 @@ struct QuickButtonsSettingsView: View {
                             }
                         } else {
                             Toggle(isOn: Binding(get: {
-                                button.enabled!
+                                button.enabled
                             }, set: { value in
                                 button.enabled = value
                                 model.updateButtonStates()

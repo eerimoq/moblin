@@ -18,7 +18,7 @@ private struct QuickButtonImage: View {
     }
 
     private var backgroundColor: Color {
-        state.button.backgroundColor!.color()
+        state.button.backgroundColor.color()
     }
 
     var body: some View {
@@ -58,7 +58,7 @@ private struct InstantReplayView: View {
                 .font(.system(size: 25))
                 .frame(width: size, height: size)
                 .foregroundColor(.white)
-                .background(state.button.backgroundColor!.color())
+                .background(state.button.backgroundColor.color())
                 .clipShape(Circle())
                 .onTapGesture {
                     if model.stream.replay!.enabled {

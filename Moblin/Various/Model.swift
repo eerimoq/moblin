@@ -1264,7 +1264,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func updateButtonStates() {
         for page in 0 ..< controlBarPages {
             let states = database.globalButtons!.filter { button in
-                button.enabled! && button.page == page + 1
+                button.enabled && button.page == page + 1
             }.map { button in
                 ButtonState(isOn: button.isOn, button: button)
             }

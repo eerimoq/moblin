@@ -1797,8 +1797,8 @@ class SettingsQuickButton: Codable, Identifiable, Equatable, Hashable, Observabl
     var systemImageNameOn: String = "mic.slash"
     var systemImageNameOff: String = "mic"
     var isOn: Bool = false
-    var enabled: Bool? = true
-    var backgroundColor: RgbColor? = defaultQuickButtonColor
+    var enabled: Bool = true
+    var backgroundColor: RgbColor = defaultQuickButtonColor
     @Published var page: Int? = 1
     @Published var color: Color = defaultQuickButtonColor.color()
 
@@ -1850,10 +1850,10 @@ class SettingsQuickButton: Codable, Identifiable, Equatable, Hashable, Observabl
         systemImageNameOn = try container.decode(String.self, forKey: .systemImageNameOn)
         systemImageNameOff = try container.decode(String.self, forKey: .systemImageNameOff)
         isOn = try container.decode(Bool.self, forKey: .isOn)
-        enabled = try? container.decode(Bool?.self, forKey: .enabled)
-        backgroundColor = try? container.decode(RgbColor?.self, forKey: .backgroundColor)
+        enabled = (try? container.decode(Bool.self, forKey: .enabled)) ?? true
+        backgroundColor = (try? container.decode(RgbColor.self, forKey: .backgroundColor)) ?? defaultQuickButtonColor
         page = try? container.decode(Int?.self, forKey: .page)
-        color = backgroundColor!.color()
+        color = backgroundColor.color()
     }
 }
 
@@ -4327,10 +4327,6 @@ final class Settings {
         }
         for stream in realDatabase.streams where stream.srt.connectionPriorities == nil {
             stream.srt.connectionPriorities = .init()
-            store()
-        }
-        for button in realDatabase.globalButtons! where button.backgroundColor == nil {
-            button.backgroundColor = defaultQuickButtonColor
             store()
         }
         if realDatabase.debug.maximumBandwidthFollowInput == nil {
