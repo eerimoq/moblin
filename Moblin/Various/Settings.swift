@@ -3200,9 +3200,9 @@ class Database: Codable, ObservableObject {
     var color: SettingsColor = .init()
     var mirrorFrontCameraOnStream: Bool = true
     var streamButtonColor: RgbColor = defaultStreamButtonColor
-    var location: SettingsLocation? = .init()
-    var watch: WatchSettings? = .init()
-    var audio: AudioSettings? = .init()
+    var location: SettingsLocation = .init()
+    var watch: WatchSettings = .init()
+    var audio: AudioSettings = .init()
     var webBrowser: WebBrowserSettings? = .init()
     var deepLinkCreator: DeepLinkCreator? = .init()
     var srtlaServer: SettingsSrtlaServer? = .init()
@@ -3421,9 +3421,9 @@ class Database: Codable, ObservableObject {
         mirrorFrontCameraOnStream = (try? container.decode(Bool.self, forKey: .mirrorFrontCameraOnStream)) ?? true
         streamButtonColor = (try? container.decode(RgbColor.self, forKey: .streamButtonColor)) ??
             defaultStreamButtonColor
-        location = try? container.decode(SettingsLocation?.self, forKey: .location)
-        watch = try? container.decode(WatchSettings?.self, forKey: .watch)
-        audio = try? container.decode(AudioSettings?.self, forKey: .audio)
+        location = (try? container.decode(SettingsLocation.self, forKey: .location)) ?? .init()
+        watch = (try? container.decode(WatchSettings.self, forKey: .watch)) ?? .init()
+        audio = (try? container.decode(AudioSettings.self, forKey: .audio)) ?? .init()
         webBrowser = try? container.decode(WebBrowserSettings?.self, forKey: .webBrowser)
         deepLinkCreator = try? container.decode(DeepLinkCreator?.self, forKey: .deepLinkCreator)
         srtlaServer = try? container.decode(SettingsSrtlaServer?.self, forKey: .srtlaServer)
@@ -4375,10 +4375,6 @@ final class Settings {
             scene.externalCameraName = ""
             store()
         }
-        if realDatabase.location == nil {
-            realDatabase.location = .init()
-            store()
-        }
         for stream in database.streams where stream.srt.adaptiveBitrate!.fastIrlSettings == nil {
             stream.srt.adaptiveBitrate!.fastIrlSettings = .init()
             store()
@@ -4395,16 +4391,12 @@ final class Settings {
             stream.srt.adaptiveBitrateEnabled = stream.adaptiveBitrate!
             store()
         }
-        if realDatabase.watch == nil {
-            realDatabase.watch = .init()
+        if realDatabase.watch.chat.timestampEnabled == nil {
+            realDatabase.watch.chat.timestampEnabled = true
             store()
         }
-        if realDatabase.watch!.chat.timestampEnabled == nil {
-            realDatabase.watch!.chat.timestampEnabled = true
-            store()
-        }
-        if realDatabase.watch!.chat.notificationOnMessage == nil {
-            realDatabase.watch!.chat.notificationOnMessage = false
+        if realDatabase.watch.chat.notificationOnMessage == nil {
+            realDatabase.watch.chat.notificationOnMessage = false
             store()
         }
         if realDatabase.chat.usernamesToIgnore == nil {
@@ -4463,14 +4455,6 @@ final class Settings {
             stream.portrait = false
             store()
         }
-        if realDatabase.audio == nil {
-            realDatabase.audio = .init()
-            realDatabase.audio!.audioOutputToInputChannelsMap!.channel1 = realDatabase.debug
-                .audioOutputToInputChannelsMap!.channel0
-            realDatabase.audio!.audioOutputToInputChannelsMap!.channel2 = realDatabase.debug
-                .audioOutputToInputChannelsMap!.channel1
-            store()
-        }
         if realDatabase.webBrowser == nil {
             realDatabase.webBrowser = .init()
             store()
@@ -4479,8 +4463,8 @@ final class Settings {
             realDatabase.chat.textToSpeechFilter = true
             store()
         }
-        if realDatabase.watch!.show == nil {
-            realDatabase.watch!.show = .init()
+        if realDatabase.watch.show == nil {
+            realDatabase.watch.show = .init()
             store()
         }
         if realDatabase.debug.pixelFormat == nil {
@@ -5019,8 +5003,8 @@ final class Settings {
             realDatabase.chat.badges = true
             store()
         }
-        if realDatabase.watch!.chat.badges == nil {
-            realDatabase.watch!.chat.badges = true
+        if realDatabase.watch.chat.badges == nil {
+            realDatabase.watch.chat.badges = true
             store()
         }
         if realDatabase.chat.botCommandPermissions!.tts.subscribersEnabled == nil {
@@ -5224,8 +5208,8 @@ final class Settings {
             realDatabase.chat.botCommandPermissions!.tesla = .init()
             store()
         }
-        if realDatabase.watch!.viaRemoteControl == nil {
-            realDatabase.watch!.viaRemoteControl = false
+        if realDatabase.watch.viaRemoteControl == nil {
+            realDatabase.watch.viaRemoteControl = false
             store()
         }
         if realDatabase.keyboard == nil {
@@ -5370,8 +5354,8 @@ final class Settings {
             realDatabase.forceSceneSwitchTransition = false
             store()
         }
-        if realDatabase.location!.distance == nil {
-            realDatabase.location!.distance = 0.0
+        if realDatabase.location.distance == nil {
+            realDatabase.location.distance = 0.0
             store()
         }
         if realDatabase.catPrinters!.backgroundPrinting == nil {
@@ -5462,8 +5446,8 @@ final class Settings {
             realDatabase.chat.botCommandPermissions!.scene = .init()
             store()
         }
-        if realDatabase.location!.resetWhenGoingLive == nil {
-            realDatabase.location!.resetWhenGoingLive = false
+        if realDatabase.location.resetWhenGoingLive == nil {
+            realDatabase.location.resetWhenGoingLive = false
             store()
         }
         if realDatabase.debug.videoSourceWidgetTrackFace == nil {

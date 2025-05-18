@@ -7,7 +7,7 @@ struct WatchSettingsView: View {
         Form {
             Section {
                 NavigationLink {
-                    WatchChatSettingsView(fontSize: model.database.watch!.chat.fontSize)
+                    WatchChatSettingsView(fontSize: model.database.watch.chat.fontSize)
                 } label: {
                     Text("Chat")
                 }
@@ -19,9 +19,9 @@ struct WatchSettingsView: View {
             }
             Section {
                 Toggle(isOn: Binding(get: {
-                    model.database.watch!.viaRemoteControl!
+                    model.database.watch.viaRemoteControl!
                 }, set: { value in
-                    model.database.watch!.viaRemoteControl = value
+                    model.database.watch.viaRemoteControl = value
                     model.sendInitToWatch()
                 })) {
                     Text("Remote control assistant")

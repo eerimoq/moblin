@@ -3909,7 +3909,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if let latestKnownLocation {
             let distance = location?.distance(from: latestKnownLocation) ?? 0
             if distance > latestKnownLocation.horizontalAccuracy {
-                database.location!.distance! += distance
+                database.location.distance! += distance
                 self.latestKnownLocation = location
             }
         } else {
@@ -3920,18 +3920,18 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private func resetSlope() {
         slopePercent = 0.0
         previousSlopeAltitude = nil
-        previousSlopeDistance = database.location!.distance!
+        previousSlopeDistance = database.location.distance!
     }
 
     private func updateSlope() {
         guard let location = locationManager.getLatestKnownLocation() else {
             return
         }
-        let deltaDistance = database.location!.distance! - previousSlopeDistance
+        let deltaDistance = database.location.distance! - previousSlopeDistance
         guard deltaDistance != 0 else {
             return
         }
-        previousSlopeDistance = database.location!.distance!
+        previousSlopeDistance = database.location.distance!
         let deltaAltitude = location.altitude - (previousSlopeAltitude ?? location.altitude)
         previousSlopeAltitude = location.altitude
         slopePercent = 0.7 * slopePercent + 0.3 * (100 * deltaAltitude / deltaDistance)
@@ -3940,17 +3940,17 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private func resetAverageSpeed() {
         averageSpeed = 0.0
         averageSpeedStartTime = .now
-        averageSpeedStartDistance = database.location!.distance!
+        averageSpeedStartDistance = database.location.distance!
     }
 
     private func updateAverageSpeed(now: ContinuousClock.Instant) {
-        let distance = database.location!.distance! - averageSpeedStartDistance
+        let distance = database.location.distance! - averageSpeedStartDistance
         let elapsed = averageSpeedStartTime.duration(to: now)
         averageSpeed = distance / elapsed.seconds
     }
 
     func getDistance() -> String {
-        return format(distance: database.location!.distance!)
+        return format(distance: database.location.distance!)
     }
 
     private func updateTextWidgetsLapTimes(now: Date) {
@@ -4590,7 +4590,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             )
             return
         }
-        if database.location!.resetWhenGoingLive! {
+        if database.location.resetWhenGoingLive! {
             resetLocationData()
         }
         streamLog.removeAll()
@@ -4827,8 +4827,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         setAudioStreamBitrate(stream: stream)
         setAudioStreamFormat(format: .aac)
         setAudioChannelsMap(channelsMap: [
-            0: database.audio!.audioOutputToInputChannelsMap!.channel1,
-            1: database.audio!.audioOutputToInputChannelsMap!.channel2,
+            0: database.audio.audioOutputToInputChannelsMap!.channel1,
+            1: database.audio.audioOutputToInputChannelsMap!.channel2,
         ])
         startRecorderIfNeeded()
         reloadConnections()
@@ -7145,7 +7145,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func isWatchRemoteControl() -> Bool {
-        return database.watch!.viaRemoteControl!
+        return database.watch.viaRemoteControl!
     }
 
     private func isWatchLocal() -> Bool {
@@ -10078,7 +10078,7 @@ extension Model {
     }
 
     private func resetDistance() {
-        database.location!.distance = 0.0
+        database.location.distance = 0.0
         latestKnownLocation = nil
     }
 
@@ -10089,7 +10089,7 @@ extension Model {
     }
 
     func isLocationEnabled() -> Bool {
-        return database.location!.enabled
+        return database.location.enabled
     }
 
     private func handleLocationUpdate(location: CLLocation) {
@@ -10103,7 +10103,7 @@ extension Model {
     }
 
     private func isLocationInPrivacyRegion(location: CLLocation) -> Bool {
-        for region in database.location!.privacyRegions
+        for region in database.location.privacyRegions
             where region.contains(coordinate: location.coordinate)
         {
             return true

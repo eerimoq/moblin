@@ -7,7 +7,7 @@ struct AudioSettingsView: View {
         guard let channel = Int(value) else {
             return
         }
-        model.database.audio!.audioOutputToInputChannelsMap!.channel1 = max(channel - 1, -1)
+        model.database.audio.audioOutputToInputChannelsMap!.channel1 = max(channel - 1, -1)
         model.reloadStream()
         model.sceneUpdated(updateRemoteScene: false)
     }
@@ -16,7 +16,7 @@ struct AudioSettingsView: View {
         guard let channel = Int(value) else {
             return
         }
-        model.database.audio!.audioOutputToInputChannelsMap!.channel2 = max(channel - 1, -1)
+        model.database.audio.audioOutputToInputChannelsMap!.channel2 = max(channel - 1, -1)
         model.reloadStream()
         model.sceneUpdated(updateRemoteScene: false)
     }
@@ -68,13 +68,13 @@ struct AudioSettingsView: View {
             Section {
                 TextEditNavigationView(
                     title: String(localized: "Output channel 1"),
-                    value: String(model.database.audio!.audioOutputToInputChannelsMap!.channel1 + 1),
+                    value: String(model.database.audio.audioOutputToInputChannelsMap!.channel1 + 1),
                     onSubmit: submitOutputChannel1
                 )
                 .disabled(model.isLive || model.isRecording)
                 TextEditNavigationView(
                     title: String(localized: "Output channel 2"),
-                    value: String(model.database.audio!.audioOutputToInputChannelsMap!.channel2 + 1),
+                    value: String(model.database.audio.audioOutputToInputChannelsMap!.channel2 + 1),
                     onSubmit: submitOutputChannel2
                 )
                 .disabled(model.isLive || model.isRecording)

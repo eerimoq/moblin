@@ -4,7 +4,7 @@ struct WatchLocalOverlaysSettingsView: View {
     @EnvironmentObject var model: Model
 
     var show: WatchSettingsShow {
-        model.database.watch!.show!
+        model.database.watch.show!
     }
 
     var body: some View {

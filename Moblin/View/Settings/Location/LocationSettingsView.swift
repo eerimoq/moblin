@@ -28,17 +28,17 @@ struct LocationSettingsView: View {
         Form {
             Section {
                 Toggle("Enabled", isOn: Binding(get: {
-                    model.database.location!.enabled
+                    model.database.location.enabled
                 }, set: { value in
-                    model.database.location!.enabled = value
+                    model.database.location.enabled = value
                     model.reloadLocation()
                 }))
             }
             Section {
                 Toggle(isOn: Binding(get: {
-                    model.database.location!.resetWhenGoingLive!
+                    model.database.location.resetWhenGoingLive!
                 }, set: { value in
-                    model.database.location!.resetWhenGoingLive = value
+                    model.database.location.resetWhenGoingLive = value
                 })) {
                     Text("Reset when going live")
                 }
@@ -74,7 +74,7 @@ struct LocationSettingsView: View {
             }
             Section {
                 List {
-                    ForEach(model.database.location!.privacyRegions) { region in
+                    ForEach(model.database.location.privacyRegions) { region in
                         PrivacyRegionView(region: region, current: MKCoordinateRegion(
                             center: CLLocationCoordinate2D(latitude: region.latitude,
                                                            longitude: region.longitude),
@@ -85,7 +85,7 @@ struct LocationSettingsView: View {
                         ))
                     }
                     .onDelete(perform: { indexes in
-                        model.database.location!.privacyRegions.remove(atOffsets: indexes)
+                        model.database.location.privacyRegions.remove(atOffsets: indexes)
                         model.reloadLocation()
                     })
                 }
@@ -97,7 +97,7 @@ struct LocationSettingsView: View {
                         privacyRegion.latitudeDelta = 0.02
                         privacyRegion.longitudeDelta = 0.02
                     }
-                    model.database.location!.privacyRegions.append(privacyRegion)
+                    model.database.location.privacyRegions.append(privacyRegion)
                     model.objectWillChange.send()
                     model.reloadLocation()
                 }
