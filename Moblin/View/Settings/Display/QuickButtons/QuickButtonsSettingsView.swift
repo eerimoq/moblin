@@ -68,11 +68,11 @@ private struct ButtonsSettingsView: View {
     var body: some View {
         Section {
             List {
-                ForEach(model.database.globalButtons) { button in
+                ForEach(model.database.quickButtons) { button in
                     ButtonSettingsView(button: button)
                 }
                 .onMove(perform: { froms, to in
-                    model.database.globalButtons.move(fromOffsets: froms, toOffset: to)
+                    model.database.quickButtons.move(fromOffsets: froms, toOffset: to)
                     model.updateQuickButtonStates()
                     model.sceneUpdated(updateRemoteScene: false)
                 })
@@ -88,7 +88,7 @@ struct QuickButtonsSettingsView: View {
 
     var body: some View {
         Form {
-            AppearenceSettingsView(quickButtons: model.database.quickButtons)
+            AppearenceSettingsView(quickButtons: model.database.quickButtonsGeneral)
             ButtonsSettingsView()
         }
         .navigationTitle("Quick buttons")

@@ -1258,7 +1258,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func updateQuickButtonStates() {
         for page in 0 ..< controlBarPages {
-            let states = database.globalButtons.filter { button in
+            let states = database.quickButtons.filter { button in
                 button.enabled && button.page == page + 1
             }.map { button in
                 ButtonState(isOn: button.isOn, button: button)
@@ -2939,21 +2939,21 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private func handleSettingsUrlsDefaultQuickButtons(settings: MoblinSettingsUrl) {
         if let quickButtons = settings.quickButtons {
             if let twoColumns = quickButtons.twoColumns {
-                database.quickButtons.twoColumns = twoColumns
+                database.quickButtonsGeneral.twoColumns = twoColumns
             }
             if let showName = quickButtons.showName {
-                database.quickButtons.showName = showName
+                database.quickButtonsGeneral.showName = showName
             }
             if let enableScroll = quickButtons.enableScroll {
-                database.quickButtons.enableScroll = enableScroll
+                database.quickButtonsGeneral.enableScroll = enableScroll
             }
             if quickButtons.disableAllButtons == true {
-                for globalButton in database.globalButtons {
+                for globalButton in database.quickButtons {
                     globalButton.enabled = false
                 }
             }
             for button in quickButtons.buttons ?? [] {
-                for globalButton in database.globalButtons {
+                for globalButton in database.quickButtons {
                     guard button.type == globalButton.type else {
                         continue
                     }
@@ -3768,7 +3768,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func isGlobalButtonOn(type: SettingsQuickButtonType) -> Bool {
-        return database.globalButtons.first(where: { button in
+        return database.quickButtons.first(where: { button in
             button.type == type
         })?.isOn ?? false
     }
@@ -4477,7 +4477,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func setGlobalButtonState(type: SettingsQuickButtonType, isOn: Bool) {
-        for button in database.globalButtons where button.type == type {
+        for button in database.quickButtons where button.type == type {
             button.isOn = isOn
         }
         for pageButtonPairs in buttonPairs {
@@ -4495,7 +4495,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func getGlobalButton(type: SettingsQuickButtonType) -> SettingsQuickButton? {
-        return database.globalButtons.first(where: { $0.type == type })
+        return database.quickButtons.first(where: { $0.type == type })
     }
 
     func showQuickButtonSettings(type: SettingsQuickButtonType) {
@@ -4505,7 +4505,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func toggleGlobalButton(type: SettingsQuickButtonType) {
-        for button in database.globalButtons where button.type == type {
+        for button in database.quickButtons where button.type == type {
             button.isOn.toggle()
         }
         for pageButtonPairs in buttonPairs {

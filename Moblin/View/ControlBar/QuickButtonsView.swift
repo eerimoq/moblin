@@ -604,7 +604,7 @@ struct QuickButtonsInnerView: View {
                     autoSceneSwitcherAction()
                 }
             }
-            if model.database.quickButtons.showName && !model.isPortrait() {
+            if model.database.quickButtonsGeneral.showName && !model.isPortrait() {
                 Text(state.button.name)
                     .multilineTextAlignment(.center)
                     .frame(width: nameWidth, alignment: .center)

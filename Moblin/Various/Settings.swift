@@ -3210,8 +3210,8 @@ class Database: Codable, ObservableObject {
     var batteryPercentage: Bool = true
     var mic: SettingsMic = getDefaultMic()
     var debug: SettingsDebug = .init()
-    var quickButtons: SettingsQuickButtons = .init()
-    var globalButtons: [SettingsQuickButton] = []
+    var quickButtonsGeneral: SettingsQuickButtons = .init()
+    var quickButtons: [SettingsQuickButton] = []
     var rtmpServer: SettingsRtmpServer = .init()
     var networkInterfaceNames: [SettingsNetworkInterfaceName] = []
     var lowBitrateWarning: Bool = true
@@ -3270,7 +3270,7 @@ class Database: Codable, ObservableObject {
             addDefaultBitratePresets(database: database)
         }
         addMissingQuickButtons(database: database)
-        for button in database.globalButtons where button.type != .interactiveChat && button.type != .cameraPreview {
+        for button in database.quickButtons where button.type != .interactiveChat && button.type != .cameraPreview {
             button.isOn = false
         }
         addMissingDeepLinkQuickButtons(database: database)
@@ -3358,8 +3358,8 @@ class Database: Codable, ObservableObject {
         try container.encode(batteryPercentage, forKey: .batteryPercentage)
         try container.encode(mic, forKey: .mic)
         try container.encode(debug, forKey: .debug)
-        try container.encode(quickButtons, forKey: .quickButtons)
-        try container.encode(globalButtons, forKey: .globalButtons)
+        try container.encode(quickButtonsGeneral, forKey: .quickButtons)
+        try container.encode(quickButtons, forKey: .globalButtons)
         try container.encode(rtmpServer, forKey: .rtmpServer)
         try container.encode(networkInterfaceNames, forKey: .networkInterfaceNames)
         try container.encode(lowBitrateWarning, forKey: .lowBitrateWarning)
@@ -3424,8 +3424,8 @@ class Database: Codable, ObservableObject {
         batteryPercentage = try container.decode(Bool.self, forKey: .batteryPercentage)
         mic = try container.decode(SettingsMic.self, forKey: .mic)
         debug = try container.decode(SettingsDebug.self, forKey: .debug)
-        quickButtons = (try? container.decode(SettingsQuickButtons.self, forKey: .quickButtons)) ?? .init()
-        globalButtons = (try? container.decode([SettingsQuickButton].self, forKey: .globalButtons)) ?? []
+        quickButtonsGeneral = (try? container.decode(SettingsQuickButtons.self, forKey: .quickButtons)) ?? .init()
+        quickButtons = (try? container.decode([SettingsQuickButton].self, forKey: .globalButtons)) ?? []
         rtmpServer = (try? container.decode(SettingsRtmpServer.self, forKey: .rtmpServer)) ?? .init()
         networkInterfaceNames = (try? container.decode(
             [SettingsNetworkInterfaceName].self,
@@ -3570,7 +3570,7 @@ private func addDefaultBitratePresets(database: Database) {
 }
 
 private func updateQuickButton(database: Database, button: SettingsQuickButton) {
-    let existingButton = database.globalButtons.first(where: { globalButton in
+    let existingButton = database.quickButtons.first(where: { globalButton in
         globalButton.type == button.type
     })
     if let existingButton {
@@ -3578,7 +3578,7 @@ private func updateQuickButton(database: Database, button: SettingsQuickButton) 
         existingButton.systemImageNameOn = button.systemImageNameOn
         existingButton.systemImageNameOff = button.systemImageNameOff
     } else {
-        database.globalButtons.append(button)
+        database.quickButtons.append(button)
     }
 }
 
@@ -3959,7 +3959,7 @@ private func addMissingQuickButtons(database: Database) {
     button.systemImageNameOff = "phone.connection"
     updateQuickButton(database: database, button: button)
 
-    database.globalButtons = database.globalButtons.filter { button in
+    database.quickButtons = database.quickButtons.filter { button in
         if button.type == .unknown {
             return false
         }
@@ -3978,7 +3978,7 @@ private func addMissingDeepLinkQuickButtons(database: Database) {
         database.deepLinkCreator.quickButtons = .init()
     }
     let quickButtons = database.deepLinkCreator.quickButtons!
-    for quickButton in database.globalButtons where quickButton.type != .lut {
+    for quickButton in database.quickButtons where quickButton.type != .lut {
         let button = DeepLinkCreatorQuickButton()
         let buttonExists = quickButtons.buttons.contains(where: { button in
             quickButton.type == button.type
@@ -4302,7 +4302,7 @@ final class Settings {
             realDatabase.show.location = true
             store()
         }
-        for button in realDatabase.globalButtons where button.type == .image {
+        for button in realDatabase.quickButtons where button.type == .image {
             if button.name != String(localized: "Camera") {
                 button.name = String(localized: "Camera")
                 store()
@@ -4956,16 +4956,16 @@ final class Settings {
         }
         let allLuts = realDatabase.color.bundledLuts + (realDatabase.color.diskLuts ?? [])
         for lut in allLuts where lut.enabled == nil {
-            if let button = realDatabase.globalButtons.first(where: { $0.id == lut.buttonId }) {
+            if let button = realDatabase.quickButtons.first(where: { $0.id == lut.buttonId }) {
                 lut.enabled = button.isOn
             } else {
                 lut.enabled = false
             }
             store()
         }
-        let newButtons = realDatabase.globalButtons.filter { $0.type != .lut }
-        if realDatabase.globalButtons.count != newButtons.count {
-            realDatabase.globalButtons = newButtons
+        let newButtons = realDatabase.quickButtons.filter { $0.type != .lut }
+        if realDatabase.quickButtons.count != newButtons.count {
+            realDatabase.quickButtons = newButtons
             store()
         }
         for stream in realDatabase.streams where stream.obsMainScene == nil {
@@ -5511,7 +5511,7 @@ final class Settings {
             realDatabase.autoSceneSwitchers = .init()
             store()
         }
-        for button in realDatabase.globalButtons where button.page == nil {
+        for button in realDatabase.quickButtons where button.page == nil {
             button.page = 1
             store()
         }
