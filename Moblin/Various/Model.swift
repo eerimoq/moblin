@@ -3236,7 +3236,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func lutEnabledUpdated() {
-        if database.color!.lutEnabled, database.color!.space == .appleLog {
+        if database.color.lutEnabled, database.color.space == .appleLog {
             media.registerEffect(lutEffect)
         } else {
             media.unregisterEffect(lutEffect)
@@ -3244,7 +3244,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func lutUpdated() {
-        guard let lut = getLogLutById(id: database.color!.lut) else {
+        guard let lut = getLogLutById(id: database.color.lut) else {
             media.unregisterEffect(lutEffect)
             return
         }
@@ -3256,32 +3256,32 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func addLutCube(url: URL) {
         let lut = SettingsColorLut(type: .diskCube, name: "My LUT")
         imageStorage.write(id: lut.id, url: url)
-        database.color!.diskLutsCube!.append(lut)
+        database.color.diskLutsCube!.append(lut)
         resetSelectedScene()
     }
 
     func removeLutCube(offsets: IndexSet) {
         for offset in offsets {
-            let lut = database.color!.diskLutsCube![offset]
+            let lut = database.color.diskLutsCube![offset]
             imageStorage.remove(id: lut.id)
         }
-        database.color!.diskLutsCube!.remove(atOffsets: offsets)
+        database.color.diskLutsCube!.remove(atOffsets: offsets)
         resetSelectedScene()
     }
 
     func addLutPng(data: Data) {
         let lut = SettingsColorLut(type: .disk, name: "My LUT")
         imageStorage.write(id: lut.id, data: data)
-        database.color!.diskLutsPng!.append(lut)
+        database.color.diskLutsPng!.append(lut)
         resetSelectedScene()
     }
 
     func removeLutPng(offsets: IndexSet) {
         for offset in offsets {
-            let lut = database.color!.diskLutsPng![offset]
+            let lut = database.color.diskLutsPng![offset]
             imageStorage.remove(id: lut.id)
         }
-        database.color!.diskLutsPng!.remove(atOffsets: offsets)
+        database.color.diskLutsPng!.remove(atOffsets: offsets)
         resetSelectedScene()
     }
 
@@ -3290,7 +3290,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func allLuts() -> [SettingsColorLut] {
-        return database.color!.bundledLuts + database.color!.diskLutsCube! + database.color!.diskLutsPng!
+        return database.color.bundledLuts + database.color.diskLutsCube! + database.color.diskLutsPng!
     }
 
     func getLogLutById(id: UUID) -> SettingsColorLut? {
@@ -3330,10 +3330,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                     break
                 }
             }
-            if database.color!.diskLutsPng!.contains(where: { lut in lut.id == id }) {
+            if database.color.diskLutsPng!.contains(where: { lut in lut.id == id }) {
                 used = true
             }
-            if database.color!.diskLutsCube!.contains(where: { lut in lut.id == id }) {
+            if database.color.diskLutsCube!.contains(where: { lut in lut.id == id }) {
                 used = true
             }
             if !used {
@@ -4281,7 +4281,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             videoSize: media.getVideoSize(),
             size: drawOnStreamSize,
             lines: drawOnStreamLines,
-            mirror: isFrontCameraSelected && !database.mirrorFrontCameraOnStream!
+            mirror: isFrontCameraSelected && !database.mirrorFrontCameraOnStream
         )
         for lutEffect in lutEffects.values {
             media.unregisterEffect(lutEffect)
@@ -4971,7 +4971,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func setColorSpace() {
         var colorSpace: AVCaptureColorSpace
-        switch database.color!.space {
+        switch database.color.space {
         case .srgb:
             colorSpace = .sRGB
         case .p3D65:
@@ -5040,7 +5040,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         case .h264avc:
             media.setVideoProfile(profile: kVTProfileLevel_H264_Main_AutoLevel)
         case .h265hevc:
-            if database.color!.space == .hlgBt2020 {
+            if database.color.space == .hlgBt2020 {
                 media.setVideoProfile(profile: kVTProfileLevel_HEVC_Main10_AutoLevel)
             } else {
                 media.setVideoProfile(profile: kVTProfileLevel_HEVC_Main_AutoLevel)
@@ -6636,7 +6636,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func sceneUpdatedOn(scene: SettingsScene, attachCamera: Bool) {
         var effects: [VideoEffect] = []
-        if database.color!.lutEnabled, database.color!.space == .appleLog {
+        if database.color.lutEnabled, database.color.space == .appleLog {
             effects.append(lutEffect)
         }
         for lut in allLuts() {
@@ -6700,7 +6700,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 videoSize: media.getVideoSize(),
                 size: drawOnStreamSize,
                 lines: drawOnStreamLines,
-                mirror: isFrontCameraSelected && !database.mirrorFrontCameraOnStream!
+                mirror: isFrontCameraSelected && !database.mirrorFrontCameraOnStream
             )
         }
     }
@@ -7304,7 +7304,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             if stream.portrait! {
                 return true
             } else {
-                return database.mirrorFrontCameraOnStream!
+                return database.mirrorFrontCameraOnStream
             }
         }
         return false
@@ -7315,7 +7315,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             if stream.portrait! {
                 return false
             } else {
-                return !database.mirrorFrontCameraOnStream!
+                return !database.mirrorFrontCameraOnStream
             }
         }
         return false
@@ -10143,7 +10143,7 @@ extension Model {
             videoSize: media.getVideoSize(),
             size: drawOnStreamSize,
             lines: drawOnStreamLines,
-            mirror: isFrontCameraSelected && !database.mirrorFrontCameraOnStream!
+            mirror: isFrontCameraSelected && !database.mirrorFrontCameraOnStream
         )
         media.registerEffect(drawOnStreamEffect)
         drawOnStreamUpdateButtonState()
@@ -10155,7 +10155,7 @@ extension Model {
             videoSize: media.getVideoSize(),
             size: drawOnStreamSize,
             lines: drawOnStreamLines,
-            mirror: isFrontCameraSelected && !database.mirrorFrontCameraOnStream!
+            mirror: isFrontCameraSelected && !database.mirrorFrontCameraOnStream
         )
         media.unregisterEffect(drawOnStreamEffect)
         drawOnStreamUpdateButtonState()
@@ -10170,7 +10170,7 @@ extension Model {
             videoSize: media.getVideoSize(),
             size: drawOnStreamSize,
             lines: drawOnStreamLines,
-            mirror: isFrontCameraSelected && !database.mirrorFrontCameraOnStream!
+            mirror: isFrontCameraSelected && !database.mirrorFrontCameraOnStream
         )
         if drawOnStreamLines.isEmpty {
             media.unregisterEffect(drawOnStreamEffect)

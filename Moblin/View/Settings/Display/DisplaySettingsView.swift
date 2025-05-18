@@ -34,7 +34,7 @@ struct DisplaySettingsView: View {
                 }
                 if model.database.showAllSettings! {
                     NavigationLink {
-                        StreamButtonsSettingsView(background: model.database.streamButtonColor!.color())
+                        StreamButtonsSettingsView(background: model.database.streamButtonColor.color())
                     } label: {
                         Text("Stream button")
                     }

@@ -3197,9 +3197,9 @@ class Database: Codable, ObservableObject {
     var gameControllers: [SettingsGameController] = [.init()]
     var remoteControl: SettingsRemoteControl = .init()
     var startStopRecordingConfirmations: Bool = true
-    var color: SettingsColor? = .init()
-    var mirrorFrontCameraOnStream: Bool? = true
-    var streamButtonColor: RgbColor? = defaultStreamButtonColor
+    var color: SettingsColor = .init()
+    var mirrorFrontCameraOnStream: Bool = true
+    var streamButtonColor: RgbColor = defaultStreamButtonColor
     var location: SettingsLocation? = .init()
     var watch: WatchSettings? = .init()
     var audio: AudioSettings? = .init()
@@ -3417,9 +3417,10 @@ class Database: Codable, ObservableObject {
             try? container.decode(Bool.self, forKey: .startStopRecordingConfirmations)
         ) ??
             true
-        color = try? container.decode(SettingsColor?.self, forKey: .color)
-        mirrorFrontCameraOnStream = try? container.decode(Bool?.self, forKey: .mirrorFrontCameraOnStream)
-        streamButtonColor = try? container.decode(RgbColor?.self, forKey: .streamButtonColor)
+        color = (try? container.decode(SettingsColor.self, forKey: .color)) ?? .init()
+        mirrorFrontCameraOnStream = (try? container.decode(Bool.self, forKey: .mirrorFrontCameraOnStream)) ?? true
+        streamButtonColor = (try? container.decode(RgbColor.self, forKey: .streamButtonColor)) ??
+            defaultStreamButtonColor
         location = try? container.decode(SettingsLocation?.self, forKey: .location)
         watch = try? container.decode(WatchSettings?.self, forKey: .watch)
         audio = try? container.decode(AudioSettings?.self, forKey: .audio)
@@ -3969,18 +3970,15 @@ private func addMissingDeepLinkQuickButtons(database: Database) {
 }
 
 private func addMissingBundledLuts(database: Database) {
-    if database.color == nil {
-        database.color = .init()
-    }
     var bundledLuts: [SettingsColorLut] = []
     for lut in allBundledLuts {
-        if let existingLut = database.color!.bundledLuts.first(where: { $0.name == lut.name }) {
+        if let existingLut = database.color.bundledLuts.first(where: { $0.name == lut.name }) {
             bundledLuts.append(existingLut)
         } else {
             bundledLuts.append(lut)
         }
     }
-    database.color!.bundledLuts = bundledLuts
+    database.color.bundledLuts = bundledLuts
 }
 
 private func addMissingGoPro(database: Database) {
@@ -4365,12 +4363,8 @@ final class Settings {
             realDatabase.debug.maximumLogLines = 500
             store()
         }
-        if realDatabase.color == nil {
-            realDatabase.color = .init()
-            store()
-        }
-        if realDatabase.color!.diskLuts == nil {
-            realDatabase.color!.diskLuts = []
+        if realDatabase.color.diskLuts == nil {
+            realDatabase.color.diskLuts = []
             store()
         }
         for scene in realDatabase.scenes where scene.externalCameraId == nil {
@@ -4379,10 +4373,6 @@ final class Settings {
         }
         for scene in realDatabase.scenes where scene.externalCameraName == nil {
             scene.externalCameraName = ""
-            store()
-        }
-        if realDatabase.streamButtonColor == nil {
-            realDatabase.streamButtonColor = defaultStreamButtonColor
             store()
         }
         if realDatabase.location == nil {
@@ -4580,10 +4570,6 @@ final class Settings {
                     }
                 }
             }
-            store()
-        }
-        if realDatabase.mirrorFrontCameraOnStream == nil {
-            realDatabase.mirrorFrontCameraOnStream = true
             store()
         }
         if realDatabase.debug.metalPetalFilters == nil {
@@ -4999,7 +4985,7 @@ final class Settings {
             realDatabase.chat.botCommandPermissions!.fax = .init()
             store()
         }
-        let allLuts = realDatabase.color!.bundledLuts + (realDatabase.color!.diskLuts ?? [])
+        let allLuts = realDatabase.color.bundledLuts + (realDatabase.color.diskLuts ?? [])
         for lut in allLuts where lut.enabled == nil {
             if let button = realDatabase.globalButtons.first(where: { $0.id == lut.buttonId }) {
                 lut.enabled = button.isOn
@@ -5336,12 +5322,12 @@ final class Settings {
             realDatabase.chat.newMessagesAtTop = false
             store()
         }
-        if realDatabase.color!.diskLutsPng == nil {
-            realDatabase.color!.diskLutsPng = realDatabase.color!.diskLuts
+        if realDatabase.color.diskLutsPng == nil {
+            realDatabase.color.diskLutsPng = realDatabase.color.diskLuts
             store()
         }
-        if realDatabase.color!.diskLutsCube == nil {
-            realDatabase.color!.diskLutsCube = []
+        if realDatabase.color.diskLutsCube == nil {
+            realDatabase.color.diskLutsCube = []
             store()
         }
         if realDatabase.show.bondingRtts == nil {

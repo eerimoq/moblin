@@ -56,7 +56,7 @@ private struct CameraSettingsCubeLutsView: View {
     var body: some View {
         Section {
             List {
-                ForEach(model.database.color!.diskLutsCube!) { lut in
+                ForEach(model.database.color.diskLutsCube!) { lut in
                     CustomLutView(lut: lut, name: lut.name)
                         .tag(lut.id)
                 }
@@ -89,7 +89,7 @@ private struct CameraSettingsPngLutsView: View {
     var body: some View {
         Section {
             List {
-                ForEach(model.database.color!.diskLutsPng!) { lut in
+                ForEach(model.database.color.diskLutsPng!) { lut in
                     CustomLutView(lut: lut, name: lut.name)
                         .tag(lut.id)
                 }
@@ -132,7 +132,7 @@ private struct CameraSettingsLutsView: View {
         Form {
             Section {
                 List {
-                    ForEach(model.database.color!.bundledLuts) { lut in
+                    ForEach(model.database.color.bundledLuts) { lut in
                         Text(lut.name)
                             .tag(lut.id)
                     }
@@ -152,7 +152,7 @@ struct CameraSettingsAppleLogLutView: View {
     @State var selectedId: UUID
 
     private func submitLut(id: UUID) {
-        model.database.color!.lut = id
+        model.database.color.lut = id
         model.lutUpdated()
         model.objectWillChange.send()
     }
@@ -161,9 +161,9 @@ struct CameraSettingsAppleLogLutView: View {
         Form {
             Section {
                 Toggle(isOn: Binding(get: {
-                    model.database.color!.lutEnabled
+                    model.database.color.lutEnabled
                 }, set: { value in
-                    model.database.color!.lutEnabled = value
+                    model.database.color.lutEnabled = value
                     model.lutEnabledUpdated()
                 })) {
                     Text("Enabled")
@@ -240,9 +240,9 @@ struct CameraSettingsView: View {
                 if model.supportsAppleLog {
                     Section {
                         Picker("Color space", selection: Binding(get: {
-                            model.database.color!.space.rawValue
+                            model.database.color.space.rawValue
                         }, set: { value in
-                            model.database.color!.space = SettingsColorSpace(rawValue: value)!
+                            model.database.color.space = SettingsColorSpace(rawValue: value)!
                             model.colorSpaceUpdated()
                             model.objectWillChange.send()
                         })) {
@@ -253,7 +253,7 @@ struct CameraSettingsView: View {
                         .disabled(model.isLive || model.isRecording)
                         NavigationLink {
                             CameraSettingsAppleLogLutView(
-                                selectedId: model.database.color!.lut
+                                selectedId: model.database.color.lut
                             )
                         } label: {
                             Text("Apple Log LUT")
@@ -264,9 +264,9 @@ struct CameraSettingsView: View {
                 } else {
                     Section {
                         Picker("Color space", selection: Binding(get: {
-                            model.database.color!.space.rawValue
+                            model.database.color.space.rawValue
                         }, set: { value in
-                            model.database.color!.space = SettingsColorSpace(rawValue: value)!
+                            model.database.color.space = SettingsColorSpace(rawValue: value)!
                             model.colorSpaceUpdated()
                             model.objectWillChange.send()
                         })) {

@@ -11,7 +11,7 @@ private struct StreamButtonText: View {
             .foregroundColor(.white)
             .frame(minWidth: 60)
             .padding(5)
-            .background(model.database.streamButtonColor!.color())
+            .background(model.database.streamButtonColor.color())
             .cornerRadius(10)
     }
 }
