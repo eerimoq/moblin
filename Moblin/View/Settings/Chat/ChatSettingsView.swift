@@ -151,11 +151,7 @@ struct ChatSettingsView: View {
                     Text("Usernames to ignore")
                 }
                 NavigationLink {
-                    ChatTextToSpeechSettingsView(
-                        rate: chat.textToSpeechRate,
-                        volume: chat.textToSpeechSayVolume,
-                        pauseBetweenMessages: chat.textToSpeechPauseBetweenMessages
-                    )
+                    ChatTextToSpeechSettingsView(chat: chat)
                 } label: {
                     Toggle(isOn: Binding(get: {
                         chat.textToSpeechEnabled
@@ -171,11 +167,7 @@ struct ChatSettingsView: View {
                 NavigationLink {
                     ChatBotSettingsView()
                 } label: {
-                    Toggle(isOn: Binding(get: {
-                        chat.botEnabled
-                    }, set: { value in
-                        chat.botEnabled = value
-                    })) {
+                    Toggle(isOn: $chat.botEnabled) {
                         Text("Bot")
                     }
                 }

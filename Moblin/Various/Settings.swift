@@ -2092,14 +2092,14 @@ class SettingsChat: Codable, ObservableObject {
     var textToSpeechEnabled: Bool = false
     var textToSpeechDetectLanguagePerMessage: Bool = false
     var textToSpeechSayUsername: Bool = true
-    var textToSpeechRate: Float = 0.4
-    var textToSpeechSayVolume: Float = 0.6
+    @Published var textToSpeechRate: Float = 0.4
+    @Published var textToSpeechSayVolume: Float = 0.6
     var textToSpeechLanguageVoices: [String: String] = .init()
     var textToSpeechSubscribersOnly: Bool = false
     var textToSpeechFilter: Bool = true
     var textToSpeechFilterMentions: Bool = true
     var mirrored: Bool = false
-    var botEnabled: Bool = false
+    @Published var botEnabled: Bool = false
     var botCommandPermissions: SettingsChatBotPermissions = .init()
     var botSendLowBatteryWarning: Bool = false
     var badges: Bool = true
@@ -2107,7 +2107,7 @@ class SettingsChat: Codable, ObservableObject {
     var showNewFollowerMessage: Bool = true
     @Published var bottom: Double = 0.0
     var newMessagesAtTop: Bool = false
-    var textToSpeechPauseBetweenMessages: Double = 1.0
+    @Published var textToSpeechPauseBetweenMessages: Double = 1.0
 
     enum CodingKeys: CodingKey {
         case fontSize,

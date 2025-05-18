@@ -3,9 +3,7 @@ import SwiftUI
 
 struct ChatTextToSpeechSettingsView: View {
     @EnvironmentObject var model: Model
-    @State var rate: Float
-    @State var volume: Float
-    @State var pauseBetweenMessages: Double
+    @ObservedObject var chat: SettingsChat
 
     private func onVoiceChange(languageCode: String, voice: String) {
         model.database.chat.textToSpeechLanguageVoices[languageCode] = voice
@@ -26,15 +24,14 @@ struct ChatTextToSpeechSettingsView: View {
                 HStack {
                     Image(systemName: "volume.1.fill")
                     Slider(
-                        value: $volume,
+                        value: $chat.textToSpeechSayVolume,
                         in: 0.3 ... 1.0,
                         step: 0.01,
                         onEditingChanged: { begin in
                             guard !begin else {
                                 return
                             }
-                            model.database.chat.textToSpeechSayVolume = volume
-                            model.chatTextToSpeech.setVolume(volume: volume)
+                            model.chatTextToSpeech.setVolume(volume: chat.textToSpeechSayVolume)
                         }
                     )
                     Image(systemName: "volume.3.fill")
@@ -42,15 +39,14 @@ struct ChatTextToSpeechSettingsView: View {
                 HStack {
                     Image(systemName: "tortoise.fill")
                     Slider(
-                        value: $rate,
+                        value: $chat.textToSpeechRate,
                         in: 0.3 ... 0.6,
                         step: 0.01,
                         onEditingChanged: { begin in
                             guard !begin else {
                                 return
                             }
-                            model.database.chat.textToSpeechRate = rate
-                            model.chatTextToSpeech.setRate(rate: rate)
+                            model.chatTextToSpeech.setRate(rate: chat.textToSpeechRate)
                         }
                     )
                     Image(systemName: "hare.fill")
@@ -61,18 +57,17 @@ struct ChatTextToSpeechSettingsView: View {
             Section {
                 HStack {
                     Slider(
-                        value: $pauseBetweenMessages,
+                        value: $chat.textToSpeechPauseBetweenMessages,
                         in: 0.5 ... 15.0,
                         step: 0.5,
                         onEditingChanged: { begin in
                             guard !begin else {
                                 return
                             }
-                            model.database.chat.textToSpeechPauseBetweenMessages = pauseBetweenMessages
-                            model.chatTextToSpeech.setPauseBetweenMessages(value: pauseBetweenMessages)
+                            model.chatTextToSpeech.setPauseBetweenMessages(value: chat.textToSpeechPauseBetweenMessages)
                         }
                     )
-                    Text("\(formatOneDecimal(Float(pauseBetweenMessages))) s")
+                    Text("\(formatOneDecimal(Float(chat.textToSpeechPauseBetweenMessages))) s")
                         .frame(width: 45)
                 }
             } header: {

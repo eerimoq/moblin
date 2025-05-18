@@ -226,7 +226,9 @@ struct ChatBotSettingsView: View {
     var body: some View {
         Form {
             Section {
-                NavigationLink { ChatBotCommandsSettingsView() } label: {
+                NavigationLink {
+                    ChatBotCommandsSettingsView()
+                } label: {
                     Text("Commands")
                 }
             }
