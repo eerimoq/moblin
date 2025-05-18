@@ -28,6 +28,40 @@ private struct AppearenceSettingsView: View {
     }
 }
 
+private struct ButtonSettingsView: View {
+    @EnvironmentObject var model: Model
+    @ObservedObject var button: SettingsQuickButton
+
+    private func label() -> some View {
+        Toggle(isOn: $button.enabled) {
+            HStack {
+                DraggableItemPrefixView()
+                IconAndTextView(
+                    image: button.systemImageNameOff,
+                    text: button.name,
+                    longDivider: true
+                )
+                Spacer()
+            }
+        }
+        .onChange(of: button.enabled) { _ in
+            model.updateQuickButtonStates()
+        }
+    }
+
+    var body: some View {
+        if model.database.showAllSettings {
+            NavigationLink {
+                QuickButtonsButtonSettingsView(button: button, shortcut: false)
+            } label: {
+                label()
+            }
+        } else {
+            label()
+        }
+    }
+}
+
 private struct ButtonsSettingsView: View {
     @EnvironmentObject var model: Model
 
@@ -35,48 +69,7 @@ private struct ButtonsSettingsView: View {
         Section {
             List {
                 ForEach(model.database.globalButtons) { button in
-                    if model.database.showAllSettings {
-                        NavigationLink {
-                            QuickButtonsButtonSettingsView(
-                                button: button,
-                                shortcut: false
-                            )
-                        } label: {
-                            Toggle(isOn: Binding(get: {
-                                button.enabled
-                            }, set: { value in
-                                button.enabled = value
-                                model.updateQuickButtonStates()
-                            })) {
-                                HStack {
-                                    DraggableItemPrefixView()
-                                    IconAndTextView(
-                                        image: button.systemImageNameOff,
-                                        text: button.name,
-                                        longDivider: true
-                                    )
-                                    Spacer()
-                                }
-                            }
-                        }
-                    } else {
-                        Toggle(isOn: Binding(get: {
-                            button.enabled
-                        }, set: { value in
-                            button.enabled = value
-                            model.updateQuickButtonStates()
-                        })) {
-                            HStack {
-                                DraggableItemPrefixView()
-                                IconAndTextView(
-                                    image: button.systemImageNameOff,
-                                    text: button.name,
-                                    longDivider: true
-                                )
-                                Spacer()
-                            }
-                        }
-                    }
+                    ButtonSettingsView(button: button)
                 }
                 .onMove(perform: { froms, to in
                     model.database.globalButtons.move(fromOffsets: froms, toOffset: to)

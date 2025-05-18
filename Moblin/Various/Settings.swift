@@ -1797,7 +1797,7 @@ class SettingsQuickButton: Codable, Identifiable, Equatable, Hashable, Observabl
     var systemImageNameOn: String = "mic.slash"
     var systemImageNameOff: String = "mic"
     var isOn: Bool = false
-    var enabled: Bool = true
+    @Published var enabled: Bool = true
     var backgroundColor: RgbColor = defaultQuickButtonColor
     @Published var page: Int? = 1
     @Published var color: Color = defaultQuickButtonColor.color()
