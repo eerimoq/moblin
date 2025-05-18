@@ -28,7 +28,7 @@ struct KeyboardSettingsView: View {
             }
             Section {
                 List {
-                    ForEach(model.database.keyboard!.keys) { key in
+                    ForEach(model.database.keyboard.keys) { key in
                         NavigationLink {
                             KeyboardKeySettingsView(
                                 key: key,
@@ -46,11 +46,11 @@ struct KeyboardSettingsView: View {
                         }
                     }
                     .onDelete(perform: { indexSet in
-                        model.database.keyboard!.keys.remove(atOffsets: indexSet)
+                        model.database.keyboard.keys.remove(atOffsets: indexSet)
                     })
                 }
                 CreateButtonView {
-                    model.database.keyboard!.keys.append(SettingsKeyboardKey())
+                    model.database.keyboard.keys.append(SettingsKeyboardKey())
                     model.objectWillChange.send()
                 }
             } footer: {

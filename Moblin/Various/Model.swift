@@ -7064,7 +7064,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         guard isKeyboardActive() else {
             return .ignored
         }
-        guard let key = database.keyboard!.keys.first(where: {
+        guard let key = database.keyboard.keys.first(where: {
             $0.key == press.characters
         }) else {
             return .ignored

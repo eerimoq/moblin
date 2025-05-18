@@ -3214,7 +3214,7 @@ class Database: Codable, ObservableObject {
     var catPrinters: SettingsCatPrinters = .init()
     var verboseStatuses: Bool = false
     var scoreboardPlayers: [SettingsWidgetScoreboardPlayer] = .init()
-    var keyboard: SettingsKeyboard? = .init()
+    var keyboard: SettingsKeyboard = .init()
     var tesla: SettingsTesla? = .init()
     var srtlaRelay: SettingsMoblink? = .init()
     var pixellateStrength: Float? = 0.3
@@ -3439,7 +3439,7 @@ class Database: Codable, ObservableObject {
             try? container.decode([SettingsWidgetScoreboardPlayer].self, forKey: .scoreboardPlayers)
         ) ??
             .init()
-        keyboard = try? container.decode(SettingsKeyboard?.self, forKey: .keyboard)
+        keyboard = (try? container.decode(SettingsKeyboard.self, forKey: .keyboard)) ?? .init()
         tesla = try? container.decode(SettingsTesla?.self, forKey: .tesla)
         srtlaRelay = try? container.decode(SettingsMoblink?.self, forKey: .srtlaRelay)
         pixellateStrength = try? container.decode(Float?.self, forKey: .pixellateStrength)
@@ -5169,10 +5169,6 @@ final class Settings {
             realDatabase.watch.viaRemoteControl = false
             store()
         }
-        if realDatabase.keyboard == nil {
-            realDatabase.keyboard = .init()
-            store()
-        }
         for stream in realDatabase.streams where stream.twitchMultiTrackEnabled == nil {
             stream.twitchMultiTrackEnabled = false
             store()
@@ -5299,7 +5295,7 @@ final class Settings {
             scene.overrideVideoStabilizationMode = false
             store()
         }
-        for key in realDatabase.keyboard!.keys where key.widgetId == nil {
+        for key in realDatabase.keyboard.keys where key.widgetId == nil {
             key.widgetId = .init()
             store()
         }
