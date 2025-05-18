@@ -8,6 +8,12 @@ let defaultSrtLatency: Int32 = 3000
 private let defaultRtmpLatency: Int32 = 2000
 let minZoomX: Float = 0.5
 
+extension KeyedDecodingContainer {
+    func decode<T>(_ key: KeyedDecodingContainer<K>.Key, _ type: T.Type, _ defaultValue: T) -> T where T: Decodable {
+        return (try? decode(type, forKey: key)) ?? defaultValue
+    }
+}
+
 enum SettingsStreamCodec: String, Codable, CaseIterable {
     case h265hevc = "H.265/HEVC"
     case h264avc = "H.264/AVC"
@@ -2208,44 +2214,32 @@ class SettingsChat: Codable, ObservableObject {
         animatedEmotes = try container.decode(Bool.self, forKey: .animatedEmotes)
         timestampColor = try container.decode(RgbColor.self, forKey: .timestampColor)
         timestampColorEnabled = try container.decode(Bool.self, forKey: .timestampColorEnabled)
-        height = (try? container.decode(Double.self, forKey: .height)) ?? 0.7
-        width = (try? container.decode(Double.self, forKey: .width)) ?? 1.0
-        maximumAge = (try? container.decode(Int.self, forKey: .maximumAge)) ?? 30
-        maximumAgeEnabled = (try? container.decode(Bool.self, forKey: .maximumAgeEnabled)) ?? false
-        meInUsernameColor = (try? container.decode(Bool.self, forKey: .meInUsernameColor)) ?? true
-        enabled = (try? container.decode(Bool.self, forKey: .enabled)) ?? true
-        usernamesToIgnore = (try? container.decode([SettingsChatUsername].self, forKey: .usernamesToIgnore)) ?? []
-        textToSpeechEnabled = (try? container.decode(Bool.self, forKey: .textToSpeechEnabled)) ?? false
-        textToSpeechDetectLanguagePerMessage = (try? container.decode(
-            Bool.self,
-            forKey: .textToSpeechDetectLanguagePerMessage
-        )) ?? false
-        textToSpeechSayUsername = (try? container.decode(Bool.self, forKey: .textToSpeechSayUsername)) ?? true
-        textToSpeechRate = (try? container.decode(Float.self, forKey: .textToSpeechRate)) ?? 0.4
-        textToSpeechSayVolume = (try? container.decode(Float.self, forKey: .textToSpeechSayVolume)) ?? 0.6
-        textToSpeechLanguageVoices = (try? container.decode(
-            [String: String].self,
-            forKey: .textToSpeechLanguageVoices
-        )) ?? .init()
-        textToSpeechSubscribersOnly = (try? container.decode(Bool.self, forKey: .textToSpeechSubscribersOnly)) ?? false
-        textToSpeechFilter = (try? container.decode(Bool.self, forKey: .textToSpeechFilter)) ?? true
-        textToSpeechFilterMentions = (try? container.decode(Bool.self, forKey: .textToSpeechFilterMentions)) ?? true
-        mirrored = (try? container.decode(Bool.self, forKey: .mirrored)) ?? false
-        botEnabled = (try? container.decode(Bool.self, forKey: .botEnabled)) ?? false
-        botCommandPermissions = (try? container.decode(
-            SettingsChatBotPermissions.self,
-            forKey: .botCommandPermissions
-        )) ?? .init()
-        botSendLowBatteryWarning = (try? container.decode(Bool.self, forKey: .botSendLowBatteryWarning)) ?? false
-        badges = (try? container.decode(Bool.self, forKey: .badges)) ?? true
-        showFirstTimeChatterMessage = (try? container.decode(Bool.self, forKey: .showFirstTimeChatterMessage)) ?? true
-        showNewFollowerMessage = (try? container.decode(Bool.self, forKey: .showNewFollowerMessage)) ?? true
-        bottom = (try? container.decode(Double.self, forKey: .bottom)) ?? 0.0
-        newMessagesAtTop = (try? container.decode(Bool.self, forKey: .newMessagesAtTop)) ?? false
-        textToSpeechPauseBetweenMessages = (try? container.decode(
-            Double.self,
-            forKey: .textToSpeechPauseBetweenMessages
-        )) ?? 1.0
+        height = container.decode(.height, Double.self, 0.7)
+        width = container.decode(.width, Double.self, 1.0)
+        maximumAge = container.decode(.maximumAge, Int.self, 30)
+        maximumAgeEnabled = container.decode(.maximumAgeEnabled, Bool.self, false)
+        meInUsernameColor = container.decode(.meInUsernameColor, Bool.self, true)
+        enabled = container.decode(.enabled, Bool.self, true)
+        usernamesToIgnore = container.decode(.usernamesToIgnore, [SettingsChatUsername].self, [])
+        textToSpeechEnabled = container.decode(.textToSpeechEnabled, Bool.self, false)
+        textToSpeechDetectLanguagePerMessage = container.decode(.textToSpeechDetectLanguagePerMessage, Bool.self, false)
+        textToSpeechSayUsername = container.decode(.textToSpeechSayUsername, Bool.self, true)
+        textToSpeechRate = container.decode(.textToSpeechRate, Float.self, 0.4)
+        textToSpeechSayVolume = container.decode(.textToSpeechSayVolume, Float.self, 0.6)
+        textToSpeechLanguageVoices = container.decode(.textToSpeechLanguageVoices, [String: String].self, .init())
+        textToSpeechSubscribersOnly = container.decode(.textToSpeechSubscribersOnly, Bool.self, false)
+        textToSpeechFilter = container.decode(.textToSpeechFilter, Bool.self, true)
+        textToSpeechFilterMentions = container.decode(.textToSpeechFilterMentions, Bool.self, true)
+        mirrored = container.decode(.mirrored, Bool.self, false)
+        botEnabled = container.decode(.botEnabled, Bool.self, false)
+        botCommandPermissions = container.decode(.botCommandPermissions, SettingsChatBotPermissions.self, .init())
+        botSendLowBatteryWarning = container.decode(.botSendLowBatteryWarning, Bool.self, false)
+        badges = container.decode(.badges, Bool.self, true)
+        showFirstTimeChatterMessage = container.decode(.showFirstTimeChatterMessage, Bool.self, true)
+        showNewFollowerMessage = container.decode(.showNewFollowerMessage, Bool.self, true)
+        bottom = container.decode(.bottom, Double.self, 0.0)
+        newMessagesAtTop = container.decode(.newMessagesAtTop, Bool.self, false)
+        textToSpeechPauseBetweenMessages = container.decode(.textToSpeechPauseBetweenMessages, Double.self, 1.0)
     }
 }
 
