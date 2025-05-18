@@ -1661,8 +1661,8 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject {
     var type: SettingsWidgetType = .browser
     var text: SettingsWidgetText = .init()
     var browser: SettingsWidgetBrowser = .init()
-    var crop: SettingsWidgetCrop? = .init()
-    var map: SettingsWidgetMap? = .init()
+    var crop: SettingsWidgetCrop = .init()
+    var map: SettingsWidgetMap = .init()
     var scene: SettingsWidgetScene? = .init()
     var qrCode: SettingsWidgetQrCode? = .init()
     var alerts: SettingsWidgetAlerts? = .init()
@@ -1718,8 +1718,8 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject {
         type = try container.decode(SettingsWidgetType.self, forKey: .type)
         text = try container.decode(SettingsWidgetText.self, forKey: .text)
         browser = try container.decode(SettingsWidgetBrowser.self, forKey: .browser)
-        crop = try? container.decode(SettingsWidgetCrop?.self, forKey: .crop)
-        map = try? container.decode(SettingsWidgetMap?.self, forKey: .map)
+        crop = (try? container.decode(SettingsWidgetCrop.self, forKey: .crop)) ?? .init()
+        map = (try? container.decode(SettingsWidgetMap.self, forKey: .map)) ?? .init()
         scene = try? container.decode(SettingsWidgetScene?.self, forKey: .scene)
         qrCode = try? container.decode(SettingsWidgetQrCode?.self, forKey: .qrCode)
         alerts = try? container.decode(SettingsWidgetAlerts?.self, forKey: .alerts)
@@ -4473,10 +4473,6 @@ final class Settings {
             stream.openStreamingPlatformChannelId = ""
             store()
         }
-        for widget in realDatabase.widgets where widget.crop == nil {
-            widget.crop = .init()
-            store()
-        }
         if realDatabase.chat.textToSpeechEnabled == nil {
             realDatabase.chat.textToSpeechEnabled = false
             store()
@@ -4742,12 +4738,8 @@ final class Settings {
             stream.obsBrbScene = ""
             store()
         }
-        for widget in realDatabase.widgets where widget.map == nil {
-            widget.map = .init()
-            store()
-        }
-        for widget in realDatabase.widgets where widget.map!.northUp == nil {
-            widget.map!.northUp = false
+        for widget in realDatabase.widgets where widget.map.northUp == nil {
+            widget.map.northUp = false
             store()
         }
         if realDatabase.portrait == nil {
@@ -4866,8 +4858,8 @@ final class Settings {
             widget.text.delay = 0.0
             store()
         }
-        for widget in database.widgets where widget.map!.delay == nil {
-            widget.map!.delay = 0.0
+        for widget in database.widgets where widget.map.delay == nil {
+            widget.map.delay = 0.0
             store()
         }
         for widget in database.widgets where widget.text.timers == nil {
@@ -4987,12 +4979,12 @@ final class Settings {
             realDatabase.debug.twitchRewards = false
             store()
         }
-        for widget in realDatabase.widgets where widget.map!.migrated == nil {
-            widget.map!.migrated = false
+        for widget in realDatabase.widgets where widget.map.migrated == nil {
+            widget.map.migrated = false
             store()
         }
-        for widget in realDatabase.widgets where !widget.map!.migrated! {
-            widget.map!.migrated = true
+        for widget in realDatabase.widgets where !widget.map.migrated! {
+            widget.map.migrated = true
             let stream = realDatabase.streams.first(where: { $0.enabled }) ?? SettingsStream(name: "")
             if widget.type == .map {
                 for scene in realDatabase.scenes {
@@ -5022,9 +5014,9 @@ final class Settings {
                             width = 426
                             height = 240
                         }
-                        sceneWidget.width = (100 * Double(widget.map!.width) / width)
+                        sceneWidget.width = (100 * Double(widget.map.width) / width)
                             .clamped(to: 1 ... 100)
-                        sceneWidget.height = (100 * Double(widget.map!.height) / height)
+                        sceneWidget.height = (100 * Double(widget.map.height) / height)
                             .clamped(to: 1 ... 100)
                     }
                 }

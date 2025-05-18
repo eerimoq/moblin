@@ -8,9 +8,9 @@ struct WidgetMapSettingsView: View {
     var body: some View {
         Section {
             Toggle(isOn: Binding(get: {
-                widget.map!.northUp!
+                widget.map.northUp!
             }, set: { value in
-                widget.map!.northUp = value
+                widget.map.northUp = value
                 model.resetSelectedScene(changeScene: false)
             })) {
                 Text("North up")
@@ -37,7 +37,7 @@ struct WidgetMapSettingsView: View {
                         guard !begin else {
                             return
                         }
-                        widget.map!.delay = delay
+                        widget.map.delay = delay
                         model.resetSelectedScene(changeScene: false)
                     }
                 )

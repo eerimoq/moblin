@@ -145,7 +145,7 @@ struct RemoteControlRemoteSceneSettingsWidget: Codable {
         case .crop:
             return nil
         case .map:
-            type = .map(data: RemoteControlRemoteSceneSettingsWidgetTypeMap(map: widget.map!))
+            type = .map(data: RemoteControlRemoteSceneSettingsWidgetTypeMap(map: widget.map))
         case .scene:
             type = .scene(data: RemoteControlRemoteSceneSettingsWidgetTypeScene(scene: widget.scene!))
         case .qrCode:

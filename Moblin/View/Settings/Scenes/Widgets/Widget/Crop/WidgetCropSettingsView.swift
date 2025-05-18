@@ -11,7 +11,7 @@ struct WidgetCropSettingsView: View {
         guard x >= 0 else {
             return
         }
-        widget.crop!.x = x
+        widget.crop.x = x
         model.resetSelectedScene(changeScene: false)
     }
 
@@ -22,7 +22,7 @@ struct WidgetCropSettingsView: View {
         guard y >= 0 else {
             return
         }
-        widget.crop!.y = y
+        widget.crop.y = y
         model.resetSelectedScene(changeScene: false)
     }
 
@@ -33,7 +33,7 @@ struct WidgetCropSettingsView: View {
         guard width > 0 else {
             return
         }
-        widget.crop!.width = width
+        widget.crop.width = width
         model.resetSelectedScene(changeScene: false)
     }
 
@@ -44,12 +44,12 @@ struct WidgetCropSettingsView: View {
         guard height > 0 else {
             return
         }
-        widget.crop!.height = height
+        widget.crop.height = height
         model.resetSelectedScene(changeScene: false)
     }
 
     private func sourceWidgetExists() -> Bool {
-        return model.database.widgets.contains(where: { $0.id == widget.crop!.sourceWidgetId })
+        return model.database.widgets.contains(where: { $0.id == widget.crop.sourceWidgetId })
     }
 
     var body: some View {
@@ -59,7 +59,7 @@ struct WidgetCropSettingsView: View {
                 Spacer()
                 Picker("", selection: Binding(get: {
                     if sourceWidgetExists() {
-                        widget.crop!.sourceWidgetId
+                        widget.crop.sourceWidgetId
                     } else {
                         nil as UUID?
                     }
@@ -67,7 +67,7 @@ struct WidgetCropSettingsView: View {
                     guard let value else {
                         return
                     }
-                    widget.crop!.sourceWidgetId = value
+                    widget.crop.sourceWidgetId = value
                     model.resetSelectedScene(changeScene: false)
                 })) {
                     if !sourceWidgetExists() {
@@ -82,25 +82,25 @@ struct WidgetCropSettingsView: View {
             }
             TextEditNavigationView(
                 title: String(localized: "X"),
-                value: String(widget.crop!.x),
+                value: String(widget.crop.x),
                 onSubmit: submitX,
                 keyboardType: .numbersAndPunctuation
             )
             TextEditNavigationView(
                 title: String(localized: "Y"),
-                value: String(widget.crop!.y),
+                value: String(widget.crop.y),
                 onSubmit: submitY,
                 keyboardType: .numbersAndPunctuation
             )
             TextEditNavigationView(
                 title: String(localized: "Width"),
-                value: String(widget.crop!.width),
+                value: String(widget.crop.width),
                 onSubmit: submitWidth,
                 keyboardType: .numbersAndPunctuation
             )
             TextEditNavigationView(
                 title: String(localized: "Height"),
-                value: String(widget.crop!.height),
+                value: String(widget.crop.height),
                 onSubmit: submitHeight,
                 keyboardType: .numbersAndPunctuation
             )

@@ -4202,7 +4202,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         mapEffects.removeAll()
         for widget in widgets where widget.type == .map {
-            mapEffects[widget.id] = MapEffect(widget: widget.map!)
+            mapEffects[widget.id] = MapEffect(widget: widget.map)
         }
         for qrCodeEffect in qrCodeEffects.values {
             media.unregisterEffect(qrCodeEffect)
@@ -6773,12 +6773,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                     usedBrowserEffects.append(browserEffect)
                 }
             case .crop:
-                if let browserEffect = browserEffects[widget.crop!.sourceWidgetId],
+                if let browserEffect = browserEffects[widget.crop.sourceWidgetId],
                    !usedBrowserEffects.contains(browserEffect)
                 {
                     browserEffect.setSceneWidget(
-                        sceneWidget: findSceneWidget(scene: scene, widgetId: widget.crop!.sourceWidgetId),
-                        crops: findWidgetCrops(scene: scene, sourceWidgetId: widget.crop!.sourceWidgetId)
+                        sceneWidget: findSceneWidget(scene: scene, widgetId: widget.crop.sourceWidgetId),
+                        crops: findWidgetCrops(scene: scene, sourceWidgetId: widget.crop.sourceWidgetId)
                     )
                     if !browserEffect.audioOnly {
                         effects.append(browserEffect)
@@ -6903,7 +6903,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             guard widget.type == .crop else {
                 continue
             }
-            let crop = widget.crop!
+            let crop = widget.crop
             guard crop.sourceWidgetId == sourceWidgetId else {
                 continue
             }
