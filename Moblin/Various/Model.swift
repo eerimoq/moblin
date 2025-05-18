@@ -1826,9 +1826,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         setCameraControlsEnabled()
         resetAverageSpeed()
         resetSlope()
-        goProLaunchLiveStreamSelection = database.goPro!.selectedLaunchLiveStream
-        goProWifiCredentialsSelection = database.goPro!.selectedWifiCredentials
-        goProRtmpUrlSelection = database.goPro!.selectedRtmpUrl
+        goProLaunchLiveStreamSelection = database.goPro.selectedLaunchLiveStream
+        goProWifiCredentialsSelection = database.goPro.selectedWifiCredentials
+        goProRtmpUrlSelection = database.goPro.selectedRtmpUrl
         replay.speed = database.replay.speed
     }
 

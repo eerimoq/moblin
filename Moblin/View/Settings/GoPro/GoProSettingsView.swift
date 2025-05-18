@@ -387,7 +387,7 @@ private struct GoProLaunchLiveStream: View {
     @EnvironmentObject var model: Model
 
     var goPro: SettingsGoPro {
-        model.database.goPro!
+        model.database.goPro
     }
 
     var body: some View {
@@ -428,7 +428,7 @@ private struct GoProWifiCredentials: View {
     @EnvironmentObject var model: Model
 
     var goPro: SettingsGoPro {
-        model.database.goPro!
+        model.database.goPro
     }
 
     var body: some View {
@@ -469,7 +469,7 @@ private struct GoProRtmpUrls: View {
     @EnvironmentObject var model: Model
 
     var goPro: SettingsGoPro {
-        model.database.goPro!
+        model.database.goPro
     }
 
     var body: some View {

@@ -3228,7 +3228,7 @@ class Database: Codable, ObservableObject {
     var djiGimbalDevices: SettingsDjiGimbalDevices? = .init()
     var remoteSceneId: UUID?
     var sceneNumericInput: Bool? = false
-    var goPro: SettingsGoPro? = .init()
+    var goPro: SettingsGoPro = .init()
     var replay: SettingsReplay = .init()
     var portraitVideoOffsetFromTop: Double = 0.0
     var autoSceneSwitchers: SettingsAutoSceneSwitchers? = .init()
@@ -3460,7 +3460,7 @@ class Database: Codable, ObservableObject {
         djiGimbalDevices = try? container.decode(SettingsDjiGimbalDevices?.self, forKey: .djiGimbalDevices)
         remoteSceneId = try? container.decode(UUID?.self, forKey: .remoteSceneId)
         sceneNumericInput = try? container.decode(Bool?.self, forKey: .sceneNumericInput)
-        goPro = try? container.decode(SettingsGoPro?.self, forKey: .goPro)
+        goPro = (try? container.decode(SettingsGoPro.self, forKey: .goPro)) ?? .init()
         replay = (try? container.decode(SettingsReplay.self, forKey: .replay)) ?? .init()
         portraitVideoOffsetFromTop = (try? container.decode(Double.self, forKey: .portraitVideoOffsetFromTop)) ?? 0.0
         autoSceneSwitchers = try? container.decode(SettingsAutoSceneSwitchers?.self, forKey: .autoSceneSwitchers)
@@ -3984,10 +3984,7 @@ private func addMissingBundledLuts(database: Database) {
 }
 
 private func addMissingGoPro(database: Database) {
-    if database.goPro == nil {
-        database.goPro = .init()
-    }
-    let goPro = database.goPro!
+    let goPro = database.goPro
     if goPro.launchLiveStream.isEmpty {
         goPro.launchLiveStream = [.init()]
         goPro.selectedLaunchLiveStream = goPro.launchLiveStream.first?.id
@@ -5448,11 +5445,7 @@ final class Settings {
             realDatabase.debug.srtlaBatchSendEnabled = true
             store()
         }
-        if realDatabase.goPro == nil {
-            realDatabase.goPro = .init()
-            store()
-        }
-        for launchLiveStream in realDatabase.goPro!.launchLiveStream where launchLiveStream.isHero12Or13 == nil {
+        for launchLiveStream in realDatabase.goPro.launchLiveStream where launchLiveStream.isHero12Or13 == nil {
             launchLiveStream.isHero12Or13 = true
             store()
         }

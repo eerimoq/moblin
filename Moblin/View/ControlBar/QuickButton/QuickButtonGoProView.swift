@@ -12,7 +12,7 @@ private struct QuickButtonGoProLaunchLiveStreamView: View {
     @State var entries: [PickerEntry] = []
 
     private var goPro: SettingsGoPro {
-        return model.database.goPro!
+        return model.database.goPro
     }
 
     private func generate() {
@@ -64,7 +64,7 @@ private struct QuickButtonGoProWifiCredentialsView: View {
     @State var entries: [PickerEntry] = []
 
     private var goPro: SettingsGoPro {
-        return model.database.goPro!
+        return model.database.goPro
     }
 
     private func generate() {
@@ -117,7 +117,7 @@ private struct QuickButtonGoProRtmpUrlView: View {
     @State var entries: [PickerEntry] = []
 
     private var goPro: SettingsGoPro {
-        return model.database.goPro!
+        return model.database.goPro
     }
 
     private func generate() {
@@ -170,7 +170,7 @@ struct QuickButtonGoProView: View {
     @State private var activeIndex: Int? = 0
 
     private var goPro: SettingsGoPro {
-        return model.database.goPro!
+        return model.database.goPro
     }
 
     var body: some View {
