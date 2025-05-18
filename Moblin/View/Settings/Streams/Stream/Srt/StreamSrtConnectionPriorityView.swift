@@ -15,7 +15,7 @@ struct PriorityItemView: View {
     private func makeName() -> String {
         if priority.relayId != nil {
             return priority.name
-        } else if let name = model.database.networkInterfaceNames!.first(where: { interface in
+        } else if let name = model.database.networkInterfaceNames.first(where: { interface in
             interface.interfaceName == priority.name
         })?.name, !name.isEmpty {
             return name

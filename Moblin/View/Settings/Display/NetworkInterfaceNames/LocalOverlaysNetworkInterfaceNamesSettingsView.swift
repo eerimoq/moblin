@@ -10,11 +10,11 @@ struct LocalOverlaysNetworkInterfaceNamesSettingsView: View {
     var body: some View {
         Form {
             Section {
-                if model.database.networkInterfaceNames!.isEmpty {
+                if model.database.networkInterfaceNames.isEmpty {
                     Text("No known Ethernet network interfaces.")
                 } else {
                     List {
-                        ForEach(model.database.networkInterfaceNames!) { interface in
+                        ForEach(model.database.networkInterfaceNames) { interface in
                             TextEditNavigationView(
                                 title: interface.interfaceName,
                                 value: interface.name,
@@ -23,7 +23,7 @@ struct LocalOverlaysNetworkInterfaceNamesSettingsView: View {
                             )
                         }
                         .onDelete { indexes in
-                            model.database.networkInterfaceNames!.remove(atOffsets: indexes)
+                            model.database.networkInterfaceNames.remove(atOffsets: indexes)
                             model.networkInterfaceNamesUpdated()
                         }
                     }

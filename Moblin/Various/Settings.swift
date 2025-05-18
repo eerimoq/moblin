@@ -3191,9 +3191,9 @@ class Database: Codable, ObservableObject {
     var quickButtons: SettingsQuickButtons = .init()
     var globalButtons: [SettingsQuickButton] = []
     var rtmpServer: SettingsRtmpServer = .init()
-    var networkInterfaceNames: [SettingsNetworkInterfaceName]? = []
-    var lowBitrateWarning: Bool? = true
-    var vibrate: Bool? = false
+    var networkInterfaceNames: [SettingsNetworkInterfaceName] = []
+    var lowBitrateWarning: Bool = true
+    var vibrate: Bool = false
     var gameControllers: [SettingsGameController]? = [.init()]
     var remoteControl: SettingsRemoteControl? = .init()
     var startStopRecordingConfirmations: Bool? = true
@@ -3405,12 +3405,12 @@ class Database: Codable, ObservableObject {
         quickButtons = (try? container.decode(SettingsQuickButtons.self, forKey: .quickButtons)) ?? .init()
         globalButtons = (try? container.decode([SettingsQuickButton].self, forKey: .globalButtons)) ?? []
         rtmpServer = (try? container.decode(SettingsRtmpServer.self, forKey: .rtmpServer)) ?? .init()
-        networkInterfaceNames = try? container.decode(
-            [SettingsNetworkInterfaceName]?.self,
+        networkInterfaceNames = (try? container.decode(
+            [SettingsNetworkInterfaceName].self,
             forKey: .networkInterfaceNames
-        )
-        lowBitrateWarning = try? container.decode(Bool?.self, forKey: .lowBitrateWarning)
-        vibrate = try? container.decode(Bool?.self, forKey: .vibrate)
+        )) ?? []
+        lowBitrateWarning = (try? container.decode(Bool.self, forKey: .lowBitrateWarning)) ?? true
+        vibrate = (try? container.decode(Bool.self, forKey: .vibrate)) ?? false
         gameControllers = try? container.decode([SettingsGameController]?.self, forKey: .gameControllers)
         remoteControl = try? container.decode(SettingsRemoteControl?.self, forKey: .remoteControl)
         startStopRecordingConfirmations = try? container.decode(Bool?.self, forKey: .startStopRecordingConfirmations)
@@ -4246,20 +4246,8 @@ final class Settings {
             realDatabase.show.rtmpSpeed = true
             store()
         }
-        if realDatabase.networkInterfaceNames == nil {
-            realDatabase.networkInterfaceNames = []
-            store()
-        }
-        if realDatabase.lowBitrateWarning == nil {
-            realDatabase.lowBitrateWarning = true
-            store()
-        }
         for stream in realDatabase.rtmpServer.streams where stream.latency == nil {
             stream.latency = defaultRtmpLatency
-            store()
-        }
-        if realDatabase.vibrate == nil {
-            realDatabase.vibrate = false
             store()
         }
         for stream in realDatabase.streams where stream.recording == nil {

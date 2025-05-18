@@ -26,7 +26,7 @@ private struct RemoteControlSrtConnectionPriorityView: View {
     @State var prio: Float
 
     private func makeName() -> String {
-        if let name = model.database.networkInterfaceNames!.first(where: { interface in
+        if let name = model.database.networkInterfaceNames.first(where: { interface in
             interface.interfaceName == priority.name
         })?.name, !name.isEmpty {
             return name

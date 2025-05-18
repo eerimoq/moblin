@@ -1539,7 +1539,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func setAllowHapticsAndSystemSoundsDuringRecording() {
         do {
             try AVAudioSession.sharedInstance()
-                .setAllowHapticsAndSystemSoundsDuringRecording(database.vibrate!)
+                .setAllowHapticsAndSystemSoundsDuringRecording(database.vibrate)
         } catch {}
     }
 
@@ -1815,7 +1815,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         startGeographyManager()
         twitchAuth.setOnAccessToken(onAccessToken: handleTwitchAccessToken)
         MoblinShortcuts.updateAppShortcutParameters()
-        bondingStatisticsFormatter.setNetworkInterfaceNames(database.networkInterfaceNames!)
+        bondingStatisticsFormatter.setNetworkInterfaceNames(database.networkInterfaceNames)
         reloadTeslaVehicle()
         updateFaceFilterButtonState()
         updateLutsButtonState()
@@ -2271,13 +2271,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 stream.srt.connectionPriorities!.priorities
                     .append(SettingsStreamSrtConnectionPriority(name: status.name))
             }
-            if !database.networkInterfaceNames!.contains(where: { interface in
+            if !database.networkInterfaceNames.contains(where: { interface in
                 interface.interfaceName == status.name
             }) {
                 let interface = SettingsNetworkInterfaceName()
                 interface.interfaceName = status.name
                 interface.name = status.name
-                database.networkInterfaceNames!.append(interface)
+                database.networkInterfaceNames.append(interface)
             }
         }
     }
@@ -4302,8 +4302,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func networkInterfaceNamesUpdated() {
-        media.setNetworkInterfaceNames(networkInterfaceNames: database.networkInterfaceNames!)
-        bondingStatisticsFormatter.setNetworkInterfaceNames(database.networkInterfaceNames!)
+        media.setNetworkInterfaceNames(networkInterfaceNames: database.networkInterfaceNames)
+        bondingStatisticsFormatter.setNetworkInterfaceNames(database.networkInterfaceNames)
     }
 
     @MainActor
@@ -4755,7 +4755,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 overheadBandwidth: database.debug.srtOverheadBandwidth!,
                 maximumBandwidthFollowInput: database.debug.maximumBandwidthFollowInput!,
                 mpegtsPacketsPerPacket: stream.srt.mpegtsPacketsPerPacket,
-                networkInterfaceNames: database.networkInterfaceNames!,
+                networkInterfaceNames: database.networkInterfaceNames,
                 connectionPriorities: stream.srt.connectionPriorities!,
                 dnsLookupStrategy: stream.srt.dnsLookupStrategy!
             )
@@ -7104,7 +7104,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func checkLowBitrate(speed: Int64, now: ContinuousClock.Instant) {
-        guard database.lowBitrateWarning! else {
+        guard database.lowBitrateWarning else {
             return
         }
         guard streamState == .connected else {

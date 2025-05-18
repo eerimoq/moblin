@@ -58,7 +58,7 @@ struct DisplaySettingsView: View {
                         Text("Network interface names")
                     }
                     Toggle("Low bitrate warning", isOn: Binding(get: {
-                        model.database.lowBitrateWarning!
+                        model.database.lowBitrateWarning
                     }, set: { value in
                         model.database.lowBitrateWarning = value
                     }))
@@ -71,7 +71,7 @@ struct DisplaySettingsView: View {
             }
             Section {
                 Toggle("Vibrate", isOn: Binding(get: {
-                    model.database.vibrate!
+                    model.database.vibrate
                 }, set: { value in
                     model.database.vibrate = value
                     model.setAllowHapticsAndSystemSoundsDuringRecording()
