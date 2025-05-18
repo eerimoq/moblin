@@ -216,13 +216,7 @@ struct SettingsView: View {
                         IconAndTextView(image: "info.circle", text: String(localized: "About"))
                     }
                     NavigationLink {
-                        DebugSettingsView(
-                            debug: model.database.debug,
-                            cameraSwitchRemoveBlackish: model.database.debug.cameraSwitchRemoveBlackish,
-                            dataRateLimitFactor: model.database.debug.dataRateLimitFactor,
-                            recordSegmentLength: model.database.debug.recordSegmentLength,
-                            builtinAudioAndVideoDelay: model.database.debug.builtinAudioAndVideoDelay
-                        )
+                        DebugSettingsView(debug: model.database.debug)
                     } label: {
                         IconAndTextView(image: "ladybug", text: String(localized: "Debug"))
                     }

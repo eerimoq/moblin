@@ -4,10 +4,6 @@ import WebKit
 struct DebugSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var debug: SettingsDebug
-    @State var cameraSwitchRemoveBlackish: Float
-    @State var dataRateLimitFactor: Float
-    @State var recordSegmentLength: Double
-    @State var builtinAudioAndVideoDelay: Double
 
     private func submitLogLines(value: String) {
         guard let lines = Int(value) else {
@@ -52,17 +48,11 @@ struct DebugSettingsView: View {
                 HStack {
                     Text("Video blackish")
                     Slider(
-                        value: $cameraSwitchRemoveBlackish,
+                        value: $debug.cameraSwitchRemoveBlackish,
                         in: 0.0 ... 1.0,
-                        step: 0.1,
-                        onEditingChanged: { begin in
-                            guard !begin else {
-                                return
-                            }
-                            debug.cameraSwitchRemoveBlackish = cameraSwitchRemoveBlackish
-                        }
+                        step: 0.1
                     )
-                    Text("\(formatOneDecimal(cameraSwitchRemoveBlackish)) s")
+                    Text("\(formatOneDecimal(debug.cameraSwitchRemoveBlackish)) s")
                         .frame(width: 40)
                 }
                 Toggle("Bitrate drop fix", isOn: $debug.bitrateDropFix)
@@ -72,18 +62,17 @@ struct DebugSettingsView: View {
                 HStack {
                     Text("Data rate limit")
                     Slider(
-                        value: $dataRateLimitFactor,
+                        value: $debug.dataRateLimitFactor,
                         in: 1.2 ... 2.5,
                         step: 0.1,
                         onEditingChanged: { begin in
                             guard !begin else {
                                 return
                             }
-                            debug.dataRateLimitFactor = dataRateLimitFactor
                             model.setBitrateDropFix()
                         }
                     )
-                    Text(formatOneDecimal(dataRateLimitFactor))
+                    Text(formatOneDecimal(debug.dataRateLimitFactor))
                         .frame(width: 40)
                 }
                 Toggle("Relaxed bitrate decrement after scene switch", isOn: $debug.relaxedBitrate)
@@ -110,7 +99,6 @@ struct DebugSettingsView: View {
                     }
                 Toggle("SRT(LA) batch send", isOn: $debug.srtlaBatchSendEnabled)
                     .onChange(of: debug.srtlaBatchSendEnabled) { _ in
-                        logger.info("xxx")
                         model.setSrtlaBatchSend()
                     }
                 NavigationLink {
@@ -122,17 +110,11 @@ struct DebugSettingsView: View {
                     Text("Builtin audio and video delay")
                     HStack {
                         Slider(
-                            value: $builtinAudioAndVideoDelay,
+                            value: $debug.builtinAudioAndVideoDelay,
                             in: 0.0 ... 4.0,
-                            step: 0.01,
-                            onEditingChanged: { begin in
-                                guard !begin else {
-                                    return
-                                }
-                                debug.builtinAudioAndVideoDelay = builtinAudioAndVideoDelay
-                            }
+                            step: 0.01
                         )
-                        Text(formatTwoDecimals(builtinAudioAndVideoDelay))
+                        Text(formatTwoDecimals(debug.builtinAudioAndVideoDelay))
                             .frame(width: 40)
                     }
                 }

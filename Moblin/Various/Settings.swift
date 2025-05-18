@@ -2197,7 +2197,7 @@ class SettingsDebug: Codable, ObservableObject {
     var logLevel: SettingsLogLevel = .error
     @Published var srtOverlay: Bool = false
     var srtOverheadBandwidth: Int32 = 25
-    var cameraSwitchRemoveBlackish: Float = 0.3
+    @Published var cameraSwitchRemoveBlackish: Float = 0.3
     var maximumBandwidthFollowInput: Bool = true
     var audioOutputToInputChannelsMap: SettingsDebugAudioOutputToInputChannelsMap = .init()
     var bluetoothOutputOnly: Bool = true
@@ -2218,7 +2218,7 @@ class SettingsDebug: Codable, ObservableObject {
     var dnsLookupStrategy: SettingsDnsLookupStrategy = .system
     var srtlaBatchSend: Bool = false
     var cameraControlsEnabled: Bool = true
-    var dataRateLimitFactor: Float = 2.0
+    @Published var dataRateLimitFactor: Float = 2.0
     @Published var bitrateDropFix: Bool = false
     @Published var relaxedBitrate: Bool = false
     var externalDisplayChat: Bool = false
@@ -2226,7 +2226,7 @@ class SettingsDebug: Codable, ObservableObject {
     @Published var srtlaBatchSendEnabled: Bool = true
     var replay: Bool = false
     var recordSegmentLength: Double = 5.0
-    var builtinAudioAndVideoDelay: Double = 0.0
+    @Published var builtinAudioAndVideoDelay: Double = 0.0
 
     enum CodingKeys: CodingKey {
         case logLevel,
