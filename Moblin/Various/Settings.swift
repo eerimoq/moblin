@@ -1790,6 +1790,7 @@ enum SettingsQuickButtonType: String, Codable, CaseIterable {
     case pinch = "Pinch"
     case whirlpool = "Whirlpool"
     case autoSceneSwitcher = "Auto scene switcher"
+    case pauseTts = "Pause TTS"
 
     public init(from decoder: Decoder) throws {
         var value = try decoder.singleValueContainer().decode(RawValue.self)
@@ -2914,6 +2915,7 @@ enum SettingsGameControllerButtonFunction: String, Codable, CaseIterable {
     case chat = "Chat"
     case scene = "Scene"
     case instantReplay = "Instant replay"
+    case pauseTts = "Pause TTS"
 
     public init(from decoder: Decoder) throws {
         var value = try decoder.singleValueContainer().decode(RawValue.self)
@@ -2947,6 +2949,8 @@ enum SettingsGameControllerButtonFunction: String, Codable, CaseIterable {
             return .scene
         case String(localized: "Instant replay"):
             return .instantReplay
+        case String(localized: "Pause TTS"):
+            return .pauseTts
         default:
             return .unused
         }
@@ -2976,6 +2980,8 @@ enum SettingsGameControllerButtonFunction: String, Codable, CaseIterable {
             return String(localized: "Scene")
         case .instantReplay:
             return String(localized: "Instant replay")
+        case .pauseTts:
+            return String(localized: "Pause TTS")
         }
     }
 }
@@ -4150,6 +4156,14 @@ private func addMissingQuickButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "waveform.slash"
     button.systemImageNameOff = "waveform.slash"
+    updateQuickButton(database: database, button: button)
+
+    button = SettingsQuickButton(name: String(localized: "Pause TTS"))
+    button.id = UUID()
+    button.type = .pauseTts
+    button.imageType = "System name"
+    button.systemImageNameOn = "waveform.badge.xmark"
+    button.systemImageNameOff = "waveform.badge.xmark"
     updateQuickButton(database: database, button: button)
 
     button = SettingsQuickButton(name: String(localized: "Ads"))

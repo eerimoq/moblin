@@ -327,6 +327,10 @@ struct QuickButtonsInnerView: View {
         model.chatTextToSpeech.skipCurrentMessage()
     }
 
+    private func pauseTtsAction() {
+        model.toggleTextToSpeechPaused()
+    }
+
     private func streamMarkerAction() {
         model.createStreamMarker()
     }
@@ -602,6 +606,10 @@ struct QuickButtonsInnerView: View {
             case .autoSceneSwitcher:
                 QuickButtonImage(state: state, buttonSize: size) {
                     autoSceneSwitcherAction()
+                }
+            case .pauseTts:
+                QuickButtonImage(state: state, buttonSize: size) {
+                    pauseTtsAction()
                 }
             }
             if model.database.quickButtonsGeneral.showName && !model.isPortrait() {

@@ -42,6 +42,7 @@ class ChatTextToSpeech: NSObject {
     private var filterMentionsEnabled: Bool = true
     private var streamerMentions: [String] = []
     private var running = true
+    private var paused = false
 
     func say(user: String, message: String, isRedemption: Bool) {
         textToSpeechDispatchQueue.async {
@@ -125,6 +126,19 @@ class ChatTextToSpeech: NSObject {
             self.synthesizer = AVSpeechSynthesizer()
             self.synthesizer.delegate = self
             self.trySayNextMessage()
+        }
+    }
+
+    func play() {
+        textToSpeechDispatchQueue.async {
+            self.paused = false
+            self.trySayNextMessage()
+        }
+    }
+
+    func pause() {
+        textToSpeechDispatchQueue.async {
+            self.paused = true
         }
     }
 
@@ -224,6 +238,9 @@ class ChatTextToSpeech: NSObject {
     }
 
     private func trySayNextMessage() {
+        guard !paused else {
+            return
+        }
         guard !synthesizer.isSpeaking else {
             return
         }

@@ -2352,6 +2352,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             if !pressed {
                 instantReplay()
             }
+        case .pauseTts:
+            if !pressed {
+                toggleTextToSpeechPaused()
+            }
         }
     }
 
@@ -6240,6 +6244,16 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func toggleBlackScreen() {
         blackScreen.toggle()
+    }
+
+    func toggleTextToSpeechPaused() {
+        if getGlobalButton(type: .pauseTts)?.isOn == false {
+            chatTextToSpeech.pause()
+        } else {
+            chatTextToSpeech.play()
+        }
+        toggleGlobalButton(type: .pauseTts)
+        updateQuickButtonStates()
     }
 
     func toggleLockScreen() {
