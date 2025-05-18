@@ -10,7 +10,7 @@ private struct PlayersView: View {
     var body: some View {
         Section {
             List {
-                ForEach(model.database.scoreboardPlayers!) { player in
+                ForEach(model.database.scoreboardPlayers) { player in
                     NavigationLink {
                         TextEditView(
                             title: String(localized: "Name"),
@@ -26,18 +26,18 @@ private struct PlayersView: View {
                     }
                 }
                 .onMove(perform: { froms, to in
-                    model.database.scoreboardPlayers!.move(fromOffsets: froms, toOffset: to)
+                    model.database.scoreboardPlayers.move(fromOffsets: froms, toOffset: to)
                     model.resetSelectedScene(changeScene: false)
                     model.sendScoreboardPlayersToWatch()
                 })
                 .onDelete(perform: { offsets in
-                    model.database.scoreboardPlayers!.remove(atOffsets: offsets)
+                    model.database.scoreboardPlayers.remove(atOffsets: offsets)
                     model.resetSelectedScene(changeScene: false)
                     model.sendScoreboardPlayersToWatch()
                 })
             }
             CreateButtonView {
-                model.database.scoreboardPlayers!.append(.init())
+                model.database.scoreboardPlayers.append(.init())
                 model.sendScoreboardPlayersToWatch()
                 model.objectWillChange.send()
             }
@@ -59,7 +59,7 @@ private struct PlayerView: View {
                              onChange: {
                                  playerId = UUID(uuidString: $0) ?? .init()
                              },
-                             items: model.database.scoreboardPlayers!.map { .init(
+                             items: model.database.scoreboardPlayers.map { .init(
                                  id: $0.id.uuidString, text: $0.name
                              ) },
                              selectedId: playerId.uuidString)

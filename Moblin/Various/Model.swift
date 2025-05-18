@@ -6865,7 +6865,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func findScoreboardPlayer(id: UUID) -> String {
-        return database.scoreboardPlayers!.first(where: { $0.id == id })?.name ?? "🇸🇪 Moblin"
+        return database.scoreboardPlayers.first(where: { $0.id == id })?.name ?? "🇸🇪 Moblin"
     }
 
     private func getVideoSourceId(cameraId: SettingsCameraId) -> UUID? {
@@ -9086,7 +9086,7 @@ extension Model {
         }
         var data: Data
         do {
-            let message = database.scoreboardPlayers!.map { WatchProtocolScoreboardPlayer(
+            let message = database.scoreboardPlayers.map { WatchProtocolScoreboardPlayer(
                 id: $0.id,
                 name: $0.name
             ) }

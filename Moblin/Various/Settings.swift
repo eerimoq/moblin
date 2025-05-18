@@ -3213,7 +3213,7 @@ class Database: Codable, ObservableObject {
     var alertsMediaGallery: SettingsAlertsMediaGallery = .init()
     var catPrinters: SettingsCatPrinters = .init()
     var verboseStatuses: Bool = false
-    var scoreboardPlayers: [SettingsWidgetScoreboardPlayer]? = .init()
+    var scoreboardPlayers: [SettingsWidgetScoreboardPlayer] = .init()
     var keyboard: SettingsKeyboard? = .init()
     var tesla: SettingsTesla? = .init()
     var srtlaRelay: SettingsMoblink? = .init()
@@ -3435,7 +3435,10 @@ class Database: Codable, ObservableObject {
             .init()
         catPrinters = (try? container.decode(SettingsCatPrinters.self, forKey: .catPrinters)) ?? .init()
         verboseStatuses = (try? container.decode(Bool.self, forKey: .verboseStatuses)) ?? false
-        scoreboardPlayers = try? container.decode([SettingsWidgetScoreboardPlayer]?.self, forKey: .scoreboardPlayers)
+        scoreboardPlayers = (
+            try? container.decode([SettingsWidgetScoreboardPlayer].self, forKey: .scoreboardPlayers)
+        ) ??
+            .init()
         keyboard = try? container.decode(SettingsKeyboard?.self, forKey: .keyboard)
         tesla = try? container.decode(SettingsTesla?.self, forKey: .tesla)
         srtlaRelay = try? container.decode(SettingsMoblink?.self, forKey: .srtlaRelay)
@@ -5127,10 +5130,6 @@ final class Settings {
         }
         if realDatabase.debug.removeWindNoise == nil {
             realDatabase.debug.removeWindNoise = false
-            store()
-        }
-        if realDatabase.scoreboardPlayers == nil {
-            realDatabase.scoreboardPlayers = .init()
             store()
         }
         for widget in database.widgets where widget.alerts.twitch!.cheerBits == nil {
