@@ -63,7 +63,7 @@ struct DisplaySettingsView: View {
                         model.database.lowBitrateWarning = value
                     }))
                     Toggle("Recording confirmations", isOn: Binding(get: {
-                        model.database.startStopRecordingConfirmations!
+                        model.database.startStopRecordingConfirmations
                     }, set: { value in
                         model.database.startStopRecordingConfirmations = value
                     }))

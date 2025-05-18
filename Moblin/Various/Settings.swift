@@ -3194,9 +3194,9 @@ class Database: Codable, ObservableObject {
     var networkInterfaceNames: [SettingsNetworkInterfaceName] = []
     var lowBitrateWarning: Bool = true
     var vibrate: Bool = false
-    var gameControllers: [SettingsGameController]? = [.init()]
-    var remoteControl: SettingsRemoteControl? = .init()
-    var startStopRecordingConfirmations: Bool? = true
+    var gameControllers: [SettingsGameController] = [.init()]
+    var remoteControl: SettingsRemoteControl = .init()
+    var startStopRecordingConfirmations: Bool = true
     var color: SettingsColor? = .init()
     var mirrorFrontCameraOnStream: Bool? = true
     var streamButtonColor: RgbColor? = defaultStreamButtonColor
@@ -3411,9 +3411,12 @@ class Database: Codable, ObservableObject {
         )) ?? []
         lowBitrateWarning = (try? container.decode(Bool.self, forKey: .lowBitrateWarning)) ?? true
         vibrate = (try? container.decode(Bool.self, forKey: .vibrate)) ?? false
-        gameControllers = try? container.decode([SettingsGameController]?.self, forKey: .gameControllers)
-        remoteControl = try? container.decode(SettingsRemoteControl?.self, forKey: .remoteControl)
-        startStopRecordingConfirmations = try? container.decode(Bool?.self, forKey: .startStopRecordingConfirmations)
+        gameControllers = (try? container.decode([SettingsGameController].self, forKey: .gameControllers)) ?? [.init()]
+        remoteControl = (try? container.decode(SettingsRemoteControl.self, forKey: .remoteControl)) ?? .init()
+        startStopRecordingConfirmations = (
+            try? container.decode(Bool.self, forKey: .startStopRecordingConfirmations)
+        ) ??
+            true
         color = try? container.decode(SettingsColor?.self, forKey: .color)
         mirrorFrontCameraOnStream = try? container.decode(Bool?.self, forKey: .mirrorFrontCameraOnStream)
         streamButtonColor = try? container.decode(RgbColor?.self, forKey: .streamButtonColor)
@@ -4017,10 +4020,10 @@ private func updateBundledAlertsMediaGallery(database: Database) {
 }
 
 private func addScenesToGameController(database: Database) {
-    var button = database.gameControllers![0].buttons[0]
+    var button = database.gameControllers[0].buttons[0]
     button.function = .scene
     button.sceneId = database.scenes[0].id
-    button = database.gameControllers![0].buttons[1]
+    button = database.gameControllers[0].buttons[1]
     button.function = .scene
     button.sceneId = database.scenes[1].id
 }
@@ -4258,11 +4261,7 @@ final class Settings {
             realDatabase.show.gameController = true
             store()
         }
-        if realDatabase.gameControllers == nil {
-            realDatabase.gameControllers = [.init()]
-            store()
-        }
-        for controller in realDatabase.gameControllers! {
+        for controller in realDatabase.gameControllers {
             for button in controller.buttons where button.text == nil {
                 button.text = ""
                 store()
@@ -4310,10 +4309,6 @@ final class Settings {
             realDatabase.debug.maximumBandwidthFollowInput = true
             store()
         }
-        if realDatabase.remoteControl == nil {
-            realDatabase.remoteControl = .init()
-            store()
-        }
         for widget in realDatabase.widgets where widget.type == .browser {
             if widget.browser.audioOnly == nil {
                 widget.browser.audioOnly = false
@@ -4332,12 +4327,8 @@ final class Settings {
             stream.srt.adaptiveBitrate = .init()
             store()
         }
-        if realDatabase.startStopRecordingConfirmations == nil {
-            realDatabase.startStopRecordingConfirmations = true
-            store()
-        }
-        if realDatabase.remoteControl!.password == nil {
-            realDatabase.remoteControl!.password = randomGoodPassword()
+        if realDatabase.remoteControl.password == nil {
+            realDatabase.remoteControl.password = randomGoodPassword()
             store()
         }
         for widget in realDatabase.widgets where widget.browser.scaleToFitVideo == nil {
@@ -4655,8 +4646,8 @@ final class Settings {
             realDatabase.debug.preferStereoMic = false
             store()
         }
-        if realDatabase.remoteControl!.server.previewFps == nil {
-            realDatabase.remoteControl!.server.previewFps = 1.0
+        if realDatabase.remoteControl.server.previewFps == nil {
+            realDatabase.remoteControl.server.previewFps = 1.0
             store()
         }
         for stream in realDatabase.streams where stream.srt.adaptiveBitrate!.belaboxSettings == nil {
@@ -5235,8 +5226,8 @@ final class Settings {
             stream.estimatedViewerDelay = 8.0
             store()
         }
-        if realDatabase.remoteControl!.client.relay == nil {
-            realDatabase.remoteControl!.client.relay = .init()
+        if realDatabase.remoteControl.client.relay == nil {
+            realDatabase.remoteControl.client.relay = .init()
             store()
         }
         if realDatabase.debug.tesla == nil {

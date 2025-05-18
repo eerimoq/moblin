@@ -110,12 +110,12 @@ private struct RemoteControlSettingsStreamerView: View {
         guard isValidWebSocketUrl(url: value) == nil else {
             return
         }
-        model.database.remoteControl!.server.url = value
+        model.database.remoteControl.server.url = value
         model.reloadRemoteControlStreamer()
     }
 
     private func submitStreamerPreviewFps(value: Float) {
-        model.database.remoteControl!.server.previewFps = value
+        model.database.remoteControl.server.previewFps = value
         model.setLowFpsImage()
     }
 
@@ -126,16 +126,16 @@ private struct RemoteControlSettingsStreamerView: View {
     var body: some View {
         Section {
             Toggle(isOn: Binding(get: {
-                model.database.remoteControl!.server.enabled
+                model.database.remoteControl.server.enabled
             }, set: { value in
-                model.database.remoteControl!.server.enabled = value
+                model.database.remoteControl.server.enabled = value
                 model.reloadRemoteControlStreamer()
             })) {
                 Text("Enabled")
             }
             TextEditNavigationView(
                 title: String(localized: "Assistant URL"),
-                value: model.database.remoteControl!.server.url,
+                value: model.database.remoteControl.server.url,
                 onSubmit: submitStreamerUrl,
                 footers: [
                     String(
@@ -148,7 +148,7 @@ private struct RemoteControlSettingsStreamerView: View {
             HStack {
                 Text("Preview FPS")
                 SliderView(
-                    value: model.database.remoteControl!.server.previewFps!,
+                    value: model.database.remoteControl.server.previewFps!,
                     minimum: 1,
                     maximum: 5,
                     step: 1,
@@ -175,16 +175,16 @@ private struct RemoteControlSettingsAssistantView: View {
         guard let port = UInt16(value.trim()) else {
             return
         }
-        model.database.remoteControl!.client.port = port
+        model.database.remoteControl.client.port = port
         model.reloadRemoteControlAssistant()
     }
 
     var body: some View {
         Section {
             Toggle(isOn: Binding(get: {
-                model.database.remoteControl!.client.enabled
+                model.database.remoteControl.client.enabled
             }, set: { value in
-                model.database.remoteControl!.client.enabled = value
+                model.database.remoteControl.client.enabled = value
                 model.reloadRemoteControlAssistant()
                 model.objectWillChange.send()
             })) {
@@ -192,7 +192,7 @@ private struct RemoteControlSettingsAssistantView: View {
             }
             TextEditNavigationView(
                 title: String(localized: "Server port"),
-                value: String(model.database.remoteControl!.client.port),
+                value: String(model.database.remoteControl.client.port),
                 onSubmit: submitAssistantPort,
                 keyboardType: .numbersAndPunctuation,
                 placeholder: "2345"
@@ -215,7 +215,7 @@ private struct RemoteControlSettingsRelayView: View {
         guard isValidWebSocketUrl(url: value) == nil else {
             return
         }
-        model.database.remoteControl!.client.relay!.baseUrl = value
+        model.database.remoteControl.client.relay!.baseUrl = value
         model.reloadRemoteControlRelay()
     }
 
@@ -223,28 +223,28 @@ private struct RemoteControlSettingsRelayView: View {
         guard !value.isEmpty else {
             return
         }
-        model.database.remoteControl!.client.relay!.bridgeId = value
+        model.database.remoteControl.client.relay!.bridgeId = value
         model.reloadRemoteControlRelay()
     }
 
     var body: some View {
         Section {
             Toggle(isOn: Binding(get: {
-                model.database.remoteControl!.client.relay!.enabled
+                model.database.remoteControl.client.relay!.enabled
             }, set: { value in
-                model.database.remoteControl!.client.relay!.enabled = value
+                model.database.remoteControl.client.relay!.enabled = value
                 model.reloadRemoteControlRelay()
             })) {
                 Text("Enabled")
             }
             TextEditNavigationView(
                 title: String(localized: "Base URL"),
-                value: model.database.remoteControl!.client.relay!.baseUrl,
+                value: model.database.remoteControl.client.relay!.baseUrl,
                 onSubmit: submitAssistantRelayUrl
             )
             TextEditNavigationView(
                 title: String(localized: "Bridge id"),
-                value: model.database.remoteControl!.client.relay!.bridgeId,
+                value: model.database.remoteControl.client.relay!.bridgeId,
                 onSubmit: submitAssistantRelayBridgeId
             )
         } header: {
@@ -259,13 +259,13 @@ struct RemoteControlSettingsView: View {
     @EnvironmentObject var model: Model
 
     private func submitPassword(value: String) {
-        model.database.remoteControl!.password = value.trim()
+        model.database.remoteControl.password = value.trim()
         model.reloadRemoteControlStreamer()
         model.reloadRemoteControlAssistant()
     }
 
     private func relayUrl() -> String {
-        let relay = model.database.remoteControl!.client.relay!
+        let relay = model.database.remoteControl.client.relay!
         return "\(relay.baseUrl)/streamer/\(relay.bridgeId)"
     }
 
@@ -295,13 +295,13 @@ struct RemoteControlSettingsView: View {
             Section {
                 NavigationLink {
                     PasswordView(
-                        value: model.database.remoteControl!.password!,
+                        value: model.database.remoteControl.password!,
                         onSubmit: submitPassword
                     )
                 } label: {
                     TextItemView(
                         name: String(localized: "Password"),
-                        value: model.database.remoteControl!.password!,
+                        value: model.database.remoteControl.password!,
                         sensitive: true
                     )
                 }
@@ -313,29 +313,29 @@ struct RemoteControlSettingsView: View {
             RemoteControlSettingsStreamerView()
             RemoteControlSettingsAssistantView()
             RemoteControlSettingsRelayView()
-            if model.database.remoteControl!.client.enabled {
+            if model.database.remoteControl.client.enabled {
                 Section {
                     List {
                         ForEach(model.ipStatuses.filter { $0.ipType == .ipv4 }) { status in
                             InterfaceView(
                                 ip: status.ipType.formatAddress(status.ip),
-                                port: model.database.remoteControl!.client.port,
+                                port: model.database.remoteControl.client.port,
                                 image: urlImage(interfaceType: status.interfaceType)
                             )
                         }
                         InterfaceView(
                             ip: personalHotspotLocalAddress,
-                            port: model.database.remoteControl!.client.port,
+                            port: model.database.remoteControl.client.port,
                             image: "personalhotspot"
                         )
                         ForEach(model.ipStatuses.filter { $0.ipType == .ipv6 }) { status in
                             InterfaceView(
                                 ip: status.ipType.formatAddress(status.ip),
-                                port: model.database.remoteControl!.client.port,
+                                port: model.database.remoteControl.client.port,
                                 image: urlImage(interfaceType: status.interfaceType)
                             )
                         }
-                        if model.database.remoteControl!.client.relay!.enabled {
+                        if model.database.remoteControl.client.relay!.enabled {
                             InterfaceViewUrl(url: relayUrl(), image: "globe")
                         }
                     }

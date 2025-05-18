@@ -2301,13 +2301,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         guard let gameControllerIndex = gameControllers.firstIndex(of: gameController) else {
             return
         }
-        guard gameControllerIndex < database.gameControllers!.count else {
+        guard gameControllerIndex < database.gameControllers.count else {
             return
         }
         guard let name = button.sfSymbolsName else {
             return
         }
-        let button = database.gameControllers![gameControllerIndex].buttons.first(where: { button in
+        let button = database.gameControllers[gameControllerIndex].buttons.first(where: { button in
             button.name == name
         })
         guard let button else {
@@ -5593,7 +5593,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             fps = 1.0
         }
         if isRemoteControlStreamerConnected(), isRemoteControlAssistantRequestingPreview {
-            fps = database.remoteControl!.server.previewFps!
+            fps = database.remoteControl.server.previewFps!
         }
         media.setLowFpsImage(fps: fps)
         lowFpsImageFps = max(UInt64(fps), 1)
@@ -8584,14 +8584,14 @@ extension Model {
             reloadChats()
             return
         }
-        guard let url = URL(string: database.remoteControl!.server.url) else {
+        guard let url = URL(string: database.remoteControl.server.url) else {
             reloadTwitchEventSub()
             reloadChats()
             return
         }
         remoteControlStreamer = RemoteControlStreamer(
             clientUrl: url,
-            password: database.remoteControl!.password!,
+            password: database.remoteControl.password!,
             delegate: self
         )
         remoteControlStreamer!.start()
@@ -8628,8 +8628,8 @@ extension Model {
     }
 
     func isRemoteControlStreamerConfigured() -> Bool {
-        let server = database.remoteControl!.server
-        return server.enabled && !server.url.isEmpty && !database.remoteControl!.password!.isEmpty
+        let server = database.remoteControl.server
+        return server.enabled && !server.url.isEmpty && !database.remoteControl.password!.isEmpty
     }
 
     func isRemoteControlStreamerConnected() -> Bool {
@@ -8647,8 +8647,8 @@ extension Model {
             return
         }
         remoteControlAssistant = RemoteControlAssistant(
-            port: database.remoteControl!.client.port,
-            password: database.remoteControl!.password!,
+            port: database.remoteControl.client.port,
+            password: database.remoteControl.password!,
             delegate: self,
             httpProxy: httpProxy(),
             urlSession: urlSession
@@ -8713,8 +8713,8 @@ extension Model {
     }
 
     func isRemoteControlAssistantConfigured() -> Bool {
-        let client = database.remoteControl!.client
-        return client.enabled && client.port > 0 && !database.remoteControl!.password!.isEmpty
+        let client = database.remoteControl.client
+        return client.enabled && client.port > 0 && !database.remoteControl.password!.isEmpty
     }
 
     private func remoteControlAssistantSetRemoteSceneSettings() {
@@ -8846,19 +8846,19 @@ extension Model {
         guard isRemoteControlRelayConfigured() else {
             return
         }
-        guard let assistantUrl = URL(string: "ws://localhost:\(database.remoteControl!.client.port)") else {
+        guard let assistantUrl = URL(string: "ws://localhost:\(database.remoteControl.client.port)") else {
             return
         }
         remoteControlRelay = RemoteControlRelay(
-            baseUrl: database.remoteControl!.client.relay!.baseUrl,
-            bridgeId: database.remoteControl!.client.relay!.bridgeId,
+            baseUrl: database.remoteControl.client.relay!.baseUrl,
+            bridgeId: database.remoteControl.client.relay!.bridgeId,
             assistantUrl: assistantUrl
         )
         remoteControlRelay?.start()
     }
 
     func isRemoteControlRelayConfigured() -> Bool {
-        let relay = database.remoteControl!.client.relay!
+        let relay = database.remoteControl.client.relay!
         return relay.enabled && !relay.baseUrl.isEmpty
     }
 }

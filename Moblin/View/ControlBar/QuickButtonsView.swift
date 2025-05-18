@@ -406,7 +406,7 @@ struct QuickButtonsInnerView: View {
                 }
             case .record:
                 QuickButtonImage(state: state, buttonSize: size) {
-                    if model.database.startStopRecordingConfirmations! {
+                    if model.database.startStopRecordingConfirmations {
                         isPresentingRecordConfirm = true
                     } else {
                         recordAction()
