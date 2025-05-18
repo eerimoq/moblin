@@ -3230,7 +3230,7 @@ class Database: Codable, ObservableObject {
     var sceneNumericInput: Bool? = false
     var goPro: SettingsGoPro? = .init()
     var replay: SettingsReplay? = .init()
-    var portraitVideoOffsetFromTop: Double? = 0.0
+    var portraitVideoOffsetFromTop: Double = 0.0
     var autoSceneSwitchers: SettingsAutoSceneSwitchers? = .init()
 
     static func fromString(settings: String) throws -> Database {
@@ -3462,7 +3462,7 @@ class Database: Codable, ObservableObject {
         sceneNumericInput = try? container.decode(Bool?.self, forKey: .sceneNumericInput)
         goPro = try? container.decode(SettingsGoPro?.self, forKey: .goPro)
         replay = try? container.decode(SettingsReplay?.self, forKey: .replay)
-        portraitVideoOffsetFromTop = try? container.decode(Double?.self, forKey: .portraitVideoOffsetFromTop)
+        portraitVideoOffsetFromTop = (try? container.decode(Double.self, forKey: .portraitVideoOffsetFromTop)) ?? 0.0
         autoSceneSwitchers = try? container.decode(SettingsAutoSceneSwitchers?.self, forKey: .autoSceneSwitchers)
     }
 }
@@ -5494,10 +5494,6 @@ final class Settings {
         }
         if realDatabase.replay!.stop == nil {
             realDatabase.replay!.stop = 30.0
-            store()
-        }
-        if realDatabase.portraitVideoOffsetFromTop == nil {
-            realDatabase.portraitVideoOffsetFromTop = 0.0
             store()
         }
         for stream in realDatabase.streams where stream.replay == nil {

@@ -1678,7 +1678,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         setAllowVideoRangePixelFormat()
         setSrtlaBatchSend()
         setExternalDisplayContent()
-        portraitVideoOffsetFromTop = database.portraitVideoOffsetFromTop!
+        portraitVideoOffsetFromTop = database.portraitVideoOffsetFromTop
         audioUnitRemoveWindNoise = database.debug.removeWindNoise!
         showFirstTimeChatterMessage = database.chat.showFirstTimeChatterMessage!
         showNewFollowerMessage = database.chat.showNewFollowerMessage!

@@ -106,7 +106,7 @@ struct DisplaySettingsView: View {
                             }
                         }
                         .onChange(of: model.portraitVideoOffsetFromTop) {
-                            model.database.portraitVideoOffsetFromTop! = $0
+                            model.database.portraitVideoOffsetFromTop = $0
                         }
                     } footer: {
                         VStack(alignment: .leading) {
