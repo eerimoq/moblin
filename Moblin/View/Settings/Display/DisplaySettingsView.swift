@@ -51,7 +51,7 @@ struct DisplaySettingsView: View {
                     } label: {
                         Text("Local overlays")
                     }
-                    ExternalDisplayContentView(selection: model.database.externalDisplayContent!.toString())
+                    ExternalDisplayContentView(selection: model.database.externalDisplayContent.toString())
                     NavigationLink {
                         LocalOverlaysNetworkInterfaceNamesSettingsView()
                     } label: {

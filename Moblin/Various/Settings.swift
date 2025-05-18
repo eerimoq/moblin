@@ -3222,7 +3222,7 @@ class Database: Codable, ObservableObject {
     var sceneSwitchTransition: SettingsSceneSwitchTransition = .blur
     var forceSceneSwitchTransition: Bool = false
     var cameraControlsEnabled: Bool = true
-    var externalDisplayContent: SettingsExternalDisplayContent? = .stream
+    var externalDisplayContent: SettingsExternalDisplayContent = .stream
     var cyclingPowerDevices: SettingsCyclingPowerDevices? = .init()
     var heartRateDevices: SettingsHeartRateDevices? = .init()
     var djiGimbalDevices: SettingsDjiGimbalDevices? = .init()
@@ -3450,10 +3450,10 @@ class Database: Codable, ObservableObject {
         )) ?? .blur
         forceSceneSwitchTransition = (try? container.decode(Bool.self, forKey: .forceSceneSwitchTransition)) ?? false
         cameraControlsEnabled = (try? container.decode(Bool.self, forKey: .cameraControlsEnabled)) ?? true
-        externalDisplayContent = try? container.decode(
-            SettingsExternalDisplayContent?.self,
+        externalDisplayContent = (try? container.decode(
+            SettingsExternalDisplayContent.self,
             forKey: .externalDisplayContent
-        )
+        )) ?? .stream
         cyclingPowerDevices = try? container.decode(SettingsCyclingPowerDevices?.self, forKey: .cyclingPowerDevices)
         heartRateDevices = try? container.decode(SettingsHeartRateDevices?.self, forKey: .heartRateDevices)
         djiGimbalDevices = try? container.decode(SettingsDjiGimbalDevices?.self, forKey: .djiGimbalDevices)
@@ -5307,14 +5307,6 @@ final class Settings {
         }
         if realDatabase.debug.externalDisplayChat == nil {
             realDatabase.debug.externalDisplayChat = false
-            store()
-        }
-        if realDatabase.externalDisplayContent == nil {
-            if realDatabase.debug.externalDisplayChat! {
-                realDatabase.externalDisplayContent = .chat
-            } else {
-                realDatabase.externalDisplayContent = .stream
-            }
             store()
         }
         for stream in realDatabase.streams where stream.recording!.cleanRecordings == nil {

@@ -2148,7 +2148,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func setExternalDisplayContent() {
-        switch database.externalDisplayContent! {
+        switch database.externalDisplayContent {
         case .stream:
             externalDisplayChatEnabled = false
         case .cleanStream:
@@ -2566,7 +2566,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         guard let externalDisplayWindow else {
             return
         }
-        switch database.externalDisplayContent! {
+        switch database.externalDisplayContent {
         case .stream:
             externalDisplayWindow.makeKeyAndVisible()
         case .cleanStream:
