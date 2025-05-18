@@ -5600,7 +5600,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func setSceneSwitchTransition() {
-        media.setSceneSwitchTransition(sceneSwitchTransition: database.sceneSwitchTransition!.toVideoUnit())
+        media.setSceneSwitchTransition(sceneSwitchTransition: database.sceneSwitchTransition.toVideoUnit())
     }
 
     func setCleanRecordings() {

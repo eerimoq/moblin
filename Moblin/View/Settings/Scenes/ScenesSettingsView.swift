@@ -150,7 +150,7 @@ struct ScenesSettingsView: View {
             ScenesListView()
             WidgetsSettingsView(database: model.database)
             AutoSwitchersSettingsView(autoSceneSwitchers: model.database.autoSceneSwitchers!)
-            ScenesSwitchTransition(sceneSwitchTransition: model.database.sceneSwitchTransition!.toString())
+            ScenesSwitchTransition(sceneSwitchTransition: model.database.sceneSwitchTransition.toString())
             RemoteSceneView(selectedSceneId: model.database.remoteSceneId)
             ReloadBrowserSources()
         }

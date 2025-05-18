@@ -3219,7 +3219,7 @@ class Database: Codable, ObservableObject {
     var srtlaRelay: SettingsMoblink = .init()
     var pixellateStrength: Float? = 0.3
     var moblink: SettingsMoblink = .init()
-    var sceneSwitchTransition: SettingsSceneSwitchTransition? = .blur
+    var sceneSwitchTransition: SettingsSceneSwitchTransition = .blur
     var forceSceneSwitchTransition: Bool? = false
     var cameraControlsEnabled: Bool? = true
     var externalDisplayContent: SettingsExternalDisplayContent? = .stream
@@ -3444,10 +3444,10 @@ class Database: Codable, ObservableObject {
         srtlaRelay = (try? container.decode(SettingsMoblink?.self, forKey: .srtlaRelay)) ?? .init()
         pixellateStrength = try? container.decode(Float?.self, forKey: .pixellateStrength)
         moblink = (try? container.decode(SettingsMoblink.self, forKey: .moblink)) ?? srtlaRelay
-        sceneSwitchTransition = try? container.decode(
-            SettingsSceneSwitchTransition?.self,
+        sceneSwitchTransition = (try? container.decode(
+            SettingsSceneSwitchTransition.self,
             forKey: .sceneSwitchTransition
-        )
+        )) ?? .blur
         forceSceneSwitchTransition = try? container.decode(Bool?.self, forKey: .forceSceneSwitchTransition)
         cameraControlsEnabled = try? container.decode(Bool?.self, forKey: .cameraControlsEnabled)
         externalDisplayContent = try? container.decode(
@@ -5283,10 +5283,6 @@ final class Settings {
         }
         for key in realDatabase.keyboard.keys where key.widgetId == nil {
             key.widgetId = .init()
-            store()
-        }
-        if realDatabase.sceneSwitchTransition == nil {
-            realDatabase.sceneSwitchTransition = realDatabase.debug.blurSceneSwitch! ? .blur : .freeze
             store()
         }
         if realDatabase.forceSceneSwitchTransition == nil {
