@@ -84,12 +84,10 @@ private struct InstantReplayView: View {
 
 struct QuickButtonPlaceholderImage: View {
     var body: some View {
-        Button {} label: {
-            Image(systemName: "pawprint")
-                .frame(width: controlBarButtonSize, height: controlBarButtonSize)
-                .foregroundColor(.black)
-        }
-        .opacity(0.0)
+        Image(systemName: "pawprint")
+            .frame(width: controlBarButtonSize, height: controlBarButtonSize)
+            .foregroundColor(.black)
+            .opacity(0.0)
     }
 }
 
