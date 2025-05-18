@@ -82,7 +82,7 @@ private struct ScenesSwitchTransition: View {
                 model.setSceneSwitchTransition()
             }
             Toggle("Force scene switch transition", isOn: Binding(get: {
-                model.database.forceSceneSwitchTransition!
+                model.database.forceSceneSwitchTransition
             }, set: { value in
                 model.database.forceSceneSwitchTransition = value
             }))

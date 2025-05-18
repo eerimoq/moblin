@@ -7512,7 +7512,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func getIgnoreFramesAfterAttachSecondsReplaceCamera() -> Double {
-        if database.forceSceneSwitchTransition! {
+        if database.forceSceneSwitchTransition {
             return Double(database.debug.cameraSwitchRemoveBlackish!)
         } else {
             return 0.0

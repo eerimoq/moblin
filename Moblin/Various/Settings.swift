@@ -3220,7 +3220,7 @@ class Database: Codable, ObservableObject {
     var pixellateStrength: Float? = 0.3
     var moblink: SettingsMoblink = .init()
     var sceneSwitchTransition: SettingsSceneSwitchTransition = .blur
-    var forceSceneSwitchTransition: Bool? = false
+    var forceSceneSwitchTransition: Bool = false
     var cameraControlsEnabled: Bool? = true
     var externalDisplayContent: SettingsExternalDisplayContent? = .stream
     var cyclingPowerDevices: SettingsCyclingPowerDevices? = .init()
@@ -3448,7 +3448,7 @@ class Database: Codable, ObservableObject {
             SettingsSceneSwitchTransition.self,
             forKey: .sceneSwitchTransition
         )) ?? .blur
-        forceSceneSwitchTransition = try? container.decode(Bool?.self, forKey: .forceSceneSwitchTransition)
+        forceSceneSwitchTransition = (try? container.decode(Bool.self, forKey: .forceSceneSwitchTransition)) ?? false
         cameraControlsEnabled = try? container.decode(Bool?.self, forKey: .cameraControlsEnabled)
         externalDisplayContent = try? container.decode(
             SettingsExternalDisplayContent?.self,
@@ -5283,10 +5283,6 @@ final class Settings {
         }
         for key in realDatabase.keyboard.keys where key.widgetId == nil {
             key.widgetId = .init()
-            store()
-        }
-        if realDatabase.forceSceneSwitchTransition == nil {
-            realDatabase.forceSceneSwitchTransition = false
             store()
         }
         if realDatabase.location.distance == nil {
