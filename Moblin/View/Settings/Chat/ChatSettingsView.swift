@@ -26,7 +26,7 @@ struct ChatSettingsView: View {
         Form {
             Section {
                 Toggle("Enabled", isOn: Binding(get: {
-                    model.database.chat.enabled!
+                    model.database.chat.enabled
                 }, set: { value in
                     model.database.chat.enabled = value
                     model.reloadChats()
@@ -98,7 +98,7 @@ struct ChatSettingsView: View {
                         Text("Bold message")
                     }
                     Toggle(isOn: Binding(get: {
-                        model.database.chat.badges!
+                        model.database.chat.badges
                     }, set: { value in
                         model.database.chat.badges = value
                         model.reloadChatMessages()
@@ -114,7 +114,7 @@ struct ChatSettingsView: View {
                         Text("Animated emotes")
                     }
                     Toggle(isOn: Binding(get: {
-                        model.database.chat.newMessagesAtTop!
+                        model.database.chat.newMessagesAtTop
                     }, set: { value in
                         model.database.chat.newMessagesAtTop = value
                         model.objectWillChange.send()
@@ -122,7 +122,7 @@ struct ChatSettingsView: View {
                         Text("New messages at top")
                     }
                     Toggle(isOn: Binding(get: {
-                        model.database.chat.mirrored!
+                        model.database.chat.mirrored
                     }, set: { value in
                         model.database.chat.mirrored = value
                         model.objectWillChange.send()
@@ -132,20 +132,20 @@ struct ChatSettingsView: View {
                     NavigationLink {
                         TextEditView(
                             title: String(localized: "Maximum age"),
-                            value: String(model.database.chat.maximumAge!),
+                            value: String(model.database.chat.maximumAge),
                             footers: [String(localized: "Maximum message age in seconds.")]
                         ) {
                             submitMaximumAge(value: $0)
                         }
                     } label: {
                         Toggle(isOn: Binding(get: {
-                            model.database.chat.maximumAgeEnabled!
+                            model.database.chat.maximumAgeEnabled
                         }, set: { value in
                             model.database.chat.maximumAgeEnabled = value
                         })) {
                             TextItemView(
                                 name: String(localized: "Maximum age"),
-                                value: String(model.database.chat.maximumAge!)
+                                value: String(model.database.chat.maximumAge)
                             )
                         }
                     }
@@ -157,13 +157,13 @@ struct ChatSettingsView: View {
                 }
                 NavigationLink {
                     ChatTextToSpeechSettingsView(
-                        rate: model.database.chat.textToSpeechRate!,
-                        volume: model.database.chat.textToSpeechSayVolume!,
-                        pauseBetweenMessages: model.database.chat.textToSpeechPauseBetweenMessages!
+                        rate: model.database.chat.textToSpeechRate,
+                        volume: model.database.chat.textToSpeechSayVolume,
+                        pauseBetweenMessages: model.database.chat.textToSpeechPauseBetweenMessages
                     )
                 } label: {
                     Toggle(isOn: Binding(get: {
-                        model.database.chat.textToSpeechEnabled!
+                        model.database.chat.textToSpeechEnabled
                     }, set: { value in
                         model.database.chat.textToSpeechEnabled = value
                         if !value {
@@ -177,7 +177,7 @@ struct ChatSettingsView: View {
                     ChatBotSettingsView()
                 } label: {
                     Toggle(isOn: Binding(get: {
-                        model.database.chat.botEnabled!
+                        model.database.chat.botEnabled
                     }, set: { value in
                         model.database.chat.botEnabled = value
                     })) {
@@ -310,7 +310,7 @@ struct ChatSettingsView: View {
                             }
                     }
                     Toggle(isOn: Binding(get: {
-                        model.database.chat.meInUsernameColor!
+                        model.database.chat.meInUsernameColor
                     }, set: { value in
                         model.database.chat.meInUsernameColor = value
                     })) {

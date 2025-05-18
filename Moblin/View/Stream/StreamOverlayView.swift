@@ -72,7 +72,7 @@ private struct ChatOverlayView: View {
                 }
                 Rectangle()
                     .foregroundColor(.clear)
-                    .frame(height: height * model.database.chat.bottom!)
+                    .frame(height: height * model.database.chat.bottom)
             }
         }
     }
@@ -147,7 +147,7 @@ struct StreamOverlayView: View {
             ZStack {
                 if model.showingPanel != .chat {
                     ChatOverlayView(height: height)
-                        .opacity(model.database.chat.enabled! ? 1 : 0)
+                        .opacity(model.database.chat.enabled ? 1 : 0)
                         .allowsHitTesting(model.interactiveChat)
                 }
                 HStack {

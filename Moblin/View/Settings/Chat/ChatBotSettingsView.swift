@@ -71,7 +71,7 @@ struct ChatBotCommandsSettingsView: View {
     @EnvironmentObject var model: Model
 
     private var permissions: SettingsChatBotPermissions {
-        model.database.chat.botCommandPermissions!
+        model.database.chat.botCommandPermissions
     }
 
     var body: some View {
@@ -232,7 +232,7 @@ struct ChatBotSettingsView: View {
             }
             Section {
                 Toggle(isOn: Binding(get: {
-                    model.database.chat.botSendLowBatteryWarning!
+                    model.database.chat.botSendLowBatteryWarning
                 }, set: { value in
                     model.database.chat.botSendLowBatteryWarning = value
                 }), label: {

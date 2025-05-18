@@ -1675,8 +1675,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         setExternalDisplayContent()
         portraitVideoOffsetFromTop = database.portraitVideoOffsetFromTop
         audioUnitRemoveWindNoise = database.debug.removeWindNoise
-        showFirstTimeChatterMessage = database.chat.showFirstTimeChatterMessage!
-        showNewFollowerMessage = database.chat.showNewFollowerMessage!
+        showFirstTimeChatterMessage = database.chat.showFirstTimeChatterMessage
+        showNewFollowerMessage = database.chat.showNewFollowerMessage
         verboseStatuses = database.verboseStatuses
         autoSceneSwitcher.currentSwitcherId = database.autoSceneSwitchers!.switcherId
         supportsAppleLog = hasAppleLog()
@@ -1786,15 +1786,15 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         } else {
             logger.info("watch: Not supported")
         }
-        chatTextToSpeech.setRate(rate: database.chat.textToSpeechRate!)
-        chatTextToSpeech.setVolume(volume: database.chat.textToSpeechSayVolume!)
-        chatTextToSpeech.setVoices(voices: database.chat.textToSpeechLanguageVoices!)
-        chatTextToSpeech.setSayUsername(value: database.chat.textToSpeechSayUsername!)
+        chatTextToSpeech.setRate(rate: database.chat.textToSpeechRate)
+        chatTextToSpeech.setVolume(volume: database.chat.textToSpeechSayVolume)
+        chatTextToSpeech.setVoices(voices: database.chat.textToSpeechLanguageVoices)
+        chatTextToSpeech.setSayUsername(value: database.chat.textToSpeechSayUsername)
         chatTextToSpeech
-            .setDetectLanguagePerMessage(value: database.chat.textToSpeechDetectLanguagePerMessage!)
-        chatTextToSpeech.setFilter(value: database.chat.textToSpeechFilter!)
-        chatTextToSpeech.setFilterMentions(value: database.chat.textToSpeechFilterMentions!)
-        chatTextToSpeech.setPauseBetweenMessages(value: database.chat.textToSpeechPauseBetweenMessages!)
+            .setDetectLanguagePerMessage(value: database.chat.textToSpeechDetectLanguagePerMessage)
+        chatTextToSpeech.setFilter(value: database.chat.textToSpeechFilter)
+        chatTextToSpeech.setFilterMentions(value: database.chat.textToSpeechFilterMentions)
+        chatTextToSpeech.setPauseBetweenMessages(value: database.chat.textToSpeechPauseBetweenMessages)
         setTextToSpeechStreamerMentions()
         updateOrientationLock()
         updateFaceFilterSettings()
@@ -3536,11 +3536,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if quickButtonChat.paused {
             return
         }
-        guard database.chat.maximumAgeEnabled! else {
+        guard database.chat.maximumAgeEnabled else {
             return
         }
         while let post = chat.posts.last {
-            if now > post.timestampTime + .seconds(database.chat.maximumAge!) {
+            if now > post.timestampTime + .seconds(database.chat.maximumAge) {
                 chat.posts.removeLast()
             } else {
                 break
@@ -3644,10 +3644,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func isTextToSpeechEnabledForMessage(post: ChatPost) -> Bool {
-        guard database.chat.textToSpeechEnabled!, post.live else {
+        guard database.chat.textToSpeechEnabled, post.live else {
             return false
         }
-        if database.chat.textToSpeechSubscribersOnly! {
+        if database.chat.textToSpeechSubscribersOnly {
             guard post.isSubscriber else {
                 return false
             }
@@ -5094,7 +5094,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func isTwitchChatConfigured() -> Bool {
-        return database.chat.enabled! && stream.twitchChannelName != ""
+        return database.chat.enabled && stream.twitchChannelName != ""
     }
 
     func isTwitchAccessTokenConfigured() -> Bool {
@@ -5110,7 +5110,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func isKickPusherConfigured() -> Bool {
-        return database.chat.enabled! && (stream.kickChatroomId != "" || stream.kickChannelName != "")
+        return database.chat.enabled && (stream.kickChatroomId != "" || stream.kickChannelName != "")
     }
 
     func isKickPusherConnected() -> Bool {
@@ -5126,7 +5126,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func isYouTubeLiveChatConfigured() -> Bool {
-        return database.chat.enabled! && stream.youTubeVideoId! != ""
+        return database.chat.enabled && stream.youTubeVideoId! != ""
     }
 
     func isYouTubeLiveChatConnected() -> Bool {
@@ -5138,7 +5138,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func isAfreecaTvChatConfigured() -> Bool {
-        return database.chat.enabled! && stream.afreecaTvChannelName! != "" && stream.afreecaTvStreamId! != ""
+        return database.chat.enabled && stream.afreecaTvChannelName! != "" && stream.afreecaTvStreamId! != ""
     }
 
     func isAfreecaTvChatConnected() -> Bool {
@@ -5150,7 +5150,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func isOpenStreamingPlatformChatConfigured() -> Bool {
-        return database.chat.enabled! && stream.openStreamingPlatformUrl! != "" && stream
+        return database.chat.enabled && stream.openStreamingPlatformUrl! != "" && stream
             .openStreamingPlatformChannelId! != ""
     }
 
@@ -5735,7 +5735,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func handleChatBotMessageTtsOn(command: ChatBotCommand) {
         executeIfUserAllowedToUseChatBot(
-            permissions: database.chat.botCommandPermissions!.tts,
+            permissions: database.chat.botCommandPermissions.tts,
             command: command
         ) {
             self.makeToast(
@@ -5748,7 +5748,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func handleChatBotMessageTtsOff(command: ChatBotCommand) {
         executeIfUserAllowedToUseChatBot(
-            permissions: database.chat.botCommandPermissions!.tts,
+            permissions: database.chat.botCommandPermissions.tts,
             command: command
         ) {
             self.makeToast(
@@ -5762,7 +5762,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func handleChatBotMessageTtsSay(command: ChatBotCommand) {
         executeIfUserAllowedToUseChatBot(
-            permissions: database.chat.botCommandPermissions!.tts,
+            permissions: database.chat.botCommandPermissions.tts,
             command: command
         ) {
             let user = command.user() ?? "Unknown"
@@ -5772,7 +5772,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func handleChatBotMessageObsFix(command: ChatBotCommand) {
         executeIfUserAllowedToUseChatBot(
-            permissions: database.chat.botCommandPermissions!.fix,
+            permissions: database.chat.botCommandPermissions.fix,
             command: command
         ) {
             if self.obsWebSocket != nil {
@@ -5794,7 +5794,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func handleChatBotMessageMapZoomOut(command: ChatBotCommand) {
         executeIfUserAllowedToUseChatBot(
-            permissions: database.chat.botCommandPermissions!.map,
+            permissions: database.chat.botCommandPermissions.map,
             command: command
         ) {
             self.makeToast(
@@ -5820,7 +5820,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func handleChatBotMessageSnapshot(command: ChatBotCommand) {
-        let permissions = database.chat.botCommandPermissions!.snapshot!
+        let permissions = database.chat.botCommandPermissions.snapshot!
         executeIfUserAllowedToUseChatBot(
             permissions: permissions,
             command: command
@@ -5841,7 +5841,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func handleChatBotMessageSnapshotWithMessage(command: ChatBotCommand) {
-        let permissions = database.chat.botCommandPermissions!.snapshot!
+        let permissions = database.chat.botCommandPermissions.snapshot!
         executeIfUserAllowedToUseChatBot(
             permissions: permissions,
             command: command
@@ -5863,7 +5863,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func handleChatBotMessageMute(command: ChatBotCommand) {
         executeIfUserAllowedToUseChatBot(
-            permissions: database.chat.botCommandPermissions!.audio!,
+            permissions: database.chat.botCommandPermissions.audio!,
             command: command
         ) {
             guard !self.isMuteOn else {
@@ -5881,7 +5881,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func handleChatBotMessageUnmute(command: ChatBotCommand) {
         executeIfUserAllowedToUseChatBot(
-            permissions: database.chat.botCommandPermissions!.audio!,
+            permissions: database.chat.botCommandPermissions.audio!,
             command: command
         ) {
             guard self.isMuteOn else {
@@ -5902,7 +5902,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             return
         }
         executeIfUserAllowedToUseChatBot(
-            permissions: database.chat.botCommandPermissions!.reaction!,
+            permissions: database.chat.botCommandPermissions.reaction!,
             command: command
         ) {
             let reaction: AVCaptureReactionType
@@ -5937,7 +5937,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             return
         }
         executeIfUserAllowedToUseChatBot(
-            permissions: database.chat.botCommandPermissions!.scene!,
+            permissions: database.chat.botCommandPermissions.scene!,
             command: command
         ) {
             self.selectSceneByName(name: sceneName)
@@ -5946,7 +5946,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func handleChatBotMessageAlert(command: ChatBotCommand) {
         executeIfUserAllowedToUseChatBot(
-            permissions: database.chat.botCommandPermissions!.alert!,
+            permissions: database.chat.botCommandPermissions.alert!,
             command: command
         ) {
             guard let alert = command.popFirst() else {
@@ -5961,7 +5961,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func handleChatBotMessageFax(command: ChatBotCommand) {
         executeIfUserAllowedToUseChatBot(
-            permissions: database.chat.botCommandPermissions!.fax!,
+            permissions: database.chat.botCommandPermissions.fax!,
             command: command
         ) {
             if let url = command.peekFirst(), let url = URL(string: url) {
@@ -5972,7 +5972,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func handleChatBotMessageFilter(command: ChatBotCommand) {
         executeIfUserAllowedToUseChatBot(
-            permissions: database.chat.botCommandPermissions!.filter!,
+            permissions: database.chat.botCommandPermissions.filter!,
             command: command
         ) {
             guard let filter = command.popFirst(), let state = command.popFirst() else {
@@ -6005,7 +6005,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func handleChatBotMessageTesla(command: ChatBotCommand) {
         executeIfUserAllowedToUseChatBot(
-            permissions: database.chat.botCommandPermissions!.tesla!,
+            permissions: database.chat.botCommandPermissions.tesla!,
             command: command
         ) {
             switch command.popFirst() {
@@ -6168,10 +6168,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         highlight: ChatHighlight?,
         live: Bool
     ) {
-        if database.chat.usernamesToIgnore!.contains(where: { user == $0.value }) {
+        if database.chat.usernamesToIgnore.contains(where: { user == $0.value }) {
             return
         }
-        if database.chat.botEnabled!, live, segments.first?.text?.trim().lowercased() == "!moblin" {
+        if database.chat.botEnabled, live, segments.first?.text?.trim().lowercased() == "!moblin" {
             if chatBotMessages.count < 25 || isModerator {
                 chatBotMessages.append(ChatBotMessage(
                     platform: platform,
@@ -7017,7 +7017,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             batteryLevelLowCounter += 1
             if (batteryLevelLowCounter % 3) == 0 {
                 makeWarningToast(title: lowBatteryMessage, vibrate: true)
-                if database.chat.botEnabled!, database.chat.botSendLowBatteryWarning! {
+                if database.chat.botEnabled, database.chat.botSendLowBatteryWarning {
                     sendChatMessage(message: "Moblin bot: \(lowBatteryMessage)")
                 }
             }

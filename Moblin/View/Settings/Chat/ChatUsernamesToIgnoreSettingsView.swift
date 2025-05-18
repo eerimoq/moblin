@@ -43,21 +43,21 @@ struct ChatUsernamesToIgnoreSettingsView: View {
         Form {
             Section {
                 List {
-                    ForEach(model.database.chat.usernamesToIgnore!) { username in
+                    ForEach(model.database.chat.usernamesToIgnore) { username in
                         UsernameEditView(
                             value: username.value,
                             onSubmit: { value in onSubmit(username, value) }
                         )
                     }
                     .onMove(perform: { froms, to in
-                        model.database.chat.usernamesToIgnore!.move(fromOffsets: froms, toOffset: to)
+                        model.database.chat.usernamesToIgnore.move(fromOffsets: froms, toOffset: to)
                     })
                     .onDelete(perform: { offsets in
-                        model.database.chat.usernamesToIgnore!.remove(atOffsets: offsets)
+                        model.database.chat.usernamesToIgnore.remove(atOffsets: offsets)
                     })
                 }
                 AddButtonView(action: {
-                    model.database.chat.usernamesToIgnore!.append(SettingsChatUsername())
+                    model.database.chat.usernamesToIgnore.append(SettingsChatUsername())
                     model.objectWillChange.send()
                 })
             } footer: {

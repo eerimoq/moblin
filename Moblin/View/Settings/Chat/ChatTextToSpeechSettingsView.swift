@@ -8,8 +8,8 @@ struct ChatTextToSpeechSettingsView: View {
     @State var pauseBetweenMessages: Double
 
     private func onVoiceChange(languageCode: String, voice: String) {
-        model.database.chat.textToSpeechLanguageVoices![languageCode] = voice
-        model.chatTextToSpeech.setVoices(voices: model.database.chat.textToSpeechLanguageVoices!)
+        model.database.chat.textToSpeechLanguageVoices[languageCode] = voice
+        model.chatTextToSpeech.setVoices(voices: model.database.chat.textToSpeechLanguageVoices)
     }
 
     var body: some View {
@@ -17,7 +17,7 @@ struct ChatTextToSpeechSettingsView: View {
             Section {
                 NavigationLink {
                     VoicesView(
-                        textToSpeechLanguageVoices: model.database.chat.textToSpeechLanguageVoices!,
+                        textToSpeechLanguageVoices: model.database.chat.textToSpeechLanguageVoices,
                         onVoiceChange: onVoiceChange
                     )
                 } label: {
@@ -80,7 +80,7 @@ struct ChatTextToSpeechSettingsView: View {
             }
             Section {
                 Toggle(isOn: Binding(get: {
-                    model.database.chat.textToSpeechDetectLanguagePerMessage!
+                    model.database.chat.textToSpeechDetectLanguagePerMessage
                 }, set: { value in
                     model.database.chat.textToSpeechDetectLanguagePerMessage = value
                     model.chatTextToSpeech.setDetectLanguagePerMessage(value: value)
@@ -88,7 +88,7 @@ struct ChatTextToSpeechSettingsView: View {
                     Text("Detect language per message")
                 }
                 Toggle(isOn: Binding(get: {
-                    model.database.chat.textToSpeechSayUsername!
+                    model.database.chat.textToSpeechSayUsername
                 }, set: { value in
                     model.database.chat.textToSpeechSayUsername = value
                     model.chatTextToSpeech.setSayUsername(value: value)
@@ -96,7 +96,7 @@ struct ChatTextToSpeechSettingsView: View {
                     Text("Say username")
                 }
                 Toggle(isOn: Binding(get: {
-                    model.database.chat.textToSpeechSubscribersOnly!
+                    model.database.chat.textToSpeechSubscribersOnly
                 }, set: { value in
                     model.database.chat.textToSpeechSubscribersOnly = value
                 })) {
@@ -107,7 +107,7 @@ struct ChatTextToSpeechSettingsView: View {
             }
             Section {
                 Toggle(isOn: Binding(get: {
-                    model.database.chat.textToSpeechFilter!
+                    model.database.chat.textToSpeechFilter
                 }, set: { value in
                     model.database.chat.textToSpeechFilter = value
                     model.chatTextToSpeech.setFilter(value: value)
@@ -119,7 +119,7 @@ struct ChatTextToSpeechSettingsView: View {
             }
             Section {
                 Toggle(isOn: Binding(get: {
-                    model.database.chat.textToSpeechFilterMentions!
+                    model.database.chat.textToSpeechFilterMentions
                 }, set: { value in
                     model.database.chat.textToSpeechFilterMentions = value
                     model.chatTextToSpeech.setFilterMentions(value: value)

@@ -2069,7 +2069,7 @@ class SettingsChatBotPermissions: Codable {
     var scene: SettingsChatBotPermissionsCommand? = .init()
 }
 
-class SettingsChat: Codable {
+class SettingsChat: Codable, ObservableObject {
     var fontSize: Float = 19.0
     var usernameColor: RgbColor = .init(red: 255, green: 163, blue: 0)
     var messageColor: RgbColor = .init(red: 255, green: 255, blue: 255)
@@ -2082,32 +2082,171 @@ class SettingsChat: Codable {
     var animatedEmotes: Bool = false
     var timestampColor: RgbColor = .init(red: 180, green: 180, blue: 180)
     var timestampColorEnabled: Bool = false
-    var height: Double? = 0.7
-    var width: Double? = 1.0
-    var maximumAge: Int? = 30
-    var maximumAgeEnabled: Bool? = false
-    var meInUsernameColor: Bool? = true
-    var enabled: Bool? = true
-    var usernamesToIgnore: [SettingsChatUsername]? = []
-    var textToSpeechEnabled: Bool? = false
-    var textToSpeechDetectLanguagePerMessage: Bool? = false
-    var textToSpeechSayUsername: Bool? = true
-    var textToSpeechRate: Float? = 0.4
-    var textToSpeechSayVolume: Float? = 0.6
-    var textToSpeechLanguageVoices: [String: String]? = .init()
-    var textToSpeechSubscribersOnly: Bool? = false
-    var textToSpeechFilter: Bool? = true
-    var textToSpeechFilterMentions: Bool? = true
-    var mirrored: Bool? = false
-    var botEnabled: Bool? = false
-    var botCommandPermissions: SettingsChatBotPermissions? = .init()
-    var botSendLowBatteryWarning: Bool? = false
-    var badges: Bool? = true
-    var showFirstTimeChatterMessage: Bool? = true
-    var showNewFollowerMessage: Bool? = true
-    var bottom: Double? = 0.0
-    var newMessagesAtTop: Bool? = false
-    var textToSpeechPauseBetweenMessages: Double? = 1.0
+    var height: Double = 0.7
+    var width: Double = 1.0
+    var maximumAge: Int = 30
+    var maximumAgeEnabled: Bool = false
+    var meInUsernameColor: Bool = true
+    var enabled: Bool = true
+    var usernamesToIgnore: [SettingsChatUsername] = []
+    var textToSpeechEnabled: Bool = false
+    var textToSpeechDetectLanguagePerMessage: Bool = false
+    var textToSpeechSayUsername: Bool = true
+    var textToSpeechRate: Float = 0.4
+    var textToSpeechSayVolume: Float = 0.6
+    var textToSpeechLanguageVoices: [String: String] = .init()
+    var textToSpeechSubscribersOnly: Bool = false
+    var textToSpeechFilter: Bool = true
+    var textToSpeechFilterMentions: Bool = true
+    var mirrored: Bool = false
+    var botEnabled: Bool = false
+    var botCommandPermissions: SettingsChatBotPermissions = .init()
+    var botSendLowBatteryWarning: Bool = false
+    var badges: Bool = true
+    var showFirstTimeChatterMessage: Bool = true
+    var showNewFollowerMessage: Bool = true
+    var bottom: Double = 0.0
+    var newMessagesAtTop: Bool = false
+    var textToSpeechPauseBetweenMessages: Double = 1.0
+
+    enum CodingKeys: CodingKey {
+        case fontSize,
+             usernameColor,
+             messageColor,
+             backgroundColor,
+             backgroundColorEnabled,
+             shadowColor,
+             shadowColorEnabled,
+             boldUsername,
+             boldMessage,
+             animatedEmotes,
+             timestampColor,
+             timestampColorEnabled,
+             height,
+             width,
+             maximumAge,
+             maximumAgeEnabled,
+             meInUsernameColor,
+             enabled,
+             usernamesToIgnore,
+             textToSpeechEnabled,
+             textToSpeechDetectLanguagePerMessage,
+             textToSpeechSayUsername,
+             textToSpeechRate,
+             textToSpeechSayVolume,
+             textToSpeechLanguageVoices,
+             textToSpeechSubscribersOnly,
+             textToSpeechFilter,
+             textToSpeechFilterMentions,
+             mirrored,
+             botEnabled,
+             botCommandPermissions,
+             botSendLowBatteryWarning,
+             badges,
+             showFirstTimeChatterMessage,
+             showNewFollowerMessage,
+             bottom,
+             newMessagesAtTop,
+             textToSpeechPauseBetweenMessages
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(fontSize, forKey: .fontSize)
+        try container.encode(usernameColor, forKey: .usernameColor)
+        try container.encode(messageColor, forKey: .messageColor)
+        try container.encode(backgroundColor, forKey: .backgroundColor)
+        try container.encode(backgroundColorEnabled, forKey: .backgroundColorEnabled)
+        try container.encode(shadowColor, forKey: .shadowColor)
+        try container.encode(shadowColorEnabled, forKey: .shadowColorEnabled)
+        try container.encode(boldUsername, forKey: .boldUsername)
+        try container.encode(boldMessage, forKey: .boldMessage)
+        try container.encode(animatedEmotes, forKey: .animatedEmotes)
+        try container.encode(timestampColor, forKey: .timestampColor)
+        try container.encode(timestampColorEnabled, forKey: .timestampColorEnabled)
+        try container.encode(height, forKey: .height)
+        try container.encode(width, forKey: .width)
+        try container.encode(maximumAge, forKey: .maximumAge)
+        try container.encode(maximumAgeEnabled, forKey: .maximumAgeEnabled)
+        try container.encode(meInUsernameColor, forKey: .meInUsernameColor)
+        try container.encode(enabled, forKey: .enabled)
+        try container.encode(usernamesToIgnore, forKey: .usernamesToIgnore)
+        try container.encode(textToSpeechEnabled, forKey: .textToSpeechEnabled)
+        try container.encode(textToSpeechDetectLanguagePerMessage, forKey: .textToSpeechDetectLanguagePerMessage)
+        try container.encode(textToSpeechSayUsername, forKey: .textToSpeechSayUsername)
+        try container.encode(textToSpeechRate, forKey: .textToSpeechRate)
+        try container.encode(textToSpeechSayVolume, forKey: .textToSpeechSayVolume)
+        try container.encode(textToSpeechLanguageVoices, forKey: .textToSpeechLanguageVoices)
+        try container.encode(textToSpeechSubscribersOnly, forKey: .textToSpeechSubscribersOnly)
+        try container.encode(textToSpeechFilter, forKey: .textToSpeechFilter)
+        try container.encode(textToSpeechFilterMentions, forKey: .textToSpeechFilterMentions)
+        try container.encode(mirrored, forKey: .mirrored)
+        try container.encode(botEnabled, forKey: .botEnabled)
+        try container.encode(botCommandPermissions, forKey: .botCommandPermissions)
+        try container.encode(botSendLowBatteryWarning, forKey: .botSendLowBatteryWarning)
+        try container.encode(badges, forKey: .badges)
+        try container.encode(showFirstTimeChatterMessage, forKey: .showFirstTimeChatterMessage)
+        try container.encode(showNewFollowerMessage, forKey: .showNewFollowerMessage)
+        try container.encode(bottom, forKey: .bottom)
+        try container.encode(newMessagesAtTop, forKey: .newMessagesAtTop)
+        try container.encode(textToSpeechPauseBetweenMessages, forKey: .textToSpeechPauseBetweenMessages)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        fontSize = try container.decode(Float.self, forKey: .fontSize)
+        usernameColor = try container.decode(RgbColor.self, forKey: .usernameColor)
+        messageColor = try container.decode(RgbColor.self, forKey: .messageColor)
+        backgroundColor = try container.decode(RgbColor.self, forKey: .backgroundColor)
+        backgroundColorEnabled = try container.decode(Bool.self, forKey: .backgroundColorEnabled)
+        shadowColor = try container.decode(RgbColor.self, forKey: .shadowColor)
+        shadowColorEnabled = try container.decode(Bool.self, forKey: .shadowColorEnabled)
+        boldUsername = try container.decode(Bool.self, forKey: .boldUsername)
+        boldMessage = try container.decode(Bool.self, forKey: .boldMessage)
+        animatedEmotes = try container.decode(Bool.self, forKey: .animatedEmotes)
+        timestampColor = try container.decode(RgbColor.self, forKey: .timestampColor)
+        timestampColorEnabled = try container.decode(Bool.self, forKey: .timestampColorEnabled)
+        height = (try? container.decode(Double.self, forKey: .height)) ?? 0.7
+        width = (try? container.decode(Double.self, forKey: .width)) ?? 1.0
+        maximumAge = (try? container.decode(Int.self, forKey: .maximumAge)) ?? 30
+        maximumAgeEnabled = (try? container.decode(Bool.self, forKey: .maximumAgeEnabled)) ?? false
+        meInUsernameColor = (try? container.decode(Bool.self, forKey: .meInUsernameColor)) ?? true
+        enabled = (try? container.decode(Bool.self, forKey: .enabled)) ?? true
+        usernamesToIgnore = (try? container.decode([SettingsChatUsername].self, forKey: .usernamesToIgnore)) ?? []
+        textToSpeechEnabled = (try? container.decode(Bool.self, forKey: .textToSpeechEnabled)) ?? false
+        textToSpeechDetectLanguagePerMessage = (try? container.decode(
+            Bool.self,
+            forKey: .textToSpeechDetectLanguagePerMessage
+        )) ?? false
+        textToSpeechSayUsername = (try? container.decode(Bool.self, forKey: .textToSpeechSayUsername)) ?? true
+        textToSpeechRate = (try? container.decode(Float.self, forKey: .textToSpeechRate)) ?? 0.4
+        textToSpeechSayVolume = (try? container.decode(Float.self, forKey: .textToSpeechSayVolume)) ?? 0.6
+        textToSpeechLanguageVoices = (try? container.decode(
+            [String: String].self,
+            forKey: .textToSpeechLanguageVoices
+        )) ?? .init()
+        textToSpeechSubscribersOnly = (try? container.decode(Bool.self, forKey: .textToSpeechSubscribersOnly)) ?? false
+        textToSpeechFilter = (try? container.decode(Bool.self, forKey: .textToSpeechFilter)) ?? true
+        textToSpeechFilterMentions = (try? container.decode(Bool.self, forKey: .textToSpeechFilterMentions)) ?? true
+        mirrored = (try? container.decode(Bool.self, forKey: .mirrored)) ?? false
+        botEnabled = (try? container.decode(Bool.self, forKey: .botEnabled)) ?? false
+        botCommandPermissions = (try? container.decode(
+            SettingsChatBotPermissions.self,
+            forKey: .botCommandPermissions
+        )) ?? .init()
+        botSendLowBatteryWarning = (try? container.decode(Bool.self, forKey: .botSendLowBatteryWarning)) ?? false
+        badges = (try? container.decode(Bool.self, forKey: .badges)) ?? true
+        showFirstTimeChatterMessage = (try? container.decode(Bool.self, forKey: .showFirstTimeChatterMessage)) ?? true
+        showNewFollowerMessage = (try? container.decode(Bool.self, forKey: .showNewFollowerMessage)) ?? true
+        bottom = (try? container.decode(Double.self, forKey: .bottom)) ?? 0.0
+        newMessagesAtTop = (try? container.decode(Bool.self, forKey: .newMessagesAtTop)) ?? false
+        textToSpeechPauseBetweenMessages = (try? container.decode(
+            Double.self,
+            forKey: .textToSpeechPauseBetweenMessages
+        )) ?? 1.0
+    }
 }
 
 enum SettingsMic: String, Codable, CaseIterable {
@@ -4282,24 +4421,8 @@ final class Settings {
     }
 
     private func migrateFromOlderVersions() {
-        if realDatabase.chat.height == nil {
-            realDatabase.chat.height = 0.7
-            store()
-        }
-        if realDatabase.chat.width == nil {
-            realDatabase.chat.width = 1.0
-            store()
-        }
         for stream in realDatabase.streams where stream.youTubeVideoId == nil {
             stream.youTubeVideoId = ""
-            store()
-        }
-        if realDatabase.chat.maximumAge == nil {
-            realDatabase.chat.maximumAge = 30
-            store()
-        }
-        if realDatabase.chat.maximumAgeEnabled == nil {
-            realDatabase.chat.maximumAgeEnabled = false
             store()
         }
         for stream in realDatabase.streams where stream.maxKeyFrameInterval == nil {
@@ -4356,10 +4479,6 @@ final class Settings {
         }
         for stream in realDatabase.streams where stream.obsWebSocketEnabled == nil {
             stream.obsWebSocketEnabled = true
-            store()
-        }
-        if realDatabase.chat.meInUsernameColor == nil {
-            realDatabase.chat.meInUsernameColor = true
             store()
         }
         for stream in realDatabase.streams where stream.audioBitrate == nil {
@@ -4494,10 +4613,6 @@ final class Settings {
             stream.srt.adaptiveBitrate!.fastIrlSettings = .init()
             store()
         }
-        if realDatabase.chat.enabled == nil {
-            realDatabase.chat.enabled = true
-            store()
-        }
         for stream in database.streams where stream.rtmp == nil {
             stream.rtmp = .init()
             store()
@@ -4512,10 +4627,6 @@ final class Settings {
         }
         if realDatabase.watch.chat.notificationOnMessage == nil {
             realDatabase.watch.chat.notificationOnMessage = false
-            store()
-        }
-        if realDatabase.chat.usernamesToIgnore == nil {
-            realDatabase.chat.usernamesToIgnore = []
             store()
         }
         for scene in realDatabase.scenes where scene.backCameraId == nil {
@@ -4534,52 +4645,16 @@ final class Settings {
             stream.openStreamingPlatformChannelId = ""
             store()
         }
-        if realDatabase.chat.textToSpeechEnabled == nil {
-            realDatabase.chat.textToSpeechEnabled = false
-            store()
-        }
-        if realDatabase.chat.textToSpeechDetectLanguagePerMessage == nil {
-            realDatabase.chat.textToSpeechDetectLanguagePerMessage = false
-            store()
-        }
-        if realDatabase.chat.textToSpeechSayUsername == nil {
-            realDatabase.chat.textToSpeechSayUsername = true
-            store()
-        }
-        if realDatabase.chat.textToSpeechRate == nil {
-            realDatabase.chat.textToSpeechRate = 0.4
-            store()
-        }
-        if realDatabase.chat.textToSpeechSayVolume == nil {
-            realDatabase.chat.textToSpeechSayVolume = 0.6
-            store()
-        }
-        if realDatabase.chat.textToSpeechLanguageVoices == nil {
-            realDatabase.chat.textToSpeechLanguageVoices = .init()
-            store()
-        }
         for stream in realDatabase.streams where stream.kickChannelName == nil {
             stream.kickChannelName = ""
-            store()
-        }
-        if realDatabase.chat.textToSpeechSubscribersOnly == nil {
-            realDatabase.chat.textToSpeechSubscribersOnly = false
             store()
         }
         for stream in database.streams where stream.portrait == nil {
             stream.portrait = false
             store()
         }
-        if realDatabase.chat.textToSpeechFilter == nil {
-            realDatabase.chat.textToSpeechFilter = true
-            store()
-        }
         if realDatabase.watch.show == nil {
             realDatabase.watch.show = .init()
-            store()
-        }
-        if realDatabase.chat.mirrored == nil {
-            realDatabase.chat.mirrored = false
             store()
         }
         if realDatabase.debug.beautyFilterSettings.showBeauty == nil {
@@ -4711,10 +4786,6 @@ final class Settings {
             stream.kick = .init()
             store()
         }
-        if realDatabase.chat.botEnabled == nil {
-            realDatabase.chat.botEnabled = false
-            store()
-        }
         for stream in realDatabase.deepLinkCreator.streams where stream.video.resolution == nil {
             stream.video.resolution = .r1920x1080
             store()
@@ -4809,10 +4880,6 @@ final class Settings {
         }
         for device in realDatabase.djiDevices.devices where device.autoRestartStream == nil {
             device.autoRestartStream = false
-            store()
-        }
-        if realDatabase.chat.textToSpeechFilterMentions == nil {
-            realDatabase.chat.textToSpeechFilterMentions = true
             store()
         }
         for device in realDatabase.djiDevices.devices where device.imageStabilization == nil {
@@ -4935,10 +5002,6 @@ final class Settings {
             widget.text.ratings = []
             store()
         }
-        if realDatabase.chat.botCommandPermissions == nil {
-            realDatabase.chat.botCommandPermissions = .init()
-            store()
-        }
         for stream in realDatabase.streams where stream.twitchLoggedIn == nil {
             stream.twitchLoggedIn = false
             store()
@@ -5004,16 +5067,12 @@ final class Settings {
             widget.alerts.chatBot = .init()
             store()
         }
-        if realDatabase.chat.botCommandPermissions!.alert == nil {
-            realDatabase.chat.botCommandPermissions!.alert = .init()
+        if realDatabase.chat.botCommandPermissions.alert == nil {
+            realDatabase.chat.botCommandPermissions.alert = .init()
             store()
         }
-        if realDatabase.chat.botSendLowBatteryWarning == nil {
-            realDatabase.chat.botSendLowBatteryWarning = false
-            store()
-        }
-        if realDatabase.chat.botCommandPermissions!.fax == nil {
-            realDatabase.chat.botCommandPermissions!.fax = .init()
+        if realDatabase.chat.botCommandPermissions.fax == nil {
+            realDatabase.chat.botCommandPermissions.fax = .init()
             store()
         }
         let allLuts = realDatabase.color.bundledLuts + (realDatabase.color.diskLuts ?? [])
@@ -5042,32 +5101,28 @@ final class Settings {
             device.printChat = true
             store()
         }
-        if realDatabase.chat.badges == nil {
-            realDatabase.chat.badges = true
-            store()
-        }
         if realDatabase.watch.chat.badges == nil {
             realDatabase.watch.chat.badges = true
             store()
         }
-        if realDatabase.chat.botCommandPermissions!.tts.subscribersEnabled == nil {
-            realDatabase.chat.botCommandPermissions!.tts.subscribersEnabled = false
+        if realDatabase.chat.botCommandPermissions.tts.subscribersEnabled == nil {
+            realDatabase.chat.botCommandPermissions.tts.subscribersEnabled = false
             store()
         }
-        if realDatabase.chat.botCommandPermissions!.fix.subscribersEnabled == nil {
-            realDatabase.chat.botCommandPermissions!.fix.subscribersEnabled = false
+        if realDatabase.chat.botCommandPermissions.fix.subscribersEnabled == nil {
+            realDatabase.chat.botCommandPermissions.fix.subscribersEnabled = false
             store()
         }
-        if realDatabase.chat.botCommandPermissions!.map.subscribersEnabled == nil {
-            realDatabase.chat.botCommandPermissions!.map.subscribersEnabled = false
+        if realDatabase.chat.botCommandPermissions.map.subscribersEnabled == nil {
+            realDatabase.chat.botCommandPermissions.map.subscribersEnabled = false
             store()
         }
-        if realDatabase.chat.botCommandPermissions!.alert!.subscribersEnabled == nil {
-            realDatabase.chat.botCommandPermissions!.alert!.subscribersEnabled = false
+        if realDatabase.chat.botCommandPermissions.alert!.subscribersEnabled == nil {
+            realDatabase.chat.botCommandPermissions.alert!.subscribersEnabled = false
             store()
         }
-        if realDatabase.chat.botCommandPermissions!.fax!.subscribersEnabled == nil {
-            realDatabase.chat.botCommandPermissions!.fax!.subscribersEnabled = false
+        if realDatabase.chat.botCommandPermissions.fax!.subscribersEnabled == nil {
+            realDatabase.chat.botCommandPermissions.fax!.subscribersEnabled = false
             store()
         }
         for stream in realDatabase.streams where stream.discordSnapshotWebhook == nil {
@@ -5078,44 +5133,44 @@ final class Settings {
             stream.discordSnapshotWebhookOnlyWhenLive = true
             store()
         }
-        if realDatabase.chat.botCommandPermissions!.snapshot == nil {
-            realDatabase.chat.botCommandPermissions!.snapshot = .init()
+        if realDatabase.chat.botCommandPermissions.snapshot == nil {
+            realDatabase.chat.botCommandPermissions.snapshot = .init()
             store()
         }
-        if realDatabase.chat.botCommandPermissions!.filter == nil {
-            realDatabase.chat.botCommandPermissions!.filter = .init()
+        if realDatabase.chat.botCommandPermissions.filter == nil {
+            realDatabase.chat.botCommandPermissions.filter = .init()
             store()
         }
         for device in realDatabase.catPrinters.devices where device.faxMeowSound == nil {
             device.faxMeowSound = true
             store()
         }
-        if realDatabase.chat.botCommandPermissions!.tts.minimumSubscriberTier == nil {
-            realDatabase.chat.botCommandPermissions!.tts.minimumSubscriberTier = 1
+        if realDatabase.chat.botCommandPermissions.tts.minimumSubscriberTier == nil {
+            realDatabase.chat.botCommandPermissions.tts.minimumSubscriberTier = 1
             store()
         }
-        if realDatabase.chat.botCommandPermissions!.fix.minimumSubscriberTier == nil {
-            realDatabase.chat.botCommandPermissions!.fix.minimumSubscriberTier = 1
+        if realDatabase.chat.botCommandPermissions.fix.minimumSubscriberTier == nil {
+            realDatabase.chat.botCommandPermissions.fix.minimumSubscriberTier = 1
             store()
         }
-        if realDatabase.chat.botCommandPermissions!.map.minimumSubscriberTier == nil {
-            realDatabase.chat.botCommandPermissions!.map.minimumSubscriberTier = 1
+        if realDatabase.chat.botCommandPermissions.map.minimumSubscriberTier == nil {
+            realDatabase.chat.botCommandPermissions.map.minimumSubscriberTier = 1
             store()
         }
-        if realDatabase.chat.botCommandPermissions!.alert!.minimumSubscriberTier == nil {
-            realDatabase.chat.botCommandPermissions!.alert!.minimumSubscriberTier = 1
+        if realDatabase.chat.botCommandPermissions.alert!.minimumSubscriberTier == nil {
+            realDatabase.chat.botCommandPermissions.alert!.minimumSubscriberTier = 1
             store()
         }
-        if realDatabase.chat.botCommandPermissions!.fax!.minimumSubscriberTier == nil {
-            realDatabase.chat.botCommandPermissions!.fax!.minimumSubscriberTier = 1
+        if realDatabase.chat.botCommandPermissions.fax!.minimumSubscriberTier == nil {
+            realDatabase.chat.botCommandPermissions.fax!.minimumSubscriberTier = 1
             store()
         }
-        if realDatabase.chat.botCommandPermissions!.snapshot!.minimumSubscriberTier == nil {
-            realDatabase.chat.botCommandPermissions!.snapshot!.minimumSubscriberTier = 1
+        if realDatabase.chat.botCommandPermissions.snapshot!.minimumSubscriberTier == nil {
+            realDatabase.chat.botCommandPermissions.snapshot!.minimumSubscriberTier = 1
             store()
         }
-        if realDatabase.chat.botCommandPermissions!.filter!.minimumSubscriberTier == nil {
-            realDatabase.chat.botCommandPermissions!.filter!.minimumSubscriberTier = 1
+        if realDatabase.chat.botCommandPermissions.filter!.minimumSubscriberTier == nil {
+            realDatabase.chat.botCommandPermissions.filter!.minimumSubscriberTier = 1
             store()
         }
         for widget in database.widgets where widget.alerts.twitch!.cheers == nil {
@@ -5128,14 +5183,6 @@ final class Settings {
         }
         for widget in realDatabase.widgets where widget.browser.styleSheet == nil {
             widget.browser.styleSheet = ""
-            store()
-        }
-        if realDatabase.chat.showFirstTimeChatterMessage == nil {
-            realDatabase.chat.showFirstTimeChatterMessage = true
-            store()
-        }
-        if realDatabase.chat.showNewFollowerMessage == nil {
-            realDatabase.chat.showNewFollowerMessage = true
             store()
         }
         for widget in realDatabase.widgets where widget.videoSource.cameraPosition == nil {
@@ -5231,8 +5278,8 @@ final class Settings {
             realDatabase.remoteControl.client.relay = .init()
             store()
         }
-        if realDatabase.chat.botCommandPermissions!.tesla == nil {
-            realDatabase.chat.botCommandPermissions!.tesla = .init()
+        if realDatabase.chat.botCommandPermissions.tesla == nil {
+            realDatabase.chat.botCommandPermissions.tesla = .init()
             store()
         }
         if realDatabase.watch.viaRemoteControl == nil {
@@ -5243,8 +5290,8 @@ final class Settings {
             stream.twitchMultiTrackEnabled = false
             store()
         }
-        if realDatabase.chat.botCommandPermissions!.audio == nil {
-            realDatabase.chat.botCommandPermissions!.audio = .init()
+        if realDatabase.chat.botCommandPermissions.audio == nil {
+            realDatabase.chat.botCommandPermissions.audio = .init()
             store()
         }
         for scene in realDatabase.scenes where scene.videoSourceRotation == nil {
@@ -5275,20 +5322,12 @@ final class Settings {
             stream.srt.dnsLookupStrategy = .system
             store()
         }
-        if realDatabase.chat.bottom == nil {
-            realDatabase.chat.bottom = 0.0
-            store()
-        }
         if realDatabase.show.djiDevices == nil {
             realDatabase.show.djiDevices = true
             store()
         }
         for stream in realDatabase.streams where stream.autoFps == nil {
             stream.autoFps = false
-            store()
-        }
-        if realDatabase.chat.newMessagesAtTop == nil {
-            realDatabase.chat.newMessagesAtTop = false
             store()
         }
         if realDatabase.color.diskLutsPng == nil {
@@ -5375,12 +5414,12 @@ final class Settings {
             scene.fillFrame = false
             store()
         }
-        if realDatabase.chat.botCommandPermissions!.reaction == nil {
-            realDatabase.chat.botCommandPermissions!.reaction = .init()
+        if realDatabase.chat.botCommandPermissions.reaction == nil {
+            realDatabase.chat.botCommandPermissions.reaction = .init()
             store()
         }
-        if realDatabase.chat.botCommandPermissions!.scene == nil {
-            realDatabase.chat.botCommandPermissions!.scene = .init()
+        if realDatabase.chat.botCommandPermissions.scene == nil {
+            realDatabase.chat.botCommandPermissions.scene = .init()
             store()
         }
         if realDatabase.location.resetWhenGoingLive == nil {
@@ -5391,48 +5430,48 @@ final class Settings {
             widget.videoSource.trackFaceEnabled = false
             store()
         }
-        if realDatabase.chat.botCommandPermissions!.tts.sendChatMessages == nil {
-            realDatabase.chat.botCommandPermissions!.tts.sendChatMessages = false
+        if realDatabase.chat.botCommandPermissions.tts.sendChatMessages == nil {
+            realDatabase.chat.botCommandPermissions.tts.sendChatMessages = false
             store()
         }
-        if realDatabase.chat.botCommandPermissions!.fix.sendChatMessages == nil {
-            realDatabase.chat.botCommandPermissions!.fix.sendChatMessages = false
+        if realDatabase.chat.botCommandPermissions.fix.sendChatMessages == nil {
+            realDatabase.chat.botCommandPermissions.fix.sendChatMessages = false
             store()
         }
-        if realDatabase.chat.botCommandPermissions!.map.sendChatMessages == nil {
-            realDatabase.chat.botCommandPermissions!.map.sendChatMessages = false
+        if realDatabase.chat.botCommandPermissions.map.sendChatMessages == nil {
+            realDatabase.chat.botCommandPermissions.map.sendChatMessages = false
             store()
         }
-        if realDatabase.chat.botCommandPermissions!.alert!.sendChatMessages == nil {
-            realDatabase.chat.botCommandPermissions!.alert!.sendChatMessages = false
+        if realDatabase.chat.botCommandPermissions.alert!.sendChatMessages == nil {
+            realDatabase.chat.botCommandPermissions.alert!.sendChatMessages = false
             store()
         }
-        if realDatabase.chat.botCommandPermissions!.fax!.sendChatMessages == nil {
-            realDatabase.chat.botCommandPermissions!.fax!.sendChatMessages = false
+        if realDatabase.chat.botCommandPermissions.fax!.sendChatMessages == nil {
+            realDatabase.chat.botCommandPermissions.fax!.sendChatMessages = false
             store()
         }
-        if realDatabase.chat.botCommandPermissions!.snapshot!.sendChatMessages == nil {
-            realDatabase.chat.botCommandPermissions!.snapshot!.sendChatMessages = false
+        if realDatabase.chat.botCommandPermissions.snapshot!.sendChatMessages == nil {
+            realDatabase.chat.botCommandPermissions.snapshot!.sendChatMessages = false
             store()
         }
-        if realDatabase.chat.botCommandPermissions!.filter!.sendChatMessages == nil {
-            realDatabase.chat.botCommandPermissions!.filter!.sendChatMessages = false
+        if realDatabase.chat.botCommandPermissions.filter!.sendChatMessages == nil {
+            realDatabase.chat.botCommandPermissions.filter!.sendChatMessages = false
             store()
         }
-        if realDatabase.chat.botCommandPermissions!.tesla!.sendChatMessages == nil {
-            realDatabase.chat.botCommandPermissions!.tesla!.sendChatMessages = false
+        if realDatabase.chat.botCommandPermissions.tesla!.sendChatMessages == nil {
+            realDatabase.chat.botCommandPermissions.tesla!.sendChatMessages = false
             store()
         }
-        if realDatabase.chat.botCommandPermissions!.audio!.sendChatMessages == nil {
-            realDatabase.chat.botCommandPermissions!.audio!.sendChatMessages = false
+        if realDatabase.chat.botCommandPermissions.audio!.sendChatMessages == nil {
+            realDatabase.chat.botCommandPermissions.audio!.sendChatMessages = false
             store()
         }
-        if realDatabase.chat.botCommandPermissions!.reaction!.sendChatMessages == nil {
-            realDatabase.chat.botCommandPermissions!.reaction!.sendChatMessages = false
+        if realDatabase.chat.botCommandPermissions.reaction!.sendChatMessages == nil {
+            realDatabase.chat.botCommandPermissions.reaction!.sendChatMessages = false
             store()
         }
-        if realDatabase.chat.botCommandPermissions!.scene!.sendChatMessages == nil {
-            realDatabase.chat.botCommandPermissions!.scene!.sendChatMessages = false
+        if realDatabase.chat.botCommandPermissions.scene!.sendChatMessages == nil {
+            realDatabase.chat.botCommandPermissions.scene!.sendChatMessages = false
             store()
         }
         for device in realDatabase.catPrinters.devices where device.printSnapshots == nil {
@@ -5507,10 +5546,6 @@ final class Settings {
         }
         for button in realDatabase.quickButtons where button.page == nil {
             button.page = 1
-            store()
-        }
-        if realDatabase.chat.textToSpeechPauseBetweenMessages == nil {
-            realDatabase.chat.textToSpeechPauseBetweenMessages = 1.0
             store()
         }
     }

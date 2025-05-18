@@ -47,7 +47,7 @@ private struct LineView: View {
                 Text("\(post.timestamp) ")
                     .foregroundColor(.gray)
             }
-            if chat.badges! {
+            if chat.badges {
                 ForEach(post.userBadges, id: \.self) { url in
                     CacheAsyncImage(url: url) { image in
                         image
@@ -105,7 +105,7 @@ private struct MessagesView: View {
     @ObservedObject var chat: ChatProvider
 
     private func getRotation() -> Double {
-        if model.database.chat.newMessagesAtTop! {
+        if model.database.chat.newMessagesAtTop {
             return 0.0
         } else {
             return 180.0
@@ -113,7 +113,7 @@ private struct MessagesView: View {
     }
 
     private func getScaleX() -> Double {
-        if model.database.chat.newMessagesAtTop! {
+        if model.database.chat.newMessagesAtTop {
             return 1.0
         } else {
             return -1.0
@@ -121,7 +121,7 @@ private struct MessagesView: View {
     }
 
     private func isMirrored() -> CGFloat {
-        if model.database.chat.mirrored! {
+        if model.database.chat.mirrored {
             return -1
         } else {
             return 1
