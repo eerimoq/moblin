@@ -2,32 +2,27 @@ import SwiftUI
 
 private struct AppearenceSettingsView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var quickButtons: SettingsQuickButtons
 
     var body: some View {
         Section {
             if model.database.showAllSettings {
-                Toggle("Scroll", isOn: Binding(get: {
-                    model.database.quickButtons.enableScroll
-                }, set: { value in
-                    model.database.quickButtons.enableScroll = value
-                    model.updateQuickButtonStates()
-                    model.scrollQuickButtonsToBottom()
-                }))
-                Toggle("Two columns", isOn: Binding(get: {
-                    model.database.quickButtons.twoColumns
-                }, set: { value in
-                    model.database.quickButtons.twoColumns = value
-                    model.updateQuickButtonStates()
-                    model.scrollQuickButtonsToBottom()
-                }))
+                Toggle("Scroll", isOn: $quickButtons.enableScroll)
+                    .onChange(of: quickButtons.enableScroll) { _ in
+                        model.updateQuickButtonStates()
+                        model.scrollQuickButtonsToBottom()
+                    }
+                Toggle("Two columns", isOn: $quickButtons.twoColumns)
+                    .onChange(of: quickButtons.twoColumns) { _ in
+                        model.updateQuickButtonStates()
+                        model.scrollQuickButtonsToBottom()
+                    }
             }
-            Toggle("Show name", isOn: Binding(get: {
-                model.database.quickButtons.showName
-            }, set: { value in
-                model.database.quickButtons.showName = value
-                model.updateQuickButtonStates()
-                model.scrollQuickButtonsToBottom()
-            }))
+            Toggle("Show name", isOn: $quickButtons.showName)
+                .onChange(of: quickButtons.showName) { _ in
+                    model.updateQuickButtonStates()
+                    model.scrollQuickButtonsToBottom()
+                }
         } header: {
             Text("Appearence")
         } footer: {
@@ -99,9 +94,11 @@ private struct ButtonsSettingsView: View {
 }
 
 struct QuickButtonsSettingsView: View {
+    @EnvironmentObject var model: Model
+
     var body: some View {
         Form {
-            AppearenceSettingsView()
+            AppearenceSettingsView(quickButtons: model.database.quickButtons)
             ButtonsSettingsView()
         }
         .navigationTitle("Quick buttons")

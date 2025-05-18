@@ -2611,10 +2611,32 @@ class SettingsHeartRateDevices: Codable {
     var devices: [SettingsHeartRateDevice] = []
 }
 
-class SettingsQuickButtons: Codable {
-    var twoColumns: Bool = true
-    var showName: Bool = true
-    var enableScroll: Bool = true
+class SettingsQuickButtons: Codable, ObservableObject {
+    @Published var twoColumns: Bool = true
+    @Published var showName: Bool = true
+    @Published var enableScroll: Bool = true
+
+    enum CodingKeys: CodingKey {
+        case twoColumns,
+             showName,
+             enableScroll
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(twoColumns, forKey: .twoColumns)
+        try container.encode(showName, forKey: .showName)
+        try container.encode(enableScroll, forKey: .enableScroll)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        twoColumns = try container.decode(Bool.self, forKey: .twoColumns)
+        showName = try container.decode(Bool.self, forKey: .showName)
+        enableScroll = try container.decode(Bool.self, forKey: .enableScroll)
+    }
 }
 
 class SettingsNetworkInterfaceName: Codable, Identifiable {
