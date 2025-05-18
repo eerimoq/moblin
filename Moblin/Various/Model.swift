@@ -1794,6 +1794,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             .setDetectLanguagePerMessage(value: database.chat.textToSpeechDetectLanguagePerMessage!)
         chatTextToSpeech.setFilter(value: database.chat.textToSpeechFilter!)
         chatTextToSpeech.setFilterMentions(value: database.chat.textToSpeechFilterMentions!)
+        chatTextToSpeech.setPauseBetweenMessages(value: database.chat.textToSpeechPauseBetweenMessages!)
         setTextToSpeechStreamerMentions()
         updateOrientationLock()
         updateFaceFilterSettings()

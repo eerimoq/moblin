@@ -5,6 +5,7 @@ struct ChatTextToSpeechSettingsView: View {
     @EnvironmentObject var model: Model
     @State var rate: Float
     @State var volume: Float
+    @State var pauseBetweenMessages: Double
 
     private func onVoiceChange(languageCode: String, voice: String) {
         model.database.chat.textToSpeechLanguageVoices![languageCode] = voice
@@ -23,22 +24,6 @@ struct ChatTextToSpeechSettingsView: View {
                     Text("Voices")
                 }
                 HStack {
-                    Image(systemName: "tortoise.fill")
-                    Slider(
-                        value: $rate,
-                        in: 0.3 ... 0.6,
-                        step: 0.01,
-                        onEditingChanged: { begin in
-                            guard !begin else {
-                                return
-                            }
-                            model.database.chat.textToSpeechRate = rate
-                            model.chatTextToSpeech.setRate(rate: rate)
-                        }
-                    )
-                    Image(systemName: "hare.fill")
-                }
-                HStack {
                     Image(systemName: "volume.1.fill")
                     Slider(
                         value: $volume,
@@ -54,6 +39,44 @@ struct ChatTextToSpeechSettingsView: View {
                     )
                     Image(systemName: "volume.3.fill")
                 }
+                HStack {
+                    Image(systemName: "tortoise.fill")
+                    Slider(
+                        value: $rate,
+                        in: 0.3 ... 0.6,
+                        step: 0.01,
+                        onEditingChanged: { begin in
+                            guard !begin else {
+                                return
+                            }
+                            model.database.chat.textToSpeechRate = rate
+                            model.chatTextToSpeech.setRate(rate: rate)
+                        }
+                    )
+                    Image(systemName: "hare.fill")
+                }
+            } header: {
+                Text("Voice")
+            }
+            Section {
+                HStack {
+                    Slider(
+                        value: $pauseBetweenMessages,
+                        in: 0.5 ... 15.0,
+                        step: 0.5,
+                        onEditingChanged: { begin in
+                            guard !begin else {
+                                return
+                            }
+                            model.database.chat.textToSpeechPauseBetweenMessages = pauseBetweenMessages
+                            model.chatTextToSpeech.setPauseBetweenMessages(value: pauseBetweenMessages)
+                        }
+                    )
+                    Text("\(formatOneDecimal(Float(pauseBetweenMessages))) s")
+                        .frame(width: 45)
+                }
+            } header: {
+                Text("Pause between messages")
             }
             Section {
                 Toggle(isOn: Binding(get: {

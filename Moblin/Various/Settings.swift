@@ -2107,6 +2107,7 @@ class SettingsChat: Codable {
     var showNewFollowerMessage: Bool? = true
     var bottom: Double? = 0.0
     var newMessagesAtTop: Bool? = false
+    var textToSpeechPauseBetweenMessages: Double? = 1.0
 }
 
 enum SettingsMic: String, Codable, CaseIterable {
@@ -5506,6 +5507,10 @@ final class Settings {
         }
         for button in realDatabase.quickButtons where button.page == nil {
             button.page = 1
+            store()
+        }
+        if realDatabase.chat.textToSpeechPauseBetweenMessages == nil {
+            realDatabase.chat.textToSpeechPauseBetweenMessages = 1.0
             store()
         }
     }

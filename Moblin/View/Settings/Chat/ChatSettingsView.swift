@@ -158,7 +158,8 @@ struct ChatSettingsView: View {
                 NavigationLink {
                     ChatTextToSpeechSettingsView(
                         rate: model.database.chat.textToSpeechRate!,
-                        volume: model.database.chat.textToSpeechSayVolume!
+                        volume: model.database.chat.textToSpeechSayVolume!,
+                        pauseBetweenMessages: model.database.chat.textToSpeechPauseBetweenMessages!
                     )
                 } label: {
                     Toggle(isOn: Binding(get: {

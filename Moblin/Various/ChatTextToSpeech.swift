@@ -31,6 +31,7 @@ class ChatTextToSpeech: NSObject {
     private var volume: Float = 0.6
     private var sayUsername: Bool = false
     private var detectLanguagePerMessage: Bool = false
+    private var pauseBetweenMessages: Double = 0.0
     private var voices: [String: String] = [:]
     private var messageQueue: Deque<TextToSpeechMessage> = .init()
     private var synthesizer = AVSpeechSynthesizer()
@@ -41,6 +42,89 @@ class ChatTextToSpeech: NSObject {
     private var filterMentionsEnabled: Bool = true
     private var streamerMentions: [String] = []
     private var running = true
+
+    func say(user: String, message: String, isRedemption: Bool) {
+        textToSpeechDispatchQueue.async {
+            guard self.running else {
+                return
+            }
+            self.messageQueue.append(.init(user: user, message: message, isRedemption: isRedemption))
+            self.trySayNextMessage()
+        }
+    }
+
+    func setRate(rate: Float) {
+        textToSpeechDispatchQueue.async {
+            self.rate = rate
+        }
+    }
+
+    func setVolume(volume: Float) {
+        textToSpeechDispatchQueue.async {
+            self.volume = volume
+        }
+    }
+
+    func setVoices(voices: [String: String]) {
+        textToSpeechDispatchQueue.async {
+            self.voices = voices
+        }
+    }
+
+    func setSayUsername(value: Bool) {
+        textToSpeechDispatchQueue.async {
+            self.sayUsername = value
+        }
+    }
+
+    func setFilter(value: Bool) {
+        textToSpeechDispatchQueue.async {
+            self.filterEnabled = value
+        }
+    }
+
+    func setFilterMentions(value: Bool) {
+        textToSpeechDispatchQueue.async {
+            self.filterMentionsEnabled = value
+        }
+    }
+
+    func setStreamerMentions(streamerMentions: [String]) {
+        textToSpeechDispatchQueue.async {
+            self.streamerMentions = streamerMentions
+        }
+    }
+
+    func setDetectLanguagePerMessage(value: Bool) {
+        textToSpeechDispatchQueue.async {
+            self.detectLanguagePerMessage = value
+        }
+    }
+
+    func setPauseBetweenMessages(value: Double) {
+        textToSpeechDispatchQueue.async {
+            self.pauseBetweenMessages = value
+        }
+    }
+
+    func reset(running: Bool) {
+        textToSpeechDispatchQueue.async {
+            self.running = running
+            self.synthesizer.stopSpeaking(at: .word)
+            self.latestUserThatSaidSomething = nil
+            self.messageQueue.removeAll()
+            self.synthesizer = AVSpeechSynthesizer()
+            self.synthesizer.delegate = self
+            self.recognizer = NLLanguageRecognizer()
+        }
+    }
+
+    func skipCurrentMessage() {
+        textToSpeechDispatchQueue.async {
+            self.synthesizer.stopSpeaking(at: .word)
+            self.trySayNextMessage()
+        }
+    }
 
     private func isFilteredOut(message: String) -> Bool {
         if isFilteredOutFilter(message: message) {
@@ -163,6 +247,7 @@ class ChatTextToSpeech: NSObject {
         utterance.rate = rate
         utterance.pitchMultiplier = 0.8
         utterance.preUtteranceDelay = 0.05
+        utterance.postUtteranceDelay = pauseBetweenMessages
         utterance.volume = volume
         utterance.voice = voice
         synthesizer.speak(utterance)
@@ -178,83 +263,6 @@ class ChatTextToSpeech: NSObject {
             return true
         }
         return false
-    }
-
-    func say(user: String, message: String, isRedemption: Bool) {
-        textToSpeechDispatchQueue.async {
-            guard self.running else {
-                return
-            }
-            self.messageQueue.append(.init(user: user, message: message, isRedemption: isRedemption))
-            self.trySayNextMessage()
-        }
-    }
-
-    func setRate(rate: Float) {
-        textToSpeechDispatchQueue.async {
-            self.rate = rate
-        }
-    }
-
-    func setVolume(volume: Float) {
-        textToSpeechDispatchQueue.async {
-            self.volume = volume
-        }
-    }
-
-    func setVoices(voices: [String: String]) {
-        textToSpeechDispatchQueue.async {
-            self.voices = voices
-        }
-    }
-
-    func setSayUsername(value: Bool) {
-        textToSpeechDispatchQueue.async {
-            self.sayUsername = value
-        }
-    }
-
-    func setFilter(value: Bool) {
-        textToSpeechDispatchQueue.async {
-            self.filterEnabled = value
-        }
-    }
-
-    func setFilterMentions(value: Bool) {
-        textToSpeechDispatchQueue.async {
-            self.filterMentionsEnabled = value
-        }
-    }
-
-    func setStreamerMentions(streamerMentions: [String]) {
-        textToSpeechDispatchQueue.async {
-            self.streamerMentions = streamerMentions
-        }
-    }
-
-    func setDetectLanguagePerMessage(value: Bool) {
-        textToSpeechDispatchQueue.async {
-            self.detectLanguagePerMessage = value
-        }
-    }
-
-    func reset(running: Bool) {
-        textToSpeechDispatchQueue.async {
-            self.running = running
-            self.synthesizer.stopSpeaking(at: .word)
-            self.latestUserThatSaidSomething = nil
-            self.messageQueue.removeAll()
-            self.synthesizer = AVSpeechSynthesizer()
-            self.synthesizer.delegate = self
-            self.recognizer = NLLanguageRecognizer()
-        }
-    }
-
-    func skipCurrentMessage() {
-        textToSpeechDispatchQueue.async {
-            self.synthesizer.stopSpeaking(at: .word)
-            self.trySayNextMessage()
-        }
     }
 }
 
