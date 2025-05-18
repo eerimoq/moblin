@@ -10,7 +10,7 @@ struct QuickButtonsButtonSettingsView: View {
             return
         }
         button.backgroundColor = color
-        model.updateButtonStates()
+        model.updateQuickButtonStates()
     }
 
     var body: some View {
@@ -42,7 +42,7 @@ struct QuickButtonsButtonSettingsView: View {
                         Text("Page")
                     }
                     .onChange(of: button.page) { _ in
-                        model.updateButtonStates()
+                        model.updateQuickButtonStates()
                     }
                 }
             }

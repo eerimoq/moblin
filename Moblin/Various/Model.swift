@@ -271,8 +271,8 @@ enum StreamState {
     case disconnected
 }
 
-struct ButtonPair: Identifiable, Equatable {
-    static func == (lhs: ButtonPair, rhs: ButtonPair) -> Bool {
+struct QuickButtonPair: Identifiable, Equatable {
+    static func == (lhs: QuickButtonPair, rhs: QuickButtonPair) -> Bool {
         return lhs.id == rhs.id
     }
 
@@ -543,7 +543,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var logsStorage = LogsStorage()
     var mediaStorage = MediaPlayerStorage()
     var alertMediaStorage = AlertMediaStorage()
-    @Published var buttonPairs: [[ButtonPair]] = Array(repeating: [], count: controlBarPages)
+    @Published var buttonPairs: [[QuickButtonPair]] = Array(repeating: [], count: controlBarPages)
     var controlBarPage = 1
     private var reconnectTimer: Timer?
     private var logId = 1
@@ -1010,7 +1010,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if let type {
             setGlobalButtonState(type: type, isOn: showingPanel == panel)
         }
-        updateButtonStates()
+        updateQuickButtonStates()
     }
 
     func setAutoSceneSwitcher(id: UUID?) {
@@ -1261,30 +1261,30 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         scrollQuickButtons += 1
     }
 
-    func updateButtonStates() {
+    func updateQuickButtonStates() {
         for page in 0 ..< controlBarPages {
             let states = database.globalButtons.filter { button in
                 button.enabled && button.page == page + 1
             }.map { button in
                 ButtonState(isOn: button.isOn, button: button)
             }
-            var pairs: [ButtonPair] = []
+            var pairs: [QuickButtonPair] = []
             for index in stride(from: 0, to: states.count, by: 2) {
                 if states.count - index > 1 {
-                    pairs.append(ButtonPair(
+                    pairs.append(QuickButtonPair(
                         id: UUID(),
                         first: states[index + 1],
                         second: states[index]
                     ))
                 } else {
-                    pairs.append(ButtonPair(id: UUID(), first: states[index]))
+                    pairs.append(QuickButtonPair(id: UUID(), first: states[index]))
                 }
             }
             buttonPairs[page] = pairs
         }
     }
 
-    func getButtonPairs(page: Int) -> [ButtonPair] {
+    func getQuickButtonPairs(page: Int) -> [QuickButtonPair] {
         return buttonPairs[page]
     }
 
@@ -1721,7 +1721,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         resetSelectedScene()
         setupPeriodicTimers()
         setupThermalState()
-        updateButtonStates()
+        updateQuickButtonStates()
         scrollQuickButtonsToBottom()
         removeUnusedImages()
         removeUnusedAlertMedias()
@@ -2209,7 +2209,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             isOn = true
         }
         setGlobalButtonState(type: .face, isOn: isOn)
-        updateButtonStates()
+        updateQuickButtonStates()
     }
 
     func updateImageButtonState() {
@@ -2227,7 +2227,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             isOn = true
         }
         setGlobalButtonState(type: .image, isOn: isOn)
-        updateButtonStates()
+        updateQuickButtonStates()
     }
 
     func updateLutsButtonState() {
@@ -2236,7 +2236,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             isOn = true
         }
         setGlobalButtonState(type: .luts, isOn: isOn)
-        updateButtonStates()
+        updateQuickButtonStates()
     }
 
     func updateAutoSceneSwitcherButtonState() {
@@ -2248,7 +2248,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             isOn = true
         }
         setGlobalButtonState(type: .autoSceneSwitcher, isOn: isOn)
-        updateButtonStates()
+        updateQuickButtonStates()
     }
 
     func setPixelFormat() {
@@ -2319,12 +2319,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         case .record:
             if !pressed {
                 toggleRecording()
-                updateButtonStates()
+                updateQuickButtonStates()
             }
         case .stream:
             if !pressed {
                 toggleStream()
-                updateButtonStates()
+                updateQuickButtonStates()
             }
         case .zoomIn:
             handleGameControllerButtonZoom(pressed: pressed, x: Float.infinity)
@@ -2334,18 +2334,18 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             if !pressed {
                 toggleTorch()
                 toggleGlobalButton(type: .torch)
-                updateButtonStates()
+                updateQuickButtonStates()
             }
         case .mute:
             if !pressed {
                 toggleMute()
                 toggleGlobalButton(type: .mute)
-                updateButtonStates()
+                updateQuickButtonStates()
             }
         case .blackScreen:
             if !pressed {
                 toggleBlackScreen()
-                updateButtonStates()
+                updateQuickButtonStates()
             }
         case .chat:
             break
@@ -2984,7 +2984,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         handleSettingsUrlsDefaultQuickButtons(settings: settings)
         handleSettingsUrlsDefaultWebBrowser(settings: settings)
         makeToast(title: String(localized: "URL import successful"))
-        updateButtonStates()
+        updateQuickButtonStates()
     }
 
     func handleSettingsUrls(urls: Set<UIOpenURLContext>) {
@@ -4531,7 +4531,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func setDisplayPortrait(portrait: Bool) {
         database.portrait = portrait
         setGlobalButtonState(type: .portrait, isOn: portrait)
-        updateButtonStates()
+        updateQuickButtonStates()
         updateOrientationLock()
     }
 
@@ -4554,7 +4554,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func setIsRecording(value: Bool) {
         isRecording = value
         setGlobalButtonState(type: .record, isOn: value)
-        updateButtonStates()
+        updateQuickButtonStates()
         if isWatchLocal() {
             sendIsRecordingToWatch(isRecording: isRecording)
         }
@@ -4564,7 +4564,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func setIsWorkout(type: WatchProtocolWorkoutType?) {
         workoutType = type
         setGlobalButtonState(type: .workout, isOn: type != nil)
-        updateButtonStates()
+        updateQuickButtonStates()
     }
 
     private func setIsMuted(value: Bool) {
@@ -5881,7 +5881,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             )
             self.setMuted(value: true)
             self.setGlobalButtonState(type: .mute, isOn: true)
-            self.updateButtonStates()
+            self.updateQuickButtonStates()
         }
     }
 
@@ -5899,7 +5899,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             )
             self.setMuted(value: false)
             self.setGlobalButtonState(type: .mute, isOn: false)
-            self.updateButtonStates()
+            self.updateQuickButtonStates()
         }
     }
 
@@ -6005,7 +6005,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             }
             self.setGlobalButtonState(type: type, isOn: state == "on")
             self.sceneUpdated(updateRemoteScene: false)
-            self.updateButtonStates()
+            self.updateQuickButtonStates()
         }
     }
 
@@ -6251,7 +6251,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func toggleLockScreen() {
         lockScreen.toggle()
         setGlobalButtonState(type: .lockScreen, isOn: lockScreen)
-        updateButtonStates()
+        updateQuickButtonStates()
         if lockScreen {
             makeToast(
                 title: String(localized: "Screen locked"),
@@ -7091,7 +7091,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         case .instantReplay:
             instantReplay()
         }
-        updateButtonStates()
+        updateQuickButtonStates()
         return .handled
     }
 
@@ -8401,7 +8401,7 @@ extension Model: RemoteControlStreamerDelegate {
         } else {
             stopRecording()
         }
-        updateButtonStates()
+        updateQuickButtonStates()
         onComplete()
     }
 
@@ -8411,7 +8411,7 @@ extension Model: RemoteControlStreamerDelegate {
         } else {
             stopStream()
         }
-        updateButtonStates()
+        updateQuickButtonStates()
         onComplete()
     }
 
@@ -8433,7 +8433,7 @@ extension Model: RemoteControlStreamerDelegate {
         }
         updateMute()
         setGlobalButtonState(type: .mute, isOn: value)
-        updateButtonStates()
+        updateQuickButtonStates()
     }
 
     func remoteControlStreamerSetMute(on: Bool, onComplete: @escaping () -> Void) {
@@ -8449,7 +8449,7 @@ extension Model: RemoteControlStreamerDelegate {
         }
         updateTorch()
         toggleGlobalButton(type: .torch)
-        updateButtonStates()
+        updateQuickButtonStates()
         onComplete()
     }
 
@@ -10180,7 +10180,7 @@ extension Model {
 
     func drawOnStreamUpdateButtonState() {
         setGlobalButtonState(type: .draw, isOn: showDrawOnStream || !drawOnStreamLines.isEmpty)
-        updateButtonStates()
+        updateQuickButtonStates()
     }
 }
 

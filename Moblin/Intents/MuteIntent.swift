@@ -9,7 +9,7 @@ struct MuteIntent: AppIntent {
     func perform() async throws -> some IntentResult {
         model.setMuted(value: true)
         model.setGlobalButtonState(type: .mute, isOn: true)
-        model.updateButtonStates()
+        model.updateQuickButtonStates()
         return .result()
     }
 

@@ -9,7 +9,7 @@ struct StreamButtonsSettingsView: View {
             return
         }
         model.database.streamButtonColor = color
-        model.updateButtonStates()
+        model.updateQuickButtonStates()
     }
 
     var body: some View {

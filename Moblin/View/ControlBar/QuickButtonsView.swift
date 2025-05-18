@@ -126,13 +126,13 @@ struct QuickButtonsInnerView: View {
     private func torchAction(state: ButtonState) {
         state.button.isOn.toggle()
         model.toggleTorch()
-        model.updateButtonStates()
+        model.updateQuickButtonStates()
     }
 
     private func muteAction(state: ButtonState) {
         state.button.isOn.toggle()
         model.toggleMute()
-        model.updateButtonStates()
+        model.updateQuickButtonStates()
     }
 
     private func widgetAction(state: ButtonState) {
@@ -146,7 +146,7 @@ struct QuickButtonsInnerView: View {
             title: String(localized: "Black screen"),
             subTitle: String(localized: "Double tap to return to main view")
         )
-        model.updateButtonStates()
+        model.updateQuickButtonStates()
     }
 
     private func lockScreenAction() {
@@ -170,7 +170,7 @@ struct QuickButtonsInnerView: View {
         state.button.isOn.toggle()
         model.setGlobalButtonState(type: type, isOn: state.button.isOn)
         model.sceneUpdated(updateRemoteScene: false)
-        model.updateButtonStates()
+        model.updateQuickButtonStates()
     }
 
     private func movieAction(state: ButtonState) {
@@ -218,7 +218,7 @@ struct QuickButtonsInnerView: View {
         state.button.isOn.toggle()
         model.showingGrid.toggle()
         model.sceneUpdated(updateRemoteScene: false)
-        model.updateButtonStates()
+        model.updateQuickButtonStates()
     }
 
     private func obsAction() {
@@ -247,7 +247,7 @@ struct QuickButtonsInnerView: View {
         }
         model.showingRemoteControl.toggle()
         model.setGlobalButtonState(type: .remote, isOn: model.showingRemoteControl)
-        model.updateButtonStates()
+        model.updateQuickButtonStates()
     }
 
     private func drawAction() {
@@ -257,20 +257,20 @@ struct QuickButtonsInnerView: View {
     private func localOverlaysAction() {
         state.button.isOn.toggle()
         model.setGlobalButtonState(type: .localOverlays, isOn: state.button.isOn)
-        model.updateButtonStates()
+        model.updateQuickButtonStates()
         model.toggleLocalOverlays()
     }
 
     private func browserAction() {
         state.button.isOn.toggle()
         model.setGlobalButtonState(type: .browser, isOn: state.button.isOn)
-        model.updateButtonStates()
+        model.updateQuickButtonStates()
         model.toggleBrowser()
     }
 
     private func cameraPreviewAction() {
         state.button.isOn.toggle()
-        model.updateButtonStates()
+        model.updateQuickButtonStates()
         model.reattachCamera()
     }
 
@@ -304,7 +304,7 @@ struct QuickButtonsInnerView: View {
     private func interactiveChatAction(state: ButtonState) {
         state.button.isOn.toggle()
         model.setGlobalButtonState(type: .interactiveChat, isOn: state.button.isOn)
-        model.updateButtonStates()
+        model.updateQuickButtonStates()
         model.interactiveChat = state.button.isOn
         if !state.button.isOn {
             model.disableInteractiveChat()
@@ -351,7 +351,7 @@ struct QuickButtonsInnerView: View {
         model.showingReplay.toggle()
         state.button.isOn.toggle()
         model.setGlobalButtonState(type: .replay, isOn: state.button.isOn)
-        model.updateButtonStates()
+        model.updateQuickButtonStates()
     }
 
     private func connectionPrioritiesAction() {

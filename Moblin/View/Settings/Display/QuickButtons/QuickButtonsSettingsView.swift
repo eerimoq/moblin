@@ -11,14 +11,14 @@ struct QuickButtonsSettingsView: View {
                         model.database.quickButtons.enableScroll
                     }, set: { value in
                         model.database.quickButtons.enableScroll = value
-                        model.updateButtonStates()
+                        model.updateQuickButtonStates()
                         model.scrollQuickButtonsToBottom()
                     }))
                     Toggle("Two columns", isOn: Binding(get: {
                         model.database.quickButtons.twoColumns
                     }, set: { value in
                         model.database.quickButtons.twoColumns = value
-                        model.updateButtonStates()
+                        model.updateQuickButtonStates()
                         model.scrollQuickButtonsToBottom()
                     }))
                 }
@@ -26,7 +26,7 @@ struct QuickButtonsSettingsView: View {
                     model.database.quickButtons.showName
                 }, set: { value in
                     model.database.quickButtons.showName = value
-                    model.updateButtonStates()
+                    model.updateQuickButtonStates()
                     model.scrollQuickButtonsToBottom()
                 }))
             } header: {
@@ -48,7 +48,7 @@ struct QuickButtonsSettingsView: View {
                                     button.enabled
                                 }, set: { value in
                                     button.enabled = value
-                                    model.updateButtonStates()
+                                    model.updateQuickButtonStates()
                                 })) {
                                     HStack {
                                         DraggableItemPrefixView()
@@ -66,7 +66,7 @@ struct QuickButtonsSettingsView: View {
                                 button.enabled
                             }, set: { value in
                                 button.enabled = value
-                                model.updateButtonStates()
+                                model.updateQuickButtonStates()
                             })) {
                                 HStack {
                                     DraggableItemPrefixView()
@@ -82,7 +82,7 @@ struct QuickButtonsSettingsView: View {
                     }
                     .onMove(perform: { froms, to in
                         model.database.globalButtons.move(fromOffsets: froms, toOffset: to)
-                        model.updateButtonStates()
+                        model.updateQuickButtonStates()
                         model.sceneUpdated(updateRemoteScene: false)
                     })
                 }

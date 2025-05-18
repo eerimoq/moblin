@@ -162,7 +162,7 @@ private struct CloseButtonRemoteView: View {
                 CloseButtonView {
                     model.showingRemoteControl = false
                     model.setGlobalButtonState(type: .remote, isOn: model.showingRemoteControl)
-                    model.updateButtonStates()
+                    model.updateQuickButtonStates()
                 }
                 Spacer()
             }

@@ -8,7 +8,7 @@ struct ImportSettingsView: View {
         model.updateIconImageFromDatabase()
         model.reloadStream()
         model.resetSelectedScene()
-        model.updateButtonStates()
+        model.updateQuickButtonStates()
         model.updateFaceFilterButtonState()
     }
 
