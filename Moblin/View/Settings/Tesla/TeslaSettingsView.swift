@@ -18,7 +18,7 @@ private struct TeslaSettingsConfigurationView: View {
     @EnvironmentObject var model: Model
 
     private var tesla: SettingsTesla {
-        return model.database.tesla!
+        return model.database.tesla
     }
 
     private func onSubmitVin(value: String) {
@@ -83,9 +83,9 @@ struct TeslaSettingsView: View {
             }
             Section {
                 Toggle(isOn: Binding(get: {
-                    model.database.tesla!.enabled!
+                    model.database.tesla.enabled!
                 }, set: {
-                    model.database.tesla!.enabled = $0
+                    model.database.tesla.enabled = $0
                     model.reloadTeslaVehicle()
                 })) {
                     Text("Enabled")

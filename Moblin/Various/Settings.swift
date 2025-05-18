@@ -3215,7 +3215,7 @@ class Database: Codable, ObservableObject {
     var verboseStatuses: Bool = false
     var scoreboardPlayers: [SettingsWidgetScoreboardPlayer] = .init()
     var keyboard: SettingsKeyboard = .init()
-    var tesla: SettingsTesla? = .init()
+    var tesla: SettingsTesla = .init()
     var srtlaRelay: SettingsMoblink? = .init()
     var pixellateStrength: Float? = 0.3
     var moblink: SettingsMoblink? = .init()
@@ -3440,7 +3440,7 @@ class Database: Codable, ObservableObject {
         ) ??
             .init()
         keyboard = (try? container.decode(SettingsKeyboard.self, forKey: .keyboard)) ?? .init()
-        tesla = try? container.decode(SettingsTesla?.self, forKey: .tesla)
+        tesla = (try? container.decode(SettingsTesla.self, forKey: .tesla)) ?? .init()
         srtlaRelay = try? container.decode(SettingsMoblink?.self, forKey: .srtlaRelay)
         pixellateStrength = try? container.decode(Float?.self, forKey: .pixellateStrength)
         moblink = try? container.decode(SettingsMoblink?.self, forKey: .moblink)
@@ -5177,12 +5177,6 @@ final class Settings {
             realDatabase.chat.botCommandPermissions!.audio = .init()
             store()
         }
-        if realDatabase.tesla == nil {
-            realDatabase.tesla = .init()
-            realDatabase.tesla!.vin = realDatabase.debug.tesla!.vin
-            realDatabase.tesla!.privateKey = realDatabase.debug.tesla!.privateKey
-            store()
-        }
         if realDatabase.debug.reliableChat == nil {
             realDatabase.debug.reliableChat = false
             store()
@@ -5501,8 +5495,8 @@ final class Settings {
             widget.videoSource.borderColor = .init(red: 0, green: 0, blue: 0)
             store()
         }
-        if realDatabase.tesla!.enabled == nil {
-            realDatabase.tesla!.enabled = true
+        if realDatabase.tesla.enabled == nil {
+            realDatabase.tesla.enabled = true
             store()
         }
         if realDatabase.debug.replay == nil {
