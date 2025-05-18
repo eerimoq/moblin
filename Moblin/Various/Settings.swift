@@ -3227,7 +3227,7 @@ class Database: Codable, ObservableObject {
     var heartRateDevices: SettingsHeartRateDevices? = .init()
     var djiGimbalDevices: SettingsDjiGimbalDevices? = .init()
     var remoteSceneId: UUID?
-    var sceneNumericInput: Bool? = false
+    var sceneNumericInput: Bool = false
     var goPro: SettingsGoPro = .init()
     var replay: SettingsReplay = .init()
     var portraitVideoOffsetFromTop: Double = 0.0
@@ -3459,7 +3459,7 @@ class Database: Codable, ObservableObject {
         heartRateDevices = try? container.decode(SettingsHeartRateDevices?.self, forKey: .heartRateDevices)
         djiGimbalDevices = try? container.decode(SettingsDjiGimbalDevices?.self, forKey: .djiGimbalDevices)
         remoteSceneId = try? container.decode(UUID?.self, forKey: .remoteSceneId)
-        sceneNumericInput = try? container.decode(Bool?.self, forKey: .sceneNumericInput)
+        sceneNumericInput = (try? container.decode(Bool.self, forKey: .sceneNumericInput)) ?? false
         goPro = (try? container.decode(SettingsGoPro.self, forKey: .goPro)) ?? .init()
         replay = (try? container.decode(SettingsReplay.self, forKey: .replay)) ?? .init()
         portraitVideoOffsetFromTop = (try? container.decode(Double.self, forKey: .portraitVideoOffsetFromTop)) ?? 0.0
@@ -5425,10 +5425,6 @@ final class Settings {
         }
         for widget in realDatabase.widgets where widget.videoSource.trackFaceZoom == nil {
             widget.videoSource.trackFaceZoom = 0.75
-            store()
-        }
-        if realDatabase.sceneNumericInput == nil {
-            realDatabase.sceneNumericInput = false
             store()
         }
         for widget in realDatabase.widgets {

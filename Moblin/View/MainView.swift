@@ -119,7 +119,7 @@ private struct MenuView: View {
                 SceneSettingsView(scene: model.sceneSettingsPanelScene,
                                   name: model.sceneSettingsPanelScene.name,
                                   selectedRotation: model.sceneSettingsPanelScene.videoSourceRotation!,
-                                  numericInput: model.database.sceneNumericInput!)
+                                  numericInput: model.database.sceneNumericInput)
             }
             .id(model.sceneSettingsPanelSceneId)
         case .goPro:

@@ -16,7 +16,7 @@ private struct ScenesListView: View {
                             scene: scene,
                             name: scene.name,
                             selectedRotation: scene.videoSourceRotation!,
-                            numericInput: model.database.sceneNumericInput!
+                            numericInput: model.database.sceneNumericInput
                         )
                     } label: {
                         HStack {
