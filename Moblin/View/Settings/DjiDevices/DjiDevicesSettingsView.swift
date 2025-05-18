@@ -35,11 +35,11 @@ struct DjiDevicesSettingsView: View {
             }
             Section {
                 List {
-                    ForEach(model.database.djiDevices!.devices) { device in
+                    ForEach(model.database.djiDevices.devices) { device in
                         DjiDeviceSettingsWrapperView(device: device, name: device.name)
                     }
                     .onMove(perform: { froms, to in
-                        model.database.djiDevices!.devices.move(fromOffsets: froms, toOffset: to)
+                        model.database.djiDevices.devices.move(fromOffsets: froms, toOffset: to)
                         model.objectWillChange.send()
                     })
                     .onDelete(perform: { offsets in
@@ -50,7 +50,7 @@ struct DjiDevicesSettingsView: View {
                 CreateButtonView {
                     let device = SettingsDjiDevice()
                     device.name = "My device"
-                    model.database.djiDevices!.devices.append(device)
+                    model.database.djiDevices.devices.append(device)
                     model.objectWillChange.send()
                 }
             } footer: {

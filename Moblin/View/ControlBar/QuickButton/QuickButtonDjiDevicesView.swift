@@ -7,7 +7,7 @@ struct QuickButtonDjiDevicesView: View {
         Form {
             Section {
                 List {
-                    ForEach(model.database.djiDevices!.devices) { device in
+                    ForEach(model.database.djiDevices.devices) { device in
                         Toggle(isOn: Binding(get: {
                             model.isDjiDeviceStarted(device: device)
                         }, set: { value in

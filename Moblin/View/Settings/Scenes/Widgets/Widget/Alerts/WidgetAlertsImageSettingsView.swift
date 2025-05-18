@@ -10,7 +10,7 @@ func loadAlertImage(model: Model, imageId: UUID) -> Data? {
         return image
     }
     var image: Data?
-    if let bundledImage = model.database.alertsMediaGallery!.bundledImages
+    if let bundledImage = model.database.alertsMediaGallery.bundledImages
         .first(where: { $0.id == imageId })
     {
         if let path = Bundle.main.path(forResource: "Alerts.bundle/\(bundledImage.name)", ofType: "gif") {
@@ -85,7 +85,7 @@ private struct ImageGalleryView: View {
         Form {
             Section {
                 List {
-                    ForEach(model.database.alertsMediaGallery!.customImages) { image in
+                    ForEach(model.database.alertsMediaGallery.customImages) { image in
                         NavigationLink {
                             CustomImageView(
                                 media: image,
@@ -96,14 +96,14 @@ private struct ImageGalleryView: View {
                         }
                     }
                     .onDelete(perform: { offsets in
-                        model.database.alertsMediaGallery!.customImages.remove(atOffsets: offsets)
+                        model.database.alertsMediaGallery.customImages.remove(atOffsets: offsets)
                         model.fixAlertMedias()
                         imageId = alert.imageId
                     })
                 }
                 Button {
                     let image = SettingsAlertsMediaGalleryItem(name: "My image")
-                    model.database.alertsMediaGallery!.customImages.append(image)
+                    model.database.alertsMediaGallery.customImages.append(image)
                     model.objectWillChange.send()
                 } label: {
                     HCenter {

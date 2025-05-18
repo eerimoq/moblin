@@ -4,7 +4,7 @@ import UniformTypeIdentifiers
 
 private func loadSound(model: Model, soundId: UUID) -> AVAudioPlayer? {
     var url: URL?
-    if let bundledSound = model.database.alertsMediaGallery!.bundledSounds
+    if let bundledSound = model.database.alertsMediaGallery.bundledSounds
         .first(where: { $0.id == soundId })
     {
         url = Bundle.main.url(forResource: "Alerts.bundle/\(bundledSound.name)", withExtension: "mp3")
@@ -84,7 +84,7 @@ private struct SoundGalleryView: View {
         Form {
             Section {
                 List {
-                    ForEach(model.database.alertsMediaGallery!.customSounds) { sound in
+                    ForEach(model.database.alertsMediaGallery.customSounds) { sound in
                         NavigationLink {
                             CustomSoundView(
                                 media: sound,
@@ -95,14 +95,14 @@ private struct SoundGalleryView: View {
                         }
                     }
                     .onDelete(perform: { offsets in
-                        model.database.alertsMediaGallery!.customSounds.remove(atOffsets: offsets)
+                        model.database.alertsMediaGallery.customSounds.remove(atOffsets: offsets)
                         model.fixAlertMedias()
                         soundId = alert.soundId
                     })
                 }
                 Button {
                     let sound = SettingsAlertsMediaGalleryItem(name: "My sound")
-                    model.database.alertsMediaGallery!.customSounds.append(sound)
+                    model.database.alertsMediaGallery.customSounds.append(sound)
                     model.objectWillChange.send()
                 } label: {
                     HCenter {

@@ -3209,9 +3209,9 @@ class Database: Codable, ObservableObject {
     var mediaPlayers: SettingsMediaPlayers = .init()
     var showAllSettings: Bool = false
     var portrait: Bool = false
-    var djiDevices: SettingsDjiDevices? = .init()
-    var alertsMediaGallery: SettingsAlertsMediaGallery? = .init()
-    var catPrinters: SettingsCatPrinters? = .init()
+    var djiDevices: SettingsDjiDevices = .init()
+    var alertsMediaGallery: SettingsAlertsMediaGallery = .init()
+    var catPrinters: SettingsCatPrinters = .init()
     var verboseStatuses: Bool? = false
     var scoreboardPlayers: [SettingsWidgetScoreboardPlayer]? = .init()
     var keyboard: SettingsKeyboard? = .init()
@@ -3430,9 +3430,10 @@ class Database: Codable, ObservableObject {
         mediaPlayers = (try? container.decode(SettingsMediaPlayers.self, forKey: .mediaPlayers)) ?? .init()
         showAllSettings = (try? container.decode(Bool.self, forKey: .showAllSettings)) ?? false
         portrait = (try? container.decode(Bool.self, forKey: .portrait)) ?? false
-        djiDevices = try? container.decode(SettingsDjiDevices?.self, forKey: .djiDevices)
-        alertsMediaGallery = try? container.decode(SettingsAlertsMediaGallery?.self, forKey: .alertsMediaGallery)
-        catPrinters = try? container.decode(SettingsCatPrinters?.self, forKey: .catPrinters)
+        djiDevices = (try? container.decode(SettingsDjiDevices?.self, forKey: .djiDevices)) ?? .init()
+        alertsMediaGallery = (try? container.decode(SettingsAlertsMediaGallery?.self, forKey: .alertsMediaGallery)) ??
+            .init()
+        catPrinters = (try? container.decode(SettingsCatPrinters?.self, forKey: .catPrinters)) ?? .init()
         verboseStatuses = try? container.decode(Bool?.self, forKey: .verboseStatuses)
         scoreboardPlayers = try? container.decode([SettingsWidgetScoreboardPlayer]?.self, forKey: .scoreboardPlayers)
         keyboard = try? container.decode(SettingsKeyboard?.self, forKey: .keyboard)
@@ -3992,7 +3993,7 @@ private func addMissingGoPro(database: Database) {
 private func updateBundledAlertsMediaGallery(database: Database) {
     var bundledImages: [SettingsAlertsMediaGalleryItem] = []
     for image in allBundledAlertsMediaGalleryImages {
-        if let existingImage = database.alertsMediaGallery!.bundledImages
+        if let existingImage = database.alertsMediaGallery.bundledImages
             .first(where: { $0.name == image.name })
         {
             bundledImages.append(existingImage)
@@ -4000,10 +4001,10 @@ private func updateBundledAlertsMediaGallery(database: Database) {
             bundledImages.append(image)
         }
     }
-    database.alertsMediaGallery!.bundledImages = bundledImages
+    database.alertsMediaGallery.bundledImages = bundledImages
     var bundledSounds: [SettingsAlertsMediaGalleryItem] = []
     for sound in allBundledAlertsMediaGallerySounds {
-        if let existingSound = database.alertsMediaGallery!.bundledSounds
+        if let existingSound = database.alertsMediaGallery.bundledSounds
             .first(where: { $0.name == sound.name })
         {
             bundledSounds.append(existingSound)
@@ -4011,7 +4012,7 @@ private func updateBundledAlertsMediaGallery(database: Database) {
             bundledSounds.append(sound)
         }
     }
-    database.alertsMediaGallery!.bundledSounds = bundledSounds
+    database.alertsMediaGallery.bundledSounds = bundledSounds
 }
 
 private func addScenesToGameController(database: Database) {
@@ -4701,27 +4702,23 @@ final class Settings {
             stream.obsBrbSceneVideoSourceBroken = false
             store()
         }
-        if realDatabase.djiDevices == nil {
-            realDatabase.djiDevices = .init()
-            store()
-        }
-        for device in realDatabase.djiDevices!.devices where device.rtmpUrlType == nil {
+        for device in realDatabase.djiDevices.devices where device.rtmpUrlType == nil {
             device.rtmpUrlType = .server
             store()
         }
-        for device in realDatabase.djiDevices!.devices where device.serverRtmpStreamId == nil {
+        for device in realDatabase.djiDevices.devices where device.serverRtmpStreamId == nil {
             device.serverRtmpStreamId = .init()
             store()
         }
-        for device in realDatabase.djiDevices!.devices where device.serverRtmpUrl == nil {
+        for device in realDatabase.djiDevices.devices where device.serverRtmpUrl == nil {
             device.serverRtmpUrl = ""
             store()
         }
-        for device in realDatabase.djiDevices!.devices where device.customRtmpUrl == nil {
+        for device in realDatabase.djiDevices.devices where device.customRtmpUrl == nil {
             device.customRtmpUrl = ""
             store()
         }
-        for device in realDatabase.djiDevices!.devices where device.autoRestartStream == nil {
+        for device in realDatabase.djiDevices.devices where device.autoRestartStream == nil {
             device.autoRestartStream = false
             store()
         }
@@ -4729,27 +4726,27 @@ final class Settings {
             realDatabase.chat.textToSpeechFilterMentions = true
             store()
         }
-        for device in realDatabase.djiDevices!.devices where device.imageStabilization == nil {
+        for device in realDatabase.djiDevices.devices where device.imageStabilization == nil {
             device.imageStabilization = .off
             store()
         }
-        for device in realDatabase.djiDevices!.devices where device.resolution == nil {
+        for device in realDatabase.djiDevices.devices where device.resolution == nil {
             device.resolution = .r1080p
             store()
         }
-        for device in realDatabase.djiDevices!.devices where device.bitrate == nil {
+        for device in realDatabase.djiDevices.devices where device.bitrate == nil {
             device.bitrate = 6_000_000
             store()
         }
-        for device in realDatabase.djiDevices!.devices where device.isStarted == nil {
+        for device in realDatabase.djiDevices.devices where device.isStarted == nil {
             device.isStarted = false
             store()
         }
-        for device in realDatabase.djiDevices!.devices where device.fps == nil {
+        for device in realDatabase.djiDevices.devices where device.fps == nil {
             device.fps = 30
             store()
         }
-        for device in realDatabase.djiDevices!.devices where device.model == nil {
+        for device in realDatabase.djiDevices.devices where device.model == nil {
             device.model = .unknown
             store()
         }
@@ -4857,10 +4854,6 @@ final class Settings {
             stream.twitchLoggedIn = false
             store()
         }
-        if realDatabase.alertsMediaGallery == nil {
-            realDatabase.alertsMediaGallery = .init()
-            store()
-        }
         updateBundledAlertsMediaGallery(database: realDatabase)
         if realDatabase.show.events == nil {
             realDatabase.show.events = true
@@ -4934,10 +4927,6 @@ final class Settings {
             realDatabase.chat.botSendLowBatteryWarning = false
             store()
         }
-        if realDatabase.catPrinters == nil {
-            realDatabase.catPrinters = .init()
-            store()
-        }
         if realDatabase.chat.botCommandPermissions!.fax == nil {
             realDatabase.chat.botCommandPermissions!.fax = .init()
             store()
@@ -4968,7 +4957,7 @@ final class Settings {
             widget.alerts.twitch!.raids = .init()
             store()
         }
-        for device in realDatabase.catPrinters!.devices where device.printChat == nil {
+        for device in realDatabase.catPrinters.devices where device.printChat == nil {
             device.printChat = true
             store()
         }
@@ -5016,7 +5005,7 @@ final class Settings {
             realDatabase.chat.botCommandPermissions!.filter = .init()
             store()
         }
-        for device in realDatabase.catPrinters!.devices where device.faxMeowSound == nil {
+        for device in realDatabase.catPrinters.devices where device.faxMeowSound == nil {
             device.faxMeowSound = true
             store()
         }
@@ -5331,8 +5320,8 @@ final class Settings {
             realDatabase.location.distance = 0.0
             store()
         }
-        if realDatabase.catPrinters!.backgroundPrinting == nil {
-            realDatabase.catPrinters!.backgroundPrinting = false
+        if realDatabase.catPrinters.backgroundPrinting == nil {
+            realDatabase.catPrinters.backgroundPrinting = false
             store()
         }
         if realDatabase.show.catPrinter == nil {
@@ -5475,7 +5464,7 @@ final class Settings {
             realDatabase.chat.botCommandPermissions!.scene!.sendChatMessages = false
             store()
         }
-        for device in realDatabase.catPrinters!.devices where device.printSnapshots == nil {
+        for device in realDatabase.catPrinters.devices where device.printSnapshots == nil {
             device.printSnapshots = true
             store()
         }

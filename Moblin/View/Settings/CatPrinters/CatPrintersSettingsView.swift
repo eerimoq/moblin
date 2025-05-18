@@ -29,9 +29,9 @@ struct CatPrintersSettingsView: View {
             }
             Section {
                 Toggle(isOn: Binding(get: {
-                    model.database.catPrinters!.backgroundPrinting!
+                    model.database.catPrinters.backgroundPrinting!
                 }, set: { value in
-                    model.database.catPrinters!.backgroundPrinting = value
+                    model.database.catPrinters.backgroundPrinting = value
                 }), label: {
                     Text("Background printing")
                 })
@@ -40,17 +40,17 @@ struct CatPrintersSettingsView: View {
             }
             Section {
                 List {
-                    ForEach(model.database.catPrinters!.devices) { device in
+                    ForEach(model.database.catPrinters.devices) { device in
                         CatPrinterSettingsWrapperView(device: device, name: device.name)
                     }
                     .onDelete(perform: { offsets in
-                        model.database.catPrinters!.devices.remove(atOffsets: offsets)
+                        model.database.catPrinters.devices.remove(atOffsets: offsets)
                     })
                 }
                 CreateButtonView {
                     let device = SettingsCatPrinter()
                     device.name = "My printer"
-                    model.database.catPrinters!.devices.append(device)
+                    model.database.catPrinters.devices.append(device)
                     model.objectWillChange.send()
                 }
             } footer: {

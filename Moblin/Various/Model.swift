@@ -2586,7 +2586,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if isLive || isRecording {
             return false
         }
-        return database.moblink!.client.enabled || database.catPrinters!.backgroundPrinting!
+        return database.moblink!.client.enabled || database.catPrinters.backgroundPrinting!
     }
 
     @objc func handleBatteryStateDidChangeNotification() {
@@ -2729,7 +2729,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if currentMic.id == "\(stream.id) 0" {
             setMicFromSettings()
         }
-        for device in database.djiDevices!.devices {
+        for device in database.djiDevices.devices {
             guard device.rtmpUrlType == .server, device.serverRtmpStreamId! == stream.id else {
                 continue
             }
@@ -3850,10 +3850,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func fixAlert(alert: SettingsWidgetAlertsAlert) {
         if getAllAlertImages().first(where: { $0.id == alert.imageId }) == nil {
-            alert.imageId = database.alertsMediaGallery!.bundledImages[0].id
+            alert.imageId = database.alertsMediaGallery.bundledImages[0].id
         }
         if getAllAlertSounds().first(where: { $0.id == alert.soundId }) == nil {
-            alert.soundId = database.alertsMediaGallery!.bundledSounds[0].id
+            alert.soundId = database.alertsMediaGallery.bundledSounds[0].id
         }
     }
 
@@ -3871,10 +3871,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private func removeUnusedAlertMedias() {
         for mediaId in alertMediaStorage.ids() {
             var found = false
-            if database.alertsMediaGallery!.customImages.contains(where: { $0.id == mediaId }) {
+            if database.alertsMediaGallery.customImages.contains(where: { $0.id == mediaId }) {
                 found = true
             }
-            if database.alertsMediaGallery!.customSounds.contains(where: { $0.id == mediaId }) {
+            if database.alertsMediaGallery.customSounds.contains(where: { $0.id == mediaId }) {
                 found = true
             }
             for widget in database.widgets where widget.type == .alerts {
@@ -3890,11 +3890,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func getAllAlertImages() -> [SettingsAlertsMediaGalleryItem] {
-        return database.alertsMediaGallery!.bundledImages + database.alertsMediaGallery!.customImages
+        return database.alertsMediaGallery.bundledImages + database.alertsMediaGallery.customImages
     }
 
     func getAllAlertSounds() -> [SettingsAlertsMediaGalleryItem] {
-        return database.alertsMediaGallery!.bundledSounds + database.alertsMediaGallery!.customSounds
+        return database.alertsMediaGallery.bundledSounds + database.alertsMediaGallery.customSounds
     }
 
     func getAlertsEffect(id: UUID) -> AlertsEffect? {
@@ -4234,8 +4234,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 settings: widget.alerts.clone(),
                 delegate: self,
                 mediaStorage: alertMediaStorage,
-                bundledImages: database.alertsMediaGallery!.bundledImages,
-                bundledSounds: database.alertsMediaGallery!.bundledSounds
+                bundledImages: database.alertsMediaGallery.bundledImages,
+                bundledSounds: database.alertsMediaGallery.bundledSounds
             )
         }
         browsers = browserEffects.map { _, browser in
@@ -10944,7 +10944,7 @@ extension Model {
     }
 
     private func markDjiIsStreamingIfNeeded(rtmpServerStreamId: UUID) {
-        for device in database.djiDevices!.devices {
+        for device in database.djiDevices.devices {
             guard device.rtmpUrlType == .server, device.serverRtmpStreamId! == rtmpServerStreamId else {
                 continue
             }
@@ -10957,7 +10957,7 @@ extension Model {
     }
 
     private func getDjiDeviceSettings(djiDevice: DjiDevice) -> SettingsDjiDevice? {
-        return database.djiDevices!.devices.first(where: { djiDeviceWrappers[$0.id]?.device === djiDevice })
+        return database.djiDevices.devices.first(where: { djiDeviceWrappers[$0.id]?.device === djiDevice })
     }
 
     func setCurrentDjiDevice(device: SettingsDjiDevice) {
@@ -10967,7 +10967,7 @@ extension Model {
 
     func reloadDjiDevices() {
         for deviceId in djiDeviceWrappers.keys {
-            guard let device = database.djiDevices!.devices.first(where: { $0.id == deviceId }) else {
+            guard let device = database.djiDevices.devices.first(where: { $0.id == deviceId }) else {
                 continue
             }
             guard device.isStarted! else {
@@ -10984,7 +10984,7 @@ extension Model {
     }
 
     func autoStartDjiDevices() {
-        for device in database.djiDevices!.devices where device.isStarted! {
+        for device in database.djiDevices.devices where device.isStarted! {
             startDjiDeviceLiveStream(device: device)
         }
     }
@@ -10995,16 +10995,16 @@ extension Model {
 
     func removeDjiDevices(offsets: IndexSet) {
         for offset in offsets {
-            let device = database.djiDevices!.devices[offset]
+            let device = database.djiDevices.devices[offset]
             stopDjiDeviceLiveStream(device: device)
             djiDeviceWrappers.removeValue(forKey: device.id)
         }
-        database.djiDevices!.devices.remove(atOffsets: offsets)
+        database.djiDevices.devices.remove(atOffsets: offsets)
     }
 
     private func updateDjiDevicesStatus() {
         var statuses: [String] = []
-        for device in database.djiDevices!.devices {
+        for device in database.djiDevices.devices {
             guard let djiDeviceWrapper = djiDeviceWrappers[device.id] else {
                 continue
             }
@@ -11537,7 +11537,7 @@ extension Model {
     }
 
     private func getCatPrinterSettings(catPrinter: CatPrinter) -> SettingsCatPrinter? {
-        return database.catPrinters!.devices.first(where: { catPrinters[$0.id] === catPrinter })
+        return database.catPrinters.devices.first(where: { catPrinters[$0.id] === catPrinter })
     }
 
     func setCurrentCatPrinter(device: SettingsCatPrinter) {
@@ -11550,7 +11550,7 @@ extension Model {
     }
 
     private func autoStartCatPrinters() {
-        for device in database.catPrinters!.devices where device.enabled {
+        for device in database.catPrinters.devices where device.enabled {
             enableCatPrinter(device: device)
         }
     }
@@ -11568,7 +11568,7 @@ extension Model {
     }
 
     func isAnyCatPrinterConfigured() -> Bool {
-        return database.catPrinters!.devices.contains(where: { $0.enabled })
+        return database.catPrinters.devices.contains(where: { $0.enabled })
     }
 
     func areAllCatPrintersConnected() -> Bool {
