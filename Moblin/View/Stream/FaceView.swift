@@ -68,7 +68,7 @@ private struct FaceViewBeautyShape: View {
     var body: some View {
         FaceViewSlider(
             name: String(localized: "POSITION"),
-            value: settings.shapeOffset!,
+            value: settings.shapeOffset,
             range: 0 ... 1,
             step: 0.01,
             onChange: { offset in
@@ -78,7 +78,7 @@ private struct FaceViewBeautyShape: View {
         )
         FaceViewSlider(
             name: String(localized: "RADIUS"),
-            value: settings.shapeRadius!,
+            value: settings.shapeRadius,
             range: 0 ... 1,
             step: 0.01,
             onChange: { radius in
@@ -88,7 +88,7 @@ private struct FaceViewBeautyShape: View {
         )
         FaceViewSlider(
             name: String(localized: "STRENGTH"),
-            value: settings.shapeScale!,
+            value: settings.shapeScale,
             range: 0 ... 1,
             step: 0.01,
             onChange: { scale in
@@ -109,7 +109,7 @@ private struct FaceViewBeautySmooth: View {
     var body: some View {
         FaceViewSlider(
             name: String(localized: "RADIUS"),
-            value: settings.smoothRadius!,
+            value: settings.smoothRadius,
             range: 5 ... 20,
             step: 0.5,
             onChange: { radius in
@@ -119,7 +119,7 @@ private struct FaceViewBeautySmooth: View {
         )
         FaceViewSlider(
             name: String(localized: "STRENGTH"),
-            value: settings.smoothAmount!,
+            value: settings.smoothAmount,
             range: 0 ... 1,
             step: 0.01,
             onChange: { amount in
@@ -153,10 +153,10 @@ private struct FaceViewBeautyButtons: View {
                 }
             }
             Button {
-                model.database.debug.beautyFilterSettings.showBeauty!.toggle()
+                model.database.debug.beautyFilterSettings.showBeauty.toggle()
                 model.sceneUpdated(updateRemoteScene: false)
                 model.updateFaceFilterSettings()
-                beauty = model.database.debug.beautyFilterSettings.showBeauty!
+                beauty = model.database.debug.beautyFilterSettings.showBeauty
                 model.updateFaceFilterButtonState()
             } label: {
                 FaceButtonView(title: String(localized: "Enabled"), on: beauty)
@@ -168,15 +168,8 @@ private struct FaceViewBeautyButtons: View {
 
 struct FaceView: View {
     @EnvironmentObject var model: Model
-    @State var crop: Bool
-    @State var beauty: Bool
-    @State var blur: Bool
-    @State var blurBackground: Bool
-    @State var mouth: Bool
-
-    private var settings: SettingsDebugBeautyFilter {
-        return model.database.debug.beautyFilterSettings
-    }
+    @ObservedObject var debug: SettingsDebug
+    @ObservedObject var settings: SettingsDebugBeautyFilter
 
     var body: some View {
         HStack {
@@ -191,54 +184,50 @@ struct FaceView: View {
                     {
                         FaceViewBeautySmooth()
                     }
-                    FaceViewBeautyButtons(beauty: $beauty)
+                    FaceViewBeautyButtons(beauty: $settings.showBeauty)
                 }
                 HStack {
                     Button {
-                        model.database.debug.beautyFilter.toggle()
+                        debug.beautyFilter.toggle()
                         model.sceneUpdated(updateRemoteScene: false)
                         model.updateFaceFilterSettings()
-                        crop = model.database.debug.beautyFilter
                         model.updateFaceFilterButtonState()
                     } label: {
                         FaceButtonView(
                             title: String(localized: "Crop"),
-                            on: crop
+                            on: debug.beautyFilter
                         )
                     }
                     Button {
                         settings.showMoblin.toggle()
                         model.sceneUpdated(updateRemoteScene: false)
                         model.updateFaceFilterSettings()
-                        mouth = settings.showMoblin
                         model.updateFaceFilterButtonState()
                     } label: {
                         FaceButtonView(
                             title: String(localized: "Mouth"),
-                            on: mouth
+                            on: settings.showMoblin
                         )
                     }
                     Button {
                         settings.showBlur.toggle()
                         model.sceneUpdated(updateRemoteScene: false)
                         model.updateFaceFilterSettings()
-                        blur = settings.showBlur
                     } label: {
                         FaceButtonView(
                             title: String(localized: "Blur"),
-                            on: blur
+                            on: settings.showBlur
                         )
                     }
                     Button {
-                        settings.showBlurBackground!.toggle()
+                        settings.showBlurBackground.toggle()
                         model.sceneUpdated(updateRemoteScene: false)
                         model.updateFaceFilterSettings()
-                        blurBackground = settings.showBlurBackground!
                         model.updateFaceFilterButtonState()
                     } label: {
                         FaceButtonView(
                             title: String(localized: "Privacy"),
-                            on: blurBackground
+                            on: settings.showBlurBackground
                         )
                     }
                     Button {
@@ -246,7 +235,7 @@ struct FaceView: View {
                     } label: {
                         FaceButtonView(
                             title: String(localized: "Beauty"),
-                            on: beauty || model.showFaceBeauty
+                            on: debug.beautyFilter || model.showFaceBeauty
                         )
                     }
                 }

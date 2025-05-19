@@ -2172,14 +2172,14 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         faceEffect.safeSettings.mutate { $0 = FaceEffectSettings(
             showCrop: database.debug.beautyFilter,
             showBlur: settings.showBlur,
-            showBlurBackground: settings.showBlurBackground!,
+            showBlurBackground: settings.showBlurBackground,
             showMouth: settings.showMoblin,
-            showBeauty: settings.showBeauty!,
-            shapeRadius: settings.shapeRadius!,
-            shapeAmount: settings.shapeScale!,
-            shapeOffset: settings.shapeOffset!,
-            smoothAmount: settings.smoothAmount!,
-            smoothRadius: settings.smoothRadius!
+            showBeauty: settings.showBeauty,
+            shapeRadius: settings.shapeRadius,
+            shapeAmount: settings.shapeScale,
+            shapeOffset: settings.shapeOffset,
+            smoothAmount: settings.smoothAmount,
+            smoothRadius: settings.smoothRadius
         ) }
     }
 
@@ -2191,13 +2191,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if database.debug.beautyFilter {
             isOn = true
         }
-        if database.debug.beautyFilterSettings.showBeauty! {
+        if database.debug.beautyFilterSettings.showBeauty {
             isOn = true
         }
         if database.debug.beautyFilterSettings.showBlur {
             isOn = true
         }
-        if database.debug.beautyFilterSettings.showBlurBackground! {
+        if database.debug.beautyFilterSettings.showBlurBackground {
             isOn = true
         }
         if database.debug.beautyFilterSettings.showMoblin {
@@ -3780,8 +3780,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func isFaceEnabled() -> Bool {
         let settings = database.debug.beautyFilterSettings
-        return database.debug.beautyFilter || settings.showBlur || settings.showBlurBackground! || settings
-            .showMoblin || settings.showBeauty!
+        return database.debug.beautyFilter || settings.showBlur || settings.showBlurBackground || settings
+            .showMoblin || settings.showBeauty
     }
 
     private func registerGlobalVideoEffects() -> [VideoEffect] {

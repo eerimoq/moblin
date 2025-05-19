@@ -2284,20 +2284,72 @@ let pixelFormatTypes = [
     kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange,
 ]
 
-class SettingsDebugBeautyFilter: Codable {
-    var showBlur = false
-    var showBlurBackground: Bool? = false
-    var showMoblin = false
-    var showCute: Bool? = false
-    var cuteRadius: Float? = 0.5
-    var cuteScale: Float? = 0.0
-    var cuteOffset: Float? = 0.5
-    var showBeauty: Bool? = false
-    var shapeRadius: Float? = 0.5
-    var shapeScale: Float? = 0.0
-    var shapeOffset: Float? = 0.5
-    var smoothAmount: Float? = 0.65
-    var smoothRadius: Float? = 20.0
+class SettingsDebugBeautyFilter: Codable, ObservableObject {
+    @Published var showBlur = false
+    @Published var showBlurBackground: Bool = false
+    @Published var showMoblin = false
+    @Published var showCute: Bool = false
+    var cuteRadius: Float = 0.5
+    var cuteScale: Float = 0.0
+    var cuteOffset: Float = 0.5
+    var showBeauty: Bool = false
+    var shapeRadius: Float = 0.5
+    var shapeScale: Float = 0.0
+    var shapeOffset: Float = 0.5
+    var smoothAmount: Float = 0.65
+    var smoothRadius: Float = 20.0
+
+    enum CodingKeys: CodingKey {
+        case showBlur,
+             showBlurBackground,
+             showMoblin,
+             showCute,
+             cuteRadius,
+             cuteScale,
+             cuteOffset,
+             showBeauty,
+             shapeRadius,
+             shapeScale,
+             shapeOffset,
+             smoothAmount,
+             smoothRadius
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.showBlur, showBlur)
+        try container.encode(.showBlurBackground, showBlurBackground)
+        try container.encode(.showMoblin, showMoblin)
+        try container.encode(.showCute, showCute)
+        try container.encode(.cuteRadius, cuteRadius)
+        try container.encode(.cuteScale, cuteScale)
+        try container.encode(.cuteOffset, cuteOffset)
+        try container.encode(.showBeauty, showBeauty)
+        try container.encode(.shapeRadius, shapeRadius)
+        try container.encode(.shapeScale, shapeScale)
+        try container.encode(.shapeOffset, shapeOffset)
+        try container.encode(.smoothAmount, smoothAmount)
+        try container.encode(.smoothRadius, smoothRadius)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        showBlur = container.decode(.showBlur, Bool.self, false)
+        showBlurBackground = container.decode(.showBlurBackground, Bool.self, false)
+        showMoblin = container.decode(.showMoblin, Bool.self, false)
+        showCute = container.decode(.showCute, Bool.self, false)
+        cuteRadius = container.decode(.cuteRadius, Float.self, 0.5)
+        cuteScale = container.decode(.cuteScale, Float.self, 0.0)
+        cuteOffset = container.decode(.cuteOffset, Float.self, 0.5)
+        showBeauty = container.decode(.showBeauty, Bool.self, false)
+        shapeRadius = container.decode(.shapeRadius, Float.self, 0.5)
+        shapeScale = container.decode(.shapeScale, Float.self, 0.0)
+        shapeOffset = container.decode(.shapeOffset, Float.self, 0.5)
+        smoothAmount = container.decode(.smoothAmount, Float.self, 0.65)
+        smoothRadius = container.decode(.smoothRadius, Float.self, 20.0)
+    }
 }
 
 class SettingsHttpProxy: Codable {
@@ -2344,7 +2396,7 @@ class SettingsDebug: Codable, ObservableObject {
     var bluetoothOutputOnly: Bool = true
     var maximumLogLines: Int = 500
     var pixelFormat: String = pixelFormats[1]
-    var beautyFilter: Bool = false
+    @Published var beautyFilter: Bool = false
     var beautyFilterSettings: SettingsDebugBeautyFilter = .init()
     @Published var allowVideoRangePixelFormat: Bool = false
     var blurSceneSwitch: Bool = true
@@ -4671,26 +4723,6 @@ final class Settings {
             realDatabase.watch.show = .init()
             store()
         }
-        if realDatabase.debug.beautyFilterSettings.showBeauty == nil {
-            realDatabase.debug.beautyFilterSettings.showBeauty = realDatabase.debug.beautyFilterSettings
-                .showCute ?? false
-            store()
-        }
-        if realDatabase.debug.beautyFilterSettings.shapeRadius == nil {
-            realDatabase.debug.beautyFilterSettings.shapeRadius = realDatabase.debug.beautyFilterSettings
-                .cuteRadius ?? 0.5
-            store()
-        }
-        if realDatabase.debug.beautyFilterSettings.shapeScale == nil {
-            realDatabase.debug.beautyFilterSettings.shapeScale = realDatabase.debug.beautyFilterSettings
-                .cuteScale ?? 0.0
-            store()
-        }
-        if realDatabase.debug.beautyFilterSettings.shapeOffset == nil {
-            realDatabase.debug.beautyFilterSettings.shapeOffset = realDatabase.debug.beautyFilterSettings
-                .cuteOffset ?? 0.5
-            store()
-        }
         for stream in realDatabase.streams where stream.recording!.autoStartRecording == nil {
             stream.recording!.autoStartRecording = false
             store()
@@ -4709,14 +4741,6 @@ final class Settings {
         }
         if realDatabase.show.bonding == nil {
             realDatabase.show.bonding = true
-            store()
-        }
-        if realDatabase.debug.beautyFilterSettings.smoothAmount == nil {
-            realDatabase.debug.beautyFilterSettings.smoothAmount = 0.65
-            store()
-        }
-        if realDatabase.debug.beautyFilterSettings.smoothRadius == nil {
-            realDatabase.debug.beautyFilterSettings.smoothRadius = 20.0
             store()
         }
         var videoEffectWidgets: [SettingsWidget] = []
@@ -5189,10 +5213,6 @@ final class Settings {
         }
         for widget in database.widgets where widget.alerts.twitch!.cheers == nil {
             widget.alerts.twitch!.cheers = .init()
-            store()
-        }
-        if realDatabase.debug.beautyFilterSettings.showBlurBackground == nil {
-            realDatabase.debug.beautyFilterSettings.showBlurBackground = false
             store()
         }
         for widget in realDatabase.widgets where widget.browser.styleSheet == nil {
