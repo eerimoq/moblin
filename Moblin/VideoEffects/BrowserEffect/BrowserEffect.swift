@@ -39,7 +39,7 @@ final class BrowserEffect: VideoEffect {
     let audioOnly: Bool
     var fps: Float
     private var scaleToFitVideo: Bool
-    private var snapshotTimer: Timer?
+    private let snapshotTimer = SimpleTimer(queue: .main)
     var startLoadingTime = ContinuousClock.now
     private var scale = UIScreen().scale
     private var defaultEnabled = true
@@ -179,7 +179,7 @@ final class BrowserEffect: VideoEffect {
     }
 
     private func startTakeSnapshots() {
-        snapshotTimer = Timer.scheduledTimer(withTimeInterval: Double(1 / fps), repeats: false, block: { _ in
+        snapshotTimer.startSingleShot(timeout: Double(1 / fps)) {
             guard !self.audioOnly else {
                 return
             }
@@ -199,12 +199,11 @@ final class BrowserEffect: VideoEffect {
                     logger.warning("No browser image")
                 }
             }
-        })
+        }
     }
 
     private func stopTakeSnapshots() {
-        snapshotTimer?.invalidate()
-        snapshotTimer = nil
+        snapshotTimer.stop()
     }
 
     func setImage(image: UIImage) {

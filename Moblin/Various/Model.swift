@@ -744,6 +744,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var cyclingPower = 0
     private var cyclingCadence = 0
 
+    private let periodicTimer20ms = SimpleTimer(queue: .main)
+    private let periodicTimer200ms = SimpleTimer(queue: .main)
+    private let periodicTimer1s = SimpleTimer(queue: .main)
+    private let periodicTimer3s = SimpleTimer(queue: .main)
+    private let periodicTimer5s = SimpleTimer(queue: .main)
+    private let periodicTimer10s = SimpleTimer(queue: .main)
+
     @Published var heartRateDeviceState: HeartRateDeviceState?
     private var currentHeartRateDeviceSettings: SettingsHeartRateDevice?
     private var heartRateDevices: [UUID: HeartRateDevice] = [:]
@@ -3047,10 +3054,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func setupPeriodicTimers() {
-        Timer.scheduledTimer(withTimeInterval: 0.02, repeats: true, block: { _ in
+        periodicTimer20ms.startPeriodic(interval: 0.02) {
             self.updateAdaptiveBitrate()
-        })
-        Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true, block: { _ in
+        }
+        periodicTimer200ms.startPeriodic(interval: 0.2) {
             let monotonicNow = ContinuousClock.now
             self.updateAudioLevel()
             self.updateChat()
@@ -3071,8 +3078,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 self.relaxedBitrateStartTime = nil
             }
             self.speechToText.tick(now: monotonicNow)
-        })
-        Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
+        }
+        periodicTimer1s.startPeriodic(interval: 1) {
             let now = Date()
             let monotonicNow = ContinuousClock.now
             self.updateStreamUptime(now: monotonicNow)
@@ -3109,18 +3116,18 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             self.updateStatusEventsText()
             self.updateStatusChatText()
             self.updateAutoSceneSwitcher(now: monotonicNow)
-        })
-        Timer.scheduledTimer(withTimeInterval: 3, repeats: true, block: { _ in
+        }
+        periodicTimer3s.startPeriodic(interval: 3) {
             self.teslaGetDriveState()
-        })
-        Timer.scheduledTimer(withTimeInterval: 5, repeats: true, block: { _ in
+        }
+        periodicTimer5s.startPeriodic(interval: 5) {
             self.updateRemoteControlAssistantStatus()
             if self.isWatchLocal() {
                 self.sendThermalStateToWatch(thermalState: self.thermalState)
             }
             self.teslaGetMediaState()
-        })
-        Timer.scheduledTimer(withTimeInterval: 10, repeats: true, block: { _ in
+        }
+        periodicTimer10s.startPeriodic(interval: 10) {
             let monotonicNow = ContinuousClock.now
             self.updateBatteryLevel()
             self.media.logStatistics()
@@ -3137,7 +3144,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             self.updateDjiDevicesStatus()
             self.updateTwitchStream(monotonicNow: monotonicNow)
             self.updateAvailableDiskSpace()
-        })
+        }
     }
 
     private func updateAvailableDiskSpace() {
