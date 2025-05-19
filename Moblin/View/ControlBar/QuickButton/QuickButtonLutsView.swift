@@ -9,8 +9,8 @@ struct QuickButtonLutsView: View {
                 ForEach(model.allLuts()) { lut in
                     Toggle(isOn: Binding(get: {
                         lut.enabled!
-                    }, set: { value in
-                        lut.enabled = value
+                    }, set: {
+                        lut.enabled = $0
                         model.sceneUpdated(updateRemoteScene: false)
                     })) {
                         Text(lut.name)

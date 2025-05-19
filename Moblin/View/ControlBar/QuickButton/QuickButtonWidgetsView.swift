@@ -52,8 +52,8 @@ struct TimerWidgetView: View {
                                 .tag(delta)
                         }
                     }
-                    .onChange(of: delta) { value in
-                        timer.delta = value
+                    .onChange(of: delta) {
+                        timer.delta = $0
                     }
                     Button {
                         endTime -= 60 * Double(delta)
@@ -169,8 +169,8 @@ struct RatingWidgetView: View {
             } label: {
                 Text(name)
             }
-            .onChange(of: ratingSelection) { value in
-                rating.rating = value
+            .onChange(of: ratingSelection) {
+                rating.rating = $0
                 updateTextEffect()
             }
         }
@@ -263,8 +263,8 @@ struct QuickButtonWidgetsView: View {
                     ForEach(model.widgetsInCurrentScene) { widget in
                         Toggle(isOn: Binding(get: {
                             widget.enabled
-                        }, set: { value in
-                            widget.enabled = value
+                        }, set: {
+                            widget.enabled = $0
                             model.reloadSpeechToText()
                             model.sceneUpdated(attachCamera: model.isCaptureDeviceVideoSoureWidget(widget: widget))
                         })) {

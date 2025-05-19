@@ -38,10 +38,10 @@ private struct RemoteControlSrtConnectionPriorityView: View {
     var body: some View {
         Toggle(isOn: Binding(get: {
             enabled
-        }, set: { value in
+        }, set: {
             var priority = priority
-            priority.enabled = value
-            enabled = value
+            priority.enabled = $0
+            enabled = $0
             model.remoteControlAssistantSetSrtConnectionPriority(priority: priority)
         })) {
             HStack {
@@ -75,9 +75,9 @@ private struct RemoteControlSrtConnectionPrioritiesView: View {
             Section {
                 Toggle(isOn: Binding(get: {
                     enabled
-                }, set: { value in
-                    enabled = value
-                    model.remoteControlAssistantSetSrtConnectionPriorityEnabled(enabled: value)
+                }, set: {
+                    enabled = $0
+                    model.remoteControlAssistantSetSrtConnectionPriorityEnabled(enabled: $0)
                 })) {
                     Text("Enabled")
                 }
@@ -337,8 +337,8 @@ private struct LiveView: View {
     var body: some View {
         Toggle(isOn: Binding(get: {
             model.remoteControlState.streaming ?? false
-        }, set: { value in
-            pendingValue = value
+        }, set: {
+            pendingValue = $0
             isPresentingConfirm = true
         })) {
             Text("Live")
@@ -359,8 +359,8 @@ private struct RecordingView: View {
     var body: some View {
         Toggle(isOn: Binding(get: {
             model.remoteControlState.recording ?? false
-        }, set: { value in
-            pendingValue = value
+        }, set: {
+            pendingValue = $0
             isPresentingConfirm = true
         })) {
             Text("Recording")
@@ -495,8 +495,8 @@ private struct DebugLoggingView: View {
     var body: some View {
         Toggle(isOn: Binding(get: {
             model.remoteControlDebugLogging
-        }, set: { value in
-            model.remoteControlDebugLogging = value
+        }, set: {
+            model.remoteControlDebugLogging = $0
             guard model.remoteControlDebugLogging != model.remoteControlState.debugLogging else {
                 return
             }

@@ -43,8 +43,8 @@ struct AudioSettingsView: View {
             Section {
                 Toggle("Bluetooth output only", isOn: Binding(get: {
                     model.database.debug.bluetoothOutputOnly
-                }, set: { value in
-                    model.database.debug.bluetoothOutputOnly = value
+                }, set: {
+                    model.database.debug.bluetoothOutputOnly = $0
                     model.reloadAudioSession()
                 }))
             } footer: {
@@ -53,8 +53,8 @@ struct AudioSettingsView: View {
             Section {
                 Toggle("Prefer stereo mic", isOn: Binding(get: {
                     model.database.debug.preferStereoMic
-                }, set: { value in
-                    model.database.debug.preferStereoMic = value
+                }, set: {
+                    model.database.debug.preferStereoMic = $0
                     model.reloadAudioSession()
                     model.setMic()
                 }))
