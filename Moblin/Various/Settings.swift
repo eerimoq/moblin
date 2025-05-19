@@ -3265,11 +3265,36 @@ class SettingsMoblinkStreamer: Codable {
     var port: UInt16 = 7777
 }
 
-class SettingsMoblinkRelay: Codable {
+class SettingsMoblinkRelay: Codable, ObservableObject {
     var enabled: Bool = false
-    var name: String = randomName()
-    var url: String = ""
-    var manual: Bool? = false
+    @Published var name: String = randomName()
+    @Published var url: String = ""
+    @Published var manual: Bool = false
+
+    enum CodingKeys: CodingKey {
+        case enabled,
+             name,
+             url,
+             manual
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.enabled, enabled)
+        try container.encode(.name, name)
+        try container.encode(.url, url)
+        try container.encode(.manual, manual)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        enabled = container.decode(.enabled, Bool.self, false)
+        name = container.decode(.name, String.self, randomName())
+        url = container.decode(.url, String.self, "")
+        manual = container.decode(.manual, Bool.self, false)
+    }
 }
 
 class SettingsMoblink: Codable {
@@ -5402,10 +5427,6 @@ final class Settings {
         }
         if realDatabase.show.catPrinter == nil {
             realDatabase.show.catPrinter = true
-            store()
-        }
-        if realDatabase.moblink.client.manual == nil {
-            realDatabase.moblink.client.manual = !realDatabase.moblink.client.url.isEmpty
             store()
         }
         for widget in realDatabase.widgets where widget.text.alignment == nil {

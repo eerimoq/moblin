@@ -1868,7 +1868,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         stopMoblinkScanner()
         if isMoblinkRelayConfigured() {
             reloadMoblinkScanner()
-            if database.moblink.client.manual! {
+            if database.moblink.client.manual {
                 startMoblinkRelayManual()
             } else {
                 startMoblinkRelayAutomatic()
@@ -1911,7 +1911,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if !client.enabled {
             return false
         }
-        if client.manual! {
+        if client.manual {
             return !client.url.isEmpty && !database.moblink.password.isEmpty
         } else {
             return true
@@ -11942,7 +11942,7 @@ extension Model: MoblinkRelayDelegate {
 extension Model: MoblinkScannerDelegate {
     func moblinkScannerDiscoveredStreamers(streamers: [MoblinkScannerStreamer]) {
         moblinkScannerDiscoveredStreamers = streamers
-        if !database.moblink.client.manual! {
+        if !database.moblink.client.manual {
             startMoblinkRelayAutomatic()
         }
     }
