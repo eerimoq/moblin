@@ -47,6 +47,7 @@ final class BrowserEffect: VideoEffect {
     private var cropsMetalPetal: [WidgetCrop] = []
     private let settingName: String
     private let server: BrowserEffectServer
+    private var stopped = false
 
     init(
         url: URL,
@@ -174,12 +175,19 @@ final class BrowserEffect: VideoEffect {
         }
         stopTakeSnapshots()
         if enabled {
+            stopped = false
             startTakeSnapshots()
         }
     }
 
     private func startTakeSnapshots() {
-        snapshotTimer.startSingleShot(timeout: Double(1 / fps)) {
+        guard !stopped else {
+            return
+        }
+        snapshotTimer.startSingleShot(timeout: Double(1 / fps)) { [weak self] in
+            guard let self else {
+                return
+            }
             guard !self.audioOnly else {
                 return
             }
@@ -189,7 +197,10 @@ final class BrowserEffect: VideoEffect {
             } else {
                 configuration.snapshotWidth = NSNumber(value: self.width / self.scale)
             }
-            self.webView.takeSnapshot(with: configuration) { image, error in
+            self.webView.takeSnapshot(with: configuration) { [weak self] image, error in
+                guard let self else {
+                    return
+                }
                 self.startTakeSnapshots()
                 if let error {
                     logger.warning("Browser snapshot error: \(error)")
@@ -203,6 +214,7 @@ final class BrowserEffect: VideoEffect {
     }
 
     private func stopTakeSnapshots() {
+        stopped = true
         snapshotTimer.stop()
     }
 

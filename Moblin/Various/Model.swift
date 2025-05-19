@@ -7019,6 +7019,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             sceneUpdatedOff()
             return
         }
+        for browserEffect in browserEffects.values {
+            browserEffect.stop()
+        }
         sceneUpdatedOn(scene: scene, attachCamera: attachCamera)
         startWeatherManager()
         startGeographyManager()
