@@ -62,9 +62,9 @@ class SrtServer {
                 self.srtlaServer?.clientConnected(streamId: streamId)
                 SrtServerClient(server: self, streamId: streamId, timecodesEnabled: self.timecodesEnabled)
                     .run(clientSocket: clientSocket)
+                self.srtlaServer?.connectedStreamIds.mutate { $0.removeAll(where: { $0 == streamId }) }
                 self.srtlaServer?.clientDisconnected(streamId: streamId)
                 logger.info("srt-server: \(self.port): Closed client.")
-                self.srtlaServer?.connectedStreamIds.mutate { $0.removeAll(where: { $0 == streamId }) }
             }
             acceptedStreamId.mutate { $0 = "" }
         }

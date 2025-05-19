@@ -1026,11 +1026,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    private func updateAutoSceneSwitcher(now: ContinuousClock.Instant) {
+    private func updateAutoSceneSwitcher(now: ContinuousClock.Instant, forceSwitch: Bool = false) {
         guard let switcherId = autoSceneSwitcher.currentSwitcherId else {
             return
         }
-        if let switchTime = autoSceneSwitcher.switchTime {
+        if let switchTime = autoSceneSwitcher.switchTime, !forceSwitch {
             guard now > switchTime else {
                 return
             }
@@ -1038,6 +1038,16 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         guard let autoSwitcher = database.autoSceneSwitchers!.switchers.first(where: { $0.id == switcherId }) else {
             return
         }
+        fillAutoSceneSwitcherIfNeeded(autoSwitcher: autoSwitcher)
+        if !trySwitchToNextScene(autoSwitcher: autoSwitcher, now: now) {
+            fillAutoSceneSwitcherIfNeeded(autoSwitcher: autoSwitcher)
+            if !trySwitchToNextScene(autoSwitcher: autoSwitcher, now: now) {
+                logger.info("No scene to auto switch to")
+            }
+        }
+    }
+
+    private func fillAutoSceneSwitcherIfNeeded(autoSwitcher: SettingsAutoSceneSwitcher) {
         if autoSceneSwitcher.sceneIds.isEmpty {
             autoSceneSwitcher.sceneIds = autoSwitcher.scenes.map { $0.id }.reversed()
             if autoSwitcher.shuffle {
@@ -1049,6 +1059,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 }
             }
         }
+    }
+
+    private func trySwitchToNextScene(autoSwitcher: SettingsAutoSceneSwitcher, now: ContinuousClock.Instant) -> Bool {
         while let switcherSceneId = autoSceneSwitcher.sceneIds.popLast() {
             guard let switcherScene = autoSwitcher.scenes.first(where: { $0.id == switcherSceneId }) else {
                 continue
@@ -1065,8 +1078,22 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             selectScene(id: sceneId)
             autoSceneSwitcher.switchTime = now + .seconds(switcherScene.time)
             autoSceneSwitcher.currentSwitcherSceneId = switcherSceneId
-            break
+            return true
         }
+        return false
+    }
+
+    private func updateAutoSceneSwitcherVideoSourceDisconnected() {
+        guard autoSceneSwitcher.currentSwitcherId != nil else {
+            return
+        }
+        guard let currentSceneId = autoSceneSwitcher.currentSwitcherSceneId else {
+            return
+        }
+        guard !isSceneVideoSourceActive(sceneId: currentSceneId) else {
+            return
+        }
+        updateAutoSceneSwitcher(now: .now, forceSwitch: true)
     }
 
     private func isSceneVideoSourceActive(sceneId: UUID) -> Bool {
@@ -2716,6 +2743,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 return
             }
             self.stopRtmpServerStream(stream: stream, showToast: true, reason: reason)
+            self.updateAutoSceneSwitcherVideoSourceDisconnected()
         }
     }
 
@@ -10635,6 +10663,7 @@ extension Model: SrtlaServerDelegate {
             if self.currentMic.id == "\(stream.id) 0" {
                 self.setMicFromSettings()
             }
+            self.updateAutoSceneSwitcherVideoSourceDisconnected()
         }
     }
 

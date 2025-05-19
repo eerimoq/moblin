@@ -169,14 +169,14 @@ class RtmpServer {
     }
 
     func handleClientDisconnected(client: RtmpServerClient, reason: String) {
-        if !client.streamKey.isEmpty {
-            delegate?.rtmpServerOnPublishStop(streamKey: client.streamKey, reason: reason)
-        }
         client.stop(reason: reason)
         clients.removeAll { c in
             c === client
         }
         logNumberOfClients()
+        if !client.streamKey.isEmpty {
+            delegate?.rtmpServerOnPublishStop(streamKey: client.streamKey, reason: reason)
+        }
     }
 
     private func logNumberOfClients() {
