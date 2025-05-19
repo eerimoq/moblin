@@ -7976,6 +7976,63 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         motionManager.stopDeviceMotionUpdates()
     }
 
+    private var gForceMax = 0.0
+    private var gForcePeak = 0.0
+    private var gForcePeakNow = 0.0
+    private var gForcePeakProgress = 0.0
+    private var isAccelerometerStarted = false
+
+    private func startAccelerometer() {
+        guard !isAccelerometerStarted else {
+            return
+        }
+        isAccelerometerStarted = true
+        gForcePeak = 0.0
+        gForcePeakNow = 0.0
+        gForcePeakProgress = 0.0
+        motionManager.accelerometerUpdateInterval = 0.1
+        motionManager.startAccelerometerUpdates(to: .main) { data, error in
+            guard let data, error == nil else {
+                return
+            }
+            self.handleAccelerometerUpdate(data: data)
+        }
+    }
+
+    private func stopAccelerometer() {
+        guard isAccelerometerStarted else {
+            return
+        }
+        isAccelerometerStarted = false
+        motionManager.stopAccelerometerUpdates()
+    }
+
+    private func handleAccelerometerUpdate(data: CMAccelerometerData) {
+        let x = data.acceleration.x
+        let y = data.acceleration.y
+        let z = data.acceleration.z
+        let g = (x * x + y * y + z * z).squareRoot()
+        if g > gForceMax {
+            gForceMax = g
+        }
+        if g > gForcePeakNow {
+            gForcePeakProgress = 0.0
+            gForcePeak = g
+        } else {
+            gForcePeakProgress += 0.01
+            gForcePeakProgress = min(gForcePeakProgress, 1)
+        }
+        gForcePeakNow = (1 - easeIn(x: gForcePeakProgress)) * gForcePeak
+        let now = formatOneDecimal(Float(g))
+        let peak = formatOneDecimal(Float(max(gForcePeakNow, g)))
+        let max = formatOneDecimal(Float(gForceMax))
+        logger.info("xxx G-force: \(now) (peak: \(peak), max: \(max))")
+    }
+
+    private func easeIn(x: Double) -> Double {
+        return x * x * x * x
+    }
+
     private func preferredCamera(position: AVCaptureDevice.Position) -> AVCaptureDevice? {
         if let scene = findEnabledScene(id: selectedSceneId) {
             if position == .back {
