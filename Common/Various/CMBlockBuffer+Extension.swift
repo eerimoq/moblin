@@ -26,13 +26,4 @@ extension CMBlockBuffer {
         }
         return (buffer, length)
     }
-
-    func copyDataBytes(fromOffset: Int, length: Int, to: UnsafeMutableRawPointer) {
-        CMBlockBufferCopyDataBytes(
-            self,
-            atOffset: fromOffset,
-            dataLength: length,
-            destination: to
-        )
-    }
 }

@@ -107,10 +107,6 @@ extension CMSampleBuffer {
         )
     }
 
-    func getSampleSize(at: Int) -> Int {
-        return CMSampleBufferGetSampleSize(self, at: at)
-    }
-
     func replacePresentationTimeStamp(_ presentationTimeStamp: CMTime) -> CMSampleBuffer? {
         var timingInfo = CMSampleTimingInfo(
             duration: duration,
