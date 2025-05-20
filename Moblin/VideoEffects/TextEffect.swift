@@ -47,6 +47,7 @@ struct TextEffectStats {
     let cyclingPower: String
     let cyclingCadence: String
     let browserTitle: String
+    let gForce: GForce?
 }
 
 private enum PartData: Equatable {
@@ -164,6 +165,12 @@ private class Formatter {
                 formatLapTimes()
             case .browserTitle:
                 formatBrowserTitle(stats: stats)
+            case .gForce:
+                formatGForce(stats: stats)
+            case .gForceRecentMax:
+                formatGForceRecentMax(stats: stats)
+            case .gForceMax:
+                formatGForceMax(stats: stats)
             }
             partId += 1
         }
@@ -426,6 +433,36 @@ private class Formatter {
 
     private func formatBrowserTitle(stats: TextEffectStats) {
         parts.append(.init(id: partId, data: .text(stats.browserTitle)))
+    }
+
+    private func formatGForce(stats: TextEffectStats) {
+        let text: String
+        if let now = stats.gForce?.now {
+            text = formatOneDecimal(Float(now))
+        } else {
+            text = "-"
+        }
+        parts.append(.init(id: partId, data: .text(text)))
+    }
+
+    private func formatGForceRecentMax(stats: TextEffectStats) {
+        let text: String
+        if let peak = stats.gForce?.recentMax {
+            text = formatOneDecimal(Float(peak))
+        } else {
+            text = "-"
+        }
+        parts.append(.init(id: partId, data: .text(text)))
+    }
+
+    private func formatGForceMax(stats: TextEffectStats) {
+        let text: String
+        if let max = stats.gForce?.max {
+            text = formatOneDecimal(Float(max))
+        } else {
+            text = "-"
+        }
+        parts.append(.init(id: partId, data: .text(text)))
     }
 }
 

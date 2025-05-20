@@ -36,6 +36,9 @@ enum TextFormatPart {
     case cyclingCadence
     case lapTimes
     case browserTitle
+    case gForce
+    case gForceRecentMax
+    case gForceMax
 }
 
 class TextFormatLoader {
@@ -118,6 +121,12 @@ class TextFormatLoader {
                     loadItem(part: .lapTimes, offsetBy: 10)
                 } else if formatFromIndex.hasPrefix("{browsertitle}") {
                     loadItem(part: .browserTitle, offsetBy: 14)
+                } else if formatFromIndex.hasPrefix("{gforce}") {
+                    loadItem(part: .gForce, offsetBy: 8)
+                } else if formatFromIndex.hasPrefix("{gforcerecentmax}") {
+                    loadItem(part: .gForceRecentMax, offsetBy: 17)
+                } else if formatFromIndex.hasPrefix("{gforcemax}") {
+                    loadItem(part: .gForceMax, offsetBy: 11)
                 } else {
                     index = format.index(after: index)
                 }

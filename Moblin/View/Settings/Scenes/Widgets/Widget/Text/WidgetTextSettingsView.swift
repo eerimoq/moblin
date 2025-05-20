@@ -212,6 +212,22 @@ private struct TextSelectionView: View {
         model.startGeographyManager()
     }
 
+    private func updateNeedsGForce(_ parts: [TextFormatPart]) {
+        widget.text.needsGForce = !parts.filter { value in
+            switch value {
+            case .gForce:
+                return true
+            case .gForceRecentMax:
+                return true
+            case .gForceMax:
+                return true
+            default:
+                return false
+            }
+        }.isEmpty
+        model.startGForceManager()
+    }
+
     private func updateNeedsSubtitles(_ parts: [TextFormatPart]) {
         widget.text.needsSubtitles = !parts.filter { value in
             switch value {
@@ -236,6 +252,7 @@ private struct TextSelectionView: View {
         updateNeedsWeather(parts)
         updateNeedsGeography(parts)
         updateNeedsSubtitles(parts)
+        updateNeedsGForce(parts)
         model.sceneUpdated()
     }
 
@@ -281,6 +298,9 @@ private struct TextSelectionView: View {
                 FormatView(title: "{altitude}", description: String(localized: "Show altitude"), text: $value)
                 FormatView(title: "{distance}", description: String(localized: "Show distance"), text: $value)
                 FormatView(title: "{slope}", description: String(localized: "Show slope"), text: $value)
+                FormatView(title: "{gForce}", description: String(localized: "Show G-force"), text: $value)
+                FormatView(title: "{gForceRecentMax}", description: String(localized: "Show recent max G-force"), text: $value)
+                FormatView(title: "{gForceMax}", description: String(localized: "Show max G-force"), text: $value)
             } header: {
                 Text("Location (if Settings -> Location is enabled)")
             }

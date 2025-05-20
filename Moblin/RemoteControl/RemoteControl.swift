@@ -372,6 +372,7 @@ struct RemoteControlRemoteSceneDataTextStats: Codable {
     var cyclingPower: String
     var cyclingCadence: String
     var browserTitle: String
+    var gForce: GForce?
 
     init(stats: TextEffectStats) {
         bitrateAndTotal = stats.bitrateAndTotal
@@ -427,7 +428,8 @@ struct RemoteControlRemoteSceneDataTextStats: Codable {
                                teslaMedia: teslaMedia,
                                cyclingPower: cyclingPower,
                                cyclingCadence: cyclingCadence,
-                               browserTitle: browserTitle)
+                               browserTitle: browserTitle,
+                               gForce: gForce)
     }
 }
 

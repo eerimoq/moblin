@@ -260,7 +260,7 @@ struct QuickButtonWidgetsView: View {
         Form {
             Section {
                 List {
-                    ForEach(model.widgetsInCurrentScene) { widget in
+                    ForEach(model.widgetsInCurrentScene(onlyEnabled: false)) { widget in
                         Toggle(isOn: Binding(get: {
                             widget.enabled
                         }, set: {

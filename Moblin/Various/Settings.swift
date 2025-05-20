@@ -1076,6 +1076,7 @@ class SettingsWidgetText: Codable {
     var checkboxes: [SettingsWidgetTextCheckbox]? = []
     var ratings: [SettingsWidgetTextRating]? = []
     var lapTimes: [SettingsWidgetTextLapTimes]? = []
+    var needsGForce: Bool? = false
 }
 
 class SettingsWidgetCrop: Codable {
@@ -5601,6 +5602,10 @@ final class Settings {
         }
         for button in realDatabase.quickButtons where button.page == nil {
             button.page = 1
+            store()
+        }
+        for widget in database.widgets where widget.text.needsGForce == nil {
+            widget.text.needsGForce = false
             store()
         }
     }

@@ -618,6 +618,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var frontZoomX: Float = 1.0
     var cameraPosition: AVCaptureDevice.Position?
     private let motionManager = CMMotionManager()
+    private var gForceManager: GForceManager?
     var database: Database {
         settings.database
     }
@@ -857,12 +858,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         database.scenes.filter { scene in scene.enabled }
     }
 
-    var widgetsInCurrentScene: [SettingsWidget] {
+    func widgetsInCurrentScene(onlyEnabled: Bool) -> [SettingsWidget] {
         guard let scene = getSelectedScene() else {
             return []
         }
         var found: [UUID] = []
-        return getSceneWidgets(scene: scene).filter {
+        return getSceneWidgets(scene: scene, onlyEnabled: onlyEnabled).filter {
             if found.contains($0.id) {
                 return false
             } else {
@@ -876,10 +877,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return stream.portrait! || database.portrait
     }
 
-    private func getSceneWidgets(scene: SettingsScene) -> [SettingsWidget] {
+    private func getSceneWidgets(scene: SettingsScene, onlyEnabled: Bool) -> [SettingsWidget] {
         var widgets: [SettingsWidget] = []
         for sceneWidget in scene.widgets {
             guard let widget = findWidget(id: sceneWidget.widgetId) else {
+                continue
+            }
+            guard !onlyEnabled || widget.enabled else {
                 continue
             }
             widgets.append(widget)
@@ -887,7 +891,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 continue
             }
             if let scene = database.scenes.first(where: { $0.id == widget.scene.sceneId }) {
-                widgets += getSceneWidgets(scene: scene)
+                widgets += getSceneWidgets(scene: scene, onlyEnabled: onlyEnabled)
             }
         }
         return widgets
@@ -1679,14 +1683,14 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func isSpeechToTextNeeded() -> Bool {
-        for widget in database.widgets {
+        for widget in widgetsInCurrentScene(onlyEnabled: true) {
             switch widget.type {
             case .text:
-                if widget.enabled, widget.text.needsSubtitles! {
+                if widget.text.needsSubtitles! {
                     return true
                 }
             case .alerts:
-                if widget.enabled, widget.alerts.needsSubtitles! {
+                if widget.alerts.needsSubtitles! {
                     return true
                 }
             default:
@@ -1859,6 +1863,29 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         goProWifiCredentialsSelection = database.goPro.selectedWifiCredentials
         goProRtmpUrlSelection = database.goPro.selectedRtmpUrl
         replay.speed = database.replay.speed
+        gForceManager = GForceManager(motionManager: motionManager)
+        startGForceManager()
+    }
+
+    func startGForceManager() {
+        if isGForceManagerNeeded() {
+            gForceManager?.start()
+        } else {
+            gForceManager?.stop()
+        }
+    }
+
+    private func isGForceManagerNeeded() -> Bool {
+        for widget in widgetsInCurrentScene(onlyEnabled: true) {
+            guard widget.type == .text else {
+                continue
+            }
+            guard widget.text.needsGForce! else {
+                continue
+            }
+            return true
+        }
+        return false
     }
 
     func setBitrateDropFix() {
@@ -2119,11 +2146,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func isWeatherNeeded() -> Bool {
-        for widget in database.widgets {
+        for widget in widgetsInCurrentScene(onlyEnabled: true) {
             guard widget.type == .text else {
-                continue
-            }
-            guard widget.enabled else {
                 continue
             }
             guard widget.text.needsWeather! else {
@@ -2140,11 +2164,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func isGeographyNeeded() -> Bool {
-        for widget in database.widgets {
+        for widget in widgetsInCurrentScene(onlyEnabled: true) {
             guard widget.type == .text else {
-                continue
-            }
-            guard widget.enabled else {
                 continue
             }
             guard widget.text.needsGeography! else {
@@ -2523,6 +2544,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             locationManager.stop()
             weatherManager.stop()
             geographyManager.stop()
+            gForceManager?.stop()
             obsWebSocket?.stop()
             media.stopAllNetStreams()
             speechToText.stop()
@@ -2555,6 +2577,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             chatTextToSpeech.reset(running: true)
             startWeatherManager()
             startGeographyManager()
+            startGForceManager()
             if isRecording {
                 resumeRecording()
             }
@@ -4041,7 +4064,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 teslaMedia: textEffectTeslaMedia(),
                 cyclingPower: "\(cyclingPower) W",
                 cyclingCadence: "\(cyclingCadence)",
-                browserTitle: getBrowserTitle()
+                browserTitle: getBrowserTitle(),
+                gForce: gForceManager?.getLatest()
             )
             remoteControlAssistantSetRemoteSceneDataTextStats(stats: stats)
         }
@@ -7025,6 +7049,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         sceneUpdatedOn(scene: scene, attachCamera: attachCamera)
         startWeatherManager()
         startGeographyManager()
+        startGForceManager()
         if updateRemoteScene {
             remoteSceneSettingsUpdated()
         }
@@ -7984,63 +8009,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func stopMotionDetection() {
         motionManager.stopDeviceMotionUpdates()
-    }
-
-    private var gForceMax = 0.0
-    private var gForcePeak = 0.0
-    private var gForcePeakNow = 0.0
-    private var gForcePeakProgress = 0.0
-    private var isAccelerometerStarted = false
-
-    private func startAccelerometer() {
-        guard !isAccelerometerStarted else {
-            return
-        }
-        isAccelerometerStarted = true
-        gForcePeak = 0.0
-        gForcePeakNow = 0.0
-        gForcePeakProgress = 0.0
-        motionManager.accelerometerUpdateInterval = 0.1
-        motionManager.startAccelerometerUpdates(to: .main) { data, error in
-            guard let data, error == nil else {
-                return
-            }
-            self.handleAccelerometerUpdate(data: data)
-        }
-    }
-
-    private func stopAccelerometer() {
-        guard isAccelerometerStarted else {
-            return
-        }
-        isAccelerometerStarted = false
-        motionManager.stopAccelerometerUpdates()
-    }
-
-    private func handleAccelerometerUpdate(data: CMAccelerometerData) {
-        let x = data.acceleration.x
-        let y = data.acceleration.y
-        let z = data.acceleration.z
-        let g = (x * x + y * y + z * z).squareRoot()
-        if g > gForceMax {
-            gForceMax = g
-        }
-        if g > gForcePeakNow {
-            gForcePeakProgress = 0.0
-            gForcePeak = g
-        } else {
-            gForcePeakProgress += 0.01
-            gForcePeakProgress = min(gForcePeakProgress, 1)
-        }
-        gForcePeakNow = (1 - easeIn(x: gForcePeakProgress)) * gForcePeak
-        let now = formatOneDecimal(Float(g))
-        let peak = formatOneDecimal(Float(max(gForcePeakNow, g)))
-        let max = formatOneDecimal(Float(gForceMax))
-        logger.info("xxx G-force: \(now) (peak: \(peak), max: \(max))")
-    }
-
-    private func easeIn(x: Double) -> Double {
-        return x * x * x * x
     }
 
     private func preferredCamera(position: AVCaptureDevice.Position) -> AVCaptureDevice? {
