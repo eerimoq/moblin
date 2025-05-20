@@ -299,7 +299,11 @@ private struct TextSelectionView: View {
                 FormatView(title: "{distance}", description: String(localized: "Show distance"), text: $value)
                 FormatView(title: "{slope}", description: String(localized: "Show slope"), text: $value)
                 FormatView(title: "{gForce}", description: String(localized: "Show G-force"), text: $value)
-                FormatView(title: "{gForceRecentMax}", description: String(localized: "Show recent max G-force"), text: $value)
+                FormatView(
+                    title: "{gForceRecentMax}",
+                    description: String(localized: "Show recent max G-force"),
+                    text: $value
+                )
                 FormatView(title: "{gForceMax}", description: String(localized: "Show max G-force"), text: $value)
             } header: {
                 Text("Location (if Settings -> Location is enabled)")
