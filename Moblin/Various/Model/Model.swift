@@ -329,6 +329,11 @@ struct ObsSceneInput: Identifiable {
     var muted: Bool?
 }
 
+class DebugOverlayProvider: ObservableObject {
+    @Published var debugLines: [String] = []
+    @Published var cpuUsage: Float = 0.0
+}
+
 class AudioProvider: ObservableObject {
     @Published var showing = false
     @Published var level: Float = defaultAudioLevel
@@ -753,8 +758,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var cameraZoomLevelToXScale: Float = 1.0
     var cameraZoomXMinimum: Float = 1.0
     var cameraZoomXMaximum: Float = 1.0
-    @Published var debugLines: [String] = []
-    @Published var cpuUsage: Float = 0.0
+    @Published var debugOverlay = DebugOverlayProvider()
     var cpuUsageNeeded = false
     private var latestDebugLines: [String] = []
     private var latestDebugActions: [String] = []
@@ -2205,7 +2209,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             self.updateAdsRemainingTimer(now: now)
             self.keepSpeakerAlive(now: monotonicNow)
             if self.cpuUsageNeeded {
-                self.cpuUsage = getCpuUsage()
+                self.debugOverlay.cpuUsage = getCpuUsage()
             }
             self.updateMoblinkStatus()
             self.updateStatusEventsText()
@@ -2372,12 +2376,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func updateAdaptiveBitrateDebug() {
         if database.debug.srtOverlay {
-            debugLines = latestDebugLines + latestDebugActions
+            debugOverlay.debugLines = latestDebugLines + latestDebugActions
             if logger.debugEnabled, isLive {
                 logger.debug(latestDebugLines.joined(separator: ", "))
             }
-        } else if !debugLines.isEmpty {
-            debugLines = []
+        } else if !debugOverlay.debugLines.isEmpty {
+            debugOverlay.debugLines = []
         }
     }
 
@@ -2948,7 +2952,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 timestamp: timestamp,
                 bitrateAndTotal: speedAndTotal,
                 date: now,
-                debugOverlayLines: debugLines,
+                debugOverlayLines: debugOverlay.debugLines,
                 speed: format(speed: location?.speed ?? 0),
                 averageSpeed: format(speed: averageSpeed),
                 altitude: format(altitude: location?.altitude ?? 0),

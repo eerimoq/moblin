@@ -164,7 +164,7 @@ struct StreamOverlayView: View {
                     RightOverlayTopView()
                 }
                 HStack {
-                    StreamOverlayDebugView()
+                    StreamOverlayDebugView(debugOverlay: model.debugOverlay)
                         .padding([.leading], leadingPadding())
                     Spacer()
                 }
