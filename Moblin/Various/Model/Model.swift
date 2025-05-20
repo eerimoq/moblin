@@ -131,11 +131,11 @@ struct Icon: Identifiable {
     }
 }
 
-private let screenCaptureCameraId = UUID(uuidString: "00000000-cafe-babe-beef-000000000000")!
+let screenCaptureCameraId = UUID(uuidString: "00000000-cafe-babe-beef-000000000000")!
 let builtinBackCameraId = UUID(uuidString: "00000000-cafe-dead-beef-000000000000")!
 let builtinFrontCameraId = UUID(uuidString: "00000000-cafe-dead-beef-000000000001")!
 let externalCameraId = UUID(uuidString: "00000000-cafe-dead-beef-000000000002")!
-private let screenCaptureCamera = "Screen capture"
+let screenCaptureCamera = "Screen capture"
 private let backTripleLowEnergyCamera = "Back Triple (low energy)"
 private let backDualLowEnergyCamera = "Back Dual (low energy)"
 private let backWideDualLowEnergyCamera = "Back Wide dual (low energy)"
@@ -329,13 +329,6 @@ struct ObsSceneInput: Identifiable {
     var muted: Bool?
 }
 
-class AutoSceneSwitcherProvider: ObservableObject {
-    fileprivate var switchTime: ContinuousClock.Instant?
-    fileprivate var sceneIds: [UUID] = []
-    fileprivate var currentSwitcherSceneId: UUID?
-    @Published var currentSwitcherId: UUID?
-}
-
 class AudioProvider: ObservableObject {
     @Published var showing = false
     @Published var level: Float = defaultAudioLevel
@@ -482,7 +475,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var youTubeLiveChat: YouTubeLiveChat?
     private var afreecaTvChat: AfreecaTvChat?
     private var openStreamingPlatformChat: OpenStreamingPlatformChat!
-    private var obsWebSocket: ObsWebSocket?
+    var obsWebSocket: ObsWebSocket?
     private var chatPostId = 0
     @Published var interactiveChat = false
     var chat = ChatProvider(maximumNumberOfMessages: maximumNumberOfChatMessages)
@@ -490,7 +483,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var externalDisplayChat = ChatProvider(maximumNumberOfMessages: 50)
     @Published var externalDisplayChatEnabled = false
     private var externalDisplayWindow: UIWindow?
-    private var chatBotMessages: Deque<ChatBotMessage> = []
+    var chatBotMessages: Deque<ChatBotMessage> = []
     @Published var showAllQuickButtonChatMessage = true
     @Published var showFirstTimeChatterMessage = true
     @Published var showNewFollowerMessage = true
@@ -522,7 +515,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var imageEffects: [UUID: ImageEffect] = [:]
     private var browserEffects: [UUID: BrowserEffect] = [:]
     private var lutEffects: [UUID: LutEffect] = [:]
-    private var mapEffects: [UUID: MapEffect] = [:]
+    var mapEffects: [UUID: MapEffect] = [:]
     private var qrCodeEffects: [UUID: QrCodeEffect] = [:]
     private var alertsEffects: [UUID: AlertsEffect] = [:]
     private var videoSourceEffects: [UUID: VideoSourceEffect] = [:]
@@ -593,20 +586,20 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var obsAudioVolume: String = noValue
     @Published var obsAudioDelay: Int = 0
     @Published var portraitVideoOffsetFromTop = 0.0
-    private var obsAudioVolumeLatest: String = ""
+    var obsAudioVolumeLatest: String = ""
     @Published var obsCurrentScenePicker: String = ""
     @Published var obsCurrentScene: String = ""
-    private var obsSceneBeforeSwitchToBrbScene: String?
-    private var previousSrtDroppedPacketsTotal: Int32 = 0
-    private var streamBecameBrokenTime: ContinuousClock.Instant?
+    var obsSceneBeforeSwitchToBrbScene: String?
+    var previousSrtDroppedPacketsTotal: Int32 = 0
+    var streamBecameBrokenTime: ContinuousClock.Instant?
     @Published var currentStreamId = UUID()
     @Published var obsStreaming = false
     @Published var obsStreamingState: ObsOutputState = .stopped
     @Published var obsRecordingState: ObsOutputState = .stopped
     @Published var obsFixOngoing = false
     @Published var obsScreenshot: CGImage?
-    private var obsSourceFetchScreenshot = false
-    private var obsSourceScreenshotIsFetching = false
+    var obsSourceFetchScreenshot = false
+    var obsSourceScreenshotIsFetching = false
     var obsRecording = false
     @Published var iconImage: String = plainIcon.id
     @Published var backZoomPresetId = UUID()
@@ -631,7 +624,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     let twitchAuth = TwitchAuth()
     var twitchAuthOnComplete: ((_ accessToken: String) -> Void)?
 
-    private var numberOfTwitchViewers: Int?
+    var numberOfTwitchViewers: Int?
 
     @Published var bondingPieChartPercentages: [BondingPercentage] = []
 
@@ -792,19 +785,19 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     var srtlaServer: SrtlaServer?
 
-    private var gameControllers: [GCController?] = []
+    var gameControllers: [GCController?] = []
     @Published var gameControllersTotal = noValue
 
     @Published var location = noValue
     @Published var showLoadSettingsFailed = false
 
-    private var latestKnownLocation: CLLocation?
-    private var slopePercent = 0.0
-    private var previousSlopeAltitude: Double? = 0.0
-    private var previousSlopeDistance = 0.0
-    private var averageSpeed = 0.0
-    private var averageSpeedStartTime: ContinuousClock.Instant = .now
-    private var averageSpeedStartDistance = 0.0
+    var latestKnownLocation: CLLocation?
+    var slopePercent = 0.0
+    var previousSlopeAltitude: Double? = 0.0
+    var previousSlopeDistance = 0.0
+    var averageSpeed = 0.0
+    var averageSpeedStartTime: ContinuousClock.Instant = .now
+    var averageSpeedStartDistance = 0.0
 
     let replaysStorage = ReplaysStorage()
     var replaySettings: ReplaySettings?
@@ -817,14 +810,14 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private let sampleBufferReceiver = SampleBufferReceiver()
 
-    private let faxReceiver = FaxReceiver()
+    let faxReceiver = FaxReceiver()
 
     var moblinkStreamer: MoblinkStreamer?
     var moblinkRelays: [MoblinkRelay] = []
     var moblinkScanner: MoblinkScanner?
 
     @Published var cameraControlEnabled = false
-    private var twitchStreamUpdateTime = ContinuousClock.now
+    var twitchStreamUpdateTime = ContinuousClock.now
 
     var externalDisplayPreview = false
 
@@ -918,8 +911,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var pixellateEffect = PixellateEffect(strength: 0.0)
     private var pollEffect = PollEffect()
     var replayEffect: ReplayEffect?
-    private var locationManager = Location()
-    private var realtimeIrl: RealtimeIrl?
+    var locationManager = Location()
+    var realtimeIrl: RealtimeIrl?
     private var failedVideoEffect: String?
     var supportsAppleLog: Bool = false
 
@@ -1023,129 +1016,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         updateQuickButtonStates()
     }
 
-    func setAutoSceneSwitcher(id: UUID?) {
-        database.autoSceneSwitchers!.switcherId = id
-        autoSceneSwitcher.switchTime = .now
-        autoSceneSwitcher.sceneIds.removeAll()
-    }
-
-    func deleteAutoSceneSwitchers(offsets: IndexSet) {
-        database.autoSceneSwitchers!.switchers.remove(atOffsets: offsets)
-        if !database.autoSceneSwitchers!.switchers.contains(where: { $0.id == autoSceneSwitcher.currentSwitcherId }) {
-            autoSceneSwitcher.currentSwitcherId = nil
-            setAutoSceneSwitcher(id: nil)
-        }
-    }
-
-    private func updateAutoSceneSwitcher(now: ContinuousClock.Instant, forceSwitch: Bool = false) {
-        guard let switcherId = autoSceneSwitcher.currentSwitcherId else {
-            return
-        }
-        if let switchTime = autoSceneSwitcher.switchTime, !forceSwitch {
-            guard now > switchTime else {
-                return
-            }
-        }
-        guard let autoSwitcher = database.autoSceneSwitchers!.switchers.first(where: { $0.id == switcherId }) else {
-            return
-        }
-        fillAutoSceneSwitcherIfNeeded(autoSwitcher: autoSwitcher)
-        if !trySwitchToNextScene(autoSwitcher: autoSwitcher, now: now) {
-            fillAutoSceneSwitcherIfNeeded(autoSwitcher: autoSwitcher)
-            if !trySwitchToNextScene(autoSwitcher: autoSwitcher, now: now) {
-                logger.info("No scene to auto switch to")
-            }
-        }
-    }
-
-    private func fillAutoSceneSwitcherIfNeeded(autoSwitcher: SettingsAutoSceneSwitcher) {
-        if autoSceneSwitcher.sceneIds.isEmpty {
-            autoSceneSwitcher.sceneIds = autoSwitcher.scenes.map { $0.id }.reversed()
-            if autoSwitcher.shuffle {
-                autoSceneSwitcher.sceneIds.shuffle()
-                if autoSceneSwitcher.sceneIds.last == autoSceneSwitcher.currentSwitcherSceneId {
-                    if let switcherSceneId = autoSceneSwitcher.sceneIds.popLast() {
-                        autoSceneSwitcher.sceneIds.insert(switcherSceneId, at: 0)
-                    }
-                }
-            }
-        }
-    }
-
-    private func trySwitchToNextScene(autoSwitcher: SettingsAutoSceneSwitcher, now: ContinuousClock.Instant) -> Bool {
-        while let switcherSceneId = autoSceneSwitcher.sceneIds.popLast() {
-            guard let switcherScene = autoSwitcher.scenes.first(where: { $0.id == switcherSceneId }) else {
-                continue
-            }
-            guard let sceneId = switcherScene.sceneId else {
-                continue
-            }
-            guard enabledScenes.contains(where: { $0.id == sceneId }) else {
-                continue
-            }
-            guard isSceneVideoSourceActive(sceneId: sceneId) else {
-                continue
-            }
-            selectScene(id: sceneId)
-            autoSceneSwitcher.switchTime = now + .seconds(switcherScene.time)
-            autoSceneSwitcher.currentSwitcherSceneId = switcherSceneId
-            return true
-        }
-        return false
-    }
-
-    func updateAutoSceneSwitcherVideoSourceDisconnected() {
-        guard autoSceneSwitcher.currentSwitcherId != nil else {
-            return
-        }
-        guard let currentSceneId = autoSceneSwitcher.currentSwitcherSceneId else {
-            return
-        }
-        guard !isSceneVideoSourceActive(sceneId: currentSceneId) else {
-            return
-        }
-        updateAutoSceneSwitcher(now: .now, forceSwitch: true)
-    }
-
-    private func isSceneVideoSourceActive(sceneId: UUID) -> Bool {
+    func isSceneVideoSourceActive(sceneId: UUID) -> Bool {
         guard let scene = enabledScenes.first(where: { $0.id == sceneId }) else {
             return false
         }
         return isSceneVideoSourceActive(scene: scene)
-    }
-
-    func createStreamMarker() {
-        TwitchApi(stream.twitchAccessToken!, urlSession)
-            .createStreamMarker(userId: stream.twitchChannelId) { data in
-                if data != nil {
-                    self.makeToast(title: String(localized: "Stream marker created"))
-                } else {
-                    self.makeErrorToast(title: String(localized: "Failed to create stream marker"))
-                }
-            }
-    }
-
-    private func getStream() {
-        TwitchApi(stream.twitchAccessToken!, urlSession)
-            .getStream(userId: stream.twitchChannelId) { data in
-                guard let data else {
-                    self.numberOfTwitchViewers = nil
-                    return
-                }
-                self.numberOfTwitchViewers = data.viewer_count
-            }
-    }
-
-    private func updateTwitchStream(monotonicNow: ContinuousClock.Instant) {
-        guard isLive, isTwitchViewersConfigured() else {
-            numberOfTwitchViewers = nil
-            return
-        }
-        guard twitchStreamUpdateTime.duration(to: monotonicNow) > .seconds(25) else {
-            return
-        }
-        twitchStreamUpdateTime = monotonicNow
-        getStream()
     }
 
     @MainActor
@@ -1353,6 +1228,18 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         snapshotCountdownTick()
     }
 
+    func formatSnapshotTakenBy(user: String) -> String {
+        return String(localized: "Snapshot taken by \(user).")
+    }
+
+    func formatSnapshotTakenSuccessfully(user: String) -> String {
+        return String(localized: "\(user), thanks for bringing our photo album to life. 🎉")
+    }
+
+    func formatSnapshotTakenNotAllowed(user: String) -> String {
+        return String(localized: " \(user), you are not allowed to take snapshots, sorry. 😢")
+    }
+
     private func snapshotCountdownTick() {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             self.snapshotCountdown -= 1
@@ -1376,7 +1263,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    private func takeSnapshotWithCountdown(isChatBot: Bool, message: String, user: String?) {
+    func takeSnapshotWithCountdown(isChatBot: Bool, message: String, user: String?) {
         snapshotJobs.append(SnapshotJob(isChatBot: isChatBot, message: message, user: user))
         tryTakeNextSnapshot()
     }
@@ -1451,98 +1338,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             try AVAudioSession.sharedInstance()
                 .setAllowHapticsAndSystemSoundsDuringRecording(database.vibrate)
         } catch {}
-    }
-
-    func isObsConnected() -> Bool {
-        return obsWebSocket?.isConnected() ?? false
-    }
-
-    func obsConnectionErrorMessage() -> String {
-        return obsWebSocket?.connectionErrorMessage ?? ""
-    }
-
-    func listObsScenes(updateAudioInputs: Bool = false) {
-        obsWebSocket?.getSceneList(onSuccess: { list in
-            self.obsCurrentScenePicker = list.current
-            self.obsCurrentScene = list.current
-            self.obsScenes = list.scenes
-            if updateAudioInputs {
-                self.updateObsAudioInputs(sceneName: list.current)
-            }
-        }, onError: { _ in
-        })
-    }
-
-    func updateObsAudioInputs(sceneName: String) {
-        obsWebSocket?.getInputList { inputs in
-            self.obsWebSocket?.getSpecialInputs { specialInputs in
-                self.obsWebSocket?.getSceneItemList(sceneName: sceneName, onSuccess: { sceneItems in
-                    guard !sceneItems.isEmpty else {
-                        self.obsSceneInputs = []
-                        return
-                    }
-                    var obsSceneInputs: [ObsSceneInput] = []
-                    for input in inputs {
-                        if specialInputs.mics().contains(input) {
-                            obsSceneInputs.append(ObsSceneInput(name: input))
-                        } else if sceneItems.contains(where: { $0.sourceName == input }) {
-                            if sceneItems.first(where: { $0.sourceName == input })?.sceneItemEnabled == true {
-                                obsSceneInputs.append(ObsSceneInput(name: input))
-                            }
-                        }
-                    }
-                    self.obsWebSocket?.getInputMuteBatch(
-                        inputNames: obsSceneInputs.map { $0.name },
-                        onSuccess: { muteds in
-                            guard muteds.count == obsSceneInputs.count else {
-                                self.obsSceneInputs = []
-                                return
-                            }
-                            for (i, muted) in muteds.enumerated() {
-                                obsSceneInputs[i].muted = muted
-                            }
-                            self.obsSceneInputs = obsSceneInputs
-                        }, onError: { _ in
-                            self.obsSceneInputs = []
-                        }
-                    )
-                }, onError: { _ in
-                    self.obsSceneInputs = []
-                })
-            } onError: { _ in
-                self.obsSceneInputs = []
-            }
-        } onError: { _ in
-            self.obsSceneInputs = []
-        }
-    }
-
-    func setObsScene(name: String) {
-        obsWebSocket?.setCurrentProgramScene(name: name, onSuccess: {
-            self.obsCurrentScene = name
-            self.updateObsAudioInputs(sceneName: name)
-        }, onError: { message in
-            self.makeErrorToast(title: String(localized: "Failed to set OBS scene to \(name)"),
-                                subTitle: message)
-        })
-    }
-
-    private func updateObsStatus() {
-        guard isObsConnected() else {
-            obsAudioVolumeLatest = noValue
-            return
-        }
-        obsWebSocket?.getStreamStatus(onSuccess: { state in
-            self.obsWebsocketStreamStatusChanged(active: state.active, state: state.state)
-        }, onError: { _ in
-            self.obsWebsocketStreamStatusChanged(active: false, state: nil)
-        })
-        obsWebSocket?.getRecordStatus(onSuccess: { status in
-            self.obsWebsocketRecordStatusChanged(active: status.active, state: nil)
-        }, onError: { _ in
-            self.obsWebsocketRecordStatusChanged(active: false, state: nil)
-        })
-        listObsScenes()
     }
 
     func setup() {
@@ -1921,18 +1716,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         updateQuickButtonStates()
     }
 
-    func updateAutoSceneSwitcherButtonState() {
-        var isOn = false
-        if database.autoSceneSwitchers!.switcherId != nil {
-            isOn = true
-        }
-        if showingPanel == .autoSceneSwitcher {
-            isOn = true
-        }
-        setGlobalButtonState(type: .autoSceneSwitcher, isOn: isOn)
-        updateQuickButtonStates()
-    }
-
     func setPixelFormat() {
         for (format, type) in zip(pixelFormats, pixelFormatTypes) where
             database.debug.pixelFormat == format
@@ -1964,88 +1747,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    private func handleGameControllerButtonZoom(pressed: Bool, x: Float) {
-        if pressed {
-            setZoomX(x: x, rate: database.zoom.speed!)
-        } else {
-            if let x = stopCameraZoom() {
-                setZoomXWhenInRange(x: x)
-            }
-        }
-    }
-
-    private func handleGameControllerButton(
-        _ gameController: GCController,
-        _ button: GCControllerButtonInput,
-        _: Float,
-        _ pressed: Bool
-    ) {
-        guard let gameControllerIndex = gameControllers.firstIndex(of: gameController) else {
-            return
-        }
-        guard gameControllerIndex < database.gameControllers.count else {
-            return
-        }
-        guard let name = button.sfSymbolsName else {
-            return
-        }
-        let button = database.gameControllers[gameControllerIndex].buttons.first(where: { button in
-            button.name == name
-        })
-        guard let button else {
-            return
-        }
-        switch button.function {
-        case .unused:
-            break
-        case .record:
-            if !pressed {
-                toggleRecording()
-                updateQuickButtonStates()
-            }
-        case .stream:
-            if !pressed {
-                toggleStream()
-                updateQuickButtonStates()
-            }
-        case .zoomIn:
-            handleGameControllerButtonZoom(pressed: pressed, x: Float.infinity)
-        case .zoomOut:
-            handleGameControllerButtonZoom(pressed: pressed, x: 0)
-        case .torch:
-            if !pressed {
-                toggleTorch()
-                toggleGlobalButton(type: .torch)
-                updateQuickButtonStates()
-            }
-        case .mute:
-            if !pressed {
-                toggleMute()
-                toggleGlobalButton(type: .mute)
-                updateQuickButtonStates()
-            }
-        case .blackScreen:
-            if !pressed {
-                toggleBlackScreen()
-                updateQuickButtonStates()
-            }
-        case .chat:
-            break
-        case .scene:
-            if !pressed {
-                selectScene(id: button.sceneId)
-            }
-        case .instantReplay:
-            if !pressed {
-                instantReplay()
-            }
-        case .pauseTts:
-            if !pressed {
-                toggleTextToSpeechPaused()
-            }
-        }
-    }
-
     private func updateCameraLists() {
         if ProcessInfo().isiOSAppOnMac {
             externalCameras = []
@@ -2066,97 +1767,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @objc func handleCaptureDeviceWasDisconnected(_: Notification) {
         logger.info("Capture device disconnected")
         updateCameraLists()
-    }
-
-    private func numberOfGameControllers() -> Int {
-        return gameControllers.filter { gameController in
-            gameController != nil
-        }.count
-    }
-
-    func isGameControllerConnected() -> Bool {
-        return numberOfGameControllers() > 0
-    }
-
-    private func updateGameControllers() {
-        gameControllersTotal = String(numberOfGameControllers())
-    }
-
-    private func gameControllerNumber(gameController: GCController) -> Int? {
-        if let gameControllerIndex = gameControllers.firstIndex(of: gameController) {
-            return gameControllerIndex + 1
-        }
-        return nil
-    }
-
-    @objc func handleGameControllerDidConnect(_ notification: Notification) {
-        guard let gameController = notification.object as? GCController else {
-            return
-        }
-        guard let gamepad = gameController.extendedGamepad else {
-            return
-        }
-        gamepad.dpad.left.pressedChangedHandler = { button, value, pressed in
-            self.handleGameControllerButton(gameController, button, value, pressed)
-        }
-        gamepad.dpad.right.pressedChangedHandler = { button, value, pressed in
-            self.handleGameControllerButton(gameController, button, value, pressed)
-        }
-        gamepad.dpad.up.pressedChangedHandler = { button, value, pressed in
-            self.handleGameControllerButton(gameController, button, value, pressed)
-        }
-        gamepad.dpad.down.pressedChangedHandler = { button, value, pressed in
-            self.handleGameControllerButton(gameController, button, value, pressed)
-        }
-        gamepad.buttonA.pressedChangedHandler = { button, value, pressed in
-            self.handleGameControllerButton(gameController, button, value, pressed)
-        }
-        gamepad.buttonB.pressedChangedHandler = { button, value, pressed in
-            self.handleGameControllerButton(gameController, button, value, pressed)
-        }
-        gamepad.buttonX.pressedChangedHandler = { button, value, pressed in
-            self.handleGameControllerButton(gameController, button, value, pressed)
-        }
-        gamepad.buttonY.pressedChangedHandler = { button, value, pressed in
-            self.handleGameControllerButton(gameController, button, value, pressed)
-        }
-        gamepad.buttonMenu.pressedChangedHandler = { button, value, pressed in
-            self.handleGameControllerButton(gameController, button, value, pressed)
-        }
-        gamepad.leftShoulder.pressedChangedHandler = { button, value, pressed in
-            self.handleGameControllerButton(gameController, button, value, pressed)
-        }
-        gamepad.rightShoulder.pressedChangedHandler = { button, value, pressed in
-            self.handleGameControllerButton(gameController, button, value, pressed)
-        }
-        gamepad.leftTrigger.pressedChangedHandler = { button, value, pressed in
-            self.handleGameControllerButton(gameController, button, value, pressed)
-        }
-        gamepad.rightTrigger.pressedChangedHandler = { button, value, pressed in
-            self.handleGameControllerButton(gameController, button, value, pressed)
-        }
-        if let index = gameControllers.firstIndex(of: nil) {
-            gameControllers[index] = gameController
-        } else {
-            gameControllers.append(gameController)
-        }
-        if let number = gameControllerNumber(gameController: gameController) {
-            makeToast(title: String(localized: "Game controller \(number) connected"))
-        }
-        updateGameControllers()
-    }
-
-    @objc func handleGameControllerDidDisconnect(notification: Notification) {
-        guard let gameController = notification.object as? GCController else {
-            return
-        }
-        if let number = gameControllerNumber(gameController: gameController) {
-            makeToast(title: String(localized: "Game controller \(number) disconnected"))
-        }
-        if let index = gameControllers.firstIndex(of: gameController) {
-            gameControllers[index] = nil
-        }
-        updateGameControllers()
     }
 
     @objc func handleDidEnterBackgroundNotification() {
@@ -2647,72 +2257,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    private func isStreamLikelyBroken(now: ContinuousClock.Instant) -> Bool {
-        defer {
-            previousSrtDroppedPacketsTotal = media.srtDroppedPacketsTotal
-        }
-        if streamState == .disconnected {
-            return true
-        }
-        if media.srtDroppedPacketsTotal > previousSrtDroppedPacketsTotal {
-            streamBecameBrokenTime = now
-            return true
-        }
-        if let streamBecameBrokenTime {
-            if streamBecameBrokenTime.duration(to: now) < .seconds(15) {
-                return true
-            } else if obsCurrentScene != stream.obsBrbScene! {
-                return true
-            }
-        }
-        if stream.obsBrbSceneVideoSourceBroken!, let scene = getSelectedScene() {
-            switch scene.cameraPosition {
-            case .srtla:
-                if let srtlaStream = getSrtlaStream(id: scene.srtlaCameraId!) {
-                    if srtlaServer?.isStreamConnected(streamId: srtlaStream.streamId) == false {
-                        streamBecameBrokenTime = now
-                        return true
-                    }
-                }
-            case .rtmp:
-                if let rtmpStream = getRtmpStream(id: scene.rtmpCameraId!) {
-                    if rtmpServer?.isStreamConnected(streamKey: rtmpStream.streamKey) == false {
-                        streamBecameBrokenTime = now
-                        return true
-                    }
-                }
-            default:
-                break
-            }
-        }
-        streamBecameBrokenTime = nil
-        return false
-    }
-
-    private func updateObsSceneSwitcher(now: ContinuousClock.Instant) {
-        guard isLive, !stream.obsBrbScene!.isEmpty, !obsCurrentScene.isEmpty, isObsConnected() else {
-            return
-        }
-        if isStreamLikelyBroken(now: now) {
-            if obsCurrentScene != stream.obsBrbScene! {
-                if !stream.obsMainScene!.isEmpty {
-                    obsSceneBeforeSwitchToBrbScene = stream.obsMainScene!
-                } else {
-                    obsSceneBeforeSwitchToBrbScene = obsCurrentScene
-                }
-                makeStreamLikelyBrokenToast(scene: stream.obsBrbScene!)
-                setObsScene(name: stream.obsBrbScene!)
-            }
-        } else if let obsSceneBeforeSwitchToBrbScene {
-            if obsCurrentScene == stream.obsBrbScene! {
-                makeStreamLikelyWorkingToast(scene: obsSceneBeforeSwitchToBrbScene)
-                setObsScene(name: obsSceneBeforeSwitchToBrbScene)
-            } else if obsCurrentScene == obsSceneBeforeSwitchToBrbScene {
-                self.obsSceneBeforeSwitchToBrbScene = nil
-            }
-        }
-    }
-
     private func updateBitrateStatus() {
         defer {
             previousBitrateStatusColorSrtDroppedPacketsTotal = media.srtDroppedPacketsTotal
@@ -3167,25 +2711,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    private func isTextToSpeechEnabledForMessage(post: ChatPost) -> Bool {
-        guard database.chat.textToSpeechEnabled, post.live else {
-            return false
-        }
-        if database.chat.textToSpeechSubscribersOnly {
-            guard post.isSubscriber else {
-                return false
-            }
-        }
-        if post.bits != nil {
-            return false
-        }
-        if isAlertMessage(post: post) && isTextToSpeechEnabledForAnyAlertWidget() {
-            return false
-        }
-        return true
-    }
-
-    private func isAlertMessage(post: ChatPost) -> Bool {
+    func isAlertMessage(post: ChatPost) -> Bool {
         switch post.highlight?.kind {
         case .redemption:
             return true
@@ -3194,39 +2720,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         default:
             return false
         }
-    }
-
-    private func isTextToSpeechEnabledForAnyAlertWidget() -> Bool {
-        for alertEffect in enabledAlertsEffects {
-            let settings = alertEffect.getSettings()
-            if settings.twitch!.follows.isTextToSpeechEnabled() {
-                return true
-            }
-            if settings.twitch!.subscriptions.isTextToSpeechEnabled() {
-                return true
-            }
-            if settings.twitch!.raids!.isTextToSpeechEnabled() {
-                return true
-            }
-            if settings.twitch!.cheers!.isTextToSpeechEnabled() {
-                return true
-            }
-        }
-        return false
-    }
-
-    private func setTextToSpeechStreamerMentions() {
-        var streamerMentions: [String] = []
-        if isTwitchChatConfigured() {
-            streamerMentions.append("@\(stream.twitchChannelName)")
-        }
-        if isKickPusherConfigured() {
-            streamerMentions.append("@\(stream.kickChannelName!)")
-        }
-        if isAfreecaTvChatConfigured() {
-            streamerMentions.append("@\(stream.afreecaTvChannelName!)")
-        }
-        chatTextToSpeech.setStreamerMentions(streamerMentions: streamerMentions)
     }
 
     private func reloadImageEffects() {
@@ -3420,55 +2913,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             return alertsEffect
         }
         return nil
-    }
-
-    private func updateDistance() {
-        let location = locationManager.getLatestKnownLocation()
-        if let latestKnownLocation {
-            let distance = location?.distance(from: latestKnownLocation) ?? 0
-            if distance > latestKnownLocation.horizontalAccuracy {
-                database.location.distance! += distance
-                self.latestKnownLocation = location
-            }
-        } else {
-            latestKnownLocation = location
-        }
-    }
-
-    private func resetSlope() {
-        slopePercent = 0.0
-        previousSlopeAltitude = nil
-        previousSlopeDistance = database.location.distance!
-    }
-
-    private func updateSlope() {
-        guard let location = locationManager.getLatestKnownLocation() else {
-            return
-        }
-        let deltaDistance = database.location.distance! - previousSlopeDistance
-        guard deltaDistance != 0 else {
-            return
-        }
-        previousSlopeDistance = database.location.distance!
-        let deltaAltitude = location.altitude - (previousSlopeAltitude ?? location.altitude)
-        previousSlopeAltitude = location.altitude
-        slopePercent = 0.7 * slopePercent + 0.3 * (100 * deltaAltitude / deltaDistance)
-    }
-
-    private func resetAverageSpeed() {
-        averageSpeed = 0.0
-        averageSpeedStartTime = .now
-        averageSpeedStartDistance = database.location.distance!
-    }
-
-    private func updateAverageSpeed(now: ContinuousClock.Instant) {
-        let distance = database.location.distance! - averageSpeedStartDistance
-        let elapsed = averageSpeedStartTime.duration(to: now)
-        averageSpeed = distance / elapsed.seconds
-    }
-
-    func getDistance() -> String {
-        return format(distance: database.location.distance!)
     }
 
     private func updateTextWidgetsLapTimes(now: Date) {
@@ -3923,17 +3367,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    func startAds(seconds: Int) {
-        TwitchApi(stream.twitchAccessToken!, urlSession)
-            .startCommercial(broadcasterId: stream.twitchChannelId, length: seconds) { data in
-                if let data {
-                    self.makeToast(title: data.message)
-                } else {
-                    self.makeErrorToast(title: String(localized: "Failed to start commercial"))
-                }
-            }
-    }
-
     func setGlobalButtonState(type: SettingsQuickButtonType, isOn: Bool) {
         for button in database.quickButtons where button.type == type {
             button.isOn = isOn
@@ -3987,7 +3420,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         updateOrientationLock()
     }
 
-    private func toggleStream() {
+    func toggleStream() {
         if isLive {
             stopStream()
         } else {
@@ -4528,20 +3961,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return isTwitchEventSubConfigured()
     }
 
-    func isTwitchEventSubConfigured() -> Bool {
-        return isTwitchAccessTokenConfigured()
-    }
-
     func isEventsConnected() -> Bool {
         return isTwitchEventsConnected()
     }
 
     func isEventsRemoteControl() -> Bool {
         return useRemoteControlForChatAndEvents
-    }
-
-    func isTwitchEventsConnected() -> Bool {
-        return twitchEventSub?.isConnected() ?? false
     }
 
     func isChatConfigured() -> Bool {
@@ -4556,26 +3981,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func isViewersConfigured() -> Bool {
         return isTwitchViewersConfigured() || isKickViewersConfigured()
-    }
-
-    func isTwitchViewersConfigured() -> Bool {
-        return stream.twitchChannelId != "" && isTwitchAccessTokenConfigured()
-    }
-
-    func isTwitchChatConfigured() -> Bool {
-        return database.chat.enabled && stream.twitchChannelName != ""
-    }
-
-    func isTwitchAccessTokenConfigured() -> Bool {
-        return stream.twitchAccessToken != ""
-    }
-
-    func isTwitchChatConnected() -> Bool {
-        return twitchChat?.isConnected() ?? false
-    }
-
-    func hasTwitchChatEmotes() -> Bool {
-        return twitchChat?.hasEmotes() ?? false
     }
 
     func isKickPusherConfigured() -> Bool {
@@ -4663,7 +4068,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return streaming
     }
 
-    private func resetChat() {
+    func resetChat() {
         chat.reset()
         quickButtonChat.reset()
         externalDisplayChat.reset()
@@ -4673,21 +4078,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         chatBotMessages = []
         chatTextToSpeech.reset(running: true)
         remoteControlStreamerLatestReceivedChatMessageId = -1
-    }
-
-    private func reloadTwitchChat() {
-        twitchChat.stop()
-        setTextToSpeechStreamerMentions()
-        if isTwitchChatConfigured(), !isChatRemoteControl() {
-            twitchChat.start(
-                channelName: stream.twitchChannelName,
-                channelId: stream.twitchChannelId,
-                settings: stream.chat!,
-                accessToken: stream.twitchAccessToken!,
-                httpProxy: httpProxy(),
-                urlSession: urlSession
-            )
-        }
     }
 
     func httpProxy() -> HttpProxy? {
@@ -4768,35 +4158,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    private func reloadObsWebSocket() {
-        obsWebSocket?.stop()
-        obsWebSocket = nil
-        guard isObsRemoteControlConfigured() else {
-            return
-        }
-        guard let url = URL(string: stream.obsWebSocketUrl!) else {
-            return
-        }
-        obsWebSocket = ObsWebSocket(
-            url: url,
-            password: stream.obsWebSocketPassword!,
-            delegate: self
-        )
-        obsWebSocket!.start()
-    }
-
-    func twitchChannelNameUpdated() {
-        reloadTwitchEventSub()
-        reloadTwitchChat()
-        resetChat()
-    }
-
-    func twitchChannelIdUpdated() {
-        reloadTwitchEventSub()
-        reloadTwitchChat()
-        resetChat()
-    }
-
     func kickChannelNameUpdated() {
         reloadKickPusher()
         reloadKickViewers()
@@ -4828,25 +4189,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         resetChat()
     }
 
-    func setObsRemoteControlEnabled(enabled: Bool) {
-        stream.obsWebSocketEnabled = enabled
-        if stream.enabled {
-            obsWebSocketEnabledUpdated()
-        }
-    }
-
-    func obsWebSocketEnabledUpdated() {
-        reloadObsWebSocket()
-    }
-
-    func obsWebSocketUrlUpdated() {
-        reloadObsWebSocket()
-    }
-
-    func obsWebSocketPasswordUpdated() {
-        reloadObsWebSocket()
-    }
-
     func bttvEmotesEnabledUpdated() {
         reloadChats()
     }
@@ -4857,86 +4199,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func seventvEmotesEnabledUpdated() {
         reloadChats()
-    }
-
-    func obsStartStream() {
-        obsWebSocket?.startStream(onSuccess: {}, onError: { message in
-            DispatchQueue.main.async {
-                self.makeErrorToast(title: String(localized: "Failed to start OBS stream"),
-                                    subTitle: message)
-            }
-        })
-    }
-
-    func obsStopStream() {
-        obsWebSocket?.stopStream(onSuccess: {}, onError: { message in
-            DispatchQueue.main.async {
-                self.makeErrorToast(title: String(localized: "Failed to stop OBS stream"),
-                                    subTitle: message)
-            }
-        })
-    }
-
-    func obsStartRecording() {
-        obsWebSocket?.startRecord(onSuccess: {}, onError: { message in
-            DispatchQueue.main.async {
-                self.makeErrorToast(title: String(localized: "Failed to start OBS recording"),
-                                    subTitle: message)
-            }
-        })
-    }
-
-    func obsStopRecording() {
-        obsWebSocket?.stopRecord(onSuccess: {}, onError: { message in
-            DispatchQueue.main.async {
-                self.makeErrorToast(title: String(localized: "Failed to stop OBS recording"),
-                                    subTitle: message)
-            }
-        })
-    }
-
-    func obsFixStream() {
-        guard let obsWebSocket else {
-            return
-        }
-        obsFixOngoing = true
-        obsWebSocket.setInputSettings(inputName: stream.obsSourceName!,
-                                      onSuccess: {
-                                          self.obsFixOngoing = false
-                                      }, onError: { message in
-                                          self.obsFixOngoing = false
-                                          DispatchQueue.main.async {
-                                              self.makeErrorToast(
-                                                  title: String(localized: "Failed to fix OBS input"),
-                                                  subTitle: message
-                                              )
-                                          }
-                                      })
-    }
-
-    func obsMuteAudio(inputName: String, muted: Bool) {
-        guard let obsWebSocket else {
-            return
-        }
-        obsWebSocket.setInputMute(inputName: inputName,
-                                  muted: muted,
-                                  onSuccess: {}, onError: { _ in
-                                  })
-    }
-
-    func startObsAudioVolume() {
-        obsAudioVolumeLatest = noValue
-        obsWebSocket?.startAudioVolume()
-    }
-
-    func stopObsAudioVolume() {
-        obsWebSocket?.stopAudioVolume()
-    }
-
-    private func updateObsAudioVolume() {
-        if obsAudioVolumeLatest != obsAudioVolume {
-            obsAudioVolume = obsAudioVolumeLatest
-        }
     }
 
     func updateBrowserWidgetStatus() {
@@ -5012,541 +4274,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func toggleBrowser() {
         showBrowser.toggle()
-    }
-
-    func startObsSourceScreenshot() {
-        obsScreenshot = nil
-        obsSourceFetchScreenshot = true
-        obsSourceScreenshotIsFetching = false
-    }
-
-    func stopObsSourceScreenshot() {
-        obsSourceFetchScreenshot = false
-    }
-
-    private func updateObsSourceScreenshot() {
-        guard obsSourceFetchScreenshot else {
-            return
-        }
-        guard !obsSourceScreenshotIsFetching else {
-            return
-        }
-        guard !obsCurrentScene.isEmpty else {
-            return
-        }
-        obsWebSocket?.getSourceScreenshot(name: obsCurrentScene, onSuccess: { data in
-            let screenshot = UIImage(data: data)?.cgImage
-            self.obsScreenshot = screenshot
-            self.obsSourceScreenshotIsFetching = false
-        }, onError: { message in
-            logger.debug("Failed to update screenshot with error \(message)")
-            self.obsScreenshot = nil
-            self.obsSourceScreenshotIsFetching = false
-        })
-    }
-
-    func setObsAudioDelay(offset: Int) {
-        guard !stream.obsSourceName!.isEmpty else {
-            return
-        }
-        obsWebSocket?.setInputAudioSyncOffset(name: stream.obsSourceName!, offsetInMs: offset, onSuccess: {
-            DispatchQueue.main.async {
-                self.updateObsAudioDelay()
-            }
-        }, onError: { _ in
-        })
-    }
-
-    func updateObsAudioDelay() {
-        guard !stream.obsSourceName!.isEmpty else {
-            return
-        }
-        obsWebSocket?.getInputAudioSyncOffset(name: stream.obsSourceName!, onSuccess: { offset in
-            DispatchQueue.main.async {
-                self.obsAudioDelay = offset
-            }
-        }, onError: { _ in
-        })
-    }
-
-    private func executeChatBotMessage() {
-        guard let message = chatBotMessages.popFirst() else {
-            return
-        }
-        handleChatBotMessage(message: message)
-    }
-
-    private func handleChatBotMessage(message: ChatBotMessage) {
-        guard let command = ChatBotCommand(message: message) else {
-            return
-        }
-        switch command.rest() {
-        case "help":
-            handleChatBotMessageHelp()
-        case "tts on":
-            handleChatBotMessageTtsOn(command: command)
-        case "tts off":
-            handleChatBotMessageTtsOff(command: command)
-        case "obs fix":
-            handleChatBotMessageObsFix(command: command)
-        case "map zoom out":
-            handleChatBotMessageMapZoomOut(command: command)
-        case "snapshot":
-            handleChatBotMessageSnapshot(command: command)
-        case "mute":
-            handleChatBotMessageMute(command: command)
-        case "unmute":
-            handleChatBotMessageUnmute(command: command)
-        default:
-            switch command.popFirst() {
-            case "alert":
-                handleChatBotMessageAlert(command: command)
-            case "fax":
-                handleChatBotMessageFax(command: command)
-            case "filter":
-                handleChatBotMessageFilter(command: command)
-            case "say":
-                handleChatBotMessageTtsSay(command: command)
-            case "tesla":
-                handleChatBotMessageTesla(command: command)
-            case "snapshot":
-                handleChatBotMessageSnapshotWithMessage(command: command)
-            case "reaction":
-                handleChatBotMessageReaction(command: command)
-            case "scene":
-                handleChatBotMessageScene(command: command)
-            default:
-                break
-            }
-        }
-    }
-
-    private func handleChatBotMessageHelp() {
-        sendChatMessage(
-            message: """
-            Moblin chat bot help: \
-            https://github.com/eerimoq/moblin/blob/main/docs/chat-bot-help.md#moblin-chat-bot-help
-            """
-        )
-    }
-
-    private func handleChatBotMessageTtsOn(command: ChatBotCommand) {
-        executeIfUserAllowedToUseChatBot(
-            permissions: database.chat.botCommandPermissions.tts,
-            command: command
-        ) {
-            self.makeToast(
-                title: String(localized: "Chat bot"),
-                subTitle: String(localized: "Turning on chat text to speech")
-            )
-            self.database.chat.textToSpeechEnabled = true
-        }
-    }
-
-    private func handleChatBotMessageTtsOff(command: ChatBotCommand) {
-        executeIfUserAllowedToUseChatBot(
-            permissions: database.chat.botCommandPermissions.tts,
-            command: command
-        ) {
-            self.makeToast(
-                title: String(localized: "Chat bot"),
-                subTitle: String(localized: "Turning off chat text to speech")
-            )
-            self.database.chat.textToSpeechEnabled = false
-            self.chatTextToSpeech.reset(running: true)
-        }
-    }
-
-    private func handleChatBotMessageTtsSay(command: ChatBotCommand) {
-        executeIfUserAllowedToUseChatBot(
-            permissions: database.chat.botCommandPermissions.tts,
-            command: command
-        ) {
-            let user = command.user() ?? "Unknown"
-            self.chatTextToSpeech.say(user: user, message: command.rest(), isRedemption: false)
-        }
-    }
-
-    private func handleChatBotMessageObsFix(command: ChatBotCommand) {
-        executeIfUserAllowedToUseChatBot(
-            permissions: database.chat.botCommandPermissions.fix,
-            command: command
-        ) {
-            if self.obsWebSocket != nil {
-                self.makeToast(
-                    title: String(localized: "Chat bot"),
-                    subTitle: String(localized: "Fixing OBS input")
-                )
-                self.obsFixStream()
-            } else {
-                self.makeErrorToast(
-                    title: String(localized: "Chat bot"),
-                    subTitle: String(
-                        localized: "Cannot fix OBS input. OBS remote control is not configured."
-                    )
-                )
-            }
-        }
-    }
-
-    private func handleChatBotMessageMapZoomOut(command: ChatBotCommand) {
-        executeIfUserAllowedToUseChatBot(
-            permissions: database.chat.botCommandPermissions.map,
-            command: command
-        ) {
-            self.makeToast(
-                title: String(localized: "Chat bot"),
-                subTitle: String(localized: "Zooming out map")
-            )
-            for mapEffect in self.mapEffects.values {
-                mapEffect.zoomOutTemporarily()
-            }
-        }
-    }
-
-    private func formatSnapshotTakenBy(user: String) -> String {
-        return String(localized: "Snapshot taken by \(user).")
-    }
-
-    private func formatSnapshotTakenSuccessfully(user: String) -> String {
-        return String(localized: "\(user), thanks for bringing our photo album to life. 🎉")
-    }
-
-    private func formatSnapshotTakenNotAllowed(user: String) -> String {
-        return String(localized: " \(user), you are not allowed to take snapshots, sorry. 😢")
-    }
-
-    private func handleChatBotMessageSnapshot(command: ChatBotCommand) {
-        let permissions = database.chat.botCommandPermissions.snapshot!
-        executeIfUserAllowedToUseChatBot(
-            permissions: permissions,
-            command: command
-        ) {
-            if let user = command.user() {
-                if permissions.sendChatMessages! {
-                    self.sendChatMessage(message: self.formatSnapshotTakenSuccessfully(user: user))
-                }
-                self.takeSnapshot(isChatBot: true, message: self.formatSnapshotTakenBy(user: user))
-            } else {
-                self.takeSnapshot(isChatBot: true)
-            }
-        } onNotAllowed: {
-            if permissions.sendChatMessages!, let user = command.user() {
-                self.sendChatMessage(message: self.formatSnapshotTakenNotAllowed(user: user))
-            }
-        }
-    }
-
-    private func handleChatBotMessageSnapshotWithMessage(command: ChatBotCommand) {
-        let permissions = database.chat.botCommandPermissions.snapshot!
-        executeIfUserAllowedToUseChatBot(
-            permissions: permissions,
-            command: command
-        ) {
-            if permissions.sendChatMessages!, let user = command.user() {
-                self.sendChatMessage(message: self.formatSnapshotTakenSuccessfully(user: user))
-            }
-            self.takeSnapshotWithCountdown(
-                isChatBot: true,
-                message: command.rest(),
-                user: command.user()
-            )
-        } onNotAllowed: {
-            if permissions.sendChatMessages!, let user = command.user() {
-                self.sendChatMessage(message: self.formatSnapshotTakenNotAllowed(user: user))
-            }
-        }
-    }
-
-    private func handleChatBotMessageMute(command: ChatBotCommand) {
-        executeIfUserAllowedToUseChatBot(
-            permissions: database.chat.botCommandPermissions.audio!,
-            command: command
-        ) {
-            guard !self.isMuteOn else {
-                return
-            }
-            self.makeToast(
-                title: String(localized: "Chat bot"),
-                subTitle: String(localized: "Muting audio")
-            )
-            self.setMuted(value: true)
-            self.setGlobalButtonState(type: .mute, isOn: true)
-            self.updateQuickButtonStates()
-        }
-    }
-
-    private func handleChatBotMessageUnmute(command: ChatBotCommand) {
-        executeIfUserAllowedToUseChatBot(
-            permissions: database.chat.botCommandPermissions.audio!,
-            command: command
-        ) {
-            guard self.isMuteOn else {
-                return
-            }
-            self.makeToast(
-                title: String(localized: "Chat bot"),
-                subTitle: String(localized: "Unmuting audio")
-            )
-            self.setMuted(value: false)
-            self.setGlobalButtonState(type: .mute, isOn: false)
-            self.updateQuickButtonStates()
-        }
-    }
-
-    private func handleChatBotMessageReaction(command: ChatBotCommand) {
-        guard #available(iOS 17, *) else {
-            return
-        }
-        executeIfUserAllowedToUseChatBot(
-            permissions: database.chat.botCommandPermissions.reaction!,
-            command: command
-        ) {
-            let reaction: AVCaptureReactionType
-            switch command.popFirst() {
-            case "fireworks":
-                reaction = .fireworks
-            case "balloons":
-                reaction = .balloons
-            case "hearts":
-                reaction = .heart
-            case "confetti":
-                reaction = .confetti
-            case "lasers":
-                reaction = .lasers
-            case "rain":
-                reaction = .rain
-            default:
-                return
-            }
-            guard let scene = self.getSelectedScene() else {
-                return
-            }
-            for device in self.getBuiltinCameraDevices(scene: scene, sceneDevice: self.cameraDevice).devices
-                where device.device?.availableReactionTypes.contains(reaction) == true {
-                    device.device?.performEffect(for: reaction)
-                }
-        }
-    }
-
-    private func handleChatBotMessageScene(command: ChatBotCommand) {
-        guard let sceneName = command.popFirst() else {
-            return
-        }
-        executeIfUserAllowedToUseChatBot(
-            permissions: database.chat.botCommandPermissions.scene!,
-            command: command
-        ) {
-            self.selectSceneByName(name: sceneName)
-        }
-    }
-
-    private func handleChatBotMessageAlert(command: ChatBotCommand) {
-        executeIfUserAllowedToUseChatBot(
-            permissions: database.chat.botCommandPermissions.alert!,
-            command: command
-        ) {
-            guard let alert = command.popFirst() else {
-                return
-            }
-            let prompt = command.rest()
-            DispatchQueue.main.async {
-                self.playAlert(alert: .chatBotCommand(alert, command.user() ?? "Unknown", prompt))
-            }
-        }
-    }
-
-    private func handleChatBotMessageFax(command: ChatBotCommand) {
-        executeIfUserAllowedToUseChatBot(
-            permissions: database.chat.botCommandPermissions.fax!,
-            command: command
-        ) {
-            if let url = command.peekFirst(), let url = URL(string: url) {
-                self.faxReceiver.add(url: url)
-            }
-        }
-    }
-
-    private func handleChatBotMessageFilter(command: ChatBotCommand) {
-        executeIfUserAllowedToUseChatBot(
-            permissions: database.chat.botCommandPermissions.filter!,
-            command: command
-        ) {
-            guard let filter = command.popFirst(), let state = command.popFirst() else {
-                return
-            }
-            let type: SettingsQuickButtonType
-            switch filter {
-            case "movie":
-                type = .movie
-            case "grayscale":
-                type = .grayScale
-            case "sepia":
-                type = .sepia
-            case "triple":
-                type = .triple
-            case "twin":
-                type = .twin
-            case "pixellate":
-                type = .pixellate
-            case "4:3":
-                type = .fourThree
-            default:
-                return
-            }
-            self.setGlobalButtonState(type: type, isOn: state == "on")
-            self.sceneUpdated(updateRemoteScene: false)
-            self.updateQuickButtonStates()
-        }
-    }
-
-    private func handleChatBotMessageTesla(command: ChatBotCommand) {
-        executeIfUserAllowedToUseChatBot(
-            permissions: database.chat.botCommandPermissions.tesla!,
-            command: command
-        ) {
-            switch command.popFirst() {
-            case "trunk":
-                self.handleChatBotMessageTeslaTrunk(command: command)
-            case "media":
-                self.handleChatBotMessageTeslaMedia(command: command)
-            default:
-                break
-            }
-        }
-    }
-
-    private func handleChatBotMessageTeslaTrunk(command: ChatBotCommand) {
-        switch command.popFirst() {
-        case "open":
-            teslaVehicle?.openTrunk()
-        case "close":
-            teslaVehicle?.closeTrunk()
-        default:
-            break
-        }
-    }
-
-    private func handleChatBotMessageTeslaMedia(command: ChatBotCommand) {
-        switch command.popFirst() {
-        case "next":
-            teslaVehicle?.mediaNextTrack()
-        case "previous":
-            teslaVehicle?.mediaPreviousTrack()
-        case "toggle-playback":
-            teslaVehicle?.mediaTogglePlayback()
-        default:
-            break
-        }
-    }
-
-    private func executeIfUserAllowedToUseChatBot(
-        permissions: SettingsChatBotPermissionsCommand,
-        command: ChatBotCommand,
-        onCompleted: @escaping () -> Void,
-        onNotAllowed: (() -> Void)? = nil
-    ) {
-        var onNotAllowed = onNotAllowed
-        if permissions.sendChatMessages!, onNotAllowed == nil {
-            onNotAllowed = {
-                if permissions.sendChatMessages!, let user = command.user() {
-                    self
-                        .sendChatMessage(
-                            message: String(
-                                localized: "\(user) Sorry, you are not allowed to use this chat bot command 😢"
-                            )
-                        )
-                }
-            }
-        }
-        if command.message.isModerator, permissions.moderatorsEnabled {
-            onCompleted()
-            return
-        }
-        if command.message.isSubscriber, permissions.subscribersEnabled! {
-            if command.message.platform == .twitch {
-                if permissions.minimumSubscriberTier! > 1 {
-                    if let userId = command.message.userId {
-                        TwitchApi(stream.twitchAccessToken!, urlSession).getBroadcasterSubscriptions(
-                            broadcasterId: stream.twitchChannelId,
-                            userId: userId
-                        ) { data in
-                            DispatchQueue.main.async {
-                                if let tier = data?.tierAsNumber(),
-                                   tier >= permissions.minimumSubscriberTier!
-                                {
-                                    onCompleted()
-                                    return
-                                }
-                                self.executeIfUserAllowedToUseChatBotAfterSubscribeCheck(
-                                    permissions: permissions,
-                                    command: command,
-                                    onCompleted: onCompleted,
-                                    onNotAllowed: onNotAllowed
-                                )
-                            }
-                        }
-                        return
-                    }
-                } else {
-                    onCompleted()
-                    return
-                }
-            } else {
-                onCompleted()
-                return
-            }
-        }
-        executeIfUserAllowedToUseChatBotAfterSubscribeCheck(
-            permissions: permissions,
-            command: command,
-            onCompleted: onCompleted,
-            onNotAllowed: onNotAllowed
-        )
-    }
-
-    private func executeIfUserAllowedToUseChatBotAfterSubscribeCheck(
-        permissions: SettingsChatBotPermissionsCommand,
-        command: ChatBotCommand,
-        onCompleted: @escaping () -> Void,
-        onNotAllowed: (() -> Void)?
-    ) {
-        guard let user = command.user() else {
-            return
-        }
-        switch command.message.platform {
-        case .twitch:
-            if isTwitchUserAllowedToUseChatBot(permissions: permissions, user: user) {
-                onCompleted()
-                return
-            }
-        case .kick:
-            if isKickUserAllowedToUseChatBot(permissions: permissions, user: user) {
-                onCompleted()
-                return
-            }
-        default:
-            break
-        }
-        onNotAllowed?()
-    }
-
-    private func isTwitchUserAllowedToUseChatBot(permissions: SettingsChatBotPermissionsCommand,
-                                                 user: String) -> Bool
-    {
-        if permissions.othersEnabled {
-            return true
-        }
-        return user.lowercased() == stream.twitchChannelName.lowercased()
-    }
-
-    private func isKickUserAllowedToUseChatBot(permissions: SettingsChatBotPermissionsCommand,
-                                               user: String) -> Bool
-    {
-        if permissions.othersEnabled {
-            return true
-        }
-        return user.lowercased() == stream.kickChannelName?.lowercased()
     }
 
     func appendChatMessage(
@@ -5637,16 +4364,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func toggleBlackScreen() {
         blackScreen.toggle()
-    }
-
-    func toggleTextToSpeechPaused() {
-        if getGlobalButton(type: .pauseTts)?.isOn == false {
-            chatTextToSpeech.pause()
-        } else {
-            chatTextToSpeech.play()
-        }
-        toggleGlobalButton(type: .pauseTts)
-        updateQuickButtonStates()
     }
 
     func toggleLockScreen() {
@@ -5774,7 +4491,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return CaptureDevice(device: device, id: getBuiltinCameraId(device.uniqueID))
     }
 
-    private func getBuiltinCameraDevices(scene: SettingsScene, sceneDevice: AVCaptureDevice?) -> CaptureDevices {
+    func getBuiltinCameraDevices(scene: SettingsScene, sceneDevice: AVCaptureDevice?) -> CaptureDevices {
         var devices = CaptureDevices(hasSceneDevice: false, devices: [])
         if let sceneDevice {
             devices.hasSceneDevice = true
@@ -5861,10 +4578,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func isFrontCamera(cameraId: String) -> Bool {
         return frontCameras.contains(where: { $0.id == cameraId })
-    }
-
-    func isScreenCaptureCamera(cameraId: String) -> Bool {
-        return cameraId == screenCaptureCamera
     }
 
     func isBackTripleLowEnergyAutoCamera(cameraId: String) -> Bool {
@@ -6305,7 +5018,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         toggleShowingPanel(type: nil, panel: .sceneSettings)
     }
 
-    private func selectSceneByName(name: String) {
+    func selectSceneByName(name: String) {
         if let scene = enabledScenes.first(where: { $0.name.lowercased() == name.lowercased() }) {
             selectScene(id: scene.id)
         }
@@ -6910,7 +5623,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         ))
     }
 
-    private func stopCameraZoom() -> Float? {
+    func stopCameraZoom() -> Float? {
         return cameraZoomLevelToX(media.stopCameraZoomLevel(device: cameraDevice))
     }
 
@@ -7045,7 +5758,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    private func setZoomXWhenInRange(x: Float, setPinch: Bool = true) {
+    func setZoomXWhenInRange(x: Float, setPinch: Bool = true) {
         switch cameraPosition {
         case .back:
             backZoomX = x
@@ -7249,20 +5962,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         )
     }
 
-    private func makeStreamLikelyBrokenToast(scene: String) {
-        makeErrorToast(
-            title: String(localized: "😠 Stream likely broken 😠"),
-            subTitle: String(localized: "Trying to switch OBS scene to \(scene)")
-        )
-    }
-
-    private func makeStreamLikelyWorkingToast(scene: String) {
-        makeToast(
-            title: String(localized: "🥳 Stream likely working 🥳"),
-            subTitle: String(localized: "Trying to switch OBS scene to \(scene)")
-        )
-    }
-
     private func makeFlameRedToast() {
         makeWarningToast(title: flameRedMessage, vibrate: true)
     }
@@ -7349,10 +6048,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return database.show.zoom && hasZoom
     }
 
-    func isShowingStatusObs() -> Bool {
-        return database.show.obsStatus! && isObsRemoteControlConfigured()
-    }
-
     func isShowingStatusEvents() -> Bool {
         return database.show.events! && isEventsConfigured()
     }
@@ -7390,24 +6085,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func statusZoomText() -> String {
         return String(format: "%.1f", zoomX)
-    }
-
-    func statusObsText() -> String {
-        if !isObsRemoteControlConfigured() {
-            return String(localized: "Not configured")
-        } else if isObsConnected() {
-            if obsStreaming && obsRecording {
-                return "\(obsCurrentScene) (Streaming, Recording)"
-            } else if obsStreaming {
-                return "\(obsCurrentScene) (Streaming)"
-            } else if obsRecording {
-                return "\(obsCurrentScene) (Recording)"
-            } else {
-                return obsCurrentScene
-            }
-        } else {
-            return obsConnectionErrorMessage()
-        }
     }
 
     private func updateStatusEventsText() {
@@ -7488,20 +6165,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return database.show.djiDevices! && djiDevicesStatus != noValue
     }
 
-    func isShowingStatusGameController() -> Bool {
-        return database.show.gameController! && isGameControllerConnected()
-    }
-
     func isShowingStatusBitrate() -> Bool {
         return database.show.speed && isLive
     }
 
     func isShowingStatusStreamUptime() -> Bool {
         return database.show.uptime && isLive
-    }
-
-    func isShowingStatusLocation() -> Bool {
-        return database.show.location! && isLocationEnabled()
     }
 
     func isShowingStatusBonding() -> Bool {
@@ -7546,94 +6215,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func isStatusBrowserWidgetsActive() -> Bool {
         return !browserWidgetsStatus.isEmpty && browserWidgetsStatusChanged
-    }
-}
-
-extension Model {
-    func isObsRemoteControlConfigured() -> Bool {
-        return stream.obsWebSocketEnabled! && stream.obsWebSocketUrl != "" && stream
-            .obsWebSocketPassword != ""
-    }
-}
-
-extension Model {
-    private func updateLocation() {
-        var newLocation = locationManager.status()
-        if let realtimeIrl {
-            newLocation += realtimeIrl.status()
-        }
-        if location != newLocation {
-            location = newLocation
-        }
-    }
-
-    func setRealtimeIrlEnabled(enabled: Bool) {
-        stream.realtimeIrlEnabled = enabled
-        if stream.enabled {
-            reloadLocation()
-        }
-    }
-
-    func reloadLocation() {
-        locationManager.stop()
-        if isLocationEnabled() {
-            locationManager.start(onUpdate: handleLocationUpdate)
-        }
-        reloadRealtimeIrl()
-    }
-
-    private func resetDistance() {
-        database.location.distance = 0.0
-        latestKnownLocation = nil
-    }
-
-    func resetLocationData() {
-        resetDistance()
-        resetAverageSpeed()
-        resetSlope()
-    }
-
-    func isLocationEnabled() -> Bool {
-        return database.location.enabled
-    }
-
-    private func handleLocationUpdate(location: CLLocation) {
-        guard isLive else {
-            return
-        }
-        guard !isLocationInPrivacyRegion(location: location) else {
-            return
-        }
-        realtimeIrl?.update(location: location)
-    }
-
-    private func isLocationInPrivacyRegion(location: CLLocation) -> Bool {
-        for region in database.location.privacyRegions
-            where region.contains(coordinate: location.coordinate)
-        {
-            return true
-        }
-        return false
-    }
-
-    func getLatestKnownLocation() -> (Double, Double)? {
-        if let location = locationManager.getLatestKnownLocation() {
-            return (location.coordinate.latitude, location.coordinate.longitude)
-        } else {
-            return nil
-        }
-    }
-
-    func isRealtimeIrlConfigured() -> Bool {
-        return stream.realtimeIrlEnabled! && !stream.realtimeIrlPushKey!.isEmpty
-    }
-
-    func reloadRealtimeIrl() {
-        realtimeIrl?.stop()
-        realtimeIrl = nil
-        if isRealtimeIrlConfigured() {
-            realtimeIrl = RealtimeIrl(pushKey: stream.realtimeIrlPushKey!)
-        }
     }
 }
 
@@ -7729,49 +6310,6 @@ extension Model {
 extension Model: WKNavigationDelegate {
     func webView(_ webView: WKWebView, didStartProvisionalNavigation _: WKNavigation!) {
         webBrowserUrl = webView.url?.absoluteString ?? ""
-    }
-}
-
-extension Model: SampleBufferReceiverDelegate {
-    func senderConnected() {
-        DispatchQueue.main.async {
-            self.handleSampleBufferSenderConnected()
-        }
-    }
-
-    func senderDisconnected() {
-        DispatchQueue.main.async {
-            self.handleSampleBufferSenderDisconnected()
-        }
-    }
-
-    func handleSampleBuffer(type: RPSampleBufferType, sampleBuffer: CMSampleBuffer) {
-        handleSampleBufferSenderBuffer(type, sampleBuffer)
-    }
-}
-
-extension Model {
-    private func handleSampleBufferSenderConnected() {
-        makeToast(title: String(localized: "Screen capture started"))
-        media.addBufferedVideo(
-            cameraId: screenCaptureCameraId,
-            name: "Screen capture",
-            latency: screenRecordingLatency
-        )
-    }
-
-    private func handleSampleBufferSenderDisconnected() {
-        makeToast(title: String(localized: "Screen capture stopped"))
-        media.removeBufferedVideo(cameraId: screenCaptureCameraId)
-    }
-
-    private func handleSampleBufferSenderBuffer(_ type: RPSampleBufferType, _ sampleBuffer: CMSampleBuffer) {
-        switch type {
-        case .video:
-            media.appendBufferedVideoSampleBuffer(cameraId: screenCaptureCameraId, sampleBuffer: sampleBuffer)
-        default:
-            break
-        }
     }
 }
 
@@ -7915,69 +6453,6 @@ extension Model: UIDocumentPickerDelegate {
         DispatchQueue.main.async {
             self.onDocumentPickerUrl?(url)
         }
-    }
-}
-
-extension Model: ObsWebsocketDelegate {
-    func obsWebsocketConnected() {
-        updateObsStatus()
-    }
-
-    func obsWebsocketSceneChanged(sceneName: String) {
-        obsCurrentScenePicker = sceneName
-        obsCurrentScene = sceneName
-        updateObsAudioInputs(sceneName: sceneName)
-    }
-
-    func obsWebsocketInputMuteStateChangedEvent(inputName: String, muted: Bool) {
-        obsSceneInputs = obsSceneInputs.map { input in
-            var input = input
-            if input.name == inputName {
-                input.muted = muted
-            }
-            return input
-        }
-    }
-
-    func obsWebsocketStreamStatusChanged(active: Bool, state: ObsOutputState?) {
-        obsStreaming = active
-        if let state {
-            obsStreamingState = state
-        } else if active {
-            obsStreamingState = .started
-        } else {
-            obsStreamingState = .stopped
-        }
-    }
-
-    func obsWebsocketRecordStatusChanged(active: Bool, state: ObsOutputState?) {
-        obsRecording = active
-        if let state {
-            obsRecordingState = state
-        } else if active {
-            obsRecordingState = .started
-        } else {
-            obsRecordingState = .stopped
-        }
-    }
-
-    func obsWebsocketAudioVolume(volumes: [ObsAudioInputVolume]) {
-        guard let volume = volumes.first(where: { volume in
-            volume.name == self.stream.obsSourceName!
-        }) else {
-            obsAudioVolumeLatest =
-                String(localized: "Source \(stream.obsSourceName!) not found")
-            return
-        }
-        var values: [String] = []
-        for volume in volume.volumes {
-            if volume.isInfinite {
-                values.append(String(localized: "Muted"))
-            } else {
-                values.append(String(localized: "\(formatOneDecimal(volume)) dB"))
-            }
-        }
-        obsAudioVolumeLatest = values.joined(separator: ", ")
     }
 }
 

@@ -3,6 +3,61 @@ import Foundation
 import SwiftUI
 
 extension Model {
+    func isTwitchEventSubConfigured() -> Bool {
+        return isTwitchAccessTokenConfigured()
+    }
+
+    func isTwitchEventsConnected() -> Bool {
+        return twitchEventSub?.isConnected() ?? false
+    }
+
+    func isTwitchViewersConfigured() -> Bool {
+        return stream.twitchChannelId != "" && isTwitchAccessTokenConfigured()
+    }
+
+    func isTwitchChatConfigured() -> Bool {
+        return database.chat.enabled && stream.twitchChannelName != ""
+    }
+
+    func isTwitchAccessTokenConfigured() -> Bool {
+        return stream.twitchAccessToken != ""
+    }
+
+    func isTwitchChatConnected() -> Bool {
+        return twitchChat?.isConnected() ?? false
+    }
+
+    func hasTwitchChatEmotes() -> Bool {
+        return twitchChat?.hasEmotes() ?? false
+    }
+
+    func reloadTwitchChat() {
+        twitchChat.stop()
+        setTextToSpeechStreamerMentions()
+        if isTwitchChatConfigured(), !isChatRemoteControl() {
+            twitchChat.start(
+                channelName: stream.twitchChannelName,
+                channelId: stream.twitchChannelId,
+                settings: stream.chat!,
+                accessToken: stream.twitchAccessToken!,
+                httpProxy: httpProxy(),
+                urlSession: urlSession
+            )
+        }
+    }
+
+    func twitchChannelNameUpdated() {
+        reloadTwitchEventSub()
+        reloadTwitchChat()
+        resetChat()
+    }
+
+    func twitchChannelIdUpdated() {
+        reloadTwitchEventSub()
+        reloadTwitchChat()
+        resetChat()
+    }
+
     func reloadTwitchEventSub() {
         twitchEventSub?.stop()
         twitchEventSub = nil
@@ -108,6 +163,51 @@ extension Model {
 
     func handleTwitchAccessToken(accessToken: String) {
         twitchAuthOnComplete?(accessToken)
+    }
+
+    func createStreamMarker() {
+        TwitchApi(stream.twitchAccessToken!, urlSession)
+            .createStreamMarker(userId: stream.twitchChannelId) { data in
+                if data != nil {
+                    self.makeToast(title: String(localized: "Stream marker created"))
+                } else {
+                    self.makeErrorToast(title: String(localized: "Failed to create stream marker"))
+                }
+            }
+    }
+
+    private func getStream() {
+        TwitchApi(stream.twitchAccessToken!, urlSession)
+            .getStream(userId: stream.twitchChannelId) { data in
+                guard let data else {
+                    self.numberOfTwitchViewers = nil
+                    return
+                }
+                self.numberOfTwitchViewers = data.viewer_count
+            }
+    }
+
+    func updateTwitchStream(monotonicNow: ContinuousClock.Instant) {
+        guard isLive, isTwitchViewersConfigured() else {
+            numberOfTwitchViewers = nil
+            return
+        }
+        guard twitchStreamUpdateTime.duration(to: monotonicNow) > .seconds(25) else {
+            return
+        }
+        twitchStreamUpdateTime = monotonicNow
+        getStream()
+    }
+
+    func startAds(seconds: Int) {
+        TwitchApi(stream.twitchAccessToken!, urlSession)
+            .startCommercial(broadcasterId: stream.twitchChannelId, length: seconds) { data in
+                if let data {
+                    self.makeToast(title: data.message)
+                } else {
+                    self.makeErrorToast(title: String(localized: "Failed to start commercial"))
+                }
+            }
     }
 }
 
