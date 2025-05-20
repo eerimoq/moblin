@@ -51,7 +51,7 @@ struct StreamSnapshotSettingsView: View {
             } footer: {
                 VStack(alignment: .leading) {
                     Text("""
-                    Auotmatically upload quick button snapshots and chat bot snapshots to channels \
+                    Automatically upload quick button snapshots and chat bot snapshots to channels \
                     in your Discord server.
                     """)
                     Text("")
