@@ -1,5 +1,14 @@
 import Foundation
 
+class DjiDeviceWrapper {
+    let device: DjiDevice
+    var autoRestartStreamTimer: DispatchSourceTimer?
+
+    init(device: DjiDevice) {
+        self.device = device
+    }
+}
+
 extension Model {
     func isDjiDeviceStarted(device: SettingsDjiDevice) -> Bool {
         return device.isStarted!

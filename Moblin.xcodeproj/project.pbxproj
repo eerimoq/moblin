@@ -113,12 +113,21 @@
 		032A49B82AC54DD000ED3916 /* ExportSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032A49B72AC54DD000ED3916 /* ExportSettingsView.swift */; };
 		032A49BA2AC54E6500ED3916 /* ImportSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032A49B92AC54E6500ED3916 /* ImportSettingsView.swift */; };
 		032A49BC2AC5DF3F00ED3916 /* ImportExportSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032A49BB2AC5DF3F00ED3916 /* ImportExportSettingsView.swift */; };
+		032A6F0D2DDD23E400453B0A /* ModelRecording.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032A6F0C2DDD23DF00453B0A /* ModelRecording.swift */; };
+		032A6F0F2DDD253200453B0A /* ModelChat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032A6F0E2DDD253000453B0A /* ModelChat.swift */; };
+		032A6F112DDD285F00453B0A /* ModelStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032A6F102DDD285600453B0A /* ModelStore.swift */; };
+		032A6F132DDD6E6F00453B0A /* ModelSettingsUrl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032A6F122DDD6E6A00453B0A /* ModelSettingsUrl.swift */; };
+		032A6F152DDD6F8F00453B0A /* ModelStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032A6F142DDD6F8B00453B0A /* ModelStream.swift */; };
 		032B4ED42C34910A00204547 /* MediaPlayerControlsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032B4ED32C34910A00204547 /* MediaPlayerControlsView.swift */; };
 		032B4ED72C34918E00204547 /* SceneSelectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032B4ED62C34918E00204547 /* SceneSelectorView.swift */; };
 		032B4EDA2C3491A100204547 /* ZoomPresetSelctorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032B4ED92C3491A100204547 /* ZoomPresetSelctorView.swift */; };
 		032B4EDC2C3491F200204547 /* CameraSettingsControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032B4EDB2C3491F200204547 /* CameraSettingsControlView.swift */; };
 		032B4EDE2C34927C00204547 /* SegmentedPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032B4EDD2C34927C00204547 /* SegmentedPicker.swift */; };
 		032BAEF12C0C78FF005D5DA7 /* DeepLinkCreatorSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032BAEF02C0C78FF005D5DA7 /* DeepLinkCreatorSettingsView.swift */; };
+		032D85842DDD7BD900A6128A /* ModelScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032D85832DDD7BD600A6128A /* ModelScene.swift */; };
+		032D85862DDD7F4E00A6128A /* ModelKeyboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032D85852DDD7F4B00A6128A /* ModelKeyboard.swift */; };
+		032D85882DDD7FA700A6128A /* ModelMediaPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032D85872DDD7FA200A6128A /* ModelMediaPlayer.swift */; };
+		032D858A2DDD824400A6128A /* ModelSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032D85892DDD824000A6128A /* ModelSnapshot.swift */; };
 		032F3B3C2C935385002FF97E /* QuickButtonLutsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032F3B3B2C935385002FF97E /* QuickButtonLutsView.swift */; };
 		032F81B82DDCEA7300E14CC5 /* ModelChatBot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032F81B72DDCEA6E00E14CC5 /* ModelChatBot.swift */; };
 		032F81BA2DDCEE1500E14CC5 /* ModelScreenCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032F81B92DDCEE0E00E14CC5 /* ModelScreenCapture.swift */; };
@@ -703,6 +712,11 @@
 		032A49B72AC54DD000ED3916 /* ExportSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportSettingsView.swift; sourceTree = "<group>"; };
 		032A49B92AC54E6500ED3916 /* ImportSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportSettingsView.swift; sourceTree = "<group>"; };
 		032A49BB2AC5DF3F00ED3916 /* ImportExportSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportExportSettingsView.swift; sourceTree = "<group>"; };
+		032A6F0C2DDD23DF00453B0A /* ModelRecording.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelRecording.swift; sourceTree = "<group>"; };
+		032A6F0E2DDD253000453B0A /* ModelChat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelChat.swift; sourceTree = "<group>"; };
+		032A6F102DDD285600453B0A /* ModelStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelStore.swift; sourceTree = "<group>"; };
+		032A6F122DDD6E6A00453B0A /* ModelSettingsUrl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelSettingsUrl.swift; sourceTree = "<group>"; };
+		032A6F142DDD6F8B00453B0A /* ModelStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelStream.swift; sourceTree = "<group>"; };
 		032B4ED32C34910A00204547 /* MediaPlayerControlsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaPlayerControlsView.swift; sourceTree = "<group>"; };
 		032B4ED62C34918E00204547 /* SceneSelectorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneSelectorView.swift; sourceTree = "<group>"; };
 		032B4ED92C3491A100204547 /* ZoomPresetSelctorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomPresetSelctorView.swift; sourceTree = "<group>"; };
@@ -710,6 +724,10 @@
 		032B4EDD2C34927C00204547 /* SegmentedPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentedPicker.swift; sourceTree = "<group>"; };
 		032BAEF02C0C78FF005D5DA7 /* DeepLinkCreatorSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkCreatorSettingsView.swift; sourceTree = "<group>"; };
 		032BC5B22AD8E18000DEC883 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		032D85832DDD7BD600A6128A /* ModelScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelScene.swift; sourceTree = "<group>"; };
+		032D85852DDD7F4B00A6128A /* ModelKeyboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelKeyboard.swift; sourceTree = "<group>"; };
+		032D85872DDD7FA200A6128A /* ModelMediaPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelMediaPlayer.swift; sourceTree = "<group>"; };
+		032D85892DDD824000A6128A /* ModelSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelSnapshot.swift; sourceTree = "<group>"; };
 		032F3B3B2C935385002FF97E /* QuickButtonLutsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickButtonLutsView.swift; sourceTree = "<group>"; };
 		032F3B3D2C950F08002FF97E /* MoblinWatch.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MoblinWatch.entitlements; sourceTree = "<group>"; };
 		032F81B72DDCEA6E00E14CC5 /* ModelChatBot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelChatBot.swift; sourceTree = "<group>"; };
@@ -2701,22 +2719,31 @@
 				032F81C32DDCF57C00E14CC5 /* ModelAutoSceneSwitcher.swift */,
 				03BA73B42DDCD72900075CD6 /* ModelCamera.swift */,
 				03BA73AC2DDC5AE200075CD6 /* ModelCatPrinters.swift */,
+				032A6F0E2DDD253000453B0A /* ModelChat.swift */,
 				032F81B72DDCEA6E00E14CC5 /* ModelChatBot.swift */,
 				03BA73AA2DDC593600075CD6 /* ModelCyclingPowerDevice.swift */,
 				03BA73B02DDCD58100075CD6 /* ModelDjiDevice.swift */,
 				03BA73B82DDCD98600075CD6 /* ModelDjiGimbalDevice.swift */,
 				032F81C12DDCF4C000E14CC5 /* ModelGameController.swift */,
 				03BA73A72DDC582B00075CD6 /* ModelHeartRateDevice.swift */,
+				032D85852DDD7F4B00A6128A /* ModelKeyboard.swift */,
 				032F81BF2DDCF32D00E14CC5 /* ModelLocation.swift */,
+				032D85872DDD7FA200A6128A /* ModelMediaPlayer.swift */,
 				03BA73A52DDC571E00075CD6 /* ModelMoblink.swift */,
 				032F81BB2DDCF00F00E14CC5 /* ModelObs.swift */,
+				032A6F0C2DDD23DF00453B0A /* ModelRecording.swift */,
 				03BA73C02DDCDF6600075CD6 /* ModelRemoteControl.swift */,
 				03BA73A32DDC562700075CD6 /* ModelReplay.swift */,
 				03BA73B22DDCD65300075CD6 /* ModelRtmpServer.swift */,
+				032D85832DDD7BD600A6128A /* ModelScene.swift */,
 				032F81B92DDCEE0E00E14CC5 /* ModelScreenCapture.swift */,
+				032A6F122DDD6E6A00453B0A /* ModelSettingsUrl.swift */,
+				032D85892DDD824000A6128A /* ModelSnapshot.swift */,
 				03BA73AE2DDCD49300075CD6 /* ModelSpeechToText.swift */,
 				03BA73BC2DDCDC2200075CD6 /* ModelSrtlaServer.swift */,
+				032A6F142DDD6F8B00453B0A /* ModelStream.swift */,
 				03BA73C42DDCE34100075CD6 /* ModelStreamWizard.swift */,
+				032A6F102DDD285600453B0A /* ModelStore.swift */,
 				03BA73BA2DDCDA4500075CD6 /* ModelTesla.swift */,
 				032F81BD2DDCF27400E14CC5 /* ModelTextToSpeech.swift */,
 				03BA73B62DDCD84600075CD6 /* ModelTwitch.swift */,
@@ -3418,6 +3445,7 @@
 				0359F8FD2BD3DA61005BFDA8 /* SrtSocketOption.swift in Sources */,
 				032F81C42DDCF58200E14CC5 /* ModelAutoSceneSwitcher.swift in Sources */,
 				03DBD0FB2B30078B004B0BE6 /* StreamWizardKickSettingsView.swift in Sources */,
+				032A6F112DDD285F00453B0A /* ModelStore.swift in Sources */,
 				0346B5F42B9AF4EE00999109 /* ControlBarRemoteControlAssistantView.swift in Sources */,
 				03510DDC2C7661A400FD3A27 /* SpeechToText.swift in Sources */,
 				03B16A312B35D74800E5AB07 /* DisplaySettingsView.swift in Sources */,
@@ -3464,6 +3492,7 @@
 				0325D0B42BB29713007EE85B /* ChatUsernamesToIgnoreSettingsView.swift in Sources */,
 				03980C552C5E74A9000ED476 /* VoicesView.swift in Sources */,
 				0302F07F2B320B0500B06FF0 /* StreamWizardChatSettingsView.swift in Sources */,
+				032D85862DDD7F4E00A6128A /* ModelKeyboard.swift in Sources */,
 				03F655F22D16DFD60054D73E /* BitReader.swift in Sources */,
 				03828C2C2C3AEF6D00F5A8AC /* MapEffect.swift in Sources */,
 				033BB53D2D50A45D0071662A /* CMFormatDescription+Extension.swift in Sources */,
@@ -3521,6 +3550,7 @@
 				035BC8B22C17ABC5008FF4D2 /* SrtServerClient.swift in Sources */,
 				03BA73AF2DDCD49A00075CD6 /* ModelSpeechToText.swift in Sources */,
 				03BA73AB2DDC593D00075CD6 /* ModelCyclingPowerDevice.swift in Sources */,
+				032A6F152DDD6F8F00453B0A /* ModelStream.swift in Sources */,
 				0379E6712C8980460021AB59 /* CatPrinterScannerSettingsView.swift in Sources */,
 				03708D162B83C39B009C88AA /* StreamRtmpSettingsView.swift in Sources */,
 				03B2189F2C3E4E4E001FDE57 /* WidgetSceneSettingsView.swift in Sources */,
@@ -3534,6 +3564,8 @@
 				03A29A272BECAA0900DAA1B1 /* StreamRistSettingsView.swift in Sources */,
 				0359F8D02BD3DA61005BFDA8 /* AudioUnit.swift in Sources */,
 				0379E66D2C8980160021AB59 /* CatPrintersSettingsView.swift in Sources */,
+				032A6F132DDD6E6F00453B0A /* ModelSettingsUrl.swift in Sources */,
+				032D858A2DDD824400A6128A /* ModelSnapshot.swift in Sources */,
 				030EFE752BDAD7C7004208B6 /* SwipeLeftToDeleteHelpView.swift in Sources */,
 				03A3F4C72AF4C0AD00F465D1 /* AdaptiveBitrate.swift in Sources */,
 				03E3637F2DB026BA007A3CBB /* QuickButtonGoProView.swift in Sources */,
@@ -3594,6 +3626,7 @@
 				0318D3772CF51DEB00E12F3B /* keys.pb.swift in Sources */,
 				03C357422D081CE900B8B29F /* RtmpSetChunkSizeMessage.swift in Sources */,
 				0318D3782CF51DEB00E12F3B /* signatures.pb.swift in Sources */,
+				032D85882DDD7FA700A6128A /* ModelMediaPlayer.swift in Sources */,
 				0318D3792CF51DEB00E12F3B /* universal_message.pb.swift in Sources */,
 				0318D37A2CF51DEB00E12F3B /* vcsec.pb.swift in Sources */,
 				0318D37B2CF51DEB00E12F3B /* vehicle.pb.swift in Sources */,
@@ -3602,6 +3635,7 @@
 				0379BBAA2AAD953200B718B6 /* HelpAndSupportSettingsView.swift in Sources */,
 				03A3504D2C12E15A0015FAC8 /* SrtServer.swift in Sources */,
 				038605412D80098800B9C3CE /* HeartRateDeviceSettingsView.swift in Sources */,
+				032A6F0D2DDD23E400453B0A /* ModelRecording.swift in Sources */,
 				0323F37E2D1E8EDE00A57AC2 /* MoblinkSettingsView.swift in Sources */,
 				0364304F2B2FF9F400B7C448 /* StreamWizardTwitchSettingsView.swift in Sources */,
 				03403DF62AD05CA60079D8E4 /* WidgetBrowserSettingsView.swift in Sources */,
@@ -3646,6 +3680,7 @@
 				038C0F632C2D7C6400A258C6 /* LogsStorage.swift in Sources */,
 				0359F8DC2BD3DA61005BFDA8 /* ElementaryStreamSpecificData.swift in Sources */,
 				03CFF9CB2CA82EEF00FEC614 /* StrokeModifier.swift in Sources */,
+				032A6F0F2DDD253200453B0A /* ModelChat.swift in Sources */,
 				03F655F02D147C0B0054D73E /* VideoSourceRotationView.swift in Sources */,
 				0359F9022BD3DA61005BFDA8 /* ByteWriter.swift in Sources */,
 				0380D5E52C2CB2C80071C12B /* ChatBotSettingsView.swift in Sources */,
@@ -3654,6 +3689,7 @@
 				03BA73A62DDC572100075CD6 /* ModelMoblink.swift in Sources */,
 				0379BBAD2AAD964000B718B6 /* AboutSettingsView.swift in Sources */,
 				03F5A8DF2AD5DACB00F354D2 /* Srt.swift in Sources */,
+				032D85842DDD7BD900A6128A /* ModelScene.swift in Sources */,
 				038E7BE72C331272008994BA /* MediaPlayerFileSettingsView.swift in Sources */,
 				03B82CC12D7C230500909B24 /* StreamSnapshotSettingsView.swift in Sources */,
 				036BE2CF2ABD4CA60048F9C5 /* KickPusher.swift in Sources */,

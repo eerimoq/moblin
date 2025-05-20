@@ -1,5 +1,16 @@
 import SwiftUI
 
+class ReplayProvider: ObservableObject {
+    @Published var selectedId: UUID?
+    @Published var isSaving = false
+    @Published var previewImage: UIImage?
+    @Published var isPlaying = false
+    @Published var startFromEnd = 10.0
+    @Published var speed: SettingsReplaySpeed? = .one
+    @Published var instantReplayCountdown = 0
+    @Published var timeLeft = 0
+}
+
 extension Model {
     func saveReplay(completion: ((ReplaySettings) -> Void)? = nil) -> Bool {
         guard !replay.isSaving else {

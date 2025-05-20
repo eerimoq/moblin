@@ -124,6 +124,25 @@ extension Model {
                 )
         }
     }
+
+    func stopRtmpServer() {
+        rtmpServer?.stop()
+        rtmpServer = nil
+        stopAllRtmpStreams()
+    }
+
+    func reloadRtmpServer() {
+        stopRtmpServer()
+        if database.rtmpServer.enabled {
+            rtmpServer = RtmpServer(settings: database.rtmpServer.clone())
+            rtmpServer?.delegate = self
+            rtmpServer!.start()
+        }
+    }
+
+    func rtmpServerEnabled() -> Bool {
+        return rtmpServer != nil
+    }
 }
 
 extension Model: RtmpServerDelegate {

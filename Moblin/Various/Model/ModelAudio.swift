@@ -1,5 +1,11 @@
 import AVFAudio
 
+class AudioProvider: ObservableObject {
+    @Published var showing = false
+    @Published var level: Float = defaultAudioLevel
+    @Published var numberOfChannels: Int = 0
+}
+
 extension Model {
     func reloadAudioSession() {
         teardownAudioSession()
@@ -321,5 +327,27 @@ extension Model {
         }
         keepSpeakerAlivePlayer = try? AVAudioPlayer(contentsOf: soundUrl)
         keepSpeakerAlivePlayer?.play()
+    }
+
+    func updateAudioLevel() {
+        if database.show.audioLevel != audio.showing {
+            audio.showing = database.show.audioLevel
+        }
+        let newAudioLevel = media.getAudioLevel()
+        let newNumberOfAudioChannels = media.getNumberOfAudioChannels()
+        if newNumberOfAudioChannels != audio.numberOfChannels {
+            audio.numberOfChannels = newNumberOfAudioChannels
+        }
+        if newAudioLevel == audio.level {
+            return
+        }
+        if abs(audio.level - newAudioLevel) > 5 || newAudioLevel
+            .isNaN || newAudioLevel == .infinity || audio.level.isNaN || audio.level == .infinity
+        {
+            audio.level = newAudioLevel
+            if isWatchLocal() {
+                sendAudioLevelToWatch(audioLevel: audio.level)
+            }
+        }
     }
 }

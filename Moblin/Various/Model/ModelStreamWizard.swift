@@ -1,5 +1,42 @@
 import Foundation
 
+enum WizardPlatform {
+    case twitch
+    case kick
+    case youTube
+    case afreecaTv
+    case custom
+    case obs
+}
+
+enum WizardNetworkSetup {
+    case none
+    case obs
+    case belaboxCloudObs
+    case direct
+    case myServers
+}
+
+enum WizardCustomProtocol {
+    case none
+    case srt
+    case rtmp
+    case rist
+
+    func toDefaultCodec() -> SettingsStreamCodec {
+        switch self {
+        case .none:
+            return .h264avc
+        case .srt:
+            return .h265hevc
+        case .rtmp:
+            return .h264avc
+        case .rist:
+            return .h265hevc
+        }
+    }
+}
+
 extension Model {
     private func cleanWizardUrl(url: String) -> String {
         var cleanedUrl = cleanUrl(url: url)

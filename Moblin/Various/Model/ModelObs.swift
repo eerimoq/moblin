@@ -1,5 +1,11 @@
 import UIKit
 
+struct ObsSceneInput: Identifiable {
+    var id: UUID = .init()
+    var name: String
+    var muted: Bool?
+}
+
 extension Model {
     func startObsSourceScreenshot() {
         obsScreenshot = nil

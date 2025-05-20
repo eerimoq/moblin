@@ -2,6 +2,11 @@ import CoreLocation
 import Foundation
 import UIKit
 
+enum RemoteControlAssistantPreviewUser {
+    case panel
+    case watch
+}
+
 extension Model {
     func isShowingStatusRemoteControl() -> Bool {
         return database.show.remoteControl! && isAnyRemoteControlConfigured()

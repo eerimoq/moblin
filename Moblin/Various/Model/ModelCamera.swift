@@ -1,6 +1,20 @@
 import AVFoundation
 import Foundation
 
+struct Camera: Identifiable, Equatable {
+    var id: String
+    var name: String
+}
+
+let screenCaptureCameraId = UUID(uuidString: "00000000-cafe-babe-beef-000000000000")!
+let builtinBackCameraId = UUID(uuidString: "00000000-cafe-dead-beef-000000000000")!
+let builtinFrontCameraId = UUID(uuidString: "00000000-cafe-dead-beef-000000000001")!
+let externalCameraId = UUID(uuidString: "00000000-cafe-dead-beef-000000000002")!
+let screenCaptureCamera = "Screen capture"
+private let backTripleLowEnergyCamera = "Back Triple (low energy)"
+private let backDualLowEnergyCamera = "Back Dual (low energy)"
+private let backWideDualLowEnergyCamera = "Back Wide dual (low energy)"
+
 extension Model {
     func setFocusPointOfInterest(focusPoint: CGPoint) {
         guard
@@ -120,9 +134,7 @@ extension Model {
     func stopObservingFocus() {
         focusObservation = nil
     }
-}
 
-extension Model {
     func setAutoIso() {
         guard
             let device = cameraDevice, device.isExposureModeSupported(.continuousAutoExposure)
@@ -205,9 +217,7 @@ extension Model {
     func stopObservingIso() {
         isoObservation = nil
     }
-}
 
-extension Model {
     func setAutoWhiteBalance() {
         guard
             let device = cameraDevice, device.isWhiteBalanceModeSupported(.continuousAutoWhiteBalance)
@@ -318,5 +328,362 @@ extension Model {
         return deviceDiscovery.devices.map { device in
             Camera(id: device.uniqueID, name: cameraName(device: device))
         }
+    }
+
+    func colorSpaceUpdated() {
+        storeAndReloadStreamIfEnabled(stream: stream)
+    }
+
+    func lutEnabledUpdated() {
+        if database.color.lutEnabled, database.color.space == .appleLog {
+            media.registerEffect(lutEffect)
+        } else {
+            media.unregisterEffect(lutEffect)
+        }
+    }
+
+    func lutUpdated() {
+        guard let lut = getLogLutById(id: database.color.lut) else {
+            media.unregisterEffect(lutEffect)
+            return
+        }
+        lutEffect.setLut(lut: lut.clone(), imageStorage: imageStorage) { title, subTitle in
+            self.makeErrorToastMain(title: title, subTitle: subTitle)
+        }
+    }
+
+    func addLutCube(url: URL) {
+        let lut = SettingsColorLut(type: .diskCube, name: "My LUT")
+        imageStorage.write(id: lut.id, url: url)
+        database.color.diskLutsCube!.append(lut)
+        resetSelectedScene()
+    }
+
+    func removeLutCube(offsets: IndexSet) {
+        for offset in offsets {
+            let lut = database.color.diskLutsCube![offset]
+            imageStorage.remove(id: lut.id)
+        }
+        database.color.diskLutsCube!.remove(atOffsets: offsets)
+        resetSelectedScene()
+    }
+
+    func addLutPng(data: Data) {
+        let lut = SettingsColorLut(type: .disk, name: "My LUT")
+        imageStorage.write(id: lut.id, data: data)
+        database.color.diskLutsPng!.append(lut)
+        resetSelectedScene()
+    }
+
+    func removeLutPng(offsets: IndexSet) {
+        for offset in offsets {
+            let lut = database.color.diskLutsPng![offset]
+            imageStorage.remove(id: lut.id)
+        }
+        database.color.diskLutsPng!.remove(atOffsets: offsets)
+        resetSelectedScene()
+    }
+
+    func setLutName(lut: SettingsColorLut, name: String) {
+        lut.name = name
+    }
+
+    func allLuts() -> [SettingsColorLut] {
+        return database.color.bundledLuts + database.color.diskLutsCube! + database.color.diskLutsPng!
+    }
+
+    func getLogLutById(id: UUID) -> SettingsColorLut? {
+        return allLuts().first { $0.id == id }
+    }
+
+    func updateLutsButtonState() {
+        var isOn = showingPanel == .luts
+        for lut in allLuts() where lut.enabled! {
+            isOn = true
+        }
+        setGlobalButtonState(type: .luts, isOn: isOn)
+        updateQuickButtonStates()
+    }
+
+    func updateShowCameraPreview() -> Bool {
+        showCameraPreview = shouldShowCameraPreview()
+        return showCameraPreview
+    }
+
+    private func shouldShowCameraPreview() -> Bool {
+        if !(getGlobalButton(type: .cameraPreview)?.isOn ?? false) {
+            return false
+        }
+        return cameraDevice != nil
+    }
+
+    func updateCameraLists() {
+        if ProcessInfo().isiOSAppOnMac {
+            externalCameras = []
+            backCameras = listCameras(position: .back)
+            frontCameras = listCameras(position: .front)
+        } else {
+            externalCameras = listExternalCameras()
+            backCameras = listCameras(position: .back)
+            frontCameras = listCameras(position: .front)
+        }
+    }
+
+    private func listExternalCameras() -> [Camera] {
+        var deviceTypes: [AVCaptureDevice.DeviceType] = []
+        if #available(iOS 17.0, *) {
+            deviceTypes.append(.external)
+        }
+        let deviceDiscovery = AVCaptureDevice.DiscoverySession(
+            deviceTypes: deviceTypes,
+            mediaType: .video,
+            position: .unspecified
+        )
+        return deviceDiscovery.devices.map { device in
+            Camera(id: device.uniqueID, name: cameraName(device: device))
+        }
+    }
+
+    func listCameraPositions(excludeBuiltin: Bool = false) -> [(String, String)] {
+        var cameras: [(String, String)] = []
+        if !excludeBuiltin {
+            if hasTripleBackCamera() {
+                cameras.append((backTripleLowEnergyCamera, backTripleLowEnergyCamera))
+            }
+            if hasDualBackCamera() {
+                cameras.append((backDualLowEnergyCamera, backDualLowEnergyCamera))
+            }
+            if hasWideDualBackCamera() {
+                cameras.append((backWideDualLowEnergyCamera, backWideDualLowEnergyCamera))
+            }
+            cameras += backCameras.map {
+                ($0.id, "Back \($0.name)")
+            }
+            cameras += frontCameras.map {
+                ($0.id, "Front \($0.name)")
+            }
+            cameras += externalCameras.map {
+                ($0.id, $0.name)
+            }
+        }
+        cameras += rtmpCameras().map {
+            ($0, $0)
+        }
+        cameras += srtlaCameras().map {
+            ($0, $0)
+        }
+        cameras += playerCameras().map {
+            ($0, $0)
+        }
+        cameras.append((screenCaptureCamera, screenCaptureCamera))
+        return cameras
+    }
+
+    func isBackCamera(cameraId: String) -> Bool {
+        return backCameras.contains(where: { $0.id == cameraId })
+    }
+
+    func isFrontCamera(cameraId: String) -> Bool {
+        return frontCameras.contains(where: { $0.id == cameraId })
+    }
+
+    func isBackTripleLowEnergyAutoCamera(cameraId: String) -> Bool {
+        return cameraId == backTripleLowEnergyCamera
+    }
+
+    func isBackDualLowEnergyAutoCamera(cameraId: String) -> Bool {
+        return cameraId == backDualLowEnergyCamera
+    }
+
+    func isBackWideDualLowEnergyAutoCamera(cameraId: String) -> Bool {
+        return cameraId == backWideDualLowEnergyCamera
+    }
+
+    func getCameraPositionId(scene: SettingsScene?) -> String {
+        return getCameraPositionId(settingsCameraId: scene?.toCameraId())
+    }
+
+    func getCameraPositionId(videoSourceWidget: SettingsWidgetVideoSource?) -> String {
+        return getCameraPositionId(settingsCameraId: videoSourceWidget?.toCameraId())
+    }
+
+    func cameraIdToSettingsCameraId(cameraId: String) -> SettingsCameraId {
+        if isSrtlaCamera(camera: cameraId) {
+            return .srtla(id: getSrtlaStream(camera: cameraId)?.id ?? .init())
+        } else if isRtmpCamera(camera: cameraId) {
+            return .rtmp(id: getRtmpStream(camera: cameraId)?.id ?? .init())
+        } else if isMediaPlayerCamera(camera: cameraId) {
+            return .mediaPlayer(id: getMediaPlayer(camera: cameraId)?.id ?? .init())
+        } else if isBackCamera(cameraId: cameraId) {
+            return .back(id: cameraId)
+        } else if isFrontCamera(cameraId: cameraId) {
+            return .front(id: cameraId)
+        } else if isScreenCaptureCamera(cameraId: cameraId) {
+            return .screenCapture
+        } else if isBackTripleLowEnergyAutoCamera(cameraId: cameraId) {
+            return .backTripleLowEnergy
+        } else if isBackDualLowEnergyAutoCamera(cameraId: cameraId) {
+            return .backDualLowEnergy
+        } else if isBackWideDualLowEnergyAutoCamera(cameraId: cameraId) {
+            return .backWideDualLowEnergy
+        } else {
+            return .external(id: cameraId, name: getExternalCameraName(cameraId: cameraId))
+        }
+    }
+
+    private func getCameraPositionId(settingsCameraId: SettingsCameraId?) -> String {
+        guard let settingsCameraId else {
+            return ""
+        }
+        switch settingsCameraId {
+        case let .rtmp(id):
+            return getRtmpStream(id: id)?.camera() ?? ""
+        case let .srtla(id):
+            return getSrtlaStream(id: id)?.camera() ?? ""
+        case let .mediaPlayer(id):
+            return getMediaPlayer(id: id)?.camera() ?? ""
+        case let .external(id, _):
+            return id
+        case let .back(id):
+            return id
+        case let .front(id):
+            return id
+        case .screenCapture:
+            return screenCaptureCamera
+        case .backTripleLowEnergy:
+            return backTripleLowEnergyCamera
+        case .backDualLowEnergy:
+            return backDualLowEnergyCamera
+        case .backWideDualLowEnergy:
+            return backWideDualLowEnergyCamera
+        }
+    }
+
+    func getCameraPositionName(scene: SettingsScene?) -> String {
+        return getCameraPositionName(settingsCameraId: scene?.toCameraId())
+    }
+
+    func getCameraPositionName(videoSourceWidget: SettingsWidgetVideoSource?) -> String {
+        return getCameraPositionName(settingsCameraId: videoSourceWidget?.toCameraId())
+    }
+
+    private func getCameraPositionName(settingsCameraId: SettingsCameraId?) -> String {
+        guard let settingsCameraId else {
+            return unknownSad
+        }
+        switch settingsCameraId {
+        case let .rtmp(id):
+            return getRtmpStream(id: id)?.camera() ?? unknownSad
+        case let .srtla(id):
+            return getSrtlaStream(id: id)?.camera() ?? unknownSad
+        case let .mediaPlayer(id):
+            return getMediaPlayer(id: id)?.camera() ?? unknownSad
+        case let .external(_, name):
+            if !name.isEmpty {
+                return name
+            } else {
+                return unknownSad
+            }
+        case let .back(id):
+            if let camera = backCameras.first(where: { $0.id == id }) {
+                return "Back \(camera.name)"
+            } else {
+                return unknownSad
+            }
+        case let .front(id):
+            if let camera = frontCameras.first(where: { $0.id == id }) {
+                return "Front \(camera.name)"
+            } else {
+                return unknownSad
+            }
+        case .screenCapture:
+            return screenCaptureCamera
+        case .backTripleLowEnergy:
+            return backTripleLowEnergyCamera
+        case .backDualLowEnergy:
+            return backDualLowEnergyCamera
+        case .backWideDualLowEnergy:
+            return backWideDualLowEnergyCamera
+        }
+    }
+
+    func getExternalCameraName(cameraId: String) -> String {
+        if let camera = externalCameras.first(where: { camera in
+            camera.id == cameraId
+        }) {
+            return camera.name
+        } else {
+            return unknownSad
+        }
+    }
+
+    func isExternalCameraConnected(id: String) -> Bool {
+        externalCameras.first { camera in
+            camera.id == id
+        } != nil
+    }
+
+    func setColorSpace() {
+        var colorSpace: AVCaptureColorSpace
+        switch database.color.space {
+        case .srgb:
+            colorSpace = .sRGB
+        case .p3D65:
+            colorSpace = .P3_D65
+        case .hlgBt2020:
+            colorSpace = .HLG_BT2020
+        case .appleLog:
+            if #available(iOS 17.0, *) {
+                colorSpace = .appleLog
+            } else {
+                colorSpace = .sRGB
+            }
+        }
+        media.setColorSpace(colorSpace: colorSpace, onComplete: {
+            DispatchQueue.main.async {
+                if let x = self.setCameraZoomX(x: self.zoomX) {
+                    self.setZoomXWhenInRange(x: x)
+                }
+                self.lutEnabledUpdated()
+            }
+        })
+    }
+
+    func getBuiltinCameraId(_ uniqueId: String) -> UUID {
+        if let id = builtinCameraIds[uniqueId] {
+            return id
+        }
+        let id = UUID()
+        builtinCameraIds[uniqueId] = id
+        return id
+    }
+
+    func makeCaptureDevice(device: AVCaptureDevice) -> CaptureDevice {
+        return CaptureDevice(device: device, id: getBuiltinCameraId(device.uniqueID))
+    }
+
+    func setGlobalToneMapping(on: Bool) {
+        guard let cameraDevice else {
+            return
+        }
+        guard cameraDevice.activeFormat.isGlobalToneMappingSupported else {
+            logger.info("Global tone mapping is not supported")
+            return
+        }
+        do {
+            try cameraDevice.lockForConfiguration()
+            cameraDevice.isGlobalToneMappingEnabled = on
+            cameraDevice.unlockForConfiguration()
+        } catch {
+            logger.info("Failed to set global tone mapping")
+        }
+    }
+
+    func getGlobalToneMappingOn() -> Bool {
+        return cameraDevice?.isGlobalToneMappingEnabled ?? false
+    }
+
+    func statusCameraText() -> String {
+        return getCameraPositionName(scene: findEnabledScene(id: selectedSceneId))
     }
 }
