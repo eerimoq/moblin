@@ -514,6 +514,7 @@
 		03E6F7F92CE5B4B100D9198A /* BondingStatisticsFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E6F7F82CE5B4AB00D9198A /* BondingStatisticsFormatter.swift */; };
 		03E877F72B2DB27800086355 /* QuickButtonsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E877F62B2DB27800086355 /* QuickButtonsSettingsView.swift */; };
 		03E8D69F2DDE2E2D0080BEB4 /* ModelZoom.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E8D69E2DDE2E2A0080BEB4 /* ModelZoom.swift */; };
+		03E8D6A12DDE435E0080BEB4 /* ModelKick.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E8D6A02DDE435C0080BEB4 /* ModelKick.swift */; };
 		03E95AC62ADAF58900DAE2DF /* ZoomSwitchToSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E95AC52ADAF58900DAE2DF /* ZoomSwitchToSettingsView.swift */; };
 		03E95AE42ADB7B3D00DAE2DF /* TapScreenToFocusSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E95AE32ADB7B3D00DAE2DF /* TapScreenToFocusSettingsView.swift */; };
 		03E972CD2D3AB52700888FAB /* MoblinkScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E972CC2D3AB52200888FAB /* MoblinkScanner.swift */; };
@@ -1145,6 +1146,7 @@
 		03E6F7F82CE5B4AB00D9198A /* BondingStatisticsFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BondingStatisticsFormatter.swift; sourceTree = "<group>"; };
 		03E877F62B2DB27800086355 /* QuickButtonsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickButtonsSettingsView.swift; sourceTree = "<group>"; };
 		03E8D69E2DDE2E2A0080BEB4 /* ModelZoom.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelZoom.swift; sourceTree = "<group>"; };
+		03E8D6A02DDE435C0080BEB4 /* ModelKick.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelKick.swift; sourceTree = "<group>"; };
 		03E95AC52ADAF58900DAE2DF /* ZoomSwitchToSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomSwitchToSettingsView.swift; sourceTree = "<group>"; };
 		03E95AE32ADB7B3D00DAE2DF /* TapScreenToFocusSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TapScreenToFocusSettingsView.swift; sourceTree = "<group>"; };
 		03E972CC2D3AB52200888FAB /* MoblinkScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoblinkScanner.swift; sourceTree = "<group>"; };
@@ -2727,6 +2729,7 @@
 				032F81C12DDCF4C000E14CC5 /* ModelGameController.swift */,
 				03BA73A72DDC582B00075CD6 /* ModelHeartRateDevice.swift */,
 				032D85852DDD7F4B00A6128A /* ModelKeyboard.swift */,
+				03E8D6A02DDE435C0080BEB4 /* ModelKick.swift */,
 				032F81BF2DDCF32D00E14CC5 /* ModelLocation.swift */,
 				032D85872DDD7FA200A6128A /* ModelMediaPlayer.swift */,
 				03BA73A52DDC571E00075CD6 /* ModelMoblink.swift */,
@@ -3406,6 +3409,7 @@
 				0359F8B22BD3DA61005BFDA8 /* VTSessionProperty.swift in Sources */,
 				0315A37A2AA39DA800295443 /* TextItemView.swift in Sources */,
 				0359F8B92BD3DA61005BFDA8 /* AVFrameRateRange+Extension.swift in Sources */,
+				03E8D6A12DDE435E0080BEB4 /* ModelKick.swift in Sources */,
 				0379BBA22AAD824600B718B6 /* StreamOverlayIconAndTextView.swift in Sources */,
 				035735802BC62FDC00F4E87D /* WatchLocalOverlaysSettingsView.swift in Sources */,
 				03BA73A42DDC562D00075CD6 /* ModelReplay.swift in Sources */,

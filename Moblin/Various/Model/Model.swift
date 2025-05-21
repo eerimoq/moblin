@@ -181,8 +181,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var selectedSceneId = UUID()
     var twitchChat: TwitchChatMoblin!
     var twitchEventSub: TwitchEventSub?
-    private var kickPusher: KickPusher?
-    private var kickViewers: KickViewers?
+    var kickPusher: KickPusher?
+    var kickViewers: KickViewers?
     private var youTubeLiveChat: YouTubeLiveChat?
     private var afreecaTvChat: AfreecaTvChat?
     private var openStreamingPlatformChat: OpenStreamingPlatformChat!
@@ -1803,19 +1803,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return database.debug.timecodesEnabled && stream.timecodesEnabled! && !stream.ntpPoolAddress!.isEmpty
     }
 
-    private func showPreset(preset: SettingsZoomPreset) -> Bool {
-        let x = preset.x!
-        return x >= cameraZoomXMinimum && x <= cameraZoomXMaximum
-    }
-
-    func backZoomPresets() -> [SettingsZoomPreset] {
-        return database.zoom.back.filter { showPreset(preset: $0) }
-    }
-
-    func frontZoomPresets() -> [SettingsZoomPreset] {
-        return database.zoom.front.filter { showPreset(preset: $0) }
-    }
-
     func setPixellateStrength(strength: Float) {
         pixellateEffect.strength.mutate { $0 = strength }
     }
@@ -1844,22 +1831,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func isViewersConfigured() -> Bool {
         return isTwitchViewersConfigured() || isKickViewersConfigured()
-    }
-
-    func isKickPusherConfigured() -> Bool {
-        return database.chat.enabled && (stream.kickChatroomId != "" || stream.kickChannelName != "")
-    }
-
-    func isKickPusherConnected() -> Bool {
-        return kickPusher?.isConnected() ?? false
-    }
-
-    func hasKickPusherEmotes() -> Bool {
-        return kickPusher?.hasEmotes() ?? false
-    }
-
-    func isKickViewersConfigured() -> Bool {
-        return stream.kickChannelName != ""
     }
 
     func isYouTubeLiveChatConfigured() -> Bool {
@@ -1903,27 +1874,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return settings.database.debug.httpProxy.toHttpProxy()
     }
 
-    private func reloadKickViewers() {
-        kickViewers?.stop()
-        if isKickViewersConfigured() {
-            kickViewers = KickViewers()
-            kickViewers!.start(channelName: stream.kickChannelName!)
-        }
-    }
-
-    func reloadKickPusher() {
-        kickPusher?.stop()
-        kickPusher = nil
-        setTextToSpeechStreamerMentions()
-        if isKickPusherConfigured(), !isChatRemoteControl() {
-            kickPusher = KickPusher(delegate: self,
-                                    channelId: stream.kickChatroomId,
-                                    channelName: stream.kickChannelName!,
-                                    settings: stream.chat!)
-            kickPusher!.start()
-        }
-    }
-
     func reloadYouTubeLiveChat() {
         youTubeLiveChat?.stop()
         youTubeLiveChat = nil
@@ -1962,12 +1912,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             )
             openStreamingPlatformChat!.start()
         }
-    }
-
-    func kickChannelNameUpdated() {
-        reloadKickPusher()
-        reloadKickViewers()
-        resetChat()
     }
 
     func youTubeVideoIdUpdated() {
@@ -2490,45 +2434,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         attachCamera(scene: scene, position: .unspecified)
     }
 
-    func setCameraZoomX(x: Float, rate: Float? = nil) -> Float? {
-        return cameraZoomLevelToX(media.setCameraZoomLevel(
-            device: cameraDevice,
-            level: x / cameraZoomLevelToXScale,
-            rate: rate
-        ))
-    }
-
-    func stopCameraZoom() -> Float? {
-        return cameraZoomLevelToX(media.stopCameraZoomLevel(device: cameraDevice))
-    }
-
-    private func cameraZoomLevelToX(_ level: Float?) -> Float? {
-        if let level {
-            return level * cameraZoomLevelToXScale
-        }
-        return nil
-    }
-
-    func setExposureBias(bias: Float) {
-        guard let position = cameraPosition else {
-            return
-        }
-        guard let device = preferredCamera(position: position) else {
-            return
-        }
-        if bias < device.minExposureTargetBias {
-            return
-        }
-        if bias > device.maxExposureTargetBias {
-            return
-        }
-        do {
-            try device.lockForConfiguration()
-            device.setExposureTargetBias(bias)
-            device.unlockForConfiguration()
-        } catch {}
-    }
-
     private func getVideoStabilizationMode(scene: SettingsScene) -> AVCaptureVideoStabilizationMode {
         if scene.overrideVideoStabilizationMode! {
             return getVideoStabilization(mode: scene.videoStabilizationMode!)
@@ -2621,7 +2526,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         motionManager.stopDeviceMotionUpdates()
     }
 
-    private func preferredCamera(position: AVCaptureDevice.Position) -> AVCaptureDevice? {
+    func preferredCamera(position: AVCaptureDevice.Position) -> AVCaptureDevice? {
         if let scene = findEnabledScene(id: selectedSceneId) {
             if position == .back {
                 return AVCaptureDevice(uniqueID: scene.backCameraId!)
@@ -2635,42 +2540,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    private func factorToX(position: AVCaptureDevice.Position, factor: Float) -> Float {
-        if position == .back && hasUltraWideBackCamera() {
-            return factor / 2
-        }
-        return factor
-    }
-
-    func getMinMaxZoomX(position: AVCaptureDevice.Position) -> (Float, Float) {
-        var minX: Float
-        var maxX: Float
-        if let device = preferredCamera(position: position) {
-            minX = factorToX(
-                position: position,
-                factor: Float(device.minAvailableVideoZoomFactor)
-            )
-            maxX = factorToX(
-                position: position,
-                factor: Float(device.maxAvailableVideoZoomFactor)
-            )
-        } else {
-            minX = 1.0
-            maxX = 1.0
-        }
-        return (minX, maxX)
-    }
-
     func isShowingStatusCamera() -> Bool {
         return database.show.cameras!
     }
 
     func isShowingStatusMic() -> Bool {
         return database.show.microphone
-    }
-
-    func isShowingStatusZoom() -> Bool {
-        return database.show.zoom && hasZoom
     }
 
     func isShowingStatusEvents() -> Bool {
@@ -2698,10 +2573,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         \(stream.name) (\(resolution), \(fps), \(proto), \(codec) \(bitrate), \
         \(audioCodec) \(audioBitrate))
         """
-    }
-
-    func statusZoomText() -> String {
-        return String(format: "%.1f", zoomX)
     }
 
     private func updateStatusEventsText() {
@@ -2928,35 +2799,5 @@ extension Model: FaxReceiverDelegate {
         DispatchQueue.main.async {
             self.printAllCatPrinters(image: image)
         }
-    }
-}
-
-extension Model: KickOusherDelegate {
-    func kickPusherMakeErrorToast(title: String, subTitle: String?) {
-        makeErrorToast(title: title, subTitle: subTitle)
-    }
-
-    func kickPusherAppendMessage(
-        user: String,
-        userColor: RgbColor?,
-        segments: [ChatPostSegment],
-        isSubscriber: Bool,
-        isModerator: Bool,
-        highlight: ChatHighlight?
-    ) {
-        appendChatMessage(platform: .kick,
-                          user: user,
-                          userId: nil,
-                          userColor: userColor,
-                          userBadges: [],
-                          segments: segments,
-                          timestamp: digitalClock,
-                          timestampTime: .now,
-                          isAction: false,
-                          isSubscriber: isSubscriber,
-                          isModerator: isModerator,
-                          bits: nil,
-                          highlight: highlight,
-                          live: true)
     }
 }

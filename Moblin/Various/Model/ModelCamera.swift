@@ -711,4 +711,24 @@ extension Model {
             return nil
         }
     }
+
+    func setExposureBias(bias: Float) {
+        guard let position = cameraPosition else {
+            return
+        }
+        guard let device = preferredCamera(position: position) else {
+            return
+        }
+        if bias < device.minExposureTargetBias {
+            return
+        }
+        if bias > device.maxExposureTargetBias {
+            return
+        }
+        do {
+            try device.lockForConfiguration()
+            device.setExposureTargetBias(bias)
+            device.unlockForConfiguration()
+        } catch {}
+    }
 }

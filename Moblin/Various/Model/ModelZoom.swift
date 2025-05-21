@@ -1,3 +1,4 @@
+import AVFoundation
 import Foundation
 
 private let noBackZoomPresetId = UUID()
@@ -156,5 +157,71 @@ extension Model {
             frontZoomX = database.zoom.switchToFront.x!
             updateFrontZoomPresetId()
         }
+    }
+
+    private func factorToX(position: AVCaptureDevice.Position, factor: Float) -> Float {
+        if position == .back && hasUltraWideBackCamera() {
+            return factor / 2
+        }
+        return factor
+    }
+
+    func getMinMaxZoomX(position: AVCaptureDevice.Position) -> (Float, Float) {
+        var minX: Float
+        var maxX: Float
+        if let device = preferredCamera(position: position) {
+            minX = factorToX(
+                position: position,
+                factor: Float(device.minAvailableVideoZoomFactor)
+            )
+            maxX = factorToX(
+                position: position,
+                factor: Float(device.maxAvailableVideoZoomFactor)
+            )
+        } else {
+            minX = 1.0
+            maxX = 1.0
+        }
+        return (minX, maxX)
+    }
+
+    func isShowingStatusZoom() -> Bool {
+        return database.show.zoom && hasZoom
+    }
+
+    func statusZoomText() -> String {
+        return String(format: "%.1f", zoomX)
+    }
+
+    private func showPreset(preset: SettingsZoomPreset) -> Bool {
+        let x = preset.x!
+        return x >= cameraZoomXMinimum && x <= cameraZoomXMaximum
+    }
+
+    func backZoomPresets() -> [SettingsZoomPreset] {
+        return database.zoom.back.filter { showPreset(preset: $0) }
+    }
+
+    func frontZoomPresets() -> [SettingsZoomPreset] {
+        return database.zoom.front.filter { showPreset(preset: $0) }
+    }
+
+    func setCameraZoomX(x: Float, rate: Float? = nil) -> Float? {
+        return cameraZoomLevelToX(media.setCameraZoomLevel(
+            device: cameraDevice,
+            level: x / cameraZoomLevelToXScale,
+            rate: rate
+        ))
+    }
+
+    func stopCameraZoom() -> Float? {
+        return cameraZoomLevelToX(media.stopCameraZoomLevel(device: cameraDevice))
+    }
+
+    private func cameraZoomLevelToX(_ level: Float?) -> Float? {
+        if let level {
+            return level * cameraZoomLevelToXScale
+        }
+        return nil
     }
 }
