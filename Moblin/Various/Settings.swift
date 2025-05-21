@@ -2421,6 +2421,7 @@ class SettingsDebug: Codable, ObservableObject {
     var replay: Bool = false
     var recordSegmentLength: Double = 5.0
     @Published var builtinAudioAndVideoDelay: Double = 0.0
+    @Published var horizon = false
 
     enum CodingKeys: CodingKey {
         case logLevel,
@@ -2455,7 +2456,8 @@ class SettingsDebug: Codable, ObservableObject {
              srtlaBatchSendEnabled,
              replay,
              recordSegmentLength,
-             builtinAudioAndVideoDelay
+             builtinAudioAndVideoDelay,
+             horizon
     }
 
     func encode(to encoder: Encoder) throws {
@@ -2493,6 +2495,7 @@ class SettingsDebug: Codable, ObservableObject {
         try container.encode(.replay, replay)
         try container.encode(.recordSegmentLength, recordSegmentLength)
         try container.encode(.builtinAudioAndVideoDelay, builtinAudioAndVideoDelay)
+        try container.encode(.horizon, horizon)
     }
 
     init() {}
@@ -2537,6 +2540,7 @@ class SettingsDebug: Codable, ObservableObject {
         replay = (try? container.decode(Bool.self, forKey: .replay)) ?? false
         recordSegmentLength = (try? container.decode(Double.self, forKey: .recordSegmentLength)) ?? 5.0
         builtinAudioAndVideoDelay = (try? container.decode(Double.self, forKey: .builtinAudioAndVideoDelay)) ?? 0.0
+        horizon = (try? container.decode(Bool.self, forKey: .horizon)) ?? false
     }
 }
 

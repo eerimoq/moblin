@@ -515,6 +515,7 @@
 		03E877F72B2DB27800086355 /* QuickButtonsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E877F62B2DB27800086355 /* QuickButtonsSettingsView.swift */; };
 		03E8D69F2DDE2E2D0080BEB4 /* ModelZoom.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E8D69E2DDE2E2A0080BEB4 /* ModelZoom.swift */; };
 		03E8D6A12DDE435E0080BEB4 /* ModelKick.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E8D6A02DDE435C0080BEB4 /* ModelKick.swift */; };
+		03E8D6A32DDE5A560080BEB4 /* HorizonEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E8D6A22DDE5A4F0080BEB4 /* HorizonEffect.swift */; };
 		03E95AC62ADAF58900DAE2DF /* ZoomSwitchToSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E95AC52ADAF58900DAE2DF /* ZoomSwitchToSettingsView.swift */; };
 		03E95AE42ADB7B3D00DAE2DF /* TapScreenToFocusSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E95AE32ADB7B3D00DAE2DF /* TapScreenToFocusSettingsView.swift */; };
 		03E972CD2D3AB52700888FAB /* MoblinkScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E972CC2D3AB52200888FAB /* MoblinkScanner.swift */; };
@@ -1147,6 +1148,7 @@
 		03E877F62B2DB27800086355 /* QuickButtonsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickButtonsSettingsView.swift; sourceTree = "<group>"; };
 		03E8D69E2DDE2E2A0080BEB4 /* ModelZoom.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelZoom.swift; sourceTree = "<group>"; };
 		03E8D6A02DDE435C0080BEB4 /* ModelKick.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelKick.swift; sourceTree = "<group>"; };
+		03E8D6A22DDE5A4F0080BEB4 /* HorizonEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HorizonEffect.swift; sourceTree = "<group>"; };
 		03E95AC52ADAF58900DAE2DF /* ZoomSwitchToSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomSwitchToSettingsView.swift; sourceTree = "<group>"; };
 		03E95AE32ADB7B3D00DAE2DF /* TapScreenToFocusSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TapScreenToFocusSettingsView.swift; sourceTree = "<group>"; };
 		03E972CC2D3AB52200888FAB /* MoblinkScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoblinkScanner.swift; sourceTree = "<group>"; };
@@ -2630,6 +2632,7 @@
 				03559E7D2BDCEB14002D0886 /* FaceEffect.swift */,
 				0324ECA72C1EADAB007CB0B3 /* FourThreeEffect.swift */,
 				03B374012AA0354C0028DDD5 /* GrayScaleEffect.swift */,
+				03E8D6A22DDE5A4F0080BEB4 /* HorizonEffect.swift */,
 				03B374082AA0EA700028DDD5 /* ImageEffect.swift */,
 				038F42EC2B6849D400E68752 /* LutEffect.swift */,
 				03828C2B2C3AEF6D00F5A8AC /* MapEffect.swift */,
@@ -3851,6 +3854,7 @@
 				0359F8C22BD3DA61005BFDA8 /* URL+Extension.swift in Sources */,
 				032FDBFC2B0B1183007BE85E /* ValueEditView.swift in Sources */,
 				0318391B2AF79DDF00320FB2 /* StreamSrtAdaptiveBitrateSettingsView.swift in Sources */,
+				03E8D6A32DDE5A560080BEB4 /* HorizonEffect.swift in Sources */,
 				03C3573B2D08150300B8B29F /* Flv.swift in Sources */,
 				03F5A8E52AD6FF8E00F354D2 /* StreamOverlayDebugView.swift in Sources */,
 				0359F8BE2BD3DA61005BFDA8 /* CVPixelBuffer+Extension.swift in Sources */,

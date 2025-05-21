@@ -42,6 +42,7 @@ extension Model {
         media.unregisterEffect(pollEffect)
         media.unregisterEffect(whirlpoolEffect)
         media.unregisterEffect(pinchEffect)
+        media.unregisterEffect(horizonEffect)
         faceEffect = FaceEffect(fps: Float(stream.fps), onFindFaceChanged: handleFindFaceChanged(value:))
         updateFaceFilterSettings()
         movieEffect = MovieEffect()
@@ -53,10 +54,17 @@ extension Model {
         pollEffect = PollEffect()
         whirlpoolEffect = WhirlpoolEffect()
         pinchEffect = PinchEffect()
+        horizonEffect = HorizonEffect()
     }
 
     private func registerGlobalVideoEffects() -> [VideoEffect] {
         var effects: [VideoEffect] = []
+        if isHorizonEnabled() {
+            horizonEffect.start()
+            effects.append(horizonEffect)
+        } else {
+            horizonEffect.stop()
+        }
         if isFaceEnabled() {
             effects.append(faceEffect)
         }
@@ -219,6 +227,10 @@ extension Model {
         let settings = database.debug.beautyFilterSettings
         return database.debug.beautyFilter || settings.showBlur || settings.showBlurBackground || settings
             .showMoblin || settings.showBeauty
+    }
+
+    private func isHorizonEnabled() -> Bool {
+        return database.debug.horizon
     }
 
     func resetSelectedScene(changeScene: Bool = true) {
