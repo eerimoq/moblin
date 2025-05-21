@@ -1,3 +1,4 @@
+import AVFoundation
 import CoreLocation
 import SwiftUI
 
@@ -803,6 +804,80 @@ extension Model {
         }
         for mapEffect in mapEffects.values {
             mapEffect.updateLocation(location: location)
+        }
+    }
+
+    func isSceneVideoSourceActive(scene: SettingsScene) -> Bool {
+        switch scene.cameraPosition {
+        case .rtmp:
+            if let stream = getRtmpStream(id: scene.rtmpCameraId!) {
+                return isRtmpStreamConnected(streamKey: stream.streamKey)
+            } else {
+                return false
+            }
+        case .srtla:
+            if let stream = getSrtlaStream(id: scene.srtlaCameraId!) {
+                return isSrtlaStreamConnected(streamId: stream.streamId)
+            } else {
+                return false
+            }
+        case .external:
+            return isExternalCameraConnected(id: scene.externalCameraId!)
+        default:
+            return true
+        }
+    }
+
+    func isSceneVideoSourceActive(sceneId: UUID) -> Bool {
+        guard let scene = enabledScenes.first(where: { $0.id == sceneId }) else {
+            return false
+        }
+        return isSceneVideoSourceActive(scene: scene)
+    }
+
+    func getBuiltinCameraDevices(scene: SettingsScene, sceneDevice: AVCaptureDevice?) -> CaptureDevices {
+        var devices = CaptureDevices(hasSceneDevice: false, devices: [])
+        if let sceneDevice {
+            devices.hasSceneDevice = true
+            devices.devices.append(makeCaptureDevice(device: sceneDevice))
+        }
+        getBuiltinCameraDevicesInScene(scene: scene, devices: &devices.devices)
+        return devices
+    }
+
+    private func getBuiltinCameraDevicesInScene(scene: SettingsScene, devices: inout [CaptureDevice]) {
+        for sceneWidget in scene.widgets {
+            guard let widget = findWidget(id: sceneWidget.widgetId) else {
+                continue
+            }
+            guard widget.enabled else {
+                continue
+            }
+            switch widget.type {
+            case .videoSource:
+                let cameraId: String?
+                switch widget.videoSource.cameraPosition! {
+                case .back:
+                    cameraId = widget.videoSource.backCameraId!
+                case .front:
+                    cameraId = widget.videoSource.frontCameraId!
+                case .external:
+                    cameraId = widget.videoSource.externalCameraId!
+                default:
+                    cameraId = nil
+                }
+                if let cameraId, let device = AVCaptureDevice(uniqueID: cameraId) {
+                    if !devices.contains(where: { $0.device == device }) {
+                        devices.append(makeCaptureDevice(device: device))
+                    }
+                }
+            case .scene:
+                if let scene = database.scenes.first(where: { $0.id == widget.scene.sceneId }) {
+                    getBuiltinCameraDevicesInScene(scene: scene, devices: &devices)
+                }
+            default:
+                break
+            }
         }
     }
 }

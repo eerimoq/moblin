@@ -686,4 +686,29 @@ extension Model {
     func statusCameraText() -> String {
         return getCameraPositionName(scene: findEnabledScene(id: selectedSceneId))
     }
+
+    func getVideoSourceId(cameraId: SettingsCameraId) -> UUID? {
+        switch cameraId {
+        case let .rtmp(id: id):
+            return id
+        case let .srtla(id: id):
+            return id
+        case let .mediaPlayer(id: id):
+            return id
+        case .screenCapture:
+            return screenCaptureCameraId
+        case let .back(id: id):
+            return getBuiltinCameraId(id)
+        case let .front(id: id):
+            return getBuiltinCameraId(id)
+        case let .external(id: id, name: _):
+            return getBuiltinCameraId(id)
+        case .backDualLowEnergy:
+            return nil
+        case .backTripleLowEnergy:
+            return nil
+        case .backWideDualLowEnergy:
+            return nil
+        }
+    }
 }

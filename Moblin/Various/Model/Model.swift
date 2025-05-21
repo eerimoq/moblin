@@ -1,31 +1,19 @@
 import AlertToast
 import AppIntents
-import AppleGPUInfo
 import Collections
 import Combine
 import CoreMotion
 import GameController
 import HealthKit
-import Intents
-import MapKit
-import NaturalLanguage
-import Network
 import NetworkExtension
 import PhotosUI
-import ReplayKit
 import SDWebImageSwiftUI
 import SDWebImageWebPCoder
 import StoreKit
 import SwiftUI
 import TrueTime
-import TwitchChat
-import VideoToolbox
 import WatchConnectivity
 import WebKit
-import WrappingHStack
-
-private let noBackZoomPresetId = UUID()
-private let noFrontZoomPresetId = UUID()
 
 enum ShowingPanel {
     case none
@@ -131,11 +119,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var goProWifiCredentialsSelection: UUID?
     @Published var goProRtmpUrlSelection: UUID?
 
-    @Published var bias: Float = 0.0
-
     var selectedFps: Int?
     var autoFps = false
 
+    @Published var bias: Float = 0.0
     var manualFocusesEnabled: [AVCaptureDevice: Bool] = [:]
     var manualFocuses: [AVCaptureDevice: Float] = [:]
     @Published var manualFocus: Float = 1.0
@@ -330,9 +317,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var frontZoomPresetId = UUID()
     @Published var zoomX: Float = 1.0
     @Published var hasZoom = true
-    private var zoomXPinch: Float = 1.0
-    private var backZoomX: Float = 0.5
-    private var frontZoomX: Float = 1.0
+    var zoomXPinch: Float = 1.0
+    var backZoomX: Float = 0.5
+    var frontZoomX: Float = 1.0
     var cameraPosition: AVCaptureDevice.Position?
     private let motionManager = CMMotionManager()
     var gForceManager: GForceManager?
@@ -710,13 +697,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             setGlobalButtonState(type: type, isOn: showingPanel == panel)
         }
         updateQuickButtonStates()
-    }
-
-    func isSceneVideoSourceActive(sceneId: UUID) -> Bool {
-        guard let scene = enabledScenes.first(where: { $0.id == sceneId }) else {
-            return false
-        }
-        return isSceneVideoSourceActive(scene: scene)
     }
 
     func setAllowVideoRangePixelFormat() {
@@ -1333,27 +1313,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     @objc func handleBatteryStateDidChangeNotification() {
         updateBatteryState()
-    }
-
-    func isSceneVideoSourceActive(scene: SettingsScene) -> Bool {
-        switch scene.cameraPosition {
-        case .rtmp:
-            if let stream = getRtmpStream(id: scene.rtmpCameraId!) {
-                return isRtmpStreamConnected(streamKey: stream.streamKey)
-            } else {
-                return false
-            }
-        case .srtla:
-            if let stream = getSrtlaStream(id: scene.srtlaCameraId!) {
-                return isSrtlaStreamConnected(streamId: stream.streamId)
-            } else {
-                return false
-            }
-        case .external:
-            return isExternalCameraConnected(id: scene.externalCameraId!)
-        default:
-            return true
-        }
     }
 
     deinit {
@@ -2133,52 +2092,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    func getBuiltinCameraDevices(scene: SettingsScene, sceneDevice: AVCaptureDevice?) -> CaptureDevices {
-        var devices = CaptureDevices(hasSceneDevice: false, devices: [])
-        if let sceneDevice {
-            devices.hasSceneDevice = true
-            devices.devices.append(makeCaptureDevice(device: sceneDevice))
-        }
-        getBuiltinCameraDevicesInScene(scene: scene, devices: &devices.devices)
-        return devices
-    }
-
-    private func getBuiltinCameraDevicesInScene(scene: SettingsScene, devices: inout [CaptureDevice]) {
-        for sceneWidget in scene.widgets {
-            guard let widget = findWidget(id: sceneWidget.widgetId) else {
-                continue
-            }
-            guard widget.enabled else {
-                continue
-            }
-            switch widget.type {
-            case .videoSource:
-                let cameraId: String?
-                switch widget.videoSource.cameraPosition! {
-                case .back:
-                    cameraId = widget.videoSource.backCameraId!
-                case .front:
-                    cameraId = widget.videoSource.frontCameraId!
-                case .external:
-                    cameraId = widget.videoSource.externalCameraId!
-                default:
-                    cameraId = nil
-                }
-                if let cameraId, let device = AVCaptureDevice(uniqueID: cameraId) {
-                    if !devices.contains(where: { $0.device == device }) {
-                        devices.append(makeCaptureDevice(device: device))
-                    }
-                }
-            case .scene:
-                if let scene = database.scenes.first(where: { $0.id == widget.scene.sceneId }) {
-                    getBuiltinCameraDevicesInScene(scene: scene, devices: &devices)
-                }
-            default:
-                break
-            }
-        }
-    }
-
     private func authorizeHealthKit(completion: @escaping () -> Void) {
         let typesToShare: Set = [
             HKQuantityType.workoutType(),
@@ -2218,31 +2131,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func findScoreboardPlayer(id: UUID) -> String {
         return database.scoreboardPlayers.first(where: { $0.id == id })?.name ?? "🇸🇪 Moblin"
-    }
-
-    func getVideoSourceId(cameraId: SettingsCameraId) -> UUID? {
-        switch cameraId {
-        case let .rtmp(id: id):
-            return id
-        case let .srtla(id: id):
-            return id
-        case let .mediaPlayer(id: id):
-            return id
-        case .screenCapture:
-            return screenCaptureCameraId
-        case let .back(id: id):
-            return getBuiltinCameraId(id)
-        case let .front(id: id):
-            return getBuiltinCameraId(id)
-        case let .external(id: id, name: _):
-            return getBuiltinCameraId(id)
-        case .backDualLowEnergy:
-            return nil
-        case .backTripleLowEnergy:
-            return nil
-        case .backWideDualLowEnergy:
-            return nil
-        }
     }
 
     private func updateDigitalClock(now: Date) {
@@ -2418,40 +2306,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             }
         }
         return false
-    }
-
-    private func lowEnergyCameraUpdateBackZoom(force: Bool) {
-        if force {
-            updateBackZoomSwitchTo()
-        }
-    }
-
-    private func updateBackZoomPresetId() {
-        for preset in database.zoom.back where preset.x == backZoomX {
-            backZoomPresetId = preset.id
-        }
-    }
-
-    private func updateFrontZoomPresetId() {
-        for preset in database.zoom.front where preset.x == frontZoomX {
-            frontZoomPresetId = preset.id
-        }
-    }
-
-    private func updateBackZoomSwitchTo() {
-        if database.zoom.switchToBack.enabled {
-            clearZoomPresetId()
-            backZoomX = database.zoom.switchToBack.x!
-            updateBackZoomPresetId()
-        }
-    }
-
-    private func updateFrontZoomSwitchTo() {
-        if database.zoom.switchToFront.enabled {
-            clearZoomPresetId()
-            frontZoomX = database.zoom.switchToFront.x!
-            updateFrontZoomPresetId()
-        }
     }
 
     func attachBackTripleLowEnergyCamera(force: Bool = true) {
@@ -2735,126 +2589,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         updateTextEffects(now: .now, timestamp: .now)
         forceUpdateTextEffects()
-    }
-
-    func setZoomPreset(id: UUID) {
-        switch cameraPosition {
-        case .back:
-            backZoomPresetId = id
-        case .front:
-            frontZoomPresetId = id
-        default:
-            break
-        }
-        if let preset = findZoomPreset(id: id) {
-            if setCameraZoomX(x: preset.x!, rate: database.zoom.speed!) != nil {
-                setZoomXWhenInRange(x: preset.x!)
-                switch getSelectedScene()?.cameraPosition {
-                case .backTripleLowEnergy:
-                    attachBackTripleLowEnergyCamera(force: false)
-                case .backDualLowEnergy:
-                    attachBackDualLowEnergyCamera(force: false)
-                case .backWideDualLowEnergy:
-                    attachBackWideDualLowEnergyCamera(force: false)
-                default:
-                    break
-                }
-            }
-            if isWatchLocal() {
-                sendZoomPresetToWatch()
-            }
-        } else {
-            clearZoomPresetId()
-        }
-    }
-
-    func setZoomX(x: Float, rate: Float? = nil, setPinch: Bool = true) {
-        clearZoomPresetId()
-        if let x = setCameraZoomX(x: x, rate: rate) {
-            setZoomXWhenInRange(x: x, setPinch: setPinch)
-        }
-    }
-
-    func setZoomXWhenInRange(x: Float, setPinch: Bool = true) {
-        switch cameraPosition {
-        case .back:
-            backZoomX = x
-            updateBackZoomPresetId()
-        case .front:
-            frontZoomX = x
-            updateFrontZoomPresetId()
-        default:
-            break
-        }
-        zoomX = x
-        remoteControlStreamer?.stateChanged(state: RemoteControlState(zoom: x))
-        if isWatchLocal() {
-            sendZoomToWatch(x: x)
-        }
-        if setPinch {
-            zoomXPinch = zoomX
-        }
-    }
-
-    func changeZoomX(amount: Float, rate: Float? = nil) {
-        guard hasZoom else {
-            return
-        }
-        setZoomX(x: zoomXPinch * amount, rate: rate, setPinch: false)
-    }
-
-    func commitZoomX(amount: Float, rate: Float? = nil) {
-        guard hasZoom else {
-            return
-        }
-        setZoomX(x: zoomXPinch * amount, rate: rate)
-    }
-
-    private func clearZoomPresetId() {
-        switch cameraPosition {
-        case .back:
-            backZoomPresetId = noBackZoomPresetId
-        case .front:
-            frontZoomPresetId = noFrontZoomPresetId
-        default:
-            break
-        }
-        if isWatchLocal() {
-            sendZoomPresetToWatch()
-        }
-    }
-
-    private func findZoomPreset(id: UUID) -> SettingsZoomPreset? {
-        switch cameraPosition {
-        case .back:
-            return database.zoom.back.first { preset in
-                preset.id == id
-            }
-        case .front:
-            return database.zoom.front.first { preset in
-                preset.id == id
-            }
-        default:
-            return nil
-        }
-    }
-
-    func backZoomUpdated() {
-        if !database.zoom.back.contains(where: { level in
-            level.id == backZoomPresetId
-        }) {
-            backZoomPresetId = database.zoom.back[0].id
-        }
-        sceneUpdated(updateRemoteScene: false)
-    }
-
-    func frontZoomUpdated() {
-        if !database.zoom.front.contains(where: { level in
-            level.id == frontZoomPresetId
-        }) {
-            frontZoomPresetId = database.zoom.front[0].id
-        }
-        sceneUpdated(updateRemoteScene: false)
     }
 
     private func makeFlameRedToast() {

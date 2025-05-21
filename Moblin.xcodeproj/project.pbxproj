@@ -513,6 +513,7 @@
 		03E3E3922C431E0900932B00 /* DjiDeviceSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E3E3912C431E0900932B00 /* DjiDeviceSettingsView.swift */; };
 		03E6F7F92CE5B4B100D9198A /* BondingStatisticsFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E6F7F82CE5B4AB00D9198A /* BondingStatisticsFormatter.swift */; };
 		03E877F72B2DB27800086355 /* QuickButtonsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E877F62B2DB27800086355 /* QuickButtonsSettingsView.swift */; };
+		03E8D69F2DDE2E2D0080BEB4 /* ModelZoom.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E8D69E2DDE2E2A0080BEB4 /* ModelZoom.swift */; };
 		03E95AC62ADAF58900DAE2DF /* ZoomSwitchToSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E95AC52ADAF58900DAE2DF /* ZoomSwitchToSettingsView.swift */; };
 		03E95AE42ADB7B3D00DAE2DF /* TapScreenToFocusSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E95AE32ADB7B3D00DAE2DF /* TapScreenToFocusSettingsView.swift */; };
 		03E972CD2D3AB52700888FAB /* MoblinkScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E972CC2D3AB52200888FAB /* MoblinkScanner.swift */; };
@@ -1143,6 +1144,7 @@
 		03E3E3912C431E0900932B00 /* DjiDeviceSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DjiDeviceSettingsView.swift; sourceTree = "<group>"; };
 		03E6F7F82CE5B4AB00D9198A /* BondingStatisticsFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BondingStatisticsFormatter.swift; sourceTree = "<group>"; };
 		03E877F62B2DB27800086355 /* QuickButtonsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickButtonsSettingsView.swift; sourceTree = "<group>"; };
+		03E8D69E2DDE2E2A0080BEB4 /* ModelZoom.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelZoom.swift; sourceTree = "<group>"; };
 		03E95AC52ADAF58900DAE2DF /* ZoomSwitchToSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomSwitchToSettingsView.swift; sourceTree = "<group>"; };
 		03E95AE32ADB7B3D00DAE2DF /* TapScreenToFocusSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TapScreenToFocusSettingsView.swift; sourceTree = "<group>"; };
 		03E972CC2D3AB52200888FAB /* MoblinkScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoblinkScanner.swift; sourceTree = "<group>"; };
@@ -2745,6 +2747,7 @@
 				03BA73BA2DDCDA4500075CD6 /* ModelTesla.swift */,
 				032F81BD2DDCF27400E14CC5 /* ModelTextToSpeech.swift */,
 				03BA73B62DDCD84600075CD6 /* ModelTwitch.swift */,
+				03E8D69E2DDE2E2A0080BEB4 /* ModelZoom.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -3595,6 +3598,7 @@
 				03B507A72C88B8F6003CDEDF /* CatPrinter.swift in Sources */,
 				03CD92A92DC9D76100202D49 /* PinchEffect.swift in Sources */,
 				035192E02B53EF2C00B09E3B /* QuickButtonsButtonSettingsView.swift in Sources */,
+				03E8D69F2DDE2E2D0080BEB4 /* ModelZoom.swift in Sources */,
 				0359F8DD2BD3DA61005BFDA8 /* MpegTsVideoConfigHevc.swift in Sources */,
 				03A983692A9A05D7008FF0DB /* CreateButtonView.swift in Sources */,
 				0364662C2B456B25005AB9FA /* StreamWizardCustomSrtSettingsView.swift in Sources */,
