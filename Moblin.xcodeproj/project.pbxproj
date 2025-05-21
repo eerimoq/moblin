@@ -528,7 +528,6 @@
 		03EEC76B2CED8C9000749D4E /* DriftTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03EEC76A2CED8C8B00749D4E /* DriftTracker.swift */; };
 		03EF34B42B1AFBB600A19221 /* AfreecaTvChat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03EF34B32B1AFBB600A19221 /* AfreecaTvChat.swift */; };
 		03EF34BA2B1B028900A19221 /* StreamAfreecaTvSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03EF34B92B1B028900A19221 /* StreamAfreecaTvSettingsView.swift */; };
-		03EF41AE2BE8A58200C72415 /* Histogram.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03EF41AD2BE8A58200C72415 /* Histogram.swift */; };
 		03F3BF192ADAAA94009A8D3E /* TextEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F3BF182ADAAA94009A8D3E /* TextEffect.swift */; };
 		03F465E72C43DFF500630708 /* DjiDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F465E62C43DFF500630708 /* DjiDevice.swift */; };
 		03F465EC2C441D1400630708 /* CrcSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 03F465EB2C441D1400630708 /* CrcSwift */; };
@@ -1158,7 +1157,6 @@
 		03EEC76A2CED8C8B00749D4E /* DriftTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriftTracker.swift; sourceTree = "<group>"; };
 		03EF34B32B1AFBB600A19221 /* AfreecaTvChat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AfreecaTvChat.swift; sourceTree = "<group>"; };
 		03EF34B92B1B028900A19221 /* StreamAfreecaTvSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamAfreecaTvSettingsView.swift; sourceTree = "<group>"; };
-		03EF41AD2BE8A58200C72415 /* Histogram.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Histogram.swift; sourceTree = "<group>"; };
 		03F3BF182ADAAA94009A8D3E /* TextEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextEffect.swift; sourceTree = "<group>"; };
 		03F465E62C43DFF500630708 /* DjiDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DjiDevice.swift; sourceTree = "<group>"; };
 		03F5A8DE2AD5DACB00F354D2 /* Srt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Srt.swift; sourceTree = "<group>"; };
@@ -2810,7 +2808,6 @@
 				0323F3822D21346F00A57AC2 /* DnsLookup.swift */,
 				031863C62C8C4BEA00CECA33 /* FaxReceiver.swift */,
 				03C5AE472C5515B20056B6C7 /* GeographyManager.swift */,
-				03EF41AD2BE8A58200C72415 /* Histogram.swift */,
 				036333272AAE2E5100FF1231 /* ImageStorage.swift */,
 				03BE50492B3EB59A004720AF /* IpMonitor.swift */,
 				03279CE62B4CD245006CEA5A /* Location.swift */,
@@ -3818,7 +3815,6 @@
 				031E9FC52C5B3EFC009FF4D8 /* TwitchEventSub.swift in Sources */,
 				03487F242B334AD0003D9ED9 /* StreamingHistorySettingsView.swift in Sources */,
 				03BC115D2AE4BD7B00C38FC4 /* Bttv.swift in Sources */,
-				03EF41AE2BE8A58200C72415 /* Histogram.swift in Sources */,
 				0318D3612CF2BDC700E12F3B /* RemoteControlRelay.swift in Sources */,
 				0359F8D12BD3DA61005BFDA8 /* Mixer.swift in Sources */,
 				037CE22D2BC17EBD004E9B18 /* AudioSettingsView.swift in Sources */,
