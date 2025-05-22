@@ -118,7 +118,6 @@ struct DebugSettingsView: View {
                             .frame(width: 40)
                     }
                 }
-                Toggle("Horizon", isOn: $debug.horizon)
             } header: {
                 Text("Experimental")
             }

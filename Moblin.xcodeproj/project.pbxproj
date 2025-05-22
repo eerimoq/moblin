@@ -515,7 +515,9 @@
 		03E877F72B2DB27800086355 /* QuickButtonsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E877F62B2DB27800086355 /* QuickButtonsSettingsView.swift */; };
 		03E8D69F2DDE2E2D0080BEB4 /* ModelZoom.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E8D69E2DDE2E2A0080BEB4 /* ModelZoom.swift */; };
 		03E8D6A12DDE435E0080BEB4 /* ModelKick.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E8D6A02DDE435C0080BEB4 /* ModelKick.swift */; };
-		03E8D6A32DDE5A560080BEB4 /* HorizonEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E8D6A22DDE5A4F0080BEB4 /* HorizonEffect.swift */; };
+		03E8D6A32DDE5A560080BEB4 /* FixedHorizonEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E8D6A22DDE5A4F0080BEB4 /* FixedHorizonEffect.swift */; };
+		03E8D6A52DDEE7300080BEB4 /* FixedHorizonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E8D6A42DDEE7270080BEB4 /* FixedHorizonView.swift */; };
+		03E8D6A92DDEE8660080BEB4 /* CameraControlsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E8D6A82DDEE8610080BEB4 /* CameraControlsView.swift */; };
 		03E95AC62ADAF58900DAE2DF /* ZoomSwitchToSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E95AC52ADAF58900DAE2DF /* ZoomSwitchToSettingsView.swift */; };
 		03E95AE42ADB7B3D00DAE2DF /* TapScreenToFocusSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E95AE32ADB7B3D00DAE2DF /* TapScreenToFocusSettingsView.swift */; };
 		03E972CD2D3AB52700888FAB /* MoblinkScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E972CC2D3AB52200888FAB /* MoblinkScanner.swift */; };
@@ -1148,7 +1150,9 @@
 		03E877F62B2DB27800086355 /* QuickButtonsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickButtonsSettingsView.swift; sourceTree = "<group>"; };
 		03E8D69E2DDE2E2A0080BEB4 /* ModelZoom.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelZoom.swift; sourceTree = "<group>"; };
 		03E8D6A02DDE435C0080BEB4 /* ModelKick.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelKick.swift; sourceTree = "<group>"; };
-		03E8D6A22DDE5A4F0080BEB4 /* HorizonEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HorizonEffect.swift; sourceTree = "<group>"; };
+		03E8D6A22DDE5A4F0080BEB4 /* FixedHorizonEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FixedHorizonEffect.swift; sourceTree = "<group>"; };
+		03E8D6A42DDEE7270080BEB4 /* FixedHorizonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FixedHorizonView.swift; sourceTree = "<group>"; };
+		03E8D6A82DDEE8610080BEB4 /* CameraControlsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraControlsView.swift; sourceTree = "<group>"; };
 		03E95AC52ADAF58900DAE2DF /* ZoomSwitchToSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomSwitchToSettingsView.swift; sourceTree = "<group>"; };
 		03E95AE32ADB7B3D00DAE2DF /* TapScreenToFocusSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TapScreenToFocusSettingsView.swift; sourceTree = "<group>"; };
 		03E972CC2D3AB52200888FAB /* MoblinkScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoblinkScanner.swift; sourceTree = "<group>"; };
@@ -2522,6 +2526,8 @@
 		03B16A2A2B35D70D00E5AB07 /* Camera */ = {
 			isa = PBXGroup;
 			children = (
+				03E8D6A72DDEE8570080BEB4 /* CameraControls */,
+				03E8D6A62DDEE7410080BEB4 /* FixedHorizon */,
 				03CBFC732BFD3C650029A888 /* MirrorFrontCamera */,
 				03E95AE22ADB7B2200DAE2DF /* TapScreenToFocus */,
 				03A14BE02ACC902B00D180FF /* Zoom */,
@@ -2632,7 +2638,7 @@
 				03559E7D2BDCEB14002D0886 /* FaceEffect.swift */,
 				0324ECA72C1EADAB007CB0B3 /* FourThreeEffect.swift */,
 				03B374012AA0354C0028DDD5 /* GrayScaleEffect.swift */,
-				03E8D6A22DDE5A4F0080BEB4 /* HorizonEffect.swift */,
+				03E8D6A22DDE5A4F0080BEB4 /* FixedHorizonEffect.swift */,
 				03B374082AA0EA700028DDD5 /* ImageEffect.swift */,
 				038F42EC2B6849D400E68752 /* LutEffect.swift */,
 				03828C2B2C3AEF6D00F5A8AC /* MapEffect.swift */,
@@ -3031,6 +3037,22 @@
 				035192DF2B53EF2C00B09E3B /* QuickButtonsButtonSettingsView.swift */,
 			);
 			path = QuickButtons;
+			sourceTree = "<group>";
+		};
+		03E8D6A62DDEE7410080BEB4 /* FixedHorizon */ = {
+			isa = PBXGroup;
+			children = (
+				03E8D6A42DDEE7270080BEB4 /* FixedHorizonView.swift */,
+			);
+			path = FixedHorizon;
+			sourceTree = "<group>";
+		};
+		03E8D6A72DDEE8570080BEB4 /* CameraControls */ = {
+			isa = PBXGroup;
+			children = (
+				03E8D6A82DDEE8610080BEB4 /* CameraControlsView.swift */,
+			);
+			path = CameraControls;
 			sourceTree = "<group>";
 		};
 		03E95AE22ADB7B2200DAE2DF /* TapScreenToFocus */ = {
@@ -3511,6 +3533,7 @@
 				037EBE772B666F66004D5774 /* DrawOnStreamView.swift in Sources */,
 				03B16A242B35612000E5AB07 /* RecordingsSettingsView.swift in Sources */,
 				031F413F2C6F167400790EEC /* WidgetAlertsSoundSettingsView.swift in Sources */,
+				03E8D6A52DDEE7300080BEB4 /* FixedHorizonView.swift in Sources */,
 				035F24402CB5B4BB008288C7 /* SnapshotIntent.swift in Sources */,
 				0379E66F2C89802B0021AB59 /* CatPrinterSettingsView.swift in Sources */,
 				030499652C4039EF003488F4 /* QrCodeEffect.swift in Sources */,
@@ -3536,6 +3559,7 @@
 				03D691532B36EDB600038F13 /* TextValueView.swift in Sources */,
 				03EEC76B2CED8C9000749D4E /* DriftTracker.swift in Sources */,
 				03E363812DB0BB61007A3CBB /* QrCodeImageView.swift in Sources */,
+				03E8D6A92DDEE8660080BEB4 /* CameraControlsView.swift in Sources */,
 				032B4EDA2C3491A100204547 /* ZoomPresetSelctorView.swift in Sources */,
 				0359F8D22BD3DA61005BFDA8 /* Recorder.swift in Sources */,
 				0323F3732D1DCDA800A57AC2 /* MoblinkStreamer.swift in Sources */,
@@ -3854,7 +3878,7 @@
 				0359F8C22BD3DA61005BFDA8 /* URL+Extension.swift in Sources */,
 				032FDBFC2B0B1183007BE85E /* ValueEditView.swift in Sources */,
 				0318391B2AF79DDF00320FB2 /* StreamSrtAdaptiveBitrateSettingsView.swift in Sources */,
-				03E8D6A32DDE5A560080BEB4 /* HorizonEffect.swift in Sources */,
+				03E8D6A32DDE5A560080BEB4 /* FixedHorizonEffect.swift in Sources */,
 				03C3573B2D08150300B8B29F /* Flv.swift in Sources */,
 				03F5A8E52AD6FF8E00F354D2 /* StreamOverlayDebugView.swift in Sources */,
 				0359F8BE2BD3DA61005BFDA8 /* CVPixelBuffer+Extension.swift in Sources */,

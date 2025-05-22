@@ -42,7 +42,7 @@ extension Model {
         media.unregisterEffect(pollEffect)
         media.unregisterEffect(whirlpoolEffect)
         media.unregisterEffect(pinchEffect)
-        media.unregisterEffect(horizonEffect)
+        media.unregisterEffect(fixedHorizonEffect)
         faceEffect = FaceEffect(fps: Float(stream.fps), onFindFaceChanged: handleFindFaceChanged(value:))
         updateFaceFilterSettings()
         movieEffect = MovieEffect()
@@ -54,16 +54,16 @@ extension Model {
         pollEffect = PollEffect()
         whirlpoolEffect = WhirlpoolEffect()
         pinchEffect = PinchEffect()
-        horizonEffect = HorizonEffect()
+        fixedHorizonEffect = FixedHorizonEffect()
     }
 
-    private func registerGlobalVideoEffects() -> [VideoEffect] {
+    private func registerGlobalVideoEffects(scene: SettingsScene) -> [VideoEffect] {
         var effects: [VideoEffect] = []
-        if isHorizonEnabled() {
-            horizonEffect.start()
-            effects.append(horizonEffect)
+        if isFixedHorizonEnabled(scene: scene) {
+            fixedHorizonEffect.start()
+            effects.append(fixedHorizonEffect)
         } else {
-            horizonEffect.stop()
+            fixedHorizonEffect.stop()
         }
         if isFaceEnabled() {
             effects.append(faceEffect)
@@ -229,8 +229,8 @@ extension Model {
             .showMoblin || settings.showBeauty
     }
 
-    private func isHorizonEnabled() -> Bool {
-        return database.debug.horizon
+    private func isFixedHorizonEnabled(scene: SettingsScene) -> Bool {
+        return database.fixedHorizon && scene.cameraPosition?.isBuiltin() == true
     }
 
     func resetSelectedScene(changeScene: Bool = true) {
@@ -378,7 +378,7 @@ extension Model {
             }
             effects.append(lutEffect)
         }
-        effects += registerGlobalVideoEffects()
+        effects += registerGlobalVideoEffects(scene: scene)
         var usedBrowserEffects: [BrowserEffect] = []
         var usedMapEffects: [MapEffect] = []
         var usedPadelScoreboardEffects: [PadelScoreboardEffect] = []

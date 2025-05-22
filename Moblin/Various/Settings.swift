@@ -671,7 +671,19 @@ enum SettingsSceneCameraPosition: String, Codable, CaseIterable {
         self = try SettingsSceneCameraPosition(rawValue: decoder.singleValueContainer()
             .decode(RawValue.self)) ?? .back
     }
+
+    func isBuiltin() -> Bool {
+        return builtinCameraPositions.contains(self)
+    }
 }
+
+private let builtinCameraPositions: [SettingsSceneCameraPosition] = [
+    .back,
+    .front,
+    .backTripleLowEnergy,
+    .backDualLowEnergy,
+    .backWideDualLowEnergy,
+]
 
 enum SettingsCameraId {
     case back(id: String)
@@ -2421,7 +2433,6 @@ class SettingsDebug: Codable, ObservableObject {
     var replay: Bool = false
     var recordSegmentLength: Double = 5.0
     @Published var builtinAudioAndVideoDelay: Double = 0.0
-    @Published var horizon = false
 
     enum CodingKeys: CodingKey {
         case logLevel,
@@ -2456,8 +2467,7 @@ class SettingsDebug: Codable, ObservableObject {
              srtlaBatchSendEnabled,
              replay,
              recordSegmentLength,
-             builtinAudioAndVideoDelay,
-             horizon
+             builtinAudioAndVideoDelay
     }
 
     func encode(to encoder: Encoder) throws {
@@ -2495,7 +2505,6 @@ class SettingsDebug: Codable, ObservableObject {
         try container.encode(.replay, replay)
         try container.encode(.recordSegmentLength, recordSegmentLength)
         try container.encode(.builtinAudioAndVideoDelay, builtinAudioAndVideoDelay)
-        try container.encode(.horizon, horizon)
     }
 
     init() {}
@@ -2540,7 +2549,6 @@ class SettingsDebug: Codable, ObservableObject {
         replay = (try? container.decode(Bool.self, forKey: .replay)) ?? false
         recordSegmentLength = (try? container.decode(Double.self, forKey: .recordSegmentLength)) ?? 5.0
         builtinAudioAndVideoDelay = (try? container.decode(Double.self, forKey: .builtinAudioAndVideoDelay)) ?? 0.0
-        horizon = (try? container.decode(Bool.self, forKey: .horizon)) ?? false
     }
 }
 
@@ -3588,7 +3596,7 @@ class Database: Codable, ObservableObject {
     var moblink: SettingsMoblink = .init()
     var sceneSwitchTransition: SettingsSceneSwitchTransition = .blur
     var forceSceneSwitchTransition: Bool = false
-    var cameraControlsEnabled: Bool = true
+    @Published var cameraControlsEnabled: Bool = true
     var externalDisplayContent: SettingsExternalDisplayContent = .stream
     var cyclingPowerDevices: SettingsCyclingPowerDevices = .init()
     var heartRateDevices: SettingsHeartRateDevices = .init()
@@ -3599,6 +3607,7 @@ class Database: Codable, ObservableObject {
     var replay: SettingsReplay = .init()
     var portraitVideoOffsetFromTop: Double = 0.0
     var autoSceneSwitchers: SettingsAutoSceneSwitchers? = .init()
+    @Published var fixedHorizon: Bool = false
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -3685,7 +3694,8 @@ class Database: Codable, ObservableObject {
              goPro,
              replay,
              portraitVideoOffsetFromTop,
-             autoSceneSwitchers
+             autoSceneSwitchers,
+             fixedHorizon
     }
 
     func encode(to encoder: Encoder) throws {
@@ -3747,6 +3757,7 @@ class Database: Codable, ObservableObject {
         try container.encode(.replay, replay)
         try container.encode(.portraitVideoOffsetFromTop, portraitVideoOffsetFromTop)
         try container.encode(.autoSceneSwitchers, autoSceneSwitchers)
+        try container.encode(.fixedHorizon, fixedHorizon)
     }
 
     init() {}
@@ -3831,6 +3842,7 @@ class Database: Codable, ObservableObject {
         replay = (try? container.decode(SettingsReplay.self, forKey: .replay)) ?? .init()
         portraitVideoOffsetFromTop = (try? container.decode(Double.self, forKey: .portraitVideoOffsetFromTop)) ?? 0.0
         autoSceneSwitchers = try? container.decode(SettingsAutoSceneSwitchers?.self, forKey: .autoSceneSwitchers)
+        fixedHorizon = (try? container.decode(Bool.self, forKey: .fixedHorizon)) ?? false
     }
 }
 

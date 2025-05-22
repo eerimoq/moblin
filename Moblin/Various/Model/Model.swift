@@ -593,7 +593,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var twinEffect = TwinEffect()
     var pixellateEffect = PixellateEffect(strength: 0.0)
     var pollEffect = PollEffect()
-    var horizonEffect = HorizonEffect()
+    var fixedHorizonEffect = FixedHorizonEffect()
     var replayEffect: ReplayEffect?
     var locationManager = Location()
     var realtimeIrl: RealtimeIrl?
@@ -1225,7 +1225,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             stopHeartRateDevices()
             stopRemoteControlAssistant()
             stopDjiGimbalDevices()
-            horizonEffect.stop()
+            fixedHorizonEffect.stop()
         }
     }
 
