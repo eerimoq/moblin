@@ -59,6 +59,12 @@
             "value" : "Moblin can show your heart rate on stream."
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin peut afficher votre fréquence cardiaque sur le stream"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -77,6 +83,12 @@
             "value" : "Moblin can show your heart rate on stream."
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin peut afficher votre fréquence cardiaque sur le stream"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -93,6 +105,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Moblin can show your heart rate on stream."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin peut afficher votre fréquence cardiaque sur le stream"
           }
         },
         "zh-Hant" : {

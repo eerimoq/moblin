@@ -101,6 +101,12 @@
             "value" : "Moblin communicates with DJI cameras using Bluetooth."
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin communique avec les caméras DJI par Bluetooth"
+          }
+        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
@@ -191,6 +197,12 @@
             "value" : "Moblin can show your heart rate on stream."
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin peut afficher votre fréquence cardiaque sur le stream."
+          }
+        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
@@ -221,6 +233,12 @@
             "value" : "Moblin can show your heart rate on stream."
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin peut afficher votre fréquence cardiaque sur le stream"
+          }
+        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
@@ -249,6 +267,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Moblin can show your heart rate on stream."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin peut afficher votre fréquence cardiaque sur le stream"
           }
         },
         "it" : {
@@ -333,6 +357,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Moblin can display your location and/or speed on screen and stream."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin peut afficher votre position et/ou votre vitesse sur l’écran et sur le stream."
           }
         },
         "it" : {
@@ -531,6 +561,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Moblin can add transcription to the stream."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin peut ajouter la transcription au stream"
           }
         },
         "it" : {

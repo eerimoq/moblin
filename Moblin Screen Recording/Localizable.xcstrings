@@ -65,6 +65,12 @@
             "value" : "Host fehlt"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hôte manquant"
+          }
+        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
@@ -97,6 +103,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Fehlerhafte IRL URL"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "URL IRL érronée"
           }
         },
         "it" : {
@@ -134,6 +146,12 @@
             "value" : "Fehlerhafte IRLToolkit URL"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "URL IRLToolkit érronée"
+          }
+        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
@@ -166,6 +184,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Fehlerhafte RIST URL"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "URL RIST érronée"
           }
         },
         "it" : {
@@ -202,6 +226,12 @@
             "value" : "Fehlerhafte RTMP URL"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "URL RTMP érronée"
+          }
+        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
@@ -234,6 +264,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Fehlerhafte SRT(LA) URL"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "URL SRT(LA) érronée"
           }
         },
         "it" : {
@@ -270,6 +306,12 @@
             "value" : "Fehlerhafte URL"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "URL érronée"
+          }
+        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
@@ -302,6 +344,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "RIST-Port Nummer fehlt"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Numéro de port RIST manquant"
           }
         },
         "it" : {
@@ -338,6 +386,12 @@
             "value" : "RTMP Stream Name fehlt"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nom du flux RTMP manquant"
+          }
+        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
@@ -372,6 +426,12 @@
             "value" : "Fehlendes Schema"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schéma manquant"
+          }
+        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
@@ -400,6 +460,12 @@
             "value" : "SRT(LA) Port Nummer fehlt"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Numéro de port SRT(LA) manquant"
+          }
+        },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
@@ -426,6 +492,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nicht unterstütztes Schema"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schéma non supporté"
           }
         },
         "ru" : {
