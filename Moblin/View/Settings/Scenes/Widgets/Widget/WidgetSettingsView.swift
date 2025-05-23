@@ -1,5 +1,63 @@
 import SwiftUI
 
+private struct WidgetSettingsEffectView: View {
+    @EnvironmentObject var model: Model
+    @ObservedObject var effect: SettingsVideoEffect
+
+    var body: some View {
+        NavigationLink {
+            Form {
+                Section {
+                    Picker("Type", selection: $effect.type) {
+                        ForEach(SettingsVideoEffectType.allCases, id: \.self) {
+                            Text($0.toString())
+                                .tag($0)
+                        }
+                    }
+                    .onChange(of: effect.type) { _ in
+                        model.resetSelectedScene(changeScene: false)
+                    }
+                }
+            }
+            .navigationTitle(effect.type.toString())
+        } label: {
+            HStack {
+                DraggableItemPrefixView()
+                Text(effect.type.toString())
+            }
+        }
+    }
+}
+
+struct WidgetEffectsView: View {
+    @EnvironmentObject var model: Model
+    @ObservedObject var widget: SettingsWidget
+
+    var body: some View {
+        Section {
+            ForEach(widget.effects) { effect in
+                WidgetSettingsEffectView(effect: effect)
+            }
+            .onMove(perform: { froms, to in
+                widget.effects.move(fromOffsets: froms, toOffset: to)
+                model.resetSelectedScene(changeScene: false)
+            })
+            .onDelete(perform: { offsets in
+                widget.effects.remove(atOffsets: offsets)
+                model.resetSelectedScene(changeScene: false)
+            })
+            AddButtonView {
+                widget.effects.append(SettingsVideoEffect())
+                model.resetSelectedScene(changeScene: false)
+            }
+        } header: {
+            Text("Effects")
+        } footer: {
+            SwipeLeftToDeleteHelpView(kind: String(localized: "an effect"))
+        }
+    }
+}
+
 struct WidgetSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var widget: SettingsWidget

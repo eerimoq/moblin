@@ -1680,6 +1680,56 @@ let widgetTypes = SettingsWidgetType.allCases
     .filter { $0 != .videoEffect }
     .map { $0.toString() }
 
+enum SettingsVideoEffectType: String, Codable, CaseIterable {
+    case grayScale
+    case sepia
+    case whirlpool
+    case pinch
+
+    public init(from decoder: Decoder) throws {
+        do {
+            self = try SettingsVideoEffectType(rawValue: decoder.singleValueContainer()
+                .decode(RawValue.self)) ?? .grayScale
+        } catch {
+            self = .grayScale
+        }
+    }
+
+    func toString() -> String {
+        switch self {
+        case .grayScale:
+            return String(localized: "Gray scale")
+        case .sepia:
+            return String(localized: "Sepia")
+        case .whirlpool:
+            return String(localized: "Whirlpool")
+        case .pinch:
+            return String(localized: "Pinch")
+        }
+    }
+}
+
+class SettingsVideoEffect: Codable, Identifiable, ObservableObject {
+    var id: UUID = .init()
+    @Published var type: SettingsVideoEffectType = .grayScale
+
+    enum CodingKeys: CodingKey {
+        case type
+    }
+
+    init() {}
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.type, type)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        type = try container.decode(SettingsVideoEffectType.self, forKey: .type)
+    }
+}
+
 class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject {
     @Published var name: String
     var id: UUID = .init()
@@ -1694,6 +1744,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject {
     var videoSource: SettingsWidgetVideoSource = .init()
     var scoreboard: SettingsWidgetScoreboard = .init()
     @Published var enabled: Bool = true
+    @Published var effects: [SettingsVideoEffect] = []
 
     init(name: String) {
         self.name = name
@@ -1716,7 +1767,8 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject {
              alerts,
              videoSource,
              scoreboard,
-             enabled
+             enabled,
+             effects
     }
 
     func encode(to encoder: Encoder) throws {
@@ -1734,6 +1786,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject {
         try container.encode(.videoSource, videoSource)
         try container.encode(.scoreboard, scoreboard)
         try container.encode(.enabled, enabled)
+        try container.encode(.effects, effects)
     }
 
     required init(from decoder: Decoder) throws {
@@ -1751,6 +1804,24 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject {
         videoSource = (try? container.decode(SettingsWidgetVideoSource.self, forKey: .videoSource)) ?? .init()
         scoreboard = (try? container.decode(SettingsWidgetScoreboard.self, forKey: .scoreboard)) ?? .init()
         enabled = (try? container.decode(Bool.self, forKey: .enabled)) ?? true
+        effects = (try? container.decode([SettingsVideoEffect].self, forKey: .effects)) ?? []
+    }
+
+    func getEffects() -> [VideoEffect] {
+        var videoEffects: [VideoEffect] = []
+        for effect in effects {
+            switch effect.type {
+            case .grayScale:
+                videoEffects.append(GrayScaleEffect())
+            case .sepia:
+                videoEffects.append(SepiaEffect())
+            case .whirlpool:
+                videoEffects.append(WhirlpoolEffect())
+            case .pinch:
+                videoEffects.append(PinchEffect())
+            }
+        }
+        return videoEffects
     }
 }
 

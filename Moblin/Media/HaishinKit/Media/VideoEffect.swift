@@ -18,6 +18,8 @@ public struct VideoEffectInfo {
 }
 
 open class VideoEffect: NSObject {
+    var effects: [VideoEffect] = []
+
     open func getName() -> String {
         return ""
     }

@@ -215,7 +215,7 @@ private struct CropView: View {
 
 struct WidgetVideoSourceSettingsView: View {
     @EnvironmentObject var model: Model
-    var widget: SettingsWidget
+    @ObservedObject var widget: SettingsWidget
     @State var cornerRadius: Float
     @State var selectedRotation: Double
     @State var zoom: Double
@@ -355,5 +355,6 @@ struct WidgetVideoSourceSettingsView: View {
                 CropView(widgetId: widget.id, widget: widget.videoSource)
             }
         }
+        WidgetEffectsView(widget: widget)
     }
 }

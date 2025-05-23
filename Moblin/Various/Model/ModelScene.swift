@@ -190,7 +190,9 @@ extension Model {
         }
         videoSourceEffects.removeAll()
         for widget in widgets where widget.type == .videoSource {
-            videoSourceEffects[widget.id] = VideoSourceEffect()
+            let videoSourceEffect = VideoSourceEffect()
+            videoSourceEffect.effects = widget.getEffects()
+            videoSourceEffects[widget.id] = videoSourceEffect
         }
         for padelScoreboardEffect in padelScoreboardEffects.values {
             media.unregisterEffect(padelScoreboardEffect)
