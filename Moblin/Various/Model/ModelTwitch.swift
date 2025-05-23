@@ -259,13 +259,13 @@ extension Model: TwitchEventSubDelegate {
         DispatchQueue.main.async {
             let user = event.user_name ?? String(localized: "Anonymous")
             let text =
-                String(localized: "just gifted \(event.total) tier \(event.tierAsNumber()) subsciptions!")
+                String(localized: "just gifted \(event.total) tier \(event.tierAsNumber()) subscriptions!")
             self.makeToast(title: "\(user) \(text)")
             self.playAlert(alert: .twitchSubscrptionGift(event))
             self.appendTwitchChatAlertMessage(
                 user: user,
                 text: text,
-                title: String(localized: "Gift subsciptions"),
+                title: String(localized: "Gift subscriptions"),
                 color: .cyan,
                 image: "gift"
             )

@@ -355,7 +355,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
             medias: twitchSubscribe,
             username: event.user_name ?? "Anomymous",
             message: String(
-                localized: "just gifted \(event.total) tier \(event.tierAsNumber()) subsciptions!"
+                localized: "just gifted \(event.total) tier \(event.tierAsNumber()) subscriptions!"
             ),
             settings: settings.twitch!.subscriptions
         )
