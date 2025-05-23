@@ -74,9 +74,9 @@ final class FixedHorizonEffect: VideoEffect {
         let targetAngle: Double
         let targetWeight: Double
         if image.extent.width > image.extent.height {
-             targetAngle = targetX > 0 ? targetPitch :  -targetPitch
+            targetAngle = targetX > 0 ? targetPitch : -targetPitch
         } else {
-            targetAngle = targetX > 0 ? targetPitch - .pi / 2:  -targetPitch + .pi / 2
+            targetAngle = targetX > 0 ? targetPitch - .pi / 2 : -targetPitch + .pi / 2
         }
         if abs(targetX) < 0.1 {
             targetWeight = 2 * abs(targetX)
