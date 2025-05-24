@@ -890,13 +890,13 @@ extension Model {
             switch widget.type {
             case .videoSource:
                 let cameraId: String?
-                switch widget.videoSource.cameraPosition! {
+                switch widget.videoSource.cameraPosition {
                 case .back:
-                    cameraId = widget.videoSource.backCameraId!
+                    cameraId = widget.videoSource.backCameraId
                 case .front:
-                    cameraId = widget.videoSource.frontCameraId!
+                    cameraId = widget.videoSource.frontCameraId
                 case .external:
-                    cameraId = widget.videoSource.externalCameraId!
+                    cameraId = widget.videoSource.externalCameraId
                 default:
                     cameraId = nil
                 }

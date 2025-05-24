@@ -152,10 +152,10 @@ private struct CropView: View {
             (positionAnchorPoint, positionOffset) = calculatePositioningAnchorPoint(
                 location,
                 size,
-                widget.cropX!,
-                widget.cropY!,
-                widget.cropWidth!,
-                widget.cropHeight!
+                widget.cropX,
+                widget.cropY,
+                widget.cropWidth,
+                widget.cropHeight
             )
         }
     }
@@ -163,10 +163,10 @@ private struct CropView: View {
     private func createPositionPath(size: CGSize) -> Path {
         let (xTopLeft, yTopLeft, xBottomRight, yBottomRight) = calculatePositioningRectangle(
             positionAnchorPoint,
-            widget.cropX!,
-            widget.cropY!,
-            widget.cropWidth!,
-            widget.cropHeight!,
+            widget.cropX,
+            widget.cropY,
+            widget.cropWidth,
+            widget.cropHeight,
             position,
             size,
             positionOffset
@@ -176,10 +176,10 @@ private struct CropView: View {
         widget.cropWidth = xBottomRight - xTopLeft
         widget.cropHeight = yBottomRight - yTopLeft
         model.getVideoSourceEffect(id: widgetId)?.setSettings(settings: widget.toEffectSettings())
-        let xPoints = CGFloat(widget.cropX!) * size.width
-        let yPoints = CGFloat(widget.cropY!) * size.height
-        let widthPoints = CGFloat(widget.cropWidth!) * size.width
-        let heightPoints = CGFloat(widget.cropHeight!) * size.height
+        let xPoints = CGFloat(widget.cropX) * size.width
+        let yPoints = CGFloat(widget.cropY) * size.height
+        let widthPoints = CGFloat(widget.cropWidth) * size.width
+        let heightPoints = CGFloat(widget.cropHeight) * size.height
         return drawPositioningRectangle(xPoints, yPoints, widthPoints, heightPoints)
     }
 
@@ -284,7 +284,7 @@ struct WidgetVideoSourceSettingsView: View {
                     setEffectSettings()
                 }
             Toggle(isOn: Binding(get: {
-                widget.videoSource.mirror!
+                widget.videoSource.mirror
             }, set: { value in
                 widget.videoSource.mirror = value
                 setEffectSettings()
@@ -305,9 +305,12 @@ struct WidgetVideoSourceSettingsView: View {
                     setEffectSettings()
                 }
             }
-            ColorPicker("Background", selection: $background, supportsOpacity: false)
+            ColorPicker("Color", selection: $background, supportsOpacity: false)
                 .onChange(of: background) { _ in
-                    widget.videoSource.borderColor = background.toRgb()
+                    guard let borderColor = background.toRgb() else {
+                        return
+                    }
+                    widget.videoSource.borderColor = borderColor
                     setEffectSettings()
                 }
         } header: {
@@ -315,7 +318,7 @@ struct WidgetVideoSourceSettingsView: View {
         }
         Section {
             Toggle(isOn: Binding(get: {
-                widget.videoSource.trackFaceEnabled!
+                widget.videoSource.trackFaceEnabled
             }, set: { value in
                 widget.videoSource.trackFaceEnabled = value
                 setEffectSettings()
@@ -338,10 +341,10 @@ struct WidgetVideoSourceSettingsView: View {
         } header: {
             Text("Face tracking")
         }
-        if !widget.videoSource.trackFaceEnabled! {
+        if !widget.videoSource.trackFaceEnabled {
             Section {
                 Toggle(isOn: Binding(get: {
-                    widget.videoSource.cropEnabled!
+                    widget.videoSource.cropEnabled
                 }, set: { value in
                     widget.videoSource.cropEnabled = value
                     setEffectSettings()

@@ -1401,61 +1401,138 @@ class SettingsWidgetAlerts: Codable {
     }
 }
 
-class SettingsWidgetVideoSource: Codable {
+class SettingsWidgetVideoSource: Codable, ObservableObject {
     var cornerRadius: Float = 0
-    var cameraPosition: SettingsSceneCameraPosition? = .screenCapture
-    var backCameraId: String? = getBestBackCameraId()
-    var frontCameraId: String? = getBestFrontCameraId()
-    var rtmpCameraId: UUID? = .init()
-    var srtlaCameraId: UUID? = .init()
-    var mediaPlayerCameraId: UUID? = .init()
-    var externalCameraId: String? = ""
-    var externalCameraName: String? = ""
-    var cropEnabled: Bool? = false
-    var cropX: Double? = 0.25
-    var cropY: Double? = 0.0
-    var cropWidth: Double? = 0.5
-    var cropHeight: Double? = 1.0
-    var rotation: Double? = 0.0
-    var trackFaceEnabled: Bool? = false
-    var trackFaceZoom: Double? = 0.75
-    var mirror: Bool? = false
-    var borderWidth: Double? = 0
-    var borderColor: RgbColor? = .init(red: 0, green: 0, blue: 0)
+    var cameraPosition: SettingsSceneCameraPosition = .screenCapture
+    var backCameraId: String = getBestBackCameraId()
+    var frontCameraId: String = getBestFrontCameraId()
+    var rtmpCameraId: UUID = .init()
+    var srtlaCameraId: UUID = .init()
+    var mediaPlayerCameraId: UUID = .init()
+    var externalCameraId: String = ""
+    var externalCameraName: String = ""
+    var cropEnabled: Bool = false
+    var cropX: Double = 0.25
+    var cropY: Double = 0.0
+    var cropWidth: Double = 0.5
+    var cropHeight: Double = 1.0
+    var rotation: Double = 0.0
+    var trackFaceEnabled: Bool = false
+    var trackFaceZoom: Double = 0.75
+    var mirror: Bool = false
+    var borderWidth: Double = 0
+    var borderColor: RgbColor = .init(red: 0, green: 0, blue: 0)
+    var borderColorColor: Color
+
+    enum CodingKeys: CodingKey {
+        case cornerRadius,
+             cameraPosition,
+             backCameraId,
+             frontCameraId,
+             rtmpCameraId,
+             srtlaCameraId,
+             mediaPlayerCameraId,
+             externalCameraId,
+             externalCameraName,
+             cropEnabled,
+             cropX,
+             cropY,
+             cropWidth,
+             cropHeight,
+             rotation,
+             trackFaceEnabled,
+             trackFaceZoom,
+             mirror,
+             borderWidth,
+             borderColor
+    }
+
+    init() {
+        borderColorColor = borderColor.color()
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.cornerRadius, cornerRadius)
+        try container.encode(.cameraPosition, cameraPosition)
+        try container.encode(.backCameraId, backCameraId)
+        try container.encode(.frontCameraId, frontCameraId)
+        try container.encode(.rtmpCameraId, rtmpCameraId)
+        try container.encode(.srtlaCameraId, srtlaCameraId)
+        try container.encode(.mediaPlayerCameraId, mediaPlayerCameraId)
+        try container.encode(.externalCameraId, externalCameraId)
+        try container.encode(.externalCameraName, externalCameraName)
+        try container.encode(.cropEnabled, cropEnabled)
+        try container.encode(.cropX, cropX)
+        try container.encode(.cropY, cropY)
+        try container.encode(.cropWidth, cropWidth)
+        try container.encode(.cropHeight, cropHeight)
+        try container.encode(.rotation, rotation)
+        try container.encode(.trackFaceEnabled, trackFaceEnabled)
+        try container.encode(.trackFaceZoom, trackFaceZoom)
+        try container.encode(.mirror, mirror)
+        try container.encode(.borderWidth, borderWidth)
+        try container.encode(.borderColor, borderColor)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        cornerRadius = container.decode(.cornerRadius, Float.self, 0)
+        cameraPosition = container.decode(.cameraPosition, SettingsSceneCameraPosition.self, .screenCapture)
+        backCameraId = container.decode(.backCameraId, String.self, getBestBackCameraId())
+        frontCameraId = container.decode(.frontCameraId, String.self, getBestFrontCameraId())
+        rtmpCameraId = container.decode(.rtmpCameraId, UUID.self, .init())
+        srtlaCameraId = container.decode(.srtlaCameraId, UUID.self, .init())
+        mediaPlayerCameraId = container.decode(.mediaPlayerCameraId, UUID.self, .init())
+        externalCameraId = container.decode(.externalCameraId, String.self, "")
+        externalCameraName = container.decode(.externalCameraName, String.self, "")
+        cropEnabled = container.decode(.cropEnabled, Bool.self, false)
+        cropX = container.decode(.cropX, Double.self, 0.25)
+        cropY = container.decode(.cropY, Double.self, 0.0)
+        cropWidth = container.decode(.cropWidth, Double.self, 0.5)
+        cropHeight = container.decode(.cropHeight, Double.self, 1.0)
+        rotation = container.decode(.rotation, Double.self, 0.0)
+        trackFaceEnabled = container.decode(.trackFaceEnabled, Bool.self, false)
+        trackFaceZoom = container.decode(.trackFaceZoom, Double.self, 0.75)
+        mirror = container.decode(.mirror, Bool.self, false)
+        borderWidth = container.decode(.borderWidth, Double.self, 0)
+        borderColor = container.decode(.borderColor, RgbColor.self, .init(red: 0, green: 0, blue: 0))
+        borderColorColor = borderColor.color()
+    }
 
     func toEffectSettings() -> VideoSourceEffectSettings {
         return .init(cornerRadius: cornerRadius,
-                     cropEnabled: cropEnabled!,
-                     cropX: cropX!,
-                     cropY: cropY!,
-                     cropWidth: cropWidth!,
-                     cropHeight: cropHeight!,
-                     rotation: rotation!,
-                     trackFaceEnabled: trackFaceEnabled!,
-                     trackFaceZoom: 1.5 + (1 - trackFaceZoom!) * 4,
-                     mirror: mirror!,
-                     borderWidth: borderWidth!,
+                     cropEnabled: cropEnabled,
+                     cropX: cropX,
+                     cropY: cropY,
+                     cropWidth: cropWidth,
+                     cropHeight: cropHeight,
+                     rotation: rotation,
+                     trackFaceEnabled: trackFaceEnabled,
+                     trackFaceZoom: 1.5 + (1 - trackFaceZoom) * 4,
+                     mirror: mirror,
+                     borderWidth: borderWidth,
                      borderColor: CIColor(
-                         red: Double(borderColor!.red) / 255,
-                         green: Double(borderColor!.green) / 255,
-                         blue: Double(borderColor!.blue) / 255
+                         red: Double(borderColor.red) / 255,
+                         green: Double(borderColor.green) / 255,
+                         blue: Double(borderColor.blue) / 255
                      ))
     }
 
     func toCameraId() -> SettingsCameraId {
-        switch cameraPosition! {
+        switch cameraPosition {
         case .back:
-            return .back(id: backCameraId!)
+            return .back(id: backCameraId)
         case .front:
-            return .front(id: frontCameraId!)
+            return .front(id: frontCameraId)
         case .rtmp:
-            return .rtmp(id: rtmpCameraId!)
+            return .rtmp(id: rtmpCameraId)
         case .external:
-            return .external(id: externalCameraId!, name: externalCameraName!)
+            return .external(id: externalCameraId, name: externalCameraName)
         case .srtla:
-            return .srtla(id: srtlaCameraId!)
+            return .srtla(id: srtlaCameraId)
         case .mediaPlayer:
-            return .mediaPlayer(id: mediaPlayerCameraId!)
+            return .mediaPlayer(id: mediaPlayerCameraId)
         case .screenCapture:
             return .screenCapture
         case .backTripleLowEnergy:
@@ -5377,76 +5454,20 @@ final class Settings {
             widget.browser.styleSheet = ""
             store()
         }
-        for widget in realDatabase.widgets where widget.videoSource.cameraPosition == nil {
-            widget.videoSource.cameraPosition = .screenCapture
-            store()
-        }
-        for widget in realDatabase.widgets where widget.videoSource.backCameraId == nil {
-            widget.videoSource.backCameraId = getBestBackCameraId()
-            store()
-        }
-        for widget in realDatabase.widgets where widget.videoSource.frontCameraId == nil {
-            widget.videoSource.frontCameraId = getBestFrontCameraId()
-            store()
-        }
-        for widget in realDatabase.widgets where widget.videoSource.rtmpCameraId == nil {
-            widget.videoSource.rtmpCameraId = .init()
-            store()
-        }
-        for widget in realDatabase.widgets where widget.videoSource.srtlaCameraId == nil {
-            widget.videoSource.srtlaCameraId = .init()
-            store()
-        }
-        for widget in realDatabase.widgets where widget.videoSource.mediaPlayerCameraId == nil {
-            widget.videoSource.mediaPlayerCameraId = .init()
-            store()
-        }
-        for widget in realDatabase.widgets where widget.videoSource.externalCameraId == nil {
-            widget.videoSource.externalCameraId = ""
-            store()
-        }
-        for widget in realDatabase.widgets where widget.videoSource.externalCameraName == nil {
-            widget.videoSource.externalCameraName = ""
-            store()
-        }
-        for widget in realDatabase.widgets where widget.videoSource.cropEnabled == nil {
-            widget.videoSource.cropEnabled = false
-            store()
-        }
-        for widget in realDatabase.widgets where widget.videoSource.cropX == nil {
-            widget.videoSource.cropX = 0.25
-            store()
-        }
-        for widget in realDatabase.widgets where widget.videoSource.cropY == nil {
-            widget.videoSource.cropY = 0.0
-            store()
-        }
-        for widget in realDatabase.widgets where widget.videoSource.cropWidth == nil {
-            widget.videoSource.cropWidth = 0.5
-            store()
-        }
-        for widget in realDatabase.widgets where widget.videoSource.cropHeight == nil {
-            widget.videoSource.cropHeight = 1.0
-            store()
-        }
-        for widget in realDatabase.widgets where widget.videoSource.cropX! > 1.0 {
+        for widget in realDatabase.widgets where widget.videoSource.cropX > 1.0 {
             widget.videoSource.cropX = 0.0
             store()
         }
-        for widget in realDatabase.widgets where widget.videoSource.cropY! > 1.0 {
+        for widget in realDatabase.widgets where widget.videoSource.cropY > 1.0 {
             widget.videoSource.cropY = 0.0
             store()
         }
-        for widget in realDatabase.widgets where widget.videoSource.cropWidth! > 1.0 {
+        for widget in realDatabase.widgets where widget.videoSource.cropWidth > 1.0 {
             widget.videoSource.cropWidth = 1.0
             store()
         }
-        for widget in realDatabase.widgets where widget.videoSource.cropHeight! > 1.0 {
+        for widget in realDatabase.widgets where widget.videoSource.cropHeight > 1.0 {
             widget.videoSource.cropHeight = 1.0
-            store()
-        }
-        for widget in realDatabase.widgets where widget.videoSource.rotation == nil {
-            widget.videoSource.rotation = 0.0
             store()
         }
         for widget in database.widgets where widget.alerts.twitch!.cheerBits == nil {
@@ -5614,10 +5635,6 @@ final class Settings {
             realDatabase.location.resetWhenGoingLive = false
             store()
         }
-        for widget in realDatabase.widgets where widget.videoSource.trackFaceEnabled == nil {
-            widget.videoSource.trackFaceEnabled = false
-            store()
-        }
         if realDatabase.chat.botCommandPermissions.tts.sendChatMessages == nil {
             realDatabase.chat.botCommandPermissions.tts.sendChatMessages = false
             store()
@@ -5666,14 +5683,6 @@ final class Settings {
             device.printSnapshots = true
             store()
         }
-        for widget in realDatabase.widgets where widget.videoSource.mirror == nil {
-            widget.videoSource.mirror = false
-            store()
-        }
-        for widget in realDatabase.widgets where widget.videoSource.trackFaceZoom == nil {
-            widget.videoSource.trackFaceZoom = 0.75
-            store()
-        }
         for widget in realDatabase.widgets {
             for command in widget.alerts.chatBot!.commands where command.imageType == nil {
                 command.imageType = .file
@@ -5686,14 +5695,6 @@ final class Settings {
         }
         for launchLiveStream in realDatabase.goPro.launchLiveStream where launchLiveStream.isHero12Or13 == nil {
             launchLiveStream.isHero12Or13 = true
-            store()
-        }
-        for widget in realDatabase.widgets where widget.videoSource.borderWidth == nil {
-            widget.videoSource.borderWidth = 0
-            store()
-        }
-        for widget in realDatabase.widgets where widget.videoSource.borderColor == nil {
-            widget.videoSource.borderColor = .init(red: 0, green: 0, blue: 0)
             store()
         }
         if realDatabase.tesla.enabled == nil {
