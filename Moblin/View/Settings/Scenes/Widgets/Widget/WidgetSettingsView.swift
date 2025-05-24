@@ -172,12 +172,7 @@ struct WidgetSettingsView: View {
             case .alerts:
                 WidgetAlertsSettingsView(widget: widget)
             case .videoSource:
-                WidgetVideoSourceSettingsView(widget: widget,
-                                              cornerRadius: widget.videoSource.cornerRadius,
-                                              selectedRotation: widget.videoSource.rotation,
-                                              zoom: widget.videoSource.trackFaceZoom,
-                                              borderWidth: widget.videoSource.borderWidth,
-                                              background: widget.videoSource.borderColor.color())
+                WidgetVideoSourceSettingsView(widget: widget, videoSource: widget.videoSource)
             case .scoreboard:
                 WidgetScoreboardSettingsView(widget: widget, type: widget.scoreboard.type.rawValue)
             }

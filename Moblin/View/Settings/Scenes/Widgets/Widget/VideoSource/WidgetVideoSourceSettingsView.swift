@@ -216,21 +216,16 @@ private struct CropView: View {
 struct WidgetVideoSourceSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var widget: SettingsWidget
-    @State var cornerRadius: Float
-    @State var selectedRotation: Double
-    @State var zoom: Double
-    @State var borderWidth: Double
-    @State var background: Color
+    @ObservedObject var videoSource: SettingsWidgetVideoSource
 
     private func onCameraChange(cameraId: String) {
-        widget.videoSource
-            .updateCameraId(settingsCameraId: model.cameraIdToSettingsCameraId(cameraId: cameraId))
+        videoSource.updateCameraId(settingsCameraId: model.cameraIdToSettingsCameraId(cameraId: cameraId))
         model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
     }
 
     private func setEffectSettings() {
         model.getVideoSourceEffect(id: widget.id)?
-            .setSettings(settings: widget.videoSource.toEffectSettings())
+            .setSettings(settings: videoSource.toEffectSettings())
     }
 
     var body: some View {
@@ -248,13 +243,13 @@ struct WidgetVideoSourceSettingsView: View {
                     items: model.listCameraPositions(excludeBuiltin: false).map { id, name in
                         InlinePickerItem(id: id, text: name)
                     },
-                    selectedId: model.getCameraPositionId(videoSourceWidget: widget.videoSource)
+                    selectedId: model.getCameraPositionId(videoSourceWidget: videoSource)
                 )
             } label: {
                 HStack {
                     Text("Video source")
                     Spacer()
-                    Text(model.getCameraPositionName(videoSourceWidget: widget.videoSource))
+                    Text(model.getCameraPositionName(videoSourceWidget: videoSource))
                         .foregroundColor(.gray)
                         .lineLimit(1)
                 }
@@ -263,30 +258,28 @@ struct WidgetVideoSourceSettingsView: View {
         Section {
             HStack {
                 Slider(
-                    value: $cornerRadius,
+                    value: $videoSource.cornerRadius,
                     in: 0 ... 1,
                     step: 0.01
                 )
-                .onChange(of: cornerRadius) { _ in
-                    widget.videoSource.cornerRadius = cornerRadius
+                .onChange(of: videoSource.cornerRadius) { _ in
                     setEffectSettings()
                 }
-                Text(String(Int(cornerRadius * 100)))
+                Text(String(Int(videoSource.cornerRadius * 100)))
                     .frame(width: 35)
             }
         } header: {
             Text("Corner radius")
         }
         Section {
-            VideoSourceRotationView(selectedRotation: $selectedRotation)
-                .onChange(of: selectedRotation) { rotation in
-                    widget.videoSource.rotation = rotation
+            VideoSourceRotationView(selectedRotation: $videoSource.rotation)
+                .onChange(of: videoSource.rotation) { _ in
                     setEffectSettings()
                 }
             Toggle(isOn: Binding(get: {
-                widget.videoSource.mirror
+                videoSource.mirror
             }, set: { value in
-                widget.videoSource.mirror = value
+                videoSource.mirror = value
                 setEffectSettings()
             })) {
                 Text("Mirror")
@@ -296,21 +289,20 @@ struct WidgetVideoSourceSettingsView: View {
             HStack {
                 Text("Width")
                 Slider(
-                    value: $borderWidth,
+                    value: $videoSource.borderWidth,
                     in: 0 ... 1.0,
                     step: 0.01
                 )
-                .onChange(of: borderWidth) { value in
-                    widget.videoSource.borderWidth = value
+                .onChange(of: videoSource.borderWidth) { _ in
                     setEffectSettings()
                 }
             }
-            ColorPicker("Color", selection: $background, supportsOpacity: false)
-                .onChange(of: background) { _ in
-                    guard let borderColor = background.toRgb() else {
+            ColorPicker("Color", selection: $videoSource.borderColorColor, supportsOpacity: false)
+                .onChange(of: videoSource.borderColorColor) { _ in
+                    guard let borderColor = videoSource.borderColorColor.toRgb() else {
                         return
                     }
-                    widget.videoSource.borderColor = borderColor
+                    videoSource.borderColor = borderColor
                     setEffectSettings()
                 }
         } header: {
@@ -318,9 +310,9 @@ struct WidgetVideoSourceSettingsView: View {
         }
         Section {
             Toggle(isOn: Binding(get: {
-                widget.videoSource.trackFaceEnabled
+                videoSource.trackFaceEnabled
             }, set: { value in
-                widget.videoSource.trackFaceEnabled = value
+                videoSource.trackFaceEnabled = value
                 setEffectSettings()
                 model.objectWillChange.send()
             })) {
@@ -329,24 +321,23 @@ struct WidgetVideoSourceSettingsView: View {
             HStack {
                 Text("Zoom")
                 Slider(
-                    value: $zoom,
+                    value: $videoSource.trackFaceZoom,
                     in: 0 ... 1,
                     step: 0.01
                 )
-                .onChange(of: zoom) {
-                    widget.videoSource.trackFaceZoom = $0
+                .onChange(of: videoSource.trackFaceZoom) { _ in
                     setEffectSettings()
                 }
             }
         } header: {
             Text("Face tracking")
         }
-        if !widget.videoSource.trackFaceEnabled {
+        if !videoSource.trackFaceEnabled {
             Section {
                 Toggle(isOn: Binding(get: {
-                    widget.videoSource.cropEnabled
+                    videoSource.cropEnabled
                 }, set: { value in
-                    widget.videoSource.cropEnabled = value
+                    videoSource.cropEnabled = value
                     setEffectSettings()
                 })) {
                     Text("Enabled")
@@ -355,7 +346,7 @@ struct WidgetVideoSourceSettingsView: View {
                 Text("Crop")
             }
             Section {
-                CropView(widgetId: widget.id, widget: widget.videoSource)
+                CropView(widgetId: widget.id, widget: videoSource)
             }
         }
         WidgetEffectsView(widget: widget)

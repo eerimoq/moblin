@@ -1402,7 +1402,7 @@ class SettingsWidgetAlerts: Codable {
 }
 
 class SettingsWidgetVideoSource: Codable, ObservableObject {
-    var cornerRadius: Float = 0
+    @Published var cornerRadius: Float = 0
     var cameraPosition: SettingsSceneCameraPosition = .screenCapture
     var backCameraId: String = getBestBackCameraId()
     var frontCameraId: String = getBestFrontCameraId()
@@ -1416,13 +1416,13 @@ class SettingsWidgetVideoSource: Codable, ObservableObject {
     var cropY: Double = 0.0
     var cropWidth: Double = 0.5
     var cropHeight: Double = 1.0
-    var rotation: Double = 0.0
+    @Published var rotation: Double = 0.0
     var trackFaceEnabled: Bool = false
-    var trackFaceZoom: Double = 0.75
+    @Published var trackFaceZoom: Double = 0.75
     var mirror: Bool = false
-    var borderWidth: Double = 0
+    @Published var borderWidth: Double = 0
     var borderColor: RgbColor = .init(red: 0, green: 0, blue: 0)
-    var borderColorColor: Color
+    @Published var borderColorColor: Color
 
     enum CodingKeys: CodingKey {
         case cornerRadius,
