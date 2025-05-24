@@ -1685,6 +1685,7 @@ enum SettingsVideoEffectType: String, Codable, CaseIterable {
     case sepia
     case whirlpool
     case pinch
+    case removeBackground
 
     public init(from decoder: Decoder) throws {
         do {
@@ -1705,16 +1706,54 @@ enum SettingsVideoEffectType: String, Codable, CaseIterable {
             return String(localized: "Whirlpool")
         case .pinch:
             return String(localized: "Pinch")
+        case .removeBackground:
+            return String(localized: "Remove background")
         }
+    }
+}
+
+private let defaultFromColor = RgbColor(red: 220, green: 235, blue: 92)
+private let defaultToColor = RgbColor(red: 82, green: 180, blue: 203)
+
+class SettingsVideoEffectRemoveBackground: Codable, ObservableObject {
+    var from: RgbColor = defaultFromColor
+    @Published var fromColor: Color
+    var to: RgbColor = defaultToColor
+    @Published var toColor: Color
+
+    enum CodingKeys: CodingKey {
+        case from,
+             to
+    }
+
+    init() {
+        fromColor = from.color()
+        toColor = to.color()
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.from, from)
+        try container.encode(.to, to)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        from = container.decode(.from, RgbColor.self, defaultFromColor)
+        fromColor = from.color()
+        to = container.decode(.to, RgbColor.self, defaultToColor)
+        toColor = to.color()
     }
 }
 
 class SettingsVideoEffect: Codable, Identifiable, ObservableObject {
     var id: UUID = .init()
     @Published var type: SettingsVideoEffectType = .grayScale
+    var removeBackground: SettingsVideoEffectRemoveBackground = .init()
 
     enum CodingKeys: CodingKey {
-        case type
+        case type,
+             removeBackground
     }
 
     init() {}
@@ -1722,11 +1761,30 @@ class SettingsVideoEffect: Codable, Identifiable, ObservableObject {
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.type, type)
+        try container.encode(.removeBackground, removeBackground)
     }
 
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        type = try container.decode(SettingsVideoEffectType.self, forKey: .type)
+        type = container.decode(.type, SettingsVideoEffectType.self, .grayScale)
+        removeBackground = container.decode(.removeBackground, SettingsVideoEffectRemoveBackground.self, .init())
+    }
+
+    func getEffect() -> VideoEffect {
+        switch type {
+        case .grayScale:
+            return GrayScaleEffect()
+        case .sepia:
+            return SepiaEffect()
+        case .whirlpool:
+            return WhirlpoolEffect()
+        case .pinch:
+            return PinchEffect()
+        case .removeBackground:
+            let effect = RemoveBackgroundEffect()
+            effect.setTransparent(from: removeBackground.from, to: removeBackground.to)
+            return effect
+        }
     }
 }
 
@@ -1804,24 +1862,11 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject {
         videoSource = (try? container.decode(SettingsWidgetVideoSource.self, forKey: .videoSource)) ?? .init()
         scoreboard = (try? container.decode(SettingsWidgetScoreboard.self, forKey: .scoreboard)) ?? .init()
         enabled = (try? container.decode(Bool.self, forKey: .enabled)) ?? true
-        effects = (try? container.decode([SettingsVideoEffect].self, forKey: .effects)) ?? []
+        effects = container.decode(.effects, [SettingsVideoEffect].self, [])
     }
 
     func getEffects() -> [VideoEffect] {
-        var videoEffects: [VideoEffect] = []
-        for effect in effects {
-            switch effect.type {
-            case .grayScale:
-                videoEffects.append(GrayScaleEffect())
-            case .sepia:
-                videoEffects.append(SepiaEffect())
-            case .whirlpool:
-                videoEffects.append(WhirlpoolEffect())
-            case .pinch:
-                videoEffects.append(PinchEffect())
-            }
-        }
-        return videoEffects
+        return effects.map { $0.getEffect() }
     }
 }
 

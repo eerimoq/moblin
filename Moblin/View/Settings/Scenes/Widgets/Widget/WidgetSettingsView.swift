@@ -1,7 +1,52 @@
 import SwiftUI
 
-private struct WidgetSettingsEffectView: View {
+private struct RemoveBackgroundView: View {
     @EnvironmentObject var model: Model
+    let widgetId: UUID
+    let effectIndex: Int
+    @ObservedObject var removeBackground: SettingsVideoEffectRemoveBackground
+
+    private func updateWidget() {
+        guard let effect = model.getVideoSourceEffect(id: widgetId) else {
+            return
+        }
+        guard effectIndex < effect.effects.count else {
+            return
+        }
+        guard let effect = effect.effects[effectIndex] as? RemoveBackgroundEffect else {
+            return
+        }
+        effect.setTransparent(from: removeBackground.from, to: removeBackground.to)
+    }
+
+    var body: some View {
+        Section {
+            ColorPicker("From", selection: $removeBackground.fromColor, supportsOpacity: false)
+                .onChange(of: removeBackground.fromColor) { _ in
+                    guard let color = removeBackground.fromColor.toRgb() else {
+                        return
+                    }
+                    removeBackground.from = color
+                    updateWidget()
+                }
+            ColorPicker("To", selection: $removeBackground.toColor, supportsOpacity: false)
+                .onChange(of: removeBackground.toColor) { _ in
+                    guard let color = removeBackground.toColor.toRgb() else {
+                        return
+                    }
+                    removeBackground.to = color
+                    updateWidget()
+                }
+        } header: {
+            Text("Color range")
+        }
+    }
+}
+
+private struct EffectView: View {
+    @EnvironmentObject var model: Model
+    let widgetId: UUID
+    let effectIndex: Int
     @ObservedObject var effect: SettingsVideoEffect
 
     var body: some View {
@@ -17,6 +62,13 @@ private struct WidgetSettingsEffectView: View {
                     .onChange(of: effect.type) { _ in
                         model.resetSelectedScene(changeScene: false)
                     }
+                }
+                if effect.type == .removeBackground {
+                    RemoveBackgroundView(
+                        widgetId: widgetId,
+                        effectIndex: effectIndex,
+                        removeBackground: effect.removeBackground
+                    )
                 }
             }
             .navigationTitle(effect.type.toString())
@@ -36,7 +88,11 @@ struct WidgetEffectsView: View {
     var body: some View {
         Section {
             ForEach(widget.effects) { effect in
-                WidgetSettingsEffectView(effect: effect)
+                EffectView(
+                    widgetId: widget.id,
+                    effectIndex: widget.effects.firstIndex(where: { $0 === effect })!,
+                    effect: effect
+                )
             }
             .onMove(perform: { froms, to in
                 widget.effects.move(fromOffsets: froms, toOffset: to)

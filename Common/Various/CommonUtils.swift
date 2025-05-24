@@ -711,6 +711,13 @@ extension RgbColor {
             opacity: opacity ?? 1.0
         )
     }
+
+    func hue() -> Double {
+        let color = UIColor(red: colorScale(red), green: colorScale(green), blue: colorScale(blue), alpha: 1)
+        var hue: CGFloat = 0
+        color.getHue(&hue, saturation: nil, brightness: nil, alpha: nil)
+        return hue
+    }
 }
 
 extension Color {
