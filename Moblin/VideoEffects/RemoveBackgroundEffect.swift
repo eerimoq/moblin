@@ -14,11 +14,11 @@ private func makeFilter(fromHue: CGFloat, toHue: CGFloat) -> CIColorCubeWithColo
                 let red = Float(x) / Float(size - 1)
                 let color = RgbColor(red: Int(255 * red), green: Int(255 * green), blue: Int(255 * blue))
                 let hue = color.hue()
-                let alpha = (hue >= fromHue && hue <= toHue) ? 0 : 1
+                let alpha: Float = (hue >= fromHue && hue <= toHue) ? 0 : 1
                 cube.append(red)
                 cube.append(green)
                 cube.append(blue)
-                cube.append(Float(alpha))
+                cube.append(alpha)
             }
         }
     }
@@ -31,19 +31,19 @@ private func makeFilter(fromHue: CGFloat, toHue: CGFloat) -> CIColorCubeWithColo
 
 final class RemoveBackgroundEffect: VideoEffect {
     private var filter: CIColorCubeWithColorSpace?
-    private var pendingFrom: RgbColor?
-    private var pendingTo: RgbColor?
+    private var pendingFrom: Double?
+    private var pendingTo: Double?
     private var updating = false
 
-    func setTransparent(from: RgbColor, to: RgbColor) {
-        pendingFrom = from
-        pendingTo = to
+    func setColorRange(from: RgbColor, to: RgbColor) {
+        pendingFrom = from.hue()
+        pendingTo = to.hue()
         tryUpdateFilter()
     }
 
     private func tryUpdateFilter() {
         DispatchQueue.main.async {
-            guard !self.updating, let fromHue = self.pendingFrom?.hue(), let toHue = self.pendingTo?.hue() else {
+            guard !self.updating, let fromHue = self.pendingFrom, let toHue = self.pendingTo else {
                 return
             }
             self.pendingFrom = nil
@@ -63,7 +63,7 @@ final class RemoveBackgroundEffect: VideoEffect {
     }
 
     override func getName() -> String {
-        return "chroma key filter"
+        return "remove background filter"
     }
 
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {

@@ -16,7 +16,7 @@ private struct RemoveBackgroundView: View {
         guard let effect = effect.effects[effectIndex] as? RemoveBackgroundEffect else {
             return
         }
-        effect.setTransparent(from: removeBackground.from, to: removeBackground.to)
+        effect.setColorRange(from: removeBackground.from, to: removeBackground.to)
     }
 
     var body: some View {

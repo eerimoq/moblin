@@ -1782,7 +1782,7 @@ class SettingsVideoEffect: Codable, Identifiable, ObservableObject {
             return PinchEffect()
         case .removeBackground:
             let effect = RemoveBackgroundEffect()
-            effect.setTransparent(from: removeBackground.from, to: removeBackground.to)
+            effect.setColorRange(from: removeBackground.from, to: removeBackground.to)
             return effect
         }
     }
