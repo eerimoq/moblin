@@ -5,28 +5,28 @@ import Vision
 
 private func makeFilter(fromHue: CGFloat, toHue: CGFloat) -> CIColorCubeWithColorSpace {
     let size = 64
-    var cubeRGB = [Float]()
+    var cube = [Float]()
     for z in 0 ..< size {
-        let blue = CGFloat(z) / CGFloat(size - 1)
+        let blue = Float(z) / Float(size - 1)
         for y in 0 ..< size {
-            let green = CGFloat(y) / CGFloat(size - 1)
+            let green = Float(y) / Float(size - 1)
             for x in 0 ..< size {
-                let red = CGFloat(x) / CGFloat(size - 1)
+                let red = Float(x) / Float(size - 1)
                 let color = RgbColor(red: Int(255 * red), green: Int(255 * green), blue: Int(255 * blue))
                 let hue = color.hue()
-                let alpha: CGFloat = (hue >= fromHue && hue <= toHue) ? 0 : 1
-                cubeRGB.append(Float(red))
-                cubeRGB.append(Float(green))
-                cubeRGB.append(Float(blue))
-                cubeRGB.append(Float(alpha))
+                let alpha = (hue >= fromHue && hue <= toHue) ? 0 : 1
+                cube.append(red)
+                cube.append(green)
+                cube.append(blue)
+                cube.append(Float(alpha))
             }
         }
     }
-    let colorCubeFilter = CIFilter.colorCubeWithColorSpace()
-    colorCubeFilter.cubeData = Data(bytes: cubeRGB, count: cubeRGB.count * 4)
-    colorCubeFilter.cubeDimension = Float(size)
-    colorCubeFilter.colorSpace = CGColorSpaceCreateDeviceRGB()
-    return colorCubeFilter
+    let filter = CIFilter.colorCubeWithColorSpace()
+    filter.cubeData = Data(bytes: cube, count: cube.count * 4)
+    filter.cubeDimension = Float(size)
+    filter.colorSpace = CGColorSpaceCreateDeviceRGB()
+    return filter
 }
 
 final class RemoveBackgroundEffect: VideoEffect {
