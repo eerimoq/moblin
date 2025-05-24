@@ -14,11 +14,14 @@ private func makeFilter(fromHue: CGFloat, toHue: CGFloat) -> CIColorCubeWithColo
                 let red = Float(x) / Float(size - 1)
                 let color = RgbColor(red: Int(255 * red), green: Int(255 * green), blue: Int(255 * blue))
                 let hue = color.hue()
-                let alpha: Float = (hue >= fromHue && hue <= toHue) ? 0 : 1
                 cube.append(red)
                 cube.append(green)
                 cube.append(blue)
-                cube.append(alpha)
+                if fromHue <= toHue {
+                    cube.append((hue >= fromHue && hue <= toHue) ? 0 : 1)
+                } else {
+                    cube.append(hue > fromHue || hue < toHue ? 0 : 1)
+                }
             }
         }
     }
