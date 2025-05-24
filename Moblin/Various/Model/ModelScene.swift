@@ -152,22 +152,22 @@ extension Model {
         for widget in widgets where widget.type == .text {
             textEffects[widget.id] = TextEffect(
                 format: widget.text.formatString,
-                backgroundColor: widget.text.backgroundColor!,
-                foregroundColor: widget.text.foregroundColor!,
-                fontSize: CGFloat(widget.text.fontSize!),
-                fontDesign: widget.text.fontDesign!.toSystem(),
-                fontWeight: widget.text.fontWeight!.toSystem(),
-                fontMonospacedDigits: widget.text.fontMonospacedDigits!,
-                horizontalAlignment: widget.text.horizontalAlignment!.toSystem(),
-                verticalAlignment: widget.text.verticalAlignment!.toSystem(),
+                backgroundColor: widget.text.backgroundColor,
+                foregroundColor: widget.text.foregroundColor,
+                fontSize: CGFloat(widget.text.fontSize),
+                fontDesign: widget.text.fontDesign.toSystem(),
+                fontWeight: widget.text.fontWeight.toSystem(),
+                fontMonospacedDigits: widget.text.fontMonospacedDigits,
+                horizontalAlignment: widget.text.horizontalAlignment.toSystem(),
+                verticalAlignment: widget.text.verticalAlignment.toSystem(),
                 settingName: widget.name,
-                delay: widget.text.delay!,
-                timersEndTime: widget.text.timers!.map {
+                delay: widget.text.delay,
+                timersEndTime: widget.text.timers.map {
                     .now.advanced(by: .seconds(utcTimeDeltaFromNow(to: $0.endTime)))
                 },
-                checkboxes: widget.text.checkboxes!.map { $0.checked },
-                ratings: widget.text.ratings!.map { $0.rating },
-                lapTimes: widget.text.lapTimes!.map { $0.lapTimes }
+                checkboxes: widget.text.checkboxes.map { $0.checked },
+                ratings: widget.text.ratings.map { $0.rating },
+                lapTimes: widget.text.lapTimes.map { $0.lapTimes }
             )
         }
         for browserEffect in browserEffects.values {
@@ -487,7 +487,7 @@ extension Model {
                 if let textEffect = textEffects[widget.id] {
                     textEffect.setPosition(x: sceneWidget.x, y: sceneWidget.y)
                     effects.append(textEffect)
-                    if widget.text.needsSubtitles! {
+                    if widget.text.needsSubtitles {
                         needsSpeechToText = true
                     }
                 }
@@ -742,18 +742,18 @@ extension Model {
 
     private func updateTextWidgetsLapTimes(now: Date) {
         for widget in database.widgets where widget.type == .text {
-            guard !widget.text.lapTimes!.isEmpty else {
+            guard !widget.text.lapTimes.isEmpty else {
                 continue
             }
             let now = now.timeIntervalSince1970
-            for lapTimes in widget.text.lapTimes! {
+            for lapTimes in widget.text.lapTimes {
                 let lastIndex = lapTimes.lapTimes.endIndex - 1
                 guard lastIndex >= 0, let currentLapStartTime = lapTimes.currentLapStartTime else {
                     continue
                 }
                 lapTimes.lapTimes[lastIndex] = now - currentLapStartTime
             }
-            getTextEffect(id: widget.id)?.setLapTimes(lapTimes: widget.text.lapTimes!.map { $0.lapTimes })
+            getTextEffect(id: widget.id)?.setLapTimes(lapTimes: widget.text.lapTimes.map { $0.lapTimes })
         }
     }
 

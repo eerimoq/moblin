@@ -19,7 +19,7 @@ extension Model {
         for widget in widgetsInCurrentScene(onlyEnabled: true) {
             switch widget.type {
             case .text:
-                if widget.text.needsSubtitles! {
+                if widget.text.needsSubtitles {
                     return true
                 }
             case .alerts:

@@ -117,13 +117,13 @@ private struct TextSelectionView: View {
                 return false
             }
         }.count
-        for index in 0 ..< numberOfTimers where index >= widget.text.timers!.count {
-            widget.text.timers!.append(.init())
+        for index in 0 ..< numberOfTimers where index >= widget.text.timers.count {
+            widget.text.timers.append(.init())
         }
-        while widget.text.timers!.count > numberOfTimers {
-            widget.text.timers!.removeLast()
+        while widget.text.timers.count > numberOfTimers {
+            widget.text.timers.removeLast()
         }
-        textEffect?.setTimersEndTime(endTimes: widget.text.timers!.map {
+        textEffect?.setTimersEndTime(endTimes: widget.text.timers.map {
             .now.advanced(by: .seconds(utcTimeDeltaFromNow(to: $0.endTime)))
         })
     }
@@ -137,13 +137,13 @@ private struct TextSelectionView: View {
                 return false
             }
         }.count
-        for index in 0 ..< numberOfCheckboxes where index >= widget.text.checkboxes!.count {
-            widget.text.checkboxes!.append(.init())
+        for index in 0 ..< numberOfCheckboxes where index >= widget.text.checkboxes.count {
+            widget.text.checkboxes.append(.init())
         }
-        while widget.text.checkboxes!.count > numberOfCheckboxes {
-            widget.text.checkboxes!.removeLast()
+        while widget.text.checkboxes.count > numberOfCheckboxes {
+            widget.text.checkboxes.removeLast()
         }
-        textEffect?.setCheckboxes(checkboxes: widget.text.checkboxes!.map { $0.checked })
+        textEffect?.setCheckboxes(checkboxes: widget.text.checkboxes.map { $0.checked })
     }
 
     private func updateRatings(_ textEffect: TextEffect?, _ parts: [TextFormatPart]) {
@@ -155,13 +155,13 @@ private struct TextSelectionView: View {
                 return false
             }
         }.count
-        for index in 0 ..< numberOfRatings where index >= widget.text.ratings!.count {
-            widget.text.ratings!.append(.init())
+        for index in 0 ..< numberOfRatings where index >= widget.text.ratings.count {
+            widget.text.ratings.append(.init())
         }
-        while widget.text.ratings!.count > numberOfRatings {
-            widget.text.ratings!.removeLast()
+        while widget.text.ratings.count > numberOfRatings {
+            widget.text.ratings.removeLast()
         }
-        textEffect?.setRatings(ratings: widget.text.ratings!.map { $0.rating })
+        textEffect?.setRatings(ratings: widget.text.ratings.map { $0.rating })
     }
 
     private func updateLapTimes(_ textEffect: TextEffect?, _ parts: [TextFormatPart]) {
@@ -173,13 +173,13 @@ private struct TextSelectionView: View {
                 return false
             }
         }.count
-        for index in 0 ..< numberOfLapTimes where index >= widget.text.lapTimes!.count {
-            widget.text.lapTimes!.append(.init())
+        for index in 0 ..< numberOfLapTimes where index >= widget.text.lapTimes.count {
+            widget.text.lapTimes.append(.init())
         }
-        while widget.text.lapTimes!.count > numberOfLapTimes {
-            widget.text.lapTimes!.removeLast()
+        while widget.text.lapTimes.count > numberOfLapTimes {
+            widget.text.lapTimes.removeLast()
         }
-        textEffect?.setLapTimes(lapTimes: widget.text.lapTimes!.map { $0.lapTimes })
+        textEffect?.setLapTimes(lapTimes: widget.text.lapTimes.map { $0.lapTimes })
     }
 
     private func updateNeedsWeather(_ parts: [TextFormatPart]) {
@@ -405,11 +405,11 @@ struct WidgetTextSettingsView: View {
                 TextItemView(name: String(localized: "Text"), value: widget.text.formatString)
             }
         }
-        if !widget.text.timers!.isEmpty {
+        if !widget.text.timers.isEmpty {
             if let textEffect = model.getTextEffect(id: widget.id) {
                 Section {
-                    ForEach(widget.text.timers!) { timer in
-                        let index = widget.text.timers!.firstIndex(where: { $0 === timer }) ?? 0
+                    ForEach(widget.text.timers) { timer in
+                        let index = widget.text.timers.firstIndex(where: { $0 === timer }) ?? 0
                         TimerWidgetView(
                             name: "Timer \(index + 1)",
                             timer: timer,
@@ -423,12 +423,12 @@ struct WidgetTextSettingsView: View {
                 }
             }
         }
-        if !widget.text.checkboxes!.isEmpty {
+        if !widget.text.checkboxes.isEmpty {
             if let textEffect = model.getTextEffect(id: widget.id) {
                 let textFormat = loadTextFormat(format: widget.text.formatString)
                 Section {
-                    ForEach(widget.text.checkboxes!) { checkbox in
-                        let index = widget.text.checkboxes!.firstIndex(where: { $0 === checkbox }) ?? 0
+                    ForEach(widget.text.checkboxes) { checkbox in
+                        let index = widget.text.checkboxes.firstIndex(where: { $0 === checkbox }) ?? 0
                         CheckboxWidgetView(
                             name: textFormat.getCheckboxText(index: index),
                             checkbox: checkbox,
@@ -442,11 +442,11 @@ struct WidgetTextSettingsView: View {
                 }
             }
         }
-        if !widget.text.ratings!.isEmpty {
+        if !widget.text.ratings.isEmpty {
             if let textEffect = model.getTextEffect(id: widget.id) {
                 Section {
-                    ForEach(widget.text.ratings!) { rating in
-                        let index = widget.text.ratings!.firstIndex(where: { $0 === rating }) ?? 0
+                    ForEach(widget.text.ratings) { rating in
+                        let index = widget.text.ratings.firstIndex(where: { $0 === rating }) ?? 0
                         RatingWidgetView(
                             name: "Rating \(index + 1)",
                             rating: rating,
@@ -460,11 +460,11 @@ struct WidgetTextSettingsView: View {
                 }
             }
         }
-        if !widget.text.lapTimes!.isEmpty {
+        if !widget.text.lapTimes.isEmpty {
             if let textEffect = model.getTextEffect(id: widget.id) {
                 Section {
-                    ForEach(widget.text.lapTimes!) { lapTimes in
-                        let index = widget.text.lapTimes!.firstIndex(where: { $0 === lapTimes }) ?? 0
+                    ForEach(widget.text.lapTimes) { lapTimes in
+                        let index = widget.text.lapTimes.firstIndex(where: { $0 === lapTimes }) ?? 0
                         LapTimesWidgetView(
                             name: "Lap times \(index + 1)",
                             lapTimes: lapTimes,
@@ -530,7 +530,7 @@ struct WidgetTextSettingsView: View {
                 .onChange(of: fontDesign) {
                     widget.text.fontDesign = SettingsFontDesign.fromString(value: $0)
                     model.getTextEffect(id: widget.id)?
-                        .setFontDesign(design: widget.text.fontDesign!.toSystem())
+                        .setFontDesign(design: widget.text.fontDesign.toSystem())
                     model.remoteSceneSettingsUpdated()
                 }
             }
@@ -545,15 +545,15 @@ struct WidgetTextSettingsView: View {
                 .onChange(of: fontWeight) {
                     widget.text.fontWeight = SettingsFontWeight.fromString(value: $0)
                     model.getTextEffect(id: widget.id)?
-                        .setFontWeight(weight: widget.text.fontWeight!.toSystem())
+                        .setFontWeight(weight: widget.text.fontWeight.toSystem())
                     model.remoteSceneSettingsUpdated()
                 }
             }
             Toggle(isOn: Binding(get: {
-                widget.text.fontMonospacedDigits!
+                widget.text.fontMonospacedDigits
             }, set: { value in
                 widget.text.fontMonospacedDigits = value
-                model.getTextEffect(id: widget.id)?.setFontMonospacedDigits(enabled: widget.text.fontMonospacedDigits!)
+                model.getTextEffect(id: widget.id)?.setFontMonospacedDigits(enabled: widget.text.fontMonospacedDigits)
                 model.remoteSceneSettingsUpdated()
             })) {
                 Text("Monospaced digits")
@@ -573,7 +573,7 @@ struct WidgetTextSettingsView: View {
                 .onChange(of: horizontalAlignment) {
                     widget.text.horizontalAlignment = SettingsHorizontalAlignment.fromString(value: $0)
                     model.getTextEffect(id: widget.id)?
-                        .setHorizontalAlignment(alignment: widget.text.horizontalAlignment!.toSystem())
+                        .setHorizontalAlignment(alignment: widget.text.horizontalAlignment.toSystem())
                     model.remoteSceneSettingsUpdated()
                 }
             }
@@ -588,7 +588,7 @@ struct WidgetTextSettingsView: View {
                 .onChange(of: verticalAlignment) {
                     widget.text.verticalAlignment = SettingsVerticalAlignment.fromString(value: $0)
                     model.getTextEffect(id: widget.id)?
-                        .setVerticalAlignment(alignment: widget.text.verticalAlignment!.toSystem())
+                        .setVerticalAlignment(alignment: widget.text.verticalAlignment.toSystem())
                     model.remoteSceneSettingsUpdated()
                 }
             }

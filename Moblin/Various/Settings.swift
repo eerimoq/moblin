@@ -1067,28 +1067,115 @@ class SettingsWidgetTextLapTimes: Codable, Identifiable {
     var lapTimes: [Double] = []
 }
 
-class SettingsWidgetText: Codable {
+class SettingsWidgetText: Codable, ObservableObject {
     var formatString: String = "{shortTime}"
-    var backgroundColor: RgbColor? = .init(red: 0, green: 0, blue: 0, opacity: 0.75)
-    var clearBackgroundColor: Bool? = false
-    var foregroundColor: RgbColor? = .init(red: 255, green: 255, blue: 255)
-    var clearForegroundColor: Bool? = false
-    var fontSize: Int? = 30
-    var fontDesign: SettingsFontDesign? = .default
-    var fontWeight: SettingsFontWeight? = .regular
-    var fontMonospacedDigits: Bool? = false
-    var alignment: SettingsHorizontalAlignment? = .leading
-    var horizontalAlignment: SettingsHorizontalAlignment? = .leading
-    var verticalAlignment: SettingsVerticalAlignment? = .top
-    var delay: Double? = 0.0
-    var timers: [SettingsWidgetTextTimer]? = []
-    var needsWeather: Bool? = false
-    var needsGeography: Bool? = false
-    var needsSubtitles: Bool? = false
-    var checkboxes: [SettingsWidgetTextCheckbox]? = []
-    var ratings: [SettingsWidgetTextRating]? = []
-    var lapTimes: [SettingsWidgetTextLapTimes]? = []
-    var needsGForce: Bool? = false
+    var backgroundColor: RgbColor = .init(red: 0, green: 0, blue: 0, opacity: 0.75)
+    var backgroundColorColor: Color
+    var clearBackgroundColor: Bool = false
+    var foregroundColor: RgbColor = .init(red: 255, green: 255, blue: 255)
+    var foregroundColorColor: Color
+    var clearForegroundColor: Bool = false
+    var fontSize: Int = 30
+    var fontDesign: SettingsFontDesign = .default
+    var fontWeight: SettingsFontWeight = .regular
+    var fontMonospacedDigits: Bool = false
+    var alignment: SettingsHorizontalAlignment = .leading
+    var horizontalAlignment: SettingsHorizontalAlignment = .leading
+    var verticalAlignment: SettingsVerticalAlignment = .top
+    var delay: Double = 0.0
+    var timers: [SettingsWidgetTextTimer] = []
+    var needsWeather: Bool = false
+    var needsGeography: Bool = false
+    var needsSubtitles: Bool = false
+    var checkboxes: [SettingsWidgetTextCheckbox] = []
+    var ratings: [SettingsWidgetTextRating] = []
+    var lapTimes: [SettingsWidgetTextLapTimes] = []
+    var needsGForce: Bool = false
+
+    enum CodingKeys: CodingKey {
+        case formatString,
+             backgroundColor,
+             clearBackgroundColor,
+             foregroundColor,
+             clearForegroundColor,
+             fontSize,
+             fontDesign,
+             fontWeight,
+             fontMonospacedDigits,
+             alignment,
+             horizontalAlignment,
+             verticalAlignment,
+             delay,
+             timers,
+             needsWeather,
+             needsGeography,
+             needsSubtitles,
+             checkboxes,
+             ratings,
+             lapTimes,
+             needsGForce
+    }
+
+    init() {
+        backgroundColorColor = backgroundColor.color()
+        foregroundColorColor = foregroundColor.color()
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.formatString, formatString)
+        try container.encode(.backgroundColor, backgroundColor)
+        try container.encode(.clearBackgroundColor, clearBackgroundColor)
+        try container.encode(.foregroundColor, foregroundColor)
+        try container.encode(.clearForegroundColor, clearForegroundColor)
+        try container.encode(.fontSize, fontSize)
+        try container.encode(.fontDesign, fontDesign)
+        try container.encode(.fontWeight, fontWeight)
+        try container.encode(.fontMonospacedDigits, fontMonospacedDigits)
+        try container.encode(.alignment, alignment)
+        try container.encode(.horizontalAlignment, horizontalAlignment)
+        try container.encode(.verticalAlignment, verticalAlignment)
+        try container.encode(.delay, delay)
+        try container.encode(.timers, timers)
+        try container.encode(.needsWeather, needsWeather)
+        try container.encode(.needsGeography, needsGeography)
+        try container.encode(.needsSubtitles, needsSubtitles)
+        try container.encode(.checkboxes, checkboxes)
+        try container.encode(.ratings, ratings)
+        try container.encode(.lapTimes, lapTimes)
+        try container.encode(.needsGForce, needsGForce)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        formatString = container.decode(.formatString, String.self, "{shortTime}")
+        backgroundColor = container.decode(
+            .backgroundColor,
+            RgbColor.self,
+            .init(red: 0, green: 0, blue: 0, opacity: 0.75)
+        )
+        backgroundColorColor = backgroundColor.color()
+        clearBackgroundColor = container.decode(.clearBackgroundColor, Bool.self, false)
+        foregroundColor = container.decode(.foregroundColor, RgbColor.self, .init(red: 255, green: 255, blue: 255))
+        foregroundColorColor = foregroundColor.color()
+        clearForegroundColor = container.decode(.clearForegroundColor, Bool.self, false)
+        fontSize = container.decode(.fontSize, Int.self, 30)
+        fontDesign = container.decode(.fontDesign, SettingsFontDesign.self, .default)
+        fontWeight = container.decode(.fontWeight, SettingsFontWeight.self, .regular)
+        fontMonospacedDigits = container.decode(.fontMonospacedDigits, Bool.self, false)
+        alignment = container.decode(.alignment, SettingsHorizontalAlignment.self, .leading)
+        horizontalAlignment = container.decode(.horizontalAlignment, SettingsHorizontalAlignment.self, .leading)
+        verticalAlignment = container.decode(.verticalAlignment, SettingsVerticalAlignment.self, .top)
+        delay = container.decode(.delay, Double.self, 0.0)
+        timers = container.decode(.timers, [SettingsWidgetTextTimer].self, [])
+        needsWeather = container.decode(.needsWeather, Bool.self, false)
+        needsGeography = container.decode(.needsGeography, Bool.self, false)
+        needsSubtitles = container.decode(.needsSubtitles, Bool.self, false)
+        checkboxes = container.decode(.checkboxes, [SettingsWidgetTextCheckbox].self, [])
+        ratings = container.decode(.ratings, [SettingsWidgetTextRating].self, [])
+        lapTimes = container.decode(.lapTimes, [SettingsWidgetTextLapTimes].self, [])
+        needsGForce = container.decode(.needsGForce, Bool.self, false)
+    }
 }
 
 class SettingsWidgetCrop: Codable {
@@ -5087,34 +5174,6 @@ final class Settings {
             widget.map.northUp = false
             store()
         }
-        for widget in realDatabase.widgets where widget.text.backgroundColor == nil {
-            widget.text.backgroundColor = .init(red: 0, green: 0, blue: 0, opacity: 0.75)
-            store()
-        }
-        for widget in realDatabase.widgets where widget.text.clearBackgroundColor == nil {
-            widget.text.clearBackgroundColor = false
-            store()
-        }
-        for widget in realDatabase.widgets where widget.text.foregroundColor == nil {
-            widget.text.foregroundColor = .init(red: 255, green: 255, blue: 255)
-            store()
-        }
-        for widget in realDatabase.widgets where widget.text.clearForegroundColor == nil {
-            widget.text.clearForegroundColor = false
-            store()
-        }
-        for widget in realDatabase.widgets where widget.text.fontSize == nil {
-            widget.text.fontSize = 30
-            store()
-        }
-        for widget in realDatabase.widgets where widget.text.fontDesign == nil {
-            widget.text.fontDesign = .default
-            store()
-        }
-        for widget in realDatabase.widgets where widget.text.fontWeight == nil {
-            widget.text.fontWeight = .regular
-            store()
-        }
         for stream in realDatabase.streams where stream.obsAutoStartStream == nil {
             stream.obsAutoStartStream = false
             store()
@@ -5179,38 +5238,8 @@ final class Settings {
             device.model = .unknown
             store()
         }
-        for widget in database.widgets where widget.text.delay == nil {
-            widget.text.delay = 0.0
-            store()
-        }
         for widget in database.widgets where widget.map.delay == nil {
             widget.map.delay = 0.0
-            store()
-        }
-        for widget in database.widgets where widget.text.timers == nil {
-            widget.text.timers = []
-            store()
-        }
-        for widget in database.widgets where widget.text.needsWeather == nil {
-            widget.text.needsWeather = false
-            store()
-        }
-        for widget in database.widgets where widget.text.clearForegroundColor! {
-            widget.text.foregroundColor!.opacity = 0.0
-            widget.text.clearForegroundColor = false
-            store()
-        }
-        for widget in database.widgets where widget.text.clearBackgroundColor! {
-            widget.text.backgroundColor!.opacity = 0.0
-            widget.text.clearBackgroundColor = false
-            store()
-        }
-        for widget in database.widgets where widget.text.needsGeography == nil {
-            widget.text.needsGeography = false
-            store()
-        }
-        for widget in database.widgets where widget.text.checkboxes == nil {
-            widget.text.checkboxes = []
             store()
         }
         for stream in realDatabase.streams where stream.twitchAccessToken == nil {
@@ -5271,10 +5300,6 @@ final class Settings {
                 store()
             }
         }
-        for widget in database.widgets where widget.text.ratings == nil {
-            widget.text.ratings = []
-            store()
-        }
         for stream in realDatabase.streams where stream.twitchLoggedIn == nil {
             stream.twitchLoggedIn = false
             store()
@@ -5330,10 +5355,6 @@ final class Settings {
                     }
                 }
             }
-            store()
-        }
-        for widget in database.widgets where widget.text.needsSubtitles == nil {
-            widget.text.needsSubtitles = false
             store()
         }
         for widget in realDatabase.widgets where widget.alerts.chatBot == nil {
@@ -5583,10 +5604,6 @@ final class Settings {
             realDatabase.show.catPrinter = true
             store()
         }
-        for widget in realDatabase.widgets where widget.text.alignment == nil {
-            widget.text.alignment = .leading
-            store()
-        }
         for stream in realDatabase.streams where stream.recording!.cleanRecordings == nil {
             stream.recording!.cleanRecordings = false
             store()
@@ -5595,28 +5612,12 @@ final class Settings {
             stream.recording!.cleanSnapshots = false
             store()
         }
-        for widget in realDatabase.widgets where widget.text.horizontalAlignment == nil {
-            widget.text.horizontalAlignment = widget.text.alignment!
-            store()
-        }
-        for widget in realDatabase.widgets where widget.text.verticalAlignment == nil {
-            widget.text.verticalAlignment = .top
-            store()
-        }
         if realDatabase.show.cyclingPowerDevice == nil {
             realDatabase.show.cyclingPowerDevice = true
             store()
         }
         if realDatabase.show.heartRateDevice == nil {
             realDatabase.show.heartRateDevice = true
-            store()
-        }
-        for widget in database.widgets where widget.text.lapTimes == nil {
-            widget.text.lapTimes = []
-            store()
-        }
-        for widget in realDatabase.widgets where widget.text.fontMonospacedDigits == nil {
-            widget.text.fontMonospacedDigits = false
             store()
         }
         for scene in realDatabase.scenes where scene.fillFrame == nil {

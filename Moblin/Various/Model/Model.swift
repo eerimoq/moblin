@@ -987,7 +987,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             guard widget.type == .text else {
                 continue
             }
-            guard widget.text.needsGForce! else {
+            guard widget.text.needsGForce else {
                 continue
             }
             return true
@@ -1037,7 +1037,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             guard widget.type == .text else {
                 continue
             }
-            guard widget.text.needsWeather! else {
+            guard widget.text.needsWeather else {
                 continue
             }
             return true
@@ -1055,7 +1055,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             guard widget.type == .text else {
                 continue
             }
-            guard widget.text.needsGeography! else {
+            guard widget.text.needsGeography else {
                 continue
             }
             return true

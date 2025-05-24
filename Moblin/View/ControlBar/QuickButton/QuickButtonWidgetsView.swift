@@ -277,8 +277,8 @@ struct QuickButtonWidgetsView: View {
                         if widget.type == .text {
                             if let textEffect = model.getTextEffect(id: widget.id) {
                                 let textFormat = loadTextFormat(format: widget.text.formatString)
-                                ForEach(widget.text.timers!) { timer in
-                                    let index = widget.text.timers!.firstIndex(where: { $0 === timer }) ?? 0
+                                ForEach(widget.text.timers) { timer in
+                                    let index = widget.text.timers.firstIndex(where: { $0 === timer }) ?? 0
                                     TimerWidgetView(
                                         name: "Timer \(index + 1)",
                                         timer: timer,
@@ -287,9 +287,8 @@ struct QuickButtonWidgetsView: View {
                                         indented: true
                                     )
                                 }
-                                ForEach(widget.text.checkboxes!) { checkbox in
-                                    let index = widget.text.checkboxes!
-                                        .firstIndex(where: { $0 === checkbox }) ?? 0
+                                ForEach(widget.text.checkboxes) { checkbox in
+                                    let index = widget.text.checkboxes.firstIndex(where: { $0 === checkbox }) ?? 0
                                     CheckboxWidgetView(
                                         name: textFormat.getCheckboxText(index: index),
                                         checkbox: checkbox,
@@ -298,9 +297,8 @@ struct QuickButtonWidgetsView: View {
                                         indented: true
                                     )
                                 }
-                                ForEach(widget.text.ratings!) { rating in
-                                    let index = widget.text.ratings!
-                                        .firstIndex(where: { $0 === rating }) ?? 0
+                                ForEach(widget.text.ratings) { rating in
+                                    let index = widget.text.ratings.firstIndex(where: { $0 === rating }) ?? 0
                                     RatingWidgetView(
                                         name: "Rating \(index + 1)",
                                         rating: rating,
@@ -309,9 +307,8 @@ struct QuickButtonWidgetsView: View {
                                         indented: true
                                     )
                                 }
-                                ForEach(widget.text.lapTimes!) { lapTimes in
-                                    let index = widget.text.lapTimes!
-                                        .firstIndex(where: { $0 === lapTimes }) ?? 0
+                                ForEach(widget.text.lapTimes) { lapTimes in
+                                    let index = widget.text.lapTimes.firstIndex(where: { $0 === lapTimes }) ?? 0
                                     LapTimesWidgetView(
                                         name: "Lap times \(index + 1)",
                                         lapTimes: lapTimes,
