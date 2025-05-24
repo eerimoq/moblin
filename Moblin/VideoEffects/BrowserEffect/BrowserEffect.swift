@@ -305,9 +305,13 @@ final class BrowserEffect: VideoEffect {
         }
     }
 
-    override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
+    override func execute(_ image: CIImage, _ info: VideoEffectInfo) -> CIImage {
         updateOverlay()
-        filter.inputImage = overlay
+        if let overlay {
+            filter.inputImage = applyEffects(overlay, info)
+        } else {
+            filter.inputImage = nil
+        }
         filter.backgroundImage = image
         return filter.outputImage ?? image
     }

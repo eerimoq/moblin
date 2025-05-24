@@ -41,4 +41,12 @@ open class VideoEffect: NSObject {
     open func shouldRemove() -> Bool {
         return false
     }
+
+    func applyEffects(_ image: CIImage, _ info: VideoEffectInfo) -> CIImage {
+        var image = image
+        for effect in effects {
+            image = effect.execute(image, info)
+        }
+        return image
+    }
 }

@@ -15,7 +15,7 @@ final class ImageEffect: VideoEffect {
         }
     }
 
-    private var overlay: CIImage!
+    private var overlay: CIImage?
     private var overlayMetalPetal: MTIImage?
     private let originalImage: UIImage
     private let x: Double
@@ -23,14 +23,16 @@ final class ImageEffect: VideoEffect {
     private let width: Double
     private let height: Double
     private let settingName: String
+    let widgetId: UUID
 
-    init(image: UIImage, x: Double, y: Double, width: Double, height: Double, settingName: String) {
+    init(image: UIImage, x: Double, y: Double, width: Double, height: Double, settingName: String, widgetId: UUID) {
         originalImage = image
         self.x = x
         self.y = y
         self.width = width
         self.height = height
         self.settingName = settingName
+        self.widgetId = widgetId
         super.init()
     }
 
@@ -38,9 +40,13 @@ final class ImageEffect: VideoEffect {
         return "\(settingName) image widget"
     }
 
-    override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
+    override func execute(_ image: CIImage, _ info: VideoEffectInfo) -> CIImage {
         extent = image.extent
-        filter.inputImage = overlay
+        if let overlay {
+            filter.inputImage = applyEffects(overlay, info)
+        } else {
+            filter.inputImage = nil
+        }
         filter.backgroundImage = image
         return filter.outputImage ?? image
     }

@@ -764,6 +764,13 @@ final class TextEffect: VideoEffect {
                         translationX: x,
                         y: y
                     ))
+                    // For some reason the background expands to screen edges without this
+                    // when used in combination with a remove background effect on another
+                    // widget on top of this.
+                    .cropped(to: CGRect(x: x,
+                                        y: y,
+                                        width: newImage.size.width,
+                                        height: newImage.size.height - 1))
                     .cropped(to: CGRect(x: 0, y: 0, width: size.width, height: size.height))
             } else {
                 overlay = nil

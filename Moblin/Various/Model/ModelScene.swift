@@ -19,14 +19,17 @@ extension Model {
                 guard let image = UIImage(data: data) else {
                     continue
                 }
-                imageEffects[widget.id] = ImageEffect(
+                let imageEffect = ImageEffect(
                     image: image,
                     x: widget.x,
                     y: widget.y,
                     width: widget.width,
                     height: widget.height,
-                    settingName: realWidget.name
+                    settingName: realWidget.name,
+                    widgetId: realWidget.id
                 )
+                imageEffect.effects = realWidget.getEffects()
+                imageEffects[widget.id] = imageEffect
             }
         }
     }
@@ -121,6 +124,21 @@ extension Model {
         return nil
     }
 
+    func getImageEffect(id: UUID) -> ImageEffect? {
+        return imageEffects.values.first(where: { $0.widgetId == id })
+    }
+
+    func getBrowserEffect(id: UUID) -> BrowserEffect? {
+        for (browserEffectId, browserEffect) in browserEffects where id == browserEffectId {
+            return browserEffect
+        }
+        return nil
+    }
+
+    func getEffectWithPossibleEffects(id: UUID) -> VideoEffect? {
+        return getVideoSourceEffect(id: id) ?? getImageEffect(id: id) ?? getBrowserEffect(id: id)
+    }
+
     func getVideoSourceSettings(id: UUID) -> SettingsWidget? {
         return database.widgets.first(where: { $0.id == id })
     }
@@ -162,7 +180,7 @@ extension Model {
             guard let url = URL(string: widget.browser.url) else {
                 continue
             }
-            browserEffects[widget.id] = BrowserEffect(
+            let browserEffect = BrowserEffect(
                 url: url,
                 styleSheet: widget.browser.styleSheet!,
                 widget: widget.browser,
@@ -170,6 +188,8 @@ extension Model {
                 settingName: widget.name,
                 moblinAccess: widget.browser.moblinAccess!
             )
+            browserEffect.effects = widget.getEffects()
+            browserEffects[widget.id] = browserEffect
         }
         for mapEffect in mapEffects.values {
             media.unregisterEffect(mapEffect)

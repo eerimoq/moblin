@@ -7,7 +7,7 @@ private struct RemoveBackgroundView: View {
     @ObservedObject var removeBackground: SettingsVideoEffectRemoveBackground
 
     private func updateWidget() {
-        guard let effect = model.getVideoSourceEffect(id: widgetId) else {
+        guard let effect = model.getEffectWithPossibleEffects(id: widgetId) else {
             return
         }
         guard effectIndex < effect.effects.count else {

@@ -337,12 +337,10 @@ final class VideoSourceEffect: VideoEffect {
         } else {
             widgetImage = makeRoundedCornersImage(widgetImage, settings)
         }
-        for effect in effects {
-            widgetImage = effect.execute(widgetImage, info)
-        }
-        return widgetImage
+        widgetImage = widgetImage
             .transformed(by: translation)
             .cropped(to: crop)
+        return applyEffects(widgetImage, info)
             .composited(over: backgroundImage)
     }
 
