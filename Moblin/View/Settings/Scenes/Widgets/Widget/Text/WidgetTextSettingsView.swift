@@ -388,28 +388,21 @@ private struct TextSelectionView: View {
 struct WidgetTextSettingsView: View {
     @EnvironmentObject var model: Model
     var widget: SettingsWidget
-    @State var backgroundColor: Color
-    @State var foregroundColor: Color
-    @State var fontSize: Float
-    @State var fontDesign: String
-    @State var fontWeight: String
-    @State var horizontalAlignment: String
-    @State var verticalAlignment: String
-    @State var delay: Double
+    @ObservedObject var text: SettingsWidgetText
 
     var body: some View {
         Section {
             NavigationLink {
-                TextSelectionView(widget: widget, value: widget.text.formatString)
+                TextSelectionView(widget: widget, value: text.formatString)
             } label: {
                 TextItemView(name: String(localized: "Text"), value: widget.text.formatString)
             }
         }
-        if !widget.text.timers.isEmpty {
+        if !text.timers.isEmpty {
             if let textEffect = model.getTextEffect(id: widget.id) {
                 Section {
-                    ForEach(widget.text.timers) { timer in
-                        let index = widget.text.timers.firstIndex(where: { $0 === timer }) ?? 0
+                    ForEach(text.timers) { timer in
+                        let index = text.timers.firstIndex(where: { $0 === timer }) ?? 0
                         TimerWidgetView(
                             name: "Timer \(index + 1)",
                             timer: timer,
@@ -423,12 +416,12 @@ struct WidgetTextSettingsView: View {
                 }
             }
         }
-        if !widget.text.checkboxes.isEmpty {
+        if !text.checkboxes.isEmpty {
             if let textEffect = model.getTextEffect(id: widget.id) {
-                let textFormat = loadTextFormat(format: widget.text.formatString)
+                let textFormat = loadTextFormat(format: text.formatString)
                 Section {
-                    ForEach(widget.text.checkboxes) { checkbox in
-                        let index = widget.text.checkboxes.firstIndex(where: { $0 === checkbox }) ?? 0
+                    ForEach(text.checkboxes) { checkbox in
+                        let index = text.checkboxes.firstIndex(where: { $0 === checkbox }) ?? 0
                         CheckboxWidgetView(
                             name: textFormat.getCheckboxText(index: index),
                             checkbox: checkbox,
@@ -442,11 +435,11 @@ struct WidgetTextSettingsView: View {
                 }
             }
         }
-        if !widget.text.ratings.isEmpty {
+        if !text.ratings.isEmpty {
             if let textEffect = model.getTextEffect(id: widget.id) {
                 Section {
-                    ForEach(widget.text.ratings) { rating in
-                        let index = widget.text.ratings.firstIndex(where: { $0 === rating }) ?? 0
+                    ForEach(text.ratings) { rating in
+                        let index = text.ratings.firstIndex(where: { $0 === rating }) ?? 0
                         RatingWidgetView(
                             name: "Rating \(index + 1)",
                             rating: rating,
@@ -460,11 +453,11 @@ struct WidgetTextSettingsView: View {
                 }
             }
         }
-        if !widget.text.lapTimes.isEmpty {
+        if !text.lapTimes.isEmpty {
             if let textEffect = model.getTextEffect(id: widget.id) {
                 Section {
-                    ForEach(widget.text.lapTimes) { lapTimes in
-                        let index = widget.text.lapTimes.firstIndex(where: { $0 === lapTimes }) ?? 0
+                    ForEach(text.lapTimes) { lapTimes in
+                        let index = text.lapTimes.firstIndex(where: { $0 === lapTimes }) ?? 0
                         LapTimesWidgetView(
                             name: "Lap times \(index + 1)",
                             lapTimes: lapTimes,
@@ -479,21 +472,21 @@ struct WidgetTextSettingsView: View {
             }
         }
         Section {
-            ColorPicker("Background", selection: $backgroundColor, supportsOpacity: true)
-                .onChange(of: backgroundColor) { _ in
-                    guard let color = backgroundColor.toRgb() else {
+            ColorPicker("Background", selection: $text.backgroundColorColor, supportsOpacity: true)
+                .onChange(of: text.backgroundColorColor) { _ in
+                    guard let color = text.backgroundColorColor.toRgb() else {
                         return
                     }
-                    widget.text.backgroundColor = color
+                    text.backgroundColor = color
                     model.getTextEffect(id: widget.id)?.setBackgroundColor(color: color)
                     model.remoteSceneSettingsUpdated()
                 }
-            ColorPicker("Foreground", selection: $foregroundColor, supportsOpacity: true)
-                .onChange(of: foregroundColor) { _ in
-                    guard let color = foregroundColor.toRgb() else {
+            ColorPicker("Foreground", selection: $text.foregroundColorColor, supportsOpacity: true)
+                .onChange(of: text.foregroundColorColor) { _ in
+                    guard let color = text.foregroundColorColor.toRgb() else {
                         return
                     }
-                    widget.text.foregroundColor = color
+                    text.foregroundColor = color
                     model.getTextEffect(id: widget.id)?.setForegroundColor(color: color)
                     model.remoteSceneSettingsUpdated()
                 }
@@ -504,56 +497,54 @@ struct WidgetTextSettingsView: View {
             HStack {
                 Text("Size")
                 Slider(
-                    value: $fontSize,
+                    value: $text.fontSizeFloat,
                     in: 10 ... 200,
                     step: 5,
                     onEditingChanged: { begin in
                         guard !begin else {
                             return
                         }
-                        widget.text.fontSize = Int(fontSize)
-                        model.getTextEffect(id: widget.id)?.setFontSize(size: CGFloat(fontSize))
+                        text.fontSize = Int(text.fontSizeFloat)
+                        model.getTextEffect(id: widget.id)?.setFontSize(size: CGFloat(text.fontSizeFloat))
                         model.remoteSceneSettingsUpdated()
                     }
                 )
-                Text(String(Int(fontSize)))
+                Text(String(Int(text.fontSizeFloat)))
                     .frame(width: 35)
             }
             HStack {
                 Text("Design")
                 Spacer()
-                Picker("", selection: $fontDesign) {
-                    ForEach(textWidgetFontDesigns, id: \.self) {
-                        Text($0)
+                Picker("", selection: $text.fontDesign) {
+                    ForEach(SettingsFontDesign.allCases, id: \.self) {
+                        Text($0.toString())
+                            .tag($0)
                     }
                 }
-                .onChange(of: fontDesign) {
-                    widget.text.fontDesign = SettingsFontDesign.fromString(value: $0)
-                    model.getTextEffect(id: widget.id)?
-                        .setFontDesign(design: widget.text.fontDesign.toSystem())
+                .onChange(of: text.fontDesign) { _ in
+                    model.getTextEffect(id: widget.id)?.setFontDesign(design: text.fontDesign.toSystem())
                     model.remoteSceneSettingsUpdated()
                 }
             }
             HStack {
                 Text("Weight")
                 Spacer()
-                Picker("", selection: $fontWeight) {
-                    ForEach(textWidgetFontWeights, id: \.self) {
-                        Text($0)
+                Picker("", selection: $text.fontWeight) {
+                    ForEach(SettingsFontWeight.allCases, id: \.self) {
+                        Text($0.toString())
+                            .tag($0)
                     }
                 }
-                .onChange(of: fontWeight) {
-                    widget.text.fontWeight = SettingsFontWeight.fromString(value: $0)
-                    model.getTextEffect(id: widget.id)?
-                        .setFontWeight(weight: widget.text.fontWeight.toSystem())
+                .onChange(of: text.fontWeight) { _ in
+                    model.getTextEffect(id: widget.id)?.setFontWeight(weight: text.fontWeight.toSystem())
                     model.remoteSceneSettingsUpdated()
                 }
             }
             Toggle(isOn: Binding(get: {
-                widget.text.fontMonospacedDigits
+                text.fontMonospacedDigits
             }, set: { value in
-                widget.text.fontMonospacedDigits = value
-                model.getTextEffect(id: widget.id)?.setFontMonospacedDigits(enabled: widget.text.fontMonospacedDigits)
+                text.fontMonospacedDigits = value
+                model.getTextEffect(id: widget.id)?.setFontMonospacedDigits(enabled: text.fontMonospacedDigits)
                 model.remoteSceneSettingsUpdated()
             })) {
                 Text("Monospaced digits")
@@ -565,30 +556,30 @@ struct WidgetTextSettingsView: View {
             HStack {
                 Text("Horizontal")
                 Spacer()
-                Picker("", selection: $horizontalAlignment) {
-                    ForEach(textWidgetHorizontalAlignments, id: \.self) {
-                        Text($0)
+                Picker("", selection: $text.horizontalAlignment) {
+                    ForEach(SettingsHorizontalAlignment.allCases, id: \.self) {
+                        Text($0.toString())
+                            .tag($0)
                     }
                 }
-                .onChange(of: horizontalAlignment) {
-                    widget.text.horizontalAlignment = SettingsHorizontalAlignment.fromString(value: $0)
+                .onChange(of: text.horizontalAlignment) { _ in
                     model.getTextEffect(id: widget.id)?
-                        .setHorizontalAlignment(alignment: widget.text.horizontalAlignment.toSystem())
+                        .setHorizontalAlignment(alignment: text.horizontalAlignment.toSystem())
                     model.remoteSceneSettingsUpdated()
                 }
             }
             HStack {
                 Text("Vertical")
                 Spacer()
-                Picker("", selection: $verticalAlignment) {
-                    ForEach(textWidgetVerticalAlignments, id: \.self) {
-                        Text($0)
+                Picker("", selection: $text.verticalAlignment) {
+                    ForEach(SettingsVerticalAlignment.allCases, id: \.self) {
+                        Text($0.toString())
+                            .tag($0)
                     }
                 }
-                .onChange(of: verticalAlignment) {
-                    widget.text.verticalAlignment = SettingsVerticalAlignment.fromString(value: $0)
+                .onChange(of: text.verticalAlignment) { _ in
                     model.getTextEffect(id: widget.id)?
-                        .setVerticalAlignment(alignment: widget.text.verticalAlignment.toSystem())
+                        .setVerticalAlignment(alignment: text.verticalAlignment.toSystem())
                     model.remoteSceneSettingsUpdated()
                 }
             }
@@ -598,18 +589,17 @@ struct WidgetTextSettingsView: View {
         Section {
             HStack {
                 Slider(
-                    value: $delay,
+                    value: $text.delay,
                     in: 0 ... 10,
                     step: 0.5,
                     onEditingChanged: { begin in
                         guard !begin else {
                             return
                         }
-                        widget.text.delay = delay
                         model.resetSelectedScene(changeScene: false)
                     }
                 )
-                Text(String(String(delay)))
+                Text(String(String(text.delay)))
                     .frame(width: 35)
             }
         } header: {

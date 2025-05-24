@@ -1002,8 +1002,6 @@ enum SettingsHorizontalAlignment: String, Codable, CaseIterable {
     }
 }
 
-let textWidgetHorizontalAlignments = SettingsHorizontalAlignment.allCases.map { $0.toString() }
-
 enum SettingsVerticalAlignment: String, Codable, CaseIterable {
     case top = "Top"
     case bottom = "Bottom"
@@ -1043,8 +1041,6 @@ enum SettingsVerticalAlignment: String, Codable, CaseIterable {
     }
 }
 
-let textWidgetVerticalAlignments = SettingsVerticalAlignment.allCases.map { $0.toString() }
-
 class SettingsWidgetTextTimer: Codable, Identifiable {
     var id: UUID = .init()
     var delta: Int = 5
@@ -1070,19 +1066,20 @@ class SettingsWidgetTextLapTimes: Codable, Identifiable {
 class SettingsWidgetText: Codable, ObservableObject {
     var formatString: String = "{shortTime}"
     var backgroundColor: RgbColor = .init(red: 0, green: 0, blue: 0, opacity: 0.75)
-    var backgroundColorColor: Color
+    @Published var backgroundColorColor: Color
     var clearBackgroundColor: Bool = false
     var foregroundColor: RgbColor = .init(red: 255, green: 255, blue: 255)
-    var foregroundColorColor: Color
+    @Published var foregroundColorColor: Color
     var clearForegroundColor: Bool = false
     var fontSize: Int = 30
-    var fontDesign: SettingsFontDesign = .default
-    var fontWeight: SettingsFontWeight = .regular
+    @Published var fontSizeFloat: Float
+    @Published var fontDesign: SettingsFontDesign = .default
+    @Published var fontWeight: SettingsFontWeight = .regular
     var fontMonospacedDigits: Bool = false
-    var alignment: SettingsHorizontalAlignment = .leading
-    var horizontalAlignment: SettingsHorizontalAlignment = .leading
-    var verticalAlignment: SettingsVerticalAlignment = .top
-    var delay: Double = 0.0
+    @Published var alignment: SettingsHorizontalAlignment = .leading
+    @Published var horizontalAlignment: SettingsHorizontalAlignment = .leading
+    @Published var verticalAlignment: SettingsVerticalAlignment = .top
+    @Published var delay: Double = 0.0
     var timers: [SettingsWidgetTextTimer] = []
     var needsWeather: Bool = false
     var needsGeography: Bool = false
@@ -1119,6 +1116,7 @@ class SettingsWidgetText: Codable, ObservableObject {
     init() {
         backgroundColorColor = backgroundColor.color()
         foregroundColorColor = foregroundColor.color()
+        fontSizeFloat = Float(fontSize)
     }
 
     func encode(to encoder: Encoder) throws {
@@ -1160,6 +1158,7 @@ class SettingsWidgetText: Codable, ObservableObject {
         foregroundColorColor = foregroundColor.color()
         clearForegroundColor = container.decode(.clearForegroundColor, Bool.self, false)
         fontSize = container.decode(.fontSize, Int.self, 30)
+        fontSizeFloat = Float(fontSize)
         fontDesign = container.decode(.fontDesign, SettingsFontDesign.self, .default)
         fontWeight = container.decode(.fontWeight, SettingsFontWeight.self, .regular)
         fontMonospacedDigits = container.decode(.fontMonospacedDigits, Bool.self, false)
@@ -5736,10 +5735,6 @@ final class Settings {
         }
         for button in realDatabase.quickButtons where button.page == nil {
             button.page = 1
-            store()
-        }
-        for widget in database.widgets where widget.text.needsGForce == nil {
-            widget.text.needsGForce = false
             store()
         }
     }

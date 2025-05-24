@@ -152,15 +152,7 @@ struct WidgetSettingsView: View {
             case .browser:
                 WidgetBrowserSettingsView(widget: widget)
             case .text:
-                WidgetTextSettingsView(widget: widget,
-                                       backgroundColor: widget.text.backgroundColor.color(),
-                                       foregroundColor: widget.text.foregroundColor.color(),
-                                       fontSize: Float(widget.text.fontSize),
-                                       fontDesign: widget.text.fontDesign.toString(),
-                                       fontWeight: widget.text.fontWeight.toString(),
-                                       horizontalAlignment: widget.text.horizontalAlignment.toString(),
-                                       verticalAlignment: widget.text.verticalAlignment.toString(),
-                                       delay: widget.text.delay)
+                WidgetTextSettingsView(widget: widget, text: widget.text)
             case .crop:
                 WidgetCropSettingsView(widget: widget)
             case .map:
