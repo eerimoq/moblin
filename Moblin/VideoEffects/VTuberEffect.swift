@@ -10,7 +10,7 @@ final class VTuberEffect: VideoEffect {
             logger.info("v-tuber: Failed to load VRM file with error: \(error)")
         }
     }
-    
+
     override func getName() -> String {
         return "VTuber"
     }
