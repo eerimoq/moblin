@@ -274,6 +274,8 @@
 		0376F6FE2B9511030056B3D2 /* MoblinWidgetApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0376F6FD2B9511030056B3D2 /* MoblinWidgetApp.swift */; };
 		0376F7002B9511040056B3D2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0376F6FF2B9511040056B3D2 /* Assets.xcassets */; };
 		0376F7042B9511040056B3D2 /* MoblinWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 0376F6F72B9511030056B3D2 /* MoblinWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		0377239A2DE35191007D040D /* VRMKit in Frameworks */ = {isa = PBXBuildFile; productRef = 037723992DE35191007D040D /* VRMKit */; };
+		0377239C2DE35191007D040D /* VRMSceneKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0377239B2DE35191007D040D /* VRMSceneKit */; };
 		037798FC2DE1396D006D4526 /* RemoveBackgroundEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 037798FB2DE1395E006D4526 /* RemoveBackgroundEffect.swift */; };
 		0379BB882AA836B500B718B6 /* StreamVideoSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB872AA836B500B718B6 /* StreamVideoSettingsView.swift */; };
 		0379BB8E2AA90D1900B718B6 /* DebugLogSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB8D2AA90D1900B718B6 /* DebugLogSettingsView.swift */; };
@@ -1216,10 +1218,12 @@
 				03AE56142BEA74D500FE8427 /* Rist in Frameworks */,
 				03F465EC2C441D1400630708 /* CrcSwift in Frameworks */,
 				0359F9092BD3DA61005BFDA8 /* libsrt.xcframework in Frameworks */,
+				0377239A2DE35191007D040D /* VRMKit in Frameworks */,
 				03B279832D45EB9C007DEDB2 /* SwiftCube in Frameworks */,
 				03D151AF2BFA73C100D29D8E /* MetalPetal in Frameworks */,
 				03A974282AC137A000610E21 /* Collections in Frameworks */,
 				03A08B7C2AC295620018BA95 /* AlertToast in Frameworks */,
+				0377239C2DE35191007D040D /* VRMSceneKit in Frameworks */,
 				03BC116B2AE56C2200C38FC4 /* SDWebImageWebPCoder in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3218,6 +3222,8 @@
 				03C3572C2D0416CD00B8B29F /* AppleGPUInfo */,
 				03AC6B942D17786700832A7E /* TrueTime */,
 				03B279822D45EB9C007DEDB2 /* SwiftCube */,
+				037723992DE35191007D040D /* VRMKit */,
+				0377239B2DE35191007D040D /* VRMSceneKit */,
 			);
 			productName = Mobs;
 			productReference = 035E9E332A9A02D6009D4F5A /* Moblin.app */;
@@ -3335,6 +3341,7 @@
 				03C3572B2D0416CD00B8B29F /* XCRemoteSwiftPackageReference "applegpuinfo" */,
 				03AC6B932D17786700832A7E /* XCRemoteSwiftPackageReference "TrueTime" */,
 				03B279812D45EB9C007DEDB2 /* XCRemoteSwiftPackageReference "SwiftCube" */,
+				037723982DE35191007D040D /* XCRemoteSwiftPackageReference "VRMKit" */,
 			);
 			productRefGroup = 035E9E342A9A02D6009D4F5A /* Products */;
 			projectDirPath = "";
@@ -4522,6 +4529,14 @@
 				kind = branch;
 			};
 		};
+		037723982DE35191007D040D /* XCRemoteSwiftPackageReference "VRMKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/eerimoq/VRMKit";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
 		03A08B7A2AC295620018BA95 /* XCRemoteSwiftPackageReference "AlertToast" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/elai950/AlertToast.git";
@@ -4645,6 +4660,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 033BEAC22C0FCC0B005F4E06 /* XCRemoteSwiftPackageReference "NWWebSocket" */;
 			productName = NWWebSocket;
+		};
+		037723992DE35191007D040D /* VRMKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 037723982DE35191007D040D /* XCRemoteSwiftPackageReference "VRMKit" */;
+			productName = VRMKit;
+		};
+		0377239B2DE35191007D040D /* VRMSceneKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 037723982DE35191007D040D /* XCRemoteSwiftPackageReference "VRMKit" */;
+			productName = VRMSceneKit;
 		};
 		03A08B7B2AC295620018BA95 /* AlertToast */ = {
 			isa = XCSwiftPackageProductDependency;

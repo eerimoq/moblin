@@ -1,5 +1,5 @@
 {
-  "originHash" : "479e4432ed781d0fd12328e1b0ecbf4a5bf478622a02a4294b02ef29e0b8d98e",
+  "originHash" : "50be67d575d6e1e6891f1fdf650bc952bd962ab6a1457cc44f79a329cdc9bab2",
   "pins" : [
     {
       "identity" : "alerttoast",
@@ -161,6 +161,15 @@
       "state" : {
         "branch" : "trunk",
         "revision" : "11baf75e9cd04b6aa7987f89e0104e7b8f3c10fa"
+      }
+    },
+    {
+      "identity" : "vrmkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/eerimoq/VRMKit",
+      "state" : {
+        "branch" : "main",
+        "revision" : "acdcda8d3bf552427551a71497064af495f34d96"
       }
     },
     {
