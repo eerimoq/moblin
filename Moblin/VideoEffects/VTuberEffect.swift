@@ -34,6 +34,25 @@ final class VTuberEffect: VideoEffect {
         return "VTuber"
     }
 
+    private func calcMinXMaxYWidthHeight(points: [CGPoint]) -> (CGFloat, CGFloat, CGFloat, CGFloat)? {
+        guard let firstPoint = points.first else {
+            return nil
+        }
+        var minX = firstPoint.x
+        var maxX = firstPoint.x
+        var minY = firstPoint.y
+        var maxY = firstPoint.y
+        for point in points {
+            minX = min(point.x, minX)
+            maxX = max(point.x, maxX)
+            minY = min(point.y, minY)
+            maxY = max(point.y, maxY)
+        }
+        let width = maxX - minX
+        let height = maxY - minY
+        return (minX, maxY, width, height)
+    }
+
     override func execute(_ image: CIImage, _ info: VideoEffectInfo) -> CIImage {
         let presentationTimeStamp = info.presentationTimeStamp.seconds
         if firstPresentationTimeStamp == nil {
@@ -50,8 +69,22 @@ final class VTuberEffect: VideoEffect {
         }
         angle -= .pi / 2
         angle *= 0.5
-        node.setBlendShape(value: abs(time.truncatingRemainder(dividingBy: 2) - 1), for: .preset(.blink))
-        node.setBlendShape(value: abs(time.truncatingRemainder(dividingBy: 2) - 1), for: .preset(.angry))
+        if let detection = info.faceDetections[info.sceneVideoSourceId]?.first {
+            if let innerLips = detection.landmarks?.innerLips {
+                let points = innerLips.normalizedPoints
+                if let (_, _, _, height) = calcMinXMaxYWidthHeight(points: points) {
+                    node.setBlendShape(value: min(height * 6, 1), for: .preset(.angry))
+                }
+            }
+        }
+        if let detection = info.faceDetections[info.sceneVideoSourceId]?.first {
+            if let leftEye = detection.landmarks?.leftEye {
+                let points = leftEye.normalizedPoints
+                if let (_, _, _, height) = calcMinXMaxYWidthHeight(points: points) {
+                    node.setBlendShape(value: height > 0.035 ? 0 : 1, for: .preset(.blink))
+                }
+            }
+        }
         node.humanoid.node(for: .leftShoulder)?.eulerAngles = SCNVector3(0, 0, angle)
         node.humanoid.node(for: .rightShoulder)?.eulerAngles = SCNVector3(0, 0, angle)
         node.humanoid.node(for: .neck)?.eulerAngles = SCNVector3(0, 0, angle * 0.7)
@@ -63,5 +96,9 @@ final class VTuberEffect: VideoEffect {
             .transformed(by: CGAffineTransform(translationX: image.extent.width - 300, y: -40))
             .cropped(to: image.extent)
             .composited(over: image) ?? image
+    }
+
+    override func needsFaceDetections(_: Double) -> (Bool, UUID?) {
+        return (true, nil)
     }
 }
