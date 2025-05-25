@@ -234,6 +234,13 @@ extension Model {
                 bundledSounds: database.alertsMediaGallery.bundledSounds
             )
         }
+        for vTuberEffect in vTuberEffects.values {
+            media.unregisterEffect(vTuberEffect)
+        }
+        vTuberEffects.removeAll()
+        for widget in widgets where widget.type == .vTuber {
+            vTuberEffects[widget.id] = VTuberEffect(vrm: vTuberStorage.makePath(id: widget.vTuber.id))
+        }
         browsers = browserEffects.map { _, browser in
             Browser(browserEffect: browser)
         }
@@ -574,7 +581,9 @@ extension Model {
                     usedPadelScoreboardEffects.append(padelScoreboardEffect)
                 }
             case .vTuber:
-                logger.info("xxx not adding vtuber effect")
+                if let vTuberEffect = vTuberEffects[widget.id] {
+                    effects.append(vTuberEffect)
+                }
             }
         }
     }

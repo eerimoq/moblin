@@ -234,6 +234,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var drawOnStreamEffect = DrawOnStreamEffect()
     var lutEffect = LutEffect()
     var padelScoreboardEffects: [UUID: PadelScoreboardEffect] = [:]
+    var vTuberEffects: [UUID: VTuberEffect] = [:]
     var speechToTextAlertMatchOffset = 0
     @Published var browsers: [Browser] = []
     @Published var sceneIndex = 0
@@ -246,6 +247,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var logsStorage = LogsStorage()
     var mediaStorage = MediaPlayerStorage()
     var alertMediaStorage = AlertMediaStorage()
+    var vTuberStorage = VTuberStorage()
     @Published var buttonPairs: [[QuickButtonPair]] = Array(repeating: [], count: controlBarPages)
     var controlBarPage = 1
     var reconnectTimer: Timer?
@@ -864,6 +866,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         updateQuickButtonStates()
         removeUnusedImages()
         removeUnusedAlertMedias()
+        removeUnusedVTubers()
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(orientationDidChange),
                                                name: UIDevice.orientationDidChangeNotification,
@@ -1481,6 +1484,15 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                     break
                 }
             }
+            for widget in database.widgets {
+                if widget.type != .vTuber {
+                    continue
+                }
+                if widget.vTuber.id == id {
+                    used = true
+                    break
+                }
+            }
             if database.color.diskLutsPng!.contains(where: { lut in lut.id == id }) {
                 used = true
             }
@@ -1568,6 +1580,19 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             }
             if !found {
                 alertMediaStorage.remove(id: mediaId)
+            }
+        }
+    }
+
+    private func removeUnusedVTubers() {
+        for vTuberId in vTuberStorage.ids() {
+            var found = false
+            for widget in database.widgets where widget.vTuber.id == vTuberId {
+                found = true
+                break
+            }
+            if !found {
+                vTuberStorage.remove(id: vTuberId)
             }
         }
     }
