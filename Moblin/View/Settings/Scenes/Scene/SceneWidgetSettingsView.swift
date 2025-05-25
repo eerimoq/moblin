@@ -163,7 +163,6 @@ struct SceneWidgetSettingsView: View {
                     NavigationLink {
                         SceneSettingsView(
                             scene: scene,
-                            name: scene.name,
                             selectedRotation: scene.videoSourceRotation,
                             numericInput: model.database.sceneNumericInput
                         )

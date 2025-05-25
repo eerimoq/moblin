@@ -1,5 +1,49 @@
 import SwiftUI
 
+private struct SceneItemView: View {
+    @EnvironmentObject var model: Model
+    @ObservedObject var database: Database
+    @ObservedObject var scene: SettingsScene
+
+    var body: some View {
+        NavigationLink {
+            SceneSettingsView(
+                scene: scene,
+                selectedRotation: scene.videoSourceRotation,
+                numericInput: model.database.sceneNumericInput
+            )
+        } label: {
+            HStack {
+                DraggableItemPrefixView()
+                Toggle(scene.name, isOn: Binding(get: {
+                    scene.enabled
+                }, set: { value in
+                    scene.enabled = value
+                    model.resetSelectedScene()
+                }))
+            }
+        }
+        .swipeActions(edge: .trailing) {
+            Button {
+                database.scenes.removeAll { $0 == scene }
+                model.resetSelectedScene()
+            } label: {
+                Text("Delete")
+            }
+            .tint(.red)
+        }
+        .swipeActions(edge: .trailing) {
+            Button {
+                database.scenes.append(scene.clone())
+                model.resetSelectedScene()
+            } label: {
+                Text("Duplicate")
+            }
+            .tint(.blue)
+        }
+    }
+}
+
 private struct ScenesListView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var database: Database
@@ -8,42 +52,7 @@ private struct ScenesListView: View {
         Section {
             List {
                 ForEach(database.scenes) { scene in
-                    NavigationLink {
-                        SceneSettingsView(
-                            scene: scene,
-                            name: scene.name,
-                            selectedRotation: scene.videoSourceRotation,
-                            numericInput: model.database.sceneNumericInput
-                        )
-                    } label: {
-                        HStack {
-                            DraggableItemPrefixView()
-                            Toggle(scene.name, isOn: Binding(get: {
-                                scene.enabled
-                            }, set: { value in
-                                scene.enabled = value
-                                model.resetSelectedScene()
-                            }))
-                        }
-                    }
-                    .swipeActions(edge: .trailing) {
-                        Button {
-                            database.scenes.removeAll { $0 == scene }
-                            model.resetSelectedScene()
-                        } label: {
-                            Text("Delete")
-                        }
-                        .tint(.red)
-                    }
-                    .swipeActions(edge: .trailing) {
-                        Button {
-                            database.scenes.append(scene.clone())
-                            model.resetSelectedScene()
-                        } label: {
-                            Text("Duplicate")
-                        }
-                        .tint(.blue)
-                    }
+                    SceneItemView(database: database, scene: scene)
                 }
                 .onMove(perform: { froms, to in
                     database.scenes.move(fromOffsets: froms, toOffset: to)

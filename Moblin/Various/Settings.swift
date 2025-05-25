@@ -883,8 +883,8 @@ enum SettingsCameraId {
     case backWideDualLowEnergy
 }
 
-class SettingsScene: Codable, Identifiable, Equatable {
-    var name: String
+class SettingsScene: Codable, Identifiable, Equatable, ObservableObject {
+    @Published var name: String
     var id: UUID = .init()
     var enabled: Bool = true
     var cameraType: SettingsSceneCameraPosition = .back
