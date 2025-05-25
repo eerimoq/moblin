@@ -573,6 +573,8 @@ extension Model {
                     effects.append(padelScoreboardEffect)
                     usedPadelScoreboardEffects.append(padelScoreboardEffect)
                 }
+            case .vTuber:
+                logger.info("xxx not adding vtuber effect")
             }
         }
     }

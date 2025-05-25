@@ -2023,6 +2023,7 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
     case alerts = "Alerts"
     case videoSource = "Video source"
     case scoreboard = "Scoreboard"
+    case vTuber = "VTuber"
 
     public init(from decoder: Decoder) throws {
         self = try SettingsWidgetType(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
@@ -2053,6 +2054,8 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
             return .videoSource
         case String(localized: "Scoreboard"):
             return .scoreboard
+        case String(localized: "VTuber"):
+            return .vTuber
         default:
             return .videoEffect
         }
@@ -2082,12 +2085,15 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
             return String(localized: "Video source")
         case .scoreboard:
             return String(localized: "Scoreboard")
+        case .vTuber:
+            return String(localized: "VTuber")
         }
     }
 }
 
 let widgetTypes = SettingsWidgetType.allCases
     .filter { $0 != .videoEffect }
+    .filter { $0 != .vTuber }
     .map { $0.toString() }
 
 enum SettingsVideoEffectType: String, Codable, CaseIterable {
@@ -2205,6 +2211,10 @@ class SettingsVideoEffect: Codable, Identifiable, ObservableObject {
     }
 }
 
+class SettingsWidgetVTuber: Codable {
+    var vrmPath: String = ""
+}
+
 class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject {
     @Published var name: String
     var id: UUID = .init()
@@ -2218,6 +2228,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject {
     var alerts: SettingsWidgetAlerts = .init()
     var videoSource: SettingsWidgetVideoSource = .init()
     var scoreboard: SettingsWidgetScoreboard = .init()
+    var vTuber: SettingsWidgetVTuber = .init()
     @Published var enabled: Bool = true
     @Published var effects: [SettingsVideoEffect] = []
 
@@ -2242,6 +2253,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject {
              alerts,
              videoSource,
              scoreboard,
+             vTuber,
              enabled,
              effects
     }
@@ -2260,6 +2272,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject {
         try container.encode(.alerts, alerts)
         try container.encode(.videoSource, videoSource)
         try container.encode(.scoreboard, scoreboard)
+        try container.encode(.vTuber, vTuber)
         try container.encode(.enabled, enabled)
         try container.encode(.effects, effects)
     }
@@ -2278,6 +2291,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject {
         alerts = (try? container.decode(SettingsWidgetAlerts.self, forKey: .alerts)) ?? .init()
         videoSource = (try? container.decode(SettingsWidgetVideoSource.self, forKey: .videoSource)) ?? .init()
         scoreboard = (try? container.decode(SettingsWidgetScoreboard.self, forKey: .scoreboard)) ?? .init()
+        vTuber = (try? container.decode(SettingsWidgetVTuber.self, forKey: .vTuber)) ?? .init()
         enabled = (try? container.decode(Bool.self, forKey: .enabled)) ?? true
         effects = container.decode(.effects, [SettingsVideoEffect].self, [])
     }

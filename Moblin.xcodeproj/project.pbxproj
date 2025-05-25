@@ -277,6 +277,7 @@
 		0377239A2DE35191007D040D /* VRMKit in Frameworks */ = {isa = PBXBuildFile; productRef = 037723992DE35191007D040D /* VRMKit */; };
 		0377239C2DE35191007D040D /* VRMSceneKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0377239B2DE35191007D040D /* VRMSceneKit */; };
 		0377239E2DE354A7007D040D /* VTuberEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0377239D2DE354A2007D040D /* VTuberEffect.swift */; };
+		037723A22DE35CD3007D040D /* WidgetVTuberSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 037723A12DE35CCC007D040D /* WidgetVTuberSettingsView.swift */; };
 		037798FC2DE1396D006D4526 /* RemoveBackgroundEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 037798FB2DE1395E006D4526 /* RemoveBackgroundEffect.swift */; };
 		0379BB882AA836B500B718B6 /* StreamVideoSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB872AA836B500B718B6 /* StreamVideoSettingsView.swift */; };
 		0379BB8E2AA90D1900B718B6 /* DebugLogSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB8D2AA90D1900B718B6 /* DebugLogSettingsView.swift */; };
@@ -932,6 +933,7 @@
 		0376F6FF2B9511040056B3D2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0376F7012B9511040056B3D2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0377239D2DE354A2007D040D /* VTuberEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VTuberEffect.swift; sourceTree = "<group>"; };
+		037723A12DE35CCC007D040D /* WidgetVTuberSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetVTuberSettingsView.swift; sourceTree = "<group>"; };
 		037798FB2DE1395E006D4526 /* RemoveBackgroundEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoveBackgroundEffect.swift; sourceTree = "<group>"; };
 		0379BB872AA836B500B718B6 /* StreamVideoSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamVideoSettingsView.swift; sourceTree = "<group>"; };
 		0379BB8D2AA90D1900B718B6 /* DebugLogSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugLogSettingsView.swift; sourceTree = "<group>"; };
@@ -1468,6 +1470,7 @@
 				033FD71C2CC8A4940073C6EC /* Scoreboard */,
 				037132CC2C29FEED00393605 /* Text */,
 				030C762E2CBBF52B0062D8FD /* VideoSource */,
+				037723A02DE35CC2007D040D /* VTuber */,
 				03A983602A9A05D7008FF0DB /* WidgetSettingsView.swift */,
 			);
 			path = Widget;
@@ -2156,6 +2159,14 @@
 				0376F7012B9511040056B3D2 /* Info.plist */,
 			);
 			path = "Moblin Widget";
+			sourceTree = "<group>";
+		};
+		037723A02DE35CC2007D040D /* VTuber */ = {
+			isa = PBXGroup;
+			children = (
+				037723A12DE35CCC007D040D /* WidgetVTuberSettingsView.swift */,
+			);
+			path = VTuber;
 			sourceTree = "<group>";
 		};
 		0379BB712AA4BFA500B718B6 /* Twitch */ = {
@@ -3819,6 +3830,7 @@
 				0342F1A12C627A70004DD3EA /* MirlClient.swift in Sources */,
 				03D15CF42DACC878007DA935 /* AirPrinter.swift in Sources */,
 				03A983632A9A05D7008FF0DB /* SettingsView.swift in Sources */,
+				037723A22DE35CD3007D040D /* WidgetVTuberSettingsView.swift in Sources */,
 				0359F8D42BD3DA61005BFDA8 /* PreviewView.swift in Sources */,
 				032B4ED42C34910A00204547 /* MediaPlayerControlsView.swift in Sources */,
 				0391D2072CB30142008AB44B /* MoblinShortcuts.swift in Sources */,
