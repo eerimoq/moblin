@@ -115,18 +115,18 @@ struct SceneSettingsView: View {
                         model.sceneUpdated(updateRemoteScene: false)
                     }
                 Toggle(isOn: Binding(get: {
-                    scene.overrideVideoStabilizationMode!
+                    scene.overrideVideoStabilizationMode
                 }, set: { value in
                     scene.overrideVideoStabilizationMode = value
                     model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
                 })) {
                     Text("Override video stabilization")
                 }
-                if scene.overrideVideoStabilizationMode! {
-                    VideoStabilizationView(scene: scene, mode: scene.videoStabilizationMode!.toString())
+                if scene.overrideVideoStabilizationMode {
+                    VideoStabilizationView(scene: scene, mode: scene.videoStabilizationMode.toString())
                 }
                 Toggle(isOn: Binding(get: {
-                    scene.fillFrame!
+                    scene.fillFrame
                 }, set: { value in
                     scene.fillFrame = value
                     model.sceneUpdated(attachCamera: true, updateRemoteScene: false)

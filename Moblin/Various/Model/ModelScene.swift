@@ -252,7 +252,7 @@ extension Model {
     }
 
     private func isFixedHorizonEnabled(scene: SettingsScene) -> Bool {
-        return database.fixedHorizon && scene.cameraPosition?.isBuiltin() == true
+        return database.fixedHorizon && scene.cameraPosition.isBuiltin()
     }
 
     func resetSelectedScene(changeScene: Bool = true) {
@@ -426,7 +426,7 @@ extension Model {
             effects.append(drawOnStreamEffect)
         }
         effects += registerGlobalVideoEffectsOnTop()
-        media.setPendingAfterAttachEffects(effects: effects, rotation: scene.videoSourceRotation!)
+        media.setPendingAfterAttachEffects(effects: effects, rotation: scene.videoSourceRotation)
         for browserEffect in browserEffects.values where !usedBrowserEffects.contains(browserEffect) {
             browserEffect.setSceneWidget(sceneWidget: nil, crops: [])
         }
@@ -614,19 +614,19 @@ extension Model {
     func attachSingleLayout(scene: SettingsScene) {
         isFrontCameraSelected = false
         deactivateAllMediaPlayers()
-        switch scene.cameraPosition! {
+        switch scene.cameraPosition {
         case .back:
             attachCamera(scene: scene, position: .back)
         case .front:
             attachCamera(scene: scene, position: .front)
             isFrontCameraSelected = true
         case .rtmp:
-            attachBufferedCamera(cameraId: scene.rtmpCameraId!, scene: scene)
+            attachBufferedCamera(cameraId: scene.rtmpCameraId, scene: scene)
         case .srtla:
-            attachBufferedCamera(cameraId: scene.srtlaCameraId!, scene: scene)
+            attachBufferedCamera(cameraId: scene.srtlaCameraId, scene: scene)
         case .mediaPlayer:
-            mediaPlayers[scene.mediaPlayerCameraId!]?.activate()
-            attachBufferedCamera(cameraId: scene.mediaPlayerCameraId!, scene: scene)
+            mediaPlayers[scene.mediaPlayerCameraId]?.activate()
+            attachBufferedCamera(cameraId: scene.mediaPlayerCameraId, scene: scene)
         case .external:
             attachExternalCamera(scene: scene)
         case .screenCapture:
@@ -702,7 +702,7 @@ extension Model {
     }
 
     func getFillFrame(scene: SettingsScene) -> Bool {
-        return scene.fillFrame!
+        return scene.fillFrame
     }
 
     func widgetsInCurrentScene(onlyEnabled: Bool) -> [SettingsWidget] {
@@ -844,19 +844,19 @@ extension Model {
     func isSceneVideoSourceActive(scene: SettingsScene) -> Bool {
         switch scene.cameraPosition {
         case .rtmp:
-            if let stream = getRtmpStream(id: scene.rtmpCameraId!) {
+            if let stream = getRtmpStream(id: scene.rtmpCameraId) {
                 return isRtmpStreamConnected(streamKey: stream.streamKey)
             } else {
                 return false
             }
         case .srtla:
-            if let stream = getSrtlaStream(id: scene.srtlaCameraId!) {
+            if let stream = getSrtlaStream(id: scene.srtlaCameraId) {
                 return isSrtlaStreamConnected(streamId: stream.streamId)
             } else {
                 return false
             }
         case .external:
-            return isExternalCameraConnected(id: scene.externalCameraId!)
+            return isExternalCameraConnected(id: scene.externalCameraId)
         default:
             return true
         }

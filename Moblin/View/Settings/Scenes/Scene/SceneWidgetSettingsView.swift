@@ -164,7 +164,7 @@ struct SceneWidgetSettingsView: View {
                         SceneSettingsView(
                             scene: scene,
                             name: scene.name,
-                            selectedRotation: scene.videoSourceRotation!,
+                            selectedRotation: scene.videoSourceRotation,
                             numericInput: model.database.sceneNumericInput
                         )
                     } label: {

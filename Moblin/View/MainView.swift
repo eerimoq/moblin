@@ -118,7 +118,7 @@ private struct MenuView: View {
             NavigationStack {
                 SceneSettingsView(scene: model.sceneSettingsPanelScene,
                                   name: model.sceneSettingsPanelScene.name,
-                                  selectedRotation: model.sceneSettingsPanelScene.videoSourceRotation!,
+                                  selectedRotation: model.sceneSettingsPanelScene.videoSourceRotation,
                                   numericInput: model.database.sceneNumericInput)
             }
             .id(model.sceneSettingsPanelSceneId)

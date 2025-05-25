@@ -888,19 +888,19 @@ class SettingsScene: Codable, Identifiable, Equatable {
     var id: UUID = .init()
     var enabled: Bool = true
     var cameraType: SettingsSceneCameraPosition = .back
-    var cameraPosition: SettingsSceneCameraPosition? = .back
-    var backCameraId: String? = getBestBackCameraId()
-    var frontCameraId: String? = getBestFrontCameraId()
-    var rtmpCameraId: UUID? = .init()
-    var srtlaCameraId: UUID? = .init()
-    var mediaPlayerCameraId: UUID? = .init()
-    var externalCameraId: String? = ""
-    var externalCameraName: String? = ""
+    var cameraPosition: SettingsSceneCameraPosition = .back
+    var backCameraId: String = getBestBackCameraId()
+    var frontCameraId: String = getBestFrontCameraId()
+    var rtmpCameraId: UUID = .init()
+    var srtlaCameraId: UUID = .init()
+    var mediaPlayerCameraId: UUID = .init()
+    var externalCameraId: String = ""
+    var externalCameraName: String = ""
     var widgets: [SettingsSceneWidget] = []
-    var videoSourceRotation: Double? = 0.0
-    var videoStabilizationMode: SettingsVideoStabilizationMode? = .off
-    var overrideVideoStabilizationMode: Bool? = false
-    var fillFrame: Bool? = false
+    var videoSourceRotation: Double = 0.0
+    var videoStabilizationMode: SettingsVideoStabilizationMode = .off
+    var overrideVideoStabilizationMode: Bool = false
+    var fillFrame: Bool = false
 
     init(name: String) {
         self.name = name
@@ -908,6 +908,68 @@ class SettingsScene: Codable, Identifiable, Equatable {
 
     static func == (lhs: SettingsScene, rhs: SettingsScene) -> Bool {
         return lhs.id == rhs.id
+    }
+
+    enum CodingKeys: CodingKey {
+        case name,
+             id,
+             enabled,
+             cameraType,
+             cameraPosition,
+             backCameraId,
+             frontCameraId,
+             rtmpCameraId,
+             srtlaCameraId,
+             mediaPlayerCameraId,
+             externalCameraId,
+             externalCameraName,
+             widgets,
+             videoSourceRotation,
+             videoStabilizationMode,
+             overrideVideoStabilizationMode,
+             fillFrame
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.name, name)
+        try container.encode(.id, id)
+        try container.encode(.enabled, enabled)
+        try container.encode(.cameraType, cameraType)
+        try container.encode(.cameraPosition, cameraPosition)
+        try container.encode(.backCameraId, backCameraId)
+        try container.encode(.frontCameraId, frontCameraId)
+        try container.encode(.rtmpCameraId, rtmpCameraId)
+        try container.encode(.srtlaCameraId, srtlaCameraId)
+        try container.encode(.mediaPlayerCameraId, mediaPlayerCameraId)
+        try container.encode(.externalCameraId, externalCameraId)
+        try container.encode(.externalCameraName, externalCameraName)
+        try container.encode(.widgets, widgets)
+        try container.encode(.videoSourceRotation, videoSourceRotation)
+        try container.encode(.videoStabilizationMode, videoStabilizationMode)
+        try container.encode(.overrideVideoStabilizationMode, overrideVideoStabilizationMode)
+        try container.encode(.fillFrame, fillFrame)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        name = container.decode(.name, String.self, "")
+        id = container.decode(.id, UUID.self, .init())
+        enabled = container.decode(.enabled, Bool.self, true)
+        cameraType = container.decode(.cameraType, SettingsSceneCameraPosition.self, .back)
+        cameraPosition = container.decode(.cameraPosition, SettingsSceneCameraPosition.self, .back)
+        backCameraId = container.decode(.backCameraId, String.self, getBestBackCameraId())
+        frontCameraId = container.decode(.frontCameraId, String.self, getBestFrontCameraId())
+        rtmpCameraId = container.decode(.rtmpCameraId, UUID.self, .init())
+        srtlaCameraId = container.decode(.srtlaCameraId, UUID.self, .init())
+        mediaPlayerCameraId = container.decode(.mediaPlayerCameraId, UUID.self, .init())
+        externalCameraId = container.decode(.externalCameraId, String.self, "")
+        externalCameraName = container.decode(.externalCameraName, String.self, "")
+        widgets = container.decode(.widgets, [SettingsSceneWidget].self, [])
+        videoSourceRotation = container.decode(.videoSourceRotation, Double.self, 0.0)
+        videoStabilizationMode = container.decode(.videoStabilizationMode, SettingsVideoStabilizationMode.self, .off)
+        overrideVideoStabilizationMode = container.decode(.overrideVideoStabilizationMode, Bool.self, false)
+        fillFrame = container.decode(.fillFrame, Bool.self, false)
     }
 
     func clone() -> SettingsScene {
@@ -930,19 +992,19 @@ class SettingsScene: Codable, Identifiable, Equatable {
     }
 
     func toCameraId() -> SettingsCameraId {
-        switch cameraPosition! {
+        switch cameraPosition {
         case .back:
-            return .back(id: backCameraId!)
+            return .back(id: backCameraId)
         case .front:
-            return .front(id: frontCameraId!)
+            return .front(id: frontCameraId)
         case .rtmp:
-            return .rtmp(id: rtmpCameraId!)
+            return .rtmp(id: rtmpCameraId)
         case .external:
-            return .external(id: externalCameraId!, name: externalCameraName!)
+            return .external(id: externalCameraId, name: externalCameraName)
         case .srtla:
-            return .srtla(id: srtlaCameraId!)
+            return .srtla(id: srtlaCameraId)
         case .mediaPlayer:
-            return .mediaPlayer(id: mediaPlayerCameraId!)
+            return .mediaPlayer(id: mediaPlayerCameraId)
         case .screenCapture:
             return .screenCapture
         case .backTripleLowEnergy:
@@ -4993,10 +5055,6 @@ final class Settings {
     }
 
     private func migrateFromOlderVersions() {
-        for scene in realDatabase.scenes where scene.cameraPosition == nil {
-            scene.cameraPosition = scene.cameraType
-            store()
-        }
         if realDatabase.zoom.speed == nil {
             realDatabase.zoom.speed = 5.0
             store()
@@ -5023,10 +5081,6 @@ final class Settings {
         }
         if realDatabase.show.obsStatus == nil {
             realDatabase.show.obsStatus = true
-            store()
-        }
-        for scene in realDatabase.scenes where scene.rtmpCameraId == nil {
-            scene.rtmpCameraId = .init()
             store()
         }
         if realDatabase.show.rtmpSpeed == nil {
@@ -5117,14 +5171,6 @@ final class Settings {
             realDatabase.color.diskLuts = []
             store()
         }
-        for scene in realDatabase.scenes where scene.externalCameraId == nil {
-            scene.externalCameraId = ""
-            store()
-        }
-        for scene in realDatabase.scenes where scene.externalCameraName == nil {
-            scene.externalCameraName = ""
-            store()
-        }
         for stream in database.streams where stream.srt.adaptiveBitrate!.fastIrlSettings == nil {
             stream.srt.adaptiveBitrate!.fastIrlSettings = .init()
             store()
@@ -5139,14 +5185,6 @@ final class Settings {
         }
         if realDatabase.watch.chat.notificationOnMessage == nil {
             realDatabase.watch.chat.notificationOnMessage = false
-            store()
-        }
-        for scene in realDatabase.scenes where scene.backCameraId == nil {
-            scene.backCameraId = getBestBackCameraId()
-            store()
-        }
-        for scene in realDatabase.scenes where scene.frontCameraId == nil {
-            scene.frontCameraId = getBestFrontCameraId()
             store()
         }
         if realDatabase.watch.show == nil {
@@ -5212,10 +5250,6 @@ final class Settings {
             where stream.srt.adaptiveBitrate!.fastIrlSettings!.minimumBitrate == nil
         {
             stream.srt.adaptiveBitrate!.fastIrlSettings!.minimumBitrate = 250
-            store()
-        }
-        for scene in realDatabase.scenes where scene.srtlaCameraId == nil {
-            scene.srtlaCameraId = .init()
             store()
         }
         for stream in realDatabase.rtmpServer.streams where stream.autoSelectMic == nil {
@@ -5564,10 +5598,6 @@ final class Settings {
             realDatabase.chat.botCommandPermissions.audio = .init()
             store()
         }
-        for scene in realDatabase.scenes where scene.videoSourceRotation == nil {
-            scene.videoSourceRotation = 0.0
-            store()
-        }
         for widget in realDatabase.widgets where widget.alerts.speechToText == nil {
             widget.alerts.speechToText = .init()
             store()
@@ -5604,14 +5634,6 @@ final class Settings {
             realDatabase.show.moblink = true
             store()
         }
-        for scene in realDatabase.scenes where scene.videoStabilizationMode == nil {
-            scene.videoStabilizationMode = .off
-            store()
-        }
-        for scene in realDatabase.scenes where scene.overrideVideoStabilizationMode == nil {
-            scene.overrideVideoStabilizationMode = false
-            store()
-        }
         for key in realDatabase.keyboard.keys where key.widgetId == nil {
             key.widgetId = .init()
             store()
@@ -5642,10 +5664,6 @@ final class Settings {
         }
         if realDatabase.show.heartRateDevice == nil {
             realDatabase.show.heartRateDevice = true
-            store()
-        }
-        for scene in realDatabase.scenes where scene.fillFrame == nil {
-            scene.fillFrame = false
             store()
         }
         if realDatabase.chat.botCommandPermissions.reaction == nil {

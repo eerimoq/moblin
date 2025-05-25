@@ -72,7 +72,7 @@ extension Model {
         guard scene.cameraPosition == .mediaPlayer else {
             return nil
         }
-        guard let mediaPlayerSettings = getMediaPlayer(id: scene.mediaPlayerCameraId!) else {
+        guard let mediaPlayerSettings = getMediaPlayer(id: scene.mediaPlayerCameraId) else {
             return nil
         }
         return mediaPlayers[mediaPlayerSettings.id]

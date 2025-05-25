@@ -2437,8 +2437,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func getVideoStabilizationMode(scene: SettingsScene) -> AVCaptureVideoStabilizationMode {
-        if scene.overrideVideoStabilizationMode! {
-            return getVideoStabilization(mode: scene.videoStabilizationMode!)
+        if scene.overrideVideoStabilizationMode {
+            return getVideoStabilization(mode: scene.videoStabilizationMode)
         } else {
             return getVideoStabilization(mode: database.videoStabilizationMode)
         }
@@ -2531,11 +2531,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func preferredCamera(position: AVCaptureDevice.Position) -> AVCaptureDevice? {
         if let scene = findEnabledScene(id: selectedSceneId) {
             if position == .back {
-                return AVCaptureDevice(uniqueID: scene.backCameraId!)
+                return AVCaptureDevice(uniqueID: scene.backCameraId)
             } else if position == .front {
-                return AVCaptureDevice(uniqueID: scene.frontCameraId!)
+                return AVCaptureDevice(uniqueID: scene.frontCameraId)
             } else {
-                return AVCaptureDevice(uniqueID: scene.externalCameraId!)
+                return AVCaptureDevice(uniqueID: scene.externalCameraId)
             }
         } else {
             return nil
