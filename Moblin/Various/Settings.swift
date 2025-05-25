@@ -419,12 +419,8 @@ class SettingsStreamTwitchReward: Codable, Identifiable {
     var alert: SettingsWidgetAlertsAlert = .init()
 }
 
-class SettingsStream: Codable, Identifiable, Equatable {
-    static func == (lhs: SettingsStream, rhs: SettingsStream) -> Bool {
-        lhs.id == rhs.id
-    }
-
-    var name: String
+class SettingsStream: Codable, Identifiable, Equatable, ObservableObject {
+    @Published var name: String
     var id: UUID = .init()
     var enabled: Bool = false
     var url: String = defaultStreamUrl
@@ -482,6 +478,10 @@ class SettingsStream: Codable, Identifiable, Equatable {
     var ntpPoolAddress: String = "time.apple.com"
     var timecodesEnabled: Bool = false
     var replay: SettingsStreamReplay = .init()
+
+    static func == (lhs: SettingsStream, rhs: SettingsStream) -> Bool {
+        lhs.id == rhs.id
+    }
 
     init(name: String) {
         self.name = name

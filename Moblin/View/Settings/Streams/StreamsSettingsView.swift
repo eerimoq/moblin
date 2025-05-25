@@ -1,5 +1,59 @@
 import SwiftUI
 
+private struct StreamItemView: View {
+    @EnvironmentObject var model: Model
+    @ObservedObject var database: Database
+    @ObservedObject var stream: SettingsStream
+
+    var body: some View {
+        let item = NavigationLink {
+            StreamSettingsView(stream: stream)
+        } label: {
+            HStack {
+                DraggableItemPrefixView()
+                Toggle(stream.name, isOn: Binding(get: {
+                    stream.enabled
+                }, set: { _ in
+                    model.setCurrentStream(stream: stream)
+                    model.reloadStream()
+                    model.resetSelectedScene(changeScene: false)
+                    model.updateOrientation()
+                }))
+                .disabled(stream.enabled || model.isLive || model.isRecording)
+            }
+        }
+        if stream.enabled && (model.isLive || model.isRecording) {
+            item.swipeActions(edge: .trailing) {
+                Button {
+                    database.streams.append(stream.clone())
+                } label: {
+                    Text("Duplicate")
+                }
+                .tint(.blue)
+            }
+        } else {
+            item.swipeActions(edge: .trailing) {
+                Button {
+                    database.streams.removeAll { $0 == stream }
+                    model.reloadStream()
+                    model.sceneUpdated(attachCamera: true)
+                } label: {
+                    Text("Delete")
+                }
+                .tint(.red)
+            }
+            .swipeActions(edge: .trailing) {
+                Button {
+                    database.streams.append(stream.clone())
+                } label: {
+                    Text("Duplicate")
+                }
+                .tint(.blue)
+            }
+        }
+    }
+}
+
 struct StreamsSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var database: Database
@@ -9,51 +63,7 @@ struct StreamsSettingsView: View {
             Section {
                 List {
                     ForEach(database.streams) { stream in
-                        let item = NavigationLink {
-                            StreamSettingsView(stream: stream, name: stream.name)
-                        } label: {
-                            HStack {
-                                DraggableItemPrefixView()
-                                Toggle(stream.name, isOn: Binding(get: {
-                                    stream.enabled
-                                }, set: { _ in
-                                    model.setCurrentStream(stream: stream)
-                                    model.reloadStream()
-                                    model.resetSelectedScene(changeScene: false)
-                                    model.updateOrientation()
-                                }))
-                                .disabled(stream.enabled || model.isLive || model.isRecording)
-                            }
-                        }
-                        if stream.enabled && (model.isLive || model.isRecording) {
-                            item.swipeActions(edge: .trailing) {
-                                Button {
-                                    database.streams.append(stream.clone())
-                                } label: {
-                                    Text("Duplicate")
-                                }
-                                .tint(.blue)
-                            }
-                        } else {
-                            item.swipeActions(edge: .trailing) {
-                                Button {
-                                    database.streams.removeAll { $0 == stream }
-                                    model.reloadStream()
-                                    model.sceneUpdated(attachCamera: true)
-                                } label: {
-                                    Text("Delete")
-                                }
-                                .tint(.red)
-                            }
-                            .swipeActions(edge: .trailing) {
-                                Button {
-                                    database.streams.append(stream.clone())
-                                } label: {
-                                    Text("Duplicate")
-                                }
-                                .tint(.blue)
-                            }
-                        }
+                        StreamItemView(database: database, stream: stream)
                     }
                     .onMove(perform: { froms, to in
                         database.streams.move(fromOffsets: froms, toOffset: to)

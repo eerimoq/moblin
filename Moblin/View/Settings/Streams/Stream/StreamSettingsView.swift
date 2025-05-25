@@ -39,19 +39,15 @@ struct StreamPlatformsSettingsView: View {
 
 struct StreamSettingsView: View {
     @EnvironmentObject private var model: Model
-    var stream: SettingsStream
-    @State var name: String
+    @ObservedObject var stream: SettingsStream
 
     var body: some View {
         Form {
             Section {
                 NavigationLink {
-                    NameEditView(name: $name)
+                    NameEditView(name: $stream.name)
                 } label: {
-                    TextItemView(name: String(localized: "Name"), value: name)
-                }
-                .onChange(of: name) { name in
-                    stream.name = name
+                    TextItemView(name: String(localized: "Name"), value: stream.name)
                 }
             }
             Section {
