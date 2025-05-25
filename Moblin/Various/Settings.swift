@@ -2158,11 +2158,14 @@ class SettingsVideoEffectRemoveBackground: Codable, ObservableObject {
 
 class SettingsVideoEffect: Codable, Identifiable, ObservableObject {
     var id: UUID = .init()
+    @Published var enabled: Bool = true
     @Published var type: SettingsVideoEffectType = .grayScale
     var removeBackground: SettingsVideoEffectRemoveBackground = .init()
 
     enum CodingKeys: CodingKey {
-        case type,
+        case id,
+             enabled,
+             type,
              removeBackground
     }
 
@@ -2170,12 +2173,16 @@ class SettingsVideoEffect: Codable, Identifiable, ObservableObject {
 
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.enabled, enabled)
         try container.encode(.type, type)
         try container.encode(.removeBackground, removeBackground)
     }
 
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        enabled = container.decode(.enabled, Bool.self, true)
         type = container.decode(.type, SettingsVideoEffectType.self, .grayScale)
         removeBackground = container.decode(.removeBackground, SettingsVideoEffectRemoveBackground.self, .init())
     }
@@ -2276,7 +2283,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject {
     }
 
     func getEffects() -> [VideoEffect] {
-        return effects.map { $0.getEffect() }
+        return effects.filter { $0.enabled }.map { $0.getEffect() }
     }
 }
 

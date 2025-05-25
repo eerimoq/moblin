@@ -75,7 +75,10 @@ private struct EffectView: View {
         } label: {
             HStack {
                 DraggableItemPrefixView()
-                Text(effect.type.toString())
+                Toggle(effect.type.toString(), isOn: $effect.enabled)
+                    .onChange(of: effect.enabled) { _ in
+                        model.resetSelectedScene(changeScene: false)
+                    }
             }
         }
     }
