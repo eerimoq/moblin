@@ -69,14 +69,14 @@ extension Model {
     }
 
     func isRealtimeIrlConfigured() -> Bool {
-        return stream.realtimeIrlEnabled! && !stream.realtimeIrlPushKey!.isEmpty
+        return stream.realtimeIrlEnabled && !stream.realtimeIrlPushKey.isEmpty
     }
 
     func reloadRealtimeIrl() {
         realtimeIrl?.stop()
         realtimeIrl = nil
         if isRealtimeIrlConfigured() {
-            realtimeIrl = RealtimeIrl(pushKey: stream.realtimeIrlPushKey!)
+            realtimeIrl = RealtimeIrl(pushKey: stream.realtimeIrlPushKey)
         }
     }
 

@@ -25,7 +25,7 @@ extension Model {
             return
         }
         var focusPointOfInterest = focusPoint
-        if stream.portrait! {
+        if stream.portrait {
             focusPointOfInterest.x = focusPoint.y
             focusPointOfInterest.y = 1 - focusPoint.x
         } else if getOrientation() == .landscapeRight {

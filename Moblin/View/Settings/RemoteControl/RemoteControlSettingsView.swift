@@ -279,7 +279,7 @@ struct RemoteControlSettingsView: View {
                     StreamObsRemoteControlSettingsView(stream: model.stream)
                 } label: {
                     Toggle(isOn: Binding(get: {
-                        model.stream.obsWebSocketEnabled!
+                        model.stream.obsWebSocketEnabled
                     }, set: {
                         model.setObsRemoteControlEnabled(enabled: $0)
                     })) {

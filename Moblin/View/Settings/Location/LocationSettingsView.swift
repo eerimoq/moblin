@@ -59,7 +59,7 @@ struct LocationSettingsView: View {
                     StreamRealtimeIrlSettingsView(stream: model.stream)
                 } label: {
                     Toggle(isOn: Binding(get: {
-                        model.stream.realtimeIrlEnabled!
+                        model.stream.realtimeIrlEnabled
                     }, set: { value in
                         model.setRealtimeIrlEnabled(enabled: value)
                     })) {

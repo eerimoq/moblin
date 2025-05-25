@@ -5,10 +5,7 @@ struct StreamPlatformsSettingsView: View {
 
     var body: some View {
         NavigationLink {
-            StreamTwitchSettingsView(
-                stream: stream,
-                loggedIn: stream.twitchLoggedIn!
-            )
+            StreamTwitchSettingsView(stream: stream, loggedIn: stream.twitchLoggedIn)
         } label: {
             Text("Twitch")
         }
@@ -82,7 +79,7 @@ struct StreamSettingsView: View {
                     NavigationLink {
                         StreamAudioSettingsView(
                             stream: stream,
-                            bitrate: Float(stream.audioBitrate! / 1000)
+                            bitrate: Float(stream.audioBitrate / 1000)
                         )
                     } label: {
                         Text("Audio")
@@ -90,7 +87,7 @@ struct StreamSettingsView: View {
                     NavigationLink {
                         StreamRecordingSettingsView(
                             stream: stream,
-                            videoCodec: stream.recording!.videoCodec.rawValue
+                            videoCodec: stream.recording.videoCodec.rawValue
                         )
                     } label: {
                         Text("Recording")
@@ -108,7 +105,7 @@ struct StreamSettingsView: View {
                 }
                 if isPhone() || isPad() {
                     Toggle(isOn: Binding(get: {
-                        stream.portrait!
+                        stream.portrait
                     }, set: { value in
                         stream.portrait = value
                         if stream.enabled {
@@ -162,7 +159,7 @@ struct StreamSettingsView: View {
                     StreamObsRemoteControlSettingsView(stream: stream)
                 } label: {
                     Toggle("OBS remote control", isOn: Binding(get: {
-                        stream.obsWebSocketEnabled!
+                        stream.obsWebSocketEnabled
                     }, set: {
                         model.setObsRemoteControlEnabled(enabled: $0)
                     }))
@@ -172,7 +169,7 @@ struct StreamSettingsView: View {
                         StreamRealtimeIrlSettingsView(stream: stream)
                     } label: {
                         Toggle("RealtimeIRL", isOn: Binding(get: {
-                            stream.realtimeIrlEnabled!
+                            stream.realtimeIrlEnabled
                         }, set: { value in
                             model.setRealtimeIrlEnabled(enabled: value)
                         }))
@@ -183,7 +180,7 @@ struct StreamSettingsView: View {
                 if !ProcessInfo().isiOSAppOnMac {
                     Section {
                         Toggle("Background streaming", isOn: Binding(get: {
-                            stream.backgroundStreaming!
+                            stream.backgroundStreaming
                         }, set: { value in
                             stream.backgroundStreaming = value
                         }))
@@ -195,7 +192,7 @@ struct StreamSettingsView: View {
                     NavigationLink {
                         TextEditView(
                             title: String(localized: "Estimated viewer delay"),
-                            value: formatOneDecimal(stream.estimatedViewerDelay!),
+                            value: formatOneDecimal(stream.estimatedViewerDelay),
                             keyboardType: .numbersAndPunctuation
                         ) {
                             guard let latency = Float($0), latency >= 0.0, latency <= 15.0 else {
@@ -206,7 +203,7 @@ struct StreamSettingsView: View {
                     } label: {
                         TextItemView(
                             name: String(localized: "Estimated viewer delay"),
-                            value: "\(formatOneDecimal(stream.estimatedViewerDelay!)) s"
+                            value: "\(formatOneDecimal(stream.estimatedViewerDelay)) s"
                         )
                     }
                 } footer: {

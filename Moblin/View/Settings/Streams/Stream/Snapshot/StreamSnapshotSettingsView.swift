@@ -18,9 +18,9 @@ struct StreamSnapshotSettingsView: View {
         Form {
             Section {
                 Toggle("Clean snapshots", isOn: Binding(get: {
-                    stream.recording!.cleanSnapshots!
+                    stream.recording.cleanSnapshots!
                 }, set: { value in
-                    stream.recording!.cleanSnapshots = value
+                    stream.recording.cleanSnapshots = value
                     model.setCleanSnapshots()
                 }))
             } footer: {
@@ -29,18 +29,18 @@ struct StreamSnapshotSettingsView: View {
             Section {
                 TextEditNavigationView(
                     title: String(localized: "Webhook URL"),
-                    value: stream.discordSnapshotWebhook!,
+                    value: stream.discordSnapshotWebhook,
                     onSubmit: submitSnapshotWebhookUrl,
                     keyboardType: .URL
                 )
                 TextEditNavigationView(
                     title: String(localized: "Chat bot webhook URL"),
-                    value: stream.discordChatBotSnapshotWebhook!,
+                    value: stream.discordChatBotSnapshotWebhook,
                     onSubmit: submitSnapshotChatBotWebhookUrl,
                     keyboardType: .URL
                 )
                 Toggle(isOn: Binding(get: {
-                    stream.discordSnapshotWebhookOnlyWhenLive!
+                    stream.discordSnapshotWebhookOnlyWhenLive
                 }, set: { value in
                     stream.discordSnapshotWebhookOnlyWhenLive = value
                 })) {

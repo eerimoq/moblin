@@ -5,7 +5,7 @@ private struct ReplayPreview: View {
     @ObservedObject var replay: ReplayProvider
 
     private func width() -> Double {
-        if model.stream.portrait! {
+        if model.stream.portrait {
             return 200
         } else {
             return 300
@@ -117,7 +117,7 @@ private struct ReplayControlsSaveButton: View {
                 .tint(.white)
         } else {
             Button {
-                if model.stream.replay!.enabled {
+                if model.stream.replay.enabled {
                     _ = model.saveReplay()
                 } else {
                     model.makeReplayIsNotEnabledToast()
@@ -186,7 +186,7 @@ private struct ReplayControls: View {
     }
 
     var body: some View {
-        if model.stream.portrait! {
+        if model.stream.portrait {
             portrait()
         } else {
             landscape()
@@ -200,7 +200,7 @@ private struct ReplayHistoryItem: View {
     var video: ReplaySettings
 
     private func height() -> Double {
-        if model.stream.portrait! {
+        if model.stream.portrait {
             return 118
         } else {
             return 68
@@ -232,7 +232,7 @@ private struct ReplayHistory: View {
     @ObservedObject var replay: ReplayProvider
 
     private func height() -> Double {
-        if model.stream.portrait! {
+        if model.stream.portrait {
             return 120
         } else {
             return 70

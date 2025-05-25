@@ -61,7 +61,7 @@ private struct InstantReplayView: View {
                 .background(state.button.backgroundColor.color())
                 .clipShape(Circle())
                 .onTapGesture {
-                    if model.stream.replay!.enabled {
+                    if model.stream.replay.enabled {
                         model.instantReplay()
                     } else {
                         model.makeReplayIsNotEnabledToast()
@@ -72,7 +72,7 @@ private struct InstantReplayView: View {
                 }
         } else {
             QuickButtonImage(state: state, buttonSize: size) {
-                if model.stream.replay!.enabled {
+                if model.stream.replay.enabled {
                     model.instantReplay()
                 } else {
                     model.makeReplayIsNotEnabledToast()

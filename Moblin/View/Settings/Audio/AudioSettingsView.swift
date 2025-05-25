@@ -28,7 +28,7 @@ struct AudioSettingsView: View {
                     NavigationLink {
                         StreamAudioSettingsView(
                             stream: model.stream,
-                            bitrate: Float(model.stream.audioBitrate! / 1000)
+                            bitrate: Float(model.stream.audioBitrate / 1000)
                         )
                     } label: {
                         IconAndTextView(

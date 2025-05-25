@@ -388,7 +388,7 @@ extension Model {
             if command.message.platform == .twitch {
                 if permissions.minimumSubscriberTier! > 1 {
                     if let userId = command.message.userId {
-                        TwitchApi(stream.twitchAccessToken!, urlSession).getBroadcasterSubscriptions(
+                        TwitchApi(stream.twitchAccessToken, urlSession).getBroadcasterSubscriptions(
                             broadcasterId: stream.twitchChannelId,
                             userId: userId
                         ) { data in
@@ -467,6 +467,6 @@ extension Model {
         if permissions.othersEnabled {
             return true
         }
-        return user.lowercased() == stream.kickChannelName?.lowercased()
+        return user.lowercased() == stream.kickChannelName.lowercased()
     }
 }

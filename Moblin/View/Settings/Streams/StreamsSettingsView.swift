@@ -2,10 +2,7 @@ import SwiftUI
 
 struct StreamsSettingsView: View {
     @EnvironmentObject var model: Model
-
-    var database: Database {
-        model.database
-    }
+    @ObservedObject var database: Database
 
     var body: some View {
         Form {

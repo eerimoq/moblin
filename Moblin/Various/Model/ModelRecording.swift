@@ -47,17 +47,17 @@ extension Model {
         guard !isRecorderRecording else {
             return
         }
-        guard isRecording || stream.replay!.enabled else {
+        guard isRecording || stream.replay.enabled else {
             return
         }
         isRecorderRecording = true
-        let bitrate = Int(stream.recording!.videoBitrate)
-        let keyFrameInterval = Int(stream.recording!.maxKeyFrameInterval)
-        let audioBitrate = Int(stream.recording!.audioBitrate!)
+        let bitrate = Int(stream.recording.videoBitrate)
+        let keyFrameInterval = Int(stream.recording.maxKeyFrameInterval)
+        let audioBitrate = Int(stream.recording.audioBitrate!)
         media.startRecording(
             url: isRecording ? currentRecording?.url() : nil,
-            replay: stream.replay!.enabled,
-            videoCodec: stream.recording!.videoCodec,
+            replay: stream.replay.enabled,
+            videoCodec: stream.recording.videoCodec,
             videoBitrate: bitrate != 0 ? bitrate : nil,
             keyFrameInterval: keyFrameInterval != 0 ? keyFrameInterval : nil,
             audioBitrate: audioBitrate != 0 ? audioBitrate : nil
@@ -68,7 +68,7 @@ extension Model {
         guard isRecorderRecording else {
             return
         }
-        if forceStop || (!isRecording && !stream.replay!.enabled) {
+        if forceStop || (!isRecording && !stream.replay.enabled) {
             media.stopRecording()
             isRecorderRecording = false
         }
@@ -109,7 +109,7 @@ extension Model {
     }
 
     func setCleanRecordings() {
-        media.setCleanRecordings(enabled: stream.recording!.cleanRecordings!)
+        media.setCleanRecordings(enabled: stream.recording.cleanRecordings!)
     }
 
     func isShowingStatusRecording() -> Bool {

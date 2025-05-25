@@ -370,7 +370,7 @@ extension Model {
             makeNotLoggedInToTwitchToast()
             return
         }
-        TwitchApi(stream.twitchAccessToken!, urlSession)
+        TwitchApi(stream.twitchAccessToken, urlSession)
             .sendChatMessage(broadcasterId: stream.twitchChannelId, message: message) { ok in
                 if !ok {
                     self.makeErrorToast(title: "Failed to send chat message")

@@ -19,7 +19,7 @@ struct StreamRealtimeIrlSettingsView: View {
             Section {
                 TextEditNavigationView(
                     title: String(localized: "Push key"),
-                    value: stream.realtimeIrlPushKey!,
+                    value: stream.realtimeIrlPushKey,
                     onSubmit: submitPushKey,
                     sensitive: true
                 )

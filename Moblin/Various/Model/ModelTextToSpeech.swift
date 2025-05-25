@@ -52,10 +52,10 @@ extension Model {
             streamerMentions.append("@\(stream.twitchChannelName)")
         }
         if isKickPusherConfigured() {
-            streamerMentions.append("@\(stream.kickChannelName!)")
+            streamerMentions.append("@\(stream.kickChannelName)")
         }
         if isAfreecaTvChatConfigured() {
-            streamerMentions.append("@\(stream.afreecaTvChannelName!)")
+            streamerMentions.append("@\(stream.afreecaTvChannelName)")
         }
         chatTextToSpeech.setStreamerMentions(streamerMentions: streamerMentions)
     }

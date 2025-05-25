@@ -109,7 +109,7 @@ extension Model {
             stop: replaySettings.stopFromVideoStart(),
             speed: database.replay.speed.toNumber(),
             size: stream.dimensions(),
-            fade: stream.replay!.fade!,
+            fade: stream.replay.fade!,
             delegate: self
         )
         media.registerEffectBack(replayEffect!)
@@ -123,8 +123,8 @@ extension Model {
 
     func streamReplayEnabledUpdated() {
         replayBuffer = ReplayBuffer()
-        media.setReplayBuffering(enabled: stream.replay!.enabled)
-        if stream.replay!.enabled {
+        media.setReplayBuffering(enabled: stream.replay.enabled)
+        if stream.replay.enabled {
             startRecorderIfNeeded()
         } else {
             stopRecorderIfNeeded()

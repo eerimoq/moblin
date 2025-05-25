@@ -47,13 +47,13 @@ extension Model {
         streamTotalChatMessages = 0
         updateScreenAutoOff()
         startNetStream()
-        if stream.recording!.autoStartRecording! {
+        if stream.recording.autoStartRecording! {
             startRecording()
         }
-        if stream.obsAutoStartStream! {
+        if stream.obsAutoStartStream {
             obsStartStream()
         }
-        if stream.obsAutoStartRecording! {
+        if stream.obsAutoStartRecording {
             obsStartRecording()
         }
         streamingHistoryStream = StreamingHistoryStream(settings: stream.clone())
@@ -71,13 +71,13 @@ extension Model {
         logger.info("stream: Stop")
         streamTotalBytes += UInt64(media.streamTotal())
         streaming = false
-        if stream.recording!.autoStopRecording! {
+        if stream.recording.autoStopRecording! {
             stopRecording()
         }
-        if stopObsStreamIfEnabled, stream.obsAutoStopStream! {
+        if stopObsStreamIfEnabled, stream.obsAutoStopStream {
             obsStopStream()
         }
-        if stopObsRecordingIfEnabled, stream.obsAutoStopRecording! {
+        if stopObsRecordingIfEnabled, stream.obsAutoStopRecording {
             obsStopRecording()
         }
         stopNetStream()
@@ -98,7 +98,7 @@ extension Model {
         streamState = .connecting
         latestLowBitrateTime = .now
         moblinkStreamer?.stopTunnels()
-        if stream.twitchMultiTrackEnabled! {
+        if stream.twitchMultiTrackEnabled {
             startNetStreamMultiTrack()
         } else {
             startNetStreamSingleTrack()
@@ -183,7 +183,7 @@ extension Model {
         case .rtmp:
             media.rtmpStartStream(url: stream.url,
                                   targetBitrate: stream.bitrate,
-                                  adaptiveBitrate: stream.rtmp!.adaptiveBitrateEnabled)
+                                  adaptiveBitrate: stream.rtmp.adaptiveBitrateEnabled)
             updateAdaptiveBitrateRtmpIfEnabled()
         case .srt:
             payloadSize = stream.srt.mpegtsPacketsPerPacket * MpegTsPacket.size
@@ -205,9 +205,9 @@ extension Model {
             updateAdaptiveBitrateSrt(stream: stream)
         case .rist:
             media.ristStartStream(url: stream.url,
-                                  bonding: stream.rist!.bonding,
+                                  bonding: stream.rist.bonding,
                                   targetBitrate: stream.bitrate,
-                                  adaptiveBitrate: stream.rist!.adaptiveBitrateEnabled)
+                                  adaptiveBitrate: stream.rist.adaptiveBitrateEnabled)
             updateAdaptiveBitrateRistIfEnabled()
         case .irl:
             media.irlStartStream()
@@ -292,7 +292,7 @@ extension Model {
         cameraPreviewLayer?.session = nil
         media.setNetStream(
             proto: stream.getProtocol(),
-            portrait: stream.portrait!,
+            portrait: stream.portrait,
             timecodesEnabled: isTimecodesEnabled(),
             builtinAudioDelay: database.debug.builtinAudioAndVideoDelay
         )
@@ -347,7 +347,7 @@ extension Model {
             captureSize = .init(width: 1280, height: 720)
             outputSize = .init(width: 426, height: 240)
         }
-        if stream.portrait! {
+        if stream.portrait {
             outputSize = .init(width: outputSize.height, height: outputSize.width)
         }
         media.setVideoSize(capture: captureSize, output: outputSize)
@@ -364,15 +364,15 @@ extension Model {
                 media.setVideoProfile(profile: kVTProfileLevel_HEVC_Main_AutoLevel)
             }
         }
-        media.setAllowFrameReordering(value: stream.bFrames!)
+        media.setAllowFrameReordering(value: stream.bFrames)
     }
 
     private func setStreamAdaptiveResolution() {
-        media.setStreamAdaptiveResolution(value: stream.adaptiveEncoderResolution!)
+        media.setStreamAdaptiveResolution(value: stream.adaptiveEncoderResolution)
     }
 
     private func setStreamKeyFrameInterval() {
-        media.setStreamKeyFrameInterval(seconds: stream.maxKeyFrameInterval!)
+        media.setStreamKeyFrameInterval(seconds: stream.maxKeyFrameInterval)
     }
 
     func isStreamConfigured() -> Bool {
@@ -623,7 +623,7 @@ extension Model {
     }
 
     func setStreamPreferAutoFps() {
-        media.setStreamPreferAutoFps(value: stream.autoFps!)
+        media.setStreamPreferAutoFps(value: stream.autoFps)
     }
 
     func setStreamBitrate(stream: SettingsStream) {
@@ -645,7 +645,7 @@ extension Model {
     }
 
     func setAudioStreamBitrate(stream: SettingsStream) {
-        media.setAudioStreamBitrate(bitrate: stream.audioBitrate!)
+        media.setAudioStreamBitrate(bitrate: stream.audioBitrate)
     }
 
     func setAudioStreamFormat(format: AudioEncoderSettings.Format) {

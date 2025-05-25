@@ -88,7 +88,7 @@ struct StreamTwitchSettingsView: View {
             }
             Section {
                 Toggle(isOn: Binding(get: {
-                    stream.twitchShowFollows!
+                    stream.twitchShowFollows
                 }, set: { value in
                     stream.twitchShowFollows = value
                 })) {
@@ -100,7 +100,7 @@ struct StreamTwitchSettingsView: View {
             if false {
                 Section {
                     Toggle("Multi track", isOn: Binding(get: {
-                        stream.twitchMultiTrackEnabled!
+                        stream.twitchMultiTrackEnabled
                     }, set: { value in
                         stream.twitchMultiTrackEnabled = value
                     }))

@@ -228,7 +228,7 @@ struct QuickButtonObsView: View {
                 } header: {
                     Text("Scene audio inputs")
                 }
-                if !model.stream.obsSourceName!.isEmpty {
+                if !model.stream.obsSourceName.isEmpty {
                     if !model.obsFixOngoing {
                         Section {
                             HStack {
@@ -236,13 +236,13 @@ struct QuickButtonObsView: View {
                                 Button {
                                     model.obsFixStream()
                                 } label: {
-                                    Text("Fix \(model.stream.obsSourceName!) source")
+                                    Text("Fix \(model.stream.obsSourceName) source")
                                 }
                                 Spacer()
                             }
                         } footer: {
                             Text("""
-                            Restarts the \(model.stream.obsSourceName!) source to hopefully fix \
+                            Restarts the \(model.stream.obsSourceName) source to hopefully fix \
                             audio and video issues.
                             """)
                         }
@@ -260,7 +260,7 @@ struct QuickButtonObsView: View {
                             .foregroundColor(.white)
                         } footer: {
                             Text("""
-                            Restarts the \(model.stream.obsSourceName!) source to hopefully fix \
+                            Restarts the \(model.stream.obsSourceName) source to hopefully fix \
                             audio and video issues.
                             """)
                         }
@@ -278,7 +278,7 @@ struct QuickButtonObsView: View {
                             unit: "ms"
                         )
                     } header: {
-                        Text("\(model.stream.obsSourceName!) source audio sync")
+                        Text("\(model.stream.obsSourceName) source audio sync")
                     }
                     Section {
                         if model.isLive {
@@ -291,7 +291,7 @@ struct QuickButtonObsView: View {
                             Text("Go live to see audio levels.")
                         }
                     } header: {
-                        Text("\(model.stream.obsSourceName!) source audio levels")
+                        Text("\(model.stream.obsSourceName) source audio levels")
                     }
                 } else {
                     Text("""

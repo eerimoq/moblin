@@ -8,7 +8,7 @@ private struct StreamTimecodesSettingsView: View {
         Form {
             Section {
                 NavigationLink {
-                    TextEditView(title: String(localized: "NTP pool address"), value: stream.ntpPoolAddress!) {
+                    TextEditView(title: String(localized: "NTP pool address"), value: stream.ntpPoolAddress) {
                         stream.ntpPoolAddress = $0
                         if stream.enabled {
                             model.reloadNtpClient()
@@ -18,7 +18,7 @@ private struct StreamTimecodesSettingsView: View {
                 } label: {
                     TextItemView(
                         name: String(localized: "NTP pool address"),
-                        value: stream.ntpPoolAddress!
+                        value: stream.ntpPoolAddress
                     )
                 }
                 .disabled(stream.codec != .h265hevc || (stream.enabled && model.isLive))
@@ -120,7 +120,7 @@ struct StreamVideoSettingsView: View {
             if #available(iOS 18, *) {
                 Section {
                     Toggle("Low light boost (LLB)", isOn: Binding(get: {
-                        stream.autoFps!
+                        stream.autoFps
                     }, set: { value in
                         stream.autoFps = value
                         model.setStreamPreferAutoFps()
@@ -173,7 +173,7 @@ struct StreamVideoSettingsView: View {
                     NavigationLink {
                         TextEditView(
                             title: String(localized: "Key frame interval"),
-                            value: String(stream.maxKeyFrameInterval!),
+                            value: String(stream.maxKeyFrameInterval),
                             footers: [
                                 String(
                                     localized: "Maximum key frame interval in seconds. Set to 0 for automatic."
@@ -186,12 +186,12 @@ struct StreamVideoSettingsView: View {
                     } label: {
                         TextItemView(
                             name: String(localized: "Key frame interval"),
-                            value: "\(stream.maxKeyFrameInterval!) s"
+                            value: "\(stream.maxKeyFrameInterval) s"
                         )
                     }
                     .disabled(stream.enabled && model.isLive)
                     Toggle("B-frames", isOn: Binding(get: {
-                        stream.bFrames!
+                        stream.bFrames
                     }, set: { value in
                         stream.bFrames = value
                         model.storeAndReloadStreamIfEnabled(stream: stream)
@@ -200,7 +200,7 @@ struct StreamVideoSettingsView: View {
                 }
                 Section {
                     Toggle("Adaptive resolution", isOn: Binding(get: {
-                        stream.adaptiveEncoderResolution!
+                        stream.adaptiveEncoderResolution
                     }, set: { value in
                         stream.adaptiveEncoderResolution = value
                         model.storeAndReloadStreamIfEnabled(stream: stream)
@@ -224,7 +224,7 @@ struct StreamVideoSettingsView: View {
                             StreamTimecodesSettingsView(stream: stream)
                         } label: {
                             Toggle("Timecodes", isOn: Binding(get: {
-                                stream.timecodesEnabled!
+                                stream.timecodesEnabled
                             }, set: { value in
                                 stream.timecodesEnabled = value
                                 if stream.enabled {

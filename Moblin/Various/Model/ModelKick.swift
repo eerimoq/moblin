@@ -19,7 +19,7 @@ extension Model {
         kickViewers?.stop()
         if isKickViewersConfigured() {
             kickViewers = KickViewers()
-            kickViewers!.start(channelName: stream.kickChannelName!)
+            kickViewers!.start(channelName: stream.kickChannelName)
         }
     }
 
@@ -30,8 +30,8 @@ extension Model {
         if isKickPusherConfigured(), !isChatRemoteControl() {
             kickPusher = KickPusher(delegate: self,
                                     channelId: stream.kickChatroomId,
-                                    channelName: stream.kickChannelName!,
-                                    settings: stream.chat!)
+                                    channelName: stream.kickChannelName,
+                                    settings: stream.chat)
             kickPusher!.start()
         }
     }

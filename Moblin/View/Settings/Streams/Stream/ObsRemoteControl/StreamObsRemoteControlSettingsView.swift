@@ -40,14 +40,14 @@ struct StreamObsRemoteControlSettingsView: View {
             Section {
                 TextEditNavigationView(
                     title: String(localized: "URL"),
-                    value: stream.obsWebSocketUrl!,
+                    value: stream.obsWebSocketUrl,
                     onSubmit: submitWebSocketUrl,
                     footers: [String(localized: "For example ws://232.32.45.332:4567.")],
                     keyboardType: .URL
                 )
                 TextEditNavigationView(
                     title: String(localized: "Password"),
-                    value: stream.obsWebSocketPassword!,
+                    value: stream.obsWebSocketPassword,
                     onSubmit: submitWebSocketPassword,
                     sensitive: true
                 )
@@ -57,13 +57,13 @@ struct StreamObsRemoteControlSettingsView: View {
             Section {
                 TextEditNavigationView(
                     title: String(localized: "Main scene"),
-                    value: stream.obsMainScene!,
+                    value: stream.obsMainScene,
                     onSubmit: submitMainScene,
                     capitalize: true
                 )
                 TextEditNavigationView(
                     title: String(localized: "BRB scene"),
-                    value: stream.obsBrbScene!,
+                    value: stream.obsBrbScene,
                     onSubmit: submitBrbScene,
                     capitalize: true
                 )
@@ -76,11 +76,11 @@ struct StreamObsRemoteControlSettingsView: View {
             if model.database.showAllSettings {
                 Section {
                     Toggle("BRB scene when video source is broken", isOn: Binding(get: {
-                        stream.obsBrbSceneVideoSourceBroken!
+                        stream.obsBrbSceneVideoSourceBroken
                     }, set: { value in
                         stream.obsBrbSceneVideoSourceBroken = value
                     }))
-                    .disabled(stream.obsBrbScene!.isEmpty)
+                    .disabled(stream.obsBrbScene.isEmpty)
                 } footer: {
                     Text("""
                     Moblin will switch to the BRB scene configured above when the current scene's \
@@ -92,7 +92,7 @@ struct StreamObsRemoteControlSettingsView: View {
             Section {
                 TextEditNavigationView(
                     title: String(localized: "Source name"),
-                    value: stream.obsSourceName!,
+                    value: stream.obsSourceName,
                     onSubmit: submitSourceName,
                     capitalize: true
                 )
@@ -102,24 +102,24 @@ struct StreamObsRemoteControlSettingsView: View {
             if model.database.showAllSettings {
                 Section {
                     Toggle("Auto start streaming when going live", isOn: Binding(get: {
-                        stream.obsAutoStartStream!
+                        stream.obsAutoStartStream
                     }, set: { value in
                         stream.obsAutoStartStream = value
                     }))
                     Toggle("Auto stop streaming when ending stream", isOn: Binding(get: {
-                        stream.obsAutoStopStream!
+                        stream.obsAutoStopStream
                     }, set: { value in
                         stream.obsAutoStopStream = value
                     }))
                 }
                 Section {
                     Toggle("Auto start recording when going live", isOn: Binding(get: {
-                        stream.obsAutoStartRecording!
+                        stream.obsAutoStartRecording
                     }, set: { value in
                         stream.obsAutoStartRecording = value
                     }))
                     Toggle("Auto stop recording when ending stream", isOn: Binding(get: {
-                        stream.obsAutoStopRecording!
+                        stream.obsAutoStopRecording
                     }, set: { value in
                         stream.obsAutoStopRecording = value
                     }))

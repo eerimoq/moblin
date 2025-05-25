@@ -39,10 +39,10 @@ extension Model {
     }
 
     func setObsAudioDelay(offset: Int) {
-        guard !stream.obsSourceName!.isEmpty else {
+        guard !stream.obsSourceName.isEmpty else {
             return
         }
-        obsWebSocket?.setInputAudioSyncOffset(name: stream.obsSourceName!, offsetInMs: offset, onSuccess: {
+        obsWebSocket?.setInputAudioSyncOffset(name: stream.obsSourceName, offsetInMs: offset, onSuccess: {
             DispatchQueue.main.async {
                 self.updateObsAudioDelay()
             }
@@ -51,10 +51,10 @@ extension Model {
     }
 
     func updateObsAudioDelay() {
-        guard !stream.obsSourceName!.isEmpty else {
+        guard !stream.obsSourceName.isEmpty else {
             return
         }
-        obsWebSocket?.getInputAudioSyncOffset(name: stream.obsSourceName!, onSuccess: { offset in
+        obsWebSocket?.getInputAudioSyncOffset(name: stream.obsSourceName, onSuccess: { offset in
             DispatchQueue.main.async {
                 self.obsAudioDelay = offset
             }
@@ -168,11 +168,11 @@ extension Model {
         if let streamBecameBrokenTime {
             if streamBecameBrokenTime.duration(to: now) < .seconds(15) {
                 return true
-            } else if obsCurrentScene != stream.obsBrbScene! {
+            } else if obsCurrentScene != stream.obsBrbScene {
                 return true
             }
         }
-        if stream.obsBrbSceneVideoSourceBroken!, let scene = getSelectedScene() {
+        if stream.obsBrbSceneVideoSourceBroken, let scene = getSelectedScene() {
             switch scene.cameraPosition {
             case .srtla:
                 if let srtlaStream = getSrtlaStream(id: scene.srtlaCameraId!) {
@@ -197,21 +197,21 @@ extension Model {
     }
 
     func updateObsSceneSwitcher(now: ContinuousClock.Instant) {
-        guard isLive, !stream.obsBrbScene!.isEmpty, !obsCurrentScene.isEmpty, isObsConnected() else {
+        guard isLive, !stream.obsBrbScene.isEmpty, !obsCurrentScene.isEmpty, isObsConnected() else {
             return
         }
         if isStreamLikelyBroken(now: now) {
-            if obsCurrentScene != stream.obsBrbScene! {
-                if !stream.obsMainScene!.isEmpty {
-                    obsSceneBeforeSwitchToBrbScene = stream.obsMainScene!
+            if obsCurrentScene != stream.obsBrbScene {
+                if !stream.obsMainScene.isEmpty {
+                    obsSceneBeforeSwitchToBrbScene = stream.obsMainScene
                 } else {
                     obsSceneBeforeSwitchToBrbScene = obsCurrentScene
                 }
-                makeStreamLikelyBrokenToast(scene: stream.obsBrbScene!)
-                setObsScene(name: stream.obsBrbScene!)
+                makeStreamLikelyBrokenToast(scene: stream.obsBrbScene)
+                setObsScene(name: stream.obsBrbScene)
             }
         } else if let obsSceneBeforeSwitchToBrbScene {
-            if obsCurrentScene == stream.obsBrbScene! {
+            if obsCurrentScene == stream.obsBrbScene {
                 makeStreamLikelyWorkingToast(scene: obsSceneBeforeSwitchToBrbScene)
                 setObsScene(name: obsSceneBeforeSwitchToBrbScene)
             } else if obsCurrentScene == obsSceneBeforeSwitchToBrbScene {
@@ -240,12 +240,12 @@ extension Model {
         guard isObsRemoteControlConfigured() else {
             return
         }
-        guard let url = URL(string: stream.obsWebSocketUrl!) else {
+        guard let url = URL(string: stream.obsWebSocketUrl) else {
             return
         }
         obsWebSocket = ObsWebSocket(
             url: url,
-            password: stream.obsWebSocketPassword!,
+            password: stream.obsWebSocketPassword,
             delegate: self
         )
         obsWebSocket!.start()
@@ -311,7 +311,7 @@ extension Model {
             return
         }
         obsFixOngoing = true
-        obsWebSocket.setInputSettings(inputName: stream.obsSourceName!,
+        obsWebSocket.setInputSettings(inputName: stream.obsSourceName,
                                       onSuccess: {
                                           self.obsFixOngoing = false
                                       }, onError: { message in
@@ -373,8 +373,7 @@ extension Model {
     }
 
     func isObsRemoteControlConfigured() -> Bool {
-        return stream.obsWebSocketEnabled! && stream.obsWebSocketUrl != "" && stream
-            .obsWebSocketPassword != ""
+        return stream.obsWebSocketEnabled && stream.obsWebSocketUrl != "" && stream.obsWebSocketPassword != ""
     }
 }
 
@@ -423,10 +422,10 @@ extension Model: ObsWebsocketDelegate {
 
     func obsWebsocketAudioVolume(volumes: [ObsAudioInputVolume]) {
         guard let volume = volumes.first(where: { volume in
-            volume.name == self.stream.obsSourceName!
+            volume.name == self.stream.obsSourceName
         }) else {
             obsAudioVolumeLatest =
-                String(localized: "Source \(stream.obsSourceName!) not found")
+                String(localized: "Source \(stream.obsSourceName) not found")
             return
         }
         var values: [String] = []

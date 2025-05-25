@@ -560,10 +560,10 @@ private struct TwitchRewardsView: View {
 
     var body: some View {
         Form {
-            if model.stream.twitchRewards!.isEmpty {
+            if model.stream.twitchRewards.isEmpty {
                 Text("No rewards found")
             } else {
-                ForEach(model.stream.twitchRewards!) { reward in
+                ForEach(model.stream.twitchRewards) { reward in
                     NavigationLink {
                         TwitchRewardView(reward: reward)
                     } label: {

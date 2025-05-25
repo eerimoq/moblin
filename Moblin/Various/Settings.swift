@@ -430,61 +430,246 @@ class SettingsStream: Codable, Identifiable, Equatable {
     var url: String = defaultStreamUrl
     var twitchChannelName: String = ""
     var twitchChannelId: String = ""
-    var twitchShowFollows: Bool? = true
-    var twitchAccessToken: String? = ""
-    var twitchLoggedIn: Bool? = false
-    var twitchRewards: [SettingsStreamTwitchReward]? = []
+    var twitchShowFollows: Bool = true
+    var twitchAccessToken: String = ""
+    var twitchLoggedIn: Bool = false
+    var twitchRewards: [SettingsStreamTwitchReward] = []
     var kickChatroomId: String = ""
-    var kickChannelName: String? = ""
-    var youTubeApiKey: String? = ""
-    var youTubeVideoId: String? = ""
-    var afreecaTvChannelName: String? = ""
-    var afreecaTvStreamId: String? = ""
-    var openStreamingPlatformUrl: String? = ""
-    var openStreamingPlatformChannelId: String? = ""
-    var obsWebSocketEnabled: Bool? = false
-    var obsWebSocketUrl: String? = ""
-    var obsWebSocketPassword: String? = ""
-    var obsSourceName: String? = ""
-    var obsMainScene: String? = ""
-    var obsBrbScene: String? = ""
-    var obsBrbSceneVideoSourceBroken: Bool? = false
-    var obsAutoStartStream: Bool? = false
-    var obsAutoStopStream: Bool? = false
-    var obsAutoStartRecording: Bool? = false
-    var obsAutoStopRecording: Bool? = false
-    var discordSnapshotWebhook: String? = ""
-    var discordChatBotSnapshotWebhook: String? = ""
-    var discordSnapshotWebhookOnlyWhenLive: Bool? = true
+    var kickChannelName: String = ""
+    var youTubeApiKey: String = ""
+    var youTubeVideoId: String = ""
+    var afreecaTvChannelName: String = ""
+    var afreecaTvStreamId: String = ""
+    var openStreamingPlatformUrl: String = ""
+    var openStreamingPlatformChannelId: String = ""
+    var obsWebSocketEnabled: Bool = false
+    var obsWebSocketUrl: String = ""
+    var obsWebSocketPassword: String = ""
+    var obsSourceName: String = ""
+    var obsMainScene: String = ""
+    var obsBrbScene: String = ""
+    var obsBrbSceneVideoSourceBroken: Bool = false
+    var obsAutoStartStream: Bool = false
+    var obsAutoStopStream: Bool = false
+    var obsAutoStartRecording: Bool = false
+    var obsAutoStopRecording: Bool = false
+    var discordSnapshotWebhook: String = ""
+    var discordChatBotSnapshotWebhook: String = ""
+    var discordSnapshotWebhookOnlyWhenLive: Bool = true
     var resolution: SettingsStreamResolution = .r1920x1080
     var fps: Int = 30
-    var autoFps: Bool? = false
+    var autoFps: Bool = false
     var bitrate: UInt32 = 5_000_000
     var codec: SettingsStreamCodec = .h265hevc
-    var bFrames: Bool? = false
-    var adaptiveEncoderResolution: Bool? = false
-    var adaptiveBitrate: Bool? = true
+    var bFrames: Bool = false
+    var adaptiveEncoderResolution: Bool = false
+    var adaptiveBitrate: Bool = true
     var srt: SettingsStreamSrt = .init()
-    var rtmp: SettingsStreamRtmp? = .init()
-    var rist: SettingsStreamRist? = .init()
-    var captureSessionPresetEnabled: Bool? = false
-    var captureSessionPreset: SettingsCaptureSessionPreset? = .medium
-    var maxKeyFrameInterval: Int32? = 2
-    var audioBitrate: Int? = 128_000
-    var chat: SettingsStreamChat? = .init()
-    var recording: SettingsStreamRecording? = .init()
-    var realtimeIrlEnabled: Bool? = false
-    var realtimeIrlPushKey: String? = ""
-    var portrait: Bool? = false
-    var backgroundStreaming: Bool? = false
-    var estimatedViewerDelay: Float? = 8.0
-    var twitchMultiTrackEnabled: Bool? = false
-    var ntpPoolAddress: String? = "time.apple.com"
-    var timecodesEnabled: Bool? = false
-    var replay: SettingsStreamReplay? = .init()
+    var rtmp: SettingsStreamRtmp = .init()
+    var rist: SettingsStreamRist = .init()
+    var captureSessionPresetEnabled: Bool = false
+    var captureSessionPreset: SettingsCaptureSessionPreset = .medium
+    var maxKeyFrameInterval: Int32 = 2
+    var audioBitrate: Int = 128_000
+    var chat: SettingsStreamChat = .init()
+    var recording: SettingsStreamRecording = .init()
+    var realtimeIrlEnabled: Bool = false
+    var realtimeIrlPushKey: String = ""
+    var portrait: Bool = false
+    var backgroundStreaming: Bool = false
+    var estimatedViewerDelay: Float = 8.0
+    var twitchMultiTrackEnabled: Bool = false
+    var ntpPoolAddress: String = "time.apple.com"
+    var timecodesEnabled: Bool = false
+    var replay: SettingsStreamReplay = .init()
 
     init(name: String) {
         self.name = name
+    }
+
+    enum CodingKeys: CodingKey {
+        case name,
+             id,
+             enabled,
+             url,
+             twitchChannelName,
+             twitchChannelId,
+             twitchShowFollows,
+             twitchAccessToken,
+             twitchLoggedIn,
+             twitchRewards,
+             kickChatroomId,
+             kickChannelName,
+             youTubeApiKey,
+             youTubeVideoId,
+             afreecaTvChannelName,
+             afreecaTvStreamId,
+             openStreamingPlatformUrl,
+             openStreamingPlatformChannelId,
+             obsWebSocketEnabled,
+             obsWebSocketUrl,
+             obsWebSocketPassword,
+             obsSourceName,
+             obsMainScene,
+             obsBrbScene,
+             obsBrbSceneVideoSourceBroken,
+             obsAutoStartStream,
+             obsAutoStopStream,
+             obsAutoStartRecording,
+             obsAutoStopRecording,
+             discordSnapshotWebhook,
+             discordChatBotSnapshotWebhook,
+             discordSnapshotWebhookOnlyWhenLive,
+             resolution,
+             fps,
+             autoFps,
+             bitrate,
+             codec,
+             bFrames,
+             adaptiveEncoderResolution,
+             adaptiveBitrate,
+             srt,
+             rtmp,
+             rist,
+             captureSessionPresetEnabled,
+             captureSessionPreset,
+             maxKeyFrameInterval,
+             audioBitrate,
+             chat,
+             recording,
+             realtimeIrlEnabled,
+             realtimeIrlPushKey,
+             portrait,
+             backgroundStreaming,
+             estimatedViewerDelay,
+             twitchMultiTrackEnabled,
+             ntpPoolAddress,
+             timecodesEnabled,
+             replay
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.name, name)
+        try container.encode(.id, id)
+        try container.encode(.enabled, enabled)
+        try container.encode(.url, url)
+        try container.encode(.twitchChannelName, twitchChannelName)
+        try container.encode(.twitchChannelId, twitchChannelId)
+        try container.encode(.twitchShowFollows, twitchShowFollows)
+        try container.encode(.twitchAccessToken, twitchAccessToken)
+        try container.encode(.twitchLoggedIn, twitchLoggedIn)
+        try container.encode(.twitchRewards, twitchRewards)
+        try container.encode(.kickChatroomId, kickChatroomId)
+        try container.encode(.kickChannelName, kickChannelName)
+        try container.encode(.youTubeApiKey, youTubeApiKey)
+        try container.encode(.youTubeVideoId, youTubeVideoId)
+        try container.encode(.afreecaTvChannelName, afreecaTvChannelName)
+        try container.encode(.afreecaTvStreamId, afreecaTvStreamId)
+        try container.encode(.openStreamingPlatformUrl, openStreamingPlatformUrl)
+        try container.encode(.openStreamingPlatformChannelId, openStreamingPlatformChannelId)
+        try container.encode(.obsWebSocketEnabled, obsWebSocketEnabled)
+        try container.encode(.obsWebSocketUrl, obsWebSocketUrl)
+        try container.encode(.obsWebSocketPassword, obsWebSocketPassword)
+        try container.encode(.obsSourceName, obsSourceName)
+        try container.encode(.obsMainScene, obsMainScene)
+        try container.encode(.obsBrbScene, obsBrbScene)
+        try container.encode(.obsBrbSceneVideoSourceBroken, obsBrbSceneVideoSourceBroken)
+        try container.encode(.obsAutoStartStream, obsAutoStartStream)
+        try container.encode(.obsAutoStopStream, obsAutoStopStream)
+        try container.encode(.obsAutoStartRecording, obsAutoStartRecording)
+        try container.encode(.obsAutoStopRecording, obsAutoStopRecording)
+        try container.encode(.discordSnapshotWebhook, discordSnapshotWebhook)
+        try container.encode(.discordChatBotSnapshotWebhook, discordChatBotSnapshotWebhook)
+        try container.encode(.discordSnapshotWebhookOnlyWhenLive, discordSnapshotWebhookOnlyWhenLive)
+        try container.encode(.resolution, resolution)
+        try container.encode(.fps, fps)
+        try container.encode(.autoFps, autoFps)
+        try container.encode(.bitrate, bitrate)
+        try container.encode(.codec, codec)
+        try container.encode(.bFrames, bFrames)
+        try container.encode(.adaptiveEncoderResolution, adaptiveEncoderResolution)
+        try container.encode(.adaptiveBitrate, adaptiveBitrate)
+        try container.encode(.srt, srt)
+        try container.encode(.rtmp, rtmp)
+        try container.encode(.rist, rist)
+        try container.encode(.captureSessionPresetEnabled, captureSessionPresetEnabled)
+        try container.encode(.captureSessionPreset, captureSessionPreset)
+        try container.encode(.maxKeyFrameInterval, maxKeyFrameInterval)
+        try container.encode(.audioBitrate, audioBitrate)
+        try container.encode(.chat, chat)
+        try container.encode(.recording, recording)
+        try container.encode(.realtimeIrlEnabled, realtimeIrlEnabled)
+        try container.encode(.realtimeIrlPushKey, realtimeIrlPushKey)
+        try container.encode(.portrait, portrait)
+        try container.encode(.backgroundStreaming, backgroundStreaming)
+        try container.encode(.estimatedViewerDelay, estimatedViewerDelay)
+        try container.encode(.twitchMultiTrackEnabled, twitchMultiTrackEnabled)
+        try container.encode(.ntpPoolAddress, ntpPoolAddress)
+        try container.encode(.timecodesEnabled, timecodesEnabled)
+        try container.encode(.replay, replay)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        name = container.decode(.name, String.self, "My stream")
+        id = container.decode(.id, UUID.self, .init())
+        enabled = container.decode(.enabled, Bool.self, false)
+        url = container.decode(.url, String.self, defaultStreamUrl)
+        twitchChannelName = container.decode(.twitchChannelName, String.self, "")
+        twitchChannelId = container.decode(.twitchChannelId, String.self, "")
+        twitchShowFollows = container.decode(.twitchShowFollows, Bool.self, true)
+        twitchAccessToken = container.decode(.twitchAccessToken, String.self, "")
+        twitchLoggedIn = container.decode(.twitchLoggedIn, Bool.self, false)
+        twitchRewards = container.decode(.twitchRewards, [SettingsStreamTwitchReward].self, [])
+        kickChatroomId = container.decode(.kickChatroomId, String.self, "")
+        kickChannelName = container.decode(.kickChannelName, String.self, "")
+        youTubeApiKey = container.decode(.youTubeApiKey, String.self, "")
+        youTubeVideoId = container.decode(.youTubeVideoId, String.self, "")
+        afreecaTvChannelName = container.decode(.afreecaTvChannelName, String.self, "")
+        afreecaTvStreamId = container.decode(.afreecaTvStreamId, String.self, "")
+        openStreamingPlatformUrl = container.decode(.openStreamingPlatformUrl, String.self, "")
+        openStreamingPlatformChannelId = container.decode(.openStreamingPlatformChannelId, String.self, "")
+        obsWebSocketEnabled = container.decode(.obsWebSocketEnabled, Bool.self, false)
+        obsWebSocketUrl = container.decode(.obsWebSocketUrl, String.self, "")
+        obsWebSocketPassword = container.decode(.obsWebSocketPassword, String.self, "")
+        obsSourceName = container.decode(.obsSourceName, String.self, "")
+        obsMainScene = container.decode(.obsMainScene, String.self, "")
+        obsBrbScene = container.decode(.obsBrbScene, String.self, "")
+        obsBrbSceneVideoSourceBroken = container.decode(.obsBrbSceneVideoSourceBroken, Bool.self, false)
+        obsAutoStartStream = container.decode(.obsAutoStartStream, Bool.self, false)
+        obsAutoStopStream = container.decode(.obsAutoStopStream, Bool.self, false)
+        obsAutoStartRecording = container.decode(.obsAutoStartRecording, Bool.self, false)
+        obsAutoStopRecording = container.decode(.obsAutoStopRecording, Bool.self, false)
+        discordSnapshotWebhook = container.decode(.discordSnapshotWebhook, String.self, "")
+        discordChatBotSnapshotWebhook = container.decode(.discordChatBotSnapshotWebhook, String.self, "")
+        discordSnapshotWebhookOnlyWhenLive = container.decode(.discordSnapshotWebhookOnlyWhenLive, Bool.self, true)
+        resolution = container.decode(.resolution, SettingsStreamResolution.self, .r1920x1080)
+        fps = container.decode(.fps, Int.self, 30)
+        autoFps = container.decode(.autoFps, Bool.self, false)
+        bitrate = container.decode(.bitrate, UInt32.self, 5_000_000)
+        codec = container.decode(.codec, SettingsStreamCodec.self, .h265hevc)
+        bFrames = container.decode(.bFrames, Bool.self, false)
+        adaptiveEncoderResolution = container.decode(.adaptiveEncoderResolution, Bool.self, false)
+        adaptiveBitrate = container.decode(.adaptiveBitrate, Bool.self, true)
+        srt = container.decode(.srt, SettingsStreamSrt.self, .init())
+        rtmp = container.decode(.rtmp, SettingsStreamRtmp.self, .init())
+        rist = container.decode(.rist, SettingsStreamRist.self, .init())
+        captureSessionPresetEnabled = container.decode(.captureSessionPresetEnabled, Bool.self, false)
+        captureSessionPreset = container.decode(.captureSessionPreset, SettingsCaptureSessionPreset.self, .medium)
+        maxKeyFrameInterval = container.decode(.maxKeyFrameInterval, Int32.self, 2)
+        audioBitrate = container.decode(.audioBitrate, Int.self, 128_000)
+        chat = container.decode(.chat, SettingsStreamChat.self, .init())
+        recording = container.decode(.recording, SettingsStreamRecording.self, .init())
+        realtimeIrlEnabled = container.decode(.realtimeIrlEnabled, Bool.self, false)
+        realtimeIrlPushKey = container.decode(.realtimeIrlPushKey, String.self, "")
+        portrait = container.decode(.portrait, Bool.self, false)
+        backgroundStreaming = container.decode(.backgroundStreaming, Bool.self, false)
+        estimatedViewerDelay = container.decode(.estimatedViewerDelay, Float.self, 8.0)
+        twitchMultiTrackEnabled = container.decode(.twitchMultiTrackEnabled, Bool.self, false)
+        ntpPoolAddress = container.decode(.ntpPoolAddress, String.self, "time.apple.com")
+        timecodesEnabled = container.decode(.timecodesEnabled, Bool.self, false)
+        replay = container.decode(.replay, SettingsStreamReplay.self, .init())
     }
 
     func clone() -> SettingsStream {
@@ -521,14 +706,14 @@ class SettingsStream: Codable, Identifiable, Equatable {
         new.bFrames = bFrames
         new.adaptiveBitrate = adaptiveBitrate
         new.srt = srt.clone()
-        new.rtmp = rtmp!.clone()
-        new.rist = rist!.clone()
+        new.rtmp = rtmp.clone()
+        new.rist = rist.clone()
         new.captureSessionPresetEnabled = captureSessionPresetEnabled
         new.captureSessionPreset = captureSessionPreset
         new.maxKeyFrameInterval = maxKeyFrameInterval
         new.audioBitrate = audioBitrate
-        new.chat = chat?.clone()
-        new.recording = recording?.clone()
+        new.chat = chat.clone()
+        new.recording = recording.clone()
         new.realtimeIrlEnabled = realtimeIrlEnabled
         new.realtimeIrlPushKey = realtimeIrlPushKey
         new.portrait = portrait
@@ -537,7 +722,7 @@ class SettingsStream: Codable, Identifiable, Equatable {
         new.twitchMultiTrackEnabled = twitchMultiTrackEnabled
         new.ntpPoolAddress = ntpPoolAddress
         new.timecodesEnabled = timecodesEnabled
-        new.replay = replay!.clone()
+        new.replay = replay.clone()
         return new
     }
 
@@ -586,7 +771,7 @@ class SettingsStream: Codable, Identifiable, Equatable {
         if isSrtla() {
             return true
         }
-        if getProtocol() == .rist && rist!.bonding {
+        if getProtocol() == .rist && rist.bonding {
             return true
         }
         return false
@@ -597,7 +782,7 @@ class SettingsStream: Codable, Identifiable, Equatable {
     }
 
     func dimensions() -> CMVideoDimensions {
-        return resolution.dimensions(portrait: portrait!)
+        return resolution.dimensions(portrait: portrait)
     }
 
     func codecString() -> String {
@@ -608,14 +793,14 @@ class SettingsStream: Codable, Identifiable, Equatable {
         var bitrate = formatBytesPerSecond(speed: Int64(bitrate))
         if getProtocol() == .srt && (srt.adaptiveBitrateEnabled ?? false) {
             bitrate = "<\(bitrate)"
-        } else if getProtocol() == .rtmp && (rtmp?.adaptiveBitrateEnabled ?? false) {
+        } else if getProtocol() == .rtmp && rtmp.adaptiveBitrateEnabled {
             bitrate = "<\(bitrate)"
         }
         return bitrate
     }
 
     func audioBitrateString() -> String {
-        return formatBytesPerSecond(speed: Int64(audioBitrate!))
+        return formatBytesPerSecond(speed: Int64(audioBitrate))
     }
 
     func audioCodecString() -> String {
@@ -3829,8 +4014,8 @@ class SettingsAlertsMediaGallery: Codable {
 }
 
 class Database: Codable, ObservableObject {
-    var streams: [SettingsStream] = []
-    var scenes: [SettingsScene] = []
+    @Published var streams: [SettingsStream] = []
+    @Published var scenes: [SettingsScene] = []
     @Published var widgets: [SettingsWidget] = []
     var show: SettingsShow = .init()
     var zoom: SettingsZoom = .init()
@@ -4808,14 +4993,6 @@ final class Settings {
     }
 
     private func migrateFromOlderVersions() {
-        for stream in realDatabase.streams where stream.youTubeVideoId == nil {
-            stream.youTubeVideoId = ""
-            store()
-        }
-        for stream in realDatabase.streams where stream.maxKeyFrameInterval == nil {
-            stream.maxKeyFrameInterval = 2
-            store()
-        }
         for scene in realDatabase.scenes where scene.cameraPosition == nil {
             scene.cameraPosition = scene.cameraType
             store()
@@ -4844,40 +5021,8 @@ final class Settings {
             realDatabase.zoom.switchToFront.x = realDatabase.zoom.switchToFront.level / 2
             store()
         }
-        for stream in realDatabase.streams where stream.afreecaTvChannelName == nil {
-            stream.afreecaTvChannelName = ""
-            store()
-        }
-        for stream in realDatabase.streams where stream.afreecaTvStreamId == nil {
-            stream.afreecaTvStreamId = ""
-            store()
-        }
-        for stream in realDatabase.streams where stream.obsWebSocketUrl == nil {
-            stream.obsWebSocketUrl = ""
-            store()
-        }
-        for stream in realDatabase.streams where stream.obsWebSocketPassword == nil {
-            stream.obsWebSocketPassword = ""
-            store()
-        }
         if realDatabase.show.obsStatus == nil {
             realDatabase.show.obsStatus = true
-            store()
-        }
-        for stream in realDatabase.streams where stream.obsWebSocketEnabled == nil {
-            stream.obsWebSocketEnabled = true
-            store()
-        }
-        for stream in realDatabase.streams where stream.audioBitrate == nil {
-            stream.audioBitrate = 128_000
-            store()
-        }
-        for stream in realDatabase.streams where stream.chat == nil {
-            stream.chat = .init()
-            store()
-        }
-        for stream in realDatabase.streams where stream.bFrames == nil {
-            stream.bFrames = false
             store()
         }
         for scene in realDatabase.scenes where scene.rtmpCameraId == nil {
@@ -4892,10 +5037,6 @@ final class Settings {
             stream.latency = defaultRtmpLatency
             store()
         }
-        for stream in realDatabase.streams where stream.recording == nil {
-            stream.recording = .init()
-            store()
-        }
         if realDatabase.show.gameController == nil {
             realDatabase.show.gameController = true
             store()
@@ -4905,14 +5046,6 @@ final class Settings {
                 button.text = ""
                 store()
             }
-        }
-        for stream in database.streams where stream.realtimeIrlEnabled == nil {
-            stream.realtimeIrlEnabled = false
-            store()
-        }
-        for stream in database.streams where stream.realtimeIrlPushKey == nil {
-            stream.realtimeIrlPushKey = ""
-            store()
         }
         if realDatabase.show.location == nil {
             realDatabase.show.location = true
@@ -4931,10 +5064,6 @@ final class Settings {
                 button.systemImageNameOff = "camera"
                 store()
             }
-        }
-        for stream in realDatabase.streams where stream.obsSourceName == nil {
-            stream.obsSourceName = ""
-            store()
         }
         for stream in realDatabase.streams where stream.srt.connectionPriorities == nil {
             stream.srt.connectionPriorities = .init()
@@ -5000,12 +5129,8 @@ final class Settings {
             stream.srt.adaptiveBitrate!.fastIrlSettings = .init()
             store()
         }
-        for stream in database.streams where stream.rtmp == nil {
-            stream.rtmp = .init()
-            store()
-        }
         for stream in database.streams where stream.srt.adaptiveBitrateEnabled == nil {
-            stream.srt.adaptiveBitrateEnabled = stream.adaptiveBitrate!
+            stream.srt.adaptiveBitrateEnabled = stream.adaptiveBitrate
             store()
         }
         if realDatabase.watch.chat.timestampEnabled == nil {
@@ -5024,40 +5149,20 @@ final class Settings {
             scene.frontCameraId = getBestFrontCameraId()
             store()
         }
-        for stream in realDatabase.streams where stream.openStreamingPlatformUrl == nil {
-            stream.openStreamingPlatformUrl = ""
-            store()
-        }
-        for stream in realDatabase.streams where stream.openStreamingPlatformChannelId == nil {
-            stream.openStreamingPlatformChannelId = ""
-            store()
-        }
-        for stream in realDatabase.streams where stream.kickChannelName == nil {
-            stream.kickChannelName = ""
-            store()
-        }
-        for stream in database.streams where stream.portrait == nil {
-            stream.portrait = false
-            store()
-        }
         if realDatabase.watch.show == nil {
             realDatabase.watch.show = .init()
             store()
         }
-        for stream in realDatabase.streams where stream.recording!.autoStartRecording == nil {
-            stream.recording!.autoStartRecording = false
+        for stream in realDatabase.streams where stream.recording.autoStartRecording == nil {
+            stream.recording.autoStartRecording = false
             store()
         }
-        for stream in realDatabase.streams where stream.recording!.autoStopRecording == nil {
-            stream.recording!.autoStopRecording = false
+        for stream in realDatabase.streams where stream.recording.autoStopRecording == nil {
+            stream.recording.autoStopRecording = false
             store()
         }
-        for stream in realDatabase.streams where stream.rist == nil {
-            stream.rist = .init()
-            store()
-        }
-        for stream in realDatabase.streams where stream.recording!.audioBitrate == nil {
-            stream.recording!.audioBitrate = 128_000
+        for stream in realDatabase.streams where stream.recording.audioBitrate == nil {
+            stream.recording.audioBitrate = 128_000
             store()
         }
         if realDatabase.show.bonding == nil {
@@ -5107,10 +5212,6 @@ final class Settings {
             where stream.srt.adaptiveBitrate!.fastIrlSettings!.minimumBitrate == nil
         {
             stream.srt.adaptiveBitrate!.fastIrlSettings!.minimumBitrate = 250
-            store()
-        }
-        for stream in realDatabase.streams where stream.backgroundStreaming == nil {
-            stream.backgroundStreaming = false
             store()
         }
         for scene in realDatabase.scenes where scene.srtlaCameraId == nil {
@@ -5165,32 +5266,8 @@ final class Settings {
             stream.audio = .init()
             store()
         }
-        for stream in realDatabase.streams where stream.obsBrbScene == nil {
-            stream.obsBrbScene = ""
-            store()
-        }
         for widget in realDatabase.widgets where widget.map.northUp == nil {
             widget.map.northUp = false
-            store()
-        }
-        for stream in realDatabase.streams where stream.obsAutoStartStream == nil {
-            stream.obsAutoStartStream = false
-            store()
-        }
-        for stream in realDatabase.streams where stream.obsAutoStopStream == nil {
-            stream.obsAutoStopStream = false
-            store()
-        }
-        for stream in realDatabase.streams where stream.obsAutoStartRecording == nil {
-            stream.obsAutoStartRecording = false
-            store()
-        }
-        for stream in realDatabase.streams where stream.obsAutoStopRecording == nil {
-            stream.obsAutoStopRecording = false
-            store()
-        }
-        for stream in realDatabase.streams where stream.obsBrbSceneVideoSourceBroken == nil {
-            stream.obsBrbSceneVideoSourceBroken = false
             store()
         }
         for device in realDatabase.djiDevices.devices where device.rtmpUrlType == nil {
@@ -5239,10 +5316,6 @@ final class Settings {
         }
         for widget in database.widgets where widget.map.delay == nil {
             widget.map.delay = 0.0
-            store()
-        }
-        for stream in realDatabase.streams where stream.twitchAccessToken == nil {
-            stream.twitchAccessToken = ""
             store()
         }
         for widget in realDatabase.widgets where widget.alerts.twitch == nil {
@@ -5299,17 +5372,9 @@ final class Settings {
                 store()
             }
         }
-        for stream in realDatabase.streams where stream.twitchLoggedIn == nil {
-            stream.twitchLoggedIn = false
-            store()
-        }
         updateBundledAlertsMediaGallery(database: realDatabase)
         if realDatabase.show.events == nil {
             realDatabase.show.events = true
-            store()
-        }
-        for stream in realDatabase.streams where stream.twitchRewards == nil {
-            stream.twitchRewards = .init()
             store()
         }
         for widget in realDatabase.widgets where widget.map.migrated == nil {
@@ -5382,10 +5447,6 @@ final class Settings {
             realDatabase.quickButtons = newButtons
             store()
         }
-        for stream in realDatabase.streams where stream.obsMainScene == nil {
-            stream.obsMainScene = ""
-            store()
-        }
         for widget in database.widgets where widget.alerts.twitch!.raids == nil {
             widget.alerts.twitch!.raids = .init()
             store()
@@ -5416,14 +5477,6 @@ final class Settings {
         }
         if realDatabase.chat.botCommandPermissions.fax!.subscribersEnabled == nil {
             realDatabase.chat.botCommandPermissions.fax!.subscribersEnabled = false
-            store()
-        }
-        for stream in realDatabase.streams where stream.discordSnapshotWebhook == nil {
-            stream.discordSnapshotWebhook = ""
-            store()
-        }
-        for stream in realDatabase.streams where stream.discordSnapshotWebhookOnlyWhenLive == nil {
-            stream.discordSnapshotWebhookOnlyWhenLive = true
             store()
         }
         if realDatabase.chat.botCommandPermissions.snapshot == nil {
@@ -5495,18 +5548,6 @@ final class Settings {
             widget.alerts.twitch!.cheerBits![0].alert = widget.alerts.twitch!.cheers!.clone()
             store()
         }
-        for stream in database.streams where stream.adaptiveEncoderResolution == nil {
-            stream.adaptiveEncoderResolution = false
-            store()
-        }
-        for stream in realDatabase.streams where stream.discordChatBotSnapshotWebhook == nil {
-            stream.discordChatBotSnapshotWebhook = stream.discordSnapshotWebhook
-            store()
-        }
-        for stream in realDatabase.streams where stream.estimatedViewerDelay == nil {
-            stream.estimatedViewerDelay = 8.0
-            store()
-        }
         if realDatabase.remoteControl.client.relay == nil {
             realDatabase.remoteControl.client.relay = .init()
             store()
@@ -5517,10 +5558,6 @@ final class Settings {
         }
         if realDatabase.watch.viaRemoteControl == nil {
             realDatabase.watch.viaRemoteControl = false
-            store()
-        }
-        for stream in realDatabase.streams where stream.twitchMultiTrackEnabled == nil {
-            stream.twitchMultiTrackEnabled = false
             store()
         }
         if realDatabase.chat.botCommandPermissions.audio == nil {
@@ -5539,14 +5576,6 @@ final class Settings {
             widget.alerts.needsSubtitles = false
             store()
         }
-        for stream in realDatabase.streams where stream.ntpPoolAddress == nil {
-            stream.ntpPoolAddress = "time.apple.com"
-            store()
-        }
-        for stream in realDatabase.streams where stream.timecodesEnabled == nil {
-            stream.timecodesEnabled = false
-            store()
-        }
         for stream in realDatabase.streams where stream.srt.dnsLookupStrategy == nil {
             stream.srt.dnsLookupStrategy = .system
             store()
@@ -5557,10 +5586,6 @@ final class Settings {
         }
         if realDatabase.show.djiDevices == nil {
             realDatabase.show.djiDevices = true
-            store()
-        }
-        for stream in realDatabase.streams where stream.autoFps == nil {
-            stream.autoFps = false
             store()
         }
         if realDatabase.color.diskLutsPng == nil {
@@ -5603,12 +5628,12 @@ final class Settings {
             realDatabase.show.catPrinter = true
             store()
         }
-        for stream in realDatabase.streams where stream.recording!.cleanRecordings == nil {
-            stream.recording!.cleanRecordings = false
+        for stream in realDatabase.streams where stream.recording.cleanRecordings == nil {
+            stream.recording.cleanRecordings = false
             store()
         }
-        for stream in realDatabase.streams where stream.recording!.cleanSnapshots == nil {
-            stream.recording!.cleanSnapshots = false
+        for stream in realDatabase.streams where stream.recording.cleanSnapshots == nil {
+            stream.recording.cleanSnapshots = false
             store()
         }
         if realDatabase.show.cyclingPowerDevice == nil {
@@ -5701,10 +5726,6 @@ final class Settings {
             realDatabase.tesla.enabled = true
             store()
         }
-        for stream in realDatabase.streams where stream.twitchShowFollows == nil {
-            stream.twitchShowFollows = true
-            store()
-        }
         if realDatabase.replay.position == nil {
             realDatabase.replay.position = 10.0
             store()
@@ -5717,12 +5738,8 @@ final class Settings {
             realDatabase.replay.stop = 30.0
             store()
         }
-        for stream in realDatabase.streams where stream.replay == nil {
-            stream.replay = .init()
-            store()
-        }
-        for stream in realDatabase.streams where stream.replay!.fade == nil {
-            stream.replay!.fade = true
+        for stream in realDatabase.streams where stream.replay.fade == nil {
+            stream.replay.fade = true
             store()
         }
         for widget in realDatabase.widgets where widget.browser.moblinAccess == nil {

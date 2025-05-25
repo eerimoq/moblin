@@ -16,7 +16,7 @@ struct StreamKickSettingsView: View {
             Section {
                 TextEditNavigationView(
                     title: String(localized: "Channel name"),
-                    value: stream.kickChannelName!,
+                    value: stream.kickChannelName,
                     onSubmit: submitChannelName
                 )
             }

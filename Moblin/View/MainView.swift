@@ -322,7 +322,7 @@ struct MainView: View {
     }
 
     private func portraitAspectRatio() -> CGFloat {
-        if model.stream.portrait! {
+        if model.stream.portrait {
             return 9 / 16
         } else {
             return 16 / 9
@@ -330,7 +330,7 @@ struct MainView: View {
     }
 
     private func portraitVideoOffset() -> Double {
-        if model.stream.portrait! {
+        if model.stream.portrait {
             return 0
         } else {
             return model.portraitVideoOffsetFromTop

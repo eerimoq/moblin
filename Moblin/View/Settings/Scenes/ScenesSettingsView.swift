@@ -2,10 +2,7 @@ import SwiftUI
 
 private struct ScenesListView: View {
     @EnvironmentObject var model: Model
-
-    var database: Database {
-        model.database
-    }
+    @ObservedObject var database: Database
 
     var body: some View {
         Section {
@@ -147,7 +144,7 @@ struct ScenesSettingsView: View {
 
     var body: some View {
         Form {
-            ScenesListView()
+            ScenesListView(database: model.database)
             WidgetsSettingsView(database: model.database)
             AutoSwitchersSettingsView(autoSceneSwitchers: model.database.autoSceneSwitchers!)
             ScenesSwitchTransition(sceneSwitchTransition: model.database.sceneSwitchTransition.toString())

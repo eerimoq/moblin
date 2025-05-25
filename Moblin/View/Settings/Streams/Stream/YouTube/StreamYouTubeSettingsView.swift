@@ -16,7 +16,7 @@ struct StreamYouTubeSettingsView: View {
             Section {
                 TextEditNavigationView(
                     title: String(localized: "Video id"),
-                    value: stream.youTubeVideoId!,
+                    value: stream.youTubeVideoId,
                     onSubmit: submitVideoId
                 )
             } footer: {

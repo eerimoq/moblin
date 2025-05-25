@@ -35,7 +35,7 @@ class RecordingSettings: Codable {
         fps = settings.fps
         resolution = settings.resolution
         codec = settings.codec
-        recording = settings.recording!.clone()
+        recording = settings.recording.clone()
     }
 
     func resolutionString() -> String {

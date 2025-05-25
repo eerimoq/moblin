@@ -8,18 +8,18 @@ struct StreamReplaySettingsView: View {
         Form {
             Section {
                 Toggle("Enabled", isOn: Binding(get: {
-                    stream.replay!.enabled
+                    stream.replay.enabled
                 }, set: { value in
-                    stream.replay!.enabled = value
+                    stream.replay.enabled = value
                     if stream.enabled {
                         model.streamReplayEnabledUpdated()
                         model.objectWillChange.send()
                     }
                 }))
                 Toggle("Fade transition", isOn: Binding(get: {
-                    stream.replay!.fade!
+                    stream.replay.fade!
                 }, set: { value in
-                    stream.replay!.fade = value
+                    stream.replay.fade = value
                 }))
             }
         }

@@ -38,8 +38,8 @@ extension Model {
             twitchChat.start(
                 channelName: stream.twitchChannelName,
                 channelId: stream.twitchChannelId,
-                settings: stream.chat!,
-                accessToken: stream.twitchAccessToken!,
+                settings: stream.chat,
+                accessToken: stream.twitchAccessToken,
                 httpProxy: httpProxy(),
                 urlSession: urlSession
             )
@@ -65,7 +65,7 @@ extension Model {
             twitchEventSub = TwitchEventSub(
                 remoteControl: useRemoteControlForChatAndEvents,
                 userId: stream.twitchChannelId,
-                accessToken: stream.twitchAccessToken!,
+                accessToken: stream.twitchAccessToken,
                 httpProxy: httpProxy(),
                 urlSession: urlSession,
                 delegate: self
@@ -75,7 +75,7 @@ extension Model {
     }
 
     func fetchTwitchRewards() {
-        TwitchApi(stream.twitchAccessToken!, urlSession)
+        TwitchApi(stream.twitchAccessToken, urlSession)
             .getChannelPointsCustomRewards(broadcasterId: stream.twitchChannelId) { rewards in
                 guard let rewards else {
                     logger.info("Failed to get Twitch rewards")
@@ -102,11 +102,11 @@ extension Model {
         stream: SettingsStream,
         onComplete: @escaping (TwitchApiChannelInformationData) -> Void
     ) {
-        guard stream.twitchLoggedIn! else {
+        guard stream.twitchLoggedIn else {
             makeNotLoggedInToTwitchToast()
             return
         }
-        TwitchApi(stream.twitchAccessToken!, urlSession)
+        TwitchApi(stream.twitchAccessToken, urlSession)
             .getChannelInformation(broadcasterId: stream.twitchChannelId) { channelInformation in
                 guard let channelInformation else {
                     return
@@ -116,11 +116,11 @@ extension Model {
     }
 
     func setTwitchStreamTitle(stream: SettingsStream, title: String) {
-        guard stream.twitchLoggedIn! else {
+        guard stream.twitchLoggedIn else {
             makeNotLoggedInToTwitchToast()
             return
         }
-        TwitchApi(stream.twitchAccessToken!, urlSession)
+        TwitchApi(stream.twitchAccessToken, urlSession)
             .modifyChannelInformation(broadcasterId: stream.twitchChannelId, category: nil,
                                       title: title)
         { ok in
@@ -166,7 +166,7 @@ extension Model {
     }
 
     func createStreamMarker() {
-        TwitchApi(stream.twitchAccessToken!, urlSession)
+        TwitchApi(stream.twitchAccessToken, urlSession)
             .createStreamMarker(userId: stream.twitchChannelId) { data in
                 if data != nil {
                     self.makeToast(title: String(localized: "Stream marker created"))
@@ -177,7 +177,7 @@ extension Model {
     }
 
     private func getStream() {
-        TwitchApi(stream.twitchAccessToken!, urlSession)
+        TwitchApi(stream.twitchAccessToken, urlSession)
             .getStream(userId: stream.twitchChannelId) { data in
                 guard let data else {
                     self.numberOfTwitchViewers = nil
@@ -200,7 +200,7 @@ extension Model {
     }
 
     func startAds(seconds: Int) {
-        TwitchApi(stream.twitchAccessToken!, urlSession)
+        TwitchApi(stream.twitchAccessToken, urlSession)
             .startCommercial(broadcasterId: stream.twitchChannelId, length: seconds) { data in
                 if let data {
                     self.makeToast(title: data.message)
@@ -221,7 +221,7 @@ extension Model: TwitchEventSubDelegate {
 
     func twitchEventSubChannelFollow(event: TwitchEventSubNotificationChannelFollowEvent) {
         DispatchQueue.main.async {
-            guard self.stream.twitchShowFollows! else {
+            guard self.stream.twitchShowFollows else {
                 return
             }
             let text = String(localized: "just followed!")

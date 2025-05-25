@@ -138,9 +138,9 @@ extension Model {
         case .custom:
             break
         }
-        stream.chat!.bttvEmotes = wizardChatBttv
-        stream.chat!.ffzEmotes = wizardChatFfz
-        stream.chat!.seventvEmotes = wizardChatSeventv
+        stream.chat.bttvEmotes = wizardChatBttv
+        stream.chat.ffzEmotes = wizardChatFfz
+        stream.chat.seventvEmotes = wizardChatSeventv
         stream.url = createStreamFromWizardUrl()
         switch wizardNetworkSetup {
         case .none:

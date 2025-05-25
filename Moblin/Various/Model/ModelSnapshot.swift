@@ -8,7 +8,7 @@ struct SnapshotJob {
 
 extension Model {
     func takeSnapshot(isChatBot: Bool = false, message: String? = nil, noDelay: Bool = false) {
-        let age = (isChatBot && !noDelay) ? stream.estimatedViewerDelay! : 0.0
+        let age = (isChatBot && !noDelay) ? stream.estimatedViewerDelay : 0.0
         media.takeSnapshot(age: age) { image, portraitImage in
             guard let imageJpeg = image.jpegData(compressionQuality: 0.9) else {
                 return
@@ -76,15 +76,14 @@ extension Model {
 
     private func getDiscordWebhookUrl(_ isChatBot: Bool) -> URL? {
         if isChatBot {
-            return URL(string: stream.discordChatBotSnapshotWebhook!)
+            return URL(string: stream.discordChatBotSnapshotWebhook)
         } else {
-            return URL(string: stream.discordSnapshotWebhook!)
+            return URL(string: stream.discordSnapshotWebhook)
         }
     }
 
     private func tryUploadSnapshotToDiscord(_ image: Data, _ message: String?, _ isChatBot: Bool) {
-        guard !stream.discordSnapshotWebhookOnlyWhenLive! || isLive, let url = getDiscordWebhookUrl(isChatBot)
-        else {
+        guard !stream.discordSnapshotWebhookOnlyWhenLive || isLive, let url = getDiscordWebhookUrl(isChatBot) else {
             return
         }
         logger.debug("Uploading snapshot to Discord of \(image).")
@@ -106,6 +105,6 @@ extension Model {
     }
 
     func setCleanSnapshots() {
-        media.setCleanSnapshots(enabled: stream.recording!.cleanSnapshots!)
+        media.setCleanSnapshots(enabled: stream.recording.cleanSnapshots!)
     }
 }

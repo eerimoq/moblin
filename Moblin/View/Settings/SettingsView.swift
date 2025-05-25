@@ -24,7 +24,7 @@ struct SettingsView: View {
             }
             Section {
                 NavigationLink {
-                    StreamsSettingsView()
+                    StreamsSettingsView(database: model.database)
                 } label: {
                     IconAndTextView(
                         image: "dot.radiowaves.left.and.right",

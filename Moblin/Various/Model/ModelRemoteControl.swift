@@ -45,7 +45,7 @@ extension Model {
         remoteControlStreamer?.twitchStart(
             channelName: database.debug.reliableChat ? stream.twitchChannelName : nil,
             channelId: stream.twitchChannelId,
-            accessToken: stream.twitchAccessToken!
+            accessToken: stream.twitchAccessToken
         )
     }
 
@@ -394,7 +394,7 @@ extension Model: RemoteControlStreamerDelegate {
         if isRecording {
             topRight.recording = RemoteControlStatusItem(message: recording.length)
         }
-        if stream.replay!.enabled {
+        if stream.replay.enabled {
             topRight.replay = RemoteControlStatusItem(message: String(localized: "Enabled"))
         }
         if isStatusBrowserWidgetsActive() {
