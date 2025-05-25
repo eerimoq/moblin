@@ -1,5 +1,5 @@
 {
-  "originHash" : "50be67d575d6e1e6891f1fdf650bc952bd962ab6a1457cc44f79a329cdc9bab2",
+  "originHash" : "2262e01c0128387be5bd6148bd5ed69961e78864f6feadc78600e477c925e620",
   "pins" : [
     {
       "identity" : "alerttoast",
@@ -169,7 +169,7 @@
       "location" : "https://github.com/eerimoq/VRMKit",
       "state" : {
         "branch" : "main",
-        "revision" : "acdcda8d3bf552427551a71497064af495f34d96"
+        "revision" : "071e0bc6a0f4f0ba2385c05332b0adb172d0f7ec"
       }
     },
     {

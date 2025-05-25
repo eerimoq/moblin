@@ -276,6 +276,7 @@
 		0376F7042B9511040056B3D2 /* MoblinWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 0376F6F72B9511030056B3D2 /* MoblinWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		0377239A2DE35191007D040D /* VRMKit in Frameworks */ = {isa = PBXBuildFile; productRef = 037723992DE35191007D040D /* VRMKit */; };
 		0377239C2DE35191007D040D /* VRMSceneKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0377239B2DE35191007D040D /* VRMSceneKit */; };
+		0377239E2DE354A7007D040D /* VTuberEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0377239D2DE354A2007D040D /* VTuberEffect.swift */; };
 		037798FC2DE1396D006D4526 /* RemoveBackgroundEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 037798FB2DE1395E006D4526 /* RemoveBackgroundEffect.swift */; };
 		0379BB882AA836B500B718B6 /* StreamVideoSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB872AA836B500B718B6 /* StreamVideoSettingsView.swift */; };
 		0379BB8E2AA90D1900B718B6 /* DebugLogSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB8D2AA90D1900B718B6 /* DebugLogSettingsView.swift */; };
@@ -930,6 +931,7 @@
 		0376F6FD2B9511030056B3D2 /* MoblinWidgetApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoblinWidgetApp.swift; sourceTree = "<group>"; };
 		0376F6FF2B9511040056B3D2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0376F7012B9511040056B3D2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		0377239D2DE354A2007D040D /* VTuberEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VTuberEffect.swift; sourceTree = "<group>"; };
 		037798FB2DE1395E006D4526 /* RemoveBackgroundEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoveBackgroundEffect.swift; sourceTree = "<group>"; };
 		0379BB872AA836B500B718B6 /* StreamVideoSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamVideoSettingsView.swift; sourceTree = "<group>"; };
 		0379BB8D2AA90D1900B718B6 /* DebugLogSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugLogSettingsView.swift; sourceTree = "<group>"; };
@@ -2659,6 +2661,7 @@
 				03F3BF182ADAAA94009A8D3E /* TextEffect.swift */,
 				032815DE2AC9885C001F8A85 /* TripleEffect.swift */,
 				038C76962CAC99D900564200 /* VideoSourceEffect.swift */,
+				0377239D2DE354A2007D040D /* VTuberEffect.swift */,
 				03CD92A62DC9D23100202D49 /* WhirlpoolEffect.swift */,
 			);
 			path = VideoEffects;
@@ -3448,6 +3451,7 @@
 				0379BBA22AAD824600B718B6 /* StreamOverlayIconAndTextView.swift in Sources */,
 				035735802BC62FDC00F4E87D /* WatchLocalOverlaysSettingsView.swift in Sources */,
 				03BA73A42DDC562D00075CD6 /* ModelReplay.swift in Sources */,
+				0377239E2DE354A7007D040D /* VTuberEffect.swift in Sources */,
 				03D445E22AE5966B00A0F6E9 /* CacheAsyncImage.swift in Sources */,
 				03F3BF192ADAAA94009A8D3E /* TextEffect.swift in Sources */,
 				038ED3DB2B403664005DEC08 /* LocalOverlaysNetworkInterfaceNamesSettingsView.swift in Sources */,
