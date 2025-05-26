@@ -332,6 +332,7 @@
 		038E7BE32C32F391008994BA /* MediaPlayerSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038E7BE22C32F391008994BA /* MediaPlayerSettingsView.swift */; };
 		038E7BE72C331272008994BA /* MediaPlayerFileSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038E7BE62C331272008994BA /* MediaPlayerFileSettingsView.swift */; };
 		038ED3DB2B403664005DEC08 /* LocalOverlaysNetworkInterfaceNamesSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038ED3DA2B403664005DEC08 /* LocalOverlaysNetworkInterfaceNamesSettingsView.swift */; };
+		038F03942DE426E900A72CA2 /* Detection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038F03932DE426E500A72CA2 /* Detection.swift */; };
 		038F42ED2B6849D400E68752 /* LutEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038F42EC2B6849D400E68752 /* LutEffect.swift */; };
 		038F42F42B685ACF00E68752 /* LUTs.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 038F42F32B685ACF00E68752 /* LUTs.bundle */; };
 		0391BB3D2B36CAC5004852EA /* AboutVersionHistorySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0391BB3C2B36CAC5004852EA /* AboutVersionHistorySettingsView.swift */; };
@@ -988,6 +989,7 @@
 		038E7BE22C32F391008994BA /* MediaPlayerSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaPlayerSettingsView.swift; sourceTree = "<group>"; };
 		038E7BE62C331272008994BA /* MediaPlayerFileSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaPlayerFileSettingsView.swift; sourceTree = "<group>"; };
 		038ED3DA2B403664005DEC08 /* LocalOverlaysNetworkInterfaceNamesSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalOverlaysNetworkInterfaceNamesSettingsView.swift; sourceTree = "<group>"; };
+		038F03932DE426E500A72CA2 /* Detection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Detection.swift; sourceTree = "<group>"; };
 		038F42EC2B6849D400E68752 /* LutEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LutEffect.swift; sourceTree = "<group>"; };
 		038F42F32B685ACF00E68752 /* LUTs.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = LUTs.bundle; sourceTree = "<group>"; };
 		0391BB3C2B36CAC5004852EA /* AboutVersionHistorySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutVersionHistorySettingsView.swift; sourceTree = "<group>"; };
@@ -2843,6 +2845,7 @@
 				03D445E12AE5966B00A0F6E9 /* CacheAsyncImage.swift */,
 				03C357362D0803B100B8B29F /* ChatBotCommand.swift */,
 				03C380DB2BC24F7800394625 /* ChatTextToSpeech.swift */,
+				038F03932DE426E500A72CA2 /* Detection.swift */,
 				0323F3822D21346F00A57AC2 /* DnsLookup.swift */,
 				031863C62C8C4BEA00CECA33 /* FaxReceiver.swift */,
 				03C5AE472C5515B20056B6C7 /* GeographyManager.swift */,
@@ -3457,6 +3460,7 @@
 				03AD440A2B78A8A700B1B9B9 /* StreamButtonsSettingsView.swift in Sources */,
 				03A9836B2A9A05D7008FF0DB /* StreamOverlayView.swift in Sources */,
 				0359F8EA2BD3DA61005BFDA8 /* RtmpEventDispatcher.swift in Sources */,
+				038F03942DE426E900A72CA2 /* Detection.swift in Sources */,
 				03DBD1032B300D55004B0BE6 /* StreamWizardNetworkSetupBelaboxSettingsView.swift in Sources */,
 				0359F8B22BD3DA61005BFDA8 /* VTSessionProperty.swift in Sources */,
 				0315A37A2AA39DA800295443 /* TextItemView.swift in Sources */,
