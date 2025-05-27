@@ -63,7 +63,7 @@ struct WidgetVTuberSettingsView: View {
             Button {
                 showPicker = true
                 model.onDocumentPickerUrl = onUrl
-                model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
+                model.resetSelectedScene(changeScene: false)
             } label: {
                 HCenter {
                     Text("Select model")
