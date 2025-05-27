@@ -65,7 +65,7 @@ func widgetImage(widget: SettingsWidget) -> String {
     case .scoreboard:
         return "rectangle.split.2x1"
     case .vTuber:
-        return "face.smiling.inverse"
+        return "face.smiling"
     }
 }
 

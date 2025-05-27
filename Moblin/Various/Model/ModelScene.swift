@@ -582,6 +582,9 @@ extension Model {
                 }
             case .vTuber:
                 if let vTuberEffect = vTuberEffects[widget.id] {
+                    if let videoSourceId = getVideoSourceId(cameraId: widget.vTuber.toCameraId()) {
+                        vTuberEffect.setVideoSourceId(videoSourceId: videoSourceId)
+                    }
                     effects.append(vTuberEffect)
                 }
             }
@@ -900,29 +903,61 @@ extension Model {
             }
             switch widget.type {
             case .videoSource:
-                let cameraId: String?
-                switch widget.videoSource.cameraPosition {
-                case .back:
-                    cameraId = widget.videoSource.backCameraId
-                case .front:
-                    cameraId = widget.videoSource.frontCameraId
-                case .external:
-                    cameraId = widget.videoSource.externalCameraId
-                default:
-                    cameraId = nil
-                }
-                if let cameraId, let device = AVCaptureDevice(uniqueID: cameraId) {
-                    if !devices.contains(where: { $0.device == device }) {
-                        devices.append(makeCaptureDevice(device: device))
-                    }
-                }
+                getBuiltinCameraDevicesForVideoSourceWidget(videoSource: widget.videoSource, devices: &devices)
+            case .vTuber:
+                getBuiltinCameraDevicesForVTuberWidget(vTuber: widget.vTuber, devices: &devices)
             case .scene:
-                if let scene = database.scenes.first(where: { $0.id == widget.scene.sceneId }) {
-                    getBuiltinCameraDevicesInScene(scene: scene, devices: &devices)
-                }
+                getBuiltinCameraDevicesForSceneWidget(scene: widget.scene, devices: &devices)
             default:
                 break
             }
+        }
+    }
+
+    private func getBuiltinCameraDevicesForVideoSourceWidget(
+        videoSource: SettingsWidgetVideoSource,
+        devices: inout [CaptureDevice]
+    ) {
+        let cameraId: String?
+        switch videoSource.cameraPosition {
+        case .back:
+            cameraId = videoSource.backCameraId
+        case .front:
+            cameraId = videoSource.frontCameraId
+        case .external:
+            cameraId = videoSource.externalCameraId
+        default:
+            cameraId = nil
+        }
+        if let cameraId, let device = AVCaptureDevice(uniqueID: cameraId) {
+            if !devices.contains(where: { $0.device == device }) {
+                devices.append(makeCaptureDevice(device: device))
+            }
+        }
+    }
+
+    private func getBuiltinCameraDevicesForVTuberWidget(vTuber: SettingsWidgetVTuber, devices: inout [CaptureDevice]) {
+        let cameraId: String?
+        switch vTuber.cameraPosition {
+        case .back:
+            cameraId = vTuber.backCameraId
+        case .front:
+            cameraId = vTuber.frontCameraId
+        case .external:
+            cameraId = vTuber.externalCameraId
+        default:
+            cameraId = nil
+        }
+        if let cameraId, let device = AVCaptureDevice(uniqueID: cameraId) {
+            if !devices.contains(where: { $0.device == device }) {
+                devices.append(makeCaptureDevice(device: device))
+            }
+        }
+    }
+
+    private func getBuiltinCameraDevicesForSceneWidget(scene: SettingsWidgetScene, devices: inout [CaptureDevice]) {
+        if let scene = database.scenes.first(where: { $0.id == scene.sceneId }) {
+            getBuiltinCameraDevicesInScene(scene: scene, devices: &devices)
         }
     }
 }

@@ -171,7 +171,7 @@ struct WidgetSettingsView: View {
             case .scoreboard:
                 WidgetScoreboardSettingsView(widget: widget, type: widget.scoreboard.type.rawValue)
             case .vTuber:
-                WidgetVTuberSettingsView(widget: widget)
+                WidgetVTuberSettingsView(widget: widget, vTuber: widget.vTuber)
             }
         }
         .navigationTitle("Widget")

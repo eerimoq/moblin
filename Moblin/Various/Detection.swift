@@ -37,6 +37,24 @@ extension VNFaceObservation {
         return -atan(deltaX / deltaY)
     }
 
+    func calcFaceAngleSide() -> CGFloat? {
+        guard let landmarks,
+              let centerPoint = landmarks.medianLine?.normalizedPoints.first,
+              let faceContour = landmarks.faceContour?.normalizedPoints,
+              let leftPoint = faceContour.first,
+              let rightPoint = faceContour.last
+        else {
+            return nil
+        }
+        let leftWidth = max(leftPoint.x - centerPoint.x, 0)
+        let rightWidth = max(centerPoint.x - rightPoint.x, 0)
+        if leftWidth < rightWidth {
+            return -(1 - leftWidth / rightWidth)
+        } else {
+            return 1 - rightWidth / leftWidth
+        }
+    }
+
     func isMouthOpen() -> Double {
         if let points = landmarks?.innerLips?.normalizedPoints,
            let boundingBox = calcBoundingBox(points: points)
