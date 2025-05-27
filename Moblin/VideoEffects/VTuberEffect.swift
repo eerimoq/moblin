@@ -55,8 +55,10 @@ final class VTuberEffect: VideoEffect {
            let rotationAngle = detection.calcFaceAngle(imageSize: image.extent.size),
            let sideAngle = detection.calcFaceAngleSide()
         {
-            node.setBlendShape(value: detection.isMouthOpen(), for: .preset(.angry))
-            node.setBlendShape(value: -(detection.isLeftEyeOpen() - 1), for: .preset(.blink))
+            let isMouthOpen = detection.isMouthOpen(rotationAngle: rotationAngle)
+            node.setBlendShape(value: isMouthOpen, for: .preset(.angry))
+            let isLeftEyeOpen = -(detection.isLeftEyeOpen(rotationAngle: rotationAngle) - 1)
+            node.setBlendShape(value: isLeftEyeOpen, for: .preset(.blink))
             neckYAngle = 0.7 * neckYAngle + 0.3 * sideAngle
             neckZAngle = 0.8 * neckZAngle + 0.2 * rotationAngle
             node.humanoid.node(for: .neck)?.eulerAngles = SCNVector3(0, -neckYAngle, -neckZAngle)
