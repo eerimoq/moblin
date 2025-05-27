@@ -50,8 +50,10 @@ extension VNFaceObservation {
         let rightWidth = max(centerPoint.x - rightPoint.x, 0)
         if leftWidth < rightWidth {
             return -(1 - leftWidth / rightWidth)
-        } else {
+        } else if leftWidth > rightWidth {
             return 1 - rightWidth / leftWidth
+        } else {
+            return 0
         }
     }
 
