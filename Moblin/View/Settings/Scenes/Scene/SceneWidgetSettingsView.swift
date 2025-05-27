@@ -23,22 +23,22 @@ struct SceneWidgetSettingsView: View {
 
     func submitX(value: Double) {
         sceneWidget.x = value
-        model.sceneUpdated(imageEffectChanged: true)
+        model.sceneUpdated()
     }
 
     func submitY(value: Double) {
         sceneWidget.y = value
-        model.sceneUpdated(imageEffectChanged: true)
+        model.sceneUpdated()
     }
 
     func submitWidth(value: Double) {
         sceneWidget.width = value
-        model.sceneUpdated(imageEffectChanged: true)
+        model.sceneUpdated()
     }
 
     func submitHeight(value: Double) {
         sceneWidget.height = value
-        model.sceneUpdated(imageEffectChanged: true)
+        model.sceneUpdated()
     }
 
     private let widgetsWithPosition: [SettingsWidgetType] = [

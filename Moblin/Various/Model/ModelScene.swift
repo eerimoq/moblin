@@ -21,10 +21,6 @@ extension Model {
                 }
                 let imageEffect = ImageEffect(
                     image: image,
-                    x: widget.x,
-                    y: widget.y,
-                    width: widget.width,
-                    height: widget.height,
                     settingName: realWidget.name,
                     widgetId: realWidget.id
                 )
@@ -499,6 +495,7 @@ extension Model {
             switch widget.type {
             case .image:
                 if let imageEffect = imageEffects[sceneWidget.id] {
+                    imageEffect.setSceneWidget(sceneWidget: sceneWidget.clone())
                     effects.append(imageEffect)
                 }
             case .text:

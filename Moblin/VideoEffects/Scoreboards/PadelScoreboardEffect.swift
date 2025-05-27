@@ -53,7 +53,7 @@ final class PadelScoreboardEffect: VideoEffect {
         return "padel scoreboard"
     }
 
-    func setSceneWidget(sceneWidget: SettingsSceneWidget?) {
+    func setSceneWidget(sceneWidget: SettingsSceneWidget) {
         self.sceneWidget.mutate { $0 = sceneWidget }
     }
 

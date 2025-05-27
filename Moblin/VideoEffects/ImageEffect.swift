@@ -18,22 +18,25 @@ final class ImageEffect: VideoEffect {
     private var overlay: CIImage?
     private var overlayMetalPetal: MTIImage?
     private let originalImage: UIImage
-    private let x: Double
-    private let y: Double
-    private let width: Double
-    private let height: Double
+    private var sceneWidget: SettingsSceneWidget?
     private let settingName: String
     let widgetId: UUID
 
-    init(image: UIImage, x: Double, y: Double, width: Double, height: Double, settingName: String, widgetId: UUID) {
+    init(image: UIImage, settingName: String, widgetId: UUID) {
         originalImage = image
-        self.x = x
-        self.y = y
-        self.width = width
-        self.height = height
         self.settingName = settingName
         self.widgetId = widgetId
         super.init()
+    }
+
+    func setSceneWidget(sceneWidget: SettingsSceneWidget) {
+        mixerLockQueue.async {
+            if self.sceneWidget?.isSamePositioning(other: sceneWidget) != true {
+                self.sceneWidget = sceneWidget
+                self.prepare(size: self.extent.size)
+                self.prepareMetalPetal(size: self.extent.size)
+            }
+        }
     }
 
     override func getName() -> String {
@@ -52,15 +55,15 @@ final class ImageEffect: VideoEffect {
     }
 
     override func executeMetalPetal(_ image: MTIImage?, _: VideoEffectInfo) -> MTIImage? {
-        guard let image else {
+        guard let image, let sceneWidget else {
             return image
         }
         extent = image.extent
         guard let overlayMetalPetal else {
             return image
         }
-        let x = toPixels(self.x, extent.size.width) + overlayMetalPetal.size.width / 2
-        let y = toPixels(self.y, extent.size.height) + overlayMetalPetal.size.height / 2
+        let x = toPixels(sceneWidget.x, extent.size.width) + overlayMetalPetal.size.width / 2
+        let y = toPixels(sceneWidget.y, extent.size.height) + overlayMetalPetal.size.height / 2
         let filter = MTIMultilayerCompositingFilter()
         filter.inputBackgroundImage = image
         filter.layers = [
@@ -70,11 +73,14 @@ final class ImageEffect: VideoEffect {
     }
 
     private func prepare(size: CGSize) {
+        guard let sceneWidget, size != .zero else {
+            return
+        }
         UIGraphicsBeginImageContext(size)
-        let x = toPixels(self.x, size.width)
-        let y = toPixels(self.y, size.height)
-        let width = toPixels(self.width, size.width)
-        let height = toPixels(self.height, size.height)
+        let x = toPixels(sceneWidget.x, size.width)
+        let y = toPixels(sceneWidget.y, size.height)
+        let width = toPixels(sceneWidget.width, size.width)
+        let height = toPixels(sceneWidget.height, size.height)
         let image = originalImage.scalePreservingAspectRatio(targetSize: CGSize(
             width: width,
             height: height
@@ -88,11 +94,11 @@ final class ImageEffect: VideoEffect {
     }
 
     private func prepareMetalPetal(size: CGSize) {
-        guard let originalImage = originalImage.cgImage else {
+        guard let originalImage = originalImage.cgImage, let sceneWidget, size != .zero else {
             return
         }
-        let width = toPixels(self.width, size.width)
-        let height = toPixels(self.height, size.height)
+        let width = toPixels(sceneWidget.width, size.width)
+        let height = toPixels(sceneWidget.height, size.height)
         overlayMetalPetal = MTIImage(cgImage: originalImage, isOpaque: true).resized(
             to: .init(width: width, height: height),
             resizingMode: .aspect

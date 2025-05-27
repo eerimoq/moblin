@@ -835,6 +835,10 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable {
         return new
     }
 
+    func isSamePositioning(other: SettingsSceneWidget) -> Bool {
+        return x == other.x && y == other.y && width == other.width && height == other.height
+    }
+
     func extent() -> CGRect {
         return .init(x: x, y: y, width: width, height: height)
     }

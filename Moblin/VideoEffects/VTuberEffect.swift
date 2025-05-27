@@ -48,7 +48,7 @@ final class VTuberEffect: VideoEffect {
         }
     }
 
-    func setSceneWidget(sceneWidget: SettingsSceneWidget?) {
+    func setSceneWidget(sceneWidget: SettingsSceneWidget) {
         mixerLockQueue.async {
             self.sceneWidget = sceneWidget
         }
