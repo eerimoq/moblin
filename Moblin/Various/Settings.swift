@@ -2221,6 +2221,8 @@ class SettingsWidgetVTuber: Codable, ObservableObject {
     var mediaPlayerCameraId: UUID = .init()
     var externalCameraId: String = ""
     var externalCameraName: String = ""
+    @Published var cameraPositionY: Double = 1.37
+    @Published var cameraFieldOfView: Double = 18
 
     enum CodingKeys: CodingKey {
         case id,
@@ -2231,7 +2233,9 @@ class SettingsWidgetVTuber: Codable, ObservableObject {
              srtlaCameraId,
              mediaPlayerCameraId,
              externalCameraId,
-             externalCameraName
+             externalCameraName,
+             cameraPositionY,
+             cameraFieldOfView
     }
 
     init() {}
@@ -2247,6 +2251,8 @@ class SettingsWidgetVTuber: Codable, ObservableObject {
         try container.encode(.mediaPlayerCameraId, mediaPlayerCameraId)
         try container.encode(.externalCameraId, externalCameraId)
         try container.encode(.externalCameraName, externalCameraName)
+        try container.encode(.cameraPositionY, cameraPositionY)
+        try container.encode(.cameraFieldOfView, cameraFieldOfView)
     }
 
     required init(from decoder: Decoder) throws {
@@ -2260,6 +2266,8 @@ class SettingsWidgetVTuber: Codable, ObservableObject {
         mediaPlayerCameraId = container.decode(.mediaPlayerCameraId, UUID.self, .init())
         externalCameraId = container.decode(.externalCameraId, String.self, "")
         externalCameraName = container.decode(.externalCameraName, String.self, "")
+        cameraPositionY = container.decode(.cameraPositionY, Double.self, 1.37)
+        cameraFieldOfView = container.decode(.cameraFieldOfView, Double.self, 18)
     }
 
     func toCameraId() -> SettingsCameraId {

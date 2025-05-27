@@ -4,14 +4,16 @@ import Vision
 import VRMSceneKit
 
 final class VTuberEffect: VideoEffect {
-    private var videoSourceId: Atomic<UUID> = .init(.init())
+    private var videoSourceId: UUID = .init()
     private let scene: VRMScene?
     private let renderer = SCNRenderer(device: nil)
     private var firstPresentationTimeStamp: Double?
     private var neckYAngle = 0.0
     private var neckZAngle = 0.0
+    private let cameraNode = SCNNode()
+    private var sceneWidget: SettingsSceneWidget?
 
-    init(vrm: URL) {
+    init(vrm: URL, cameraFieldOfView: Double, cameraPositionY: Double) {
         do {
             scene = try VRMSceneLoader(withURL: vrm).loadScene()
         } catch {
@@ -22,10 +24,9 @@ final class VTuberEffect: VideoEffect {
             return
         }
         let camera = SCNCamera()
-        camera.fieldOfView = 18
-        let cameraNode = SCNNode()
+        camera.fieldOfView = cameraFieldOfView
         cameraNode.camera = camera
-        cameraNode.position = SCNVector3(0, 1.37, -1.8)
+        cameraNode.position = SCNVector3(0, cameraPositionY, -1.8)
         cameraNode.rotation = SCNVector4(0, 1, 0, Float.pi)
         scene.rootNode.addChildNode(cameraNode)
         renderer.scene = scene
@@ -35,11 +36,35 @@ final class VTuberEffect: VideoEffect {
     }
 
     func setVideoSourceId(videoSourceId: UUID) {
-        self.videoSourceId.mutate { $0 = videoSourceId }
+        mixerLockQueue.async {
+            self.videoSourceId = videoSourceId
+        }
+    }
+
+    func setCameraSettings(cameraFieldOfView: Double, cameraPositionY: Double) {
+        mixerLockQueue.async {
+            self.cameraNode.camera?.fieldOfView = cameraFieldOfView
+            self.cameraNode.position = SCNVector3(0, cameraPositionY, -1.8)
+        }
+    }
+
+    func setSceneWidget(sceneWidget: SettingsSceneWidget?) {
+        mixerLockQueue.async {
+            self.sceneWidget = sceneWidget
+        }
     }
 
     override func getName() -> String {
         return "VTuber"
+    }
+
+    private func makeTranslation(_ vTuberImage: CIImage,
+                                 _ sceneWidget: SettingsSceneWidget,
+                                 _ size: CGSize) -> CGAffineTransform
+    {
+        let x = toPixels(sceneWidget.x, size.width)
+        let y = size.height - toPixels(sceneWidget.y, size.height) - vTuberImage.extent.height
+        return CGAffineTransform(translationX: x, y: y)
     }
 
     override func execute(_ image: CIImage, _ info: VideoEffectInfo) -> CIImage {
@@ -51,7 +76,7 @@ final class VTuberEffect: VideoEffect {
             return image
         }
         let node = scene.vrmNode
-        if let detection = info.faceDetections[videoSourceId.value]?.first,
+        if let detection = info.faceDetections[videoSourceId]?.first,
            let rotationAngle = detection.calcFaceAngle(imageSize: image.extent.size),
            let sideAngle = detection.calcFaceAngleSide()
         {
@@ -78,19 +103,23 @@ final class VTuberEffect: VideoEffect {
         node.humanoid.node(for: .rightShoulder)?.eulerAngles = SCNVector3(0, 0, -armAngle)
         node.update(at: time)
         let width = 300.0 * 2.0
-        let height = 400.0 * 2.0
+        let height = 300.0 * 2.0
         let vTuberImage = renderer.snapshot(atTime: time,
                                             with: CGSize(width: width, height: height),
                                             antialiasingMode: .none)
-        // return addFaceLandmarks(image: image, detections: info.faceDetections[videoSourceId.value]) ?? image
-        return CIImage(image: vTuberImage)?
+        // return addFaceLandmarks(image: image, detections: info.faceDetections[videoSourceId]) ?? image
+        guard let vTuberImage = CIImage(image: vTuberImage), let sceneWidget else {
+            return image
+        }
+        return vTuberImage
             .transformed(by: CGAffineTransform(scaleX: 0.5, y: 0.5))
-            .transformed(by: CGAffineTransform(translationX: image.extent.width - width / 2, y: 0))
-            .composited(over: image) ?? image
+            .transformed(by: makeTranslation(vTuberImage, sceneWidget, image.extent.size))
+            .cropped(to: image.extent)
+            .composited(over: image)
     }
 
     override func needsFaceDetections(_: Double) -> (Bool, UUID?) {
-        return (true, videoSourceId.value)
+        return (true, videoSourceId)
     }
 
     private func createMesh(landmark: VNFaceLandmarkRegion2D?, image: CIImage?) -> [CIVector] {

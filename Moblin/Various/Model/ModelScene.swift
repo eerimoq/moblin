@@ -124,6 +124,13 @@ extension Model {
         return nil
     }
 
+    func getVTuberEffect(id: UUID) -> VTuberEffect? {
+        for (vTuberEffectId, vTuberEffect) in vTuberEffects where id == vTuberEffectId {
+            return vTuberEffect
+        }
+        return nil
+    }
+
     func getImageEffect(id: UUID) -> ImageEffect? {
         return imageEffects.values.first(where: { $0.widgetId == id })
     }
@@ -239,7 +246,11 @@ extension Model {
         }
         vTuberEffects.removeAll()
         for widget in widgets where widget.type == .vTuber {
-            vTuberEffects[widget.id] = VTuberEffect(vrm: vTuberStorage.makePath(id: widget.vTuber.id))
+            vTuberEffects[widget.id] = VTuberEffect(
+                vrm: vTuberStorage.makePath(id: widget.vTuber.id),
+                cameraFieldOfView: widget.vTuber.cameraFieldOfView,
+                cameraPositionY: widget.vTuber.cameraPositionY
+            )
         }
         browsers = browserEffects.map { _, browser in
             Browser(browserEffect: browser)
@@ -585,6 +596,11 @@ extension Model {
                     if let videoSourceId = getVideoSourceId(cameraId: widget.vTuber.toCameraId()) {
                         vTuberEffect.setVideoSourceId(videoSourceId: videoSourceId)
                     }
+                    vTuberEffect.setSceneWidget(sceneWidget: sceneWidget.clone())
+                    vTuberEffect.setCameraSettings(
+                        cameraFieldOfView: widget.vTuber.cameraFieldOfView,
+                        cameraPositionY: widget.vTuber.cameraPositionY
+                    )
                     effects.append(vTuberEffect)
                 }
             }

@@ -30,18 +30,20 @@ struct WidgetVTuberSettingsView: View {
         model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
     }
 
+    private func setEffectSettings() {
+        model.getVTuberEffect(id: widget.id)?
+            .setCameraSettings(
+                cameraFieldOfView: widget.vTuber.cameraFieldOfView,
+                cameraPositionY: widget.vTuber.cameraPositionY
+            )
+    }
+
     var body: some View {
         Section {
             NavigationLink {
                 InlinePickerView(
                     title: String(localized: "Video source"),
                     onChange: onCameraChange,
-                    footers: [
-                        String(localized: """
-                        Limitation: At most one built-in or USB camera is \
-                        supported at a time in a scene.
-                        """),
-                    ],
                     items: model.listCameraPositions(excludeBuiltin: false).map { id, name in
                         InlinePickerItem(id: id, text: name)
                     },
@@ -61,6 +63,7 @@ struct WidgetVTuberSettingsView: View {
             Button {
                 showPicker = true
                 model.onDocumentPickerUrl = onUrl
+                model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
             } label: {
                 HCenter {
                     Text("Select model")
@@ -71,6 +74,32 @@ struct WidgetVTuberSettingsView: View {
             }
         } header: {
             Text("Model")
+        }
+        Section {
+            HStack {
+                Text("Vertical position")
+                Slider(
+                    value: $vTuber.cameraPositionY,
+                    in: 1 ... 2,
+                    step: 0.01
+                )
+                .onChange(of: vTuber.cameraPositionY) { _ in
+                    setEffectSettings()
+                }
+            }
+            HStack {
+                Text("Field of view")
+                Slider(
+                    value: $vTuber.cameraFieldOfView,
+                    in: 10 ... 30,
+                    step: 1.0
+                )
+                .onChange(of: vTuber.cameraFieldOfView) { _ in
+                    setEffectSettings()
+                }
+            }
+        } header: {
+            Text("Camera")
         }
     }
 }
