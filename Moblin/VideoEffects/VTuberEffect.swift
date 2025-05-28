@@ -12,6 +12,7 @@ final class VTuberEffect: VideoEffect {
     private var neckZAngle = 0.0
     private let cameraNode = SCNNode()
     private var sceneWidget: SettingsSceneWidget?
+    private var needsDetectionsPresentationTimeStamp = 0.0
 
     init(vrm: URL, cameraFieldOfView: Double, cameraPositionY: Double) {
         do {
@@ -87,9 +88,6 @@ final class VTuberEffect: VideoEffect {
             neckYAngle = 0.8 * neckYAngle + 0.2 * sideAngle
             neckZAngle = 0.8 * neckZAngle + 0.2 * rotationAngle
             node.humanoid.node(for: .neck)?.eulerAngles = SCNVector3(0, -neckYAngle, -neckZAngle)
-        } else {
-            node.setBlendShape(value: 0, for: .preset(.angry))
-            node.setBlendShape(value: 0, for: .preset(.blink))
         }
         let time = presentationTimeStamp - firstPresentationTimeStamp
         var angle = time.remainder(dividingBy: .pi * 2)
@@ -98,7 +96,7 @@ final class VTuberEffect: VideoEffect {
         }
         angle -= .pi / 2
         angle *= 0.5
-        let armAngle = (angle * 0.05) + .pi / 5
+        let armAngle = (angle * 0.1) + .pi / 5
         node.humanoid.node(for: .leftShoulder)?.eulerAngles = SCNVector3(0, 0, armAngle)
         node.humanoid.node(for: .rightShoulder)?.eulerAngles = SCNVector3(0, 0, -armAngle)
         node.update(at: time)
@@ -119,8 +117,13 @@ final class VTuberEffect: VideoEffect {
             .composited(over: image)
     }
 
-    override func needsFaceDetections(_: Double) -> (Bool, UUID?) {
-        return (true, videoSourceId)
+    override func needsFaceDetections(_ presentationTimeStamp: Double) -> (Bool, UUID?) {
+        if presentationTimeStamp - needsDetectionsPresentationTimeStamp >= 0.1 {
+            needsDetectionsPresentationTimeStamp = presentationTimeStamp
+            return (true, videoSourceId)
+        } else {
+            return (false, nil)
+        }
     }
 
     private func createMesh(landmark: VNFaceLandmarkRegion2D?, image: CIImage?) -> [CIVector] {
