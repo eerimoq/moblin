@@ -84,7 +84,7 @@ final class VTuberEffect: VideoEffect {
             node.setBlendShape(value: isMouthOpen, for: .preset(.angry))
             let isLeftEyeOpen = -(detection.isLeftEyeOpen(rotationAngle: rotationAngle) - 1)
             node.setBlendShape(value: isLeftEyeOpen, for: .preset(.blink))
-            neckYAngle = 0.7 * neckYAngle + 0.3 * sideAngle
+            neckYAngle = 0.8 * neckYAngle + 0.2 * sideAngle
             neckZAngle = 0.8 * neckZAngle + 0.2 * rotationAngle
             node.humanoid.node(for: .neck)?.eulerAngles = SCNVector3(0, -neckYAngle, -neckZAngle)
         } else {
@@ -108,11 +108,12 @@ final class VTuberEffect: VideoEffect {
                                             with: CGSize(width: width, height: height),
                                             antialiasingMode: .none)
         // return addFaceLandmarks(image: image, detections: info.faceDetections[videoSourceId]) ?? image
-        guard let vTuberImage = CIImage(image: vTuberImage), let sceneWidget else {
+        guard var vTuberImage = CIImage(image: vTuberImage), let sceneWidget else {
             return image
         }
-        return vTuberImage
+        vTuberImage = vTuberImage
             .transformed(by: CGAffineTransform(scaleX: 0.5, y: 0.5))
+        return vTuberImage
             .transformed(by: makeTranslation(vTuberImage, sceneWidget, image.extent.size))
             .cropped(to: image.extent)
             .composited(over: image)

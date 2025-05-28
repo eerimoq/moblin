@@ -22,7 +22,9 @@ struct WidgetVTuberSettingsView: View {
     @State var showPicker = false
 
     private func onUrl(url: URL) {
+        vTuber.modelName = url.lastPathComponent
         model.vTuberStorage.add(id: widget.vTuber.id, url: url)
+        model.resetSelectedScene(changeScene: false)
     }
 
     private func onCameraChange(cameraId: String) {
@@ -60,10 +62,14 @@ struct WidgetVTuberSettingsView: View {
             }
         }
         Section {
+            HStack {
+                Text("Name")
+                Spacer()
+                Text(vTuber.modelName)
+            }
             Button {
                 showPicker = true
                 model.onDocumentPickerUrl = onUrl
-                model.resetSelectedScene(changeScene: false)
             } label: {
                 HCenter {
                     Text("Select model")

@@ -2097,7 +2097,6 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
 
 let widgetTypes = SettingsWidgetType.allCases
     .filter { $0 != .videoEffect }
-    .filter { $0 != .vTuber }
     .map { $0.toString() }
 
 enum SettingsVideoEffectType: String, Codable, CaseIterable {
@@ -2227,6 +2226,7 @@ class SettingsWidgetVTuber: Codable, ObservableObject {
     var externalCameraName: String = ""
     @Published var cameraPositionY: Double = 1.37
     @Published var cameraFieldOfView: Double = 18
+    @Published var modelName: String = ""
 
     enum CodingKeys: CodingKey {
         case id,
@@ -2239,7 +2239,8 @@ class SettingsWidgetVTuber: Codable, ObservableObject {
              externalCameraId,
              externalCameraName,
              cameraPositionY,
-             cameraFieldOfView
+             cameraFieldOfView,
+             modelName
     }
 
     init() {}
@@ -2257,6 +2258,7 @@ class SettingsWidgetVTuber: Codable, ObservableObject {
         try container.encode(.externalCameraName, externalCameraName)
         try container.encode(.cameraPositionY, cameraPositionY)
         try container.encode(.cameraFieldOfView, cameraFieldOfView)
+        try container.encode(.modelName, modelName)
     }
 
     required init(from decoder: Decoder) throws {
@@ -2272,6 +2274,7 @@ class SettingsWidgetVTuber: Codable, ObservableObject {
         externalCameraName = container.decode(.externalCameraName, String.self, "")
         cameraPositionY = container.decode(.cameraPositionY, Double.self, 1.37)
         cameraFieldOfView = container.decode(.cameraFieldOfView, Double.self, 18)
+        modelName = container.decode(.modelName, String.self, "")
     }
 
     func toCameraId() -> SettingsCameraId {
