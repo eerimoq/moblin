@@ -5,7 +5,7 @@ import VRMSceneKit
 
 final class VTuberEffect: VideoEffect {
     private var videoSourceId: UUID = .init()
-    private let scene: VRMScene?
+    private var scene: VRMScene?
     private let renderer = SCNRenderer(device: nil)
     private var firstPresentationTimeStamp: Double?
     private var previousPresentationTimeStamp = 0.0
@@ -13,30 +13,36 @@ final class VTuberEffect: VideoEffect {
     private var neckZAngle = 0.0
     private var latestNeckYAngle = 0.0
     private var latestNeckZAngle = 0.0
-    private let cameraNode = SCNNode()
+    private var cameraNode: SCNNode?
     private var sceneWidget: SettingsSceneWidget?
     private var needsDetectionsPresentationTimeStamp = 0.0
 
     init(vrm: URL, cameraFieldOfView: Double, cameraPositionY: Double) {
-        do {
-            scene = try VRMSceneLoader(withURL: vrm).loadScene()
-        } catch {
-            logger.info("v-tuber: Failed to load VRM file with error: \(error)")
-            scene = nil
+        super.init()
+        DispatchQueue.global().async {
+            let scene: VRMScene
+            do {
+                scene = try VRMSceneLoader(withURL: vrm).loadScene()
+            } catch {
+                logger.info("v-tuber: Failed to load VRM file with error: \(error)")
+                return
+            }
+            mixerLockQueue.async {
+                let camera = SCNCamera()
+                camera.fieldOfView = cameraFieldOfView
+                let cameraNode = SCNNode()
+                cameraNode.camera = camera
+                cameraNode.position = SCNVector3(0, cameraPositionY, -1.8)
+                cameraNode.rotation = SCNVector4(0, 1, 0, Float.pi)
+                scene.rootNode.addChildNode(cameraNode)
+                self.renderer.scene = scene
+                let node = scene.vrmNode
+                node.humanoid.node(for: .leftShoulder)?.eulerAngles = SCNVector3(0, 0, 40 * CGFloat.pi / 180)
+                node.humanoid.node(for: .rightShoulder)?.eulerAngles = SCNVector3(0, 0, -40 * CGFloat.pi / 180)
+                self.scene = scene
+                self.cameraNode = cameraNode
+            }
         }
-        guard let scene else {
-            return
-        }
-        let camera = SCNCamera()
-        camera.fieldOfView = cameraFieldOfView
-        cameraNode.camera = camera
-        cameraNode.position = SCNVector3(0, cameraPositionY, -1.8)
-        cameraNode.rotation = SCNVector4(0, 1, 0, Float.pi)
-        scene.rootNode.addChildNode(cameraNode)
-        renderer.scene = scene
-        let node = scene.vrmNode
-        node.humanoid.node(for: .leftShoulder)?.eulerAngles = SCNVector3(0, 0, 40 * CGFloat.pi / 180)
-        node.humanoid.node(for: .rightShoulder)?.eulerAngles = SCNVector3(0, 0, -40 * CGFloat.pi / 180)
     }
 
     func setVideoSourceId(videoSourceId: UUID) {
@@ -47,8 +53,8 @@ final class VTuberEffect: VideoEffect {
 
     func setCameraSettings(cameraFieldOfView: Double, cameraPositionY: Double) {
         mixerLockQueue.async {
-            self.cameraNode.camera?.fieldOfView = cameraFieldOfView
-            self.cameraNode.position = SCNVector3(0, cameraPositionY, -1.8)
+            self.cameraNode?.camera?.fieldOfView = cameraFieldOfView
+            self.cameraNode?.position = SCNVector3(0, cameraPositionY, -1.8)
         }
     }
 
