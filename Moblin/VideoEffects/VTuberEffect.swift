@@ -8,8 +8,11 @@ final class VTuberEffect: VideoEffect {
     private let scene: VRMScene?
     private let renderer = SCNRenderer(device: nil)
     private var firstPresentationTimeStamp: Double?
+    private var previousPresentationTimeStamp = 0.0
     private var neckYAngle = 0.0
     private var neckZAngle = 0.0
+    private var latestNeckYAngle = 0.0
+    private var latestNeckZAngle = 0.0
     private let cameraNode = SCNNode()
     private var sceneWidget: SettingsSceneWidget?
     private var needsDetectionsPresentationTimeStamp = 0.0
@@ -85,10 +88,16 @@ final class VTuberEffect: VideoEffect {
             node.setBlendShape(value: isMouthOpen, for: .preset(.angry))
             let isLeftEyeOpen = -(detection.isLeftEyeOpen(rotationAngle: rotationAngle) - 1)
             node.setBlendShape(value: isLeftEyeOpen, for: .preset(.blink))
-            neckYAngle = 0.8 * neckYAngle + 0.2 * sideAngle
-            neckZAngle = 0.8 * neckZAngle + 0.2 * rotationAngle
-            node.humanoid.node(for: .neck)?.eulerAngles = SCNVector3(0, -neckYAngle, -neckZAngle)
+            latestNeckYAngle = sideAngle
+            latestNeckZAngle = rotationAngle
         }
+        let timeDelta = presentationTimeStamp - previousPresentationTimeStamp
+        previousPresentationTimeStamp = presentationTimeStamp
+        let newFactor = 0.2 * (timeDelta / 0.033)
+        let oldFactor = 1 - newFactor
+        neckYAngle = oldFactor * neckYAngle + newFactor * latestNeckYAngle
+        neckZAngle = oldFactor * neckZAngle + newFactor * latestNeckZAngle
+        node.humanoid.node(for: .neck)?.eulerAngles = SCNVector3(0, -neckYAngle, -neckZAngle)
         let time = presentationTimeStamp - firstPresentationTimeStamp
         var angle = time.remainder(dividingBy: .pi * 2)
         if angle < 0 {
