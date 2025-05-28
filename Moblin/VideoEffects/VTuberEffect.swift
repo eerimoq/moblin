@@ -126,13 +126,8 @@ final class VTuberEffect: VideoEffect {
             .composited(over: image)
     }
 
-    override func needsFaceDetections(_ presentationTimeStamp: Double) -> (Bool, UUID?) {
-        if presentationTimeStamp - needsDetectionsPresentationTimeStamp >= 0.1 {
-            needsDetectionsPresentationTimeStamp = presentationTimeStamp
-            return (true, videoSourceId)
-        } else {
-            return (false, nil)
-        }
+    override func needsFaceDetections(_: Double) -> (Bool, UUID?, Double?) {
+        return (false, videoSourceId, 0.1)
     }
 
     private func createMesh(landmark: VNFaceLandmarkRegion2D?, image: CIImage?) -> [CIVector] {

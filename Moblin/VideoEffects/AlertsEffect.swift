@@ -646,8 +646,8 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         return "Alert widget"
     }
 
-    override func needsFaceDetections(_: Double) -> (Bool, UUID?) {
-        return (landmarkSettings != nil, nil)
+    override func needsFaceDetections(_: Double) -> (Bool, UUID?, Double?) {
+        return (landmarkSettings != nil, nil, nil)
     }
 
     private func getNext(_ presentationTimeStamp: Double) -> (CIImage?, CIImage?, Double, Double, LandmarkSettings?) {

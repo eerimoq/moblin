@@ -24,8 +24,8 @@ open class VideoEffect: NSObject {
         return ""
     }
 
-    open func needsFaceDetections(_: Double) -> (Bool, UUID?) {
-        return (false, nil)
+    open func needsFaceDetections(_: Double) -> (Bool, UUID?, Double?) {
+        return (false, nil, nil)
     }
 
     open func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
