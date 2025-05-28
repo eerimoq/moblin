@@ -706,23 +706,42 @@ extension Model {
         return nil
     }
 
-    func isCaptureDeviceVideoSoureWidget(widget: SettingsWidget) -> Bool {
-        guard widget.type == .videoSource else {
-            return false
-        }
-        switch widget.videoSource.cameraPosition {
-        case .back:
-            return true
-        case .backWideDualLowEnergy:
-            return true
-        case .backDualLowEnergy:
-            return true
-        case .backTripleLowEnergy:
-            return true
-        case .front:
-            return true
-        case .external:
-            return true
+    func isCaptureDeviceWidget(widget: SettingsWidget) -> Bool {
+        switch widget.type {
+        case .videoSource:
+            switch widget.videoSource.cameraPosition {
+            case .back:
+                return true
+            case .backWideDualLowEnergy:
+                return true
+            case .backDualLowEnergy:
+                return true
+            case .backTripleLowEnergy:
+                return true
+            case .front:
+                return true
+            case .external:
+                return true
+            default:
+                return false
+            }
+        case .vTuber:
+            switch widget.vTuber.cameraPosition {
+            case .back:
+                return true
+            case .backWideDualLowEnergy:
+                return true
+            case .backDualLowEnergy:
+                return true
+            case .backTripleLowEnergy:
+                return true
+            case .front:
+                return true
+            case .external:
+                return true
+            default:
+                return false
+            }
         default:
             return false
         }

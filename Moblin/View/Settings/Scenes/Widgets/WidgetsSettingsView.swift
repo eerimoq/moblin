@@ -20,7 +20,7 @@ private struct WidgetsSettingsItemView: View {
                 }
             }
             .onChange(of: widget.enabled) { _ in
-                model.sceneUpdated(attachCamera: model.isCaptureDeviceVideoSoureWidget(widget: widget))
+                model.sceneUpdated(attachCamera: model.isCaptureDeviceWidget(widget: widget))
             }
         }
     }
