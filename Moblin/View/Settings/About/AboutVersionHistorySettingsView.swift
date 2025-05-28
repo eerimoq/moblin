@@ -8,7 +8,7 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
-    Version(version: "0.399.0", date: "2025-05-20", changes: [
+    Version(version: "0.399.0", date: "2025-05-28", changes: [
         "• Experimental support for delaying builtin camera and mic feeds.",
         "  • Set delay in debug settings. Takes effect when attaching a new source.",
         "• Chinese (HK) translation updated. ✍️ tkg2222",
@@ -37,6 +37,14 @@ private let versions = [
         "• Fix bug that made lots of timers pause when scrolling.",
         "• G-force in text widget. 💡 Marco | ParaglidingLive.com",
         "  • Current, recent max and max force.",
+        "• Finnish translation updated. ✍️ mikeful",
+        "• French translation updated. ✍️ Emtek",
+        "• Fixed horizon experiment.",
+        "  • Enable in Settings → Camera.",
+        "• Video source, image and browser widgets effects.",
+        "  • Remove background...",
+        "• Brazilian portuguese translation updated. ✍️ dmsa",
+        "• Initial VTuber widget.",
     ]),
     Version(version: "0.398.0", date: "2025-05-04", changes: [
         "• Replay speed picker.",
