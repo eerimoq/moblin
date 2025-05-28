@@ -1504,6 +1504,7 @@ final class VideoUnit: NSObject {
             }
             if needsFaceDetectionsNow {
                 ids.insert(videoSourceId)
+                previousFaceDetectionTimes[videoSourceId] = presentationTimeStamp
             }
         }
         for (videoSourceId, interval) in faceDetectionsIntervals {
