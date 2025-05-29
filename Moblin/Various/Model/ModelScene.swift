@@ -710,10 +710,10 @@ extension Model {
         switch widget.type {
         case .scene:
             if let scene = database.scenes.first(where: { $0.id == widget.scene.sceneId }) {
-                for widget in getSceneWidgets(scene: scene, onlyEnabled: false) {
-                    if isCaptureDeviceWidget(widget: widget) {
-                        return true
-                    }
+                for widget in getSceneWidgets(scene: scene, onlyEnabled: false) where
+                    isCaptureDeviceWidget(widget: widget)
+                {
+                    return true
                 }
             }
             return false
