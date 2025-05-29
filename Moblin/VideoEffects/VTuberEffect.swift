@@ -104,7 +104,10 @@ final class VTuberEffect: VideoEffect {
             .composited(over: image)
     }
 
-    private func updateModelPose(node: VRMNode, image: CIImage, info: VideoEffectInfo, time: Double,
+    private func updateModelPose(node: VRMNode,
+                                 image: CIImage,
+                                 info: VideoEffectInfo,
+                                 time: Double,
                                  timeDelta: Double)
     {
         if let detection = info.faceDetections[videoSourceId]?.first,
@@ -115,14 +118,15 @@ final class VTuberEffect: VideoEffect {
             node.setBlendShape(value: isMouthOpen, for: .preset(.a))
             let isLeftEyeOpen = -(detection.isLeftEyeOpen(rotationAngle: rotationAngle) - 1)
             node.setBlendShape(value: isLeftEyeOpen, for: .preset(.blink))
-            latestNeckYAngle = sideAngle
-            latestNeckZAngle = rotationAngle
+            latestNeckYAngle = sideAngle * 0.8
+            latestNeckZAngle = rotationAngle * 0.8
         }
         let newFactor = min(0.2 * (timeDelta / 0.033), 0.5)
         let oldFactor = 1 - newFactor
         neckYAngle = oldFactor * neckYAngle + newFactor * latestNeckYAngle
         neckZAngle = oldFactor * neckZAngle + newFactor * latestNeckZAngle
         node.humanoid.node(for: .neck)?.eulerAngles = SCNVector3(0, -neckYAngle, -neckZAngle)
+        node.humanoid.node(for: .spine)?.eulerAngles = SCNVector3(0, -neckYAngle / 3, -neckZAngle / 3)
         var angle = time.remainder(dividingBy: .pi * 2)
         if angle < 0 {
             angle *= -1
