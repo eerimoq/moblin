@@ -118,8 +118,8 @@ final class VTuberEffect: VideoEffect {
         node.humanoid.node(for: .rightShoulder)?.eulerAngles = SCNVector3(0, 0, -armAngle)
         if presentationTimeStamp - renderedImagePresentationTimeStamp > 0.025 {
             node.update(at: time)
-            let width = 400.0 * 2.0
-            let height = 400.0 * 2.0
+            let width = 600.0
+            let height = 600.0
             let vTuberImage = renderer.snapshot(atTime: time,
                                                 with: CGSize(width: width, height: height),
                                                 antialiasingMode: .none)
@@ -134,7 +134,7 @@ final class VTuberEffect: VideoEffect {
             return image
         }
         renderedImage = renderedImage
-            .transformed(by: CGAffineTransform(scaleX: 0.5, y: 0.5))
+            .transformed(by: CGAffineTransform(scaleX: 0.75, y: 0.75))
         return renderedImage
             .transformed(by: makeTranslation(renderedImage, sceneWidget, image.extent.size))
             .cropped(to: image.extent)
