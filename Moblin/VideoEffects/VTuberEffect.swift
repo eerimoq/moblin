@@ -121,7 +121,7 @@ final class VTuberEffect: VideoEffect {
             latestNeckYAngle = sideAngle * 0.8
             latestNeckZAngle = rotationAngle * 0.8
         }
-        let newFactor = min(0.15 * (timeDelta / 0.033), 0.5)
+        let newFactor = min(0.1 * (timeDelta / 0.033), 0.5)
         let oldFactor = 1 - newFactor
         neckYAngle = oldFactor * neckYAngle + newFactor * latestNeckYAngle
         neckZAngle = oldFactor * neckZAngle + newFactor * latestNeckZAngle
