@@ -16,6 +16,8 @@ final class VTuberEffect: VideoEffect {
     private var cameraNode: SCNNode?
     private var sceneWidget: SettingsSceneWidget?
     private var needsDetectionsPresentationTimeStamp = 0.0
+    private var renderedImagePresentationTimeStamp = 0.0
+    private var renderedImage: CIImage?
 
     init(vrm: URL, cameraFieldOfView: Double, cameraPositionY: Double) {
         super.init()
@@ -91,7 +93,7 @@ final class VTuberEffect: VideoEffect {
            let sideAngle = detection.calcFaceAngleSide()
         {
             let isMouthOpen = detection.isMouthOpen(rotationAngle: rotationAngle)
-            node.setBlendShape(value: isMouthOpen, for: .preset(.angry))
+            node.setBlendShape(value: isMouthOpen, for: .preset(.a))
             let isLeftEyeOpen = -(detection.isLeftEyeOpen(rotationAngle: rotationAngle) - 1)
             node.setBlendShape(value: isLeftEyeOpen, for: .preset(.blink))
             latestNeckYAngle = sideAngle
@@ -99,7 +101,7 @@ final class VTuberEffect: VideoEffect {
         }
         let timeDelta = presentationTimeStamp - previousPresentationTimeStamp
         previousPresentationTimeStamp = presentationTimeStamp
-        let newFactor = 0.2 * (timeDelta / 0.033)
+        let newFactor = min(0.2 * (timeDelta / 0.033), 0.5)
         let oldFactor = 1 - newFactor
         neckYAngle = oldFactor * neckYAngle + newFactor * latestNeckYAngle
         neckZAngle = oldFactor * neckZAngle + newFactor * latestNeckZAngle
@@ -111,23 +113,30 @@ final class VTuberEffect: VideoEffect {
         }
         angle -= .pi / 2
         angle *= 0.5
-        let armAngle = (angle * 0.1) + .pi / 5
+        let armAngle = (angle * 0.1) + .pi / 3.5
         node.humanoid.node(for: .leftShoulder)?.eulerAngles = SCNVector3(0, 0, armAngle)
         node.humanoid.node(for: .rightShoulder)?.eulerAngles = SCNVector3(0, 0, -armAngle)
-        node.update(at: time)
-        let width = 300.0 * 2.0
-        let height = 300.0 * 2.0
-        let vTuberImage = renderer.snapshot(atTime: time,
-                                            with: CGSize(width: width, height: height),
-                                            antialiasingMode: .none)
-        // return addFaceLandmarks(image: image, detections: info.faceDetections[videoSourceId]) ?? image
-        guard var vTuberImage = CIImage(image: vTuberImage), let sceneWidget else {
+        if presentationTimeStamp - renderedImagePresentationTimeStamp > 0.025 {
+            node.update(at: time)
+            let width = 400.0 * 2.0
+            let height = 400.0 * 2.0
+            let vTuberImage = renderer.snapshot(atTime: time,
+                                                with: CGSize(width: width, height: height),
+                                                antialiasingMode: .none)
+            // return addFaceLandmarks(image: image, detections: info.faceDetections[videoSourceId]) ?? image
+            guard let vTuberImage = CIImage(image: vTuberImage) else {
+                return image
+            }
+            renderedImage = vTuberImage
+            renderedImagePresentationTimeStamp = presentationTimeStamp
+        }
+        guard var renderedImage, let sceneWidget else {
             return image
         }
-        vTuberImage = vTuberImage
+        renderedImage = renderedImage
             .transformed(by: CGAffineTransform(scaleX: 0.5, y: 0.5))
-        return vTuberImage
-            .transformed(by: makeTranslation(vTuberImage, sceneWidget, image.extent.size))
+        return renderedImage
+            .transformed(by: makeTranslation(renderedImage, sceneWidget, image.extent.size))
             .cropped(to: image.extent)
             .composited(over: image)
     }
