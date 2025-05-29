@@ -19,6 +19,11 @@ private class PngCoordinate: Decodable {
     }
 }
 
+private enum BlinkTalkState: Int {
+    case closed = 1
+    case open = 2
+}
+
 private class PngTuberImage: Decodable {
     // var animSpeed: Int
     // var clipped: Bool
@@ -35,8 +40,8 @@ private class PngTuberImage: Decodable {
     // var rLimitMax: Int
     // var rLimitMin: Int
     // var rotDrag: Int
-    let showBlink: Int
-    let showTalk: Int
+    let showBlink: BlinkTalkState?
+    let showTalk: BlinkTalkState?
     // var stretchAmount: Float
     // var toggle: String
     // var type: PNGType
@@ -75,8 +80,8 @@ private class PngTuberImage: Decodable {
         offset = try container.decode(PngCoordinate.self, forKey: .offset)
         parentId = try container.decode(Int?.self, forKey: .parentId)
         pos = try container.decode(PngCoordinate.self, forKey: .pos)
-        showBlink = try container.decode(Int.self, forKey: .showBlink)
-        showTalk = try container.decode(Int.self, forKey: .showTalk)
+        showBlink = try BlinkTalkState(rawValue: container.decode(Int.self, forKey: .showBlink))
+        showTalk = try BlinkTalkState(rawValue: container.decode(Int.self, forKey: .showTalk))
         zindex = try container.decode(Int.self, forKey: .zindex)
     }
 }
@@ -125,16 +130,18 @@ final class PngTuberEffect: VideoEffect {
     }
 
     override func execute(_ image: CIImage, _ info: VideoEffectInfo) -> CIImage {
-        guard let model else {
+        guard let model, let sceneWidget else {
             return image
         }
         updateModelPose(image: image, info: info)
+        let size = image.extent.size
         var pngTuberImage = image
         for image in model.images {
             guard shouldShowImage(image: image) else {
                 continue
             }
             pngTuberImage = image.imageData
+                .transformed(by: makeTranslation(image.imageData, sceneWidget, size))
                 .composited(over: pngTuberImage)
         }
         return pngTuberImage.cropped(to: image.extent)
@@ -145,17 +152,17 @@ final class PngTuberEffect: VideoEffect {
             return false
         }
         switch image.showBlink {
-        case 1:
+        case .closed:
             return !isLeftEyeOpen
-        case 2:
+        case .open:
             return isLeftEyeOpen
         default:
             break
         }
         switch image.showTalk {
-        case 1:
+        case .closed:
             return !isMouthOpen
-        case 2:
+        case .open:
             return isMouthOpen
         default:
             break
@@ -170,6 +177,15 @@ final class PngTuberEffect: VideoEffect {
             isMouthOpen = detection.isMouthOpen(rotationAngle: rotationAngle) > 0.15
             isLeftEyeOpen = -(detection.isLeftEyeOpen(rotationAngle: rotationAngle) - 1) > 0.1
         }
+    }
+
+    private func makeTranslation(_ pngTuberImage: CIImage,
+                                 _ sceneWidget: SettingsSceneWidget,
+                                 _ size: CGSize) -> CGAffineTransform
+    {
+        let x = toPixels(sceneWidget.x, size.width)
+        let y = size.height - toPixels(sceneWidget.y, size.height) - pngTuberImage.extent.height
+        return CGAffineTransform(translationX: x, y: y)
     }
 
     override func needsFaceDetections(_: Double) -> (Bool, UUID?, Double?) {

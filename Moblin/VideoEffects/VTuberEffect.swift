@@ -70,15 +70,6 @@ final class VTuberEffect: VideoEffect {
         return "VTuber"
     }
 
-    private func makeTranslation(_ vTuberImage: CIImage,
-                                 _ sceneWidget: SettingsSceneWidget,
-                                 _ size: CGSize) -> CGAffineTransform
-    {
-        let x = toPixels(sceneWidget.x, size.width)
-        let y = size.height - toPixels(sceneWidget.y, size.height) - vTuberImage.extent.height
-        return CGAffineTransform(translationX: x, y: y)
-    }
-
     override func execute(_ image: CIImage, _ info: VideoEffectInfo) -> CIImage {
         let presentationTimeStamp = info.presentationTimeStamp.seconds
         if firstPresentationTimeStamp == nil {
@@ -101,6 +92,15 @@ final class VTuberEffect: VideoEffect {
             .transformed(by: makeTranslation(renderedImage, sceneWidget, image.extent.size))
             .cropped(to: image.extent)
             .composited(over: image)
+    }
+
+    private func makeTranslation(_ vTuberImage: CIImage,
+                                 _ sceneWidget: SettingsSceneWidget,
+                                 _ size: CGSize) -> CGAffineTransform
+    {
+        let x = toPixels(sceneWidget.x, size.width)
+        let y = size.height - toPixels(sceneWidget.y, size.height) - vTuberImage.extent.height
+        return CGAffineTransform(translationX: x, y: y)
     }
 
     private func updateModelPose(node: VRMNode,
