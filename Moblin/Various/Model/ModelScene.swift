@@ -610,9 +610,10 @@ extension Model {
                         vTuberEffect.setVideoSourceId(videoSourceId: videoSourceId)
                     }
                     vTuberEffect.setSceneWidget(sceneWidget: sceneWidget.clone())
-                    vTuberEffect.setCameraSettings(
+                    vTuberEffect.setSettings(
                         cameraFieldOfView: widget.vTuber.cameraFieldOfView,
-                        cameraPositionY: widget.vTuber.cameraPositionY
+                        cameraPositionY: widget.vTuber.cameraPositionY,
+                        mirror: widget.vTuber.mirror
                     )
                     effects.append(vTuberEffect)
                 }
@@ -622,6 +623,7 @@ extension Model {
                         pngTuberEffect.setVideoSourceId(videoSourceId: videoSourceId)
                     }
                     pngTuberEffect.setSceneWidget(sceneWidget: sceneWidget.clone())
+                    pngTuberEffect.setSettings(mirror: widget.pngTuber.mirror)
                     effects.append(pngTuberEffect)
                 }
             }

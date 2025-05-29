@@ -23,13 +23,17 @@ struct WidgetPngTuberSettingsView: View {
 
     private func onUrl(url: URL) {
         pngTuber.modelName = url.lastPathComponent
-        model.pngTuberStorage.add(id: widget.pngTuber.id, url: url)
+        model.pngTuberStorage.add(id: pngTuber.id, url: url)
         model.resetSelectedScene(changeScene: false)
     }
 
     private func onCameraChange(cameraId: String) {
-        widget.pngTuber.updateCameraId(settingsCameraId: model.cameraIdToSettingsCameraId(cameraId: cameraId))
+        pngTuber.updateCameraId(settingsCameraId: model.cameraIdToSettingsCameraId(cameraId: cameraId))
         model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
+    }
+
+    private func setEffectSettings() {
+        model.getPngTuberEffect(id: widget.id)?.setSettings(mirror: pngTuber.mirror)
     }
 
     var body: some View {
@@ -69,6 +73,14 @@ struct WidgetPngTuberSettingsView: View {
             Text("Model")
         } footer: {
             Text("A .save-file from PNGTuberPlus.")
+        }
+        Section {
+            Toggle(isOn: $pngTuber.mirror) {
+                Text("Mirror")
+            }
+            .onChange(of: pngTuber.mirror) { _ in
+                setEffectSettings()
+            }
         }
     }
 }

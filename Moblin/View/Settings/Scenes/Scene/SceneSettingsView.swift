@@ -53,6 +53,16 @@ struct SceneSettingsView: View {
             sceneWidget.y = 72
             sceneWidget.width = 28
             sceneWidget.height = 28
+        case .vTuber:
+            sceneWidget.x = 80
+            sceneWidget.y = 60
+            sceneWidget.width = 28
+            sceneWidget.height = 28
+        case .pngTuber:
+            sceneWidget.x = 85
+            sceneWidget.y = 72
+            sceneWidget.width = 28
+            sceneWidget.height = 28
         default:
             break
         }

@@ -2232,6 +2232,7 @@ class SettingsWidgetVTuber: Codable, ObservableObject {
     @Published var cameraPositionY: Double = 1.37
     @Published var cameraFieldOfView: Double = 18
     @Published var modelName: String = ""
+    @Published var mirror: Bool = false
 
     enum CodingKeys: CodingKey {
         case id,
@@ -2245,7 +2246,8 @@ class SettingsWidgetVTuber: Codable, ObservableObject {
              externalCameraName,
              cameraPositionY,
              cameraFieldOfView,
-             modelName
+             modelName,
+             mirror
     }
 
     init() {}
@@ -2264,6 +2266,7 @@ class SettingsWidgetVTuber: Codable, ObservableObject {
         try container.encode(.cameraPositionY, cameraPositionY)
         try container.encode(.cameraFieldOfView, cameraFieldOfView)
         try container.encode(.modelName, modelName)
+        try container.encode(.mirror, mirror)
     }
 
     required init(from decoder: Decoder) throws {
@@ -2280,6 +2283,7 @@ class SettingsWidgetVTuber: Codable, ObservableObject {
         cameraPositionY = container.decode(.cameraPositionY, Double.self, 1.37)
         cameraFieldOfView = container.decode(.cameraFieldOfView, Double.self, 18)
         modelName = container.decode(.modelName, String.self, "")
+        mirror = container.decode(.mirror, Bool.self, false)
     }
 
     func toCameraId() -> SettingsCameraId {
@@ -2351,6 +2355,7 @@ class SettingsWidgetPngTuber: Codable, ObservableObject {
     var externalCameraId: String = ""
     var externalCameraName: String = ""
     @Published var modelName: String = ""
+    @Published var mirror: Bool = false
 
     enum CodingKeys: CodingKey {
         case id,
@@ -2362,7 +2367,8 @@ class SettingsWidgetPngTuber: Codable, ObservableObject {
              mediaPlayerCameraId,
              externalCameraId,
              externalCameraName,
-             modelName
+             modelName,
+             mirror
     }
 
     init() {}
@@ -2379,6 +2385,7 @@ class SettingsWidgetPngTuber: Codable, ObservableObject {
         try container.encode(.externalCameraId, externalCameraId)
         try container.encode(.externalCameraName, externalCameraName)
         try container.encode(.modelName, modelName)
+        try container.encode(.mirror, mirror)
     }
 
     required init(from decoder: Decoder) throws {
@@ -2393,6 +2400,7 @@ class SettingsWidgetPngTuber: Codable, ObservableObject {
         externalCameraId = container.decode(.externalCameraId, String.self, "")
         externalCameraName = container.decode(.externalCameraName, String.self, "")
         modelName = container.decode(.modelName, String.self, "")
+        mirror = container.decode(.mirror, Bool.self, false)
     }
 
     func toCameraId() -> SettingsCameraId {

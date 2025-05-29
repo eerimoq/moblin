@@ -98,6 +98,7 @@ final class PngTuberEffect: VideoEffect {
     private let model: PngTuberFile?
     private var videoSourceId: UUID = .init()
     private var sceneWidget: SettingsSceneWidget?
+    private var mirror: Bool = false
     private var currentCostume = 1
     private var isMouthOpen = false
     private var isLeftEyeOpen = true
@@ -125,6 +126,12 @@ final class PngTuberEffect: VideoEffect {
         }
     }
 
+    func setSettings(mirror: Bool) {
+        mixerLockQueue.async {
+            self.mirror = mirror
+        }
+    }
+
     override func getName() -> String {
         return "PNGTuber"
     }
@@ -134,17 +141,26 @@ final class PngTuberEffect: VideoEffect {
             return image
         }
         updateModelPose(image: image, info: info)
-        let size = image.extent.size
-        var pngTuberImage = image
+        var pngTuberImage: CIImage?
         for image in model.images {
             guard shouldShowImage(image: image) else {
                 continue
             }
-            pngTuberImage = image.imageData
-                .transformed(by: makeTranslation(image.imageData, sceneWidget, size))
-                .composited(over: pngTuberImage)
+            if pngTuberImage != nil {
+                pngTuberImage = image.imageData.composited(over: pngTuberImage!)
+            } else {
+                pngTuberImage = image.imageData
+            }
         }
-        return pngTuberImage.cropped(to: image.extent)
+        guard var pngTuberImage else {
+            return image
+        }
+        pngTuberImage = pngTuberImage
+            .transformed(by: makeScale(pngTuberImage, sceneWidget, image.extent.size))
+        return pngTuberImage
+            .transformed(by: makeTranslation(pngTuberImage, sceneWidget, image.extent.size))
+            .composited(over: image)
+            .cropped(to: image.extent)
     }
 
     private func shouldShowImage(image: PngTuberImage) -> Bool {
@@ -177,6 +193,21 @@ final class PngTuberEffect: VideoEffect {
             isMouthOpen = detection.isMouthOpen(rotationAngle: rotationAngle) > 0.15
             isLeftEyeOpen = -(detection.isLeftEyeOpen(rotationAngle: rotationAngle) - 1) > 0.1
         }
+    }
+
+    private func makeScale(_ pngTuberImage: CIImage, _ sceneWidget: SettingsSceneWidget,
+                           _ size: CGSize) -> CGAffineTransform
+    {
+        var scaleX = toPixels(sceneWidget.width, size.width) / pngTuberImage.extent.size.width
+        var scaleY = toPixels(sceneWidget.height, size.height) / pngTuberImage.extent.size.height
+        let scale = min(scaleX, scaleY)
+        if mirror {
+            scaleX = -1 * scale
+        } else {
+            scaleX = scale
+        }
+        scaleY = scale
+        return CGAffineTransform(scaleX: scaleX, y: scaleY)
     }
 
     private func makeTranslation(_ pngTuberImage: CIImage,

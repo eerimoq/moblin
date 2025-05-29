@@ -6,6 +6,7 @@ import VRMSceneKit
 final class VTuberEffect: VideoEffect {
     private var videoSourceId: UUID = .init()
     private var scene: VRMScene?
+    private var mirror: Bool = false
     private let renderer = SCNRenderer(device: nil)
     private var firstPresentationTimeStamp: Double?
     private var previousPresentationTimeStamp = 0.0
@@ -53,10 +54,11 @@ final class VTuberEffect: VideoEffect {
         }
     }
 
-    func setCameraSettings(cameraFieldOfView: Double, cameraPositionY: Double) {
+    func setSettings(cameraFieldOfView: Double, cameraPositionY: Double, mirror: Bool) {
         mixerLockQueue.async {
             self.cameraNode?.camera?.fieldOfView = cameraFieldOfView
             self.cameraNode?.position = SCNVector3(0, cameraPositionY, -1.8)
+            self.mirror = mirror
         }
     }
 
@@ -87,11 +89,26 @@ final class VTuberEffect: VideoEffect {
             return image
         }
         renderedImage = renderedImage
-            .transformed(by: CGAffineTransform(scaleX: 0.75, y: 0.75))
+            .transformed(by: makeScale(renderedImage, sceneWidget, image.extent.size))
         return renderedImage
             .transformed(by: makeTranslation(renderedImage, sceneWidget, image.extent.size))
             .cropped(to: image.extent)
             .composited(over: image)
+    }
+
+    private func makeScale(_ vTuberImage: CIImage, _ sceneWidget: SettingsSceneWidget,
+                           _ size: CGSize) -> CGAffineTransform
+    {
+        var scaleX = toPixels(sceneWidget.width, size.width) / vTuberImage.extent.size.width
+        var scaleY = toPixels(sceneWidget.height, size.height) / vTuberImage.extent.size.height
+        let scale = min(scaleX, scaleY)
+        if mirror {
+            scaleX = -1 * scale
+        } else {
+            scaleX = scale
+        }
+        scaleY = scale
+        return CGAffineTransform(scaleX: scaleX, y: scaleY)
     }
 
     private func makeTranslation(_ vTuberImage: CIImage,
