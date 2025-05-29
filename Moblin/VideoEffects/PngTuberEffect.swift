@@ -137,7 +137,7 @@ final class PngTuberEffect: VideoEffect {
             pngTuberImage = image.imageData
                 .composited(over: pngTuberImage)
         }
-        return pngTuberImage
+        return pngTuberImage.cropped(to: image.extent)
     }
 
     private func shouldShowImage(image: PngTuberImage) -> Bool {
