@@ -62,17 +62,12 @@ struct WidgetVTuberSettingsView: View {
             }
         }
         Section {
-            HStack {
-                Text("Name")
-                Spacer()
-                Text(vTuber.modelName)
-            }
             Button {
                 showPicker = true
                 model.onDocumentPickerUrl = onUrl
             } label: {
                 HCenter {
-                    Text("Select model")
+                    Text(vTuber.modelName.isEmpty ? String(localized: "Select model") : vTuber.modelName)
                 }
             }
             .sheet(isPresented: $showPicker) {
