@@ -123,11 +123,11 @@ extension Model {
         TwitchApi(stream.twitchAccessToken, urlSession)
             .modifyChannelInformation(broadcasterId: stream.twitchChannelId, category: nil,
                                       title: title)
-        { ok in
-            if !ok {
-                self.makeErrorToast(title: "Failed to set stream title")
+            { ok in
+                if !ok {
+                    self.makeErrorToast(title: "Failed to set stream title")
+                }
             }
-        }
     }
 
     func twitchLogin(stream: SettingsStream, onComplete: (() -> Void)? = nil) {
