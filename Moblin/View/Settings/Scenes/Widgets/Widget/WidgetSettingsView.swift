@@ -172,6 +172,8 @@ struct WidgetSettingsView: View {
                 WidgetScoreboardSettingsView(widget: widget, type: widget.scoreboard.type.rawValue)
             case .vTuber:
                 WidgetVTuberSettingsView(widget: widget, vTuber: widget.vTuber)
+            case .pngTuber:
+                WidgetPngTuberSettingsView(widget: widget, pngTuber: widget.pngTuber)
             }
         }
         .navigationTitle("Widget")

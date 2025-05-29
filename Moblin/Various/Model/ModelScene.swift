@@ -127,6 +127,13 @@ extension Model {
         return nil
     }
 
+    func getPngTuberEffect(id: UUID) -> PngTuberEffect? {
+        for (pngTuberEffectId, pngTuberEffect) in pngTuberEffects where id == pngTuberEffectId {
+            return pngTuberEffect
+        }
+        return nil
+    }
+
     func getImageEffect(id: UUID) -> ImageEffect? {
         return imageEffects.values.first(where: { $0.widgetId == id })
     }
@@ -246,6 +253,15 @@ extension Model {
                 vrm: vTuberStorage.makePath(id: widget.vTuber.id),
                 cameraFieldOfView: widget.vTuber.cameraFieldOfView,
                 cameraPositionY: widget.vTuber.cameraPositionY
+            )
+        }
+        for pngTuberEffect in pngTuberEffects.values {
+            media.unregisterEffect(pngTuberEffect)
+        }
+        pngTuberEffects.removeAll()
+        for widget in widgets where widget.type == .pngTuber {
+            pngTuberEffects[widget.id] = PngTuberEffect(
+                model: pngTuberStorage.makePath(id: widget.pngTuber.id)
             )
         }
         browsers = browserEffects.map { _, browser in
@@ -600,6 +616,14 @@ extension Model {
                     )
                     effects.append(vTuberEffect)
                 }
+            case .pngTuber:
+                if let pngTuberEffect = pngTuberEffects[widget.id] {
+                    if let videoSourceId = getVideoSourceId(cameraId: widget.pngTuber.toCameraId()) {
+                        pngTuberEffect.setVideoSourceId(videoSourceId: videoSourceId)
+                    }
+                    pngTuberEffect.setSceneWidget(sceneWidget: sceneWidget.clone())
+                    effects.append(pngTuberEffect)
+                }
             }
         }
     }
@@ -736,6 +760,23 @@ extension Model {
             }
         case .vTuber:
             switch widget.vTuber.cameraPosition {
+            case .back:
+                return true
+            case .backWideDualLowEnergy:
+                return true
+            case .backDualLowEnergy:
+                return true
+            case .backTripleLowEnergy:
+                return true
+            case .front:
+                return true
+            case .external:
+                return true
+            default:
+                return false
+            }
+        case .pngTuber:
+            switch widget.pngTuber.cameraPosition {
             case .back:
                 return true
             case .backWideDualLowEnergy:
@@ -947,6 +988,8 @@ extension Model {
                 getBuiltinCameraDevicesForVideoSourceWidget(videoSource: widget.videoSource, devices: &devices)
             case .vTuber:
                 getBuiltinCameraDevicesForVTuberWidget(vTuber: widget.vTuber, devices: &devices)
+            case .pngTuber:
+                getBuiltinCameraDevicesForPngTuberWidget(pngTuber: widget.pngTuber, devices: &devices)
             case .scene:
                 getBuiltinCameraDevicesForSceneWidget(scene: widget.scene, devices: &devices)
             default:
@@ -986,6 +1029,28 @@ extension Model {
             cameraId = vTuber.frontCameraId
         case .external:
             cameraId = vTuber.externalCameraId
+        default:
+            cameraId = nil
+        }
+        if let cameraId, let device = AVCaptureDevice(uniqueID: cameraId) {
+            if !devices.contains(where: { $0.device == device }) {
+                devices.append(makeCaptureDevice(device: device))
+            }
+        }
+    }
+
+    private func getBuiltinCameraDevicesForPngTuberWidget(
+        pngTuber: SettingsWidgetPngTuber,
+        devices: inout [CaptureDevice]
+    ) {
+        let cameraId: String?
+        switch pngTuber.cameraPosition {
+        case .back:
+            cameraId = pngTuber.backCameraId
+        case .front:
+            cameraId = pngTuber.frontCameraId
+        case .external:
+            cameraId = pngTuber.externalCameraId
         default:
             cameraId = nil
         }

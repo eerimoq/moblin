@@ -84,13 +84,12 @@ final class VTuberEffect: VideoEffect {
         if firstPresentationTimeStamp == nil {
             firstPresentationTimeStamp = presentationTimeStamp
         }
-        guard let scene, let firstPresentationTimeStamp else {
+        guard let node = scene?.vrmNode, let firstPresentationTimeStamp else {
             return image
         }
         let time = presentationTimeStamp - firstPresentationTimeStamp
         let timeDelta = presentationTimeStamp - previousPresentationTimeStamp
         previousPresentationTimeStamp = presentationTimeStamp
-        let node = scene.vrmNode
         updateModelPose(node: node, image: image, info: info, time: time, timeDelta: timeDelta)
         renderIfNeeded(node: node, image: image, presentationTimeStamp: presentationTimeStamp, time: time)
         guard var renderedImage, let sceneWidget else {

@@ -42,7 +42,7 @@ struct SceneWidgetSettingsView: View {
     }
 
     private let widgetsWithPosition: [SettingsWidgetType] = [
-        .image, .browser, .text, .crop, .map, .qrCode, .alerts, .videoSource, .vTuber,
+        .image, .browser, .text, .crop, .map, .qrCode, .alerts, .videoSource, .vTuber, .pngTuber,
     ]
 
     private func widgetHasPosition(id: UUID) -> Bool {

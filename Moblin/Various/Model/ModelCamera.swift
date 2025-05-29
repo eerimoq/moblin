@@ -511,6 +511,10 @@ extension Model {
         return getCameraPositionId(settingsCameraId: vTuberWidget?.toCameraId())
     }
 
+    func getCameraPositionId(pngTuberWidget: SettingsWidgetPngTuber?) -> String {
+        return getCameraPositionId(settingsCameraId: pngTuberWidget?.toCameraId())
+    }
+
     func cameraIdToSettingsCameraId(cameraId: String) -> SettingsCameraId {
         if isSrtlaCamera(camera: cameraId) {
             return .srtla(id: getSrtlaStream(camera: cameraId)?.id ?? .init())
@@ -573,6 +577,10 @@ extension Model {
 
     func getCameraPositionName(vTuberWidget: SettingsWidgetVTuber?) -> String {
         return getCameraPositionName(settingsCameraId: vTuberWidget?.toCameraId())
+    }
+
+    func getCameraPositionName(pngTuberWidget: SettingsWidgetPngTuber?) -> String {
+        return getCameraPositionName(settingsCameraId: pngTuberWidget?.toCameraId())
     }
 
     private func getCameraPositionName(settingsCameraId: SettingsCameraId?) -> String {

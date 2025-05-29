@@ -235,6 +235,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var lutEffect = LutEffect()
     var padelScoreboardEffects: [UUID: PadelScoreboardEffect] = [:]
     var vTuberEffects: [UUID: VTuberEffect] = [:]
+    var pngTuberEffects: [UUID: PngTuberEffect] = [:]
     var speechToTextAlertMatchOffset = 0
     @Published var browsers: [Browser] = []
     @Published var sceneIndex = 0
@@ -248,6 +249,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var mediaStorage = MediaPlayerStorage()
     var alertMediaStorage = AlertMediaStorage()
     var vTuberStorage = VTuberStorage()
+    var pngTuberStorage = PngTuberStorage()
     @Published var buttonPairs: [[QuickButtonPair]] = Array(repeating: [], count: controlBarPages)
     var controlBarPage = 1
     var reconnectTimer: Timer?
@@ -867,6 +869,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         removeUnusedImages()
         removeUnusedAlertMedias()
         removeUnusedVTubers()
+        removeUnusedPngTubers()
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(orientationDidChange),
                                                name: UIDevice.orientationDidChangeNotification,
@@ -1484,15 +1487,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                     break
                 }
             }
-            for widget in database.widgets {
-                if widget.type != .vTuber {
-                    continue
-                }
-                if widget.vTuber.id == id {
-                    used = true
-                    break
-                }
-            }
             if database.color.diskLutsPng!.contains(where: { lut in lut.id == id }) {
                 used = true
             }
@@ -1593,6 +1587,19 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             }
             if !found {
                 vTuberStorage.remove(id: vTuberId)
+            }
+        }
+    }
+
+    private func removeUnusedPngTubers() {
+        for pngTuberId in pngTuberStorage.ids() {
+            var found = false
+            for widget in database.widgets where widget.pngTuber.id == pngTuberId {
+                found = true
+                break
+            }
+            if !found {
+                pngTuberStorage.remove(id: pngTuberId)
             }
         }
     }

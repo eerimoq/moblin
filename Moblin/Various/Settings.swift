@@ -2028,6 +2028,7 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
     case videoSource = "Video source"
     case scoreboard = "Scoreboard"
     case vTuber = "VTuber"
+    case pngTuber = "PNGTuber"
 
     public init(from decoder: Decoder) throws {
         self = try SettingsWidgetType(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
@@ -2060,6 +2061,8 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
             return .scoreboard
         case String(localized: "VTuber"):
             return .vTuber
+        case String(localized: "PNGTuber"):
+            return .pngTuber
         default:
             return .videoEffect
         }
@@ -2091,6 +2094,8 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
             return String(localized: "Scoreboard")
         case .vTuber:
             return String(localized: "VTuber")
+        case .pngTuber:
+            return String(localized: "PNGTuber")
         }
     }
 }
@@ -2335,6 +2340,119 @@ class SettingsWidgetVTuber: Codable, ObservableObject {
     }
 }
 
+class SettingsWidgetPngTuber: Codable, ObservableObject {
+    var id: UUID = .init()
+    var cameraPosition: SettingsSceneCameraPosition = .screenCapture
+    var backCameraId: String = getBestBackCameraId()
+    var frontCameraId: String = getBestFrontCameraId()
+    var rtmpCameraId: UUID = .init()
+    var srtlaCameraId: UUID = .init()
+    var mediaPlayerCameraId: UUID = .init()
+    var externalCameraId: String = ""
+    var externalCameraName: String = ""
+    @Published var modelName: String = ""
+
+    enum CodingKeys: CodingKey {
+        case id,
+             cameraPosition,
+             backCameraId,
+             frontCameraId,
+             rtmpCameraId,
+             srtlaCameraId,
+             mediaPlayerCameraId,
+             externalCameraId,
+             externalCameraName,
+             modelName
+    }
+
+    init() {}
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.cameraPosition, cameraPosition)
+        try container.encode(.backCameraId, backCameraId)
+        try container.encode(.frontCameraId, frontCameraId)
+        try container.encode(.rtmpCameraId, rtmpCameraId)
+        try container.encode(.srtlaCameraId, srtlaCameraId)
+        try container.encode(.mediaPlayerCameraId, mediaPlayerCameraId)
+        try container.encode(.externalCameraId, externalCameraId)
+        try container.encode(.externalCameraName, externalCameraName)
+        try container.encode(.modelName, modelName)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        cameraPosition = container.decode(.cameraPosition, SettingsSceneCameraPosition.self, .screenCapture)
+        backCameraId = container.decode(.backCameraId, String.self, getBestBackCameraId())
+        frontCameraId = container.decode(.frontCameraId, String.self, getBestFrontCameraId())
+        rtmpCameraId = container.decode(.rtmpCameraId, UUID.self, .init())
+        srtlaCameraId = container.decode(.srtlaCameraId, UUID.self, .init())
+        mediaPlayerCameraId = container.decode(.mediaPlayerCameraId, UUID.self, .init())
+        externalCameraId = container.decode(.externalCameraId, String.self, "")
+        externalCameraName = container.decode(.externalCameraName, String.self, "")
+        modelName = container.decode(.modelName, String.self, "")
+    }
+
+    func toCameraId() -> SettingsCameraId {
+        switch cameraPosition {
+        case .back:
+            return .back(id: backCameraId)
+        case .front:
+            return .front(id: frontCameraId)
+        case .rtmp:
+            return .rtmp(id: rtmpCameraId)
+        case .external:
+            return .external(id: externalCameraId, name: externalCameraName)
+        case .srtla:
+            return .srtla(id: srtlaCameraId)
+        case .mediaPlayer:
+            return .mediaPlayer(id: mediaPlayerCameraId)
+        case .screenCapture:
+            return .screenCapture
+        case .backTripleLowEnergy:
+            return .backTripleLowEnergy
+        case .backDualLowEnergy:
+            return .backDualLowEnergy
+        case .backWideDualLowEnergy:
+            return .backWideDualLowEnergy
+        }
+    }
+
+    func updateCameraId(settingsCameraId: SettingsCameraId) {
+        switch settingsCameraId {
+        case let .back(id: id):
+            cameraPosition = .back
+            backCameraId = id
+        case let .front(id: id):
+            cameraPosition = .front
+            frontCameraId = id
+        case let .rtmp(id: id):
+            cameraPosition = .rtmp
+            rtmpCameraId = id
+        case let .srtla(id: id):
+            cameraPosition = .srtla
+            srtlaCameraId = id
+        case let .mediaPlayer(id: id):
+            cameraPosition = .mediaPlayer
+            mediaPlayerCameraId = id
+        case let .external(id: id, name: name):
+            cameraPosition = .external
+            externalCameraId = id
+            externalCameraName = name
+        case .screenCapture:
+            cameraPosition = .screenCapture
+        case .backTripleLowEnergy:
+            cameraPosition = .backTripleLowEnergy
+        case .backDualLowEnergy:
+            cameraPosition = .backDualLowEnergy
+        case .backWideDualLowEnergy:
+            cameraPosition = .backWideDualLowEnergy
+        }
+    }
+}
+
 class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject {
     @Published var name: String
     var id: UUID = .init()
@@ -2349,6 +2467,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject {
     var videoSource: SettingsWidgetVideoSource = .init()
     var scoreboard: SettingsWidgetScoreboard = .init()
     var vTuber: SettingsWidgetVTuber = .init()
+    var pngTuber: SettingsWidgetPngTuber = .init()
     @Published var enabled: Bool = true
     @Published var effects: [SettingsVideoEffect] = []
 
@@ -2374,6 +2493,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject {
              videoSource,
              scoreboard,
              vTuber,
+             pngTuber,
              enabled,
              effects
     }
@@ -2393,6 +2513,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject {
         try container.encode(.videoSource, videoSource)
         try container.encode(.scoreboard, scoreboard)
         try container.encode(.vTuber, vTuber)
+        try container.encode(.pngTuber, pngTuber)
         try container.encode(.enabled, enabled)
         try container.encode(.effects, effects)
     }
@@ -2412,6 +2533,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject {
         videoSource = (try? container.decode(SettingsWidgetVideoSource.self, forKey: .videoSource)) ?? .init()
         scoreboard = (try? container.decode(SettingsWidgetScoreboard.self, forKey: .scoreboard)) ?? .init()
         vTuber = (try? container.decode(SettingsWidgetVTuber.self, forKey: .vTuber)) ?? .init()
+        pngTuber = (try? container.decode(SettingsWidgetPngTuber.self, forKey: .pngTuber)) ?? .init()
         enabled = (try? container.decode(Bool.self, forKey: .enabled)) ?? true
         effects = container.decode(.effects, [SettingsVideoEffect].self, [])
     }

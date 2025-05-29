@@ -66,6 +66,8 @@ func widgetImage(widget: SettingsWidget) -> String {
         return "rectangle.split.2x1"
     case .vTuber:
         return "face.smiling"
+    case .pngTuber:
+        return "face.smiling"
     }
 }
 
