@@ -76,7 +76,7 @@ struct WidgetVTuberSettingsView: View {
         } header: {
             Text("Model")
         } footer: {
-            Text("Most of VRM 0.0 is supported.")
+            Text("Most VRM 0.0 files are supported.")
         }
         Section {
             HStack {
