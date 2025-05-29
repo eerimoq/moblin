@@ -87,7 +87,26 @@ final class VTuberEffect: VideoEffect {
         guard let scene, let firstPresentationTimeStamp else {
             return image
         }
+        let time = presentationTimeStamp - firstPresentationTimeStamp
+        let timeDelta = presentationTimeStamp - previousPresentationTimeStamp
+        previousPresentationTimeStamp = presentationTimeStamp
         let node = scene.vrmNode
+        updateModelPose(node: node, image: image, info: info, time: time, timeDelta: timeDelta)
+        renderIfNeeded(node: node, image: image, presentationTimeStamp: presentationTimeStamp, time: time)
+        guard var renderedImage, let sceneWidget else {
+            return image
+        }
+        renderedImage = renderedImage
+            .transformed(by: CGAffineTransform(scaleX: 0.75, y: 0.75))
+        return renderedImage
+            .transformed(by: makeTranslation(renderedImage, sceneWidget, image.extent.size))
+            .cropped(to: image.extent)
+            .composited(over: image)
+    }
+
+    private func updateModelPose(node: VRMNode, image: CIImage, info: VideoEffectInfo, time: Double,
+                                 timeDelta: Double)
+    {
         if let detection = info.faceDetections[videoSourceId]?.first,
            let rotationAngle = detection.calcFaceAngle(imageSize: image.extent.size),
            let sideAngle = detection.calcFaceAngleSide()
@@ -99,14 +118,11 @@ final class VTuberEffect: VideoEffect {
             latestNeckYAngle = sideAngle
             latestNeckZAngle = rotationAngle
         }
-        let timeDelta = presentationTimeStamp - previousPresentationTimeStamp
-        previousPresentationTimeStamp = presentationTimeStamp
         let newFactor = min(0.2 * (timeDelta / 0.033), 0.5)
         let oldFactor = 1 - newFactor
         neckYAngle = oldFactor * neckYAngle + newFactor * latestNeckYAngle
         neckZAngle = oldFactor * neckZAngle + newFactor * latestNeckZAngle
         node.humanoid.node(for: .neck)?.eulerAngles = SCNVector3(0, -neckYAngle, -neckZAngle)
-        let time = presentationTimeStamp - firstPresentationTimeStamp
         var angle = time.remainder(dividingBy: .pi * 2)
         if angle < 0 {
             angle *= -1
@@ -116,29 +132,23 @@ final class VTuberEffect: VideoEffect {
         let armAngle = (angle * 0.1) + .pi / 3.5
         node.humanoid.node(for: .leftShoulder)?.eulerAngles = SCNVector3(0, 0, armAngle)
         node.humanoid.node(for: .rightShoulder)?.eulerAngles = SCNVector3(0, 0, -armAngle)
-        if presentationTimeStamp - renderedImagePresentationTimeStamp > 0.025 {
-            node.update(at: time)
-            let width = 600.0
-            let height = 600.0
-            let vTuberImage = renderer.snapshot(atTime: time,
-                                                with: CGSize(width: width, height: height),
-                                                antialiasingMode: .none)
-            // return addFaceLandmarks(image: image, detections: info.faceDetections[videoSourceId]) ?? image
-            guard let vTuberImage = CIImage(image: vTuberImage) else {
-                return image
-            }
+    }
+
+    private func renderIfNeeded(node: VRMNode, image: CIImage, presentationTimeStamp: Double, time: Double) {
+        guard presentationTimeStamp - renderedImagePresentationTimeStamp > 0.025 else {
+            return
+        }
+        node.update(at: time)
+        let factor = (image.extent.width / 1920)
+        let width = 600.0 * factor
+        let height = 600.0 * factor
+        let vTuberImage = renderer.snapshot(atTime: time,
+                                            with: CGSize(width: width, height: height),
+                                            antialiasingMode: .none)
+        if let vTuberImage = CIImage(image: vTuberImage) {
             renderedImage = vTuberImage
             renderedImagePresentationTimeStamp = presentationTimeStamp
         }
-        guard var renderedImage, let sceneWidget else {
-            return image
-        }
-        renderedImage = renderedImage
-            .transformed(by: CGAffineTransform(scaleX: 0.75, y: 0.75))
-        return renderedImage
-            .transformed(by: makeTranslation(renderedImage, sceneWidget, image.extent.size))
-            .cropped(to: image.extent)
-            .composited(over: image)
     }
 
     override func needsFaceDetections(_: Double) -> (Bool, UUID?, Double?) {
