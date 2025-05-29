@@ -15,14 +15,12 @@ private struct StreamItemView: View {
                     stream.enabled
                 }, set: { _ in
                     model.setCurrentStream(stream: stream)
-                    model.reloadStream()
-                    model.resetSelectedScene(changeScene: false)
-                    model.updateOrientation()
+                    model.reloadStreamIfEnabled(stream: stream)
                 }))
                 .disabled(stream.enabled || model.isLive || model.isRecording)
             }
         }
-        if stream.enabled && (model.isLive || model.isRecording) {
+        if stream.enabled {
             item.swipeActions(edge: .trailing) {
                 Button {
                     database.streams.append(stream.clone())
@@ -35,8 +33,6 @@ private struct StreamItemView: View {
             item.swipeActions(edge: .trailing) {
                 Button {
                     database.streams.removeAll { $0 == stream }
-                    model.reloadStream()
-                    model.sceneUpdated(attachCamera: true)
                 } label: {
                     Text("Delete")
                 }
