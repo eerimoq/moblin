@@ -331,7 +331,7 @@ extension Model {
     }
 
     func colorSpaceUpdated() {
-        storeAndReloadStreamIfEnabled(stream: stream)
+        reloadStreamIfEnabled(stream: stream)
     }
 
     func lutEnabledUpdated() {

@@ -38,20 +38,12 @@ struct StreamVideoSettingsView: View {
 
     private func onResolutionChange(resolution: String) {
         stream.resolution = SettingsStreamResolution(rawValue: resolution)!
-        model.storeAndReloadStreamIfEnabled(stream: stream)
-        if stream.enabled {
-            model.resetSelectedScene(changeScene: false)
-            model.updateOrientation()
-        }
+        model.reloadStreamIfEnabled(stream: stream)
     }
 
     private func onFpsChange(fps: String) {
         stream.fps = Int(fps)!
-        model.storeAndReloadStreamIfEnabled(stream: stream)
-        if stream.enabled {
-            model.resetSelectedScene(changeScene: false)
-            model.updateOrientation()
-        }
+        model.reloadStreamIfEnabled(stream: stream)
     }
 
     private func onBitrateChange(bitrate: UInt32) {
@@ -65,7 +57,7 @@ struct StreamVideoSettingsView: View {
     private func onCodecChange(codec: String) {
         self.codec = codec
         stream.codec = SettingsStreamCodec(rawValue: codec)!
-        model.storeAndReloadStreamIfEnabled(stream: stream)
+        model.reloadStreamIfEnabled(stream: stream)
     }
 
     private func submitMaxKeyFrameInterval(value: String) {
@@ -76,10 +68,7 @@ struct StreamVideoSettingsView: View {
             return
         }
         stream.maxKeyFrameInterval = interval
-        model.storeAndReloadStreamIfEnabled(stream: stream)
-        if stream.enabled {
-            model.updateOrientation()
-        }
+        model.reloadStreamIfEnabled(stream: stream)
     }
 
     var body: some View {
@@ -194,7 +183,7 @@ struct StreamVideoSettingsView: View {
                         stream.bFrames
                     }, set: { value in
                         stream.bFrames = value
-                        model.storeAndReloadStreamIfEnabled(stream: stream)
+                        model.reloadStreamIfEnabled(stream: stream)
                     }))
                     .disabled(stream.enabled && model.isLive)
                 }
@@ -203,7 +192,7 @@ struct StreamVideoSettingsView: View {
                         stream.adaptiveEncoderResolution
                     }, set: { value in
                         stream.adaptiveEncoderResolution = value
-                        model.storeAndReloadStreamIfEnabled(stream: stream)
+                        model.reloadStreamIfEnabled(stream: stream)
                     }))
                     .disabled(stream.enabled && model.isLive)
                 } footer: {

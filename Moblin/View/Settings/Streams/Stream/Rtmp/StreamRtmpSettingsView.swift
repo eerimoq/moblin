@@ -11,7 +11,7 @@ struct StreamRtmpSettingsView: View {
                     stream.rtmp.adaptiveBitrateEnabled
                 }, set: { value in
                     stream.rtmp.adaptiveBitrateEnabled = value
-                    model.storeAndReloadStreamIfEnabled(stream: stream)
+                    model.reloadStreamIfEnabled(stream: stream)
                 }))
                 .disabled(stream.enabled && model.isLive)
             }

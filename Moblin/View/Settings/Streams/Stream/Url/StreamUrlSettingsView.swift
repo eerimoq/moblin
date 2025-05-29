@@ -21,7 +21,7 @@ struct StreamUrlSettingsView: View {
         }
         submitted = true
         stream.url = value
-        model.storeAndReloadStreamIfEnabled(stream: stream)
+        model.reloadStreamIfEnabled(stream: stream)
         dismiss()
     }
 

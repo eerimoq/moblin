@@ -99,7 +99,9 @@ final class Media: NSObject {
         netStream = nil
     }
 
-    func setNetStream(proto: SettingsStreamProtocol, portrait: Bool, timecodesEnabled: Bool,
+    func setNetStream(proto: SettingsStreamProtocol,
+                      portrait: Bool,
+                      timecodesEnabled: Bool,
                       builtinAudioDelay: Double)
     {
         netStream?.stopMixer()

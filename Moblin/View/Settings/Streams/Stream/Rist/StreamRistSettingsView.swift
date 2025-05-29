@@ -11,14 +11,14 @@ struct StreamRistSettingsView: View {
                     stream.rist.adaptiveBitrateEnabled
                 }, set: { value in
                     stream.rist.adaptiveBitrateEnabled = value
-                    model.storeAndReloadStreamIfEnabled(stream: stream)
+                    model.reloadStreamIfEnabled(stream: stream)
                 }))
                 .disabled(stream.enabled && model.isLive)
                 Toggle("Bonding", isOn: Binding(get: {
                     stream.rist.bonding
                 }, set: { value in
                     stream.rist.bonding = value
-                    model.storeAndReloadStreamIfEnabled(stream: stream)
+                    model.reloadStreamIfEnabled(stream: stream)
                 }))
                 .disabled(stream.enabled && model.isLive)
             }

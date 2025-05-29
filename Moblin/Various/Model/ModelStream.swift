@@ -280,11 +280,11 @@ extension Model {
         reloadRtmpStreams()
     }
 
-    func storeAndReloadStreamIfEnabled(stream: SettingsStream) {
-        store()
+    func reloadStreamIfEnabled(stream: SettingsStream) {
         if stream.enabled {
             reloadStream()
-            sceneUpdated(attachCamera: true, updateRemoteScene: false)
+            resetSelectedScene(changeScene: false)
+            updateOrientation()
         }
     }
 
