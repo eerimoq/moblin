@@ -96,7 +96,8 @@ final class VTuberEffect: VideoEffect {
             .composited(over: image)
     }
 
-    private func makeScale(_ vTuberImage: CIImage, _ sceneWidget: SettingsSceneWidget,
+    private func makeScale(_ vTuberImage: CIImage,
+                           _ sceneWidget: SettingsSceneWidget,
                            _ size: CGSize) -> CGAffineTransform
     {
         var scaleX = toPixels(sceneWidget.width, size.width) / vTuberImage.extent.size.width

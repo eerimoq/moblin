@@ -195,7 +195,8 @@ final class PngTuberEffect: VideoEffect {
         }
     }
 
-    private func makeScale(_ pngTuberImage: CIImage, _ sceneWidget: SettingsSceneWidget,
+    private func makeScale(_ pngTuberImage: CIImage,
+                           _ sceneWidget: SettingsSceneWidget,
                            _ size: CGSize) -> CGAffineTransform
     {
         var scaleX = toPixels(sceneWidget.width, size.width) / pngTuberImage.extent.size.width
