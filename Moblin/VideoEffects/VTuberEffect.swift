@@ -143,7 +143,7 @@ final class VTuberEffect: VideoEffect {
             return
         }
         node.update(at: time)
-        let factor = (image.extent.width / 1920)
+        let factor = (max(image.extent.width, image.extent.height) / 1920)
         let width = 600.0 * factor
         let height = 600.0 * factor
         let vTuberImage = renderer.snapshot(atTime: time,
