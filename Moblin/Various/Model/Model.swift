@@ -1187,6 +1187,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 database.networkInterfaceNames.append(interface)
             }
         }
+        moblinkIpStatusesUpdated()
     }
 
     @objc func handleCaptureDeviceWasConnected(_: Notification) {
