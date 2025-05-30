@@ -167,6 +167,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var catPrinterStatus = noValue
     @Published var cyclingPowerDeviceStatus = noValue
     @Published var heartRateDeviceStatus = noValue
+    @Published var fixedHorizonStatus = noValue
     private var browserWidgetsStatusChanged = false
     private var subscriptions = Set<AnyCancellable>()
     var streamUptime = StreamUptimeProvider()
@@ -2709,6 +2710,14 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func isShowingStatusHeartRateDevice() -> Bool {
         return database.show.heartRateDevice! && isAnyHeartRateDeviceConfigured()
+    }
+
+    func isShowingStatusFixedHorizon() -> Bool {
+        if let scene = getSelectedScene() {
+            return isFixedHorizonEnabled(scene: scene)
+        } else {
+            return false
+        }
     }
 
     func isStatusBrowserWidgetsActive() -> Bool {

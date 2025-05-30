@@ -60,8 +60,10 @@ extension Model {
         var effects: [VideoEffect] = []
         if isFixedHorizonEnabled(scene: scene) {
             fixedHorizonEffect.start()
+            fixedHorizonStatus = "Enabled"
             effects.append(fixedHorizonEffect)
         } else {
+            fixedHorizonStatus = "Disabled"
             fixedHorizonEffect.stop()
         }
         if isFaceEnabled() {
@@ -281,7 +283,7 @@ extension Model {
             .showMoblin || settings.showBeauty
     }
 
-    private func isFixedHorizonEnabled(scene: SettingsScene) -> Bool {
+    func isFixedHorizonEnabled(scene: SettingsScene) -> Bool {
         return database.fixedHorizon && scene.cameraPosition.isBuiltin()
     }
 

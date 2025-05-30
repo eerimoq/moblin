@@ -343,6 +343,12 @@ private struct StatusesView: View {
             textPlacement: textPlacement,
             color: heartRateDeviceColor()
         )
+        StreamOverlayIconAndTextView(
+            show: model.isShowingStatusFixedHorizon(),
+            icon: "circle.and.line.horizontal",
+            text: model.fixedHorizonStatus,
+            textPlacement: textPlacement
+        )
     }
 }
 
