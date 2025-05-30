@@ -88,10 +88,8 @@ final class VTuberEffect: VideoEffect {
         guard var renderedImage, let sceneWidget else {
             return image
         }
-        renderedImage = renderedImage
-            .transformed(by: makeScale(renderedImage, sceneWidget, image.extent.size, mirror))
         return renderedImage
-            .transformed(by: makeTranslation(renderedImage, sceneWidget, image.extent.size))
+            .resizeMoveMirror(sceneWidget, image.extent.size, mirror)
             .cropped(to: image.extent)
             .composited(over: image)
     }

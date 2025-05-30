@@ -155,10 +155,8 @@ final class PngTuberEffect: VideoEffect {
         guard var pngTuberImage else {
             return image
         }
-        pngTuberImage = pngTuberImage
-            .transformed(by: makeScale(pngTuberImage, sceneWidget, image.extent.size, mirror))
         return pngTuberImage
-            .transformed(by: makeTranslation(pngTuberImage, sceneWidget, image.extent.size))
+            .resizeMoveMirror(sceneWidget, image.extent.size, mirror)
             .composited(over: image)
             .cropped(to: image.extent)
     }
