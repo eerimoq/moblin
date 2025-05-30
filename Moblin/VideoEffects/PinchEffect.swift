@@ -1,6 +1,18 @@
 import UIKit
 
 final class PinchEffect: VideoEffect {
+    private var scale: Float
+
+    init(scale: Float) {
+        self.scale = scale
+    }
+
+    func setSettings(scale: Float) {
+        mixerLockQueue.async {
+            self.scale = scale
+        }
+    }
+
     override func getName() -> String {
         return "pinch"
     }
@@ -9,7 +21,7 @@ final class PinchEffect: VideoEffect {
         let filter = CIFilter.pinchDistortion()
         filter.inputImage = image
         filter.radius = Float(min(image.extent.width, image.extent.height) / 2)
-        filter.scale = 0.5
+        filter.scale = scale
         filter.center = CGPoint(x: image.extent.width / 2, y: image.extent.height / 2)
         return filter.outputImage?.cropped(to: image.extent) ?? image
     }

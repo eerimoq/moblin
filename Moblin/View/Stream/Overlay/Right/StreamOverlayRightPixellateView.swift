@@ -4,7 +4,7 @@ private let sliderWidth = 250.0
 
 struct StreamOverlayRightPixellateView: View {
     @EnvironmentObject var model: Model
-    @State var strength: Float
+    @ObservedObject var database: Database
 
     var body: some View {
         VStack(alignment: .trailing, spacing: 1) {
@@ -14,13 +14,12 @@ struct StreamOverlayRightPixellateView: View {
                 .padding([.trailing], 7)
             HStack {
                 Slider(
-                    value: $strength,
+                    value: $database.pixellateStrength,
                     in: 0 ... 1,
                     step: 0.01
                 )
-                .onChange(of: strength) { value in
-                    model.database.pixellateStrength = value
-                    model.setPixellateStrength(strength: value)
+                .onChange(of: database.pixellateStrength) { _ in
+                    model.setPixellateStrength(strength: database.pixellateStrength)
                 }
             }
             .padding([.top, .bottom], 5)

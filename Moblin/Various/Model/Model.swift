@@ -295,6 +295,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var showingCameraIso = false
     @Published var showingCameraFocus = false
     @Published var showingPixellate = false
+    @Published var showingWhirlpool = false
+    @Published var showingPinch = false
     @Published var showingGrid = false
     @Published var showingRemoteControl = false
     @Published var obsScenes: [String] = []
@@ -589,8 +591,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var ipStatuses: [IPMonitor.Status] = []
     var faceEffect = FaceEffect(fps: 30)
     var movieEffect = MovieEffect()
-    var whirlpoolEffect = WhirlpoolEffect()
-    var pinchEffect = PinchEffect()
+    var whirlpoolEffect = WhirlpoolEffect(angle: .pi / 2)
+    var pinchEffect = PinchEffect(scale: 0.5)
     var fourThreeEffect = FourThreeEffect()
     var grayScaleEffect = GrayScaleEffect()
     var sepiaEffect = SepiaEffect()
@@ -1840,6 +1842,14 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func setPixellateStrength(strength: Float) {
         pixellateEffect.setSettings(strength: strength)
+    }
+
+    func setWhirlpoolAngle(angle: Float) {
+        whirlpoolEffect.setSettings(angle: angle)
+    }
+
+    func setPinchScale(scale: Float) {
+        pinchEffect.setSettings(scale: scale)
     }
 
     func setDebugLogging(on: Bool) {

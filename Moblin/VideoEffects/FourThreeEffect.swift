@@ -27,7 +27,7 @@ final class FourThreeEffect: VideoEffect {
     private var black: CIImage?
 
     override func getName() -> String {
-        return "movie filter"
+        return "4:3 filter"
     }
 
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {

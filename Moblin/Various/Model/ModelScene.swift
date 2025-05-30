@@ -51,8 +51,8 @@ extension Model {
         twinEffect = TwinEffect()
         pixellateEffect = PixellateEffect(strength: database.pixellateStrength)
         pollEffect = PollEffect()
-        whirlpoolEffect = WhirlpoolEffect()
-        pinchEffect = PinchEffect()
+        whirlpoolEffect = WhirlpoolEffect(angle: database.whirlpoolAngle)
+        pinchEffect = PinchEffect(scale: database.pinchScale)
         fixedHorizonEffect = FixedHorizonEffect()
     }
 

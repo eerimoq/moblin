@@ -2208,9 +2208,9 @@ class SettingsVideoEffect: Codable, Identifiable, ObservableObject {
         case .sepia:
             return SepiaEffect()
         case .whirlpool:
-            return WhirlpoolEffect()
+            return WhirlpoolEffect(angle: .pi / 2)
         case .pinch:
-            return PinchEffect()
+            return PinchEffect(scale: 0.5)
         case .removeBackground:
             let effect = RemoveBackgroundEffect()
             effect.setColorRange(from: removeBackground.from, to: removeBackground.to)
@@ -4389,7 +4389,7 @@ class Database: Codable, ObservableObject {
     var keyboard: SettingsKeyboard = .init()
     var tesla: SettingsTesla = .init()
     var srtlaRelay: SettingsMoblink = .init()
-    var pixellateStrength: Float = 0.3
+    @Published var pixellateStrength: Float = 0.3
     var moblink: SettingsMoblink = .init()
     var sceneSwitchTransition: SettingsSceneSwitchTransition = .blur
     var forceSceneSwitchTransition: Bool = false
@@ -4405,6 +4405,8 @@ class Database: Codable, ObservableObject {
     var portraitVideoOffsetFromTop: Double = 0.0
     var autoSceneSwitchers: SettingsAutoSceneSwitchers? = .init()
     @Published var fixedHorizon: Bool = false
+    @Published var whirlpoolAngle: Float = .pi / 2
+    @Published var pinchScale: Float = 0.5
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -4492,7 +4494,9 @@ class Database: Codable, ObservableObject {
              replay,
              portraitVideoOffsetFromTop,
              autoSceneSwitchers,
-             fixedHorizon
+             fixedHorizon,
+             whirlpoolAngle,
+             pinchScale
     }
 
     func encode(to encoder: Encoder) throws {
@@ -4555,6 +4559,8 @@ class Database: Codable, ObservableObject {
         try container.encode(.portraitVideoOffsetFromTop, portraitVideoOffsetFromTop)
         try container.encode(.autoSceneSwitchers, autoSceneSwitchers)
         try container.encode(.fixedHorizon, fixedHorizon)
+        try container.encode(.whirlpoolAngle, whirlpoolAngle)
+        try container.encode(.pinchScale, pinchScale)
     }
 
     init() {}
@@ -4640,6 +4646,8 @@ class Database: Codable, ObservableObject {
         portraitVideoOffsetFromTop = (try? container.decode(Double.self, forKey: .portraitVideoOffsetFromTop)) ?? 0.0
         autoSceneSwitchers = try? container.decode(SettingsAutoSceneSwitchers?.self, forKey: .autoSceneSwitchers)
         fixedHorizon = (try? container.decode(Bool.self, forKey: .fixedHorizon)) ?? false
+        whirlpoolAngle = container.decode(.whirlpoolAngle, Float.self, .pi / 2)
+        pinchScale = container.decode(.pinchScale, Float.self, 0.5)
     }
 }
 
