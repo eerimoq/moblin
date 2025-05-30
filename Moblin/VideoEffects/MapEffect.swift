@@ -5,8 +5,6 @@ import MetalPetal
 import UIKit
 import Vision
 
-private let mapQueue = DispatchQueue(label: "com.eerimoq.widget.map")
-
 final class MapEffect: VideoEffect {
     private let filter = CIFilter.sourceOverCompositing()
     private var overlay: CIImage?
@@ -44,7 +42,7 @@ final class MapEffect: VideoEffect {
     }
 
     func zoomOutTemporarily() {
-        mapQueue.sync {
+        mixerLockQueue.async {
             if self.zoomOutFactor == nil {
                 self.zoomOutFactor = 2
             }
@@ -52,13 +50,13 @@ final class MapEffect: VideoEffect {
     }
 
     func setSceneWidget(sceneWidget: SettingsSceneWidget?) {
-        mapQueue.sync {
+        mixerLockQueue.async {
             self.newSceneWidget = sceneWidget
         }
     }
 
     func updateLocation(location: CLLocation) {
-        mapQueue.sync {
+        mixerLockQueue.async {
             self.isLocationUpdated = true
             self.newLocations.append(location)
             if self.newLocations.count > 10 {
@@ -74,12 +72,12 @@ final class MapEffect: VideoEffect {
     }
 
     private func update(size: CGSize) {
-        let (newSceneWidget, newLocation, zoomOutFactor, isLocationUpdated) = mapQueue.sync {
+        let (newSceneWidget, newLocation, zoomOutFactor, isLocationUpdated) = {
             defer {
                 self.isLocationUpdated = false
             }
             return (self.newSceneWidget, self.nextNewLocation(), self.zoomOutFactor, self.isLocationUpdated)
-        }
+        }()
         guard let newSceneWidget else {
             return
         }
@@ -118,7 +116,7 @@ final class MapEffect: VideoEffect {
                     )))
                 .transformed(by: CGAffineTransform(translationX: x, y: y))
                 .cropped(to: .init(x: 0, y: 0, width: size.width, height: size.height))
-            mapQueue.sync {
+            mixerLockQueue.async {
                 self.overlay = overlay
             }
         })
@@ -132,12 +130,12 @@ final class MapEffect: VideoEffect {
     }
 
     private func updateMetalPetal(size: CGSize) {
-        let (newSceneWidget, newLocation, zoomOutStep, isLocationUpdated) = mapQueue.sync {
+        let (newSceneWidget, newLocation, zoomOutStep, isLocationUpdated) = {
             defer {
                 self.isLocationUpdated = false
             }
             return (self.newSceneWidget, self.nextNewLocation(), self.zoomOutFactor, self.isLocationUpdated)
-        }
+        }()
         guard let newSceneWidget else {
             return
         }
@@ -166,7 +164,7 @@ final class MapEffect: VideoEffect {
                 to: .init(width: side, height: side),
                 resizingMode: .aspect
             )
-            mapQueue.sync {
+            mixerLockQueue.async {
                 self.overlayMetalPetal = overlay
                 self.dotOffsetRatioMetalPetal = dotOffsetRatio
             }
@@ -216,14 +214,10 @@ final class MapEffect: VideoEffect {
         if let zoomOutFactor {
             camera.centerCoordinateDistance *= pow(5, Double(zoomOutFactor))
             if zoomOutFactor > 9 {
-                mapQueue.sync {
-                    self.zoomOutFactor = nil
-                }
+                self.zoomOutFactor = nil
                 forceUpdate = true
             } else {
-                mapQueue.sync {
-                    self.zoomOutFactor = zoomOutFactor + 1
-                }
+                self.zoomOutFactor = zoomOutFactor + 1
             }
         }
         let options = MKMapSnapshotter.Options()
@@ -233,7 +227,7 @@ final class MapEffect: VideoEffect {
 
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
         update(size: image.extent.size)
-        filter.inputImage = mapQueue.sync { self.overlay }
+        filter.inputImage = overlay
         filter.backgroundImage = image
         return filter.outputImage ?? image
     }
@@ -243,10 +237,7 @@ final class MapEffect: VideoEffect {
             return image
         }
         updateMetalPetal(size: image.size)
-        let (overlayMetalPetal, sceneWidget, dotOffsetRatioMetalPetal) = mapQueue.sync {
-            (self.overlayMetalPetal, self.sceneWidgetMetalPetal, self.dotOffsetRatioMetalPetal)
-        }
-        guard let overlayMetalPetal, let sceneWidget else {
+        guard let overlayMetalPetal, let sceneWidget = sceneWidgetMetalPetal else {
             return image
         }
         let x = toPixels(sceneWidget.x, image.extent.size.width) + overlayMetalPetal.size.width / 2
