@@ -76,8 +76,4 @@ final class RemoveBackgroundEffect: VideoEffect {
         filter.inputImage = image
         return filter.outputImage ?? image
     }
-
-    override func executeMetalPetal(_ image: MTIImage?, _: VideoEffectInfo) -> MTIImage? {
-        return image
-    }
 }
