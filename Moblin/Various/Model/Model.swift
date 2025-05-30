@@ -1175,16 +1175,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         ipStatuses = statuses
         for status in statuses where status.interfaceType == .wiredEthernet {
             for stream in database.streams
-                where !stream.srt.connectionPriorities!.priorities.contains(where: { priority in
-                    priority.name == status.name
-                })
+                where !stream.srt.connectionPriorities!.priorities.contains(where: { $0.name == status.name })
             {
                 stream.srt.connectionPriorities!.priorities
                     .append(SettingsStreamSrtConnectionPriority(name: status.name))
             }
-            if !database.networkInterfaceNames.contains(where: { interface in
-                interface.interfaceName == status.name
-            }) {
+            if !database.networkInterfaceNames.contains(where: { $0.interfaceName == status.name }) {
                 let interface = SettingsNetworkInterfaceName()
                 interface.interfaceName = status.name
                 interface.name = status.name
