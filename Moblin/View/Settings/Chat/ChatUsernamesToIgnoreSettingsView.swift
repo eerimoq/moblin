@@ -35,29 +35,29 @@ private struct UsernameEditView: View {
 struct ChatUsernamesToIgnoreSettingsView: View {
     @EnvironmentObject var model: Model
 
-    private func onSubmit(_ username: SettingsChatUsername, _ value: String) {
-        username.value = value
+    private func onSubmit(_ username: SettingsChatFilter, _ user: String) {
+        username.user = user
     }
 
     var body: some View {
         Form {
             Section {
                 List {
-                    ForEach(model.database.chat.usernamesToIgnore) { username in
+                    ForEach(model.database.chat.filters) { filter in
                         UsernameEditView(
-                            value: username.value,
-                            onSubmit: { value in onSubmit(username, value) }
+                            value: filter.user,
+                            onSubmit: { user in onSubmit(filter, user) }
                         )
                     }
                     .onMove(perform: { froms, to in
-                        model.database.chat.usernamesToIgnore.move(fromOffsets: froms, toOffset: to)
+                        model.database.chat.filters.move(fromOffsets: froms, toOffset: to)
                     })
                     .onDelete(perform: { offsets in
-                        model.database.chat.usernamesToIgnore.remove(atOffsets: offsets)
+                        model.database.chat.filters.remove(atOffsets: offsets)
                     })
                 }
                 AddButtonView(action: {
-                    model.database.chat.usernamesToIgnore.append(SettingsChatUsername())
+                    model.database.chat.filters.append(SettingsChatFilter())
                     model.objectWillChange.send()
                 })
             } footer: {

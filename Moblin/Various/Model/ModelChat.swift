@@ -394,7 +394,7 @@ extension Model {
         highlight: ChatHighlight?,
         live: Bool
     ) {
-        if database.chat.usernamesToIgnore.contains(where: { user == $0.value }) {
+        if database.chat.filters.contains(where: { user == $0.user }) {
             return
         }
         if database.chat.botEnabled, live, segments.first?.text?.trim().lowercased() == "!moblin" {

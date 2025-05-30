@@ -2865,9 +2865,40 @@ var videoStabilizationModes = SettingsVideoStabilizationMode.allCases
     }
     .map { $0.toString() }
 
-class SettingsChatUsername: Identifiable, Codable {
+class SettingsChatFilter: Identifiable, Codable {
     var id = UUID()
-    var value: String = ""
+    var user: String = ""
+    var message: String = ""
+    var showOnScreen: Bool = false
+    var textToSpeech: Bool = false
+
+    enum CodingKeys: CodingKey {
+        case id,
+             value,
+             message,
+             showOnScreen,
+             textToSpeech
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.value, user)
+        try container.encode(.message, message)
+        try container.encode(.showOnScreen, showOnScreen)
+        try container.encode(.textToSpeech, textToSpeech)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        user = container.decode(.value, String.self, "")
+        message = container.decode(.message, String.self, "")
+        showOnScreen = container.decode(.showOnScreen, Bool.self, false)
+        textToSpeech = container.decode(.textToSpeech, Bool.self, false)
+    }
 }
 
 class SettingsChatBotPermissionsCommand: Codable {
@@ -2911,7 +2942,7 @@ class SettingsChat: Codable, ObservableObject {
     var maximumAgeEnabled: Bool = false
     var meInUsernameColor: Bool = true
     var enabled: Bool = true
-    var usernamesToIgnore: [SettingsChatUsername] = []
+    var filters: [SettingsChatFilter] = []
     var textToSpeechEnabled: Bool = false
     var textToSpeechDetectLanguagePerMessage: Bool = false
     var textToSpeechSayUsername: Bool = true
@@ -2993,7 +3024,7 @@ class SettingsChat: Codable, ObservableObject {
         try container.encode(.maximumAgeEnabled, maximumAgeEnabled)
         try container.encode(.meInUsernameColor, meInUsernameColor)
         try container.encode(.enabled, enabled)
-        try container.encode(.usernamesToIgnore, usernamesToIgnore)
+        try container.encode(.usernamesToIgnore, filters)
         try container.encode(.textToSpeechEnabled, textToSpeechEnabled)
         try container.encode(.textToSpeechDetectLanguagePerMessage, textToSpeechDetectLanguagePerMessage)
         try container.encode(.textToSpeechSayUsername, textToSpeechSayUsername)
@@ -3037,7 +3068,7 @@ class SettingsChat: Codable, ObservableObject {
         maximumAgeEnabled = container.decode(.maximumAgeEnabled, Bool.self, false)
         meInUsernameColor = container.decode(.meInUsernameColor, Bool.self, true)
         enabled = container.decode(.enabled, Bool.self, true)
-        usernamesToIgnore = container.decode(.usernamesToIgnore, [SettingsChatUsername].self, [])
+        filters = container.decode(.usernamesToIgnore, [SettingsChatFilter].self, [])
         textToSpeechEnabled = container.decode(.textToSpeechEnabled, Bool.self, false)
         textToSpeechDetectLanguagePerMessage = container.decode(.textToSpeechDetectLanguagePerMessage, Bool.self, false)
         textToSpeechSayUsername = container.decode(.textToSpeechSayUsername, Bool.self, true)
