@@ -4,8 +4,6 @@ import SwiftUI
 import UIKit
 import Vision
 
-private let drawQueue = DispatchQueue(label: "com.eerimoq.widget.text")
-
 func drawOnStreamCreatePath(points: [CGPoint]) -> Path {
     var path = Path()
     if let firstPoint = points.first {
@@ -104,33 +102,21 @@ final class DrawOnStreamEffect: VideoEffect {
                 return
             }
             let imageMetalPetal = MTIImage(cgImage: cgImage, isOpaque: true)
-            drawQueue.sync {
+            mixerLockQueue.async {
                 self.overlay = image
                 self.overlayMetalPetal = imageMetalPetal
             }
         }
     }
 
-    private func getOverlay() -> CIImage? {
-        drawQueue.sync {
-            overlay
-        }
-    }
-
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
-        filter.inputImage = getOverlay()
+        filter.inputImage = overlay
         filter.backgroundImage = image
         return filter.outputImage ?? image
     }
 
-    private func getOverlayMetalPetal() -> MTIImage? {
-        drawQueue.sync {
-            overlayMetalPetal
-        }
-    }
-
     override func executeMetalPetal(_ image: MTIImage?, _: VideoEffectInfo) -> MTIImage? {
-        guard let overlay = getOverlayMetalPetal() else {
+        guard let overlay = overlayMetalPetal else {
             return image
         }
         let filter = MTIMultilayerCompositingFilter()
