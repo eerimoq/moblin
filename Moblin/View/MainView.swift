@@ -133,7 +133,7 @@ private struct MenuView: View {
             NavigationStack {
                 QuickButtonAutoSceneSwitcherView(
                     autoSceneSwitcher: model.autoSceneSwitcher,
-                    autoSceneSwitchers: model.database.autoSceneSwitchers!
+                    autoSceneSwitchers: model.database.autoSceneSwitchers
                 )
             }
         case .quickButtonSettings:

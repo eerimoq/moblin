@@ -9,14 +9,14 @@ class AutoSceneSwitcherProvider: ObservableObject {
 
 extension Model {
     func setAutoSceneSwitcher(id: UUID?) {
-        database.autoSceneSwitchers!.switcherId = id
+        database.autoSceneSwitchers.switcherId = id
         autoSceneSwitcher.switchTime = .now
         autoSceneSwitcher.sceneIds.removeAll()
     }
 
     func deleteAutoSceneSwitchers(offsets: IndexSet) {
-        database.autoSceneSwitchers!.switchers.remove(atOffsets: offsets)
-        if !database.autoSceneSwitchers!.switchers.contains(where: { $0.id == autoSceneSwitcher.currentSwitcherId }) {
+        database.autoSceneSwitchers.switchers.remove(atOffsets: offsets)
+        if !database.autoSceneSwitchers.switchers.contains(where: { $0.id == autoSceneSwitcher.currentSwitcherId }) {
             autoSceneSwitcher.currentSwitcherId = nil
             setAutoSceneSwitcher(id: nil)
         }
@@ -31,7 +31,7 @@ extension Model {
                 return
             }
         }
-        guard let autoSwitcher = database.autoSceneSwitchers!.switchers.first(where: { $0.id == switcherId }) else {
+        guard let autoSwitcher = database.autoSceneSwitchers.switchers.first(where: { $0.id == switcherId }) else {
             return
         }
         fillAutoSceneSwitcherIfNeeded(autoSwitcher: autoSwitcher)
@@ -94,7 +94,7 @@ extension Model {
 
     func updateAutoSceneSwitcherButtonState() {
         var isOn = false
-        if database.autoSceneSwitchers!.switcherId != nil {
+        if database.autoSceneSwitchers.switcherId != nil {
             isOn = true
         }
         if showingPanel == .autoSceneSwitcher {
