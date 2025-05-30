@@ -4,8 +4,6 @@ import SwiftCube
 import UIKit
 import Vision
 
-private let lutQueue = DispatchQueue(label: "com.eerimoq.widget.cubeLut")
-
 private func interpolate3d(at point: SIMD3<Float>, in lut: [SIMD3<Float>], dimension: Int) -> SIMD3<Float> {
     let dimensionFloat = Float(dimension)
     let x = min(max(point.x * dimensionFloat - 1, 0), dimensionFloat - 1)
@@ -201,7 +199,7 @@ final class LutEffect: VideoEffect {
             sc3dLut.size = 64
         }
         let filter = try sc3dLut.ciFilter()
-        lutQueue.sync {
+        mixerLockQueue.async {
             self.filter = filter
         }
     }
@@ -214,26 +212,20 @@ final class LutEffect: VideoEffect {
         filter.colorSpace = CGColorSpaceCreateDeviceRGB()
         let filterMetalPetal = MTIColorLookupFilter()
         filterMetalPetal.inputColorLookupTable = MTIImage(cgImage: image.cgImage!, isOpaque: true)
-        lutQueue.sync {
+        mixerLockQueue.async {
             self.filter = filter
             self.filterMetalPetal = filterMetalPetal
         }
     }
 
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
-        let filter = lutQueue.sync {
-            self.filter
-        }
         filter.inputImage = image
         return filter.outputImage ?? image
     }
 
     override func executeMetalPetal(_ image: MTIImage?, _: VideoEffectInfo) -> MTIImage? {
-        let filter = lutQueue.sync {
-            self.filterMetalPetal
-        }
-        filter.inputImage = image
-        filter.intensity = 1
-        return filter.outputImage
+        filterMetalPetal.inputImage = image
+        filterMetalPetal.intensity = 1
+        return filterMetalPetal.outputImage
     }
 }
