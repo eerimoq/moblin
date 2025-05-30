@@ -46,7 +46,7 @@ class PositionInterpolator {
 
 final class VideoSourceEffect: VideoEffect {
     private var videoSourceId: UUID = .init()
-    private var sceneWidget: SettingsSceneWidget? = nil
+    private var sceneWidget: SettingsSceneWidget?
     private var settings: VideoSourceEffectSettings = .init()
     private let trackFaceLeft = PositionInterpolator()
     private let trackFaceRight = PositionInterpolator()
@@ -332,7 +332,6 @@ final class VideoSourceEffect: VideoEffect {
         let size = backgroundImage.extent.size
         let (scaleX, scaleY) = makeScale(widgetImage, sceneWidget, size, settings.mirror)
         let translation = makeTranslation(widgetImage, sceneWidget, size, scaleX, scaleY, settings.mirror)
-        let crop = CGRect(x: 0, y: 0, width: size.width, height: size.height)
         widgetImage = widgetImage
             .transformed(by: CGAffineTransform(scaleX: scaleX, y: scaleY))
         if settings.cornerRadius == 0 {
@@ -340,6 +339,7 @@ final class VideoSourceEffect: VideoEffect {
         } else {
             widgetImage = makeRoundedCornersImage(widgetImage, settings)
         }
+        let crop = CGRect(x: 0, y: 0, width: size.width, height: size.height)
         return applyEffects(widgetImage, info)
             .transformed(by: translation)
             .cropped(to: crop)
