@@ -45,9 +45,9 @@ class PositionInterpolator {
 }
 
 final class VideoSourceEffect: VideoEffect {
-    private var videoSourceId: Atomic<UUID> = .init(.init())
-    private var sceneWidget: Atomic<SettingsSceneWidget?> = .init(nil)
-    private var settings: Atomic<VideoSourceEffectSettings> = .init(.init())
+    private var videoSourceId: UUID = .init()
+    private var sceneWidget: SettingsSceneWidget? = nil
+    private var settings: VideoSourceEffectSettings = .init()
     private let trackFaceLeft = PositionInterpolator()
     private let trackFaceRight = PositionInterpolator()
     private let trackFaceTop = PositionInterpolator()
@@ -60,23 +60,29 @@ final class VideoSourceEffect: VideoEffect {
     }
 
     override func needsFaceDetections(_: Double) -> (Bool, UUID?, Double?) {
-        if settings.value.trackFaceEnabled {
-            return (false, videoSourceId.value, 0.5)
+        if settings.trackFaceEnabled {
+            return (false, videoSourceId, 0.5)
         } else {
             return (false, nil, nil)
         }
     }
 
     func setVideoSourceId(videoSourceId: UUID) {
-        self.videoSourceId.mutate { $0 = videoSourceId }
+        mixerLockQueue.async {
+            self.videoSourceId = videoSourceId
+        }
     }
 
     func setSceneWidget(sceneWidget: SettingsSceneWidget) {
-        self.sceneWidget.mutate { $0 = sceneWidget }
+        mixerLockQueue.async {
+            self.sceneWidget = sceneWidget
+        }
     }
 
     func setSettings(settings: VideoSourceEffectSettings) {
-        self.settings.mutate { $0 = settings }
+        mixerLockQueue.async {
+            self.settings = settings
+        }
     }
 
     private func interpolatePosition(_ current: Double?, _ target: Double?, _ timeElapsed: Double) -> Double {
@@ -302,11 +308,9 @@ final class VideoSourceEffect: VideoEffect {
     }
 
     override func execute(_ backgroundImage: CIImage, _ info: VideoEffectInfo) -> CIImage {
-        guard let sceneWidget = sceneWidget.value else {
+        guard let sceneWidget else {
             return backgroundImage
         }
-        let settings = self.settings.value
-        let videoSourceId = videoSourceId.value
         guard var widgetImage = info.videoUnit.getCIImage(
             videoSourceId,
             info.presentationTimeStamp

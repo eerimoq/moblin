@@ -1838,7 +1838,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func setPixellateStrength(strength: Float) {
-        pixellateEffect.strength.mutate { $0 = strength }
+        pixellateEffect.setSettings(strength: strength)
     }
 
     func setDebugLogging(on: Bool) {

@@ -92,7 +92,7 @@ extension Model {
             effects.append(twinEffect)
         }
         if isGlobalButtonOn(type: .pixellate) {
-            pixellateEffect.strength.mutate { $0 = database.pixellateStrength }
+            pixellateEffect.setSettings(strength: database.pixellateStrength)
             effects.append(pixellateEffect)
         }
         return effects
