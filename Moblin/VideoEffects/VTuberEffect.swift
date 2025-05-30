@@ -89,36 +89,11 @@ final class VTuberEffect: VideoEffect {
             return image
         }
         renderedImage = renderedImage
-            .transformed(by: makeScale(renderedImage, sceneWidget, image.extent.size))
+            .transformed(by: makeScale(renderedImage, sceneWidget, image.extent.size, mirror))
         return renderedImage
             .transformed(by: makeTranslation(renderedImage, sceneWidget, image.extent.size))
             .cropped(to: image.extent)
             .composited(over: image)
-    }
-
-    private func makeScale(_ vTuberImage: CIImage,
-                           _ sceneWidget: SettingsSceneWidget,
-                           _ size: CGSize) -> CGAffineTransform
-    {
-        var scaleX = toPixels(sceneWidget.width, size.width) / vTuberImage.extent.size.width
-        var scaleY = toPixels(sceneWidget.height, size.height) / vTuberImage.extent.size.height
-        let scale = min(scaleX, scaleY)
-        if mirror {
-            scaleX = -1 * scale
-        } else {
-            scaleX = scale
-        }
-        scaleY = scale
-        return CGAffineTransform(scaleX: scaleX, y: scaleY)
-    }
-
-    private func makeTranslation(_ vTuberImage: CIImage,
-                                 _ sceneWidget: SettingsSceneWidget,
-                                 _ size: CGSize) -> CGAffineTransform
-    {
-        let x = toPixels(sceneWidget.x, size.width)
-        let y = size.height - toPixels(sceneWidget.y, size.height) - vTuberImage.extent.height
-        return CGAffineTransform(translationX: x, y: y)
     }
 
     private func updateModelPose(node: VRMNode,

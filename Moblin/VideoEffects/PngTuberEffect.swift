@@ -156,7 +156,7 @@ final class PngTuberEffect: VideoEffect {
             return image
         }
         pngTuberImage = pngTuberImage
-            .transformed(by: makeScale(pngTuberImage, sceneWidget, image.extent.size))
+            .transformed(by: makeScale(pngTuberImage, sceneWidget, image.extent.size, mirror))
         return pngTuberImage
             .transformed(by: makeTranslation(pngTuberImage, sceneWidget, image.extent.size))
             .composited(over: image)
@@ -193,31 +193,6 @@ final class PngTuberEffect: VideoEffect {
             isMouthOpen = detection.isMouthOpen(rotationAngle: rotationAngle) > 0.15
             isLeftEyeOpen = -(detection.isLeftEyeOpen(rotationAngle: rotationAngle) - 1) > 0.1
         }
-    }
-
-    private func makeScale(_ pngTuberImage: CIImage,
-                           _ sceneWidget: SettingsSceneWidget,
-                           _ size: CGSize) -> CGAffineTransform
-    {
-        var scaleX = toPixels(sceneWidget.width, size.width) / pngTuberImage.extent.size.width
-        var scaleY = toPixels(sceneWidget.height, size.height) / pngTuberImage.extent.size.height
-        let scale = min(scaleX, scaleY)
-        if mirror {
-            scaleX = -1 * scale
-        } else {
-            scaleX = scale
-        }
-        scaleY = scale
-        return CGAffineTransform(scaleX: scaleX, y: scaleY)
-    }
-
-    private func makeTranslation(_ pngTuberImage: CIImage,
-                                 _ sceneWidget: SettingsSceneWidget,
-                                 _ size: CGSize) -> CGAffineTransform
-    {
-        let x = toPixels(sceneWidget.x, size.width)
-        let y = size.height - toPixels(sceneWidget.y, size.height) - pngTuberImage.extent.height
-        return CGAffineTransform(translationX: x, y: y)
     }
 
     override func needsFaceDetections(_: Double) -> (Bool, UUID?, Double?) {
