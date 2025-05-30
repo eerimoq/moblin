@@ -10,14 +10,6 @@ extension CIImage {
                           _ streamSize: CGSize,
                           _ mirror: Bool) -> CIImage
     {
-        let image = transformed(by: makeScale(sceneWidget, streamSize, mirror))
-        return image.transformed(by: image.makeTranslation(sceneWidget, streamSize))
-    }
-
-    private func makeScale(_ sceneWidget: SettingsSceneWidget,
-                           _ streamSize: CGSize,
-                           _ mirror: Bool) -> CGAffineTransform
-    {
         var scaleX = toPixels(sceneWidget.width, streamSize.width) / extent.size.width
         var scaleY = toPixels(sceneWidget.height, streamSize.height) / extent.size.height
         let scale = min(scaleX, scaleY)
@@ -27,12 +19,12 @@ extension CIImage {
             scaleX = scale
         }
         scaleY = scale
-        return CGAffineTransform(scaleX: scaleX, y: scaleY)
-    }
-
-    private func makeTranslation(_ sceneWidget: SettingsSceneWidget, _ streamSize: CGSize) -> CGAffineTransform {
-        let x = toPixels(sceneWidget.x, streamSize.width)
-        let y = streamSize.height - toPixels(sceneWidget.y, streamSize.height) - extent.height
-        return CGAffineTransform(translationX: x, y: y)
+        var x = toPixels(sceneWidget.x, streamSize.width)
+        if mirror {
+            x -= extent.width * scaleX
+        }
+        let y = streamSize.height - toPixels(sceneWidget.y, streamSize.height) - extent.height * scaleY
+        return transformed(by: CGAffineTransform(scaleX: scaleX, y: scaleY))
+            .transformed(by: CGAffineTransform(translationX: x, y: y))
     }
 }
