@@ -99,11 +99,11 @@ final class PngTuberEffect: VideoEffect {
     private var videoSourceId: UUID = .init()
     private var sceneWidget: SettingsSceneWidget?
     private var mirror: Bool = false
-    private var currentCostume = 1
     private var isMouthOpen = false
     private var isLeftEyeOpen = true
+    private var currentCostumeImages: [PngTuberImage] = []
 
-    init(model: URL) {
+    init(model: URL, costume: Int) {
         do {
             let model = try JSONDecoder().decode([String: PngTuberImage].self, from: Data(contentsOf: model))
             let images = model.sorted(by: { Int($0.key) ?? 0 < Int($1.key) ?? 0 }).map { $0.value }
@@ -112,6 +112,8 @@ final class PngTuberEffect: VideoEffect {
             logger.info("png-tuber: Failed to load model with error: \(error)")
             self.model = nil
         }
+        super.init()
+        setCostume(number: costume)
     }
 
     func setVideoSourceId(videoSourceId: UUID) {
@@ -137,12 +139,12 @@ final class PngTuberEffect: VideoEffect {
     }
 
     override func execute(_ image: CIImage, _ info: VideoEffectInfo) -> CIImage {
-        guard let model, let sceneWidget else {
+        guard let sceneWidget else {
             return image
         }
         updateModelPose(image: image, info: info)
         var pngTuberImage: CIImage?
-        for image in model.images {
+        for image in currentCostumeImages {
             guard shouldShowImage(image: image) else {
                 continue
             }
@@ -159,9 +161,6 @@ final class PngTuberEffect: VideoEffect {
     }
 
     private func shouldShowImage(image: PngTuberImage) -> Bool {
-        guard image.costumeLayers[currentCostume - 1] == 1 else {
-            return false
-        }
         switch image.showBlink {
         case .closed:
             return !isLeftEyeOpen
@@ -187,6 +186,19 @@ final class PngTuberEffect: VideoEffect {
         {
             isMouthOpen = detection.isMouthOpen(rotationAngle: rotationAngle) > 0.15
             isLeftEyeOpen = -(detection.isLeftEyeOpen(rotationAngle: rotationAngle) - 1) > 0.1
+        }
+    }
+
+    private func setCostume(number: Int) {
+        guard let model, number >= 1, number <= 10 else {
+            return
+        }
+        currentCostumeImages.removeAll()
+        for image in model.images.sorted(by: { $0.zindex < $1.zindex }) {
+            guard image.costumeLayers[number - 1] == 1 else {
+                continue
+            }
+            currentCostumeImages.append(image)
         }
     }
 

@@ -263,7 +263,8 @@ extension Model {
         pngTuberEffects.removeAll()
         for widget in widgets where widget.type == .pngTuber {
             pngTuberEffects[widget.id] = PngTuberEffect(
-                model: pngTuberStorage.makePath(id: widget.pngTuber.id)
+                model: pngTuberStorage.makePath(id: widget.pngTuber.id),
+                costume: 1
             )
         }
         browsers = browserEffects.map { _, browser in
