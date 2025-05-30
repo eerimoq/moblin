@@ -85,13 +85,13 @@ final class VTuberEffect: VideoEffect {
         previousPresentationTimeStamp = presentationTimeStamp
         updateModelPose(node: node, image: image, info: info, time: time, timeDelta: timeDelta)
         renderIfNeeded(node: node, image: image, presentationTimeStamp: presentationTimeStamp, time: time)
-        guard var renderedImage, let sceneWidget else {
+        guard let sceneWidget else {
             return image
         }
-        return renderedImage
+        return renderedImage?
             .resizeMoveMirror(sceneWidget, image.extent.size, mirror)
             .cropped(to: image.extent)
-            .composited(over: image)
+            .composited(over: image) ?? image
     }
 
     private func updateModelPose(node: VRMNode,

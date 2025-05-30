@@ -152,13 +152,10 @@ final class PngTuberEffect: VideoEffect {
                 pngTuberImage = image.imageData
             }
         }
-        guard var pngTuberImage else {
-            return image
-        }
-        return pngTuberImage
+        return pngTuberImage?
             .resizeMoveMirror(sceneWidget, image.extent.size, mirror)
             .composited(over: image)
-            .cropped(to: image.extent)
+            .cropped(to: image.extent) ?? image
     }
 
     private func shouldShowImage(image: PngTuberImage) -> Bool {
