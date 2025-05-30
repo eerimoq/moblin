@@ -1,7 +1,5 @@
 import SwiftUI
 
-private let sliderWidth = 250.0
-
 private func lockImage(locked: Bool) -> String {
     if locked {
         return "lock"

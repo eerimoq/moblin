@@ -1,7 +1,5 @@
 import SwiftUI
 
-private let sliderWidth = 250.0
-
 struct StreamOverlayRightPixellateView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var database: Database

@@ -1,6 +1,6 @@
 import SwiftUI
 
-private let sliderWidth = 200.0
+private let faceSliderWidth = 200.0
 
 private struct FaceButtonView: View {
     var title: String
@@ -50,7 +50,7 @@ private struct FaceViewSlider: View {
             }
             .padding([.top, .bottom], 5)
             .padding([.leading, .trailing], 7)
-            .frame(width: sliderWidth, height: sliderHeight)
+            .frame(width: faceSliderWidth, height: sliderHeight)
             .background(backgroundColor)
             .cornerRadius(7)
         }
