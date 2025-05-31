@@ -2875,13 +2875,13 @@ class SettingsChatFilter: Identifiable, Codable, ObservableObject {
     @Published var chatBot: Bool = false
     @Published var poll: Bool = false
     @Published var print: Bool = false
-    
+
     func isMatching(user: String?, segments: [ChatPostSegment]) -> Bool {
         if user != self.user {
             return false
         }
         var segmentsIterator = segments.makeIterator()
-        for messageWord in self.messageStartWords {
+        for messageWord in messageStartWords {
             if let text = firstText(segmentsIterator: &segmentsIterator) {
                 if !text.starts(with: messageWord) {
                     return false
@@ -2892,7 +2892,7 @@ class SettingsChatFilter: Identifiable, Codable, ObservableObject {
         }
         return true
     }
-    
+
     private func firstText(segmentsIterator: inout IndexingIterator<[ChatPostSegment]>) -> String? {
         while let segment = segmentsIterator.next() {
             if let text = segment.text, !text.isEmpty {
@@ -2901,7 +2901,7 @@ class SettingsChatFilter: Identifiable, Codable, ObservableObject {
         }
         return nil
     }
-    
+
     enum CodingKeys: CodingKey {
         case id,
              value,
@@ -2910,7 +2910,7 @@ class SettingsChatFilter: Identifiable, Codable, ObservableObject {
              textToSpeech,
              chatBot,
              poll,
-        print
+             print
     }
 
     func encode(to encoder: Encoder) throws {
@@ -3301,6 +3301,7 @@ class SettingsDebug: Codable, ObservableObject {
     var replay: Bool = false
     var recordSegmentLength: Double = 5.0
     @Published var builtinAudioAndVideoDelay: Double = 0.0
+    @Published var switchSceneWithVolumeButtons: Bool = false
 
     enum CodingKeys: CodingKey {
         case logLevel,
@@ -3335,7 +3336,8 @@ class SettingsDebug: Codable, ObservableObject {
              srtlaBatchSendEnabled,
              replay,
              recordSegmentLength,
-             builtinAudioAndVideoDelay
+             builtinAudioAndVideoDelay,
+             switchSceneWithVolumeButtons
     }
 
     func encode(to encoder: Encoder) throws {
@@ -3373,6 +3375,7 @@ class SettingsDebug: Codable, ObservableObject {
         try container.encode(.replay, replay)
         try container.encode(.recordSegmentLength, recordSegmentLength)
         try container.encode(.builtinAudioAndVideoDelay, builtinAudioAndVideoDelay)
+        try container.encode(.switchSceneWithVolumeButtons, switchSceneWithVolumeButtons)
     }
 
     init() {}
@@ -3417,6 +3420,7 @@ class SettingsDebug: Codable, ObservableObject {
         replay = (try? container.decode(Bool.self, forKey: .replay)) ?? false
         recordSegmentLength = (try? container.decode(Double.self, forKey: .recordSegmentLength)) ?? 5.0
         builtinAudioAndVideoDelay = (try? container.decode(Double.self, forKey: .builtinAudioAndVideoDelay)) ?? 0.0
+        switchSceneWithVolumeButtons = container.decode(.switchSceneWithVolumeButtons, Bool.self, false)
     }
 }
 

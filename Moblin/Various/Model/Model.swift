@@ -5,6 +5,7 @@ import Combine
 import CoreMotion
 import GameController
 import HealthKit
+import MediaPlayer
 import NetworkExtension
 import PhotosUI
 import SDWebImageSwiftUI
@@ -546,6 +547,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     var builtinCameraIds: [String: UUID] = [:]
 
+    private var isAppActive = true
+    private var initialVolume: Float = 0.0
+    private let volumeView = MPVolumeView(frame: .zero)
+
     weak var currentStream: NetStream? {
         didSet {
             oldValue?.mixer.video.drawable = nil
@@ -814,6 +819,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         } catch {}
     }
 
+    private var volumeObservation: NSKeyValueObservation?
+
     func setup() {
         deleteTrash()
         cameraPreviewLayer = cameraPreviewView.previewLayer
@@ -886,6 +893,19 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 self.updateIconImageFromDatabase()
             }
         }
+        let audioSession = AVAudioSession.sharedInstance()
+        initialVolume = audioSession.outputVolume
+        volumeObservation = audioSession.observe(\.outputVolume,
+                                                 options: [.old, .new],
+                                                 changeHandler: volumeDidChange)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(applicationDidChangeActive),
+                                               name: UIApplication.willResignActiveNotification,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(applicationDidChangeActive),
+                                               name: UIApplication.didBecomeActiveNotification,
+                                               object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(handleAudioRouteChange),
                                                name: AVAudioSession.routeChangeNotification,
@@ -981,6 +1001,37 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         replay.speed = database.replay.speed
         gForceManager = GForceManager(motionManager: motionManager)
         startGForceManager()
+    }
+
+    @objc func applicationDidChangeActive(notification: NSNotification) {
+        isAppActive = notification.name == UIApplication.didBecomeActiveNotification
+    }
+
+    private func volumeDidChange(_ session: AVAudioSession, _ change: NSKeyValueObservedChange<Float>) {
+        if database.debug.switchSceneWithVolumeButtons, isAppActive {
+            guard let newValue = change.newValue, newValue != initialVolume else {
+                return
+            }
+            setSystemVolume(initialVolume)
+            guard let currentSceneIndex = enabledScenes.firstIndex(where: { $0.id == selectedSceneId }) else {
+                return
+            }
+            let nextSceneIndex = (currentSceneIndex + 1) % enabledScenes.count
+            guard nextSceneIndex != currentSceneIndex else {
+                return
+            }
+            selectScene(id: enabledScenes[nextSceneIndex].id)
+        } else {
+            initialVolume = session.outputVolume
+        }
+    }
+
+    private func setSystemVolume(_ volume: Float) {
+        if let volumeSlider = volumeView.subviews.first(where: { $0 is UISlider }) as? UISlider {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                volumeSlider.value = Float(volume)
+            }
+        }
     }
 
     func startGForceManager() {

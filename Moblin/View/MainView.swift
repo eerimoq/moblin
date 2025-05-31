@@ -1,4 +1,7 @@
+import AVFoundation
+import MediaPlayer
 import SwiftUI
+import UIKit
 import WebKit
 
 private struct CloseButtonView: View {

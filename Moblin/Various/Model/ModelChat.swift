@@ -389,16 +389,14 @@ extension Model {
                 }
             }
     }
-    
+
     private func evaluateFilters(user: String?, segments: [ChatPostSegment]) -> SettingsChatFilter? {
-        for filter in database.chat.filters {
-            if filter.isMatching(user: user, segments: segments) {
-                return filter
-            }
+        for filter in database.chat.filters filter.isMatching(user: user, segments: segments) {
+            return filter
         }
         return nil
     }
-    
+
     func appendChatMessage(
         platform: Platform,
         user: String?,
@@ -416,7 +414,9 @@ extension Model {
         live: Bool
     ) {
         let filter = evaluateFilters(user: user, segments: segments)
-        if database.chat.botEnabled, live, filter?.chatBot != false, segments.first?.text?.trim().lowercased() == "!moblin" {
+        if database.chat.botEnabled, live, filter?.chatBot != false,
+           segments.first?.text?.trim().lowercased() == "!moblin"
+        {
             if chatBotMessages.count < 25 || isModerator {
                 chatBotMessages.append(ChatBotMessage(
                     platform: platform,

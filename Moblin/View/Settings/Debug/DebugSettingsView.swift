@@ -118,6 +118,7 @@ struct DebugSettingsView: View {
                             .frame(width: 40)
                     }
                 }
+                Toggle("Switch scene with volume buttons", isOn: $debug.switchSceneWithVolumeButtons)
             } header: {
                 Text("Experimental")
             }

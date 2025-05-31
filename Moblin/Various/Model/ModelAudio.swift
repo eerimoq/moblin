@@ -46,6 +46,10 @@ extension Model {
         }
     }
 
+    @objc func handleAudioVolumeChange(notification: Notification) {
+        logger.info("xxx volume change \(notification)")
+    }
+
     @objc func handleAudioRouteChange(notification _: Notification) {
         guard let inputPort = AVAudioSession.sharedInstance().currentRoute.inputs.first
         else {
