@@ -2865,28 +2865,64 @@ var videoStabilizationModes = SettingsVideoStabilizationMode.allCases
     }
     .map { $0.toString() }
 
-class SettingsChatFilter: Identifiable, Codable {
+class SettingsChatFilter: Identifiable, Codable, ObservableObject {
     var id = UUID()
-    var user: String = ""
-    var message: String = ""
-    var showOnScreen: Bool = false
-    var textToSpeech: Bool = false
-
+    @Published var user: String = ""
+    @Published var messageStart: String = ""
+    var messageStartWords: [String] = []
+    @Published var showOnScreen: Bool = false
+    @Published var textToSpeech: Bool = false
+    @Published var chatBot: Bool = false
+    @Published var poll: Bool = false
+    @Published var print: Bool = false
+    
+    func isMatching(user: String?, segments: [ChatPostSegment]) -> Bool {
+        if user != self.user {
+            return false
+        }
+        var segmentsIterator = segments.makeIterator()
+        for messageWord in self.messageStartWords {
+            if let text = firstText(segmentsIterator: &segmentsIterator) {
+                if !text.starts(with: messageWord) {
+                    return false
+                }
+            } else {
+                return false
+            }
+        }
+        return true
+    }
+    
+    private func firstText(segmentsIterator: inout IndexingIterator<[ChatPostSegment]>) -> String? {
+        while let segment = segmentsIterator.next() {
+            if let text = segment.text, !text.isEmpty {
+                return text
+            }
+        }
+        return nil
+    }
+    
     enum CodingKeys: CodingKey {
         case id,
              value,
-             message,
+             messageWords,
              showOnScreen,
-             textToSpeech
+             textToSpeech,
+             chatBot,
+             poll,
+        print
     }
 
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
         try container.encode(.value, user)
-        try container.encode(.message, message)
+        try container.encode(.messageWords, messageStartWords)
         try container.encode(.showOnScreen, showOnScreen)
         try container.encode(.textToSpeech, textToSpeech)
+        try container.encode(.chatBot, chatBot)
+        try container.encode(.poll, poll)
+        try container.encode(.print, print)
     }
 
     init() {}
@@ -2895,9 +2931,13 @@ class SettingsChatFilter: Identifiable, Codable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
         user = container.decode(.value, String.self, "")
-        message = container.decode(.message, String.self, "")
+        messageStartWords = container.decode(.messageWords, [String].self, [])
+        messageStart = messageStartWords.joined(separator: " ")
         showOnScreen = container.decode(.showOnScreen, Bool.self, false)
         textToSpeech = container.decode(.textToSpeech, Bool.self, false)
+        chatBot = container.decode(.chatBot, Bool.self, false)
+        poll = container.decode(.poll, Bool.self, false)
+        print = container.decode(.print, Bool.self, false)
     }
 }
 
@@ -2942,7 +2982,7 @@ class SettingsChat: Codable, ObservableObject {
     var maximumAgeEnabled: Bool = false
     var meInUsernameColor: Bool = true
     var enabled: Bool = true
-    var filters: [SettingsChatFilter] = []
+    @Published var filters: [SettingsChatFilter] = []
     var textToSpeechEnabled: Bool = false
     var textToSpeechDetectLanguagePerMessage: Bool = false
     var textToSpeechSayUsername: Bool = true

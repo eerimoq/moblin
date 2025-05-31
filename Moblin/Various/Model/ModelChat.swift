@@ -6,6 +6,14 @@ import WrappingHStack
 let maximumNumberOfChatMessages = 50
 let maximumNumberOfInteractiveChatMessages = 100
 
+struct ChatFilterResult {
+    var showOnScreen: Bool = true
+    var textToSpeech: Bool = true
+    var chatBot: Bool = true
+    var poll: Bool = true
+    var print: Bool = true
+}
+
 struct ChatMessageEmote: Identifiable {
     var id = UUID()
     var url: URL
@@ -89,6 +97,7 @@ struct ChatPost: Identifiable, Equatable {
     var bits: String?
     var highlight: ChatHighlight?
     var live: Bool
+    var filter: SettingsChatFilter?
 }
 
 class ChatProvider: ObservableObject {
@@ -161,7 +170,8 @@ extension Model {
             isSubscriber: false,
             bits: nil,
             highlight: nil,
-            live: true
+            live: true,
+            filter: nil
         )
     }
 
@@ -267,9 +277,11 @@ extension Model {
             if chat.posts.count > maximumNumberOfChatMessages - 1 {
                 chat.posts.removeLast()
             }
-            chat.posts.prepend(post)
-            if isWatchLocal() {
-                sendChatMessageToWatch(post: post)
+            if post.filter?.showOnScreen != false {
+                chat.posts.prepend(post)
+                if isWatchLocal() {
+                    sendChatMessageToWatch(post: post)
+                }
             }
             if isTextToSpeechEnabledForMessage(post: post), let user = post.user {
                 let message = post.segments.filter { $0.text != nil }.map { $0.text! }.joined(separator: "")
@@ -277,7 +289,7 @@ extension Model {
                     chatTextToSpeech.say(user: user, message: message, isRedemption: post.isRedemption())
                 }
             }
-            if isAnyConnectedCatPrinterPrintingChat() {
+            if post.filter?.print != false, isAnyConnectedCatPrinterPrintingChat() {
                 printChatMessage(post: post)
             }
             streamTotalChatMessages += 1
@@ -377,7 +389,16 @@ extension Model {
                 }
             }
     }
-
+    
+    private func evaluateFilters(user: String?, segments: [ChatPostSegment]) -> SettingsChatFilter? {
+        for filter in database.chat.filters {
+            if filter.isMatching(user: user, segments: segments) {
+                return filter
+            }
+        }
+        return nil
+    }
+    
     func appendChatMessage(
         platform: Platform,
         user: String?,
@@ -394,10 +415,8 @@ extension Model {
         highlight: ChatHighlight?,
         live: Bool
     ) {
-        if database.chat.filters.contains(where: { user == $0.user }) {
-            return
-        }
-        if database.chat.botEnabled, live, segments.first?.text?.trim().lowercased() == "!moblin" {
+        let filter = evaluateFilters(user: user, segments: segments)
+        if database.chat.botEnabled, live, filter?.chatBot != false, segments.first?.text?.trim().lowercased() == "!moblin" {
             if chatBotMessages.count < 25 || isModerator {
                 chatBotMessages.append(ChatBotMessage(
                     platform: platform,
@@ -409,7 +428,7 @@ extension Model {
                 ))
             }
         }
-        if pollEnabled, live {
+        if pollEnabled, live, filter?.poll != false {
             handlePollVote(vote: segments.first?.text?.trim())
         }
         let post = ChatPost(
@@ -424,24 +443,29 @@ extension Model {
             isSubscriber: isSubscriber,
             bits: bits,
             highlight: highlight,
-            live: live
+            live: live,
+            filter: filter
         )
         chatPostId += 1
-        chat.appendMessage(post: post)
-        quickButtonChat.appendMessage(post: post)
-        for browserEffect in browserEffects.values {
-            browserEffect.sendChatMessage(post: post)
+        if filter?.showOnScreen != false || filter?.textToSpeech != false {
+            chat.appendMessage(post: post)
         }
-        if externalDisplayChatEnabled {
-            externalDisplayChat.appendMessage(post: post)
-        }
-        if highlight != nil {
-            if quickButtonChatAlertsPaused {
-                if pausedQuickButtonChatAlertsPosts.count < 2 * maximumNumberOfInteractiveChatMessages {
-                    pausedQuickButtonChatAlertsPosts.append(post)
+        if filter?.showOnScreen != false {
+            quickButtonChat.appendMessage(post: post)
+            for browserEffect in browserEffects.values {
+                browserEffect.sendChatMessage(post: post)
+            }
+            if externalDisplayChatEnabled {
+                externalDisplayChat.appendMessage(post: post)
+            }
+            if highlight != nil {
+                if quickButtonChatAlertsPaused {
+                    if pausedQuickButtonChatAlertsPosts.count < 2 * maximumNumberOfInteractiveChatMessages {
+                        pausedQuickButtonChatAlertsPosts.append(post)
+                    }
+                } else {
+                    newQuickButtonChatAlertsPosts.append(post)
                 }
-            } else {
-                newQuickButtonChatAlertsPosts.append(post)
             }
         }
     }

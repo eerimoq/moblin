@@ -101,7 +101,7 @@
 		032469A92AE1B3040097B18B /* StreamSrtSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032469A82AE1B3040097B18B /* StreamSrtSettingsView.swift */; };
 		0324CD072BEBFBBA004AA063 /* RistStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0324CD062BEBFBBA004AA063 /* RistStream.swift */; };
 		0324ECA82C1EADAB007CB0B3 /* FourThreeEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0324ECA72C1EADAB007CB0B3 /* FourThreeEffect.swift */; };
-		0325D0B42BB29713007EE85B /* ChatUsernamesToIgnoreSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0325D0B32BB29713007EE85B /* ChatUsernamesToIgnoreSettingsView.swift */; };
+		0325D0B42BB29713007EE85B /* ChatFiltersSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0325D0B32BB29713007EE85B /* ChatFiltersSettingsView.swift */; };
 		0325D0B72BB29754007EE85B /* ChatTextToSpeechSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0325D0B62BB29754007EE85B /* ChatTextToSpeechSettingsView.swift */; };
 		0325D0BB2BB3D7DD007EE85B /* KickViewers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0325D0BA2BB3D7DD007EE85B /* KickViewers.swift */; };
 		0325D0BE2BB3DDD6007EE85B /* KickChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0325D0BD2BB3DDD6007EE85B /* KickChannel.swift */; };
@@ -717,7 +717,7 @@
 		032469A82AE1B3040097B18B /* StreamSrtSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamSrtSettingsView.swift; sourceTree = "<group>"; };
 		0324CD062BEBFBBA004AA063 /* RistStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RistStream.swift; sourceTree = "<group>"; };
 		0324ECA72C1EADAB007CB0B3 /* FourThreeEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FourThreeEffect.swift; sourceTree = "<group>"; };
-		0325D0B32BB29713007EE85B /* ChatUsernamesToIgnoreSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatUsernamesToIgnoreSettingsView.swift; sourceTree = "<group>"; };
+		0325D0B32BB29713007EE85B /* ChatFiltersSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatFiltersSettingsView.swift; sourceTree = "<group>"; };
 		0325D0B62BB29754007EE85B /* ChatTextToSpeechSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTextToSpeechSettingsView.swift; sourceTree = "<group>"; };
 		0325D0BA2BB3D7DD007EE85B /* KickViewers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KickViewers.swift; sourceTree = "<group>"; };
 		0325D0BD2BB3DDD6007EE85B /* KickChannel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KickChannel.swift; sourceTree = "<group>"; };
@@ -1273,7 +1273,7 @@
 				0380D5E42C2CB2C80071C12B /* ChatBotSettingsView.swift */,
 				030399122AE2D0FC00D27530 /* ChatSettingsView.swift */,
 				0325D0B62BB29754007EE85B /* ChatTextToSpeechSettingsView.swift */,
-				0325D0B32BB29713007EE85B /* ChatUsernamesToIgnoreSettingsView.swift */,
+				0325D0B32BB29713007EE85B /* ChatFiltersSettingsView.swift */,
 			);
 			path = Chat;
 			sourceTree = "<group>";
@@ -3575,7 +3575,7 @@
 				0359F8AD2BD3DA61005BFDA8 /* AudioEncoderRingBuffer.swift in Sources */,
 				03D3C0512B452D61006BAEAC /* StreamRecordingSettingsView.swift in Sources */,
 				0342F1A52C627A8F004DD3EA /* MirlCommon.swift in Sources */,
-				0325D0B42BB29713007EE85B /* ChatUsernamesToIgnoreSettingsView.swift in Sources */,
+				0325D0B42BB29713007EE85B /* ChatFiltersSettingsView.swift in Sources */,
 				03980C552C5E74A9000ED476 /* VoicesView.swift in Sources */,
 				0302F07F2B320B0500B06FF0 /* StreamWizardChatSettingsView.swift in Sources */,
 				032D85862DDD7F4E00A6128A /* ModelKeyboard.swift in Sources */,

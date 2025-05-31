@@ -146,9 +146,9 @@ struct ChatSettingsView: View {
                     }
                 }
                 NavigationLink {
-                    ChatUsernamesToIgnoreSettingsView()
+                    ChatFiltersSettingsView(chat: chat)
                 } label: {
-                    Text("Usernames to ignore")
+                    Text("Filters")
                 }
                 NavigationLink {
                     ChatTextToSpeechSettingsView(chat: chat)

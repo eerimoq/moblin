@@ -59,6 +59,7 @@ extension Model {
         guard !isMoblinkRelayOnThisDevice(streamerUrl: streamerUrl) else {
             return
         }
+        logger.info("xxx relay \(streamerUrl)")
         let relay = MoblinkRelay(
             name: database.moblink.client.name,
             streamerUrl: streamerUrl,
@@ -86,14 +87,14 @@ extension Model {
     }
 
     func moblinkIpStatusesUpdated() {
-        // logger.info("xxx statuses")
-        // for status in ipStatuses {
-        //     logger.info("xxx   status \(status)")
-        // }
+        logger.info("xxx statuses")
+        for status in ipStatuses {
+            logger.info("xxx   status \(status)")
+        }
     }
 
-    private func isMoblinkRelayOnThisDevice(streamerUrl _: URL) -> Bool {
-        // logger.info("xxx is on this device \(streamerUrl)")
+    private func isMoblinkRelayOnThisDevice(streamerUrl: URL) -> Bool {
+        logger.info("xxx is on this device \(streamerUrl)")
         return false
     }
 
@@ -188,6 +189,7 @@ extension Model: MoblinkRelayDelegate {
 
 extension Model: MoblinkScannerDelegate {
     func moblinkScannerDiscoveredStreamers(streamers: [MoblinkScannerStreamer]) {
+        logger.info("xxx xxx \(streamers)")
         moblinkScannerDiscoveredStreamers = streamers
         if !database.moblink.client.manual {
             startMoblinkRelayAutomatic()

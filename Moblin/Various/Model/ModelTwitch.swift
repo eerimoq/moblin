@@ -419,7 +419,8 @@ extension Model: TwitchEventSubDelegate {
                               color: color,
                               image: image ?? "medal",
                               title: title
-                          ), live: true)
+                          ),
+                          live: true)
     }
 
     func twitchEventSubUnauthorized() {
