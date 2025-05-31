@@ -1,4 +1,6 @@
 import AVFAudio
+import MediaPlayer
+import UIKit
 
 class AudioProvider: ObservableObject {
     @Published var showing = false
@@ -29,6 +31,13 @@ extension Model {
                     options: [.mixWithOthers, bluetoothOption, .defaultToSpeaker]
                 )
                 try session.setActive(true)
+                // For some reason volume can change a lot when starting the app, so delay observing a bit.
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    self.initialVolume = session.outputVolume
+                    self.volumeObservation = session.observe(\.outputVolume,
+                                                             options: [.old, .new],
+                                                             changeHandler: self.volumeDidChange)
+                }
             } catch {
                 logger.error("app: Session error \(error)")
             }
@@ -40,8 +49,40 @@ extension Model {
         netStreamLockQueue.async {
             do {
                 try AVAudioSession.sharedInstance().setActive(false)
+                DispatchQueue.main.async {
+                    self.volumeObservation?.invalidate()
+                    self.volumeObservation = nil
+                }
             } catch {
                 logger.info("Failed to stop audio session with error: \(error)")
+            }
+        }
+    }
+
+    private func volumeDidChange(_ session: AVAudioSession, _ change: NSKeyValueObservedChange<Float>) {
+        if database.debug.switchSceneWithVolumeButtons, isAppActive {
+            logger.info("xxx \(initialVolume) \(change.oldValue) \(change.newValue)")
+            guard let newValue = change.newValue, newValue != initialVolume else {
+                return
+            }
+            setSystemVolume(initialVolume)
+            guard let currentSceneIndex = enabledScenes.firstIndex(where: { $0.id == selectedSceneId }) else {
+                return
+            }
+            let nextSceneIndex = (currentSceneIndex + 1) % enabledScenes.count
+            guard nextSceneIndex != currentSceneIndex else {
+                return
+            }
+            selectScene(id: enabledScenes[nextSceneIndex].id)
+        } else {
+            initialVolume = session.outputVolume
+        }
+    }
+
+    private func setSystemVolume(_ volume: Float) {
+        if let volumeSlider = volumeView.subviews.first(where: { $0 is UISlider }) as? UISlider {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                volumeSlider.value = Float(volume)
             }
         }
     }

@@ -547,9 +547,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     var builtinCameraIds: [String: UUID] = [:]
 
-    private var isAppActive = true
-    private var initialVolume: Float = 0.0
-    private let volumeView = MPVolumeView(frame: .zero)
+    var isAppActive = true
+    var initialVolume: Float = 0.0
+    let volumeView = MPVolumeView(frame: .zero)
+    var volumeObservation: NSKeyValueObservation?
 
     weak var currentStream: NetStream? {
         didSet {
@@ -819,8 +820,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         } catch {}
     }
 
-    private var volumeObservation: NSKeyValueObservation?
-
     func setup() {
         deleteTrash()
         cameraPreviewLayer = cameraPreviewView.previewLayer
@@ -893,11 +892,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 self.updateIconImageFromDatabase()
             }
         }
-        let audioSession = AVAudioSession.sharedInstance()
-        initialVolume = audioSession.outputVolume
-        volumeObservation = audioSession.observe(\.outputVolume,
-                                                 options: [.old, .new],
-                                                 changeHandler: volumeDidChange)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(applicationDidChangeActive),
                                                name: UIApplication.willResignActiveNotification,
@@ -1005,33 +999,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     @objc func applicationDidChangeActive(notification: NSNotification) {
         isAppActive = notification.name == UIApplication.didBecomeActiveNotification
-    }
-
-    private func volumeDidChange(_ session: AVAudioSession, _ change: NSKeyValueObservedChange<Float>) {
-        if database.debug.switchSceneWithVolumeButtons, isAppActive {
-            guard let newValue = change.newValue, newValue != initialVolume else {
-                return
-            }
-            setSystemVolume(initialVolume)
-            guard let currentSceneIndex = enabledScenes.firstIndex(where: { $0.id == selectedSceneId }) else {
-                return
-            }
-            let nextSceneIndex = (currentSceneIndex + 1) % enabledScenes.count
-            guard nextSceneIndex != currentSceneIndex else {
-                return
-            }
-            selectScene(id: enabledScenes[nextSceneIndex].id)
-        } else {
-            initialVolume = session.outputVolume
-        }
-    }
-
-    private func setSystemVolume(_ volume: Float) {
-        if let volumeSlider = volumeView.subviews.first(where: { $0 is UISlider }) as? UISlider {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                volumeSlider.value = Float(volume)
-            }
-        }
     }
 
     func startGForceManager() {

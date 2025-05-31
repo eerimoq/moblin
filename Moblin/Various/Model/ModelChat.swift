@@ -391,10 +391,7 @@ extension Model {
     }
 
     private func evaluateFilters(user: String?, segments: [ChatPostSegment]) -> SettingsChatFilter? {
-        for filter in database.chat.filters filter.isMatching(user: user, segments: segments) {
-            return filter
-        }
-        return nil
+        return database.chat.filters.first(where: { $0.isMatching(user: user, segments: segments) })
     }
 
     func appendChatMessage(
