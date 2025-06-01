@@ -62,6 +62,11 @@ private struct ChatFilterFilterSettingsView: View {
             }
         } header: {
             Text("Condition")
+        } footer: {
+            Text("""
+            The condition is true when both Username and Message start with matches the received \
+            chat message. Leave Message start with empty to only match Username.
+            """)
         }
     }
 }
