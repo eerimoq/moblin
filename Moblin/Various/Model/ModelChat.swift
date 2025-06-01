@@ -6,14 +6,6 @@ import WrappingHStack
 let maximumNumberOfChatMessages = 50
 let maximumNumberOfInteractiveChatMessages = 100
 
-struct ChatFilterResult {
-    var showOnScreen: Bool = true
-    var textToSpeech: Bool = true
-    var chatBot: Bool = true
-    var poll: Bool = true
-    var print: Bool = true
-}
-
 struct ChatMessageEmote: Identifiable {
     var id = UUID()
     var url: URL
