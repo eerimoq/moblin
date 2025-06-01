@@ -39,14 +39,14 @@ private struct ChatFilterFilterSettingsView: View {
         Section {
             NavigationLink {
                 TextEditView(
-                    title: String(localized: "User"),
+                    title: String(localized: "Username"),
                     value: filter.user,
                     onSubmit: {
                         filter.user = $0
                     }
                 )
             } label: {
-                TextItemView(name: String(localized: "User"), value: filter.user)
+                TextItemView(name: String(localized: "Username"), value: filter.user)
             }
             NavigationLink {
                 TextEditView(
