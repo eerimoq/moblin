@@ -105,7 +105,10 @@ private struct ChatFilterSettingsView: View {
             }
             .navigationTitle("Filter")
         } label: {
-            Text(filter.user)
+            TextItemView(
+                name: String(localized: "Username"),
+                value: filter.user
+            )
         }
     }
 }
