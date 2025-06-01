@@ -548,9 +548,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var builtinCameraIds: [String: UUID] = [:]
 
     var isAppActive = true
-    var initialVolume: Float = 0.0
+    var initialVolume: Float?
     let volumeView = MPVolumeView(frame: .zero)
     var volumeObservation: NSKeyValueObservation?
+    var audioSessionWanted = false
 
     weak var currentStream: NetStream? {
         didSet {

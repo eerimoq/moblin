@@ -16,6 +16,7 @@ extension Model {
     }
 
     func setupAudioSession() {
+        audioSessionWanted = true
         let bluetoothOutputOnly = database.debug.bluetoothOutputOnly
         netStreamLockQueue.async {
             let session = AVAudioSession.sharedInstance()
@@ -32,10 +33,13 @@ extension Model {
                 )
                 try session.setActive(true)
                 // For some reason volume can change a lot when starting the app, so delay observing a bit.
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    self.initialVolume = session.outputVolume
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                    guard self.audioSessionWanted else {
+                        return
+                    }
+                    self.volumeObservation?.invalidate()
                     self.volumeObservation = session.observe(\.outputVolume,
-                                                             options: [.old, .new],
+                                                             options: [.old, .new, .initial],
                                                              changeHandler: self.volumeDidChange)
                 }
             } catch {
@@ -46,34 +50,33 @@ extension Model {
     }
 
     func teardownAudioSession() {
+        audioSessionWanted = false
         netStreamLockQueue.async {
             do {
                 try AVAudioSession.sharedInstance().setActive(false)
-                DispatchQueue.main.async {
-                    self.volumeObservation?.invalidate()
-                    self.volumeObservation = nil
-                }
             } catch {
                 logger.info("Failed to stop audio session with error: \(error)")
+            }
+            DispatchQueue.main.async {
+                self.volumeObservation?.invalidate()
+                self.volumeObservation = nil
             }
         }
     }
 
-    private func volumeDidChange(_ session: AVAudioSession, _ change: NSKeyValueObservedChange<Float>) {
+    private func volumeDidChange(_ session: AVAudioSession, _ event: NSKeyValueObservedChange<Float>) {
         if database.debug.switchSceneWithVolumeButtons, isAppActive {
-            logger.info("xxx \(initialVolume) \(change.oldValue) \(change.newValue)")
-            guard let newValue = change.newValue, newValue != initialVolume else {
+            if event.oldValue == nil {
+                initialVolume = event.newValue
+            }
+            guard let initialVolume else {
+                return
+            }
+            guard event.newValue != initialVolume else {
                 return
             }
             setSystemVolume(initialVolume)
-            guard let currentSceneIndex = enabledScenes.firstIndex(where: { $0.id == selectedSceneId }) else {
-                return
-            }
-            let nextSceneIndex = (currentSceneIndex + 1) % enabledScenes.count
-            guard nextSceneIndex != currentSceneIndex else {
-                return
-            }
-            selectScene(id: enabledScenes[nextSceneIndex].id)
+            switchToNextSceneRoundRobin()
         } else {
             initialVolume = session.outputVolume
         }
@@ -81,14 +84,10 @@ extension Model {
 
     private func setSystemVolume(_ volume: Float) {
         if let volumeSlider = volumeView.subviews.first(where: { $0 is UISlider }) as? UISlider {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                 volumeSlider.value = Float(volume)
             }
         }
-    }
-
-    @objc func handleAudioVolumeChange(notification: Notification) {
-        logger.info("xxx volume change \(notification)")
     }
 
     @objc func handleAudioRouteChange(notification _: Notification) {

@@ -1071,4 +1071,15 @@ extension Model {
             getBuiltinCameraDevicesInScene(scene: scene, devices: &devices)
         }
     }
+
+    func switchToNextSceneRoundRobin() {
+        guard let currentSceneIndex = enabledScenes.firstIndex(where: { $0.id == selectedSceneId }) else {
+            return
+        }
+        let nextSceneIndex = (currentSceneIndex + 1) % enabledScenes.count
+        guard nextSceneIndex != currentSceneIndex else {
+            return
+        }
+        selectScene(id: enabledScenes[nextSceneIndex].id)
+    }
 }

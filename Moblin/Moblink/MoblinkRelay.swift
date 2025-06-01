@@ -406,10 +406,6 @@ class MoblinkRelay: NSObject {
         guard started else {
             return
         }
-        logger.info("xxx frfrf")
-        for interface in path.availableInterfaces {
-            logger.info("xxx frfrf2 \(interface.type)")
-        }
         var relays: [Relay] = []
         for interface in path.availableInterfaces
             where interface.type == .cellular || interface.type == .wiredEthernet
