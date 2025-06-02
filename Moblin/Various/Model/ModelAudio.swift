@@ -32,7 +32,8 @@ extension Model {
                     options: [.mixWithOthers, bluetoothOption, .defaultToSpeaker]
                 )
                 try session.setActive(true)
-                // For some reason volume can change a lot when starting the app, so delay observing a bit.
+                // For some reason volume can change when starting the app, so delay observing a bit.
+                // Still unexpectedly switches scene sometimes.
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                     guard self.audioSessionWanted else {
                         return
