@@ -65,7 +65,7 @@ extension Model {
     }
 
     private func volumeDidChange(_ session: AVAudioSession, _ event: NSKeyValueObservedChange<Float>) {
-        if database.debug.switchSceneWithVolumeButtons, isAppActive {
+        if database.selfieStick.buttonEnabled, isAppActive {
             if event.oldValue == nil {
                 initialVolume = event.newValue
             }

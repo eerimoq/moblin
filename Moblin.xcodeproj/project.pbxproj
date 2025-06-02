@@ -354,6 +354,7 @@
 		03987B3C2C82859C00226C03 /* QuickButtonMicView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03987B3B2C82859C00226C03 /* QuickButtonMicView.swift */; };
 		03987B3E2C8285D900226C03 /* QuickButtonStreamView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03987B3D2C8285D900226C03 /* QuickButtonStreamView.swift */; };
 		039A9E282BAEC5A100A23F97 /* WidgetCropSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039A9E272BAEC5A100A23F97 /* WidgetCropSettingsView.swift */; };
+		039ACB672DED6DB100D35E4D /* SelfieStickSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039ACB662DED6DA900D35E4D /* SelfieStickSettingsView.swift */; };
 		039ADE472B55C23600FE0F59 /* RemoteControlStreamer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039ADE462B55C23600FE0F59 /* RemoteControlStreamer.swift */; };
 		03A01ACE2B9F738200D20AE3 /* CacheImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A01ACD2B9F738200D20AE3 /* CacheImage.swift */; };
 		03A08B7C2AC295620018BA95 /* AlertToast in Frameworks */ = {isa = PBXBuildFile; productRef = 03A08B7B2AC295620018BA95 /* AlertToast */; };
@@ -1016,6 +1017,7 @@
 		03987B3B2C82859C00226C03 /* QuickButtonMicView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickButtonMicView.swift; sourceTree = "<group>"; };
 		03987B3D2C8285D900226C03 /* QuickButtonStreamView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickButtonStreamView.swift; sourceTree = "<group>"; };
 		039A9E272BAEC5A100A23F97 /* WidgetCropSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetCropSettingsView.swift; sourceTree = "<group>"; };
+		039ACB662DED6DA900D35E4D /* SelfieStickSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelfieStickSettingsView.swift; sourceTree = "<group>"; };
 		039ADE462B55C23600FE0F59 /* RemoteControlStreamer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteControlStreamer.swift; sourceTree = "<group>"; };
 		03A01ACD2B9F738200D20AE3 /* CacheImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheImage.swift; sourceTree = "<group>"; };
 		03A08B7F2AC368860018BA95 /* Media.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Media.swift; sourceTree = "<group>"; };
@@ -2450,6 +2452,14 @@
 			path = Crop;
 			sourceTree = "<group>";
 		};
+		039ACB652DED6D9600D35E4D /* SelfieStick */ = {
+			isa = PBXGroup;
+			children = (
+				039ACB662DED6DA900D35E4D /* SelfieStickSettingsView.swift */,
+			);
+			path = SelfieStick;
+			sourceTree = "<group>";
+		};
 		039ADE452B55C20800FE0F59 /* RemoteControl */ = {
 			isa = PBXGroup;
 			children = (
@@ -2604,6 +2614,7 @@
 		03B373F42A9EF8BD0028DDD5 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
+				039ACB652DED6D9600D35E4D /* SelfieStick */,
 				0379BBAB2AAD962700B718B6 /* About */,
 				037CE22B2BC17EA3004E9B18 /* Audio */,
 				03FB4B2C2AD8CF6B005AA183 /* BitratePresets */,
@@ -3927,6 +3938,7 @@
 				0330F2B52AFADD18001262C3 /* StreamYouTubeSettingsView.swift in Sources */,
 				038605352D7DF94F00B9C3CE /* CyclingPowerDeviceScannerSettingsView.swift in Sources */,
 				031E9FC12C5B1D87009FF4D8 /* TwitchApi.swift in Sources */,
+				039ACB672DED6DB100D35E4D /* SelfieStickSettingsView.swift in Sources */,
 				03AD38D22C5280B300824980 /* TextFormatStringLoader.swift in Sources */,
 				031F9C2C2D5A7BB400424EF0 /* CatPrinterCommandsMxw01.swift in Sources */,
 				0359F8D62BD3DA61005BFDA8 /* Adts.swift in Sources */,

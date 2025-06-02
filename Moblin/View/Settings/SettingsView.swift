@@ -115,6 +115,11 @@ struct SettingsView: View {
             if model.database.showAllSettings {
                 Section {
                     NavigationLink {
+                        SelfieStickSettingsView(selfieStick: model.database.selfieStick)
+                    } label: {
+                        IconAndTextView(image: "line.diagonal", text: String(localized: "Selfie stick"))
+                    }
+                    NavigationLink {
                         GameControllersSettingsView()
                     } label: {
                         IconAndTextView(image: "gamecontroller", text: String(localized: "Game controllers"))

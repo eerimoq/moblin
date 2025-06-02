@@ -3267,6 +3267,50 @@ enum SettingsDnsLookupStrategy: String, Codable, CaseIterable {
 
 let dnsLookupStrategies = SettingsDnsLookupStrategy.allCases.map { $0.rawValue }
 
+enum SettingsSelfieStickButtonFunction: String, Codable, CaseIterable {
+    case switchScene
+
+    public init(from decoder: Decoder) throws {
+        do {
+            self = try SettingsSelfieStickButtonFunction(rawValue: decoder.singleValueContainer()
+                .decode(RawValue.self)) ?? .switchScene
+        } catch {
+            self = .switchScene
+        }
+    }
+
+    func toString() -> String {
+        switch self {
+        case .switchScene:
+            return String(localized: "Switch scene")
+        }
+    }
+}
+
+class SettingsSelfieStick: Codable, ObservableObject {
+    @Published var buttonEnabled: Bool = false
+    @Published var buttonFunction: SettingsSelfieStickButtonFunction = .switchScene
+
+    enum CodingKeys: CodingKey {
+        case enabled,
+             function
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.enabled, buttonEnabled)
+        try container.encode(.function, buttonFunction)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        buttonEnabled = container.decode(.enabled, Bool.self, false)
+        buttonFunction = container.decode(.function, SettingsSelfieStickButtonFunction.self, .switchScene)
+    }
+}
+
 class SettingsDebug: Codable, ObservableObject {
     var logLevel: SettingsLogLevel = .error
     @Published var srtOverlay: Bool = false
@@ -3301,7 +3345,6 @@ class SettingsDebug: Codable, ObservableObject {
     var replay: Bool = false
     var recordSegmentLength: Double = 5.0
     @Published var builtinAudioAndVideoDelay: Double = 0.0
-    @Published var switchSceneWithVolumeButtons: Bool = false
 
     enum CodingKeys: CodingKey {
         case logLevel,
@@ -3336,8 +3379,7 @@ class SettingsDebug: Codable, ObservableObject {
              srtlaBatchSendEnabled,
              replay,
              recordSegmentLength,
-             builtinAudioAndVideoDelay,
-             switchSceneWithVolumeButtons
+             builtinAudioAndVideoDelay
     }
 
     func encode(to encoder: Encoder) throws {
@@ -3375,7 +3417,6 @@ class SettingsDebug: Codable, ObservableObject {
         try container.encode(.replay, replay)
         try container.encode(.recordSegmentLength, recordSegmentLength)
         try container.encode(.builtinAudioAndVideoDelay, builtinAudioAndVideoDelay)
-        try container.encode(.switchSceneWithVolumeButtons, switchSceneWithVolumeButtons)
     }
 
     init() {}
@@ -3420,7 +3461,6 @@ class SettingsDebug: Codable, ObservableObject {
         replay = (try? container.decode(Bool.self, forKey: .replay)) ?? false
         recordSegmentLength = (try? container.decode(Double.self, forKey: .recordSegmentLength)) ?? 5.0
         builtinAudioAndVideoDelay = (try? container.decode(Double.self, forKey: .builtinAudioAndVideoDelay)) ?? 0.0
-        switchSceneWithVolumeButtons = container.decode(.switchSceneWithVolumeButtons, Bool.self, false)
     }
 }
 
@@ -4482,6 +4522,7 @@ class Database: Codable, ObservableObject {
     @Published var fixedHorizon: Bool = false
     @Published var whirlpoolAngle: Float = .pi / 2
     @Published var pinchScale: Float = 0.5
+    var selfieStick: SettingsSelfieStick = .init()
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -4571,7 +4612,8 @@ class Database: Codable, ObservableObject {
              autoSceneSwitchers,
              fixedHorizon,
              whirlpoolAngle,
-             pinchScale
+             pinchScale,
+             selfieStick
     }
 
     func encode(to encoder: Encoder) throws {
@@ -4636,6 +4678,7 @@ class Database: Codable, ObservableObject {
         try container.encode(.fixedHorizon, fixedHorizon)
         try container.encode(.whirlpoolAngle, whirlpoolAngle)
         try container.encode(.pinchScale, pinchScale)
+        try container.encode(.selfieStick, selfieStick)
     }
 
     init() {}
@@ -4702,6 +4745,7 @@ class Database: Codable, ObservableObject {
         fixedHorizon = container.decode(.fixedHorizon, Bool.self, false)
         whirlpoolAngle = container.decode(.whirlpoolAngle, Float.self, .pi / 2)
         pinchScale = container.decode(.pinchScale, Float.self, 0.5)
+        selfieStick = container.decode(.selfieStick, SettingsSelfieStick.self, .init())
     }
 }
 
