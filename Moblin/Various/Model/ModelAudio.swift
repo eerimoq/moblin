@@ -34,14 +34,16 @@ extension Model {
                 try session.setActive(true)
                 // For some reason volume can change when starting the app, so delay observing a bit.
                 // Still unexpectedly switches scene sometimes.
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                    guard self.audioSessionWanted else {
-                        return
+                DispatchQueue.main.async {
+                    self.volumeObservationSetupTimer.startSingleShot(timeout: 1.0) {
+                        guard self.audioSessionWanted else {
+                            return
+                        }
+                        self.volumeObservation?.invalidate()
+                        self.volumeObservation = session.observe(\.outputVolume,
+                                                                 options: [.old, .new, .initial],
+                                                                 changeHandler: self.volumeDidChange)
                     }
-                    self.volumeObservation?.invalidate()
-                    self.volumeObservation = session.observe(\.outputVolume,
-                                                             options: [.old, .new, .initial],
-                                                             changeHandler: self.volumeDidChange)
                 }
             } catch {
                 logger.error("app: Session error \(error)")
@@ -59,6 +61,7 @@ extension Model {
                 logger.info("Failed to stop audio session with error: \(error)")
             }
             DispatchQueue.main.async {
+                self.volumeObservationSetupTimer.stop()
                 self.volumeObservation?.invalidate()
                 self.volumeObservation = nil
             }

@@ -552,6 +552,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     let volumeView = MPVolumeView(frame: .zero)
     var volumeObservation: NSKeyValueObservation?
     var audioSessionWanted = false
+    var volumeObservationSetupTimer = SimpleTimer(queue: .main)
 
     weak var currentStream: NetStream? {
         didSet {
