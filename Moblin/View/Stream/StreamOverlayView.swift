@@ -72,7 +72,7 @@ private struct ChatOverlayView: View {
                 }
                 Rectangle()
                     .foregroundColor(.clear)
-                    .frame(height: height * model.database.chat.bottom)
+                    .frame(height: model.database.chat.bottomPoints)
             }
         }
     }

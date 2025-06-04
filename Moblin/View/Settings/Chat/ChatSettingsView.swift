@@ -214,9 +214,9 @@ struct ChatSettingsView: View {
                 HStack {
                     Text("Bottom")
                     Slider(
-                        value: $chat.bottom,
-                        in: 0.0 ... 0.5,
-                        step: 0.01,
+                        value: $chat.bottomPoints,
+                        in: 0.0 ... 200.0,
+                        step: 5,
                         onEditingChanged: { begin in
                             guard !begin else {
                                 return
@@ -224,7 +224,7 @@ struct ChatSettingsView: View {
                             model.reloadChatMessages()
                         }
                     )
-                    Text("\(Int(100 * chat.bottom)) %")
+                    Text("\(Int(chat.bottomPoints)) pts")
                         .frame(width: sliderValuePercentageWidth)
                 }
             }

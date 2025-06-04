@@ -3000,6 +3000,7 @@ class SettingsChat: Codable, ObservableObject {
     var showFirstTimeChatterMessage: Bool = true
     var showNewFollowerMessage: Bool = true
     @Published var bottom: Double = 0.0
+    @Published var bottomPoints: Double = 80
     var newMessagesAtTop: Bool = false
     @Published var textToSpeechPauseBetweenMessages: Double = 1.0
 
@@ -3040,6 +3041,7 @@ class SettingsChat: Codable, ObservableObject {
              showFirstTimeChatterMessage,
              showNewFollowerMessage,
              bottom,
+             bottomPoints,
              newMessagesAtTop,
              textToSpeechPauseBetweenMessages
     }
@@ -3082,6 +3084,7 @@ class SettingsChat: Codable, ObservableObject {
         try container.encode(.showFirstTimeChatterMessage, showFirstTimeChatterMessage)
         try container.encode(.showNewFollowerMessage, showNewFollowerMessage)
         try container.encode(.bottom, bottom)
+        try container.encode(.bottomPoints, bottomPoints)
         try container.encode(.newMessagesAtTop, newMessagesAtTop)
         try container.encode(.textToSpeechPauseBetweenMessages, textToSpeechPauseBetweenMessages)
     }
@@ -3126,6 +3129,7 @@ class SettingsChat: Codable, ObservableObject {
         showFirstTimeChatterMessage = container.decode(.showFirstTimeChatterMessage, Bool.self, true)
         showNewFollowerMessage = container.decode(.showNewFollowerMessage, Bool.self, true)
         bottom = container.decode(.bottom, Double.self, 0.0)
+        bottomPoints = (try? container.decode(Double.self, forKey: .bottomPoints)) ?? min(UIScreen.main.bounds.width * bottom, 200)
         newMessagesAtTop = container.decode(.newMessagesAtTop, Bool.self, false)
         textToSpeechPauseBetweenMessages = container.decode(.textToSpeechPauseBetweenMessages, Double.self, 1.0)
     }
