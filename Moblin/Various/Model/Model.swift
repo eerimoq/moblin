@@ -1411,7 +1411,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             self.logStatus()
             self.updateFailedVideoEffects()
             self.updateAdaptiveBitrateDebug()
-            self.updateFilteredLocation()
+            self.updateDistance()
             self.updateSlope()
             self.updateAverageSpeed(now: monotonicNow)
             self.updateTextEffects(now: now, timestamp: monotonicNow)

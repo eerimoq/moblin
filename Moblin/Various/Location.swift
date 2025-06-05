@@ -21,11 +21,13 @@ private class BackgroundActivity {
 
 class Location: NSObject {
     private var manager = CLLocationManager()
+    private var onUpdate: ((CLLocation) -> Void)?
     private var latestLocation: CLLocation?
     private var backgroundActivity = BackgroundActivity()
 
-    func start() {
+    func start(onUpdate: @escaping (CLLocation) -> Void) {
         logger.debug("location: Start")
+        self.onUpdate = onUpdate
         manager.delegate = self
         manager.requestWhenInUseAuthorization()
         manager.startUpdatingLocation()
@@ -34,6 +36,7 @@ class Location: NSObject {
 
     func stop() {
         logger.debug("location: Stop")
+        onUpdate = nil
         manager.stopUpdatingLocation()
         backgroundActivity.stop()
     }
@@ -62,6 +65,7 @@ extension Location: CLLocationManagerDelegate {
     func locationManager(_: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         for location in locations {
             latestLocation = location
+            onUpdate?(location)
         }
     }
 }

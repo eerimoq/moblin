@@ -442,5 +442,6 @@ class MoblinkRelay: NSObject {
         mainRelay?.isMain = true
         self.relays = relays
         relayStateChanged()
+        logger.info("xxx moblink-relay: Number of relays is \(relays.count)")
     }
 }

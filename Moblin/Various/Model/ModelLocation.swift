@@ -21,7 +21,7 @@ extension Model {
     func reloadLocation() {
         locationManager.stop()
         if isLocationEnabled() {
-            locationManager.start()
+            locationManager.start(onUpdate: handleLocationUpdate)
         }
         reloadRealtimeIrl()
     }
@@ -39,6 +39,16 @@ extension Model {
 
     func isLocationEnabled() -> Bool {
         return database.location.enabled
+    }
+
+    private func handleLocationUpdate(location: CLLocation) {
+        guard isLive else {
+            return
+        }
+        guard !isLocationInPrivacyRegion(location: location) else {
+            return
+        }
+        realtimeIrl?.update(location: location)
     }
 
     func isLocationInPrivacyRegion(location: CLLocation) -> Bool {
@@ -70,30 +80,17 @@ extension Model {
         }
     }
 
-    func updateFilteredLocation() {
+    func updateDistance() {
         let location = locationManager.getLatestKnownLocation()
         if let latestKnownLocation {
             let distance = location?.distance(from: latestKnownLocation) ?? 0
             if distance > latestKnownLocation.horizontalAccuracy {
                 database.location.distance! += distance
                 self.latestKnownLocation = location
-                updateRealtimeIrl(location: location)
             }
         } else {
             latestKnownLocation = location
-            updateRealtimeIrl(location: location)
         }
-    }
-
-    private func updateRealtimeIrl(location: CLLocation?) {
-        // logger.info("xxx should update realtime irl")
-        guard let realtimeIrl, isLive, let location else {
-            return
-        }
-        guard !isLocationInPrivacyRegion(location: location) else {
-            return
-        }
-        realtimeIrl.update(location: location)
     }
 
     func resetSlope() {
