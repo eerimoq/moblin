@@ -3129,7 +3129,10 @@ class SettingsChat: Codable, ObservableObject {
         showFirstTimeChatterMessage = container.decode(.showFirstTimeChatterMessage, Bool.self, true)
         showNewFollowerMessage = container.decode(.showNewFollowerMessage, Bool.self, true)
         bottom = container.decode(.bottom, Double.self, 0.0)
-        bottomPoints = (try? container.decode(Double.self, forKey: .bottomPoints)) ?? min(UIScreen.main.bounds.width * bottom, 200)
+        bottomPoints = (try? container.decode(Double.self, forKey: .bottomPoints)) ?? min(
+            UIScreen.main.bounds.width * bottom,
+            200
+        )
         newMessagesAtTop = container.decode(.newMessagesAtTop, Bool.self, false)
         textToSpeechPauseBetweenMessages = container.decode(.textToSpeechPauseBetweenMessages, Double.self, 1.0)
     }
