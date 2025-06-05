@@ -928,7 +928,7 @@ extension Model {
         if let remoteSceneLocation = remoteSceneData.location {
             location = remoteSceneLocation.toLocation()
         } else {
-            guard var latestKnownLocation = locationManager.getLatestKnownLocation() else {
+            guard var latestKnownLocation else {
                 return
             }
             if isLocationInPrivacyRegion(location: latestKnownLocation) {
