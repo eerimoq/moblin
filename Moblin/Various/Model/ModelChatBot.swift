@@ -48,6 +48,8 @@ extension Model {
                 handleChatBotMessageReaction(command: command)
             case "scene":
                 handleChatBotMessageScene(command: command)
+            case "stream":
+                handleChatBotMessageStream(command: command)
             default:
                 break
             }
@@ -260,6 +262,27 @@ extension Model {
         ) {
             self.selectSceneByName(name: sceneName)
         }
+    }
+
+    private func handleChatBotMessageStream(command: ChatBotCommand) {
+        executeIfUserAllowedToUseChatBot(
+            permissions: database.chat.botCommandPermissions.stream!,
+            command: command
+        ) {
+            switch command.popFirst() {
+            case "title":
+                self.handleChatBotMessageStreamTitle(command: command)
+            default:
+                break
+            }
+        }
+    }
+
+    private func handleChatBotMessageStreamTitle(command: ChatBotCommand) {
+        guard let title = command.popFirst() else {
+            return
+        }
+        setTwitchStreamTitle(stream: stream, title: title)
     }
 
     private func handleChatBotMessageAlert(command: ChatBotCommand) {

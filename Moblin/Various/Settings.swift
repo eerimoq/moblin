@@ -2961,6 +2961,7 @@ class SettingsChatBotPermissions: Codable {
     var audio: SettingsChatBotPermissionsCommand? = .init()
     var reaction: SettingsChatBotPermissionsCommand? = .init()
     var scene: SettingsChatBotPermissionsCommand? = .init()
+    var stream: SettingsChatBotPermissionsCommand? = .init()
 }
 
 class SettingsChat: Codable, ObservableObject {
@@ -6150,6 +6151,10 @@ final class Settings {
         }
         for button in realDatabase.quickButtons where button.page == nil {
             button.page = 1
+            store()
+        }
+        if realDatabase.chat.botCommandPermissions.stream == nil {
+            realDatabase.chat.botCommandPermissions.stream = .init()
             store()
         }
     }
