@@ -92,6 +92,7 @@ extension Model {
 
     private func setSystemVolume(_ volume: Float) {
         if let volumeSlider = volumeView.subviews.first(where: { $0 is UISlider }) as? UISlider {
+            // Can remove delay?
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                 self.latestSetVolumeTime = .now
                 volumeSlider.value = volume
