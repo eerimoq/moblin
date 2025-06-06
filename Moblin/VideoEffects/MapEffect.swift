@@ -1,27 +1,19 @@
 import AVFoundation
 import Collections
 import MapKit
-import MetalPetal
 import UIKit
 import Vision
 
 final class MapEffect: VideoEffect {
-    private let filter = CIFilter.sourceOverCompositing()
     private var overlay: CIImage?
-    private var overlayMetalPetal: MTIImage?
     private let widget: SettingsWidgetMap
     private var sceneWidget: SettingsSceneWidget?
     private var location: CLLocation = .init()
     private var size: CGSize = .zero
-    private var sceneWidgetMetalPetal: SettingsSceneWidget?
-    private var locationMetalPetal: CLLocation = .init()
-    private var sizeMetalPetal: CGSize = .zero
-    private var newSceneWidget: SettingsSceneWidget?
     private var newLocations: Deque<CLLocation> = [.init()]
     private var mapSnapshotter: MKMapSnapshotter?
     private let dot: CIImage?
-    private let dotImageMetalPetal: MTIImage?
-    private var dotOffsetRatioMetalPetal: Double = 0.0
+    private var dotOffsetRatio = 0.0
     private var zoomOutFactor: Int?
     private var isLocationUpdated: Bool = true
 
@@ -29,10 +21,8 @@ final class MapEffect: VideoEffect {
         self.widget = widget.clone()
         if let image = UIImage(named: "MapDot"), let image = image.cgImage {
             dot = CIImage(cgImage: image)
-            dotImageMetalPetal = MTIImage(cgImage: image, isOpaque: true)
         } else {
             dot = nil
-            dotImageMetalPetal = nil
         }
         super.init()
     }
@@ -51,7 +41,7 @@ final class MapEffect: VideoEffect {
 
     func setSceneWidget(sceneWidget: SettingsSceneWidget?) {
         mixerLockQueue.async {
-            self.newSceneWidget = sceneWidget
+            self.sceneWidget = sceneWidget
         }
     }
 
@@ -72,17 +62,13 @@ final class MapEffect: VideoEffect {
     }
 
     private func update(size: CGSize) {
-        let (newSceneWidget, newLocation, zoomOutFactor, isLocationUpdated) = {
+        let (newLocation, zoomOutFactor, isLocationUpdated) = {
             defer {
                 self.isLocationUpdated = false
             }
-            return (self.newSceneWidget, self.nextNewLocation(), self.zoomOutFactor, self.isLocationUpdated)
+            return (self.nextNewLocation(), self.zoomOutFactor, self.isLocationUpdated)
         }()
-        guard let newSceneWidget else {
-            return
-        }
-        guard newSceneWidget.extent() != sceneWidget?.extent()
-            || size != self.size
+        guard size != self.size
             || newLocation.coordinate.latitude != location.coordinate.latitude
             || newLocation.coordinate.longitude != location.coordinate.longitude
             || newLocation.speed != location.speed
@@ -90,65 +76,7 @@ final class MapEffect: VideoEffect {
         else {
             return
         }
-        let (mapSnapshotter, dotOffsetRatio, forceUpdate) = createSnapshotter(
-            newLocation: newLocation,
-            zoomOutFactor: zoomOutFactor
-        )
-        self.mapSnapshotter = mapSnapshotter
-        self.mapSnapshotter?.start(with: DispatchQueue.global(), completionHandler: { snapshot, error in
-            guard let snapshot, error == nil, let image = snapshot.image.cgImage, let dot = self.dot else {
-                return
-            }
-            let height = toPixels(newSceneWidget.height, size.height)
-            let width = toPixels(newSceneWidget.width, size.width)
-            let side = max(40, min(height, width))
-            let x = toPixels(newSceneWidget.x, size.width)
-            let y = size.height - toPixels(newSceneWidget.y, size.height) - side
-            let overlay = dot
-                .transformed(by: CGAffineTransform(
-                    translationX: CGFloat(side - 30) / 2,
-                    y: CGFloat(side - 30) / 2 - CGFloat(dotOffsetRatio * CGFloat(side) / 2)
-                ))
-                .composited(over: CIImage(cgImage: image)
-                    .transformed(by: CGAffineTransform(
-                        scaleX: CGFloat(side) / CGFloat(image.width),
-                        y: CGFloat(side) / CGFloat(image.width)
-                    )))
-                .transformed(by: CGAffineTransform(translationX: x, y: y))
-                .cropped(to: .init(x: 0, y: 0, width: size.width, height: size.height))
-            mixerLockQueue.async {
-                self.overlay = overlay
-            }
-        })
-        if forceUpdate {
-            sceneWidget = nil
-        } else {
-            sceneWidget = newSceneWidget
-        }
-        self.size = size
-        location = newLocation
-    }
-
-    private func updateMetalPetal(size: CGSize) {
-        let (newSceneWidget, newLocation, zoomOutStep, isLocationUpdated) = {
-            defer {
-                self.isLocationUpdated = false
-            }
-            return (self.newSceneWidget, self.nextNewLocation(), self.zoomOutFactor, self.isLocationUpdated)
-        }()
-        guard let newSceneWidget else {
-            return
-        }
-        guard newSceneWidget.extent() != sceneWidgetMetalPetal?.extent()
-            || size != sizeMetalPetal
-            || newLocation.coordinate.latitude != locationMetalPetal.coordinate.latitude
-            || newLocation.coordinate.longitude != locationMetalPetal.coordinate.longitude
-            || newLocation.speed != locationMetalPetal.speed
-            || (zoomOutStep != nil && isLocationUpdated)
-        else {
-            return
-        }
-        let (mapSnapshotter, dotOffsetRatio, forceUpdate) = createSnapshotter(
+        let (mapSnapshotter, dotOffsetRatio) = createSnapshotter(
             newLocation: newLocation,
             zoomOutFactor: zoomOutFactor
         )
@@ -157,30 +85,21 @@ final class MapEffect: VideoEffect {
             guard let snapshot, error == nil, let image = snapshot.image.cgImage else {
                 return
             }
-            let height = toPixels(newSceneWidget.height, size.height)
-            let width = toPixels(newSceneWidget.width, size.width)
-            let side = max(40, min(height, width))
-            let overlay = MTIImage(cgImage: image, isOpaque: false).resized(
-                to: .init(width: side, height: side),
-                resizingMode: .aspect
-            )
             mixerLockQueue.async {
-                self.overlayMetalPetal = overlay
-                self.dotOffsetRatioMetalPetal = dotOffsetRatio
+                self.overlay = CIImage(cgImage: image)
+                self.dotOffsetRatio = dotOffsetRatio
             }
         })
-        if forceUpdate {
-            sceneWidgetMetalPetal = nil
-        } else {
-            sceneWidgetMetalPetal = newSceneWidget
-        }
-        sizeMetalPetal = size
-        locationMetalPetal = newLocation
+        self.size = size
+        location = newLocation
     }
 
-    private func createSnapshotter(newLocation: CLLocation,
-                                   zoomOutFactor: Int?) -> (MKMapSnapshotter, Double, Bool)
-    {
+    private func createSnapshotter(newLocation: CLLocation, zoomOutFactor: Int?) -> (MKMapSnapshotter, Double) {
+        var zoomOutFactor = zoomOutFactor
+        if zoomOutFactor == 10 {
+            zoomOutFactor = nil
+            self.zoomOutFactor = nil
+        }
         let camera = MKMapCamera()
         if !widget.northUp! {
             camera.heading = newLocation.course
@@ -210,46 +129,40 @@ final class MapEffect: VideoEffect {
             }
         }
         camera.pitch = 0
-        var forceUpdate = false
         if let zoomOutFactor {
             camera.centerCoordinateDistance *= pow(5, Double(zoomOutFactor))
-            if zoomOutFactor > 9 {
-                self.zoomOutFactor = nil
-                forceUpdate = true
-            } else {
+            if zoomOutFactor <= 9 {
                 self.zoomOutFactor = zoomOutFactor + 1
             }
         }
         let options = MKMapSnapshotter.Options()
         options.camera = camera
-        return (MKMapSnapshotter(options: options), dotOffsetRatio, forceUpdate)
+        return (MKMapSnapshotter(options: options), dotOffsetRatio)
     }
 
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
-        update(size: image.extent.size)
-        filter.inputImage = overlay
-        filter.backgroundImage = image
-        return filter.outputImage ?? image
-    }
-
-    override func executeMetalPetal(_ image: MTIImage?, _: VideoEffectInfo) -> MTIImage? {
-        guard let image, let dotImageMetalPetal else {
+        let size = image.extent.size
+        update(size: size)
+        guard let sceneWidget, let dot, let overlay else {
             return image
         }
-        updateMetalPetal(size: image.size)
-        guard let overlayMetalPetal, let sceneWidget = sceneWidgetMetalPetal else {
-            return image
-        }
-        let x = toPixels(sceneWidget.x, image.extent.size.width) + overlayMetalPetal.size.width / 2
-        let y = toPixels(sceneWidget.y, image.extent.size.height) + overlayMetalPetal.size.height / 2
-        let yDot = toPixels(sceneWidget.y, image.extent.size.height) + overlayMetalPetal.size
-            .height / 2 + dotOffsetRatioMetalPetal * overlayMetalPetal.size.height / 2
-        let filter = MTIMultilayerCompositingFilter()
-        filter.inputBackgroundImage = image
-        filter.layers = [
-            .init(content: overlayMetalPetal, position: .init(x: x, y: y)),
-            .init(content: dotImageMetalPetal, position: .init(x: x, y: yDot)),
-        ]
-        return filter.outputImage ?? image
+        let height = toPixels(sceneWidget.height, size.height)
+        let width = toPixels(sceneWidget.width, size.width)
+        let side = max(40, min(height, width))
+        let x = toPixels(sceneWidget.x, size.width)
+        let y = size.height - toPixels(sceneWidget.y, size.height) - side
+        return dot
+            .transformed(by: CGAffineTransform(
+                translationX: CGFloat(side - 30) / 2,
+                y: CGFloat(side - 30) / 2 - CGFloat(dotOffsetRatio * CGFloat(side) / 2)
+            ))
+            .composited(over: overlay
+                .transformed(by: CGAffineTransform(
+                    scaleX: CGFloat(side) / CGFloat(overlay.extent.width),
+                    y: CGFloat(side) / CGFloat(overlay.extent.width)
+                )))
+            .transformed(by: CGAffineTransform(translationX: x, y: y))
+            .cropped(to: image.extent)
+            .composited(over: image)
     }
 }
