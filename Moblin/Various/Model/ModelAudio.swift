@@ -16,7 +16,6 @@ extension Model {
     }
 
     func setupAudioSession() {
-        audioSessionWanted = true
         let bluetoothOutputOnly = database.debug.bluetoothOutputOnly
         netStreamLockQueue.async {
             let session = AVAudioSession.sharedInstance()
@@ -32,19 +31,6 @@ extension Model {
                     options: [.mixWithOthers, bluetoothOption, .defaultToSpeaker]
                 )
                 try session.setActive(true)
-                // For some reason volume can change when starting the app, so delay observing a bit.
-                // Still unexpectedly switches scene sometimes.
-                DispatchQueue.main.async {
-                    self.volumeObservationSetupTimer.startSingleShot(timeout: 1.0) {
-                        guard self.audioSessionWanted else {
-                            return
-                        }
-                        self.volumeObservation?.invalidate()
-                        self.volumeObservation = session.observe(\.outputVolume,
-                                                                 options: [.old, .new, .initial],
-                                                                 changeHandler: self.volumeDidChange)
-                    }
-                }
             } catch {
                 logger.error("app: Session error \(error)")
             }
@@ -53,43 +39,53 @@ extension Model {
     }
 
     func teardownAudioSession() {
-        audioSessionWanted = false
         netStreamLockQueue.async {
             do {
                 try AVAudioSession.sharedInstance().setActive(false)
             } catch {
                 logger.info("Failed to stop audio session with error: \(error)")
             }
-            DispatchQueue.main.async {
-                self.volumeObservationSetupTimer.stop()
-                self.volumeObservation?.invalidate()
-                self.volumeObservation = nil
-            }
         }
     }
 
-    private func volumeDidChange(_ session: AVAudioSession, _ event: NSKeyValueObservedChange<Float>) {
-        if database.selfieStick.buttonEnabled, isAppActive {
-            if event.oldValue == nil {
-                initialVolume = event.newValue
+    @objc func systemVolumeDidChange(notification: NSNotification) {
+        DispatchQueue.main.async {
+            self.handleSystemVolumeDidChange(notification: notification)
+        }
+    }
+
+    private func handleSystemVolumeDidChange(notification: NSNotification) {
+        guard let userInfo = notification.userInfo,
+              let volume = userInfo["Volume"] as? Float,
+              let reason = userInfo["Reason"] as? String,
+              let sequenceNumber = userInfo["SequenceNumber"] as? Int
+        else {
+            return
+        }
+        // For some reason two similar notifications are received. Not sure how to distinguish
+        // them from each other.
+        guard sequenceNumber != latestVolumeChangeSequenceNumber else {
+            return
+        }
+        latestVolumeChangeSequenceNumber = sequenceNumber
+        if reason == "ExplicitVolumeChange", database.selfieStick.buttonEnabled, isAppActive {
+            if initialVolume == nil {
+                initialVolume = volume
             }
-            guard let initialVolume else {
-                return
-            }
-            guard event.newValue != initialVolume else {
+            guard let initialVolume, volume != initialVolume else {
                 return
             }
             setSystemVolume(initialVolume)
             switchToNextSceneRoundRobin()
         } else {
-            initialVolume = session.outputVolume
+            initialVolume = volume
         }
     }
 
     private func setSystemVolume(_ volume: Float) {
         if let volumeSlider = volumeView.subviews.first(where: { $0 is UISlider }) as? UISlider {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                volumeSlider.value = Float(volume)
+                volumeSlider.value = volume
             }
         }
     }

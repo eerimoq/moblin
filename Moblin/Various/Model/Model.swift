@@ -549,10 +549,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     var isAppActive = true
     var initialVolume: Float?
+    var latestVolumeChangeSequenceNumber: Int?
     let volumeView = MPVolumeView(frame: .zero)
-    var volumeObservation: NSKeyValueObservation?
-    var audioSessionWanted = false
-    var volumeObservationSetupTimer = SimpleTimer(queue: .main)
 
     weak var currentStream: NetStream? {
         didSet {
@@ -894,6 +892,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 self.updateIconImageFromDatabase()
             }
         }
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(systemVolumeDidChange),
+                                               name: Notification.Name("SystemVolumeDidChange"),
+                                               object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(applicationDidChangeActive),
                                                name: UIApplication.willResignActiveNotification,
