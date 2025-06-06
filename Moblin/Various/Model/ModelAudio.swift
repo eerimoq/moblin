@@ -72,19 +72,28 @@ extension Model {
             if initialVolume == nil {
                 initialVolume = volume
             }
-            guard let initialVolume, volume != initialVolume else {
+            guard let initialVolume else {
                 return
             }
-            setSystemVolume(initialVolume)
-            switchToNextSceneRoundRobin()
+            if volume != initialVolume {
+                setSystemVolume(initialVolume)
+                switchToNextSceneRoundRobin()
+            } else if isVolumeMinOrMax(volume), latestSetVolumeTime.duration(to: .now) > .seconds(1) {
+                switchToNextSceneRoundRobin()
+            }
         } else {
             initialVolume = volume
         }
     }
 
+    private func isVolumeMinOrMax(_ volume: Float) -> Bool {
+        return volume == 0 || volume == 1
+    }
+
     private func setSystemVolume(_ volume: Float) {
         if let volumeSlider = volumeView.subviews.first(where: { $0 is UISlider }) as? UISlider {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                self.latestSetVolumeTime = .now
                 volumeSlider.value = volume
             }
         }

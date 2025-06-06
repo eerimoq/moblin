@@ -551,6 +551,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var initialVolume: Float?
     var latestVolumeChangeSequenceNumber: Int?
     let volumeView = MPVolumeView(frame: .zero)
+    var latestSetVolumeTime = ContinuousClock.now
 
     weak var currentStream: NetStream? {
         didSet {
