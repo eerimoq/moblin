@@ -2979,7 +2979,7 @@ class SettingsChat: Codable, ObservableObject {
     var timestampColorEnabled: Bool = false
     @Published var height: Double = 0.7
     @Published var width: Double = 1.0
-    var maximumAge: Int = 30
+    @Published var maximumAge: Int = 30
     var maximumAgeEnabled: Bool = false
     var meInUsernameColor: Bool = true
     var enabled: Bool = true
