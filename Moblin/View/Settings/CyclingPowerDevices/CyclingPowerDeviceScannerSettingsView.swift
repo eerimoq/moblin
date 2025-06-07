@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct CyclingPowerDeviceScannerSettingsView: View {
+    @EnvironmentObject var model: Model
     @ObservedObject private var scanner = cyclingPowerScanner
     @Environment(\.dismiss) var dismiss
     var onChange: (String) -> Void
@@ -9,7 +10,9 @@ struct CyclingPowerDeviceScannerSettingsView: View {
     var body: some View {
         Form {
             Section {
-                if scanner.discoveredPeripherals.isEmpty {
+                if !model.bluetoothAllowed {
+                    Text(bluetoothNotAllowedMessage)
+                } else if scanner.discoveredPeripherals.isEmpty {
                     HCenter {
                         ProgressView()
                     }

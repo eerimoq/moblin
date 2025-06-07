@@ -2,6 +2,7 @@ import AlertToast
 import AppIntents
 import Collections
 import Combine
+import CoreBluetooth
 import CoreMotion
 import GameController
 import HealthKit
@@ -486,6 +487,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var recordingsStorage = RecordingsStorage()
     var latestLowBitrateTime = ContinuousClock.now
 
+    var bluetoothCentralManger: CBCentralManager?
+    @Published var bluetoothAllowed = false
+
     var rtmpServer: RtmpServer?
     @Published var serversSpeedAndTotal = noValue
     var moblinkRelayState: MoblinkRelayState = .waitingForStreamers
@@ -822,6 +826,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func setup() {
+        bluetoothCentralManger = CBCentralManager(delegate: self, queue: .main)
         deleteTrash()
         cameraPreviewLayer = cameraPreviewView.previewLayer
         media.delegate = self
