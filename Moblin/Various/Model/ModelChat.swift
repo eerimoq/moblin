@@ -174,8 +174,7 @@ extension Model {
     }
 
     func endOfQuickButtonChatReachedWhenPaused() {
-        var numberOfPostsAppended = 0
-        while numberOfPostsAppended < 5, let post = quickButtonChat.pausedPosts.popFirst() {
+        while let post = quickButtonChat.pausedPosts.popFirst() {
             if post.user == nil {
                 if let lastPost = quickButtonChat.posts.first, lastPost.user == nil {
                     continue
@@ -188,11 +187,8 @@ extension Model {
                 quickButtonChat.posts.removeLast()
             }
             quickButtonChat.posts.prepend(post)
-            numberOfPostsAppended += 1
         }
-        if numberOfPostsAppended == 0 {
-            quickButtonChat.paused = false
-        }
+        quickButtonChat.paused = false
     }
 
     func endOfChatReachedWhenPaused() {
@@ -226,8 +222,7 @@ extension Model {
     }
 
     func endOfQuickButtonChatAlertsReachedWhenPaused() {
-        var numberOfPostsAppended = 0
-        while numberOfPostsAppended < 5, let post = pausedQuickButtonChatAlertsPosts.popFirst() {
+        while let post = pausedQuickButtonChatAlertsPosts.popFirst() {
             if post.user == nil {
                 if let lastPost = quickButtonChatAlertsPosts.first, lastPost.user == nil {
                     continue
@@ -240,11 +235,8 @@ extension Model {
                 quickButtonChatAlertsPosts.removeLast()
             }
             quickButtonChatAlertsPosts.prepend(post)
-            numberOfPostsAppended += 1
         }
-        if numberOfPostsAppended == 0 {
-            quickButtonChatAlertsPaused = false
-        }
+        quickButtonChatAlertsPaused = false
     }
 
     func removeOldChatMessages(now: ContinuousClock.Instant) {
