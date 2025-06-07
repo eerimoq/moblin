@@ -5,7 +5,7 @@ import UIKit
 import Vision
 
 final class MapEffect: VideoEffect {
-    private var overlay: CIImage?
+    private var mapSnapshot: CIImage?
     private let widget: SettingsWidgetMap
     private var sceneWidget: SettingsSceneWidget?
     private var location: CLLocation = .init()
@@ -86,7 +86,7 @@ final class MapEffect: VideoEffect {
                 return
             }
             mixerLockQueue.async {
-                self.overlay = CIImage(cgImage: image)
+                self.mapSnapshot = CIImage(cgImage: image)
                 self.dotOffsetRatio = dotOffsetRatio
             }
         })
@@ -140,10 +140,10 @@ final class MapEffect: VideoEffect {
         return (MKMapSnapshotter(options: options), dotOffsetRatio)
     }
 
-    override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
+    override func execute(_ image: CIImage, _ info: VideoEffectInfo) -> CIImage {
         let size = image.extent.size
         update(size: size)
-        guard let sceneWidget, let dot, let overlay else {
+        guard let sceneWidget, let dot, let mapSnapshot else {
             return image
         }
         let height = toPixels(sceneWidget.height, size.height)
@@ -156,10 +156,10 @@ final class MapEffect: VideoEffect {
                 translationX: CGFloat(side - 30) / 2,
                 y: CGFloat(side - 30) / 2 - CGFloat(dotOffsetRatio * CGFloat(side) / 2)
             ))
-            .composited(over: overlay
+            .composited(over: applyEffects(mapSnapshot, info)
                 .transformed(by: CGAffineTransform(
-                    scaleX: CGFloat(side) / CGFloat(overlay.extent.width),
-                    y: CGFloat(side) / CGFloat(overlay.extent.width)
+                    scaleX: CGFloat(side) / CGFloat(mapSnapshot.extent.width),
+                    y: CGFloat(side) / CGFloat(mapSnapshot.extent.width)
                 )))
             .transformed(by: CGAffineTransform(translationX: x, y: y))
             .cropped(to: image.extent)

@@ -49,5 +49,6 @@ struct WidgetMapSettingsView: View {
         } footer: {
             Text("To show the widget in sync with high latency cameras.")
         }
+        WidgetEffectsView(widget: widget)
     }
 }

@@ -147,8 +147,16 @@ extension Model {
         return nil
     }
 
+    func getMapEffect(id: UUID) -> MapEffect? {
+        for (mapEffectId, mapEffect) in mapEffects where id == mapEffectId {
+            return mapEffect
+        }
+        return nil
+    }
+
     func getEffectWithPossibleEffects(id: UUID) -> VideoEffect? {
-        return getVideoSourceEffect(id: id) ?? getImageEffect(id: id) ?? getBrowserEffect(id: id)
+        return getVideoSourceEffect(id: id) ?? getImageEffect(id: id) ?? getBrowserEffect(id: id) ??
+            getMapEffect(id: id)
     }
 
     func getVideoSourceSettings(id: UUID) -> SettingsWidget? {
@@ -208,7 +216,9 @@ extension Model {
         }
         mapEffects.removeAll()
         for widget in widgets where widget.type == .map {
-            mapEffects[widget.id] = MapEffect(widget: widget.map)
+            let mapEffect = MapEffect(widget: widget.map)
+            mapEffect.effects = widget.getEffects()
+            mapEffects[widget.id] = mapEffect
         }
         for qrCodeEffect in qrCodeEffects.values {
             media.unregisterEffect(qrCodeEffect)

@@ -508,6 +508,7 @@
 		03D541752B32095B00B9D595 /* StreamWizardCustomSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D541742B32095B00B9D595 /* StreamWizardCustomSettingsView.swift */; };
 		03D691532B36EDB600038F13 /* TextValueView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D691522B36EDB600038F13 /* TextValueView.swift */; };
 		03DA0B972DF45A0D00AE83C3 /* ModelBluetooth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03DA0B962DF45A0900AE83C3 /* ModelBluetooth.swift */; };
+		03DA0B992DF4A4AE00AE83C3 /* ShapeEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03DA0B982DF4A4AB00AE83C3 /* ShapeEffect.swift */; };
 		03DAC9392BFE6A1F005EB92C /* AVCaptureColorSpace+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03DAC9382BFE6A1F005EB92C /* AVCaptureColorSpace+Extension.swift */; };
 		03DBD0F82B300659004B0BE6 /* StreamWizardSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03DBD0F72B300659004B0BE6 /* StreamWizardSettingsView.swift */; };
 		03DBD0FB2B30078B004B0BE6 /* StreamWizardKickSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03DBD0FA2B30078B004B0BE6 /* StreamWizardKickSettingsView.swift */; };
@@ -1157,6 +1158,7 @@
 		03D541742B32095B00B9D595 /* StreamWizardCustomSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardCustomSettingsView.swift; sourceTree = "<group>"; };
 		03D691522B36EDB600038F13 /* TextValueView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextValueView.swift; sourceTree = "<group>"; };
 		03DA0B962DF45A0900AE83C3 /* ModelBluetooth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelBluetooth.swift; sourceTree = "<group>"; };
+		03DA0B982DF4A4AB00AE83C3 /* ShapeEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapeEffect.swift; sourceTree = "<group>"; };
 		03DAC9382BFE6A1F005EB92C /* AVCaptureColorSpace+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AVCaptureColorSpace+Extension.swift"; sourceTree = "<group>"; };
 		03DBD0F72B300659004B0BE6 /* StreamWizardSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardSettingsView.swift; sourceTree = "<group>"; };
 		03DBD0FA2B30078B004B0BE6 /* StreamWizardKickSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardKickSettingsView.swift; sourceTree = "<group>"; };
@@ -2707,6 +2709,7 @@
 				037798FB2DE1395E006D4526 /* RemoveBackgroundEffect.swift */,
 				0317646C2DB66CD1000080A5 /* ReplayEffect.swift */,
 				0379BB932AACF16600B718B6 /* SepiaEffect.swift */,
+				03DA0B982DF4A4AB00AE83C3 /* ShapeEffect.swift */,
 				03F3BF182ADAAA94009A8D3E /* TextEffect.swift */,
 				032815DE2AC9885C001F8A85 /* TripleEffect.swift */,
 				03D278732D9050C600BB0502 /* TwinEffect.swift */,
@@ -3866,6 +3869,7 @@
 				032815DF2AC9885C001F8A85 /* TripleEffect.swift in Sources */,
 				03584BED2BE49B1B007E61F6 /* FaceView.swift in Sources */,
 				03B374022AA0354C0028DDD5 /* GrayScaleEffect.swift in Sources */,
+				03DA0B992DF4A4AE00AE83C3 /* ShapeEffect.swift in Sources */,
 				03E877F72B2DB27800086355 /* QuickButtonsSettingsView.swift in Sources */,
 				032FDC022B0B11C5007BE85E /* SizeEditView.swift in Sources */,
 				032F81B82DDCEA7300E14CC5 /* ModelChatBot.swift in Sources */,

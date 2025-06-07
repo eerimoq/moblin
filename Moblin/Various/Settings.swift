@@ -2110,6 +2110,7 @@ enum SettingsVideoEffectType: String, Codable, CaseIterable {
     case whirlpool
     case pinch
     case removeBackground
+    case shape
 
     public init(from decoder: Decoder) throws {
         do {
@@ -2132,6 +2133,8 @@ enum SettingsVideoEffectType: String, Codable, CaseIterable {
             return String(localized: "Pinch")
         case .removeBackground:
             return String(localized: "Remove background")
+        case .shape:
+            return String(localized: "Shape")
         }
     }
 }
@@ -2170,17 +2173,61 @@ class SettingsVideoEffectRemoveBackground: Codable, ObservableObject {
     }
 }
 
+class SettingsVideoEffectShape: Codable, ObservableObject {
+    @Published var cornerRadius: Float = 0
+    @Published var borderWidth: Double = 0
+    var borderColor: RgbColor = .init(red: 0, green: 0, blue: 0)
+    @Published var borderColorColor: Color
+
+    enum CodingKeys: CodingKey {
+        case cornerRadius,
+             borderWidth,
+             borderColor
+    }
+
+    init() {
+        borderColorColor = borderColor.color()
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.cornerRadius, cornerRadius)
+        try container.encode(.borderWidth, borderWidth)
+        try container.encode(.borderColor, borderColor)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        cornerRadius = container.decode(.cornerRadius, Float.self, 0)
+        borderWidth = container.decode(.borderWidth, Double.self, 0)
+        borderColor = container.decode(.borderColor, RgbColor.self, .init(red: 0, green: 0, blue: 0))
+        borderColorColor = borderColor.color()
+    }
+
+    func toSettings() -> ShapeEffectSettings {
+        return .init(cornerRadius: cornerRadius,
+                     borderWidth: borderWidth,
+                     borderColor: CIColor(
+                         red: Double(borderColor.red) / 255,
+                         green: Double(borderColor.green) / 255,
+                         blue: Double(borderColor.blue) / 255
+                     ))
+    }
+}
+
 class SettingsVideoEffect: Codable, Identifiable, ObservableObject {
     var id: UUID = .init()
     @Published var enabled: Bool = true
     @Published var type: SettingsVideoEffectType = .grayScale
     var removeBackground: SettingsVideoEffectRemoveBackground = .init()
+    var shape: SettingsVideoEffectShape = .init()
 
     enum CodingKeys: CodingKey {
         case id,
              enabled,
              type,
-             removeBackground
+             removeBackground,
+             shape
     }
 
     init() {}
@@ -2191,6 +2238,7 @@ class SettingsVideoEffect: Codable, Identifiable, ObservableObject {
         try container.encode(.enabled, enabled)
         try container.encode(.type, type)
         try container.encode(.removeBackground, removeBackground)
+        try container.encode(.shape, shape)
     }
 
     required init(from decoder: Decoder) throws {
@@ -2199,6 +2247,7 @@ class SettingsVideoEffect: Codable, Identifiable, ObservableObject {
         enabled = container.decode(.enabled, Bool.self, true)
         type = container.decode(.type, SettingsVideoEffectType.self, .grayScale)
         removeBackground = container.decode(.removeBackground, SettingsVideoEffectRemoveBackground.self, .init())
+        shape = container.decode(.shape, SettingsVideoEffectShape.self, .init())
     }
 
     func getEffect() -> VideoEffect {
@@ -2214,6 +2263,10 @@ class SettingsVideoEffect: Codable, Identifiable, ObservableObject {
         case .removeBackground:
             let effect = RemoveBackgroundEffect()
             effect.setColorRange(from: removeBackground.from, to: removeBackground.to)
+            return effect
+        case .shape:
+            let effect = ShapeEffect()
+            effect.setSettings(settings: shape.toSettings())
             return effect
         }
     }
