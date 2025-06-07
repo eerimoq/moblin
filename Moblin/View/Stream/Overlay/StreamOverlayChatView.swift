@@ -169,14 +169,11 @@ struct ViewOffsetKey: PreferenceKey {
     }
 }
 
-private var previousOffset = 0.0
+private let startId = UUID()
 
 struct StreamOverlayChatView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var chat: ChatProvider
-    private let spaceName = "scroll"
-    @State var wholeSize: CGSize = .zero
-    @State var scrollViewSize: CGSize = .zero
 
     private func getRotation() -> Double {
         if model.database.chat.newMessagesAtTop {
@@ -194,14 +191,6 @@ struct StreamOverlayChatView: View {
         }
     }
 
-    private func isCloseToStart(offset: Double) -> Bool {
-        if model.database.chat.newMessagesAtTop {
-            return offset < 50
-        } else {
-            return offset >= scrollViewSize.height - wholeSize.height - 50.0
-        }
-    }
-
     private func isMirrored() -> CGFloat {
         if model.database.chat.mirrored {
             return -1
@@ -216,86 +205,77 @@ struct StreamOverlayChatView: View {
         GeometryReader { metrics in
             VStack {
                 Spacer()
-                ChildSizeReader(size: $wholeSize) {
+                ScrollViewReader { proxy in
                     ScrollView(showsIndicators: false) {
-                        ChildSizeReader(size: $scrollViewSize) {
-                            VStack {
-                                LazyVStack(alignment: .leading, spacing: 1) {
-                                    ForEach(chat.posts) { post in
-                                        if post.user != nil {
-                                            if let highlight = post.highlight {
-                                                HStack(spacing: 0) {
-                                                    Rectangle()
-                                                        .frame(width: 3)
-                                                        .foregroundColor(highlight.color)
-                                                    VStack(alignment: .leading, spacing: 1) {
-                                                        HighlightMessageView(
-                                                            chat: model.database.chat,
-                                                            image: highlight.image,
-                                                            name: highlight.title
-                                                        )
-                                                        LineView(
-                                                            post: post,
-                                                            chat: model.database.chat
-                                                        )
-                                                    }
-                                                }
-                                                .rotationEffect(Angle(degrees: rotation))
-                                                .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
-                                            } else {
-                                                LineView(post: post, chat: model.database.chat)
-                                                    .padding([.leading], 3)
-                                                    .rotationEffect(Angle(degrees: rotation))
-                                                    .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
-                                            }
-                                        } else {
-                                            Rectangle()
-                                                .fill(.red)
-                                                .frame(width: metrics.size.width, height: 1.5)
-                                                .padding(2)
-                                                .rotationEffect(Angle(degrees: rotation))
-                                                .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
-                                        }
-                                    }
-                                }
-                                Spacer(minLength: 0)
-                            }
-                            .background(
-                                GeometryReader { proxy in
-                                    Color.clear.preference(
-                                        key: ViewOffsetKey.self,
-                                        value: -1 * proxy.frame(in: .named(spaceName)).origin.y
-                                    )
-                                }
-                            )
-                            .onPreferenceChange(
-                                ViewOffsetKey.self,
-                                perform: { scrollViewOffsetFromTop in
+                        LazyVStack(alignment: .leading, spacing: 1) {
+                            Color.clear
+                                .onAppear {
                                     guard model.interactiveChat else {
                                         return
                                     }
-                                    let offset = max(scrollViewOffsetFromTop, 0)
-                                    if isCloseToStart(offset: offset) {
-                                        if chat.paused, offset >= previousOffset {
-                                            model.endOfChatReachedWhenPaused()
-                                        }
-                                    } else if !chat.paused {
+                                    if chat.paused {
+                                        model.endOfChatReachedWhenPaused()
+                                    }
+                                }
+                                .onDisappear {
+                                    guard model.interactiveChat else {
+                                        return
+                                    }
+                                    if !chat.paused {
                                         if !chat.posts.isEmpty {
                                             model.pauseChat()
                                         }
                                     }
-                                    previousOffset = offset
                                 }
-                            )
-                            .frame(minHeight: metrics.size.height)
+                                .frame(height: 1)
+                                .id(startId)
+                            ForEach(chat.posts) { post in
+                                if post.user != nil {
+                                    if let highlight = post.highlight {
+                                        HStack(spacing: 0) {
+                                            Rectangle()
+                                                .frame(width: 3)
+                                                .foregroundColor(highlight.color)
+                                            VStack(alignment: .leading, spacing: 1) {
+                                                HighlightMessageView(
+                                                    chat: model.database.chat,
+                                                    image: highlight.image,
+                                                    name: highlight.title
+                                                )
+                                                LineView(
+                                                    post: post,
+                                                    chat: model.database.chat
+                                                )
+                                            }
+                                        }
+                                        .rotationEffect(Angle(degrees: rotation))
+                                        .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
+                                    } else {
+                                        LineView(post: post, chat: model.database.chat)
+                                            .padding([.leading], 3)
+                                            .rotationEffect(Angle(degrees: rotation))
+                                            .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
+                                    }
+                                } else {
+                                    Rectangle()
+                                        .fill(.red)
+                                        .frame(width: metrics.size.width, height: 1.5)
+                                        .padding(2)
+                                        .rotationEffect(Angle(degrees: rotation))
+                                        .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
+                                }
+                            }
+                            Spacer(minLength: 0)
                         }
                     }
                     .foregroundColor(.white)
                     .rotationEffect(Angle(degrees: rotation))
                     .scaleEffect(x: scaleX * isMirrored(), y: 1.0, anchor: .center)
-                    .coordinateSpace(name: spaceName)
                     .frame(width: metrics.size.width * model.database.chat.width,
                            height: metrics.size.height * model.database.chat.height)
+                    .onChange(of: model.interactiveChat) { _ in
+                        proxy.scrollTo(startId, anchor: .bottom)
+                    }
                 }
             }
         }

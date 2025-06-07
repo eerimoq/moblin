@@ -196,9 +196,8 @@ extension Model {
     }
 
     func endOfChatReachedWhenPaused() {
-        if appendPausedChatPosts(maximumNumberOfPostsToAppend: 5) == 0 {
-            chat.paused = false
-        }
+        _ = appendPausedChatPosts(maximumNumberOfPostsToAppend: Int.max)
+        chat.paused = false
     }
 
     private func appendPausedChatPosts(maximumNumberOfPostsToAppend: Int) -> Int {
