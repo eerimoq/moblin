@@ -1413,17 +1413,6 @@ enum SettingsWidgetAlertPositionType: String, Codable, CaseIterable {
             .decode(RawValue.self)) ?? .scene
     }
 
-    static func fromString(value: String) -> SettingsWidgetAlertPositionType {
-        switch value {
-        case String(localized: "Scene"):
-            return .scene
-        case String(localized: "Face"):
-            return .face
-        default:
-            return .scene
-        }
-    }
-
     func toString() -> String {
         switch self {
         case .scene:
@@ -1433,8 +1422,6 @@ enum SettingsWidgetAlertPositionType: String, Codable, CaseIterable {
         }
     }
 }
-
-let alertPositionTypes = SettingsWidgetAlertPositionType.allCases.map { $0.toString() }
 
 class SettingsWidgetAlertFacePosition: Codable {
     var x: Double = 0.25
@@ -3564,23 +3551,6 @@ enum SettingsDjiDeviceImageStabilization: String, CaseIterable, Codable {
             .decode(RawValue.self)) ?? .rockSteady
     }
 
-    static func fromString(value: String) -> SettingsDjiDeviceImageStabilization {
-        switch value {
-        case String(localized: "Off"):
-            return .off
-        case String(localized: "RockSteady"):
-            return .rockSteady
-        case String(localized: "RockSteady+"):
-            return .rockSteadyPlus
-        case String(localized: "HorizonBalancing"):
-            return .horizonBalancing
-        case String(localized: "HorizonSteady"):
-            return .horizonSteady
-        default:
-            return .rockSteady
-        }
-    }
-
     func toString() -> String {
         switch self {
         case .off:
@@ -3596,8 +3566,6 @@ enum SettingsDjiDeviceImageStabilization: String, CaseIterable, Codable {
         }
     }
 }
-
-var djiDeviceImageStabilizations = SettingsDjiDeviceImageStabilization.allCases.map { $0.toString() }
 
 enum SettingsDjiDeviceResolution: String, CaseIterable, Codable {
     case r1080p = "1080p"
@@ -4175,19 +4143,6 @@ enum SettingsSceneSwitchTransition: String, Codable, CaseIterable {
             .blur
     }
 
-    static func fromString(value: String) -> SettingsSceneSwitchTransition {
-        switch value {
-        case String(localized: "Blur"):
-            return .blur
-        case String(localized: "Freeze"):
-            return .freeze
-        case String(localized: "Blur & zoom"):
-            return .blurAndZoom
-        default:
-            return .blur
-        }
-    }
-
     func toString() -> String {
         switch self {
         case .blur:
@@ -4210,8 +4165,6 @@ enum SettingsSceneSwitchTransition: String, Codable, CaseIterable {
         }
     }
 }
-
-let sceneSwitchTransitions = SettingsSceneSwitchTransition.allCases.map { $0.toString() }
 
 enum SettingsExternalDisplayContent: String, Codable, CaseIterable {
     case stream = "Stream"

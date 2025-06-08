@@ -253,14 +253,13 @@ private struct DjiDeviceSettingsSettingsView: View {
             .disabled(model.isDjiDeviceStarted(device: device))
             if device.model == .osmoAction4 || device.model == .osmoAction5Pro {
                 Picker("Image stabilization", selection: Binding(get: {
-                    device.imageStabilization!.toString()
+                    device.imageStabilization!
                 }, set: { value in
-                    device.imageStabilization = SettingsDjiDeviceImageStabilization
-                        .fromString(value: value)
+                    device.imageStabilization = value
                     model.objectWillChange.send()
                 })) {
-                    ForEach(djiDeviceImageStabilizations, id: \.self) { imageStabilization in
-                        Text(imageStabilization)
+                    ForEach(SettingsDjiDeviceImageStabilization.allCases, id: \.self) {
+                        Text($0.toString())
                     }
                 }
                 .disabled(model.isDjiDeviceStarted(device: device))

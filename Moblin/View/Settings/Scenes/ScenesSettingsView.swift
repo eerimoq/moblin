@@ -73,18 +73,17 @@ private struct ScenesListView: View {
 
 private struct ScenesSwitchTransition: View {
     @EnvironmentObject var model: Model
-    @State var sceneSwitchTransition: String
+    @State var sceneSwitchTransition: SettingsSceneSwitchTransition
 
     var body: some View {
         Section {
             Picker("Scene switch transition", selection: $sceneSwitchTransition) {
-                ForEach(sceneSwitchTransitions, id: \.self) { transition in
-                    Text(transition)
+                ForEach(SettingsSceneSwitchTransition.allCases, id: \.self) {
+                    Text($0.toString())
                 }
             }
             .onChange(of: sceneSwitchTransition) { _ in
-                model.database.sceneSwitchTransition = SettingsSceneSwitchTransition
-                    .fromString(value: sceneSwitchTransition)
+                model.database.sceneSwitchTransition = sceneSwitchTransition
                 model.setSceneSwitchTransition()
             }
             Toggle("Force scene switch transition", isOn: Binding(get: {
@@ -156,7 +155,7 @@ struct ScenesSettingsView: View {
             ScenesListView(database: model.database)
             WidgetsSettingsView(database: model.database)
             AutoSwitchersSettingsView(autoSceneSwitchers: model.database.autoSceneSwitchers)
-            ScenesSwitchTransition(sceneSwitchTransition: model.database.sceneSwitchTransition.toString())
+            ScenesSwitchTransition(sceneSwitchTransition: model.database.sceneSwitchTransition)
             RemoteSceneView(selectedSceneId: model.database.remoteSceneId)
             ReloadBrowserSources()
         }

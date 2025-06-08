@@ -200,17 +200,17 @@ private struct AlertPositionFaceView: View {
 private struct AlertPositionView: View {
     @EnvironmentObject var model: Model
     var alert: SettingsWidgetAlertsAlert
-    @State var positionType: String
+    @State var positionType: SettingsWidgetAlertPositionType
 
     var body: some View {
         Section {
             Picker("Type", selection: $positionType) {
-                ForEach(alertPositionTypes, id: \.self) { type in
-                    Text(type)
+                ForEach(SettingsWidgetAlertPositionType.allCases, id: \.self) {
+                    Text($0.toString())
                 }
             }
             .onChange(of: positionType) { _ in
-                alert.positionType = SettingsWidgetAlertPositionType.fromString(value: positionType)
+                alert.positionType = positionType
                 model.updateAlertsSettings()
                 model.objectWillChange.send()
             }
@@ -218,7 +218,7 @@ private struct AlertPositionView: View {
             Text("Position")
         }
         Section {
-            switch SettingsWidgetAlertPositionType.fromString(value: positionType) {
+            switch positionType {
             case .face:
                 AlertPositionFaceView(alert: alert)
             default:
@@ -245,7 +245,7 @@ private struct TwitchFollowsView: View {
                 }
             }
             AlertMediaView(alert: alert, imageId: alert.imageId, soundId: alert.soundId)
-            AlertPositionView(alert: alert, positionType: alert.positionType!.toString())
+            AlertPositionView(alert: alert, positionType: alert.positionType!)
             AlertColorsView(
                 alert: alert,
                 textColor: alert.textColor.color(),
@@ -292,7 +292,7 @@ private struct TwitchSubscriptionsView: View {
                 }
             }
             AlertMediaView(alert: alert, imageId: alert.imageId, soundId: alert.soundId)
-            AlertPositionView(alert: alert, positionType: alert.positionType!.toString())
+            AlertPositionView(alert: alert, positionType: alert.positionType!)
             AlertColorsView(
                 alert: alert,
                 textColor: alert.textColor.color(),
@@ -341,7 +341,7 @@ private struct TwitchRaidsView: View {
                 }
             }
             AlertMediaView(alert: alert, imageId: alert.imageId, soundId: alert.soundId)
-            AlertPositionView(alert: alert, positionType: alert.positionType!.toString())
+            AlertPositionView(alert: alert, positionType: alert.positionType!)
             AlertColorsView(
                 alert: alert,
                 textColor: alert.textColor.color(),
@@ -436,7 +436,7 @@ private struct TwitchCheerView: View {
                 model.updateAlertsSettings()
             }
             AlertMediaView(alert: alert, imageId: alert.imageId, soundId: alert.soundId)
-            AlertPositionView(alert: alert, positionType: alert.positionType!.toString())
+            AlertPositionView(alert: alert, positionType: alert.positionType!)
             AlertColorsView(
                 alert: alert,
                 textColor: alert.textColor.color(),
@@ -707,7 +707,7 @@ private struct ChatBotCommandView: View {
                 //     Text("Sound")
                 // }
                 AlertMediaView(alert: alert, imageId: alert.imageId, soundId: alert.soundId)
-                AlertPositionView(alert: alert, positionType: alert.positionType!.toString())
+                AlertPositionView(alert: alert, positionType: alert.positionType!)
                 AlertColorsView(
                     alert: alert,
                     textColor: alert.textColor.color(),
@@ -817,7 +817,7 @@ private struct SpeechToTextStringView: View {
                     Text("Trigger by saying '\(text)'.")
                 }
                 AlertMediaView(alert: alert, imageId: alert.imageId, soundId: alert.soundId)
-                AlertPositionView(alert: alert, positionType: alert.positionType!.toString())
+                AlertPositionView(alert: alert, positionType: alert.positionType!)
                 Section {
                     Button {
                         model.testAlert(alert: .speechToTextString(string.id))
