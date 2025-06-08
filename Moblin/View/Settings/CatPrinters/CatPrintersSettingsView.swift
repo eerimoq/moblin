@@ -1,14 +1,13 @@
 import SwiftUI
 
 private struct CatPrinterSettingsWrapperView: View {
-    var device: SettingsCatPrinter
-    @State var name: String
+    @ObservedObject var device: SettingsCatPrinter
 
     var body: some View {
         NavigationLink {
-            CatPrinterSettingsView(device: device, name: $name)
+            CatPrinterSettingsView(device: device)
         } label: {
-            Text(name)
+            Text(device.name)
         }
     }
 }
@@ -38,7 +37,7 @@ struct CatPrintersSettingsView: View {
             Section {
                 List {
                     ForEach(catPrinters.devices) { device in
-                        CatPrinterSettingsWrapperView(device: device, name: device.name)
+                        CatPrinterSettingsWrapperView(device: device)
                     }
                     .onDelete(perform: { offsets in
                         catPrinters.devices.remove(atOffsets: offsets)

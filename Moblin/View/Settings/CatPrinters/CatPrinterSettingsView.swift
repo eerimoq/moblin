@@ -17,8 +17,7 @@ private func formatCatPrinterState(state: CatPrinterState?) -> String {
 struct CatPrinterSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject private var scanner = catPrinterScanner
-    var device: SettingsCatPrinter
-    @Binding var name: String
+    @ObservedObject var device: SettingsCatPrinter
 
     func state() -> String {
         return formatCatPrinterState(state: model.catPrinterState)
@@ -45,17 +44,16 @@ struct CatPrinterSettingsView: View {
     var body: some View {
         Form {
             Section {
-                TextEditNavigationView(title: "Name", value: name, onSubmit: { value in
-                    self.name = value
-                    device.name = value
+                TextEditNavigationView(title: "Name", value: device.name, onSubmit: {
+                    device.name = $0
                 })
             }
             Section {
-                NavigationLink { CatPrinterScannerSettingsView(
-                    onChange: onDeviceChange,
-                    selectedId: device.bluetoothPeripheralId?
-                        .uuidString ?? String(localized: "Select device")
-                )
+                NavigationLink {
+                    CatPrinterScannerSettingsView(
+                        onChange: onDeviceChange,
+                        selectedId: device.bluetoothPeripheralId?.uuidString ?? String(localized: "Select device")
+                    )
                 } label: {
                     Text(device.bluetoothPeripheralName ?? String(localized: "Select device"))
                         .foregroundColor(.gray)
@@ -66,47 +64,35 @@ struct CatPrinterSettingsView: View {
                 Text("Device")
             }
             Section {
-                Toggle(isOn: Binding(get: {
-                    device.enabled
-                }, set: { value in
-                    device.enabled = value
+                Toggle(isOn: $device.enabled) {
+                    Text("Enabled")
+                }
+                .onChange(of: device.enabled) { _ in
                     if device.enabled {
                         model.enableCatPrinter(device: device)
                     } else {
                         model.disableCatPrinter(device: device)
                     }
-                }), label: {
-                    Text("Enabled")
-                })
+                }
                 .disabled(!canEnable())
             }
             Section {
-                Toggle(isOn: Binding(get: {
-                    device.printChat
-                }, set: { value in
-                    device.printChat = value
-                }), label: {
+                Toggle(isOn: $device.printChat) {
                     Text("Print chat")
-                })
+                }
             }
             Section {
-                Toggle(isOn: Binding(get: {
-                    device.printSnapshots
-                }, set: { value in
-                    device.printSnapshots = value
-                }), label: {
+                Toggle(isOn: $device.printSnapshots) {
                     Text("Print snapshots")
-                })
+                }
             }
             Section {
-                Toggle(isOn: Binding(get: {
-                    device.faxMeowSound
-                }, set: { value in
-                    device.faxMeowSound = value
-                    model.catPrinterSetFaxMeowSound(device: device)
-                }), label: {
+                Toggle(isOn: $device.faxMeowSound) {
                     Text("Fax meow sound")
-                })
+                }
+                .onChange(of: device.faxMeowSound) { _ in
+                    model.catPrinterSetFaxMeowSound(device: device)
+                }
             }
             if device.enabled {
                 Section {

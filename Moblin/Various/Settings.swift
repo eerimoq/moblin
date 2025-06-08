@@ -3761,15 +3761,15 @@ class SettingsReplay: Codable {
     var speed: SettingsReplaySpeed = .one
 }
 
-class SettingsCatPrinter: Codable, Identifiable {
+class SettingsCatPrinter: Codable, Identifiable, ObservableObject {
     var id: UUID = .init()
-    var name: String = ""
-    var enabled: Bool = false
-    var bluetoothPeripheralName: String?
-    var bluetoothPeripheralId: UUID?
-    var printChat: Bool = true
-    var faxMeowSound: Bool = true
-    var printSnapshots: Bool = true
+    @Published var name: String = ""
+    @Published var enabled: Bool = false
+    @Published var bluetoothPeripheralName: String?
+    @Published var bluetoothPeripheralId: UUID?
+    @Published var printChat: Bool = true
+    @Published var faxMeowSound: Bool = true
+    @Published var printSnapshots: Bool = true
 
     init() {}
 
