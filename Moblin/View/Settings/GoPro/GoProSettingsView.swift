@@ -1,7 +1,6 @@
 import SwiftUI
 
 private struct GoProLaunchLiveStreamSettingsView: View {
-    @EnvironmentObject var model: Model
     @ObservedObject var launchLiveStream: SettingsGoProLaunchLiveStream
     @State var qrCode: UIImage?
 
@@ -60,7 +59,6 @@ private struct GoProLaunchLiveStreamSettingsEntryView: View {
 }
 
 private struct GoProWifiCredentialsSettingsView: View {
-    @EnvironmentObject var model: Model
     @ObservedObject var wifiCredentials: SettingsGoProWifiCredentials
     @State var qrCode: UIImage?
 
