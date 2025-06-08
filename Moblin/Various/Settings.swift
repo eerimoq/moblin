@@ -3725,13 +3725,44 @@ class SettingsGoProLaunchLiveStream: Codable, Identifiable {
     var isHero12Or13: Bool? = true
 }
 
-class SettingsGoPro: Codable {
-    var launchLiveStream: [SettingsGoProLaunchLiveStream] = []
-    var selectedLaunchLiveStream: UUID?
-    var wifiCredentials: [SettingsGoProWifiCredentials] = []
-    var selectedWifiCredentials: UUID?
-    var rtmpUrls: [SettingsGoProRtmpUrl] = []
-    var selectedRtmpUrl: UUID?
+class SettingsGoPro: Codable, ObservableObject {
+    @Published var launchLiveStream: [SettingsGoProLaunchLiveStream] = []
+    @Published var selectedLaunchLiveStream: UUID?
+    @Published var wifiCredentials: [SettingsGoProWifiCredentials] = []
+    @Published var selectedWifiCredentials: UUID?
+    @Published var rtmpUrls: [SettingsGoProRtmpUrl] = []
+    @Published var selectedRtmpUrl: UUID?
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case launchLiveStream,
+             selectedLaunchLiveStream,
+             wifiCredentials,
+             selectedWifiCredentials,
+             rtmpUrls,
+             selectedRtmpUrl
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.launchLiveStream, launchLiveStream)
+        try container.encode(.selectedLaunchLiveStream, selectedLaunchLiveStream)
+        try container.encode(.wifiCredentials, wifiCredentials)
+        try container.encode(.selectedWifiCredentials, selectedWifiCredentials)
+        try container.encode(.rtmpUrls, rtmpUrls)
+        try container.encode(.selectedRtmpUrl, selectedRtmpUrl)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        launchLiveStream = container.decode(.launchLiveStream, [SettingsGoProLaunchLiveStream].self, [])
+        selectedLaunchLiveStream = try? container.decode(UUID.self, forKey: .selectedLaunchLiveStream)
+        wifiCredentials = container.decode(.wifiCredentials, [SettingsGoProWifiCredentials].self, [])
+        selectedWifiCredentials = try? container.decode(UUID.self, forKey: .selectedWifiCredentials)
+        rtmpUrls = container.decode(.rtmpUrls, [SettingsGoProRtmpUrl].self, [])
+        selectedRtmpUrl = try? container.decode(UUID.self, forKey: .selectedRtmpUrl)
+    }
 }
 
 enum SettingsReplaySpeed: String, Codable, CaseIterable {
