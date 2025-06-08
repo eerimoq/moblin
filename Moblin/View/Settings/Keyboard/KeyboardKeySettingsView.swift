@@ -2,73 +2,90 @@ import SwiftUI
 
 struct KeyboardKeySettingsView: View {
     @EnvironmentObject var model: Model
-    var key: SettingsKeyboardKey
-    @State var selection: String
-    @State var sceneSelection: UUID
-    @State var widgetSelection: UUID
+    @ObservedObject var key: SettingsKeyboardKey
 
     private func onFunctionChange(function: String) {
-        selection = function
-        key.function = SettingsKeyboardKeyFunction.fromString(value: function)
+        key.function = SettingsKeyboardKeyFunction(rawValue: function) ?? .unused
+    }
+
+    private func keyText() -> String {
+        switch key.function {
+        case .scene:
+            return "\(model.getSceneName(id: key.sceneId)) scene"
+        default:
+            return key.function.toString()
+        }
+    }
+
+    private func keyColor() -> Color {
+        switch key.function {
+        case .unused:
+            return .gray
+        default:
+            return .primary
+        }
     }
 
     var body: some View {
-        Form {
-            Section {
-                TextEditNavigationView(title: "Key", value: key.key) {
-                    key.key = $0
-                }
-            }
-            Section {
-                NavigationLink {
-                    InlinePickerView(
-                        title: String(localized: "Function"),
-                        onChange: onFunctionChange,
-                        items: InlinePickerItem
-                            .fromStrings(values: keyboardKeyFunctions),
-                        selectedId: selection
-                    )
-                } label: {
-                    TextItemView(name: String(localized: "Function"), value: selection)
-                }
-            }
-            if key.function == .scene {
+        NavigationLink {
+            Form {
                 Section {
-                    Picker("", selection: $sceneSelection) {
-                        ForEach(model.database.scenes) { scene in
-                            Text(scene.name)
-                                .tag(scene.id)
+                    TextEditNavigationView(title: "Key", value: key.key) {
+                        key.key = $0
+                    }
+                }
+                Section {
+                    NavigationLink {
+                        InlinePickerView(
+                            title: String(localized: "Function"),
+                            onChange: onFunctionChange,
+                            items: SettingsKeyboardKeyFunction.allCases
+                                .map { .init(id: $0.rawValue, text: $0.toString()) },
+                            selectedId: key.function.rawValue
+                        )
+                    } label: {
+                        TextItemView(name: String(localized: "Function"), value: key.function.toString())
+                    }
+                }
+                switch key.function {
+                case .scene:
+                    Section {
+                        Picker("", selection: $key.sceneId) {
+                            ForEach(model.database.scenes) { scene in
+                                Text(scene.name)
+                                    .tag(scene.id)
+                            }
                         }
+                        .pickerStyle(.inline)
+                        .labelsHidden()
+                    } header: {
+                        Text("Scene")
                     }
-                    .onChange(of: sceneSelection) { sceneId in
-                        key.sceneId = sceneId
-                        model.objectWillChange.send()
+                case .widget:
+                    Section {
+                        Picker("", selection: $key.widgetId) {
+                            ForEach(model.database.widgets) { widget in
+                                Text(widget.name)
+                                    .tag(widget.id)
+                            }
+                        }
+                        .pickerStyle(.inline)
+                        .labelsHidden()
+                    } header: {
+                        Text("Widget")
                     }
-                    .pickerStyle(.inline)
-                    .labelsHidden()
-                } header: {
-                    Text("Scene")
+                default:
+                    EmptyView()
                 }
             }
-            if key.function == .widget {
-                Section {
-                    Picker("", selection: $widgetSelection) {
-                        ForEach(model.database.widgets) { widget in
-                            Text(widget.name)
-                                .tag(widget.id)
-                        }
-                    }
-                    .onChange(of: widgetSelection) { widgetId in
-                        key.widgetId = widgetId
-                        model.objectWillChange.send()
-                    }
-                    .pickerStyle(.inline)
-                    .labelsHidden()
-                } header: {
-                    Text("Widget")
-                }
+            .navigationTitle("Keyboard key")
+        } label: {
+            HStack {
+                Text(key.key)
+                Spacer()
+                Text(keyText())
+                    .foregroundColor(keyColor())
             }
         }
-        .navigationTitle("Keyboard key")
     }
 }

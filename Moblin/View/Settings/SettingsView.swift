@@ -127,13 +127,13 @@ struct SettingsView: View {
                     }
                     if #available(iOS 17.0, *) {
                         NavigationLink {
-                            KeyboardSettingsView()
+                            KeyboardSettingsView(keyboard: model.database.keyboard)
                         } label: {
                             IconAndTextView(image: "keyboard", text: String(localized: "Keyboard"))
                         }
                     }
                     NavigationLink {
-                        RemoteControlSettingsView()
+                        RemoteControlSettingsView(database: model.database)
                     } label: {
                         IconAndTextView(image: "appletvremote.gen1", text: String(localized: "Remote control"))
                     }
