@@ -1,7 +1,6 @@
 import SwiftUI
 
 struct GameControllersSettingsView: View {
-    @EnvironmentObject var model: Model
     @ObservedObject var database: Database
 
     private func gameControllerIndex(gameController: SettingsGameController) -> Int {
@@ -34,7 +33,6 @@ struct GameControllersSettingsView: View {
                 }
                 CreateButtonView {
                     database.gameControllers.append(SettingsGameController())
-                    model.objectWillChange.send()
                 }
             } footer: {
                 SwipeLeftToDeleteHelpView(kind: String(localized: "a controller"))

@@ -3854,17 +3854,45 @@ enum SettingsGameControllerButtonFunction: String, Codable, CaseIterable {
     }
 }
 
-class SettingsGameControllerButton: Codable, Identifiable {
+class SettingsGameControllerButton: Codable, Identifiable, ObservableObject {
     var id: UUID = .init()
     var name: String = ""
-    var text: String? = ""
-    var function: SettingsGameControllerButtonFunction = .unused
-    var sceneId: UUID = .init()
+    var text: String = ""
+    @Published var function: SettingsGameControllerButtonFunction = .unused
+    @Published var sceneId: UUID = .init()
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case id,
+             name,
+             text,
+             function,
+             sceneId
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.name, name)
+        try container.encode(.text, text)
+        try container.encode(.function, function)
+        try container.encode(.sceneId, sceneId)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        name = container.decode(.name, String.self, "")
+        text = container.decode(.text, String.self, "")
+        function = container.decode(.function, SettingsGameControllerButtonFunction.self, .unused)
+        sceneId = container.decode(.sceneId, UUID.self, .init())
+    }
 }
 
-class SettingsGameController: Codable, Identifiable {
+class SettingsGameController: Codable, Identifiable, ObservableObject {
     var id: UUID = .init()
-    var buttons: [SettingsGameControllerButton] = []
+    @Published var buttons: [SettingsGameControllerButton] = []
 
     init() {
         var button = SettingsGameControllerButton()
@@ -3963,6 +3991,23 @@ class SettingsGameController: Codable, Identifiable {
         button.text = "R1"
         button.function = .chat
         buttons.append(button)
+    }
+
+    enum CodingKeys: CodingKey {
+        case id,
+             buttons
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.buttons, buttons)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        buttons = container.decode(.buttons, [SettingsGameControllerButton].self, [])
     }
 }
 
@@ -5328,12 +5373,6 @@ final class Settings {
         if realDatabase.show.gameController == nil {
             realDatabase.show.gameController = true
             store()
-        }
-        for controller in realDatabase.gameControllers {
-            for button in controller.buttons where button.text == nil {
-                button.text = ""
-                store()
-            }
         }
         if realDatabase.show.location == nil {
             realDatabase.show.location = true

@@ -2,51 +2,72 @@ import SwiftUI
 
 struct GameControllersControllerButtonSettingsView: View {
     @EnvironmentObject var model: Model
-    var button: SettingsGameControllerButton
-    @State var selection: SettingsGameControllerButtonFunction
-    @State var sceneSelection: UUID
+    @ObservedObject var button: SettingsGameControllerButton
 
     private func onFunctionChange(function: String) {
-        selection = SettingsGameControllerButtonFunction(rawValue: function) ?? .unused
-        button.function = selection
+        button.function = SettingsGameControllerButtonFunction(rawValue: function) ?? .unused
+    }
+
+    private func buttonText() -> String {
+        switch button.function {
+        case .scene:
+            return "\(model.getSceneName(id: button.sceneId)) scene"
+        default:
+            return button.function.toString()
+        }
+    }
+
+    private func buttonColor() -> Color {
+        switch button.function {
+        case .unused:
+            return .gray
+        default:
+            return .primary
+        }
     }
 
     var body: some View {
-        Form {
-            Section {
-                NavigationLink {
-                    InlinePickerView(
-                        title: String(localized: "Function"),
-                        onChange: onFunctionChange,
-                        items: SettingsGameControllerButtonFunction.allCases.map { .init(
-                            id: $0.rawValue,
-                            text: $0.toString()
-                        ) },
-                        selectedId: selection.rawValue
-                    )
-                } label: {
-                    TextItemView(name: String(localized: "Function"), value: selection.toString())
+        NavigationLink {
+            Form {
+                Section {
+                    NavigationLink {
+                        InlinePickerView(
+                            title: String(localized: "Function"),
+                            onChange: onFunctionChange,
+                            items: SettingsGameControllerButtonFunction.allCases.map { .init(
+                                id: $0.rawValue,
+                                text: $0.toString()
+                            ) },
+                            selectedId: button.function.rawValue
+                        )
+                    } label: {
+                        TextItemView(name: String(localized: "Function"), value: button.function.toString())
+                    }
+                }
+                if button.function == .scene {
+                    Section {
+                        Picker("", selection: $button.sceneId) {
+                            ForEach(model.database.scenes) { scene in
+                                Text(scene.name)
+                                    .tag(scene.id)
+                            }
+                        }
+                        .pickerStyle(.inline)
+                        .labelsHidden()
+                    } header: {
+                        Text("Scene")
+                    }
                 }
             }
-            if button.function == .scene {
-                Section {
-                    Picker("", selection: $sceneSelection) {
-                        ForEach(model.database.scenes) { scene in
-                            Text(scene.name)
-                                .tag(scene.id)
-                        }
-                    }
-                    .onChange(of: sceneSelection) { sceneId in
-                        button.sceneId = sceneId
-                        model.objectWillChange.send()
-                    }
-                    .pickerStyle(.inline)
-                    .labelsHidden()
-                } header: {
-                    Text("Scene")
-                }
+            .navigationTitle("Game controller button")
+        } label: {
+            HStack {
+                Image(systemName: button.name)
+                Text(button.text)
+                Spacer()
+                Text(buttonText())
+                    .foregroundColor(buttonColor())
             }
         }
-        .navigationTitle("Game controller button")
     }
 }
