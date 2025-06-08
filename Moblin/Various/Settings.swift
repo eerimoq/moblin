@@ -3767,9 +3767,46 @@ class SettingsCatPrinter: Codable, Identifiable {
     var enabled: Bool = false
     var bluetoothPeripheralName: String?
     var bluetoothPeripheralId: UUID?
-    var printChat: Bool? = true
-    var faxMeowSound: Bool? = true
-    var printSnapshots: Bool? = true
+    var printChat: Bool = true
+    var faxMeowSound: Bool = true
+    var printSnapshots: Bool = true
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case id,
+             name,
+             enabled,
+             bluetoothPeripheralName,
+             bluetoothPeripheralId,
+             printChat,
+             faxMeowSound,
+             printSnapshots
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.name, name)
+        try container.encode(.enabled, enabled)
+        try container.encode(.bluetoothPeripheralName, bluetoothPeripheralName)
+        try container.encode(.bluetoothPeripheralId, bluetoothPeripheralId)
+        try container.encode(.printChat, printChat)
+        try container.encode(.faxMeowSound, faxMeowSound)
+        try container.encode(.printSnapshots, printSnapshots)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        name = container.decode(.name, String.self, "")
+        enabled = container.decode(.enabled, Bool.self, false)
+        bluetoothPeripheralName = try? container.decode(String.self, forKey: .bluetoothPeripheralName)
+        bluetoothPeripheralId = try? container.decode(UUID.self, forKey: .bluetoothPeripheralId)
+        printChat = container.decode(.printChat, Bool.self, true)
+        faxMeowSound = container.decode(.faxMeowSound, Bool.self, true)
+        printSnapshots = container.decode(.printSnapshots, Bool.self, true)
+    }
 }
 
 class SettingsCatPrinters: Codable, ObservableObject {
@@ -5780,10 +5817,6 @@ final class Settings {
             widget.alerts.twitch!.raids = .init()
             store()
         }
-        for device in realDatabase.catPrinters.devices where device.printChat == nil {
-            device.printChat = true
-            store()
-        }
         if realDatabase.watch.chat.badges == nil {
             realDatabase.watch.chat.badges = true
             store()
@@ -5814,10 +5847,6 @@ final class Settings {
         }
         if realDatabase.chat.botCommandPermissions.filter == nil {
             realDatabase.chat.botCommandPermissions.filter = .init()
-            store()
-        }
-        for device in realDatabase.catPrinters.devices where device.faxMeowSound == nil {
-            device.faxMeowSound = true
             store()
         }
         if realDatabase.chat.botCommandPermissions.tts.minimumSubscriberTier == nil {
@@ -5937,10 +5966,6 @@ final class Settings {
             realDatabase.location.distance = 0.0
             store()
         }
-        if realDatabase.catPrinters.backgroundPrinting == nil {
-            realDatabase.catPrinters.backgroundPrinting = false
-            store()
-        }
         if realDatabase.show.catPrinter == nil {
             realDatabase.show.catPrinter = true
             store()
@@ -6015,10 +6040,6 @@ final class Settings {
         }
         if realDatabase.chat.botCommandPermissions.scene!.sendChatMessages == nil {
             realDatabase.chat.botCommandPermissions.scene!.sendChatMessages = false
-            store()
-        }
-        for device in realDatabase.catPrinters.devices where device.printSnapshots == nil {
-            device.printSnapshots = true
             store()
         }
         for widget in realDatabase.widgets {

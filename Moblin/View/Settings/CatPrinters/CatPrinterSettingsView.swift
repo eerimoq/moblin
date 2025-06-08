@@ -82,7 +82,7 @@ struct CatPrinterSettingsView: View {
             }
             Section {
                 Toggle(isOn: Binding(get: {
-                    device.printChat!
+                    device.printChat
                 }, set: { value in
                     device.printChat = value
                 }), label: {
@@ -91,7 +91,7 @@ struct CatPrinterSettingsView: View {
             }
             Section {
                 Toggle(isOn: Binding(get: {
-                    device.printSnapshots!
+                    device.printSnapshots
                 }, set: { value in
                     device.printSnapshots = value
                 }), label: {
@@ -100,7 +100,7 @@ struct CatPrinterSettingsView: View {
             }
             Section {
                 Toggle(isOn: Binding(get: {
-                    device.faxMeowSound!
+                    device.faxMeowSound
                 }, set: { value in
                     device.faxMeowSound = value
                     model.catPrinterSetFaxMeowSound(device: device)

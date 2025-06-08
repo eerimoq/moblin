@@ -9,7 +9,7 @@ extension Model {
 
     func printSnapshotCatPrinters(image: CIImage) {
         for catPrinter in catPrinters.values where
-            getCatPrinterSettings(catPrinter: catPrinter)?.printSnapshots! == true
+            getCatPrinterSettings(catPrinter: catPrinter)?.printSnapshots == true
         {
             catPrinter.print(image: image, feedPaperDelay: nil)
         }
@@ -27,12 +27,12 @@ extension Model {
         }
         catPrinters[device.id]?.start(
             deviceId: device.bluetoothPeripheralId,
-            meowSoundEnabled: device.faxMeowSound!
+            meowSoundEnabled: device.faxMeowSound
         )
     }
 
     func catPrinterSetFaxMeowSound(device: SettingsCatPrinter) {
-        catPrinters[device.id]?.setMeowSoundEnabled(meowSoundEnabled: device.faxMeowSound!)
+        catPrinters[device.id]?.setMeowSoundEnabled(meowSoundEnabled: device.faxMeowSound)
     }
 
     func disableCatPrinter(device: SettingsCatPrinter) {
