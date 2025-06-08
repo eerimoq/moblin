@@ -4161,21 +4161,6 @@ enum SettingsExternalDisplayContent: String, Codable, CaseIterable {
             .stream
     }
 
-    static func fromString(value: String) -> SettingsExternalDisplayContent {
-        switch value {
-        case String(localized: "Stream"):
-            return .stream
-        case String(localized: "Clean stream"):
-            return .cleanStream
-        case String(localized: "Chat"):
-            return .chat
-        case String(localized: "Mirror"):
-            return .mirror
-        default:
-            return .stream
-        }
-    }
-
     func toString() -> String {
         switch self {
         case .stream:
@@ -4189,8 +4174,6 @@ enum SettingsExternalDisplayContent: String, Codable, CaseIterable {
         }
     }
 }
-
-let externalDisplayContents = SettingsExternalDisplayContent.allCases.map { $0.toString() }
 
 class SettingsPrivacyRegion: Codable, Identifiable {
     var id: UUID = .init()
@@ -4383,7 +4366,7 @@ class Database: Codable, ObservableObject {
     var sceneSwitchTransition: SettingsSceneSwitchTransition = .blur
     var forceSceneSwitchTransition: Bool = false
     @Published var cameraControlsEnabled: Bool = true
-    var externalDisplayContent: SettingsExternalDisplayContent = .stream
+    @Published var externalDisplayContent: SettingsExternalDisplayContent = .stream
     var cyclingPowerDevices: SettingsCyclingPowerDevices = .init()
     var heartRateDevices: SettingsHeartRateDevices = .init()
     var djiGimbalDevices: SettingsDjiGimbalDevices = .init()
