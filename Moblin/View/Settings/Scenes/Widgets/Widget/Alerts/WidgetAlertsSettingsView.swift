@@ -254,8 +254,8 @@ private struct TwitchFollowsView: View {
             AlertFontView(
                 alert: alert,
                 fontSize: Float(alert.fontSize),
-                fontDesign: alert.fontDesign.toString(),
-                fontWeight: alert.fontWeight.toString()
+                fontDesign: alert.fontDesign,
+                fontWeight: alert.fontWeight
             )
             AlertTextToSpeechView(alert: alert, ttsDelay: alert.textToSpeechDelay!)
             Section {
@@ -301,8 +301,8 @@ private struct TwitchSubscriptionsView: View {
             AlertFontView(
                 alert: alert,
                 fontSize: Float(alert.fontSize),
-                fontDesign: alert.fontDesign.toString(),
-                fontWeight: alert.fontWeight.toString()
+                fontDesign: alert.fontDesign,
+                fontWeight: alert.fontWeight
             )
             AlertTextToSpeechView(alert: alert, ttsDelay: alert.textToSpeechDelay!)
             Section {
@@ -350,8 +350,8 @@ private struct TwitchRaidsView: View {
             AlertFontView(
                 alert: alert,
                 fontSize: Float(alert.fontSize),
-                fontDesign: alert.fontDesign.toString(),
-                fontWeight: alert.fontWeight.toString()
+                fontDesign: alert.fontDesign,
+                fontWeight: alert.fontWeight
             )
             AlertTextToSpeechView(alert: alert, ttsDelay: alert.textToSpeechDelay!)
             Section {
@@ -445,8 +445,8 @@ private struct TwitchCheerView: View {
             AlertFontView(
                 alert: alert,
                 fontSize: Float(alert.fontSize),
-                fontDesign: alert.fontDesign.toString(),
-                fontWeight: alert.fontWeight.toString()
+                fontDesign: alert.fontDesign,
+                fontWeight: alert.fontWeight
             )
             AlertTextToSpeechView(alert: alert, ttsDelay: alert.textToSpeechDelay!)
             Section {
@@ -716,8 +716,8 @@ private struct ChatBotCommandView: View {
                 AlertFontView(
                     alert: alert,
                     fontSize: Float(alert.fontSize),
-                    fontDesign: alert.fontDesign.toString(),
-                    fontWeight: alert.fontWeight.toString()
+                    fontDesign: alert.fontDesign,
+                    fontWeight: alert.fontWeight
                 )
                 AlertTextToSpeechView(alert: alert, ttsDelay: alert.textToSpeechDelay!)
                 Section {

@@ -1105,21 +1105,6 @@ enum SettingsFontDesign: String, Codable, CaseIterable {
             .decode(RawValue.self)) ?? .default
     }
 
-    static func fromString(value: String) -> SettingsFontDesign {
-        switch value {
-        case String(localized: "Default"):
-            return .default
-        case String(localized: "Serif"):
-            return .serif
-        case String(localized: "Rounded"):
-            return .rounded
-        case String(localized: "Monospaced"):
-            return .monospaced
-        default:
-            return .default
-        }
-    }
-
     func toString() -> String {
         switch self {
         case .default:
@@ -1147,8 +1132,6 @@ enum SettingsFontDesign: String, Codable, CaseIterable {
     }
 }
 
-let textWidgetFontDesigns = SettingsFontDesign.allCases.map { $0.toString() }
-
 enum SettingsFontWeight: String, Codable, CaseIterable {
     case regular = "Regular"
     case light = "Light"
@@ -1157,19 +1140,6 @@ enum SettingsFontWeight: String, Codable, CaseIterable {
     public init(from decoder: Decoder) throws {
         self = try SettingsFontWeight(rawValue: decoder.singleValueContainer()
             .decode(RawValue.self)) ?? .regular
-    }
-
-    static func fromString(value: String) -> SettingsFontWeight {
-        switch value {
-        case String(localized: "Regular"):
-            return .regular
-        case String(localized: "Light"):
-            return .light
-        case String(localized: "Bold"):
-            return .bold
-        default:
-            return .regular
-        }
     }
 
     func toString() -> String {
@@ -1194,8 +1164,6 @@ enum SettingsFontWeight: String, Codable, CaseIterable {
         }
     }
 }
-
-let textWidgetFontWeights = SettingsFontWeight.allCases.map { $0.toString() }
 
 enum SettingsHorizontalAlignment: String, Codable, CaseIterable {
     case leading = "Leading"
