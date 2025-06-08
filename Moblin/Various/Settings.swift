@@ -3567,7 +3567,7 @@ class SettingsDjiDevice: Codable, Identifiable, ObservableObject {
     @Published var serverRtmpStreamId: UUID = .init()
     @Published var serverRtmpUrl: String = ""
     @Published var customRtmpUrl: String = ""
-    var autoRestartStream: Bool = false
+    @Published var autoRestartStream: Bool = false
     @Published var imageStabilization: SettingsDjiDeviceImageStabilization = .off
     @Published var resolution: SettingsDjiDeviceResolution = .r1080p
     @Published var fps: Int = 30

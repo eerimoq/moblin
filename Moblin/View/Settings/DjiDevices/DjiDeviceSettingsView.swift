@@ -253,17 +253,12 @@ private struct DjiDeviceSettingsSettingsView: View {
 
 private struct DjiDeviceAutoRestartSettingsView: View {
     @EnvironmentObject var model: Model
-    var device: SettingsDjiDevice
+    @ObservedObject var device: SettingsDjiDevice
 
     var body: some View {
         if device.rtmpUrlType == .server {
             Section {
-                Toggle(isOn: Binding(get: {
-                    device.autoRestartStream
-                }, set: { value in
-                    device.autoRestartStream = value
-                    model.objectWillChange.send()
-                })) {
+                Toggle(isOn: $device.autoRestartStream) {
                     Text("Auto-restart live stream when broken")
                 }
             }
