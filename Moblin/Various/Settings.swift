@@ -1174,17 +1174,6 @@ enum SettingsHorizontalAlignment: String, Codable, CaseIterable {
             .decode(RawValue.self)) ?? .leading
     }
 
-    static func fromString(value: String) -> SettingsHorizontalAlignment {
-        switch value {
-        case String(localized: "Leading"):
-            return .leading
-        case String(localized: "Trailing"):
-            return .trailing
-        default:
-            return .leading
-        }
-    }
-
     func toString() -> String {
         switch self {
         case .leading:
@@ -1211,17 +1200,6 @@ enum SettingsVerticalAlignment: String, Codable, CaseIterable {
     public init(from decoder: Decoder) throws {
         self = try SettingsVerticalAlignment(rawValue: decoder.singleValueContainer()
             .decode(RawValue.self)) ?? .top
-    }
-
-    static func fromString(value: String) -> SettingsVerticalAlignment {
-        switch value {
-        case String(localized: "Top"):
-            return .top
-        case String(localized: "Bottom"):
-            return .bottom
-        default:
-            return .top
-        }
     }
 
     func toString() -> String {
