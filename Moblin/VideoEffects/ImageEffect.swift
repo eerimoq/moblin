@@ -34,8 +34,8 @@ final class ImageEffect: VideoEffect {
     private let settingName: String
     let widgetId: UUID
 
-    init(image: UIImage, settingName: String, widgetId: UUID) {
-        originalImage = CIImage(image: image)?.oriented(CGImagePropertyOrientation(image.imageOrientation))
+    init(image: CIImage, settingName: String, widgetId: UUID) {
+        originalImage = image
         self.settingName = settingName
         self.widgetId = widgetId
         super.init()

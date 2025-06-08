@@ -3,11 +3,11 @@ import SwiftUI
 private struct RemoveBackgroundView: View {
     @EnvironmentObject var model: Model
     let widgetId: UUID
-    let effectIndex: Int
+    let effectIndex: Int?
     @ObservedObject var removeBackground: SettingsVideoEffectRemoveBackground
 
     private func updateWidget() {
-        guard let effect = model.getEffectWithPossibleEffects(id: widgetId) else {
+        guard let effectIndex, let effect = model.getEffectWithPossibleEffects(id: widgetId) else {
             return
         }
         guard effectIndex < effect.effects.count else {
@@ -46,11 +46,11 @@ private struct RemoveBackgroundView: View {
 private struct ShapeView: View {
     @EnvironmentObject var model: Model
     let widgetId: UUID
-    let effectIndex: Int
+    let effectIndex: Int?
     @ObservedObject var shape: SettingsVideoEffectShape
 
     private func updateWidget() {
-        guard let effect = model.getEffectWithPossibleEffects(id: widgetId) else {
+        guard let effectIndex, let effect = model.getEffectWithPossibleEffects(id: widgetId) else {
             return
         }
         guard effectIndex < effect.effects.count else {
@@ -108,7 +108,7 @@ private struct ShapeView: View {
 private struct EffectView: View {
     @EnvironmentObject var model: Model
     let widgetId: UUID
-    let effectIndex: Int
+    let effectIndex: Int?
     @ObservedObject var effect: SettingsVideoEffect
 
     var body: some View {
@@ -164,7 +164,7 @@ struct WidgetEffectsView: View {
             ForEach(widget.effects) { effect in
                 EffectView(
                     widgetId: widget.id,
-                    effectIndex: widget.effects.firstIndex(where: { $0 === effect })!,
+                    effectIndex: widget.effects.filter { $0.enabled }.firstIndex(where: { $0 === effect }),
                     effect: effect
                 )
             }
