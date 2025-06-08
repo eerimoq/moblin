@@ -90,12 +90,12 @@ struct SettingsView: View {
             Section {
                 if database.showAllSettings {
                     NavigationLink {
-                        RtmpServerSettingsView()
+                        RtmpServerSettingsView(database: model.database)
                     } label: {
                         IconAndTextView(image: "server.rack", text: String(localized: "RTMP server"))
                     }
                     NavigationLink {
-                        SrtlaServerSettingsView()
+                        SrtlaServerSettingsView(database: model.database)
                     } label: {
                         IconAndTextView(image: "server.rack", text: String(localized: "SRT(LA) server"))
                     }
@@ -107,7 +107,7 @@ struct SettingsView: View {
                 }
                 if database.showAllSettings {
                     NavigationLink {
-                        MediaPlayersSettingsView()
+                        MediaPlayersSettingsView(database: model.database)
                     } label: {
                         IconAndTextView(image: "play.rectangle.on.rectangle", text: String(localized: "Media players"))
                     }
@@ -121,7 +121,7 @@ struct SettingsView: View {
                         IconAndTextView(image: "line.diagonal", text: String(localized: "Selfie stick"))
                     }
                     NavigationLink {
-                        GameControllersSettingsView()
+                        GameControllersSettingsView(database: model.database)
                     } label: {
                         IconAndTextView(image: "gamecontroller", text: String(localized: "Game controllers"))
                     }

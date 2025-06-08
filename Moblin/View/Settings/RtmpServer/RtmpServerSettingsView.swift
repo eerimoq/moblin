@@ -2,12 +2,13 @@ import SwiftUI
 
 struct RtmpServerSettingsView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var database: Database
 
     private func submitPort(value: String) {
         guard let port = UInt16(value.trim()) else {
             return
         }
-        model.database.rtmpServer.port = port
+        database.rtmpServer.port = port
         model.reloadRtmpServer()
     }
 
@@ -21,9 +22,9 @@ struct RtmpServerSettingsView: View {
             }
             Section {
                 Toggle("Enabled", isOn: Binding(get: {
-                    model.database.rtmpServer.enabled
+                    database.rtmpServer.enabled
                 }, set: { value in
-                    model.database.rtmpServer.enabled = value
+                    database.rtmpServer.enabled = value
                     model.reloadRtmpServer()
                     model.objectWillChange.send()
                 }))
@@ -40,7 +41,7 @@ struct RtmpServerSettingsView: View {
             Section {
                 TextEditNavigationView(
                     title: String(localized: "Port"),
-                    value: String(model.database.rtmpServer.port),
+                    value: String(database.rtmpServer.port),
                     onSubmit: submitPort,
                     keyboardType: .numbersAndPunctuation
                 )
@@ -50,10 +51,10 @@ struct RtmpServerSettingsView: View {
             }
             Section {
                 List {
-                    let list = ForEach(model.database.rtmpServer.streams) { stream in
+                    let list = ForEach(database.rtmpServer.streams) { stream in
                         NavigationLink {
                             RtmpServerStreamSettingsView(
-                                port: model.database.rtmpServer.port,
+                                port: database.rtmpServer.port,
                                 stream: stream
                             )
                         } label: {
@@ -70,7 +71,7 @@ struct RtmpServerSettingsView: View {
                     }
                     if !model.rtmpServerEnabled() {
                         list.onDelete(perform: { indexes in
-                            model.database.rtmpServer.streams.remove(atOffsets: indexes)
+                            database.rtmpServer.streams.remove(atOffsets: indexes)
                             model.reloadRtmpServer()
                         })
                     } else {
@@ -85,7 +86,7 @@ struct RtmpServerSettingsView: View {
                             break
                         }
                     }
-                    model.database.rtmpServer.streams.append(stream)
+                    database.rtmpServer.streams.append(stream)
                     model.objectWillChange.send()
                 }
                 .disabled(model.rtmpServerEnabled())

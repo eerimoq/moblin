@@ -199,7 +199,7 @@ private struct DjiDeviceRtmpSettingsView: View {
         }
         Section {
             NavigationLink {
-                RtmpServerSettingsView()
+                RtmpServerSettingsView(database: model.database)
             } label: {
                 Text("RTMP server")
             }

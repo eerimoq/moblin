@@ -268,7 +268,7 @@ private struct GoProRtmpUrlView: View {
         }
         Section {
             NavigationLink {
-                RtmpServerSettingsView()
+                RtmpServerSettingsView(database: model.database)
             } label: {
                 Text("RTMP server")
             }

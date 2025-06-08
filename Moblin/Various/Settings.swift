@@ -4338,7 +4338,7 @@ class Database: Codable, ObservableObject {
     var networkInterfaceNames: [SettingsNetworkInterfaceName] = []
     var lowBitrateWarning: Bool = true
     var vibrate: Bool = false
-    var gameControllers: [SettingsGameController] = [.init()]
+    @Published var gameControllers: [SettingsGameController] = [.init()]
     var remoteControl: SettingsRemoteControl = .init()
     var startStopRecordingConfirmations: Bool = true
     var color: SettingsColor = .init()
