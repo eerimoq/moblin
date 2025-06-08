@@ -513,10 +513,7 @@ struct GoProSettingsView: View {
         Form {
             Section {
                 HCenter {
-                    Image("GoPro")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(height: 130)
+                    IntegrationImageView(imageName: "GoPro")
                 }
             }
             GoProLaunchLiveStream()

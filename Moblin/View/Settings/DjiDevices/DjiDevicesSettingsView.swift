@@ -27,10 +27,7 @@ struct DjiDevicesSettingsView: View {
         Form {
             Section {
                 HCenter {
-                    Image("DjiOa4")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(height: 130)
+                    IntegrationImageView(imageName: "DjiOa4")
                 }
             }
             Section {

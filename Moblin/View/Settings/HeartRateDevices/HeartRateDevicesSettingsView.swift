@@ -20,10 +20,7 @@ struct HeartRateDevicesSettingsView: View {
         Form {
             Section {
                 HCenter {
-                    Image("HeartRateDevice")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(height: 130)
+                    IntegrationImageView(imageName: "HeartRateDevice")
                     Image("HeartRateDeviceCoros")
                         .resizable()
                         .aspectRatio(contentMode: .fit)

@@ -1,5 +1,16 @@
 import SwiftUI
 
+struct IntegrationImageView: View {
+    let imageName: String
+
+    var body: some View {
+        Image(imageName)
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .frame(height: 130.0)
+    }
+}
+
 private struct CatPrinterSettingsWrapperView: View {
     @ObservedObject var device: SettingsCatPrinter
 
@@ -20,10 +31,7 @@ struct CatPrintersSettingsView: View {
         Form {
             Section {
                 HCenter {
-                    Image("CatPrinter")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(height: 130)
+                    IntegrationImageView(imageName: "CatPrinter")
                 }
                 Text("A small affordable black and white printer.")
             }
