@@ -3563,17 +3563,17 @@ class SettingsDjiDevice: Codable, Identifiable, ObservableObject {
     var bluetoothPeripheralId: UUID?
     var wifiSsid: String = ""
     var wifiPassword: String = ""
-    var rtmpUrlType: SettingsDjiDeviceUrlType = .server
-    var serverRtmpStreamId: UUID = .init()
-    var serverRtmpUrl: String = ""
-    var customRtmpUrl: String = ""
+    @Published var rtmpUrlType: SettingsDjiDeviceUrlType = .server
+    @Published var serverRtmpStreamId: UUID = .init()
+    @Published var serverRtmpUrl: String = ""
+    @Published var customRtmpUrl: String = ""
     var autoRestartStream: Bool = false
-    var imageStabilization: SettingsDjiDeviceImageStabilization = .off
-    var resolution: SettingsDjiDeviceResolution = .r1080p
-    var fps: Int = 30
-    var bitrate: UInt32 = 6_000_000
+    @Published var imageStabilization: SettingsDjiDeviceImageStabilization = .off
+    @Published var resolution: SettingsDjiDeviceResolution = .r1080p
+    @Published var fps: Int = 30
+    @Published var bitrate: UInt32 = 6_000_000
     var isStarted: Bool = false
-    var model: SettingsDjiDeviceModel = .unknown
+    @Published var model: SettingsDjiDeviceModel = .unknown
 
     init() {
         bluetoothPeripheralName = nil
