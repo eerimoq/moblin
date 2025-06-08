@@ -3703,26 +3703,104 @@ class SettingsDjiGimbalDevices: Codable {
     var devices: [SettingsDjiGimbalDevice] = []
 }
 
-class SettingsGoProWifiCredentials: Codable, Identifiable {
+class SettingsGoProWifiCredentials: Codable, Identifiable, ObservableObject {
     var id: UUID = .init()
     var name = "My SSID"
     var ssid = ""
     var password = ""
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case id,
+             name,
+             ssid,
+             password
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.name, name)
+        try container.encode(.ssid, ssid)
+        try container.encode(.password, password)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        name = container.decode(.name, String.self, "")
+        ssid = container.decode(.ssid, String.self, "")
+        password = container.decode(.password, String.self, "")
+    }
 }
 
-class SettingsGoProRtmpUrl: Codable, Identifiable {
+class SettingsGoProRtmpUrl: Codable, Identifiable, ObservableObject {
     var id: UUID = .init()
     var name = "My URL"
     var type: SettingsDjiDeviceUrlType = .server
     var serverStreamId: UUID = .init()
     var serverUrl = ""
     var customUrl = ""
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case id,
+             name,
+             type,
+             serverStreamId,
+             serverUrl,
+             customUrl
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.name, name)
+        try container.encode(.type, type)
+        try container.encode(.serverStreamId, serverStreamId)
+        try container.encode(.serverUrl, serverUrl)
+        try container.encode(.customUrl, customUrl)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        name = container.decode(.name, String.self, "My URL")
+        type = container.decode(.type, SettingsDjiDeviceUrlType.self, .server)
+        serverStreamId = container.decode(.serverStreamId, UUID.self, .init())
+        serverUrl = container.decode(.serverUrl, String.self, "")
+        customUrl = container.decode(.customUrl, String.self, "")
+    }
 }
 
-class SettingsGoProLaunchLiveStream: Codable, Identifiable {
+class SettingsGoProLaunchLiveStream: Codable, Identifiable, ObservableObject {
     var id: UUID = .init()
     var name = "1080p"
-    var isHero12Or13: Bool? = true
+    var isHero12Or13: Bool = true
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case id,
+             name,
+             isHero12Or13
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.name, name)
+        try container.encode(.isHero12Or13, isHero12Or13)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        name = container.decode(.name, String.self, "1080p")
+        isHero12Or13 = container.decode(.isHero12Or13, Bool.self, true)
+    }
 }
 
 class SettingsGoPro: Codable, ObservableObject {
@@ -6082,10 +6160,6 @@ final class Settings {
                 command.imagePlaygroundImageId = .init()
                 store()
             }
-        }
-        for launchLiveStream in realDatabase.goPro.launchLiveStream where launchLiveStream.isHero12Or13 == nil {
-            launchLiveStream.isHero12Or13 = true
-            store()
         }
         if realDatabase.tesla.enabled == nil {
             realDatabase.tesla.enabled = true

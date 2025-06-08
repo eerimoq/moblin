@@ -7,7 +7,7 @@ private struct GoProLaunchLiveStreamSettingsView: View {
     @State var qrCode: UIImage?
 
     private func generate() {
-        qrCode = GoPro.generateLaunchLiveStream(isHero12Or13: launchLiveStream.isHero12Or13!)
+        qrCode = GoPro.generateLaunchLiveStream(isHero12Or13: launchLiveStream.isHero12Or13)
     }
 
     var body: some View {
@@ -24,7 +24,7 @@ private struct GoProLaunchLiveStreamSettingsView: View {
                 }
                 Section {
                     Toggle("HERO 12/13", isOn: Binding(get: {
-                        launchLiveStream.isHero12Or13!
+                        launchLiveStream.isHero12Or13
                     }, set: { value in
                         launchLiveStream.isHero12Or13 = value
                         generate()
