@@ -3,7 +3,7 @@ import SwiftUI
 
 struct BitratePresetsPresetSettingsView: View {
     @EnvironmentObject var model: Model
-    var preset: SettingsBitratePreset
+    @ObservedObject var preset: SettingsBitratePreset
 
     func submit(bitrate: String) {
         guard var bitrate = Float(bitrate) else {
@@ -12,16 +12,25 @@ struct BitratePresetsPresetSettingsView: View {
         bitrate = max(bitrate, 0.05)
         bitrate = min(bitrate, 50)
         preset.bitrate = bitrateFromMbps(bitrate: bitrate)
-        model.store()
     }
 
     var body: some View {
-        TextEditView(
-            title: String(localized: "Bitrate"),
-            value: String(bitrateToMbps(bitrate: preset.bitrate)),
-            keyboardType: .numbersAndPunctuation
-        ) {
-            submit(bitrate: $0)
+        NavigationLink {
+            TextEditView(
+                title: String(localized: "Bitrate"),
+                value: String(bitrateToMbps(bitrate: preset.bitrate)),
+                keyboardType: .numbersAndPunctuation
+            ) {
+                submit(bitrate: $0)
+            }
+        } label: {
+            HStack {
+                DraggableItemPrefixView()
+                TextItemView(
+                    name: formatBytesPerSecond(speed: Int64(preset.bitrate)),
+                    value: String(bitrateToMbps(bitrate: preset.bitrate))
+                )
+            }
         }
     }
 }

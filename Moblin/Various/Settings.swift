@@ -2702,13 +2702,30 @@ class SettingsZoom: Codable {
     var speed: Float? = 5.0
 }
 
-class SettingsBitratePreset: Codable, Identifiable {
+class SettingsBitratePreset: Codable, Identifiable, ObservableObject {
     var id: UUID
-    var bitrate: UInt32 = 5_000_000
+    @Published var bitrate: UInt32 = 5_000_000
 
     init(id: UUID, bitrate: UInt32) {
         self.id = id
         self.bitrate = bitrate
+    }
+
+    enum CodingKeys: CodingKey {
+        case id,
+             bitrate
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.bitrate, bitrate)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        bitrate = container.decode(.bitrate, UInt32.self, 5_000_000)
     }
 }
 
@@ -4384,7 +4401,7 @@ class Database: Codable, ObservableObject {
     var show: SettingsShow = .init()
     var zoom: SettingsZoom = .init()
     var tapToFocus: Bool = false
-    var bitratePresets: [SettingsBitratePreset] = []
+    @Published var bitratePresets: [SettingsBitratePreset] = []
     var iconImage: String = plainIcon.image()
     var videoStabilizationMode: SettingsVideoStabilizationMode = .off
     var chat: SettingsChat = .init()
