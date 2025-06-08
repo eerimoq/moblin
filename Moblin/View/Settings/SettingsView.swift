@@ -140,7 +140,7 @@ struct SettingsView: View {
                 }
                 Section {
                     NavigationLink {
-                        DjiDevicesSettingsView()
+                        DjiDevicesSettingsView(djiDevices: model.database.djiDevices)
                     } label: {
                         IconAndTextView(image: "appletvremote.gen1", text: String(localized: "DJI devices"))
                     }

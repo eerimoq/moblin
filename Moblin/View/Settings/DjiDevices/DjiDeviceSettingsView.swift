@@ -304,8 +304,7 @@ private struct DjiDeviceStartStopButtonSettingsView: View {
 
 struct DjiDeviceSettingsView: View {
     @EnvironmentObject var model: Model
-    var device: SettingsDjiDevice
-    @Binding var name: String
+    @ObservedObject var device: SettingsDjiDevice
 
     func state() -> String {
         return formatDjiDeviceState(state: model.djiDeviceStreamingState)
@@ -314,9 +313,8 @@ struct DjiDeviceSettingsView: View {
     var body: some View {
         Form {
             Section {
-                TextEditNavigationView(title: "Name", value: device.name, onSubmit: { value in
-                    name = value
-                    device.name = value
+                TextEditNavigationView(title: "Name", value: device.name, onSubmit: {
+                    device.name = $0
                 })
             }
             DjiDeviceSelectDeviceSettingsView(device: device)

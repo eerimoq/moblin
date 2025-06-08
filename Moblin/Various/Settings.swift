@@ -3575,7 +3575,7 @@ var djiDeviceFpss: [Int] = [25, 30]
 
 class SettingsDjiDevice: Codable, Identifiable, ObservableObject {
     var id: UUID = .init()
-    var name: String = ""
+    @Published var name: String = ""
     var bluetoothPeripheralName: String?
     var bluetoothPeripheralId: UUID?
     var wifiSsid: String = ""
@@ -3660,8 +3660,24 @@ class SettingsDjiDevice: Codable, Identifiable, ObservableObject {
     }
 }
 
-class SettingsDjiDevices: Codable {
-    var devices: [SettingsDjiDevice] = []
+class SettingsDjiDevices: Codable, ObservableObject {
+    @Published var devices: [SettingsDjiDevice] = []
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case devices
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.devices, devices)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        devices = container.decode(.devices, [SettingsDjiDevice].self, [])
+    }
 }
 
 enum SettingsDjiGimbalDeviceModel: String, Codable {

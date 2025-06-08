@@ -2,16 +2,15 @@ import SwiftUI
 
 private struct DjiDeviceSettingsWrapperView: View {
     @EnvironmentObject var model: Model
-    var device: SettingsDjiDevice
-    @State var name: String
+    @ObservedObject var device: SettingsDjiDevice
 
     var body: some View {
         NavigationLink {
-            DjiDeviceSettingsView(device: device, name: $name)
+            DjiDeviceSettingsView(device: device)
         } label: {
             HStack {
                 DraggableItemPrefixView()
-                Text(name)
+                Text(device.name)
                 Spacer()
                 Text(formatDjiDeviceState(state: model.getDjiDeviceState(device: device)))
                     .foregroundColor(.gray)
@@ -22,6 +21,7 @@ private struct DjiDeviceSettingsWrapperView: View {
 
 struct DjiDevicesSettingsView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var djiDevices: SettingsDjiDevices
 
     var body: some View {
         Form {
@@ -35,23 +35,20 @@ struct DjiDevicesSettingsView: View {
             }
             Section {
                 List {
-                    ForEach(model.database.djiDevices.devices) { device in
-                        DjiDeviceSettingsWrapperView(device: device, name: device.name)
+                    ForEach(djiDevices.devices) { device in
+                        DjiDeviceSettingsWrapperView(device: device)
                     }
                     .onMove(perform: { froms, to in
-                        model.database.djiDevices.devices.move(fromOffsets: froms, toOffset: to)
-                        model.objectWillChange.send()
+                        djiDevices.devices.move(fromOffsets: froms, toOffset: to)
                     })
                     .onDelete(perform: { offsets in
                         model.removeDjiDevices(offsets: offsets)
-                        model.objectWillChange.send()
                     })
                 }
                 CreateButtonView {
                     let device = SettingsDjiDevice()
                     device.name = "My device"
-                    model.database.djiDevices.devices.append(device)
-                    model.objectWillChange.send()
+                    djiDevices.devices.append(device)
                 }
             } footer: {
                 SwipeLeftToDeleteHelpView(kind: String(localized: "a device"))
