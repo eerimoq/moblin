@@ -108,7 +108,7 @@ private struct DjiDeviceRtmpSettingsView: View {
     var device: SettingsDjiDevice
 
     private func serverUrls() -> [String] {
-        guard let stream = model.getRtmpStream(id: device.serverRtmpStreamId!) else {
+        guard let stream = model.getRtmpStream(id: device.serverRtmpStreamId) else {
             return []
         }
         var serverUrls: [String] = []
@@ -137,7 +137,7 @@ private struct DjiDeviceRtmpSettingsView: View {
     var body: some View {
         Section {
             Picker("Type", selection: Binding(get: {
-                device.rtmpUrlType!
+                device.rtmpUrlType
             }, set: { value in
                 device.rtmpUrlType = value
                 model.objectWillChange.send()
@@ -152,7 +152,7 @@ private struct DjiDeviceRtmpSettingsView: View {
                     Text("No RTMP server streams exists")
                 } else {
                     Picker("Stream", selection: Binding(get: {
-                        device.serverRtmpStreamId!
+                        device.serverRtmpStreamId
                     }, set: { value in
                         device.serverRtmpStreamId = value
                         device.serverRtmpUrl = serverUrls().first ?? ""
@@ -165,7 +165,7 @@ private struct DjiDeviceRtmpSettingsView: View {
                     }
                     .disabled(model.isDjiDeviceStarted(device: device))
                     Picker("URL", selection: Binding(get: {
-                        device.serverRtmpUrl!
+                        device.serverRtmpUrl
                     }, set: { value in
                         device.serverRtmpUrl = value
                         model.objectWillChange.send()
@@ -183,7 +183,7 @@ private struct DjiDeviceRtmpSettingsView: View {
             } else if device.rtmpUrlType == .custom {
                 TextEditNavigationView(
                     title: String(localized: "URL"),
-                    value: device.customRtmpUrl!,
+                    value: device.customRtmpUrl,
                     onSubmit: { value in
                         device.customRtmpUrl = value
                     }
@@ -202,10 +202,10 @@ private struct DjiDeviceRtmpSettingsView: View {
         .onAppear {
             let streams = model.database.rtmpServer.streams
             if !streams.isEmpty {
-                if !streams.contains(where: { $0.id == device.serverRtmpStreamId! }) {
+                if !streams.contains(where: { $0.id == device.serverRtmpStreamId }) {
                     device.serverRtmpStreamId = streams.first!.id
                 }
-                if !serverUrls().contains(where: { $0 == device.serverRtmpUrl! }) {
+                if !serverUrls().contains(where: { $0 == device.serverRtmpUrl }) {
                     device.serverRtmpUrl = serverUrls().first ?? ""
                 }
             }
@@ -229,7 +229,7 @@ private struct DjiDeviceSettingsSettingsView: View {
     var body: some View {
         Section {
             Picker("Resolution", selection: Binding(get: {
-                device.resolution!
+                device.resolution
             }, set: {
                 device.resolution = $0
                 model.objectWillChange.send()
@@ -240,7 +240,7 @@ private struct DjiDeviceSettingsSettingsView: View {
             }
             .disabled(model.isDjiDeviceStarted(device: device))
             Picker("Bitrate", selection: Binding(get: {
-                device.bitrate!
+                device.bitrate
             }, set: { value in
                 device.bitrate = value
                 model.objectWillChange.send()
@@ -253,7 +253,7 @@ private struct DjiDeviceSettingsSettingsView: View {
             .disabled(model.isDjiDeviceStarted(device: device))
             if device.model == .osmoAction4 || device.model == .osmoAction5Pro {
                 Picker("Image stabilization", selection: Binding(get: {
-                    device.imageStabilization!
+                    device.imageStabilization
                 }, set: { value in
                     device.imageStabilization = value
                     model.objectWillChange.send()
@@ -266,7 +266,7 @@ private struct DjiDeviceSettingsSettingsView: View {
             }
             if device.model == .osmoPocket3 {
                 Picker("FPS", selection: Binding(get: {
-                    device.fps!
+                    device.fps
                 }, set: { value in
                     device.fps = value
                     model.objectWillChange.send()
@@ -294,7 +294,7 @@ private struct DjiDeviceAutoRestartSettingsView: View {
         if device.rtmpUrlType == .server {
             Section {
                 Toggle(isOn: Binding(get: {
-                    device.autoRestartStream!
+                    device.autoRestartStream
                 }, set: { value in
                     device.autoRestartStream = value
                     model.objectWillChange.send()

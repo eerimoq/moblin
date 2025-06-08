@@ -93,7 +93,7 @@ extension Model {
             setMicFromSettings()
         }
         for device in database.djiDevices.devices {
-            guard device.rtmpUrlType == .server, device.serverRtmpStreamId! == stream.id else {
+            guard device.rtmpUrlType == .server, device.serverRtmpStreamId == stream.id else {
                 continue
             }
             restartDjiLiveStreamIfNeededAfterDelay(device: device)

@@ -3556,24 +3556,91 @@ var djiDeviceBitrates: [UInt32] = [
 
 var djiDeviceFpss: [Int] = [25, 30]
 
-class SettingsDjiDevice: Codable, Identifiable {
+class SettingsDjiDevice: Codable, Identifiable, ObservableObject {
     var id: UUID = .init()
     var name: String = ""
     var bluetoothPeripheralName: String?
     var bluetoothPeripheralId: UUID?
     var wifiSsid: String = ""
     var wifiPassword: String = ""
-    var rtmpUrlType: SettingsDjiDeviceUrlType? = .server
-    var serverRtmpStreamId: UUID? = .init()
-    var serverRtmpUrl: String? = ""
-    var customRtmpUrl: String? = ""
-    var autoRestartStream: Bool? = false
-    var imageStabilization: SettingsDjiDeviceImageStabilization? = .off
-    var resolution: SettingsDjiDeviceResolution? = .r1080p
-    var fps: Int? = 30
-    var bitrate: UInt32? = 6_000_000
-    var isStarted: Bool? = false
-    var model: SettingsDjiDeviceModel? = .unknown
+    var rtmpUrlType: SettingsDjiDeviceUrlType = .server
+    var serverRtmpStreamId: UUID = .init()
+    var serverRtmpUrl: String = ""
+    var customRtmpUrl: String = ""
+    var autoRestartStream: Bool = false
+    var imageStabilization: SettingsDjiDeviceImageStabilization = .off
+    var resolution: SettingsDjiDeviceResolution = .r1080p
+    var fps: Int = 30
+    var bitrate: UInt32 = 6_000_000
+    var isStarted: Bool = false
+    var model: SettingsDjiDeviceModel = .unknown
+
+    init() {
+        bluetoothPeripheralName = nil
+        bluetoothPeripheralId = nil
+    }
+
+    enum CodingKeys: CodingKey {
+        case id,
+             name,
+             bluetoothPeripheralName,
+             bluetoothPeripheralId,
+             wifiSsid,
+             wifiPassword,
+             rtmpUrlType,
+             serverRtmpStreamId,
+             serverRtmpUrl,
+             customRtmpUrl,
+             autoRestartStream,
+             imageStabilization,
+             resolution,
+             fps,
+             bitrate,
+             isStarted,
+             model
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.name, name)
+        try container.encode(.bluetoothPeripheralName, bluetoothPeripheralName)
+        try container.encode(.bluetoothPeripheralId, bluetoothPeripheralId)
+        try container.encode(.wifiSsid, wifiSsid)
+        try container.encode(.wifiPassword, wifiPassword)
+        try container.encode(.rtmpUrlType, rtmpUrlType)
+        try container.encode(.serverRtmpStreamId, serverRtmpStreamId)
+        try container.encode(.serverRtmpUrl, serverRtmpUrl)
+        try container.encode(.customRtmpUrl, customRtmpUrl)
+        try container.encode(.autoRestartStream, autoRestartStream)
+        try container.encode(.imageStabilization, imageStabilization)
+        try container.encode(.resolution, resolution)
+        try container.encode(.fps, fps)
+        try container.encode(.bitrate, bitrate)
+        try container.encode(.isStarted, isStarted)
+        try container.encode(.model, model)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        name = container.decode(.name, String.self, "")
+        bluetoothPeripheralName = try? container.decode(String.self, forKey: .bluetoothPeripheralName)
+        bluetoothPeripheralId = try? container.decode(UUID.self, forKey: .bluetoothPeripheralId)
+        wifiSsid = container.decode(.wifiSsid, String.self, "")
+        wifiPassword = container.decode(.wifiPassword, String.self, "")
+        rtmpUrlType = container.decode(.rtmpUrlType, SettingsDjiDeviceUrlType.self, .server)
+        serverRtmpStreamId = container.decode(.serverRtmpStreamId, UUID.self, .init())
+        serverRtmpUrl = container.decode(.serverRtmpUrl, String.self, "")
+        customRtmpUrl = container.decode(.customRtmpUrl, String.self, "")
+        autoRestartStream = container.decode(.autoRestartStream, Bool.self, false)
+        imageStabilization = container.decode(.imageStabilization, SettingsDjiDeviceImageStabilization.self, .off)
+        resolution = container.decode(.resolution, SettingsDjiDeviceResolution.self, .r1080p)
+        fps = container.decode(.fps, Int.self, 30)
+        bitrate = container.decode(.bitrate, UInt32.self, 6_000_000)
+        isStarted = container.decode(.isStarted, Bool.self, false)
+        model = container.decode(.model, SettingsDjiDeviceModel.self, .unknown)
+    }
 }
 
 class SettingsDjiDevices: Codable {
@@ -5486,50 +5553,6 @@ final class Settings {
         }
         for widget in realDatabase.widgets where widget.map.northUp == nil {
             widget.map.northUp = false
-            store()
-        }
-        for device in realDatabase.djiDevices.devices where device.rtmpUrlType == nil {
-            device.rtmpUrlType = .server
-            store()
-        }
-        for device in realDatabase.djiDevices.devices where device.serverRtmpStreamId == nil {
-            device.serverRtmpStreamId = .init()
-            store()
-        }
-        for device in realDatabase.djiDevices.devices where device.serverRtmpUrl == nil {
-            device.serverRtmpUrl = ""
-            store()
-        }
-        for device in realDatabase.djiDevices.devices where device.customRtmpUrl == nil {
-            device.customRtmpUrl = ""
-            store()
-        }
-        for device in realDatabase.djiDevices.devices where device.autoRestartStream == nil {
-            device.autoRestartStream = false
-            store()
-        }
-        for device in realDatabase.djiDevices.devices where device.imageStabilization == nil {
-            device.imageStabilization = .off
-            store()
-        }
-        for device in realDatabase.djiDevices.devices where device.resolution == nil {
-            device.resolution = .r1080p
-            store()
-        }
-        for device in realDatabase.djiDevices.devices where device.bitrate == nil {
-            device.bitrate = 6_000_000
-            store()
-        }
-        for device in realDatabase.djiDevices.devices where device.isStarted == nil {
-            device.isStarted = false
-            store()
-        }
-        for device in realDatabase.djiDevices.devices where device.fps == nil {
-            device.fps = 30
-            store()
-        }
-        for device in realDatabase.djiDevices.devices where device.model == nil {
-            device.model = .unknown
             store()
         }
         for widget in database.widgets where widget.map.delay == nil {

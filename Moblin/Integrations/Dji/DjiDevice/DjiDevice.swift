@@ -451,13 +451,13 @@ extension SettingsDjiDevice {
         if wifiSsid.isEmpty {
             return false
         }
-        switch rtmpUrlType! {
+        switch rtmpUrlType {
         case .server:
-            if serverRtmpUrl!.isEmpty {
+            if serverRtmpUrl.isEmpty {
                 return false
             }
         case .custom:
-            if customRtmpUrl!.isEmpty {
+            if customRtmpUrl.isEmpty {
                 return false
             }
         }
