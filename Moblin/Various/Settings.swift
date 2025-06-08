@@ -4351,7 +4351,7 @@ class Database: Codable, ObservableObject {
     var deepLinkCreator: DeepLinkCreator = .init()
     var srtlaServer: SettingsSrtlaServer = .init()
     var mediaPlayers: SettingsMediaPlayers = .init()
-    var showAllSettings: Bool = false
+    @Published var showAllSettings: Bool = false
     var portrait: Bool = false
     var djiDevices: SettingsDjiDevices = .init()
     var alertsMediaGallery: SettingsAlertsMediaGallery = .init()

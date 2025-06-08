@@ -75,7 +75,7 @@ private struct MenuView: View {
         switch model.showingPanel {
         case .settings:
             NavigationStack {
-                SettingsView()
+                SettingsView(database: model.database)
             }
         case .bitrate:
             NavigationStack {

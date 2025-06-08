@@ -22,6 +22,7 @@ private struct ExternalDisplayContentView: View {
 
 struct DisplaySettingsView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var database: Database
 
     var body: some View {
         Form {
@@ -31,17 +32,17 @@ struct DisplaySettingsView: View {
                 } label: {
                     Text("Quick buttons")
                 }
-                if model.database.showAllSettings {
+                if database.showAllSettings {
                     NavigationLink {
-                        StreamButtonsSettingsView(background: model.database.streamButtonColor.color())
+                        StreamButtonsSettingsView(background: database.streamButtonColor.color())
                     } label: {
                         Text("Stream button")
                     }
                     if !ProcessInfo().isiOSAppOnMac {
                         Toggle("Battery percentage", isOn: Binding(get: {
-                            model.database.batteryPercentage
+                            database.batteryPercentage
                         }, set: { value in
-                            model.database.batteryPercentage = value
+                            database.batteryPercentage = value
                             model.objectWillChange.send()
                         }))
                     }
@@ -50,29 +51,29 @@ struct DisplaySettingsView: View {
                     } label: {
                         Text("Local overlays")
                     }
-                    ExternalDisplayContentView(database: model.database)
+                    ExternalDisplayContentView(database: database)
                     NavigationLink {
                         LocalOverlaysNetworkInterfaceNamesSettingsView()
                     } label: {
                         Text("Network interface names")
                     }
                     Toggle("Low bitrate warning", isOn: Binding(get: {
-                        model.database.lowBitrateWarning
+                        database.lowBitrateWarning
                     }, set: { value in
-                        model.database.lowBitrateWarning = value
+                        database.lowBitrateWarning = value
                     }))
                     Toggle("Recording confirmations", isOn: Binding(get: {
-                        model.database.startStopRecordingConfirmations
+                        database.startStopRecordingConfirmations
                     }, set: { value in
-                        model.database.startStopRecordingConfirmations = value
+                        database.startStopRecordingConfirmations = value
                     }))
                 }
             }
             Section {
                 Toggle("Vibrate", isOn: Binding(get: {
-                    model.database.vibrate
+                    database.vibrate
                 }, set: { value in
-                    model.database.vibrate = value
+                    database.vibrate = value
                     model.setAllowHapticsAndSystemSoundsDuringRecording()
                 }))
             } footer: {
@@ -92,9 +93,9 @@ struct DisplaySettingsView: View {
                 if !ProcessInfo().isiOSAppOnMac {
                     Section {
                         Toggle(isOn: Binding(get: {
-                            model.database.portrait
+                            database.portrait
                         }, set: { _ in
-                            model.setDisplayPortrait(portrait: !model.database.portrait)
+                            model.setDisplayPortrait(portrait: !database.portrait)
                         })) {
                             Text("Portrait")
                         }
@@ -105,7 +106,7 @@ struct DisplaySettingsView: View {
                             }
                         }
                         .onChange(of: model.portraitVideoOffsetFromTop) {
-                            model.database.portraitVideoOffsetFromTop = $0
+                            database.portraitVideoOffsetFromTop = $0
                         }
                     } footer: {
                         VStack(alignment: .leading) {
