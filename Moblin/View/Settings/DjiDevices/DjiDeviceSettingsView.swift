@@ -137,13 +137,13 @@ private struct DjiDeviceRtmpSettingsView: View {
     var body: some View {
         Section {
             Picker("Type", selection: Binding(get: {
-                device.rtmpUrlType!.toString()
+                device.rtmpUrlType!
             }, set: { value in
-                device.rtmpUrlType = SettingsDjiDeviceUrlType.fromString(value: value)
+                device.rtmpUrlType = value
                 model.objectWillChange.send()
             })) {
-                ForEach(djiDeviceUrlTypes, id: \.self) {
-                    Text($0)
+                ForEach(SettingsDjiDeviceUrlType.allCases, id: \.self) {
+                    Text($0.toString())
                 }
             }
             .disabled(model.isDjiDeviceStarted(device: device))
@@ -229,13 +229,13 @@ private struct DjiDeviceSettingsSettingsView: View {
     var body: some View {
         Section {
             Picker("Resolution", selection: Binding(get: {
-                device.resolution!.rawValue
-            }, set: { value in
-                device.resolution = SettingsDjiDeviceResolution(rawValue: value) ?? .r1080p
+                device.resolution!
+            }, set: {
+                device.resolution = $0
                 model.objectWillChange.send()
             })) {
-                ForEach(djiDeviceResolutions, id: \.self) { resolution in
-                    Text(resolution)
+                ForEach(SettingsDjiDeviceResolution.allCases, id: \.self) {
+                    Text($0.rawValue)
                 }
             }
             .disabled(model.isDjiDeviceStarted(device: device))

@@ -3481,17 +3481,6 @@ enum SettingsDjiDeviceUrlType: String, Codable, CaseIterable {
             .decode(RawValue.self)) ?? .server
     }
 
-    static func fromString(value: String) -> SettingsDjiDeviceUrlType {
-        switch value {
-        case String(localized: "Server"):
-            return .server
-        case String(localized: "Custom"):
-            return .custom
-        default:
-            return .server
-        }
-    }
-
     func toString() -> String {
         switch self {
         case .server:
@@ -3501,8 +3490,6 @@ enum SettingsDjiDeviceUrlType: String, Codable, CaseIterable {
         }
     }
 }
-
-var djiDeviceUrlTypes = SettingsDjiDeviceUrlType.allCases.map { $0.toString() }
 
 enum SettingsDjiDeviceImageStabilization: String, CaseIterable, Codable {
     case off
@@ -3542,8 +3529,6 @@ enum SettingsDjiDeviceResolution: String, CaseIterable, Codable {
             .decode(RawValue.self)) ?? .r1080p
     }
 }
-
-var djiDeviceResolutions = SettingsDjiDeviceResolution.allCases.map { $0.rawValue }
 
 enum SettingsDjiDeviceModel: String, Codable {
     case osmoAction3
