@@ -1914,39 +1914,6 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
             .text
     }
 
-    static func fromString(value: String) -> SettingsWidgetType {
-        switch value {
-        case String(localized: "Browser"):
-            return .browser
-        case String(localized: "Image"):
-            return .image
-        case String(localized: "Text"):
-            return .text
-        case String(localized: "Video effect"):
-            return .videoEffect
-        case String(localized: "Crop"):
-            return .crop
-        case String(localized: "Map"):
-            return .map
-        case String(localized: "Scene"):
-            return .scene
-        case String(localized: "QR code"):
-            return .qrCode
-        case String(localized: "Alerts"):
-            return .alerts
-        case String(localized: "Video source"):
-            return .videoSource
-        case String(localized: "Scoreboard"):
-            return .scoreboard
-        case String(localized: "VTuber"):
-            return .vTuber
-        case String(localized: "PNGTuber"):
-            return .pngTuber
-        default:
-            return .videoEffect
-        }
-    }
-
     func toString() -> String {
         switch self {
         case .browser:
@@ -1979,9 +1946,7 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
     }
 }
 
-let widgetTypes = SettingsWidgetType.allCases
-    .filter { $0 != .videoEffect }
-    .map { $0.toString() }
+let widgetTypes = SettingsWidgetType.allCases.filter { $0 != .videoEffect }
 
 enum SettingsVideoEffectType: String, Codable, CaseIterable {
     case grayScale

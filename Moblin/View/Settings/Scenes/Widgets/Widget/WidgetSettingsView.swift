@@ -206,10 +206,7 @@ struct WidgetSettingsView: View {
                                          widget.type = SettingsWidgetType(rawValue: id) ?? .browser
                                          model.resetSelectedScene(changeScene: false)
                                      },
-                                     items: widgetTypes.map { .init(
-                                         id: SettingsWidgetType.fromString(value: $0).rawValue,
-                                         text: $0
-                                     ) },
+                                     items: widgetTypes.map { .init(id: $0.rawValue, text: $0.toString()) },
                                      selectedId: widget.type.rawValue)
                 } label: {
                     TextItemView(
