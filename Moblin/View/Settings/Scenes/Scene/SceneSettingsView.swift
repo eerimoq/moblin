@@ -3,7 +3,7 @@ import SwiftUI
 private struct VideoStabilizationView: View {
     @EnvironmentObject var model: Model
     var scene: SettingsScene
-    @State var mode: String
+    @State var mode: SettingsVideoStabilizationMode
 
     var body: some View {
         HStack {
@@ -11,11 +11,12 @@ private struct VideoStabilizationView: View {
             Spacer()
             Picker("", selection: $mode) {
                 ForEach(videoStabilizationModes, id: \.self) {
-                    Text($0)
+                    Text($0.toString())
+                        .tag($0)
                 }
             }
             .onChange(of: mode) {
-                scene.videoStabilizationMode = SettingsVideoStabilizationMode.fromString(value: $0)
+                scene.videoStabilizationMode = $0
                 model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
             }
         }
@@ -129,7 +130,7 @@ struct SceneSettingsView: View {
                     Text("Override video stabilization")
                 }
                 if scene.overrideVideoStabilizationMode {
-                    VideoStabilizationView(scene: scene, mode: scene.videoStabilizationMode.toString())
+                    VideoStabilizationView(scene: scene, mode: scene.videoStabilizationMode)
                 }
                 Toggle(isOn: Binding(get: {
                     scene.fillFrame

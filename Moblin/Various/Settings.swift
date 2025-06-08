@@ -2771,21 +2771,6 @@ enum SettingsVideoStabilizationMode: String, Codable, CaseIterable {
             .decode(RawValue.self)) ?? .off
     }
 
-    static func fromString(value: String) -> SettingsVideoStabilizationMode {
-        switch value {
-        case String(localized: "Off"):
-            return .off
-        case String(localized: "Standard"):
-            return .standard
-        case String(localized: "Cinematic"):
-            return .cinematic
-        case String(localized: "Cinematic extended enhanced"):
-            return .cinematicExtendedEnhanced
-        default:
-            return .off
-        }
-    }
-
     func toString() -> String {
         switch self {
         case .off:
@@ -2808,7 +2793,6 @@ var videoStabilizationModes = SettingsVideoStabilizationMode.allCases
             return $0 != .cinematicExtendedEnhanced
         }
     }
-    .map { $0.toString() }
 
 class SettingsChatFilter: Identifiable, Codable, ObservableObject {
     var id = UUID()

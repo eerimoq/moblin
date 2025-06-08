@@ -220,7 +220,7 @@ struct CameraSettingsView: View {
                         Text("Zoom")
                     }
                 }
-                VideoStabilizationSettingsView(mode: model.database.videoStabilizationMode.toString())
+                VideoStabilizationSettingsView(mode: model.database.videoStabilizationMode)
                 if model.database.showAllSettings {
                     TapScreenToFocusSettingsView()
                     FixedHorizonView(database: model.database)
