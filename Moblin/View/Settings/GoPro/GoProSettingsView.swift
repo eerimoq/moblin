@@ -385,10 +385,7 @@ private struct GoProRtmpUrlSettingsEntryView: View {
 
 private struct GoProLaunchLiveStream: View {
     @EnvironmentObject var model: Model
-
-    var goPro: SettingsGoPro {
-        model.database.goPro
-    }
+    @ObservedObject var goPro: SettingsGoPro
 
     var body: some View {
         Section {
@@ -414,7 +411,6 @@ private struct GoProLaunchLiveStream: View {
                     model.goProLaunchLiveStreamSelection = goPro.selectedLaunchLiveStream
                 }
                 goPro.launchLiveStream.append(launchLiveStream)
-                model.objectWillChange.send()
             }
         } header: {
             Text("Launch live streams")
@@ -426,10 +422,7 @@ private struct GoProLaunchLiveStream: View {
 
 private struct GoProWifiCredentials: View {
     @EnvironmentObject var model: Model
-
-    var goPro: SettingsGoPro {
-        model.database.goPro
-    }
+    @ObservedObject var goPro: SettingsGoPro
 
     var body: some View {
         Section {
@@ -455,7 +448,6 @@ private struct GoProWifiCredentials: View {
                     model.goProWifiCredentialsSelection = goPro.selectedWifiCredentials
                 }
                 goPro.wifiCredentials.append(wifiCredentials)
-                model.objectWillChange.send()
             }
         } header: {
             Text("WiFi credentials")
@@ -467,10 +459,7 @@ private struct GoProWifiCredentials: View {
 
 private struct GoProRtmpUrls: View {
     @EnvironmentObject var model: Model
-
-    var goPro: SettingsGoPro {
-        model.database.goPro
-    }
+    @ObservedObject var goPro: SettingsGoPro
 
     var body: some View {
         Section {
@@ -496,7 +485,6 @@ private struct GoProRtmpUrls: View {
                     model.goProRtmpUrlSelection = goPro.selectedRtmpUrl
                 }
                 goPro.rtmpUrls.append(rtmpUrl)
-                model.objectWillChange.send()
             }
         } header: {
             Text("RTMP URLs")
@@ -516,9 +504,9 @@ struct GoProSettingsView: View {
                     IntegrationImageView(imageName: "GoPro")
                 }
             }
-            GoProLaunchLiveStream()
-            GoProWifiCredentials()
-            GoProRtmpUrls()
+            GoProLaunchLiveStream(goPro: model.database.goPro)
+            GoProWifiCredentials(goPro: model.database.goPro)
+            GoProRtmpUrls(goPro: model.database.goPro)
         }
         .navigationTitle("GoPro")
     }
