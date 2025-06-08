@@ -150,8 +150,10 @@ extension Model {
     }
 
     func getEffectWithPossibleEffects(id: UUID) -> VideoEffect? {
-        return getVideoSourceEffect(id: id) ?? getImageEffect(id: id) ?? getBrowserEffect(id: id) ??
-            getMapEffect(id: id)
+        return getVideoSourceEffect(id: id)
+            ?? getImageEffect(id: id)
+            ?? getBrowserEffect(id: id)
+            ?? getMapEffect(id: id)
     }
 
     func getVideoSourceSettings(id: UUID) -> SettingsWidget? {
