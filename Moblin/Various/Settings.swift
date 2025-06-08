@@ -1550,17 +1550,6 @@ enum SettingsWidgetAlertsChatBotCommandImageType: String, Codable, CaseIterable 
             .file
     }
 
-    static func fromString(value: String) -> SettingsWidgetAlertsChatBotCommandImageType {
-        switch value {
-        case String(localized: "File"):
-            return .file
-        case String(localized: "Image Playground"):
-            return .imagePlayground
-        default:
-            return .file
-        }
-    }
-
     func toString() -> String {
         switch self {
         case .file:
@@ -1570,8 +1559,6 @@ enum SettingsWidgetAlertsChatBotCommandImageType: String, Codable, CaseIterable 
         }
     }
 }
-
-let chatBotCommandImageTypes = SettingsWidgetAlertsChatBotCommandImageType.allCases.map { $0.toString() }
 
 class SettingsWidgetAlertsChatBotCommand: Codable, Identifiable, @unchecked Sendable {
     var id: UUID = .init()
@@ -1852,15 +1839,6 @@ enum SettingsWidgetScoreboardType: String, Codable, CaseIterable {
             .padel
     }
 
-    static func fromString(value: String) -> SettingsWidgetScoreboardType {
-        switch value {
-        case String(localized: "Padel"):
-            return .padel
-        default:
-            return .padel
-        }
-    }
-
     func toString() -> String {
         switch self {
         case .padel:
@@ -1868,8 +1846,6 @@ enum SettingsWidgetScoreboardType: String, Codable, CaseIterable {
         }
     }
 }
-
-let scoreboardTypes = SettingsWidgetScoreboardType.allCases.map { $0.toString() }
 
 class SettingsWidgetScoreboardPlayer: Codable, Identifiable {
     var id: UUID = .init()
@@ -1891,17 +1867,6 @@ enum SettingsWidgetPadelScoreboardGameType: String, Codable, CaseIterable {
             .doubles
     }
 
-    static func fromString(value: String) -> SettingsWidgetPadelScoreboardGameType {
-        switch value {
-        case String(localized: "Doubles"):
-            return .doubles
-        case String(localized: "Singles"):
-            return .singles
-        default:
-            return .doubles
-        }
-    }
-
     func toString() -> String {
         switch self {
         case .doubles:
@@ -1911,8 +1876,6 @@ enum SettingsWidgetPadelScoreboardGameType: String, Codable, CaseIterable {
         }
     }
 }
-
-let scoreboardGameTypes = SettingsWidgetPadelScoreboardGameType.allCases.map { $0.toString() }
 
 class SettingsWidgetPadelScoreboard: Codable {
     var type: SettingsWidgetPadelScoreboardGameType = .doubles
