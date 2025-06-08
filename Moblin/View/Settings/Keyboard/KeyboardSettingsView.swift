@@ -1,7 +1,6 @@
 import SwiftUI
 
 struct KeyboardSettingsView: View {
-    @EnvironmentObject var model: Model
     @ObservedObject var keyboard: SettingsKeyboard
 
     var body: some View {
