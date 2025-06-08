@@ -4023,36 +4023,8 @@ enum SettingsKeyboardKeyFunction: String, Codable, CaseIterable {
     case instantReplay = "Instant replay"
 
     public init(from decoder: Decoder) throws {
-        var value = try decoder.singleValueContainer().decode(RawValue.self)
-        if value == "Pause chat" {
-            value = "Interactive chat"
-        }
-        self = SettingsKeyboardKeyFunction(rawValue: value) ?? .unused
-    }
-
-    static func fromString(value: String) -> SettingsKeyboardKeyFunction {
-        switch value {
-        case String(localized: "Unused"):
-            return .unused
-        case String(localized: "Record"):
-            return .record
-        case String(localized: "Stream"):
-            return .stream
-        case String(localized: "Mute"):
-            return .mute
-        case String(localized: "Torch"):
-            return .torch
-        case String(localized: "Black screen"):
-            return .blackScreen
-        case String(localized: "Scene"):
-            return .scene
-        case String(localized: "Widget"):
-            return .widget
-        case String(localized: "Instant replay"):
-            return .instantReplay
-        default:
-            return .unused
-        }
+        self = try SettingsKeyboardKeyFunction(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
+            .unused
     }
 
     func toString() -> String {
