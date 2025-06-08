@@ -29,7 +29,7 @@ struct GameControllersControllerSettingsView: View {
                     NavigationLink {
                         GameControllersControllerButtonSettingsView(
                             button: button,
-                            selection: button.function.toString(),
+                            selection: button.function,
                             sceneSelection: button.sceneId
                         )
                     } label: {

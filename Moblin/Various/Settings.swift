@@ -3772,37 +3772,6 @@ enum SettingsGameControllerButtonFunction: String, Codable, CaseIterable {
         self = SettingsGameControllerButtonFunction(rawValue: value) ?? .unused
     }
 
-    static func fromString(value: String) -> SettingsGameControllerButtonFunction {
-        switch value {
-        case String(localized: "Unused"):
-            return .unused
-        case String(localized: "Record"):
-            return .record
-        case String(localized: "Stream"):
-            return .stream
-        case String(localized: "Zoom in"):
-            return .zoomIn
-        case String(localized: "Zoom out"):
-            return .zoomOut
-        case String(localized: "Mute"):
-            return .mute
-        case String(localized: "Torch"):
-            return .torch
-        case String(localized: "Black screen"):
-            return .blackScreen
-        case String(localized: "Chat"):
-            return .chat
-        case String(localized: "Scene"):
-            return .scene
-        case String(localized: "Instant replay"):
-            return .instantReplay
-        case String(localized: "Pause TTS"):
-            return .pauseTts
-        default:
-            return .unused
-        }
-    }
-
     func toString() -> String {
         switch self {
         case .unused:
@@ -3832,8 +3801,6 @@ enum SettingsGameControllerButtonFunction: String, Codable, CaseIterable {
         }
     }
 }
-
-var gameControllerButtonFunctions = SettingsGameControllerButtonFunction.allCases.map { $0.toString() }
 
 class SettingsGameControllerButton: Codable, Identifiable {
     var id: UUID = .init()

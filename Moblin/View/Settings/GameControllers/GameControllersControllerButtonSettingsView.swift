@@ -3,12 +3,12 @@ import SwiftUI
 struct GameControllersControllerButtonSettingsView: View {
     @EnvironmentObject var model: Model
     var button: SettingsGameControllerButton
-    @State var selection: String
+    @State var selection: SettingsGameControllerButtonFunction
     @State var sceneSelection: UUID
 
     private func onFunctionChange(function: String) {
-        selection = function
-        button.function = SettingsGameControllerButtonFunction.fromString(value: function)
+        selection = SettingsGameControllerButtonFunction(rawValue: function) ?? .unused
+        button.function = selection
     }
 
     var body: some View {
@@ -18,12 +18,14 @@ struct GameControllersControllerButtonSettingsView: View {
                     InlinePickerView(
                         title: String(localized: "Function"),
                         onChange: onFunctionChange,
-                        items: InlinePickerItem
-                            .fromStrings(values: gameControllerButtonFunctions),
-                        selectedId: selection
+                        items: SettingsGameControllerButtonFunction.allCases.map { .init(
+                            id: $0.rawValue,
+                            text: $0.toString()
+                        ) },
+                        selectedId: selection.rawValue
                     )
                 } label: {
-                    TextItemView(name: String(localized: "Function"), value: selection)
+                    TextItemView(name: String(localized: "Function"), value: selection.toString())
                 }
             }
             if button.function == .scene {
