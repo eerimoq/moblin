@@ -174,21 +174,6 @@ enum SettingsStreamSrtAdaptiveBitrateAlgorithm: Codable, CaseIterable {
         }
     }
 
-    static func fromString(value: String) -> SettingsStreamSrtAdaptiveBitrateAlgorithm {
-        switch value {
-        case String(localized: "Fast IRL"):
-            return .fastIrl
-        case String(localized: "Slow IRL"):
-            return .slowIrl
-        case String(localized: "Custom IRL"):
-            return .customIrl
-        case String(localized: "BELABOX"):
-            return .belabox
-        default:
-            return .fastIrl
-        }
-    }
-
     func toString() -> String {
         switch self {
         case .belabox:
@@ -202,8 +187,6 @@ enum SettingsStreamSrtAdaptiveBitrateAlgorithm: Codable, CaseIterable {
         }
     }
 }
-
-let adaptiveBitrateAlgorithms = SettingsStreamSrtAdaptiveBitrateAlgorithm.allCases.map { $0.toString() }
 
 class SettingsStreamSrtAdaptiveBitrateFastIrlSettings: Codable {
     var packetsInFlight: Int32 = 200
