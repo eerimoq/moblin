@@ -3705,9 +3705,9 @@ class SettingsDjiGimbalDevices: Codable {
 
 class SettingsGoProWifiCredentials: Codable, Identifiable, ObservableObject {
     var id: UUID = .init()
-    var name = "My SSID"
-    var ssid = ""
-    var password = ""
+    @Published var name = "My SSID"
+    @Published var ssid = ""
+    @Published var password = ""
 
     init() {}
 
@@ -3737,11 +3737,11 @@ class SettingsGoProWifiCredentials: Codable, Identifiable, ObservableObject {
 
 class SettingsGoProRtmpUrl: Codable, Identifiable, ObservableObject {
     var id: UUID = .init()
-    var name = "My URL"
-    var type: SettingsDjiDeviceUrlType = .server
-    var serverStreamId: UUID = .init()
-    var serverUrl = ""
-    var customUrl = ""
+    @Published var name = "My URL"
+    @Published var type: SettingsDjiDeviceUrlType = .server
+    @Published var serverStreamId: UUID = .init()
+    @Published var serverUrl = ""
+    @Published var customUrl = ""
 
     init() {}
 
@@ -3777,8 +3777,8 @@ class SettingsGoProRtmpUrl: Codable, Identifiable, ObservableObject {
 
 class SettingsGoProLaunchLiveStream: Codable, Identifiable, ObservableObject {
     var id: UUID = .init()
-    var name = "1080p"
-    var isHero12Or13: Bool = true
+    @Published var name = "1080p"
+    @Published var isHero12Or13: Bool = true
 
     init() {}
 
