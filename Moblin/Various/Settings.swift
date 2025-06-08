@@ -3772,9 +3772,28 @@ class SettingsCatPrinter: Codable, Identifiable {
     var printSnapshots: Bool? = true
 }
 
-class SettingsCatPrinters: Codable {
-    var devices: [SettingsCatPrinter] = []
-    var backgroundPrinting: Bool? = false
+class SettingsCatPrinters: Codable, ObservableObject {
+    @Published var devices: [SettingsCatPrinter] = []
+    @Published var backgroundPrinting: Bool = false
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case devices,
+             backgroundPrinting
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.devices, devices)
+        try container.encode(.backgroundPrinting, backgroundPrinting)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        devices = container.decode(.devices, [SettingsCatPrinter].self, [])
+        backgroundPrinting = container.decode(.backgroundPrinting, Bool.self, false)
+    }
 }
 
 class SettingsCyclingPowerDevice: Codable, Identifiable {

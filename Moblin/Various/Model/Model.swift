@@ -1344,7 +1344,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if isLive || isRecording {
             return false
         }
-        return database.moblink.client.enabled || database.catPrinters.backgroundPrinting!
+        return database.moblink.client.enabled || database.catPrinters.backgroundPrinting
     }
 
     @objc func handleBatteryStateDidChangeNotification() {

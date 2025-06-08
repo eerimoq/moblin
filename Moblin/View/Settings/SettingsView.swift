@@ -150,7 +150,7 @@ struct SettingsView: View {
                         IconAndTextView(image: "appletvremote.gen1", text: String(localized: "GoPro"))
                     }
                     NavigationLink {
-                        CatPrintersSettingsView()
+                        CatPrintersSettingsView(catPrinters: model.database.catPrinters)
                     } label: {
                         IconAndTextView(image: "pawprint", text: String(localized: "Cat printers"))
                     }
