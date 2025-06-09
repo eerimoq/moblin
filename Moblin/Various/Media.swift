@@ -936,7 +936,7 @@ final class Media: NSObject {
     private func makeAudioCompressionSettings(audioBitrate: Int?) -> [String: Any] {
         var settings = [
             AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
-            AVSampleRateKey: 0,
+            AVSampleRateKey: 48000,
             AVNumberOfChannelsKey: 0,
         ]
         if let audioBitrate {
