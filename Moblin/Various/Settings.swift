@@ -3966,6 +3966,18 @@ class SettingsHeartRateDevices: Codable {
     var devices: [SettingsHeartRateDevice] = []
 }
 
+class SettingsPhoneCoolerDevice: Codable, Identifiable {
+    var id: UUID = .init()
+    var name: String = ""
+    var enabled: Bool = false
+    var bluetoothPeripheralName: String?
+    var bluetoothPeripheralId: UUID?
+}
+
+class SettingsPhoneCoolerDevices: Codable {
+    var devices: [SettingsPhoneCoolerDevice] = []
+}
+
 class SettingsQuickButtons: Codable, ObservableObject {
     @Published var twoColumns: Bool = true
     @Published var showName: Bool = true
@@ -4626,6 +4638,7 @@ class Database: Codable, ObservableObject {
     @Published var externalDisplayContent: SettingsExternalDisplayContent = .stream
     var cyclingPowerDevices: SettingsCyclingPowerDevices = .init()
     var heartRateDevices: SettingsHeartRateDevices = .init()
+    var phoneCoolerDevices: SettingsPhoneCoolerDevices = .init()
     var djiGimbalDevices: SettingsDjiGimbalDevices = .init()
     var remoteSceneId: UUID?
     var sceneNumericInput: Bool = false

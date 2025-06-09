@@ -169,6 +169,11 @@ struct SettingsView: View {
                     } label: {
                         IconAndTextView(image: "heart", text: String(localized: "Heart rate devices"))
                     }
+                    NavigationLink {
+                        PhoneCoolerDevicesSettingsView()
+                    } label: {
+                        IconAndTextView(image: "fan", text: String(localized: "Phone Coolers"))
+                    }
                 }
             }
             Section {

@@ -566,6 +566,7 @@
 		03FE41462DE9E0180085D4E1 /* StreamOverlayRightWhirlpoolView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FE41452DE9E0180085D4E1 /* StreamOverlayRightWhirlpoolView.swift */; };
 		03FE41482DE9E0200085D4E1 /* StreamOverlayRightPinchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FE41472DE9E0200085D4E1 /* StreamOverlayRightPinchView.swift */; };
 		45E3E780842910145791546F /* DjiDeviceScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E3EAA92F1B2253BB2ED4FC /* DjiDeviceScanner.swift */; };
+		882D0C0E2DF72CCD0035BFAF /* ModelPhoneCoolerDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 882D0C0D2DF72CC60035BFAF /* ModelPhoneCoolerDevice.swift */; };
 		ABF045852C1CEAF800D07696 /* AdaptiveBitrateSrtBela.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABF045842C1CEAF800D07696 /* AdaptiveBitrateSrtBela.swift */; };
 		C7E682562BC2E3FE004EB747 /* ThermalStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B373FE2A9FCA790028DDD5 /* ThermalStateView.swift */; };
 /* End PBXBuildFile section */
@@ -1213,8 +1214,13 @@
 		03FE41452DE9E0180085D4E1 /* StreamOverlayRightWhirlpoolView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamOverlayRightWhirlpoolView.swift; sourceTree = "<group>"; };
 		03FE41472DE9E0200085D4E1 /* StreamOverlayRightPinchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamOverlayRightPinchView.swift; sourceTree = "<group>"; };
 		45E3EAA92F1B2253BB2ED4FC /* DjiDeviceScanner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DjiDeviceScanner.swift; sourceTree = "<group>"; };
+		882D0C0D2DF72CC60035BFAF /* ModelPhoneCoolerDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelPhoneCoolerDevice.swift; sourceTree = "<group>"; };
 		ABF045842C1CEAF800D07696 /* AdaptiveBitrateSrtBela.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdaptiveBitrateSrtBela.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		882D0C032DF725860035BFAF /* PhoneCoolers */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = PhoneCoolers; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		0312E42B2C00F24E00C6F878 /* Frameworks */ = {
@@ -2618,6 +2624,7 @@
 		03B373F42A9EF8BD0028DDD5 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
+				882D0C032DF725860035BFAF /* PhoneCoolers */,
 				039ACB652DED6D9600D35E4D /* SelfieStick */,
 				0379BBAB2AAD962700B718B6 /* About */,
 				037CE22B2BC17EA3004E9B18 /* Audio */,
@@ -2801,6 +2808,7 @@
 				03BA73B82DDCD98600075CD6 /* ModelDjiGimbalDevice.swift */,
 				032F81C12DDCF4C000E14CC5 /* ModelGameController.swift */,
 				03BA73A72DDC582B00075CD6 /* ModelHeartRateDevice.swift */,
+				882D0C0D2DF72CC60035BFAF /* ModelPhoneCoolerDevice.swift */,
 				032D85852DDD7F4B00A6128A /* ModelKeyboard.swift */,
 				03E8D6A02DDE435C0080BEB4 /* ModelKick.swift */,
 				032F81BF2DDCF32D00E14CC5 /* ModelLocation.swift */,
@@ -3263,6 +3271,9 @@
 				032815D72AC855B1001F8A85 /* PBXTargetDependency */,
 				03ECDF522B8E4E6000BD920E /* PBXTargetDependency */,
 				0312E4362C00F24E00C6F878 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				882D0C032DF725860035BFAF /* PhoneCoolers */,
 			);
 			name = Moblin;
 			packageProductDependencies = (
@@ -3915,6 +3926,7 @@
 				0351F8FB2DD2965300F37D9C /* AutoSwitchersSettingsView.swift in Sources */,
 				03A983662A9A05D7008FF0DB /* AddButtonView.swift in Sources */,
 				032F81BA2DDCEE1500E14CC5 /* ModelScreenCapture.swift in Sources */,
+				882D0C0E2DF72CCD0035BFAF /* ModelPhoneCoolerDevice.swift in Sources */,
 				032F81C02DDCF33000E14CC5 /* ModelLocation.swift in Sources */,
 				0359F9012BD3DA61005BFDA8 /* Atomic.swift in Sources */,
 				03A983612A9A05D7008FF0DB /* StreamsSettingsView.swift in Sources */,
