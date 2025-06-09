@@ -231,6 +231,7 @@ class Recorder: NSObject {
         guard var streamBasicDescription = formatDescription?.audioStreamBasicDescription else {
             return
         }
+        logger.info("recorder: Creating converter from \(streamBasicDescription)")
         guard let inputFormat = makeAudioFormat(&streamBasicDescription) else {
             return
         }
@@ -245,6 +246,7 @@ class Recorder: NSObject {
         guard let audioOutputFormat else {
             return
         }
+        logger.info("recorder: Input: \(inputFormat), output: \(audioOutputFormat)")
         audioConverter = AVAudioConverter(from: inputFormat, to: audioOutputFormat)
         audioConverter?.channelMap = makeChannelMap(
             numberOfInputChannels: Int(inputFormat.channelCount),
@@ -265,6 +267,7 @@ class Recorder: NSObject {
            kLinearPCMFormatFlagIsBigEndian ==
            (basicDescription.mFormatFlags & kLinearPCMFormatFlagIsBigEndian)
         {
+            logger.info("recorder: Big endian?")
             // ReplayKit audioApp.
             guard basicDescription.mBitsPerChannel == 16 else {
                 return nil
