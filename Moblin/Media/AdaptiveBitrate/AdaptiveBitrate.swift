@@ -1,6 +1,9 @@
 import Collections
 import Foundation
 
+let adaptiveBitrateStart: Int64 = 1_000_000
+let adaptiveBitrateTransportMinimum = adaptiveBitrateStart
+
 protocol AdaptiveBitrateDelegate: AnyObject {
     func adaptiveBitrateSetVideoStreamBitrate(bitrate: UInt32)
 }

@@ -4,11 +4,8 @@ private let defaultDeepLink = "moblin://?{}"
 
 struct DeepLinkCreatorSettingsView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var deepLinkCreator: DeepLinkCreator
     @State var deepLink = defaultDeepLink
-
-    private var deepLinkCreator: DeepLinkCreator {
-        return model.database.deepLinkCreator
-    }
 
     private func createDeepLinkStream(stream: DeepLinkCreatorStream) -> MoblinSettingsUrlStream {
         let newStream = MoblinSettingsUrlStream(name: stream.name, url: stream.url)
@@ -16,26 +13,26 @@ struct DeepLinkCreatorSettingsView: View {
             newStream.selected = true
         }
         newStream.video = .init()
-        if stream.video.resolution! != .r1920x1080 {
-            newStream.video!.resolution = stream.video.resolution!
+        if stream.video.resolution != .r1920x1080 {
+            newStream.video!.resolution = stream.video.resolution
         }
-        if stream.video.fps! != 30 {
-            newStream.video!.fps = stream.video.fps!
+        if stream.video.fps != 30 {
+            newStream.video!.fps = stream.video.fps
         }
-        if stream.video.bitrate! != 5_000_000 {
-            newStream.video!.bitrate = stream.video.bitrate!
+        if stream.video.bitrate != 5_000_000 {
+            newStream.video!.bitrate = stream.video.bitrate
         }
         newStream.video!.codec = stream.video.codec
-        if stream.video.bFrames! {
-            newStream.video!.bFrames = stream.video.bFrames!
+        if stream.video.bFrames {
+            newStream.video!.bFrames = stream.video.bFrames
         }
-        if stream.video.maxKeyFrameInterval! != 2 {
-            newStream.video!.maxKeyFrameInterval = stream.video.maxKeyFrameInterval!
+        if stream.video.maxKeyFrameInterval != 2 {
+            newStream.video!.maxKeyFrameInterval = stream.video.maxKeyFrameInterval
         }
-        if stream.audio!.bitrate != 128_000 {
+        if stream.audio.bitrate != 128_000 {
             newStream.audio = .init()
-            if stream.audio!.bitrate != 128_000 {
-                newStream.audio!.bitrate = stream.audio!.bitrate
+            if stream.audio.bitrate != 128_000 {
+                newStream.audio!.bitrate = stream.audio.bitrate
             }
         }
         newStream.srt = .init()
@@ -48,14 +45,14 @@ struct DeepLinkCreatorSettingsView: View {
                 webSocketPassword: stream.obs.webSocketPassword
             )
         }
-        if !stream.twitch!.channelName.isEmpty || !stream.twitch!.channelId.isEmpty {
+        if !stream.twitch.channelName.isEmpty || !stream.twitch.channelId.isEmpty {
             newStream.twitch = .init(
-                channelName: stream.twitch!.channelName,
-                channelId: stream.twitch!.channelId
+                channelName: stream.twitch.channelName,
+                channelId: stream.twitch.channelId
             )
         }
-        if !stream.kick!.channelName.isEmpty {
-            newStream.kick = .init(channelName: stream.kick!.channelName)
+        if !stream.kick.channelName.isEmpty {
+            newStream.kick = .init(channelName: stream.kick.channelName)
         }
         return newStream
     }
@@ -71,15 +68,15 @@ struct DeepLinkCreatorSettingsView: View {
     }
 
     private func updateDeepLinkQuickButtons(settings: MoblinSettingsUrl) {
-        guard deepLinkCreator.quickButtonsEnabled! else {
+        guard deepLinkCreator.quickButtonsEnabled else {
             return
         }
         settings.quickButtons = .init()
-        settings.quickButtons!.enableScroll = deepLinkCreator.quickButtons!.enableScroll
-        settings.quickButtons!.twoColumns = deepLinkCreator.quickButtons!.twoColumns
-        settings.quickButtons!.showName = deepLinkCreator.quickButtons!.showName
+        settings.quickButtons!.enableScroll = deepLinkCreator.quickButtons.enableScroll
+        settings.quickButtons!.twoColumns = deepLinkCreator.quickButtons.twoColumns
+        settings.quickButtons!.showName = deepLinkCreator.quickButtons.showName
         settings.quickButtons!.disableAllButtons = true
-        for button in deepLinkCreator.quickButtons!.buttons where button.enabled {
+        for button in deepLinkCreator.quickButtons.buttons where button.enabled {
             settings.quickButtons = settings.quickButtons ?? .init()
             settings.quickButtons!.buttons = settings.quickButtons!.buttons ?? .init()
             let newButton = MoblinSettingsButton(type: button.type)
@@ -89,11 +86,11 @@ struct DeepLinkCreatorSettingsView: View {
     }
 
     private func updateDeepLinkWebBrowser(settings: MoblinSettingsUrl) {
-        guard deepLinkCreator.webBrowserEnabled! else {
+        guard deepLinkCreator.webBrowserEnabled else {
             return
         }
         settings.webBrowser = .init()
-        settings.webBrowser!.home = deepLinkCreator.webBrowser!.home
+        settings.webBrowser!.home = deepLinkCreator.webBrowser.home
     }
 
     private func updateDeepLink() {
@@ -124,34 +121,28 @@ struct DeepLinkCreatorSettingsView: View {
             Form {
                 Section {
                     NavigationLink {
-                        DeepLinkCreatorStreamsSettingsView()
+                        DeepLinkCreatorStreamsSettingsView(deepLinkCreator: deepLinkCreator)
                     } label: {
                         Text("Streams")
                     }
                     NavigationLink {
-                        DeepLinkCreatorQuickButtonsSettingsView()
+                        DeepLinkCreatorQuickButtonsSettingsView(quickButtons: deepLinkCreator.quickButtons)
                     } label: {
-                        Toggle(isOn: Binding(get: {
-                            deepLinkCreator.quickButtonsEnabled!
-                        }, set: {
-                            deepLinkCreator.quickButtonsEnabled = $0
-                            model.store()
-                            updateDeepLink()
-                        })) {
+                        Toggle(isOn: $deepLinkCreator.quickButtonsEnabled) {
                             Text("Quick buttons")
+                        }
+                        .onChange(of: deepLinkCreator.quickButtonsEnabled) { _ in
+                            updateDeepLink()
                         }
                     }
                     NavigationLink {
-                        DeepLinkCreatorWebBrowserSettingsView(webBrowser: deepLinkCreator.webBrowser!)
+                        DeepLinkCreatorWebBrowserSettingsView(webBrowser: deepLinkCreator.webBrowser)
                     } label: {
-                        Toggle(isOn: Binding(get: {
-                            deepLinkCreator.webBrowserEnabled!
-                        }, set: {
-                            deepLinkCreator.webBrowserEnabled = $0
-                            model.store()
-                            updateDeepLink()
-                        })) {
+                        Toggle(isOn: $deepLinkCreator.webBrowserEnabled) {
                             Text("Web browser")
+                        }
+                        .onChange(of: deepLinkCreator.webBrowserEnabled) { _ in
+                            updateDeepLink()
                         }
                     }
                 }
@@ -161,7 +152,7 @@ struct DeepLinkCreatorSettingsView: View {
                             Spacer()
                             Button("Copy to clipboard") {
                                 UIPasteboard.general.string = deepLink
-                                model.makeToast(title: "Deep link copied to clipboard")
+                                model.makeToast(title: String(localized: "Deep link copied to clipboard"))
                             }
                             Spacer()
                         }

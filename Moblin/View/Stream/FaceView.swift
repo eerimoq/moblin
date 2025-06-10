@@ -42,7 +42,6 @@ private struct FaceViewSlider: View {
                     guard !begin else {
                         return
                     }
-                    model.store()
                 }
             )
             .onChange(of: value) { _ in

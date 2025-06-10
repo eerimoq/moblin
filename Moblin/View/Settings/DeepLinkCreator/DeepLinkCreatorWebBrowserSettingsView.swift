@@ -1,12 +1,10 @@
 import SwiftUI
 
 struct DeepLinkCreatorWebBrowserSettingsView: View {
-    @EnvironmentObject var model: Model
-    var webBrowser: DeepLinkCreatorWebBrowser
+    @ObservedObject var webBrowser: DeepLinkCreatorWebBrowser
 
     private func submitHome(value: String) {
         webBrowser.home = value
-        model.store()
     }
 
     var body: some View {

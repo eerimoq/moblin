@@ -1,23 +1,20 @@
 import SwiftUI
 
-struct DeepLinkCreatorStreamVideoBitrateView: View {
+private struct DeepLinkCreatorStreamVideoBitrateView: View {
     @EnvironmentObject var model: Model
     @Environment(\.dismiss) var dismiss
-    var video: DeepLinkCreatorStreamVideo
-    @State var selection: UInt32
+    @ObservedObject var video: DeepLinkCreatorStreamVideo
 
     var body: some View {
         Form {
             Section {
-                Picker("", selection: $selection) {
+                Picker("", selection: $video.bitrate) {
                     ForEach(model.database.bitratePresets) { preset in
                         Text(formatBytesPerSecond(speed: Int64(preset.bitrate)))
                             .tag(preset.bitrate)
                     }
                 }
-                .onChange(of: selection) { bitrate in
-                    video.bitrate = bitrate
-                    model.store()
+                .onChange(of: video.bitrate) { _ in
                     dismiss()
                 }
                 .pickerStyle(.inline)
@@ -29,23 +26,7 @@ struct DeepLinkCreatorStreamVideoBitrateView: View {
 }
 
 private struct DeepLinkCreatorStreamVideoView: View {
-    @EnvironmentObject var model: Model
-    var video: DeepLinkCreatorStreamVideo
-
-    private func onResolutionChange(resolution: String) {
-        video.resolution = SettingsStreamResolution(rawValue: resolution)!
-        model.store()
-    }
-
-    private func onFpsChange(fps: String) {
-        video.fps = Int(fps)!
-        model.store()
-    }
-
-    private func onCodecChange(codec: String) {
-        video.codec = SettingsStreamCodec(rawValue: codec)!
-        model.store()
-    }
+    @ObservedObject var video: DeepLinkCreatorStreamVideo
 
     private func submitMaxKeyFrameInterval(value: String) {
         guard let interval = Int32(value) else {
@@ -55,7 +36,6 @@ private struct DeepLinkCreatorStreamVideoView: View {
             return
         }
         video.maxKeyFrameInterval = interval
-        model.store()
     }
 
     var body: some View {
@@ -64,27 +44,27 @@ private struct DeepLinkCreatorStreamVideoView: View {
                 NavigationLink {
                     InlinePickerView(
                         title: String(localized: "Resolution"),
-                        onChange: onResolutionChange,
+                        onChange: { video.resolution = SettingsStreamResolution(rawValue: $0)! },
                         items: resolutions.map { .init(id: $0.rawValue, text: $0.shortString()) },
-                        selectedId: video.resolution!.rawValue
+                        selectedId: video.resolution.rawValue
                     )
                 } label: {
-                    TextItemView(name: String(localized: "Resolution"), value: video.resolution!.shortString())
+                    TextItemView(name: String(localized: "Resolution"), value: video.resolution.shortString())
                 }
                 NavigationLink {
                     InlinePickerView(
                         title: String(localized: "FPS"),
-                        onChange: onFpsChange,
+                        onChange: { video.fps = Int($0)! },
                         items: InlinePickerItem.fromStrings(values: fpss),
-                        selectedId: String(video.fps!)
+                        selectedId: String(video.fps)
                     )
                 } label: {
-                    TextItemView(name: "FPS", value: String(video.fps!))
+                    TextItemView(name: "FPS", value: String(video.fps))
                 }
                 NavigationLink {
                     InlinePickerView(
                         title: String(localized: "Codec"),
-                        onChange: onCodecChange,
+                        onChange: { video.codec = SettingsStreamCodec(rawValue: $0)! },
                         items: InlinePickerItem.fromStrings(values: codecs),
                         selectedId: video.codec.rawValue
                     )
@@ -92,24 +72,19 @@ private struct DeepLinkCreatorStreamVideoView: View {
                     TextItemView(name: String(localized: "Codec"), value: video.codec.rawValue)
                 }
                 NavigationLink {
-                    DeepLinkCreatorStreamVideoBitrateView(
-                        video: video,
-                        selection: video.bitrate!
-                    )
+                    DeepLinkCreatorStreamVideoBitrateView(video: video)
                 } label: {
                     TextItemView(
                         name: String(localized: "Bitrate"),
-                        value: formatBytesPerSecond(speed: Int64(video.bitrate!))
+                        value: formatBytesPerSecond(speed: Int64(video.bitrate))
                     )
                 }
                 NavigationLink {
                     TextEditView(
                         title: String(localized: "Key frame interval"),
-                        value: String(video.maxKeyFrameInterval!),
+                        value: String(video.maxKeyFrameInterval),
                         footers: [
-                            String(
-                                localized: "Maximum key frame interval in seconds. Set to 0 for automatic."
-                            ),
+                            String(localized: "Maximum key frame interval in seconds. Set to 0 for automatic."),
                         ],
                         keyboardType: .numbersAndPunctuation
                     ) {
@@ -118,17 +93,12 @@ private struct DeepLinkCreatorStreamVideoView: View {
                 } label: {
                     TextItemView(
                         name: String(localized: "Key frame interval"),
-                        value: "\(video.maxKeyFrameInterval!) s"
+                        value: "\(video.maxKeyFrameInterval) s"
                     )
                 }
-                Toggle(isOn: Binding(get: {
-                    video.bFrames!
-                }, set: { value in
-                    video.bFrames = value
-                    model.store()
-                }), label: {
+                Toggle(isOn: $video.bFrames) {
                     Text("B-frames")
-                })
+                }
             }
         }
         .navigationTitle("Video")
@@ -136,12 +106,10 @@ private struct DeepLinkCreatorStreamVideoView: View {
 }
 
 private struct DeepLinkCreatorStreamAudioView: View {
-    @EnvironmentObject var model: Model
-    var audio: DeepLinkCreatorStreamAudio
-    @State var bitrate: Float
+    @ObservedObject var audio: DeepLinkCreatorStreamAudio
 
     private func calcBitrate() -> Int {
-        return Int((bitrate * 1000).rounded(.up))
+        return Int((audio.bitrateFloat * 1000).rounded(.up))
     }
 
     var body: some View {
@@ -149,7 +117,7 @@ private struct DeepLinkCreatorStreamAudioView: View {
             Section {
                 HStack {
                     Slider(
-                        value: $bitrate,
+                        value: $audio.bitrateFloat,
                         in: 32 ... 320,
                         step: 32,
                         onEditingChanged: { begin in
@@ -157,7 +125,6 @@ private struct DeepLinkCreatorStreamAudioView: View {
                                 return
                             }
                             audio.bitrate = calcBitrate()
-                            model.store()
                         }
                     )
                     Text(formatBytesPerSecond(speed: Int64(calcBitrate())))
@@ -171,8 +138,7 @@ private struct DeepLinkCreatorStreamAudioView: View {
 
 private struct DeepLinkCreatorStreamSrtView: View {
     @EnvironmentObject var model: Model
-    var srt: DeepLinkCreatorStreamSrt
-    @State var dnsLookupStrategy: String
+    @ObservedObject var srt: DeepLinkCreatorStreamSrt
 
     func submitLatency(value: String) {
         guard let latency = Int32(value) else {
@@ -182,7 +148,6 @@ private struct DeepLinkCreatorStreamSrtView: View {
             return
         }
         srt.latency = latency
-        model.store()
     }
 
     var body: some View {
@@ -201,19 +166,14 @@ private struct DeepLinkCreatorStreamSrtView: View {
                     keyboardType: .numbersAndPunctuation,
                     valueFormat: { "\($0) ms" }
                 )
-                Toggle("Adaptive bitrate", isOn: Binding(get: {
-                    srt.adaptiveBitrateEnabled
-                }, set: { value in
-                    srt.adaptiveBitrateEnabled = value
-                    model.store()
-                }))
-                Picker("DNS lookup strategy", selection: $dnsLookupStrategy) {
-                    ForEach(dnsLookupStrategies, id: \.self) { strategy in
-                        Text(strategy)
+                Toggle("Adaptive bitrate", isOn: $srt.adaptiveBitrateEnabled)
+                Picker("DNS lookup strategy", selection: $srt.dnsLookupStrategy) {
+                    ForEach(SettingsDnsLookupStrategy.allCases, id: \.self) { strategy in
+                        Text(strategy.rawValue)
                     }
                 }
-                .onChange(of: dnsLookupStrategy) { strategy in
-                    srt.dnsLookupStrategy = SettingsDnsLookupStrategy(rawValue: strategy) ?? .system
+                .onChange(of: srt.dnsLookupStrategy) { strategy in
+                    srt.dnsLookupStrategy = strategy
                 }
             }
         }
@@ -223,7 +183,7 @@ private struct DeepLinkCreatorStreamSrtView: View {
 
 private struct DeepLinkCreatorStreamObsView: View {
     @EnvironmentObject var model: Model
-    var obs: DeepLinkCreatorStreamObs
+    @ObservedObject var obs: DeepLinkCreatorStreamObs
 
     func submitWebSocketUrl(value: String) {
         let url = cleanUrl(url: value)
@@ -232,12 +192,6 @@ private struct DeepLinkCreatorStreamObsView: View {
             return
         }
         obs.webSocketUrl = url
-        model.store()
-    }
-
-    func submitWebSocketPassword(value: String) {
-        obs.webSocketPassword = value
-        model.store()
     }
 
     var body: some View {
@@ -253,7 +207,7 @@ private struct DeepLinkCreatorStreamObsView: View {
                 TextEditNavigationView(
                     title: String(localized: "Password"),
                     value: obs.webSocketPassword,
-                    onSubmit: submitWebSocketPassword,
+                    onSubmit: { obs.webSocketPassword = $0 },
                     sensitive: true
                 )
             } header: {
@@ -266,33 +220,22 @@ private struct DeepLinkCreatorStreamObsView: View {
     }
 }
 
-struct DeepLinkCreatorStreamTwitchView: View {
-    @EnvironmentObject var model: Model
-    var stream: DeepLinkCreatorStream
-
-    func submitChannelName(value: String) {
-        stream.twitch!.channelName = value
-        model.store()
-    }
-
-    func submitChannelId(value: String) {
-        stream.twitch!.channelId = value
-        model.store()
-    }
+private struct DeepLinkCreatorStreamTwitchView: View {
+    @ObservedObject var twitch: DeepLinkCreatorStreamTwitch
 
     var body: some View {
         Form {
             Section {
                 TextEditNavigationView(
                     title: String(localized: "Channel name"),
-                    value: stream.twitch!.channelName,
-                    onSubmit: submitChannelName,
+                    value: twitch.channelName,
+                    onSubmit: { twitch.channelName = $0 },
                     capitalize: true
                 )
                 TextEditNavigationView(
                     title: String(localized: "Channel id"),
-                    value: stream.twitch!.channelId,
-                    onSubmit: submitChannelId
+                    value: twitch.channelId,
+                    onSubmit: { twitch.channelId = $0 }
                 )
             }
         }
@@ -300,22 +243,16 @@ struct DeepLinkCreatorStreamTwitchView: View {
     }
 }
 
-struct DeepLinkCreatorStreamKickView: View {
-    @EnvironmentObject var model: Model
-    var stream: DeepLinkCreatorStream
-
-    func submitChannelName(value: String) {
-        stream.kick!.channelName = value
-        model.store()
-    }
+private struct DeepLinkCreatorStreamKickView: View {
+    @ObservedObject var kick: DeepLinkCreatorStreamKick
 
     var body: some View {
         Form {
             Section {
                 TextEditNavigationView(
                     title: String(localized: "Channel name"),
-                    value: stream.kick!.channelName,
-                    onSubmit: submitChannelName,
+                    value: kick.channelName,
+                    onSubmit: { kick.channelName = $0 },
                     capitalize: true
                 )
             }
@@ -326,85 +263,80 @@ struct DeepLinkCreatorStreamKickView: View {
 
 struct DeepLinkCreatorStreamSettingsView: View {
     @EnvironmentObject var model: Model
-    var stream: DeepLinkCreatorStream
+    @ObservedObject var stream: DeepLinkCreatorStream
 
     var body: some View {
-        Form {
-            Section {
-                TextEditNavigationView(
-                    title: String(localized: "Name"),
-                    value: stream.name,
-                    onSubmit: {
-                        stream.name = $0
-                        model.store()
-                    }
-                )
-                TextEditNavigationView(
-                    title: String(localized: "URL"),
-                    value: stream.url,
-                    onSubmit: {
-                        stream.url = $0
-                        model.store()
-                    }
-                )
-                NavigationLink {
-                    DeepLinkCreatorStreamVideoView(video: stream.video)
-                } label: {
-                    Text("Video")
-                }
-                NavigationLink {
-                    DeepLinkCreatorStreamAudioView(
-                        audio: stream.audio!,
-                        bitrate: Float(stream.audio!.bitrate / 1000)
+        NavigationLink {
+            Form {
+                Section {
+                    TextEditNavigationView(
+                        title: String(localized: "Name"),
+                        value: stream.name,
+                        onSubmit: {
+                            stream.name = $0
+                        }
                     )
-                } label: {
-                    Text("Audio")
-                }
-                if let url = URL(string: stream.url), ["srt", "srtla"].contains(url.scheme) {
+                    TextEditNavigationView(
+                        title: String(localized: "URL"),
+                        value: stream.url,
+                        onSubmit: {
+                            stream.url = $0
+                        }
+                    )
                     NavigationLink {
-                        DeepLinkCreatorStreamSrtView(
-                            srt: stream.srt,
-                            dnsLookupStrategy: stream.srt.dnsLookupStrategy!.rawValue
-                        )
+                        DeepLinkCreatorStreamVideoView(video: stream.video)
                     } label: {
-                        Text("SRT(LA)")
+                        Text("Video")
+                    }
+                    NavigationLink {
+                        DeepLinkCreatorStreamAudioView(audio: stream.audio)
+                    } label: {
+                        Text("Audio")
+                    }
+                    if let url = URL(string: stream.url), ["srt", "srtla"].contains(url.scheme) {
+                        NavigationLink {
+                            DeepLinkCreatorStreamSrtView(srt: stream.srt)
+                        } label: {
+                            Text("SRT(LA)")
+                        }
+                    }
+                } header: {
+                    Text("Media")
+                }
+                Section {
+                    NavigationLink {
+                        DeepLinkCreatorStreamTwitchView(twitch: stream.twitch)
+                    } label: {
+                        Text("Twitch")
+                    }
+                    NavigationLink {
+                        DeepLinkCreatorStreamKickView(kick: stream.kick)
+                    } label: {
+                        Text("Kick")
+                    }
+                } header: {
+                    Text("Chat and viewers")
+                }
+                Section {
+                    NavigationLink {
+                        DeepLinkCreatorStreamObsView(obs: stream.obs)
+                    } label: {
+                        Text("OBS remote control")
                     }
                 }
-            } header: {
-                Text("Media")
-            }
-            Section {
-                NavigationLink {
-                    DeepLinkCreatorStreamTwitchView(stream: stream)
-                } label: {
-                    Text("Twitch")
-                }
-                NavigationLink {
-                    DeepLinkCreatorStreamKickView(stream: stream)
-                } label: {
-                    Text("Kick")
-                }
-            } header: {
-                Text("Chat and viewers")
-            }
-            Section {
-                NavigationLink {
-                    DeepLinkCreatorStreamObsView(obs: stream.obs)
-                } label: {
-                    Text("OBS remote control")
+                Section {
+                    Toggle(isOn: $stream.selected) {
+                        Text("Selected")
+                    }
                 }
             }
-            Section {
-                Toggle(isOn: Binding(get: {
-                    stream.selected
-                }, set: { value in
-                    stream.selected = value
-                    model.store()
-                }), label: {
-                    Text("Selected")
-                })
+            .navigationTitle("Stream")
+        } label: {
+            HStack {
+                DraggableItemPrefixView()
+                Text(stream.name)
+                Spacer()
             }
         }
-        .navigationTitle("Stream")
     }
 }

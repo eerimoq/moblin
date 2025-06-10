@@ -238,7 +238,7 @@ struct SettingsView: View {
                         IconAndTextView(image: "gearshape", text: String(localized: "Import and export settings"))
                     }
                     NavigationLink {
-                        DeepLinkCreatorSettingsView()
+                        DeepLinkCreatorSettingsView(deepLinkCreator: model.database.deepLinkCreator)
                     } label: {
                         IconAndTextView(image: "link.badge.plus", text: String(localized: "Deep link creator"))
                     }
