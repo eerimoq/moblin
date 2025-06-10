@@ -441,14 +441,14 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject {
     @Published var bitrate: UInt32 = 5_000_000
     @Published var codec: SettingsStreamCodec = .h265hevc
     @Published var bFrames: Bool = false
-    var adaptiveEncoderResolution: Bool = false
+    @Published var adaptiveEncoderResolution: Bool = false
     var adaptiveBitrate: Bool = true
     var srt: SettingsStreamSrt = .init()
     var rtmp: SettingsStreamRtmp = .init()
     var rist: SettingsStreamRist = .init()
     var captureSessionPresetEnabled: Bool = false
     var captureSessionPreset: SettingsCaptureSessionPreset = .medium
-    var maxKeyFrameInterval: Int32 = 2
+    @Published var maxKeyFrameInterval: Int32 = 2
     var audioBitrate: Int = 128_000
     var chat: SettingsStreamChat = .init()
     var recording: SettingsStreamRecording = .init()
@@ -459,7 +459,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject {
     var estimatedViewerDelay: Float = 8.0
     var twitchMultiTrackEnabled: Bool = false
     @Published var ntpPoolAddress: String = "time.apple.com"
-    var timecodesEnabled: Bool = false
+    @Published  var timecodesEnabled: Bool = false
     var replay: SettingsStreamReplay = .init()
 
     static func == (lhs: SettingsStream, rhs: SettingsStream) -> Bool {
