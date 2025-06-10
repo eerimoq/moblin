@@ -58,7 +58,7 @@ struct SettingsView: View {
                     )
                 }
                 NavigationLink {
-                    CameraSettingsView()
+                    CameraSettingsView(database: database)
                 } label: {
                     IconAndTextView(image: "camera", text: String(localized: "Camera"))
                 }

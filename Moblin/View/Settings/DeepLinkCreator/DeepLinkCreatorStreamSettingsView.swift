@@ -55,7 +55,7 @@ private struct DeepLinkCreatorStreamVideoView: View {
                     InlinePickerView(
                         title: String(localized: "FPS"),
                         onChange: { video.fps = Int($0)! },
-                        items: InlinePickerItem.fromStrings(values: fpss),
+                        items: InlinePickerItem.fromStrings(values: fpss.map { String($0) }),
                         selectedId: String(video.fps)
                     )
                 } label: {

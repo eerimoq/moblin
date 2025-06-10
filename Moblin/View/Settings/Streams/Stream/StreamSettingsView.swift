@@ -39,6 +39,7 @@ struct StreamPlatformsSettingsView: View {
 
 struct StreamSettingsView: View {
     @EnvironmentObject private var model: Model
+    @ObservedObject var database: Database
     @ObservedObject var stream: SettingsStream
 
     var body: some View {
@@ -61,17 +62,11 @@ struct StreamSettingsView: View {
                 }
                 .disabled(stream.enabled && model.isLive)
                 NavigationLink {
-                    StreamVideoSettingsView(
-                        stream: stream,
-                        codec: stream.codec.rawValue,
-                        bitrate: stream.bitrate,
-                        resolution: stream.resolution.rawValue,
-                        fps: String(stream.fps)
-                    )
+                    StreamVideoSettingsView(database: database, stream: stream)
                 } label: {
                     Text("Video")
                 }
-                if model.database.showAllSettings {
+                if database.showAllSettings {
                     NavigationLink {
                         StreamAudioSettingsView(
                             stream: stream,
@@ -100,23 +95,20 @@ struct StreamSettingsView: View {
                     }
                 }
                 if isPhone() || isPad() {
-                    Toggle(isOn: Binding(get: {
-                        stream.portrait
-                    }, set: { value in
-                        stream.portrait = value
+                    Toggle(isOn: $stream.portrait) {
+                        Text("Portrait")
+                    }
+                    .disabled(stream.enabled && (model.isLive || model.isRecording))
+                    .onChange(of: stream.portrait) { _ in
                         if stream.enabled {
                             model.setCurrentStream(stream: stream)
                             model.reloadStream()
                             model.resetSelectedScene(changeScene: false)
                             model.updateOrientation()
                         }
-                        model.objectWillChange.send()
-                    })) {
-                        Text("Portrait")
                     }
-                    .disabled(stream.enabled && (model.isLive || model.isRecording))
                 }
-                if model.database.showAllSettings {
+                if database.showAllSettings {
                     if stream.getProtocol() == .srt {
                         NavigationLink {
                             StreamSrtSettingsView(
@@ -160,7 +152,7 @@ struct StreamSettingsView: View {
                         model.setObsRemoteControlEnabled(enabled: $0)
                     }))
                 }
-                if model.database.showAllSettings {
+                if database.showAllSettings {
                     NavigationLink {
                         StreamRealtimeIrlSettingsView(stream: stream)
                     } label: {
@@ -172,7 +164,7 @@ struct StreamSettingsView: View {
                     }
                 }
             }
-            if model.database.showAllSettings {
+            if database.showAllSettings {
                 if !ProcessInfo().isiOSAppOnMac {
                     Section {
                         Toggle("Background streaming", isOn: Binding(get: {
