@@ -7,12 +7,36 @@
 
 import SwiftUI
 
+private func formatPhoneCoolerDeviceState(state: PhoneCoolerDeviceState?) -> String {
+    if state == nil || state == .disconnected {
+        return String(localized: "Disconnected")
+    } else if state == .discovering {
+        return String(localized: "Discovering")
+    } else if state == .connecting {
+        return String(localized: "Connecting")
+    } else if state == .connected {
+        return String(localized: "Connected")
+    } else {
+        return String(localized: "Unknown")
+    }
+}
+
 struct PhoneCoolerDeviceSettingsView: View {
     @EnvironmentObject var model: Model
-    @ObservedObject private var scanner = heartRateScanner
+    @ObservedObject private var scanner = phoneCoolerScanner
     var device: SettingsPhoneCoolerDevice
     @Binding var name: String
     
+    func state() -> String {
+        return formatPhoneCoolerDeviceState(state: model.phoneCoolerDeviceState)
+    }
+    
+    private func canEnable() -> Bool {
+        if device.bluetoothPeripheralId == nil {
+            return false
+        }
+        return true
+    }
     
     private func onDeviceChange(value: String) {
         guard let deviceId = UUID(uuidString: value) else {
@@ -48,6 +72,36 @@ struct PhoneCoolerDeviceSettingsView: View {
                 .disabled(device.enabled)
             } header: {
                 Text("Device")
+            } footer: {
+                if model.phoneCoolerPhoneTemp != nil && model.phoneCoolerExhaustTemp != nil {
+                    HStack{
+                        Text("Phone: \(String(model.phoneCoolerPhoneTemp!)) C°")
+                        Spacer()
+                        Text("Exhaust: \(String(model.phoneCoolerExhaustTemp!)) C°")
+                    }
+                }
+            }
+            Section {
+                Toggle(isOn: Binding(get: {
+                    device.enabled
+                }, set: { value in
+                    device.enabled = value
+                    if device.enabled {
+                        model.enablePhoneCoolerDevice(device: device)
+                    } else {
+                        model.disablePhoneCoolerDevice(device: device)
+                    }
+                }), label: {
+                    Text("Enabled")
+                })
+                .disabled(!canEnable())
+            }
+            if device.enabled {
+                Section {
+                    HCenter {
+                        Text(state())
+                    }
+                }
             }
         }
     }

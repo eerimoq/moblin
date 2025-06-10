@@ -276,6 +276,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var urlSession = URLSession.shared
 
     var heartRates: [String: Int?] = [:]
+    
+    @Published var phoneCoolerPhoneTemp: Int?
+    @Published var phoneCoolerExhaustTemp: Int?
+    
     var workoutActiveEnergyBurned: Int?
     var workoutDistance: Int?
     var workoutPower: Int?
@@ -468,6 +472,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var heartRateDeviceState: HeartRateDeviceState?
     var currentHeartRateDeviceSettings: SettingsHeartRateDevice?
     var heartRateDevices: [UUID: HeartRateDevice] = [:]
+    
+    @Published var phoneCoolerDeviceState: PhoneCoolerDeviceState?
+    var currentPhoneCoolerDeviceSettings: SettingsPhoneCoolerDevice?
+    var phoneCoolerDevices: [UUID: PhoneCoolerDevice] = [:]
 
     var cameraDevice: AVCaptureDevice?
     var cameraZoomLevelToXScale: Float = 1.0
@@ -984,6 +992,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         autoStartCatPrinters()
         autoStartCyclingPowerDevices()
         autoStartHeartRateDevices()
+        autoStartPhoneCoolerDevices()
         startWeatherManager()
         startGeographyManager()
         twitchAuth.setOnAccessToken(onAccessToken: handleTwitchAccessToken)
@@ -1292,6 +1301,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             autoStartCyclingPowerDevices()
             autoStartHeartRateDevices()
             autoStartDjiGimbalDevices()
+            autoStartPhoneCoolerDevices()
         }
     }
 

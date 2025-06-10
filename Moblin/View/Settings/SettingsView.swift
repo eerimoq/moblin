@@ -172,7 +172,7 @@ struct SettingsView: View {
                     NavigationLink {
                         PhoneCoolerDevicesSettingsView()
                     } label: {
-                        IconAndTextView(image: "fan", text: String(localized: "Phone Coolers"))
+                        IconAndTextView(image: "fan.fill", text: String(localized: "Phone Coolers"))
                     }
                 }
             }

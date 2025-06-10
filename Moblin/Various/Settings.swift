@@ -4731,6 +4731,7 @@ class Database: Codable, ObservableObject {
              cyclingPowerDevices,
              heartRateDevices,
              djiGimbalDevices,
+             phoneCoolerDevices,
              remoteSceneId,
              sceneNumericInput,
              goPro,
@@ -4796,6 +4797,7 @@ class Database: Codable, ObservableObject {
         try container.encode(.cyclingPowerDevices, cyclingPowerDevices)
         try container.encode(.heartRateDevices, heartRateDevices)
         try container.encode(.djiGimbalDevices, djiGimbalDevices)
+        try container.encode(.phoneCoolerDevices, phoneCoolerDevices)
         try container.encode(.remoteSceneId, remoteSceneId)
         try container.encode(.sceneNumericInput, sceneNumericInput)
         try container.encode(.goPro, goPro)
@@ -4863,6 +4865,7 @@ class Database: Codable, ObservableObject {
         cyclingPowerDevices = container.decode(.cyclingPowerDevices, SettingsCyclingPowerDevices.self, .init())
         heartRateDevices = container.decode(.heartRateDevices, SettingsHeartRateDevices.self, .init())
         djiGimbalDevices = container.decode(.djiGimbalDevices, SettingsDjiGimbalDevices.self, .init())
+        phoneCoolerDevices = container.decode(.phoneCoolerDevices, SettingsPhoneCoolerDevices.self, .init())
         remoteSceneId = try? container.decode(UUID?.self, forKey: .remoteSceneId)
         sceneNumericInput = container.decode(.sceneNumericInput, Bool.self, false)
         goPro = container.decode(.goPro, SettingsGoPro.self, .init())

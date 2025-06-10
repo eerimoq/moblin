@@ -349,6 +349,12 @@ private struct StatusesView: View {
             text: model.fixedHorizonStatus,
             textPlacement: textPlacement
         )
+        StreamOverlayIconAndTextView(
+            show: model.phoneCoolerPhoneTemp != nil && model.phoneCoolerExhaustTemp != nil,
+            icon: "fan.fill",
+            text: "\(String(model.phoneCoolerPhoneTemp ?? 0)) C° / \(String(model.phoneCoolerExhaustTemp ?? 0)) C°",
+            textPlacement: .beforeIcon
+        )
     }
 }
 
