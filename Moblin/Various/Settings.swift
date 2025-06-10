@@ -437,10 +437,10 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject {
     var discordSnapshotWebhookOnlyWhenLive: Bool = true
     @Published var resolution: SettingsStreamResolution = .r1920x1080
     @Published var fps: Int = 30
-    var autoFps: Bool = false
+    @Published var autoFps: Bool = false
     @Published var bitrate: UInt32 = 5_000_000
     @Published var codec: SettingsStreamCodec = .h265hevc
-    var bFrames: Bool = false
+    @Published var bFrames: Bool = false
     var adaptiveEncoderResolution: Bool = false
     var adaptiveBitrate: Bool = true
     var srt: SettingsStreamSrt = .init()

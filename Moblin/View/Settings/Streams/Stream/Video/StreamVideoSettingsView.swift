@@ -80,13 +80,10 @@ struct StreamVideoSettingsView: View {
             }
             if #available(iOS 18, *) {
                 Section {
-                    Toggle("Low light boost (LLB)", isOn: Binding(get: {
-                        stream.autoFps
-                    }, set: { value in
-                        stream.autoFps = value
-                        model.setStreamPreferAutoFps()
-                        model.objectWillChange.send()
-                    }))
+                    Toggle("Low light boost (LLB)", isOn: $stream.autoFps)
+                        .onChange(of: stream.autoFps) { _ in
+                            model.setStreamPreferAutoFps()
+                        }
                 } footer: {
                     Text("""
                     Enable low light boost to make builtin cameras automatically \
@@ -155,13 +152,11 @@ struct StreamVideoSettingsView: View {
                         )
                     }
                     .disabled(stream.enabled && model.isLive)
-                    Toggle("B-frames", isOn: Binding(get: {
-                        stream.bFrames
-                    }, set: { value in
-                        stream.bFrames = value
-                        model.reloadStreamIfEnabled(stream: stream)
-                    }))
-                    .disabled(stream.enabled && model.isLive)
+                    Toggle("B-frames", isOn: $stream.bFrames)
+                        .onChange(of: stream.bFrames) { _ in
+                            model.reloadStreamIfEnabled(stream: stream)
+                        }
+                        .disabled(stream.enabled && model.isLive)
                 }
                 Section {
                     Toggle("Adaptive resolution", isOn: Binding(get: {
