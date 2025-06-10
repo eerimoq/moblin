@@ -2,21 +2,14 @@ import SwiftUI
 
 struct DeepLinkCreatorStreamsSettingsView: View {
     @EnvironmentObject var model: Model
-
-    private var deepLinkCreator: DeepLinkCreator {
-        return model.database.deepLinkCreator
-    }
+    @ObservedObject var deepLinkCreator: DeepLinkCreator
 
     var body: some View {
         Form {
             Section {
                 List {
                     ForEach(deepLinkCreator.streams) { stream in
-                        NavigationLink {
-                            DeepLinkCreatorStreamSettingsView(stream: stream)
-                        } label: {
-                            Text(stream.name)
-                        }
+                        DeepLinkCreatorStreamSettingsView(stream: stream)
                     }
                     .onMove(perform: { froms, to in
                         deepLinkCreator.streams.move(fromOffsets: froms, toOffset: to)
@@ -27,7 +20,6 @@ struct DeepLinkCreatorStreamsSettingsView: View {
                 }
                 CreateButtonView {
                     deepLinkCreator.streams.append(DeepLinkCreatorStream())
-                    model.objectWillChange.send()
                 }
             }
         }

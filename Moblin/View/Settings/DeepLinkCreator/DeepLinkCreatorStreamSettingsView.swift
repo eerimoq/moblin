@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct DeepLinkCreatorStreamVideoBitrateView: View {
+private struct DeepLinkCreatorStreamVideoBitrateView: View {
     @EnvironmentObject var model: Model
     @Environment(\.dismiss) var dismiss
     var video: DeepLinkCreatorStreamVideo
@@ -255,31 +255,22 @@ private struct DeepLinkCreatorStreamObsView: View {
     }
 }
 
-struct DeepLinkCreatorStreamTwitchView: View {
-    @EnvironmentObject var model: Model
-    var stream: DeepLinkCreatorStream
-
-    func submitChannelName(value: String) {
-        stream.twitch!.channelName = value
-    }
-
-    func submitChannelId(value: String) {
-        stream.twitch!.channelId = value
-    }
+private struct DeepLinkCreatorStreamTwitchView: View {
+    @ObservedObject var twitch: DeepLinkCreatorStreamTwitch
 
     var body: some View {
         Form {
             Section {
                 TextEditNavigationView(
                     title: String(localized: "Channel name"),
-                    value: stream.twitch!.channelName,
-                    onSubmit: submitChannelName,
+                    value: twitch.channelName,
+                    onSubmit: { twitch.channelName = $0 },
                     capitalize: true
                 )
                 TextEditNavigationView(
                     title: String(localized: "Channel id"),
-                    value: stream.twitch!.channelId,
-                    onSubmit: submitChannelId
+                    value: twitch.channelId,
+                    onSubmit: { twitch.channelId = $0 }
                 )
             }
         }
@@ -287,21 +278,16 @@ struct DeepLinkCreatorStreamTwitchView: View {
     }
 }
 
-struct DeepLinkCreatorStreamKickView: View {
-    @EnvironmentObject var model: Model
-    var stream: DeepLinkCreatorStream
-
-    func submitChannelName(value: String) {
-        stream.kick!.channelName = value
-    }
+private struct DeepLinkCreatorStreamKickView: View {
+    @ObservedObject var kick: DeepLinkCreatorStreamKick
 
     var body: some View {
         Form {
             Section {
                 TextEditNavigationView(
                     title: String(localized: "Channel name"),
-                    value: stream.kick!.channelName,
-                    onSubmit: submitChannelName,
+                    value: kick.channelName,
+                    onSubmit: { kick.channelName = $0 },
                     capitalize: true
                 )
             }
@@ -312,82 +298,86 @@ struct DeepLinkCreatorStreamKickView: View {
 
 struct DeepLinkCreatorStreamSettingsView: View {
     @EnvironmentObject var model: Model
-    var stream: DeepLinkCreatorStream
+    @ObservedObject var stream: DeepLinkCreatorStream
 
     var body: some View {
-        Form {
-            Section {
-                TextEditNavigationView(
-                    title: String(localized: "Name"),
-                    value: stream.name,
-                    onSubmit: {
-                        stream.name = $0
-                    }
-                )
-                TextEditNavigationView(
-                    title: String(localized: "URL"),
-                    value: stream.url,
-                    onSubmit: {
-                        stream.url = $0
-                    }
-                )
-                NavigationLink {
-                    DeepLinkCreatorStreamVideoView(video: stream.video)
-                } label: {
-                    Text("Video")
-                }
-                NavigationLink {
-                    DeepLinkCreatorStreamAudioView(
-                        audio: stream.audio!,
-                        bitrate: Float(stream.audio!.bitrate / 1000)
+        NavigationLink {
+            Form {
+                Section {
+                    TextEditNavigationView(
+                        title: String(localized: "Name"),
+                        value: stream.name,
+                        onSubmit: {
+                            stream.name = $0
+                        }
                     )
-                } label: {
-                    Text("Audio")
-                }
-                if let url = URL(string: stream.url), ["srt", "srtla"].contains(url.scheme) {
+                    TextEditNavigationView(
+                        title: String(localized: "URL"),
+                        value: stream.url,
+                        onSubmit: {
+                            stream.url = $0
+                        }
+                    )
                     NavigationLink {
-                        DeepLinkCreatorStreamSrtView(
-                            srt: stream.srt,
-                            dnsLookupStrategy: stream.srt.dnsLookupStrategy!.rawValue
+                        DeepLinkCreatorStreamVideoView(video: stream.video)
+                    } label: {
+                        Text("Video")
+                    }
+                    NavigationLink {
+                        DeepLinkCreatorStreamAudioView(
+                            audio: stream.audio,
+                            bitrate: Float(stream.audio.bitrate / 1000)
                         )
                     } label: {
-                        Text("SRT(LA)")
+                        Text("Audio")
+                    }
+                    if let url = URL(string: stream.url), ["srt", "srtla"].contains(url.scheme) {
+                        NavigationLink {
+                            DeepLinkCreatorStreamSrtView(
+                                srt: stream.srt,
+                                dnsLookupStrategy: stream.srt.dnsLookupStrategy!.rawValue
+                            )
+                        } label: {
+                            Text("SRT(LA)")
+                        }
+                    }
+                } header: {
+                    Text("Media")
+                }
+                Section {
+                    NavigationLink {
+                        DeepLinkCreatorStreamTwitchView(twitch: stream.twitch)
+                    } label: {
+                        Text("Twitch")
+                    }
+                    NavigationLink {
+                        DeepLinkCreatorStreamKickView(kick: stream.kick)
+                    } label: {
+                        Text("Kick")
+                    }
+                } header: {
+                    Text("Chat and viewers")
+                }
+                Section {
+                    NavigationLink {
+                        DeepLinkCreatorStreamObsView(obs: stream.obs)
+                    } label: {
+                        Text("OBS remote control")
                     }
                 }
-            } header: {
-                Text("Media")
-            }
-            Section {
-                NavigationLink {
-                    DeepLinkCreatorStreamTwitchView(stream: stream)
-                } label: {
-                    Text("Twitch")
-                }
-                NavigationLink {
-                    DeepLinkCreatorStreamKickView(stream: stream)
-                } label: {
-                    Text("Kick")
-                }
-            } header: {
-                Text("Chat and viewers")
-            }
-            Section {
-                NavigationLink {
-                    DeepLinkCreatorStreamObsView(obs: stream.obs)
-                } label: {
-                    Text("OBS remote control")
+                Section {
+                    Toggle(isOn: $stream.selected) {
+                        Text("Selected")
+                    }
                 }
             }
-            Section {
-                Toggle(isOn: Binding(get: {
-                    stream.selected
-                }, set: { value in
-                    stream.selected = value
-                }), label: {
-                    Text("Selected")
-                })
+            .navigationTitle("Stream")
+        } label: {
+            HStack {
+                DraggableItemPrefixView()
+                Text(stream.name)
+                Spacer()
             }
         }
-        .navigationTitle("Stream")
     }
 }

@@ -29,10 +29,10 @@ struct DeepLinkCreatorSettingsView: View {
         if stream.video.maxKeyFrameInterval! != 2 {
             newStream.video!.maxKeyFrameInterval = stream.video.maxKeyFrameInterval!
         }
-        if stream.audio!.bitrate != 128_000 {
+        if stream.audio.bitrate != 128_000 {
             newStream.audio = .init()
-            if stream.audio!.bitrate != 128_000 {
-                newStream.audio!.bitrate = stream.audio!.bitrate
+            if stream.audio.bitrate != 128_000 {
+                newStream.audio!.bitrate = stream.audio.bitrate
             }
         }
         newStream.srt = .init()
@@ -45,14 +45,14 @@ struct DeepLinkCreatorSettingsView: View {
                 webSocketPassword: stream.obs.webSocketPassword
             )
         }
-        if !stream.twitch!.channelName.isEmpty || !stream.twitch!.channelId.isEmpty {
+        if !stream.twitch.channelName.isEmpty || !stream.twitch.channelId.isEmpty {
             newStream.twitch = .init(
-                channelName: stream.twitch!.channelName,
-                channelId: stream.twitch!.channelId
+                channelName: stream.twitch.channelName,
+                channelId: stream.twitch.channelId
             )
         }
-        if !stream.kick!.channelName.isEmpty {
-            newStream.kick = .init(channelName: stream.kick!.channelName)
+        if !stream.kick.channelName.isEmpty {
+            newStream.kick = .init(channelName: stream.kick.channelName)
         }
         return newStream
     }
@@ -121,7 +121,7 @@ struct DeepLinkCreatorSettingsView: View {
             Form {
                 Section {
                     NavigationLink {
-                        DeepLinkCreatorStreamsSettingsView()
+                        DeepLinkCreatorStreamsSettingsView(deepLinkCreator: deepLinkCreator)
                     } label: {
                         Text("Streams")
                     }

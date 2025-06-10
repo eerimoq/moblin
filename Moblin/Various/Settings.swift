@@ -4484,26 +4484,104 @@ class DeepLinkCreatorStreamObs: Codable {
     var webSocketPassword: String = ""
 }
 
-class DeepLinkCreatorStreamTwitch: Codable {
-    var channelName: String = ""
-    var channelId: String = ""
+class DeepLinkCreatorStreamTwitch: Codable, ObservableObject {
+    @Published var channelName: String = ""
+    @Published var channelId: String = ""
+
+    enum CodingKeys: CodingKey {
+        case channelName,
+             channelId
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.channelName, channelName)
+        try container.encode(.channelId, channelId)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        channelName = container.decode(.channelName, String.self, "")
+        channelId = container.decode(.channelId, String.self, "")
+    }
 }
 
-class DeepLinkCreatorStreamKick: Codable {
-    var channelName: String = ""
+class DeepLinkCreatorStreamKick: Codable, ObservableObject {
+    @Published var channelName: String = ""
+
+    enum CodingKeys: CodingKey {
+        case channelName
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.channelName, channelName)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        channelName = container.decode(.channelName, String.self, "")
+    }
 }
 
-class DeepLinkCreatorStream: Codable, Identifiable {
+class DeepLinkCreatorStream: Codable, Identifiable, ObservableObject {
     var id: UUID = .init()
-    var name: String = "My stream"
-    var url: String = defaultStreamUrl
-    var selected: Bool = false
-    var video: DeepLinkCreatorStreamVideo = .init()
-    var audio: DeepLinkCreatorStreamAudio? = .init()
-    var srt: DeepLinkCreatorStreamSrt = .init()
-    var obs: DeepLinkCreatorStreamObs = .init()
-    var twitch: DeepLinkCreatorStreamTwitch? = .init()
-    var kick: DeepLinkCreatorStreamKick? = .init()
+    @Published var name: String = "My stream"
+    @Published var url: String = defaultStreamUrl
+    @Published var selected: Bool = false
+    @Published var video: DeepLinkCreatorStreamVideo = .init()
+    @Published var audio: DeepLinkCreatorStreamAudio = .init()
+    @Published var srt: DeepLinkCreatorStreamSrt = .init()
+    @Published var obs: DeepLinkCreatorStreamObs = .init()
+    @Published var twitch: DeepLinkCreatorStreamTwitch = .init()
+    @Published var kick: DeepLinkCreatorStreamKick = .init()
+
+    enum CodingKeys: CodingKey {
+        case id,
+             name,
+             url,
+             selected,
+             video,
+             audio,
+             srt,
+             obs,
+             twitch,
+             kick
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.name, name)
+        try container.encode(.url, url)
+        try container.encode(.selected, selected)
+        try container.encode(.video, video)
+        try container.encode(.audio, audio)
+        try container.encode(.srt, srt)
+        try container.encode(.obs, obs)
+        try container.encode(.twitch, twitch)
+        try container.encode(.kick, kick)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        name = container.decode(.name, String.self, "My stream")
+        url = container.decode(.url, String.self, defaultStreamUrl)
+        selected = container.decode(.selected, Bool.self, false)
+        video = container.decode(.video, DeepLinkCreatorStreamVideo.self, .init())
+        audio = container.decode(.audio, DeepLinkCreatorStreamAudio.self, .init())
+        srt = container.decode(.srt, DeepLinkCreatorStreamSrt.self, .init())
+        obs = container.decode(.obs, DeepLinkCreatorStreamObs.self, .init())
+        twitch = container.decode(.twitch, DeepLinkCreatorStreamTwitch.self, .init())
+        kick = container.decode(.kick, DeepLinkCreatorStreamKick.self, .init())
+    }
 }
 
 class DeepLinkCreatorQuickButton: Codable, Identifiable, ObservableObject {
@@ -5803,22 +5881,6 @@ final class Settings {
             stream.srt.adaptiveBitrate!.customSettings.minimumBitrate = 250
             store()
         }
-        if realDatabase.deepLinkCreator.webBrowser == nil {
-            realDatabase.deepLinkCreator.webBrowser = .init()
-            store()
-        }
-        if realDatabase.deepLinkCreator.quickButtons == nil {
-            realDatabase.deepLinkCreator.quickButtons = .init()
-            store()
-        }
-        if realDatabase.deepLinkCreator.quickButtonsEnabled == nil {
-            realDatabase.deepLinkCreator.quickButtonsEnabled = false
-            store()
-        }
-        if realDatabase.deepLinkCreator.webBrowserEnabled == nil {
-            realDatabase.deepLinkCreator.webBrowserEnabled = false
-            store()
-        }
         for stream in realDatabase.streams
             where stream.srt.adaptiveBitrate!.fastIrlSettings!.minimumBitrate == nil
         {
@@ -5845,14 +5907,6 @@ final class Settings {
             stream.video.bFrames = false
             store()
         }
-        for stream in realDatabase.deepLinkCreator.streams where stream.twitch == nil {
-            stream.twitch = .init()
-            store()
-        }
-        for stream in realDatabase.deepLinkCreator.streams where stream.kick == nil {
-            stream.kick = .init()
-            store()
-        }
         for stream in realDatabase.deepLinkCreator.streams where stream.video.resolution == nil {
             stream.video.resolution = .r1920x1080
             store()
@@ -5867,10 +5921,6 @@ final class Settings {
         }
         for stream in realDatabase.deepLinkCreator.streams where stream.video.maxKeyFrameInterval == nil {
             stream.video.maxKeyFrameInterval = 2
-            store()
-        }
-        for stream in realDatabase.deepLinkCreator.streams where stream.audio == nil {
-            stream.audio = .init()
             store()
         }
         for widget in realDatabase.widgets where widget.map.northUp == nil {
