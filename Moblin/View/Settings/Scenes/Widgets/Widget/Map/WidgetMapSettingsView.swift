@@ -22,7 +22,7 @@ struct WidgetMapSettingsView: View {
             NavigationLink {
                 LocationSettingsView()
             } label: {
-                IconAndTextView(image: "location", text: String(localized: "Location"))
+                Label("Location", systemImage: "location")
             }
         } header: {
             Text("Shortcut")

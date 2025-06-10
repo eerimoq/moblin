@@ -214,7 +214,7 @@ struct QuickButtonGoProView: View {
                     NavigationLink {
                         GoProSettingsView()
                     } label: {
-                        IconAndTextView(image: "appletvremote.gen1", text: String(localized: "GoPro"))
+                        Label("GoPro", systemImage: "appletvremote.gen1")
                     }
                 } header: {
                     Text("Shortcut")

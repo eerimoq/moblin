@@ -287,10 +287,7 @@ struct RemoteControlSettingsView: View {
                     }, set: {
                         model.setObsRemoteControlEnabled(enabled: $0)
                     })) {
-                        IconAndTextView(
-                            image: "dot.radiowaves.left.and.right",
-                            text: String(localized: "OBS remote control")
-                        )
+                        Label("OBS remote control", systemImage: "dot.radiowaves.left.and.right")
                     }
                 }
             } header: {

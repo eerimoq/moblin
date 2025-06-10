@@ -38,10 +38,7 @@ struct ChatSettingsView: View {
                         }
                         .navigationTitle("Streaming platforms")
                     } label: {
-                        IconAndTextView(
-                            image: "dot.radiowaves.left.and.right",
-                            text: String(localized: "Streaming platforms")
-                        )
+                        Label("Streaming platforms", systemImage: "dot.radiowaves.left.and.right")
                     }
                 } header: {
                     Text("Shortcut")

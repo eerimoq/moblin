@@ -79,7 +79,7 @@ private struct MenuView: View {
             }
         case .bitrate:
             NavigationStack {
-                QuickButtonBitrateView(selection: model.stream.bitrate)
+                QuickButtonBitrateView(database: model.database, stream: model.stream)
             }
         case .mic:
             NavigationStack {

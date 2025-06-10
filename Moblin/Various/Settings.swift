@@ -6251,10 +6251,6 @@ final class Settings {
             stream.srt.dnsLookupStrategy = .system
             store()
         }
-        for stream in realDatabase.deepLinkCreator.streams where stream.srt.dnsLookupStrategy == nil {
-            stream.srt.dnsLookupStrategy = .system
-            store()
-        }
         if realDatabase.show.djiDevices == nil {
             realDatabase.show.djiDevices = true
             store()

@@ -63,10 +63,7 @@ struct LocationSettingsView: View {
                     }, set: { value in
                         model.setRealtimeIrlEnabled(enabled: value)
                     })) {
-                        IconAndTextView(
-                            image: "dot.radiowaves.left.and.right",
-                            text: String(localized: "RealtimeIRL")
-                        )
+                        Label("RealtimeIRL", systemImage: "dot.radiowaves.left.and.right")
                     }
                 }
             } header: {

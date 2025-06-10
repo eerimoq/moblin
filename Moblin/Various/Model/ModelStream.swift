@@ -637,7 +637,12 @@ extension Model {
     }
 
     func setBitrate(bitrate: UInt32) {
-        stream.bitrate = bitrate
+        if bitrate != stream.bitrate {
+            stream.bitrate = bitrate
+        }
+        if stream.enabled {
+            setStreamBitrate(stream: stream)
+        }
         guard let preset = getBitratePresetByBitrate(bitrate: bitrate) else {
             return
         }

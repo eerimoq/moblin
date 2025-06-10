@@ -457,9 +457,6 @@ extension Model: RemoteControlStreamerDelegate {
             return
         }
         setBitrate(bitrate: preset.bitrate)
-        if stream.enabled {
-            setStreamBitrate(stream: stream)
-        }
         onComplete()
     }
 
