@@ -4550,9 +4550,28 @@ class DeepLinkCreatorStreamSrt: Codable, ObservableObject {
     }
 }
 
-class DeepLinkCreatorStreamObs: Codable {
-    var webSocketUrl: String = ""
-    var webSocketPassword: String = ""
+class DeepLinkCreatorStreamObs: Codable, ObservableObject {
+    @Published var webSocketUrl: String = ""
+    @Published var webSocketPassword: String = ""
+
+    enum CodingKeys: CodingKey {
+        case webSocketUrl,
+             webSocketPassword
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.webSocketUrl, webSocketUrl)
+        try container.encode(.webSocketPassword, webSocketPassword)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        webSocketUrl = container.decode(.webSocketUrl, String.self, "")
+        webSocketPassword = container.decode(.webSocketPassword, String.self, "")
+    }
 }
 
 class DeepLinkCreatorStreamTwitch: Codable, ObservableObject {

@@ -183,7 +183,7 @@ private struct DeepLinkCreatorStreamSrtView: View {
 
 private struct DeepLinkCreatorStreamObsView: View {
     @EnvironmentObject var model: Model
-    var obs: DeepLinkCreatorStreamObs
+    @ObservedObject var obs: DeepLinkCreatorStreamObs
 
     func submitWebSocketUrl(value: String) {
         let url = cleanUrl(url: value)
@@ -192,10 +192,6 @@ private struct DeepLinkCreatorStreamObsView: View {
             return
         }
         obs.webSocketUrl = url
-    }
-
-    func submitWebSocketPassword(value: String) {
-        obs.webSocketPassword = value
     }
 
     var body: some View {
@@ -211,7 +207,7 @@ private struct DeepLinkCreatorStreamObsView: View {
                 TextEditNavigationView(
                     title: String(localized: "Password"),
                     value: obs.webSocketPassword,
-                    onSubmit: submitWebSocketPassword,
+                    onSubmit: { obs.webSocketPassword = $0 },
                     sensitive: true
                 )
             } header: {
