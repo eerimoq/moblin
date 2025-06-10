@@ -6,7 +6,6 @@ struct DeepLinkCreatorWebBrowserSettingsView: View {
 
     private func submitHome(value: String) {
         webBrowser.home = value
-        model.store()
     }
 
     var body: some View {

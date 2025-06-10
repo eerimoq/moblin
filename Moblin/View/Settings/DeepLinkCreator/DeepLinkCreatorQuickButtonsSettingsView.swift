@@ -14,19 +14,16 @@ struct DeepLinkCreatorQuickButtonsSettingsView: View {
                     quickButtons.enableScroll
                 }, set: { value in
                     quickButtons.enableScroll = value
-                    model.store()
                 }))
                 Toggle("Two columns", isOn: Binding(get: {
                     quickButtons.twoColumns
                 }, set: { value in
                     quickButtons.twoColumns = value
-                    model.store()
                 }))
                 Toggle("Show name", isOn: Binding(get: {
                     quickButtons.showName
                 }, set: { value in
                     quickButtons.showName = value
-                    model.store()
                 }))
             } header: {
                 Text("Appearence")
@@ -38,7 +35,6 @@ struct DeepLinkCreatorQuickButtonsSettingsView: View {
                             button.enabled
                         }, set: { value in
                             button.enabled = value
-                            model.store()
                         })) {
                             HStack {
                                 DraggableItemPrefixView()

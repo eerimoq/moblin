@@ -17,7 +17,6 @@ struct DeepLinkCreatorStreamVideoBitrateView: View {
                 }
                 .onChange(of: selection) { bitrate in
                     video.bitrate = bitrate
-                    model.store()
                     dismiss()
                 }
                 .pickerStyle(.inline)
@@ -34,17 +33,14 @@ private struct DeepLinkCreatorStreamVideoView: View {
 
     private func onResolutionChange(resolution: String) {
         video.resolution = SettingsStreamResolution(rawValue: resolution)!
-        model.store()
     }
 
     private func onFpsChange(fps: String) {
         video.fps = Int(fps)!
-        model.store()
     }
 
     private func onCodecChange(codec: String) {
         video.codec = SettingsStreamCodec(rawValue: codec)!
-        model.store()
     }
 
     private func submitMaxKeyFrameInterval(value: String) {
@@ -55,7 +51,6 @@ private struct DeepLinkCreatorStreamVideoView: View {
             return
         }
         video.maxKeyFrameInterval = interval
-        model.store()
     }
 
     var body: some View {
@@ -125,7 +120,6 @@ private struct DeepLinkCreatorStreamVideoView: View {
                     video.bFrames!
                 }, set: { value in
                     video.bFrames = value
-                    model.store()
                 }), label: {
                     Text("B-frames")
                 })
@@ -157,7 +151,6 @@ private struct DeepLinkCreatorStreamAudioView: View {
                                 return
                             }
                             audio.bitrate = calcBitrate()
-                            model.store()
                         }
                     )
                     Text(formatBytesPerSecond(speed: Int64(calcBitrate())))
@@ -182,7 +175,6 @@ private struct DeepLinkCreatorStreamSrtView: View {
             return
         }
         srt.latency = latency
-        model.store()
     }
 
     var body: some View {
@@ -205,7 +197,6 @@ private struct DeepLinkCreatorStreamSrtView: View {
                     srt.adaptiveBitrateEnabled
                 }, set: { value in
                     srt.adaptiveBitrateEnabled = value
-                    model.store()
                 }))
                 Picker("DNS lookup strategy", selection: $dnsLookupStrategy) {
                     ForEach(dnsLookupStrategies, id: \.self) { strategy in
@@ -232,12 +223,10 @@ private struct DeepLinkCreatorStreamObsView: View {
             return
         }
         obs.webSocketUrl = url
-        model.store()
     }
 
     func submitWebSocketPassword(value: String) {
         obs.webSocketPassword = value
-        model.store()
     }
 
     var body: some View {
@@ -272,12 +261,10 @@ struct DeepLinkCreatorStreamTwitchView: View {
 
     func submitChannelName(value: String) {
         stream.twitch!.channelName = value
-        model.store()
     }
 
     func submitChannelId(value: String) {
         stream.twitch!.channelId = value
-        model.store()
     }
 
     var body: some View {
@@ -306,7 +293,6 @@ struct DeepLinkCreatorStreamKickView: View {
 
     func submitChannelName(value: String) {
         stream.kick!.channelName = value
-        model.store()
     }
 
     var body: some View {
@@ -336,7 +322,6 @@ struct DeepLinkCreatorStreamSettingsView: View {
                     value: stream.name,
                     onSubmit: {
                         stream.name = $0
-                        model.store()
                     }
                 )
                 TextEditNavigationView(
@@ -344,7 +329,6 @@ struct DeepLinkCreatorStreamSettingsView: View {
                     value: stream.url,
                     onSubmit: {
                         stream.url = $0
-                        model.store()
                     }
                 )
                 NavigationLink {
@@ -399,7 +383,6 @@ struct DeepLinkCreatorStreamSettingsView: View {
                     stream.selected
                 }, set: { value in
                     stream.selected = value
-                    model.store()
                 }), label: {
                     Text("Selected")
                 })
