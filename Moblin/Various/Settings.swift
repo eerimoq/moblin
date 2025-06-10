@@ -4522,10 +4522,32 @@ class DeepLinkCreatorStreamAudio: Codable, ObservableObject {
     }
 }
 
-class DeepLinkCreatorStreamSrt: Codable {
-    var latency: Int32 = defaultSrtLatency
-    var adaptiveBitrateEnabled: Bool = true
-    var dnsLookupStrategy: SettingsDnsLookupStrategy? = .system
+class DeepLinkCreatorStreamSrt: Codable, ObservableObject {
+    @Published var latency: Int32 = defaultSrtLatency
+    @Published var adaptiveBitrateEnabled: Bool = true
+    @Published var dnsLookupStrategy: SettingsDnsLookupStrategy = .system
+
+    enum CodingKeys: CodingKey {
+        case latency,
+             adaptiveBitrateEnabled,
+             dnsLookupStrategy
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.latency, latency)
+        try container.encode(.adaptiveBitrateEnabled, adaptiveBitrateEnabled)
+        try container.encode(.dnsLookupStrategy, dnsLookupStrategy)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        latency = container.decode(.latency, Int32.self, defaultSrtLatency)
+        adaptiveBitrateEnabled = container.decode(.adaptiveBitrateEnabled, Bool.self, true)
+        dnsLookupStrategy = container.decode(.dnsLookupStrategy, SettingsDnsLookupStrategy.self, .system)
+    }
 }
 
 class DeepLinkCreatorStreamObs: Codable {

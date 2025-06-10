@@ -138,8 +138,7 @@ private struct DeepLinkCreatorStreamAudioView: View {
 
 private struct DeepLinkCreatorStreamSrtView: View {
     @EnvironmentObject var model: Model
-    var srt: DeepLinkCreatorStreamSrt
-    @State var dnsLookupStrategy: String
+    @ObservedObject var srt: DeepLinkCreatorStreamSrt
 
     func submitLatency(value: String) {
         guard let latency = Int32(value) else {
@@ -167,18 +166,14 @@ private struct DeepLinkCreatorStreamSrtView: View {
                     keyboardType: .numbersAndPunctuation,
                     valueFormat: { "\($0) ms" }
                 )
-                Toggle("Adaptive bitrate", isOn: Binding(get: {
-                    srt.adaptiveBitrateEnabled
-                }, set: { value in
-                    srt.adaptiveBitrateEnabled = value
-                }))
-                Picker("DNS lookup strategy", selection: $dnsLookupStrategy) {
-                    ForEach(dnsLookupStrategies, id: \.self) { strategy in
-                        Text(strategy)
+                Toggle("Adaptive bitrate", isOn: $srt.adaptiveBitrateEnabled)
+                Picker("DNS lookup strategy", selection: $srt.dnsLookupStrategy) {
+                    ForEach(SettingsDnsLookupStrategy.allCases, id: \.self) { strategy in
+                        Text(strategy.rawValue)
                     }
                 }
-                .onChange(of: dnsLookupStrategy) { strategy in
-                    srt.dnsLookupStrategy = SettingsDnsLookupStrategy(rawValue: strategy) ?? .system
+                .onChange(of: srt.dnsLookupStrategy) { strategy in
+                    srt.dnsLookupStrategy = strategy
                 }
             }
         }
@@ -304,10 +299,7 @@ struct DeepLinkCreatorStreamSettingsView: View {
                     }
                     if let url = URL(string: stream.url), ["srt", "srtla"].contains(url.scheme) {
                         NavigationLink {
-                            DeepLinkCreatorStreamSrtView(
-                                srt: stream.srt,
-                                dnsLookupStrategy: stream.srt.dnsLookupStrategy!.rawValue
-                            )
+                            DeepLinkCreatorStreamSrtView(srt: stream.srt)
                         } label: {
                             Text("SRT(LA)")
                         }
