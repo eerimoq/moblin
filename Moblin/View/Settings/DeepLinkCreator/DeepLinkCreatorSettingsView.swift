@@ -126,7 +126,7 @@ struct DeepLinkCreatorSettingsView: View {
                         Text("Streams")
                     }
                     NavigationLink {
-                        DeepLinkCreatorQuickButtonsSettingsView()
+                        DeepLinkCreatorQuickButtonsSettingsView(quickButtons: deepLinkCreator.quickButtons)
                     } label: {
                         Toggle(isOn: $deepLinkCreator.quickButtonsEnabled) {
                             Text("Quick buttons")

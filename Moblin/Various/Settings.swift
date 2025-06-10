@@ -4512,11 +4512,36 @@ class DeepLinkCreatorQuickButton: Codable, Identifiable {
     var enabled: Bool = false
 }
 
-class DeepLinkCreatorQuickButtons: Codable {
-    var twoColumns: Bool = true
-    var showName: Bool = true
-    var enableScroll: Bool = true
-    var buttons: [DeepLinkCreatorQuickButton] = []
+class DeepLinkCreatorQuickButtons: Codable, ObservableObject {
+    @Published var twoColumns: Bool = true
+    @Published var showName: Bool = true
+    @Published var enableScroll: Bool = true
+    @Published var buttons: [DeepLinkCreatorQuickButton] = []
+
+    enum CodingKeys: CodingKey {
+        case twoColumns,
+             showName,
+             enableScroll,
+             buttons
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.twoColumns, twoColumns)
+        try container.encode(.showName, showName)
+        try container.encode(.enableScroll, enableScroll)
+        try container.encode(.buttons, buttons)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        twoColumns = container.decode(.twoColumns, Bool.self, true)
+        showName = container.decode(.showName, Bool.self, true)
+        enableScroll = container.decode(.enableScroll, Bool.self, true)
+        buttons = container.decode(.buttons, [DeepLinkCreatorQuickButton].self, [])
+    }
 }
 
 class DeepLinkCreatorWebBrowser: Codable, ObservableObject {

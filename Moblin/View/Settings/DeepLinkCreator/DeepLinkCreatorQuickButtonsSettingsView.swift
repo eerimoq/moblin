@@ -2,29 +2,14 @@ import SwiftUI
 
 struct DeepLinkCreatorQuickButtonsSettingsView: View {
     @EnvironmentObject var model: Model
-
-    private var quickButtons: DeepLinkCreatorQuickButtons {
-        return model.database.deepLinkCreator.quickButtons
-    }
+    @ObservedObject var quickButtons: DeepLinkCreatorQuickButtons
 
     var body: some View {
         Form {
             Section {
-                Toggle("Scroll", isOn: Binding(get: {
-                    quickButtons.enableScroll
-                }, set: { value in
-                    quickButtons.enableScroll = value
-                }))
-                Toggle("Two columns", isOn: Binding(get: {
-                    quickButtons.twoColumns
-                }, set: { value in
-                    quickButtons.twoColumns = value
-                }))
-                Toggle("Show name", isOn: Binding(get: {
-                    quickButtons.showName
-                }, set: { value in
-                    quickButtons.showName = value
-                }))
+                Toggle("Scroll", isOn: $quickButtons.enableScroll)
+                Toggle("Two columns", isOn: $quickButtons.twoColumns)
+                Toggle("Show name", isOn: $quickButtons.showName)
             } header: {
                 Text("Appearence")
             }
