@@ -4500,8 +4500,26 @@ class DeepLinkCreatorStreamVideo: Codable, ObservableObject {
     }
 }
 
-class DeepLinkCreatorStreamAudio: Codable {
-    var bitrate: Int = 128_000
+class DeepLinkCreatorStreamAudio: Codable, ObservableObject {
+    @Published var bitrate: Int = 128_000
+    @Published var bitrateFloat: Float = 128
+
+    enum CodingKeys: CodingKey {
+        case bitrate
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.bitrate, bitrate)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        bitrate = container.decode(.bitrate, Int.self, 128_000)
+        bitrateFloat = Float(bitrate / 1000)
+    }
 }
 
 class DeepLinkCreatorStreamSrt: Codable {

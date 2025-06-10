@@ -4,19 +4,17 @@ private struct DeepLinkCreatorStreamVideoBitrateView: View {
     @EnvironmentObject var model: Model
     @Environment(\.dismiss) var dismiss
     @ObservedObject var video: DeepLinkCreatorStreamVideo
-    @State var selection: UInt32
 
     var body: some View {
         Form {
             Section {
-                Picker("", selection: $selection) {
+                Picker("", selection: $video.bitrate) {
                     ForEach(model.database.bitratePresets) { preset in
                         Text(formatBytesPerSecond(speed: Int64(preset.bitrate)))
                             .tag(preset.bitrate)
                     }
                 }
-                .onChange(of: selection) { bitrate in
-                    video.bitrate = bitrate
+                .onChange(of: video.bitrate) { _ in
                     dismiss()
                 }
                 .pickerStyle(.inline)
@@ -74,10 +72,7 @@ private struct DeepLinkCreatorStreamVideoView: View {
                     TextItemView(name: String(localized: "Codec"), value: video.codec.rawValue)
                 }
                 NavigationLink {
-                    DeepLinkCreatorStreamVideoBitrateView(
-                        video: video,
-                        selection: video.bitrate
-                    )
+                    DeepLinkCreatorStreamVideoBitrateView(video: video)
                 } label: {
                     TextItemView(
                         name: String(localized: "Bitrate"),
@@ -111,12 +106,10 @@ private struct DeepLinkCreatorStreamVideoView: View {
 }
 
 private struct DeepLinkCreatorStreamAudioView: View {
-    @EnvironmentObject var model: Model
-    var audio: DeepLinkCreatorStreamAudio
-    @State var bitrate: Float
+    @ObservedObject var audio: DeepLinkCreatorStreamAudio
 
     private func calcBitrate() -> Int {
-        return Int((bitrate * 1000).rounded(.up))
+        return Int((audio.bitrateFloat * 1000).rounded(.up))
     }
 
     var body: some View {
@@ -124,7 +117,7 @@ private struct DeepLinkCreatorStreamAudioView: View {
             Section {
                 HStack {
                     Slider(
-                        value: $bitrate,
+                        value: $audio.bitrateFloat,
                         in: 32 ... 320,
                         step: 32,
                         onEditingChanged: { begin in
@@ -305,10 +298,7 @@ struct DeepLinkCreatorStreamSettingsView: View {
                         Text("Video")
                     }
                     NavigationLink {
-                        DeepLinkCreatorStreamAudioView(
-                            audio: stream.audio,
-                            bitrate: Float(stream.audio.bitrate / 1000)
-                        )
+                        DeepLinkCreatorStreamAudioView(audio: stream.audio)
                     } label: {
                         Text("Audio")
                     }
