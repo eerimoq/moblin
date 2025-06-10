@@ -569,6 +569,9 @@
 		882D0C0E2DF72CCD0035BFAF /* ModelPhoneCoolerDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 882D0C0D2DF72CC60035BFAF /* ModelPhoneCoolerDevice.swift */; };
 		882D0C162DF76F5B0035BFAF /* BlackSharkLib in Frameworks */ = {isa = PBXBuildFile; productRef = 882D0C152DF76F5B0035BFAF /* BlackSharkLib */; };
 		882D0C222DF785520035BFAF /* PhoneCoolerDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 882D0C202DF785520035BFAF /* PhoneCoolerDevice.swift */; };
+		88DBCC772DF8D3CA0048C50E /* PhoneCoolerDeviceScannerSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88DBCC732DF8D3CA0048C50E /* PhoneCoolerDeviceScannerSettingsView.swift */; };
+		88DBCC782DF8D3CA0048C50E /* PhoneCoolerDeviceSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88DBCC742DF8D3CA0048C50E /* PhoneCoolerDeviceSettingsView.swift */; };
+		88DBCC792DF8D3CA0048C50E /* PhoneCoolerDevicesSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88DBCC752DF8D3CA0048C50E /* PhoneCoolerDevicesSettingsView.swift */; };
 		ABF045852C1CEAF800D07696 /* AdaptiveBitrateSrtBela.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABF045842C1CEAF800D07696 /* AdaptiveBitrateSrtBela.swift */; };
 		C7E682562BC2E3FE004EB747 /* ThermalStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B373FE2A9FCA790028DDD5 /* ThermalStateView.swift */; };
 /* End PBXBuildFile section */
@@ -1218,12 +1221,11 @@
 		45E3EAA92F1B2253BB2ED4FC /* DjiDeviceScanner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DjiDeviceScanner.swift; sourceTree = "<group>"; };
 		882D0C0D2DF72CC60035BFAF /* ModelPhoneCoolerDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelPhoneCoolerDevice.swift; sourceTree = "<group>"; };
 		882D0C202DF785520035BFAF /* PhoneCoolerDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneCoolerDevice.swift; sourceTree = "<group>"; };
+		88DBCC732DF8D3CA0048C50E /* PhoneCoolerDeviceScannerSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneCoolerDeviceScannerSettingsView.swift; sourceTree = "<group>"; };
+		88DBCC742DF8D3CA0048C50E /* PhoneCoolerDeviceSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneCoolerDeviceSettingsView.swift; sourceTree = "<group>"; };
+		88DBCC752DF8D3CA0048C50E /* PhoneCoolerDevicesSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneCoolerDevicesSettingsView.swift; sourceTree = "<group>"; };
 		ABF045842C1CEAF800D07696 /* AdaptiveBitrateSrtBela.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdaptiveBitrateSrtBela.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
-
-/* Begin PBXFileSystemSynchronizedRootGroup section */
-		882D0C032DF725860035BFAF /* PhoneCoolers */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = PhoneCoolers; sourceTree = "<group>"; };
-/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		0312E42B2C00F24E00C6F878 /* Frameworks */ = {
@@ -2628,7 +2630,7 @@
 		03B373F42A9EF8BD0028DDD5 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
-				882D0C032DF725860035BFAF /* PhoneCoolers */,
+				88DBCC762DF8D3CA0048C50E /* PhoneCoolers */,
 				039ACB652DED6D9600D35E4D /* SelfieStick */,
 				0379BBAB2AAD962700B718B6 /* About */,
 				037CE22B2BC17EA3004E9B18 /* Audio */,
@@ -3248,6 +3250,16 @@
 			path = PhoneCooler;
 			sourceTree = "<group>";
 		};
+		88DBCC762DF8D3CA0048C50E /* PhoneCoolers */ = {
+			isa = PBXGroup;
+			children = (
+				88DBCC732DF8D3CA0048C50E /* PhoneCoolerDeviceScannerSettingsView.swift */,
+				88DBCC742DF8D3CA0048C50E /* PhoneCoolerDeviceSettingsView.swift */,
+				88DBCC752DF8D3CA0048C50E /* PhoneCoolerDevicesSettingsView.swift */,
+			);
+			path = PhoneCoolers;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -3284,9 +3296,6 @@
 				032815D72AC855B1001F8A85 /* PBXTargetDependency */,
 				03ECDF522B8E4E6000BD920E /* PBXTargetDependency */,
 				0312E4362C00F24E00C6F878 /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				882D0C032DF725860035BFAF /* PhoneCoolers */,
 			);
 			name = Moblin;
 			packageProductDependencies = (
@@ -3621,6 +3630,9 @@
 				03D3C0512B452D61006BAEAC /* StreamRecordingSettingsView.swift in Sources */,
 				0342F1A52C627A8F004DD3EA /* MirlCommon.swift in Sources */,
 				0325D0B42BB29713007EE85B /* ChatFiltersSettingsView.swift in Sources */,
+				88DBCC772DF8D3CA0048C50E /* PhoneCoolerDeviceScannerSettingsView.swift in Sources */,
+				88DBCC782DF8D3CA0048C50E /* PhoneCoolerDeviceSettingsView.swift in Sources */,
+				88DBCC792DF8D3CA0048C50E /* PhoneCoolerDevicesSettingsView.swift in Sources */,
 				03980C552C5E74A9000ED476 /* VoicesView.swift in Sources */,
 				0302F07F2B320B0500B06FF0 /* StreamWizardChatSettingsView.swift in Sources */,
 				032D85862DDD7F4E00A6128A /* ModelKeyboard.swift in Sources */,

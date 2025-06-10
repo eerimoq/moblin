@@ -26,11 +26,13 @@ struct PhoneCoolerDeviceScannerSettingsView: View {
                     }
                 } else {
                     List {
-                        ForEach(scanner.discoveredPeripherals.map { peripheral in
-                            InlinePickerItem(
-                                id: peripheral.identifier.uuidString,
-                                text: peripheral.name ?? String(localized: "Unknown")
-                            )
+                        ForEach(scanner.discoveredPeripherals
+                            .filter { $0.name?.localizedCaseInsensitiveContains("black shark") == true }
+                            .map { peripheral in
+                                InlinePickerItem(
+                                    id: peripheral.identifier.uuidString,
+                                    text: peripheral.name ?? String(localized: "Unknown")
+                                )
                         }) { item in
                             Button {
                                 onChange(item.id)
