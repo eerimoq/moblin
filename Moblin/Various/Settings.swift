@@ -4460,13 +4460,44 @@ class WebBrowserSettings: Codable {
     var home: String = "https://google.com"
 }
 
-class DeepLinkCreatorStreamVideo: Codable {
-    var resolution: SettingsStreamResolution? = .r1920x1080
-    var fps: Int? = 30
-    var bitrate: UInt32? = 5_000_000
-    var codec: SettingsStreamCodec = .h265hevc
-    var bFrames: Bool? = false
-    var maxKeyFrameInterval: Int32? = 2
+class DeepLinkCreatorStreamVideo: Codable, ObservableObject {
+    @Published var resolution: SettingsStreamResolution = .r1920x1080
+    @Published var fps: Int = 30
+    @Published var bitrate: UInt32 = 5_000_000
+    @Published var codec: SettingsStreamCodec = .h265hevc
+    @Published var bFrames: Bool = false
+    @Published var maxKeyFrameInterval: Int32 = 2
+
+    enum CodingKeys: CodingKey {
+        case resolution,
+             fps,
+             bitrate,
+             codec,
+             bFrames,
+             maxKeyFrameInterval
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.resolution, resolution)
+        try container.encode(.fps, fps)
+        try container.encode(.bitrate, bitrate)
+        try container.encode(.codec, codec)
+        try container.encode(.bFrames, bFrames)
+        try container.encode(.maxKeyFrameInterval, maxKeyFrameInterval)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        resolution = container.decode(.resolution, SettingsStreamResolution.self, .r1920x1080)
+        fps = container.decode(.fps, Int.self, 30)
+        bitrate = container.decode(.bitrate, UInt32.self, 5_000_000)
+        codec = container.decode(.codec, SettingsStreamCodec.self, .h265hevc)
+        bFrames = container.decode(.bFrames, Bool.self, false)
+        maxKeyFrameInterval = container.decode(.maxKeyFrameInterval, Int32.self, 2)
+    }
 }
 
 class DeepLinkCreatorStreamAudio: Codable {
@@ -5901,26 +5932,6 @@ final class Settings {
         }
         for stream in realDatabase.streams where stream.srt.adaptiveBitrate!.belaboxSettings == nil {
             stream.srt.adaptiveBitrate!.belaboxSettings = .init()
-            store()
-        }
-        for stream in realDatabase.deepLinkCreator.streams where stream.video.bFrames == nil {
-            stream.video.bFrames = false
-            store()
-        }
-        for stream in realDatabase.deepLinkCreator.streams where stream.video.resolution == nil {
-            stream.video.resolution = .r1920x1080
-            store()
-        }
-        for stream in realDatabase.deepLinkCreator.streams where stream.video.fps == nil {
-            stream.video.fps = 30
-            store()
-        }
-        for stream in realDatabase.deepLinkCreator.streams where stream.video.bitrate == nil {
-            stream.video.bitrate = 5_000_000
-            store()
-        }
-        for stream in realDatabase.deepLinkCreator.streams where stream.video.maxKeyFrameInterval == nil {
-            stream.video.maxKeyFrameInterval = 2
             store()
         }
         for widget in realDatabase.widgets where widget.map.northUp == nil {

@@ -3,7 +3,7 @@ import SwiftUI
 private struct DeepLinkCreatorStreamVideoBitrateView: View {
     @EnvironmentObject var model: Model
     @Environment(\.dismiss) var dismiss
-    var video: DeepLinkCreatorStreamVideo
+    @ObservedObject var video: DeepLinkCreatorStreamVideo
     @State var selection: UInt32
 
     var body: some View {
@@ -28,20 +28,7 @@ private struct DeepLinkCreatorStreamVideoBitrateView: View {
 }
 
 private struct DeepLinkCreatorStreamVideoView: View {
-    @EnvironmentObject var model: Model
-    var video: DeepLinkCreatorStreamVideo
-
-    private func onResolutionChange(resolution: String) {
-        video.resolution = SettingsStreamResolution(rawValue: resolution)!
-    }
-
-    private func onFpsChange(fps: String) {
-        video.fps = Int(fps)!
-    }
-
-    private func onCodecChange(codec: String) {
-        video.codec = SettingsStreamCodec(rawValue: codec)!
-    }
+    @ObservedObject var video: DeepLinkCreatorStreamVideo
 
     private func submitMaxKeyFrameInterval(value: String) {
         guard let interval = Int32(value) else {
@@ -59,27 +46,27 @@ private struct DeepLinkCreatorStreamVideoView: View {
                 NavigationLink {
                     InlinePickerView(
                         title: String(localized: "Resolution"),
-                        onChange: onResolutionChange,
+                        onChange: { video.resolution = SettingsStreamResolution(rawValue: $0)! },
                         items: resolutions.map { .init(id: $0.rawValue, text: $0.shortString()) },
-                        selectedId: video.resolution!.rawValue
+                        selectedId: video.resolution.rawValue
                     )
                 } label: {
-                    TextItemView(name: String(localized: "Resolution"), value: video.resolution!.shortString())
+                    TextItemView(name: String(localized: "Resolution"), value: video.resolution.shortString())
                 }
                 NavigationLink {
                     InlinePickerView(
                         title: String(localized: "FPS"),
-                        onChange: onFpsChange,
+                        onChange: { video.fps = Int($0)! },
                         items: InlinePickerItem.fromStrings(values: fpss),
-                        selectedId: String(video.fps!)
+                        selectedId: String(video.fps)
                     )
                 } label: {
-                    TextItemView(name: "FPS", value: String(video.fps!))
+                    TextItemView(name: "FPS", value: String(video.fps))
                 }
                 NavigationLink {
                     InlinePickerView(
                         title: String(localized: "Codec"),
-                        onChange: onCodecChange,
+                        onChange: { video.codec = SettingsStreamCodec(rawValue: $0)! },
                         items: InlinePickerItem.fromStrings(values: codecs),
                         selectedId: video.codec.rawValue
                     )
@@ -89,22 +76,20 @@ private struct DeepLinkCreatorStreamVideoView: View {
                 NavigationLink {
                     DeepLinkCreatorStreamVideoBitrateView(
                         video: video,
-                        selection: video.bitrate!
+                        selection: video.bitrate
                     )
                 } label: {
                     TextItemView(
                         name: String(localized: "Bitrate"),
-                        value: formatBytesPerSecond(speed: Int64(video.bitrate!))
+                        value: formatBytesPerSecond(speed: Int64(video.bitrate))
                     )
                 }
                 NavigationLink {
                     TextEditView(
                         title: String(localized: "Key frame interval"),
-                        value: String(video.maxKeyFrameInterval!),
+                        value: String(video.maxKeyFrameInterval),
                         footers: [
-                            String(
-                                localized: "Maximum key frame interval in seconds. Set to 0 for automatic."
-                            ),
+                            String(localized: "Maximum key frame interval in seconds. Set to 0 for automatic."),
                         ],
                         keyboardType: .numbersAndPunctuation
                     ) {
@@ -113,16 +98,12 @@ private struct DeepLinkCreatorStreamVideoView: View {
                 } label: {
                     TextItemView(
                         name: String(localized: "Key frame interval"),
-                        value: "\(video.maxKeyFrameInterval!) s"
+                        value: "\(video.maxKeyFrameInterval) s"
                     )
                 }
-                Toggle(isOn: Binding(get: {
-                    video.bFrames!
-                }, set: { value in
-                    video.bFrames = value
-                }), label: {
+                Toggle(isOn: $video.bFrames) {
                     Text("B-frames")
-                })
+                }
             }
         }
         .navigationTitle("Video")
