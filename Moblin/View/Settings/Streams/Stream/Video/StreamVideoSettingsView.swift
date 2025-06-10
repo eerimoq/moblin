@@ -160,10 +160,10 @@ struct StreamVideoSettingsView: View {
                 }
                 Section {
                     Toggle("Adaptive resolution", isOn: $stream.adaptiveEncoderResolution)
-                    .onChange(of: stream.adaptiveEncoderResolution) {_ in
-                        model.reloadStreamIfEnabled(stream: stream)
-                    }
-                    .disabled(stream.enabled && model.isLive)
+                        .onChange(of: stream.adaptiveEncoderResolution) { _ in
+                            model.reloadStreamIfEnabled(stream: stream)
+                        }
+                        .disabled(stream.enabled && model.isLive)
                 } footer: {
                     VStack(alignment: .leading) {
                         Text("""
@@ -182,13 +182,13 @@ struct StreamVideoSettingsView: View {
                             StreamTimecodesSettingsView(stream: stream)
                         } label: {
                             Toggle("Timecodes", isOn: $stream.timecodesEnabled)
-                            .onChange(of: stream.timecodesEnabled) {_ in
-                                if stream.enabled {
-                                    model.reloadNtpClient()
-                                    model.reloadSrtlaServer()
+                                .onChange(of: stream.timecodesEnabled) { _ in
+                                    if stream.enabled {
+                                        model.reloadNtpClient()
+                                        model.reloadSrtlaServer()
+                                    }
                                 }
-                            }
-                            .disabled(stream.codec != .h265hevc || (stream.enabled && model.isLive))
+                                .disabled(stream.codec != .h265hevc || (stream.enabled && model.isLive))
                         }
                     } footer: {
                         Text("""

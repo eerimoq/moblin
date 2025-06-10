@@ -459,7 +459,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject {
     var estimatedViewerDelay: Float = 8.0
     var twitchMultiTrackEnabled: Bool = false
     @Published var ntpPoolAddress: String = "time.apple.com"
-    @Published  var timecodesEnabled: Bool = false
+    @Published var timecodesEnabled: Bool = false
     var replay: SettingsStreamReplay = .init()
 
     static func == (lhs: SettingsStream, rhs: SettingsStream) -> Bool {
