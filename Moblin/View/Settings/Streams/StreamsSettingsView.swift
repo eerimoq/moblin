@@ -7,7 +7,7 @@ private struct StreamItemView: View {
 
     var body: some View {
         let item = NavigationLink {
-            StreamSettingsView(stream: stream)
+            StreamSettingsView(database: database, stream: stream)
         } label: {
             HStack {
                 DraggableItemPrefixView()

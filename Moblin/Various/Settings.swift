@@ -101,7 +101,7 @@ enum SettingsStreamResolution: String, Codable, CaseIterable {
 
 let resolutions = SettingsStreamResolution.allCases
 
-let fpss = ["120", "100", "60", "50", "30", "25", "15"]
+let fpss = [120, 100, 60, 50, 30, 25, 15]
 
 enum SettingsStreamProtocol: String, Codable {
     case rtmp = "RTMP"
@@ -435,11 +435,11 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject {
     var discordSnapshotWebhook: String = ""
     var discordChatBotSnapshotWebhook: String = ""
     var discordSnapshotWebhookOnlyWhenLive: Bool = true
-    var resolution: SettingsStreamResolution = .r1920x1080
-    var fps: Int = 30
+    @Published var resolution: SettingsStreamResolution = .r1920x1080
+    @Published var fps: Int = 30
     var autoFps: Bool = false
-    var bitrate: UInt32 = 5_000_000
-    var codec: SettingsStreamCodec = .h265hevc
+    @Published var bitrate: UInt32 = 5_000_000
+    @Published var codec: SettingsStreamCodec = .h265hevc
     var bFrames: Bool = false
     var adaptiveEncoderResolution: Bool = false
     var adaptiveBitrate: Bool = true
@@ -454,11 +454,11 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject {
     var recording: SettingsStreamRecording = .init()
     var realtimeIrlEnabled: Bool = false
     var realtimeIrlPushKey: String = ""
-    var portrait: Bool = false
+    @Published var portrait: Bool = false
     var backgroundStreaming: Bool = false
     var estimatedViewerDelay: Float = 8.0
     var twitchMultiTrackEnabled: Bool = false
-    var ntpPoolAddress: String = "time.apple.com"
+    @Published var ntpPoolAddress: String = "time.apple.com"
     var timecodesEnabled: Bool = false
     var replay: SettingsStreamReplay = .init()
 

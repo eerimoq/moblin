@@ -2,7 +2,7 @@ import SwiftUI
 
 private struct StreamTimecodesSettingsView: View {
     @EnvironmentObject var model: Model
-    var stream: SettingsStream
+    @ObservedObject var stream: SettingsStream
 
     var body: some View {
         Form {
@@ -30,35 +30,8 @@ private struct StreamTimecodesSettingsView: View {
 
 struct StreamVideoSettingsView: View {
     @EnvironmentObject var model: Model
-    var stream: SettingsStream
-    @State var codec: String
-    @State var bitrate: UInt32
-    @State var resolution: String
-    @State var fps: String
-
-    private func onResolutionChange(resolution: String) {
-        stream.resolution = SettingsStreamResolution(rawValue: resolution)!
-        model.reloadStreamIfEnabled(stream: stream)
-    }
-
-    private func onFpsChange(fps: String) {
-        stream.fps = Int(fps)!
-        model.reloadStreamIfEnabled(stream: stream)
-    }
-
-    private func onBitrateChange(bitrate: UInt32) {
-        self.bitrate = bitrate
-        stream.bitrate = bitrate
-        if stream.enabled {
-            model.setStreamBitrate(stream: stream)
-        }
-    }
-
-    private func onCodecChange(codec: String) {
-        self.codec = codec
-        stream.codec = SettingsStreamCodec(rawValue: codec)!
-        model.reloadStreamIfEnabled(stream: stream)
-    }
+    @ObservedObject var database: Database
+    @ObservedObject var stream: SettingsStream
 
     private func submitMaxKeyFrameInterval(value: String) {
         guard let interval = Int32(value) else {
@@ -77,15 +50,14 @@ struct StreamVideoSettingsView: View {
                 HStack {
                     Text("Resolution")
                     Spacer()
-                    Picker("", selection: $resolution) {
+                    Picker("", selection: $stream.resolution) {
                         ForEach(resolutions, id: \.self) {
                             Text($0.shortString())
-                                .tag($0.rawValue)
                         }
                     }
                 }
-                .onChange(of: resolution) { _ in
-                    onResolutionChange(resolution: resolution)
+                .onChange(of: stream.resolution) { _ in
+                    model.reloadStreamIfEnabled(stream: stream)
                 }
                 .disabled(stream.enabled && (model.isLive || model.isRecording))
             }
@@ -93,14 +65,14 @@ struct StreamVideoSettingsView: View {
                 HStack {
                     Text("FPS")
                     Spacer()
-                    Picker("", selection: $fps) {
+                    Picker("", selection: $stream.fps) {
                         ForEach(fpss, id: \.self) {
-                            Text($0)
+                            Text(String($0))
                         }
                     }
                 }
-                .onChange(of: fps) { _ in
-                    onFpsChange(fps: fps)
+                .onChange(of: stream.fps) { _ in
+                    model.reloadStreamIfEnabled(stream: stream)
                 }
                 .disabled(stream.enabled && (model.isLive || model.isRecording))
             } footer: {
@@ -122,18 +94,19 @@ struct StreamVideoSettingsView: View {
                     """)
                 }
             }
-            if model.database.showAllSettings {
+            if database.showAllSettings {
                 Section {
                     HStack {
                         Text("Codec")
                         Spacer()
-                        Picker("", selection: Binding(get: {
-                            codec
-                        }, set: onCodecChange)) {
-                            ForEach(codecs, id: \.self) {
-                                Text($0)
+                        Picker("", selection: $stream.codec) {
+                            ForEach(SettingsStreamCodec.allCases, id: \.self) {
+                                Text($0.rawValue)
                             }
                         }
+                    }
+                    .onChange(of: stream.codec) { _ in
+                        model.reloadStreamIfEnabled(stream: stream)
                     }
                     .disabled(stream.enabled && model.isLive)
                 } footer: {
@@ -146,12 +119,15 @@ struct StreamVideoSettingsView: View {
                     HStack {
                         Text("Bitrate")
                         Spacer()
-                        Picker("", selection: Binding(get: {
-                            bitrate
-                        }, set: onBitrateChange)) {
-                            ForEach(model.database.bitratePresets) { preset in
+                        Picker("", selection: $stream.bitrate) {
+                            ForEach(database.bitratePresets) { preset in
                                 Text(formatBytesPerSecond(speed: Int64(preset.bitrate)))
                                     .tag(preset.bitrate)
+                            }
+                        }
+                        .onChange(of: stream.bitrate) { _ in
+                            if stream.enabled {
+                                model.setStreamBitrate(stream: stream)
                             }
                         }
                     }
@@ -207,7 +183,7 @@ struct StreamVideoSettingsView: View {
                         """)
                     }
                 }
-                if model.database.debug.timecodesEnabled {
+                if database.debug.timecodesEnabled {
                     Section {
                         NavigationLink {
                             StreamTimecodesSettingsView(stream: stream)

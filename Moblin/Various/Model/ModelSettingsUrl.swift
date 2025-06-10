@@ -13,7 +13,7 @@ extension Model {
                 if let resolution = video.resolution {
                     newStream.resolution = resolution
                 }
-                if let fps = video.fps, fpss.contains(String(fps)) {
+                if let fps = video.fps, fpss.contains(fps) {
                     newStream.fps = fps
                 }
                 if let bitrate = video.bitrate, bitrate >= 50000, bitrate <= 50_000_000 {
