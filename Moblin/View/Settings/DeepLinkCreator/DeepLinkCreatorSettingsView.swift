@@ -4,11 +4,8 @@ private let defaultDeepLink = "moblin://?{}"
 
 struct DeepLinkCreatorSettingsView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var deepLinkCreator: DeepLinkCreator
     @State var deepLink = defaultDeepLink
-
-    private var deepLinkCreator: DeepLinkCreator {
-        return model.database.deepLinkCreator
-    }
 
     private func createDeepLinkStream(stream: DeepLinkCreatorStream) -> MoblinSettingsUrlStream {
         let newStream = MoblinSettingsUrlStream(name: stream.name, url: stream.url)
@@ -71,15 +68,15 @@ struct DeepLinkCreatorSettingsView: View {
     }
 
     private func updateDeepLinkQuickButtons(settings: MoblinSettingsUrl) {
-        guard deepLinkCreator.quickButtonsEnabled! else {
+        guard deepLinkCreator.quickButtonsEnabled else {
             return
         }
         settings.quickButtons = .init()
-        settings.quickButtons!.enableScroll = deepLinkCreator.quickButtons!.enableScroll
-        settings.quickButtons!.twoColumns = deepLinkCreator.quickButtons!.twoColumns
-        settings.quickButtons!.showName = deepLinkCreator.quickButtons!.showName
+        settings.quickButtons!.enableScroll = deepLinkCreator.quickButtons.enableScroll
+        settings.quickButtons!.twoColumns = deepLinkCreator.quickButtons.twoColumns
+        settings.quickButtons!.showName = deepLinkCreator.quickButtons.showName
         settings.quickButtons!.disableAllButtons = true
-        for button in deepLinkCreator.quickButtons!.buttons where button.enabled {
+        for button in deepLinkCreator.quickButtons.buttons where button.enabled {
             settings.quickButtons = settings.quickButtons ?? .init()
             settings.quickButtons!.buttons = settings.quickButtons!.buttons ?? .init()
             let newButton = MoblinSettingsButton(type: button.type)
@@ -89,11 +86,11 @@ struct DeepLinkCreatorSettingsView: View {
     }
 
     private func updateDeepLinkWebBrowser(settings: MoblinSettingsUrl) {
-        guard deepLinkCreator.webBrowserEnabled! else {
+        guard deepLinkCreator.webBrowserEnabled else {
             return
         }
         settings.webBrowser = .init()
-        settings.webBrowser!.home = deepLinkCreator.webBrowser!.home
+        settings.webBrowser!.home = deepLinkCreator.webBrowser.home
     }
 
     private func updateDeepLink() {
@@ -131,25 +128,21 @@ struct DeepLinkCreatorSettingsView: View {
                     NavigationLink {
                         DeepLinkCreatorQuickButtonsSettingsView()
                     } label: {
-                        Toggle(isOn: Binding(get: {
-                            deepLinkCreator.quickButtonsEnabled!
-                        }, set: {
-                            deepLinkCreator.quickButtonsEnabled = $0
-                            updateDeepLink()
-                        })) {
+                        Toggle(isOn: $deepLinkCreator.quickButtonsEnabled) {
                             Text("Quick buttons")
+                        }
+                        .onChange(of: deepLinkCreator.quickButtonsEnabled) { _ in
+                            updateDeepLink()
                         }
                     }
                     NavigationLink {
-                        DeepLinkCreatorWebBrowserSettingsView(webBrowser: deepLinkCreator.webBrowser!)
+                        DeepLinkCreatorWebBrowserSettingsView(webBrowser: deepLinkCreator.webBrowser)
                     } label: {
-                        Toggle(isOn: Binding(get: {
-                            deepLinkCreator.webBrowserEnabled!
-                        }, set: {
-                            deepLinkCreator.webBrowserEnabled = $0
-                            updateDeepLink()
-                        })) {
+                        Toggle(isOn: $deepLinkCreator.webBrowserEnabled) {
                             Text("Web browser")
+                        }
+                        .onChange(of: deepLinkCreator.webBrowserEnabled) { _ in
+                            updateDeepLink()
                         }
                     }
                 }
@@ -159,7 +152,7 @@ struct DeepLinkCreatorSettingsView: View {
                             Spacer()
                             Button("Copy to clipboard") {
                                 UIPasteboard.general.string = deepLink
-                                model.makeToast(title: "Deep link copied to clipboard")
+                                model.makeToast(title: String(localized: "Deep link copied to clipboard"))
                             }
                             Spacer()
                         }

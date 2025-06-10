@@ -4,7 +4,7 @@ struct DeepLinkCreatorQuickButtonsSettingsView: View {
     @EnvironmentObject var model: Model
 
     private var quickButtons: DeepLinkCreatorQuickButtons {
-        return model.database.deepLinkCreator.quickButtons!
+        return model.database.deepLinkCreator.quickButtons
     }
 
     var body: some View {

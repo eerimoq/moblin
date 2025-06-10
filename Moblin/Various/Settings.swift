@@ -4519,16 +4519,60 @@ class DeepLinkCreatorQuickButtons: Codable {
     var buttons: [DeepLinkCreatorQuickButton] = []
 }
 
-class DeepLinkCreatorWebBrowser: Codable {
-    var home: String = ""
+class DeepLinkCreatorWebBrowser: Codable, ObservableObject {
+    @Published var home: String = ""
+
+    enum CodingKeys: CodingKey {
+        case home
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.home, home)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        home = container.decode(.home, String.self, "")
+    }
 }
 
-class DeepLinkCreator: Codable {
-    var streams: [DeepLinkCreatorStream] = []
-    var quickButtonsEnabled: Bool? = false
-    var quickButtons: DeepLinkCreatorQuickButtons? = .init()
-    var webBrowserEnabled: Bool? = false
-    var webBrowser: DeepLinkCreatorWebBrowser? = .init()
+class DeepLinkCreator: Codable, ObservableObject {
+    @Published var streams: [DeepLinkCreatorStream] = []
+    @Published var quickButtonsEnabled: Bool = false
+    @Published var quickButtons: DeepLinkCreatorQuickButtons = .init()
+    @Published var webBrowserEnabled: Bool = false
+    @Published var webBrowser: DeepLinkCreatorWebBrowser = .init()
+
+    enum CodingKeys: CodingKey {
+        case streams,
+             quickButtonsEnabled,
+             quickButtons,
+             webBrowserEnabled,
+             webBrowser
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.streams, streams)
+        try container.encode(.quickButtonsEnabled, quickButtonsEnabled)
+        try container.encode(.quickButtons, quickButtons)
+        try container.encode(.webBrowserEnabled, webBrowserEnabled)
+        try container.encode(.webBrowser, webBrowser)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        streams = container.decode(.streams, [DeepLinkCreatorStream].self, [])
+        quickButtonsEnabled = container.decode(.quickButtonsEnabled, Bool.self, false)
+        quickButtons = container.decode(.quickButtons, DeepLinkCreatorQuickButtons.self, .init())
+        webBrowserEnabled = container.decode(.webBrowserEnabled, Bool.self, false)
+        webBrowser = container.decode(.webBrowser, DeepLinkCreatorWebBrowser.self, .init())
+    }
 }
 
 class SettingsAlertsMediaGalleryItem: Codable, Identifiable {
@@ -5356,10 +5400,7 @@ private func addMissingQuickButtons(database: Database) {
 }
 
 private func addMissingDeepLinkQuickButtons(database: Database) {
-    if database.deepLinkCreator.quickButtons == nil {
-        database.deepLinkCreator.quickButtons = .init()
-    }
-    let quickButtons = database.deepLinkCreator.quickButtons!
+    let quickButtons = database.deepLinkCreator.quickButtons
     for quickButton in database.quickButtons where quickButton.type != .lut {
         let button = DeepLinkCreatorQuickButton()
         let buttonExists = quickButtons.buttons.contains(where: { button in
