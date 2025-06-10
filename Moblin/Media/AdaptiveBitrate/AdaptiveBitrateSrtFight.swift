@@ -22,17 +22,20 @@ let adaptiveBitrateSlowSettings = AdaptiveBitrateSettings(
 class AdaptiveBitrateSrtFight: AdaptiveBitrate {
     private var avgRtt: Double = 0.0
     private var fastRtt: Double = 0.0
-    private var currentBitrate: Int64 = 500_000
-    private var previousBitrate: Int64 = 500_000
-    private var targetBitrate: Int64 = 500_000
-    private var currentMaximumBitrate: Int64 = 500_000
+    private var currentBitrate: Int64
+    private var previousBitrate: Int64
+    private var targetBitrate: Int64
+    private var currentMaximumBitrate: Int64
     private var smoothPif: Double = 0
     private var fastPif: Double = 0
     private var settings = adaptiveBitrateFastSettings
 
     init(targetBitrate: UInt32, delegate: AdaptiveBitrateDelegate) {
-        super.init(delegate: delegate)
         self.targetBitrate = Int64(targetBitrate)
+        currentBitrate = adaptiveBitrateStart
+        previousBitrate = adaptiveBitrateStart
+        currentMaximumBitrate = adaptiveBitrateStart
+        super.init(delegate: delegate)
     }
 
     override func setTargetBitrate(bitrate: UInt32) {
@@ -231,7 +234,7 @@ class AdaptiveBitrateSrtFight: AdaptiveBitrate {
         // To not push too high bitrate after static scene. The encoder may output way
         // lower bitrate than configured.
         if let transportBitrate = stats.transportBitrate {
-            let maximumBitrate = max(transportBitrate + 1_000_000, (17 * transportBitrate) / 10)
+            let maximumBitrate = max(transportBitrate + adaptiveBitrateTransportMinimum, (17 * transportBitrate) / 10)
             if currentMaximumBitrate > maximumBitrate {
                 currentMaximumBitrate = maximumBitrate
             }
