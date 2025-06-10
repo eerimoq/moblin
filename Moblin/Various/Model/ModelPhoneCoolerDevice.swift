@@ -29,7 +29,11 @@ extension Model {
 
 extension Model: PhoneCoolerDeviceDelegate {
     func phoneCoolerDeviceState(_ device: PhoneCoolerDevice, state: PhoneCoolerDeviceState) {
-        print("Getting Phone State")
+        logger.debug("Getting Phone Cooler State: \(state)")
+        DispatchQueue.main.async{
+            self.phoneCoolerDeviceState = state
+        }
+        
     }
     
     func phoneCoolerStatus(_ device: PhoneCoolerDevice, status: BlackSharkLib.CoolingState) {

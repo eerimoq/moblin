@@ -180,6 +180,9 @@ extension PhoneCoolerDevice: CBPeripheralDelegate {
     }
     
     private func pollForCoolingStats(){
+        guard self.writeCharacteristic != nil else {
+            return
+        }
         peripheral?.writeValue(BlackSharkLib.getCoolingMetadataCommand(), for: self.writeCharacteristic!, type: .withoutResponse)
     }
     
