@@ -4506,10 +4506,32 @@ class DeepLinkCreatorStream: Codable, Identifiable {
     var kick: DeepLinkCreatorStreamKick? = .init()
 }
 
-class DeepLinkCreatorQuickButton: Codable, Identifiable {
-    var id: UUID = .init()
-    var type: SettingsQuickButtonType = .unknown
-    var enabled: Bool = false
+class DeepLinkCreatorQuickButton: Codable, Identifiable, ObservableObject {
+    @Published var id: UUID = .init()
+    @Published var type: SettingsQuickButtonType = .unknown
+    @Published var enabled: Bool = false
+
+    enum CodingKeys: CodingKey {
+        case id,
+             type,
+             enabled
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.type, type)
+        try container.encode(.enabled, enabled)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        type = container.decode(.type, SettingsQuickButtonType.self, .unknown)
+        enabled = container.decode(.enabled, Bool.self, false)
+    }
 }
 
 class DeepLinkCreatorQuickButtons: Codable, ObservableObject {
