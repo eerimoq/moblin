@@ -3,7 +3,8 @@ import SwiftUI
 struct WatchChatSettingsView: View {
     @EnvironmentObject var model: Model
     @State var fontSize: Float
-
+    @State var notificationRate: Int
+    
     var body: some View {
         Form {
             Section {
@@ -51,6 +52,19 @@ struct WatchChatSettingsView: View {
                 })) {
                     Text("Notification on message")
                 }
+                HStack {
+                    Text("Notification rate")
+                    Spacer()
+                    TextField("", value: $notificationRate, formatter: NumberFormatter())
+                        .keyboardType(.numberPad)
+                        .multilineTextAlignment(.trailing)
+                        .frame(width: 60)
+                        .onChange(of: notificationRate) { newValue in
+                            model.database.watch.chat.notificationRate = Int(newValue)
+                            model.sendSettingsToWatch()
+                        }
+                }
+
             } header: {
                 Text("General")
             }

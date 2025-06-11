@@ -4,6 +4,7 @@ class WatchSettingsChat: Codable {
     var fontSize: Float = 17.0
     var timestampEnabled: Bool? = true
     var notificationOnMessage: Bool? = false
+    var notificationRate: Int? = 30
     var badges: Bool? = true
 }
 
