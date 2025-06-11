@@ -27,7 +27,6 @@ struct StreamWizardCustomRtmpSettingsView: View {
         Form {
             Section {
                 TextField("rtmp://arn03.contribute.live-video.net/app/", text: $model.wizardCustomRtmpUrl)
-                    .keyboardType(.URL)
                     .textInputAutocapitalization(.never)
                     .disableAutocorrection(true)
                     .onChange(of: model.wizardCustomRtmpUrl) { _ in

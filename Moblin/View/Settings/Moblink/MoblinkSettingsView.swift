@@ -150,7 +150,6 @@ private struct RelayStreamerUrlView: View {
         Form {
             Section {
                 TextField("ws://32.143.32.12:2345", text: $streamerUrl)
-                    .keyboardType(.URL)
                     .textInputAutocapitalization(.never)
                     .disableAutocorrection(true)
                     .submitLabel(.done)

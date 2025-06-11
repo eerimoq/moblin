@@ -30,7 +30,6 @@ struct StreamUrlSettingsView: View {
             Section {
                 ZStack(alignment: .leading) {
                     TextField("", text: $value, axis: .vertical)
-                        .keyboardType(.URL)
                         .textInputAutocapitalization(.never)
                         .onSubmit {
                             submitUrl()
