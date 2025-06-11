@@ -2,32 +2,23 @@ import SwiftUI
 
 struct WatchLocalOverlaysSettingsView: View {
     @EnvironmentObject var model: Model
-
-    var show: WatchSettingsShow {
-        model.database.watch.show!
-    }
+    @ObservedObject var show: WatchSettingsShow
 
     var body: some View {
         Form {
             Section {
-                Toggle("Thermal state", isOn: Binding(get: {
-                    show.thermalState
-                }, set: { value in
-                    show.thermalState = value
-                    model.sendSettingsToWatch()
-                }))
-                Toggle("Audio level", isOn: Binding(get: {
-                    show.audioLevel
-                }, set: { value in
-                    show.audioLevel = value
-                    model.sendSettingsToWatch()
-                }))
-                Toggle("Bitrate", isOn: Binding(get: {
-                    show.speed
-                }, set: { value in
-                    show.speed = value
-                    model.sendSettingsToWatch()
-                }))
+                Toggle("Thermal state", isOn: $show.thermalState)
+                    .onChange(of: show.thermalState) { _ in
+                        model.sendSettingsToWatch()
+                    }
+                Toggle("Audio level", isOn: $show.audioLevel)
+                    .onChange(of: show.audioLevel) { _ in
+                        model.sendSettingsToWatch()
+                    }
+                Toggle("Bitrate", isOn: $show.speed)
+                    .onChange(of: show.speed) { _ in
+                        model.sendSettingsToWatch()
+                    }
             }
         }
         .navigationTitle("Local overlays")

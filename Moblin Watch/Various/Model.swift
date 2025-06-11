@@ -299,10 +299,7 @@ class Model: NSObject, ObservableObject {
             return
         }
         self.settings = try JSONDecoder().decode(WatchSettings.self, from: settings)
-        if self.settings.show == nil {
-            self.settings.show = .init()
-        }
-        viaRemoteControl = self.settings.viaRemoteControl ?? false
+        viaRemoteControl = self.settings.viaRemoteControl
     }
 
     private func handleThermalState(_ data: Any) throws {
@@ -522,15 +519,15 @@ class Model: NSObject, ObservableObject {
     }
 
     func isShowingStatusThermalState() -> Bool {
-        return settings.show!.thermalState
+        return settings.show.thermalState
     }
 
     func isShowingStatusAudioLevel() -> Bool {
-        return settings.show!.audioLevel
+        return settings.show.audioLevel
     }
 
     func isShowingStatusBitrate() -> Bool {
-        return settings.show!.speed && isLive
+        return settings.show.speed && isLive
     }
 
     func isShowingStatusRecording() -> Bool {

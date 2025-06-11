@@ -194,7 +194,7 @@ struct SettingsView: View {
             if database.showAllSettings {
                 Section {
                     NavigationLink {
-                        WatchSettingsView()
+                        WatchSettingsView(watch: database.watch)
                     } label: {
                         Label("Apple Watch", systemImage: "applewatch")
                     }

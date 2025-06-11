@@ -2,6 +2,7 @@ import SwiftUI
 
 struct WatchSettingsView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var watch: WatchSettings
 
     var body: some View {
         Form {
@@ -12,20 +13,16 @@ struct WatchSettingsView: View {
                     Text("Chat")
                 }
                 NavigationLink {
-                    WatchDisplaySettingsView()
+                    WatchDisplaySettingsView(show: watch.show)
                 } label: {
                     Text("Display")
                 }
             }
             Section {
-                Toggle(isOn: Binding(get: {
-                    model.database.watch.viaRemoteControl!
-                }, set: { value in
-                    model.database.watch.viaRemoteControl = value
-                    model.sendInitToWatch()
-                })) {
-                    Text("Remote control assistant")
-                }
+                Toggle("Remote control assistant", isOn: $watch.viaRemoteControl)
+                    .onChange(of: watch.viaRemoteControl) { _ in
+                        model.sendInitToWatch()
+                    }
             } footer: {
                 Text("""
                 The watch acts as remote control assistant when enabled. Please note that in this \

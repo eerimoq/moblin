@@ -36,14 +36,58 @@ class WatchSettingsChat: Codable, ObservableObject {
     }
 }
 
-class WatchSettingsShow: Codable {
-    var thermalState: Bool = true
-    var audioLevel: Bool = true
-    var speed: Bool = true
+class WatchSettingsShow: Codable, ObservableObject {
+    @Published var thermalState: Bool = true
+    @Published var audioLevel: Bool = true
+    @Published var speed: Bool = true
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case thermalState,
+             audioLevel,
+             speed
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.thermalState, thermalState)
+        try container.encode(.audioLevel, audioLevel)
+        try container.encode(.speed, speed)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        thermalState = container.decode(.thermalState, Bool.self, true)
+        audioLevel = container.decode(.audioLevel, Bool.self, true)
+        speed = container.decode(.speed, Bool.self, true)
+    }
 }
 
-class WatchSettings: Codable {
+class WatchSettings: Codable, ObservableObject {
     var chat: WatchSettingsChat = .init()
-    var show: WatchSettingsShow? = .init()
-    var viaRemoteControl: Bool? = false
+    var show: WatchSettingsShow = .init()
+    @Published var viaRemoteControl: Bool = false
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case chat,
+             show,
+             viaRemoteControl
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.chat, chat)
+        try container.encode(.show, show)
+        try container.encode(.viaRemoteControl, viaRemoteControl)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        chat = container.decode(.chat, WatchSettingsChat.self, .init())
+        show = container.decode(.show, WatchSettingsShow.self, .init())
+        viaRemoteControl = container.decode(.viaRemoteControl, Bool.self, false)
+    }
 }
