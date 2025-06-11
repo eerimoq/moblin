@@ -18,14 +18,7 @@ struct MediaPlayersSettingsView: View {
             Section {
                 List {
                     ForEach(mediaPlayers.players) { player in
-                        NavigationLink {
-                            MediaPlayerSettingsView(player: player)
-                        } label: {
-                            HStack {
-                                Text(player.name)
-                                Spacer()
-                            }
-                        }
+                        MediaPlayerSettingsView(player: player)
                     }
                     .onDelete(perform: { indexes in
                         for index in indexes {
