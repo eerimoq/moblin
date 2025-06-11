@@ -68,7 +68,7 @@ struct SrtlaServerSettingsView: View {
             }
             Section {
                 List {
-                    let list = ForEach(model.database.srtlaServer.streams) { stream in
+                    let list = ForEach(database.srtlaServer.streams) { stream in
                         NavigationLink {
                             SrtlaServerStreamSettingsView(
                                 srtlaPort: database.srtlaServer.srtlaPort,

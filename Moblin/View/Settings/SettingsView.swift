@@ -101,7 +101,7 @@ struct SettingsView: View {
                 }
                 if database.showAllSettings {
                     NavigationLink {
-                        MediaPlayersSettingsView(database: model.database)
+                        MediaPlayersSettingsView(mediaPlayers: model.database.mediaPlayers)
                     } label: {
                         Label("Media players", systemImage: "play.rectangle.on.rectangle")
                     }

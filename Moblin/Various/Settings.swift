@@ -3461,12 +3461,40 @@ class SettingsMediaPlayerFile: Codable, Identifiable {
     }
 }
 
-class SettingsMediaPlayer: Codable, Identifiable {
+class SettingsMediaPlayer: Codable, Identifiable, ObservableObject {
     var id: UUID = .init()
-    var name: String = "My player"
-    var playerId: String = ""
-    var autoSelectMic: Bool = true
-    var playlist: [SettingsMediaPlayerFile] = []
+    @Published var name: String = "My player"
+    @Published var playerId: String = ""
+    @Published var autoSelectMic: Bool = true
+    @Published var playlist: [SettingsMediaPlayerFile] = []
+
+    enum CodingKeys: CodingKey {
+        case id,
+             name,
+             playerId,
+             autoSelectMic,
+             playlist
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.name, name)
+        try container.encode(.playerId, playerId)
+        try container.encode(.autoSelectMic, autoSelectMic)
+        try container.encode(.playlist, playlist)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        name = container.decode(.name, String.self, "My player")
+        playerId = container.decode(.playerId, String.self, "")
+        autoSelectMic = container.decode(.autoSelectMic, Bool.self, true)
+        playlist = container.decode(.playlist, [SettingsMediaPlayerFile].self, [])
+    }
 
     func camera() -> String {
         return mediaPlayerCamera(name: name)
@@ -3485,8 +3513,24 @@ class SettingsMediaPlayer: Codable, Identifiable {
     }
 }
 
-class SettingsMediaPlayers: Codable {
-    var players: [SettingsMediaPlayer] = []
+class SettingsMediaPlayers: Codable, ObservableObject {
+    @Published var players: [SettingsMediaPlayer] = []
+
+    enum CodingKeys: CodingKey {
+        case players
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.players, players)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        players = container.decode(.players, [SettingsMediaPlayer].self, [])
+    }
 }
 
 enum SettingsDjiDeviceUrlType: String, Codable, CaseIterable {

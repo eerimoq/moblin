@@ -61,12 +61,15 @@ struct GameControllersControllerButtonSettingsView: View {
             }
             .navigationTitle("Game controller button")
         } label: {
-            HStack {
+            Label {
+                HStack {
+                    Text(button.text)
+                    Spacer()
+                    Text(buttonText())
+                        .foregroundColor(buttonColor())
+                }
+            } icon: {
                 Image(systemName: button.name)
-                Text(button.text)
-                Spacer()
-                Text(buttonText())
-                    .foregroundColor(buttonColor())
             }
         }
     }

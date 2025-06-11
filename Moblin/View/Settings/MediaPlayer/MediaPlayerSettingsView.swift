@@ -21,12 +21,11 @@ struct Video: Transferable {
 
 struct MediaPlayerSettingsView: View {
     @EnvironmentObject var model: Model
-    var player: SettingsMediaPlayer
+    @ObservedObject var player: SettingsMediaPlayer
     @State var selectedVideoItem: PhotosPickerItem?
 
     private func submitName(value: String) {
         player.name = value.trim()
-        model.objectWillChange.send()
         model.updateMediaPlayerSettings(playerId: player.id, settings: player)
     }
 
@@ -34,7 +33,6 @@ struct MediaPlayerSettingsView: View {
         let file = SettingsMediaPlayerFile()
         model.mediaStorage.add(id: file.id, url: url)
         player.playlist.append(file)
-        model.objectWillChange.send()
         model.updateMediaPlayerSettings(playerId: player.id, settings: player)
     }
 
@@ -50,12 +48,7 @@ struct MediaPlayerSettingsView: View {
             }
             if false {
                 Section {
-                    Toggle("Auto select mic", isOn: Binding(get: {
-                        player.autoSelectMic
-                    }, set: { value in
-                        player.autoSelectMic = value
-                        model.objectWillChange.send()
-                    }))
+                    Toggle("Auto select mic", isOn: $player.autoSelectMic)
                 }
             }
             Section {
@@ -66,9 +59,7 @@ struct MediaPlayerSettingsView: View {
                         } label: {
                             HStack {
                                 DraggableItemPrefixView()
-                                if let image = createThumbnail(path: model.mediaStorage
-                                    .makePath(id: file.id))
-                                {
+                                if let image = createThumbnail(path: model.mediaStorage.makePath(id: file.id)) {
                                     Image(uiImage: image)
                                         .resizable()
                                         .aspectRatio(contentMode: .fit)
@@ -95,6 +86,7 @@ struct MediaPlayerSettingsView: View {
                     }
                 }
                 .onChange(of: selectedVideoItem) { videoItem in
+                    selectedVideoItem = nil
                     videoItem?.loadTransferable(type: Video.self) { result in
                         switch result {
                         case let .success(video?):

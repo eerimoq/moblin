@@ -2,7 +2,7 @@ import SwiftUI
 
 struct MediaPlayersSettingsView: View {
     @EnvironmentObject var model: Model
-    @ObservedObject var database: Database
+    @ObservedObject var mediaPlayers: SettingsMediaPlayers
 
     var body: some View {
         Form {
@@ -17,7 +17,7 @@ struct MediaPlayersSettingsView: View {
             }
             Section {
                 List {
-                    ForEach(database.mediaPlayers.players) { player in
+                    ForEach(mediaPlayers.players) { player in
                         NavigationLink {
                             MediaPlayerSettingsView(player: player)
                         } label: {
@@ -29,15 +29,14 @@ struct MediaPlayersSettingsView: View {
                     }
                     .onDelete(perform: { indexes in
                         for index in indexes {
-                            model.deleteMediaPlayer(playerId: database.mediaPlayers.players[index].id)
+                            model.deleteMediaPlayer(playerId: mediaPlayers.players[index].id)
                         }
-                        database.mediaPlayers.players.remove(atOffsets: indexes)
+                        mediaPlayers.players.remove(atOffsets: indexes)
                     })
                 }
                 CreateButtonView {
                     let settings = SettingsMediaPlayer()
-                    database.mediaPlayers.players.append(settings)
-                    model.objectWillChange.send()
+                    mediaPlayers.players.append(settings)
                     model.addMediaPlayer(settings: settings)
                 }
             }
