@@ -8,6 +8,31 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "26.0.0", date: "2025-06-11", changes: [
+        "• Watch app chat notification rate (kinda). 🧑‍🏭 kompots",
+    ]),
+    Version(version: "0.400.0", date: "2025-06-09", changes: [
+        "• VTuber tweaks.",
+        "• Fix AVError when changing resolution or FPS on currently enabled stream.",
+        "• Initial very incomplete PNGTuber widget. 💡 mikeful",
+        "• Fixed horizon status in top right of UI.",
+        "• Experimental support for using selfie stick buttons to switch scene. 💡 G and others",
+        "• Fine grained chat filters. 💡 3l3ktr0l4mpe",
+        "• Chat bottom position in points instead of percent.",
+        "• Rework interactive (scrollable) chat to hopefully fix hangs. 🐛 JohannesLiv",
+        "• Set stream title with chat bot command.",
+        "  • !moblin stream title <title>",
+        "• Show \"Bluetooth not allowed\" message in a few places to be more helpful.",
+        "• Make map widget positioning snappier. Remove MetalPetal support for it.",
+        "• Remove MetalPetal support in image widget.",
+        "• Shape widget effect.",
+        "• 100 and 120 FPS.",
+        "  • Use at your own risk.",
+        "• Fix recording with DJI mic and AirPods??? 🐛 Blazo and Marco | ParaglidingLive.com",
+        "  • By forcing 48 kHz sample rate in the recording.",
+        "• Make adaptive bitrate algorithms start at a bitrate higher than adaptive resolution limit (about 1 Mbps).",
+        "• German and Korean translations updated. ✍️  MaurisonX and 위인터",
+    ]),
     Version(version: "0.399.0", date: "2025-05-28", changes: [
         "• Experimental support for delaying builtin camera and mic feeds.",
         "  • Set delay in debug settings. Takes effect when attaching a new source.",
