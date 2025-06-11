@@ -279,10 +279,7 @@ extension Model {
     }
 
     private func handleChatBotMessageStreamTitle(command: ChatBotCommand) {
-        guard let title = command.popFirst() else {
-            return
-        }
-        setTwitchStreamTitle(stream: stream, title: title)
+        setTwitchStreamTitle(stream: stream, title: command.rest())
     }
 
     private func handleChatBotMessageAlert(command: ChatBotCommand) {
