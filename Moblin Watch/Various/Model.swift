@@ -221,9 +221,9 @@ class Model: NSObject, ObservableObject {
         }
         nextExpectedWatchChatPostId = message.id + 1
         let now = ContinuousClock.now
-        if latestChatMessageTime.duration(to: now) > .seconds(settings.chat.notificationRate!) {
+        if latestChatMessageTime.duration(to: now) > .seconds(settings.chat.notificationRate) {
             appendRedLineMessage(message: message)
-            if settings.chat.notificationOnMessage! {
+            if settings.chat.notificationOnMessage {
                 WKInterfaceDevice.current().play(.notification)
             }
         }
@@ -299,17 +299,8 @@ class Model: NSObject, ObservableObject {
             return
         }
         self.settings = try JSONDecoder().decode(WatchSettings.self, from: settings)
-        if self.settings.chat.timestampEnabled == nil {
-            self.settings.chat.timestampEnabled = false
-        }
-        if self.settings.chat.notificationOnMessage == nil {
-            self.settings.chat.notificationOnMessage = false
-        }
         if self.settings.show == nil {
             self.settings.show = .init()
-        }
-        if self.settings.chat.notificationRate == nil {
-            self.settings.chat.notificationRate = 30
         }
         viaRemoteControl = self.settings.viaRemoteControl ?? false
     }

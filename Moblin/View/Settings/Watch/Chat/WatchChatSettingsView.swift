@@ -2,8 +2,7 @@ import SwiftUI
 
 struct WatchChatSettingsView: View {
     @EnvironmentObject var model: Model
-    @State var fontSize: Float
-    @State var notificationRate: Int
+    @ObservedObject var chat: WatchSettingsChat
 
     var body: some View {
         Form {
@@ -11,56 +10,37 @@ struct WatchChatSettingsView: View {
                 HStack {
                     Text("Font size")
                     Slider(
-                        value: $fontSize,
+                        value: $chat.fontSize,
                         in: 10 ... 30,
                         step: 1,
                         onEditingChanged: { begin in
                             guard !begin else {
                                 return
                             }
-                            model.database.watch.chat.fontSize = fontSize
                             model.sendSettingsToWatch()
                         }
                     )
-                    .onChange(of: fontSize) { _ in
-                        model.database.watch.chat.fontSize = fontSize
-                    }
-                    Text(String(Int(fontSize)))
+                    Text(String(Int(chat.fontSize)))
                         .frame(width: 25)
                 }
-                Toggle(isOn: Binding(get: {
-                    model.database.watch.chat.timestampEnabled!
-                }, set: { value in
-                    model.database.watch.chat.timestampEnabled = value
-                    model.sendSettingsToWatch()
-                })) {
-                    Text("Timestamp")
-                }
-                Toggle(isOn: Binding(get: {
-                    model.database.watch.chat.badges!
-                }, set: { value in
-                    model.database.watch.chat.badges = value
-                    model.sendSettingsToWatch()
-                })) {
-                    Text("Badges")
-                }
-                Toggle(isOn: Binding(get: {
-                    model.database.watch.chat.notificationOnMessage!
-                }, set: { value in
-                    model.database.watch.chat.notificationOnMessage = value
-                    model.sendSettingsToWatch()
-                })) {
-                    Text("Notification on message")
-                }
-                Picker(selection: $notificationRate) {
+                Toggle("Timestamp", isOn: $chat.timestampEnabled)
+                    .onChange(of: chat.timestampEnabled) { _ in
+                        model.sendSettingsToWatch()
+                    }
+                Toggle("Badges", isOn: $chat.badges)
+                    .onChange(of: chat.badges) { _ in
+                        model.sendSettingsToWatch()
+                    }
+                Toggle("Notification on message", isOn: $chat.notificationOnMessage)
+                    .onChange(of: chat.notificationOnMessage) { _ in
+                        model.sendSettingsToWatch()
+                    }
+                Picker("Notification rate", selection: $chat.notificationRate) {
                     ForEach([60, 30, 15, 5, 1], id: \.self) { rate in
                         Text("\(rate) s")
                     }
-                } label: {
-                    Text("Notification rate")
                 }
-                .onChange(of: notificationRate) { _ in
-                    model.database.watch.chat.notificationRate = notificationRate
+                .onChange(of: chat.notificationRate) { _ in
                     model.sendSettingsToWatch()
                 }
             } header: {

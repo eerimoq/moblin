@@ -8,18 +8,6 @@ let defaultSrtLatency: Int32 = 3000
 private let defaultRtmpLatency: Int32 = 2000
 let minZoomX: Float = 0.5
 
-extension KeyedEncodingContainer {
-    mutating func encode<T>(_ key: KeyedEncodingContainer<K>.Key, _ value: T) throws where T: Encodable {
-        try encode(value, forKey: key)
-    }
-}
-
-extension KeyedDecodingContainer {
-    func decode<T>(_ key: KeyedDecodingContainer<K>.Key, _ type: T.Type, _ defaultValue: T) -> T where T: Decodable {
-        return (try? decode(type, forKey: key)) ?? defaultValue
-    }
-}
-
 enum SettingsStreamCodec: String, Codable, CaseIterable {
     case h265hevc = "H.265/HEVC"
     case h264avc = "H.264/AVC"
@@ -5964,14 +5952,6 @@ final class Settings {
             stream.srt.adaptiveBitrateEnabled = stream.adaptiveBitrate
             store()
         }
-        if realDatabase.watch.chat.timestampEnabled == nil {
-            realDatabase.watch.chat.timestampEnabled = true
-            store()
-        }
-        if realDatabase.watch.chat.notificationOnMessage == nil {
-            realDatabase.watch.chat.notificationOnMessage = false
-            store()
-        }
         if realDatabase.watch.show == nil {
             realDatabase.watch.show = .init()
             store()
@@ -6176,10 +6156,6 @@ final class Settings {
         }
         for widget in database.widgets where widget.alerts.twitch!.raids == nil {
             widget.alerts.twitch!.raids = .init()
-            store()
-        }
-        if realDatabase.watch.chat.badges == nil {
-            realDatabase.watch.chat.badges = true
             store()
         }
         if realDatabase.chat.botCommandPermissions.tts.subscribersEnabled == nil {
