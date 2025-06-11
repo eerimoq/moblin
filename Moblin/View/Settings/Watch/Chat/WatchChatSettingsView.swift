@@ -4,7 +4,7 @@ struct WatchChatSettingsView: View {
     @EnvironmentObject var model: Model
     @State var fontSize: Float
     @State var notificationRate: Int
-    
+
     var body: some View {
         Form {
             Section {
@@ -52,19 +52,17 @@ struct WatchChatSettingsView: View {
                 })) {
                     Text("Notification on message")
                 }
-                HStack {
+                Picker(selection: $notificationRate) {
+                    ForEach([60, 30, 15, 5, 1], id: \.self) { rate in
+                        Text("\(rate) s")
+                    }
+                } label: {
                     Text("Notification rate")
-                    Spacer()
-                    TextField("", value: $notificationRate, formatter: NumberFormatter())
-                        .keyboardType(.numberPad)
-                        .multilineTextAlignment(.trailing)
-                        .frame(width: 60)
-                        .onChange(of: notificationRate) { newValue in
-                            model.database.watch.chat.notificationRate = Int(newValue)
-                            model.sendSettingsToWatch()
-                        }
                 }
-
+                .onChange(of: notificationRate) { _ in
+                    model.database.watch.chat.notificationRate = notificationRate
+                    model.sendSettingsToWatch()
+                }
             } header: {
                 Text("General")
             }

@@ -221,7 +221,7 @@ class Model: NSObject, ObservableObject {
         }
         nextExpectedWatchChatPostId = message.id + 1
         let now = ContinuousClock.now
-        if latestChatMessageTime + .seconds(settings.chat.notificationRate ?? 1) < now {
+        if latestChatMessageTime.duration(to: now) > .seconds(settings.chat.notificationRate!) {
             appendRedLineMessage(message: message)
             if settings.chat.notificationOnMessage! {
                 WKInterfaceDevice.current().play(.notification)
@@ -309,9 +309,8 @@ class Model: NSObject, ObservableObject {
             self.settings.show = .init()
         }
         if self.settings.chat.notificationRate == nil {
-            self.settings.chat.notificationRate = 1
+            self.settings.chat.notificationRate = 30
         }
-        
         viaRemoteControl = self.settings.viaRemoteControl ?? false
     }
 

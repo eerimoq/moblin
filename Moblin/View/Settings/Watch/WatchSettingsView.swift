@@ -7,7 +7,10 @@ struct WatchSettingsView: View {
         Form {
             Section {
                 NavigationLink {
-                    WatchChatSettingsView(fontSize: model.database.watch.chat.fontSize, notificationRate: model.database.watch.chat.notificationRate ?? 1)
+                    WatchChatSettingsView(
+                        fontSize: model.database.watch.chat.fontSize,
+                        notificationRate: model.database.watch.chat.notificationRate ?? 30
+                    )
                 } label: {
                     Text("Chat")
                 }
