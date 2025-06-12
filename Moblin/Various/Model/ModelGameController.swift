@@ -175,6 +175,6 @@ extension Model {
     }
 
     func isShowingStatusGameController() -> Bool {
-        return database.show.gameController! && isGameControllerConnected()
+        return database.show.gameController && isGameControllerConnected()
     }
 }

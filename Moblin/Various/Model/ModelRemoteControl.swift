@@ -9,7 +9,7 @@ enum RemoteControlAssistantPreviewUser {
 
 extension Model {
     func isShowingStatusRemoteControl() -> Bool {
-        return database.show.remoteControl! && isAnyRemoteControlConfigured()
+        return database.show.remoteControl && isAnyRemoteControlConfigured()
     }
 
     private func isAnyRemoteControlConfigured() -> Bool {

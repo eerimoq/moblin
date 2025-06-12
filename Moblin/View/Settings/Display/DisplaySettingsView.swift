@@ -47,7 +47,7 @@ struct DisplaySettingsView: View {
                         }))
                     }
                     NavigationLink {
-                        LocalOverlaysSettingsView()
+                        LocalOverlaysSettingsView(show: database.show)
                     } label: {
                         Text("Local overlays")
                     }

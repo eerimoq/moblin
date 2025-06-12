@@ -2611,7 +2611,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func isShowingStatusCamera() -> Bool {
-        return database.show.cameras!
+        return database.show.cameras
     }
 
     func isShowingStatusMic() -> Bool {
@@ -2619,7 +2619,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func isShowingStatusEvents() -> Bool {
-        return database.show.events! && isEventsConfigured()
+        return database.show.events && isEventsConfigured()
     }
 
     func isShowingStatusViewers() -> Bool {
@@ -2684,7 +2684,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func isShowingStatusServers() -> Bool {
-        return database.show.rtmpSpeed! && isServersConfigured()
+        return database.show.rtmpSpeed && isServersConfigured()
     }
 
     func isServersConfigured() -> Bool {
@@ -2692,7 +2692,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func isShowingStatusMoblink() -> Bool {
-        return database.show.moblink! && isAnyMoblinkConfigured()
+        return database.show.moblink && isAnyMoblinkConfigured()
     }
 
     func isAnyMoblinkConfigured() -> Bool {
@@ -2700,7 +2700,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func isShowingStatusDjiDevices() -> Bool {
-        return database.show.djiDevices! && djiDevicesStatus != noValue
+        return database.show.djiDevices && djiDevicesStatus != noValue
     }
 
     func isShowingStatusBitrate() -> Bool {
@@ -2712,7 +2712,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func isShowingStatusBonding() -> Bool {
-        return database.show.bonding! && isStatusBondingActive()
+        return database.show.bonding && isStatusBondingActive()
     }
 
     func isStatusBondingActive() -> Bool {
@@ -2720,7 +2720,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func isShowingStatusBondingRtts() -> Bool {
-        return database.show.bondingRtts! && isStatusBondingRttsActive()
+        return database.show.bondingRtts && isStatusBondingRttsActive()
     }
 
     func isStatusBondingRttsActive() -> Bool {
@@ -2732,19 +2732,19 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func isShowingStatusBrowserWidgets() -> Bool {
-        return database.show.browserWidgets! && isStatusBrowserWidgetsActive()
+        return database.show.browserWidgets && isStatusBrowserWidgetsActive()
     }
 
     func isShowingStatusCatPrinter() -> Bool {
-        return database.show.catPrinter! && isAnyCatPrinterConfigured()
+        return database.show.catPrinter && isAnyCatPrinterConfigured()
     }
 
     func isShowingStatusCyclingPowerDevice() -> Bool {
-        return database.show.cyclingPowerDevice! && isAnyCyclingPowerDeviceConfigured()
+        return database.show.cyclingPowerDevice && isAnyCyclingPowerDeviceConfigured()
     }
 
     func isShowingStatusHeartRateDevice() -> Bool {
-        return database.show.heartRateDevice! && isAnyHeartRateDeviceConfigured()
+        return database.show.heartRateDevice && isAnyHeartRateDeviceConfigured()
     }
 
     func isShowingStatusFixedHorizon() -> Bool {
