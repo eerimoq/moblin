@@ -364,7 +364,7 @@ extension Model {
     }
 
     func isWatchRemoteControl() -> Bool {
-        return database.watch.viaRemoteControl!
+        return database.watch.viaRemoteControl
     }
 
     func isWatchLocal() -> Bool {

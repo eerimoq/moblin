@@ -9,7 +9,7 @@ enum RemoteControlAssistantPreviewUser {
 
 extension Model {
     func isShowingStatusRemoteControl() -> Bool {
-        return database.show.remoteControl! && isAnyRemoteControlConfigured()
+        return database.show.remoteControl && isAnyRemoteControlConfigured()
     }
 
     private func isAnyRemoteControlConfigured() -> Bool {
@@ -457,9 +457,6 @@ extension Model: RemoteControlStreamerDelegate {
             return
         }
         setBitrate(bitrate: preset.bitrate)
-        if stream.enabled {
-            setStreamBitrate(stream: stream)
-        }
         onComplete()
     }
 

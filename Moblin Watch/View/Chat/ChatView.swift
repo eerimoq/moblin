@@ -13,11 +13,11 @@ private struct LineView: View {
             verticalSpacing: 0,
             fitContentWidth: true
         ) {
-            if model.settings.chat.timestampEnabled! {
+            if model.settings.chat.timestampEnabled {
                 Text(post.timestamp + " ")
                     .foregroundColor(.gray)
             }
-            if model.settings.chat.badges! {
+            if model.settings.chat.badges {
                 ForEach(post.userBadges, id: \.self) { url in
                     CacheImage(url: url) { image in
                         image

@@ -31,6 +31,7 @@ private struct CollapsedViewersView: View {
 
 private struct StatusesView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var show: SettingsShow
     let textPlacement: StreamOverlayIconAndTextPlacement
 
     func eventsColor() -> Color {
@@ -145,10 +146,10 @@ struct LeftOverlayView: View {
         VStack(alignment: .leading, spacing: 1) {
             VStack(alignment: .leading, spacing: 1) {
                 if model.verboseStatuses {
-                    StatusesView(textPlacement: .afterIcon)
+                    StatusesView(show: model.database.show, textPlacement: .afterIcon)
                 } else {
                     HStack(spacing: 1) {
-                        StatusesView(textPlacement: .hide)
+                        StatusesView(show: model.database.show, textPlacement: .hide)
                     }
                 }
             }

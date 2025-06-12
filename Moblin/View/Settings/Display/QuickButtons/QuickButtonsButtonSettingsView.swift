@@ -51,10 +51,7 @@ struct QuickButtonsButtonSettingsView: View {
                     NavigationLink {
                         QuickButtonsSettingsView()
                     } label: {
-                        IconAndTextView(
-                            image: "rectangle.inset.topright.fill",
-                            text: String(localized: "Quick buttons")
-                        )
+                        Label("Quick buttons", systemImage: "rectangle.inset.topright.fill")
                     }
                 } header: {
                     Text("Shortcut")

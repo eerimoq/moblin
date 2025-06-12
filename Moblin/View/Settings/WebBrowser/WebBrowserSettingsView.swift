@@ -14,8 +14,7 @@ struct WebBrowserSettingsView: View {
                     title: String(localized: "Home"),
                     value: model.database.webBrowser.home,
                     onSubmit: submitHome,
-                    capitalize: false,
-                    keyboardType: .URL
+                    capitalize: false
                 )
             }
         }

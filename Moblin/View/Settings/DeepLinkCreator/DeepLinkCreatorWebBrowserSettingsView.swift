@@ -14,8 +14,7 @@ struct DeepLinkCreatorWebBrowserSettingsView: View {
                     title: String(localized: "Home"),
                     value: webBrowser.home,
                     onSubmit: submitHome,
-                    capitalize: false,
-                    keyboardType: .URL
+                    capitalize: false
                 )
             }
         }

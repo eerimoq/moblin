@@ -21,7 +21,6 @@ struct StreamWizardNetworkSetupMyServersSrtSettingsView: View {
         Form {
             Section {
                 TextField("srt://107.32.12.132:5000", text: $model.wizardCustomSrtUrl)
-                    .keyboardType(.URL)
                     .textInputAutocapitalization(.never)
                     .disableAutocorrection(true)
                     .onChange(of: model.wizardCustomSrtUrl) { _ in

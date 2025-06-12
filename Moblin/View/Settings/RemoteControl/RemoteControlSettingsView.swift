@@ -143,7 +143,6 @@ private struct RemoteControlSettingsStreamerView: View {
                         localized: "Enter assistant's address and port. For example ws://132.23.43.43:2345."
                     ),
                 ],
-                keyboardType: .URL,
                 placeholder: "ws://32.143.32.12:2345"
             )
             HStack {
@@ -287,10 +286,7 @@ struct RemoteControlSettingsView: View {
                     }, set: {
                         model.setObsRemoteControlEnabled(enabled: $0)
                     })) {
-                        IconAndTextView(
-                            image: "dot.radiowaves.left.and.right",
-                            text: String(localized: "OBS remote control")
-                        )
+                        Label("OBS remote control", systemImage: "dot.radiowaves.left.and.right")
                     }
                 }
             } header: {

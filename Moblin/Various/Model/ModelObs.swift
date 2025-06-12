@@ -351,7 +351,7 @@ extension Model {
     }
 
     func isShowingStatusObs() -> Bool {
-        return database.show.obsStatus! && isObsRemoteControlConfigured()
+        return database.show.obsStatus && isObsRemoteControlConfigured()
     }
 
     func statusObsText() -> String {

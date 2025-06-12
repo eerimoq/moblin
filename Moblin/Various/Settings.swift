@@ -8,18 +8,6 @@ let defaultSrtLatency: Int32 = 3000
 private let defaultRtmpLatency: Int32 = 2000
 let minZoomX: Float = 0.5
 
-extension KeyedEncodingContainer {
-    mutating func encode<T>(_ key: KeyedEncodingContainer<K>.Key, _ value: T) throws where T: Encodable {
-        try encode(value, forKey: key)
-    }
-}
-
-extension KeyedDecodingContainer {
-    func decode<T>(_ key: KeyedDecodingContainer<K>.Key, _ type: T.Type, _ defaultValue: T) -> T where T: Decodable {
-        return (try? decode(type, forKey: key)) ?? defaultValue
-    }
-}
-
 enum SettingsStreamCodec: String, Codable, CaseIterable {
     case h265hevc = "H.265/HEVC"
     case h264avc = "H.264/AVC"
@@ -2641,33 +2629,120 @@ class SettingsColor: Codable {
     var diskLutsCube: [SettingsColorLut]? = []
 }
 
-class SettingsShow: Codable {
-    var chat: Bool = true
-    var viewers: Bool = true
-    var uptime: Bool = true
-    var stream: Bool = false
-    var speed: Bool = true
-    var audioLevel: Bool = true
-    var zoom: Bool = false
-    var zoomPresets: Bool = true
-    var microphone: Bool = false
-    // periphery:ignore
-    var audioBar: Bool? = true
-    var cameras: Bool? = false
-    var obsStatus: Bool? = true
-    var rtmpSpeed: Bool? = true
-    var gameController: Bool? = true
-    var location: Bool? = true
-    var remoteControl: Bool? = true
-    var browserWidgets: Bool? = true
-    var bonding: Bool? = true
-    var events: Bool? = true
-    var djiDevices: Bool? = true
-    var bondingRtts: Bool? = false
-    var moblink: Bool? = true
-    var catPrinter: Bool? = true
-    var cyclingPowerDevice: Bool? = true
-    var heartRateDevice: Bool? = true
+class SettingsShow: Codable, ObservableObject {
+    @Published var chat: Bool = true
+    @Published var viewers: Bool = true
+    @Published var uptime: Bool = true
+    @Published var stream: Bool = false
+    @Published var speed: Bool = true
+    @Published var audioLevel: Bool = true
+    @Published var zoom: Bool = false
+    @Published var zoomPresets: Bool = true
+    @Published var microphone: Bool = false
+    @Published var audioBar: Bool = true
+    @Published var cameras: Bool = false
+    @Published var obsStatus: Bool = true
+    @Published var rtmpSpeed: Bool = true
+    @Published var gameController: Bool = true
+    @Published var location: Bool = true
+    @Published var remoteControl: Bool = true
+    @Published var browserWidgets: Bool = true
+    @Published var bonding: Bool = true
+    @Published var events: Bool = true
+    @Published var djiDevices: Bool = true
+    @Published var bondingRtts: Bool = false
+    @Published var moblink: Bool = true
+    @Published var catPrinter: Bool = true
+    @Published var cyclingPowerDevice: Bool = true
+    @Published var heartRateDevice: Bool = true
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case chat,
+             viewers,
+             uptime,
+             stream,
+             speed,
+             audioLevel,
+             zoom,
+             zoomPresets,
+             microphone,
+             audioBar,
+             cameras,
+             obsStatus,
+             rtmpSpeed,
+             gameController,
+             location,
+             remoteControl,
+             browserWidgets,
+             bonding,
+             events,
+             djiDevices,
+             bondingRtts,
+             moblink,
+             catPrinter,
+             cyclingPowerDevice,
+             heartRateDevice
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.chat, chat)
+        try container.encode(.viewers, viewers)
+        try container.encode(.uptime, uptime)
+        try container.encode(.stream, stream)
+        try container.encode(.speed, speed)
+        try container.encode(.audioLevel, audioLevel)
+        try container.encode(.zoom, zoom)
+        try container.encode(.zoomPresets, zoomPresets)
+        try container.encode(.microphone, microphone)
+        try container.encode(.audioBar, audioBar)
+        try container.encode(.cameras, cameras)
+        try container.encode(.obsStatus, obsStatus)
+        try container.encode(.rtmpSpeed, rtmpSpeed)
+        try container.encode(.gameController, gameController)
+        try container.encode(.location, location)
+        try container.encode(.remoteControl, remoteControl)
+        try container.encode(.browserWidgets, browserWidgets)
+        try container.encode(.bonding, bonding)
+        try container.encode(.events, events)
+        try container.encode(.djiDevices, djiDevices)
+        try container.encode(.bondingRtts, bondingRtts)
+        try container.encode(.moblink, moblink)
+        try container.encode(.catPrinter, catPrinter)
+        try container.encode(.cyclingPowerDevice, cyclingPowerDevice)
+        try container.encode(.heartRateDevice, heartRateDevice)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        chat = container.decode(.chat, Bool.self, true)
+        viewers = container.decode(.viewers, Bool.self, true)
+        uptime = container.decode(.uptime, Bool.self, true)
+        stream = container.decode(.stream, Bool.self, false)
+        speed = container.decode(.speed, Bool.self, true)
+        audioLevel = container.decode(.audioLevel, Bool.self, true)
+        zoom = container.decode(.zoom, Bool.self, false)
+        zoomPresets = container.decode(.zoomPresets, Bool.self, true)
+        microphone = container.decode(.microphone, Bool.self, false)
+        audioBar = container.decode(.audioBar, Bool.self, true)
+        cameras = container.decode(.cameras, Bool.self, false)
+        obsStatus = container.decode(.obsStatus, Bool.self, true)
+        rtmpSpeed = container.decode(.rtmpSpeed, Bool.self, true)
+        gameController = container.decode(.gameController, Bool.self, true)
+        location = container.decode(.location, Bool.self, true)
+        remoteControl = container.decode(.remoteControl, Bool.self, true)
+        browserWidgets = container.decode(.browserWidgets, Bool.self, true)
+        bonding = container.decode(.bonding, Bool.self, true)
+        events = container.decode(.events, Bool.self, true)
+        djiDevices = container.decode(.djiDevices, Bool.self, true)
+        bondingRtts = container.decode(.bondingRtts, Bool.self, false)
+        moblink = container.decode(.moblink, Bool.self, true)
+        catPrinter = container.decode(.catPrinter, Bool.self, true)
+        cyclingPowerDevice = container.decode(.cyclingPowerDevice, Bool.self, true)
+        heartRateDevice = container.decode(.heartRateDevice, Bool.self, true)
+    }
 }
 
 class SettingsZoomPreset: Codable, Identifiable, Equatable {
@@ -3461,12 +3536,40 @@ class SettingsMediaPlayerFile: Codable, Identifiable {
     }
 }
 
-class SettingsMediaPlayer: Codable, Identifiable {
+class SettingsMediaPlayer: Codable, Identifiable, ObservableObject {
     var id: UUID = .init()
-    var name: String = "My player"
-    var playerId: String = ""
-    var autoSelectMic: Bool = true
-    var playlist: [SettingsMediaPlayerFile] = []
+    @Published var name: String = "My player"
+    @Published var playerId: String = ""
+    @Published var autoSelectMic: Bool = true
+    @Published var playlist: [SettingsMediaPlayerFile] = []
+
+    enum CodingKeys: CodingKey {
+        case id,
+             name,
+             playerId,
+             autoSelectMic,
+             playlist
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.name, name)
+        try container.encode(.playerId, playerId)
+        try container.encode(.autoSelectMic, autoSelectMic)
+        try container.encode(.playlist, playlist)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        name = container.decode(.name, String.self, "My player")
+        playerId = container.decode(.playerId, String.self, "")
+        autoSelectMic = container.decode(.autoSelectMic, Bool.self, true)
+        playlist = container.decode(.playlist, [SettingsMediaPlayerFile].self, [])
+    }
 
     func camera() -> String {
         return mediaPlayerCamera(name: name)
@@ -3485,8 +3588,24 @@ class SettingsMediaPlayer: Codable, Identifiable {
     }
 }
 
-class SettingsMediaPlayers: Codable {
-    var players: [SettingsMediaPlayer] = []
+class SettingsMediaPlayers: Codable, ObservableObject {
+    @Published var players: [SettingsMediaPlayer] = []
+
+    enum CodingKeys: CodingKey {
+        case players
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.players, players)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        players = container.decode(.players, [SettingsMediaPlayer].self, [])
+    }
 }
 
 enum SettingsDjiDeviceUrlType: String, Codable, CaseIterable {
@@ -5843,10 +5962,6 @@ final class Settings {
             realDatabase.zoom.speed = 5.0
             store()
         }
-        if realDatabase.show.cameras == nil {
-            realDatabase.show.cameras = false
-            store()
-        }
         for preset in realDatabase.zoom.back where preset.x == nil {
             preset.x = preset.level / 2
             store()
@@ -5863,24 +5978,8 @@ final class Settings {
             realDatabase.zoom.switchToFront.x = realDatabase.zoom.switchToFront.level / 2
             store()
         }
-        if realDatabase.show.obsStatus == nil {
-            realDatabase.show.obsStatus = true
-            store()
-        }
-        if realDatabase.show.rtmpSpeed == nil {
-            realDatabase.show.rtmpSpeed = true
-            store()
-        }
         for stream in realDatabase.rtmpServer.streams where stream.latency == nil {
             stream.latency = defaultRtmpLatency
-            store()
-        }
-        if realDatabase.show.gameController == nil {
-            realDatabase.show.gameController = true
-            store()
-        }
-        if realDatabase.show.location == nil {
-            realDatabase.show.location = true
             store()
         }
         for button in realDatabase.quickButtons where button.type == .image {
@@ -5937,14 +6036,6 @@ final class Settings {
                 store()
             }
         }
-        if realDatabase.show.remoteControl == nil {
-            realDatabase.show.remoteControl = true
-            store()
-        }
-        if realDatabase.show.browserWidgets == nil {
-            realDatabase.show.browserWidgets = true
-            store()
-        }
         if realDatabase.color.diskLuts == nil {
             realDatabase.color.diskLuts = []
             store()
@@ -5957,18 +6048,6 @@ final class Settings {
             stream.srt.adaptiveBitrateEnabled = stream.adaptiveBitrate
             store()
         }
-        if realDatabase.watch.chat.timestampEnabled == nil {
-            realDatabase.watch.chat.timestampEnabled = true
-            store()
-        }
-        if realDatabase.watch.chat.notificationOnMessage == nil {
-            realDatabase.watch.chat.notificationOnMessage = false
-            store()
-        }
-        if realDatabase.watch.show == nil {
-            realDatabase.watch.show = .init()
-            store()
-        }
         for stream in realDatabase.streams where stream.recording.autoStartRecording == nil {
             stream.recording.autoStartRecording = false
             store()
@@ -5979,10 +6058,6 @@ final class Settings {
         }
         for stream in realDatabase.streams where stream.recording.audioBitrate == nil {
             stream.recording.audioBitrate = 128_000
-            store()
-        }
-        if realDatabase.show.bonding == nil {
-            realDatabase.show.bonding = true
             store()
         }
         var videoEffectWidgets: [SettingsWidget] = []
@@ -6093,10 +6168,6 @@ final class Settings {
             }
         }
         updateBundledAlertsMediaGallery(database: realDatabase)
-        if realDatabase.show.events == nil {
-            realDatabase.show.events = true
-            store()
-        }
         for widget in realDatabase.widgets where widget.map.migrated == nil {
             widget.map.migrated = false
             store()
@@ -6169,10 +6240,6 @@ final class Settings {
         }
         for widget in database.widgets where widget.alerts.twitch!.raids == nil {
             widget.alerts.twitch!.raids = .init()
-            store()
-        }
-        if realDatabase.watch.chat.badges == nil {
-            realDatabase.watch.chat.badges = true
             store()
         }
         if realDatabase.chat.botCommandPermissions.tts.subscribersEnabled == nil {
@@ -6268,10 +6335,6 @@ final class Settings {
             realDatabase.chat.botCommandPermissions.tesla = .init()
             store()
         }
-        if realDatabase.watch.viaRemoteControl == nil {
-            realDatabase.watch.viaRemoteControl = false
-            store()
-        }
         if realDatabase.chat.botCommandPermissions.audio == nil {
             realDatabase.chat.botCommandPermissions.audio = .init()
             store()
@@ -6288,28 +6351,12 @@ final class Settings {
             stream.srt.dnsLookupStrategy = .system
             store()
         }
-        for stream in realDatabase.deepLinkCreator.streams where stream.srt.dnsLookupStrategy == nil {
-            stream.srt.dnsLookupStrategy = .system
-            store()
-        }
-        if realDatabase.show.djiDevices == nil {
-            realDatabase.show.djiDevices = true
-            store()
-        }
         if realDatabase.color.diskLutsPng == nil {
             realDatabase.color.diskLutsPng = realDatabase.color.diskLuts
             store()
         }
         if realDatabase.color.diskLutsCube == nil {
             realDatabase.color.diskLutsCube = []
-            store()
-        }
-        if realDatabase.show.bondingRtts == nil {
-            realDatabase.show.bondingRtts = false
-            store()
-        }
-        if realDatabase.show.moblink == nil {
-            realDatabase.show.moblink = true
             store()
         }
         for key in realDatabase.keyboard.keys where key.widgetId == nil {
@@ -6320,24 +6367,12 @@ final class Settings {
             realDatabase.location.distance = 0.0
             store()
         }
-        if realDatabase.show.catPrinter == nil {
-            realDatabase.show.catPrinter = true
-            store()
-        }
         for stream in realDatabase.streams where stream.recording.cleanRecordings == nil {
             stream.recording.cleanRecordings = false
             store()
         }
         for stream in realDatabase.streams where stream.recording.cleanSnapshots == nil {
             stream.recording.cleanSnapshots = false
-            store()
-        }
-        if realDatabase.show.cyclingPowerDevice == nil {
-            realDatabase.show.cyclingPowerDevice = true
-            store()
-        }
-        if realDatabase.show.heartRateDevice == nil {
-            realDatabase.show.heartRateDevice = true
             store()
         }
         if realDatabase.chat.botCommandPermissions.reaction == nil {

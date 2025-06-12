@@ -91,6 +91,13 @@ extension Model {
             }
     }
 
+    func fetchTwitchGameId(name: String, onComplete: @escaping (String?) -> Void) {
+        TwitchApi(stream.twitchAccessToken, urlSession)
+            .getGames(names: [name]) {
+                onComplete($0?.data.first?.id)
+            }
+    }
+
     func makeNotLoggedInToTwitchToast() {
         makeErrorToast(
             title: String(localized: "Not logged in to Twitch"),
@@ -121,11 +128,28 @@ extension Model {
             return
         }
         TwitchApi(stream.twitchAccessToken, urlSession)
-            .modifyChannelInformation(broadcasterId: stream.twitchChannelId, category: nil,
+            .modifyChannelInformation(broadcasterId: stream.twitchChannelId,
+                                      categoryId: nil,
                                       title: title)
             { ok in
                 if !ok {
                     self.makeErrorToast(title: "Failed to set stream title")
+                }
+            }
+    }
+
+    func setTwitchStreamCategory(stream: SettingsStream, categoryId: String) {
+        guard stream.twitchLoggedIn else {
+            makeNotLoggedInToTwitchToast()
+            return
+        }
+        TwitchApi(stream.twitchAccessToken, urlSession)
+            .modifyChannelInformation(broadcasterId: stream.twitchChannelId,
+                                      categoryId: categoryId,
+                                      title: nil)
+            { ok in
+                if !ok {
+                    self.makeErrorToast(title: "Failed to set stream category")
                 }
             }
     }

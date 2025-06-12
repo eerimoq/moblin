@@ -272,6 +272,8 @@ extension Model {
             switch command.popFirst() {
             case "title":
                 self.handleChatBotMessageStreamTitle(command: command)
+            case "category":
+                self.handleChatBotMessageStreamCategory(command: command)
             default:
                 break
             }
@@ -279,10 +281,16 @@ extension Model {
     }
 
     private func handleChatBotMessageStreamTitle(command: ChatBotCommand) {
-        guard let title = command.popFirst() else {
-            return
+        setTwitchStreamTitle(stream: stream, title: command.rest())
+    }
+
+    private func handleChatBotMessageStreamCategory(command: ChatBotCommand) {
+        fetchTwitchGameId(name: command.rest()) { gameId in
+            guard let gameId else {
+                return
+            }
+            self.setTwitchStreamCategory(stream: self.stream, categoryId: gameId)
         }
-        setTwitchStreamTitle(stream: stream, title: title)
     }
 
     private func handleChatBotMessageAlert(command: ChatBotCommand) {

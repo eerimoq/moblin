@@ -746,3 +746,15 @@ func isSetWin(first: Int, second: Int) -> Bool {
     }
     return false
 }
+
+extension KeyedEncodingContainer {
+    mutating func encode<T>(_ key: KeyedEncodingContainer<K>.Key, _ value: T) throws where T: Encodable {
+        try encode(value, forKey: key)
+    }
+}
+
+extension KeyedDecodingContainer {
+    func decode<T>(_ key: KeyedDecodingContainer<K>.Key, _ type: T.Type, _ defaultValue: T) -> T where T: Decodable {
+        return (try? decode(type, forKey: key)) ?? defaultValue
+    }
+}

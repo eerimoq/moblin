@@ -32,10 +32,7 @@ struct AudioSettingsView: View {
                             bitrate: Float(model.stream.audioBitrate / 1000)
                         )
                     } label: {
-                        IconAndTextView(
-                            image: "dot.radiowaves.left.and.right",
-                            text: String(localized: "Audio")
-                        )
+                        Label("Audio", systemImage: "dot.radiowaves.left.and.right")
                     }
                 } header: {
                     Text("Shortcut")

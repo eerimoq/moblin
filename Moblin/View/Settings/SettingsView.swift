@@ -27,15 +27,12 @@ struct SettingsView: View {
                 NavigationLink {
                     StreamsSettingsView(database: database)
                 } label: {
-                    IconAndTextView(
-                        image: "dot.radiowaves.left.and.right",
-                        text: String(localized: "Streams")
-                    )
+                    Label("Streams", systemImage: "dot.radiowaves.left.and.right")
                 }
                 NavigationLink {
                     ScenesSettingsView()
                 } label: {
-                    IconAndTextView(image: "photo.on.rectangle", text: String(localized: "Scenes"))
+                    Label("Scenes", systemImage: "photo.on.rectangle")
                 }
                 NavigationLink {
                     ChatSettingsView(
@@ -47,43 +44,40 @@ struct SettingsView: View {
                         shadowColor: chat.shadowColor.color()
                     )
                 } label: {
-                    IconAndTextView(image: "message", text: String(localized: "Chat"))
+                    Label("Chat", systemImage: "message")
                 }
                 NavigationLink {
                     DisplaySettingsView(database: database)
                 } label: {
-                    IconAndTextView(
-                        image: "rectangle.inset.topright.fill",
-                        text: String(localized: "Display")
-                    )
+                    Label("Display", systemImage: "rectangle.inset.topright.fill")
                 }
                 NavigationLink {
                     CameraSettingsView(database: database)
                 } label: {
-                    IconAndTextView(image: "camera", text: String(localized: "Camera"))
+                    Label("Camera", systemImage: "camera")
                 }
                 if database.showAllSettings {
                     NavigationLink {
                         AudioSettingsView(database: model.database)
                     } label: {
-                        IconAndTextView(image: "waveform", text: String(localized: "Audio"))
+                        Label("Audio", systemImage: "waveform")
                     }
                     NavigationLink {
                         BitratePresetsSettingsView(database: model.database)
                     } label: {
-                        IconAndTextView(image: "speedometer", text: String(localized: "Bitrate presets"))
+                        Label("Bitrate presets", systemImage: "speedometer")
                     }
                 }
                 NavigationLink {
                     LocationSettingsView()
                 } label: {
-                    IconAndTextView(image: "location", text: String(localized: "Location"))
+                    Label("Location", systemImage: "location")
                 }
                 if database.showAllSettings {
                     NavigationLink {
                         WebBrowserSettingsView()
                     } label: {
-                        IconAndTextView(image: "globe", text: String(localized: "Web browser"))
+                        Label("Web browser", systemImage: "globe")
                     }
                 }
             }
@@ -92,24 +86,24 @@ struct SettingsView: View {
                     NavigationLink {
                         RtmpServerSettingsView(database: model.database)
                     } label: {
-                        IconAndTextView(image: "server.rack", text: String(localized: "RTMP server"))
+                        Label("RTMP server", systemImage: "server.rack")
                     }
                     NavigationLink {
                         SrtlaServerSettingsView(database: model.database)
                     } label: {
-                        IconAndTextView(image: "server.rack", text: String(localized: "SRT(LA) server"))
+                        Label("SRT(LA) server", systemImage: "server.rack")
                     }
                 }
                 NavigationLink {
                     MoblinkSettingsView(streamerEnabled: database.moblink.server.enabled)
                 } label: {
-                    IconAndTextView(image: "app.connected.to.app.below.fill", text: String(localized: "Moblink"))
+                    Label("Moblink", systemImage: "app.connected.to.app.below.fill")
                 }
                 if database.showAllSettings {
                     NavigationLink {
-                        MediaPlayersSettingsView(database: model.database)
+                        MediaPlayersSettingsView(mediaPlayers: model.database.mediaPlayers)
                     } label: {
-                        IconAndTextView(image: "play.rectangle.on.rectangle", text: String(localized: "Media players"))
+                        Label("Media players", systemImage: "play.rectangle.on.rectangle")
                     }
                 }
             }
@@ -118,56 +112,56 @@ struct SettingsView: View {
                     NavigationLink {
                         SelfieStickSettingsView(selfieStick: database.selfieStick)
                     } label: {
-                        IconAndTextView(image: "line.diagonal", text: String(localized: "Selfie stick"))
+                        Label("Selfie stick", systemImage: "line.diagonal")
                     }
                     NavigationLink {
                         GameControllersSettingsView(database: model.database)
                     } label: {
-                        IconAndTextView(image: "gamecontroller", text: String(localized: "Game controllers"))
+                        Label("Game controllers", systemImage: "gamecontroller")
                     }
                     if #available(iOS 17.0, *) {
                         NavigationLink {
                             KeyboardSettingsView(keyboard: model.database.keyboard)
                         } label: {
-                            IconAndTextView(image: "keyboard", text: String(localized: "Keyboard"))
+                            Label("Keyboard", systemImage: "keyboard")
                         }
                     }
                     NavigationLink {
                         RemoteControlSettingsView(database: model.database)
                     } label: {
-                        IconAndTextView(image: "appletvremote.gen1", text: String(localized: "Remote control"))
+                        Label("Remote control", systemImage: "appletvremote.gen1")
                     }
                 }
                 Section {
                     NavigationLink {
                         DjiDevicesSettingsView(djiDevices: model.database.djiDevices)
                     } label: {
-                        IconAndTextView(image: "appletvremote.gen1", text: String(localized: "DJI devices"))
+                        Label("DJI devices", systemImage: "appletvremote.gen1")
                     }
                     NavigationLink {
                         GoProSettingsView()
                     } label: {
-                        IconAndTextView(image: "appletvremote.gen1", text: String(localized: "GoPro"))
+                        Label("GoPro", systemImage: "appletvremote.gen1")
                     }
                     NavigationLink {
                         CatPrintersSettingsView(catPrinters: model.database.catPrinters)
                     } label: {
-                        IconAndTextView(image: "pawprint", text: String(localized: "Cat printers"))
+                        Label("Cat printers", systemImage: "pawprint")
                     }
                     NavigationLink {
                         TeslaSettingsView()
                     } label: {
-                        IconAndTextView(image: "car.side", text: String(localized: "Tesla"))
+                        Label("Tesla", systemImage: "car.side")
                     }
                     NavigationLink {
                         CyclingPowerDevicesSettingsView()
                     } label: {
-                        IconAndTextView(image: "bicycle", text: String(localized: "Cycling power devices"))
+                        Label("Cycling power devices", systemImage: "bicycle")
                     }
                     NavigationLink {
                         HeartRateDevicesSettingsView()
                     } label: {
-                        IconAndTextView(image: "heart", text: String(localized: "Heart rate devices"))
+                        Label("Heart rate devices", systemImage: "heart")
                     }
                     NavigationLink {
                         PhoneCoolerDevicesSettingsView()
@@ -180,11 +174,11 @@ struct SettingsView: View {
                 NavigationLink {
                     CosmeticsSettingsView()
                 } label: {
-                    HStack {
+                    Label {
+                        Text("Cosmetics")
+                    } icon: {
                         Image(systemName: "heart.fill")
                             .foregroundColor(.red)
-                            .frame(width: iconWidth)
-                        Text("Cosmetics")
                     }
                 }
             }
@@ -192,22 +186,22 @@ struct SettingsView: View {
                 NavigationLink {
                     RecordingsSettingsView()
                 } label: {
-                    IconAndTextView(image: "photo.on.rectangle.angled", text: String(localized: "Recordings"))
+                    Label("Recordings", systemImage: "photo.on.rectangle.angled")
                 }
                 if database.showAllSettings {
                     NavigationLink {
                         StreamingHistorySettingsView()
                     } label: {
-                        IconAndTextView(image: "text.book.closed", text: String(localized: "Streaming history"))
+                        Label("Streaming history", systemImage: "text.book.closed")
                     }
                 }
             }
             if database.showAllSettings {
                 Section {
                     NavigationLink {
-                        WatchSettingsView()
+                        WatchSettingsView(watch: database.watch)
                     } label: {
-                        IconAndTextView(image: "applewatch", text: String(localized: "Apple Watch"))
+                        Label("Apple Watch", systemImage: "applewatch")
                     }
                 }
             }
@@ -215,18 +209,18 @@ struct SettingsView: View {
                 NavigationLink {
                     HelpAndSupportSettingsView()
                 } label: {
-                    IconAndTextView(image: "questionmark.circle", text: String(localized: "Help and support"))
+                    Label("Help and support", systemImage: "questionmark.circle")
                 }
                 if database.showAllSettings {
                     NavigationLink {
                         AboutSettingsView()
                     } label: {
-                        IconAndTextView(image: "info.circle", text: String(localized: "About"))
+                        Label("About", systemImage: "info.circle")
                     }
                     NavigationLink {
                         DebugSettingsView(debug: database.debug)
                     } label: {
-                        IconAndTextView(image: "ladybug", text: String(localized: "Debug"))
+                        Label("Debug", systemImage: "ladybug")
                     }
                 }
             }
@@ -235,12 +229,12 @@ struct SettingsView: View {
                     NavigationLink {
                         ImportExportSettingsView()
                     } label: {
-                        IconAndTextView(image: "gearshape", text: String(localized: "Import and export settings"))
+                        Label("Import and export settings", systemImage: "gearshape")
                     }
                     NavigationLink {
                         DeepLinkCreatorSettingsView(deepLinkCreator: model.database.deepLinkCreator)
                     } label: {
-                        IconAndTextView(image: "link.badge.plus", text: String(localized: "Deep link creator"))
+                        Label("Deep link creator", systemImage: "link.badge.plus")
                     }
                 }
             }

@@ -172,6 +172,7 @@ private struct RecordingStatusView: View {
 
 private struct StatusesView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var show: SettingsShow
     let textPlacement: StreamOverlayIconAndTextPlacement
 
     private func remoteControlColor() -> Color {
@@ -379,10 +380,10 @@ struct RightOverlayTopView: View {
             VStack(alignment: .trailing, spacing: 1) {
                 AudioView(audio: model.audio)
                 if model.verboseStatuses {
-                    StatusesView(textPlacement: .beforeIcon)
+                    StatusesView(show: model.database.show, textPlacement: .beforeIcon)
                 } else {
                     HStack(spacing: 1) {
-                        StatusesView(textPlacement: .hide)
+                        StatusesView(show: model.database.show, textPlacement: .hide)
                     }
                 }
             }
@@ -396,11 +397,8 @@ struct RightOverlayTopView: View {
 
 struct RightOverlayBottomView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var show: SettingsShow
     let width: CGFloat
-
-    private var database: Database {
-        model.settings.database
-    }
 
     var body: some View {
         VStack(alignment: .trailing, spacing: 1) {
@@ -424,7 +422,7 @@ struct RightOverlayBottomView: View {
                         if model.showingCamera {
                             StreamOverlayRightCameraSettingsControlView()
                         }
-                        if database.show.zoomPresets && model.hasZoom {
+                        if show.zoomPresets && model.hasZoom {
                             StreamOverlayRightZoomPresetSelctorView(width: width)
                         }
                     }

@@ -152,7 +152,7 @@ struct StreamOverlayView: View {
                 }
                 HStack {
                     Spacer()
-                    RightOverlayBottomView(width: width)
+                    RightOverlayBottomView(show: model.database.show, width: width)
                 }
                 HStack {
                     LeftOverlayView()

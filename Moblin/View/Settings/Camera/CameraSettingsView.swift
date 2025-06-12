@@ -199,10 +199,7 @@ struct CameraSettingsView: View {
                 NavigationLink {
                     StreamVideoSettingsView(database: database, stream: model.stream)
                 } label: {
-                    IconAndTextView(
-                        image: "dot.radiowaves.left.and.right",
-                        text: String(localized: "Video")
-                    )
+                    Label("Video", systemImage: "dot.radiowaves.left.and.right")
                 }
             } header: {
                 Text("Shortcut")

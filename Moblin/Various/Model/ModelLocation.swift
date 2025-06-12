@@ -130,6 +130,6 @@ extension Model {
     }
 
     func isShowingStatusLocation() -> Bool {
-        return database.show.location! && isLocationEnabled()
+        return database.show.location && isLocationEnabled()
     }
 }
