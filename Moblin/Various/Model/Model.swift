@@ -276,10 +276,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var urlSession = URLSession.shared
 
     var heartRates: [String: Int?] = [:]
-    
+
     @Published var phoneCoolerPhoneTemp: Int?
     @Published var phoneCoolerExhaustTemp: Int?
-    
+
     var workoutActiveEnergyBurned: Int?
     var workoutDistance: Int?
     var workoutPower: Int?
@@ -472,7 +472,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var heartRateDeviceState: HeartRateDeviceState?
     var currentHeartRateDeviceSettings: SettingsHeartRateDevice?
     var heartRateDevices: [UUID: HeartRateDevice] = [:]
-    
+
     @Published var phoneCoolerDeviceState: PhoneCoolerDeviceState?
     var currentPhoneCoolerDeviceSettings: SettingsPhoneCoolerDevice?
     var phoneCoolerDevices: [UUID: PhoneCoolerDevice] = [:]

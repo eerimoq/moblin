@@ -26,20 +26,18 @@ struct PhoneCoolerDeviceSettingsView: View {
     @ObservedObject private var scanner = phoneCoolerScanner
     @ObservedObject var device: SettingsPhoneCoolerDevice
     @Binding var name: String
-    
-    
-    
+
     func state() -> String {
         return formatPhoneCoolerDeviceState(state: model.phoneCoolerDeviceState)
     }
-    
+
     private func canEnable() -> Bool {
         if device.bluetoothPeripheralId == nil {
             return false
         }
         return true
     }
-    
+
     private func onDeviceChange(value: String) {
         guard let deviceId = UUID(uuidString: value) else {
             return
@@ -50,38 +48,34 @@ struct PhoneCoolerDeviceSettingsView: View {
         device.bluetoothPeripheralName = peripheral.name
         device.bluetoothPeripheralId = deviceId
     }
-    
-    private func changeColor(color: [Double]){
-        
-        
-        let phoneCoolerDevice = model.phoneCoolerDevices.first(where: {$0.key == device.bluetoothPeripheralId})?.value
-        
+
+    private func changeColor(color _: [Double]) {
+        let phoneCoolerDevice = model.phoneCoolerDevices.first(where: { $0.key == device.bluetoothPeripheralId })?.value
+
         guard phoneCoolerDevice != nil else {
             logger.error("Could not find phone cooler")
             return
         }
-        
-       
+
         phoneCoolerDevice!.setLEDColor(
             red: Int(device.ledLightsColor[0]),
             green: Int(device.ledLightsColor[1]),
             blue: Int(device.ledLightsColor[2]),
             brightness: Int(device.ledLightsColor[3])
         )
-    
     }
-    
-    private func toggleLight(_ state: Bool){
+
+    private func toggleLight(_ state: Bool) {
         device.ledLightsIsEnabled = state
         device.objectWillChange.send()
-        
-        let phoneCoolerDevice = model.phoneCoolerDevices.first(where: {$0.key == device.bluetoothPeripheralId})?.value
-        
+
+        let phoneCoolerDevice = model.phoneCoolerDevices.first(where: { $0.key == device.bluetoothPeripheralId })?.value
+
         guard phoneCoolerDevice != nil else {
             logger.error("PhoneCoolerDeviceSettingsView: Could not find phone cooler")
             return
         }
-        
+
         if !state {
             phoneCoolerDevice!.turnLEdOff()
         } else {
@@ -92,9 +86,8 @@ struct PhoneCoolerDeviceSettingsView: View {
                 brightness: Int(device.ledLightsColor[3])
             )
         }
-        
     }
-    
+
     var body: some View {
         Form {
             Section {
@@ -103,7 +96,7 @@ struct PhoneCoolerDeviceSettingsView: View {
                     device.name = value
                 })
             }
-            
+
             Section {
                 NavigationLink { PhoneCoolerDeviceScannerSettingsView(
                     onChange: onDeviceChange,
@@ -120,7 +113,7 @@ struct PhoneCoolerDeviceSettingsView: View {
                 Text("Device")
             } footer: {
                 if model.phoneCoolerPhoneTemp != nil && model.phoneCoolerExhaustTemp != nil {
-                    HStack{
+                    HStack {
                         Text("Phone: \(String(model.phoneCoolerPhoneTemp!)) C°")
                         Spacer()
                         Text("Exhaust: \(String(model.phoneCoolerExhaustTemp!)) C°")
@@ -150,65 +143,61 @@ struct PhoneCoolerDeviceSettingsView: View {
                 }
             }
             Section {
-                Toggle(isOn: Binding(get: {device.ledLightsIsEnabled}, set: {value in
+                Toggle(isOn: Binding(get: { device.ledLightsIsEnabled }, set: { value in
                     toggleLight(value)
-                }), label: {Text("Enable lights")})
-                
-                
+                }), label: { Text("Enable lights") })
+
                 if device.ledLightsIsEnabled {
-                    HStack{
+                    HStack {
                         Text("Red")
                         Slider(
                             value: device.ledLightsColorBinding[0],
-                            in: 0...100,
-                            onEditingChanged: {editing in
-                                    changeColor(color: device.getLedLightsColor())
+                            in: 0 ... 100,
+                            onEditingChanged: { _ in
+                                changeColor(color: device.getLedLightsColor())
                             }
                         )
                     }
-                    
-                    HStack{
+
+                    HStack {
                         Text("Green")
                         Slider(
                             value: device.ledLightsColorBinding[1],
-                            in: 0...100,
-                            onEditingChanged: {editing in
-                                    changeColor(color: device.getLedLightsColor())
+                            in: 0 ... 100,
+                            onEditingChanged: { _ in
+                                changeColor(color: device.getLedLightsColor())
                             }
                         )
                     }
-                    
-                    HStack{
+
+                    HStack {
                         Text("Blue")
                         Slider(
                             value: device.ledLightsColorBinding[2],
-                            in: 0...100,
-                            onEditingChanged: {editing in
-                                    changeColor(color: device.getLedLightsColor())
+                            in: 0 ... 100,
+                            onEditingChanged: { _ in
+                                changeColor(color: device.getLedLightsColor())
                             }
                         )
                     }
-                    HStack{
+                    HStack {
                         Text("Opacity")
                         Slider(
                             value: device.ledLightsColorBinding[3],
-                            in: 0...100,
-                            onEditingChanged: {editing in
-                                    changeColor(color: device.getLedLightsColor())
+                            in: 0 ... 100,
+                            onEditingChanged: { _ in
+                                changeColor(color: device.getLedLightsColor())
                             }
                         )
                     }
-                    
-                    
                 }
-                
+
             } header: {
                 Text("LED Light")
             }
-            .onChange(of: device.ledLightsColor) { newArray in
+            .onChange(of: device.ledLightsColor) { _ in
                 DispatchQueue.main.async {
                     changeColor(color: device.getLedLightsColor())
-                    
                 }
             }
         }

@@ -29,9 +29,6 @@ struct PhoneCoolerDevicesSettingsView: View {
                 HCenter {
                     IntegrationImageView(imageName: "BlackSharkMagCooler4Pro")
                 }
-               
-            } footer: {
-                Text(String(localized: "Currently only the Black Shark Magnetic Cooler 4 Pro is supported, but other coolers from same brand may work as well."))
             }
             Section {
                 List {

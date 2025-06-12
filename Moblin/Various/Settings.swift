@@ -3978,20 +3978,20 @@ class SettingsPhoneCoolerDevice: Codable, Identifiable, ObservableObject {
 
 extension SettingsPhoneCoolerDevice {
     var ledLightsColorBinding: Binding<[Double]> {
-           Binding(
-               get: { self.getLedLightsColor() },
-               set: {
-                   self.setLedLightsColor(color: $0)
-               }
-           )
-       }
-    
-    func setLedLightsColor(color: [Double]){
-        self.ledLightsColor = color
+        Binding(
+            get: { self.getLedLightsColor() },
+            set: {
+                self.setLedLightsColor(color: $0)
+            }
+        )
     }
-    
+
+    func setLedLightsColor(color: [Double]) {
+        ledLightsColor = color
+    }
+
     func getLedLightsColor() -> [Double] {
-        return self.ledLightsColor
+        return ledLightsColor
     }
 }
 

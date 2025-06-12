@@ -8,13 +8,12 @@
 import SwiftUI
 
 struct PhoneCoolerDeviceScannerSettingsView: View {
-    
     @EnvironmentObject var model: Model
     @ObservedObject private var scanner = phoneCoolerScanner
     @Environment(\.dismiss) var dismiss
     var onChange: (String) -> Void
     @State var selectedId: String
-    
+
     var body: some View {
         Form {
             Section {
@@ -33,14 +32,14 @@ struct PhoneCoolerDeviceScannerSettingsView: View {
                                     id: peripheral.identifier.uuidString,
                                     text: peripheral.name ?? String(localized: "Unknown")
                                 )
-                        }) { item in
-                            Button {
-                                onChange(item.id)
-                                dismiss()
-                            } label: {
-                                Text(item.text)
+                            }) { item in
+                                Button {
+                                    onChange(item.id)
+                                    dismiss()
+                                } label: {
+                                    Text(item.text)
+                                }
                             }
-                        }
                     }
                 }
             }
@@ -53,5 +52,4 @@ struct PhoneCoolerDeviceScannerSettingsView: View {
         }
         .navigationTitle("Device")
     }
-    
 }
