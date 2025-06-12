@@ -5952,10 +5952,6 @@ final class Settings {
             stream.srt.adaptiveBitrateEnabled = stream.adaptiveBitrate
             store()
         }
-        if realDatabase.watch.show == nil {
-            realDatabase.watch.show = .init()
-            store()
-        }
         for stream in realDatabase.streams where stream.recording.autoStartRecording == nil {
             stream.recording.autoStartRecording = false
             store()
@@ -6249,10 +6245,6 @@ final class Settings {
         }
         if realDatabase.chat.botCommandPermissions.tesla == nil {
             realDatabase.chat.botCommandPermissions.tesla = .init()
-            store()
-        }
-        if realDatabase.watch.viaRemoteControl == nil {
-            realDatabase.watch.viaRemoteControl = false
             store()
         }
         if realDatabase.chat.botCommandPermissions.audio == nil {
