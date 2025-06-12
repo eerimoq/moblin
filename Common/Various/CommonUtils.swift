@@ -721,12 +721,6 @@ extension RgbColor {
 }
 
 extension Color {
-    func toComponents() -> [Double]? {
-        guard let components = UIColor(self).cgColor.components else {
-            return nil
-        }
-        return components.map {Double($0)}
-    }
     func toRgb() -> RgbColor? {
         guard let components = UIColor(self).cgColor.components else {
             return nil

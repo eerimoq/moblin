@@ -26,7 +26,6 @@ struct PhoneCoolerDeviceSettingsView: View {
     @ObservedObject private var scanner = phoneCoolerScanner
     @ObservedObject var device: SettingsPhoneCoolerDevice
     @Binding var name: String
-    @State private var ledColor = Color(.sRGB, red: 0, green: 1, blue: 0, opacity: 1)
     
     
     
@@ -52,22 +51,22 @@ struct PhoneCoolerDeviceSettingsView: View {
         device.bluetoothPeripheralId = deviceId
     }
     
-    private func changeColor(color: Color){
+    private func changeColor(color: [Double]){
         
         
         let phoneCoolerDevice = model.phoneCoolerDevices.first(where: {$0.key == device.bluetoothPeripheralId})?.value
         
         guard phoneCoolerDevice != nil else {
-            print("Could not find phone cooler")
+            logger.error("Could not find phone cooler")
             return
         }
         
        
         phoneCoolerDevice!.setLEDColor(
-            red: Int(255 * device.ledLightsColor[0]),
-            green: Int(255 * device.ledLightsColor[1]),
-            blue: Int(255 * device.ledLightsColor[2]),
-            brightness: Int(100 * device.ledLightsColor[3])
+            red: Int(device.ledLightsColor[0]),
+            green: Int(device.ledLightsColor[1]),
+            blue: Int(device.ledLightsColor[2]),
+            brightness: Int(device.ledLightsColor[3])
         )
     
     }
@@ -87,10 +86,10 @@ struct PhoneCoolerDeviceSettingsView: View {
             phoneCoolerDevice!.turnLEdOff()
         } else {
             phoneCoolerDevice!.setLEDColor(
-                red: Int(255 * device.ledLightsColor[0]),
-                green: Int(255 * device.ledLightsColor[1]),
-                blue: Int(255 * device.ledLightsColor[2]),
-                brightness: device.ledLightsColor.count == 4 ? Int(device.ledLightsColor[3]) : 1
+                red: Int(device.ledLightsColor[0]),
+                green: Int(device.ledLightsColor[1]),
+                blue: Int(device.ledLightsColor[2]),
+                brightness: Int(device.ledLightsColor[3])
             )
         }
         
@@ -155,23 +154,62 @@ struct PhoneCoolerDeviceSettingsView: View {
                     toggleLight(value)
                 }), label: {Text("Enable lights")})
                 
+                
                 if device.ledLightsIsEnabled {
-                    ColorPicker("LED Color", selection: device.ledLightsColorBinding)
-                        .onChange(of: device.ledLightsColor) { newArray in
-                            //let newColor = self.getLedLightsColor()
-                            
-                        
-                                print("Chang23")
-                            DispatchQueue.main.async {
-                                changeColor(color: device.getLedLightsColor())
-
+                    HStack{
+                        Text("Red")
+                        Slider(
+                            value: device.ledLightsColorBinding[0],
+                            in: 0...100,
+                            onEditingChanged: {editing in
+                                    changeColor(color: device.getLedLightsColor())
                             }
-                            
-                        }
+                        )
+                    }
+                    
+                    HStack{
+                        Text("Green")
+                        Slider(
+                            value: device.ledLightsColorBinding[1],
+                            in: 0...100,
+                            onEditingChanged: {editing in
+                                    changeColor(color: device.getLedLightsColor())
+                            }
+                        )
+                    }
+                    
+                    HStack{
+                        Text("Blue")
+                        Slider(
+                            value: device.ledLightsColorBinding[2],
+                            in: 0...100,
+                            onEditingChanged: {editing in
+                                    changeColor(color: device.getLedLightsColor())
+                            }
+                        )
+                    }
+                    HStack{
+                        Text("Opacity")
+                        Slider(
+                            value: device.ledLightsColorBinding[3],
+                            in: 0...100,
+                            onEditingChanged: {editing in
+                                    changeColor(color: device.getLedLightsColor())
+                            }
+                        )
+                    }
+                    
+                    
                 }
                 
             } header: {
-                Text("Settings")
+                Text("LED Light")
+            }
+            .onChange(of: device.ledLightsColor) { newArray in
+                DispatchQueue.main.async {
+                    changeColor(color: device.getLedLightsColor())
+                    
+                }
             }
         }
     }

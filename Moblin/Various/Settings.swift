@@ -3977,30 +3977,21 @@ class SettingsPhoneCoolerDevice: Codable, Identifiable, ObservableObject {
 }
 
 extension SettingsPhoneCoolerDevice {
-    var ledLightsColorBinding: Binding<Color> {
+    var ledLightsColorBinding: Binding<[Double]> {
            Binding(
                get: { self.getLedLightsColor() },
                set: {
                    self.setLedLightsColor(color: $0)
-                   print("Changing \($0.description)")
-                   self.objectWillChange.send()
-                   print("Changing \(self.getLedLightsColor().description)")
                }
            )
        }
     
-    func setLedLightsColor(color: Color){
-        let colorComponents = color.toComponents()!
-        self.ledLightsColor = colorComponents
+    func setLedLightsColor(color: [Double]){
+        self.ledLightsColor = color
     }
     
-    func getLedLightsColor() -> Color {
-        return Color(.sRGB,
-            red: self.ledLightsColor[0],
-            green: self.ledLightsColor[1],
-            blue: self.ledLightsColor[2],
-            opacity: self.ledLightsColor[3]
-        )
+    func getLedLightsColor() -> [Double] {
+        return self.ledLightsColor
     }
 }
 

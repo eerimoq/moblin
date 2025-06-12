@@ -46,6 +46,9 @@ class PhoneCoolerDevice: NSObject{
     
     var coolingStatsTimer: Timer?
     
+    var coolingPower: Int? // 0-100% How much the cooler should cool.
+    var fanSpeed: Int? // 0-100% How much the fan should spin.
+    
     weak var delegate: (any PhoneCoolerDeviceDelegate)?
     
     func start(deviceId: UUID?){
@@ -181,11 +184,86 @@ extension PhoneCoolerDevice: CBPeripheralDelegate {
         }
     }
     
+    func updatedPercentageScale(_ value: Int?, target: Int) -> Int {
+        guard let current = value else {
+            return target
+        }
+        if current > target {
+            let newValue = current - 5
+            return newValue < target ? target : newValue
+        } else if current < target {
+            let newValue = current + 5
+            return newValue > target ? target : newValue
+        } else {
+            return target
+        }
+    }
+    
     private func pollForCoolingStats(){
         guard self.writeCharacteristic != nil else {
             return
         }
         peripheral?.writeValue(BlackSharkLib.getCoolingMetadataCommand(), for: self.writeCharacteristic!, type: .withoutResponse)
+        // Get thermal state of phone
+        let thermalState = ProcessInfo.processInfo.thermalState
+
+        switch(thermalState) {
+            
+        case .nominal:
+            // Cooling: 10%, Fan: 10%
+            let updatedCoolingPower = self.updatedPercentageScale(self.coolingPower, target: 10)
+            if updatedCoolingPower != self.coolingPower {
+                self.coolingPower = updatedCoolingPower
+                logger.debug("Phone is Nominal. Adjusting cooling power to \(String(coolingPower!)) %")
+            }
+            let updatedFanSpeed = self.updatedPercentageScale(self.fanSpeed, target: 10)
+            if updatedFanSpeed != self.fanSpeed {
+                self.fanSpeed = updatedFanSpeed
+                logger.debug("Phone is nominal. Adjusting fan speed to \(String(fanSpeed!)) %")
+            }
+        case .fair:
+            // Cooling: 20%, Fan: 20%
+            let updatedCoolingPower = self.updatedPercentageScale(self.coolingPower, target: 20)
+            if updatedCoolingPower != self.coolingPower {
+                self.coolingPower = updatedCoolingPower
+                logger.debug("Phone is fair. Adjusting cooling power to \(String(coolingPower!)) %")
+            }
+            let updatedFanSpeed = self.updatedPercentageScale(self.fanSpeed, target: 20)
+            if updatedFanSpeed != self.fanSpeed {
+                self.fanSpeed = updatedFanSpeed
+                logger.debug("Phone is fair. Adjusting fan speed to \(String(fanSpeed!)) %")
+            }
+        case .serious:
+            // Cooling: 80%, Fan: 50%
+            let updatedCoolingPower = self.updatedPercentageScale(self.coolingPower, target: 80)
+            if updatedCoolingPower != self.coolingPower {
+                self.coolingPower = updatedCoolingPower
+                logger.debug("Phone is serious. Adjusting cooling power to \(String(coolingPower!)) %")
+            }
+            let updatedFanSpeed = self.updatedPercentageScale(self.fanSpeed, target: 50)
+            if updatedFanSpeed != self.fanSpeed {
+                self.fanSpeed = updatedFanSpeed
+                logger.debug("Phone is serious. Adjusting fan speed to \(String(fanSpeed!)) %")
+            }
+        case .critical:
+            // Cooling: 100%, Fan: 100%
+            let updatedCoolingPower = self.updatedPercentageScale(self.coolingPower, target: 100)
+            if updatedCoolingPower != self.coolingPower {
+                self.coolingPower = updatedCoolingPower
+                logger.debug("Phone is critical. Adjusting cooling power to \(String(coolingPower!)) %")
+            }
+            let updatedFanSpeed = self.updatedPercentageScale(self.fanSpeed, target: 100)
+            if updatedFanSpeed != self.fanSpeed {
+                self.fanSpeed = updatedFanSpeed
+                logger.debug("Phone is faCritical. Adjusting fan speed to \(String(fanSpeed!)) %")
+            }
+        @unknown default:
+            logger.warning("Thermal state is Unkonwn value")
+        }
+        
+        peripheral?.writeValue(BlackSharkLib.getSetCoolingPowerCommand(coolingPower!)!, for: self.writeCharacteristic!, type: .withoutResponse)
+        peripheral?.writeValue(BlackSharkLib.getSetFanSpeedCommand(fanSpeed!)!, for: self.writeCharacteristic!, type: .withoutResponse)
+        
     }
     
     func setLEDColor(red: Int, green: Int, blue: Int, brightness: Int){
