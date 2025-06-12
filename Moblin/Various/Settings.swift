@@ -4085,6 +4085,39 @@ class SettingsHeartRateDevices: Codable {
     var devices: [SettingsHeartRateDevice] = []
 }
 
+class SettingsPhoneCoolerDevice: Codable, Identifiable, ObservableObject {
+    var id: UUID = .init()
+    var name: String = ""
+    var enabled: Bool = false
+    var bluetoothPeripheralName: String?
+    var bluetoothPeripheralId: UUID?
+    var ledLightsIsEnabled: Bool = false
+    var ledLightsColor: [Double] = [0, 1, 0, 1]
+}
+
+extension SettingsPhoneCoolerDevice {
+    var ledLightsColorBinding: Binding<[Double]> {
+        Binding(
+            get: { self.getLedLightsColor() },
+            set: {
+                self.setLedLightsColor(color: $0)
+            }
+        )
+    }
+
+    func setLedLightsColor(color: [Double]) {
+        ledLightsColor = color
+    }
+
+    func getLedLightsColor() -> [Double] {
+        return ledLightsColor
+    }
+}
+
+class SettingsPhoneCoolerDevices: Codable {
+    var devices: [SettingsPhoneCoolerDevice] = []
+}
+
 class SettingsQuickButtons: Codable, ObservableObject {
     @Published var twoColumns: Bool = true
     @Published var showName: Bool = true
@@ -5004,6 +5037,7 @@ class Database: Codable, ObservableObject {
     @Published var externalDisplayContent: SettingsExternalDisplayContent = .stream
     var cyclingPowerDevices: SettingsCyclingPowerDevices = .init()
     var heartRateDevices: SettingsHeartRateDevices = .init()
+    var phoneCoolerDevices: SettingsPhoneCoolerDevices = .init()
     var djiGimbalDevices: SettingsDjiGimbalDevices = .init()
     var remoteSceneId: UUID?
     var sceneNumericInput: Bool = false
@@ -5096,6 +5130,7 @@ class Database: Codable, ObservableObject {
              cyclingPowerDevices,
              heartRateDevices,
              djiGimbalDevices,
+             phoneCoolerDevices,
              remoteSceneId,
              sceneNumericInput,
              goPro,
@@ -5161,6 +5196,7 @@ class Database: Codable, ObservableObject {
         try container.encode(.cyclingPowerDevices, cyclingPowerDevices)
         try container.encode(.heartRateDevices, heartRateDevices)
         try container.encode(.djiGimbalDevices, djiGimbalDevices)
+        try container.encode(.phoneCoolerDevices, phoneCoolerDevices)
         try container.encode(.remoteSceneId, remoteSceneId)
         try container.encode(.sceneNumericInput, sceneNumericInput)
         try container.encode(.goPro, goPro)
@@ -5228,6 +5264,7 @@ class Database: Codable, ObservableObject {
         cyclingPowerDevices = container.decode(.cyclingPowerDevices, SettingsCyclingPowerDevices.self, .init())
         heartRateDevices = container.decode(.heartRateDevices, SettingsHeartRateDevices.self, .init())
         djiGimbalDevices = container.decode(.djiGimbalDevices, SettingsDjiGimbalDevices.self, .init())
+        phoneCoolerDevices = container.decode(.phoneCoolerDevices, SettingsPhoneCoolerDevices.self, .init())
         remoteSceneId = try? container.decode(UUID?.self, forKey: .remoteSceneId)
         sceneNumericInput = container.decode(.sceneNumericInput, Bool.self, false)
         goPro = container.decode(.goPro, SettingsGoPro.self, .init())

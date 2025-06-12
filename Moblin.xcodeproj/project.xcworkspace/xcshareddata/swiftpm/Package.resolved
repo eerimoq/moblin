@@ -1,5 +1,5 @@
 {
-  "originHash" : "2262e01c0128387be5bd6148bd5ed69961e78864f6feadc78600e477c925e620",
+  "originHash" : "d8d7fa218f0fc5fe025b58ad3365ee171bab30016d5e401f38644c8927c1ea89",
   "pins" : [
     {
       "identity" : "alerttoast",
@@ -17,6 +17,15 @@
       "state" : {
         "branch" : "main",
         "revision" : "24226431095c614c88de686ea5afcc99d7cb31f5"
+      }
+    },
+    {
+      "identity" : "blacksharklib.swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Spillmaker/BlackSharkLib.swift",
+      "state" : {
+        "revision" : "b329f089423e5e4ffd00a7e113255e3cff42a6bf",
+        "version" : "1.2.0"
       }
     },
     {
