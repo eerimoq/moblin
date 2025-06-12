@@ -42,6 +42,8 @@ class PhoneCoolerDevice: NSObject{
     private var readCharacteristic: CBCharacteristic?
     private var writeCharacteristic: CBCharacteristic?
     
+    var lastTransmission: Date = .distantPast
+    
     var coolingStatsTimer: Timer?
     
     weak var delegate: (any PhoneCoolerDeviceDelegate)?
@@ -184,6 +186,27 @@ extension PhoneCoolerDevice: CBPeripheralDelegate {
             return
         }
         peripheral?.writeValue(BlackSharkLib.getCoolingMetadataCommand(), for: self.writeCharacteristic!, type: .withoutResponse)
+    }
+    
+    func setLEDColor(red: Int, green: Int, blue: Int, brightness: Int){
+        
+        
+        let cooldown: TimeInterval = 0.08
+        let now = Date()
+        
+        guard now.timeIntervalSince(lastTransmission) >= cooldown else {
+            return
+        }
+        
+        self.lastTransmission = .now
+        
+        let setColorCommand = BlackSharkLib.getSetLEDColorCommand(red, green, blue, brightness: brightness)!
+        print(setColorCommand.hexString())
+        peripheral?.writeValue(setColorCommand, for: self.writeCharacteristic!, type: .withoutResponse)
+    }
+    
+    func turnLEdOff(){
+        peripheral?.writeValue(BlackSharkLib.getTurnOffLEDCommand(), for: self.writeCharacteristic!, type: .withoutResponse)
     }
     
     // Read updates

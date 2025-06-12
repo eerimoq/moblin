@@ -13,12 +13,12 @@ extension Model {
 
     
     func enablePhoneCoolerDevice(device: SettingsPhoneCoolerDevice){
-        if !phoneCoolerDevices.keys.contains(device.id) {
+        if !phoneCoolerDevices.keys.contains(device.bluetoothPeripheralId!) {
             let phoneCoolerDevice = PhoneCoolerDevice()
             phoneCoolerDevice.delegate = self
-            phoneCoolerDevices[device.id] = phoneCoolerDevice
+            phoneCoolerDevices[device.bluetoothPeripheralId!] = phoneCoolerDevice
         }
-        phoneCoolerDevices[device.id]?.start(deviceId: device.bluetoothPeripheralId)
+        phoneCoolerDevices[device.bluetoothPeripheralId!]?.start(deviceId: device.bluetoothPeripheralId)
     }
     
     func disablePhoneCoolerDevice(device: SettingsPhoneCoolerDevice){

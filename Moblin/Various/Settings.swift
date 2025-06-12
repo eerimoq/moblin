@@ -3966,12 +3966,42 @@ class SettingsHeartRateDevices: Codable {
     var devices: [SettingsHeartRateDevice] = []
 }
 
-class SettingsPhoneCoolerDevice: Codable, Identifiable {
+class SettingsPhoneCoolerDevice: Codable, Identifiable, ObservableObject {
     var id: UUID = .init()
     var name: String = ""
     var enabled: Bool = false
     var bluetoothPeripheralName: String?
     var bluetoothPeripheralId: UUID?
+    var ledLightsIsEnabled: Bool = false
+    var ledLightsColor: [Double] = [0, 1, 0, 1]
+}
+
+extension SettingsPhoneCoolerDevice {
+    var ledLightsColorBinding: Binding<Color> {
+           Binding(
+               get: { self.getLedLightsColor() },
+               set: {
+                   self.setLedLightsColor(color: $0)
+                   print("Changing \($0.description)")
+                   self.objectWillChange.send()
+                   print("Changing \(self.getLedLightsColor().description)")
+               }
+           )
+       }
+    
+    func setLedLightsColor(color: Color){
+        let colorComponents = color.toComponents()!
+        self.ledLightsColor = colorComponents
+    }
+    
+    func getLedLightsColor() -> Color {
+        return Color(.sRGB,
+            red: self.ledLightsColor[0],
+            green: self.ledLightsColor[1],
+            blue: self.ledLightsColor[2],
+            opacity: self.ledLightsColor[3]
+        )
+    }
 }
 
 class SettingsPhoneCoolerDevices: Codable {

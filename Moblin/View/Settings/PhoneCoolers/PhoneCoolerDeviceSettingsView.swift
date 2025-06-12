@@ -24,8 +24,11 @@ private func formatPhoneCoolerDeviceState(state: PhoneCoolerDeviceState?) -> Str
 struct PhoneCoolerDeviceSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject private var scanner = phoneCoolerScanner
-    var device: SettingsPhoneCoolerDevice
+    @ObservedObject var device: SettingsPhoneCoolerDevice
     @Binding var name: String
+    @State private var ledColor = Color(.sRGB, red: 0, green: 1, blue: 0, opacity: 1)
+    
+    
     
     func state() -> String {
         return formatPhoneCoolerDeviceState(state: model.phoneCoolerDeviceState)
@@ -47,6 +50,50 @@ struct PhoneCoolerDeviceSettingsView: View {
         }
         device.bluetoothPeripheralName = peripheral.name
         device.bluetoothPeripheralId = deviceId
+    }
+    
+    private func changeColor(color: Color){
+        
+        
+        let phoneCoolerDevice = model.phoneCoolerDevices.first(where: {$0.key == device.bluetoothPeripheralId})?.value
+        
+        guard phoneCoolerDevice != nil else {
+            print("Could not find phone cooler")
+            return
+        }
+        
+       
+        phoneCoolerDevice!.setLEDColor(
+            red: Int(255 * device.ledLightsColor[0]),
+            green: Int(255 * device.ledLightsColor[1]),
+            blue: Int(255 * device.ledLightsColor[2]),
+            brightness: Int(100 * device.ledLightsColor[3])
+        )
+    
+    }
+    
+    private func toggleLight(_ state: Bool){
+        device.ledLightsIsEnabled = state
+        device.objectWillChange.send()
+        
+        let phoneCoolerDevice = model.phoneCoolerDevices.first(where: {$0.key == device.bluetoothPeripheralId})?.value
+        
+        guard phoneCoolerDevice != nil else {
+            logger.error("PhoneCoolerDeviceSettingsView: Could not find phone cooler")
+            return
+        }
+        
+        if !state {
+            phoneCoolerDevice!.turnLEdOff()
+        } else {
+            phoneCoolerDevice!.setLEDColor(
+                red: Int(255 * device.ledLightsColor[0]),
+                green: Int(255 * device.ledLightsColor[1]),
+                blue: Int(255 * device.ledLightsColor[2]),
+                brightness: device.ledLightsColor.count == 4 ? Int(device.ledLightsColor[3]) : 1
+            )
+        }
+        
     }
     
     var body: some View {
@@ -102,6 +149,29 @@ struct PhoneCoolerDeviceSettingsView: View {
                         Text(state())
                     }
                 }
+            }
+            Section {
+                Toggle(isOn: Binding(get: {device.ledLightsIsEnabled}, set: {value in
+                    toggleLight(value)
+                }), label: {Text("Enable lights")})
+                
+                if device.ledLightsIsEnabled {
+                    ColorPicker("LED Color", selection: device.ledLightsColorBinding)
+                        .onChange(of: device.ledLightsColor) { newArray in
+                            //let newColor = self.getLedLightsColor()
+                            
+                        
+                                print("Chang23")
+                            DispatchQueue.main.async {
+                                changeColor(color: device.getLedLightsColor())
+
+                            }
+                            
+                        }
+                }
+                
+            } header: {
+                Text("Settings")
             }
         }
     }
