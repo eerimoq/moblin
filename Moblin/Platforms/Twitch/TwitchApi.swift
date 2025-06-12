@@ -73,6 +73,15 @@ struct TwitchApiStreams: Decodable {
     let data: [TwitchApiStreamData]
 }
 
+struct TwitchApiGameData: Decodable {
+    let id: String
+    let name: String
+}
+
+struct TwitchApiGames: Decodable {
+    let data: [TwitchApiGameData]
+}
+
 struct TwitchApiGetBroadcasterSubscriptionsData: Decodable {
     // periphery:ignore
     let user_id: String
@@ -284,14 +293,28 @@ class TwitchApi {
         })
     }
 
+    func getGames(
+        names: [String],
+        onComplete: @escaping (TwitchApiGames?) -> Void
+    ) {
+        let names = names.map { "name=\($0)" }.joined(separator: "&")
+        doGet(subPath: "games?\(names)", onComplete: { data in
+            let message = try? JSONDecoder().decode(
+                TwitchApiGames.self,
+                from: data ?? Data()
+            )
+            onComplete(message)
+        })
+    }
+
     func modifyChannelInformation(broadcasterId: String,
-                                  category: String?,
+                                  categoryId: String?,
                                   title: String?,
                                   onComplete: @escaping (Bool) -> Void)
     {
         var items: [String] = []
-        if let category {
-            items.append("\"game_id\": \"\(category)\"")
+        if let categoryId {
+            items.append("\"game_id\": \"\(categoryId)\"")
         }
         if let title {
             items.append("\"title\": \"\(title)\"")

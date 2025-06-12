@@ -159,6 +159,9 @@ struct ChatBotCommandsSettingsView: View {
                 VStack(alignment: .leading) {
                     Text("!moblin stream title <title>")
                     Text("Set stream title.")
+                    Text("")
+                    Text("!moblin stream category <category name>")
+                    Text("Set stream category.")
                 }
             }
             Section {
