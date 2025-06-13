@@ -68,7 +68,7 @@ struct PhoneCoolerDeviceSettingsView: View {
             logger.error("PhoneCoolerDeviceSettingsView: Could not find phone cooler")
             return
         }
-        if device.ledLightsIsEnabled {
+        if device.rgbLightEnabled {
             phoneCoolerDevice.setLedColor(color: device.rgbLightColor, brightness: Int(device.rgbLightBrightness))
         } else {
             phoneCoolerDevice.turnLedOff()
@@ -124,11 +124,11 @@ struct PhoneCoolerDeviceSettingsView: View {
                     }
                 }
                 Section {
-                    Toggle("Enabled", isOn: $device.ledLightsIsEnabled)
-                        .onChange(of: device.ledLightsIsEnabled) { _ in
+                    Toggle("Enabled", isOn: $device.rgbLightEnabled)
+                        .onChange(of: device.rgbLightEnabled) { _ in
                             toggleLight()
                         }
-                    if device.ledLightsIsEnabled {
+                    if device.rgbLightEnabled {
                         ColorPicker("Color", selection: $device.rgbLightColorColor, supportsOpacity: false)
                             .onChange(of: device.rgbLightColorColor) { _ in
                                 guard let color = device.rgbLightColorColor.toStandardRgb() else {

@@ -4097,7 +4097,7 @@ class SettingsPhoneCoolerDevice: Codable, Identifiable, ObservableObject {
     @Published var enabled: Bool = false
     @Published var bluetoothPeripheralName: String?
     @Published var bluetoothPeripheralId: UUID?
-    @Published var ledLightsIsEnabled: Bool = false
+    @Published var rgbLightEnabled: Bool = false
     var rgbLightColor: RgbColor = defaultRgbLightColor
     @Published var rgbLightColorColor: Color = defaultRgbLightColor.color()
     @Published var rgbLightBrightness: Double = 100.0
@@ -4108,7 +4108,7 @@ class SettingsPhoneCoolerDevice: Codable, Identifiable, ObservableObject {
              enabled,
              bluetoothPeripheralName,
              bluetoothPeripheralId,
-             ledLightsIsEnabled,
+             rgbLightEnabled,
              rgbLightColor,
              rgbLightBrightness
     }
@@ -4120,7 +4120,7 @@ class SettingsPhoneCoolerDevice: Codable, Identifiable, ObservableObject {
         try container.encode(.enabled, enabled)
         try container.encode(.bluetoothPeripheralName, bluetoothPeripheralName)
         try container.encode(.bluetoothPeripheralId, bluetoothPeripheralId)
-        try container.encode(.ledLightsIsEnabled, ledLightsIsEnabled)
+        try container.encode(.rgbLightEnabled, rgbLightEnabled)
         try container.encode(.rgbLightColor, rgbLightColor)
         try container.encode(.rgbLightBrightness, rgbLightBrightness)
     }
@@ -4134,10 +4134,10 @@ class SettingsPhoneCoolerDevice: Codable, Identifiable, ObservableObject {
         enabled = container.decode(.enabled, Bool.self, false)
         bluetoothPeripheralName = try? container.decode(String.self, forKey: .bluetoothPeripheralName)
         bluetoothPeripheralId = try? container.decode(UUID.self, forKey: .bluetoothPeripheralId)
-        ledLightsIsEnabled = container.decode(.ledLightsIsEnabled, Bool.self, false)
+        rgbLightEnabled = container.decode(.rgbLightEnabled, Bool.self, false)
         rgbLightColor = container.decode(.rgbLightColor, RgbColor.self, defaultRgbLightColor)
         rgbLightColorColor = rgbLightColor.color()
-        rgbLightBrightness = container.decode(.rgbLightBrightness, Double.self, 1.0)
+        rgbLightBrightness = container.decode(.rgbLightBrightness, Double.self, 100.0)
     }
 }
 
