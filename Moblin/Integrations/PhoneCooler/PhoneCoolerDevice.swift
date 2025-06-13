@@ -143,8 +143,8 @@ extension PhoneCoolerDevice: CBPeripheralDelegate {
             case CBUUID(data: BlackSharkLib.getWriteCharacteristicsUUID()):
                 writeCharacteristic = characteristic
                 pollForCoolingStats()
-                coolingStatsTimer.startPeriodic(interval: 2) {
-                    self.pollForCoolingStats()
+                coolingStatsTimer.startPeriodic(interval: 2) { [weak self] in
+                    self?.pollForCoolingStats()
                 }
             default:
                 break
