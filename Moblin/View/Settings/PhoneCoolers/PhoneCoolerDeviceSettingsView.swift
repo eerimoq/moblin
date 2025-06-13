@@ -152,7 +152,7 @@ struct PhoneCoolerDeviceSettingsView: View {
                     Text("RGB light")
                 }
             }
-            .navigationTitle("Phone cooler")
+            .navigationTitle("Cooler")
         } label: {
             Text(device.name)
         }

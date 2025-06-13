@@ -29,13 +29,13 @@ struct PhoneCoolerDevicesSettingsView: View {
                 }
                 CreateButtonView {
                     let device = SettingsPhoneCoolerDevice()
-                    device.name = "My phone cooler"
+                    device.name = "My cooler"
                     phoneCoolerDevices.devices.append(device)
                 }
             } footer: {
-                SwipeLeftToDeleteHelpView(kind: String(localized: "a phone cooler"))
+                SwipeLeftToDeleteHelpView(kind: String(localized: "a cooler"))
             }
         }
-        .navigationTitle("Phone coolers")
+        .navigationTitle("Black Shark coolers")
     }
 }

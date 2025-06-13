@@ -24,9 +24,7 @@ enum PhoneCoolerDeviceState {
 
 private let phoneCoolerServiceId = CBUUID(string: BlackSharkLib.getServiceUUID().uuidString)
 
-let phoneCoolerScanner = BluetoothScanner(
-    serviceIds: []
-)
+let phoneCoolerScanner = BluetoothScanner(serviceIds: [])
 
 class PhoneCoolerDevice: NSObject {
     private var state: PhoneCoolerDeviceState = .disconnected
