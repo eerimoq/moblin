@@ -199,26 +199,22 @@ extension PhoneCoolerDevice: CBPeripheralDelegate {
             fanSpeedTarget = 100
             logger.warning("phone-cooler-device: Thermal state is unknown value")
         }
-        let newCoolingPower = updatedPercentageScale(coolingPower, target: coolingPowerTarget)
-        if newCoolingPower != coolingPower {
-            coolingPower = newCoolingPower
-            logger.debug("phone-cooler-device: Adjusting cooling power to \(newCoolingPower) %")
-            peripheral.writeValue(
-                BlackSharkLib.getSetFanSpeedCommand(newCoolingPower)!,
-                for: writeCharacteristic,
-                type: .withoutResponse
-            )
-        }
-        let newFanSpeed = updatedPercentageScale(fanSpeed, target: fanSpeedTarget)
-        if newFanSpeed != fanSpeed {
-            fanSpeed = newFanSpeed
-            logger.debug("phone-cooler-device: Adjusting fan speed to \(newFanSpeed) %")
-            peripheral.writeValue(
-                BlackSharkLib.getSetCoolingPowerCommand(newFanSpeed)!,
-                for: writeCharacteristic,
-                type: .withoutResponse
-            )
-        }
+        // Since we do not know the fan and cooler-state we have to assume that it can be out of sync. sending the
+        // commands to update the cooling power and fan speed on every interval will make sure that its in sync.
+        let coolingPower = updatedPercentageScale(coolingPower, target: coolingPowerTarget)
+        logger.debug("phone-cooler-device: Adjusting cooling power to \(coolingPower) %")
+        peripheral.writeValue(
+            BlackSharkLib.getSetCoolingPowerCommand(coolingPower)!,
+            for: writeCharacteristic,
+            type: .withoutResponse
+        )
+        let fanSpeed = updatedPercentageScale(fanSpeed, target: fanSpeedTarget)
+        logger.debug("phone-cooler-device: Adjusting fan speed to \(fanSpeed) %")
+        peripheral.writeValue(
+            BlackSharkLib.getSetFanSpeedCommand(fanSpeed)!,
+            for: writeCharacteristic,
+            type: .withoutResponse
+        )
     }
 
     func setLedColor(color: RgbColor, brightness: Int) {
