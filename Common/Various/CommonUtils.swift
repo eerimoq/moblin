@@ -735,6 +735,19 @@ extension Color {
             opacity: components.count == 4 ? components[3] : 1.0
         )
     }
+
+    /// Returns an RgbColor within the standard range. meaning the value is clamped to be in between 0 and 255
+    func toStandardRgb() -> RgbColor? {
+        guard let extendedRgbColor = toRgb() else {
+            return nil
+        }
+        return RgbColor(
+            red: min(max(extendedRgbColor.red, 0), 255),
+            green: min(max(extendedRgbColor.green, 0), 255),
+            blue: min(max(extendedRgbColor.blue, 0), 255),
+            opacity: extendedRgbColor.opacity
+        )
+    }
 }
 
 func isSetWin(first: Int, second: Int) -> Bool {
