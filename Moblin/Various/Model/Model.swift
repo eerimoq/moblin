@@ -1965,6 +1965,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             )
             youTubeLiveChat!.start()
         }
+        updateChatMoreThanOneChatConfigured()
     }
 
     func reloadAfreecaTvChat() {
@@ -1979,6 +1980,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             )
             afreecaTvChat!.start()
         }
+        updateChatMoreThanOneChatConfigured()
     }
 
     func reloadOpenStreamingPlatformChat() {
@@ -1992,6 +1994,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             )
             openStreamingPlatformChat!.start()
         }
+        updateChatMoreThanOneChatConfigured()
     }
 
     func youTubeVideoIdUpdated() {

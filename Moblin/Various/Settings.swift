@@ -2947,7 +2947,7 @@ class SettingsChat: Codable, ObservableObject {
     var shadowColorEnabled: Bool = true
     var boldUsername: Bool = true
     var boldMessage: Bool = true
-    var animatedEmotes: Bool = false
+    @Published var animatedEmotes: Bool = false
     var timestampColor: RgbColor = .init(red: 180, green: 180, blue: 180)
     var timestampColorEnabled: Bool = false
     @Published var height: Double = 0.7
@@ -2970,13 +2970,14 @@ class SettingsChat: Codable, ObservableObject {
     @Published var botEnabled: Bool = false
     var botCommandPermissions: SettingsChatBotPermissions = .init()
     var botSendLowBatteryWarning: Bool = false
-    var badges: Bool = true
+    @Published var badges: Bool = true
     var showFirstTimeChatterMessage: Bool = true
     var showNewFollowerMessage: Bool = true
     @Published var bottom: Double = 0.0
     @Published var bottomPoints: Double = 80
     var newMessagesAtTop: Bool = false
     @Published var textToSpeechPauseBetweenMessages: Double = 1.0
+    @Published var platform: Bool = true
 
     enum CodingKeys: CodingKey {
         case fontSize,
@@ -3017,7 +3018,8 @@ class SettingsChat: Codable, ObservableObject {
              bottom,
              bottomPoints,
              newMessagesAtTop,
-             textToSpeechPauseBetweenMessages
+             textToSpeechPauseBetweenMessages,
+             platform
     }
 
     func encode(to encoder: Encoder) throws {
@@ -3061,6 +3063,7 @@ class SettingsChat: Codable, ObservableObject {
         try container.encode(.bottomPoints, bottomPoints)
         try container.encode(.newMessagesAtTop, newMessagesAtTop)
         try container.encode(.textToSpeechPauseBetweenMessages, textToSpeechPauseBetweenMessages)
+        try container.encode(.platform, platform)
     }
 
     init() {}
@@ -3109,6 +3112,7 @@ class SettingsChat: Codable, ObservableObject {
         )
         newMessagesAtTop = container.decode(.newMessagesAtTop, Bool.self, false)
         textToSpeechPauseBetweenMessages = container.decode(.textToSpeechPauseBetweenMessages, Double.self, 1.0)
+        platform = container.decode(.platform, Bool.self, true)
     }
 }
 

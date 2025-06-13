@@ -34,6 +34,7 @@ extension Model {
                                     settings: stream.chat)
             kickPusher!.start()
         }
+        updateChatMoreThanOneChatConfigured()
     }
 
     func kickChannelNameUpdated() {

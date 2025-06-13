@@ -44,6 +44,7 @@ extension Model {
                 urlSession: urlSession
             )
         }
+        updateChatMoreThanOneChatConfigured()
     }
 
     func twitchChannelNameUpdated() {

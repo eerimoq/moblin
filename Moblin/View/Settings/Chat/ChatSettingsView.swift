@@ -89,22 +89,18 @@ struct ChatSettingsView: View {
                     })) {
                         Text("Bold message")
                     }
-                    Toggle(isOn: Binding(get: {
-                        chat.badges
-                    }, set: { value in
-                        chat.badges = value
-                        model.reloadChatMessages()
-                    })) {
-                        Text("Badges")
-                    }
-                    Toggle(isOn: Binding(get: {
-                        chat.animatedEmotes
-                    }, set: { value in
-                        chat.animatedEmotes = value
-                        model.reloadChatMessages()
-                    })) {
-                        Text("Animated emotes")
-                    }
+                    Toggle("Badges", isOn: $chat.badges)
+                        .onChange(of: chat.badges) { _ in
+                            model.reloadChatMessages()
+                        }
+                    Toggle("Streaming platform", isOn: $chat.platform)
+                        .onChange(of: chat.platform) { _ in
+                            model.reloadChatMessages()
+                        }
+                    Toggle("Animated emotes", isOn: $chat.animatedEmotes)
+                        .onChange(of: chat.animatedEmotes) { _ in
+                            model.reloadChatMessages()
+                        }
                     Toggle(isOn: Binding(get: {
                         chat.newMessagesAtTop
                     }, set: { value in

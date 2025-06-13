@@ -56,6 +56,7 @@ private struct HighlightMessageView: View {
 private struct LineView: View {
     var post: ChatPost
     var chat: SettingsChat
+    var platform: Bool
 
     private func usernameColor() -> Color {
         return post.userColor.color()
@@ -85,6 +86,23 @@ private struct LineView: View {
         }
     }
 
+    private func platformImage() -> String? {
+        switch post.platform {
+        case .afreecaTv:
+            return nil
+        case .kick:
+            return "KickLogo"
+        case .openStreamingPlatform:
+            return nil
+        case .twitch:
+            return "TwitchLogo"
+        case .youTube:
+            return "YouTubeLogo"
+        case nil:
+            return nil
+        }
+    }
+
     var body: some View {
         let timestampColor = chat.timestampColor.color()
         let usernameColor = usernameColor()
@@ -99,6 +117,13 @@ private struct LineView: View {
             if chat.timestampColorEnabled {
                 Text("\(post.timestamp) ")
                     .foregroundColor(timestampColor)
+            }
+            if chat.platform, platform, let image = platformImage() {
+                Image(image)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .padding(2)
+                    .frame(height: CGFloat(chat.fontSize * 1.4))
             }
             if chat.badges {
                 ForEach(post.userBadges, id: \.self) { url in
@@ -234,16 +259,17 @@ struct StreamOverlayChatView: View {
                                                     image: highlight.image,
                                                     name: highlight.title
                                                 )
-                                                LineView(
-                                                    post: post,
-                                                    chat: model.database.chat
-                                                )
+                                                LineView(post: post,
+                                                         chat: model.database.chat,
+                                                         platform: chat.moreThanOneStreamingPlatform)
                                             }
                                         }
                                         .rotationEffect(Angle(degrees: rotation))
                                         .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
                                     } else {
-                                        LineView(post: post, chat: model.database.chat)
+                                        LineView(post: post,
+                                                 chat: model.database.chat,
+                                                 platform: chat.moreThanOneStreamingPlatform)
                                             .padding([.leading], 3)
                                             .rotationEffect(Angle(degrees: rotation))
                                             .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
