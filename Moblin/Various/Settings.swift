@@ -4100,7 +4100,7 @@ class SettingsPhoneCoolerDevice: Codable, Identifiable, ObservableObject {
     @Published var ledLightsIsEnabled: Bool = false
     var rgbLightColor: RgbColor = defaultRgbLightColor
     @Published var rgbLightColorColor: Color = defaultRgbLightColor.color()
-    @Published var rgbLightBrightness: Double = 1.0
+    @Published var rgbLightBrightness: Double = 100.0
 
     enum CodingKeys: CodingKey {
         case id,

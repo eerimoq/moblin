@@ -131,7 +131,7 @@ struct PhoneCoolerDeviceSettingsView: View {
                     if device.ledLightsIsEnabled {
                         ColorPicker("Color", selection: $device.rgbLightColorColor, supportsOpacity: false)
                             .onChange(of: device.rgbLightColorColor) { _ in
-                                guard let color = device.rgbLightColorColor.toRgb() else {
+                                guard let color = device.rgbLightColorColor.toStandardRgb() else {
                                     return
                                 }
                                 device.rgbLightColor = color
