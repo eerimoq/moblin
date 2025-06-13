@@ -4085,37 +4085,76 @@ class SettingsHeartRateDevices: Codable {
     var devices: [SettingsHeartRateDevice] = []
 }
 
+private let defaultRgbLightColor = RgbColor(red: 0, green: 255, blue: 0)
+
 class SettingsPhoneCoolerDevice: Codable, Identifiable, ObservableObject {
     var id: UUID = .init()
-    var name: String = ""
-    var enabled: Bool = false
-    var bluetoothPeripheralName: String?
-    var bluetoothPeripheralId: UUID?
-    var ledLightsIsEnabled: Bool = false
-    var ledLightsColor: [Double] = [0, 1, 0, 1]
+    @Published var name: String = ""
+    @Published var enabled: Bool = false
+    @Published var bluetoothPeripheralName: String?
+    @Published var bluetoothPeripheralId: UUID?
+    @Published var ledLightsIsEnabled: Bool = false
+    var rgbLightColor: RgbColor = defaultRgbLightColor
+    @Published var rgbLightColorColor: Color = defaultRgbLightColor.color()
+    @Published var rgbLightBrightness: Double = 1.0
+
+    enum CodingKeys: CodingKey {
+        case id,
+             name,
+             enabled,
+             bluetoothPeripheralName,
+             bluetoothPeripheralId,
+             ledLightsIsEnabled,
+             rgbLightColor,
+             rgbLightBrightness
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.name, name)
+        try container.encode(.enabled, enabled)
+        try container.encode(.bluetoothPeripheralName, bluetoothPeripheralName)
+        try container.encode(.bluetoothPeripheralId, bluetoothPeripheralId)
+        try container.encode(.ledLightsIsEnabled, ledLightsIsEnabled)
+        try container.encode(.rgbLightColor, rgbLightColor)
+        try container.encode(.rgbLightBrightness, rgbLightBrightness)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        name = container.decode(.name, String.self, "")
+        enabled = container.decode(.enabled, Bool.self, false)
+        bluetoothPeripheralName = try? container.decode(String.self, forKey: .bluetoothPeripheralName)
+        bluetoothPeripheralId = try? container.decode(UUID.self, forKey: .bluetoothPeripheralId)
+        ledLightsIsEnabled = container.decode(.ledLightsIsEnabled, Bool.self, false)
+        rgbLightColor = container.decode(.rgbLightColor, RgbColor.self, defaultRgbLightColor)
+        rgbLightColorColor = rgbLightColor.color()
+        rgbLightBrightness = container.decode(.rgbLightBrightness, Double.self, 1.0)
+    }
 }
 
-extension SettingsPhoneCoolerDevice {
-    var ledLightsColorBinding: Binding<[Double]> {
-        Binding(
-            get: { self.getLedLightsColor() },
-            set: {
-                self.setLedLightsColor(color: $0)
-            }
-        )
+class SettingsPhoneCoolerDevices: Codable, ObservableObject {
+    @Published var devices: [SettingsPhoneCoolerDevice] = []
+
+    enum CodingKeys: CodingKey {
+        case devices
     }
 
-    func setLedLightsColor(color: [Double]) {
-        ledLightsColor = color
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.devices, devices)
     }
 
-    func getLedLightsColor() -> [Double] {
-        return ledLightsColor
-    }
-}
+    init() {}
 
-class SettingsPhoneCoolerDevices: Codable {
-    var devices: [SettingsPhoneCoolerDevice] = []
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        devices = container.decode(.devices, [SettingsPhoneCoolerDevice].self, [])
+    }
 }
 
 class SettingsQuickButtons: Codable, ObservableObject {
@@ -4140,9 +4179,9 @@ class SettingsQuickButtons: Codable, ObservableObject {
 
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        twoColumns = try container.decode(Bool.self, forKey: .twoColumns)
-        showName = try container.decode(Bool.self, forKey: .showName)
-        enableScroll = try container.decode(Bool.self, forKey: .enableScroll)
+        twoColumns = container.decode(.twoColumns, Bool.self, true)
+        showName = container.decode(.showName, Bool.self, true)
+        enableScroll = container.decode(.enableScroll, Bool.self, true)
     }
 }
 

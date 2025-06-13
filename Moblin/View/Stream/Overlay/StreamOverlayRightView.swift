@@ -352,8 +352,8 @@ private struct StatusesView: View {
         )
         StreamOverlayIconAndTextView(
             show: model.phoneCoolerDeviceState == .connected,
-            icon: "fan.fill",
-            text: "\(String(model.phoneCoolerPhoneTemp ?? 0)) C° / \(String(model.phoneCoolerExhaustTemp ?? 0)) C°",
+            icon: "fan",
+            text: "\(String(model.phoneCoolerPhoneTemp ?? 0)) °C / \(String(model.phoneCoolerExhaustTemp ?? 0)) °C",
             textPlacement: .beforeIcon
         )
     }

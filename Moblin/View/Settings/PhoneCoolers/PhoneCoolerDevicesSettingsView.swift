@@ -7,21 +7,9 @@
 
 import SwiftUI
 
-private struct PhoneCoolerDeviceSettingsWrapperView: View {
-    var device: SettingsPhoneCoolerDevice
-    @State var name: String
-
-    var body: some View {
-        NavigationLink {
-            PhoneCoolerDeviceSettingsView(device: device, name: $name)
-        } label: {
-            Text(name)
-        }
-    }
-}
-
 struct PhoneCoolerDevicesSettingsView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var phoneCoolerDevices: SettingsPhoneCoolerDevices
 
     var body: some View {
         Form {
@@ -32,23 +20,22 @@ struct PhoneCoolerDevicesSettingsView: View {
             }
             Section {
                 List {
-                    ForEach(model.database.phoneCoolerDevices.devices) { device in
-                        PhoneCoolerDeviceSettingsWrapperView(device: device, name: device.name)
+                    ForEach(phoneCoolerDevices.devices) { device in
+                        PhoneCoolerDeviceSettingsView(device: device)
                     }
                     .onDelete(perform: { offsets in
-                        model.database.phoneCoolerDevices.devices.remove(atOffsets: offsets)
+                        phoneCoolerDevices.devices.remove(atOffsets: offsets)
                     })
                 }
                 CreateButtonView {
                     let device = SettingsPhoneCoolerDevice()
                     device.name = "My phone cooler"
-                    model.database.phoneCoolerDevices.devices.append(device)
-                    model.objectWillChange.send()
+                    phoneCoolerDevices.devices.append(device)
                 }
             } footer: {
-                SwipeLeftToDeleteHelpView(kind: String(localized: "a device"))
+                SwipeLeftToDeleteHelpView(kind: String(localized: "a phone cooler"))
             }
         }
-        .navigationTitle("Phone Coolers")
+        .navigationTitle("Phone coolers")
     }
 }

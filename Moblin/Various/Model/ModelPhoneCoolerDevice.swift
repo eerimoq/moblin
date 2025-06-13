@@ -25,7 +25,6 @@ extension Model {
 
 extension Model: PhoneCoolerDeviceDelegate {
     func phoneCoolerDeviceState(_: PhoneCoolerDevice, state: PhoneCoolerDeviceState) {
-        logger.debug("Getting Phone Cooler State: \(state)")
         DispatchQueue.main.async {
             self.phoneCoolerDeviceState = state
         }

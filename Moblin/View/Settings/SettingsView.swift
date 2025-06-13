@@ -58,12 +58,12 @@ struct SettingsView: View {
                 }
                 if database.showAllSettings {
                     NavigationLink {
-                        AudioSettingsView(database: model.database)
+                        AudioSettingsView(database: database)
                     } label: {
                         Label("Audio", systemImage: "waveform")
                     }
                     NavigationLink {
-                        BitratePresetsSettingsView(database: model.database)
+                        BitratePresetsSettingsView(database: database)
                     } label: {
                         Label("Bitrate presets", systemImage: "speedometer")
                     }
@@ -84,12 +84,12 @@ struct SettingsView: View {
             Section {
                 if database.showAllSettings {
                     NavigationLink {
-                        RtmpServerSettingsView(database: model.database)
+                        RtmpServerSettingsView(database: database)
                     } label: {
                         Label("RTMP server", systemImage: "server.rack")
                     }
                     NavigationLink {
-                        SrtlaServerSettingsView(database: model.database)
+                        SrtlaServerSettingsView(database: database)
                     } label: {
                         Label("SRT(LA) server", systemImage: "server.rack")
                     }
@@ -101,7 +101,7 @@ struct SettingsView: View {
                 }
                 if database.showAllSettings {
                     NavigationLink {
-                        MediaPlayersSettingsView(mediaPlayers: model.database.mediaPlayers)
+                        MediaPlayersSettingsView(mediaPlayers: database.mediaPlayers)
                     } label: {
                         Label("Media players", systemImage: "play.rectangle.on.rectangle")
                     }
@@ -115,26 +115,26 @@ struct SettingsView: View {
                         Label("Selfie stick", systemImage: "line.diagonal")
                     }
                     NavigationLink {
-                        GameControllersSettingsView(database: model.database)
+                        GameControllersSettingsView(database: database)
                     } label: {
                         Label("Game controllers", systemImage: "gamecontroller")
                     }
                     if #available(iOS 17.0, *) {
                         NavigationLink {
-                            KeyboardSettingsView(keyboard: model.database.keyboard)
+                            KeyboardSettingsView(keyboard: database.keyboard)
                         } label: {
                             Label("Keyboard", systemImage: "keyboard")
                         }
                     }
                     NavigationLink {
-                        RemoteControlSettingsView(database: model.database)
+                        RemoteControlSettingsView(database: database)
                     } label: {
                         Label("Remote control", systemImage: "appletvremote.gen1")
                     }
                 }
                 Section {
                     NavigationLink {
-                        DjiDevicesSettingsView(djiDevices: model.database.djiDevices)
+                        DjiDevicesSettingsView(djiDevices: database.djiDevices)
                     } label: {
                         Label("DJI devices", systemImage: "appletvremote.gen1")
                     }
@@ -164,9 +164,9 @@ struct SettingsView: View {
                         Label("Heart rate devices", systemImage: "heart")
                     }
                     NavigationLink {
-                        PhoneCoolerDevicesSettingsView()
+                        PhoneCoolerDevicesSettingsView(phoneCoolerDevices: database.phoneCoolerDevices)
                     } label: {
-                        IconAndTextView(image: "fan.fill", text: String(localized: "Phone Coolers"))
+                        Label("Phone coolers", systemImage: "fan")
                     }
                 }
             }

@@ -12,11 +12,7 @@ private let phoneCoolerDeviceDispatchQueue = DispatchQueue(label: "com.eerimoq.p
 
 protocol PhoneCoolerDeviceDelegate: AnyObject {
     func phoneCoolerDeviceState(_ device: PhoneCoolerDevice, state: PhoneCoolerDeviceState)
-
-    func phoneCoolerStatus(
-        _ device: PhoneCoolerDevice,
-        status: BlackSharkLib.CoolingState
-    )
+    func phoneCoolerStatus(_ device: PhoneCoolerDevice, status: BlackSharkLib.CoolingState)
 }
 
 enum PhoneCoolerDeviceState {
@@ -37,17 +33,12 @@ class PhoneCoolerDevice: NSObject {
     private var centralManager: CBCentralManager?
     private var peripheral: CBPeripheral?
     private var deviceId: UUID?
-
     private var readCharacteristic: CBCharacteristic?
     private var writeCharacteristic: CBCharacteristic?
-
-    var lastTransmission: Date = .distantPast
-
-    var coolingStatsTimer: Timer?
-
-    var coolingPower: Int? // 0-100% How much the cooler should cool.
-    var fanSpeed: Int? // 0-100% How much the fan should spin.
-
+    private var latestTransmissionTime = ContinuousClock.now
+    private var coolingStatsTimer = SimpleTimer(queue: phoneCoolerDeviceDispatchQueue)
+    private var coolingPower: Int? // 0-100% How much the cooler should cool.
+    private var fanSpeed: Int? // 0-100% How much the fan should spin.
     weak var delegate: (any PhoneCoolerDeviceDelegate)?
 
     func start(deviceId: UUID?) {
@@ -77,8 +68,7 @@ class PhoneCoolerDevice: NSObject {
         peripheral = nil
         readCharacteristic = nil
         writeCharacteristic = nil
-        coolingStatsTimer?.invalidate()
-        coolingStatsTimer = nil
+        coolingStatsTimer.stop()
         setState(state: .disconnected)
     }
 
@@ -129,11 +119,7 @@ extension PhoneCoolerDevice: CBCentralManagerDelegate {
         peripheral.discoverServices(nil)
     }
 
-    func centralManager(
-        _: CBCentralManager,
-        didDisconnectPeripheral _: CBPeripheral,
-        error _: Error?
-    ) {
+    func centralManager(_: CBCentralManager, didDisconnectPeripheral _: CBPeripheral, error _: Error?) {
         reconnect()
     }
 }
@@ -145,29 +131,23 @@ extension PhoneCoolerDevice: CBPeripheralDelegate {
         }
     }
 
-    // Find characteristics
     func peripheral(
         _: CBPeripheral,
         didDiscoverCharacteristicsFor service: CBService,
         error _: Error?
     ) {
         for characteristic in service.characteristics ?? [] {
-            logger.debug("Characteristic foudn: \(characteristic.uuid)")
+            logger.debug("phone-cooler-device: Characteristic found: \(characteristic.uuid)")
             switch characteristic.uuid {
             case CBUUID(data: BlackSharkLib.getReadCharacteristicsUUID()):
                 readCharacteristic = characteristic
                 peripheral?.setNotifyValue(true, for: characteristic)
-
             case CBUUID(data: BlackSharkLib.getWriteCharacteristicsUUID()):
                 writeCharacteristic = characteristic
-
                 pollForCoolingStats()
-                DispatchQueue.main.async {
-                    self.coolingStatsTimer = Timer.scheduledTimer(withTimeInterval: 2, repeats: true) { _ in
-                        self.pollForCoolingStats()
-                    }
+                coolingStatsTimer.startPeriodic(interval: 2) {
+                    self.pollForCoolingStats()
                 }
-
             default:
                 break
             }
@@ -177,133 +157,110 @@ extension PhoneCoolerDevice: CBPeripheralDelegate {
         }
     }
 
-    func updatedPercentageScale(_ value: Int?, target: Int) -> Int {
-        guard let current = value else {
+    private func updatedPercentageScale(_ current: Int?, target: Int) -> Int {
+        guard let current else {
             return target
         }
         if current > target {
-            let newValue = current - 5
-            return newValue < target ? target : newValue
+            return max(current - 5, target)
         } else if current < target {
-            let newValue = current + 5
-            return newValue > target ? target : newValue
+            return min(current + 5, target)
         } else {
             return target
         }
     }
 
     private func pollForCoolingStats() {
-        guard writeCharacteristic != nil else {
+        guard let peripheral, let writeCharacteristic else {
             return
         }
-        peripheral?.writeValue(
+        peripheral.writeValue(
             BlackSharkLib.getCoolingMetadataCommand(),
-            for: writeCharacteristic!,
+            for: writeCharacteristic,
             type: .withoutResponse
         )
-        // Get thermal state of phone
-        let thermalState = ProcessInfo.processInfo.thermalState
-
-        switch thermalState {
+        let coolingPowerTarget: Int
+        let fanSpeedTarget: Int
+        switch ProcessInfo.processInfo.thermalState {
         case .nominal:
-            // Cooling: 10%, Fan: 10%
-            let updatedCoolingPower = updatedPercentageScale(coolingPower, target: 5)
-            if updatedCoolingPower != coolingPower {
-                coolingPower = updatedCoolingPower
-                logger.debug("Phone is Nominal. Adjusting cooling power to \(String(coolingPower!)) %")
-            }
-            let updatedFanSpeed = updatedPercentageScale(fanSpeed, target: 15)
-            if updatedFanSpeed != fanSpeed {
-                fanSpeed = updatedFanSpeed
-                logger.debug("Phone is nominal. Adjusting fan speed to \(String(fanSpeed!)) %")
-            }
+            coolingPowerTarget = 5
+            fanSpeedTarget = 15
         case .fair:
-            // Cooling: 20%, Fan: 20%
-            let updatedCoolingPower = updatedPercentageScale(coolingPower, target: 20)
-            if updatedCoolingPower != coolingPower {
-                coolingPower = updatedCoolingPower
-                logger.debug("Phone is fair. Adjusting cooling power to \(String(coolingPower!)) %")
-            }
-            let updatedFanSpeed = updatedPercentageScale(fanSpeed, target: 20)
-            if updatedFanSpeed != fanSpeed {
-                fanSpeed = updatedFanSpeed
-                logger.debug("Phone is fair. Adjusting fan speed to \(String(fanSpeed!)) %")
-            }
+            coolingPowerTarget = 20
+            fanSpeedTarget = 20
         case .serious:
-            // Cooling: 80%, Fan: 50%
-            let updatedCoolingPower = updatedPercentageScale(coolingPower, target: 80)
-            if updatedCoolingPower != coolingPower {
-                coolingPower = updatedCoolingPower
-                logger.debug("Phone is serious. Adjusting cooling power to \(String(coolingPower!)) %")
-            }
-            let updatedFanSpeed = updatedPercentageScale(fanSpeed, target: 50)
-            if updatedFanSpeed != fanSpeed {
-                fanSpeed = updatedFanSpeed
-                logger.debug("Phone is serious. Adjusting fan speed to \(String(fanSpeed!)) %")
-            }
+            coolingPowerTarget = 80
+            fanSpeedTarget = 50
         case .critical:
-            // Cooling: 100%, Fan: 100%
-            let updatedCoolingPower = updatedPercentageScale(coolingPower, target: 100)
-            if updatedCoolingPower != coolingPower {
-                coolingPower = updatedCoolingPower
-                logger.debug("Phone is critical. Adjusting cooling power to \(String(coolingPower!)) %")
-            }
-            let updatedFanSpeed = updatedPercentageScale(fanSpeed, target: 100)
-            if updatedFanSpeed != fanSpeed {
-                fanSpeed = updatedFanSpeed
-                logger.debug("Phone is faCritical. Adjusting fan speed to \(String(fanSpeed!)) %")
-            }
+            coolingPowerTarget = 100
+            fanSpeedTarget = 100
         @unknown default:
-            logger.warning("Thermal state is Unkonwn value")
+            coolingPowerTarget = 100
+            fanSpeedTarget = 100
+            logger.warning("phone-cooler-device: Thermal state is unknown value")
         }
-
-        peripheral?.writeValue(
-            BlackSharkLib.getSetFanSpeedCommand(fanSpeed!)!,
-            for: writeCharacteristic!,
-            type: .withoutResponse
-        )
-
-        peripheral?.writeValue(
-            BlackSharkLib.getSetCoolingPowerCommand(coolingPower!)!,
-            for: writeCharacteristic!,
-            type: .withoutResponse
-        )
+        let newCoolingPower = updatedPercentageScale(coolingPower, target: coolingPowerTarget)
+        if newCoolingPower != coolingPower {
+            coolingPower = newCoolingPower
+            logger.debug("phone-cooler-device: Adjusting cooling power to \(newCoolingPower) %")
+            peripheral.writeValue(
+                BlackSharkLib.getSetFanSpeedCommand(newCoolingPower)!,
+                for: writeCharacteristic,
+                type: .withoutResponse
+            )
+        }
+        let newFanSpeed = updatedPercentageScale(fanSpeed, target: fanSpeedTarget)
+        if newFanSpeed != fanSpeed {
+            fanSpeed = newFanSpeed
+            logger.debug("phone-cooler-device: Adjusting fan speed to \(newFanSpeed) %")
+            peripheral.writeValue(
+                BlackSharkLib.getSetCoolingPowerCommand(newFanSpeed)!,
+                for: writeCharacteristic,
+                type: .withoutResponse
+            )
+        }
     }
 
-    func setLEDColor(red: Int, green: Int, blue: Int, brightness: Int) {
-        let cooldown: TimeInterval = 0.08
-        let now = Date()
-
-        guard now.timeIntervalSince(lastTransmission) >= cooldown else {
+    func setLedColor(color: RgbColor, brightness: Int) {
+        let now = ContinuousClock.now
+        guard latestTransmissionTime.duration(to: now) >= .milliseconds(80) else {
             return
         }
-
-        lastTransmission = .now
-
-        let setColorCommand = BlackSharkLib.getSetLEDColorCommand(red, green, blue, brightness: brightness)!
-        print(setColorCommand.hexString())
-        peripheral?.writeValue(setColorCommand, for: writeCharacteristic!, type: .withoutResponse)
+        latestTransmissionTime = now
+        guard let setColorCommand = BlackSharkLib.getSetLEDColorCommand(
+            color.red,
+            color.green,
+            color.blue,
+            brightness: brightness
+        ) else {
+            return
+        }
+        guard let peripheral, let writeCharacteristic else {
+            return
+        }
+        peripheral.writeValue(setColorCommand, for: writeCharacteristic, type: .withoutResponse)
     }
 
-    func turnLEdOff() {
-        peripheral?.writeValue(BlackSharkLib.getTurnOffLEDCommand(), for: writeCharacteristic!, type: .withoutResponse)
+    func turnLedOff() {
+        guard let peripheral, let writeCharacteristic else {
+            return
+        }
+        peripheral.writeValue(BlackSharkLib.getTurnOffLEDCommand(), for: writeCharacteristic, type: .withoutResponse)
     }
 
-    // Read updates
     func peripheral(_: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error _: Error?) {
         guard let value = characteristic.value else {
             return
         }
-
         switch characteristic.uuid {
         case CBUUID(data: BlackSharkLib.getReadCharacteristicsUUID()):
             let message = BlackSharkLib.parseMessages(value)
-            if let coolingstate = message as? BlackSharkLib.CoolingState {
-                delegate?.phoneCoolerStatus(self, status: coolingstate)
-                logger
-                    .debug(
-                        "CoolerTemp:\(coolingstate.phoneTemperature), Heatsink: \(coolingstate.heatsinkTemperature)"
-                    )
+            if let coolingState = message as? BlackSharkLib.CoolingState {
+                delegate?.phoneCoolerStatus(self, status: coolingState)
+                logger.debug("""
+                phone-cooler-device: CoolerTemp:\(coolingState.phoneTemperature), \
+                Heatsink: \(coolingState.heatsinkTemperature)
+                """)
             }
         default:
             break

@@ -25,7 +25,6 @@ struct PhoneCoolerDeviceSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject private var scanner = phoneCoolerScanner
     @ObservedObject var device: SettingsPhoneCoolerDevice
-    @Binding var name: String
 
     func state() -> String {
         return formatPhoneCoolerDeviceState(state: model.phoneCoolerDeviceState)
@@ -49,157 +48,113 @@ struct PhoneCoolerDeviceSettingsView: View {
         device.bluetoothPeripheralId = deviceId
     }
 
-    private func changeColor(color _: [Double]) {
+    private func changeColor() {
         let phoneCoolerDevice = model.phoneCoolerDevices.first(where: { $0.key == device.bluetoothPeripheralId })?.value
-
-        guard phoneCoolerDevice != nil else {
+        guard let phoneCoolerDevice else {
             logger.error("Could not find phone cooler")
             return
         }
-
-        phoneCoolerDevice!.setLEDColor(
-            red: Int(device.ledLightsColor[0]),
-            green: Int(device.ledLightsColor[1]),
-            blue: Int(device.ledLightsColor[2]),
-            brightness: Int(device.ledLightsColor[3])
+        phoneCoolerDevice.setLedColor(
+            color: device.rgbLightColor,
+            brightness: Int(device.rgbLightBrightness)
         )
     }
 
-    private func toggleLight(_ state: Bool) {
-        device.ledLightsIsEnabled = state
-        device.objectWillChange.send()
-
-        let phoneCoolerDevice = model.phoneCoolerDevices.first(where: { $0.key == device.bluetoothPeripheralId })?.value
-
-        guard phoneCoolerDevice != nil else {
+    private func toggleLight() {
+        guard let phoneCoolerDevice = model.phoneCoolerDevices
+            .first(where: { $0.key == device.bluetoothPeripheralId })?
+            .value
+        else {
             logger.error("PhoneCoolerDeviceSettingsView: Could not find phone cooler")
             return
         }
-
-        if !state {
-            phoneCoolerDevice!.turnLEdOff()
+        if device.ledLightsIsEnabled {
+            phoneCoolerDevice.setLedColor(color: device.rgbLightColor, brightness: Int(device.rgbLightBrightness))
         } else {
-            phoneCoolerDevice!.setLEDColor(
-                red: Int(device.ledLightsColor[0]),
-                green: Int(device.ledLightsColor[1]),
-                blue: Int(device.ledLightsColor[2]),
-                brightness: Int(device.ledLightsColor[3])
-            )
+            phoneCoolerDevice.turnLedOff()
         }
     }
 
     var body: some View {
-        Form {
-            Section {
-                TextEditNavigationView(title: "Name", value: device.name, onSubmit: { value in
-                    name = value
-                    device.name = value
-                })
-            }
-
-            Section {
-                NavigationLink { PhoneCoolerDeviceScannerSettingsView(
-                    onChange: onDeviceChange,
-                    selectedId: device.bluetoothPeripheralId?
-                        .uuidString ?? String(localized: "Select device")
-                )
-                } label: {
-                    Text(device.bluetoothPeripheralName ?? String(localized: "Select device"))
-                        .foregroundColor(.gray)
-                        .lineLimit(1)
-                }
-                .disabled(device.enabled)
-            } header: {
-                Text("Device")
-            } footer: {
-                if model.phoneCoolerPhoneTemp != nil && model.phoneCoolerExhaustTemp != nil {
-                    HStack {
-                        Text("Phone: \(String(model.phoneCoolerPhoneTemp!)) C°")
-                        Spacer()
-                        Text("Exhaust: \(String(model.phoneCoolerExhaustTemp!)) C°")
-                    }
-                }
-            }
-            Section {
-                Toggle(isOn: Binding(get: {
-                    device.enabled
-                }, set: { value in
-                    device.enabled = value
-                    if device.enabled {
-                        model.enablePhoneCoolerDevice(device: device)
-                    } else {
-                        model.disablePhoneCoolerDevice(device: device)
-                    }
-                }), label: {
-                    Text("Enabled")
-                })
-                .disabled(!canEnable())
-            }
-            if device.enabled {
+        NavigationLink {
+            Form {
                 Section {
-                    HCenter {
-                        Text(state())
+                    TextEditNavigationView(title: "Name", value: device.name, onSubmit: {
+                        device.name = $0
+                    })
+                }
+                Section {
+                    NavigationLink { PhoneCoolerDeviceScannerSettingsView(
+                        onChange: onDeviceChange,
+                        selectedId: device.bluetoothPeripheralId?.uuidString ?? String(localized: "Select device")
+                    )
+                    } label: {
+                        Text(device.bluetoothPeripheralName ?? String(localized: "Select device"))
+                            .foregroundColor(.gray)
+                            .lineLimit(1)
+                    }
+                    .disabled(device.enabled)
+                } header: {
+                    Text("Device")
+                } footer: {
+                    if let phoneTemp = model.phoneCoolerPhoneTemp, let exhaustTemp = model.phoneCoolerExhaustTemp {
+                        HStack {
+                            Text("Phone: \(phoneTemp) °C")
+                            Spacer()
+                            Text("Exhaust: \(exhaustTemp) °C")
+                        }
                     }
                 }
-            }
-            Section {
-                Toggle(isOn: Binding(get: { device.ledLightsIsEnabled }, set: { value in
-                    toggleLight(value)
-                }), label: { Text("Enable lights") })
-
-                if device.ledLightsIsEnabled {
-                    HStack {
-                        Text("Red")
-                        Slider(
-                            value: device.ledLightsColorBinding[0],
-                            in: 0 ... 100,
-                            onEditingChanged: { _ in
-                                changeColor(color: device.getLedLightsColor())
+                Section {
+                    Toggle("Enabled", isOn: $device.enabled)
+                        .onChange(of: device.enabled) { _ in
+                            if device.enabled {
+                                model.enablePhoneCoolerDevice(device: device)
+                            } else {
+                                model.disablePhoneCoolerDevice(device: device)
                             }
-                        )
-                    }
-
-                    HStack {
-                        Text("Green")
-                        Slider(
-                            value: device.ledLightsColorBinding[1],
-                            in: 0 ... 100,
-                            onEditingChanged: { _ in
-                                changeColor(color: device.getLedLightsColor())
-                            }
-                        )
-                    }
-
-                    HStack {
-                        Text("Blue")
-                        Slider(
-                            value: device.ledLightsColorBinding[2],
-                            in: 0 ... 100,
-                            onEditingChanged: { _ in
-                                changeColor(color: device.getLedLightsColor())
-                            }
-                        )
-                    }
-                    HStack {
-                        Text("Opacity")
-                        Slider(
-                            value: device.ledLightsColorBinding[3],
-                            in: 0 ... 100,
-                            onEditingChanged: { _ in
-                                changeColor(color: device.getLedLightsColor())
-                            }
-                        )
+                        }
+                        .disabled(!canEnable())
+                }
+                if device.enabled {
+                    Section {
+                        HCenter {
+                            Text(state())
+                        }
                     }
                 }
-
-            } header: {
-                Text("LED Light")
-            }
-            .onChange(of: device.ledLightsColor) { _ in
-                DispatchQueue.main.async {
-                    changeColor(color: device.getLedLightsColor())
+                Section {
+                    Toggle("Enabled", isOn: $device.ledLightsIsEnabled)
+                        .onChange(of: device.ledLightsIsEnabled) { _ in
+                            toggleLight()
+                        }
+                    if device.ledLightsIsEnabled {
+                        ColorPicker("Color", selection: $device.rgbLightColorColor, supportsOpacity: false)
+                            .onChange(of: device.rgbLightColorColor) { _ in
+                                guard let color = device.rgbLightColorColor.toRgb() else {
+                                    return
+                                }
+                                device.rgbLightColor = color
+                                changeColor()
+                            }
+                        HStack {
+                            Text("Brightness")
+                            Slider(
+                                value: $device.rgbLightBrightness,
+                                in: 0 ... 100
+                            )
+                            .onChange(of: device.rgbLightBrightness) { _ in
+                                changeColor()
+                            }
+                        }
+                    }
+                } header: {
+                    Text("RGB light")
                 }
             }
+            .navigationTitle("Phone cooler")
+        } label: {
+            Text(device.name)
         }
     }
 }
