@@ -163,10 +163,12 @@ struct SettingsView: View {
                     } label: {
                         Label("Heart rate devices", systemImage: "heart")
                     }
-                    NavigationLink {
-                        PhoneCoolerDevicesSettingsView(phoneCoolerDevices: database.phoneCoolerDevices)
-                    } label: {
-                        Label("Phone coolers", systemImage: "fan")
+                    if false {
+                        NavigationLink {
+                            PhoneCoolerDevicesSettingsView(phoneCoolerDevices: database.phoneCoolerDevices)
+                        } label: {
+                            Label("Phone coolers", systemImage: "fan")
+                        }
                     }
                 }
             }
