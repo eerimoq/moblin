@@ -5,7 +5,7 @@ struct HelpAndSupportSettingsView: View {
         Form {
             Section {
                 Button {
-                    openUrl(url: "https://discord.gg/nt3UwHqbMM")
+                    openUrl(url: "https://discord.gg/kh3KMng4JV")
                 } label: {
                     Text("Discord")
                 }
