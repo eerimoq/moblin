@@ -31,10 +31,7 @@ struct PhoneCoolerDeviceSettingsView: View {
     }
 
     private func canEnable() -> Bool {
-        if device.bluetoothPeripheralId == nil {
-            return false
-        }
-        return true
+        return device.bluetoothPeripheralId != nil
     }
 
     private func onDeviceChange(value: String) {
