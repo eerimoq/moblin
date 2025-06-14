@@ -133,6 +133,18 @@ class Servers: ObservableObject {
     @Published var speedAndTotal = noValue
 }
 
+class Bitrate: ObservableObject {
+    @Published var speedAndTotal = noValue
+    @Published var speedMbpsOneDecimal = noValue
+}
+
+class Bonding: ObservableObject {
+    @Published var statistics = noValue
+    @Published var rtts = noValue
+    @Published var pieChartPercentages: [BondingPercentage] = []
+    var statisticsFormatter = BondingStatisticsFormatter()
+}
+
 final class Model: NSObject, ObservableObject, @unchecked Sendable {
     let media = Media()
     var streamState = StreamState.disconnected {
@@ -144,6 +156,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     let hypeTrain = HypeTrain()
     let moblink = Moblink()
     let servers = Servers()
+    let bitrate = Bitrate()
+    let bonding = Bonding()
 
     @Published var goProLaunchLiveStreamSelection: UUID?
     @Published var goProWifiCredentialsSelection: UUID?
@@ -201,9 +215,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var browserWidgetsStatusChanged = false
     private var subscriptions = Set<AnyCancellable>()
     var streamUptime = StreamUptimeProvider()
-    @Published var bondingStatistics = noValue
-    @Published var bondingRtts = noValue
-    var bondingStatisticsFormatter = BondingStatisticsFormatter()
     let audio = AudioProvider()
     var settings = Settings()
     @Published var digitalClock = noValue
@@ -240,8 +251,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var batteryLevel = Double(UIDevice.current.batteryLevel)
     private var batteryLevelLowCounter = -1
     @Published var batteryState: UIDevice.BatteryState = .full
-    @Published var speedAndTotal = noValue
-    @Published var speedMbpsOneDecimal = noValue
     @Published var bitrateStatusColor: Color = .white
     @Published var bitrateStatusIconColor: Color?
     var previousBitrateStatusColorSrtDroppedPacketsTotal: Int32 = 0
@@ -372,8 +381,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var twitchAuthOnComplete: ((_ accessToken: String) -> Void)?
 
     var numberOfTwitchViewers: Int?
-
-    @Published var bondingPieChartPercentages: [BondingPercentage] = []
 
     @Published var verboseStatuses = false
     @Published var showDrawOnStream = false
@@ -1008,7 +1015,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         startGeographyManager()
         twitchAuth.setOnAccessToken(onAccessToken: handleTwitchAccessToken)
         MoblinShortcuts.updateAppShortcutParameters()
-        bondingStatisticsFormatter.setNetworkInterfaceNames(database.networkInterfaceNames)
+        bonding.statisticsFormatter.setNetworkInterfaceNames(database.networkInterfaceNames)
         reloadTeslaVehicle()
         updateFaceFilterButtonState()
         updateLutsButtonState()
@@ -1709,7 +1716,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func networkInterfaceNamesUpdated() {
         media.setNetworkInterfaceNames(networkInterfaceNames: database.networkInterfaceNames)
-        bondingStatisticsFormatter.setNetworkInterfaceNames(database.networkInterfaceNames)
+        bonding.statisticsFormatter.setNetworkInterfaceNames(database.networkInterfaceNames)
     }
 
     @MainActor
@@ -2070,7 +2077,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func logStatus() {
         if logger.debugEnabled, isLive {
-            logger.debug("Status: Bitrate: \(speedAndTotal), Uptime: \(streamUptime.uptime)")
+            logger.debug("Status: Bitrate: \(bitrate.speedAndTotal), Uptime: \(streamUptime.uptime)")
         }
     }
 

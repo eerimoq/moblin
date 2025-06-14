@@ -879,7 +879,7 @@ extension Model {
             let placemark = geographyManager.getLatestPlacemark()
             stats = TextEffectStats(
                 timestamp: timestamp,
-                bitrateAndTotal: speedAndTotal,
+                bitrateAndTotal: bitrate.speedAndTotal,
                 date: now,
                 debugOverlayLines: debugOverlay.debugLines,
                 speed: format(speed: location?.speed ?? 0),

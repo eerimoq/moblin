@@ -225,7 +225,7 @@ extension Model {
         updateStreamUptime(now: .now)
         updateSpeed(now: .now)
         updateAudioLevel()
-        bondingStatistics = noValue
+        bonding.statistics = noValue
         if !reconnect {
             makeStreamEndedToast()
         }
@@ -493,16 +493,16 @@ extension Model {
                 return
             }
         }
-        if bondingStatistics != noValue {
-            bondingStatistics = noValue
+        if bonding.statistics != noValue {
+            bonding.statistics = noValue
         }
     }
 
     private func handleBondingStatistics(connections: [BondingConnection]) {
-        if let (message, rtts, percentages) = bondingStatisticsFormatter.format(connections) {
-            bondingStatistics = message
-            bondingRtts = rtts
-            bondingPieChartPercentages = percentages
+        if let (message, rtts, percentages) = bonding.statisticsFormatter.format(connections) {
+            bonding.statistics = message
+            bonding.rtts = rtts
+            bonding.pieChartPercentages = percentages
         }
     }
 
@@ -511,10 +511,16 @@ extension Model {
             let speed = Int64(media.getVideoStreamBitrate(bitrate: stream.bitrate))
             checkLowBitrate(speed: speed, now: now)
             streamingHistoryStream?.updateBitrate(bitrate: speed)
-            speedMbpsOneDecimal = String(format: "%.1f", Double(speed) / 1_000_000)
+            let speedMbpsOneDecimal = String(format: "%.1f", Double(speed) / 1_000_000)
+            if speedMbpsOneDecimal != bitrate.speedMbpsOneDecimal {
+                bitrate.speedMbpsOneDecimal = speedMbpsOneDecimal
+            }
             let speedString = formatBytesPerSecond(speed: speed)
             let total = sizeFormatter.string(fromByteCount: media.streamTotal())
-            speedAndTotal = String(localized: "\(speedString) (\(total))")
+            let speedAndTotal = String(localized: "\(speedString) (\(total))")
+            if speedAndTotal != bitrate.speedAndTotal {
+                bitrate.speedAndTotal = speedAndTotal
+            }
             if speed < stream.bitrate / 5 {
                 bitrateStatusIconColor = .red
             } else if speed < stream.bitrate / 2 {
@@ -523,13 +529,13 @@ extension Model {
                 bitrateStatusIconColor = nil
             }
             if isWatchLocal() {
-                sendSpeedAndTotalToWatch(speedAndTotal: speedAndTotal)
+                sendSpeedAndTotalToWatch(speedAndTotal: bitrate.speedAndTotal)
             }
-        } else if speedAndTotal != noValue {
-            speedMbpsOneDecimal = noValue
-            speedAndTotal = noValue
+        } else if bitrate.speedAndTotal != noValue {
+            bitrate.speedMbpsOneDecimal = noValue
+            bitrate.speedAndTotal = noValue
             if isWatchLocal() {
-                sendSpeedAndTotalToWatch(speedAndTotal: speedAndTotal)
+                sendSpeedAndTotalToWatch(speedAndTotal: bitrate.speedAndTotal)
             }
         }
     }

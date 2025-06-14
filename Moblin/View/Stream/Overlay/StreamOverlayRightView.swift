@@ -2,37 +2,66 @@ import Charts
 import SwiftUI
 
 private struct CollapsedBondingView: View {
-    @EnvironmentObject var model: Model
-    var show: Bool
+    @ObservedObject var bonding: Bonding
     var color: Color
 
     var body: some View {
-        if show {
-            HStack(spacing: 1) {
-                Image(systemName: "phone.connection")
-                    .frame(width: 17, height: 17)
-                    .font(smallFont)
-                    .padding([.leading, .trailing], 2)
-                    .foregroundColor(color)
-                if #available(iOS 17.0, *) {
-                    if !model.bondingPieChartPercentages.isEmpty {
-                        Chart(model.bondingPieChartPercentages.reversed()) { item in
-                            SectorMark(angle: .value("", item.percentage))
-                                .foregroundStyle(item.color)
-                        }
-                        .chartLegend(.hidden)
-                        .scaledToFit()
-                        .frame(width: 14, height: 14)
-                        .padding([.trailing], 2)
+        HStack(spacing: 1) {
+            Image(systemName: "phone.connection")
+                .frame(width: 17, height: 17)
+                .font(smallFont)
+                .padding([.leading, .trailing], 2)
+                .foregroundColor(color)
+            if #available(iOS 17.0, *) {
+                if !bonding.pieChartPercentages.isEmpty {
+                    Chart(bonding.pieChartPercentages.reversed()) { item in
+                        SectorMark(angle: .value("", item.percentage))
+                            .foregroundStyle(item.color)
                     }
+                    .chartLegend(.hidden)
+                    .scaledToFit()
+                    .frame(width: 14, height: 14)
+                    .padding([.trailing], 2)
                 }
             }
-            .background(backgroundColor)
-            .cornerRadius(5)
-            .padding(20)
-            .contentShape(Rectangle())
-            .padding(-20)
         }
+        .background(backgroundColor)
+        .cornerRadius(5)
+        .padding(20)
+        .contentShape(Rectangle())
+        .padding(-20)
+    }
+}
+
+private struct BondingStatusView: View {
+    @EnvironmentObject var model: Model
+    @ObservedObject var bonding: Bonding
+    let textPlacement: StreamOverlayIconAndTextPlacement
+
+    var body: some View {
+        if model.isShowingStatusBonding() {
+            if textPlacement == .hide {
+                CollapsedBondingView(
+                    bonding: bonding,
+                    color: netStreamColor(model: model)
+                )
+            } else {
+                StreamOverlayIconAndTextView(
+                    show: model.isShowingStatusBonding(),
+                    icon: "phone.connection",
+                    text: bonding.statistics,
+                    textPlacement: textPlacement,
+                    color: netStreamColor(model: model)
+                )
+            }
+        }
+        StreamOverlayIconAndTextView(
+            show: model.isShowingStatusBondingRtts(),
+            icon: "phone.connection",
+            text: bonding.rtts,
+            textPlacement: textPlacement,
+            color: netStreamColor(model: model)
+        )
     }
 }
 
@@ -98,6 +127,7 @@ private struct CollapsedAdsRemainingTimerView: View {
 
 private struct CollapsedBitrateView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var streamStatus: Bitrate
     var show: Bool
 
     var body: some View {
@@ -108,8 +138,8 @@ private struct CollapsedBitrateView: View {
                     .padding([.leading], 2)
                     .foregroundColor(model.bitrateStatusColor)
                     .background(model.bitrateStatusIconColor ?? .clear)
-                if !model.speedMbpsOneDecimal.isEmpty {
-                    Text(model.speedMbpsOneDecimal)
+                if !streamStatus.speedMbpsOneDecimal.isEmpty {
+                    Text(streamStatus.speedMbpsOneDecimal)
                         .foregroundColor(.white)
                         .padding([.trailing], 2)
                 }
@@ -120,6 +150,27 @@ private struct CollapsedBitrateView: View {
             .padding(20)
             .contentShape(Rectangle())
             .padding(-20)
+        }
+    }
+}
+
+private struct BitrateStatusView: View {
+    @EnvironmentObject var model: Model
+    @ObservedObject var bitrate: Bitrate
+    let textPlacement: StreamOverlayIconAndTextPlacement
+
+    var body: some View {
+        if textPlacement == .hide {
+            CollapsedBitrateView(streamStatus: model.bitrate, show: model.isShowingStatusBitrate())
+        } else {
+            StreamOverlayIconAndTextView(
+                show: model.isShowingStatusBitrate(),
+                icon: "speedometer",
+                text: bitrate.speedAndTotal,
+                textPlacement: textPlacement,
+                color: model.bitrateStatusColor,
+                iconBackgroundColor: model.bitrateStatusIconColor ?? backgroundColor
+            )
         }
     }
 }
@@ -305,36 +356,8 @@ private struct StatusesView: View {
             text: model.gameControllersTotal,
             textPlacement: textPlacement
         )
-        if textPlacement == .hide {
-            CollapsedBitrateView(show: model.isShowingStatusBitrate())
-        } else {
-            StreamOverlayIconAndTextView(
-                show: model.isShowingStatusBitrate(),
-                icon: "speedometer",
-                text: model.speedAndTotal,
-                textPlacement: textPlacement,
-                color: model.bitrateStatusColor,
-                iconBackgroundColor: model.bitrateStatusIconColor ?? backgroundColor
-            )
-        }
-        if textPlacement == .hide {
-            CollapsedBondingView(show: model.isShowingStatusBonding(), color: netStreamColor(model: model))
-        } else {
-            StreamOverlayIconAndTextView(
-                show: model.isShowingStatusBonding(),
-                icon: "phone.connection",
-                text: model.bondingStatistics,
-                textPlacement: textPlacement,
-                color: netStreamColor(model: model)
-            )
-        }
-        StreamOverlayIconAndTextView(
-            show: model.isShowingStatusBondingRtts(),
-            icon: "phone.connection",
-            text: model.bondingRtts,
-            textPlacement: textPlacement,
-            color: netStreamColor(model: model)
-        )
+        BitrateStatusView(bitrate: model.bitrate, textPlacement: textPlacement)
+        BondingStatusView(bonding: model.bonding, textPlacement: textPlacement)
         StreamOverlayIconAndTextView(
             show: model.isShowingStatusReplay(),
             icon: "play",
