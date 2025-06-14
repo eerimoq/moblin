@@ -55,7 +55,7 @@ private struct HighlightMessageView: View {
 
 private struct LineView: View {
     var post: ChatPost
-    var chat: SettingsChat
+    @ObservedObject var chat: SettingsChat
     var platform: Bool
 
     private func usernameColor() -> Color {
@@ -86,23 +86,6 @@ private struct LineView: View {
         }
     }
 
-    private func platformImage() -> String? {
-        switch post.platform {
-        case .afreecaTv:
-            return nil
-        case .kick:
-            return "KickLogo"
-        case .openStreamingPlatform:
-            return nil
-        case .twitch:
-            return "TwitchLogo"
-        case .youTube:
-            return "YouTubeLogo"
-        case nil:
-            return nil
-        }
-    }
-
     var body: some View {
         let timestampColor = chat.timestampColor.color()
         let usernameColor = usernameColor()
@@ -118,7 +101,7 @@ private struct LineView: View {
                 Text("\(post.timestamp) ")
                     .foregroundColor(timestampColor)
             }
-            if chat.platform, platform, let image = platformImage() {
+            if chat.platform, platform, let image = post.platform?.imageName() {
                 Image(image)
                     .resizable()
                     .aspectRatio(contentMode: .fit)

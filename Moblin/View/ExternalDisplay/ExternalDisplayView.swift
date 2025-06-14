@@ -29,7 +29,8 @@ private struct HighlightMessageView: View {
 
 private struct LineView: View {
     var post: ChatPost
-    var chat: SettingsChat
+    @ObservedObject var chat: SettingsChat
+    var platform: Bool
 
     private func usernameColor() -> Color {
         return post.userColor.color()
@@ -46,6 +47,13 @@ private struct LineView: View {
             if chat.timestampColorEnabled {
                 Text("\(post.timestamp) ")
                     .foregroundColor(.gray)
+            }
+            if chat.platform, platform, let image = post.platform?.imageName() {
+                Image(image)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .padding(2)
+                    .frame(height: fontSizeScaleFactor * CGFloat(chat.fontSize * 1.4))
             }
             if chat.badges {
                 ForEach(post.userBadges, id: \.self) { url in
@@ -125,13 +133,17 @@ private struct MessagesView: View {
                                                 image: highlight.image,
                                                 name: highlight.title
                                             )
-                                            LineView(post: post, chat: chatSettings)
+                                            LineView(post: post,
+                                                     chat: chatSettings,
+                                                     platform: chat.moreThanOneStreamingPlatform)
                                         }
                                     }
                                     .rotationEffect(Angle(degrees: rotation))
                                     .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
                                 } else {
-                                    LineView(post: post, chat: chatSettings)
+                                    LineView(post: post,
+                                             chat: chatSettings,
+                                             platform: chat.moreThanOneStreamingPlatform)
                                         .padding([.leading], 3)
                                         .rotationEffect(Angle(degrees: rotation))
                                         .scaleEffect(x: scaleX, y: 1.0, anchor: .center)

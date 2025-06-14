@@ -322,7 +322,10 @@ extension Model {
     }
 
     func updateChatMoreThanOneChatConfigured() {
-        chat.moreThanOneStreamingPlatform = isMoreThanOneChatConfigured()
+        let moreThanOneStreamingPlatform = isMoreThanOneChatConfigured()
+        chat.moreThanOneStreamingPlatform = moreThanOneStreamingPlatform
+        quickButtonChat.moreThanOneStreamingPlatform = moreThanOneStreamingPlatform
+        externalDisplayChat.moreThanOneStreamingPlatform = moreThanOneStreamingPlatform
     }
 
     private func isMoreThanOneChatConfigured() -> Bool {

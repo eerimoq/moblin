@@ -24,14 +24,11 @@ private struct HighlightMessageView: View {
 
 private struct LineView: View {
     var post: ChatPost
-    var chat: SettingsChat
-
-    private func usernameColor() -> Color {
-        return post.userColor.color()
-    }
+    @ObservedObject var chat: SettingsChat
+    var platform: Bool
 
     var body: some View {
-        let usernameColor = usernameColor()
+        let usernameColor = post.userColor.color()
         WrappingHStack(
             alignment: .leading,
             horizontalSpacing: 0,
@@ -41,6 +38,13 @@ private struct LineView: View {
             if chat.timestampColorEnabled {
                 Text("\(post.timestamp) ")
                     .foregroundColor(.gray)
+            }
+            if chat.platform, platform, let image = post.platform?.imageName() {
+                Image(image)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .padding(2)
+                    .frame(height: CGFloat(chat.fontSize * 1.4))
             }
             if chat.badges {
                 ForEach(post.userBadges, id: \.self) { url in
@@ -125,13 +129,17 @@ private struct MessagesView: View {
                                             image: highlight.image,
                                             name: highlight.title
                                         )
-                                        LineView(post: post, chat: chatSettings)
+                                        LineView(post: post,
+                                                 chat: chatSettings,
+                                                 platform: chat.moreThanOneStreamingPlatform)
                                     }
                                 }
                                 .rotationEffect(Angle(degrees: rotation))
                                 .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
                             } else {
-                                LineView(post: post, chat: chatSettings)
+                                LineView(post: post,
+                                         chat: chatSettings,
+                                         platform: chat.moreThanOneStreamingPlatform)
                                     .padding([.leading], 3)
                                     .rotationEffect(Angle(degrees: rotation))
                                     .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
@@ -238,6 +246,7 @@ private struct ChatView: View {
 private struct AlertsMessagesView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var chatSettings: SettingsChat
+    @ObservedObject var chat: ChatProvider
 
     private func shouldShowMessage(highlight: ChatHighlight) -> Bool {
         if highlight.kind == .firstMessage && !model.showFirstTimeChatterMessage {
@@ -279,14 +288,18 @@ private struct AlertsMessagesView: View {
                                                 image: highlight.image,
                                                 name: highlight.title
                                             )
-                                            LineView(post: post, chat: chatSettings)
+                                            LineView(post: post,
+                                                     chat: chatSettings,
+                                                     platform: chat.moreThanOneStreamingPlatform)
                                         }
                                     }
                                     .rotationEffect(Angle(degrees: rotation))
                                     .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
                                 }
                             } else {
-                                LineView(post: post, chat: chatSettings)
+                                LineView(post: post,
+                                         chat: chatSettings,
+                                         platform: chat.moreThanOneStreamingPlatform)
                                     .padding([.leading], 3)
                                     .rotationEffect(Angle(degrees: rotation))
                                     .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
@@ -316,7 +329,7 @@ private struct ChatAlertsView: View {
 
     var body: some View {
         ZStack {
-            AlertsMessagesView(chatSettings: model.database.chat)
+            AlertsMessagesView(chatSettings: model.database.chat, chat: model.chat)
             if model.quickButtonChatAlertsPaused {
                 ChatInfo(
                     message: String(localized: "Chat paused: \(model.pausedQuickButtonChatAlertsPostsCount) new alerts")
