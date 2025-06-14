@@ -286,10 +286,6 @@ struct MainView: View {
         )
     }
 
-    private var debug: SettingsDebug {
-        model.database.debug
-    }
-
     private func handleTapToFocus(metrics: GeometryProxy, location: CGPoint) {
         guard model.database.tapToFocus else {
             return
