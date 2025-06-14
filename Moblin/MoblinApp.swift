@@ -19,7 +19,6 @@ struct MoblinApp: App {
                     cameraPreviewView: CameraPreviewView(),
                     streamPreviewView: StreamPreviewView()
                 ),
-                webBrowserView: WebBrowserView(),
                 replay: model.replay
             )
             .environmentObject(model)
