@@ -153,6 +153,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
+    @Published var isPresentingWidgetWizard = false
+
     let hypeTrain = HypeTrain()
     let moblink = Moblink()
     let servers = Servers()
