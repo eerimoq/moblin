@@ -397,12 +397,10 @@ struct MainView: View {
                     webBrowserView
                 }
                 if model.showingRemoteControl {
-                    ZStack {
-                        NavigationStack {
-                            ControlBarRemoteControlAssistantView()
-                        }
-                        CloseButtonRemoteView()
+                    NavigationStack {
+                        ControlBarRemoteControlAssistantView()
                     }
+                    CloseButtonRemoteView()
                 }
                 if model.showingPanel != .none {
                     MenuView()
