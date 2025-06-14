@@ -65,30 +65,18 @@ struct ChatSettingsView: View {
                         .frame(width: 25)
                 }
                 if model.database.showAllSettings {
-                    Toggle(isOn: Binding(get: {
-                        chat.timestampColorEnabled
-                    }, set: { value in
-                        chat.timestampColorEnabled = value
-                        model.reloadChatMessages()
-                    })) {
-                        Text("Timestamp")
-                    }
-                    Toggle(isOn: Binding(get: {
-                        chat.boldUsername
-                    }, set: { value in
-                        chat.boldUsername = value
-                        model.reloadChatMessages()
-                    })) {
-                        Text("Bold username")
-                    }
-                    Toggle(isOn: Binding(get: {
-                        chat.boldMessage
-                    }, set: { value in
-                        chat.boldMessage = value
-                        model.reloadChatMessages()
-                    })) {
-                        Text("Bold message")
-                    }
+                    Toggle("Timestamp", isOn: $chat.timestampColorEnabled)
+                        .onChange(of: chat.timestampColorEnabled) { _ in
+                            model.reloadChatMessages()
+                        }
+                    Toggle("Bold username", isOn: $chat.boldUsername)
+                        .onChange(of: chat.boldUsername) { _ in
+                            model.reloadChatMessages()
+                        }
+                    Toggle("Bold message", isOn: $chat.boldMessage)
+                        .onChange(of: chat.boldMessage) { _ in
+                            model.reloadChatMessages()
+                        }
                     Toggle("Badges", isOn: $chat.badges)
                         .onChange(of: chat.badges) { _ in
                             model.reloadChatMessages()

@@ -2945,11 +2945,11 @@ class SettingsChat: Codable, ObservableObject {
     var backgroundColorEnabled: Bool = false
     var shadowColor: RgbColor = .init(red: 0, green: 0, blue: 0)
     var shadowColorEnabled: Bool = true
-    var boldUsername: Bool = true
-    var boldMessage: Bool = true
+    @Published var boldUsername: Bool = true
+    @Published var boldMessage: Bool = true
     @Published var animatedEmotes: Bool = false
     var timestampColor: RgbColor = .init(red: 180, green: 180, blue: 180)
-    var timestampColorEnabled: Bool = false
+    @Published var timestampColorEnabled: Bool = false
     @Published var height: Double = 0.7
     @Published var width: Double = 1.0
     @Published var maximumAge: Int = 30
