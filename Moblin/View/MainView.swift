@@ -422,9 +422,6 @@ struct MainView: View {
             )
             ControlBarPortraitView()
         }
-        .overlay(alignment: .topLeading) {
-            browserWidgets()
-        }
     }
 
     private func landscape() -> some View {
@@ -506,9 +503,6 @@ struct MainView: View {
             }
             ControlBarLandscapeView()
         }
-        .overlay(alignment: .topLeading) {
-            browserWidgets()
-        }
     }
 
     var body: some View {
@@ -545,6 +539,9 @@ struct MainView: View {
             if replay.instantReplayCountdown != 0 {
                 InstantReplayCountdownView(replay: replay)
             }
+        }
+        .overlay(alignment: .topLeading) {
+            browserWidgets()
         }
         .onAppear {
             model.setup()
