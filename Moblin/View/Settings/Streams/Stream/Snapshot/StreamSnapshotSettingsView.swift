@@ -30,12 +30,14 @@ struct StreamSnapshotSettingsView: View {
                 TextEditNavigationView(
                     title: String(localized: "Webhook URL"),
                     value: stream.discordSnapshotWebhook,
-                    onSubmit: submitSnapshotWebhookUrl
+                    onSubmit: submitSnapshotWebhookUrl,
+                    placeholder: "https://discord.com/api/webhooks/foobar"
                 )
                 TextEditNavigationView(
                     title: String(localized: "Chat bot webhook URL"),
                     value: stream.discordChatBotSnapshotWebhook,
-                    onSubmit: submitSnapshotChatBotWebhookUrl
+                    onSubmit: submitSnapshotChatBotWebhookUrl,
+                    placeholder: "https://discord.com/api/webhooks/foobar"
                 )
                 Toggle("Only when live", isOn: $stream.discordSnapshotWebhookOnlyWhenLive)
             } header: {

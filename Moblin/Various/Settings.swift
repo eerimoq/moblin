@@ -449,6 +449,8 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject {
     @Published var ntpPoolAddress: String = "time.apple.com"
     @Published var timecodesEnabled: Bool = false
     var replay: SettingsStreamReplay = .init()
+    @Published var goLiveNotificationDiscordMessage: String = ""
+    @Published var goLiveNotificationDiscordWebhookUrl: String = ""
 
     static func == (lhs: SettingsStream, rhs: SettingsStream) -> Bool {
         lhs.id == rhs.id
@@ -516,7 +518,9 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject {
              twitchMultiTrackEnabled,
              ntpPoolAddress,
              timecodesEnabled,
-             replay
+             replay,
+             goLiveNotificationDiscordMessage,
+             goLiveNotificationDiscordWebhookUrl
     }
 
     func encode(to encoder: Encoder) throws {
@@ -579,6 +583,8 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject {
         try container.encode(.ntpPoolAddress, ntpPoolAddress)
         try container.encode(.timecodesEnabled, timecodesEnabled)
         try container.encode(.replay, replay)
+        try container.encode(.goLiveNotificationDiscordMessage, goLiveNotificationDiscordMessage)
+        try container.encode(.goLiveNotificationDiscordWebhookUrl, goLiveNotificationDiscordWebhookUrl)
     }
 
     required init(from decoder: Decoder) throws {
@@ -641,6 +647,8 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject {
         ntpPoolAddress = container.decode(.ntpPoolAddress, String.self, "time.apple.com")
         timecodesEnabled = container.decode(.timecodesEnabled, Bool.self, false)
         replay = container.decode(.replay, SettingsStreamReplay.self, .init())
+        goLiveNotificationDiscordMessage = container.decode(.goLiveNotificationDiscordMessage, String.self, "")
+        goLiveNotificationDiscordWebhookUrl = container.decode(.goLiveNotificationDiscordWebhookUrl, String.self, "")
     }
 
     func clone() -> SettingsStream {

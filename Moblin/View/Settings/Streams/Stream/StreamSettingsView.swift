@@ -152,6 +152,11 @@ struct StreamSettingsView: View {
                         model.setObsRemoteControlEnabled(enabled: $0)
                     }))
                 }
+                NavigationLink {
+                    GoLiveNotificationSettingsView(stream: stream)
+                } label: {
+                    Text("Go live notification")
+                }
                 if database.showAllSettings {
                     NavigationLink {
                         StreamRealtimeIrlSettingsView(stream: stream)

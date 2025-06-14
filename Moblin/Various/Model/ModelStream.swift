@@ -59,6 +59,43 @@ extension Model {
         streamingHistoryStream = StreamingHistoryStream(settings: stream.clone())
         streamingHistoryStream!.updateHighestThermalState(thermalState: ThermalState(from: thermalState))
         streamingHistoryStream!.updateLowestBatteryLevel(level: batteryLevel)
+        sendGoLiveNotificationIfConfigured()
+    }
+
+    private func sendGoLiveNotificationIfConfigured() {
+        guard !stream.goLiveNotificationDiscordMessage.isEmpty else {
+            return
+        }
+        guard !stream.goLiveNotificationDiscordWebhookUrl.isEmpty else {
+            return
+        }
+        media.takeSnapshot(age: 0.0) { image, _ in
+            guard let imageJpeg = image.jpegData(compressionQuality: 0.9) else {
+                return
+            }
+            DispatchQueue.main.async {
+                self.tryUploadGoLiveNotificationToDiscord(imageJpeg)
+            }
+        }
+    }
+
+    private func tryUploadGoLiveNotificationToDiscord(_ image: Data) {
+        guard let url = URL(string: stream.goLiveNotificationDiscordWebhookUrl) else {
+            return
+        }
+        uploadImage(
+            url: url,
+            paramName: "snapshot",
+            fileName: "snapshot.jpg",
+            image: image,
+            message: stream.goLiveNotificationDiscordMessage
+        ) { ok in
+            DispatchQueue.main.async {
+                if !ok {
+                    self.makeErrorToast(title: String(localized: "Failed to upload go live notification to Discord"))
+                }
+            }
+        }
     }
 
     func stopStream(stopObsStreamIfEnabled: Bool = true, stopObsRecordingIfEnabled: Bool = true) {
