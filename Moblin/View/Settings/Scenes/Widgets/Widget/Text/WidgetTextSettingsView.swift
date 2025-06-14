@@ -107,6 +107,7 @@ private struct TextSelectionView: View {
     var widget: SettingsWidget
     @State var value: String
     @State var suggestion: Int = 0
+    @FocusState var focusedField: Bool?
 
     private func updateTimers(_ textEffect: TextEffect?, _ parts: [TextFormatPart]) {
         let numberOfTimers = parts.filter { value in
@@ -259,10 +260,27 @@ private struct TextSelectionView: View {
     var body: some View {
         Form {
             Section {
-                TextField("", text: $value, axis: .vertical)
-                    .keyboardType(.default)
-                    .textInputAutocapitalization(.never)
-                    .disableAutocorrection(true)
+                ZStack(alignment: .topTrailing) {
+                    TextField("", text: $value, axis: .vertical)
+                        .padding(.trailing, 22)
+                        .focused($focusedField, equals: true)
+                        .keyboardType(.default)
+                        .textInputAutocapitalization(.never)
+                        .disableAutocorrection(true)
+                    if !value.isEmpty {
+                        Button {
+                            value = ""
+                            focusedField = true
+                        } label: {
+                            Image(systemName: "xmark.circle.fill")
+                                .foregroundColor(Color(uiColor: .gray))
+                                .opacity(0.5)
+                        }
+                        .padding([.top], 1)
+                        .padding([.trailing], 5)
+                        .buttonStyle(.plain)
+                    }
+                }
             }
             Section {
                 NavigationLink {

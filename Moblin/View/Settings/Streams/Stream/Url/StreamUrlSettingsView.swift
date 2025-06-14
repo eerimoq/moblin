@@ -9,6 +9,7 @@ struct StreamUrlSettingsView: View {
     @State var changed: Bool = false
     @State var submitted: Bool = false
     @State var error = ""
+    @FocusState var focusedField: Bool?
 
     func submitUrl() {
         guard !submitted else {
@@ -29,21 +30,38 @@ struct StreamUrlSettingsView: View {
         Form {
             Section {
                 ZStack(alignment: .leading) {
-                    TextField("", text: $value, axis: .vertical)
-                        .textInputAutocapitalization(.never)
-                        .onSubmit {
-                            submitUrl()
-                        }
-                        .submitLabel(.done)
-                        .onChange(of: value) { _ in
-                            changed = true
-                            if value.contains("\n") {
-                                value = value.replacingOccurrences(of: "\n", with: "")
+                    ZStack(alignment: .topTrailing) {
+                        TextField("", text: $value, axis: .vertical)
+                            .padding(.trailing, 30)
+                            .focused($focusedField, equals: true)
+                            .textInputAutocapitalization(.never)
+                            .onSubmit {
                                 submitUrl()
                             }
+                            .submitLabel(.done)
+                            .onChange(of: value) { _ in
+                                changed = true
+                                if value.contains("\n") {
+                                    value = value.replacingOccurrences(of: "\n", with: "")
+                                    submitUrl()
+                                }
+                            }
+                            .disableAutocorrection(true)
+                        if !value.isEmpty {
+                            Button {
+                                value = ""
+                                focusedField = true
+                            } label: {
+                                Image(systemName: "xmark.circle.fill")
+                                    .foregroundColor(Color(uiColor: .gray))
+                                    .opacity(0.5)
+                            }
+                            .padding([.top], 1)
+                            .padding([.trailing], 5)
+                            .buttonStyle(.plain)
                         }
-                        .disableAutocorrection(true)
-                        .opacity(show ? 1 : 0)
+                    }
+                    .opacity(show ? 1 : 0)
                     Text(replaceSensitive(value: value, sensitive: true))
                         .opacity(show ? 0 : 1)
                 }

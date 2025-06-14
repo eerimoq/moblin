@@ -264,6 +264,18 @@ struct MainView: View {
     @FocusState private var focused: Bool
     @ObservedObject var replay: ReplayProvider
 
+    init(webBrowserController: WebBrowserController,
+         streamView: StreamView,
+         webBrowserView: WebBrowserView,
+         replay: ReplayProvider)
+    {
+        self.webBrowserController = webBrowserController
+        self.streamView = streamView
+        self.webBrowserView = webBrowserView
+        self.replay = replay
+        UITextField.appearance().clearButtonMode = .always
+    }
+
     func drawFocus(context: GraphicsContext, metrics: GeometryProxy, focusPoint: CGPoint) {
         let sideLength = 70.0
         let x = metrics.size.width * focusPoint.x - sideLength / 2
