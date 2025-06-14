@@ -451,6 +451,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject {
     var replay: SettingsStreamReplay = .init()
     @Published var goLiveNotificationDiscordMessage: String = ""
     @Published var goLiveNotificationDiscordWebhookUrl: String = ""
+    @Published var goLiveNotificationDiscordIAmLive: Bool = false
 
     static func == (lhs: SettingsStream, rhs: SettingsStream) -> Bool {
         lhs.id == rhs.id
@@ -520,7 +521,8 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject {
              timecodesEnabled,
              replay,
              goLiveNotificationDiscordMessage,
-             goLiveNotificationDiscordWebhookUrl
+             goLiveNotificationDiscordWebhookUrl,
+             goLiveNotificationDiscordIAmLive
     }
 
     func encode(to encoder: Encoder) throws {
@@ -585,6 +587,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject {
         try container.encode(.replay, replay)
         try container.encode(.goLiveNotificationDiscordMessage, goLiveNotificationDiscordMessage)
         try container.encode(.goLiveNotificationDiscordWebhookUrl, goLiveNotificationDiscordWebhookUrl)
+        try container.encode(.goLiveNotificationDiscordIAmLive, goLiveNotificationDiscordIAmLive)
     }
 
     required init(from decoder: Decoder) throws {
@@ -649,6 +652,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject {
         replay = container.decode(.replay, SettingsStreamReplay.self, .init())
         goLiveNotificationDiscordMessage = container.decode(.goLiveNotificationDiscordMessage, String.self, "")
         goLiveNotificationDiscordWebhookUrl = container.decode(.goLiveNotificationDiscordWebhookUrl, String.self, "")
+        goLiveNotificationDiscordIAmLive = container.decode(.goLiveNotificationDiscordIAmLive, Bool.self, false)
     }
 
     func clone() -> SettingsStream {
@@ -702,6 +706,9 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject {
         new.ntpPoolAddress = ntpPoolAddress
         new.timecodesEnabled = timecodesEnabled
         new.replay = replay.clone()
+        new.goLiveNotificationDiscordMessage = goLiveNotificationDiscordMessage
+        new.goLiveNotificationDiscordWebhookUrl = goLiveNotificationDiscordWebhookUrl
+        new.goLiveNotificationDiscordIAmLive = goLiveNotificationDiscordIAmLive
         return new
     }
 

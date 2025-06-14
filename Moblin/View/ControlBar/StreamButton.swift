@@ -19,6 +19,7 @@ private struct StreamButtonText: View {
 struct StreamButton: View {
     @EnvironmentObject var model: Model
     @State private var isPresentingGoLiveConfirm = false
+    @State private var isPresentingGoLiveNotificationConfirm = false
     @State private var isPresentingStopConfirm = false
 
     var body: some View {
@@ -31,6 +32,11 @@ struct StreamButton: View {
                         RoundedRectangle(cornerRadius: 10)
                             .stroke(.white)
                     )
+            }
+            .confirmationDialog("", isPresented: $isPresentingGoLiveNotificationConfirm) {
+                Button("Send Go live notification") {
+                    model.sendGoLiveNotification()
+                }
             }
             .confirmationDialog("", isPresented: $isPresentingStopConfirm) {
                 if model.stream.obsAutoStopStream && model.stream.obsAutoStopRecording {
@@ -59,6 +65,9 @@ struct StreamButton: View {
             .confirmationDialog("", isPresented: $isPresentingGoLiveConfirm) {
                 Button("Go Live") {
                     model.startStream()
+                    if model.isGoLiveNotificationConfigured() {
+                        isPresentingGoLiveNotificationConfirm = true
+                    }
                 }
             }
         } else {
