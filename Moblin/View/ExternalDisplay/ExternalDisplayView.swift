@@ -105,33 +105,9 @@ private struct MessagesView: View {
     @ObservedObject var chatSettings: SettingsChat
     @ObservedObject var chat: ChatProvider
 
-    private func getRotation() -> Double {
-        if chatSettings.newMessagesAtTop {
-            return 0.0
-        } else {
-            return 180.0
-        }
-    }
-
-    private func getScaleX() -> Double {
-        if chatSettings.newMessagesAtTop {
-            return 1.0
-        } else {
-            return -1.0
-        }
-    }
-
-    private func isMirrored() -> CGFloat {
-        if chatSettings.mirrored {
-            return -1
-        } else {
-            return 1
-        }
-    }
-
     var body: some View {
-        let rotation = getRotation()
-        let scaleX = getScaleX()
+        let rotation = model.database.chat.getRotation()
+        let scaleX = model.database.chat.getScaleX()
         GeometryReader { metrics in
             ScrollView {
                 VStack {
@@ -179,7 +155,7 @@ private struct MessagesView: View {
             }
             .foregroundColor(.white)
             .rotationEffect(Angle(degrees: rotation))
-            .scaleEffect(x: scaleX * isMirrored(), y: 1.0, anchor: .center)
+            .scaleEffect(x: scaleX * model.database.chat.isMirrored(), y: 1.0, anchor: .center)
         }
     }
 }

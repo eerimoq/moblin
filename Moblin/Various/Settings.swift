@@ -3114,6 +3114,30 @@ class SettingsChat: Codable, ObservableObject {
         textToSpeechPauseBetweenMessages = container.decode(.textToSpeechPauseBetweenMessages, Double.self, 1.0)
         platform = container.decode(.platform, Bool.self, true)
     }
+
+    func getRotation() -> Double {
+        if newMessagesAtTop {
+            return 0.0
+        } else {
+            return 180.0
+        }
+    }
+
+    func getScaleX() -> Double {
+        if newMessagesAtTop {
+            return 1.0
+        } else {
+            return -1.0
+        }
+    }
+
+    func isMirrored() -> CGFloat {
+        if mirrored {
+            return -1
+        } else {
+            return 1
+        }
+    }
 }
 
 enum SettingsMic: String, Codable, CaseIterable {

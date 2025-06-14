@@ -98,33 +98,9 @@ private struct MessagesView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var chat: ChatProvider
 
-    private func getRotation() -> Double {
-        if model.database.chat.newMessagesAtTop {
-            return 0.0
-        } else {
-            return 180.0
-        }
-    }
-
-    private func getScaleX() -> Double {
-        if model.database.chat.newMessagesAtTop {
-            return 1.0
-        } else {
-            return -1.0
-        }
-    }
-
-    private func isMirrored() -> CGFloat {
-        if model.database.chat.mirrored {
-            return -1
-        } else {
-            return 1
-        }
-    }
-
     var body: some View {
-        let rotation = getRotation()
-        let scaleX = getScaleX()
+        let rotation = model.database.chat.getRotation()
+        let scaleX = model.database.chat.getScaleX()
         GeometryReader { metrics in
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 1) {
@@ -178,7 +154,7 @@ private struct MessagesView: View {
         }
         .foregroundColor(.white)
         .rotationEffect(Angle(degrees: rotation))
-        .scaleEffect(x: scaleX * isMirrored(), y: 1.0, anchor: .center)
+        .scaleEffect(x: scaleX * model.database.chat.isMirrored(), y: 1.0, anchor: .center)
     }
 }
 
@@ -277,33 +253,9 @@ private struct AlertsMessagesView: View {
         return true
     }
 
-    private func getRotation() -> Double {
-        if model.database.chat.newMessagesAtTop {
-            return 0.0
-        } else {
-            return 180.0
-        }
-    }
-
-    private func getScaleX() -> Double {
-        if model.database.chat.newMessagesAtTop {
-            return 1.0
-        } else {
-            return -1.0
-        }
-    }
-
-    private func isMirrored() -> CGFloat {
-        if model.database.chat.mirrored {
-            return -1
-        } else {
-            return 1
-        }
-    }
-
     var body: some View {
-        let rotation = getRotation()
-        let scaleX = getScaleX()
+        let rotation = model.database.chat.getRotation()
+        let scaleX = model.database.chat.getScaleX()
         GeometryReader { metrics in
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 1) {
@@ -359,7 +311,7 @@ private struct AlertsMessagesView: View {
         }
         .foregroundColor(.white)
         .rotationEffect(Angle(degrees: rotation))
-        .scaleEffect(x: scaleX * isMirrored(), y: 1.0, anchor: .center)
+        .scaleEffect(x: scaleX * model.database.chat.isMirrored(), y: 1.0, anchor: .center)
     }
 }
 
