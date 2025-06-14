@@ -6,10 +6,6 @@ struct SettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var database: Database
 
-    var chat: SettingsChat {
-        database.chat
-    }
-
     var body: some View {
         Form {
             if model.isLive {
@@ -35,14 +31,7 @@ struct SettingsView: View {
                     Label("Scenes", systemImage: "photo.on.rectangle")
                 }
                 NavigationLink {
-                    ChatSettingsView(
-                        chat: database.chat,
-                        timestampColor: chat.timestampColor.color(),
-                        usernameColor: chat.usernameColor.color(),
-                        messageColor: chat.messageColor.color(),
-                        backgroundColor: chat.backgroundColor.color(),
-                        shadowColor: chat.shadowColor.color()
-                    )
+                    ChatSettingsView(chat: database.chat)
                 } label: {
                     Label("Chat", systemImage: "message")
                 }

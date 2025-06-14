@@ -3,11 +3,6 @@ import SwiftUI
 struct ChatSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var chat: SettingsChat
-    @State var timestampColor: Color
-    @State var usernameColor: Color
-    @State var messageColor: Color
-    @State var backgroundColor: Color
-    @State var shadowColor: Color
 
     func submitMaximumAge(value: String) {
         guard let maximumAge = Int(value) else {
@@ -197,59 +192,55 @@ struct ChatSettingsView: View {
             }
             if model.database.showAllSettings {
                 Section {
-                    ColorPicker("Timestamp", selection: $timestampColor, supportsOpacity: false)
-                        .onChange(of: timestampColor) { _ in
-                            guard let color = timestampColor.toRgb() else {
+                    ColorPicker("Timestamp", selection: $chat.timestampColorColor, supportsOpacity: false)
+                        .onChange(of: chat.timestampColorColor) { _ in
+                            guard let color = chat.timestampColorColor.toRgb() else {
                                 return
                             }
                             chat.timestampColor = color
                             model.reloadChatMessages()
                         }
-                    ColorPicker("Username", selection: $usernameColor, supportsOpacity: false)
-                        .onChange(of: usernameColor) { _ in
-                            guard let color = usernameColor.toRgb() else {
+                    ColorPicker("Username", selection: $chat.usernameColorColor, supportsOpacity: false)
+                        .onChange(of: chat.usernameColorColor) { _ in
+                            guard let color = chat.usernameColorColor.toRgb() else {
                                 return
                             }
                             chat.usernameColor = color
                             model.reloadChatMessages()
                         }
-                    ColorPicker("Message", selection: $messageColor, supportsOpacity: false)
-                        .onChange(of: messageColor) { _ in
-                            guard let color = messageColor.toRgb() else {
+                    ColorPicker("Message", selection: $chat.messageColorColor, supportsOpacity: false)
+                        .onChange(of: chat.messageColorColor) { _ in
+                            guard let color = chat.messageColorColor.toRgb() else {
                                 return
                             }
                             chat.messageColor = color
                             model.reloadChatMessages()
                         }
-                    Toggle(isOn: Binding(get: {
-                        chat.backgroundColorEnabled
-                    }, set: { value in
-                        chat.backgroundColorEnabled = value
-                        model.reloadChatMessages()
-                    })) {
-                        ColorPicker("Background", selection: $backgroundColor, supportsOpacity: false)
-                            .onChange(of: backgroundColor) { _ in
-                                guard let color = backgroundColor.toRgb() else {
+                    Toggle(isOn: $chat.backgroundColorEnabled) {
+                        ColorPicker("Background", selection: $chat.backgroundColorColor, supportsOpacity: false)
+                            .onChange(of: chat.backgroundColorColor) { _ in
+                                guard let color = chat.backgroundColorColor.toRgb() else {
                                     return
                                 }
                                 chat.backgroundColor = color
                                 model.reloadChatMessages()
                             }
                     }
-                    Toggle(isOn: Binding(get: {
-                        chat.shadowColorEnabled
-                    }, set: { value in
-                        chat.shadowColorEnabled = value
+                    .onChange(of: chat.backgroundColorEnabled) { _ in
                         model.reloadChatMessages()
-                    })) {
-                        ColorPicker("Border", selection: $shadowColor, supportsOpacity: false)
-                            .onChange(of: shadowColor) { _ in
-                                guard let color = shadowColor.toRgb() else {
+                    }
+                    Toggle(isOn: $chat.shadowColorEnabled) {
+                        ColorPicker("Border", selection: $chat.shadowColorColor, supportsOpacity: false)
+                            .onChange(of: chat.shadowColorColor) { _ in
+                                guard let color = chat.shadowColorColor.toRgb() else {
                                     return
                                 }
                                 chat.shadowColor = color
                                 model.reloadChatMessages()
                             }
+                    }
+                    .onChange(of: chat.shadowColorEnabled) { _ in
+                        model.reloadChatMessages()
                     }
                     Toggle(isOn: Binding(get: {
                         chat.meInUsernameColor
