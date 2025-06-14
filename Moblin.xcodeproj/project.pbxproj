@@ -490,6 +490,7 @@
 		03C656112C02E13000E017B2 /* SampleBufferSender.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C656102C02E13000E017B2 /* SampleBufferSender.swift */; };
 		03C656152C02E23900E017B2 /* SampleBufferReceiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C656132C02E14600E017B2 /* SampleBufferReceiver.swift */; };
 		03C9A13F2DFD881300817B57 /* MultiLineTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C9A13E2DFD880C00817B57 /* MultiLineTextField.swift */; };
+		03C9A1412DFDCC5000817B57 /* ControlBarUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C9A1402DFDCC4B00817B57 /* ControlBarUtils.swift */; };
 		03CB8BCD2B5090C700B96530 /* StreamGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CB8BCC2B5090C700B96530 /* StreamGridView.swift */; };
 		03CBFC752BFD3C7E0029A888 /* MirrorFrontCameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CBFC742BFD3C7E0029A888 /* MirrorFrontCameraView.swift */; };
 		03CD92A72DC9D23700202D49 /* WhirlpoolEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CD92A62DC9D23100202D49 /* WhirlpoolEffect.swift */; };
@@ -1148,6 +1149,7 @@
 		03C656102C02E13000E017B2 /* SampleBufferSender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleBufferSender.swift; sourceTree = "<group>"; };
 		03C656132C02E14600E017B2 /* SampleBufferReceiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleBufferReceiver.swift; sourceTree = "<group>"; };
 		03C9A13E2DFD880C00817B57 /* MultiLineTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiLineTextField.swift; sourceTree = "<group>"; };
+		03C9A1402DFDCC4B00817B57 /* ControlBarUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlBarUtils.swift; sourceTree = "<group>"; };
 		03CB8BCC2B5090C700B96530 /* StreamGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamGridView.swift; sourceTree = "<group>"; };
 		03CBFC742BFD3C7E0029A888 /* MirrorFrontCameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MirrorFrontCameraView.swift; sourceTree = "<group>"; };
 		03CD92A62DC9D23100202D49 /* WhirlpoolEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhirlpoolEffect.swift; sourceTree = "<group>"; };
@@ -2681,6 +2683,7 @@
 				03B373F82A9EFB340028DDD5 /* BatteryView.swift */,
 				03B373F52A9EF98E0028DDD5 /* ControlBarLandscapeView.swift */,
 				0364B6222BD3683F002F828D /* ControlBarPortraitView.swift */,
+				03C9A1402DFDCC4B00817B57 /* ControlBarUtils.swift */,
 				03B374032AA036D10028DDD5 /* QuickButtonsView.swift */,
 				0364B6202BD36806002F828D /* StreamButton.swift */,
 			);
@@ -3731,6 +3734,7 @@
 				038605302D7DF6A300B9C3CE /* CyclingPowerDevice.swift in Sources */,
 				03B16A2D2B35D72F00E5AB07 /* CameraSettingsView.swift in Sources */,
 				030621E92D8608E1001EE50B /* DjiGimbalDeviceScannerSettingsView.swift in Sources */,
+				03C9A1412DFDCC5000817B57 /* ControlBarUtils.swift in Sources */,
 				0359F8E72BD3DA61005BFDA8 /* Amf0Serializer.swift in Sources */,
 				031F41442C6FB3B900790EEC /* AboutAttributionsSettingsView.swift in Sources */,
 				03DC9DAF2C4F846D005E2104 /* CMBlockBuffer+Extension.swift in Sources */,
