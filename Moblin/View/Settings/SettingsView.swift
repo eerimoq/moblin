@@ -51,11 +51,6 @@ struct SettingsView: View {
                     } label: {
                         Label("Audio", systemImage: "waveform")
                     }
-                    NavigationLink {
-                        BitratePresetsSettingsView(database: database)
-                    } label: {
-                        Label("Bitrate presets", systemImage: "speedometer")
-                    }
                 }
                 NavigationLink {
                     LocationSettingsView()

@@ -128,6 +128,11 @@ struct StreamVideoSettingsView: View {
                             }
                         }
                     }
+                    NavigationLink {
+                        BitratePresetsSettingsView(database: model.database)
+                    } label: {
+                        Text("Bitrate presets")
+                    }
                 } footer: {
                     Text("About 5-8 Mbps is usually enough for decent image quality.")
                 }
