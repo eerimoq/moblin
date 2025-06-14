@@ -366,39 +366,39 @@ extension Model: TwitchEventSubDelegate {
 
     private func updateHypeTrainStatus(level: Int, progress: Int, goal: Int) {
         let percentage = Int(100 * Float(progress) / Float(goal))
-        hypeTrainStatus = "LVL \(level), \(percentage)%"
+        hypeTrain.status = "LVL \(level), \(percentage)%"
     }
 
     private func startHypeTrainTimer(timeout: Double) {
-        hypeTrainTimer.startSingleShot(timeout: timeout) { [weak self] in
+        hypeTrain.timer.startSingleShot(timeout: timeout) { [weak self] in
             self?.removeHypeTrain()
         }
     }
 
     private func stopHypeTrainTimer() {
-        hypeTrainTimer.stop()
+        hypeTrain.timer.stop()
     }
 
     func twitchEventSubChannelHypeTrainBegin(event: TwitchEventSubChannelHypeTrainBeginEvent) {
-        hypeTrainLevel = event.level
-        hypeTrainProgress = event.progress
-        hypeTrainGoal = event.goal
+        hypeTrain.level = event.level
+        hypeTrain.progress = event.progress
+        hypeTrain.goal = event.goal
         updateHypeTrainStatus(level: event.level, progress: event.progress, goal: event.goal)
         startHypeTrainTimer(timeout: 600)
     }
 
     func twitchEventSubChannelHypeTrainProgress(event: TwitchEventSubChannelHypeTrainProgressEvent) {
-        hypeTrainLevel = event.level
-        hypeTrainProgress = event.progress
-        hypeTrainGoal = event.goal
+        hypeTrain.level = event.level
+        hypeTrain.progress = event.progress
+        hypeTrain.goal = event.goal
         updateHypeTrainStatus(level: event.level, progress: event.progress, goal: event.goal)
         startHypeTrainTimer(timeout: 600)
     }
 
     func twitchEventSubChannelHypeTrainEnd(event: TwitchEventSubChannelHypeTrainEndEvent) {
-        hypeTrainLevel = event.level
-        hypeTrainProgress = 1
-        hypeTrainGoal = 1
+        hypeTrain.level = event.level
+        hypeTrain.progress = 1
+        hypeTrain.goal = 1
         updateHypeTrainStatus(level: event.level, progress: 1, goal: 1)
         startHypeTrainTimer(timeout: 60)
     }
@@ -411,10 +411,10 @@ extension Model: TwitchEventSubDelegate {
     }
 
     func removeHypeTrain() {
-        hypeTrainLevel = nil
-        hypeTrainProgress = nil
-        hypeTrainGoal = nil
-        hypeTrainStatus = noValue
+        hypeTrain.level = nil
+        hypeTrain.progress = nil
+        hypeTrain.goal = nil
+        hypeTrain.status = noValue
         stopHypeTrainTimer()
     }
 

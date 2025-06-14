@@ -37,7 +37,7 @@ private struct CollapsedBondingView: View {
 }
 
 private struct CollapsedHypeTrainView: View {
-    @EnvironmentObject var model: Model
+    var status: String
     var show: Bool
     var color: Color
 
@@ -57,7 +57,7 @@ private struct CollapsedHypeTrainView: View {
                 } else {
                     train
                 }
-                Text(model.hypeTrainStatus)
+                Text(status)
                     .foregroundColor(.white)
                     .padding([.leading, .trailing], 2)
             }
@@ -170,6 +170,27 @@ private struct RecordingStatusView: View {
     }
 }
 
+private struct HypeTrainStatusView: View {
+    @EnvironmentObject var model: Model
+    @ObservedObject var hypeTrain: HypeTrain
+    let textPlacement: StreamOverlayIconAndTextPlacement
+
+    var body: some View {
+        if textPlacement == .hide {
+            CollapsedHypeTrainView(status: hypeTrain.status,
+                                   show: model.isShowingStatusHypeTrain(),
+                                   color: .white)
+        } else {
+            StreamOverlayIconAndTextView(
+                show: model.isShowingStatusHypeTrain(),
+                icon: "train.side.front.car",
+                text: hypeTrain.status,
+                textPlacement: textPlacement
+            )
+        }
+    }
+}
+
 private struct StatusesView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var show: SettingsShow
@@ -220,16 +241,7 @@ private struct StatusesView: View {
     }
 
     var body: some View {
-        if textPlacement == .hide {
-            CollapsedHypeTrainView(show: model.isShowingStatusHypeTrain(), color: .white)
-        } else {
-            StreamOverlayIconAndTextView(
-                show: model.isShowingStatusHypeTrain(),
-                icon: "train.side.front.car",
-                text: model.hypeTrainStatus,
-                textPlacement: textPlacement
-            )
-        }
+        HypeTrainStatusView(hypeTrain: model.hypeTrain, textPlacement: textPlacement)
         if textPlacement == .hide {
             CollapsedAdsRemainingTimerView(show: model.isShowingStatusAdsRemainingTimer())
         } else {

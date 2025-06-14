@@ -184,6 +184,7 @@ private struct MessagesView: View {
 
 private struct HypeTrainView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var hypeTrain: HypeTrain
 
     var body: some View {
         VStack(spacing: 0) {
@@ -192,7 +193,7 @@ private struct HypeTrainView: View {
                 .background(.clear)
                 .frame(height: 1)
             VStack {
-                if let level = model.hypeTrainLevel {
+                if let level = hypeTrain.level {
                     HStack(spacing: 0) {
                         let train = HStack(spacing: 0) {
                             Image(systemName: "train.side.rear.car")
@@ -228,7 +229,7 @@ private struct HypeTrainView: View {
                     .foregroundColor(.white)
                     .padding(10)
                 }
-                if let progress = model.hypeTrainProgress, let goal = model.hypeTrainGoal {
+                if let progress = hypeTrain.progress, let goal = hypeTrain.goal {
                     ProgressView(value: Float(progress), total: Float(goal))
                         .accentColor(.white)
                         .scaleEffect(x: 1, y: 4, anchor: .center)
@@ -243,6 +244,7 @@ private struct HypeTrainView: View {
 }
 
 private struct ChatView: View {
+    @EnvironmentObject var model: Model
     @ObservedObject var chat: ChatProvider
 
     var body: some View {
@@ -254,7 +256,7 @@ private struct ChatView: View {
                 )
                 .padding(2)
             }
-            HypeTrainView()
+            HypeTrainView(hypeTrain: model.hypeTrain)
         }
     }
 }
@@ -373,7 +375,7 @@ private struct ChatAlertsView: View {
                 )
                 .padding(2)
             }
-            HypeTrainView()
+            HypeTrainView(hypeTrain: model.hypeTrain)
         }
     }
 }

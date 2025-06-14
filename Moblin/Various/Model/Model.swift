@@ -109,6 +109,14 @@ class StreamUptimeProvider: ObservableObject {
     @Published var uptime = noValue
 }
 
+class HypeTrain: ObservableObject {
+    @Published var status = noValue
+    @Published var level: Int?
+    @Published var progress: Int?
+    @Published var goal: Int?
+    var timer = SimpleTimer(queue: .main)
+}
+
 final class Model: NSObject, ObservableObject, @unchecked Sendable {
     let media = Media()
     var streamState = StreamState.disconnected {
@@ -116,6 +124,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             logger.info("stream: State \(oldValue) -> \(streamState)")
         }
     }
+
+    var hypeTrain = HypeTrain()
 
     @Published var goProLaunchLiveStreamSelection: UUID?
     @Published var goProWifiCredentialsSelection: UUID?
@@ -266,13 +276,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private var serversSpeed: Int64 = 0
 
-    @Published var hypeTrainLevel: Int?
-    @Published var hypeTrainProgress: Int?
-    @Published var hypeTrainGoal: Int?
-    @Published var hypeTrainStatus = noValue
     @Published var adsRemainingTimerStatus = noValue
     var adsEndDate: Date?
-    var hypeTrainTimer = SimpleTimer(queue: .main)
     var urlSession = URLSession.shared
 
     var heartRates: [String: Int?] = [:]
@@ -2689,7 +2694,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func isShowingStatusHypeTrain() -> Bool {
-        return hypeTrainStatus != noValue
+        return hypeTrain.status != noValue
     }
 
     func isShowingStatusAdsRemainingTimer() -> Bool {
