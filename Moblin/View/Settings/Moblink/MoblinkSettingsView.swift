@@ -135,6 +135,7 @@ private struct RelayStreamerServerView: View {
 private struct RelayStreamerUrlView: View {
     @Environment(\.dismiss) var dismiss
     @EnvironmentObject var model: Model
+    @ObservedObject var moblink: Moblink
     @Binding var streamerUrl: String
 
     private func submitUrl(value: String) {
@@ -157,11 +158,11 @@ private struct RelayStreamerUrlView: View {
                         submitUrl(value: streamerUrl)
                     }
             }
-            if model.moblinkScannerDiscoveredStreamers.isEmpty {
+            if moblink.scannerDiscoveredStreamers.isEmpty {
                 Text("No streamers discovered yet on your local network.")
             } else {
                 List {
-                    ForEach(model.moblinkScannerDiscoveredStreamers) { server in
+                    ForEach(moblink.scannerDiscoveredStreamers) { server in
                         RelayStreamerServerView(server: server, streamerUrl: $streamerUrl, submitUrl: submitUrl)
                     }
                 }
@@ -203,7 +204,7 @@ private struct RelayView: View {
             .disabled(model.isLive)
             if relay.manual {
                 NavigationLink {
-                    RelayStreamerUrlView(streamerUrl: $relay.url)
+                    RelayStreamerUrlView(moblink: model.moblink, streamerUrl: $relay.url)
                 } label: {
                     TextItemView(name: String(localized: "Streamer URL"), value: relay.url)
                 }

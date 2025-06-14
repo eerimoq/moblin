@@ -117,6 +117,16 @@ class HypeTrain: ObservableObject {
     var timer = SimpleTimer(queue: .main)
 }
 
+class Moblink: ObservableObject {
+    var streamer: MoblinkStreamer?
+    var relays: [MoblinkRelay] = []
+    var scanner: MoblinkScanner?
+    var relayState: MoblinkRelayState = .waitingForStreamers
+    @Published var streamerOk = true
+    @Published var status = noValue
+    @Published var scannerDiscoveredStreamers: [MoblinkScannerStreamer] = []
+}
+
 final class Model: NSObject, ObservableObject, @unchecked Sendable {
     let media = Media()
     var streamState = StreamState.disconnected {
@@ -125,7 +135,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    var hypeTrain = HypeTrain()
+    let hypeTrain = HypeTrain()
+    let moblink = Moblink()
 
     @Published var goProLaunchLiveStreamSelection: UUID?
     @Published var goProWifiCredentialsSelection: UUID?
@@ -505,11 +516,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     var rtmpServer: RtmpServer?
     @Published var serversSpeedAndTotal = noValue
-    var moblinkRelayState: MoblinkRelayState = .waitingForStreamers
-    @Published var moblinkStreamerOk = true
-    @Published var moblinkStatus = noValue
     @Published var djiDevicesStatus = noValue
-    @Published var moblinkScannerDiscoveredStreamers: [MoblinkScannerStreamer] = []
 
     var sceneSettingsPanelScene = SettingsScene(name: "")
     @Published var sceneSettingsPanelSceneId = 1
@@ -546,10 +553,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private let sampleBufferReceiver = SampleBufferReceiver()
 
     let faxReceiver = FaxReceiver()
-
-    var moblinkStreamer: MoblinkStreamer?
-    var moblinkRelays: [MoblinkRelay] = []
-    var moblinkScanner: MoblinkScanner?
 
     @Published var cameraControlEnabled = false
     var twitchStreamUpdateTime = ContinuousClock.now
@@ -1477,7 +1480,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             self.updateCurrentSsid()
             self.rtmpServerInfo()
             self.teslaGetChargeState()
-            self.moblinkStreamer?.updateStatus()
+            self.moblink.streamer?.updateStatus()
             self.updateDjiDevicesStatus()
             self.updateTwitchStream(monotonicNow: monotonicNow)
             self.updateAvailableDiskSpace()

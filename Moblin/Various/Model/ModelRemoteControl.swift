@@ -401,7 +401,7 @@ extension Model: RemoteControlStreamerDelegate {
             topRight.browserWidgets = RemoteControlStatusItem(message: browserWidgetsStatus)
         }
         if isAnyMoblinkConfigured() {
-            topRight.moblink = RemoteControlStatusItem(message: moblinkStatus)
+            topRight.moblink = RemoteControlStatusItem(message: moblink.status)
         }
         if !djiDevicesStatus.isEmpty {
             topRight.djiDevices = RemoteControlStatusItem(message: djiDevicesStatus)

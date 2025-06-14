@@ -97,7 +97,7 @@ extension Model {
     private func startNetStream() {
         streamState = .connecting
         latestLowBitrateTime = .now
-        moblinkStreamer?.stopTunnels()
+        moblink.streamer?.stopTunnels()
         if stream.twitchMultiTrackEnabled {
             startNetStreamMultiTrack()
         } else {
@@ -216,7 +216,7 @@ extension Model {
     }
 
     private func stopNetStream(reconnect: Bool = false) {
-        moblinkStreamer?.stopTunnels()
+        moblink.streamer?.stopTunnels()
         reconnectTimer?.invalidate()
         media.rtmpStopStream()
         media.srtStopStream()
@@ -780,7 +780,7 @@ extension Model: MediaDelegate {
     }
 
     func mediaStrlaRelayDestinationAddress(address: String, port: UInt16) {
-        moblinkStreamer?.startTunnels(address: address, port: port)
+        moblink.streamer?.startTunnels(address: address, port: port)
     }
 
     func mediaSetZoomX(x: Float) {

@@ -191,6 +191,32 @@ private struct HypeTrainStatusView: View {
     }
 }
 
+private struct MoblinkStatusView: View {
+    @EnvironmentObject var model: Model
+    @ObservedObject var moblink: Moblink
+    let textPlacement: StreamOverlayIconAndTextPlacement
+
+    private func color() -> Color {
+        if model.isMoblinkRelayConfigured() && !model.areMoblinkRelaysOk() {
+            return .red
+        }
+        if !moblink.streamerOk {
+            return .red
+        }
+        return .white
+    }
+
+    var body: some View {
+        StreamOverlayIconAndTextView(
+            show: model.isShowingStatusMoblink(),
+            icon: "app.connected.to.app.below.fill",
+            text: moblink.status,
+            textPlacement: textPlacement,
+            color: color()
+        )
+    }
+}
+
 private struct StatusesView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var show: SettingsShow
@@ -200,16 +226,6 @@ private struct StatusesView: View {
         if model.isRemoteControlStreamerConfigured() && !model.isRemoteControlStreamerConnected() {
             return .red
         } else if model.isRemoteControlAssistantConfigured() && !model.isRemoteControlAssistantConnected() {
-            return .red
-        }
-        return .white
-    }
-
-    private func moblinkColor() -> Color {
-        if model.isMoblinkRelayConfigured() && !model.areMoblinkRelaysOk() {
-            return .red
-        }
-        if !model.moblinkStreamerOk {
             return .red
         }
         return .white
@@ -258,13 +274,7 @@ private struct StatusesView: View {
             text: model.serversSpeedAndTotal,
             textPlacement: textPlacement
         )
-        StreamOverlayIconAndTextView(
-            show: model.isShowingStatusMoblink(),
-            icon: "app.connected.to.app.below.fill",
-            text: model.moblinkStatus,
-            textPlacement: textPlacement,
-            color: moblinkColor()
-        )
+        MoblinkStatusView(moblink: model.moblink, textPlacement: textPlacement)
         StreamOverlayIconAndTextView(
             show: model.isShowingStatusRemoteControl(),
             icon: "appletvremote.gen1",
