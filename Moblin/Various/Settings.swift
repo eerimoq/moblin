@@ -422,7 +422,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject {
     var obsAutoStopRecording: Bool = false
     var discordSnapshotWebhook: String = ""
     var discordChatBotSnapshotWebhook: String = ""
-    var discordSnapshotWebhookOnlyWhenLive: Bool = true
+    @Published var discordSnapshotWebhookOnlyWhenLive: Bool = true
     @Published var resolution: SettingsStreamResolution = .r1920x1080
     @Published var fps: Int = 30
     @Published var autoFps: Bool = false
