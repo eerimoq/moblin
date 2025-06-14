@@ -217,6 +217,21 @@ private struct MoblinkStatusView: View {
     }
 }
 
+private struct ServersStatusView: View {
+    @EnvironmentObject var model: Model
+    @ObservedObject var servers: Servers
+    let textPlacement: StreamOverlayIconAndTextPlacement
+
+    var body: some View {
+        StreamOverlayIconAndTextView(
+            show: model.isShowingStatusServers(),
+            icon: "server.rack",
+            text: servers.speedAndTotal,
+            textPlacement: textPlacement
+        )
+    }
+}
+
 private struct StatusesView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var show: SettingsShow
@@ -268,12 +283,7 @@ private struct StatusesView: View {
                 textPlacement: textPlacement
             )
         }
-        StreamOverlayIconAndTextView(
-            show: model.isShowingStatusServers(),
-            icon: "server.rack",
-            text: model.serversSpeedAndTotal,
-            textPlacement: textPlacement
-        )
+        ServersStatusView(servers: model.servers, textPlacement: textPlacement)
         MoblinkStatusView(moblink: model.moblink, textPlacement: textPlacement)
         StreamOverlayIconAndTextView(
             show: model.isShowingStatusRemoteControl(),

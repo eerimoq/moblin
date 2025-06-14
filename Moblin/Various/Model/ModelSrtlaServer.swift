@@ -3,21 +3,21 @@ import Foundation
 
 extension Model {
     func stopSrtlaServer() {
-        srtlaServer?.stop()
-        srtlaServer = nil
+        servers.srtla?.stop()
+        servers.srtla = nil
     }
 
     func reloadSrtlaServer() {
         stopSrtlaServer()
         if database.srtlaServer.enabled {
-            srtlaServer = SrtlaServer(settings: database.srtlaServer, timecodesEnabled: isTimecodesEnabled())
-            srtlaServer!.delegate = self
-            srtlaServer!.start()
+            servers.srtla = SrtlaServer(settings: database.srtlaServer, timecodesEnabled: isTimecodesEnabled())
+            servers.srtla?.delegate = self
+            servers.srtla?.start()
         }
     }
 
     func srtlaServerEnabled() -> Bool {
-        return srtlaServer != nil
+        return servers.srtla != nil
     }
 
     func srtlaCameras() -> [String] {
@@ -45,7 +45,7 @@ extension Model {
     }
 
     func isSrtlaStreamConnected(streamId: String) -> Bool {
-        return srtlaServer?.isStreamConnected(streamId: streamId) ?? false
+        return servers.srtla?.isStreamConnected(streamId: streamId) ?? false
     }
 }
 

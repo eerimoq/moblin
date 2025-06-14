@@ -176,14 +176,14 @@ extension Model {
             switch scene.cameraPosition {
             case .srtla:
                 if let srtlaStream = getSrtlaStream(id: scene.srtlaCameraId) {
-                    if srtlaServer?.isStreamConnected(streamId: srtlaStream.streamId) == false {
+                    if servers.srtla?.isStreamConnected(streamId: srtlaStream.streamId) == false {
                         streamBecameBrokenTime = now
                         return true
                     }
                 }
             case .rtmp:
                 if let rtmpStream = getRtmpStream(id: scene.rtmpCameraId) {
-                    if rtmpServer?.isStreamConnected(streamKey: rtmpStream.streamKey) == false {
+                    if servers.rtmp?.isStreamConnected(streamKey: rtmpStream.streamKey) == false {
                         streamBecameBrokenTime = now
                         return true
                     }

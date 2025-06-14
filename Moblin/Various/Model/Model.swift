@@ -127,6 +127,12 @@ class Moblink: ObservableObject {
     @Published var scannerDiscoveredStreamers: [MoblinkScannerStreamer] = []
 }
 
+class Servers: ObservableObject {
+    var rtmp: RtmpServer?
+    var srtla: SrtlaServer?
+    @Published var speedAndTotal = noValue
+}
+
 final class Model: NSObject, ObservableObject, @unchecked Sendable {
     let media = Media()
     var streamState = StreamState.disconnected {
@@ -137,6 +143,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     let hypeTrain = HypeTrain()
     let moblink = Moblink()
+    let servers = Servers()
 
     @Published var goProLaunchLiveStreamSelection: UUID?
     @Published var goProWifiCredentialsSelection: UUID?
@@ -514,8 +521,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var bluetoothCentralManger: CBCentralManager?
     @Published var bluetoothAllowed = false
 
-    var rtmpServer: RtmpServer?
-    @Published var serversSpeedAndTotal = noValue
     @Published var djiDevicesStatus = noValue
 
     var sceneSettingsPanelScene = SettingsScene(name: "")
@@ -524,8 +529,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var snapshotCountdown = 0
     @Published var currentSnapshotJob: SnapshotJob?
     var snapshotJobs: Deque<SnapshotJob> = []
-
-    var srtlaServer: SrtlaServer?
 
     var gameControllers: [GCController?] = []
     @Published var gameControllersTotal = noValue
@@ -2204,7 +2207,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         var speed: UInt64 = 0
         var total: UInt64 = 0
         var numberOfClients = 0
-        if let rtmpServer {
+        if let rtmpServer = servers.rtmp {
             let stats = rtmpServer.updateStats()
             numberOfClients += rtmpServer.numberOfClients()
             if rtmpServer.numberOfClients() > 0 {
@@ -2213,7 +2216,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             }
             anyServerEnabled = true
         }
-        if let srtlaServer {
+        if let srtlaServer = servers.srtla {
             let stats = srtlaServer.updateStats()
             numberOfClients += srtlaServer.getNumberOfClients()
             if srtlaServer.getNumberOfClients() > 0 {
@@ -2235,8 +2238,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         } else {
             message = noValue
         }
-        if message != serversSpeedAndTotal {
-            serversSpeedAndTotal = message
+        if message != servers.speedAndTotal {
+            servers.speedAndTotal = message
         }
     }
 
