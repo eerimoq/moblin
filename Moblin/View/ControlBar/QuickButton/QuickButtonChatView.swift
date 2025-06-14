@@ -95,12 +95,13 @@ private struct LineView: View {
 }
 
 private struct MessagesView: View {
-    @EnvironmentObject var model: Model
+    var model: Model
+    @ObservedObject var chatSettings: SettingsChat
     @ObservedObject var chat: ChatProvider
 
     var body: some View {
-        let rotation = model.database.chat.getRotation()
-        let scaleX = model.database.chat.getScaleX()
+        let rotation = chatSettings.getRotation()
+        let scaleX = chatSettings.getScaleX()
         GeometryReader { metrics in
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 1) {
@@ -124,16 +125,13 @@ private struct MessagesView: View {
                                             image: highlight.image,
                                             name: highlight.title
                                         )
-                                        LineView(
-                                            post: post,
-                                            chat: model.database.chat
-                                        )
+                                        LineView(post: post, chat: chatSettings)
                                     }
                                 }
                                 .rotationEffect(Angle(degrees: rotation))
                                 .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
                             } else {
-                                LineView(post: post, chat: model.database.chat)
+                                LineView(post: post, chat: chatSettings)
                                     .padding([.leading], 3)
                                     .rotationEffect(Angle(degrees: rotation))
                                     .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
@@ -154,12 +152,12 @@ private struct MessagesView: View {
         }
         .foregroundColor(.white)
         .rotationEffect(Angle(degrees: rotation))
-        .scaleEffect(x: scaleX * model.database.chat.isMirrored(), y: 1.0, anchor: .center)
+        .scaleEffect(x: scaleX * chatSettings.isMirrored(), y: 1.0, anchor: .center)
     }
 }
 
 private struct HypeTrainView: View {
-    @EnvironmentObject var model: Model
+    var model: Model
     @ObservedObject var hypeTrain: HypeTrain
 
     var body: some View {
@@ -220,25 +218,26 @@ private struct HypeTrainView: View {
 }
 
 private struct ChatView: View {
-    @EnvironmentObject var model: Model
+    var model: Model
     @ObservedObject var chat: ChatProvider
 
     var body: some View {
         ZStack {
-            MessagesView(chat: chat)
+            MessagesView(model: model, chatSettings: model.database.chat, chat: chat)
             if chat.paused {
                 ChatInfo(
                     message: String(localized: "Chat paused: \(chat.pausedPostsCount) new messages")
                 )
                 .padding(2)
             }
-            HypeTrainView(hypeTrain: model.hypeTrain)
+            HypeTrainView(model: model, hypeTrain: model.hypeTrain)
         }
     }
 }
 
 private struct AlertsMessagesView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var chatSettings: SettingsChat
 
     private func shouldShowMessage(highlight: ChatHighlight) -> Bool {
         if highlight.kind == .firstMessage && !model.showFirstTimeChatterMessage {
@@ -254,8 +253,8 @@ private struct AlertsMessagesView: View {
     }
 
     var body: some View {
-        let rotation = model.database.chat.getRotation()
-        let scaleX = model.database.chat.getScaleX()
+        let rotation = chatSettings.getRotation()
+        let scaleX = chatSettings.getScaleX()
         GeometryReader { metrics in
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 1) {
@@ -280,17 +279,14 @@ private struct AlertsMessagesView: View {
                                                 image: highlight.image,
                                                 name: highlight.title
                                             )
-                                            LineView(
-                                                post: post,
-                                                chat: model.database.chat
-                                            )
+                                            LineView(post: post, chat: chatSettings)
                                         }
                                     }
                                     .rotationEffect(Angle(degrees: rotation))
                                     .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
                                 }
                             } else {
-                                LineView(post: post, chat: model.database.chat)
+                                LineView(post: post, chat: chatSettings)
                                     .padding([.leading], 3)
                                     .rotationEffect(Angle(degrees: rotation))
                                     .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
@@ -311,7 +307,7 @@ private struct AlertsMessagesView: View {
         }
         .foregroundColor(.white)
         .rotationEffect(Angle(degrees: rotation))
-        .scaleEffect(x: scaleX * model.database.chat.isMirrored(), y: 1.0, anchor: .center)
+        .scaleEffect(x: scaleX * chatSettings.isMirrored(), y: 1.0, anchor: .center)
     }
 }
 
@@ -320,14 +316,14 @@ private struct ChatAlertsView: View {
 
     var body: some View {
         ZStack {
-            AlertsMessagesView()
+            AlertsMessagesView(chatSettings: model.database.chat)
             if model.quickButtonChatAlertsPaused {
                 ChatInfo(
                     message: String(localized: "Chat paused: \(model.pausedQuickButtonChatAlertsPostsCount) new alerts")
                 )
                 .padding(2)
             }
-            HypeTrainView(hypeTrain: model.hypeTrain)
+            HypeTrainView(model: model, hypeTrain: model.hypeTrain)
         }
     }
 }
@@ -403,7 +399,7 @@ struct QuickButtonChatView: View {
     var body: some View {
         VStack {
             if model.showAllQuickButtonChatMessage {
-                ChatView(chat: model.quickButtonChat)
+                ChatView(model: model, chat: model.quickButtonChat)
             } else {
                 ChatAlertsView()
             }

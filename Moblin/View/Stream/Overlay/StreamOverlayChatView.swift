@@ -194,8 +194,8 @@ struct StreamOverlayChatView: View {
     @ObservedObject var chat: ChatProvider
 
     var body: some View {
-        let rotation = model.database.chat.getRotation()
-        let scaleX = model.database.chat.getScaleX()
+        let rotation = chatSettings.getRotation()
+        let scaleX = chatSettings.getScaleX()
         GeometryReader { metrics in
             VStack {
                 Spacer()
@@ -265,7 +265,7 @@ struct StreamOverlayChatView: View {
                     }
                     .foregroundColor(.white)
                     .rotationEffect(Angle(degrees: rotation))
-                    .scaleEffect(x: scaleX * model.database.chat.isMirrored(), y: 1.0, anchor: .center)
+                    .scaleEffect(x: scaleX * chatSettings.isMirrored(), y: 1.0, anchor: .center)
                     .frame(width: metrics.size.width * chatSettings.width,
                            height: metrics.size.height * chatSettings.height)
                     .onChange(of: chat.interactiveChat) { _ in

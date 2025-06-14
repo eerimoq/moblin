@@ -125,7 +125,10 @@ class ChatProvider: ObservableObject {
 
     func update() {
         if paused {
-            pausedPostsCount = max(pausedPosts.count - 1, 0)
+            let count = max(pausedPosts.count - 1, 0)
+            if count != pausedPostsCount {
+                pausedPostsCount = count
+            }
         } else {
             while let post = newPosts.popFirst() {
                 if posts.count > maximumNumberOfMessages - 1 {

@@ -106,8 +106,8 @@ private struct MessagesView: View {
     @ObservedObject var chat: ChatProvider
 
     var body: some View {
-        let rotation = model.database.chat.getRotation()
-        let scaleX = model.database.chat.getScaleX()
+        let rotation = chatSettings.getRotation()
+        let scaleX = chatSettings.getScaleX()
         GeometryReader { metrics in
             ScrollView {
                 VStack {
@@ -125,10 +125,7 @@ private struct MessagesView: View {
                                                 image: highlight.image,
                                                 name: highlight.title
                                             )
-                                            LineView(
-                                                post: post,
-                                                chat: chatSettings
-                                            )
+                                            LineView(post: post, chat: chatSettings)
                                         }
                                     }
                                     .rotationEffect(Angle(degrees: rotation))
@@ -155,7 +152,7 @@ private struct MessagesView: View {
             }
             .foregroundColor(.white)
             .rotationEffect(Angle(degrees: rotation))
-            .scaleEffect(x: scaleX * model.database.chat.isMirrored(), y: 1.0, anchor: .center)
+            .scaleEffect(x: scaleX * chatSettings.isMirrored(), y: 1.0, anchor: .center)
         }
     }
 }
