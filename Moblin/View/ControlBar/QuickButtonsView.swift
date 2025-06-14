@@ -307,7 +307,7 @@ struct QuickButtonsInnerView: View {
         state.button.isOn.toggle()
         model.setGlobalButtonState(type: .interactiveChat, isOn: state.button.isOn)
         model.updateQuickButtonStates()
-        model.interactiveChat = state.button.isOn
+        model.chat.interactiveChat = state.button.isOn
         if !state.button.isOn {
             model.disableInteractiveChat()
         }

@@ -2966,7 +2966,7 @@ class SettingsChat: Codable, ObservableObject {
     var textToSpeechSubscribersOnly: Bool = false
     var textToSpeechFilter: Bool = true
     var textToSpeechFilterMentions: Bool = true
-    var mirrored: Bool = false
+    @Published var mirrored: Bool = false
     @Published var botEnabled: Bool = false
     var botCommandPermissions: SettingsChatBotPermissions = .init()
     var botSendLowBatteryWarning: Bool = false
@@ -2975,7 +2975,7 @@ class SettingsChat: Codable, ObservableObject {
     var showNewFollowerMessage: Bool = true
     @Published var bottom: Double = 0.0
     @Published var bottomPoints: Double = 80
-    var newMessagesAtTop: Bool = false
+    @Published var newMessagesAtTop: Bool = false
     @Published var textToSpeechPauseBetweenMessages: Double = 1.0
     @Published var platform: Bool = true
 

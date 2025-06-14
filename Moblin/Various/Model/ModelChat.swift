@@ -101,6 +101,7 @@ class ChatProvider: ObservableObject {
     @Published var paused = false
     private let maximumNumberOfMessages: Int
     @Published var moreThanOneStreamingPlatform = false
+    @Published var interactiveChat = false
 
     init(maximumNumberOfMessages: Int) {
         self.maximumNumberOfMessages = maximumNumberOfMessages

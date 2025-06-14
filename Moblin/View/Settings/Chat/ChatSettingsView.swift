@@ -101,22 +101,8 @@ struct ChatSettingsView: View {
                         .onChange(of: chat.animatedEmotes) { _ in
                             model.reloadChatMessages()
                         }
-                    Toggle(isOn: Binding(get: {
-                        chat.newMessagesAtTop
-                    }, set: { value in
-                        chat.newMessagesAtTop = value
-                        model.objectWillChange.send()
-                    })) {
-                        Text("New messages at top")
-                    }
-                    Toggle(isOn: Binding(get: {
-                        chat.mirrored
-                    }, set: { value in
-                        chat.mirrored = value
-                        model.objectWillChange.send()
-                    })) {
-                        Text("Mirrored")
-                    }
+                    Toggle("New messages at top", isOn: $chat.newMessagesAtTop)
+                    Toggle("Mirrored", isOn: $chat.mirrored)
                     NavigationLink {
                         TextEditView(
                             title: String(localized: "Maximum age"),

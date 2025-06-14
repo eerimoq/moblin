@@ -230,7 +230,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var openStreamingPlatformChat: OpenStreamingPlatformChat!
     var obsWebSocket: ObsWebSocket?
     var chatPostId = 0
-    @Published var interactiveChat = false
     var chat = ChatProvider(maximumNumberOfMessages: maximumNumberOfChatMessages)
     var quickButtonChat = ChatProvider(maximumNumberOfMessages: maximumNumberOfInteractiveChatMessages)
     var externalDisplayChat = ChatProvider(maximumNumberOfMessages: 50)
@@ -870,7 +869,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         verboseStatuses = database.verboseStatuses
         autoSceneSwitcher.currentSwitcherId = database.autoSceneSwitchers.switcherId
         supportsAppleLog = hasAppleLog()
-        interactiveChat = getGlobalButton(type: .interactiveChat)?.isOn ?? false
+        chat.interactiveChat = getGlobalButton(type: .interactiveChat)?.isOn ?? false
         _ = updateShowCameraPreview()
         setDisplayPortrait(portrait: database.portrait)
         setBitrateDropFix()

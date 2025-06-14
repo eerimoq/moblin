@@ -102,10 +102,11 @@ private struct LineView: View {
 
 private struct MessagesView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var chatSettings: SettingsChat
     @ObservedObject var chat: ChatProvider
 
     private func getRotation() -> Double {
-        if model.database.chat.newMessagesAtTop {
+        if chatSettings.newMessagesAtTop {
             return 0.0
         } else {
             return 180.0
@@ -113,7 +114,7 @@ private struct MessagesView: View {
     }
 
     private func getScaleX() -> Double {
-        if model.database.chat.newMessagesAtTop {
+        if chatSettings.newMessagesAtTop {
             return 1.0
         } else {
             return -1.0
@@ -121,7 +122,7 @@ private struct MessagesView: View {
     }
 
     private func isMirrored() -> CGFloat {
-        if model.database.chat.mirrored {
+        if chatSettings.mirrored {
             return -1
         } else {
             return 1
@@ -144,20 +145,20 @@ private struct MessagesView: View {
                                             .foregroundColor(highlight.color)
                                         VStack(alignment: .leading, spacing: 1) {
                                             HighlightMessageView(
-                                                chat: model.database.chat,
+                                                chat: chatSettings,
                                                 image: highlight.image,
                                                 name: highlight.title
                                             )
                                             LineView(
                                                 post: post,
-                                                chat: model.database.chat
+                                                chat: chatSettings
                                             )
                                         }
                                     }
                                     .rotationEffect(Angle(degrees: rotation))
                                     .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
                                 } else {
-                                    LineView(post: post, chat: model.database.chat)
+                                    LineView(post: post, chat: chatSettings)
                                         .padding([.leading], 3)
                                         .rotationEffect(Angle(degrees: rotation))
                                         .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
@@ -184,10 +185,11 @@ private struct MessagesView: View {
 }
 
 private struct ChatView: View {
+    @EnvironmentObject var model: Model
     @ObservedObject var chat: ChatProvider
 
     var body: some View {
-        MessagesView(chat: chat)
+        MessagesView(chatSettings: model.database.chat, chat: chat)
             .padding()
     }
 }

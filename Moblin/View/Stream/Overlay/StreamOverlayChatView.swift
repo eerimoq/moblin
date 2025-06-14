@@ -189,11 +189,12 @@ private struct LineView: View {
 private let startId = UUID()
 
 struct StreamOverlayChatView: View {
-    @EnvironmentObject var model: Model
+    var model: Model
+    @ObservedObject var chatSettings: SettingsChat
     @ObservedObject var chat: ChatProvider
 
     private func getRotation() -> Double {
-        if model.database.chat.newMessagesAtTop {
+        if chatSettings.newMessagesAtTop {
             return 0.0
         } else {
             return 180.0
@@ -201,7 +202,7 @@ struct StreamOverlayChatView: View {
     }
 
     private func getScaleX() -> Double {
-        if model.database.chat.newMessagesAtTop {
+        if chatSettings.newMessagesAtTop {
             return 1.0
         } else {
             return -1.0
@@ -209,7 +210,7 @@ struct StreamOverlayChatView: View {
     }
 
     private func isMirrored() -> CGFloat {
-        if model.database.chat.mirrored {
+        if chatSettings.mirrored {
             return -1
         } else {
             return 1
@@ -227,7 +228,7 @@ struct StreamOverlayChatView: View {
                         LazyVStack(alignment: .leading, spacing: 1) {
                             Color.clear
                                 .onAppear {
-                                    guard model.interactiveChat else {
+                                    guard chat.interactiveChat else {
                                         return
                                     }
                                     if chat.paused {
@@ -235,7 +236,7 @@ struct StreamOverlayChatView: View {
                                     }
                                 }
                                 .onDisappear {
-                                    guard model.interactiveChat else {
+                                    guard chat.interactiveChat else {
                                         return
                                     }
                                     if !chat.paused {
@@ -255,12 +256,12 @@ struct StreamOverlayChatView: View {
                                                 .foregroundColor(highlight.color)
                                             VStack(alignment: .leading, spacing: 1) {
                                                 HighlightMessageView(
-                                                    chat: model.database.chat,
+                                                    chat: chatSettings,
                                                     image: highlight.image,
                                                     name: highlight.title
                                                 )
                                                 LineView(post: post,
-                                                         chat: model.database.chat,
+                                                         chat: chatSettings,
                                                          platform: chat.moreThanOneStreamingPlatform)
                                             }
                                         }
@@ -268,7 +269,7 @@ struct StreamOverlayChatView: View {
                                         .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
                                     } else {
                                         LineView(post: post,
-                                                 chat: model.database.chat,
+                                                 chat: chatSettings,
                                                  platform: chat.moreThanOneStreamingPlatform)
                                             .padding([.leading], 3)
                                             .rotationEffect(Angle(degrees: rotation))
@@ -289,9 +290,9 @@ struct StreamOverlayChatView: View {
                     .foregroundColor(.white)
                     .rotationEffect(Angle(degrees: rotation))
                     .scaleEffect(x: scaleX * isMirrored(), y: 1.0, anchor: .center)
-                    .frame(width: metrics.size.width * model.database.chat.width,
-                           height: metrics.size.height * model.database.chat.height)
-                    .onChange(of: model.interactiveChat) { _ in
+                    .frame(width: metrics.size.width * chatSettings.width,
+                           height: metrics.size.height * chatSettings.height)
+                    .onChange(of: chat.interactiveChat) { _ in
                         proxy.scrollTo(startId, anchor: .bottom)
                     }
                 }
