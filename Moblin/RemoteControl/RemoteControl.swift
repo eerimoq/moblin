@@ -4,6 +4,10 @@ import Foundation
 
 let remoteControlApiVersion = "0.1"
 
+class RemoteControlStartStatusFilter: Codable {
+    var topRight: Bool = true
+}
+
 enum RemoteControlRequest: Codable {
     case getStatus
     case getSettings
@@ -27,6 +31,8 @@ enum RemoteControlRequest: Codable {
     case setRemoteSceneData(data: RemoteControlRemoteSceneData)
     case instantReplay
     case saveReplay
+    case startStatus(interval: Int, filter: RemoteControlStartStatusFilter)
+    case stopStatus
 }
 
 enum RemoteControlResponse: Codable {
@@ -42,6 +48,9 @@ enum RemoteControlEvent: Codable {
     case state(data: RemoteControlState)
     case log(entry: String)
     case mediaShareSegmentReceived(fileId: UUID)
+    case status(general: RemoteControlStatusGeneral?,
+                topLeft: RemoteControlStatusTopLeft?,
+                topRight: RemoteControlStatusTopRight?)
 }
 
 struct RemoteControlChatMessage: Codable {

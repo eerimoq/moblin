@@ -32,12 +32,15 @@ protocol RemoteControlStreamerDelegate: AnyObject {
     )
     func remoteControlStreamerTwitchEventSubNotification(message: String)
     func remoteControlStreamerChatMessages(history: Bool, messages: [RemoteControlChatMessage])
-    func remoteControlStreamerStartPreview(onComplete: @escaping () -> Void)
-    func remoteControlStreamerStopPreview(onComplete: @escaping () -> Void)
+    func remoteControlStreamerStartPreview()
+    func remoteControlStreamerStopPreview()
     func remoteControlStreamerSetRemoteSceneSettings(data: RemoteControlRemoteSceneSettings)
     func remoteControlStreamerSetRemoteSceneData(data: RemoteControlRemoteSceneData)
     func remoteControlStreamerInstantReplay()
     func remoteControlStreamerSaveReplay()
+    func remoteControlStreamerStartStatus(interval: Int,
+                                          filter: RemoteControlStartStatusFilter)
+    func remoteControlStreamerStopStatus()
 }
 
 class RemoteControlStreamer {
@@ -103,6 +106,14 @@ class RemoteControlStreamer {
 
     func sendPreview(preview: Data) {
         send(message: .preview(preview: preview))
+    }
+
+    func sendStatus(
+        general: RemoteControlStatusGeneral?,
+        topLeft: RemoteControlStatusTopLeft?,
+        topRight: RemoteControlStatusTopRight?
+    ) {
+        send(message: .event(data: .status(general: general, topLeft: topLeft, topRight: topRight)))
     }
 
     func twitchStart(channelName: String?, channelId: String, accessToken: String) {
@@ -260,13 +271,11 @@ class RemoteControlStreamer {
             delegate.remoteControlStreamerChatMessages(history: history, messages: messages)
             send(message: .response(id: id, result: .ok, data: nil))
         case .startPreview:
-            delegate.remoteControlStreamerStartPreview {
-                self.send(message: .response(id: id, result: .ok, data: nil))
-            }
+            delegate.remoteControlStreamerStartPreview()
+            send(message: .response(id: id, result: .ok, data: nil))
         case .stopPreview:
-            delegate.remoteControlStreamerStopPreview {
-                self.send(message: .response(id: id, result: .ok, data: nil))
-            }
+            delegate.remoteControlStreamerStopPreview()
+            send(message: .response(id: id, result: .ok, data: nil))
         case let .setDebugLogging(on: on):
             delegate.remoteControlStreamerSetDebugLogging(on: on) {
                 self.send(message: .response(id: id, result: .ok, data: nil))
@@ -282,6 +291,12 @@ class RemoteControlStreamer {
             send(message: .response(id: id, result: .ok, data: nil))
         case .saveReplay:
             delegate.remoteControlStreamerSaveReplay()
+            send(message: .response(id: id, result: .ok, data: nil))
+        case let .startStatus(interval: interval, filter: filter):
+            delegate.remoteControlStreamerStartStatus(interval: interval, filter: filter)
+            send(message: .response(id: id, result: .ok, data: nil))
+        case .stopStatus:
+            delegate.remoteControlStreamerStopStatus()
             send(message: .response(id: id, result: .ok, data: nil))
         }
     }

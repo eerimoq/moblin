@@ -620,6 +620,7 @@ struct ControlBarRemoteControlAssistantView: View {
             if model.remoteControlAssistantShowPreview {
                 model.remoteControlAssistantStartPreview(user: .panel)
             }
+            model.remoteControlAssistantStartStatus()
         }
         .onDisappear {
             if !(model.isLive || model.isRecording) {
@@ -627,6 +628,7 @@ struct ControlBarRemoteControlAssistantView: View {
             }
             model.updateScreenAutoOff()
             model.remoteControlAssistantStopPreview(user: .panel)
+            model.remoteControlAssistantStopStatus()
         }
         .navigationTitle("Remote control assistant")
     }

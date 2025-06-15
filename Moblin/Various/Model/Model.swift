@@ -468,6 +468,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var remoteControlAssistantShowPreview = true
     @Published var remoteControlAssistantShowPreviewFullScreen = false
     var isRemoteControlAssistantRequestingPreview = false
+    var isRemoteControlAssistantRequestingStatus = false
+    var remoteControlAssistantRequestingStatusFilter: RemoteControlStartStatusFilter?
     var remoteControlAssistantPreviewUsers: Set<RemoteControlAssistantPreviewUser> = .init()
     var remoteControlStreamerLatestReceivedChatMessageId = -1
     var useRemoteControlForChatAndEvents = false
@@ -1467,6 +1469,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             self.updateStatusEventsText()
             self.updateStatusChatText()
             self.updateAutoSceneSwitcher(now: monotonicNow)
+            self.sendPeriodicRemoteControlStreamerStatus()
         }
         periodicTimer3s.startPeriodic(interval: 3) {
             self.teslaGetDriveState()

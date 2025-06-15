@@ -9,6 +9,9 @@ protocol RemoteControlAssistantDelegate: AnyObject {
     func remoteControlAssistantPreview(preview: Data)
     func remoteControlAssistantStateChanged(state: RemoteControlState)
     func remoteControlAssistantLog(entry: String)
+    func remoteControlAssistantStatus(general: RemoteControlStatusGeneral?,
+                                      topLeft: RemoteControlStatusTopLeft?,
+                                      topRight: RemoteControlStatusTopRight?)
 }
 
 private struct RemoteControlRequestResponse {
@@ -193,6 +196,15 @@ class RemoteControlAssistant: NSObject {
 
     func stopPreview() {
         performRequestNoResponseData(data: .stopPreview, onSuccess: {})
+    }
+
+    func startStatus() {
+        let filter = RemoteControlStartStatusFilter()
+        performRequestNoResponseData(data: .startStatus(interval: 1, filter: filter), onSuccess: {})
+    }
+
+    func stopStatus() {
+        performRequestNoResponseData(data: .stopStatus, onSuccess: {})
     }
 
     private func tryNextTwitchEventSubNotification() {
@@ -416,6 +428,8 @@ class RemoteControlAssistant: NSObject {
             handleLogEvent(entry: entry)
         case .mediaShareSegmentReceived:
             break
+        case let .status(general: general, topLeft: topLeft, topRight: topRight):
+            handleStatusEvent(general: general, topLeft: topLeft, topRight: topRight)
         }
     }
 
@@ -512,6 +526,13 @@ class RemoteControlAssistant: NSObject {
 
     private func handleLogEvent(entry: String) {
         delegate?.remoteControlAssistantLog(entry: entry)
+    }
+
+    private func handleStatusEvent(general: RemoteControlStatusGeneral?,
+                                   topLeft: RemoteControlStatusTopLeft?,
+                                   topRight: RemoteControlStatusTopRight?)
+    {
+        delegate?.remoteControlAssistantStatus(general: general, topLeft: topLeft, topRight: topRight)
     }
 
     private func performRequest(

@@ -249,6 +249,14 @@ extension Model {
         }
     }
 
+    func remoteControlAssistantStartStatus() {
+        remoteControlAssistant?.startStatus()
+    }
+
+    func remoteControlAssistantStopStatus() {
+        remoteControlAssistant?.stopStatus()
+    }
+
     func reloadRemoteControlRelay() {
         remoteControlRelay?.stop()
         remoteControlRelay = nil
@@ -270,48 +278,26 @@ extension Model {
         let relay = database.remoteControl.client.relay!
         return relay.enabled && !relay.baseUrl.isEmpty
     }
-}
 
-extension Model: RemoteControlStreamerDelegate {
-    func remoteControlStreamerConnected() {
-        makeToast(
-            title: String(localized: "Remote control assistant connected"),
-            subTitle: String(localized: "Reliable alerts and chat messages activated")
-        )
-        useRemoteControlForChatAndEvents = true
-        reloadTwitchEventSub()
-        reloadChats()
-        isRemoteControlAssistantRequestingPreview = false
-        remoteControlStreamerSendTwitchStart()
-        setLowFpsImage()
-        updateRemoteControlStatus()
-        var state = RemoteControlState()
-        if sceneIndex < enabledScenes.count {
-            state.scene = enabledScenes[sceneIndex].id
+    func remoteControlStreamerCreateStatus(filter: RemoteControlStartStatusFilter?)
+        -> (RemoteControlStatusGeneral?, RemoteControlStatusTopLeft?, RemoteControlStatusTopRight?)
+    {
+        var general: RemoteControlStatusGeneral?
+        var topLeft: RemoteControlStatusTopLeft?
+        var topRight: RemoteControlStatusTopRight?
+        if let filter {
+            if filter.topRight {
+                topRight = remoteControlStreamerCreateStatusTopRight()
+            }
+        } else {
+            general = remoteControlStreamerCreateStatusGeneral()
+            topLeft = remoteControlStreamerCreateStatusTopLeft()
+            topRight = remoteControlStreamerCreateStatusTopRight()
         }
-        state.mic = currentMic.id
-        if let preset = getBitratePresetByBitrate(bitrate: stream.bitrate) {
-            state.bitrate = preset.id
-        }
-        state.zoom = zoomX
-        state.debugLogging = database.debug.logLevel == .debug
-        state.streaming = isLive
-        state.recording = isRecording
-        remoteControlStreamer?.stateChanged(state: state)
+        return (general, topLeft, topRight)
     }
 
-    func remoteControlStreamerDisconnected() {
-        makeToast(title: String(localized: "Remote control assistant disconnected"))
-        isRemoteControlAssistantRequestingPreview = false
-        setLowFpsImage()
-        updateRemoteControlStatus()
-    }
-
-    func remoteControlStreamerGetStatus(onComplete: @escaping (
-        RemoteControlStatusGeneral,
-        RemoteControlStatusTopLeft,
-        RemoteControlStatusTopRight
-    ) -> Void) {
+    private func remoteControlStreamerCreateStatusGeneral() -> RemoteControlStatusGeneral {
         var general = RemoteControlStatusGeneral()
         general.batteryCharging = isBatteryCharging()
         general.batteryLevel = Int(100 * batteryLevel)
@@ -331,6 +317,10 @@ extension Model: RemoteControlStreamerDelegate {
         general.isLive = isLive
         general.isRecording = isRecording
         general.isMuted = isMuteOn
+        return general
+    }
+
+    private func remoteControlStreamerCreateStatusTopLeft() -> RemoteControlStatusTopLeft {
         var topLeft = RemoteControlStatusTopLeft()
         if isStreamConfigured() {
             topLeft.stream = RemoteControlStatusItem(message: statusStreamText())
@@ -352,6 +342,10 @@ extension Model: RemoteControlStreamerDelegate {
         if isViewersConfigured() && isLive {
             topLeft.viewers = RemoteControlStatusItem(message: statusViewersText())
         }
+        return topLeft
+    }
+
+    private func remoteControlStreamerCreateStatusTopRight() -> RemoteControlStatusTopRight {
         var topRight = RemoteControlStatusTopRight()
         let level = formatAudioLevel(level: audio.level) +
             formatAudioLevelChannels(channels: audio.numberOfChannels)
@@ -406,7 +400,63 @@ extension Model: RemoteControlStreamerDelegate {
         if !djiDevicesStatus.isEmpty {
             topRight.djiDevices = RemoteControlStatusItem(message: djiDevicesStatus)
         }
-        onComplete(general, topLeft, topRight)
+        return topRight
+    }
+
+    func sendPeriodicRemoteControlStreamerStatus() {
+        guard isRemoteControlStreamerConnected(), isRemoteControlAssistantRequestingStatus else {
+            return
+        }
+        let (general,
+             topLeft,
+             topRight) = remoteControlStreamerCreateStatus(filter: remoteControlAssistantRequestingStatusFilter)
+        remoteControlStreamer?.sendStatus(general: general, topLeft: topLeft, topRight: topRight)
+    }
+}
+
+extension Model: RemoteControlStreamerDelegate {
+    func remoteControlStreamerConnected() {
+        makeToast(
+            title: String(localized: "Remote control assistant connected"),
+            subTitle: String(localized: "Reliable alerts and chat messages activated")
+        )
+        useRemoteControlForChatAndEvents = true
+        reloadTwitchEventSub()
+        reloadChats()
+        isRemoteControlAssistantRequestingPreview = false
+        remoteControlStreamerSendTwitchStart()
+        setLowFpsImage()
+        updateRemoteControlStatus()
+        var state = RemoteControlState()
+        if sceneIndex < enabledScenes.count {
+            state.scene = enabledScenes[sceneIndex].id
+        }
+        state.mic = currentMic.id
+        if let preset = getBitratePresetByBitrate(bitrate: stream.bitrate) {
+            state.bitrate = preset.id
+        }
+        state.zoom = zoomX
+        state.debugLogging = database.debug.logLevel == .debug
+        state.streaming = isLive
+        state.recording = isRecording
+        remoteControlStreamer?.stateChanged(state: state)
+    }
+
+    func remoteControlStreamerDisconnected() {
+        makeToast(title: String(localized: "Remote control assistant disconnected"))
+        isRemoteControlAssistantRequestingPreview = false
+        isRemoteControlAssistantRequestingStatus = false
+        setLowFpsImage()
+        updateRemoteControlStatus()
+    }
+
+    func remoteControlStreamerGetStatus(onComplete: @escaping (
+        RemoteControlStatusGeneral,
+        RemoteControlStatusTopLeft,
+        RemoteControlStatusTopRight
+    ) -> Void) {
+        let (general, topLeft, topRight) = remoteControlStreamerCreateStatus(filter: nil)
+        onComplete(general!, topLeft!, topRight!)
     }
 
     func remoteControlStreamerGetSettings(onComplete: @escaping (RemoteControlSettings) -> Void) {
@@ -569,12 +619,12 @@ extension Model: RemoteControlStreamerDelegate {
         }
     }
 
-    func remoteControlStreamerStartPreview(onComplete _: @escaping () -> Void) {
+    func remoteControlStreamerStartPreview() {
         isRemoteControlAssistantRequestingPreview = true
         setLowFpsImage()
     }
 
-    func remoteControlStreamerStopPreview(onComplete _: @escaping () -> Void) {
+    func remoteControlStreamerStopPreview() {
         isRemoteControlAssistantRequestingPreview = false
         setLowFpsImage()
     }
@@ -617,6 +667,16 @@ extension Model: RemoteControlStreamerDelegate {
         remoteSceneWidgets = []
         remoteSceneData.textStats = nil
         remoteSceneData.location = nil
+    }
+
+    func remoteControlStreamerStartStatus(interval _: Int, filter: RemoteControlStartStatusFilter) {
+        isRemoteControlAssistantRequestingStatus = true
+        remoteControlAssistantRequestingStatusFilter = filter
+    }
+
+    func remoteControlStreamerStopStatus() {
+        isRemoteControlAssistantRequestingStatus = false
+        remoteControlAssistantRequestingStatusFilter = nil
     }
 }
 
@@ -680,5 +740,14 @@ extension Model: RemoteControlAssistantDelegate {
         }
         logId += 1
         remoteControlAssistantLog.append(LogEntry(id: logId, message: entry))
+    }
+
+    func remoteControlAssistantStatus(general _: RemoteControlStatusGeneral?,
+                                      topLeft _: RemoteControlStatusTopLeft?,
+                                      topRight: RemoteControlStatusTopRight?)
+    {
+        if let topRight {
+            remoteControlTopRight = topRight
+        }
     }
 }
