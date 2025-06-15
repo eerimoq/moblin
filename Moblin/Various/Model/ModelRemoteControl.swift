@@ -424,6 +424,7 @@ extension Model: RemoteControlStreamerDelegate {
         reloadTwitchEventSub()
         reloadChats()
         isRemoteControlAssistantRequestingPreview = false
+        isRemoteControlAssistantRequestingStatus = false
         remoteControlStreamerSendTwitchStart()
         setLowFpsImage()
         updateRemoteControlStatus()
