@@ -558,6 +558,7 @@
 		03F655F22D16DFD60054D73E /* BitReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F655F12D16DFD20054D73E /* BitReader.swift */; };
 		03F853B32B151FA700719B89 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 03F853B22B151FA700719B89 /* Localizable.xcstrings */; };
 		03F977602BA5ADD8000F5739 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 03F9775E2BA5A8E8000F5739 /* PrivacyInfo.xcprivacy */; };
+		03F9CA832DFF0F730088A720 /* ModelAppIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F9CA822DFF0F6F0088A720 /* ModelAppIntents.swift */; };
 		03FB422A2C68D9A70009FB26 /* MirlStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FB42292C68D9A70009FB26 /* MirlStream.swift */; };
 		03FB42332C68EE6D0009FB26 /* PROTOCOL.md in Resources */ = {isa = PBXBuildFile; fileRef = 03FB42322C68EE6D0009FB26 /* PROTOCOL.md */; };
 		03FB4B2F2AD8CF83005AA183 /* BitratePresetsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FB4B2E2AD8CF83005AA183 /* BitratePresetsSettingsView.swift */; };
@@ -1214,6 +1215,7 @@
 		03F6E3042D40267A00942826 /* zh-HK */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-HK"; path = "zh-HK.lproj/AppShortcuts.strings"; sourceTree = "<group>"; };
 		03F853B22B151FA700719B89 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		03F9775E2BA5A8E8000F5739 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		03F9CA822DFF0F6F0088A720 /* ModelAppIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelAppIntents.swift; sourceTree = "<group>"; };
 		03FB42292C68D9A70009FB26 /* MirlStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MirlStream.swift; sourceTree = "<group>"; };
 		03FB42322C68EE6D0009FB26 /* PROTOCOL.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = PROTOCOL.md; sourceTree = "<group>"; };
 		03FB4B2E2AD8CF83005AA183 /* BitratePresetsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitratePresetsSettingsView.swift; sourceTree = "<group>"; };
@@ -2810,6 +2812,7 @@
 			isa = PBXGroup;
 			children = (
 				03A9836D2A9A05F9008FF0DB /* Model.swift */,
+				03F9CA822DFF0F6F0088A720 /* ModelAppIntents.swift */,
 				03BA73BE2DDCDD1100075CD6 /* ModelAppleWatch.swift */,
 				03BA73C22DDCE24B00075CD6 /* ModelAudio.swift */,
 				032F81C32DDCF57C00E14CC5 /* ModelAutoSceneSwitcher.swift */,
@@ -3769,6 +3772,7 @@
 				0364662C2B456B25005AB9FA /* StreamWizardCustomSrtSettingsView.swift in Sources */,
 				03828C312C3B0A1600F5A8AC /* WidgetMapSettingsView.swift in Sources */,
 				03C9A13F2DFD881300817B57 /* MultiLineTextField.swift in Sources */,
+				03F9CA832DFF0F730088A720 /* ModelAppIntents.swift in Sources */,
 				03C380DC2BC24F7800394625 /* ChatTextToSpeech.swift in Sources */,
 				03BA73C32DDCE24E00075CD6 /* ModelAudio.swift in Sources */,
 				03A173F12B37E5E600ACC4F8 /* FormFieldError.swift in Sources */,

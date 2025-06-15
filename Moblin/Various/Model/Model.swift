@@ -1,5 +1,4 @@
 import AlertToast
-import AppIntents
 import Collections
 import Combine
 import CoreBluetooth
@@ -860,7 +859,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         cameraPreviewLayer = cameraPreviewView.previewLayer
         media.delegate = self
         createUrlSession()
-        AppDependencyManager.shared.add(dependency: self)
+        setupAppIntents()
         faxReceiver.delegate = self
         fixAlertMedias()
         setAllowVideoRangePixelFormat()

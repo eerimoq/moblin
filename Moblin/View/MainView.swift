@@ -1,5 +1,4 @@
 import AVFoundation
-import MediaPlayer
 import SwiftUI
 import UIKit
 import WebKit

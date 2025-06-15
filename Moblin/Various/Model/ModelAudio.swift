@@ -1,5 +1,4 @@
 import AVFAudio
-import MediaPlayer
 import UIKit
 
 class AudioProvider: ObservableObject {
