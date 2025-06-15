@@ -57,14 +57,10 @@ struct WidgetBrowserSettingsView: View {
                 value: browser.styleSheet,
                 onSubmit: submitStyleSheet
             )
-            Toggle(isOn: Binding(get: {
-                browser.audioOnly
-            }, set: { value in
-                browser.audioOnly = value
-                model.resetSelectedScene(changeScene: false)
-            })) {
-                Text("Audio only")
-            }
+            Toggle("Audio only", isOn: $browser.audioOnly)
+                .onChange(of: browser.audioOnly) { _ in
+                    model.resetSelectedScene(changeScene: false)
+                }
             if !browser.audioOnly {
                 TextEditNavigationView(
                     title: String(localized: "Width"),
@@ -76,14 +72,10 @@ struct WidgetBrowserSettingsView: View {
                                        value: String(browser.height),
                                        onSubmit: submitHeight,
                                        keyboardType: .numbersAndPunctuation)
-                Toggle(isOn: Binding(get: {
-                    browser.scaleToFitVideo
-                }, set: { value in
-                    browser.scaleToFitVideo = value
-                    model.resetSelectedScene(changeScene: false)
-                })) {
-                    Text("Scale to fit video width")
-                }
+                Toggle("Scale to fit video width", isOn: $browser.scaleToFitVideo)
+                    .onChange(of: browser.scaleToFitVideo) { _ in
+                        model.resetSelectedScene(changeScene: false)
+                    }
                 HStack {
                     Text("FPS")
                     SliderView(
@@ -99,14 +91,10 @@ struct WidgetBrowserSettingsView: View {
             }
         }
         Section {
-            Toggle(isOn: Binding(get: {
-                browser.moblinAccess
-            }, set: { value in
-                browser.moblinAccess = value
-                model.resetSelectedScene(changeScene: false)
-            })) {
-                Text("Moblin access")
-            }
+            Toggle("Moblin access", isOn: $browser.moblinAccess)
+                .onChange(of: browser.moblinAccess) { _ in
+                    model.resetSelectedScene(changeScene: false)
+                }
         } footer: {
             Text("Give the webpage access to various data in Moblin, for example chat messages and your location.")
         }
