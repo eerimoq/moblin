@@ -189,7 +189,7 @@ func cameraName(device: AVCaptureDevice?) -> String {
     guard let device else {
         return ""
     }
-    if ProcessInfo().isiOSAppOnMac {
+    if isMac() {
         return device.localizedName
     } else {
         switch device.deviceType {
@@ -483,6 +483,10 @@ func isPhone() -> Bool {
 
 func isPad() -> Bool {
     return UIDevice.current.userInterfaceIdiom == .pad
+}
+
+func isMac() -> Bool {
+    return ProcessInfo().isiOSAppOnMac
 }
 
 func uploadImage(

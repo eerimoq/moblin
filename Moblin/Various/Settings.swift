@@ -5896,7 +5896,7 @@ private func addMissingQuickButtons(database: Database) {
         if button.type == .workout, !isPhone() {
             return false
         }
-        if button.type == .portrait, ProcessInfo().isiOSAppOnMac {
+        if button.type == .portrait, isMac() {
             return false
         }
         return true
@@ -5975,7 +5975,7 @@ private func addScenesToGameController(database: Database) {
 }
 
 private func getDefaultMic() -> SettingsMic {
-    if ProcessInfo().isiOSAppOnMac {
+    if isMac() {
         return .bottom
     }
     let session = AVAudioSession.sharedInstance()

@@ -170,7 +170,7 @@ struct StreamSettingsView: View {
                 }
             }
             if database.showAllSettings {
-                if !ProcessInfo().isiOSAppOnMac {
+                if !isMac() {
                     Section {
                         Toggle("Background streaming", isOn: Binding(get: {
                             stream.backgroundStreaming

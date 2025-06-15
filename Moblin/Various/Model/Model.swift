@@ -1259,7 +1259,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @objc func handleDidEnterBackgroundNotification() {
         store()
         replaysStorage.store()
-        guard !ProcessInfo().isiOSAppOnMac else {
+        guard !isMac() else {
             return
         }
         if !shouldStreamInBackground() {
@@ -1292,7 +1292,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     @objc func handleWillEnterForegroundNotification() {
-        guard !ProcessInfo().isiOSAppOnMac else {
+        guard !isMac() else {
             return
         }
         if !shouldStreamInBackground() {
@@ -2189,7 +2189,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private func updateBatteryLevel() {
         batteryLevel = Double(UIDevice.current.batteryLevel)
         streamingHistoryStream?.updateLowestBatteryLevel(level: batteryLevel)
-        if batteryLevel <= 0.07, !isBatteryCharging(), !ProcessInfo().isiOSAppOnMac {
+        if batteryLevel <= 0.07, !isBatteryCharging(), !isMac() {
             batteryLevelLowCounter += 1
             if (batteryLevelLowCounter % 3) == 0 {
                 makeWarningToast(title: lowBatteryMessage, vibrate: true)

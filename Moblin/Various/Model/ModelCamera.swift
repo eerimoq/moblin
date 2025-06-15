@@ -418,7 +418,7 @@ extension Model {
     }
 
     func updateCameraLists() {
-        if ProcessInfo().isiOSAppOnMac {
+        if isMac() {
             externalCameras = []
             backCameras = listCameras(position: .back)
             frontCameras = listCameras(position: .front)
