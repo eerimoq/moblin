@@ -570,6 +570,7 @@ private struct ControlBarRemoteControlAssistantControlView: View {
 
 struct ControlBarRemoteControlAssistantView: View {
     @EnvironmentObject var model: Model
+    @State var didDetachCamera = false
 
     var body: some View {
         ZStack {
@@ -613,7 +614,8 @@ struct ControlBarRemoteControlAssistantView: View {
         }
         .onAppear {
             model.updateRemoteControlAssistantStatus()
-            if !(model.isLive || model.isRecording) {
+            didDetachCamera = !(model.isLive || model.isRecording)
+            if didDetachCamera {
                 model.detachCamera()
             }
             model.updateScreenAutoOff()
@@ -623,7 +625,7 @@ struct ControlBarRemoteControlAssistantView: View {
             model.remoteControlAssistantStartStatus()
         }
         .onDisappear {
-            if !(model.isLive || model.isRecording) {
+            if didDetachCamera {
                 model.attachCamera()
             }
             model.updateScreenAutoOff()
