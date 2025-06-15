@@ -13,9 +13,7 @@ struct SettingsView: View {
                     HStack {
                         Image(systemName: "info.circle.fill")
                             .foregroundColor(.blue)
-                        Text(
-                            "Settings that would stop the stream are disabled when live."
-                        )
+                        Text("Settings that would stop the stream are disabled when live.")
                     }
                 }
             }
