@@ -417,19 +417,21 @@ final class TwitchEventSub: NSObject {
     }
 
     private func subscribeToChannelHypeTrainBegin() {
-        subscribeBroadcasterUserId(type: subTypeChannelHypeTrainBegin, eventType: "hype train begin") {
+        subscribeBroadcasterUserId(type: subTypeChannelHypeTrainBegin, version: 2, eventType: "hype train begin") {
             self.subscribeToChannelHypeTrainProgress()
         }
     }
 
     private func subscribeToChannelHypeTrainProgress() {
-        subscribeBroadcasterUserId(type: subTypeChannelHypeTrainProgress, eventType: "hype train progress") {
+        subscribeBroadcasterUserId(type: subTypeChannelHypeTrainProgress, version: 2,
+                                   eventType: "hype train progress")
+        {
             self.subscribeToChannelHypeTrainEnd()
         }
     }
 
     private func subscribeToChannelHypeTrainEnd() {
-        subscribeBroadcasterUserId(type: subTypeChannelHypeTrainEnd, eventType: "hype train end") {
+        subscribeBroadcasterUserId(type: subTypeChannelHypeTrainEnd, version: 2, eventType: "hype train end") {
             self.subscribeTochannelAdBreakBegin()
         }
     }
@@ -442,10 +444,11 @@ final class TwitchEventSub: NSObject {
 
     private func subscribeBroadcasterUserId(
         type: String,
+        version: Int = 1,
         eventType: String,
         onSuccess: @escaping () -> Void
     ) {
-        let body = createBroadcasterUserIdBody(type: type)
+        let body = createBroadcasterUserIdBody(type: type, version: version)
         twitchApi.createEventSubSubscription(body: body) { ok in
             self.makeSubscribeErrorToastIfNotOk(ok: ok, eventType: eventType)
             guard ok else {
