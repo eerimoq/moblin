@@ -221,7 +221,7 @@ struct WidgetSettingsView: View {
             case .videoEffect:
                 EmptyView()
             case .browser:
-                WidgetBrowserSettingsView(widget: widget)
+                WidgetBrowserSettingsView(widget: widget, browser: widget.browser)
             case .text:
                 WidgetTextSettingsView(widget: widget, text: widget.text)
             case .crop:

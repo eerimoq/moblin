@@ -57,15 +57,15 @@ final class BrowserEffect: VideoEffect {
         settingName: String,
         moblinAccess: Bool
     ) {
-        scaleToFitVideo = widget.scaleToFitVideo!
+        scaleToFitVideo = widget.scaleToFitVideo
         self.url = url
         self.videoSize = videoSize
         self.settingName = settingName
-        fps = widget.fps!
+        fps = widget.fps
         isLoaded = false
         x = .nan
         y = .nan
-        audioOnly = widget.audioOnly!
+        audioOnly = widget.audioOnly
         if audioOnly {
             width = 1
             height = 1

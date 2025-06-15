@@ -199,11 +199,11 @@ extension Model {
             }
             let browserEffect = BrowserEffect(
                 url: url,
-                styleSheet: widget.browser.styleSheet!,
+                styleSheet: widget.browser.styleSheet,
                 widget: widget.browser,
                 videoSize: videoSize,
                 settingName: widget.name,
-                moblinAccess: widget.browser.moblinAccess!
+                moblinAccess: widget.browser.moblinAccess
             )
             browserEffect.effects = widget.getEffects()
             browserEffects[widget.id] = browserEffect

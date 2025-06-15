@@ -1368,15 +1368,52 @@ class SettingsWidgetCrop: Codable {
     var height: Int = 200
 }
 
-class SettingsWidgetBrowser: Codable {
-    var url: String = ""
-    var width: Int = 500
-    var height: Int = 500
-    var audioOnly: Bool? = false
-    var scaleToFitVideo: Bool? = false
-    var fps: Float? = 5.0
-    var styleSheet: String? = ""
-    var moblinAccess: Bool? = false
+class SettingsWidgetBrowser: Codable, ObservableObject {
+    @Published var url: String = ""
+    @Published var width: Int = 500
+    @Published var height: Int = 500
+    @Published var audioOnly: Bool = false
+    @Published var scaleToFitVideo: Bool = false
+    @Published var fps: Float = 5.0
+    @Published var styleSheet: String = ""
+    @Published var moblinAccess: Bool = false
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case url,
+             width,
+             height,
+             audioOnly,
+             scaleToFitVideo,
+             fps,
+             styleSheet,
+             moblinAccess
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.url, url)
+        try container.encode(.width, width)
+        try container.encode(.height, height)
+        try container.encode(.audioOnly, audioOnly)
+        try container.encode(.scaleToFitVideo, scaleToFitVideo)
+        try container.encode(.fps, fps)
+        try container.encode(.styleSheet, styleSheet)
+        try container.encode(.moblinAccess, moblinAccess)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        url = container.decode(.url, String.self, "")
+        width = container.decode(.width, Int.self, 500)
+        height = container.decode(.height, Int.self, 500)
+        audioOnly = container.decode(.audioOnly, Bool.self, false)
+        scaleToFitVideo = container.decode(.scaleToFitVideo, Bool.self, false)
+        fps = container.decode(.fps, Float.self, 5.0)
+        styleSheet = container.decode(.styleSheet, String.self, "")
+        moblinAccess = container.decode(.moblinAccess, Bool.self, false)
+    }
 }
 
 class SettingsWidgetMap: Codable {
@@ -6096,12 +6133,6 @@ final class Settings {
             stream.srt.connectionPriorities = .init()
             store()
         }
-        for widget in realDatabase.widgets where widget.type == .browser {
-            if widget.browser.audioOnly == nil {
-                widget.browser.audioOnly = false
-                store()
-            }
-        }
         for stream in realDatabase.streams where stream.srt.overheadBandwidth == nil {
             stream.srt.overheadBandwidth = realDatabase.debug.srtOverheadBandwidth
             store()
@@ -6116,14 +6147,6 @@ final class Settings {
         }
         if realDatabase.remoteControl.password == nil {
             realDatabase.remoteControl.password = randomGoodPassword()
-            store()
-        }
-        for widget in realDatabase.widgets where widget.browser.scaleToFitVideo == nil {
-            widget.browser.scaleToFitVideo = false
-            store()
-        }
-        for widget in realDatabase.widgets where widget.browser.fps == nil {
-            widget.browser.fps = 5.0
             store()
         }
         for stream in realDatabase.streams {
@@ -6396,10 +6419,6 @@ final class Settings {
         }
         for widget in database.widgets where widget.alerts.twitch!.cheers == nil {
             widget.alerts.twitch!.cheers = .init()
-            store()
-        }
-        for widget in realDatabase.widgets where widget.browser.styleSheet == nil {
-            widget.browser.styleSheet = ""
             store()
         }
         for widget in realDatabase.widgets where widget.videoSource.cropX > 1.0 {

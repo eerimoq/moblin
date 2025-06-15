@@ -205,10 +205,10 @@ struct RemoteControlRemoteSceneSettingsWidgetTypeBrowser: Codable {
         url = browser.url
         width = browser.width
         height = browser.height
-        audioOnly = browser.audioOnly!
-        scaleToFitVideo = browser.scaleToFitVideo!
-        fps = browser.fps!
-        styleSheet = browser.styleSheet!
+        audioOnly = browser.audioOnly
+        scaleToFitVideo = browser.scaleToFitVideo
+        fps = browser.fps
+        styleSheet = browser.styleSheet
     }
 
     func toSettings() -> SettingsWidgetBrowser {
