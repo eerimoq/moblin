@@ -30,7 +30,8 @@ final class FixedHorizonEffect: VideoEffect {
     private var targetPitch: Double?
     private var targetX: Double?
     private var currentAngle = 0.0
-    private let motionManager = CMMotionManager()
+    // Sometimes crashes on Mac in deinit() if instantiated here.
+    private var motionManager: CMMotionManager?
     private var started = false
     private let operationQueue = OperationQueue()
 
@@ -40,16 +41,17 @@ final class FixedHorizonEffect: VideoEffect {
     }
 
     deinit {
-        motionManager.stopDeviceMotionUpdates()
+        stop()
     }
 
     func start() {
-        guard !started else {
+        guard !started, !isMac() else {
             return
         }
         started = true
-        motionManager.deviceMotionUpdateInterval = 0.1
-        motionManager.startDeviceMotionUpdates(to: operationQueue) { [weak self] motion, _ in
+        motionManager = CMMotionManager()
+        motionManager?.deviceMotionUpdateInterval = 0.1
+        motionManager?.startDeviceMotionUpdates(to: operationQueue) { [weak self] motion, _ in
             self?.targetPitch = motion?.attitude.pitch
             self?.targetX = motion?.gravity.x
         }
@@ -60,7 +62,8 @@ final class FixedHorizonEffect: VideoEffect {
             return
         }
         started = false
-        motionManager.stopDeviceMotionUpdates()
+        motionManager?.stopDeviceMotionUpdates()
+        motionManager = nil
     }
 
     override func getName() -> String {
