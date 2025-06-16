@@ -144,6 +144,14 @@ class Bonding: ObservableObject {
     var statisticsFormatter = BondingStatisticsFormatter()
 }
 
+class MediaPlayerPlayer: ObservableObject {
+    @Published var playing = false
+    @Published var position: Float = 0
+    @Published var time = "0:00"
+    @Published var fileName = "Media name"
+    @Published var seeking = false
+}
+
 final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var isPresentingWidgetWizard = false
     @Published var goProLaunchLiveStreamSelection: UUID?
@@ -204,11 +212,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var phoneCoolerPhoneTemp: Int?
     @Published var phoneCoolerExhaustTemp: Int?
     @Published var showMediaPlayerControls = false
-    @Published var mediaPlayerPlaying = false
-    @Published var mediaPlayerPosition: Float = 0
-    @Published var mediaPlayerTime = "0:00"
-    @Published var mediaPlayerFileName = "Media name"
-    @Published var mediaPlayerSeeking = false
     @Published var showingCamera = false
     @Published var showingReplay = false
     @Published var showingCameraBias = false
@@ -321,6 +324,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
+    let mediaPlayerPlayer = MediaPlayerPlayer()
     let media = Media()
     let hypeTrain = HypeTrain()
     let moblink = Moblink()

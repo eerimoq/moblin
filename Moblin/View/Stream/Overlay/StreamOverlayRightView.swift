@@ -470,7 +470,7 @@ struct RightOverlayBottomView: View {
                     StreamOverlayRightReplayView(replay: model.replay)
                 } else {
                     if model.showMediaPlayerControls {
-                        StreamOverlayRightMediaPlayerControlsView()
+                        StreamOverlayRightMediaPlayerControlsView(mediaPlayer: model.mediaPlayerPlayer)
                     } else {
                         if model.showingPixellate {
                             StreamOverlayRightPixellateView(database: model.database)

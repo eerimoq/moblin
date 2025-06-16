@@ -2,9 +2,10 @@ import SwiftUI
 
 struct StreamOverlayRightMediaPlayerControlsView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var mediaPlayer: MediaPlayerPlayer
 
     private func playPauseImage() -> String {
-        if model.mediaPlayerPlaying {
+        if mediaPlayer.playing {
             return "pause"
         } else {
             return "play"
@@ -13,27 +14,27 @@ struct StreamOverlayRightMediaPlayerControlsView: View {
 
     var body: some View {
         VStack(alignment: .trailing, spacing: 1) {
-            Text(model.mediaPlayerFileName)
+            Text(mediaPlayer.fileName)
                 .foregroundColor(.white)
                 .padding([.trailing], 8)
             HStack {
-                Text(model.mediaPlayerTime)
+                Text(mediaPlayer.time)
                 if false {
-                    Slider(value: $model.mediaPlayerPosition,
+                    Slider(value: $mediaPlayer.position,
                            in: 0 ... 100,
                            onEditingChanged: { begin in
-                               model.mediaPlayerSeeking = begin
+                               mediaPlayer.seeking = begin
                                model.mediaPlayerSetSeeking(on: begin)
                                guard !begin else {
                                    return
                                }
-                               model.mediaPlayerSeek(position: Double(model.mediaPlayerPosition))
+                               model.mediaPlayerSeek(position: Double(mediaPlayer.position))
                            })
                            .frame(width: 250)
                            .accentColor(.white)
-                           .onChange(of: model.mediaPlayerPosition) { _ in
-                               if model.mediaPlayerSeeking {
-                                   model.mediaPlayerSeek(position: Double(model.mediaPlayerPosition))
+                           .onChange(of: mediaPlayer.position) { _ in
+                               if mediaPlayer.seeking {
+                                   model.mediaPlayerSeek(position: Double(model.mediaPlayerPlayer.position))
                                }
                            }
                 }

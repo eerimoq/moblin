@@ -41,12 +41,12 @@ extension Model {
         guard let mediaPlayer = getCurrentMediaPlayer() else {
             return
         }
-        if mediaPlayerPlaying {
+        if mediaPlayerPlayer.playing {
             mediaPlayer.pause()
         } else {
             mediaPlayer.play()
         }
-        mediaPlayerPlaying = !mediaPlayerPlaying
+        mediaPlayerPlayer.playing = !mediaPlayerPlayer.playing
     }
 
     func mediaPlayerNext() {
@@ -129,12 +129,12 @@ extension Model: MediaPlayerDelegate {
         time: String
     ) {
         DispatchQueue.main.async {
-            self.mediaPlayerPlaying = playing
-            self.mediaPlayerFileName = name
-            if !self.mediaPlayerSeeking {
-                self.mediaPlayerPosition = Float(position)
+            self.mediaPlayerPlayer.playing = playing
+            self.mediaPlayerPlayer.fileName = name
+            if !self.mediaPlayerPlayer.seeking {
+                self.mediaPlayerPlayer.position = Float(position)
             }
-            self.mediaPlayerTime = time
+            self.mediaPlayerPlayer.time = time
         }
     }
 
