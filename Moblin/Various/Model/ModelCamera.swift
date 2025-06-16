@@ -121,13 +121,11 @@ extension Model {
             guard let self else {
                 return
             }
-            DispatchQueue.main.async {
-                guard !self.editingManualFocus else {
-                    return
-                }
-                self.manualFocuses[device] = device.lensPosition
-                self.camera.manualFocus = device.lensPosition
+            guard !self.editingManualFocus else {
+                return
             }
+            self.manualFocuses[device] = device.lensPosition
+            self.camera.manualFocus = device.lensPosition
         }
     }
 
@@ -203,14 +201,12 @@ extension Model {
             guard let self else {
                 return
             }
-            DispatchQueue.main.async {
-                guard !self.editingManualIso else {
-                    return
-                }
-                let iso = factorFromIso(device: device, iso: device.iso)
-                self.manualIsos[device] = iso
-                self.camera.manualIso = iso
+            guard !self.editingManualIso else {
+                return
             }
+            let iso = factorFromIso(device: device, iso: device.iso)
+            self.manualIsos[device] = iso
+            self.camera.manualIso = iso
         }
     }
 
@@ -290,17 +286,15 @@ extension Model {
             guard let self else {
                 return
             }
-            DispatchQueue.main.async {
-                guard !self.editingManualWhiteBalance else {
-                    return
-                }
-                let factor = factorFromWhiteBalance(
-                    device: device,
-                    gains: device.deviceWhiteBalanceGains.clamped(maxGain: device.maxWhiteBalanceGain)
-                )
-                self.manualWhiteBalances[device] = factor
-                self.camera.manualWhiteBalance = factor
+            guard !self.editingManualWhiteBalance else {
+                return
             }
+            let factor = factorFromWhiteBalance(
+                device: device,
+                gains: device.deviceWhiteBalanceGains.clamped(maxGain: device.maxWhiteBalanceGain)
+            )
+            self.manualWhiteBalances[device] = factor
+            self.camera.manualWhiteBalance = factor
         }
     }
 
