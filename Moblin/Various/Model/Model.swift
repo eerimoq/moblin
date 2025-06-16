@@ -145,155 +145,54 @@ class Bonding: ObservableObject {
 }
 
 final class Model: NSObject, ObservableObject, @unchecked Sendable {
-    let media = Media()
-    var streamState = StreamState.disconnected {
-        didSet {
-            logger.info("stream: State \(oldValue) -> \(streamState)")
-        }
-    }
-
     @Published var isPresentingWidgetWizard = false
-
-    let hypeTrain = HypeTrain()
-    let moblink = Moblink()
-    let servers = Servers()
-    let bitrate = Bitrate()
-    let bonding = Bonding()
-
     @Published var goProLaunchLiveStreamSelection: UUID?
     @Published var goProWifiCredentialsSelection: UUID?
     @Published var goProRtmpUrlSelection: UUID?
-
-    var selectedFps: Int?
-    var autoFps = false
-
     @Published var bias: Float = 0.0
-    var manualFocusesEnabled: [AVCaptureDevice: Bool] = [:]
-    var manualFocuses: [AVCaptureDevice: Float] = [:]
     @Published var manualFocus: Float = 1.0
     @Published var manualFocusEnabled = false
-    var editingManualFocus = false
-    var focusObservation: NSKeyValueObservation?
     @Published var manualFocusPoint: CGPoint?
-
-    var manualIsosEnabled: [AVCaptureDevice: Bool] = [:]
-    var manualIsos: [AVCaptureDevice: Float] = [:]
     @Published var manualIso: Float = 1.0
     @Published var manualIsoEnabled = false
-    var editingManualIso = false
-    var isoObservation: NSKeyValueObservation?
-
-    var manualWhiteBalancesEnabled: [AVCaptureDevice: Bool] = [:]
-    var manualWhiteBalances: [AVCaptureDevice: Float] = [:]
     @Published var manualWhiteBalance: Float = 0
     @Published var manualWhiteBalanceEnabled = false
-    var editingManualWhiteBalance = false
-    var whiteBalanceObservation: NSKeyValueObservation?
-
-    private var manualFocusMotionAttitude: CMAttitude?
-
     @Published var showingPanel: ShowingPanel = .none
     @Published var panelHidden = false
     @Published var blackScreen = false
     @Published var lockScreen = false
     @Published var findFace = false
-    private var findFaceTimer: Timer?
-    var streaming = false
     @Published var currentMic = noMic
-    var micChange = noMic
-    var streamStartTime: ContinuousClock.Instant?
     @Published var isLive = false
     @Published var isRecording = false
-    var isRecorderRecording = false
-    var workoutType: WatchProtocolWorkoutType?
-    var currentRecording: Recording?
-    let recording = RecordingProvider()
     @Published var browserWidgetsStatus = noValue
     @Published var catPrinterStatus = noValue
     @Published var cyclingPowerDeviceStatus = noValue
     @Published var heartRateDeviceStatus = noValue
     @Published var fixedHorizonStatus = noValue
-    private var browserWidgetsStatusChanged = false
-    private var subscriptions = Set<AnyCancellable>()
-    var streamUptime = StreamUptimeProvider()
-    let audio = AudioProvider()
-    var settings = Settings()
     @Published var digitalClock = noValue
     @Published var statusEventsText = noValue
     @Published var statusChatText = noValue
-    var selectedSceneId = UUID()
-    var twitchChat: TwitchChatMoblin!
-    var twitchEventSub: TwitchEventSub?
-    var kickPusher: KickPusher?
-    var kickViewers: KickViewers?
-    private var youTubeLiveChat: YouTubeLiveChat?
-    private var afreecaTvChat: AfreecaTvChat?
-    private var openStreamingPlatformChat: OpenStreamingPlatformChat!
-    var obsWebSocket: ObsWebSocket?
-    var chatPostId = 0
-    var chat = ChatProvider(maximumNumberOfMessages: maximumNumberOfChatMessages)
-    var quickButtonChat = ChatProvider(maximumNumberOfMessages: maximumNumberOfInteractiveChatMessages)
-    var externalDisplayChat = ChatProvider(maximumNumberOfMessages: 50)
     @Published var externalDisplayChatEnabled = false
-    private var externalDisplayWindow: UIWindow?
-    var chatBotMessages: Deque<ChatBotMessage> = []
     @Published var showAllQuickButtonChatMessage = true
     @Published var showFirstTimeChatterMessage = true
     @Published var showNewFollowerMessage = true
     @Published var quickButtonChatAlertsPosts: Deque<ChatPost> = []
-    var newQuickButtonChatAlertsPosts: Deque<ChatPost> = []
-    var pausedQuickButtonChatAlertsPosts: Deque<ChatPost> = []
     @Published var pausedQuickButtonChatAlertsPostsCount: Int = 0
     @Published var quickButtonChatAlertsPaused = false
-    var watchChatPosts: Deque<WatchProtocolChatMessage> = []
-    var nextWatchChatPostId = 1
     @Published var numberOfViewers = noValue
     @Published var batteryLevel = Double(UIDevice.current.batteryLevel)
-    private var batteryLevelLowCounter = -1
     @Published var batteryState: UIDevice.BatteryState = .full
     @Published var bitrateStatusColor: Color = .white
     @Published var bitrateStatusIconColor: Color?
-    var previousBitrateStatusColorSrtDroppedPacketsTotal: Int32 = 0
-    var previousBitrateStatusNumberOfFailedEncodings = 0
     @Published var thermalState = ProcessInfo.processInfo.thermalState
-    let streamPreviewView = PreviewView()
-    let externalDisplayStreamPreviewView = PreviewView()
-    let cameraPreviewView = CameraPreviewUiView()
-    var cameraPreviewLayer: AVCaptureVideoPreviewLayer?
     @Published var remoteControlPreview: UIImage?
     @Published var showCameraPreview = false
-    var textEffects: [UUID: TextEffect] = [:]
-    var imageEffects: [UUID: ImageEffect] = [:]
-    var browserEffects: [UUID: BrowserEffect] = [:]
-    var lutEffects: [UUID: LutEffect] = [:]
-    var mapEffects: [UUID: MapEffect] = [:]
-    var qrCodeEffects: [UUID: QrCodeEffect] = [:]
-    var alertsEffects: [UUID: AlertsEffect] = [:]
-    var videoSourceEffects: [UUID: VideoSourceEffect] = [:]
-    var enabledAlertsEffects: [AlertsEffect] = []
-    var drawOnStreamEffect = DrawOnStreamEffect()
-    var lutEffect = LutEffect()
-    var padelScoreboardEffects: [UUID: PadelScoreboardEffect] = [:]
-    var vTuberEffects: [UUID: VTuberEffect] = [:]
-    var pngTuberEffects: [UUID: PngTuberEffect] = [:]
-    var speechToTextAlertMatchOffset = 0
     @Published var browsers: [Browser] = []
     @Published var sceneIndex = 0
     @Published var isTorchOn = false
     @Published var isFrontCameraSelected = false
-    var isMuteOn = false
-    var log: Deque<LogEntry> = []
-    var remoteControlAssistantLog: Deque<LogEntry> = []
-    var imageStorage = ImageStorage()
-    var logsStorage = LogsStorage()
-    var mediaStorage = MediaPlayerStorage()
-    var alertMediaStorage = AlertMediaStorage()
-    var vTuberStorage = VTuberStorage()
-    var pngTuberStorage = PngTuberStorage()
     @Published var buttonPairs: [[QuickButtonPair]] = Array(repeating: [], count: controlBarPages)
-    var controlBarPage = 1
-    var reconnectTimer: Timer?
-    var logId = 1
     @Published var showingToast = false
     @Published var toast = AlertToast(type: .regular, title: "") {
         didSet {
@@ -301,31 +200,15 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    private var serversSpeed: Int64 = 0
-
     @Published var adsRemainingTimerStatus = noValue
-    var adsEndDate: Date?
-    var urlSession = URLSession.shared
-
-    var heartRates: [String: Int?] = [:]
-
     @Published var phoneCoolerPhoneTemp: Int?
     @Published var phoneCoolerExhaustTemp: Int?
-
-    var workoutActiveEnergyBurned: Int?
-    var workoutDistance: Int?
-    var workoutPower: Int?
-    var workoutStepCount: Int?
-    private var pollVotes: [Int] = [0, 0, 0]
-    var pollEnabled = false
-    var mediaPlayers: [UUID: MediaPlayer] = [:]
     @Published var showMediaPlayerControls = false
     @Published var mediaPlayerPlaying = false
     @Published var mediaPlayerPosition: Float = 0
     @Published var mediaPlayerTime = "0:00"
     @Published var mediaPlayerFileName = "Media name"
     @Published var mediaPlayerSeeking = false
-
     @Published var showingCamera = false
     @Published var showingReplay = false
     @Published var showingCameraBias = false
@@ -342,46 +225,20 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var obsAudioVolume: String = noValue
     @Published var obsAudioDelay: Int = 0
     @Published var portraitVideoOffsetFromTop = 0.0
-    var obsAudioVolumeLatest: String = ""
     @Published var obsCurrentScenePicker: String = ""
     @Published var obsCurrentScene: String = ""
-    var obsSceneBeforeSwitchToBrbScene: String?
-    var previousSrtDroppedPacketsTotal: Int32 = 0
-    var streamBecameBrokenTime: ContinuousClock.Instant?
     @Published var currentStreamId = UUID()
     @Published var obsStreaming = false
     @Published var obsStreamingState: ObsOutputState = .stopped
     @Published var obsRecordingState: ObsOutputState = .stopped
     @Published var obsFixOngoing = false
     @Published var obsScreenshot: CGImage?
-    var obsSourceFetchScreenshot = false
-    var obsSourceScreenshotIsFetching = false
-    var obsRecording = false
     @Published var iconImage: String = plainIcon.id
     @Published var backZoomPresetId = UUID()
     @Published var frontZoomPresetId = UUID()
     @Published var zoomX: Float = 1.0
     @Published var hasZoom = true
-    var zoomXPinch: Float = 1.0
-    var backZoomX: Float = 0.5
-    var frontZoomX: Float = 1.0
-    var cameraPosition: AVCaptureDevice.Position?
-    private let motionManager = CMMotionManager()
-    var gForceManager: GForceManager?
-    var database: Database {
-        settings.database
-    }
-
-    var speechToText = SpeechToText()
-    var keepSpeakerAlivePlayer: AVAudioPlayer?
-    var keepSpeakerAliveLatestPlayed: ContinuousClock.Instant = .now
-
     @Published var showTwitchAuth = false
-    let twitchAuth = TwitchAuth()
-    var twitchAuthOnComplete: ((_ accessToken: String) -> Void)?
-
-    var numberOfTwitchViewers: Int?
-
     @Published var verboseStatuses = false
     @Published var showDrawOnStream = false
     @Published var showFace = false
@@ -393,24 +250,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var drawOnStreamLines: [DrawOnStreamLine] = []
     @Published var drawOnStreamSelectedColor: Color = .pink
     @Published var drawOnStreamSelectedWidth: CGFloat = 4
-    var drawOnStreamSize: CGSize = .zero
     @Published var webBrowserUrl: String = ""
-    private var webBrowser: WKWebView?
-    let webBrowserController = WebBrowserController()
-    var lowFpsImageFps: UInt64 = 1
-
     @Published var isPresentingWizard = false
     @Published var isPresentingSetupWizard = false
-    var wizardPlatform: WizardPlatform = .custom
-    var wizardNetworkSetup: WizardNetworkSetup = .none
-    var wizardCustomProtocol: WizardCustomProtocol = .none
-    let wizardTwitchStream = SettingsStream(name: "")
     @Published var wizardShowTwitchAuth = false
     @Published var wizardName = ""
     @Published var wizardTwitchChannelName = ""
     @Published var wizardTwitchChannelId = ""
-    var wizardTwitchAccessToken = ""
-    var wizardTwitchLoggedIn: Bool = false
     @Published var wizardKickChannelName = ""
     @Published var wizardYouTubeVideoId = ""
     @Published var wizardAfreecaTvChannelName = ""
@@ -433,118 +279,236 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var wizardCustomRtmpUrl = ""
     @Published var wizardCustomRtmpStreamKey = ""
     @Published var wizardCustomRistUrl = ""
-
-    let chatTextToSpeech = ChatTextToSpeech()
-
-    var teslaVehicle: TeslaVehicle?
-    var teslaChargeState = CarServer_ChargeState()
-    var teslaDriveState = CarServer_DriveState()
-    var teslaMediaState = CarServer_MediaState()
     @Published var teslaVehicleState: TeslaVehicleState?
     @Published var teslaVehicleVehicleSecurityConnected = false
     @Published var teslaVehicleInfotainmentConnected = false
-
-    private var lastAttachCompletedTime: ContinuousClock.Instant?
-    private var relaxedBitrateStartTime: ContinuousClock.Instant?
-    var relaxedBitrate = false
-
     @Published var remoteControlGeneral: RemoteControlStatusGeneral?
     @Published var remoteControlTopLeft: RemoteControlStatusTopLeft?
     @Published var remoteControlTopRight: RemoteControlStatusTopRight?
     @Published var remoteControlSettings: RemoteControlSettings?
-    var remoteControlState = RemoteControlState()
     @Published var remoteControlScene = UUID()
     @Published var remoteControlMic = ""
     @Published var remoteControlBitrate = UUID()
     @Published var remoteControlZoom = ""
     @Published var remoteControlDebugLogging = false
-
     @Published var quickButtonSettingsButton: SettingsQuickButton?
+    @Published var remoteControlAssistantShowPreview = true
+    @Published var remoteControlAssistantShowPreviewFullScreen = false
+    @Published var djiDeviceStreamingState: DjiDeviceState?
+    @Published var djiGimbalDeviceStreamingState: DjiGimbalDeviceState?
+    @Published var catPrinterState: CatPrinterState?
+    @Published var cyclingPowerDeviceState: CyclingPowerDeviceState?
+    @Published var heartRateDeviceState: HeartRateDeviceState?
+    @Published var phoneCoolerDeviceState: PhoneCoolerDeviceState?
+    @Published var debugOverlay = DebugOverlayProvider()
+    @Published var streamingHistory = StreamingHistory()
+    @Published var bluetoothAllowed = false
+    @Published var djiDevicesStatus = noValue
+    @Published var sceneSettingsPanelSceneId = 1
+    @Published var snapshotCountdown = 0
+    @Published var currentSnapshotJob: SnapshotJob?
+    @Published var gameControllersTotal = noValue
+    @Published var location = noValue
+    @Published var showLoadSettingsFailed = false
+    @Published var remoteControlStatus = noValue
+    @Published var cameraControlEnabled = false
+    @Published var myIcons: [Icon] = []
+    @Published var iconsInStore: [Icon] = []
+    @Published var ipStatuses: [IPMonitor.Status] = []
+    var streamState = StreamState.disconnected {
+        didSet {
+            logger.info("stream: State \(oldValue) -> \(streamState)")
+        }
+    }
 
+    let media = Media()
+    let hypeTrain = HypeTrain()
+    let moblink = Moblink()
+    let servers = Servers()
+    let bitrate = Bitrate()
+    let bonding = Bonding()
+    var selectedFps: Int?
+    var autoFps = false
+    var manualFocusesEnabled: [AVCaptureDevice: Bool] = [:]
+    var manualFocuses: [AVCaptureDevice: Float] = [:]
+    var editingManualFocus = false
+    var focusObservation: NSKeyValueObservation?
+    var manualIsosEnabled: [AVCaptureDevice: Bool] = [:]
+    var manualIsos: [AVCaptureDevice: Float] = [:]
+    var editingManualIso = false
+    var isoObservation: NSKeyValueObservation?
+    var manualWhiteBalancesEnabled: [AVCaptureDevice: Bool] = [:]
+    var manualWhiteBalances: [AVCaptureDevice: Float] = [:]
+    var editingManualWhiteBalance = false
+    var whiteBalanceObservation: NSKeyValueObservation?
+    private var manualFocusMotionAttitude: CMAttitude?
+    private var findFaceTimer: Timer?
+    var streaming = false
+    var micChange = noMic
+    var streamStartTime: ContinuousClock.Instant?
+    var isRecorderRecording = false
+    var workoutType: WatchProtocolWorkoutType?
+    var currentRecording: Recording?
+    let recording = RecordingProvider()
+    private var browserWidgetsStatusChanged = false
+    private var subscriptions = Set<AnyCancellable>()
+    var streamUptime = StreamUptimeProvider()
+    let audio = AudioProvider()
+    var settings = Settings()
+    var selectedSceneId = UUID()
+    var twitchChat: TwitchChatMoblin!
+    var twitchEventSub: TwitchEventSub?
+    var kickPusher: KickPusher?
+    var kickViewers: KickViewers?
+    private var youTubeLiveChat: YouTubeLiveChat?
+    private var afreecaTvChat: AfreecaTvChat?
+    private var openStreamingPlatformChat: OpenStreamingPlatformChat!
+    var obsWebSocket: ObsWebSocket?
+    var chatPostId = 0
+    var chat = ChatProvider(maximumNumberOfMessages: maximumNumberOfChatMessages)
+    var quickButtonChat = ChatProvider(maximumNumberOfMessages: maximumNumberOfInteractiveChatMessages)
+    var externalDisplayChat = ChatProvider(maximumNumberOfMessages: 50)
+    private var externalDisplayWindow: UIWindow?
+    var chatBotMessages: Deque<ChatBotMessage> = []
+    var newQuickButtonChatAlertsPosts: Deque<ChatPost> = []
+    var pausedQuickButtonChatAlertsPosts: Deque<ChatPost> = []
+    var watchChatPosts: Deque<WatchProtocolChatMessage> = []
+    var nextWatchChatPostId = 1
+    private var batteryLevelLowCounter = -1
+    var previousBitrateStatusColorSrtDroppedPacketsTotal: Int32 = 0
+    var previousBitrateStatusNumberOfFailedEncodings = 0
+    let streamPreviewView = PreviewView()
+    let externalDisplayStreamPreviewView = PreviewView()
+    let cameraPreviewView = CameraPreviewUiView()
+    var cameraPreviewLayer: AVCaptureVideoPreviewLayer?
+    var textEffects: [UUID: TextEffect] = [:]
+    var imageEffects: [UUID: ImageEffect] = [:]
+    var browserEffects: [UUID: BrowserEffect] = [:]
+    var lutEffects: [UUID: LutEffect] = [:]
+    var mapEffects: [UUID: MapEffect] = [:]
+    var qrCodeEffects: [UUID: QrCodeEffect] = [:]
+    var alertsEffects: [UUID: AlertsEffect] = [:]
+    var videoSourceEffects: [UUID: VideoSourceEffect] = [:]
+    var enabledAlertsEffects: [AlertsEffect] = []
+    var drawOnStreamEffect = DrawOnStreamEffect()
+    var lutEffect = LutEffect()
+    var padelScoreboardEffects: [UUID: PadelScoreboardEffect] = [:]
+    var vTuberEffects: [UUID: VTuberEffect] = [:]
+    var pngTuberEffects: [UUID: PngTuberEffect] = [:]
+    var speechToTextAlertMatchOffset = 0
+    var isMuteOn = false
+    var log: Deque<LogEntry> = []
+    var remoteControlAssistantLog: Deque<LogEntry> = []
+    var imageStorage = ImageStorage()
+    var logsStorage = LogsStorage()
+    var mediaStorage = MediaPlayerStorage()
+    var alertMediaStorage = AlertMediaStorage()
+    var vTuberStorage = VTuberStorage()
+    var pngTuberStorage = PngTuberStorage()
+    var controlBarPage = 1
+    var reconnectTimer: Timer?
+    var logId = 1
+    private var serversSpeed: Int64 = 0
+    var adsEndDate: Date?
+    var urlSession = URLSession.shared
+    var heartRates: [String: Int?] = [:]
+    var workoutActiveEnergyBurned: Int?
+    var workoutDistance: Int?
+    var workoutPower: Int?
+    var workoutStepCount: Int?
+    private var pollVotes: [Int] = [0, 0, 0]
+    var pollEnabled = false
+    var mediaPlayers: [UUID: MediaPlayer] = [:]
+    var obsAudioVolumeLatest: String = ""
+    var obsSceneBeforeSwitchToBrbScene: String?
+    var previousSrtDroppedPacketsTotal: Int32 = 0
+    var streamBecameBrokenTime: ContinuousClock.Instant?
+    var obsSourceFetchScreenshot = false
+    var obsSourceScreenshotIsFetching = false
+    var obsRecording = false
+    var zoomXPinch: Float = 1.0
+    var backZoomX: Float = 0.5
+    var frontZoomX: Float = 1.0
+    var cameraPosition: AVCaptureDevice.Position?
+    private let motionManager = CMMotionManager()
+    var gForceManager: GForceManager?
+    var database: Database {
+        settings.database
+    }
+
+    var speechToText = SpeechToText()
+    var keepSpeakerAlivePlayer: AVAudioPlayer?
+    var keepSpeakerAliveLatestPlayed: ContinuousClock.Instant = .now
+    let twitchAuth = TwitchAuth()
+    var twitchAuthOnComplete: ((_ accessToken: String) -> Void)?
+    var numberOfTwitchViewers: Int?
+    var drawOnStreamSize: CGSize = .zero
+    private var webBrowser: WKWebView?
+    let webBrowserController = WebBrowserController()
+    var lowFpsImageFps: UInt64 = 1
+    var wizardPlatform: WizardPlatform = .custom
+    var wizardNetworkSetup: WizardNetworkSetup = .none
+    var wizardCustomProtocol: WizardCustomProtocol = .none
+    let wizardTwitchStream = SettingsStream(name: "")
+    var wizardTwitchAccessToken = ""
+    var wizardTwitchLoggedIn: Bool = false
+    let chatTextToSpeech = ChatTextToSpeech()
+    var teslaVehicle: TeslaVehicle?
+    var teslaChargeState = CarServer_ChargeState()
+    var teslaDriveState = CarServer_DriveState()
+    var teslaMediaState = CarServer_MediaState()
+    private var lastAttachCompletedTime: ContinuousClock.Instant?
+    private var relaxedBitrateStartTime: ContinuousClock.Instant?
+    var relaxedBitrate = false
+    var remoteControlState = RemoteControlState()
     var remoteControlStreamer: RemoteControlStreamer?
     var remoteControlAssistant: RemoteControlAssistant?
     var remoteControlRelay: RemoteControlRelay?
-    @Published var remoteControlAssistantShowPreview = true
-    @Published var remoteControlAssistantShowPreviewFullScreen = false
     var isRemoteControlAssistantRequestingPreview = false
     var isRemoteControlAssistantRequestingStatus = false
     var remoteControlAssistantRequestingStatusFilter: RemoteControlStartStatusFilter?
     var remoteControlAssistantPreviewUsers: Set<RemoteControlAssistantPreviewUser> = .init()
     var remoteControlStreamerLatestReceivedChatMessageId = -1
     var useRemoteControlForChatAndEvents = false
-
     var currentWiFiSsid: String?
-    @Published var djiDeviceStreamingState: DjiDeviceState?
     var currentDjiDeviceSettings: SettingsDjiDevice?
     var djiDeviceWrappers: [UUID: DjiDeviceWrapper] = [:]
-
-    @Published var djiGimbalDeviceStreamingState: DjiGimbalDeviceState?
     var currentDjiGimbalDeviceSettings: SettingsDjiGimbalDevice?
     var djiGimbalDevices: [UUID: DjiGimbalDevice] = [:]
-
     let autoSceneSwitcher = AutoSceneSwitcherProvider()
-
-    @Published var catPrinterState: CatPrinterState?
     var currentCatPrinterSettings: SettingsCatPrinter?
     var catPrinters: [UUID: CatPrinter] = [:]
-
-    @Published var cyclingPowerDeviceState: CyclingPowerDeviceState?
     var currentCyclingPowerDeviceSettings: SettingsCyclingPowerDevice?
     var cyclingPowerDevices: [UUID: CyclingPowerDevice] = [:]
     var cyclingPower = 0
     var cyclingCadence = 0
-
     private let periodicTimer20ms = SimpleTimer(queue: .main)
     private let periodicTimer200ms = SimpleTimer(queue: .main)
     private let periodicTimer1s = SimpleTimer(queue: .main)
     private let periodicTimer3s = SimpleTimer(queue: .main)
     private let periodicTimer5s = SimpleTimer(queue: .main)
     private let periodicTimer10s = SimpleTimer(queue: .main)
-
-    @Published var heartRateDeviceState: HeartRateDeviceState?
     var currentHeartRateDeviceSettings: SettingsHeartRateDevice?
     var heartRateDevices: [UUID: HeartRateDevice] = [:]
-
-    @Published var phoneCoolerDeviceState: PhoneCoolerDeviceState?
     var currentPhoneCoolerDeviceSettings: SettingsPhoneCoolerDevice?
     var phoneCoolerDevices: [UUID: PhoneCoolerDevice] = [:]
-
     var cameraDevice: AVCaptureDevice?
     var cameraZoomLevelToXScale: Float = 1.0
     var cameraZoomXMinimum: Float = 1.0
     var cameraZoomXMaximum: Float = 1.0
-    @Published var debugOverlay = DebugOverlayProvider()
     var cpuUsageNeeded = false
     var latestDebugLines: [String] = []
     var latestDebugActions: [String] = []
-    @Published var streamingHistory = StreamingHistory()
     var streamingHistoryStream: StreamingHistoryStream?
-
     var backCameras: [Camera] = []
     var frontCameras: [Camera] = []
     var externalCameras: [Camera] = []
-
     var recordingsStorage = RecordingsStorage()
     var latestLowBitrateTime = ContinuousClock.now
-
     var bluetoothCentralManger: CBCentralManager?
-    @Published var bluetoothAllowed = false
-
-    @Published var djiDevicesStatus = noValue
-
     var sceneSettingsPanelScene = SettingsScene(name: "")
-    @Published var sceneSettingsPanelSceneId = 1
-
-    @Published var snapshotCountdown = 0
-    @Published var currentSnapshotJob: SnapshotJob?
     var snapshotJobs: Deque<SnapshotJob> = []
-
     var gameControllers: [GCController?] = []
-    @Published var gameControllersTotal = noValue
-
-    @Published var location = noValue
-    @Published var showLoadSettingsFailed = false
-
     var latestKnownLocation: CLLocation?
     var slopePercent = 0.0
     var previousSlopeAltitude: Double? = 0.0
@@ -552,38 +516,54 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var averageSpeed = 0.0
     var averageSpeedStartTime: ContinuousClock.Instant = .now
     var averageSpeedStartDistance = 0.0
-
     let replaysStorage = ReplaysStorage()
     var replaySettings: ReplaySettings?
     var replayFrameExtractor: ReplayFrameExtractor?
     var replayVideo: ReplayBufferFile?
     var replayBuffer = ReplayBuffer()
     let replay = ReplayProvider()
-
-    @Published var remoteControlStatus = noValue
-
     private let sampleBufferReceiver = SampleBufferReceiver()
-
     let faxReceiver = FaxReceiver()
-
-    @Published var cameraControlEnabled = false
     var twitchStreamUpdateTime = ContinuousClock.now
-
     var externalDisplayPreview = false
-
     var remoteSceneScenes: [SettingsScene] = []
     var remoteSceneWidgets: [SettingsWidget] = []
     var remoteSceneData = RemoteControlRemoteSceneData(textStats: nil, location: nil)
     var remoteSceneSettingsUpdateRequested = false
     var remoteSceneSettingsUpdating = false
-
     var builtinCameraIds: [String: UUID] = [:]
-
     var isAppActive = true
     var initialVolume: Float?
     var latestVolumeChangeSequenceNumber: Int?
     let volumeView = MPVolumeView(frame: .zero)
     var latestSetVolumeTime = ContinuousClock.now
+    private var appStoreUpdateListenerTask: Task<Void, Error>?
+    var products: [String: Product] = [:]
+    var streamTotalBytes: UInt64 = 0
+    var streamTotalChatMessages: Int = 0
+    var streamLog: Deque<String> = []
+    private var ipMonitor = IPMonitor()
+    var faceEffect = FaceEffect(fps: 30)
+    var movieEffect = MovieEffect()
+    var whirlpoolEffect = WhirlpoolEffect(angle: .pi / 2)
+    var pinchEffect = PinchEffect(scale: 0.5)
+    var fourThreeEffect = FourThreeEffect()
+    var grayScaleEffect = GrayScaleEffect()
+    var sepiaEffect = SepiaEffect()
+    var tripleEffect = TripleEffect()
+    var twinEffect = TwinEffect()
+    var pixellateEffect = PixellateEffect(strength: 0.0)
+    var pollEffect = PollEffect()
+    var fixedHorizonEffect = FixedHorizonEffect()
+    var replayEffect: ReplayEffect?
+    var locationManager = Location()
+    var realtimeIrl: RealtimeIrl?
+    private var failedVideoEffect: String?
+    var supportsAppleLog: Bool = false
+    let weatherManager = WeatherManager()
+    let geographyManager = GeographyManager()
+    var onDocumentPickerUrl: ((URL) -> Void)?
+    private var healthStore = HKHealthStore()
 
     weak var currentStream: NetStream? {
         didSet {
@@ -618,40 +598,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func isPortrait() -> Bool {
         return stream.portrait || database.portrait
     }
-
-    @Published var myIcons: [Icon] = []
-    @Published var iconsInStore: [Icon] = []
-    private var appStoreUpdateListenerTask: Task<Void, Error>?
-    var products: [String: Product] = [:]
-    var streamTotalBytes: UInt64 = 0
-    var streamTotalChatMessages: Int = 0
-    var streamLog: Deque<String> = []
-    private var ipMonitor = IPMonitor()
-    @Published var ipStatuses: [IPMonitor.Status] = []
-    var faceEffect = FaceEffect(fps: 30)
-    var movieEffect = MovieEffect()
-    var whirlpoolEffect = WhirlpoolEffect(angle: .pi / 2)
-    var pinchEffect = PinchEffect(scale: 0.5)
-    var fourThreeEffect = FourThreeEffect()
-    var grayScaleEffect = GrayScaleEffect()
-    var sepiaEffect = SepiaEffect()
-    var tripleEffect = TripleEffect()
-    var twinEffect = TwinEffect()
-    var pixellateEffect = PixellateEffect(strength: 0.0)
-    var pollEffect = PollEffect()
-    var fixedHorizonEffect = FixedHorizonEffect()
-    var replayEffect: ReplayEffect?
-    var locationManager = Location()
-    var realtimeIrl: RealtimeIrl?
-    private var failedVideoEffect: String?
-    var supportsAppleLog: Bool = false
-
-    let weatherManager = WeatherManager()
-    let geographyManager = GeographyManager()
-
-    var onDocumentPickerUrl: ((URL) -> Void)?
-
-    private var healthStore = HKHealthStore()
 
     func setAdaptiveBitrateSrtAlgorithm(stream: SettingsStream) {
         media.srtSetAdaptiveBitrateAlgorithm(
