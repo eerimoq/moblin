@@ -248,7 +248,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var iconImage: String = plainIcon.id
     @Published var hasZoom = true
     @Published var showTwitchAuth = false
-    @Published var verboseStatuses = false
     @Published var showDrawOnStream = false
     @Published var showFace = false
     @Published var showFaceBeauty = false
@@ -658,7 +657,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func toggleVerboseStatuses() {
-        verboseStatuses.toggle()
         database.verboseStatuses.toggle()
     }
 
@@ -827,7 +825,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         audioUnitRemoveWindNoise = database.debug.removeWindNoise
         showFirstTimeChatterMessage = database.chat.showFirstTimeChatterMessage
         showNewFollowerMessage = database.chat.showNewFollowerMessage
-        verboseStatuses = database.verboseStatuses
         autoSceneSwitcher.currentSwitcherId = database.autoSceneSwitchers.switcherId
         supportsAppleLog = hasAppleLog()
         chat.interactiveChat = getGlobalButton(type: .interactiveChat)?.isOn ?? false

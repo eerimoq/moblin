@@ -5153,7 +5153,7 @@ class Database: Codable, ObservableObject {
     var djiDevices: SettingsDjiDevices = .init()
     var alertsMediaGallery: SettingsAlertsMediaGallery = .init()
     var catPrinters: SettingsCatPrinters = .init()
-    var verboseStatuses: Bool = false
+    @Published var verboseStatuses: Bool = false
     var scoreboardPlayers: [SettingsWidgetScoreboardPlayer] = .init()
     var keyboard: SettingsKeyboard = .init()
     var tesla: SettingsTesla = .init()
@@ -6574,10 +6574,6 @@ final class Settings {
         }
         for stream in realDatabase.streams where stream.replay.fade == nil {
             stream.replay.fade = true
-            store()
-        }
-        for widget in realDatabase.widgets where widget.browser.moblinAccess == nil {
-            widget.browser.moblinAccess = false
             store()
         }
         for button in realDatabase.quickButtons where button.page == nil {

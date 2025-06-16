@@ -143,16 +143,17 @@ private struct StatusesView: View {
 }
 
 struct LeftOverlayView: View {
-    @EnvironmentObject var model: Model
+    var model: Model
+    @ObservedObject var database: Database
 
     var body: some View {
         VStack(alignment: .leading, spacing: 1) {
             VStack(alignment: .leading, spacing: 1) {
-                if model.verboseStatuses {
-                    StatusesView(show: model.database.show, textPlacement: .afterIcon)
+                if database.verboseStatuses {
+                    StatusesView(show: database.show, textPlacement: .afterIcon)
                 } else {
                     HStack(spacing: 1) {
-                        StatusesView(show: model.database.show, textPlacement: .hide)
+                        StatusesView(show: database.show, textPlacement: .hide)
                     }
                 }
             }

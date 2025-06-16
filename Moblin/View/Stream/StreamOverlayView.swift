@@ -157,13 +157,13 @@ struct StreamOverlayView: View {
                     RightOverlayBottomView(show: model.database.show, width: width)
                 }
                 HStack {
-                    LeftOverlayView()
+                    LeftOverlayView(model: model, database: model.database)
                         .padding([.leading], leadingPadding())
                     Spacer()
                 }
                 HStack {
                     Spacer()
-                    RightOverlayTopView()
+                    RightOverlayTopView(model: model, database: model.database)
                 }
                 HStack {
                     StreamOverlayDebugView(debugOverlay: model.debugOverlay)

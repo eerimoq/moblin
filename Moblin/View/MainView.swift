@@ -256,19 +256,16 @@ private struct WebBrowserAlertsView: UIViewControllerRepresentable {
 
 struct MainView: View {
     @EnvironmentObject var model: Model
-    @ObservedObject var database: Database
     @ObservedObject var webBrowserController: WebBrowserController
     var streamView: StreamView
     @State var showAreYouReallySure = false
     @FocusState private var focused: Bool
     @ObservedObject var replay: ReplayProvider
 
-    init(database: Database,
-         webBrowserController: WebBrowserController,
+    init(webBrowserController: WebBrowserController,
          streamView: StreamView,
          replay: ReplayProvider)
     {
-        self.database = database
         self.webBrowserController = webBrowserController
         self.streamView = streamView
         self.replay = replay
@@ -276,6 +273,7 @@ struct MainView: View {
     }
 
     func drawFocus(context: GraphicsContext, metrics: GeometryProxy, focusPoint: CGPoint) {
+        logger.info("xxx draw")
         let sideLength = 70.0
         let x = metrics.size.width * focusPoint.x - sideLength / 2
         let y = metrics.size.height * focusPoint.y - sideLength / 2
@@ -289,7 +287,7 @@ struct MainView: View {
     }
 
     private func handleTapToFocus(metrics: GeometryProxy, location: CGPoint) {
-        guard database.tapToFocus else {
+        guard model.database.tapToFocus else {
             return
         }
         let x = (location.x / metrics.size.width).clamped(to: 0 ... 1)
@@ -298,7 +296,7 @@ struct MainView: View {
     }
 
     private func handleLeaveTapToFocus() {
-        guard database.tapToFocus else {
+        guard model.database.tapToFocus else {
             return
         }
         model.setAutoFocus()
@@ -327,7 +325,7 @@ struct MainView: View {
     }
 
     private func face() -> some View {
-        FaceView(debug: database.debug, settings: database.debug.beautyFilterSettings)
+        FaceView(debug: model.database.debug, settings: model.database.debug.beautyFilterSettings)
     }
 
     private func portraitAspectRatio() -> CGFloat {
@@ -361,7 +359,7 @@ struct MainView: View {
                                     .onLongPressGesture(perform: {
                                         handleLeaveTapToFocus()
                                     })
-                                if database.tapToFocus, let focusPoint = model.manualFocusPoint {
+                                if model.database.tapToFocus, let focusPoint = model.manualFocusPoint {
                                     tapToFocusIndicator(metrics: metrics, focusPoint: focusPoint)
                                 }
                                 if model.showingGrid {
@@ -435,7 +433,7 @@ struct MainView: View {
                                     .onLongPressGesture(perform: {
                                         handleLeaveTapToFocus()
                                     })
-                                if database.tapToFocus, let focusPoint = model.manualFocusPoint {
+                                if model.database.tapToFocus, let focusPoint = model.manualFocusPoint {
                                     tapToFocusIndicator(metrics: metrics, focusPoint: focusPoint)
                                 }
                                 if model.showingGrid {
@@ -501,6 +499,7 @@ struct MainView: View {
     }
 
     var body: some View {
+        // let _ = Self._printChanges()
         let all = ZStack {
             if model.isPortrait() {
                 portrait()
