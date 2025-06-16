@@ -256,16 +256,19 @@ private struct WebBrowserAlertsView: UIViewControllerRepresentable {
 
 struct MainView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var database: Database
     @ObservedObject var webBrowserController: WebBrowserController
     var streamView: StreamView
     @State var showAreYouReallySure = false
     @FocusState private var focused: Bool
     @ObservedObject var replay: ReplayProvider
 
-    init(webBrowserController: WebBrowserController,
+    init(database: Database,
+         webBrowserController: WebBrowserController,
          streamView: StreamView,
          replay: ReplayProvider)
     {
+        self.database = database
         self.webBrowserController = webBrowserController
         self.streamView = streamView
         self.replay = replay
@@ -286,7 +289,7 @@ struct MainView: View {
     }
 
     private func handleTapToFocus(metrics: GeometryProxy, location: CGPoint) {
-        guard model.database.tapToFocus else {
+        guard database.tapToFocus else {
             return
         }
         let x = (location.x / metrics.size.width).clamped(to: 0 ... 1)
@@ -295,7 +298,7 @@ struct MainView: View {
     }
 
     private func handleLeaveTapToFocus() {
-        guard model.database.tapToFocus else {
+        guard database.tapToFocus else {
             return
         }
         model.setAutoFocus()
@@ -324,7 +327,7 @@ struct MainView: View {
     }
 
     private func face() -> some View {
-        FaceView(debug: model.database.debug, settings: model.database.debug.beautyFilterSettings)
+        FaceView(debug: database.debug, settings: database.debug.beautyFilterSettings)
     }
 
     private func portraitAspectRatio() -> CGFloat {
@@ -358,7 +361,7 @@ struct MainView: View {
                                     .onLongPressGesture(perform: {
                                         handleLeaveTapToFocus()
                                     })
-                                if model.database.tapToFocus, let focusPoint = model.manualFocusPoint {
+                                if database.tapToFocus, let focusPoint = model.manualFocusPoint {
                                     tapToFocusIndicator(metrics: metrics, focusPoint: focusPoint)
                                 }
                                 if model.showingGrid {
@@ -432,7 +435,7 @@ struct MainView: View {
                                     .onLongPressGesture(perform: {
                                         handleLeaveTapToFocus()
                                     })
-                                if model.database.tapToFocus, let focusPoint = model.manualFocusPoint {
+                                if database.tapToFocus, let focusPoint = model.manualFocusPoint {
                                     tapToFocusIndicator(metrics: metrics, focusPoint: focusPoint)
                                 }
                                 if model.showingGrid {

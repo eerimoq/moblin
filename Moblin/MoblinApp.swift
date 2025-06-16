@@ -14,6 +14,7 @@ struct MoblinApp: App {
     var body: some Scene {
         WindowGroup {
             MainView(
+                database: model.database,
                 webBrowserController: model.webBrowserController,
                 streamView: StreamView(
                     cameraPreviewView: CameraPreviewView(),
