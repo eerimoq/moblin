@@ -451,16 +451,14 @@ extension Model: RemoteControlStreamerDelegate {
         updateRemoteControlStatus()
     }
 
-    func remoteControlStreamerGetStatus(onComplete: @escaping (
-        RemoteControlStatusGeneral,
-        RemoteControlStatusTopLeft,
-        RemoteControlStatusTopRight
-    ) -> Void) {
+    func remoteControlStreamerGetStatus()
+        -> (RemoteControlStatusGeneral, RemoteControlStatusTopLeft, RemoteControlStatusTopRight)
+    {
         let (general, topLeft, topRight) = remoteControlStreamerCreateStatus(filter: nil)
-        onComplete(general!, topLeft!, topRight!)
+        return (general!, topLeft!, topRight!)
     }
 
-    func remoteControlStreamerGetSettings(onComplete: @escaping (RemoteControlSettings) -> Void) {
+    func remoteControlStreamerGetSettings() -> RemoteControlSettings {
         let scenes = enabledScenes.map { scene in
             RemoteControlSettingsScene(id: scene.id, name: scene.name)
         }
@@ -480,7 +478,7 @@ extension Model: RemoteControlStreamerDelegate {
                 )
             }
         let connectionPrioritiesEnabled = stream.srt.connectionPriorities!.enabled
-        onComplete(RemoteControlSettings(
+        return RemoteControlSettings(
             scenes: scenes,
             bitratePresets: bitratePresets,
             mics: mics,
@@ -488,65 +486,57 @@ extension Model: RemoteControlStreamerDelegate {
                 connectionPrioritiesEnabled: connectionPrioritiesEnabled,
                 connectionPriorities: connectionPriorities
             )
-        ))
+        )
     }
 
-    func remoteControlStreamerSetScene(id: UUID, onComplete: @escaping () -> Void) {
+    func remoteControlStreamerSetScene(id: UUID) {
         selectScene(id: id)
-        onComplete()
     }
 
-    func remoteControlStreamerSetMic(id: String, onComplete: @escaping () -> Void) {
+    func remoteControlStreamerSetMic(id: String) {
         selectMicById(id: id)
-        onComplete()
     }
 
-    func remoteControlStreamerSetBitratePreset(id: UUID, onComplete: @escaping () -> Void) {
+    func remoteControlStreamerSetBitratePreset(id: UUID) {
         guard let preset = database.bitratePresets.first(where: { preset in
             preset.id == id
         }) else {
             return
         }
         setBitrate(bitrate: preset.bitrate)
-        onComplete()
     }
 
-    func remoteControlStreamerSetRecord(on: Bool, onComplete: @escaping () -> Void) {
+    func remoteControlStreamerSetRecord(on: Bool) {
         if on {
             startRecording()
         } else {
             stopRecording()
         }
         updateQuickButtonStates()
-        onComplete()
     }
 
-    func remoteControlStreamerSetStream(on: Bool, onComplete: @escaping () -> Void) {
+    func remoteControlStreamerSetStream(on: Bool) {
         if on {
             startStream()
         } else {
             stopStream()
         }
         updateQuickButtonStates()
-        onComplete()
     }
 
-    func remoteControlStreamerSetDebugLogging(on: Bool, onComplete: @escaping () -> Void) {
+    func remoteControlStreamerSetDebugLogging(on: Bool) {
         setDebugLogging(on: on)
-        onComplete()
     }
 
-    func remoteControlStreamerSetZoom(x: Float, onComplete: @escaping () -> Void) {
+    func remoteControlStreamerSetZoom(x: Float) {
         setZoomX(x: x, rate: database.zoom.speed!)
-        onComplete()
     }
 
-    func remoteControlStreamerSetMute(on: Bool, onComplete: @escaping () -> Void) {
+    func remoteControlStreamerSetMute(on: Bool) {
         setMuteOn(value: on)
-        onComplete()
     }
 
-    func remoteControlStreamerSetTorch(on: Bool, onComplete: @escaping () -> Void) {
+    func remoteControlStreamerSetTorch(on: Bool) {
         if on {
             isTorchOn = true
         } else {
@@ -555,37 +545,27 @@ extension Model: RemoteControlStreamerDelegate {
         updateTorch()
         toggleGlobalButton(type: .torch)
         updateQuickButtonStates()
-        onComplete()
     }
 
-    func remoteControlStreamerReloadBrowserWidgets(onComplete: @escaping () -> Void) {
+    func remoteControlStreamerReloadBrowserWidgets() {
         reloadBrowserWidgets()
-        onComplete()
     }
 
-    func remoteControlStreamerSetSrtConnectionPrioritiesEnabled(
-        enabled: Bool,
-        onComplete: @escaping () -> Void
-    ) {
-        DispatchQueue.main.async {
-            self.stream.srt.connectionPriorities!.enabled = enabled
-            self.updateSrtlaPriorities()
-            onComplete()
-        }
+    func remoteControlStreamerSetSrtConnectionPrioritiesEnabled(enabled: Bool) {
+        stream.srt.connectionPriorities!.enabled = enabled
+        updateSrtlaPriorities()
     }
 
     func remoteControlStreamerSetSrtConnectionPriority(
         id: UUID,
         priority: Int,
-        enabled: Bool,
-        onComplete: @escaping () -> Void
+        enabled: Bool
     ) {
         if let entry = stream.srt.connectionPriorities!.priorities.first(where: { $0.id == id }) {
             entry.priority = clampConnectionPriority(value: priority)
             entry.enabled = enabled
             updateSrtlaPriorities()
         }
-        onComplete()
     }
 
     func sendPreviewToRemoteControlAssistant(preview: Data) {
