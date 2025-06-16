@@ -485,7 +485,7 @@ struct RightOverlayBottomView: View {
                             StreamOverlayRightCameraSettingsControlView()
                         }
                         if show.zoomPresets && model.hasZoom {
-                            StreamOverlayRightZoomPresetSelctorView(width: width)
+                            StreamOverlayRightZoomPresetSelctorView(zoom: model.zoom, width: width)
                         }
                     }
                     StreamOverlayRightSceneSelectorView(width: width)

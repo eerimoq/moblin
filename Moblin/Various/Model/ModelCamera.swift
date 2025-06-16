@@ -657,7 +657,7 @@ extension Model {
         }
         media.setColorSpace(colorSpace: colorSpace, onComplete: {
             DispatchQueue.main.async {
-                if let x = self.setCameraZoomX(x: self.zoomX) {
+                if let x = self.setCameraZoomX(x: self.zoom.zoomX) {
                     self.setZoomXWhenInRange(x: x)
                 }
                 self.lutEnabledUpdated()

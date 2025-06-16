@@ -162,6 +162,12 @@ class CameraState: ObservableObject {
     @Published var manualWhiteBalanceEnabled = false
 }
 
+class Zoom: ObservableObject {
+    @Published var backZoomPresetId = UUID()
+    @Published var frontZoomPresetId = UUID()
+    @Published var zoomX: Float = 1.0
+}
+
 final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var manualFocusPoint: CGPoint?
     @Published var isPresentingWidgetWizard = false
@@ -240,9 +246,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var obsFixOngoing = false
     @Published var obsScreenshot: CGImage?
     @Published var iconImage: String = plainIcon.id
-    @Published var backZoomPresetId = UUID()
-    @Published var frontZoomPresetId = UUID()
-    @Published var zoomX: Float = 1.0
     @Published var hasZoom = true
     @Published var showTwitchAuth = false
     @Published var verboseStatuses = false
@@ -327,6 +330,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
+    let zoom = Zoom()
     let camera = CameraState()
     let mediaPlayerPlayer = MediaPlayerPlayer()
     let media = Media()
@@ -845,14 +849,14 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             (cameraZoomXMinimum, cameraZoomXMaximum) = cameraDevice
                 .getUIZoomRange(hasUltraWideCamera: hasUltraWideBackCamera())
             if let preset = backZoomPresets().first {
-                backZoomPresetId = preset.id
+                zoom.backZoomPresetId = preset.id
                 backZoomX = preset.x!
             } else {
                 backZoomX = cameraZoomXMinimum
             }
-            zoomX = backZoomX
+            zoom.zoomX = backZoomX
         }
-        frontZoomPresetId = database.zoom.front[0].id
+        zoom.frontZoomPresetId = database.zoom.front[0].id
         streamPreviewView.videoGravity = .resizeAspect
         externalDisplayStreamPreviewView.videoGravity = .resizeAspect
         updateDigitalClock(now: Date())
@@ -2313,7 +2317,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func attachBackTripleLowEnergyCamera(force: Bool = true) {
         cameraPosition = .back
         lowEnergyCameraUpdateBackZoom(force: force)
-        zoomX = backZoomX
+        zoom.zoomX = backZoomX
         guard let bestDevice = AVCaptureDevice.default(.builtInTripleCamera, for: .video, position: .back),
               let lastZoomFactor = bestDevice.virtualDeviceSwitchOverVideoZoomFactors.last
         else {
@@ -2345,7 +2349,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func attachBackDualLowEnergyCamera(force: Bool = true) {
         cameraPosition = .back
         lowEnergyCameraUpdateBackZoom(force: force)
-        zoomX = backZoomX
+        zoom.zoomX = backZoomX
         guard let bestDevice = AVCaptureDevice.default(.builtInDualCamera, for: .video, position: .back),
               let lastZoomFactor = bestDevice.virtualDeviceSwitchOverVideoZoomFactors.last
         else {
@@ -2375,7 +2379,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func attachBackWideDualLowEnergyCamera(force: Bool = true) {
         cameraPosition = .back
         lowEnergyCameraUpdateBackZoom(force: force)
-        zoomX = backZoomX
+        zoom.zoomX = backZoomX
         guard let bestDevice = AVCaptureDevice.default(.builtInDualWideCamera, for: .video, position: .back),
               let lastZoomFactor = bestDevice.virtualDeviceSwitchOverVideoZoomFactors.last
         else {
@@ -2412,10 +2416,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         switch position {
         case .back:
             updateBackZoomSwitchTo()
-            zoomX = backZoomX
+            zoom.zoomX = backZoomX
         case .front:
             updateFrontZoomSwitchTo()
-            zoomX = frontZoomX
+            zoom.zoomX = frontZoomX
         default:
             break
         }
@@ -2440,7 +2444,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             onSuccess: {
                 self.streamPreviewView.isMirrored = isMirrored
                 self.externalDisplayStreamPreviewView.isMirrored = isMirrored
-                if let x = self.setCameraZoomX(x: self.zoomX) {
+                if let x = self.setCameraZoomX(x: self.zoom.zoomX) {
                     self.setZoomXWhenInRange(x: x)
                 }
                 if let device = self.cameraDevice {
@@ -2454,7 +2458,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 self.updateCameraPreviewRotation()
             }
         )
-        zoomXPinch = zoomX
+        zoomXPinch = zoom.zoomX
         hasZoom = true
     }
 
