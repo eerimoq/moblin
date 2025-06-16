@@ -152,19 +152,22 @@ class MediaPlayerPlayer: ObservableObject {
     @Published var seeking = false
 }
 
-final class Model: NSObject, ObservableObject, @unchecked Sendable {
-    @Published var isPresentingWidgetWizard = false
-    @Published var goProLaunchLiveStreamSelection: UUID?
-    @Published var goProWifiCredentialsSelection: UUID?
-    @Published var goProRtmpUrlSelection: UUID?
+class CameraState: ObservableObject {
     @Published var bias: Float = 0.0
     @Published var manualFocus: Float = 1.0
     @Published var manualFocusEnabled = false
-    @Published var manualFocusPoint: CGPoint?
     @Published var manualIso: Float = 1.0
     @Published var manualIsoEnabled = false
     @Published var manualWhiteBalance: Float = 0
     @Published var manualWhiteBalanceEnabled = false
+}
+
+final class Model: NSObject, ObservableObject, @unchecked Sendable {
+    @Published var manualFocusPoint: CGPoint?
+    @Published var isPresentingWidgetWizard = false
+    @Published var goProLaunchLiveStreamSelection: UUID?
+    @Published var goProWifiCredentialsSelection: UUID?
+    @Published var goProRtmpUrlSelection: UUID?
     @Published var showingPanel: ShowingPanel = .none
     @Published var panelHidden = false
     @Published var blackScreen = false
@@ -324,6 +327,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
+    let camera = CameraState()
     let mediaPlayerPlayer = MediaPlayerPlayer()
     let media = Media()
     let hypeTrain = HypeTrain()
@@ -1162,16 +1166,16 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func updateImageButtonState() {
         var isOn = showingCamera
-        if bias != 0.0 {
+        if camera.bias != 0.0 {
             isOn = true
         }
-        if manualWhiteBalanceEnabled {
+        if camera.manualWhiteBalanceEnabled {
             isOn = true
         }
-        if manualIsoEnabled {
+        if camera.manualIsoEnabled {
             isOn = true
         }
-        if manualFocusEnabled {
+        if camera.manualFocusEnabled {
             isOn = true
         }
         setGlobalButtonState(type: .image, isOn: isOn)
