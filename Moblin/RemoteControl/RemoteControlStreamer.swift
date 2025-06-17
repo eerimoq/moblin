@@ -204,71 +204,75 @@ class RemoteControlStreamer {
             send(message: .response(id: id, result: .ok, data: .getSettings(data: data)))
         case let .setScene(id: sceneId):
             delegate.remoteControlStreamerSetScene(id: sceneId)
-            send(message: .response(id: id, result: .ok, data: nil))
+            sendEmptyOkResponse(id: id)
         case let .setMic(id: micId):
             delegate.remoteControlStreamerSetMic(id: micId)
-            send(message: .response(id: id, result: .ok, data: nil))
+            sendEmptyOkResponse(id: id)
         case let .setBitratePreset(id: bitratePresetId):
             delegate.remoteControlStreamerSetBitratePreset(id: bitratePresetId)
-            send(message: .response(id: id, result: .ok, data: nil))
+            sendEmptyOkResponse(id: id)
         case let .setRecord(on: on):
             delegate.remoteControlStreamerSetRecord(on: on)
-            send(message: .response(id: id, result: .ok, data: nil))
+            sendEmptyOkResponse(id: id)
         case let .setStream(on: on):
             delegate.remoteControlStreamerSetStream(on: on)
-            send(message: .response(id: id, result: .ok, data: nil))
+            sendEmptyOkResponse(id: id)
         case let .setZoom(x: x):
             delegate.remoteControlStreamerSetZoom(x: x)
-            send(message: .response(id: id, result: .ok, data: nil))
+            sendEmptyOkResponse(id: id)
         case let .setMute(on: on):
             delegate.remoteControlStreamerSetMute(on: on)
-            send(message: .response(id: id, result: .ok, data: nil))
+            sendEmptyOkResponse(id: id)
         case let .setTorch(on: on):
             delegate.remoteControlStreamerSetTorch(on: on)
-            send(message: .response(id: id, result: .ok, data: nil))
+            sendEmptyOkResponse(id: id)
         case .reloadBrowserWidgets:
             delegate.remoteControlStreamerReloadBrowserWidgets()
-            send(message: .response(id: id, result: .ok, data: nil))
+            sendEmptyOkResponse(id: id)
         case let .setSrtConnectionPriority(id: priorityId, priority: priority, enabled: enabled):
             delegate.remoteControlStreamerSetSrtConnectionPriority(id: priorityId, priority: priority, enabled: enabled)
-            send(message: .response(id: id, result: .ok, data: nil))
+            sendEmptyOkResponse(id: id)
         case let .setSrtConnectionPrioritiesEnabled(enabled: enabled):
             delegate.remoteControlStreamerSetSrtConnectionPrioritiesEnabled(enabled: enabled)
-            send(message: .response(id: id, result: .ok, data: nil))
+            sendEmptyOkResponse(id: id)
         case let .twitchEventSubNotification(message: message):
             delegate.remoteControlStreamerTwitchEventSubNotification(message: message)
-            send(message: .response(id: id, result: .ok, data: nil))
+            sendEmptyOkResponse(id: id)
         case let .chatMessages(history: history, messages: messages):
             delegate.remoteControlStreamerChatMessages(history: history, messages: messages)
-            send(message: .response(id: id, result: .ok, data: nil))
+            sendEmptyOkResponse(id: id)
         case .startPreview:
             delegate.remoteControlStreamerStartPreview()
-            send(message: .response(id: id, result: .ok, data: nil))
+            sendEmptyOkResponse(id: id)
         case .stopPreview:
             delegate.remoteControlStreamerStopPreview()
-            send(message: .response(id: id, result: .ok, data: nil))
+            sendEmptyOkResponse(id: id)
         case let .setDebugLogging(on: on):
             delegate.remoteControlStreamerSetDebugLogging(on: on)
-            send(message: .response(id: id, result: .ok, data: nil))
+            sendEmptyOkResponse(id: id)
         case let .setRemoteSceneSettings(data: data):
             delegate.remoteControlStreamerSetRemoteSceneSettings(data: data)
-            send(message: .response(id: id, result: .ok, data: nil))
+            sendEmptyOkResponse(id: id)
         case let .setRemoteSceneData(data: data):
             delegate.remoteControlStreamerSetRemoteSceneData(data: data)
-            send(message: .response(id: id, result: .ok, data: nil))
+            sendEmptyOkResponse(id: id)
         case .instantReplay:
             delegate.remoteControlStreamerInstantReplay()
-            send(message: .response(id: id, result: .ok, data: nil))
+            sendEmptyOkResponse(id: id)
         case .saveReplay:
             delegate.remoteControlStreamerSaveReplay()
-            send(message: .response(id: id, result: .ok, data: nil))
+            sendEmptyOkResponse(id: id)
         case let .startStatus(interval: interval, filter: filter):
             delegate.remoteControlStreamerStartStatus(interval: interval, filter: filter)
-            send(message: .response(id: id, result: .ok, data: nil))
+            sendEmptyOkResponse(id: id)
         case .stopStatus:
             delegate.remoteControlStreamerStopStatus()
-            send(message: .response(id: id, result: .ok, data: nil))
+            sendEmptyOkResponse(id: id)
         }
+    }
+
+    private func sendEmptyOkResponse(id: Int) {
+        send(message: .response(id: id, result: .ok, data: nil))
     }
 }
 
