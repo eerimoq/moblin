@@ -81,6 +81,60 @@ struct TimerWidgetView: View {
     }
 }
 
+struct StopwatchWidgetView: View {
+    private let name: String
+    @ObservedObject var stopwatch: SettingsWidgetTextStopwatch
+    private let index: Int
+    private let textEffect: TextEffect
+    private var indented: Bool
+
+    init(name: String, stopwatch: SettingsWidgetTextStopwatch, index: Int, textEffect: TextEffect, indented: Bool) {
+        self.name = name
+        self.stopwatch = stopwatch
+        self.index = index
+        self.textEffect = textEffect
+        self.indented = indented
+    }
+
+    private func updateTextEffect() {
+        textEffect.setStopwatch(index: index, stopwatch: stopwatch.clone())
+    }
+
+    var body: some View {
+        HStack {
+            if indented {
+                Text("")
+                Text("").frame(width: iconWidth)
+            }
+            Text(name)
+            Spacer()
+            Button {
+                stopwatch.totalElapsed = 0.0
+                stopwatch.running = false
+                updateTextEffect()
+            } label: {
+                Image(systemName: "arrow.counterclockwise")
+                    .font(.title)
+            }
+            .padding([.trailing], 10)
+            Button {
+                stopwatch.running.toggle()
+                if stopwatch.running {
+                    stopwatch.playPressedTime = .now
+                } else {
+                    stopwatch.totalElapsed += stopwatch.playPressedTime.duration(to: .now).seconds
+                }
+                updateTextEffect()
+            } label: {
+                Image(systemName: stopwatch.running ? "stop" : "play")
+                    .font(.title)
+                    .frame(width: 35)
+            }
+        }
+        .buttonStyle(BorderlessButtonStyle())
+    }
+}
+
 struct CheckboxWidgetView: View {
     private let name: String
     private let checkbox: SettingsWidgetTextCheckbox
@@ -282,6 +336,16 @@ struct QuickButtonWidgetsView: View {
                                     TimerWidgetView(
                                         name: "Timer \(index + 1)",
                                         timer: timer,
+                                        index: index,
+                                        textEffect: textEffect,
+                                        indented: true
+                                    )
+                                }
+                                ForEach(widget.text.stopwatches) { stopwatch in
+                                    let index = widget.text.stopwatches.firstIndex(where: { $0 === stopwatch }) ?? 0
+                                    StopwatchWidgetView(
+                                        name: "Stopwatch \(index + 1)",
+                                        stopwatch: stopwatch,
                                         index: index,
                                         textEffect: textEffect,
                                         indented: true

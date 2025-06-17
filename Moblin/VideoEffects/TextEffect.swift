@@ -70,12 +70,14 @@ private struct Line: Equatable, Identifiable {
 private class Formatter {
     var formatParts: [TextFormatPart] = []
     var timersEndTime: [ContinuousClock.Instant] = []
+    var stopwatches: [SettingsWidgetTextStopwatch] = []
     var temperatureFormatter = MeasurementFormatter()
     var checkboxes: [Bool] = []
     var ratings: [Int] = []
     var subtitlesLines: [String] = []
     var lapTimes: [[Double]] = []
     var timerIndex = 0
+    var stopwatchIndex = 0
     var checkboxIndex = 0
     var ratingIndex = 0
     var lapTimesIndex = 0
@@ -86,6 +88,7 @@ private class Formatter {
 
     func format(stats: TextEffectStats, now: ContinuousClock.Instant) -> [Line] {
         timerIndex = 0
+        stopwatchIndex = 0
         checkboxIndex = 0
         ratingIndex = 0
         lapTimesIndex = 0
@@ -123,6 +126,8 @@ private class Formatter {
                 formatSlope(stats: stats)
             case .timer:
                 formatTimer(stats: stats, now: now)
+            case .stopwatch:
+                formatStopwatch(stats: stats, now: now)
             case .conditions:
                 formatConditions(stats: stats)
             case .temperature:
@@ -258,6 +263,21 @@ private class Formatter {
             ))
         }
         timerIndex += 1
+    }
+
+    private func formatStopwatch(stats _: TextEffectStats, now: ContinuousClock.Instant) {
+        if stopwatchIndex < stopwatches.count {
+            let stopwatch = stopwatches[stopwatchIndex]
+            var elapsed = stopwatch.totalElapsed
+            if stopwatch.running {
+                elapsed += stopwatch.playPressedTime.duration(to: now).seconds
+            }
+            parts.append(.init(
+                id: partId,
+                data: .text(uptimeFormatter.string(from: elapsed) ?? "")
+            ))
+        }
+        stopwatchIndex += 1
     }
 
     private func formatConditions(stats: TextEffectStats) {
@@ -508,6 +528,7 @@ final class TextEffect: VideoEffect {
         settingName: String,
         delay: Double,
         timersEndTime: [ContinuousClock.Instant],
+        stopwatches: [SettingsWidgetTextStopwatch],
         checkboxes: [Bool],
         ratings: [Int],
         lapTimes: [[Double]]
@@ -526,6 +547,7 @@ final class TextEffect: VideoEffect {
         x = 0
         y = 0
         formatter.timersEndTime = timersEndTime
+        formatter.stopwatches = stopwatches
         formatter.checkboxes = checkboxes
         formatter.ratings = ratings
         formatter.lapTimes = lapTimes
@@ -601,6 +623,14 @@ final class TextEffect: VideoEffect {
             return
         }
         formatter.timersEndTime[index] = endTime
+        forceImageUpdate()
+    }
+
+    func setStopwatch(index: Int, stopwatch: SettingsWidgetTextStopwatch) {
+        guard index < formatter.stopwatches.count else {
+            return
+        }
+        formatter.stopwatches[index] = stopwatch
         forceImageUpdate()
     }
 

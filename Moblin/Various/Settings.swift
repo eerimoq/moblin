@@ -1230,6 +1230,38 @@ class SettingsWidgetTextTimer: Codable, Identifiable {
     var endTime: Double = 0
 }
 
+class SettingsWidgetTextStopwatch: Codable, Identifiable, ObservableObject {
+    var id: UUID = .init()
+    var totalElapsed: Double = 0.0
+    var playPressedTime: ContinuousClock.Instant = .now
+    @Published var running: Bool = false
+
+    enum CodingKeys: CodingKey {
+        case id
+    }
+
+    init() {}
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+    }
+
+    func clone() -> SettingsWidgetTextStopwatch {
+        let new = SettingsWidgetTextStopwatch()
+        new.id = id
+        new.playPressedTime = playPressedTime
+        new.totalElapsed = totalElapsed
+        new.running = running
+        return new
+    }
+}
+
 class SettingsWidgetTextCheckbox: Codable, Identifiable {
     var id: UUID = .init()
     var checked: Bool = false
@@ -1264,6 +1296,7 @@ class SettingsWidgetText: Codable, ObservableObject {
     @Published var verticalAlignment: SettingsVerticalAlignment = .top
     @Published var delay: Double = 0.0
     var timers: [SettingsWidgetTextTimer] = []
+    var stopwatches: [SettingsWidgetTextStopwatch] = []
     var needsWeather: Bool = false
     var needsGeography: Bool = false
     var needsSubtitles: Bool = false
@@ -1287,6 +1320,7 @@ class SettingsWidgetText: Codable, ObservableObject {
              verticalAlignment,
              delay,
              timers,
+             stopwatches,
              needsWeather,
              needsGeography,
              needsSubtitles,
@@ -1318,6 +1352,7 @@ class SettingsWidgetText: Codable, ObservableObject {
         try container.encode(.verticalAlignment, verticalAlignment)
         try container.encode(.delay, delay)
         try container.encode(.timers, timers)
+        try container.encode(.stopwatches, stopwatches)
         try container.encode(.needsWeather, needsWeather)
         try container.encode(.needsGeography, needsGeography)
         try container.encode(.needsSubtitles, needsSubtitles)
@@ -1350,6 +1385,7 @@ class SettingsWidgetText: Codable, ObservableObject {
         verticalAlignment = container.decode(.verticalAlignment, SettingsVerticalAlignment.self, .top)
         delay = container.decode(.delay, Double.self, 0.0)
         timers = container.decode(.timers, [SettingsWidgetTextTimer].self, [])
+        stopwatches = container.decode(.stopwatches, [SettingsWidgetTextStopwatch].self, [])
         needsWeather = container.decode(.needsWeather, Bool.self, false)
         needsGeography = container.decode(.needsGeography, Bool.self, false)
         needsSubtitles = container.decode(.needsSubtitles, Bool.self, false)
