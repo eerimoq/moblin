@@ -121,6 +121,20 @@ struct DebugSettingsView: View {
             } header: {
                 Text("Experimental")
             }
+            #if canImport(DeviceDiscoveryUI)
+                if #available(iOS 26.0, *) {
+                    Section {
+                        HCenter {
+                            WiFiAwarePublisherView()
+                        }
+                    }
+                    Section {
+                        HCenter {
+                            WiFiAwareSubscriberView()
+                        }
+                    }
+                }
+            #endif
         }
         .navigationTitle("Debug")
     }
