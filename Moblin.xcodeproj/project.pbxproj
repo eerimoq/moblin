@@ -811,6 +811,7 @@
 		0351F8FA2DD2964900F37D9C /* AutoSwitchersSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoSwitchersSettingsView.swift; sourceTree = "<group>"; };
 		0351F8FC2DD3063C00F37D9C /* QuickButtonAutoSceneSwitcherView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickButtonAutoSceneSwitcherView.swift; sourceTree = "<group>"; };
 		0352DDF22BFFCAA60079AC7B /* SampleBufferCommon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleBufferCommon.swift; sourceTree = "<group>"; };
+		0354BDC92E020F4D005C881D /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/AppShortcuts.strings; sourceTree = "<group>"; };
 		03559E7D2BDCEB14002D0886 /* FaceEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceEffect.swift; sourceTree = "<group>"; };
 		0357357F2BC62FDC00F4E87D /* WatchLocalOverlaysSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchLocalOverlaysSettingsView.swift; sourceTree = "<group>"; };
 		035735812BC6303F00F4E87D /* WatchDisplaySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchDisplaySettingsView.swift; sourceTree = "<group>"; };
@@ -4104,6 +4105,7 @@
 				033FD7182CC52E1D0073C6EC /* de */,
 				036C39A92D193CCF00F74D37 /* zh-Hant */,
 				03F6E3042D40267A00942826 /* zh-HK */,
+				0354BDC92E020F4D005C881D /* tr */,
 			);
 			name = AppShortcuts.strings;
 			sourceTree = "<group>";

@@ -41,6 +41,12 @@
             "value" : "Yes"
           }
         },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tamam"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -63,6 +69,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Moblin peut afficher votre fréquence cardiaque sur le stream"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin yayınınızda kalp atış hızınızı gösterebilir."
           }
         },
         "zh-Hant" : {
@@ -89,6 +101,12 @@
             "value" : "Moblin peut afficher votre fréquence cardiaque sur le stream"
           }
         },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin yayınınızda kalp atış hızınızı gösterebilir."
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -111,6 +129,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Moblin peut afficher votre fréquence cardiaque sur le stream"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin yayınınızda kalp atış hızınızı gösterebilir."
           }
         },
         "zh-Hant" : {
