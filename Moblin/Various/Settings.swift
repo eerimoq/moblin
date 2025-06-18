@@ -2564,6 +2564,7 @@ enum SettingsQuickButtonType: String, Codable, CaseIterable {
     case reloadBrowserWidgets = "Reload browser widgets"
     case interactiveChat = "Interactive chat"
     case lockScreen = "Lock screen"
+    case disableCamera = "Disable camera preview"
     case djiDevices = "DJI devices"
     case portrait = "Portrait"
     case goPro = "GoPro"
@@ -5615,6 +5616,14 @@ private func addMissingQuickButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "lock.fill"
     button.systemImageNameOff = "lock"
+    updateQuickButton(database: database, button: button)
+    
+    button = SettingsQuickButton(name: String(localized: "Disable camera preview"))
+    button.id = UUID()
+    button.type = .disableCamera
+    button.imageType = "System name"
+    button.systemImageNameOn = "sunset.fill"
+    button.systemImageNameOff = "camera.aperture"
     updateQuickButton(database: database, button: button)
 
     button = SettingsQuickButton(name: String(localized: "Record"))
