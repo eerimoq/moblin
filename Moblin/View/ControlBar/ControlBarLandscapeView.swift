@@ -1,5 +1,13 @@
 import SwiftUI
 
+private func edgesToIgnore() -> Edge.Set {
+    if isPhone() {
+        return [.trailing]
+    } else {
+        return []
+    }
+}
+
 private struct QuickButtonsView: View {
     @EnvironmentObject var model: Model
     var page: Int
@@ -146,7 +154,6 @@ private struct MainPageView: View {
             PageView(page: 0, width: width)
             StreamButton()
                 .padding([.top], 10)
-                .padding([.bottom], 15)
                 .frame(width: width - 10)
         }
     }
@@ -188,14 +195,14 @@ private struct PagesView: View {
             }
             .scrollTargetBehavior(ControlBarPageScrollTargetBehavior(model: model))
             .scrollIndicators(.never)
-            .ignoresSafeArea()
+            .ignoresSafeArea(.all, edges: edgesToIgnore())
         } else {
             ScrollView(.horizontal) {
                 MainPageView(width: width)
                     .padding([.leading], 5)
             }
             .scrollIndicators(.never)
-            .ignoresSafeArea()
+            .ignoresSafeArea(.all, edges: edgesToIgnore())
         }
     }
 }
@@ -221,6 +228,6 @@ struct ControlBarLandscapeView: View {
         .padding([.top, .bottom], 0)
         .frame(width: controlBarWidth())
         .background(.black)
-        .ignoresSafeArea()
+        .ignoresSafeArea(.all, edges: edgesToIgnore())
     }
 }
