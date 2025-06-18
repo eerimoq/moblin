@@ -5,6 +5,22 @@ private struct QuickButtonsView: View {
     var page: Int
     let width: Double
 
+    private func buttonSize() -> Double {
+        if model.database.quickButtonsGeneral.bigButtons {
+            return controlBarQuickButtonSingleQuickButtonSize
+        } else {
+            return controlBarButtonSize
+        }
+    }
+
+    private func nameSize() -> Double {
+        if model.database.quickButtonsGeneral.bigButtons {
+            return controlBarQuickButtonNameSingleColumnSize
+        } else {
+            return controlBarQuickButtonNameSize
+        }
+    }
+
     var body: some View {
         VStack {
             ForEach(model.getQuickButtonPairs(page: page)) { pair in
@@ -13,37 +29,39 @@ private struct QuickButtonsView: View {
                         if let second = pair.second {
                             QuickButtonsInnerView(
                                 state: second,
-                                size: controlBarButtonSize,
-                                nameSize: controlBarQuickButtonNameSize,
-                                nameWidth: controlBarButtonSize,
+                                size: buttonSize(),
+                                nameSize: nameSize(),
+                                nameWidth: buttonSize(),
                             )
                         } else {
-                            QuickButtonPlaceholderImage()
+                            QuickButtonPlaceholderImage(size: buttonSize())
                         }
                         QuickButtonsInnerView(
                             state: pair.first,
-                            size: controlBarButtonSize,
-                            nameSize: controlBarQuickButtonNameSize,
-                            nameWidth: controlBarButtonSize,
+                            size: buttonSize(),
+                            nameSize: nameSize(),
+                            nameWidth: buttonSize(),
                         )
                     }
                 } else {
                     if let second = pair.second {
                         QuickButtonsInnerView(
                             state: second,
-                            size: controlBarQuickButtonSingleQuickButtonSize,
-                            nameSize: controlBarQuickButtonNameSingleColumnSize,
+                            size: buttonSize(),
+                            nameSize: nameSize(),
                             nameWidth: width - 10,
                         )
+                        .frame(width: width - 10)
                     } else {
                         EmptyView()
                     }
                     QuickButtonsInnerView(
                         state: pair.first,
-                        size: controlBarQuickButtonSingleQuickButtonSize,
-                        nameSize: controlBarQuickButtonNameSingleColumnSize,
+                        size: buttonSize(),
+                        nameSize: nameSize(),
                         nameWidth: width - 10,
                     )
+                    .frame(width: width - 10)
                 }
             }
         }
@@ -83,8 +101,6 @@ private struct IconAndSettingsView: View {
                 Image("\(model.iconImage)NoBackground")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .padding([.bottom], 4)
-                    .offset(x: 2)
                     .frame(width: controlBarButtonSize, height: controlBarButtonSize)
             }
             Button {
@@ -98,9 +114,10 @@ private struct IconAndSettingsView: View {
                     )
                     .foregroundColor(.white)
             }
-            .padding([.leading], 10)
+            .padding([.leading], 7)
         }
-        .padding([.leading, .trailing], 10)
+        .padding([.leading], 0)
+        .padding([.trailing], 10)
         .padding([.bottom], 5)
     }
 }
@@ -124,12 +141,13 @@ private struct MainPageView: View {
     let width: Double
 
     var body: some View {
-        VStack(spacing: 0) {
+        VStack(alignment: .leading, spacing: 0) {
             IconAndSettingsView()
             PageView(page: 0, width: width)
             StreamButton()
                 .padding([.top], 10)
-                .padding([.leading, .trailing], 5)
+                .padding([.bottom], 15)
+                .frame(width: width - 10)
         }
     }
 }
@@ -163,15 +181,17 @@ private struct PagesView: View {
                             }
                         }
                     }
-                    .containerRelativeFrame(.horizontal, count: 1, spacing: 0)
+                    .padding([.leading], 5)
+                    .containerRelativeFrame(.horizontal, count: 1, spacing: 0, alignment: .leading)
                 }
                 .scrollTargetLayout()
             }
             .scrollTargetBehavior(ControlBarPageScrollTargetBehavior(model: model))
             .scrollIndicators(.never)
-            .frame(width: width - 1)
+            .ignoresSafeArea()
         } else {
             MainPageView(width: width)
+                .ignoresSafeArea()
         }
     }
 }
@@ -197,5 +217,6 @@ struct ControlBarLandscapeView: View {
         .padding([.top, .bottom], 0)
         .frame(width: controlBarWidth())
         .background(.black)
+        .ignoresSafeArea()
     }
 }

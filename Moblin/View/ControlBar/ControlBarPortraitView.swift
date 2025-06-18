@@ -30,7 +30,7 @@ private struct QuickButtonsView: View {
                                 nameWidth: controlBarButtonSize,
                             )
                         } else {
-                            QuickButtonPlaceholderImage()
+                            QuickButtonPlaceholderImage(size: controlBarButtonSize)
                         }
                         QuickButtonsInnerView(
                             state: pair.first,

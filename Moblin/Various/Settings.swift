@@ -4285,11 +4285,13 @@ class SettingsPhoneCoolerDevices: Codable, ObservableObject {
 
 class SettingsQuickButtons: Codable, ObservableObject {
     @Published var twoColumns: Bool = true
+    @Published var bigButtons: Bool = false
     @Published var showName: Bool = true
     @Published var enableScroll: Bool = true
 
     enum CodingKeys: CodingKey {
         case twoColumns,
+             bigButtons,
              showName,
              enableScroll
     }
@@ -4297,6 +4299,7 @@ class SettingsQuickButtons: Codable, ObservableObject {
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.twoColumns, twoColumns)
+        try container.encode(.bigButtons, bigButtons)
         try container.encode(.showName, showName)
         try container.encode(.enableScroll, enableScroll)
     }
@@ -4306,6 +4309,7 @@ class SettingsQuickButtons: Codable, ObservableObject {
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         twoColumns = container.decode(.twoColumns, Bool.self, true)
+        bigButtons = container.decode(.bigButtons, Bool.self, false)
         showName = container.decode(.showName, Bool.self, true)
         enableScroll = container.decode(.enableScroll, Bool.self, true)
     }

@@ -16,6 +16,10 @@ private struct AppearenceSettingsView: View {
                         model.updateQuickButtonStates()
                     }
             }
+            Toggle("Big buttons", isOn: $quickButtons.bigButtons)
+                .onChange(of: quickButtons.bigButtons) { _ in
+                    model.updateQuickButtonStates()
+                }
             Toggle("Show name", isOn: $quickButtons.showName)
                 .onChange(of: quickButtons.showName) { _ in
                     model.updateQuickButtonStates()

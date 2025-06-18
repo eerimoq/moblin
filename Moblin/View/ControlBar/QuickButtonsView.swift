@@ -21,8 +21,17 @@ private struct QuickButtonImage: View {
         state.button.backgroundColor.color()
     }
 
+    private func iconSize() -> Font {
+        if model.database.quickButtonsGeneral.bigButtons {
+            return .system(size: 20)
+        } else {
+            return .body
+        }
+    }
+
     var body: some View {
         let image = Image(systemName: getImage(state: state))
+            .font(iconSize())
             .frame(width: buttonSize, height: buttonSize)
             .foregroundColor(.white)
             .background(backgroundColor)
@@ -37,7 +46,8 @@ private struct QuickButtonImage: View {
             } else {
                 image
             }
-        }.onTapGesture {
+        }
+        .onTapGesture {
             onTapGesture()
         }
         .onLongPressGesture {
@@ -83,11 +93,14 @@ private struct InstantReplayView: View {
 }
 
 struct QuickButtonPlaceholderImage: View {
+    var size: CGFloat
+
     var body: some View {
         Image(systemName: "pawprint")
-            .frame(width: controlBarButtonSize, height: controlBarButtonSize)
+            .frame(width: size, height: size)
             .foregroundColor(.black)
             .opacity(0.0)
+            .padding(0)
     }
 }
 
@@ -370,10 +383,10 @@ struct QuickButtonsInnerView: View {
     }
 
     var body: some View {
-        VStack {
+        VStack(spacing: 0) {
             switch state.button.type {
             case .unknown:
-                QuickButtonPlaceholderImage()
+                QuickButtonPlaceholderImage(size: size)
             case .torch:
                 QuickButtonImage(state: state, buttonSize: size) {
                     torchAction(state: state)
@@ -616,6 +629,7 @@ struct QuickButtonsInnerView: View {
             }
             if model.database.quickButtonsGeneral.showName && !model.isPortrait() {
                 Text(state.button.name)
+                    .padding(0)
                     .multilineTextAlignment(.center)
                     .frame(width: nameWidth, alignment: .center)
                     .foregroundColor(.white)
