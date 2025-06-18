@@ -461,6 +461,7 @@
 		03BC90B22BD580F800529987 /* StreamWizardNetworkSetupMyServersRtmpSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC90B12BD580F800529987 /* StreamWizardNetworkSetupMyServersRtmpSettingsView.swift */; };
 		03BDE2222B24367D00DF193A /* ObsWebSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BDE2212B24367D00DF193A /* ObsWebSocket.swift */; };
 		03BDE2262B24656400DF193A /* StreamObsRemoteControlSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BDE2252B24656400DF193A /* StreamObsRemoteControlSettingsView.swift */; };
+		03BE1B292E0261E000521479 /* FileStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BE1B282E0261D100521479 /* FileStorage.swift */; };
 		03BE504A2B3EB59A004720AF /* IpMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BE50492B3EB59A004720AF /* IpMonitor.swift */; };
 		03C088372B0AFFA8000990DA /* InlinePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C088362B0AFFA8000990DA /* InlinePickerView.swift */; };
 		03C2C2832B5F906E00E2F30B /* SliderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C2C2822B5F906E00E2F30B /* SliderView.swift */; };
@@ -1124,6 +1125,7 @@
 		03BC90B12BD580F800529987 /* StreamWizardNetworkSetupMyServersRtmpSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardNetworkSetupMyServersRtmpSettingsView.swift; sourceTree = "<group>"; };
 		03BDE2212B24367D00DF193A /* ObsWebSocket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObsWebSocket.swift; sourceTree = "<group>"; };
 		03BDE2252B24656400DF193A /* StreamObsRemoteControlSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamObsRemoteControlSettingsView.swift; sourceTree = "<group>"; };
+		03BE1B282E0261D100521479 /* FileStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileStorage.swift; sourceTree = "<group>"; };
 		03BE50492B3EB59A004720AF /* IpMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IpMonitor.swift; sourceTree = "<group>"; };
 		03C088362B0AFFA8000990DA /* InlinePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InlinePickerView.swift; sourceTree = "<group>"; };
 		03C2C2822B5F906E00E2F30B /* SliderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SliderView.swift; sourceTree = "<group>"; };
@@ -2901,12 +2903,40 @@
 			path = ObsRemoteControl;
 			sourceTree = "<group>";
 		};
+		03BE1B2A2E02653B00521479 /* Managers */ = {
+			isa = PBXGroup;
+			children = (
+				03C5AE472C5515B20056B6C7 /* GeographyManager.swift */,
+				03BA73A02DDC3A6900075CD6 /* GForceManager.swift */,
+				03279CE62B4CD245006CEA5A /* Location.swift */,
+				03C5AE412C536FE10056B6C7 /* WeatherManager.swift */,
+			);
+			path = Managers;
+			sourceTree = "<group>";
+		};
+		03BE1B2B2E02658700521479 /* Storages */ = {
+			isa = PBXGroup;
+			children = (
+				0397C3692C5E16FA00F93E58 /* AlertMediaStorage.swift */,
+				03BE1B282E0261D100521479 /* FileStorage.swift */,
+				036333272AAE2E5100FF1231 /* ImageStorage.swift */,
+				038C0F622C2D7C6400A258C6 /* LogsStorage.swift */,
+				031A43862C33B7A3007CF059 /* MediaPlayerStorage.swift */,
+				038F03972DE89C0400A72CA2 /* PngTuberStorage.swift */,
+				034D2EC12B351715003C6D14 /* RecordingsStorage.swift */,
+				03FC65C72DBB543600743C80 /* ReplaysStorage.swift */,
+				03487F252B334B63003D9ED9 /* StreamingHistory.swift */,
+				037723A32DE36F81007D040D /* VTuberStorage.swift */,
+			);
+			path = Storages;
+			sourceTree = "<group>";
+		};
 		03BE504E2B3EC107004720AF /* Various */ = {
 			isa = PBXGroup;
 			children = (
+				03BE1B2A2E02653B00521479 /* Managers */,
 				03BA73A22DDC561600075CD6 /* Model */,
-				03BA73A02DDC3A6900075CD6 /* GForceManager.swift */,
-				0397C3692C5E16FA00F93E58 /* AlertMediaStorage.swift */,
+				03BE1B2B2E02658700521479 /* Storages */,
 				0386053D2D8006D000B9C3CE /* BluetoothScanner.swift */,
 				03E6F7F82CE5B4AB00D9198A /* BondingStatisticsFormatter.swift */,
 				03D445E12AE5966B00A0F6E9 /* CacheAsyncImage.swift */,
@@ -2915,30 +2945,19 @@
 				038F03932DE426E500A72CA2 /* Detection.swift */,
 				0323F3822D21346F00A57AC2 /* DnsLookup.swift */,
 				031863C62C8C4BEA00CECA33 /* FaxReceiver.swift */,
-				03C5AE472C5515B20056B6C7 /* GeographyManager.swift */,
-				036333272AAE2E5100FF1231 /* ImageStorage.swift */,
 				03BE50492B3EB59A004720AF /* IpMonitor.swift */,
-				03279CE62B4CD245006CEA5A /* Location.swift */,
 				0379BB8F2AABA7DC00B718B6 /* Log.swift */,
-				038C0F622C2D7C6400A258C6 /* LogsStorage.swift */,
 				03A08B7F2AC368860018BA95 /* Media.swift */,
 				03311B8A2C3271B90073F9E2 /* MediaPlayer.swift */,
-				031A43862C33B7A3007CF059 /* MediaPlayerStorage.swift */,
 				03831D512AD90AB5008D26CC /* MoblinSettingsUrl.swift */,
 				033BEAC92C101B52005F4E06 /* NetworkInterfaceTypeSelector.swift */,
-				034D2EC12B351715003C6D14 /* RecordingsStorage.swift */,
 				0317646A2DB62398000080A5 /* ReplayFrameExtractor.swift */,
-				03FC65C72DBB543600743C80 /* ReplaysStorage.swift */,
 				0382933A2A9A73ED008963AA /* Settings.swift */,
 				03ADC6FC2CDDE00200E625BF /* SimpleTimer.swift */,
 				03510DDB2C7661A400FD3A27 /* SpeechToText.swift */,
-				03487F252B334B63003D9ED9 /* StreamingHistory.swift */,
 				03AD38D12C5280B300824980 /* TextFormatStringLoader.swift */,
 				03D37EDF2CE08921006D14C2 /* UrlSession.swift */,
 				03A707BF2B8F0FAE003BB7BE /* Utils.swift */,
-				037723A32DE36F81007D040D /* VTuberStorage.swift */,
-				038F03972DE89C0400A72CA2 /* PngTuberStorage.swift */,
-				03C5AE412C536FE10056B6C7 /* WeatherManager.swift */,
 				03762FE22D797A94003BD2E2 /* WebBrowserController.swift */,
 				0384C0372C10E14900B82216 /* WebSocketClient.swift */,
 			);
@@ -3911,6 +3930,7 @@
 				03831D522AD90AB5008D26CC /* MoblinSettingsUrl.swift in Sources */,
 				032A49BA2AC54E6500ED3916 /* ImportSettingsView.swift in Sources */,
 				038605452D8009A000B9C3CE /* HeartRateDeviceScannerSettingsView.swift in Sources */,
+				03BE1B292E0261E000521479 /* FileStorage.swift in Sources */,
 				0359F8B32BD3DA61005BFDA8 /* AudioStreamBasicDescription+Extension.swift in Sources */,
 				0325D0B72BB29754007EE85B /* ChatTextToSpeechSettingsView.swift in Sources */,
 				03A14BE32ACC903E00D180FF /* ZoomSettingsView.swift in Sources */,
