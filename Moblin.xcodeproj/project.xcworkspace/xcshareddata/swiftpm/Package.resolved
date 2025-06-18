@@ -1,5 +1,5 @@
 {
-  "originHash" : "479e4432ed781d0fd12328e1b0ecbf4a5bf478622a02a4294b02ef29e0b8d98e",
+  "originHash" : "d8d7fa218f0fc5fe025b58ad3365ee171bab30016d5e401f38644c8927c1ea89",
   "pins" : [
     {
       "identity" : "alerttoast",
@@ -17,6 +17,15 @@
       "state" : {
         "branch" : "main",
         "revision" : "24226431095c614c88de686ea5afcc99d7cb31f5"
+      }
+    },
+    {
+      "identity" : "blacksharklib.swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Spillmaker/BlackSharkLib.swift",
+      "state" : {
+        "revision" : "b329f089423e5e4ffd00a7e113255e3cff42a6bf",
+        "version" : "1.2.0"
       }
     },
     {
@@ -161,6 +170,15 @@
       "state" : {
         "branch" : "trunk",
         "revision" : "11baf75e9cd04b6aa7987f89e0104e7b8f3c10fa"
+      }
+    },
+    {
+      "identity" : "vrmkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/eerimoq/VRMKit",
+      "state" : {
+        "branch" : "main",
+        "revision" : "071e0bc6a0f4f0ba2385c05332b0adb172d0f7ec"
       }
     },
     {

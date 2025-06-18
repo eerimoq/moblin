@@ -81,6 +81,60 @@ struct TimerWidgetView: View {
     }
 }
 
+struct StopwatchWidgetView: View {
+    private let name: String
+    @ObservedObject var stopwatch: SettingsWidgetTextStopwatch
+    private let index: Int
+    private let textEffect: TextEffect
+    private var indented: Bool
+
+    init(name: String, stopwatch: SettingsWidgetTextStopwatch, index: Int, textEffect: TextEffect, indented: Bool) {
+        self.name = name
+        self.stopwatch = stopwatch
+        self.index = index
+        self.textEffect = textEffect
+        self.indented = indented
+    }
+
+    private func updateTextEffect() {
+        textEffect.setStopwatch(index: index, stopwatch: stopwatch.clone())
+    }
+
+    var body: some View {
+        HStack {
+            if indented {
+                Text("")
+                Text("").frame(width: iconWidth)
+            }
+            Text(name)
+            Spacer()
+            Button {
+                stopwatch.totalElapsed = 0.0
+                stopwatch.running = false
+                updateTextEffect()
+            } label: {
+                Image(systemName: "arrow.counterclockwise")
+                    .font(.title)
+            }
+            .padding([.trailing], 10)
+            Button {
+                stopwatch.running.toggle()
+                if stopwatch.running {
+                    stopwatch.playPressedTime = .now
+                } else {
+                    stopwatch.totalElapsed += stopwatch.playPressedTime.duration(to: .now).seconds
+                }
+                updateTextEffect()
+            } label: {
+                Image(systemName: stopwatch.running ? "stop" : "play")
+                    .font(.title)
+                    .frame(width: 35)
+            }
+        }
+        .buttonStyle(BorderlessButtonStyle())
+    }
+}
+
 struct CheckboxWidgetView: View {
     private let name: String
     private let checkbox: SettingsWidgetTextCheckbox
@@ -266,7 +320,7 @@ struct QuickButtonWidgetsView: View {
                         }, set: {
                             widget.enabled = $0
                             model.reloadSpeechToText()
-                            model.sceneUpdated(attachCamera: model.isCaptureDeviceVideoSoureWidget(widget: widget))
+                            model.sceneUpdated(attachCamera: model.isCaptureDeviceWidget(widget: widget))
                         })) {
                             IconAndTextView(
                                 image: widgetImage(widget: widget),
@@ -277,8 +331,8 @@ struct QuickButtonWidgetsView: View {
                         if widget.type == .text {
                             if let textEffect = model.getTextEffect(id: widget.id) {
                                 let textFormat = loadTextFormat(format: widget.text.formatString)
-                                ForEach(widget.text.timers!) { timer in
-                                    let index = widget.text.timers!.firstIndex(where: { $0 === timer }) ?? 0
+                                ForEach(widget.text.timers) { timer in
+                                    let index = widget.text.timers.firstIndex(where: { $0 === timer }) ?? 0
                                     TimerWidgetView(
                                         name: "Timer \(index + 1)",
                                         timer: timer,
@@ -287,9 +341,18 @@ struct QuickButtonWidgetsView: View {
                                         indented: true
                                     )
                                 }
-                                ForEach(widget.text.checkboxes!) { checkbox in
-                                    let index = widget.text.checkboxes!
-                                        .firstIndex(where: { $0 === checkbox }) ?? 0
+                                ForEach(widget.text.stopwatches) { stopwatch in
+                                    let index = widget.text.stopwatches.firstIndex(where: { $0 === stopwatch }) ?? 0
+                                    StopwatchWidgetView(
+                                        name: "Stopwatch \(index + 1)",
+                                        stopwatch: stopwatch,
+                                        index: index,
+                                        textEffect: textEffect,
+                                        indented: true
+                                    )
+                                }
+                                ForEach(widget.text.checkboxes) { checkbox in
+                                    let index = widget.text.checkboxes.firstIndex(where: { $0 === checkbox }) ?? 0
                                     CheckboxWidgetView(
                                         name: textFormat.getCheckboxText(index: index),
                                         checkbox: checkbox,
@@ -298,9 +361,8 @@ struct QuickButtonWidgetsView: View {
                                         indented: true
                                     )
                                 }
-                                ForEach(widget.text.ratings!) { rating in
-                                    let index = widget.text.ratings!
-                                        .firstIndex(where: { $0 === rating }) ?? 0
+                                ForEach(widget.text.ratings) { rating in
+                                    let index = widget.text.ratings.firstIndex(where: { $0 === rating }) ?? 0
                                     RatingWidgetView(
                                         name: "Rating \(index + 1)",
                                         rating: rating,
@@ -309,9 +371,8 @@ struct QuickButtonWidgetsView: View {
                                         indented: true
                                     )
                                 }
-                                ForEach(widget.text.lapTimes!) { lapTimes in
-                                    let index = widget.text.lapTimes!
-                                        .firstIndex(where: { $0 === lapTimes }) ?? 0
+                                ForEach(widget.text.lapTimes) { lapTimes in
+                                    let index = widget.text.lapTimes.firstIndex(where: { $0 === lapTimes }) ?? 0
                                     LapTimesWidgetView(
                                         name: "Lap times \(index + 1)",
                                         lapTimes: lapTimes,

@@ -17,6 +17,7 @@ private let suggestionTime = "🕑 {shortTime}"
 private let suggestionDate = "📅 {date}"
 private let suggestionFullDate = "📅 {fullDate}"
 private let suggestionTimer = "⏳ {timer}"
+private let suggestionStopwatch = "⏱️ {stopwatch}"
 private let suggestionWeather = "{conditions} {temperature}"
 private let suggestionTravel =
     "\(suggestionWeather)\n\(suggestionTime)\n\(suggestionCity)\n\(suggestionMovement)"
@@ -35,22 +36,23 @@ private func createSuggestions() -> [Suggestion] {
         Suggestion(id: 3, name: String(localized: "Date"), text: suggestionDate),
         Suggestion(id: 4, name: String(localized: "Full date"), text: suggestionFullDate),
         Suggestion(id: 5, name: String(localized: "Timer"), text: suggestionTimer),
-        Suggestion(id: 6, name: String(localized: "City"), text: suggestionCity),
-        Suggestion(id: 7, name: String(localized: "Country"), text: suggestionCountry),
-        Suggestion(id: 8, name: String(localized: "Movement"), text: suggestionMovement),
+        Suggestion(id: 6, name: String(localized: "Stopwatch"), text: suggestionStopwatch),
+        Suggestion(id: 7, name: String(localized: "City"), text: suggestionCity),
+        Suggestion(id: 8, name: String(localized: "Country"), text: suggestionCountry),
+        Suggestion(id: 9, name: String(localized: "Movement"), text: suggestionMovement),
     ]
     if isPhone() {
         suggestions += [
-            Suggestion(id: 9, name: String(localized: "Heart rate"), text: suggestionHeartRate),
+            Suggestion(id: 10, name: String(localized: "Heart rate"), text: suggestionHeartRate),
         ]
     }
     suggestions += [
-        Suggestion(id: 10, name: String(localized: "Subtitles"), text: suggestionSubtitles),
-        Suggestion(id: 11, name: String(localized: "Muted"), text: suggestionMuted),
-        Suggestion(id: 12, name: String(localized: "Debug"), text: suggestionDebug),
-        Suggestion(id: 13, name: String(localized: "Workout test"), text: suggestionWorkoutTest),
-        Suggestion(id: 14, name: String(localized: "Tesla"), text: suggestionTesla),
-        Suggestion(id: 15, name: String(localized: "Racing"), text: suggestionRacing),
+        Suggestion(id: 11, name: String(localized: "Subtitles"), text: suggestionSubtitles),
+        Suggestion(id: 12, name: String(localized: "Muted"), text: suggestionMuted),
+        Suggestion(id: 13, name: String(localized: "Debug"), text: suggestionDebug),
+        Suggestion(id: 14, name: String(localized: "Workout test"), text: suggestionWorkoutTest),
+        Suggestion(id: 15, name: String(localized: "Tesla"), text: suggestionTesla),
+        Suggestion(id: 16, name: String(localized: "Racing"), text: suggestionRacing),
     ]
     return suggestions
 }
@@ -117,15 +119,35 @@ private struct TextSelectionView: View {
                 return false
             }
         }.count
-        for index in 0 ..< numberOfTimers where index >= widget.text.timers!.count {
-            widget.text.timers!.append(.init())
+        for index in 0 ..< numberOfTimers where index >= widget.text.timers.count {
+            widget.text.timers.append(.init())
         }
-        while widget.text.timers!.count > numberOfTimers {
-            widget.text.timers!.removeLast()
+        while widget.text.timers.count > numberOfTimers {
+            widget.text.timers.removeLast()
         }
-        textEffect?.setTimersEndTime(endTimes: widget.text.timers!.map {
+        textEffect?.setTimersEndTime(endTimes: widget.text.timers.map {
             .now.advanced(by: .seconds(utcTimeDeltaFromNow(to: $0.endTime)))
         })
+    }
+
+    private func updateStopwatches(_: TextEffect?, _ parts: [TextFormatPart]) {
+        let numberOfStopwatches = parts.filter { value in
+            switch value {
+            case .stopwatch:
+                return true
+            default:
+                return false
+            }
+        }.count
+        for index in 0 ..< numberOfStopwatches where index >= widget.text.stopwatches.count {
+            widget.text.stopwatches.append(.init())
+        }
+        while widget.text.stopwatches.count > numberOfStopwatches {
+            widget.text.stopwatches.removeLast()
+        }
+        // textEffect?.setTimersEndTime(endTimes: widget.text.timers.map {
+        //     .now.advanced(by: .seconds(utcTimeDeltaFromNow(to: $0.endTime)))
+        // })
     }
 
     private func updateCheckboxes(_ textEffect: TextEffect?, _ parts: [TextFormatPart]) {
@@ -137,13 +159,13 @@ private struct TextSelectionView: View {
                 return false
             }
         }.count
-        for index in 0 ..< numberOfCheckboxes where index >= widget.text.checkboxes!.count {
-            widget.text.checkboxes!.append(.init())
+        for index in 0 ..< numberOfCheckboxes where index >= widget.text.checkboxes.count {
+            widget.text.checkboxes.append(.init())
         }
-        while widget.text.checkboxes!.count > numberOfCheckboxes {
-            widget.text.checkboxes!.removeLast()
+        while widget.text.checkboxes.count > numberOfCheckboxes {
+            widget.text.checkboxes.removeLast()
         }
-        textEffect?.setCheckboxes(checkboxes: widget.text.checkboxes!.map { $0.checked })
+        textEffect?.setCheckboxes(checkboxes: widget.text.checkboxes.map { $0.checked })
     }
 
     private func updateRatings(_ textEffect: TextEffect?, _ parts: [TextFormatPart]) {
@@ -155,13 +177,13 @@ private struct TextSelectionView: View {
                 return false
             }
         }.count
-        for index in 0 ..< numberOfRatings where index >= widget.text.ratings!.count {
-            widget.text.ratings!.append(.init())
+        for index in 0 ..< numberOfRatings where index >= widget.text.ratings.count {
+            widget.text.ratings.append(.init())
         }
-        while widget.text.ratings!.count > numberOfRatings {
-            widget.text.ratings!.removeLast()
+        while widget.text.ratings.count > numberOfRatings {
+            widget.text.ratings.removeLast()
         }
-        textEffect?.setRatings(ratings: widget.text.ratings!.map { $0.rating })
+        textEffect?.setRatings(ratings: widget.text.ratings.map { $0.rating })
     }
 
     private func updateLapTimes(_ textEffect: TextEffect?, _ parts: [TextFormatPart]) {
@@ -173,13 +195,13 @@ private struct TextSelectionView: View {
                 return false
             }
         }.count
-        for index in 0 ..< numberOfLapTimes where index >= widget.text.lapTimes!.count {
-            widget.text.lapTimes!.append(.init())
+        for index in 0 ..< numberOfLapTimes where index >= widget.text.lapTimes.count {
+            widget.text.lapTimes.append(.init())
         }
-        while widget.text.lapTimes!.count > numberOfLapTimes {
-            widget.text.lapTimes!.removeLast()
+        while widget.text.lapTimes.count > numberOfLapTimes {
+            widget.text.lapTimes.removeLast()
         }
-        textEffect?.setLapTimes(lapTimes: widget.text.lapTimes!.map { $0.lapTimes })
+        textEffect?.setLapTimes(lapTimes: widget.text.lapTimes.map { $0.lapTimes })
     }
 
     private func updateNeedsWeather(_ parts: [TextFormatPart]) {
@@ -246,6 +268,7 @@ private struct TextSelectionView: View {
         textEffect?.setFormat(format: value)
         let parts = loadTextFormat(format: value)
         updateTimers(textEffect, parts)
+        updateStopwatches(textEffect, parts)
         updateCheckboxes(textEffect, parts)
         updateRatings(textEffect, parts)
         updateLapTimes(textEffect, parts)
@@ -259,7 +282,7 @@ private struct TextSelectionView: View {
     var body: some View {
         Form {
             Section {
-                TextField("", text: $value, axis: .vertical)
+                MultiLineTextField(value: $value)
                     .keyboardType(.default)
                     .textInputAutocapitalization(.never)
                     .disableAutocorrection(true)
@@ -280,6 +303,7 @@ private struct TextSelectionView: View {
                 FormatView(title: "{date}", description: String(localized: "Show date"), text: $value)
                 FormatView(title: "{fullDate}", description: String(localized: "Show full date"), text: $value)
                 FormatView(title: "{timer}", description: String(localized: "Show a timer"), text: $value)
+                FormatView(title: "{stopwatch}", description: String(localized: "Show a stopwatch"), text: $value)
                 FormatView(title: "{checkbox}", description: String(localized: "Show a checkbox"), text: $value)
                 FormatView(title: "{rating}", description: String(localized: "Show a 0-5 rating"), text: $value)
                 FormatView(title: "{subtitles}", description: String(localized: "Show subtitles"), text: $value)
@@ -388,28 +412,21 @@ private struct TextSelectionView: View {
 struct WidgetTextSettingsView: View {
     @EnvironmentObject var model: Model
     var widget: SettingsWidget
-    @State var backgroundColor: Color
-    @State var foregroundColor: Color
-    @State var fontSize: Float
-    @State var fontDesign: String
-    @State var fontWeight: String
-    @State var horizontalAlignment: String
-    @State var verticalAlignment: String
-    @State var delay: Double
+    @ObservedObject var text: SettingsWidgetText
 
     var body: some View {
         Section {
             NavigationLink {
-                TextSelectionView(widget: widget, value: widget.text.formatString)
+                TextSelectionView(widget: widget, value: text.formatString)
             } label: {
                 TextItemView(name: String(localized: "Text"), value: widget.text.formatString)
             }
         }
-        if !widget.text.timers!.isEmpty {
+        if !text.timers.isEmpty {
             if let textEffect = model.getTextEffect(id: widget.id) {
                 Section {
-                    ForEach(widget.text.timers!) { timer in
-                        let index = widget.text.timers!.firstIndex(where: { $0 === timer }) ?? 0
+                    ForEach(text.timers) { timer in
+                        let index = text.timers.firstIndex(where: { $0 === timer }) ?? 0
                         TimerWidgetView(
                             name: "Timer \(index + 1)",
                             timer: timer,
@@ -423,12 +440,30 @@ struct WidgetTextSettingsView: View {
                 }
             }
         }
-        if !widget.text.checkboxes!.isEmpty {
+        if !text.stopwatches.isEmpty {
             if let textEffect = model.getTextEffect(id: widget.id) {
-                let textFormat = loadTextFormat(format: widget.text.formatString)
                 Section {
-                    ForEach(widget.text.checkboxes!) { checkbox in
-                        let index = widget.text.checkboxes!.firstIndex(where: { $0 === checkbox }) ?? 0
+                    ForEach(text.stopwatches) { stopwatch in
+                        let index = widget.text.stopwatches.firstIndex(where: { $0 === stopwatch }) ?? 0
+                        StopwatchWidgetView(
+                            name: "Stopwatch \(index + 1)",
+                            stopwatch: stopwatch,
+                            index: index,
+                            textEffect: textEffect,
+                            indented: false
+                        )
+                    }
+                } header: {
+                    Text("Stopwatches")
+                }
+            }
+        }
+        if !text.checkboxes.isEmpty {
+            if let textEffect = model.getTextEffect(id: widget.id) {
+                let textFormat = loadTextFormat(format: text.formatString)
+                Section {
+                    ForEach(text.checkboxes) { checkbox in
+                        let index = text.checkboxes.firstIndex(where: { $0 === checkbox }) ?? 0
                         CheckboxWidgetView(
                             name: textFormat.getCheckboxText(index: index),
                             checkbox: checkbox,
@@ -442,11 +477,11 @@ struct WidgetTextSettingsView: View {
                 }
             }
         }
-        if !widget.text.ratings!.isEmpty {
+        if !text.ratings.isEmpty {
             if let textEffect = model.getTextEffect(id: widget.id) {
                 Section {
-                    ForEach(widget.text.ratings!) { rating in
-                        let index = widget.text.ratings!.firstIndex(where: { $0 === rating }) ?? 0
+                    ForEach(text.ratings) { rating in
+                        let index = text.ratings.firstIndex(where: { $0 === rating }) ?? 0
                         RatingWidgetView(
                             name: "Rating \(index + 1)",
                             rating: rating,
@@ -460,11 +495,11 @@ struct WidgetTextSettingsView: View {
                 }
             }
         }
-        if !widget.text.lapTimes!.isEmpty {
+        if !text.lapTimes.isEmpty {
             if let textEffect = model.getTextEffect(id: widget.id) {
                 Section {
-                    ForEach(widget.text.lapTimes!) { lapTimes in
-                        let index = widget.text.lapTimes!.firstIndex(where: { $0 === lapTimes }) ?? 0
+                    ForEach(text.lapTimes) { lapTimes in
+                        let index = text.lapTimes.firstIndex(where: { $0 === lapTimes }) ?? 0
                         LapTimesWidgetView(
                             name: "Lap times \(index + 1)",
                             lapTimes: lapTimes,
@@ -479,21 +514,21 @@ struct WidgetTextSettingsView: View {
             }
         }
         Section {
-            ColorPicker("Background", selection: $backgroundColor, supportsOpacity: true)
-                .onChange(of: backgroundColor) { _ in
-                    guard let color = backgroundColor.toRgb() else {
+            ColorPicker("Background", selection: $text.backgroundColorColor, supportsOpacity: true)
+                .onChange(of: text.backgroundColorColor) { _ in
+                    guard let color = text.backgroundColorColor.toRgb() else {
                         return
                     }
-                    widget.text.backgroundColor = color
+                    text.backgroundColor = color
                     model.getTextEffect(id: widget.id)?.setBackgroundColor(color: color)
                     model.remoteSceneSettingsUpdated()
                 }
-            ColorPicker("Foreground", selection: $foregroundColor, supportsOpacity: true)
-                .onChange(of: foregroundColor) { _ in
-                    guard let color = foregroundColor.toRgb() else {
+            ColorPicker("Foreground", selection: $text.foregroundColorColor, supportsOpacity: true)
+                .onChange(of: text.foregroundColorColor) { _ in
+                    guard let color = text.foregroundColorColor.toRgb() else {
                         return
                     }
-                    widget.text.foregroundColor = color
+                    text.foregroundColor = color
                     model.getTextEffect(id: widget.id)?.setForegroundColor(color: color)
                     model.remoteSceneSettingsUpdated()
                 }
@@ -504,56 +539,54 @@ struct WidgetTextSettingsView: View {
             HStack {
                 Text("Size")
                 Slider(
-                    value: $fontSize,
+                    value: $text.fontSizeFloat,
                     in: 10 ... 200,
                     step: 5,
                     onEditingChanged: { begin in
                         guard !begin else {
                             return
                         }
-                        widget.text.fontSize = Int(fontSize)
-                        model.getTextEffect(id: widget.id)?.setFontSize(size: CGFloat(fontSize))
+                        text.fontSize = Int(text.fontSizeFloat)
+                        model.getTextEffect(id: widget.id)?.setFontSize(size: CGFloat(text.fontSizeFloat))
                         model.remoteSceneSettingsUpdated()
                     }
                 )
-                Text(String(Int(fontSize)))
+                Text(String(Int(text.fontSizeFloat)))
                     .frame(width: 35)
             }
             HStack {
                 Text("Design")
                 Spacer()
-                Picker("", selection: $fontDesign) {
-                    ForEach(textWidgetFontDesigns, id: \.self) {
-                        Text($0)
+                Picker("", selection: $text.fontDesign) {
+                    ForEach(SettingsFontDesign.allCases, id: \.self) {
+                        Text($0.toString())
+                            .tag($0)
                     }
                 }
-                .onChange(of: fontDesign) {
-                    widget.text.fontDesign = SettingsFontDesign.fromString(value: $0)
-                    model.getTextEffect(id: widget.id)?
-                        .setFontDesign(design: widget.text.fontDesign!.toSystem())
+                .onChange(of: text.fontDesign) { _ in
+                    model.getTextEffect(id: widget.id)?.setFontDesign(design: text.fontDesign.toSystem())
                     model.remoteSceneSettingsUpdated()
                 }
             }
             HStack {
                 Text("Weight")
                 Spacer()
-                Picker("", selection: $fontWeight) {
-                    ForEach(textWidgetFontWeights, id: \.self) {
-                        Text($0)
+                Picker("", selection: $text.fontWeight) {
+                    ForEach(SettingsFontWeight.allCases, id: \.self) {
+                        Text($0.toString())
+                            .tag($0)
                     }
                 }
-                .onChange(of: fontWeight) {
-                    widget.text.fontWeight = SettingsFontWeight.fromString(value: $0)
-                    model.getTextEffect(id: widget.id)?
-                        .setFontWeight(weight: widget.text.fontWeight!.toSystem())
+                .onChange(of: text.fontWeight) { _ in
+                    model.getTextEffect(id: widget.id)?.setFontWeight(weight: text.fontWeight.toSystem())
                     model.remoteSceneSettingsUpdated()
                 }
             }
             Toggle(isOn: Binding(get: {
-                widget.text.fontMonospacedDigits!
+                text.fontMonospacedDigits
             }, set: { value in
-                widget.text.fontMonospacedDigits = value
-                model.getTextEffect(id: widget.id)?.setFontMonospacedDigits(enabled: widget.text.fontMonospacedDigits!)
+                text.fontMonospacedDigits = value
+                model.getTextEffect(id: widget.id)?.setFontMonospacedDigits(enabled: text.fontMonospacedDigits)
                 model.remoteSceneSettingsUpdated()
             })) {
                 Text("Monospaced digits")
@@ -565,30 +598,30 @@ struct WidgetTextSettingsView: View {
             HStack {
                 Text("Horizontal")
                 Spacer()
-                Picker("", selection: $horizontalAlignment) {
-                    ForEach(textWidgetHorizontalAlignments, id: \.self) {
-                        Text($0)
+                Picker("", selection: $text.horizontalAlignment) {
+                    ForEach(SettingsHorizontalAlignment.allCases, id: \.self) {
+                        Text($0.toString())
+                            .tag($0)
                     }
                 }
-                .onChange(of: horizontalAlignment) {
-                    widget.text.horizontalAlignment = SettingsHorizontalAlignment.fromString(value: $0)
+                .onChange(of: text.horizontalAlignment) { _ in
                     model.getTextEffect(id: widget.id)?
-                        .setHorizontalAlignment(alignment: widget.text.horizontalAlignment!.toSystem())
+                        .setHorizontalAlignment(alignment: text.horizontalAlignment.toSystem())
                     model.remoteSceneSettingsUpdated()
                 }
             }
             HStack {
                 Text("Vertical")
                 Spacer()
-                Picker("", selection: $verticalAlignment) {
-                    ForEach(textWidgetVerticalAlignments, id: \.self) {
-                        Text($0)
+                Picker("", selection: $text.verticalAlignment) {
+                    ForEach(SettingsVerticalAlignment.allCases, id: \.self) {
+                        Text($0.toString())
+                            .tag($0)
                     }
                 }
-                .onChange(of: verticalAlignment) {
-                    widget.text.verticalAlignment = SettingsVerticalAlignment.fromString(value: $0)
+                .onChange(of: text.verticalAlignment) { _ in
                     model.getTextEffect(id: widget.id)?
-                        .setVerticalAlignment(alignment: widget.text.verticalAlignment!.toSystem())
+                        .setVerticalAlignment(alignment: text.verticalAlignment.toSystem())
                     model.remoteSceneSettingsUpdated()
                 }
             }
@@ -598,18 +631,17 @@ struct WidgetTextSettingsView: View {
         Section {
             HStack {
                 Slider(
-                    value: $delay,
+                    value: $text.delay,
                     in: 0 ... 10,
                     step: 0.5,
                     onEditingChanged: { begin in
                         guard !begin else {
                             return
                         }
-                        widget.text.delay = delay
                         model.resetSelectedScene(changeScene: false)
                     }
                 )
-                Text(String(String(delay)))
+                Text(String(String(text.delay)))
                     .frame(width: 35)
             }
         } header: {

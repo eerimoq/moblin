@@ -57,15 +57,15 @@ final class BrowserEffect: VideoEffect {
         settingName: String,
         moblinAccess: Bool
     ) {
-        scaleToFitVideo = widget.scaleToFitVideo!
+        scaleToFitVideo = widget.scaleToFitVideo
         self.url = url
         self.videoSize = videoSize
         self.settingName = settingName
-        fps = widget.fps!
+        fps = widget.fps
         isLoaded = false
         x = .nan
         y = .nan
-        audioOnly = widget.audioOnly!
+        audioOnly = widget.audioOnly
         if audioOnly {
             width = 1
             height = 1
@@ -305,9 +305,13 @@ final class BrowserEffect: VideoEffect {
         }
     }
 
-    override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
+    override func execute(_ image: CIImage, _ info: VideoEffectInfo) -> CIImage {
         updateOverlay()
-        filter.inputImage = overlay
+        if let overlay {
+            filter.inputImage = applyEffects(overlay, info)
+        } else {
+            filter.inputImage = nil
+        }
         filter.backgroundImage = image
         return filter.outputImage ?? image
     }

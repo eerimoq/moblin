@@ -8,25 +8,25 @@ struct StreamEmotesSettingsView: View {
         Form {
             Section {
                 Toggle("BTTV", isOn: Binding(get: {
-                    stream.chat!.bttvEmotes
+                    stream.chat.bttvEmotes
                 }, set: { value in
-                    stream.chat!.bttvEmotes = value
+                    stream.chat.bttvEmotes = value
                     if stream.enabled {
                         model.bttvEmotesEnabledUpdated()
                     }
                 }))
                 Toggle("FFZ", isOn: Binding(get: {
-                    stream.chat!.ffzEmotes
+                    stream.chat.ffzEmotes
                 }, set: { value in
-                    stream.chat!.ffzEmotes = value
+                    stream.chat.ffzEmotes = value
                     if stream.enabled {
                         model.ffzEmotesEnabledUpdated()
                     }
                 }))
                 Toggle("7TV", isOn: Binding(get: {
-                    stream.chat!.seventvEmotes
+                    stream.chat.seventvEmotes
                 }, set: { value in
-                    stream.chat!.seventvEmotes = value
+                    stream.chat.seventvEmotes = value
                     if stream.enabled {
                         model.seventvEmotesEnabledUpdated()
                     }

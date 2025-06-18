@@ -14,24 +14,27 @@ private struct StatusesView: View {
                 .background(backgroundColor)
                 .cornerRadius(5)
         }
-        StreamOverlayIconAndTextView(
-            show: model.isShowingWorkout(),
-            icon: "figure.run",
-            text: model.workoutType,
-            textPlacement: textPlacement
-        )
-        StreamOverlayIconAndTextView(
-            show: model.isShowingStatusBitrate(),
-            icon: "speedometer",
-            text: model.speedAndTotal,
-            textPlacement: textPlacement
-        )
-        StreamOverlayIconAndTextView(
-            show: model.isShowingStatusRecording(),
-            icon: "record.circle",
-            text: model.recordingLength,
-            textPlacement: textPlacement
-        )
+        if model.isShowingWorkout() {
+            StreamOverlayIconAndTextView(
+                icon: "figure.run",
+                text: model.workoutType,
+                textPlacement: textPlacement
+            )
+        }
+        if model.isShowingStatusBitrate() {
+            StreamOverlayIconAndTextView(
+                icon: "speedometer",
+                text: model.speedAndTotal,
+                textPlacement: textPlacement
+            )
+        }
+        if model.isShowingStatusRecording() {
+            StreamOverlayIconAndTextView(
+                icon: "record.circle",
+                text: model.recordingLength,
+                textPlacement: textPlacement
+            )
+        }
     }
 }
 
@@ -68,16 +71,14 @@ struct PreviewView: View {
                 HStack {
                     VStack(alignment: .leading, spacing: 1) {
                         Spacer()
-                        if !model.viaRemoteControl {
+                        if !model.viaRemoteControl, model.viewerCount != noValue {
                             StreamOverlayIconAndTextView(
-                                show: model.viewerCount != noValue,
                                 icon: "eye",
                                 text: model.viewerCount,
                                 textPlacement: .afterIcon
                             )
                         }
                         StreamOverlayIconAndTextView(
-                            show: true,
                             icon: "magnifyingglass",
                             text: String(format: "%.1f", model.zoomX),
                             textPlacement: .afterIcon

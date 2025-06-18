@@ -1,13 +1,11 @@
 import SwiftUI
 
 private struct GoProLaunchLiveStreamSettingsView: View {
-    @EnvironmentObject var model: Model
-    var launchLiveStream: SettingsGoProLaunchLiveStream
-    @Binding var name: String
+    @ObservedObject var launchLiveStream: SettingsGoProLaunchLiveStream
     @State var qrCode: UIImage?
 
     private func generate() {
-        qrCode = GoPro.generateLaunchLiveStream(isHero12Or13: launchLiveStream.isHero12Or13!)
+        qrCode = GoPro.generateLaunchLiveStream(isHero12Or13: launchLiveStream.isHero12Or13)
     }
 
     var body: some View {
@@ -16,15 +14,15 @@ private struct GoProLaunchLiveStreamSettingsView: View {
                 Section {
                     TextEditNavigationView(
                         title: String(localized: "Name"),
-                        value: name,
+                        value: launchLiveStream.name,
                         onSubmit: {
-                            name = $0
+                            launchLiveStream.name = $0
                         }
                     )
                 }
                 Section {
                     Toggle("HERO 12/13", isOn: Binding(get: {
-                        launchLiveStream.isHero12Or13!
+                        launchLiveStream.isHero12Or13
                     }, set: { value in
                         launchLiveStream.isHero12Or13 = value
                         generate()
@@ -36,9 +34,6 @@ private struct GoProLaunchLiveStreamSettingsView: View {
                     }
                 }
             }
-            .onChange(of: name) {
-                launchLiveStream.name = $0
-            }
             .onAppear {
                 generate()
             }
@@ -48,35 +43,27 @@ private struct GoProLaunchLiveStreamSettingsView: View {
 }
 
 private struct GoProLaunchLiveStreamSettingsEntryView: View {
-    var launchLiveStream: SettingsGoProLaunchLiveStream
-    @State var name: String = ""
+    @ObservedObject var launchLiveStream: SettingsGoProLaunchLiveStream
 
     var body: some View {
         NavigationLink {
-            GoProLaunchLiveStreamSettingsView(launchLiveStream: launchLiveStream, name: $name)
+            GoProLaunchLiveStreamSettingsView(launchLiveStream: launchLiveStream)
         } label: {
             HStack {
                 DraggableItemPrefixView()
-                Text(name)
+                Text(launchLiveStream.name)
                 Spacer()
             }
-        }
-        .onAppear {
-            name = launchLiveStream.name
         }
     }
 }
 
 private struct GoProWifiCredentialsSettingsView: View {
-    @EnvironmentObject var model: Model
-    var wifiCredentials: SettingsGoProWifiCredentials
-    @Binding var name: String
-    @Binding var ssid: String
-    @Binding var password: String
+    @ObservedObject var wifiCredentials: SettingsGoProWifiCredentials
     @State var qrCode: UIImage?
 
     private func generate() {
-        qrCode = GoPro.generateWifiCredentialsQrCode(ssid: ssid, password: password)
+        qrCode = GoPro.generateWifiCredentialsQrCode(ssid: wifiCredentials.ssid, password: wifiCredentials.password)
     }
 
     var body: some View {
@@ -85,9 +72,9 @@ private struct GoProWifiCredentialsSettingsView: View {
                 Section {
                     TextEditNavigationView(
                         title: String(localized: "Name"),
-                        value: name,
+                        value: wifiCredentials.name,
                         onSubmit: {
-                            name = $0
+                            wifiCredentials.name = $0
                         }
                     )
                 }
@@ -95,24 +82,30 @@ private struct GoProWifiCredentialsSettingsView: View {
                     NavigationLink {
                         TextEditView(
                             title: String(localized: "SSID"),
-                            value: ssid,
+                            value: wifiCredentials.ssid,
                             onSubmit: {
-                                ssid = $0
+                                wifiCredentials.ssid = $0
+                                generate()
                             }
                         )
                     } label: {
-                        TextItemView(name: String(localized: "SSID"), value: ssid)
+                        TextItemView(name: String(localized: "SSID"), value: wifiCredentials.ssid)
                     }
                     NavigationLink {
                         TextEditView(
                             title: String(localized: "Password"),
-                            value: password,
+                            value: wifiCredentials.password,
                             onSubmit: {
-                                password = $0
+                                wifiCredentials.password = $0
+                                generate()
                             }
                         )
                     } label: {
-                        TextItemView(name: String(localized: "Password"), value: password, sensitive: true)
+                        TextItemView(
+                            name: String(localized: "Password"),
+                            value: wifiCredentials.password,
+                            sensitive: true
+                        )
                     }
                 }
                 if let qrCode {
@@ -120,17 +113,6 @@ private struct GoProWifiCredentialsSettingsView: View {
                         QrCodeImageView(image: qrCode, height: metrics.size.height)
                     }
                 }
-            }
-            .onChange(of: name) {
-                wifiCredentials.name = $0
-            }
-            .onChange(of: ssid) {
-                wifiCredentials.ssid = $0
-                generate()
-            }
-            .onChange(of: password) {
-                wifiCredentials.password = $0
-                generate()
             }
             .onAppear {
                 generate()
@@ -141,28 +123,17 @@ private struct GoProWifiCredentialsSettingsView: View {
 }
 
 private struct GoProWifiCredentialsSettingsEntryView: View {
-    var wifiCredentials: SettingsGoProWifiCredentials
-    @State var name: String = ""
-    @State var ssid: String = ""
-    @State var password: String = ""
+    @ObservedObject var wifiCredentials: SettingsGoProWifiCredentials
 
     var body: some View {
         NavigationLink {
-            GoProWifiCredentialsSettingsView(wifiCredentials: wifiCredentials,
-                                             name: $name,
-                                             ssid: $ssid,
-                                             password: $password)
+            GoProWifiCredentialsSettingsView(wifiCredentials: wifiCredentials)
         } label: {
             HStack {
                 DraggableItemPrefixView()
-                Text(name)
+                Text(wifiCredentials.name)
                 Spacer()
             }
-        }
-        .onAppear {
-            name = wifiCredentials.name
-            ssid = wifiCredentials.ssid
-            password = wifiCredentials.password
         }
     }
 }
@@ -171,16 +142,22 @@ private func rtmpStreamUrl(address: String, port: UInt16, streamKey: String) -> 
     return "rtmp://\(address):\(port)\(rtmpServerApp)/\(streamKey)"
 }
 
-private struct GoProRtmpUrlView: View {
+private struct GoProRtmpUrlSettingsView: View {
     @EnvironmentObject var model: Model
-    var rtmpUrl: SettingsGoProRtmpUrl
-    @Binding var type: SettingsDjiDeviceUrlType
-    @Binding var serverStreamId: UUID
-    @Binding var serverUrl: String
-    @Binding var customUrl: String
+    @ObservedObject var rtmpUrl: SettingsGoProRtmpUrl
+    @State var qrCode: UIImage?
+
+    private func generate() {
+        switch rtmpUrl.type {
+        case .server:
+            qrCode = GoPro.generateRtmpUrlQrCode(url: rtmpUrl.serverUrl)
+        case .custom:
+            qrCode = GoPro.generateRtmpUrlQrCode(url: rtmpUrl.customUrl)
+        }
+    }
 
     private func serverUrls() -> [String] {
-        guard let stream = model.getRtmpStream(id: serverStreamId) else {
+        guard let stream = model.getRtmpStream(id: rtmpUrl.serverStreamId) else {
             return []
         }
         var serverUrls: [String] = []
@@ -207,137 +184,97 @@ private struct GoProRtmpUrlView: View {
     }
 
     var body: some View {
-        Section {
-            Picker("Type", selection: $type) {
-                ForEach(SettingsDjiDeviceUrlType.allCases, id: \.self) {
-                    Text($0.toString())
-                        .tag($0)
-                }
-            }
-            if type == .server {
-                if model.database.rtmpServer.streams.isEmpty {
-                    Text("No RTMP server streams exists")
-                } else {
-                    Picker("Stream", selection: $serverStreamId) {
-                        ForEach(model.database.rtmpServer.streams) { stream in
-                            Text(stream.name)
-                                .tag(stream.id)
-                        }
-                    }
-                    .onChange(of: serverStreamId) { _ in
-                        serverUrl = serverUrls().first ?? ""
-                    }
-                    Picker("URL", selection: $serverUrl) {
-                        ForEach(serverUrls(), id: \.self) {
-                            Text($0)
-                                .tag($0)
-                        }
-                    }
-                    if !model.database.rtmpServer.enabled {
-                        Text("⚠️ The RTMP server is not enabled")
-                    }
-                }
-            } else if type == .custom {
-                TextEditNavigationView(
-                    title: String(localized: "URL"),
-                    value: customUrl,
-                    onSubmit: {
-                        customUrl = $0
-                    }
-                )
-            }
-        } header: {
-            Text("RTMP")
-        } footer: {
-            Text("""
-            Select \(String(localized: "Server")) if you want the GoPro camera to stream to \
-            Moblin's RTMP server on this device. Select \(String(localized: "Custom")) to \
-            make the GoPro camera stream to any destination.
-            """)
-        }
-        .onAppear {
-            let streams = model.database.rtmpServer.streams
-            if !streams.isEmpty {
-                if !streams.contains(where: { $0.id == serverStreamId }) {
-                    serverStreamId = streams.first!.id
-                }
-                if !serverUrls().contains(where: { $0 == serverUrl }) {
-                    serverUrl = serverUrls().first ?? ""
-                }
-            }
-        }
-        Section {
-            NavigationLink {
-                RtmpServerSettingsView()
-            } label: {
-                Text("RTMP server")
-            }
-        } header: {
-            Text("Shortcut")
-        }
-    }
-}
-
-private struct GoProRtmpUrlSettingsView: View {
-    @EnvironmentObject var model: Model
-    var rtmpUrl: SettingsGoProRtmpUrl
-    @Binding var name: String
-    @Binding var type: SettingsDjiDeviceUrlType
-    @Binding var serverStreamId: UUID
-    @Binding var serverUrl: String
-    @Binding var customUrl: String
-    @State var qrCode: UIImage?
-
-    private func generate() {
-        switch type {
-        case .server:
-            qrCode = GoPro.generateRtmpUrlQrCode(url: serverUrl)
-        case .custom:
-            qrCode = GoPro.generateRtmpUrlQrCode(url: customUrl)
-        }
-    }
-
-    var body: some View {
         GeometryReader { metrics in
             Form {
                 Section {
                     TextEditNavigationView(
                         title: String(localized: "Name"),
-                        value: name,
+                        value: rtmpUrl.name,
                         onSubmit: {
-                            name = $0
+                            rtmpUrl.name = $0
                         }
                     )
                 }
-                GoProRtmpUrlView(
-                    rtmpUrl: rtmpUrl,
-                    type: $type,
-                    serverStreamId: $serverStreamId,
-                    serverUrl: $serverUrl,
-                    customUrl: $customUrl
-                )
+                Section {
+                    Picker("Type", selection: $rtmpUrl.type) {
+                        ForEach(SettingsDjiDeviceUrlType.allCases, id: \.self) {
+                            Text($0.toString())
+                        }
+                    }
+                    .onChange(of: rtmpUrl.type) { _ in
+                        generate()
+                    }
+                    if rtmpUrl.type == .server {
+                        if model.database.rtmpServer.streams.isEmpty {
+                            Text("No RTMP server streams exists")
+                        } else {
+                            Picker("Stream", selection: $rtmpUrl.serverStreamId) {
+                                ForEach(model.database.rtmpServer.streams) { stream in
+                                    Text(stream.name)
+                                        .tag(stream.id)
+                                }
+                            }
+                            .onChange(of: rtmpUrl.serverStreamId) { _ in
+                                rtmpUrl.serverUrl = serverUrls().first ?? ""
+                            }
+                            Picker("URL", selection: $rtmpUrl.serverUrl) {
+                                ForEach(serverUrls(), id: \.self) {
+                                    Text($0)
+                                        .tag($0)
+                                }
+                            }
+                            if !model.database.rtmpServer.enabled {
+                                Text("⚠️ The RTMP server is not enabled")
+                            }
+                        }
+                    } else if rtmpUrl.type == .custom {
+                        TextEditNavigationView(
+                            title: String(localized: "URL"),
+                            value: rtmpUrl.customUrl,
+                            onSubmit: {
+                                rtmpUrl.customUrl = $0
+                            }
+                        )
+                    }
+                } header: {
+                    Text("RTMP")
+                } footer: {
+                    Text("""
+                    Select \(String(localized: "Server")) if you want the GoPro camera to stream to \
+                    Moblin's RTMP server on this device. Select \(String(localized: "Custom")) to \
+                    make the GoPro camera stream to any destination.
+                    """)
+                }
+                .onAppear {
+                    let streams = model.database.rtmpServer.streams
+                    if !streams.isEmpty {
+                        if !streams.contains(where: { $0.id == rtmpUrl.serverStreamId }) {
+                            rtmpUrl.serverStreamId = streams.first!.id
+                        }
+                        if !serverUrls().contains(where: { $0 == rtmpUrl.serverUrl }) {
+                            rtmpUrl.serverUrl = serverUrls().first ?? ""
+                        }
+                    }
+                }
+                Section {
+                    NavigationLink {
+                        RtmpServerSettingsView(database: model.database)
+                    } label: {
+                        Text("RTMP server")
+                    }
+                } header: {
+                    Text("Shortcut")
+                }
                 if let qrCode {
                     Section {
                         QrCodeImageView(image: qrCode, height: metrics.size.height)
                     }
                 }
             }
-            .onChange(of: name) {
-                rtmpUrl.name = $0
-            }
-            .onChange(of: type) {
-                rtmpUrl.type = $0
+            .onChange(of: rtmpUrl.serverUrl) { _ in
                 generate()
             }
-            .onChange(of: serverStreamId) {
-                rtmpUrl.serverStreamId = $0
-            }
-            .onChange(of: serverUrl) {
-                rtmpUrl.serverUrl = $0
-                generate()
-            }
-            .onChange(of: customUrl) {
-                rtmpUrl.customUrl = $0
+            .onChange(of: rtmpUrl.customUrl) { _ in
                 generate()
             }
             .onAppear {
@@ -349,46 +286,24 @@ private struct GoProRtmpUrlSettingsView: View {
 }
 
 private struct GoProRtmpUrlSettingsEntryView: View {
-    var rtmpUrl: SettingsGoProRtmpUrl
-    @State var name: String = ""
-    @State var type: SettingsDjiDeviceUrlType = .server
-    @State var serverStreamId = UUID()
-    @State var serverUrl = ""
-    @State var customUrl = ""
+    @ObservedObject var rtmpUrl: SettingsGoProRtmpUrl
 
     var body: some View {
         NavigationLink {
-            GoProRtmpUrlSettingsView(
-                rtmpUrl: rtmpUrl,
-                name: $name,
-                type: $type,
-                serverStreamId: $serverStreamId,
-                serverUrl: $serverUrl,
-                customUrl: $customUrl
-            )
+            GoProRtmpUrlSettingsView(rtmpUrl: rtmpUrl)
         } label: {
             HStack {
                 DraggableItemPrefixView()
-                Text(name)
+                Text(rtmpUrl.name)
                 Spacer()
             }
-        }
-        .onAppear {
-            name = rtmpUrl.name
-            type = rtmpUrl.type
-            serverStreamId = rtmpUrl.serverStreamId
-            serverUrl = rtmpUrl.serverUrl
-            customUrl = rtmpUrl.customUrl
         }
     }
 }
 
 private struct GoProLaunchLiveStream: View {
     @EnvironmentObject var model: Model
-
-    var goPro: SettingsGoPro {
-        model.database.goPro
-    }
+    @ObservedObject var goPro: SettingsGoPro
 
     var body: some View {
         Section {
@@ -414,7 +329,6 @@ private struct GoProLaunchLiveStream: View {
                     model.goProLaunchLiveStreamSelection = goPro.selectedLaunchLiveStream
                 }
                 goPro.launchLiveStream.append(launchLiveStream)
-                model.objectWillChange.send()
             }
         } header: {
             Text("Launch live streams")
@@ -426,10 +340,7 @@ private struct GoProLaunchLiveStream: View {
 
 private struct GoProWifiCredentials: View {
     @EnvironmentObject var model: Model
-
-    var goPro: SettingsGoPro {
-        model.database.goPro
-    }
+    @ObservedObject var goPro: SettingsGoPro
 
     var body: some View {
         Section {
@@ -455,7 +366,6 @@ private struct GoProWifiCredentials: View {
                     model.goProWifiCredentialsSelection = goPro.selectedWifiCredentials
                 }
                 goPro.wifiCredentials.append(wifiCredentials)
-                model.objectWillChange.send()
             }
         } header: {
             Text("WiFi credentials")
@@ -467,10 +377,7 @@ private struct GoProWifiCredentials: View {
 
 private struct GoProRtmpUrls: View {
     @EnvironmentObject var model: Model
-
-    var goPro: SettingsGoPro {
-        model.database.goPro
-    }
+    @ObservedObject var goPro: SettingsGoPro
 
     var body: some View {
         Section {
@@ -496,7 +403,6 @@ private struct GoProRtmpUrls: View {
                     model.goProRtmpUrlSelection = goPro.selectedRtmpUrl
                 }
                 goPro.rtmpUrls.append(rtmpUrl)
-                model.objectWillChange.send()
             }
         } header: {
             Text("RTMP URLs")
@@ -513,15 +419,12 @@ struct GoProSettingsView: View {
         Form {
             Section {
                 HCenter {
-                    Image("GoPro")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(height: 130)
+                    IntegrationImageView(imageName: "GoPro")
                 }
             }
-            GoProLaunchLiveStream()
-            GoProWifiCredentials()
-            GoProRtmpUrls()
+            GoProLaunchLiveStream(goPro: model.database.goPro)
+            GoProWifiCredentials(goPro: model.database.goPro)
+            GoProRtmpUrls(goPro: model.database.goPro)
         }
         .navigationTitle("GoPro")
     }

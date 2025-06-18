@@ -18,12 +18,14 @@ public struct VideoEffectInfo {
 }
 
 open class VideoEffect: NSObject {
+    var effects: [VideoEffect] = []
+
     open func getName() -> String {
         return ""
     }
 
-    open func needsFaceDetections(_: Double) -> (Bool, UUID?) {
-        return (false, nil)
+    open func needsFaceDetections(_: Double) -> (Bool, UUID?, Double?) {
+        return (false, nil, nil)
     }
 
     open func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
@@ -38,5 +40,13 @@ open class VideoEffect: NSObject {
 
     open func shouldRemove() -> Bool {
         return false
+    }
+
+    func applyEffects(_ image: CIImage, _ info: VideoEffectInfo) -> CIImage {
+        var image = image
+        for effect in effects {
+            image = effect.execute(image, info)
+        }
+        return image
     }
 }

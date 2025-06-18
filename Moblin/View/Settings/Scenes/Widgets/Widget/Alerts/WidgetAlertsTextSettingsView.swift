@@ -5,8 +5,8 @@ struct AlertFontView: View {
     @EnvironmentObject var model: Model
     var alert: SettingsWidgetAlertsAlert
     @State var fontSize: Float
-    @State var fontDesign: String
-    @State var fontWeight: String
+    @State var fontDesign: SettingsFontDesign
+    @State var fontWeight: SettingsFontWeight
 
     var body: some View {
         if alert.positionType == .scene {
@@ -29,12 +29,13 @@ struct AlertFontView: View {
                     Text("Design")
                     Spacer()
                     Picker("", selection: $fontDesign) {
-                        ForEach(textWidgetFontDesigns, id: \.self) {
-                            Text($0)
+                        ForEach(SettingsFontDesign.allCases, id: \.self) {
+                            Text($0.toString())
+                                .tag($0)
                         }
                     }
                     .onChange(of: fontDesign) {
-                        alert.fontDesign = SettingsFontDesign.fromString(value: $0)
+                        alert.fontDesign = $0
                         model.updateAlertsSettings()
                     }
                 }
@@ -42,12 +43,13 @@ struct AlertFontView: View {
                     Text("Weight")
                     Spacer()
                     Picker("", selection: $fontWeight) {
-                        ForEach(textWidgetFontWeights, id: \.self) {
-                            Text($0)
+                        ForEach(SettingsFontWeight.allCases, id: \.self) {
+                            Text($0.toString())
+                                .tag($0)
                         }
                     }
                     .onChange(of: fontWeight) {
-                        alert.fontWeight = SettingsFontWeight.fromString(value: $0)
+                        alert.fontWeight = $0
                         model.updateAlertsSettings()
                     }
                 }

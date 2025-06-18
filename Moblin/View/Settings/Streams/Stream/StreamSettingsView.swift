@@ -5,10 +5,7 @@ struct StreamPlatformsSettingsView: View {
 
     var body: some View {
         NavigationLink {
-            StreamTwitchSettingsView(
-                stream: stream,
-                loggedIn: stream.twitchLoggedIn!
-            )
+            StreamTwitchSettingsView(stream: stream, loggedIn: stream.twitchLoggedIn)
         } label: {
             Text("Twitch")
         }
@@ -42,19 +39,16 @@ struct StreamPlatformsSettingsView: View {
 
 struct StreamSettingsView: View {
     @EnvironmentObject private var model: Model
-    var stream: SettingsStream
-    @State var name: String
+    @ObservedObject var database: Database
+    @ObservedObject var stream: SettingsStream
 
     var body: some View {
         Form {
             Section {
                 NavigationLink {
-                    NameEditView(name: $name)
+                    NameEditView(name: $stream.name)
                 } label: {
-                    TextItemView(name: String(localized: "Name"), value: name)
-                }
-                .onChange(of: name) { name in
-                    stream.name = name
+                    TextItemView(name: String(localized: "Name"), value: stream.name)
                 }
             }
             Section {
@@ -68,21 +62,15 @@ struct StreamSettingsView: View {
                 }
                 .disabled(stream.enabled && model.isLive)
                 NavigationLink {
-                    StreamVideoSettingsView(
-                        stream: stream,
-                        codec: stream.codec.rawValue,
-                        bitrate: stream.bitrate,
-                        resolution: stream.resolution.rawValue,
-                        fps: String(stream.fps)
-                    )
+                    StreamVideoSettingsView(database: database, stream: stream)
                 } label: {
                     Text("Video")
                 }
-                if model.database.showAllSettings {
+                if database.showAllSettings {
                     NavigationLink {
                         StreamAudioSettingsView(
                             stream: stream,
-                            bitrate: Float(stream.audioBitrate! / 1000)
+                            bitrate: Float(stream.audioBitrate / 1000)
                         )
                     } label: {
                         Text("Audio")
@@ -90,7 +78,7 @@ struct StreamSettingsView: View {
                     NavigationLink {
                         StreamRecordingSettingsView(
                             stream: stream,
-                            videoCodec: stream.recording!.videoCodec.rawValue
+                            videoCodec: stream.recording.videoCodec.rawValue
                         )
                     } label: {
                         Text("Recording")
@@ -107,23 +95,20 @@ struct StreamSettingsView: View {
                     }
                 }
                 if isPhone() || isPad() {
-                    Toggle(isOn: Binding(get: {
-                        stream.portrait!
-                    }, set: { value in
-                        stream.portrait = value
+                    Toggle(isOn: $stream.portrait) {
+                        Text("Portrait")
+                    }
+                    .disabled(stream.enabled && (model.isLive || model.isRecording))
+                    .onChange(of: stream.portrait) { _ in
                         if stream.enabled {
                             model.setCurrentStream(stream: stream)
                             model.reloadStream()
                             model.resetSelectedScene(changeScene: false)
                             model.updateOrientation()
                         }
-                        model.objectWillChange.send()
-                    })) {
-                        Text("Portrait")
                     }
-                    .disabled(stream.enabled && (model.isLive || model.isRecording))
                 }
-                if model.database.showAllSettings {
+                if database.showAllSettings {
                     if stream.getProtocol() == .srt {
                         NavigationLink {
                             StreamSrtSettingsView(
@@ -162,28 +147,33 @@ struct StreamSettingsView: View {
                     StreamObsRemoteControlSettingsView(stream: stream)
                 } label: {
                     Toggle("OBS remote control", isOn: Binding(get: {
-                        stream.obsWebSocketEnabled!
+                        stream.obsWebSocketEnabled
                     }, set: {
                         model.setObsRemoteControlEnabled(enabled: $0)
                     }))
                 }
-                if model.database.showAllSettings {
+                NavigationLink {
+                    GoLiveNotificationSettingsView(stream: stream)
+                } label: {
+                    Text("Go live notification")
+                }
+                if database.showAllSettings {
                     NavigationLink {
                         StreamRealtimeIrlSettingsView(stream: stream)
                     } label: {
                         Toggle("RealtimeIRL", isOn: Binding(get: {
-                            stream.realtimeIrlEnabled!
+                            stream.realtimeIrlEnabled
                         }, set: { value in
                             model.setRealtimeIrlEnabled(enabled: value)
                         }))
                     }
                 }
             }
-            if model.database.showAllSettings {
-                if !ProcessInfo().isiOSAppOnMac {
+            if database.showAllSettings {
+                if !isMac() {
                     Section {
                         Toggle("Background streaming", isOn: Binding(get: {
-                            stream.backgroundStreaming!
+                            stream.backgroundStreaming
                         }, set: { value in
                             stream.backgroundStreaming = value
                         }))
@@ -195,7 +185,7 @@ struct StreamSettingsView: View {
                     NavigationLink {
                         TextEditView(
                             title: String(localized: "Estimated viewer delay"),
-                            value: formatOneDecimal(stream.estimatedViewerDelay!),
+                            value: formatOneDecimal(stream.estimatedViewerDelay),
                             keyboardType: .numbersAndPunctuation
                         ) {
                             guard let latency = Float($0), latency >= 0.0, latency <= 15.0 else {
@@ -206,7 +196,7 @@ struct StreamSettingsView: View {
                     } label: {
                         TextItemView(
                             name: String(localized: "Estimated viewer delay"),
-                            value: "\(formatOneDecimal(stream.estimatedViewerDelay!)) s"
+                            value: "\(formatOneDecimal(stream.estimatedViewerDelay)) s"
                         )
                     }
                 } footer: {

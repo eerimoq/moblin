@@ -3,17 +3,18 @@ import SwiftUI
 struct WidgetBrowserSettingsView: View {
     @EnvironmentObject var model: Model
     var widget: SettingsWidget
+    @ObservedObject var browser: SettingsWidgetBrowser
 
     private func submitUrl(value: String) {
         guard URL(string: value.trim()) != nil else {
             return
         }
-        widget.browser.url = value.trim()
+        browser.url = value.trim()
         model.resetSelectedScene(changeScene: false)
     }
 
     private func submitStyleSheet(value: String) {
-        widget.browser.styleSheet = value.trim()
+        browser.styleSheet = value.trim()
         model.resetSelectedScene(changeScene: false)
     }
 
@@ -24,7 +25,7 @@ struct WidgetBrowserSettingsView: View {
         guard width > 0, width < 4000 else {
             return
         }
-        widget.browser.width = width
+        browser.width = width
         model.resetSelectedScene(changeScene: false)
     }
 
@@ -35,12 +36,12 @@ struct WidgetBrowserSettingsView: View {
         guard height > 0, height < 4000 else {
             return
         }
-        widget.browser.height = height
+        browser.height = height
         model.resetSelectedScene(changeScene: false)
     }
 
     private func submitFps(value: Float) {
-        widget.browser.fps = value
+        browser.fps = value
         model.resetSelectedScene(changeScene: false)
     }
 
@@ -50,43 +51,35 @@ struct WidgetBrowserSettingsView: View {
 
     var body: some View {
         Section {
-            TextEditNavigationView(title: "URL", value: widget.browser.url, onSubmit: submitUrl)
+            TextEditNavigationView(title: "URL", value: browser.url, onSubmit: submitUrl)
             TextEditNavigationView(
                 title: "Style sheet",
-                value: widget.browser.styleSheet!,
+                value: browser.styleSheet,
                 onSubmit: submitStyleSheet
             )
-            Toggle(isOn: Binding(get: {
-                widget.browser.audioOnly!
-            }, set: { value in
-                widget.browser.audioOnly = value
-                model.resetSelectedScene(changeScene: false)
-            })) {
-                Text("Audio only")
-            }
-            if !widget.browser.audioOnly! {
+            Toggle("Audio only", isOn: $browser.audioOnly)
+                .onChange(of: browser.audioOnly) { _ in
+                    model.resetSelectedScene(changeScene: false)
+                }
+            if !browser.audioOnly {
                 TextEditNavigationView(
                     title: String(localized: "Width"),
-                    value: String(widget.browser.width),
+                    value: String(browser.width),
                     onSubmit: submitWidth,
                     keyboardType: .numbersAndPunctuation
                 )
                 TextEditNavigationView(title: String(localized: "Height"),
-                                       value: String(widget.browser.height),
+                                       value: String(browser.height),
                                        onSubmit: submitHeight,
                                        keyboardType: .numbersAndPunctuation)
-                Toggle(isOn: Binding(get: {
-                    widget.browser.scaleToFitVideo!
-                }, set: { value in
-                    widget.browser.scaleToFitVideo = value
-                    model.resetSelectedScene(changeScene: false)
-                })) {
-                    Text("Scale to fit video width")
-                }
+                Toggle("Scale to fit video width", isOn: $browser.scaleToFitVideo)
+                    .onChange(of: browser.scaleToFitVideo) { _ in
+                        model.resetSelectedScene(changeScene: false)
+                    }
                 HStack {
                     Text("FPS")
                     SliderView(
-                        value: widget.browser.fps!,
+                        value: browser.fps,
                         minimum: 1,
                         maximum: 15,
                         step: 1,
@@ -98,16 +91,13 @@ struct WidgetBrowserSettingsView: View {
             }
         }
         Section {
-            Toggle(isOn: Binding(get: {
-                widget.browser.moblinAccess!
-            }, set: { value in
-                widget.browser.moblinAccess = value
-                model.resetSelectedScene(changeScene: false)
-            })) {
-                Text("Moblin access")
-            }
+            Toggle("Moblin access", isOn: $browser.moblinAccess)
+                .onChange(of: browser.moblinAccess) { _ in
+                    model.resetSelectedScene(changeScene: false)
+                }
         } footer: {
             Text("Give the webpage access to various data in Moblin, for example chat messages and your location.")
         }
+        WidgetEffectsView(widget: widget)
     }
 }

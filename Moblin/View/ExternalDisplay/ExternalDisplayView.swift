@@ -29,7 +29,8 @@ private struct HighlightMessageView: View {
 
 private struct LineView: View {
     var post: ChatPost
-    var chat: SettingsChat
+    @ObservedObject var chat: SettingsChat
+    var platform: Bool
 
     private func usernameColor() -> Color {
         return post.userColor.color()
@@ -46,6 +47,13 @@ private struct LineView: View {
             if chat.timestampColorEnabled {
                 Text("\(post.timestamp) ")
                     .foregroundColor(.gray)
+            }
+            if chat.platform, platform, let image = post.platform?.imageName() {
+                Image(image)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .padding(2)
+                    .frame(height: fontSizeScaleFactor * CGFloat(chat.fontSize * 1.4))
             }
             if chat.badges {
                 ForEach(post.userBadges, id: \.self) { url in
@@ -102,35 +110,12 @@ private struct LineView: View {
 
 private struct MessagesView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var chatSettings: SettingsChat
     @ObservedObject var chat: ChatProvider
 
-    private func getRotation() -> Double {
-        if model.database.chat.newMessagesAtTop {
-            return 0.0
-        } else {
-            return 180.0
-        }
-    }
-
-    private func getScaleX() -> Double {
-        if model.database.chat.newMessagesAtTop {
-            return 1.0
-        } else {
-            return -1.0
-        }
-    }
-
-    private func isMirrored() -> CGFloat {
-        if model.database.chat.mirrored {
-            return -1
-        } else {
-            return 1
-        }
-    }
-
     var body: some View {
-        let rotation = getRotation()
-        let scaleX = getScaleX()
+        let rotation = chatSettings.getRotation()
+        let scaleX = chatSettings.getScaleX()
         GeometryReader { metrics in
             ScrollView {
                 VStack {
@@ -144,20 +129,21 @@ private struct MessagesView: View {
                                             .foregroundColor(highlight.color)
                                         VStack(alignment: .leading, spacing: 1) {
                                             HighlightMessageView(
-                                                chat: model.database.chat,
+                                                chat: chatSettings,
                                                 image: highlight.image,
                                                 name: highlight.title
                                             )
-                                            LineView(
-                                                post: post,
-                                                chat: model.database.chat
-                                            )
+                                            LineView(post: post,
+                                                     chat: chatSettings,
+                                                     platform: chat.moreThanOneStreamingPlatform)
                                         }
                                     }
                                     .rotationEffect(Angle(degrees: rotation))
                                     .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
                                 } else {
-                                    LineView(post: post, chat: model.database.chat)
+                                    LineView(post: post,
+                                             chat: chatSettings,
+                                             platform: chat.moreThanOneStreamingPlatform)
                                         .padding([.leading], 3)
                                         .rotationEffect(Angle(degrees: rotation))
                                         .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
@@ -178,16 +164,17 @@ private struct MessagesView: View {
             }
             .foregroundColor(.white)
             .rotationEffect(Angle(degrees: rotation))
-            .scaleEffect(x: scaleX * isMirrored(), y: 1.0, anchor: .center)
+            .scaleEffect(x: scaleX * chatSettings.isMirrored(), y: 1.0, anchor: .center)
         }
     }
 }
 
 private struct ChatView: View {
+    @EnvironmentObject var model: Model
     @ObservedObject var chat: ChatProvider
 
     var body: some View {
-        MessagesView(chat: chat)
+        MessagesView(chatSettings: model.database.chat, chat: chat)
             .padding()
     }
 }

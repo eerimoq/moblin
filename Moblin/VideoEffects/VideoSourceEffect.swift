@@ -45,9 +45,9 @@ class PositionInterpolator {
 }
 
 final class VideoSourceEffect: VideoEffect {
-    private var videoSourceId: Atomic<UUID> = .init(.init())
-    private var sceneWidget: Atomic<SettingsSceneWidget?> = .init(nil)
-    private var settings: Atomic<VideoSourceEffectSettings> = .init(.init())
+    private var videoSourceId: UUID = .init()
+    private var sceneWidget: SettingsSceneWidget?
+    private var settings: VideoSourceEffectSettings = .init()
     private let trackFaceLeft = PositionInterpolator()
     private let trackFaceRight = PositionInterpolator()
     private let trackFaceTop = PositionInterpolator()
@@ -59,25 +59,30 @@ final class VideoSourceEffect: VideoEffect {
         return "video source"
     }
 
-    override func needsFaceDetections(_ presentationTimeStamp: Double) -> (Bool, UUID?) {
-        if presentationTimeStamp - trackFaceNeedsDetectionsPresentationTimeStamp > 0.5 {
-            trackFaceNeedsDetectionsPresentationTimeStamp = presentationTimeStamp
-            return (settings.value.trackFaceEnabled, videoSourceId.value)
+    override func needsFaceDetections(_: Double) -> (Bool, UUID?, Double?) {
+        if settings.trackFaceEnabled {
+            return (false, videoSourceId, 0.5)
         } else {
-            return (false, nil)
+            return (false, nil, nil)
         }
     }
 
     func setVideoSourceId(videoSourceId: UUID) {
-        self.videoSourceId.mutate { $0 = videoSourceId }
+        mixerLockQueue.async {
+            self.videoSourceId = videoSourceId
+        }
     }
 
-    func setSceneWidget(sceneWidget: SettingsSceneWidget?) {
-        self.sceneWidget.mutate { $0 = sceneWidget }
+    func setSceneWidget(sceneWidget: SettingsSceneWidget) {
+        mixerLockQueue.async {
+            self.sceneWidget = sceneWidget
+        }
     }
 
     func setSettings(settings: VideoSourceEffectSettings) {
-        self.settings.mutate { $0 = settings }
+        mixerLockQueue.async {
+            self.settings = settings
+        }
     }
 
     private func interpolatePosition(_ current: Double?, _ target: Double?, _ timeElapsed: Double) -> Double {
@@ -303,11 +308,9 @@ final class VideoSourceEffect: VideoEffect {
     }
 
     override func execute(_ backgroundImage: CIImage, _ info: VideoEffectInfo) -> CIImage {
-        guard let sceneWidget = sceneWidget.value else {
+        guard let sceneWidget else {
             return backgroundImage
         }
-        let settings = self.settings.value
-        let videoSourceId = videoSourceId.value
         guard var widgetImage = info.videoUnit.getCIImage(
             videoSourceId,
             info.presentationTimeStamp
@@ -329,7 +332,6 @@ final class VideoSourceEffect: VideoEffect {
         let size = backgroundImage.extent.size
         let (scaleX, scaleY) = makeScale(widgetImage, sceneWidget, size, settings.mirror)
         let translation = makeTranslation(widgetImage, sceneWidget, size, scaleX, scaleY, settings.mirror)
-        let crop = CGRect(x: 0, y: 0, width: size.width, height: size.height)
         widgetImage = widgetImage
             .transformed(by: CGAffineTransform(scaleX: scaleX, y: scaleY))
         if settings.cornerRadius == 0 {
@@ -337,7 +339,8 @@ final class VideoSourceEffect: VideoEffect {
         } else {
             widgetImage = makeRoundedCornersImage(widgetImage, settings)
         }
-        return widgetImage
+        let crop = CGRect(x: 0, y: 0, width: size.width, height: size.height)
+        return applyEffects(widgetImage, info)
             .transformed(by: translation)
             .cropped(to: crop)
             .composited(over: backgroundImage)

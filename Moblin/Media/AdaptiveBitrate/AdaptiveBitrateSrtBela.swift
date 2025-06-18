@@ -116,7 +116,7 @@ class AdaptiveBitrateSrtBela: AdaptiveBitrate {
             return
         }
         if curBitrate == 0 {
-            curBitrate = settings.minimumBitrate
+            curBitrate = adaptiveBitrateStart
         }
         let sendBufferSize = stats.packetsInFlight
         updateSendBufferSizeAverage(sendBufferSize: sendBufferSize)
@@ -180,7 +180,7 @@ class AdaptiveBitrateSrtBela: AdaptiveBitrate {
         // To not push too high bitrate after static scene. The encoder may output way
         // lower bitrate than configured.
         if let transportBitrate = stats.transportBitrate {
-            let maximumBitrate = max(transportBitrate + 1_000_000, (17 * transportBitrate) / 10)
+            let maximumBitrate = max(transportBitrate + adaptiveBitrateTransportMinimum, (17 * transportBitrate) / 10)
             if bitrate > maximumBitrate {
                 bitrate = maximumBitrate
             }

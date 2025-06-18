@@ -72,18 +72,18 @@ private struct PlayerView: View {
 struct WidgetScoreboardSettingsView: View {
     @EnvironmentObject var model: Model
     private var widget: SettingsWidget
-    @State private var type: String
-    @State private var gameType: String
+    @State private var type: SettingsWidgetScoreboardType
+    @State private var gameType: SettingsWidgetPadelScoreboardGameType
     @State private var homePlayer1: UUID
     @State private var homePlayer2: UUID
     @State private var awayPlayer1: UUID
     @State private var awayPlayer2: UUID
 
-    init(widget: SettingsWidget, type: String) {
+    init(widget: SettingsWidget, type: SettingsWidgetScoreboardType) {
         self.widget = widget
         self.type = type
         let padel = widget.scoreboard.padel
-        gameType = padel.type.toString()
+        gameType = padel.type
         homePlayer1 = padel.homePlayer1
         homePlayer2 = padel.homePlayer2
         awayPlayer1 = padel.awayPlayer1
@@ -96,12 +96,13 @@ struct WidgetScoreboardSettingsView: View {
                 Text("Type")
                 Spacer()
                 Picker("", selection: $type) {
-                    ForEach(scoreboardTypes, id: \.self) {
-                        Text($0)
+                    ForEach(SettingsWidgetScoreboardType.allCases, id: \.self) {
+                        Text($0.toString())
+                            .tag($0)
                     }
                 }
                 .onChange(of: type) {
-                    widget.scoreboard.type = SettingsWidgetScoreboardType.fromString(value: $0)
+                    widget.scoreboard.type = $0
                     model.resetSelectedScene(changeScene: false)
                 }
             }
@@ -109,13 +110,13 @@ struct WidgetScoreboardSettingsView: View {
                 Text("Game type")
                 Spacer()
                 Picker("", selection: $gameType) {
-                    ForEach(scoreboardGameTypes, id: \.self) {
-                        Text($0)
+                    ForEach(SettingsWidgetPadelScoreboardGameType.allCases, id: \.self) {
+                        Text($0.toString())
+                            .tag($0)
                     }
                 }
                 .onChange(of: gameType) {
-                    widget.scoreboard.padel.type = SettingsWidgetPadelScoreboardGameType
-                        .fromString(value: $0)
+                    widget.scoreboard.padel.type = $0
                     model.resetSelectedScene(changeScene: false)
                 }
             }
@@ -128,7 +129,7 @@ struct WidgetScoreboardSettingsView: View {
                     widget.scoreboard.padel.homePlayer1 = homePlayer1
                     model.resetSelectedScene(changeScene: false)
                 }
-            if SettingsWidgetPadelScoreboardGameType.fromString(value: gameType) == .doubles {
+            if gameType == .doubles {
                 PlayerView(playerId: $homePlayer2)
                     .onChange(of: homePlayer2) { _ in
                         widget.scoreboard.padel.homePlayer2 = homePlayer2
@@ -144,7 +145,7 @@ struct WidgetScoreboardSettingsView: View {
                     widget.scoreboard.padel.awayPlayer1 = awayPlayer1
                     model.resetSelectedScene(changeScene: false)
                 }
-            if SettingsWidgetPadelScoreboardGameType.fromString(value: gameType) == .doubles {
+            if gameType == .doubles {
                 PlayerView(playerId: $awayPlayer2)
                     .onChange(of: awayPlayer2) { _ in
                         widget.scoreboard.padel.awayPlayer2 = awayPlayer2

@@ -65,10 +65,7 @@ struct DjiGimbalDeviceSettingsView: View {
     }
 
     private func canEnable() -> Bool {
-        if device.bluetoothPeripheralId == nil {
-            return false
-        }
-        return true
+        return device.bluetoothPeripheralId != nil
     }
 
     var body: some View {

@@ -23,138 +23,135 @@ private struct InfoView: View {
 
 struct LocalOverlaysSettingsView: View {
     @EnvironmentObject var model: Model
-
-    var show: SettingsShow {
-        model.database.show
-    }
+    @ObservedObject var show: SettingsShow
 
     var body: some View {
         Form {
             Section("Top left") {
-                InfoView(icon: "dot.radiowaves.left.and.right", text: String(localized: "Stream")) {
-                    show.stream
-                } set: { value in
-                    show.stream = value
+                Label {
+                    Toggle("Stream", isOn: $show.stream)
+                } icon: {
+                    Image(systemName: "dot.radiowaves.left.and.right")
                 }
-                InfoView(icon: "camera", text: String(localized: "Camera")) {
-                    show.cameras!
-                } set: { value in
-                    show.cameras = value
+                Label {
+                    Toggle("Camera", isOn: $show.cameras)
+                } icon: {
+                    Image(systemName: "camera")
                 }
-                InfoView(icon: "music.mic", text: String(localized: "Mic")) {
-                    show.microphone
-                } set: { value in
-                    show.microphone = value
+                Label {
+                    Toggle("Mic", isOn: $show.microphone)
+                } icon: {
+                    Image(systemName: "music.mic")
                 }
-                InfoView(icon: "magnifyingglass", text: String(localized: "Zoom")) {
-                    show.zoom
-                } set: { value in
-                    show.zoom = value
+                Label {
+                    Toggle("Zoom", isOn: $show.zoom)
+                } icon: {
+                    Image(systemName: "magnifyingglass")
                 }
-                InfoView(icon: "xserve", text: String(localized: "OBS remote control")) {
-                    show.obsStatus!
-                } set: { value in
-                    show.obsStatus = value
+                Label {
+                    Toggle("OBS remote control", isOn: $show.obsStatus)
+                } icon: {
+                    Image(systemName: "xserve")
                 }
-                InfoView(icon: "megaphone", text: String(localized: "Events (alerts)")) {
-                    show.events!
-                } set: { value in
-                    show.events = value
+                Label {
+                    Toggle("Events (alerts)", isOn: $show.events)
+                } icon: {
+                    Image(systemName: "megaphone")
                 }
-                InfoView(icon: "message", text: String(localized: "Chat")) {
-                    show.chat
-                } set: { value in
-                    show.chat = value
+                Label {
+                    Toggle("Chat", isOn: $show.chat)
+                } icon: {
+                    Image(systemName: "message")
                 }
-                InfoView(icon: "eye", text: String(localized: "Viewers")) {
-                    show.viewers
-                } set: { value in
-                    show.viewers = value
+                Label {
+                    Toggle("Viewers", isOn: $show.viewers)
+                } icon: {
+                    Image(systemName: "eye")
                 }
             }
             Section("Top right") {
-                InfoView(icon: "waveform", text: String(localized: "Audio level")) {
-                    show.audioLevel
-                } set: { value in
-                    show.audioLevel = value
+                Label {
+                    Toggle("Audio level", isOn: $show.audioLevel)
+                } icon: {
+                    Image(systemName: "waveform")
                 }
-                InfoView(icon: "location", text: String(localized: "Location")) {
-                    show.location!
-                } set: { value in
-                    show.location = value
+                Label {
+                    Toggle("Location", isOn: $show.location)
+                } icon: {
+                    Image(systemName: "location")
                 }
-                InfoView(icon: "server.rack", text: String(localized: "RTMP server")) {
-                    show.rtmpSpeed!
-                } set: { value in
-                    show.rtmpSpeed = value
+                Label {
+                    Toggle("RTMP server", isOn: $show.rtmpSpeed)
+                } icon: {
+                    Image(systemName: "server.rack")
                 }
-                InfoView(icon: "app.connected.to.app.below.fill", text: String(localized: "Moblink")) {
-                    show.moblink!
-                } set: { value in
-                    show.moblink = value
+                Label {
+                    Toggle("Moblink", isOn: $show.moblink)
+                } icon: {
+                    Image(systemName: "app.connected.to.app.below.fill")
                 }
-                InfoView(icon: "appletvremote.gen1", text: String(localized: "Remote control")) {
-                    show.remoteControl!
-                } set: { value in
-                    show.remoteControl = value
+                Label {
+                    Toggle("Remote control", isOn: $show.remoteControl)
+                } icon: {
+                    Image(systemName: "appletvremote.gen1")
                 }
-                InfoView(icon: "appletvremote.gen1", text: String(localized: "DJI devices")) {
-                    show.djiDevices!
-                } set: { value in
-                    show.djiDevices = value
+                Label {
+                    Toggle("DJI devices", isOn: $show.djiDevices)
+                } icon: {
+                    Image(systemName: "appletvremote.gen1")
                 }
-                InfoView(icon: "gamecontroller", text: String(localized: "Game controllers")) {
-                    show.gameController!
-                } set: { value in
-                    show.gameController = value
+                Label {
+                    Toggle("Game controllers", isOn: $show.gameController)
+                } icon: {
+                    Image(systemName: "gamecontroller")
                 }
-                InfoView(icon: "speedometer", text: String(localized: "Bitrate")) {
-                    show.speed
-                } set: { value in
-                    show.speed = value
+                Label {
+                    Toggle("Bitrate", isOn: $show.speed)
+                } icon: {
+                    Image(systemName: "speedometer")
                 }
-                InfoView(icon: "deskclock", text: String(localized: "Uptime")) {
-                    show.uptime
-                } set: { value in
-                    show.uptime = value
+                Label {
+                    Toggle("Uptime", isOn: $show.uptime)
+                } icon: {
+                    Image(systemName: "deskclock")
                 }
-                InfoView(icon: "globe", text: String(localized: "Browser widgets")) {
-                    show.browserWidgets!
-                } set: { value in
-                    show.browserWidgets = value
+                Label {
+                    Toggle("Browser widgets", isOn: $show.browserWidgets)
+                } icon: {
+                    Image(systemName: "globe")
                 }
-                InfoView(icon: "phone.connection", text: String(localized: "Bonding")) {
-                    show.bonding!
-                } set: { value in
-                    show.bonding = value
+                Label {
+                    Toggle("Bonding", isOn: $show.bonding)
+                } icon: {
+                    Image(systemName: "phone.connection")
                 }
-                InfoView(icon: "phone.connection", text: String(localized: "Bonding RTTs")) {
-                    show.bondingRtts!
-                } set: { value in
-                    show.bondingRtts = value
+                Label {
+                    Toggle("Bonding RTTs", isOn: $show.bondingRtts)
+                } icon: {
+                    Image(systemName: "phone.connection")
                 }
-                InfoView(icon: "pawprint", text: String(localized: "Cat printers")) {
-                    show.catPrinter!
-                } set: { value in
-                    show.catPrinter = value
+                Label {
+                    Toggle("Cat printers", isOn: $show.catPrinter)
+                } icon: {
+                    Image(systemName: "pawprint")
                 }
-                InfoView(icon: "bicycle", text: String(localized: "Cycling power devices")) {
-                    show.cyclingPowerDevice!
-                } set: { value in
-                    show.cyclingPowerDevice = value
+                Label {
+                    Toggle("Cycling power devices", isOn: $show.cyclingPowerDevice)
+                } icon: {
+                    Image(systemName: "bicycle")
                 }
-                InfoView(icon: "heart", text: String(localized: "Heart rate devices")) {
-                    show.heartRateDevice!
-                } set: { value in
-                    show.heartRateDevice = value
+                Label {
+                    Toggle("Heart rate devices", isOn: $show.heartRateDevice)
+                } icon: {
+                    Image(systemName: "heart")
                 }
             }
             Section {
-                Toggle("Zoom presets", isOn: Binding(get: {
-                    show.zoomPresets
-                }, set: { value in
-                    show.zoomPresets = value
-                }))
+                Label {
+                    Toggle("Zoom presets", isOn: $show.zoomPresets)
+                } icon: {
+                    Image(systemName: "magnifyingglass")
+                }
             } header: {
                 Text("Bottom right")
             } footer: {

@@ -151,6 +151,21 @@ struct ChatBotCommandsSettingsView: View {
             }
             Section {
                 NavigationLink {
+                    PermissionsSettingsView(permissions: permissions.stream!)
+                } label: {
+                    Text("!moblin stream ...")
+                }
+            } footer: {
+                VStack(alignment: .leading) {
+                    Text("!moblin stream title <title>")
+                    Text("Set stream title.")
+                    Text("")
+                    Text("!moblin stream category <category name>")
+                    Text("Set stream category.")
+                }
+            }
+            Section {
+                NavigationLink {
                     PermissionsSettingsView(permissions: permissions.map)
                 } label: {
                     Text("!moblin map zoom out")

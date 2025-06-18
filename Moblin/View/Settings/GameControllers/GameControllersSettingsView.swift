@@ -1,10 +1,10 @@
 import SwiftUI
 
 struct GameControllersSettingsView: View {
-    @EnvironmentObject var model: Model
+    @ObservedObject var database: Database
 
     private func gameControllerIndex(gameController: SettingsGameController) -> Int {
-        if let index = model.database.gameControllers.firstIndex(where: { gameController2 in
+        if let index = database.gameControllers.firstIndex(where: { gameController2 in
             gameController.id == gameController2.id
         }) {
             return index + 1
@@ -20,7 +20,7 @@ struct GameControllersSettingsView: View {
             }
             Section {
                 List {
-                    ForEach(model.database.gameControllers) { gameController in
+                    ForEach(database.gameControllers) { gameController in
                         NavigationLink {
                             GameControllersControllerSettingsView(gameController: gameController)
                         } label: {
@@ -28,12 +28,11 @@ struct GameControllersSettingsView: View {
                         }
                     }
                     .onDelete(perform: { indexSet in
-                        model.database.gameControllers.remove(atOffsets: indexSet)
+                        database.gameControllers.remove(atOffsets: indexSet)
                     })
                 }
                 CreateButtonView {
-                    model.database.gameControllers.append(SettingsGameController())
-                    model.objectWillChange.send()
+                    database.gameControllers.append(SettingsGameController())
                 }
             } footer: {
                 SwipeLeftToDeleteHelpView(kind: String(localized: "a controller"))

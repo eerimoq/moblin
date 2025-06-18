@@ -200,17 +200,17 @@ private struct AlertPositionFaceView: View {
 private struct AlertPositionView: View {
     @EnvironmentObject var model: Model
     var alert: SettingsWidgetAlertsAlert
-    @State var positionType: String
+    @State var positionType: SettingsWidgetAlertPositionType
 
     var body: some View {
         Section {
             Picker("Type", selection: $positionType) {
-                ForEach(alertPositionTypes, id: \.self) { type in
-                    Text(type)
+                ForEach(SettingsWidgetAlertPositionType.allCases, id: \.self) {
+                    Text($0.toString())
                 }
             }
             .onChange(of: positionType) { _ in
-                alert.positionType = SettingsWidgetAlertPositionType.fromString(value: positionType)
+                alert.positionType = positionType
                 model.updateAlertsSettings()
                 model.objectWillChange.send()
             }
@@ -218,7 +218,7 @@ private struct AlertPositionView: View {
             Text("Position")
         }
         Section {
-            switch SettingsWidgetAlertPositionType.fromString(value: positionType) {
+            switch positionType {
             case .face:
                 AlertPositionFaceView(alert: alert)
             default:
@@ -245,7 +245,7 @@ private struct TwitchFollowsView: View {
                 }
             }
             AlertMediaView(alert: alert, imageId: alert.imageId, soundId: alert.soundId)
-            AlertPositionView(alert: alert, positionType: alert.positionType!.toString())
+            AlertPositionView(alert: alert, positionType: alert.positionType!)
             AlertColorsView(
                 alert: alert,
                 textColor: alert.textColor.color(),
@@ -254,8 +254,8 @@ private struct TwitchFollowsView: View {
             AlertFontView(
                 alert: alert,
                 fontSize: Float(alert.fontSize),
-                fontDesign: alert.fontDesign.toString(),
-                fontWeight: alert.fontWeight.toString()
+                fontDesign: alert.fontDesign,
+                fontWeight: alert.fontWeight
             )
             AlertTextToSpeechView(alert: alert, ttsDelay: alert.textToSpeechDelay!)
             Section {
@@ -292,7 +292,7 @@ private struct TwitchSubscriptionsView: View {
                 }
             }
             AlertMediaView(alert: alert, imageId: alert.imageId, soundId: alert.soundId)
-            AlertPositionView(alert: alert, positionType: alert.positionType!.toString())
+            AlertPositionView(alert: alert, positionType: alert.positionType!)
             AlertColorsView(
                 alert: alert,
                 textColor: alert.textColor.color(),
@@ -301,8 +301,8 @@ private struct TwitchSubscriptionsView: View {
             AlertFontView(
                 alert: alert,
                 fontSize: Float(alert.fontSize),
-                fontDesign: alert.fontDesign.toString(),
-                fontWeight: alert.fontWeight.toString()
+                fontDesign: alert.fontDesign,
+                fontWeight: alert.fontWeight
             )
             AlertTextToSpeechView(alert: alert, ttsDelay: alert.textToSpeechDelay!)
             Section {
@@ -341,7 +341,7 @@ private struct TwitchRaidsView: View {
                 }
             }
             AlertMediaView(alert: alert, imageId: alert.imageId, soundId: alert.soundId)
-            AlertPositionView(alert: alert, positionType: alert.positionType!.toString())
+            AlertPositionView(alert: alert, positionType: alert.positionType!)
             AlertColorsView(
                 alert: alert,
                 textColor: alert.textColor.color(),
@@ -350,8 +350,8 @@ private struct TwitchRaidsView: View {
             AlertFontView(
                 alert: alert,
                 fontSize: Float(alert.fontSize),
-                fontDesign: alert.fontDesign.toString(),
-                fontWeight: alert.fontWeight.toString()
+                fontDesign: alert.fontDesign,
+                fontWeight: alert.fontWeight
             )
             AlertTextToSpeechView(alert: alert, ttsDelay: alert.textToSpeechDelay!)
             Section {
@@ -436,7 +436,7 @@ private struct TwitchCheerView: View {
                 model.updateAlertsSettings()
             }
             AlertMediaView(alert: alert, imageId: alert.imageId, soundId: alert.soundId)
-            AlertPositionView(alert: alert, positionType: alert.positionType!.toString())
+            AlertPositionView(alert: alert, positionType: alert.positionType!)
             AlertColorsView(
                 alert: alert,
                 textColor: alert.textColor.color(),
@@ -445,8 +445,8 @@ private struct TwitchCheerView: View {
             AlertFontView(
                 alert: alert,
                 fontSize: Float(alert.fontSize),
-                fontDesign: alert.fontDesign.toString(),
-                fontWeight: alert.fontWeight.toString()
+                fontDesign: alert.fontDesign,
+                fontWeight: alert.fontWeight
             )
             AlertTextToSpeechView(alert: alert, ttsDelay: alert.textToSpeechDelay!)
             Section {
@@ -560,10 +560,10 @@ private struct TwitchRewardsView: View {
 
     var body: some View {
         Form {
-            if model.stream.twitchRewards!.isEmpty {
+            if model.stream.twitchRewards.isEmpty {
                 Text("No rewards found")
             } else {
-                ForEach(model.stream.twitchRewards!) { reward in
+                ForEach(model.stream.twitchRewards) { reward in
                     NavigationLink {
                         TwitchRewardView(reward: reward)
                     } label: {
@@ -707,7 +707,7 @@ private struct ChatBotCommandView: View {
                 //     Text("Sound")
                 // }
                 AlertMediaView(alert: alert, imageId: alert.imageId, soundId: alert.soundId)
-                AlertPositionView(alert: alert, positionType: alert.positionType!.toString())
+                AlertPositionView(alert: alert, positionType: alert.positionType!)
                 AlertColorsView(
                     alert: alert,
                     textColor: alert.textColor.color(),
@@ -716,8 +716,8 @@ private struct ChatBotCommandView: View {
                 AlertFontView(
                     alert: alert,
                     fontSize: Float(alert.fontSize),
-                    fontDesign: alert.fontDesign.toString(),
-                    fontWeight: alert.fontWeight.toString()
+                    fontDesign: alert.fontDesign,
+                    fontWeight: alert.fontWeight
                 )
                 AlertTextToSpeechView(alert: alert, ttsDelay: alert.textToSpeechDelay!)
                 Section {
@@ -817,7 +817,7 @@ private struct SpeechToTextStringView: View {
                     Text("Trigger by saying '\(text)'.")
                 }
                 AlertMediaView(alert: alert, imageId: alert.imageId, soundId: alert.soundId)
-                AlertPositionView(alert: alert, positionType: alert.positionType!.toString())
+                AlertPositionView(alert: alert, positionType: alert.positionType!)
                 Section {
                     Button {
                         model.testAlert(alert: .speechToTextString(string.id))

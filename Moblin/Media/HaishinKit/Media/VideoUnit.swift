@@ -331,6 +331,7 @@ final class VideoUnit: NSObject {
     private var externalDisplayPreview = false
     private var sceneSwitchTransition: SceneSwitchTransition = .blur
     private var pixelTransferSession: VTPixelTransferSession?
+    private var previousFaceDetectionTimes: [UUID: Double] = [:]
 
     override init() {
         if let metalDevice = MTLCreateSystemDefaultDevice() {
@@ -1487,15 +1488,34 @@ final class VideoUnit: NSObject {
     }
 
     private func needsFaceDetections(_ presentationTimeStamp: Double) -> Set<UUID> {
+        var faceDetectionsIntervals: [UUID: Double] = [:]
         var ids: Set<UUID> = []
         for effect in effects {
-            let (needsFaceDetections, videoSource) = effect.needsFaceDetections(presentationTimeStamp)
-            if needsFaceDetections {
-                if let videoSource {
-                    ids.insert(videoSource)
+            let (needsFaceDetectionsNow, videoSource, interval) = effect.needsFaceDetections(presentationTimeStamp)
+            let videoSourceId = videoSource ?? sceneVideoSourceId
+            if let interval {
+                if let currentInterval = faceDetectionsIntervals[videoSourceId] {
+                    if interval < currentInterval {
+                        faceDetectionsIntervals[videoSourceId] = interval
+                    }
                 } else {
-                    ids.insert(sceneVideoSourceId)
+                    faceDetectionsIntervals[videoSourceId] = interval
                 }
+            }
+            if needsFaceDetectionsNow {
+                ids.insert(videoSourceId)
+                previousFaceDetectionTimes[videoSourceId] = presentationTimeStamp
+            }
+        }
+        for (videoSourceId, interval) in faceDetectionsIntervals {
+            if let previousPresentationTimeStamp = previousFaceDetectionTimes[videoSourceId] {
+                if presentationTimeStamp - previousPresentationTimeStamp > interval {
+                    ids.insert(videoSourceId)
+                    previousFaceDetectionTimes[videoSourceId] = presentationTimeStamp
+                }
+            } else {
+                ids.insert(videoSourceId)
+                previousFaceDetectionTimes[videoSourceId] = presentationTimeStamp
             }
         }
         return ids

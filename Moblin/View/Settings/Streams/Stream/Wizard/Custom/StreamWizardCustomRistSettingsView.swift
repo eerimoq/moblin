@@ -21,7 +21,6 @@ struct StreamWizardCustomRistSettingsView: View {
         Form {
             Section {
                 TextField("rist://120.35.234.2:2030", text: $model.wizardCustomRistUrl)
-                    .keyboardType(.URL)
                     .textInputAutocapitalization(.never)
                     .disableAutocorrection(true)
                     .onChange(of: model.wizardCustomRistUrl) { _ in

@@ -110,7 +110,7 @@ struct ValueEditCompactView: View {
                 Slider(
                     value: $number,
                     in: minimum ... maximum,
-                    step: increment
+                    step: 1
                 )
                 .onChange(of: number) { number in
                     value = onSubmit("\(number)")

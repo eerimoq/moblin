@@ -22,7 +22,7 @@ struct WidgetMapSettingsView: View {
             NavigationLink {
                 LocationSettingsView()
             } label: {
-                IconAndTextView(image: "location", text: String(localized: "Location"))
+                Label("Location", systemImage: "location")
             }
         } header: {
             Text("Shortcut")
@@ -49,5 +49,6 @@ struct WidgetMapSettingsView: View {
         } footer: {
             Text("To show the widget in sync with high latency cameras.")
         }
+        WidgetEffectsView(widget: widget)
     }
 }

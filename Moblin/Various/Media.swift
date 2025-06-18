@@ -99,7 +99,9 @@ final class Media: NSObject {
         netStream = nil
     }
 
-    func setNetStream(proto: SettingsStreamProtocol, portrait: Bool, timecodesEnabled: Bool,
+    func setNetStream(proto: SettingsStreamProtocol,
+                      portrait: Bool,
+                      timecodesEnabled: Bool,
                       builtinAudioDelay: Double)
     {
         netStream?.stopMixer()
@@ -934,7 +936,7 @@ final class Media: NSObject {
     private func makeAudioCompressionSettings(audioBitrate: Int?) -> [String: Any] {
         var settings = [
             AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
-            AVSampleRateKey: 0,
+            AVSampleRateKey: 48000,
             AVNumberOfChannelsKey: 0,
         ]
         if let audioBitrate {

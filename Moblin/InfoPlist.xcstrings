@@ -101,6 +101,12 @@
             "value" : "Moblin communicates with DJI cameras using Bluetooth."
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin communique avec les caméras DJI par Bluetooth"
+          }
+        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
@@ -111,6 +117,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Moblin использует Bluetooth для подключения к камерам DJI"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin Bluetooth'u DJI kameraları için kullanır."
           }
         },
         "zh-Hant" : {
@@ -167,6 +179,12 @@
             "value" : "Moblin транслирует видео с камеры"
           }
         },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin yayın yaparken kameranızı kullanır."
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -191,10 +209,22 @@
             "value" : "Moblin can show your heart rate on stream."
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin peut afficher votre fréquence cardiaque sur le stream."
+          }
+        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Moblin può mostrare la tua frequenza cardiaca in live."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin yayınınızda kalp atış hızınızı gösterebilir."
           }
         },
         "zh-Hant" : {
@@ -221,10 +251,22 @@
             "value" : "Moblin can show your heart rate on stream."
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin peut afficher votre fréquence cardiaque sur le stream"
+          }
+        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Moblin può mostrare la tua frequenza cardiaca in live."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin yayınınızda kalp atış hızınızı gösterebilir."
           }
         },
         "zh-Hant" : {
@@ -251,10 +293,22 @@
             "value" : "Moblin can show your heart rate on stream."
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin peut afficher votre fréquence cardiaque sur le stream"
+          }
+        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Moblin può mostrare la tua frequenza cardiaca in live."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin yayınınızda kalp atış hızınızı gösterebilir."
           }
         },
         "zh-Hant" : {
@@ -311,6 +365,12 @@
             "value" : "Moblin использует localhost для ввода и вывода в библиотеке SRT"
           }
         },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin yerel ağı SRT kütüphanesi için kullanır."
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -335,6 +395,12 @@
             "value" : "Moblin can display your location and/or speed on screen and stream."
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin peut afficher votre position et/ou votre vitesse sur l’écran et sur le stream."
+          }
+        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
@@ -345,6 +411,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Moblin может отображать ваше местоположение и/или скорость на экране и на стриме."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin konumunuzu ve hızınızı yayınınızda gösterebilir."
           }
         },
         "zh-Hant" : {
@@ -401,6 +473,12 @@
             "value" : "Moblin транслирует аудио с микрофона."
           }
         },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin yayın yaparken mikrofonunuzu kullanır."
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -453,6 +531,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Moblin отображает выбранные изображения как оверлеи."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin seçilen görüntüleri üst üste yerleştirir."
           }
         },
         "zh-Hant" : {
@@ -509,6 +593,12 @@
             "value" : "Moblin отображает выбранные изображения как оверлеи."
           }
         },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin seçilen görüntüleri üst üste yerleştirir."
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -533,10 +623,22 @@
             "value" : "Moblin can add transcription to the stream."
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin peut ajouter la transcription au stream"
+          }
+        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Moblin può aggiungere la trascrizione alla stream."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin yayınınızda altyazı ekleyebilir."
           }
         },
         "zh-Hant" : {

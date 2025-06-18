@@ -48,14 +48,16 @@ private struct ChatPausedView: View {
 
 private struct ChatOverlayView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var chatSettings: SettingsChat
+    @ObservedObject var chat: ChatProvider
     let height: CGFloat
 
     var body: some View {
         if model.isPortrait() {
             VStack {
                 ZStack {
-                    StreamOverlayChatView(chat: model.chat)
-                    ChatPausedView(chat: model.chat)
+                    StreamOverlayChatView(model: model, chatSettings: chatSettings, chat: chat)
+                    ChatPausedView(chat: chat)
                 }
                 Rectangle()
                     .foregroundColor(.clear)
@@ -65,14 +67,14 @@ private struct ChatOverlayView: View {
             VStack {
                 ZStack {
                     GeometryReader { metrics in
-                        StreamOverlayChatView(chat: model.chat)
+                        StreamOverlayChatView(model: model, chatSettings: chatSettings, chat: chat)
                             .frame(width: metrics.size.width * 0.95)
                     }
-                    ChatPausedView(chat: model.chat)
+                    ChatPausedView(chat: chat)
                 }
                 Rectangle()
                     .foregroundColor(.clear)
-                    .frame(height: height * model.database.chat.bottom)
+                    .frame(height: chatSettings.bottomPoints)
             }
         }
     }
@@ -146,25 +148,25 @@ struct StreamOverlayView: View {
             }
             ZStack {
                 if model.showingPanel != .chat {
-                    ChatOverlayView(height: height)
+                    ChatOverlayView(chatSettings: model.database.chat, chat: model.chat, height: height)
                         .opacity(model.database.chat.enabled ? 1 : 0)
-                        .allowsHitTesting(model.interactiveChat)
+                        .allowsHitTesting(model.chat.interactiveChat)
                 }
                 HStack {
                     Spacer()
-                    RightOverlayBottomView(width: width)
+                    RightOverlayBottomView(show: model.database.show, width: width)
                 }
                 HStack {
-                    LeftOverlayView()
+                    LeftOverlayView(model: model, database: model.database)
                         .padding([.leading], leadingPadding())
                     Spacer()
                 }
                 HStack {
                     Spacer()
-                    RightOverlayTopView()
+                    RightOverlayTopView(model: model, database: model.database)
                 }
                 HStack {
-                    StreamOverlayDebugView()
+                    StreamOverlayDebugView(debugOverlay: model.debugOverlay)
                         .padding([.leading], leadingPadding())
                     Spacer()
                 }

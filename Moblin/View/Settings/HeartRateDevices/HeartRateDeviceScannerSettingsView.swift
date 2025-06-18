@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct HeartRateDeviceScannerSettingsView: View {
+    @EnvironmentObject var model: Model
     @ObservedObject private var scanner = heartRateScanner
     @Environment(\.dismiss) var dismiss
     var onChange: (String) -> Void
@@ -9,7 +10,9 @@ struct HeartRateDeviceScannerSettingsView: View {
     var body: some View {
         Form {
             Section {
-                if scanner.discoveredPeripherals.isEmpty {
+                if !model.bluetoothAllowed {
+                    Text(bluetoothNotAllowedMessage)
+                } else if scanner.discoveredPeripherals.isEmpty {
                     HCenter {
                         ProgressView()
                     }

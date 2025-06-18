@@ -61,7 +61,7 @@ private struct InstantReplayView: View {
                 .background(state.button.backgroundColor.color())
                 .clipShape(Circle())
                 .onTapGesture {
-                    if model.stream.replay!.enabled {
+                    if model.stream.replay.enabled {
                         model.instantReplay()
                     } else {
                         model.makeReplayIsNotEnabledToast()
@@ -72,7 +72,7 @@ private struct InstantReplayView: View {
                 }
         } else {
             QuickButtonImage(state: state, buttonSize: size) {
-                if model.stream.replay!.enabled {
+                if model.stream.replay.enabled {
                     model.instantReplay()
                 } else {
                     model.makeReplayIsNotEnabledToast()
@@ -179,10 +179,12 @@ struct QuickButtonsInnerView: View {
 
     private func whirlpoolAction(state: ButtonState) {
         videoEffectAction(state: state, type: .whirlpool)
+        model.showingWhirlpool.toggle()
     }
 
     private func pinchAction(state: ButtonState) {
         videoEffectAction(state: state, type: .pinch)
+        model.showingPinch.toggle()
     }
 
     private func fourThreeAction(state: ButtonState) {
@@ -305,7 +307,7 @@ struct QuickButtonsInnerView: View {
         state.button.isOn.toggle()
         model.setGlobalButtonState(type: .interactiveChat, isOn: state.button.isOn)
         model.updateQuickButtonStates()
-        model.interactiveChat = state.button.isOn
+        model.chat.interactiveChat = state.button.isOn
         if !state.button.isOn {
             model.disableInteractiveChat()
         }

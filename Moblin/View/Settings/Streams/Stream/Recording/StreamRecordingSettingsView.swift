@@ -6,7 +6,7 @@ struct StreamRecordingSettingsView: View {
     @State var videoCodec: String
 
     private var recording: SettingsStreamRecording {
-        return stream.recording!
+        return stream.recording
     }
 
     private func onVideoCodecChange(codec: String) {

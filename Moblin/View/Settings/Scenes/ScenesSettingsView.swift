@@ -1,52 +1,58 @@
 import SwiftUI
 
+private struct SceneItemView: View {
+    @EnvironmentObject var model: Model
+    @ObservedObject var database: Database
+    @ObservedObject var scene: SettingsScene
+
+    var body: some View {
+        NavigationLink {
+            SceneSettingsView(
+                scene: scene,
+                selectedRotation: scene.videoSourceRotation,
+                numericInput: model.database.sceneNumericInput
+            )
+        } label: {
+            HStack {
+                DraggableItemPrefixView()
+                Toggle(scene.name, isOn: Binding(get: {
+                    scene.enabled
+                }, set: { value in
+                    scene.enabled = value
+                    model.resetSelectedScene()
+                }))
+            }
+        }
+        .swipeActions(edge: .trailing) {
+            Button {
+                database.scenes.removeAll { $0 == scene }
+                model.resetSelectedScene()
+            } label: {
+                Text("Delete")
+            }
+            .tint(.red)
+        }
+        .swipeActions(edge: .trailing) {
+            Button {
+                database.scenes.append(scene.clone())
+                model.resetSelectedScene()
+            } label: {
+                Text("Duplicate")
+            }
+            .tint(.blue)
+        }
+    }
+}
+
 private struct ScenesListView: View {
     @EnvironmentObject var model: Model
-
-    var database: Database {
-        model.database
-    }
+    @ObservedObject var database: Database
 
     var body: some View {
         Section {
             List {
                 ForEach(database.scenes) { scene in
-                    NavigationLink {
-                        SceneSettingsView(
-                            scene: scene,
-                            name: scene.name,
-                            selectedRotation: scene.videoSourceRotation!,
-                            numericInput: model.database.sceneNumericInput
-                        )
-                    } label: {
-                        HStack {
-                            DraggableItemPrefixView()
-                            Toggle(scene.name, isOn: Binding(get: {
-                                scene.enabled
-                            }, set: { value in
-                                scene.enabled = value
-                                model.resetSelectedScene()
-                            }))
-                        }
-                    }
-                    .swipeActions(edge: .trailing) {
-                        Button {
-                            database.scenes.removeAll { $0 == scene }
-                            model.resetSelectedScene()
-                        } label: {
-                            Text("Delete")
-                        }
-                        .tint(.red)
-                    }
-                    .swipeActions(edge: .trailing) {
-                        Button {
-                            database.scenes.append(scene.clone())
-                            model.resetSelectedScene()
-                        } label: {
-                            Text("Duplicate")
-                        }
-                        .tint(.blue)
-                    }
+                    SceneItemView(database: database, scene: scene)
                 }
                 .onMove(perform: { froms, to in
                     database.scenes.move(fromOffsets: froms, toOffset: to)
@@ -67,18 +73,17 @@ private struct ScenesListView: View {
 
 private struct ScenesSwitchTransition: View {
     @EnvironmentObject var model: Model
-    @State var sceneSwitchTransition: String
+    @State var sceneSwitchTransition: SettingsSceneSwitchTransition
 
     var body: some View {
         Section {
             Picker("Scene switch transition", selection: $sceneSwitchTransition) {
-                ForEach(sceneSwitchTransitions, id: \.self) { transition in
-                    Text(transition)
+                ForEach(SettingsSceneSwitchTransition.allCases, id: \.self) {
+                    Text($0.toString())
                 }
             }
             .onChange(of: sceneSwitchTransition) { _ in
-                model.database.sceneSwitchTransition = SettingsSceneSwitchTransition
-                    .fromString(value: sceneSwitchTransition)
+                model.database.sceneSwitchTransition = sceneSwitchTransition
                 model.setSceneSwitchTransition()
             }
             Toggle("Force scene switch transition", isOn: Binding(get: {
@@ -147,10 +152,10 @@ struct ScenesSettingsView: View {
 
     var body: some View {
         Form {
-            ScenesListView()
+            ScenesListView(database: model.database)
             WidgetsSettingsView(database: model.database)
-            AutoSwitchersSettingsView(autoSceneSwitchers: model.database.autoSceneSwitchers!)
-            ScenesSwitchTransition(sceneSwitchTransition: model.database.sceneSwitchTransition.toString())
+            AutoSwitchersSettingsView(autoSceneSwitchers: model.database.autoSceneSwitchers)
+            ScenesSwitchTransition(sceneSwitchTransition: model.database.sceneSwitchTransition)
             RemoteSceneView(selectedSceneId: model.database.remoteSceneId)
             ReloadBrowserSources()
         }

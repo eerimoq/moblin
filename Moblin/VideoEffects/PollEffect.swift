@@ -4,8 +4,6 @@ import SwiftUI
 import UIKit
 import Vision
 
-private let pollQueue = DispatchQueue(label: "com.eerimoq.widget.text")
-
 final class PollEffect: VideoEffect {
     private let filter = CIFilter.sourceOverCompositing()
     private var overlay: CIImage?
@@ -43,20 +41,14 @@ final class PollEffect: VideoEffect {
             .cornerRadius(10)
             let renderer = ImageRenderer(content: content)
             let image = renderer.uiImage
-            pollQueue.sync {
+            mixerLockQueue.async {
                 self.image = image
             }
         }
-        var newImage: UIImage?
-        pollQueue.sync {
-            if self.image != nil {
-                newImage = self.image
-                self.image = nil
-            }
-        }
-        guard let newImage else {
+        guard let newImage = image else {
             return
         }
+        image = nil
         update(image: newImage, size: size)
         updateMetalPetal(image: newImage, size: size)
     }

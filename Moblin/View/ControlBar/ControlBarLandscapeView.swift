@@ -1,19 +1,5 @@
 import SwiftUI
 
-func controlBarScrollTargetBehavior(model: Model, containerWidth: Double, targetPosition: Double) -> Double {
-    let spacing = 8.0
-    let originalPagePosition = Double(model.controlBarPage - 1) * (containerWidth + spacing)
-    let distance = targetPosition - originalPagePosition
-    if distance > 15 {
-        model.controlBarPage += 1
-    } else if distance < -15 {
-        model.controlBarPage -= 1
-    }
-    let pages = model.buttonPairs.filter { !$0.isEmpty }.count
-    model.controlBarPage = model.controlBarPage.clamped(to: 1 ... pages)
-    return Double(model.controlBarPage - 1) * (containerWidth + spacing)
-}
-
 private struct QuickButtonsView: View {
     @EnvironmentObject var model: Model
     var page: Int
@@ -167,25 +153,23 @@ private struct PagesView: View {
 
     var body: some View {
         if #available(iOS 17, *) {
-            VStack {
-                ScrollView(.horizontal) {
-                    HStack {
-                        Group {
-                            MainPageView(width: width)
-                            ForEach(1 ..< controlBarPages, id: \.self) { page in
-                                if !model.buttonPairs[page].isEmpty {
-                                    PageView(page: page, width: width)
-                                }
+            ScrollView(.horizontal) {
+                HStack {
+                    Group {
+                        MainPageView(width: width)
+                        ForEach(1 ..< controlBarPages, id: \.self) { page in
+                            if !model.buttonPairs[page].isEmpty {
+                                PageView(page: page, width: width)
                             }
                         }
-                        .containerRelativeFrame(.horizontal, count: 1, spacing: 0)
                     }
-                    .scrollTargetLayout()
+                    .containerRelativeFrame(.horizontal, count: 1, spacing: 0)
                 }
-                .scrollTargetBehavior(ControlBarPageScrollTargetBehavior(model: model))
-                .scrollIndicators(.never)
-                .frame(width: width - 1)
+                .scrollTargetLayout()
             }
+            .scrollTargetBehavior(ControlBarPageScrollTargetBehavior(model: model))
+            .scrollIndicators(.never)
+            .frame(width: width - 1)
         } else {
             MainPageView(width: width)
         }

@@ -4,6 +4,10 @@ import Foundation
 
 let remoteControlApiVersion = "0.1"
 
+class RemoteControlStartStatusFilter: Codable {
+    var topRight: Bool = true
+}
+
 enum RemoteControlRequest: Codable {
     case getStatus
     case getSettings
@@ -27,6 +31,8 @@ enum RemoteControlRequest: Codable {
     case setRemoteSceneData(data: RemoteControlRemoteSceneData)
     case instantReplay
     case saveReplay
+    case startStatus(interval: Int, filter: RemoteControlStartStatusFilter)
+    case stopStatus
 }
 
 enum RemoteControlResponse: Codable {
@@ -42,6 +48,9 @@ enum RemoteControlEvent: Codable {
     case state(data: RemoteControlState)
     case log(entry: String)
     case mediaShareSegmentReceived(fileId: UUID)
+    case status(general: RemoteControlStatusGeneral?,
+                topLeft: RemoteControlStatusTopLeft?,
+                topRight: RemoteControlStatusTopRight?)
 }
 
 struct RemoteControlChatMessage: Codable {
@@ -156,6 +165,10 @@ struct RemoteControlRemoteSceneSettingsWidget: Codable {
             return nil
         case .scoreboard:
             return nil
+        case .vTuber:
+            return nil
+        case .pngTuber:
+            return nil
         }
     }
 
@@ -201,10 +214,10 @@ struct RemoteControlRemoteSceneSettingsWidgetTypeBrowser: Codable {
         url = browser.url
         width = browser.width
         height = browser.height
-        audioOnly = browser.audioOnly!
-        scaleToFitVideo = browser.scaleToFitVideo!
-        fps = browser.fps!
-        styleSheet = browser.styleSheet!
+        audioOnly = browser.audioOnly
+        scaleToFitVideo = browser.scaleToFitVideo
+        fps = browser.fps
+        styleSheet = browser.styleSheet
     }
 
     func toSettings() -> SettingsWidgetBrowser {
@@ -236,17 +249,17 @@ struct RemoteControlRemoteSceneSettingsWidgetTypeText: Codable {
 
     init(text: SettingsWidgetText) {
         formatString = text.formatString
-        backgroundColor = text.backgroundColor!
-        clearBackgroundColor = text.clearBackgroundColor!
-        foregroundColor = text.foregroundColor!
-        clearForegroundColor = text.clearForegroundColor!
-        fontSize = text.fontSize!
-        fontDesign = text.fontDesign!
-        fontWeight = text.fontWeight!
-        fontMonospacedDigits = text.fontMonospacedDigits!
-        horizontalAlignment = .init(alignment: text.horizontalAlignment!)
-        verticalAlignment = .init(alignment: text.verticalAlignment!)
-        delay = text.delay!
+        backgroundColor = text.backgroundColor
+        clearBackgroundColor = text.clearBackgroundColor
+        foregroundColor = text.foregroundColor
+        clearForegroundColor = text.clearForegroundColor
+        fontSize = text.fontSize
+        fontDesign = text.fontDesign
+        fontWeight = text.fontWeight
+        fontMonospacedDigits = text.fontMonospacedDigits
+        horizontalAlignment = .init(alignment: text.horizontalAlignment)
+        verticalAlignment = .init(alignment: text.verticalAlignment)
+        delay = text.delay
     }
 
     func toSettings() -> SettingsWidgetText {

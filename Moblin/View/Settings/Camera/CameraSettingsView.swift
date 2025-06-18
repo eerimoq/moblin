@@ -191,44 +191,32 @@ struct CameraSettingsAppleLogLutView: View {
 
 struct CameraSettingsView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var database: Database
 
     var body: some View {
         Form {
             Section {
                 NavigationLink {
-                    StreamVideoSettingsView(
-                        stream: model.stream,
-                        codec: model.stream.codec.rawValue,
-                        bitrate: model.stream.bitrate,
-                        resolution: model.stream.resolution.rawValue,
-                        fps: String(model.stream.fps)
-                    )
+                    StreamVideoSettingsView(database: database, stream: model.stream)
                 } label: {
-                    IconAndTextView(
-                        image: "dot.radiowaves.left.and.right",
-                        text: String(localized: "Video")
-                    )
+                    Label("Video", systemImage: "dot.radiowaves.left.and.right")
                 }
             } header: {
                 Text("Shortcut")
             }
             Section {
-                if model.database.showAllSettings {
+                if database.showAllSettings {
                     NavigationLink {
-                        ZoomSettingsView(speed: model.database.zoom.speed!)
+                        ZoomSettingsView(speed: database.zoom.speed!)
                     } label: {
                         Text("Zoom")
                     }
                 }
-                VideoStabilizationSettingsView(mode: model.database.videoStabilizationMode.toString())
-                if model.database.showAllSettings {
+                VideoStabilizationSettingsView(mode: database.videoStabilizationMode)
+                if database.showAllSettings {
                     TapScreenToFocusSettingsView()
-                    Toggle("Camera controls", isOn: Binding(get: {
-                        model.database.cameraControlsEnabled
-                    }, set: { value in
-                        model.database.cameraControlsEnabled = value
-                        model.setCameraControlsEnabled()
-                    }))
+                    FixedHorizonView(database: database)
+                    CameraControlsView(database: database)
                 }
                 MirrorFrontCameraOnStreamView()
             } footer: {
@@ -236,13 +224,13 @@ struct CameraSettingsView: View {
                     "\"Mirror front camera on stream\" is only supported when streaming in landscape, not portrait."
                 )
             }
-            if model.database.showAllSettings {
+            if database.showAllSettings {
                 if model.supportsAppleLog {
                     Section {
                         Picker("Color space", selection: Binding(get: {
-                            model.database.color.space.rawValue
+                            database.color.space.rawValue
                         }, set: { value in
-                            model.database.color.space = SettingsColorSpace(rawValue: value)!
+                            database.color.space = SettingsColorSpace(rawValue: value)!
                             model.colorSpaceUpdated()
                             model.objectWillChange.send()
                         })) {
@@ -253,7 +241,7 @@ struct CameraSettingsView: View {
                         .disabled(model.isLive || model.isRecording)
                         NavigationLink {
                             CameraSettingsAppleLogLutView(
-                                selectedId: model.database.color.lut
+                                selectedId: database.color.lut
                             )
                         } label: {
                             Text("Apple Log LUT")
@@ -264,9 +252,9 @@ struct CameraSettingsView: View {
                 } else {
                     Section {
                         Picker("Color space", selection: Binding(get: {
-                            model.database.color.space.rawValue
+                            database.color.space.rawValue
                         }, set: { value in
-                            model.database.color.space = SettingsColorSpace(rawValue: value)!
+                            database.color.space = SettingsColorSpace(rawValue: value)!
                             model.colorSpaceUpdated()
                             model.objectWillChange.send()
                         })) {

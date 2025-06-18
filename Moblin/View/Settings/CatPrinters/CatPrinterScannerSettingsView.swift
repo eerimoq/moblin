@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct CatPrinterScannerSettingsView: View {
+    @EnvironmentObject var model: Model
     @ObservedObject private var scanner = catPrinterScanner
     @Environment(\.dismiss) var dismiss
     var onChange: (String) -> Void
@@ -9,7 +10,9 @@ struct CatPrinterScannerSettingsView: View {
     var body: some View {
         Form {
             Section {
-                if scanner.discoveredPeripherals.isEmpty {
+                if !model.bluetoothAllowed {
+                    Text(bluetoothNotAllowedMessage)
+                } else if scanner.discoveredPeripherals.isEmpty {
                     HCenter {
                         ProgressView()
                     }

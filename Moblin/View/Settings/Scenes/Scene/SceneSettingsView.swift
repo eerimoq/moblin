@@ -3,7 +3,7 @@ import SwiftUI
 private struct VideoStabilizationView: View {
     @EnvironmentObject var model: Model
     var scene: SettingsScene
-    @State var mode: String
+    @State var mode: SettingsVideoStabilizationMode
 
     var body: some View {
         HStack {
@@ -11,11 +11,12 @@ private struct VideoStabilizationView: View {
             Spacer()
             Picker("", selection: $mode) {
                 ForEach(videoStabilizationModes, id: \.self) {
-                    Text($0)
+                    Text($0.toString())
+                        .tag($0)
                 }
             }
             .onChange(of: mode) {
-                scene.videoStabilizationMode = SettingsVideoStabilizationMode.fromString(value: $0)
+                scene.videoStabilizationMode = $0
                 model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
             }
         }
@@ -26,8 +27,7 @@ struct SceneSettingsView: View {
     @EnvironmentObject var model: Model
     @State private var showingAddWidget = false
     @State private var expandedWidget: SettingsSceneWidget?
-    var scene: SettingsScene
-    @State var name: String
+    @ObservedObject var scene: SettingsScene
     @State var selectedRotation: Double
     @State var numericInput: Bool
 
@@ -54,6 +54,16 @@ struct SceneSettingsView: View {
             sceneWidget.y = 72
             sceneWidget.width = 28
             sceneWidget.height = 28
+        case .vTuber:
+            sceneWidget.x = 80
+            sceneWidget.y = 60
+            sceneWidget.width = 28
+            sceneWidget.height = 28
+        case .pngTuber:
+            sceneWidget.x = 85
+            sceneWidget.y = 72
+            sceneWidget.width = 28
+            sceneWidget.height = 28
         default:
             break
         }
@@ -68,12 +78,9 @@ struct SceneSettingsView: View {
     var body: some View {
         Form {
             NavigationLink {
-                NameEditView(name: $name)
+                NameEditView(name: $scene.name)
             } label: {
-                TextItemView(name: String(localized: "Name"), value: name)
-            }
-            .onChange(of: name) { name in
-                scene.name = name
+                TextItemView(name: String(localized: "Name"), value: scene.name)
             }
             Section {
                 NavigationLink {
@@ -115,18 +122,18 @@ struct SceneSettingsView: View {
                         model.sceneUpdated(updateRemoteScene: false)
                     }
                 Toggle(isOn: Binding(get: {
-                    scene.overrideVideoStabilizationMode!
+                    scene.overrideVideoStabilizationMode
                 }, set: { value in
                     scene.overrideVideoStabilizationMode = value
                     model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
                 })) {
                     Text("Override video stabilization")
                 }
-                if scene.overrideVideoStabilizationMode! {
-                    VideoStabilizationView(scene: scene, mode: scene.videoStabilizationMode!.toString())
+                if scene.overrideVideoStabilizationMode {
+                    VideoStabilizationView(scene: scene, mode: scene.videoStabilizationMode)
                 }
                 Toggle(isOn: Binding(get: {
-                    scene.fillFrame!
+                    scene.fillFrame
                 }, set: { value in
                     scene.fillFrame = value
                     model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
@@ -166,7 +173,7 @@ struct SceneSettingsView: View {
                                     widget.enabled = value
                                     model
                                         .sceneUpdated(attachCamera: model
-                                            .isCaptureDeviceVideoSoureWidget(widget: widget))
+                                            .isCaptureDeviceWidget(widget: widget))
                                 })) {
                                     HStack {
                                         DraggableItemPrefixView()
@@ -190,7 +197,7 @@ struct SceneSettingsView: View {
                         if scene.id == model.getSelectedScene()?.id {
                             for offset in offsets {
                                 if let widget = model.findWidget(id: scene.widgets[offset].widgetId) {
-                                    attachCamera = model.isCaptureDeviceVideoSoureWidget(widget: widget)
+                                    attachCamera = model.isCaptureDeviceWidget(widget: widget)
                                 }
                             }
                         }
@@ -227,7 +234,7 @@ struct SceneSettingsView: View {
                                             scene.widgets.append(createSceneWidget(widget: widget))
                                             var attachCamera = false
                                             if scene.id == model.getSelectedScene()?.id {
-                                                attachCamera = model.isCaptureDeviceVideoSoureWidget(widget: widget)
+                                                attachCamera = model.isCaptureDeviceWidget(widget: widget)
                                             }
                                             model.sceneUpdated(
                                                 imageEffectChanged: true,

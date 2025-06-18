@@ -355,7 +355,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
             medias: twitchSubscribe,
             username: event.user_name ?? "Anomymous",
             message: String(
-                localized: "just gifted \(event.total) tier \(event.tierAsNumber()) subsciptions!"
+                localized: "just gifted \(event.total) tier \(event.tierAsNumber()) subscriptions!"
             ),
             settings: settings.twitch!.subscriptions
         )
@@ -646,8 +646,8 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         return "Alert widget"
     }
 
-    override func needsFaceDetections(_: Double) -> (Bool, UUID?) {
-        return (landmarkSettings != nil, nil)
+    override func needsFaceDetections(_: Double) -> (Bool, UUID?, Double?) {
+        return (landmarkSettings != nil, nil, nil)
     }
 
     private func getNext(_ presentationTimeStamp: Double) -> (CIImage?, CIImage?, Double, Double, LandmarkSettings?) {
@@ -668,38 +668,6 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         return (nil, nil, x, y, landmarkSettings)
     }
 
-    private func calcMinXMaxYWidthHeight(points: [CGPoint]) -> (CGFloat, CGFloat, CGFloat, CGFloat)? {
-        guard let firstPoint = points.first else {
-            return nil
-        }
-        var minX = firstPoint.x
-        var maxX = firstPoint.x
-        var minY = firstPoint.y
-        var maxY = firstPoint.y
-        for point in points {
-            minX = min(point.x, minX)
-            maxX = max(point.x, maxX)
-            minY = min(point.y, minY)
-            maxY = max(point.y, maxY)
-        }
-        let width = maxX - minX
-        let height = maxY - minY
-        return (minX, maxY, width, height)
-    }
-
-    private func calcFaceAngle(detection: VNFaceObservation, imageSize: CGSize) -> CGFloat? {
-        guard let medianLine = detection.landmarks?.medianLine else {
-            return nil
-        }
-        let medianLinePoints = medianLine.pointsInImage(imageSize: imageSize)
-        guard let firstPoint = medianLinePoints.first, let lastPoint = medianLinePoints.last else {
-            return nil
-        }
-        let deltaX = firstPoint.x - lastPoint.x
-        let deltaY = firstPoint.y - lastPoint.y
-        return -atan(deltaX / deltaY)
-    }
-
     private func executePositionFace(
         _ image: CIImage,
         _ faceDetections: [VNFaceObservation]?,
@@ -711,7 +679,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         }
         var outputImage = image
         for detection in faceDetections {
-            guard let rotationAngle = calcFaceAngle(detection: detection, imageSize: image.extent.size) else {
+            guard let rotationAngle = detection.calcFaceAngle(imageSize: image.extent.size) else {
                 continue
             }
             guard let boundingBox = detection.stableBoundingBox(
@@ -737,33 +705,33 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
                 }
                 var points = leftEye.pointsInImage(imageSize: image.extent.size)
                 points = rotateFace(allPoints: points, rotationAngle: -rotationAngle)
-                guard let (minX, maxY, width, height) = calcMinXMaxYWidthHeight(points: points) else {
+                guard let boundingBox = calcBoundingBox(points: points) else {
                     continue
                 }
-                centerX = minX + landmarkSettings.centerX * width
-                centerY = maxY - landmarkSettings.centerY * height
+                centerX = boundingBox.minX + landmarkSettings.centerX * boundingBox.width
+                centerY = boundingBox.minY - landmarkSettings.centerY * boundingBox.height
             case .rightEye:
                 guard let rightEye = detection.landmarks?.rightEye else {
                     continue
                 }
                 var points = rightEye.pointsInImage(imageSize: image.extent.size)
                 points = rotateFace(allPoints: points, rotationAngle: -rotationAngle)
-                guard let (minX, maxY, width, height) = calcMinXMaxYWidthHeight(points: points) else {
+                guard let boundingBox = calcBoundingBox(points: points) else {
                     continue
                 }
-                centerX = minX + landmarkSettings.centerX * width
-                centerY = maxY - landmarkSettings.centerY * height
+                centerX = boundingBox.minX + landmarkSettings.centerX * boundingBox.width
+                centerY = boundingBox.minY - landmarkSettings.centerY * boundingBox.height
             case .mouth:
                 guard let outerLips = detection.landmarks?.outerLips else {
                     continue
                 }
                 var points = outerLips.pointsInImage(imageSize: image.extent.size)
                 points = rotateFace(allPoints: points, rotationAngle: -rotationAngle)
-                guard let (minX, maxY, width, height) = calcMinXMaxYWidthHeight(points: points) else {
+                guard let boundingBox = calcBoundingBox(points: points) else {
                     continue
                 }
-                centerX = minX + landmarkSettings.centerX * width
-                centerY = maxY - landmarkSettings.centerY * height
+                centerX = boundingBox.minX + landmarkSettings.centerX * boundingBox.width
+                centerY = boundingBox.minY - landmarkSettings.centerY * boundingBox.height
             }
             let moblinImage = alertImage
                 .transformed(by: CGAffineTransform(

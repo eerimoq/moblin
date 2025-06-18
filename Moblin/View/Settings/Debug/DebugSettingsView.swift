@@ -104,7 +104,7 @@ struct DebugSettingsView: View {
                 NavigationLink {
                     DjiGimbalDevicesSettingsView()
                 } label: {
-                    IconAndTextView(image: "appletvremote.gen1", text: String(localized: "DJI gimbals"))
+                    Label("DJI gimbals", systemImage: "appletvremote.gen1")
                 }
                 VStack(alignment: .leading) {
                     Text("Builtin audio and video delay")
@@ -121,6 +121,20 @@ struct DebugSettingsView: View {
             } header: {
                 Text("Experimental")
             }
+            #if canImport(DeviceDiscoveryUI)
+                if #available(iOS 26.0, *) {
+                    Section {
+                        HCenter {
+                            WiFiAwarePublisherView()
+                        }
+                    }
+                    Section {
+                        HCenter {
+                            WiFiAwareSubscriberView()
+                        }
+                    }
+                }
+            #endif
         }
         .navigationTitle("Debug")
     }

@@ -19,6 +19,7 @@ private struct StreamButtonText: View {
 struct StreamButton: View {
     @EnvironmentObject var model: Model
     @State private var isPresentingGoLiveConfirm = false
+    @State private var isPresentingGoLiveNotificationConfirm = false
     @State private var isPresentingStopConfirm = false
 
     var body: some View {
@@ -32,16 +33,21 @@ struct StreamButton: View {
                             .stroke(.white)
                     )
             }
+            .confirmationDialog("", isPresented: $isPresentingGoLiveNotificationConfirm) {
+                Button("Send Go live notification") {
+                    model.sendGoLiveNotification()
+                }
+            }
             .confirmationDialog("", isPresented: $isPresentingStopConfirm) {
-                if model.stream.obsAutoStopStream! && model.stream.obsAutoStopRecording! {
+                if model.stream.obsAutoStopStream && model.stream.obsAutoStopRecording {
                     Button("End but leave OBS streaming and recording") {
                         model.stopStream(stopObsStreamIfEnabled: false, stopObsRecordingIfEnabled: false)
                     }
-                } else if model.stream.obsAutoStopStream! {
+                } else if model.stream.obsAutoStopStream {
                     Button("End but leave OBS streaming") {
                         model.stopStream(stopObsStreamIfEnabled: false)
                     }
-                } else if model.stream.obsAutoStopRecording! {
+                } else if model.stream.obsAutoStopRecording {
                     Button("End but leave OBS recording") {
                         model.stopStream(stopObsRecordingIfEnabled: false)
                     }
@@ -59,6 +65,9 @@ struct StreamButton: View {
             .confirmationDialog("", isPresented: $isPresentingGoLiveConfirm) {
                 Button("Go Live") {
                     model.startStream()
+                    if model.isGoLiveNotificationConfigured() {
+                        isPresentingGoLiveNotificationConfirm = true
+                    }
                 }
             }
         } else {

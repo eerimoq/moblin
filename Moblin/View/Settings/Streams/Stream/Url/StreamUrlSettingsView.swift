@@ -21,7 +21,7 @@ struct StreamUrlSettingsView: View {
         }
         submitted = true
         stream.url = value
-        model.storeAndReloadStreamIfEnabled(stream: stream)
+        model.reloadStreamIfEnabled(stream: stream)
         dismiss()
     }
 
@@ -29,8 +29,7 @@ struct StreamUrlSettingsView: View {
         Form {
             Section {
                 ZStack(alignment: .leading) {
-                    TextField("", text: $value, axis: .vertical)
-                        .keyboardType(.URL)
+                    MultiLineTextField(value: $value)
                         .textInputAutocapitalization(.never)
                         .onSubmit {
                             submitUrl()

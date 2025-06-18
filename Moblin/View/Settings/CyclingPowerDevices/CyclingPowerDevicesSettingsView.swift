@@ -20,10 +20,7 @@ struct CyclingPowerDevicesSettingsView: View {
         Form {
             Section {
                 HCenter {
-                    Image("CyclingPowerDevice")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(height: 130)
+                    IntegrationImageView(imageName: "CyclingPowerDevice")
                 }
             }
             Section {

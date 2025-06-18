@@ -5,10 +5,16 @@ import Vision
 
 final class PixellateEffect: VideoEffect {
     private let filter = CIFilter.pixellate()
-    var strength: Atomic<Float>
+    private var strength: Float
 
     init(strength: Float) {
         self.strength = .init(strength)
+    }
+
+    func setSettings(strength: Float) {
+        mixerLockQueue.async {
+            self.strength = strength
+        }
     }
 
     override func getName() -> String {
@@ -35,7 +41,7 @@ final class PixellateEffect: VideoEffect {
 
     private func calcScale(size: CGSize) -> Float {
         let maximum = Float(size.maximum())
-        let sizeInPixels = 20 * (maximum / 1920) * (1 + 5 * strength.value)
+        let sizeInPixels = 20 * (maximum / 1920) * (1 + 5 * strength)
         return maximum / Float(Int(maximum / sizeInPixels))
     }
 }

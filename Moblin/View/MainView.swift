@@ -1,4 +1,6 @@
+import AVFoundation
 import SwiftUI
+import UIKit
 import WebKit
 
 private struct CloseButtonView: View {
@@ -72,11 +74,11 @@ private struct MenuView: View {
         switch model.showingPanel {
         case .settings:
             NavigationStack {
-                SettingsView()
+                SettingsView(database: model.database)
             }
         case .bitrate:
             NavigationStack {
-                QuickButtonBitrateView(selection: model.stream.bitrate)
+                QuickButtonBitrateView(database: model.database, stream: model.stream)
             }
         case .mic:
             NavigationStack {
@@ -117,8 +119,7 @@ private struct MenuView: View {
         case .sceneSettings:
             NavigationStack {
                 SceneSettingsView(scene: model.sceneSettingsPanelScene,
-                                  name: model.sceneSettingsPanelScene.name,
-                                  selectedRotation: model.sceneSettingsPanelScene.videoSourceRotation!,
+                                  selectedRotation: model.sceneSettingsPanelScene.videoSourceRotation,
                                   numericInput: model.database.sceneNumericInput)
             }
             .id(model.sceneSettingsPanelSceneId)
@@ -134,7 +135,7 @@ private struct MenuView: View {
             NavigationStack {
                 QuickButtonAutoSceneSwitcherView(
                     autoSceneSwitcher: model.autoSceneSwitcher,
-                    autoSceneSwitchers: model.database.autoSceneSwitchers!
+                    autoSceneSwitchers: model.database.autoSceneSwitchers
                 )
             }
         case .quickButtonSettings:
@@ -257,12 +258,22 @@ struct MainView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var webBrowserController: WebBrowserController
     var streamView: StreamView
-    var webBrowserView: WebBrowserView
     @State var showAreYouReallySure = false
     @FocusState private var focused: Bool
     @ObservedObject var replay: ReplayProvider
 
+    init(webBrowserController: WebBrowserController,
+         streamView: StreamView,
+         replay: ReplayProvider)
+    {
+        self.webBrowserController = webBrowserController
+        self.streamView = streamView
+        self.replay = replay
+        UITextField.appearance().clearButtonMode = .always
+    }
+
     func drawFocus(context: GraphicsContext, metrics: GeometryProxy, focusPoint: CGPoint) {
+        logger.info("xxx draw")
         let sideLength = 70.0
         let x = metrics.size.width * focusPoint.x - sideLength / 2
         let y = metrics.size.height * focusPoint.y - sideLength / 2
@@ -273,10 +284,6 @@ struct MainView: View {
             with: .color(.yellow),
             lineWidth: 1
         )
-    }
-
-    private var debug: SettingsDebug {
-        model.database.debug
     }
 
     private func handleTapToFocus(metrics: GeometryProxy, location: CGPoint) {
@@ -322,7 +329,7 @@ struct MainView: View {
     }
 
     private func portraitAspectRatio() -> CGFloat {
-        if model.stream.portrait! {
+        if model.stream.portrait {
             return 9 / 16
         } else {
             return 16 / 9
@@ -330,7 +337,7 @@ struct MainView: View {
     }
 
     private func portraitVideoOffset() -> Double {
-        if model.stream.portrait! {
+        if model.stream.portrait {
             return 0
         } else {
             return model.portraitVideoOffsetFromTop
@@ -380,15 +387,13 @@ struct MainView: View {
                     face()
                 }
                 if model.showBrowser {
-                    webBrowserView
+                    WebBrowserView()
                 }
                 if model.showingRemoteControl {
-                    ZStack {
-                        NavigationStack {
-                            ControlBarRemoteControlAssistantView()
-                        }
-                        CloseButtonRemoteView()
+                    NavigationStack {
+                        ControlBarRemoteControlAssistantView()
                     }
+                    CloseButtonRemoteView()
                 }
                 if model.showingPanel != .none {
                     MenuView()
@@ -409,9 +414,6 @@ struct MainView: View {
                     }
             )
             ControlBarPortraitView()
-        }
-        .overlay(alignment: .topLeading) {
-            browserWidgets()
         }
     }
 
@@ -457,7 +459,7 @@ struct MainView: View {
                     face()
                 }
                 if model.showBrowser {
-                    webBrowserView
+                    WebBrowserView()
                 }
                 if model.showingRemoteControl {
                     ZStack {
@@ -494,12 +496,10 @@ struct MainView: View {
             }
             ControlBarLandscapeView()
         }
-        .overlay(alignment: .topLeading) {
-            browserWidgets()
-        }
     }
 
     var body: some View {
+        // let _ = Self._printChanges()
         let all = ZStack {
             if model.isPortrait() {
                 portrait()
@@ -533,6 +533,9 @@ struct MainView: View {
             if replay.instantReplayCountdown != 0 {
                 InstantReplayCountdownView(replay: replay)
             }
+        }
+        .overlay(alignment: .topLeading) {
+            browserWidgets()
         }
         .onAppear {
             model.setup()

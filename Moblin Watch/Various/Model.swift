@@ -221,9 +221,9 @@ class Model: NSObject, ObservableObject {
         }
         nextExpectedWatchChatPostId = message.id + 1
         let now = ContinuousClock.now
-        if latestChatMessageTime + .seconds(30) < now {
+        if latestChatMessageTime.duration(to: now) > .seconds(settings.chat.notificationRate) {
             appendRedLineMessage(message: message)
-            if settings.chat.notificationOnMessage! {
+            if settings.chat.notificationOnMessage {
                 WKInterfaceDevice.current().play(.notification)
             }
         }
@@ -299,16 +299,7 @@ class Model: NSObject, ObservableObject {
             return
         }
         self.settings = try JSONDecoder().decode(WatchSettings.self, from: settings)
-        if self.settings.chat.timestampEnabled == nil {
-            self.settings.chat.timestampEnabled = false
-        }
-        if self.settings.chat.notificationOnMessage == nil {
-            self.settings.chat.notificationOnMessage = false
-        }
-        if self.settings.show == nil {
-            self.settings.show = .init()
-        }
-        viaRemoteControl = self.settings.viaRemoteControl ?? false
+        viaRemoteControl = self.settings.viaRemoteControl
     }
 
     private func handleThermalState(_ data: Any) throws {
@@ -528,15 +519,15 @@ class Model: NSObject, ObservableObject {
     }
 
     func isShowingStatusThermalState() -> Bool {
-        return settings.show!.thermalState
+        return settings.show.thermalState
     }
 
     func isShowingStatusAudioLevel() -> Bool {
-        return settings.show!.audioLevel
+        return settings.show.audioLevel
     }
 
     func isShowingStatusBitrate() -> Bool {
-        return settings.show!.speed && isLive
+        return settings.show.speed && isLive
     }
 
     func isShowingStatusRecording() -> Bool {

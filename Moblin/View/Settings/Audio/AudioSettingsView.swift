@@ -2,12 +2,13 @@ import SwiftUI
 
 struct AudioSettingsView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var database: Database
 
     private func submitOutputChannel1(value: String) {
         guard let channel = Int(value) else {
             return
         }
-        model.database.audio.audioOutputToInputChannelsMap!.channel1 = max(channel - 1, -1)
+        database.audio.audioOutputToInputChannelsMap!.channel1 = max(channel - 1, -1)
         model.reloadStream()
         model.sceneUpdated(updateRemoteScene: false)
     }
@@ -16,25 +17,22 @@ struct AudioSettingsView: View {
         guard let channel = Int(value) else {
             return
         }
-        model.database.audio.audioOutputToInputChannelsMap!.channel2 = max(channel - 1, -1)
+        database.audio.audioOutputToInputChannelsMap!.channel2 = max(channel - 1, -1)
         model.reloadStream()
         model.sceneUpdated(updateRemoteScene: false)
     }
 
     var body: some View {
         Form {
-            if model.database.showAllSettings {
+            if database.showAllSettings {
                 Section {
                     NavigationLink {
                         StreamAudioSettingsView(
                             stream: model.stream,
-                            bitrate: Float(model.stream.audioBitrate! / 1000)
+                            bitrate: Float(model.stream.audioBitrate / 1000)
                         )
                     } label: {
-                        IconAndTextView(
-                            image: "dot.radiowaves.left.and.right",
-                            text: String(localized: "Audio")
-                        )
+                        Label("Audio", systemImage: "dot.radiowaves.left.and.right")
                     }
                 } header: {
                     Text("Shortcut")
@@ -42,9 +40,9 @@ struct AudioSettingsView: View {
             }
             Section {
                 Toggle("Bluetooth output only", isOn: Binding(get: {
-                    model.database.debug.bluetoothOutputOnly
+                    database.debug.bluetoothOutputOnly
                 }, set: {
-                    model.database.debug.bluetoothOutputOnly = $0
+                    database.debug.bluetoothOutputOnly = $0
                     model.reloadAudioSession()
                 }))
             } footer: {
@@ -52,9 +50,9 @@ struct AudioSettingsView: View {
             }
             Section {
                 Toggle("Prefer stereo mic", isOn: Binding(get: {
-                    model.database.debug.preferStereoMic
+                    database.debug.preferStereoMic
                 }, set: {
-                    model.database.debug.preferStereoMic = $0
+                    database.debug.preferStereoMic = $0
                     model.reloadAudioSession()
                     model.setMic()
                 }))
@@ -68,13 +66,13 @@ struct AudioSettingsView: View {
             Section {
                 TextEditNavigationView(
                     title: String(localized: "Output channel 1"),
-                    value: String(model.database.audio.audioOutputToInputChannelsMap!.channel1 + 1),
+                    value: String(database.audio.audioOutputToInputChannelsMap!.channel1 + 1),
                     onSubmit: submitOutputChannel1
                 )
                 .disabled(model.isLive || model.isRecording)
                 TextEditNavigationView(
                     title: String(localized: "Output channel 2"),
-                    value: String(model.database.audio.audioOutputToInputChannelsMap!.channel2 + 1),
+                    value: String(database.audio.audioOutputToInputChannelsMap!.channel2 + 1),
                     onSubmit: submitOutputChannel2
                 )
                 .disabled(model.isLive || model.isRecording)

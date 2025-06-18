@@ -8,18 +8,6 @@ let defaultSrtLatency: Int32 = 3000
 private let defaultRtmpLatency: Int32 = 2000
 let minZoomX: Float = 0.5
 
-extension KeyedEncodingContainer {
-    mutating func encode<T>(_ key: KeyedEncodingContainer<K>.Key, _ value: T) throws where T: Encodable {
-        try encode(value, forKey: key)
-    }
-}
-
-extension KeyedDecodingContainer {
-    func decode<T>(_ key: KeyedDecodingContainer<K>.Key, _ type: T.Type, _ defaultValue: T) -> T where T: Decodable {
-        return (try? decode(type, forKey: key)) ?? defaultValue
-    }
-}
-
 enum SettingsStreamCodec: String, Codable, CaseIterable {
     case h265hevc = "H.265/HEVC"
     case h264avc = "H.264/AVC"
@@ -101,7 +89,7 @@ enum SettingsStreamResolution: String, Codable, CaseIterable {
 
 let resolutions = SettingsStreamResolution.allCases
 
-let fpss = ["60", "50", "30", "25", "15"]
+let fpss = [120, 100, 60, 50, 30, 25, 15]
 
 enum SettingsStreamProtocol: String, Codable {
     case rtmp = "RTMP"
@@ -174,21 +162,6 @@ enum SettingsStreamSrtAdaptiveBitrateAlgorithm: Codable, CaseIterable {
         }
     }
 
-    static func fromString(value: String) -> SettingsStreamSrtAdaptiveBitrateAlgorithm {
-        switch value {
-        case String(localized: "Fast IRL"):
-            return .fastIrl
-        case String(localized: "Slow IRL"):
-            return .slowIrl
-        case String(localized: "Custom IRL"):
-            return .customIrl
-        case String(localized: "BELABOX"):
-            return .belabox
-        default:
-            return .fastIrl
-        }
-    }
-
     func toString() -> String {
         switch self {
         case .belabox:
@@ -202,8 +175,6 @@ enum SettingsStreamSrtAdaptiveBitrateAlgorithm: Codable, CaseIterable {
         }
     }
 }
-
-let adaptiveBitrateAlgorithms = SettingsStreamSrtAdaptiveBitrateAlgorithm.allCases.map { $0.toString() }
 
 class SettingsStreamSrtAdaptiveBitrateFastIrlSettings: Codable {
     var packetsInFlight: Int32 = 200
@@ -419,72 +390,269 @@ class SettingsStreamTwitchReward: Codable, Identifiable {
     var alert: SettingsWidgetAlertsAlert = .init()
 }
 
-class SettingsStream: Codable, Identifiable, Equatable {
-    static func == (lhs: SettingsStream, rhs: SettingsStream) -> Bool {
-        lhs.id == rhs.id
-    }
-
-    var name: String
+class SettingsStream: Codable, Identifiable, Equatable, ObservableObject {
+    @Published var name: String
     var id: UUID = .init()
     var enabled: Bool = false
     var url: String = defaultStreamUrl
     var twitchChannelName: String = ""
     var twitchChannelId: String = ""
-    var twitchShowFollows: Bool? = true
-    var twitchAccessToken: String? = ""
-    var twitchLoggedIn: Bool? = false
-    var twitchRewards: [SettingsStreamTwitchReward]? = []
+    var twitchShowFollows: Bool = true
+    var twitchAccessToken: String = ""
+    var twitchLoggedIn: Bool = false
+    var twitchRewards: [SettingsStreamTwitchReward] = []
     var kickChatroomId: String = ""
-    var kickChannelName: String? = ""
-    var youTubeApiKey: String? = ""
-    var youTubeVideoId: String? = ""
-    var afreecaTvChannelName: String? = ""
-    var afreecaTvStreamId: String? = ""
-    var openStreamingPlatformUrl: String? = ""
-    var openStreamingPlatformChannelId: String? = ""
-    var obsWebSocketEnabled: Bool? = false
-    var obsWebSocketUrl: String? = ""
-    var obsWebSocketPassword: String? = ""
-    var obsSourceName: String? = ""
-    var obsMainScene: String? = ""
-    var obsBrbScene: String? = ""
-    var obsBrbSceneVideoSourceBroken: Bool? = false
-    var obsAutoStartStream: Bool? = false
-    var obsAutoStopStream: Bool? = false
-    var obsAutoStartRecording: Bool? = false
-    var obsAutoStopRecording: Bool? = false
-    var discordSnapshotWebhook: String? = ""
-    var discordChatBotSnapshotWebhook: String? = ""
-    var discordSnapshotWebhookOnlyWhenLive: Bool? = true
-    var resolution: SettingsStreamResolution = .r1920x1080
-    var fps: Int = 30
-    var autoFps: Bool? = false
-    var bitrate: UInt32 = 5_000_000
-    var codec: SettingsStreamCodec = .h265hevc
-    var bFrames: Bool? = false
-    var adaptiveEncoderResolution: Bool? = false
-    var adaptiveBitrate: Bool? = true
+    var kickChannelName: String = ""
+    var youTubeApiKey: String = ""
+    var youTubeVideoId: String = ""
+    var afreecaTvChannelName: String = ""
+    var afreecaTvStreamId: String = ""
+    var openStreamingPlatformUrl: String = ""
+    var openStreamingPlatformChannelId: String = ""
+    var obsWebSocketEnabled: Bool = false
+    var obsWebSocketUrl: String = ""
+    var obsWebSocketPassword: String = ""
+    var obsSourceName: String = ""
+    var obsMainScene: String = ""
+    var obsBrbScene: String = ""
+    var obsBrbSceneVideoSourceBroken: Bool = false
+    var obsAutoStartStream: Bool = false
+    var obsAutoStopStream: Bool = false
+    var obsAutoStartRecording: Bool = false
+    var obsAutoStopRecording: Bool = false
+    var discordSnapshotWebhook: String = ""
+    var discordChatBotSnapshotWebhook: String = ""
+    @Published var discordSnapshotWebhookOnlyWhenLive: Bool = true
+    @Published var resolution: SettingsStreamResolution = .r1920x1080
+    @Published var fps: Int = 30
+    @Published var autoFps: Bool = false
+    @Published var bitrate: UInt32 = 5_000_000
+    @Published var codec: SettingsStreamCodec = .h265hevc
+    @Published var bFrames: Bool = false
+    @Published var adaptiveEncoderResolution: Bool = false
+    var adaptiveBitrate: Bool = true
     var srt: SettingsStreamSrt = .init()
-    var rtmp: SettingsStreamRtmp? = .init()
-    var rist: SettingsStreamRist? = .init()
-    var captureSessionPresetEnabled: Bool? = false
-    var captureSessionPreset: SettingsCaptureSessionPreset? = .medium
-    var maxKeyFrameInterval: Int32? = 2
-    var audioBitrate: Int? = 128_000
-    var chat: SettingsStreamChat? = .init()
-    var recording: SettingsStreamRecording? = .init()
-    var realtimeIrlEnabled: Bool? = false
-    var realtimeIrlPushKey: String? = ""
-    var portrait: Bool? = false
-    var backgroundStreaming: Bool? = false
-    var estimatedViewerDelay: Float? = 8.0
-    var twitchMultiTrackEnabled: Bool? = false
-    var ntpPoolAddress: String? = "time.apple.com"
-    var timecodesEnabled: Bool? = false
-    var replay: SettingsStreamReplay? = .init()
+    var rtmp: SettingsStreamRtmp = .init()
+    var rist: SettingsStreamRist = .init()
+    var captureSessionPresetEnabled: Bool = false
+    var captureSessionPreset: SettingsCaptureSessionPreset = .medium
+    @Published var maxKeyFrameInterval: Int32 = 2
+    var audioBitrate: Int = 128_000
+    var chat: SettingsStreamChat = .init()
+    var recording: SettingsStreamRecording = .init()
+    var realtimeIrlEnabled: Bool = false
+    var realtimeIrlPushKey: String = ""
+    @Published var portrait: Bool = false
+    var backgroundStreaming: Bool = false
+    var estimatedViewerDelay: Float = 8.0
+    var twitchMultiTrackEnabled: Bool = false
+    @Published var ntpPoolAddress: String = "time.apple.com"
+    @Published var timecodesEnabled: Bool = false
+    var replay: SettingsStreamReplay = .init()
+    @Published var goLiveNotificationDiscordMessage: String = ""
+    @Published var goLiveNotificationDiscordWebhookUrl: String = ""
+    @Published var goLiveNotificationDiscordIAmLive: Bool = false
+
+    static func == (lhs: SettingsStream, rhs: SettingsStream) -> Bool {
+        lhs.id == rhs.id
+    }
 
     init(name: String) {
         self.name = name
+    }
+
+    enum CodingKeys: CodingKey {
+        case name,
+             id,
+             enabled,
+             url,
+             twitchChannelName,
+             twitchChannelId,
+             twitchShowFollows,
+             twitchAccessToken,
+             twitchLoggedIn,
+             twitchRewards,
+             kickChatroomId,
+             kickChannelName,
+             youTubeApiKey,
+             youTubeVideoId,
+             afreecaTvChannelName,
+             afreecaTvStreamId,
+             openStreamingPlatformUrl,
+             openStreamingPlatformChannelId,
+             obsWebSocketEnabled,
+             obsWebSocketUrl,
+             obsWebSocketPassword,
+             obsSourceName,
+             obsMainScene,
+             obsBrbScene,
+             obsBrbSceneVideoSourceBroken,
+             obsAutoStartStream,
+             obsAutoStopStream,
+             obsAutoStartRecording,
+             obsAutoStopRecording,
+             discordSnapshotWebhook,
+             discordChatBotSnapshotWebhook,
+             discordSnapshotWebhookOnlyWhenLive,
+             resolution,
+             fps,
+             autoFps,
+             bitrate,
+             codec,
+             bFrames,
+             adaptiveEncoderResolution,
+             adaptiveBitrate,
+             srt,
+             rtmp,
+             rist,
+             captureSessionPresetEnabled,
+             captureSessionPreset,
+             maxKeyFrameInterval,
+             audioBitrate,
+             chat,
+             recording,
+             realtimeIrlEnabled,
+             realtimeIrlPushKey,
+             portrait,
+             backgroundStreaming,
+             estimatedViewerDelay,
+             twitchMultiTrackEnabled,
+             ntpPoolAddress,
+             timecodesEnabled,
+             replay,
+             goLiveNotificationDiscordMessage,
+             goLiveNotificationDiscordWebhookUrl,
+             goLiveNotificationDiscordIAmLive
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.name, name)
+        try container.encode(.id, id)
+        try container.encode(.enabled, enabled)
+        try container.encode(.url, url)
+        try container.encode(.twitchChannelName, twitchChannelName)
+        try container.encode(.twitchChannelId, twitchChannelId)
+        try container.encode(.twitchShowFollows, twitchShowFollows)
+        try container.encode(.twitchAccessToken, twitchAccessToken)
+        try container.encode(.twitchLoggedIn, twitchLoggedIn)
+        try container.encode(.twitchRewards, twitchRewards)
+        try container.encode(.kickChatroomId, kickChatroomId)
+        try container.encode(.kickChannelName, kickChannelName)
+        try container.encode(.youTubeApiKey, youTubeApiKey)
+        try container.encode(.youTubeVideoId, youTubeVideoId)
+        try container.encode(.afreecaTvChannelName, afreecaTvChannelName)
+        try container.encode(.afreecaTvStreamId, afreecaTvStreamId)
+        try container.encode(.openStreamingPlatformUrl, openStreamingPlatformUrl)
+        try container.encode(.openStreamingPlatformChannelId, openStreamingPlatformChannelId)
+        try container.encode(.obsWebSocketEnabled, obsWebSocketEnabled)
+        try container.encode(.obsWebSocketUrl, obsWebSocketUrl)
+        try container.encode(.obsWebSocketPassword, obsWebSocketPassword)
+        try container.encode(.obsSourceName, obsSourceName)
+        try container.encode(.obsMainScene, obsMainScene)
+        try container.encode(.obsBrbScene, obsBrbScene)
+        try container.encode(.obsBrbSceneVideoSourceBroken, obsBrbSceneVideoSourceBroken)
+        try container.encode(.obsAutoStartStream, obsAutoStartStream)
+        try container.encode(.obsAutoStopStream, obsAutoStopStream)
+        try container.encode(.obsAutoStartRecording, obsAutoStartRecording)
+        try container.encode(.obsAutoStopRecording, obsAutoStopRecording)
+        try container.encode(.discordSnapshotWebhook, discordSnapshotWebhook)
+        try container.encode(.discordChatBotSnapshotWebhook, discordChatBotSnapshotWebhook)
+        try container.encode(.discordSnapshotWebhookOnlyWhenLive, discordSnapshotWebhookOnlyWhenLive)
+        try container.encode(.resolution, resolution)
+        try container.encode(.fps, fps)
+        try container.encode(.autoFps, autoFps)
+        try container.encode(.bitrate, bitrate)
+        try container.encode(.codec, codec)
+        try container.encode(.bFrames, bFrames)
+        try container.encode(.adaptiveEncoderResolution, adaptiveEncoderResolution)
+        try container.encode(.adaptiveBitrate, adaptiveBitrate)
+        try container.encode(.srt, srt)
+        try container.encode(.rtmp, rtmp)
+        try container.encode(.rist, rist)
+        try container.encode(.captureSessionPresetEnabled, captureSessionPresetEnabled)
+        try container.encode(.captureSessionPreset, captureSessionPreset)
+        try container.encode(.maxKeyFrameInterval, maxKeyFrameInterval)
+        try container.encode(.audioBitrate, audioBitrate)
+        try container.encode(.chat, chat)
+        try container.encode(.recording, recording)
+        try container.encode(.realtimeIrlEnabled, realtimeIrlEnabled)
+        try container.encode(.realtimeIrlPushKey, realtimeIrlPushKey)
+        try container.encode(.portrait, portrait)
+        try container.encode(.backgroundStreaming, backgroundStreaming)
+        try container.encode(.estimatedViewerDelay, estimatedViewerDelay)
+        try container.encode(.twitchMultiTrackEnabled, twitchMultiTrackEnabled)
+        try container.encode(.ntpPoolAddress, ntpPoolAddress)
+        try container.encode(.timecodesEnabled, timecodesEnabled)
+        try container.encode(.replay, replay)
+        try container.encode(.goLiveNotificationDiscordMessage, goLiveNotificationDiscordMessage)
+        try container.encode(.goLiveNotificationDiscordWebhookUrl, goLiveNotificationDiscordWebhookUrl)
+        try container.encode(.goLiveNotificationDiscordIAmLive, goLiveNotificationDiscordIAmLive)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        name = container.decode(.name, String.self, "My stream")
+        id = container.decode(.id, UUID.self, .init())
+        enabled = container.decode(.enabled, Bool.self, false)
+        url = container.decode(.url, String.self, defaultStreamUrl)
+        twitchChannelName = container.decode(.twitchChannelName, String.self, "")
+        twitchChannelId = container.decode(.twitchChannelId, String.self, "")
+        twitchShowFollows = container.decode(.twitchShowFollows, Bool.self, true)
+        twitchAccessToken = container.decode(.twitchAccessToken, String.self, "")
+        twitchLoggedIn = container.decode(.twitchLoggedIn, Bool.self, false)
+        twitchRewards = container.decode(.twitchRewards, [SettingsStreamTwitchReward].self, [])
+        kickChatroomId = container.decode(.kickChatroomId, String.self, "")
+        kickChannelName = container.decode(.kickChannelName, String.self, "")
+        youTubeApiKey = container.decode(.youTubeApiKey, String.self, "")
+        youTubeVideoId = container.decode(.youTubeVideoId, String.self, "")
+        afreecaTvChannelName = container.decode(.afreecaTvChannelName, String.self, "")
+        afreecaTvStreamId = container.decode(.afreecaTvStreamId, String.self, "")
+        openStreamingPlatformUrl = container.decode(.openStreamingPlatformUrl, String.self, "")
+        openStreamingPlatformChannelId = container.decode(.openStreamingPlatformChannelId, String.self, "")
+        obsWebSocketEnabled = container.decode(.obsWebSocketEnabled, Bool.self, false)
+        obsWebSocketUrl = container.decode(.obsWebSocketUrl, String.self, "")
+        obsWebSocketPassword = container.decode(.obsWebSocketPassword, String.self, "")
+        obsSourceName = container.decode(.obsSourceName, String.self, "")
+        obsMainScene = container.decode(.obsMainScene, String.self, "")
+        obsBrbScene = container.decode(.obsBrbScene, String.self, "")
+        obsBrbSceneVideoSourceBroken = container.decode(.obsBrbSceneVideoSourceBroken, Bool.self, false)
+        obsAutoStartStream = container.decode(.obsAutoStartStream, Bool.self, false)
+        obsAutoStopStream = container.decode(.obsAutoStopStream, Bool.self, false)
+        obsAutoStartRecording = container.decode(.obsAutoStartRecording, Bool.self, false)
+        obsAutoStopRecording = container.decode(.obsAutoStopRecording, Bool.self, false)
+        discordSnapshotWebhook = container.decode(.discordSnapshotWebhook, String.self, "")
+        discordChatBotSnapshotWebhook = container.decode(.discordChatBotSnapshotWebhook, String.self, "")
+        discordSnapshotWebhookOnlyWhenLive = container.decode(.discordSnapshotWebhookOnlyWhenLive, Bool.self, true)
+        resolution = container.decode(.resolution, SettingsStreamResolution.self, .r1920x1080)
+        fps = container.decode(.fps, Int.self, 30)
+        autoFps = container.decode(.autoFps, Bool.self, false)
+        bitrate = container.decode(.bitrate, UInt32.self, 5_000_000)
+        codec = container.decode(.codec, SettingsStreamCodec.self, .h265hevc)
+        bFrames = container.decode(.bFrames, Bool.self, false)
+        adaptiveEncoderResolution = container.decode(.adaptiveEncoderResolution, Bool.self, false)
+        adaptiveBitrate = container.decode(.adaptiveBitrate, Bool.self, true)
+        srt = container.decode(.srt, SettingsStreamSrt.self, .init())
+        rtmp = container.decode(.rtmp, SettingsStreamRtmp.self, .init())
+        rist = container.decode(.rist, SettingsStreamRist.self, .init())
+        captureSessionPresetEnabled = container.decode(.captureSessionPresetEnabled, Bool.self, false)
+        captureSessionPreset = container.decode(.captureSessionPreset, SettingsCaptureSessionPreset.self, .medium)
+        maxKeyFrameInterval = container.decode(.maxKeyFrameInterval, Int32.self, 2)
+        audioBitrate = container.decode(.audioBitrate, Int.self, 128_000)
+        chat = container.decode(.chat, SettingsStreamChat.self, .init())
+        recording = container.decode(.recording, SettingsStreamRecording.self, .init())
+        realtimeIrlEnabled = container.decode(.realtimeIrlEnabled, Bool.self, false)
+        realtimeIrlPushKey = container.decode(.realtimeIrlPushKey, String.self, "")
+        portrait = container.decode(.portrait, Bool.self, false)
+        backgroundStreaming = container.decode(.backgroundStreaming, Bool.self, false)
+        estimatedViewerDelay = container.decode(.estimatedViewerDelay, Float.self, 8.0)
+        twitchMultiTrackEnabled = container.decode(.twitchMultiTrackEnabled, Bool.self, false)
+        ntpPoolAddress = container.decode(.ntpPoolAddress, String.self, "time.apple.com")
+        timecodesEnabled = container.decode(.timecodesEnabled, Bool.self, false)
+        replay = container.decode(.replay, SettingsStreamReplay.self, .init())
+        goLiveNotificationDiscordMessage = container.decode(.goLiveNotificationDiscordMessage, String.self, "")
+        goLiveNotificationDiscordWebhookUrl = container.decode(.goLiveNotificationDiscordWebhookUrl, String.self, "")
+        goLiveNotificationDiscordIAmLive = container.decode(.goLiveNotificationDiscordIAmLive, Bool.self, false)
     }
 
     func clone() -> SettingsStream {
@@ -521,14 +689,14 @@ class SettingsStream: Codable, Identifiable, Equatable {
         new.bFrames = bFrames
         new.adaptiveBitrate = adaptiveBitrate
         new.srt = srt.clone()
-        new.rtmp = rtmp!.clone()
-        new.rist = rist!.clone()
+        new.rtmp = rtmp.clone()
+        new.rist = rist.clone()
         new.captureSessionPresetEnabled = captureSessionPresetEnabled
         new.captureSessionPreset = captureSessionPreset
         new.maxKeyFrameInterval = maxKeyFrameInterval
         new.audioBitrate = audioBitrate
-        new.chat = chat?.clone()
-        new.recording = recording?.clone()
+        new.chat = chat.clone()
+        new.recording = recording.clone()
         new.realtimeIrlEnabled = realtimeIrlEnabled
         new.realtimeIrlPushKey = realtimeIrlPushKey
         new.portrait = portrait
@@ -537,7 +705,10 @@ class SettingsStream: Codable, Identifiable, Equatable {
         new.twitchMultiTrackEnabled = twitchMultiTrackEnabled
         new.ntpPoolAddress = ntpPoolAddress
         new.timecodesEnabled = timecodesEnabled
-        new.replay = replay!.clone()
+        new.replay = replay.clone()
+        new.goLiveNotificationDiscordMessage = goLiveNotificationDiscordMessage
+        new.goLiveNotificationDiscordWebhookUrl = goLiveNotificationDiscordWebhookUrl
+        new.goLiveNotificationDiscordIAmLive = goLiveNotificationDiscordIAmLive
         return new
     }
 
@@ -586,7 +757,7 @@ class SettingsStream: Codable, Identifiable, Equatable {
         if isSrtla() {
             return true
         }
-        if getProtocol() == .rist && rist!.bonding {
+        if getProtocol() == .rist && rist.bonding {
             return true
         }
         return false
@@ -597,7 +768,7 @@ class SettingsStream: Codable, Identifiable, Equatable {
     }
 
     func dimensions() -> CMVideoDimensions {
-        return resolution.dimensions(portrait: portrait!)
+        return resolution.dimensions(portrait: portrait)
     }
 
     func codecString() -> String {
@@ -608,14 +779,14 @@ class SettingsStream: Codable, Identifiable, Equatable {
         var bitrate = formatBytesPerSecond(speed: Int64(bitrate))
         if getProtocol() == .srt && (srt.adaptiveBitrateEnabled ?? false) {
             bitrate = "<\(bitrate)"
-        } else if getProtocol() == .rtmp && (rtmp?.adaptiveBitrateEnabled ?? false) {
+        } else if getProtocol() == .rtmp && rtmp.adaptiveBitrateEnabled {
             bitrate = "<\(bitrate)"
         }
         return bitrate
     }
 
     func audioBitrateString() -> String {
-        return formatBytesPerSecond(speed: Int64(audioBitrate!))
+        return formatBytesPerSecond(speed: Int64(audioBitrate))
     }
 
     func audioCodecString() -> String {
@@ -650,6 +821,10 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable {
         return new
     }
 
+    func isSamePositioning(other: SettingsSceneWidget) -> Bool {
+        return x == other.x && y == other.y && width == other.width && height == other.height
+    }
+
     func extent() -> CGRect {
         return .init(x: x, y: y, width: width, height: height)
     }
@@ -671,7 +846,19 @@ enum SettingsSceneCameraPosition: String, Codable, CaseIterable {
         self = try SettingsSceneCameraPosition(rawValue: decoder.singleValueContainer()
             .decode(RawValue.self)) ?? .back
     }
+
+    func isBuiltin() -> Bool {
+        return builtinCameraPositions.contains(self)
+    }
 }
+
+private let builtinCameraPositions: [SettingsSceneCameraPosition] = [
+    .back,
+    .front,
+    .backTripleLowEnergy,
+    .backDualLowEnergy,
+    .backWideDualLowEnergy,
+]
 
 enum SettingsCameraId {
     case back(id: String)
@@ -686,24 +873,24 @@ enum SettingsCameraId {
     case backWideDualLowEnergy
 }
 
-class SettingsScene: Codable, Identifiable, Equatable {
-    var name: String
+class SettingsScene: Codable, Identifiable, Equatable, ObservableObject {
+    @Published var name: String
     var id: UUID = .init()
     var enabled: Bool = true
     var cameraType: SettingsSceneCameraPosition = .back
-    var cameraPosition: SettingsSceneCameraPosition? = .back
-    var backCameraId: String? = getBestBackCameraId()
-    var frontCameraId: String? = getBestFrontCameraId()
-    var rtmpCameraId: UUID? = .init()
-    var srtlaCameraId: UUID? = .init()
-    var mediaPlayerCameraId: UUID? = .init()
-    var externalCameraId: String? = ""
-    var externalCameraName: String? = ""
+    var cameraPosition: SettingsSceneCameraPosition = .back
+    var backCameraId: String = getBestBackCameraId()
+    var frontCameraId: String = getBestFrontCameraId()
+    var rtmpCameraId: UUID = .init()
+    var srtlaCameraId: UUID = .init()
+    var mediaPlayerCameraId: UUID = .init()
+    var externalCameraId: String = ""
+    var externalCameraName: String = ""
     var widgets: [SettingsSceneWidget] = []
-    var videoSourceRotation: Double? = 0.0
-    var videoStabilizationMode: SettingsVideoStabilizationMode? = .off
-    var overrideVideoStabilizationMode: Bool? = false
-    var fillFrame: Bool? = false
+    var videoSourceRotation: Double = 0.0
+    var videoStabilizationMode: SettingsVideoStabilizationMode = .off
+    var overrideVideoStabilizationMode: Bool = false
+    var fillFrame: Bool = false
 
     init(name: String) {
         self.name = name
@@ -711,6 +898,68 @@ class SettingsScene: Codable, Identifiable, Equatable {
 
     static func == (lhs: SettingsScene, rhs: SettingsScene) -> Bool {
         return lhs.id == rhs.id
+    }
+
+    enum CodingKeys: CodingKey {
+        case name,
+             id,
+             enabled,
+             cameraType,
+             cameraPosition,
+             backCameraId,
+             frontCameraId,
+             rtmpCameraId,
+             srtlaCameraId,
+             mediaPlayerCameraId,
+             externalCameraId,
+             externalCameraName,
+             widgets,
+             videoSourceRotation,
+             videoStabilizationMode,
+             overrideVideoStabilizationMode,
+             fillFrame
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.name, name)
+        try container.encode(.id, id)
+        try container.encode(.enabled, enabled)
+        try container.encode(.cameraType, cameraType)
+        try container.encode(.cameraPosition, cameraPosition)
+        try container.encode(.backCameraId, backCameraId)
+        try container.encode(.frontCameraId, frontCameraId)
+        try container.encode(.rtmpCameraId, rtmpCameraId)
+        try container.encode(.srtlaCameraId, srtlaCameraId)
+        try container.encode(.mediaPlayerCameraId, mediaPlayerCameraId)
+        try container.encode(.externalCameraId, externalCameraId)
+        try container.encode(.externalCameraName, externalCameraName)
+        try container.encode(.widgets, widgets)
+        try container.encode(.videoSourceRotation, videoSourceRotation)
+        try container.encode(.videoStabilizationMode, videoStabilizationMode)
+        try container.encode(.overrideVideoStabilizationMode, overrideVideoStabilizationMode)
+        try container.encode(.fillFrame, fillFrame)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        name = container.decode(.name, String.self, "")
+        id = container.decode(.id, UUID.self, .init())
+        enabled = container.decode(.enabled, Bool.self, true)
+        cameraType = container.decode(.cameraType, SettingsSceneCameraPosition.self, .back)
+        cameraPosition = container.decode(.cameraPosition, SettingsSceneCameraPosition.self, .back)
+        backCameraId = container.decode(.backCameraId, String.self, getBestBackCameraId())
+        frontCameraId = container.decode(.frontCameraId, String.self, getBestFrontCameraId())
+        rtmpCameraId = container.decode(.rtmpCameraId, UUID.self, .init())
+        srtlaCameraId = container.decode(.srtlaCameraId, UUID.self, .init())
+        mediaPlayerCameraId = container.decode(.mediaPlayerCameraId, UUID.self, .init())
+        externalCameraId = container.decode(.externalCameraId, String.self, "")
+        externalCameraName = container.decode(.externalCameraName, String.self, "")
+        widgets = container.decode(.widgets, [SettingsSceneWidget].self, [])
+        videoSourceRotation = container.decode(.videoSourceRotation, Double.self, 0.0)
+        videoStabilizationMode = container.decode(.videoStabilizationMode, SettingsVideoStabilizationMode.self, .off)
+        overrideVideoStabilizationMode = container.decode(.overrideVideoStabilizationMode, Bool.self, false)
+        fillFrame = container.decode(.fillFrame, Bool.self, false)
     }
 
     func clone() -> SettingsScene {
@@ -733,19 +982,19 @@ class SettingsScene: Codable, Identifiable, Equatable {
     }
 
     func toCameraId() -> SettingsCameraId {
-        switch cameraPosition! {
+        switch cameraPosition {
         case .back:
-            return .back(id: backCameraId!)
+            return .back(id: backCameraId)
         case .front:
-            return .front(id: frontCameraId!)
+            return .front(id: frontCameraId)
         case .rtmp:
-            return .rtmp(id: rtmpCameraId!)
+            return .rtmp(id: rtmpCameraId)
         case .external:
-            return .external(id: externalCameraId!, name: externalCameraName!)
+            return .external(id: externalCameraId, name: externalCameraName)
         case .srtla:
-            return .srtla(id: srtlaCameraId!)
+            return .srtla(id: srtlaCameraId)
         case .mediaPlayer:
-            return .mediaPlayer(id: mediaPlayerCameraId!)
+            return .mediaPlayer(id: mediaPlayerCameraId)
         case .screenCapture:
             return .screenCapture
         case .backTripleLowEnergy:
@@ -844,7 +1093,7 @@ class SettingsAutoSceneSwitchers: Codable, Identifiable, ObservableObject {
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         switcherId = try? container.decode(UUID?.self, forKey: .switcherId)
-        switchers = try container.decode([SettingsAutoSceneSwitcher].self, forKey: .switchers)
+        switchers = container.decode(.switchers, [SettingsAutoSceneSwitcher].self, [])
     }
 }
 
@@ -857,21 +1106,6 @@ enum SettingsFontDesign: String, Codable, CaseIterable {
     public init(from decoder: Decoder) throws {
         self = try SettingsFontDesign(rawValue: decoder.singleValueContainer()
             .decode(RawValue.self)) ?? .default
-    }
-
-    static func fromString(value: String) -> SettingsFontDesign {
-        switch value {
-        case String(localized: "Default"):
-            return .default
-        case String(localized: "Serif"):
-            return .serif
-        case String(localized: "Rounded"):
-            return .rounded
-        case String(localized: "Monospaced"):
-            return .monospaced
-        default:
-            return .default
-        }
     }
 
     func toString() -> String {
@@ -901,8 +1135,6 @@ enum SettingsFontDesign: String, Codable, CaseIterable {
     }
 }
 
-let textWidgetFontDesigns = SettingsFontDesign.allCases.map { $0.toString() }
-
 enum SettingsFontWeight: String, Codable, CaseIterable {
     case regular = "Regular"
     case light = "Light"
@@ -911,19 +1143,6 @@ enum SettingsFontWeight: String, Codable, CaseIterable {
     public init(from decoder: Decoder) throws {
         self = try SettingsFontWeight(rawValue: decoder.singleValueContainer()
             .decode(RawValue.self)) ?? .regular
-    }
-
-    static func fromString(value: String) -> SettingsFontWeight {
-        switch value {
-        case String(localized: "Regular"):
-            return .regular
-        case String(localized: "Light"):
-            return .light
-        case String(localized: "Bold"):
-            return .bold
-        default:
-            return .regular
-        }
     }
 
     func toString() -> String {
@@ -949,8 +1168,6 @@ enum SettingsFontWeight: String, Codable, CaseIterable {
     }
 }
 
-let textWidgetFontWeights = SettingsFontWeight.allCases.map { $0.toString() }
-
 enum SettingsHorizontalAlignment: String, Codable, CaseIterable {
     case leading = "Leading"
     case trailing = "Trailing"
@@ -958,17 +1175,6 @@ enum SettingsHorizontalAlignment: String, Codable, CaseIterable {
     public init(from decoder: Decoder) throws {
         self = try SettingsHorizontalAlignment(rawValue: decoder.singleValueContainer()
             .decode(RawValue.self)) ?? .leading
-    }
-
-    static func fromString(value: String) -> SettingsHorizontalAlignment {
-        switch value {
-        case String(localized: "Leading"):
-            return .leading
-        case String(localized: "Trailing"):
-            return .trailing
-        default:
-            return .leading
-        }
     }
 
     func toString() -> String {
@@ -990,8 +1196,6 @@ enum SettingsHorizontalAlignment: String, Codable, CaseIterable {
     }
 }
 
-let textWidgetHorizontalAlignments = SettingsHorizontalAlignment.allCases.map { $0.toString() }
-
 enum SettingsVerticalAlignment: String, Codable, CaseIterable {
     case top = "Top"
     case bottom = "Bottom"
@@ -999,17 +1203,6 @@ enum SettingsVerticalAlignment: String, Codable, CaseIterable {
     public init(from decoder: Decoder) throws {
         self = try SettingsVerticalAlignment(rawValue: decoder.singleValueContainer()
             .decode(RawValue.self)) ?? .top
-    }
-
-    static func fromString(value: String) -> SettingsVerticalAlignment {
-        switch value {
-        case String(localized: "Top"):
-            return .top
-        case String(localized: "Bottom"):
-            return .bottom
-        default:
-            return .top
-        }
     }
 
     func toString() -> String {
@@ -1031,12 +1224,42 @@ enum SettingsVerticalAlignment: String, Codable, CaseIterable {
     }
 }
 
-let textWidgetVerticalAlignments = SettingsVerticalAlignment.allCases.map { $0.toString() }
-
 class SettingsWidgetTextTimer: Codable, Identifiable {
     var id: UUID = .init()
     var delta: Int = 5
     var endTime: Double = 0
+}
+
+class SettingsWidgetTextStopwatch: Codable, Identifiable, ObservableObject {
+    var id: UUID = .init()
+    var totalElapsed: Double = 0.0
+    var playPressedTime: ContinuousClock.Instant = .now
+    @Published var running: Bool = false
+
+    enum CodingKeys: CodingKey {
+        case id
+    }
+
+    init() {}
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+    }
+
+    func clone() -> SettingsWidgetTextStopwatch {
+        let new = SettingsWidgetTextStopwatch()
+        new.id = id
+        new.playPressedTime = playPressedTime
+        new.totalElapsed = totalElapsed
+        new.running = running
+        return new
+    }
 }
 
 class SettingsWidgetTextCheckbox: Codable, Identifiable {
@@ -1055,28 +1278,122 @@ class SettingsWidgetTextLapTimes: Codable, Identifiable {
     var lapTimes: [Double] = []
 }
 
-class SettingsWidgetText: Codable {
+class SettingsWidgetText: Codable, ObservableObject {
     var formatString: String = "{shortTime}"
-    var backgroundColor: RgbColor? = .init(red: 0, green: 0, blue: 0, opacity: 0.75)
-    var clearBackgroundColor: Bool? = false
-    var foregroundColor: RgbColor? = .init(red: 255, green: 255, blue: 255)
-    var clearForegroundColor: Bool? = false
-    var fontSize: Int? = 30
-    var fontDesign: SettingsFontDesign? = .default
-    var fontWeight: SettingsFontWeight? = .regular
-    var fontMonospacedDigits: Bool? = false
-    var alignment: SettingsHorizontalAlignment? = .leading
-    var horizontalAlignment: SettingsHorizontalAlignment? = .leading
-    var verticalAlignment: SettingsVerticalAlignment? = .top
-    var delay: Double? = 0.0
-    var timers: [SettingsWidgetTextTimer]? = []
-    var needsWeather: Bool? = false
-    var needsGeography: Bool? = false
-    var needsSubtitles: Bool? = false
-    var checkboxes: [SettingsWidgetTextCheckbox]? = []
-    var ratings: [SettingsWidgetTextRating]? = []
-    var lapTimes: [SettingsWidgetTextLapTimes]? = []
-    var needsGForce: Bool? = false
+    var backgroundColor: RgbColor = .init(red: 0, green: 0, blue: 0, opacity: 0.75)
+    @Published var backgroundColorColor: Color
+    var clearBackgroundColor: Bool = false
+    var foregroundColor: RgbColor = .init(red: 255, green: 255, blue: 255)
+    @Published var foregroundColorColor: Color
+    var clearForegroundColor: Bool = false
+    var fontSize: Int = 30
+    @Published var fontSizeFloat: Float
+    @Published var fontDesign: SettingsFontDesign = .default
+    @Published var fontWeight: SettingsFontWeight = .regular
+    var fontMonospacedDigits: Bool = false
+    @Published var alignment: SettingsHorizontalAlignment = .leading
+    @Published var horizontalAlignment: SettingsHorizontalAlignment = .leading
+    @Published var verticalAlignment: SettingsVerticalAlignment = .top
+    @Published var delay: Double = 0.0
+    var timers: [SettingsWidgetTextTimer] = []
+    var stopwatches: [SettingsWidgetTextStopwatch] = []
+    var needsWeather: Bool = false
+    var needsGeography: Bool = false
+    var needsSubtitles: Bool = false
+    var checkboxes: [SettingsWidgetTextCheckbox] = []
+    var ratings: [SettingsWidgetTextRating] = []
+    var lapTimes: [SettingsWidgetTextLapTimes] = []
+    var needsGForce: Bool = false
+
+    enum CodingKeys: CodingKey {
+        case formatString,
+             backgroundColor,
+             clearBackgroundColor,
+             foregroundColor,
+             clearForegroundColor,
+             fontSize,
+             fontDesign,
+             fontWeight,
+             fontMonospacedDigits,
+             alignment,
+             horizontalAlignment,
+             verticalAlignment,
+             delay,
+             timers,
+             stopwatches,
+             needsWeather,
+             needsGeography,
+             needsSubtitles,
+             checkboxes,
+             ratings,
+             lapTimes,
+             needsGForce
+    }
+
+    init() {
+        backgroundColorColor = backgroundColor.color()
+        foregroundColorColor = foregroundColor.color()
+        fontSizeFloat = Float(fontSize)
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.formatString, formatString)
+        try container.encode(.backgroundColor, backgroundColor)
+        try container.encode(.clearBackgroundColor, clearBackgroundColor)
+        try container.encode(.foregroundColor, foregroundColor)
+        try container.encode(.clearForegroundColor, clearForegroundColor)
+        try container.encode(.fontSize, fontSize)
+        try container.encode(.fontDesign, fontDesign)
+        try container.encode(.fontWeight, fontWeight)
+        try container.encode(.fontMonospacedDigits, fontMonospacedDigits)
+        try container.encode(.alignment, alignment)
+        try container.encode(.horizontalAlignment, horizontalAlignment)
+        try container.encode(.verticalAlignment, verticalAlignment)
+        try container.encode(.delay, delay)
+        try container.encode(.timers, timers)
+        try container.encode(.stopwatches, stopwatches)
+        try container.encode(.needsWeather, needsWeather)
+        try container.encode(.needsGeography, needsGeography)
+        try container.encode(.needsSubtitles, needsSubtitles)
+        try container.encode(.checkboxes, checkboxes)
+        try container.encode(.ratings, ratings)
+        try container.encode(.lapTimes, lapTimes)
+        try container.encode(.needsGForce, needsGForce)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        formatString = container.decode(.formatString, String.self, "{shortTime}")
+        backgroundColor = container.decode(
+            .backgroundColor,
+            RgbColor.self,
+            .init(red: 0, green: 0, blue: 0, opacity: 0.75)
+        )
+        backgroundColorColor = backgroundColor.color()
+        clearBackgroundColor = container.decode(.clearBackgroundColor, Bool.self, false)
+        foregroundColor = container.decode(.foregroundColor, RgbColor.self, .init(red: 255, green: 255, blue: 255))
+        foregroundColorColor = foregroundColor.color()
+        clearForegroundColor = container.decode(.clearForegroundColor, Bool.self, false)
+        fontSize = container.decode(.fontSize, Int.self, 30)
+        fontSizeFloat = Float(fontSize)
+        fontDesign = container.decode(.fontDesign, SettingsFontDesign.self, .default)
+        fontWeight = container.decode(.fontWeight, SettingsFontWeight.self, .regular)
+        fontMonospacedDigits = container.decode(.fontMonospacedDigits, Bool.self, false)
+        alignment = container.decode(.alignment, SettingsHorizontalAlignment.self, .leading)
+        horizontalAlignment = container.decode(.horizontalAlignment, SettingsHorizontalAlignment.self, .leading)
+        verticalAlignment = container.decode(.verticalAlignment, SettingsVerticalAlignment.self, .top)
+        delay = container.decode(.delay, Double.self, 0.0)
+        timers = container.decode(.timers, [SettingsWidgetTextTimer].self, [])
+        stopwatches = container.decode(.stopwatches, [SettingsWidgetTextStopwatch].self, [])
+        needsWeather = container.decode(.needsWeather, Bool.self, false)
+        needsGeography = container.decode(.needsGeography, Bool.self, false)
+        needsSubtitles = container.decode(.needsSubtitles, Bool.self, false)
+        checkboxes = container.decode(.checkboxes, [SettingsWidgetTextCheckbox].self, [])
+        ratings = container.decode(.ratings, [SettingsWidgetTextRating].self, [])
+        lapTimes = container.decode(.lapTimes, [SettingsWidgetTextLapTimes].self, [])
+        needsGForce = container.decode(.needsGForce, Bool.self, false)
+    }
 }
 
 class SettingsWidgetCrop: Codable {
@@ -1087,15 +1404,52 @@ class SettingsWidgetCrop: Codable {
     var height: Int = 200
 }
 
-class SettingsWidgetBrowser: Codable {
-    var url: String = ""
-    var width: Int = 500
-    var height: Int = 500
-    var audioOnly: Bool? = false
-    var scaleToFitVideo: Bool? = false
-    var fps: Float? = 5.0
-    var styleSheet: String? = ""
-    var moblinAccess: Bool? = false
+class SettingsWidgetBrowser: Codable, ObservableObject {
+    @Published var url: String = ""
+    @Published var width: Int = 500
+    @Published var height: Int = 500
+    @Published var audioOnly: Bool = false
+    @Published var scaleToFitVideo: Bool = false
+    @Published var fps: Float = 5.0
+    @Published var styleSheet: String = ""
+    @Published var moblinAccess: Bool = false
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case url,
+             width,
+             height,
+             audioOnly,
+             scaleToFitVideo,
+             fps,
+             styleSheet,
+             moblinAccess
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.url, url)
+        try container.encode(.width, width)
+        try container.encode(.height, height)
+        try container.encode(.audioOnly, audioOnly)
+        try container.encode(.scaleToFitVideo, scaleToFitVideo)
+        try container.encode(.fps, fps)
+        try container.encode(.styleSheet, styleSheet)
+        try container.encode(.moblinAccess, moblinAccess)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        url = container.decode(.url, String.self, "")
+        width = container.decode(.width, Int.self, 500)
+        height = container.decode(.height, Int.self, 500)
+        audioOnly = container.decode(.audioOnly, Bool.self, false)
+        scaleToFitVideo = container.decode(.scaleToFitVideo, Bool.self, false)
+        fps = container.decode(.fps, Float.self, 5.0)
+        styleSheet = container.decode(.styleSheet, String.self, "")
+        moblinAccess = container.decode(.moblinAccess, Bool.self, false)
+    }
 }
 
 class SettingsWidgetMap: Codable {
@@ -1135,17 +1489,6 @@ enum SettingsWidgetAlertPositionType: String, Codable, CaseIterable {
             .decode(RawValue.self)) ?? .scene
     }
 
-    static func fromString(value: String) -> SettingsWidgetAlertPositionType {
-        switch value {
-        case String(localized: "Scene"):
-            return .scene
-        case String(localized: "Face"):
-            return .face
-        default:
-            return .scene
-        }
-    }
-
     func toString() -> String {
         switch self {
         case .scene:
@@ -1155,8 +1498,6 @@ enum SettingsWidgetAlertPositionType: String, Codable, CaseIterable {
         }
     }
 }
-
-let alertPositionTypes = SettingsWidgetAlertPositionType.allCases.map { $0.toString() }
 
 class SettingsWidgetAlertFacePosition: Codable {
     var x: Double = 0.25
@@ -1272,17 +1613,6 @@ enum SettingsWidgetAlertsChatBotCommandImageType: String, Codable, CaseIterable 
             .file
     }
 
-    static func fromString(value: String) -> SettingsWidgetAlertsChatBotCommandImageType {
-        switch value {
-        case String(localized: "File"):
-            return .file
-        case String(localized: "Image Playground"):
-            return .imagePlayground
-        default:
-            return .file
-        }
-    }
-
     func toString() -> String {
         switch self {
         case .file:
@@ -1292,8 +1622,6 @@ enum SettingsWidgetAlertsChatBotCommandImageType: String, Codable, CaseIterable 
         }
     }
 }
-
-let chatBotCommandImageTypes = SettingsWidgetAlertsChatBotCommandImageType.allCases.map { $0.toString() }
 
 class SettingsWidgetAlertsChatBotCommand: Codable, Identifiable, @unchecked Sendable {
     var id: UUID = .init()
@@ -1389,61 +1717,138 @@ class SettingsWidgetAlerts: Codable {
     }
 }
 
-class SettingsWidgetVideoSource: Codable {
-    var cornerRadius: Float = 0
-    var cameraPosition: SettingsSceneCameraPosition? = .screenCapture
-    var backCameraId: String? = getBestBackCameraId()
-    var frontCameraId: String? = getBestFrontCameraId()
-    var rtmpCameraId: UUID? = .init()
-    var srtlaCameraId: UUID? = .init()
-    var mediaPlayerCameraId: UUID? = .init()
-    var externalCameraId: String? = ""
-    var externalCameraName: String? = ""
-    var cropEnabled: Bool? = false
-    var cropX: Double? = 0.25
-    var cropY: Double? = 0.0
-    var cropWidth: Double? = 0.5
-    var cropHeight: Double? = 1.0
-    var rotation: Double? = 0.0
-    var trackFaceEnabled: Bool? = false
-    var trackFaceZoom: Double? = 0.75
-    var mirror: Bool? = false
-    var borderWidth: Double? = 0
-    var borderColor: RgbColor? = .init(red: 0, green: 0, blue: 0)
+class SettingsWidgetVideoSource: Codable, ObservableObject {
+    @Published var cornerRadius: Float = 0
+    var cameraPosition: SettingsSceneCameraPosition = .screenCapture
+    var backCameraId: String = getBestBackCameraId()
+    var frontCameraId: String = getBestFrontCameraId()
+    var rtmpCameraId: UUID = .init()
+    var srtlaCameraId: UUID = .init()
+    var mediaPlayerCameraId: UUID = .init()
+    var externalCameraId: String = ""
+    var externalCameraName: String = ""
+    var cropEnabled: Bool = false
+    var cropX: Double = 0.25
+    var cropY: Double = 0.0
+    var cropWidth: Double = 0.5
+    var cropHeight: Double = 1.0
+    @Published var rotation: Double = 0.0
+    var trackFaceEnabled: Bool = false
+    @Published var trackFaceZoom: Double = 0.75
+    var mirror: Bool = false
+    @Published var borderWidth: Double = 0
+    var borderColor: RgbColor = .init(red: 0, green: 0, blue: 0)
+    @Published var borderColorColor: Color
+
+    enum CodingKeys: CodingKey {
+        case cornerRadius,
+             cameraPosition,
+             backCameraId,
+             frontCameraId,
+             rtmpCameraId,
+             srtlaCameraId,
+             mediaPlayerCameraId,
+             externalCameraId,
+             externalCameraName,
+             cropEnabled,
+             cropX,
+             cropY,
+             cropWidth,
+             cropHeight,
+             rotation,
+             trackFaceEnabled,
+             trackFaceZoom,
+             mirror,
+             borderWidth,
+             borderColor
+    }
+
+    init() {
+        borderColorColor = borderColor.color()
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.cornerRadius, cornerRadius)
+        try container.encode(.cameraPosition, cameraPosition)
+        try container.encode(.backCameraId, backCameraId)
+        try container.encode(.frontCameraId, frontCameraId)
+        try container.encode(.rtmpCameraId, rtmpCameraId)
+        try container.encode(.srtlaCameraId, srtlaCameraId)
+        try container.encode(.mediaPlayerCameraId, mediaPlayerCameraId)
+        try container.encode(.externalCameraId, externalCameraId)
+        try container.encode(.externalCameraName, externalCameraName)
+        try container.encode(.cropEnabled, cropEnabled)
+        try container.encode(.cropX, cropX)
+        try container.encode(.cropY, cropY)
+        try container.encode(.cropWidth, cropWidth)
+        try container.encode(.cropHeight, cropHeight)
+        try container.encode(.rotation, rotation)
+        try container.encode(.trackFaceEnabled, trackFaceEnabled)
+        try container.encode(.trackFaceZoom, trackFaceZoom)
+        try container.encode(.mirror, mirror)
+        try container.encode(.borderWidth, borderWidth)
+        try container.encode(.borderColor, borderColor)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        cornerRadius = container.decode(.cornerRadius, Float.self, 0)
+        cameraPosition = container.decode(.cameraPosition, SettingsSceneCameraPosition.self, .screenCapture)
+        backCameraId = container.decode(.backCameraId, String.self, getBestBackCameraId())
+        frontCameraId = container.decode(.frontCameraId, String.self, getBestFrontCameraId())
+        rtmpCameraId = container.decode(.rtmpCameraId, UUID.self, .init())
+        srtlaCameraId = container.decode(.srtlaCameraId, UUID.self, .init())
+        mediaPlayerCameraId = container.decode(.mediaPlayerCameraId, UUID.self, .init())
+        externalCameraId = container.decode(.externalCameraId, String.self, "")
+        externalCameraName = container.decode(.externalCameraName, String.self, "")
+        cropEnabled = container.decode(.cropEnabled, Bool.self, false)
+        cropX = container.decode(.cropX, Double.self, 0.25)
+        cropY = container.decode(.cropY, Double.self, 0.0)
+        cropWidth = container.decode(.cropWidth, Double.self, 0.5)
+        cropHeight = container.decode(.cropHeight, Double.self, 1.0)
+        rotation = container.decode(.rotation, Double.self, 0.0)
+        trackFaceEnabled = container.decode(.trackFaceEnabled, Bool.self, false)
+        trackFaceZoom = container.decode(.trackFaceZoom, Double.self, 0.75)
+        mirror = container.decode(.mirror, Bool.self, false)
+        borderWidth = container.decode(.borderWidth, Double.self, 0)
+        borderColor = container.decode(.borderColor, RgbColor.self, .init(red: 0, green: 0, blue: 0))
+        borderColorColor = borderColor.color()
+    }
 
     func toEffectSettings() -> VideoSourceEffectSettings {
         return .init(cornerRadius: cornerRadius,
-                     cropEnabled: cropEnabled!,
-                     cropX: cropX!,
-                     cropY: cropY!,
-                     cropWidth: cropWidth!,
-                     cropHeight: cropHeight!,
-                     rotation: rotation!,
-                     trackFaceEnabled: trackFaceEnabled!,
-                     trackFaceZoom: 1.5 + (1 - trackFaceZoom!) * 4,
-                     mirror: mirror!,
-                     borderWidth: borderWidth!,
+                     cropEnabled: cropEnabled,
+                     cropX: cropX,
+                     cropY: cropY,
+                     cropWidth: cropWidth,
+                     cropHeight: cropHeight,
+                     rotation: rotation,
+                     trackFaceEnabled: trackFaceEnabled,
+                     trackFaceZoom: 1.5 + (1 - trackFaceZoom) * 4,
+                     mirror: mirror,
+                     borderWidth: borderWidth,
                      borderColor: CIColor(
-                         red: Double(borderColor!.red) / 255,
-                         green: Double(borderColor!.green) / 255,
-                         blue: Double(borderColor!.blue) / 255
+                         red: Double(borderColor.red) / 255,
+                         green: Double(borderColor.green) / 255,
+                         blue: Double(borderColor.blue) / 255
                      ))
     }
 
     func toCameraId() -> SettingsCameraId {
-        switch cameraPosition! {
+        switch cameraPosition {
         case .back:
-            return .back(id: backCameraId!)
+            return .back(id: backCameraId)
         case .front:
-            return .front(id: frontCameraId!)
+            return .front(id: frontCameraId)
         case .rtmp:
-            return .rtmp(id: rtmpCameraId!)
+            return .rtmp(id: rtmpCameraId)
         case .external:
-            return .external(id: externalCameraId!, name: externalCameraName!)
+            return .external(id: externalCameraId, name: externalCameraName)
         case .srtla:
-            return .srtla(id: srtlaCameraId!)
+            return .srtla(id: srtlaCameraId)
         case .mediaPlayer:
-            return .mediaPlayer(id: mediaPlayerCameraId!)
+            return .mediaPlayer(id: mediaPlayerCameraId)
         case .screenCapture:
             return .screenCapture
         case .backTripleLowEnergy:
@@ -1497,15 +1902,6 @@ enum SettingsWidgetScoreboardType: String, Codable, CaseIterable {
             .padel
     }
 
-    static func fromString(value: String) -> SettingsWidgetScoreboardType {
-        switch value {
-        case String(localized: "Padel"):
-            return .padel
-        default:
-            return .padel
-        }
-    }
-
     func toString() -> String {
         switch self {
         case .padel:
@@ -1513,8 +1909,6 @@ enum SettingsWidgetScoreboardType: String, Codable, CaseIterable {
         }
     }
 }
-
-let scoreboardTypes = SettingsWidgetScoreboardType.allCases.map { $0.toString() }
 
 class SettingsWidgetScoreboardPlayer: Codable, Identifiable {
     var id: UUID = .init()
@@ -1536,17 +1930,6 @@ enum SettingsWidgetPadelScoreboardGameType: String, Codable, CaseIterable {
             .doubles
     }
 
-    static func fromString(value: String) -> SettingsWidgetPadelScoreboardGameType {
-        switch value {
-        case String(localized: "Doubles"):
-            return .doubles
-        case String(localized: "Singles"):
-            return .singles
-        default:
-            return .doubles
-        }
-    }
-
     func toString() -> String {
         switch self {
         case .doubles:
@@ -1556,8 +1939,6 @@ enum SettingsWidgetPadelScoreboardGameType: String, Codable, CaseIterable {
         }
     }
 }
-
-let scoreboardGameTypes = SettingsWidgetPadelScoreboardGameType.allCases.map { $0.toString() }
 
 class SettingsWidgetPadelScoreboard: Codable {
     var type: SettingsWidgetPadelScoreboardGameType = .doubles
@@ -1601,39 +1982,12 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
     case alerts = "Alerts"
     case videoSource = "Video source"
     case scoreboard = "Scoreboard"
+    case vTuber = "VTuber"
+    case pngTuber = "PNGTuber"
 
     public init(from decoder: Decoder) throws {
         self = try SettingsWidgetType(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
             .text
-    }
-
-    static func fromString(value: String) -> SettingsWidgetType {
-        switch value {
-        case String(localized: "Browser"):
-            return .browser
-        case String(localized: "Image"):
-            return .image
-        case String(localized: "Text"):
-            return .text
-        case String(localized: "Video effect"):
-            return .videoEffect
-        case String(localized: "Crop"):
-            return .crop
-        case String(localized: "Map"):
-            return .map
-        case String(localized: "Scene"):
-            return .scene
-        case String(localized: "QR code"):
-            return .qrCode
-        case String(localized: "Alerts"):
-            return .alerts
-        case String(localized: "Video source"):
-            return .videoSource
-        case String(localized: "Scoreboard"):
-            return .scoreboard
-        default:
-            return .videoEffect
-        }
     }
 
     func toString() -> String {
@@ -1660,13 +2014,425 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
             return String(localized: "Video source")
         case .scoreboard:
             return String(localized: "Scoreboard")
+        case .vTuber:
+            return String(localized: "VTuber")
+        case .pngTuber:
+            return String(localized: "PNGTuber")
         }
     }
 }
 
-let widgetTypes = SettingsWidgetType.allCases
-    .filter { $0 != .videoEffect }
-    .map { $0.toString() }
+let widgetTypes = SettingsWidgetType.allCases.filter { $0 != .videoEffect }
+
+enum SettingsVideoEffectType: String, Codable, CaseIterable {
+    case grayScale
+    case sepia
+    case whirlpool
+    case pinch
+    case removeBackground
+    case shape
+
+    public init(from decoder: Decoder) throws {
+        do {
+            self = try SettingsVideoEffectType(rawValue: decoder.singleValueContainer()
+                .decode(RawValue.self)) ?? .grayScale
+        } catch {
+            self = .grayScale
+        }
+    }
+
+    func toString() -> String {
+        switch self {
+        case .grayScale:
+            return String(localized: "Gray scale")
+        case .sepia:
+            return String(localized: "Sepia")
+        case .whirlpool:
+            return String(localized: "Whirlpool")
+        case .pinch:
+            return String(localized: "Pinch")
+        case .removeBackground:
+            return String(localized: "Remove background")
+        case .shape:
+            return String(localized: "Shape")
+        }
+    }
+}
+
+private let defaultFromColor = RgbColor(red: 220, green: 235, blue: 92)
+private let defaultToColor = RgbColor(red: 82, green: 180, blue: 203)
+
+class SettingsVideoEffectRemoveBackground: Codable, ObservableObject {
+    var from: RgbColor = defaultFromColor
+    @Published var fromColor: Color
+    var to: RgbColor = defaultToColor
+    @Published var toColor: Color
+
+    enum CodingKeys: CodingKey {
+        case from,
+             to
+    }
+
+    init() {
+        fromColor = from.color()
+        toColor = to.color()
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.from, from)
+        try container.encode(.to, to)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        from = container.decode(.from, RgbColor.self, defaultFromColor)
+        fromColor = from.color()
+        to = container.decode(.to, RgbColor.self, defaultToColor)
+        toColor = to.color()
+    }
+}
+
+class SettingsVideoEffectShape: Codable, ObservableObject {
+    @Published var cornerRadius: Float = 0
+    @Published var borderWidth: Double = 0
+    var borderColor: RgbColor = .init(red: 0, green: 0, blue: 0)
+    @Published var borderColorColor: Color
+
+    enum CodingKeys: CodingKey {
+        case cornerRadius,
+             borderWidth,
+             borderColor
+    }
+
+    init() {
+        borderColorColor = borderColor.color()
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.cornerRadius, cornerRadius)
+        try container.encode(.borderWidth, borderWidth)
+        try container.encode(.borderColor, borderColor)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        cornerRadius = container.decode(.cornerRadius, Float.self, 0)
+        borderWidth = container.decode(.borderWidth, Double.self, 0)
+        borderColor = container.decode(.borderColor, RgbColor.self, .init(red: 0, green: 0, blue: 0))
+        borderColorColor = borderColor.color()
+    }
+
+    func toSettings() -> ShapeEffectSettings {
+        return .init(cornerRadius: cornerRadius,
+                     borderWidth: borderWidth,
+                     borderColor: CIColor(
+                         red: Double(borderColor.red) / 255,
+                         green: Double(borderColor.green) / 255,
+                         blue: Double(borderColor.blue) / 255
+                     ))
+    }
+}
+
+class SettingsVideoEffect: Codable, Identifiable, ObservableObject {
+    var id: UUID = .init()
+    @Published var enabled: Bool = true
+    @Published var type: SettingsVideoEffectType = .grayScale
+    var removeBackground: SettingsVideoEffectRemoveBackground = .init()
+    var shape: SettingsVideoEffectShape = .init()
+
+    enum CodingKeys: CodingKey {
+        case id,
+             enabled,
+             type,
+             removeBackground,
+             shape
+    }
+
+    init() {}
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.enabled, enabled)
+        try container.encode(.type, type)
+        try container.encode(.removeBackground, removeBackground)
+        try container.encode(.shape, shape)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        enabled = container.decode(.enabled, Bool.self, true)
+        type = container.decode(.type, SettingsVideoEffectType.self, .grayScale)
+        removeBackground = container.decode(.removeBackground, SettingsVideoEffectRemoveBackground.self, .init())
+        shape = container.decode(.shape, SettingsVideoEffectShape.self, .init())
+    }
+
+    func getEffect() -> VideoEffect {
+        switch type {
+        case .grayScale:
+            return GrayScaleEffect()
+        case .sepia:
+            return SepiaEffect()
+        case .whirlpool:
+            return WhirlpoolEffect(angle: .pi / 2)
+        case .pinch:
+            return PinchEffect(scale: 0.5)
+        case .removeBackground:
+            let effect = RemoveBackgroundEffect()
+            effect.setColorRange(from: removeBackground.from, to: removeBackground.to)
+            return effect
+        case .shape:
+            let effect = ShapeEffect()
+            effect.setSettings(settings: shape.toSettings())
+            return effect
+        }
+    }
+}
+
+class SettingsWidgetVTuber: Codable, ObservableObject {
+    var id: UUID = .init()
+    var cameraPosition: SettingsSceneCameraPosition = .screenCapture
+    var backCameraId: String = getBestBackCameraId()
+    var frontCameraId: String = getBestFrontCameraId()
+    var rtmpCameraId: UUID = .init()
+    var srtlaCameraId: UUID = .init()
+    var mediaPlayerCameraId: UUID = .init()
+    var externalCameraId: String = ""
+    var externalCameraName: String = ""
+    @Published var cameraPositionY: Double = 1.37
+    @Published var cameraFieldOfView: Double = 18
+    @Published var modelName: String = ""
+    @Published var mirror: Bool = false
+
+    enum CodingKeys: CodingKey {
+        case id,
+             cameraPosition,
+             backCameraId,
+             frontCameraId,
+             rtmpCameraId,
+             srtlaCameraId,
+             mediaPlayerCameraId,
+             externalCameraId,
+             externalCameraName,
+             cameraPositionY,
+             cameraFieldOfView,
+             modelName,
+             mirror
+    }
+
+    init() {}
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.cameraPosition, cameraPosition)
+        try container.encode(.backCameraId, backCameraId)
+        try container.encode(.frontCameraId, frontCameraId)
+        try container.encode(.rtmpCameraId, rtmpCameraId)
+        try container.encode(.srtlaCameraId, srtlaCameraId)
+        try container.encode(.mediaPlayerCameraId, mediaPlayerCameraId)
+        try container.encode(.externalCameraId, externalCameraId)
+        try container.encode(.externalCameraName, externalCameraName)
+        try container.encode(.cameraPositionY, cameraPositionY)
+        try container.encode(.cameraFieldOfView, cameraFieldOfView)
+        try container.encode(.modelName, modelName)
+        try container.encode(.mirror, mirror)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        cameraPosition = container.decode(.cameraPosition, SettingsSceneCameraPosition.self, .screenCapture)
+        backCameraId = container.decode(.backCameraId, String.self, getBestBackCameraId())
+        frontCameraId = container.decode(.frontCameraId, String.self, getBestFrontCameraId())
+        rtmpCameraId = container.decode(.rtmpCameraId, UUID.self, .init())
+        srtlaCameraId = container.decode(.srtlaCameraId, UUID.self, .init())
+        mediaPlayerCameraId = container.decode(.mediaPlayerCameraId, UUID.self, .init())
+        externalCameraId = container.decode(.externalCameraId, String.self, "")
+        externalCameraName = container.decode(.externalCameraName, String.self, "")
+        cameraPositionY = container.decode(.cameraPositionY, Double.self, 1.37)
+        cameraFieldOfView = container.decode(.cameraFieldOfView, Double.self, 18)
+        modelName = container.decode(.modelName, String.self, "")
+        mirror = container.decode(.mirror, Bool.self, false)
+    }
+
+    func toCameraId() -> SettingsCameraId {
+        switch cameraPosition {
+        case .back:
+            return .back(id: backCameraId)
+        case .front:
+            return .front(id: frontCameraId)
+        case .rtmp:
+            return .rtmp(id: rtmpCameraId)
+        case .external:
+            return .external(id: externalCameraId, name: externalCameraName)
+        case .srtla:
+            return .srtla(id: srtlaCameraId)
+        case .mediaPlayer:
+            return .mediaPlayer(id: mediaPlayerCameraId)
+        case .screenCapture:
+            return .screenCapture
+        case .backTripleLowEnergy:
+            return .backTripleLowEnergy
+        case .backDualLowEnergy:
+            return .backDualLowEnergy
+        case .backWideDualLowEnergy:
+            return .backWideDualLowEnergy
+        }
+    }
+
+    func updateCameraId(settingsCameraId: SettingsCameraId) {
+        switch settingsCameraId {
+        case let .back(id: id):
+            cameraPosition = .back
+            backCameraId = id
+        case let .front(id: id):
+            cameraPosition = .front
+            frontCameraId = id
+        case let .rtmp(id: id):
+            cameraPosition = .rtmp
+            rtmpCameraId = id
+        case let .srtla(id: id):
+            cameraPosition = .srtla
+            srtlaCameraId = id
+        case let .mediaPlayer(id: id):
+            cameraPosition = .mediaPlayer
+            mediaPlayerCameraId = id
+        case let .external(id: id, name: name):
+            cameraPosition = .external
+            externalCameraId = id
+            externalCameraName = name
+        case .screenCapture:
+            cameraPosition = .screenCapture
+        case .backTripleLowEnergy:
+            cameraPosition = .backTripleLowEnergy
+        case .backDualLowEnergy:
+            cameraPosition = .backDualLowEnergy
+        case .backWideDualLowEnergy:
+            cameraPosition = .backWideDualLowEnergy
+        }
+    }
+}
+
+class SettingsWidgetPngTuber: Codable, ObservableObject {
+    var id: UUID = .init()
+    var cameraPosition: SettingsSceneCameraPosition = .screenCapture
+    var backCameraId: String = getBestBackCameraId()
+    var frontCameraId: String = getBestFrontCameraId()
+    var rtmpCameraId: UUID = .init()
+    var srtlaCameraId: UUID = .init()
+    var mediaPlayerCameraId: UUID = .init()
+    var externalCameraId: String = ""
+    var externalCameraName: String = ""
+    @Published var modelName: String = ""
+    @Published var mirror: Bool = false
+
+    enum CodingKeys: CodingKey {
+        case id,
+             cameraPosition,
+             backCameraId,
+             frontCameraId,
+             rtmpCameraId,
+             srtlaCameraId,
+             mediaPlayerCameraId,
+             externalCameraId,
+             externalCameraName,
+             modelName,
+             mirror
+    }
+
+    init() {}
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.cameraPosition, cameraPosition)
+        try container.encode(.backCameraId, backCameraId)
+        try container.encode(.frontCameraId, frontCameraId)
+        try container.encode(.rtmpCameraId, rtmpCameraId)
+        try container.encode(.srtlaCameraId, srtlaCameraId)
+        try container.encode(.mediaPlayerCameraId, mediaPlayerCameraId)
+        try container.encode(.externalCameraId, externalCameraId)
+        try container.encode(.externalCameraName, externalCameraName)
+        try container.encode(.modelName, modelName)
+        try container.encode(.mirror, mirror)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        cameraPosition = container.decode(.cameraPosition, SettingsSceneCameraPosition.self, .screenCapture)
+        backCameraId = container.decode(.backCameraId, String.self, getBestBackCameraId())
+        frontCameraId = container.decode(.frontCameraId, String.self, getBestFrontCameraId())
+        rtmpCameraId = container.decode(.rtmpCameraId, UUID.self, .init())
+        srtlaCameraId = container.decode(.srtlaCameraId, UUID.self, .init())
+        mediaPlayerCameraId = container.decode(.mediaPlayerCameraId, UUID.self, .init())
+        externalCameraId = container.decode(.externalCameraId, String.self, "")
+        externalCameraName = container.decode(.externalCameraName, String.self, "")
+        modelName = container.decode(.modelName, String.self, "")
+        mirror = container.decode(.mirror, Bool.self, false)
+    }
+
+    func toCameraId() -> SettingsCameraId {
+        switch cameraPosition {
+        case .back:
+            return .back(id: backCameraId)
+        case .front:
+            return .front(id: frontCameraId)
+        case .rtmp:
+            return .rtmp(id: rtmpCameraId)
+        case .external:
+            return .external(id: externalCameraId, name: externalCameraName)
+        case .srtla:
+            return .srtla(id: srtlaCameraId)
+        case .mediaPlayer:
+            return .mediaPlayer(id: mediaPlayerCameraId)
+        case .screenCapture:
+            return .screenCapture
+        case .backTripleLowEnergy:
+            return .backTripleLowEnergy
+        case .backDualLowEnergy:
+            return .backDualLowEnergy
+        case .backWideDualLowEnergy:
+            return .backWideDualLowEnergy
+        }
+    }
+
+    func updateCameraId(settingsCameraId: SettingsCameraId) {
+        switch settingsCameraId {
+        case let .back(id: id):
+            cameraPosition = .back
+            backCameraId = id
+        case let .front(id: id):
+            cameraPosition = .front
+            frontCameraId = id
+        case let .rtmp(id: id):
+            cameraPosition = .rtmp
+            rtmpCameraId = id
+        case let .srtla(id: id):
+            cameraPosition = .srtla
+            srtlaCameraId = id
+        case let .mediaPlayer(id: id):
+            cameraPosition = .mediaPlayer
+            mediaPlayerCameraId = id
+        case let .external(id: id, name: name):
+            cameraPosition = .external
+            externalCameraId = id
+            externalCameraName = name
+        case .screenCapture:
+            cameraPosition = .screenCapture
+        case .backTripleLowEnergy:
+            cameraPosition = .backTripleLowEnergy
+        case .backDualLowEnergy:
+            cameraPosition = .backDualLowEnergy
+        case .backWideDualLowEnergy:
+            cameraPosition = .backWideDualLowEnergy
+        }
+    }
+}
 
 class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject {
     @Published var name: String
@@ -1681,7 +2447,10 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject {
     var alerts: SettingsWidgetAlerts = .init()
     var videoSource: SettingsWidgetVideoSource = .init()
     var scoreboard: SettingsWidgetScoreboard = .init()
+    var vTuber: SettingsWidgetVTuber = .init()
+    var pngTuber: SettingsWidgetPngTuber = .init()
     @Published var enabled: Bool = true
+    @Published var effects: [SettingsVideoEffect] = []
 
     init(name: String) {
         self.name = name
@@ -1704,7 +2473,10 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject {
              alerts,
              videoSource,
              scoreboard,
-             enabled
+             vTuber,
+             pngTuber,
+             enabled,
+             effects
     }
 
     func encode(to encoder: Encoder) throws {
@@ -1721,7 +2493,10 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject {
         try container.encode(.alerts, alerts)
         try container.encode(.videoSource, videoSource)
         try container.encode(.scoreboard, scoreboard)
+        try container.encode(.vTuber, vTuber)
+        try container.encode(.pngTuber, pngTuber)
         try container.encode(.enabled, enabled)
+        try container.encode(.effects, effects)
     }
 
     required init(from decoder: Decoder) throws {
@@ -1731,14 +2506,21 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject {
         type = try container.decode(SettingsWidgetType.self, forKey: .type)
         text = try container.decode(SettingsWidgetText.self, forKey: .text)
         browser = try container.decode(SettingsWidgetBrowser.self, forKey: .browser)
-        crop = (try? container.decode(SettingsWidgetCrop.self, forKey: .crop)) ?? .init()
-        map = (try? container.decode(SettingsWidgetMap.self, forKey: .map)) ?? .init()
-        scene = (try? container.decode(SettingsWidgetScene.self, forKey: .scene)) ?? .init()
-        qrCode = (try? container.decode(SettingsWidgetQrCode.self, forKey: .qrCode)) ?? .init()
-        alerts = (try? container.decode(SettingsWidgetAlerts.self, forKey: .alerts)) ?? .init()
-        videoSource = (try? container.decode(SettingsWidgetVideoSource.self, forKey: .videoSource)) ?? .init()
-        scoreboard = (try? container.decode(SettingsWidgetScoreboard.self, forKey: .scoreboard)) ?? .init()
-        enabled = (try? container.decode(Bool.self, forKey: .enabled)) ?? true
+        crop = container.decode(.crop, SettingsWidgetCrop.self, .init())
+        map = container.decode(.map, SettingsWidgetMap.self, .init())
+        scene = container.decode(.scene, SettingsWidgetScene.self, .init())
+        qrCode = container.decode(.qrCode, SettingsWidgetQrCode.self, .init())
+        alerts = container.decode(.alerts, SettingsWidgetAlerts.self, .init())
+        videoSource = container.decode(.videoSource, SettingsWidgetVideoSource.self, .init())
+        scoreboard = container.decode(.scoreboard, SettingsWidgetScoreboard.self, .init())
+        vTuber = container.decode(.vTuber, SettingsWidgetVTuber.self, .init())
+        pngTuber = container.decode(.pngTuber, SettingsWidgetPngTuber.self, .init())
+        enabled = container.decode(.enabled, Bool.self, true)
+        effects = container.decode(.effects, [SettingsVideoEffect].self, [])
+    }
+
+    func getEffects() -> [VideoEffect] {
+        return effects.filter { $0.enabled }.map { $0.getEffect() }
     }
 }
 
@@ -1813,8 +2595,8 @@ class SettingsQuickButton: Codable, Identifiable, Equatable, Hashable, Observabl
     var isOn: Bool = false
     @Published var enabled: Bool = true
     var backgroundColor: RgbColor = defaultQuickButtonColor
-    @Published var page: Int? = 1
     @Published var color: Color = defaultQuickButtonColor.color()
+    @Published var page: Int? = 1
 
     init(name: String) {
         self.name = name
@@ -1857,17 +2639,17 @@ class SettingsQuickButton: Codable, Identifiable, Equatable, Hashable, Observabl
 
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        name = try container.decode(String.self, forKey: .name)
-        id = try container.decode(UUID.self, forKey: .id)
-        type = try container.decode(SettingsQuickButtonType.self, forKey: .type)
+        name = container.decode(.name, String.self, "")
+        id = container.decode(.id, UUID.self, .init())
+        type = container.decode(.type, SettingsQuickButtonType.self, .widget)
         imageType = try? container.decode(String?.self, forKey: .imageType)
-        systemImageNameOn = try container.decode(String.self, forKey: .systemImageNameOn)
-        systemImageNameOff = try container.decode(String.self, forKey: .systemImageNameOff)
-        isOn = try container.decode(Bool.self, forKey: .isOn)
-        enabled = (try? container.decode(Bool.self, forKey: .enabled)) ?? true
-        backgroundColor = (try? container.decode(RgbColor.self, forKey: .backgroundColor)) ?? defaultQuickButtonColor
-        page = try? container.decode(Int?.self, forKey: .page)
+        systemImageNameOn = container.decode(.systemImageNameOn, String.self, "mic.slash")
+        systemImageNameOff = container.decode(.systemImageNameOff, String.self, "mic")
+        isOn = container.decode(.isOn, Bool.self, false)
+        enabled = container.decode(.enabled, Bool.self, true)
+        backgroundColor = container.decode(.backgroundColor, RgbColor.self, defaultQuickButtonColor)
         color = backgroundColor.color()
+        page = try? container.decode(Int?.self, forKey: .page)
     }
 }
 
@@ -1935,33 +2717,120 @@ class SettingsColor: Codable {
     var diskLutsCube: [SettingsColorLut]? = []
 }
 
-class SettingsShow: Codable {
-    var chat: Bool = true
-    var viewers: Bool = true
-    var uptime: Bool = true
-    var stream: Bool = false
-    var speed: Bool = true
-    var audioLevel: Bool = true
-    var zoom: Bool = false
-    var zoomPresets: Bool = true
-    var microphone: Bool = false
-    // periphery:ignore
-    var audioBar: Bool? = true
-    var cameras: Bool? = false
-    var obsStatus: Bool? = true
-    var rtmpSpeed: Bool? = true
-    var gameController: Bool? = true
-    var location: Bool? = true
-    var remoteControl: Bool? = true
-    var browserWidgets: Bool? = true
-    var bonding: Bool? = true
-    var events: Bool? = true
-    var djiDevices: Bool? = true
-    var bondingRtts: Bool? = false
-    var moblink: Bool? = true
-    var catPrinter: Bool? = true
-    var cyclingPowerDevice: Bool? = true
-    var heartRateDevice: Bool? = true
+class SettingsShow: Codable, ObservableObject {
+    @Published var chat: Bool = true
+    @Published var viewers: Bool = true
+    @Published var uptime: Bool = true
+    @Published var stream: Bool = false
+    @Published var speed: Bool = true
+    @Published var audioLevel: Bool = true
+    @Published var zoom: Bool = false
+    @Published var zoomPresets: Bool = true
+    @Published var microphone: Bool = false
+    @Published var audioBar: Bool = true
+    @Published var cameras: Bool = false
+    @Published var obsStatus: Bool = true
+    @Published var rtmpSpeed: Bool = true
+    @Published var gameController: Bool = true
+    @Published var location: Bool = true
+    @Published var remoteControl: Bool = true
+    @Published var browserWidgets: Bool = true
+    @Published var bonding: Bool = true
+    @Published var events: Bool = true
+    @Published var djiDevices: Bool = true
+    @Published var bondingRtts: Bool = false
+    @Published var moblink: Bool = true
+    @Published var catPrinter: Bool = true
+    @Published var cyclingPowerDevice: Bool = true
+    @Published var heartRateDevice: Bool = true
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case chat,
+             viewers,
+             uptime,
+             stream,
+             speed,
+             audioLevel,
+             zoom,
+             zoomPresets,
+             microphone,
+             audioBar,
+             cameras,
+             obsStatus,
+             rtmpSpeed,
+             gameController,
+             location,
+             remoteControl,
+             browserWidgets,
+             bonding,
+             events,
+             djiDevices,
+             bondingRtts,
+             moblink,
+             catPrinter,
+             cyclingPowerDevice,
+             heartRateDevice
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.chat, chat)
+        try container.encode(.viewers, viewers)
+        try container.encode(.uptime, uptime)
+        try container.encode(.stream, stream)
+        try container.encode(.speed, speed)
+        try container.encode(.audioLevel, audioLevel)
+        try container.encode(.zoom, zoom)
+        try container.encode(.zoomPresets, zoomPresets)
+        try container.encode(.microphone, microphone)
+        try container.encode(.audioBar, audioBar)
+        try container.encode(.cameras, cameras)
+        try container.encode(.obsStatus, obsStatus)
+        try container.encode(.rtmpSpeed, rtmpSpeed)
+        try container.encode(.gameController, gameController)
+        try container.encode(.location, location)
+        try container.encode(.remoteControl, remoteControl)
+        try container.encode(.browserWidgets, browserWidgets)
+        try container.encode(.bonding, bonding)
+        try container.encode(.events, events)
+        try container.encode(.djiDevices, djiDevices)
+        try container.encode(.bondingRtts, bondingRtts)
+        try container.encode(.moblink, moblink)
+        try container.encode(.catPrinter, catPrinter)
+        try container.encode(.cyclingPowerDevice, cyclingPowerDevice)
+        try container.encode(.heartRateDevice, heartRateDevice)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        chat = container.decode(.chat, Bool.self, true)
+        viewers = container.decode(.viewers, Bool.self, true)
+        uptime = container.decode(.uptime, Bool.self, true)
+        stream = container.decode(.stream, Bool.self, false)
+        speed = container.decode(.speed, Bool.self, true)
+        audioLevel = container.decode(.audioLevel, Bool.self, true)
+        zoom = container.decode(.zoom, Bool.self, false)
+        zoomPresets = container.decode(.zoomPresets, Bool.self, true)
+        microphone = container.decode(.microphone, Bool.self, false)
+        audioBar = container.decode(.audioBar, Bool.self, true)
+        cameras = container.decode(.cameras, Bool.self, false)
+        obsStatus = container.decode(.obsStatus, Bool.self, true)
+        rtmpSpeed = container.decode(.rtmpSpeed, Bool.self, true)
+        gameController = container.decode(.gameController, Bool.self, true)
+        location = container.decode(.location, Bool.self, true)
+        remoteControl = container.decode(.remoteControl, Bool.self, true)
+        browserWidgets = container.decode(.browserWidgets, Bool.self, true)
+        bonding = container.decode(.bonding, Bool.self, true)
+        events = container.decode(.events, Bool.self, true)
+        djiDevices = container.decode(.djiDevices, Bool.self, true)
+        bondingRtts = container.decode(.bondingRtts, Bool.self, false)
+        moblink = container.decode(.moblink, Bool.self, true)
+        catPrinter = container.decode(.catPrinter, Bool.self, true)
+        cyclingPowerDevice = container.decode(.cyclingPowerDevice, Bool.self, true)
+        heartRateDevice = container.decode(.heartRateDevice, Bool.self, true)
+    }
 }
 
 class SettingsZoomPreset: Codable, Identifiable, Equatable {
@@ -1996,13 +2865,30 @@ class SettingsZoom: Codable {
     var speed: Float? = 5.0
 }
 
-class SettingsBitratePreset: Codable, Identifiable {
+class SettingsBitratePreset: Codable, Identifiable, ObservableObject {
     var id: UUID
-    var bitrate: UInt32 = 5_000_000
+    @Published var bitrate: UInt32 = 5_000_000
 
     init(id: UUID, bitrate: UInt32) {
         self.id = id
         self.bitrate = bitrate
+    }
+
+    enum CodingKeys: CodingKey {
+        case id,
+             bitrate
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.bitrate, bitrate)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        bitrate = container.decode(.bitrate, UInt32.self, 5_000_000)
     }
 }
 
@@ -2015,21 +2901,6 @@ enum SettingsVideoStabilizationMode: String, Codable, CaseIterable {
     public init(from decoder: Decoder) throws {
         self = try SettingsVideoStabilizationMode(rawValue: decoder.singleValueContainer()
             .decode(RawValue.self)) ?? .off
-    }
-
-    static func fromString(value: String) -> SettingsVideoStabilizationMode {
-        switch value {
-        case String(localized: "Off"):
-            return .off
-        case String(localized: "Standard"):
-            return .standard
-        case String(localized: "Cinematic"):
-            return .cinematic
-        case String(localized: "Cinematic extended enhanced"):
-            return .cinematicExtendedEnhanced
-        default:
-            return .off
-        }
     }
 
     func toString() -> String {
@@ -2054,11 +2925,81 @@ var videoStabilizationModes = SettingsVideoStabilizationMode.allCases
             return $0 != .cinematicExtendedEnhanced
         }
     }
-    .map { $0.toString() }
 
-class SettingsChatUsername: Identifiable, Codable {
+class SettingsChatFilter: Identifiable, Codable, ObservableObject {
     var id = UUID()
-    var value: String = ""
+    @Published var user: String = ""
+    @Published var messageStart: String = ""
+    var messageStartWords: [String] = []
+    @Published var showOnScreen: Bool = false
+    @Published var textToSpeech: Bool = false
+    @Published var chatBot: Bool = false
+    @Published var poll: Bool = false
+    @Published var print: Bool = false
+
+    func isMatching(user: String?, segments: [ChatPostSegment]) -> Bool {
+        if user != self.user {
+            return false
+        }
+        var segmentsIterator = segments.makeIterator()
+        for messageWord in messageStartWords {
+            if let text = firstText(segmentsIterator: &segmentsIterator) {
+                if !text.starts(with: messageWord) {
+                    return false
+                }
+            } else {
+                return false
+            }
+        }
+        return true
+    }
+
+    private func firstText(segmentsIterator: inout IndexingIterator<[ChatPostSegment]>) -> String? {
+        while let segment = segmentsIterator.next() {
+            if let text = segment.text, !text.isEmpty {
+                return text
+            }
+        }
+        return nil
+    }
+
+    enum CodingKeys: CodingKey {
+        case id,
+             value,
+             messageWords,
+             showOnScreen,
+             textToSpeech,
+             chatBot,
+             poll,
+             print
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.value, user)
+        try container.encode(.messageWords, messageStartWords)
+        try container.encode(.showOnScreen, showOnScreen)
+        try container.encode(.textToSpeech, textToSpeech)
+        try container.encode(.chatBot, chatBot)
+        try container.encode(.poll, poll)
+        try container.encode(.print, print)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        user = container.decode(.value, String.self, "")
+        messageStartWords = container.decode(.messageWords, [String].self, [])
+        messageStart = messageStartWords.joined(separator: " ")
+        showOnScreen = container.decode(.showOnScreen, Bool.self, false)
+        textToSpeech = container.decode(.textToSpeech, Bool.self, false)
+        chatBot = container.decode(.chatBot, Bool.self, false)
+        poll = container.decode(.poll, Bool.self, false)
+        print = container.decode(.print, Bool.self, false)
+    }
 }
 
 class SettingsChatBotPermissionsCommand: Codable {
@@ -2081,28 +3022,34 @@ class SettingsChatBotPermissions: Codable {
     var audio: SettingsChatBotPermissionsCommand? = .init()
     var reaction: SettingsChatBotPermissionsCommand? = .init()
     var scene: SettingsChatBotPermissionsCommand? = .init()
+    var stream: SettingsChatBotPermissionsCommand? = .init()
 }
 
 class SettingsChat: Codable, ObservableObject {
     @Published var fontSize: Float = 19.0
     var usernameColor: RgbColor = .init(red: 255, green: 163, blue: 0)
+    @Published var usernameColorColor: Color = RgbColor(red: 255, green: 163, blue: 0).color()
     var messageColor: RgbColor = .init(red: 255, green: 255, blue: 255)
+    @Published var messageColorColor: Color = RgbColor(red: 255, green: 255, blue: 255).color()
     var backgroundColor: RgbColor = .init(red: 0, green: 0, blue: 0)
-    var backgroundColorEnabled: Bool = false
+    @Published var backgroundColorColor: Color = RgbColor(red: 0, green: 0, blue: 0).color()
+    @Published var backgroundColorEnabled: Bool = false
     var shadowColor: RgbColor = .init(red: 0, green: 0, blue: 0)
-    var shadowColorEnabled: Bool = true
-    var boldUsername: Bool = true
-    var boldMessage: Bool = true
-    var animatedEmotes: Bool = false
+    @Published var shadowColorColor: Color = RgbColor(red: 0, green: 0, blue: 0).color()
+    @Published var shadowColorEnabled: Bool = true
+    @Published var boldUsername: Bool = true
+    @Published var boldMessage: Bool = true
+    @Published var animatedEmotes: Bool = false
     var timestampColor: RgbColor = .init(red: 180, green: 180, blue: 180)
-    var timestampColorEnabled: Bool = false
+    @Published var timestampColorColor: Color = RgbColor(red: 180, green: 180, blue: 180).color()
+    @Published var timestampColorEnabled: Bool = false
     @Published var height: Double = 0.7
     @Published var width: Double = 1.0
-    var maximumAge: Int = 30
+    @Published var maximumAge: Int = 30
     var maximumAgeEnabled: Bool = false
     var meInUsernameColor: Bool = true
     var enabled: Bool = true
-    var usernamesToIgnore: [SettingsChatUsername] = []
+    @Published var filters: [SettingsChatFilter] = []
     var textToSpeechEnabled: Bool = false
     var textToSpeechDetectLanguagePerMessage: Bool = false
     var textToSpeechSayUsername: Bool = true
@@ -2112,16 +3059,18 @@ class SettingsChat: Codable, ObservableObject {
     var textToSpeechSubscribersOnly: Bool = false
     var textToSpeechFilter: Bool = true
     var textToSpeechFilterMentions: Bool = true
-    var mirrored: Bool = false
+    @Published var mirrored: Bool = false
     @Published var botEnabled: Bool = false
     var botCommandPermissions: SettingsChatBotPermissions = .init()
     var botSendLowBatteryWarning: Bool = false
-    var badges: Bool = true
+    @Published var badges: Bool = true
     var showFirstTimeChatterMessage: Bool = true
     var showNewFollowerMessage: Bool = true
     @Published var bottom: Double = 0.0
-    var newMessagesAtTop: Bool = false
+    @Published var bottomPoints: Double = 80
+    @Published var newMessagesAtTop: Bool = false
     @Published var textToSpeechPauseBetweenMessages: Double = 1.0
+    @Published var platform: Bool = true
 
     enum CodingKeys: CodingKey {
         case fontSize,
@@ -2160,8 +3109,10 @@ class SettingsChat: Codable, ObservableObject {
              showFirstTimeChatterMessage,
              showNewFollowerMessage,
              bottom,
+             bottomPoints,
              newMessagesAtTop,
-             textToSpeechPauseBetweenMessages
+             textToSpeechPauseBetweenMessages,
+             platform
     }
 
     func encode(to encoder: Encoder) throws {
@@ -2184,7 +3135,7 @@ class SettingsChat: Codable, ObservableObject {
         try container.encode(.maximumAgeEnabled, maximumAgeEnabled)
         try container.encode(.meInUsernameColor, meInUsernameColor)
         try container.encode(.enabled, enabled)
-        try container.encode(.usernamesToIgnore, usernamesToIgnore)
+        try container.encode(.usernamesToIgnore, filters)
         try container.encode(.textToSpeechEnabled, textToSpeechEnabled)
         try container.encode(.textToSpeechDetectLanguagePerMessage, textToSpeechDetectLanguagePerMessage)
         try container.encode(.textToSpeechSayUsername, textToSpeechSayUsername)
@@ -2202,8 +3153,10 @@ class SettingsChat: Codable, ObservableObject {
         try container.encode(.showFirstTimeChatterMessage, showFirstTimeChatterMessage)
         try container.encode(.showNewFollowerMessage, showNewFollowerMessage)
         try container.encode(.bottom, bottom)
+        try container.encode(.bottomPoints, bottomPoints)
         try container.encode(.newMessagesAtTop, newMessagesAtTop)
         try container.encode(.textToSpeechPauseBetweenMessages, textToSpeechPauseBetweenMessages)
+        try container.encode(.platform, platform)
     }
 
     init() {}
@@ -2212,15 +3165,20 @@ class SettingsChat: Codable, ObservableObject {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         fontSize = try container.decode(Float.self, forKey: .fontSize)
         usernameColor = try container.decode(RgbColor.self, forKey: .usernameColor)
+        usernameColorColor = usernameColor.color()
         messageColor = try container.decode(RgbColor.self, forKey: .messageColor)
+        messageColorColor = messageColor.color()
         backgroundColor = try container.decode(RgbColor.self, forKey: .backgroundColor)
+        backgroundColorColor = backgroundColor.color()
         backgroundColorEnabled = try container.decode(Bool.self, forKey: .backgroundColorEnabled)
         shadowColor = try container.decode(RgbColor.self, forKey: .shadowColor)
+        shadowColorColor = shadowColor.color()
         shadowColorEnabled = try container.decode(Bool.self, forKey: .shadowColorEnabled)
         boldUsername = try container.decode(Bool.self, forKey: .boldUsername)
         boldMessage = try container.decode(Bool.self, forKey: .boldMessage)
         animatedEmotes = try container.decode(Bool.self, forKey: .animatedEmotes)
         timestampColor = try container.decode(RgbColor.self, forKey: .timestampColor)
+        timestampColorColor = timestampColor.color()
         timestampColorEnabled = try container.decode(Bool.self, forKey: .timestampColorEnabled)
         height = container.decode(.height, Double.self, 0.7)
         width = container.decode(.width, Double.self, 1.0)
@@ -2228,7 +3186,7 @@ class SettingsChat: Codable, ObservableObject {
         maximumAgeEnabled = container.decode(.maximumAgeEnabled, Bool.self, false)
         meInUsernameColor = container.decode(.meInUsernameColor, Bool.self, true)
         enabled = container.decode(.enabled, Bool.self, true)
-        usernamesToIgnore = container.decode(.usernamesToIgnore, [SettingsChatUsername].self, [])
+        filters = container.decode(.usernamesToIgnore, [SettingsChatFilter].self, [])
         textToSpeechEnabled = container.decode(.textToSpeechEnabled, Bool.self, false)
         textToSpeechDetectLanguagePerMessage = container.decode(.textToSpeechDetectLanguagePerMessage, Bool.self, false)
         textToSpeechSayUsername = container.decode(.textToSpeechSayUsername, Bool.self, true)
@@ -2246,8 +3204,37 @@ class SettingsChat: Codable, ObservableObject {
         showFirstTimeChatterMessage = container.decode(.showFirstTimeChatterMessage, Bool.self, true)
         showNewFollowerMessage = container.decode(.showNewFollowerMessage, Bool.self, true)
         bottom = container.decode(.bottom, Double.self, 0.0)
+        bottomPoints = (try? container.decode(Double.self, forKey: .bottomPoints)) ?? min(
+            UIScreen.main.bounds.width * bottom,
+            200
+        )
         newMessagesAtTop = container.decode(.newMessagesAtTop, Bool.self, false)
         textToSpeechPauseBetweenMessages = container.decode(.textToSpeechPauseBetweenMessages, Double.self, 1.0)
+        platform = container.decode(.platform, Bool.self, true)
+    }
+
+    func getRotation() -> Double {
+        if newMessagesAtTop {
+            return 0.0
+        } else {
+            return 180.0
+        }
+    }
+
+    func getScaleX() -> Double {
+        if newMessagesAtTop {
+            return 1.0
+        } else {
+            return -1.0
+        }
+    }
+
+    func isMirrored() -> CGFloat {
+        if mirrored {
+            return -1
+        } else {
+            return 1
+        }
     }
 }
 
@@ -2386,6 +3373,50 @@ enum SettingsDnsLookupStrategy: String, Codable, CaseIterable {
 }
 
 let dnsLookupStrategies = SettingsDnsLookupStrategy.allCases.map { $0.rawValue }
+
+enum SettingsSelfieStickButtonFunction: String, Codable, CaseIterable {
+    case switchScene
+
+    public init(from decoder: Decoder) throws {
+        do {
+            self = try SettingsSelfieStickButtonFunction(rawValue: decoder.singleValueContainer()
+                .decode(RawValue.self)) ?? .switchScene
+        } catch {
+            self = .switchScene
+        }
+    }
+
+    func toString() -> String {
+        switch self {
+        case .switchScene:
+            return String(localized: "Switch scene")
+        }
+    }
+}
+
+class SettingsSelfieStick: Codable, ObservableObject {
+    @Published var buttonEnabled: Bool = false
+    @Published var buttonFunction: SettingsSelfieStickButtonFunction = .switchScene
+
+    enum CodingKeys: CodingKey {
+        case enabled,
+             function
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.enabled, buttonEnabled)
+        try container.encode(.function, buttonFunction)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        buttonEnabled = container.decode(.enabled, Bool.self, false)
+        buttonFunction = container.decode(.function, SettingsSelfieStickButtonFunction.self, .switchScene)
+    }
+}
 
 class SettingsDebug: Codable, ObservableObject {
     var logLevel: SettingsLogLevel = .error
@@ -2631,12 +3662,40 @@ class SettingsMediaPlayerFile: Codable, Identifiable {
     }
 }
 
-class SettingsMediaPlayer: Codable, Identifiable {
+class SettingsMediaPlayer: Codable, Identifiable, ObservableObject {
     var id: UUID = .init()
-    var name: String = "My player"
-    var playerId: String = ""
-    var autoSelectMic: Bool = true
-    var playlist: [SettingsMediaPlayerFile] = []
+    @Published var name: String = "My player"
+    @Published var playerId: String = ""
+    @Published var autoSelectMic: Bool = true
+    @Published var playlist: [SettingsMediaPlayerFile] = []
+
+    enum CodingKeys: CodingKey {
+        case id,
+             name,
+             playerId,
+             autoSelectMic,
+             playlist
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.name, name)
+        try container.encode(.playerId, playerId)
+        try container.encode(.autoSelectMic, autoSelectMic)
+        try container.encode(.playlist, playlist)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        name = container.decode(.name, String.self, "My player")
+        playerId = container.decode(.playerId, String.self, "")
+        autoSelectMic = container.decode(.autoSelectMic, Bool.self, true)
+        playlist = container.decode(.playlist, [SettingsMediaPlayerFile].self, [])
+    }
 
     func camera() -> String {
         return mediaPlayerCamera(name: name)
@@ -2655,8 +3714,24 @@ class SettingsMediaPlayer: Codable, Identifiable {
     }
 }
 
-class SettingsMediaPlayers: Codable {
-    var players: [SettingsMediaPlayer] = []
+class SettingsMediaPlayers: Codable, ObservableObject {
+    @Published var players: [SettingsMediaPlayer] = []
+
+    enum CodingKeys: CodingKey {
+        case players
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.players, players)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        players = container.decode(.players, [SettingsMediaPlayer].self, [])
+    }
 }
 
 enum SettingsDjiDeviceUrlType: String, Codable, CaseIterable {
@@ -2666,17 +3741,6 @@ enum SettingsDjiDeviceUrlType: String, Codable, CaseIterable {
     public init(from decoder: Decoder) throws {
         self = try SettingsDjiDeviceUrlType(rawValue: decoder.singleValueContainer()
             .decode(RawValue.self)) ?? .server
-    }
-
-    static func fromString(value: String) -> SettingsDjiDeviceUrlType {
-        switch value {
-        case String(localized: "Server"):
-            return .server
-        case String(localized: "Custom"):
-            return .custom
-        default:
-            return .server
-        }
     }
 
     func toString() -> String {
@@ -2689,8 +3753,6 @@ enum SettingsDjiDeviceUrlType: String, Codable, CaseIterable {
     }
 }
 
-var djiDeviceUrlTypes = SettingsDjiDeviceUrlType.allCases.map { $0.toString() }
-
 enum SettingsDjiDeviceImageStabilization: String, CaseIterable, Codable {
     case off
     case rockSteady
@@ -2701,23 +3763,6 @@ enum SettingsDjiDeviceImageStabilization: String, CaseIterable, Codable {
     public init(from decoder: Decoder) throws {
         self = try SettingsDjiDeviceImageStabilization(rawValue: decoder.singleValueContainer()
             .decode(RawValue.self)) ?? .rockSteady
-    }
-
-    static func fromString(value: String) -> SettingsDjiDeviceImageStabilization {
-        switch value {
-        case String(localized: "Off"):
-            return .off
-        case String(localized: "RockSteady"):
-            return .rockSteady
-        case String(localized: "RockSteady+"):
-            return .rockSteadyPlus
-        case String(localized: "HorizonBalancing"):
-            return .horizonBalancing
-        case String(localized: "HorizonSteady"):
-            return .horizonSteady
-        default:
-            return .rockSteady
-        }
     }
 
     func toString() -> String {
@@ -2736,8 +3781,6 @@ enum SettingsDjiDeviceImageStabilization: String, CaseIterable, Codable {
     }
 }
 
-var djiDeviceImageStabilizations = SettingsDjiDeviceImageStabilization.allCases.map { $0.toString() }
-
 enum SettingsDjiDeviceResolution: String, CaseIterable, Codable {
     case r1080p = "1080p"
     case r720p = "720p"
@@ -2748,8 +3791,6 @@ enum SettingsDjiDeviceResolution: String, CaseIterable, Codable {
             .decode(RawValue.self)) ?? .r1080p
     }
 }
-
-var djiDeviceResolutions = SettingsDjiDeviceResolution.allCases.map { $0.rawValue }
 
 enum SettingsDjiDeviceModel: String, Codable {
     case osmoAction3
@@ -2777,28 +3818,111 @@ var djiDeviceBitrates: [UInt32] = [
 
 var djiDeviceFpss: [Int] = [25, 30]
 
-class SettingsDjiDevice: Codable, Identifiable {
+class SettingsDjiDevice: Codable, Identifiable, ObservableObject {
     var id: UUID = .init()
-    var name: String = ""
+    @Published var name: String = ""
     var bluetoothPeripheralName: String?
     var bluetoothPeripheralId: UUID?
     var wifiSsid: String = ""
     var wifiPassword: String = ""
-    var rtmpUrlType: SettingsDjiDeviceUrlType? = .server
-    var serverRtmpStreamId: UUID? = .init()
-    var serverRtmpUrl: String? = ""
-    var customRtmpUrl: String? = ""
-    var autoRestartStream: Bool? = false
-    var imageStabilization: SettingsDjiDeviceImageStabilization? = .off
-    var resolution: SettingsDjiDeviceResolution? = .r1080p
-    var fps: Int? = 30
-    var bitrate: UInt32? = 6_000_000
-    var isStarted: Bool? = false
-    var model: SettingsDjiDeviceModel? = .unknown
+    @Published var rtmpUrlType: SettingsDjiDeviceUrlType = .server
+    @Published var serverRtmpStreamId: UUID = .init()
+    @Published var serverRtmpUrl: String = ""
+    @Published var customRtmpUrl: String = ""
+    @Published var autoRestartStream: Bool = false
+    @Published var imageStabilization: SettingsDjiDeviceImageStabilization = .off
+    @Published var resolution: SettingsDjiDeviceResolution = .r1080p
+    @Published var fps: Int = 30
+    @Published var bitrate: UInt32 = 6_000_000
+    var isStarted: Bool = false
+    @Published var model: SettingsDjiDeviceModel = .unknown
+
+    init() {
+        bluetoothPeripheralName = nil
+        bluetoothPeripheralId = nil
+    }
+
+    enum CodingKeys: CodingKey {
+        case id,
+             name,
+             bluetoothPeripheralName,
+             bluetoothPeripheralId,
+             wifiSsid,
+             wifiPassword,
+             rtmpUrlType,
+             serverRtmpStreamId,
+             serverRtmpUrl,
+             customRtmpUrl,
+             autoRestartStream,
+             imageStabilization,
+             resolution,
+             fps,
+             bitrate,
+             isStarted,
+             model
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.name, name)
+        try container.encode(.bluetoothPeripheralName, bluetoothPeripheralName)
+        try container.encode(.bluetoothPeripheralId, bluetoothPeripheralId)
+        try container.encode(.wifiSsid, wifiSsid)
+        try container.encode(.wifiPassword, wifiPassword)
+        try container.encode(.rtmpUrlType, rtmpUrlType)
+        try container.encode(.serverRtmpStreamId, serverRtmpStreamId)
+        try container.encode(.serverRtmpUrl, serverRtmpUrl)
+        try container.encode(.customRtmpUrl, customRtmpUrl)
+        try container.encode(.autoRestartStream, autoRestartStream)
+        try container.encode(.imageStabilization, imageStabilization)
+        try container.encode(.resolution, resolution)
+        try container.encode(.fps, fps)
+        try container.encode(.bitrate, bitrate)
+        try container.encode(.isStarted, isStarted)
+        try container.encode(.model, model)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        name = container.decode(.name, String.self, "")
+        bluetoothPeripheralName = try? container.decode(String.self, forKey: .bluetoothPeripheralName)
+        bluetoothPeripheralId = try? container.decode(UUID.self, forKey: .bluetoothPeripheralId)
+        wifiSsid = container.decode(.wifiSsid, String.self, "")
+        wifiPassword = container.decode(.wifiPassword, String.self, "")
+        rtmpUrlType = container.decode(.rtmpUrlType, SettingsDjiDeviceUrlType.self, .server)
+        serverRtmpStreamId = container.decode(.serverRtmpStreamId, UUID.self, .init())
+        serverRtmpUrl = container.decode(.serverRtmpUrl, String.self, "")
+        customRtmpUrl = container.decode(.customRtmpUrl, String.self, "")
+        autoRestartStream = container.decode(.autoRestartStream, Bool.self, false)
+        imageStabilization = container.decode(.imageStabilization, SettingsDjiDeviceImageStabilization.self, .off)
+        resolution = container.decode(.resolution, SettingsDjiDeviceResolution.self, .r1080p)
+        fps = container.decode(.fps, Int.self, 30)
+        bitrate = container.decode(.bitrate, UInt32.self, 6_000_000)
+        isStarted = container.decode(.isStarted, Bool.self, false)
+        model = container.decode(.model, SettingsDjiDeviceModel.self, .unknown)
+    }
 }
 
-class SettingsDjiDevices: Codable {
-    var devices: [SettingsDjiDevice] = []
+class SettingsDjiDevices: Codable, ObservableObject {
+    @Published var devices: [SettingsDjiDevice] = []
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case devices
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.devices, devices)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        devices = container.decode(.devices, [SettingsDjiDevice].self, [])
+    }
 }
 
 enum SettingsDjiGimbalDeviceModel: String, Codable {
@@ -2824,35 +3948,144 @@ class SettingsDjiGimbalDevices: Codable {
     var devices: [SettingsDjiGimbalDevice] = []
 }
 
-class SettingsGoProWifiCredentials: Codable, Identifiable {
+class SettingsGoProWifiCredentials: Codable, Identifiable, ObservableObject {
     var id: UUID = .init()
-    var name = "My SSID"
-    var ssid = ""
-    var password = ""
+    @Published var name = "My SSID"
+    @Published var ssid = ""
+    @Published var password = ""
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case id,
+             name,
+             ssid,
+             password
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.name, name)
+        try container.encode(.ssid, ssid)
+        try container.encode(.password, password)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        name = container.decode(.name, String.self, "")
+        ssid = container.decode(.ssid, String.self, "")
+        password = container.decode(.password, String.self, "")
+    }
 }
 
-class SettingsGoProRtmpUrl: Codable, Identifiable {
+class SettingsGoProRtmpUrl: Codable, Identifiable, ObservableObject {
     var id: UUID = .init()
-    var name = "My URL"
-    var type: SettingsDjiDeviceUrlType = .server
-    var serverStreamId: UUID = .init()
-    var serverUrl = ""
-    var customUrl = ""
+    @Published var name = "My URL"
+    @Published var type: SettingsDjiDeviceUrlType = .server
+    @Published var serverStreamId: UUID = .init()
+    @Published var serverUrl = ""
+    @Published var customUrl = ""
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case id,
+             name,
+             type,
+             serverStreamId,
+             serverUrl,
+             customUrl
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.name, name)
+        try container.encode(.type, type)
+        try container.encode(.serverStreamId, serverStreamId)
+        try container.encode(.serverUrl, serverUrl)
+        try container.encode(.customUrl, customUrl)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        name = container.decode(.name, String.self, "My URL")
+        type = container.decode(.type, SettingsDjiDeviceUrlType.self, .server)
+        serverStreamId = container.decode(.serverStreamId, UUID.self, .init())
+        serverUrl = container.decode(.serverUrl, String.self, "")
+        customUrl = container.decode(.customUrl, String.self, "")
+    }
 }
 
-class SettingsGoProLaunchLiveStream: Codable, Identifiable {
+class SettingsGoProLaunchLiveStream: Codable, Identifiable, ObservableObject {
     var id: UUID = .init()
-    var name = "1080p"
-    var isHero12Or13: Bool? = true
+    @Published var name = "1080p"
+    @Published var isHero12Or13: Bool = true
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case id,
+             name,
+             isHero12Or13
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.name, name)
+        try container.encode(.isHero12Or13, isHero12Or13)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        name = container.decode(.name, String.self, "1080p")
+        isHero12Or13 = container.decode(.isHero12Or13, Bool.self, true)
+    }
 }
 
-class SettingsGoPro: Codable {
-    var launchLiveStream: [SettingsGoProLaunchLiveStream] = []
-    var selectedLaunchLiveStream: UUID?
-    var wifiCredentials: [SettingsGoProWifiCredentials] = []
-    var selectedWifiCredentials: UUID?
-    var rtmpUrls: [SettingsGoProRtmpUrl] = []
-    var selectedRtmpUrl: UUID?
+class SettingsGoPro: Codable, ObservableObject {
+    @Published var launchLiveStream: [SettingsGoProLaunchLiveStream] = []
+    @Published var selectedLaunchLiveStream: UUID?
+    @Published var wifiCredentials: [SettingsGoProWifiCredentials] = []
+    @Published var selectedWifiCredentials: UUID?
+    @Published var rtmpUrls: [SettingsGoProRtmpUrl] = []
+    @Published var selectedRtmpUrl: UUID?
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case launchLiveStream,
+             selectedLaunchLiveStream,
+             wifiCredentials,
+             selectedWifiCredentials,
+             rtmpUrls,
+             selectedRtmpUrl
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.launchLiveStream, launchLiveStream)
+        try container.encode(.selectedLaunchLiveStream, selectedLaunchLiveStream)
+        try container.encode(.wifiCredentials, wifiCredentials)
+        try container.encode(.selectedWifiCredentials, selectedWifiCredentials)
+        try container.encode(.rtmpUrls, rtmpUrls)
+        try container.encode(.selectedRtmpUrl, selectedRtmpUrl)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        launchLiveStream = container.decode(.launchLiveStream, [SettingsGoProLaunchLiveStream].self, [])
+        selectedLaunchLiveStream = try? container.decode(UUID.self, forKey: .selectedLaunchLiveStream)
+        wifiCredentials = container.decode(.wifiCredentials, [SettingsGoProWifiCredentials].self, [])
+        selectedWifiCredentials = try? container.decode(UUID.self, forKey: .selectedWifiCredentials)
+        rtmpUrls = container.decode(.rtmpUrls, [SettingsGoProRtmpUrl].self, [])
+        selectedRtmpUrl = try? container.decode(UUID.self, forKey: .selectedRtmpUrl)
+    }
 }
 
 enum SettingsReplaySpeed: String, Codable, CaseIterable {
@@ -2882,20 +4115,76 @@ class SettingsReplay: Codable {
     var speed: SettingsReplaySpeed = .one
 }
 
-class SettingsCatPrinter: Codable, Identifiable {
+class SettingsCatPrinter: Codable, Identifiable, ObservableObject {
     var id: UUID = .init()
-    var name: String = ""
-    var enabled: Bool = false
-    var bluetoothPeripheralName: String?
-    var bluetoothPeripheralId: UUID?
-    var printChat: Bool? = true
-    var faxMeowSound: Bool? = true
-    var printSnapshots: Bool? = true
+    @Published var name: String = ""
+    @Published var enabled: Bool = false
+    @Published var bluetoothPeripheralName: String?
+    @Published var bluetoothPeripheralId: UUID?
+    @Published var printChat: Bool = true
+    @Published var faxMeowSound: Bool = true
+    @Published var printSnapshots: Bool = true
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case id,
+             name,
+             enabled,
+             bluetoothPeripheralName,
+             bluetoothPeripheralId,
+             printChat,
+             faxMeowSound,
+             printSnapshots
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.name, name)
+        try container.encode(.enabled, enabled)
+        try container.encode(.bluetoothPeripheralName, bluetoothPeripheralName)
+        try container.encode(.bluetoothPeripheralId, bluetoothPeripheralId)
+        try container.encode(.printChat, printChat)
+        try container.encode(.faxMeowSound, faxMeowSound)
+        try container.encode(.printSnapshots, printSnapshots)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        name = container.decode(.name, String.self, "")
+        enabled = container.decode(.enabled, Bool.self, false)
+        bluetoothPeripheralName = try? container.decode(String.self, forKey: .bluetoothPeripheralName)
+        bluetoothPeripheralId = try? container.decode(UUID.self, forKey: .bluetoothPeripheralId)
+        printChat = container.decode(.printChat, Bool.self, true)
+        faxMeowSound = container.decode(.faxMeowSound, Bool.self, true)
+        printSnapshots = container.decode(.printSnapshots, Bool.self, true)
+    }
 }
 
-class SettingsCatPrinters: Codable {
-    var devices: [SettingsCatPrinter] = []
-    var backgroundPrinting: Bool? = false
+class SettingsCatPrinters: Codable, ObservableObject {
+    @Published var devices: [SettingsCatPrinter] = []
+    @Published var backgroundPrinting: Bool = false
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case devices,
+             backgroundPrinting
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.devices, devices)
+        try container.encode(.backgroundPrinting, backgroundPrinting)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        devices = container.decode(.devices, [SettingsCatPrinter].self, [])
+        backgroundPrinting = container.decode(.backgroundPrinting, Bool.self, false)
+    }
 }
 
 class SettingsCyclingPowerDevice: Codable, Identifiable {
@@ -2922,6 +4211,78 @@ class SettingsHeartRateDevices: Codable {
     var devices: [SettingsHeartRateDevice] = []
 }
 
+private let defaultRgbLightColor = RgbColor(red: 0, green: 255, blue: 0)
+
+class SettingsPhoneCoolerDevice: Codable, Identifiable, ObservableObject {
+    var id: UUID = .init()
+    @Published var name: String = ""
+    @Published var enabled: Bool = false
+    @Published var bluetoothPeripheralName: String?
+    @Published var bluetoothPeripheralId: UUID?
+    @Published var rgbLightEnabled: Bool = false
+    var rgbLightColor: RgbColor = defaultRgbLightColor
+    @Published var rgbLightColorColor: Color = defaultRgbLightColor.color()
+    @Published var rgbLightBrightness: Double = 100.0
+
+    enum CodingKeys: CodingKey {
+        case id,
+             name,
+             enabled,
+             bluetoothPeripheralName,
+             bluetoothPeripheralId,
+             rgbLightEnabled,
+             rgbLightColor,
+             rgbLightBrightness
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.name, name)
+        try container.encode(.enabled, enabled)
+        try container.encode(.bluetoothPeripheralName, bluetoothPeripheralName)
+        try container.encode(.bluetoothPeripheralId, bluetoothPeripheralId)
+        try container.encode(.rgbLightEnabled, rgbLightEnabled)
+        try container.encode(.rgbLightColor, rgbLightColor)
+        try container.encode(.rgbLightBrightness, rgbLightBrightness)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        name = container.decode(.name, String.self, "")
+        enabled = container.decode(.enabled, Bool.self, false)
+        bluetoothPeripheralName = try? container.decode(String.self, forKey: .bluetoothPeripheralName)
+        bluetoothPeripheralId = try? container.decode(UUID.self, forKey: .bluetoothPeripheralId)
+        rgbLightEnabled = container.decode(.rgbLightEnabled, Bool.self, false)
+        rgbLightColor = container.decode(.rgbLightColor, RgbColor.self, defaultRgbLightColor)
+        rgbLightColorColor = rgbLightColor.color()
+        rgbLightBrightness = container.decode(.rgbLightBrightness, Double.self, 100.0)
+    }
+}
+
+class SettingsPhoneCoolerDevices: Codable, ObservableObject {
+    @Published var devices: [SettingsPhoneCoolerDevice] = []
+
+    enum CodingKeys: CodingKey {
+        case devices
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.devices, devices)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        devices = container.decode(.devices, [SettingsPhoneCoolerDevice].self, [])
+    }
+}
+
 class SettingsQuickButtons: Codable, ObservableObject {
     @Published var twoColumns: Bool = true
     @Published var showName: Bool = true
@@ -2944,9 +4305,9 @@ class SettingsQuickButtons: Codable, ObservableObject {
 
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        twoColumns = try container.decode(Bool.self, forKey: .twoColumns)
-        showName = try container.decode(Bool.self, forKey: .showName)
-        enableScroll = try container.decode(Bool.self, forKey: .enableScroll)
+        twoColumns = container.decode(.twoColumns, Bool.self, true)
+        showName = container.decode(.showName, Bool.self, true)
+        enableScroll = container.decode(.enableScroll, Bool.self, true)
     }
 }
 
@@ -2976,37 +4337,6 @@ enum SettingsGameControllerButtonFunction: String, Codable, CaseIterable {
             value = "Interactive chat"
         }
         self = SettingsGameControllerButtonFunction(rawValue: value) ?? .unused
-    }
-
-    static func fromString(value: String) -> SettingsGameControllerButtonFunction {
-        switch value {
-        case String(localized: "Unused"):
-            return .unused
-        case String(localized: "Record"):
-            return .record
-        case String(localized: "Stream"):
-            return .stream
-        case String(localized: "Zoom in"):
-            return .zoomIn
-        case String(localized: "Zoom out"):
-            return .zoomOut
-        case String(localized: "Mute"):
-            return .mute
-        case String(localized: "Torch"):
-            return .torch
-        case String(localized: "Black screen"):
-            return .blackScreen
-        case String(localized: "Chat"):
-            return .chat
-        case String(localized: "Scene"):
-            return .scene
-        case String(localized: "Instant replay"):
-            return .instantReplay
-        case String(localized: "Pause TTS"):
-            return .pauseTts
-        default:
-            return .unused
-        }
     }
 
     func toString() -> String {
@@ -3039,19 +4369,45 @@ enum SettingsGameControllerButtonFunction: String, Codable, CaseIterable {
     }
 }
 
-var gameControllerButtonFunctions = SettingsGameControllerButtonFunction.allCases.map { $0.toString() }
-
-class SettingsGameControllerButton: Codable, Identifiable {
+class SettingsGameControllerButton: Codable, Identifiable, ObservableObject {
     var id: UUID = .init()
     var name: String = ""
-    var text: String? = ""
-    var function: SettingsGameControllerButtonFunction = .unused
-    var sceneId: UUID = .init()
+    var text: String = ""
+    @Published var function: SettingsGameControllerButtonFunction = .unused
+    @Published var sceneId: UUID = .init()
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case id,
+             name,
+             text,
+             function,
+             sceneId
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.name, name)
+        try container.encode(.text, text)
+        try container.encode(.function, function)
+        try container.encode(.sceneId, sceneId)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        name = container.decode(.name, String.self, "")
+        text = container.decode(.text, String.self, "")
+        function = container.decode(.function, SettingsGameControllerButtonFunction.self, .unused)
+        sceneId = container.decode(.sceneId, UUID.self, .init())
+    }
 }
 
-class SettingsGameController: Codable, Identifiable {
+class SettingsGameController: Codable, Identifiable, ObservableObject {
     var id: UUID = .init()
-    var buttons: [SettingsGameControllerButton] = []
+    @Published var buttons: [SettingsGameControllerButton] = []
 
     init() {
         var button = SettingsGameControllerButton()
@@ -3151,6 +4507,23 @@ class SettingsGameController: Codable, Identifiable {
         button.function = .chat
         buttons.append(button)
     }
+
+    enum CodingKeys: CodingKey {
+        case id,
+             buttons
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.buttons, buttons)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        buttons = container.decode(.buttons, [SettingsGameControllerButton].self, [])
+    }
 }
 
 enum SettingsKeyboardKeyFunction: String, Codable, CaseIterable {
@@ -3165,36 +4538,8 @@ enum SettingsKeyboardKeyFunction: String, Codable, CaseIterable {
     case instantReplay = "Instant replay"
 
     public init(from decoder: Decoder) throws {
-        var value = try decoder.singleValueContainer().decode(RawValue.self)
-        if value == "Pause chat" {
-            value = "Interactive chat"
-        }
-        self = SettingsKeyboardKeyFunction(rawValue: value) ?? .unused
-    }
-
-    static func fromString(value: String) -> SettingsKeyboardKeyFunction {
-        switch value {
-        case String(localized: "Unused"):
-            return .unused
-        case String(localized: "Record"):
-            return .record
-        case String(localized: "Stream"):
-            return .stream
-        case String(localized: "Mute"):
-            return .mute
-        case String(localized: "Torch"):
-            return .torch
-        case String(localized: "Black screen"):
-            return .blackScreen
-        case String(localized: "Scene"):
-            return .scene
-        case String(localized: "Widget"):
-            return .widget
-        case String(localized: "Instant replay"):
-            return .instantReplay
-        default:
-            return .unused
-        }
+        self = try SettingsKeyboardKeyFunction(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
+            .unused
     }
 
     func toString() -> String {
@@ -3221,18 +4566,60 @@ enum SettingsKeyboardKeyFunction: String, Codable, CaseIterable {
     }
 }
 
-var keyboardKeyFunctions = SettingsKeyboardKeyFunction.allCases.map { $0.toString() }
-
-class SettingsKeyboardKey: Codable, Identifiable {
+class SettingsKeyboardKey: Codable, Identifiable, ObservableObject {
     var id: UUID = .init()
-    var key: String = ""
-    var function: SettingsKeyboardKeyFunction = .unused
-    var sceneId: UUID = .init()
-    var widgetId: UUID? = .init()
+    @Published var key: String = ""
+    @Published var function: SettingsKeyboardKeyFunction = .unused
+    @Published var sceneId: UUID = .init()
+    @Published var widgetId: UUID? = .init()
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case id,
+             key,
+             function,
+             sceneId,
+             widgetId
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.key, key)
+        try container.encode(.function, function)
+        try container.encode(.sceneId, sceneId)
+        try container.encode(.widgetId, widgetId)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        key = container.decode(.key, String.self, "")
+        function = container.decode(.function, SettingsKeyboardKeyFunction.self, .unused)
+        sceneId = container.decode(.sceneId, UUID.self, .init())
+        widgetId = container.decode(.widgetId, UUID.self, .init())
+    }
 }
 
-class SettingsKeyboard: Codable {
-    var keys: [SettingsKeyboardKey] = []
+class SettingsKeyboard: Codable, ObservableObject {
+    @Published var keys: [SettingsKeyboardKey] = []
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case keys
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.keys, keys)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        keys = container.decode(.keys, [SettingsKeyboardKey].self, [])
+    }
 }
 
 class SettingsRemoteControlAssistant: Codable {
@@ -3314,19 +4701,6 @@ enum SettingsSceneSwitchTransition: String, Codable, CaseIterable {
             .blur
     }
 
-    static func fromString(value: String) -> SettingsSceneSwitchTransition {
-        switch value {
-        case String(localized: "Blur"):
-            return .blur
-        case String(localized: "Freeze"):
-            return .freeze
-        case String(localized: "Blur & zoom"):
-            return .blurAndZoom
-        default:
-            return .blur
-        }
-    }
-
     func toString() -> String {
         switch self {
         case .blur:
@@ -3350,8 +4724,6 @@ enum SettingsSceneSwitchTransition: String, Codable, CaseIterable {
     }
 }
 
-let sceneSwitchTransitions = SettingsSceneSwitchTransition.allCases.map { $0.toString() }
-
 enum SettingsExternalDisplayContent: String, Codable, CaseIterable {
     case stream = "Stream"
     case cleanStream = "Clean stream"
@@ -3361,21 +4733,6 @@ enum SettingsExternalDisplayContent: String, Codable, CaseIterable {
     public init(from decoder: Decoder) throws {
         self = try SettingsExternalDisplayContent(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
             .stream
-    }
-
-    static func fromString(value: String) -> SettingsExternalDisplayContent {
-        switch value {
-        case String(localized: "Stream"):
-            return .stream
-        case String(localized: "Clean stream"):
-            return .cleanStream
-        case String(localized: "Chat"):
-            return .chat
-        case String(localized: "Mirror"):
-            return .mirror
-        default:
-            return .stream
-        }
     }
 
     func toString() -> String {
@@ -3391,8 +4748,6 @@ enum SettingsExternalDisplayContent: String, Codable, CaseIterable {
         }
     }
 }
-
-let externalDisplayContents = SettingsExternalDisplayContent.allCases.map { $0.toString() }
 
 class SettingsPrivacyRegion: Codable, Identifiable {
     var id: UUID = .init()
@@ -3422,75 +4777,334 @@ class WebBrowserSettings: Codable {
     var home: String = "https://google.com"
 }
 
-class DeepLinkCreatorStreamVideo: Codable {
-    var resolution: SettingsStreamResolution? = .r1920x1080
-    var fps: Int? = 30
-    var bitrate: UInt32? = 5_000_000
-    var codec: SettingsStreamCodec = .h265hevc
-    var bFrames: Bool? = false
-    var maxKeyFrameInterval: Int32? = 2
+class DeepLinkCreatorStreamVideo: Codable, ObservableObject {
+    @Published var resolution: SettingsStreamResolution = .r1920x1080
+    @Published var fps: Int = 30
+    @Published var bitrate: UInt32 = 5_000_000
+    @Published var codec: SettingsStreamCodec = .h265hevc
+    @Published var bFrames: Bool = false
+    @Published var maxKeyFrameInterval: Int32 = 2
+
+    enum CodingKeys: CodingKey {
+        case resolution,
+             fps,
+             bitrate,
+             codec,
+             bFrames,
+             maxKeyFrameInterval
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.resolution, resolution)
+        try container.encode(.fps, fps)
+        try container.encode(.bitrate, bitrate)
+        try container.encode(.codec, codec)
+        try container.encode(.bFrames, bFrames)
+        try container.encode(.maxKeyFrameInterval, maxKeyFrameInterval)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        resolution = container.decode(.resolution, SettingsStreamResolution.self, .r1920x1080)
+        fps = container.decode(.fps, Int.self, 30)
+        bitrate = container.decode(.bitrate, UInt32.self, 5_000_000)
+        codec = container.decode(.codec, SettingsStreamCodec.self, .h265hevc)
+        bFrames = container.decode(.bFrames, Bool.self, false)
+        maxKeyFrameInterval = container.decode(.maxKeyFrameInterval, Int32.self, 2)
+    }
 }
 
-class DeepLinkCreatorStreamAudio: Codable {
-    var bitrate: Int = 128_000
+class DeepLinkCreatorStreamAudio: Codable, ObservableObject {
+    @Published var bitrate: Int = 128_000
+    @Published var bitrateFloat: Float = 128
+
+    enum CodingKeys: CodingKey {
+        case bitrate
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.bitrate, bitrate)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        bitrate = container.decode(.bitrate, Int.self, 128_000)
+        bitrateFloat = Float(bitrate / 1000)
+    }
 }
 
-class DeepLinkCreatorStreamSrt: Codable {
-    var latency: Int32 = defaultSrtLatency
-    var adaptiveBitrateEnabled: Bool = true
-    var dnsLookupStrategy: SettingsDnsLookupStrategy? = .system
+class DeepLinkCreatorStreamSrt: Codable, ObservableObject {
+    @Published var latency: Int32 = defaultSrtLatency
+    @Published var adaptiveBitrateEnabled: Bool = true
+    @Published var dnsLookupStrategy: SettingsDnsLookupStrategy = .system
+
+    enum CodingKeys: CodingKey {
+        case latency,
+             adaptiveBitrateEnabled,
+             dnsLookupStrategy
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.latency, latency)
+        try container.encode(.adaptiveBitrateEnabled, adaptiveBitrateEnabled)
+        try container.encode(.dnsLookupStrategy, dnsLookupStrategy)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        latency = container.decode(.latency, Int32.self, defaultSrtLatency)
+        adaptiveBitrateEnabled = container.decode(.adaptiveBitrateEnabled, Bool.self, true)
+        dnsLookupStrategy = container.decode(.dnsLookupStrategy, SettingsDnsLookupStrategy.self, .system)
+    }
 }
 
-class DeepLinkCreatorStreamObs: Codable {
-    var webSocketUrl: String = ""
-    var webSocketPassword: String = ""
+class DeepLinkCreatorStreamObs: Codable, ObservableObject {
+    @Published var webSocketUrl: String = ""
+    @Published var webSocketPassword: String = ""
+
+    enum CodingKeys: CodingKey {
+        case webSocketUrl,
+             webSocketPassword
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.webSocketUrl, webSocketUrl)
+        try container.encode(.webSocketPassword, webSocketPassword)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        webSocketUrl = container.decode(.webSocketUrl, String.self, "")
+        webSocketPassword = container.decode(.webSocketPassword, String.self, "")
+    }
 }
 
-class DeepLinkCreatorStreamTwitch: Codable {
-    var channelName: String = ""
-    var channelId: String = ""
+class DeepLinkCreatorStreamTwitch: Codable, ObservableObject {
+    @Published var channelName: String = ""
+    @Published var channelId: String = ""
+
+    enum CodingKeys: CodingKey {
+        case channelName,
+             channelId
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.channelName, channelName)
+        try container.encode(.channelId, channelId)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        channelName = container.decode(.channelName, String.self, "")
+        channelId = container.decode(.channelId, String.self, "")
+    }
 }
 
-class DeepLinkCreatorStreamKick: Codable {
-    var channelName: String = ""
+class DeepLinkCreatorStreamKick: Codable, ObservableObject {
+    @Published var channelName: String = ""
+
+    enum CodingKeys: CodingKey {
+        case channelName
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.channelName, channelName)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        channelName = container.decode(.channelName, String.self, "")
+    }
 }
 
-class DeepLinkCreatorStream: Codable, Identifiable {
+class DeepLinkCreatorStream: Codable, Identifiable, ObservableObject {
     var id: UUID = .init()
-    var name: String = "My stream"
-    var url: String = defaultStreamUrl
-    var selected: Bool = false
-    var video: DeepLinkCreatorStreamVideo = .init()
-    var audio: DeepLinkCreatorStreamAudio? = .init()
-    var srt: DeepLinkCreatorStreamSrt = .init()
-    var obs: DeepLinkCreatorStreamObs = .init()
-    var twitch: DeepLinkCreatorStreamTwitch? = .init()
-    var kick: DeepLinkCreatorStreamKick? = .init()
+    @Published var name: String = "My stream"
+    @Published var url: String = defaultStreamUrl
+    @Published var selected: Bool = false
+    @Published var video: DeepLinkCreatorStreamVideo = .init()
+    @Published var audio: DeepLinkCreatorStreamAudio = .init()
+    @Published var srt: DeepLinkCreatorStreamSrt = .init()
+    @Published var obs: DeepLinkCreatorStreamObs = .init()
+    @Published var twitch: DeepLinkCreatorStreamTwitch = .init()
+    @Published var kick: DeepLinkCreatorStreamKick = .init()
+
+    enum CodingKeys: CodingKey {
+        case id,
+             name,
+             url,
+             selected,
+             video,
+             audio,
+             srt,
+             obs,
+             twitch,
+             kick
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.name, name)
+        try container.encode(.url, url)
+        try container.encode(.selected, selected)
+        try container.encode(.video, video)
+        try container.encode(.audio, audio)
+        try container.encode(.srt, srt)
+        try container.encode(.obs, obs)
+        try container.encode(.twitch, twitch)
+        try container.encode(.kick, kick)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        name = container.decode(.name, String.self, "My stream")
+        url = container.decode(.url, String.self, defaultStreamUrl)
+        selected = container.decode(.selected, Bool.self, false)
+        video = container.decode(.video, DeepLinkCreatorStreamVideo.self, .init())
+        audio = container.decode(.audio, DeepLinkCreatorStreamAudio.self, .init())
+        srt = container.decode(.srt, DeepLinkCreatorStreamSrt.self, .init())
+        obs = container.decode(.obs, DeepLinkCreatorStreamObs.self, .init())
+        twitch = container.decode(.twitch, DeepLinkCreatorStreamTwitch.self, .init())
+        kick = container.decode(.kick, DeepLinkCreatorStreamKick.self, .init())
+    }
 }
 
-class DeepLinkCreatorQuickButton: Codable, Identifiable {
-    var id: UUID = .init()
-    var type: SettingsQuickButtonType = .unknown
-    var enabled: Bool = false
+class DeepLinkCreatorQuickButton: Codable, Identifiable, ObservableObject {
+    @Published var id: UUID = .init()
+    @Published var type: SettingsQuickButtonType = .unknown
+    @Published var enabled: Bool = false
+
+    enum CodingKeys: CodingKey {
+        case id,
+             type,
+             enabled
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.type, type)
+        try container.encode(.enabled, enabled)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        type = container.decode(.type, SettingsQuickButtonType.self, .unknown)
+        enabled = container.decode(.enabled, Bool.self, false)
+    }
 }
 
-class DeepLinkCreatorQuickButtons: Codable {
-    var twoColumns: Bool = true
-    var showName: Bool = true
-    var enableScroll: Bool = true
-    var buttons: [DeepLinkCreatorQuickButton] = []
+class DeepLinkCreatorQuickButtons: Codable, ObservableObject {
+    @Published var twoColumns: Bool = true
+    @Published var showName: Bool = true
+    @Published var enableScroll: Bool = true
+    @Published var buttons: [DeepLinkCreatorQuickButton] = []
+
+    enum CodingKeys: CodingKey {
+        case twoColumns,
+             showName,
+             enableScroll,
+             buttons
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.twoColumns, twoColumns)
+        try container.encode(.showName, showName)
+        try container.encode(.enableScroll, enableScroll)
+        try container.encode(.buttons, buttons)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        twoColumns = container.decode(.twoColumns, Bool.self, true)
+        showName = container.decode(.showName, Bool.self, true)
+        enableScroll = container.decode(.enableScroll, Bool.self, true)
+        buttons = container.decode(.buttons, [DeepLinkCreatorQuickButton].self, [])
+    }
 }
 
-class DeepLinkCreatorWebBrowser: Codable {
-    var home: String = ""
+class DeepLinkCreatorWebBrowser: Codable, ObservableObject {
+    @Published var home: String = ""
+
+    enum CodingKeys: CodingKey {
+        case home
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.home, home)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        home = container.decode(.home, String.self, "")
+    }
 }
 
-class DeepLinkCreator: Codable {
-    var streams: [DeepLinkCreatorStream] = []
-    var quickButtonsEnabled: Bool? = false
-    var quickButtons: DeepLinkCreatorQuickButtons? = .init()
-    var webBrowserEnabled: Bool? = false
-    var webBrowser: DeepLinkCreatorWebBrowser? = .init()
+class DeepLinkCreator: Codable, ObservableObject {
+    @Published var streams: [DeepLinkCreatorStream] = []
+    @Published var quickButtonsEnabled: Bool = false
+    @Published var quickButtons: DeepLinkCreatorQuickButtons = .init()
+    @Published var webBrowserEnabled: Bool = false
+    @Published var webBrowser: DeepLinkCreatorWebBrowser = .init()
+
+    enum CodingKeys: CodingKey {
+        case streams,
+             quickButtonsEnabled,
+             quickButtons,
+             webBrowserEnabled,
+             webBrowser
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.streams, streams)
+        try container.encode(.quickButtonsEnabled, quickButtonsEnabled)
+        try container.encode(.quickButtons, quickButtons)
+        try container.encode(.webBrowserEnabled, webBrowserEnabled)
+        try container.encode(.webBrowser, webBrowser)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        streams = container.decode(.streams, [DeepLinkCreatorStream].self, [])
+        quickButtonsEnabled = container.decode(.quickButtonsEnabled, Bool.self, false)
+        quickButtons = container.decode(.quickButtons, DeepLinkCreatorQuickButtons.self, .init())
+        webBrowserEnabled = container.decode(.webBrowserEnabled, Bool.self, false)
+        webBrowser = container.decode(.webBrowser, DeepLinkCreatorWebBrowser.self, .init())
+    }
 }
 
 class SettingsAlertsMediaGalleryItem: Codable, Identifiable {
@@ -3538,13 +5152,13 @@ class SettingsAlertsMediaGallery: Codable {
 }
 
 class Database: Codable, ObservableObject {
-    var streams: [SettingsStream] = []
-    var scenes: [SettingsScene] = []
+    @Published var streams: [SettingsStream] = []
+    @Published var scenes: [SettingsScene] = []
     @Published var widgets: [SettingsWidget] = []
     var show: SettingsShow = .init()
     var zoom: SettingsZoom = .init()
     var tapToFocus: Bool = false
-    var bitratePresets: [SettingsBitratePreset] = []
+    @Published var bitratePresets: [SettingsBitratePreset] = []
     var iconImage: String = plainIcon.image()
     var videoStabilizationMode: SettingsVideoStabilizationMode = .off
     var chat: SettingsChat = .init()
@@ -3557,7 +5171,7 @@ class Database: Codable, ObservableObject {
     var networkInterfaceNames: [SettingsNetworkInterfaceName] = []
     var lowBitrateWarning: Bool = true
     var vibrate: Bool = false
-    var gameControllers: [SettingsGameController] = [.init()]
+    @Published var gameControllers: [SettingsGameController] = [.init()]
     var remoteControl: SettingsRemoteControl = .init()
     var startStopRecordingConfirmations: Bool = true
     var color: SettingsColor = .init()
@@ -3570,31 +5184,36 @@ class Database: Codable, ObservableObject {
     var deepLinkCreator: DeepLinkCreator = .init()
     var srtlaServer: SettingsSrtlaServer = .init()
     var mediaPlayers: SettingsMediaPlayers = .init()
-    var showAllSettings: Bool = false
+    @Published var showAllSettings: Bool = false
     var portrait: Bool = false
     var djiDevices: SettingsDjiDevices = .init()
     var alertsMediaGallery: SettingsAlertsMediaGallery = .init()
     var catPrinters: SettingsCatPrinters = .init()
-    var verboseStatuses: Bool = false
+    @Published var verboseStatuses: Bool = false
     var scoreboardPlayers: [SettingsWidgetScoreboardPlayer] = .init()
     var keyboard: SettingsKeyboard = .init()
     var tesla: SettingsTesla = .init()
     var srtlaRelay: SettingsMoblink = .init()
-    var pixellateStrength: Float = 0.3
+    @Published var pixellateStrength: Float = 0.3
     var moblink: SettingsMoblink = .init()
     var sceneSwitchTransition: SettingsSceneSwitchTransition = .blur
     var forceSceneSwitchTransition: Bool = false
-    var cameraControlsEnabled: Bool = true
-    var externalDisplayContent: SettingsExternalDisplayContent = .stream
+    @Published var cameraControlsEnabled: Bool = true
+    @Published var externalDisplayContent: SettingsExternalDisplayContent = .stream
     var cyclingPowerDevices: SettingsCyclingPowerDevices = .init()
     var heartRateDevices: SettingsHeartRateDevices = .init()
+    var phoneCoolerDevices: SettingsPhoneCoolerDevices = .init()
     var djiGimbalDevices: SettingsDjiGimbalDevices = .init()
     var remoteSceneId: UUID?
     var sceneNumericInput: Bool = false
     var goPro: SettingsGoPro = .init()
     var replay: SettingsReplay = .init()
     var portraitVideoOffsetFromTop: Double = 0.0
-    var autoSceneSwitchers: SettingsAutoSceneSwitchers? = .init()
+    var autoSceneSwitchers: SettingsAutoSceneSwitchers = .init()
+    @Published var fixedHorizon: Bool = false
+    @Published var whirlpoolAngle: Float = .pi / 2
+    @Published var pinchScale: Float = 0.5
+    var selfieStick: SettingsSelfieStick = .init()
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -3676,12 +5295,17 @@ class Database: Codable, ObservableObject {
              cyclingPowerDevices,
              heartRateDevices,
              djiGimbalDevices,
+             phoneCoolerDevices,
              remoteSceneId,
              sceneNumericInput,
              goPro,
              replay,
              portraitVideoOffsetFromTop,
-             autoSceneSwitchers
+             autoSceneSwitchers,
+             fixedHorizon,
+             whirlpoolAngle,
+             pinchScale,
+             selfieStick
     }
 
     func encode(to encoder: Encoder) throws {
@@ -3737,96 +5361,85 @@ class Database: Codable, ObservableObject {
         try container.encode(.cyclingPowerDevices, cyclingPowerDevices)
         try container.encode(.heartRateDevices, heartRateDevices)
         try container.encode(.djiGimbalDevices, djiGimbalDevices)
+        try container.encode(.phoneCoolerDevices, phoneCoolerDevices)
         try container.encode(.remoteSceneId, remoteSceneId)
         try container.encode(.sceneNumericInput, sceneNumericInput)
         try container.encode(.goPro, goPro)
         try container.encode(.replay, replay)
         try container.encode(.portraitVideoOffsetFromTop, portraitVideoOffsetFromTop)
         try container.encode(.autoSceneSwitchers, autoSceneSwitchers)
+        try container.encode(.fixedHorizon, fixedHorizon)
+        try container.encode(.whirlpoolAngle, whirlpoolAngle)
+        try container.encode(.pinchScale, pinchScale)
+        try container.encode(.selfieStick, selfieStick)
     }
 
     init() {}
 
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        streams = try container.decode([SettingsStream].self, forKey: .streams)
-        scenes = try container.decode([SettingsScene].self, forKey: .scenes)
-        widgets = try container.decode([SettingsWidget].self, forKey: .widgets)
-        show = try container.decode(SettingsShow.self, forKey: .show)
-        zoom = try container.decode(SettingsZoom.self, forKey: .zoom)
-        tapToFocus = try container.decode(Bool.self, forKey: .tapToFocus)
-        bitratePresets = try container.decode([SettingsBitratePreset].self, forKey: .bitratePresets)
-        iconImage = try container.decode(String.self, forKey: .iconImage)
-        videoStabilizationMode = try container.decode(
-            SettingsVideoStabilizationMode.self,
-            forKey: .videoStabilizationMode
-        )
-        chat = try container.decode(SettingsChat.self, forKey: .chat)
-        batteryPercentage = try container.decode(Bool.self, forKey: .batteryPercentage)
-        mic = try container.decode(SettingsMic.self, forKey: .mic)
-        debug = try container.decode(SettingsDebug.self, forKey: .debug)
-        quickButtonsGeneral = (try? container.decode(SettingsQuickButtons.self, forKey: .quickButtons)) ?? .init()
-        quickButtons = (try? container.decode([SettingsQuickButton].self, forKey: .globalButtons)) ?? []
-        rtmpServer = (try? container.decode(SettingsRtmpServer.self, forKey: .rtmpServer)) ?? .init()
-        networkInterfaceNames = (try? container.decode(
-            [SettingsNetworkInterfaceName].self,
-            forKey: .networkInterfaceNames
-        )) ?? []
-        lowBitrateWarning = (try? container.decode(Bool.self, forKey: .lowBitrateWarning)) ?? true
-        vibrate = (try? container.decode(Bool.self, forKey: .vibrate)) ?? false
-        gameControllers = (try? container.decode([SettingsGameController].self, forKey: .gameControllers)) ?? [.init()]
-        remoteControl = (try? container.decode(SettingsRemoteControl.self, forKey: .remoteControl)) ?? .init()
-        startStopRecordingConfirmations = (
-            try? container.decode(Bool.self, forKey: .startStopRecordingConfirmations)
-        ) ??
-            true
-        color = (try? container.decode(SettingsColor.self, forKey: .color)) ?? .init()
-        mirrorFrontCameraOnStream = (try? container.decode(Bool.self, forKey: .mirrorFrontCameraOnStream)) ?? true
-        streamButtonColor = (try? container.decode(RgbColor.self, forKey: .streamButtonColor)) ??
-            defaultStreamButtonColor
-        location = (try? container.decode(SettingsLocation.self, forKey: .location)) ?? .init()
-        watch = (try? container.decode(WatchSettings.self, forKey: .watch)) ?? .init()
-        audio = (try? container.decode(AudioSettings.self, forKey: .audio)) ?? .init()
-        webBrowser = (try? container.decode(WebBrowserSettings.self, forKey: .webBrowser)) ?? .init()
-        deepLinkCreator = (try? container.decode(DeepLinkCreator.self, forKey: .deepLinkCreator)) ?? .init()
-        srtlaServer = (try? container.decode(SettingsSrtlaServer.self, forKey: .srtlaServer)) ?? .init()
-        mediaPlayers = (try? container.decode(SettingsMediaPlayers.self, forKey: .mediaPlayers)) ?? .init()
-        showAllSettings = (try? container.decode(Bool.self, forKey: .showAllSettings)) ?? false
-        portrait = (try? container.decode(Bool.self, forKey: .portrait)) ?? false
-        djiDevices = (try? container.decode(SettingsDjiDevices.self, forKey: .djiDevices)) ?? .init()
-        alertsMediaGallery = (try? container.decode(SettingsAlertsMediaGallery.self, forKey: .alertsMediaGallery)) ??
-            .init()
-        catPrinters = (try? container.decode(SettingsCatPrinters.self, forKey: .catPrinters)) ?? .init()
-        verboseStatuses = (try? container.decode(Bool.self, forKey: .verboseStatuses)) ?? false
-        scoreboardPlayers = (
-            try? container.decode([SettingsWidgetScoreboardPlayer].self, forKey: .scoreboardPlayers)
-        ) ??
-            .init()
-        keyboard = (try? container.decode(SettingsKeyboard.self, forKey: .keyboard)) ?? .init()
-        tesla = (try? container.decode(SettingsTesla.self, forKey: .tesla)) ?? .init()
-        srtlaRelay = (try? container.decode(SettingsMoblink?.self, forKey: .srtlaRelay)) ?? .init()
-        pixellateStrength = (try? container.decode(Float.self, forKey: .pixellateStrength)) ?? 0.3
-        moblink = (try? container.decode(SettingsMoblink.self, forKey: .moblink)) ?? srtlaRelay
-        sceneSwitchTransition = (try? container.decode(
-            SettingsSceneSwitchTransition.self,
-            forKey: .sceneSwitchTransition
-        )) ?? .blur
-        forceSceneSwitchTransition = (try? container.decode(Bool.self, forKey: .forceSceneSwitchTransition)) ?? false
-        cameraControlsEnabled = (try? container.decode(Bool.self, forKey: .cameraControlsEnabled)) ?? true
-        externalDisplayContent = (try? container.decode(
-            SettingsExternalDisplayContent.self,
-            forKey: .externalDisplayContent
-        )) ?? .stream
-        cyclingPowerDevices = (try? container.decode(SettingsCyclingPowerDevices.self, forKey: .cyclingPowerDevices)) ??
-            .init()
-        heartRateDevices = (try? container.decode(SettingsHeartRateDevices.self, forKey: .heartRateDevices)) ?? .init()
-        djiGimbalDevices = (try? container.decode(SettingsDjiGimbalDevices.self, forKey: .djiGimbalDevices)) ?? .init()
+        streams = container.decode(.streams, [SettingsStream].self, [])
+        scenes = container.decode(.scenes, [SettingsScene].self, [])
+        widgets = container.decode(.widgets, [SettingsWidget].self, [])
+        show = container.decode(.show, SettingsShow.self, .init())
+        zoom = container.decode(.zoom, SettingsZoom.self, .init())
+        tapToFocus = container.decode(.tapToFocus, Bool.self, false)
+        bitratePresets = container.decode(.bitratePresets, [SettingsBitratePreset].self, [])
+        iconImage = container.decode(.iconImage, String.self, plainIcon.image())
+        videoStabilizationMode = container.decode(.videoStabilizationMode, SettingsVideoStabilizationMode.self, .off)
+        chat = container.decode(.chat, SettingsChat.self, .init())
+        batteryPercentage = container.decode(.batteryPercentage, Bool.self, true)
+        mic = container.decode(.mic, SettingsMic.self, getDefaultMic())
+        debug = container.decode(.debug, SettingsDebug.self, .init())
+        quickButtonsGeneral = container.decode(.quickButtons, SettingsQuickButtons.self, .init())
+        quickButtons = container.decode(.globalButtons, [SettingsQuickButton].self, [])
+        rtmpServer = container.decode(.rtmpServer, SettingsRtmpServer.self, .init())
+        networkInterfaceNames = container.decode(.networkInterfaceNames, [SettingsNetworkInterfaceName].self, [])
+        lowBitrateWarning = container.decode(.lowBitrateWarning, Bool.self, true)
+        vibrate = container.decode(.vibrate, Bool.self, false)
+        gameControllers = container.decode(.gameControllers, [SettingsGameController].self, [.init()])
+        remoteControl = container.decode(.remoteControl, SettingsRemoteControl.self, .init())
+        startStopRecordingConfirmations = container.decode(.startStopRecordingConfirmations, Bool.self, true)
+        color = container.decode(.color, SettingsColor.self, .init())
+        mirrorFrontCameraOnStream = container.decode(.mirrorFrontCameraOnStream, Bool.self, true)
+        streamButtonColor = container.decode(.streamButtonColor, RgbColor.self, defaultStreamButtonColor)
+        location = container.decode(.location, SettingsLocation.self, .init())
+        watch = container.decode(.watch, WatchSettings.self, .init())
+        audio = container.decode(.audio, AudioSettings.self, .init())
+        webBrowser = container.decode(.webBrowser, WebBrowserSettings.self, .init())
+        deepLinkCreator = container.decode(.deepLinkCreator, DeepLinkCreator.self, .init())
+        srtlaServer = container.decode(.srtlaServer, SettingsSrtlaServer.self, .init())
+        mediaPlayers = container.decode(.mediaPlayers, SettingsMediaPlayers.self, .init())
+        showAllSettings = container.decode(.showAllSettings, Bool.self, false)
+        portrait = container.decode(.portrait, Bool.self, false)
+        djiDevices = container.decode(.djiDevices, SettingsDjiDevices.self, .init())
+        alertsMediaGallery = container.decode(.alertsMediaGallery, SettingsAlertsMediaGallery.self, .init())
+        catPrinters = container.decode(.catPrinters, SettingsCatPrinters.self, .init())
+        verboseStatuses = container.decode(.verboseStatuses, Bool.self, false)
+        scoreboardPlayers = container.decode(.scoreboardPlayers, [SettingsWidgetScoreboardPlayer].self, .init())
+        keyboard = container.decode(.keyboard, SettingsKeyboard.self, .init())
+        tesla = container.decode(.tesla, SettingsTesla.self, .init())
+        srtlaRelay = container.decode(.srtlaRelay, SettingsMoblink.self, .init())
+        pixellateStrength = container.decode(.pixellateStrength, Float.self, 0.3)
+        moblink = container.decode(.moblink, SettingsMoblink.self, srtlaRelay)
+        sceneSwitchTransition = container.decode(.sceneSwitchTransition, SettingsSceneSwitchTransition.self, .blur)
+        forceSceneSwitchTransition = container.decode(.forceSceneSwitchTransition, Bool.self, false)
+        cameraControlsEnabled = container.decode(.cameraControlsEnabled, Bool.self, true)
+        externalDisplayContent = container.decode(.externalDisplayContent, SettingsExternalDisplayContent.self, .stream)
+        cyclingPowerDevices = container.decode(.cyclingPowerDevices, SettingsCyclingPowerDevices.self, .init())
+        heartRateDevices = container.decode(.heartRateDevices, SettingsHeartRateDevices.self, .init())
+        djiGimbalDevices = container.decode(.djiGimbalDevices, SettingsDjiGimbalDevices.self, .init())
+        phoneCoolerDevices = container.decode(.phoneCoolerDevices, SettingsPhoneCoolerDevices.self, .init())
         remoteSceneId = try? container.decode(UUID?.self, forKey: .remoteSceneId)
-        sceneNumericInput = (try? container.decode(Bool.self, forKey: .sceneNumericInput)) ?? false
-        goPro = (try? container.decode(SettingsGoPro.self, forKey: .goPro)) ?? .init()
-        replay = (try? container.decode(SettingsReplay.self, forKey: .replay)) ?? .init()
-        portraitVideoOffsetFromTop = (try? container.decode(Double.self, forKey: .portraitVideoOffsetFromTop)) ?? 0.0
-        autoSceneSwitchers = try? container.decode(SettingsAutoSceneSwitchers?.self, forKey: .autoSceneSwitchers)
+        sceneNumericInput = container.decode(.sceneNumericInput, Bool.self, false)
+        goPro = container.decode(.goPro, SettingsGoPro.self, .init())
+        replay = container.decode(.replay, SettingsReplay.self, .init())
+        portraitVideoOffsetFromTop = container.decode(.portraitVideoOffsetFromTop, Double.self, 0.0)
+        autoSceneSwitchers = container.decode(.autoSceneSwitchers, SettingsAutoSceneSwitchers.self, .init())
+        fixedHorizon = container.decode(.fixedHorizon, Bool.self, false)
+        whirlpoolAngle = container.decode(.whirlpoolAngle, Float.self, .pi / 2)
+        pinchScale = container.decode(.pinchScale, Float.self, 0.5)
+        selfieStick = container.decode(.selfieStick, SettingsSelfieStick.self, .init())
     }
 }
 
@@ -3901,11 +5514,15 @@ private func addDefaultFrontZoomPresets(database: Database) {
 
 private func addDefaultBitratePresets(database: Database) {
     database.bitratePresets = [
-        SettingsBitratePreset(id: UUID(), bitrate: 11_000_000),
+        SettingsBitratePreset(id: UUID(), bitrate: 15_000_000),
+        SettingsBitratePreset(id: UUID(), bitrate: 12_000_000),
         SettingsBitratePreset(id: UUID(), bitrate: 9_000_000),
         SettingsBitratePreset(id: UUID(), bitrate: 7_000_000),
+        SettingsBitratePreset(id: UUID(), bitrate: 6_000_000),
         SettingsBitratePreset(id: UUID(), bitrate: 5_000_000),
+        SettingsBitratePreset(id: UUID(), bitrate: 4_000_000),
         SettingsBitratePreset(id: UUID(), bitrate: 3_000_000),
+        SettingsBitratePreset(id: UUID(), bitrate: 2_000_000),
         SettingsBitratePreset(id: UUID(), bitrate: 1_000_000),
     ]
 }
@@ -4315,7 +5932,7 @@ private func addMissingQuickButtons(database: Database) {
         if button.type == .workout, !isPhone() {
             return false
         }
-        if button.type == .portrait, ProcessInfo().isiOSAppOnMac {
+        if button.type == .portrait, isMac() {
             return false
         }
         return true
@@ -4323,10 +5940,7 @@ private func addMissingQuickButtons(database: Database) {
 }
 
 private func addMissingDeepLinkQuickButtons(database: Database) {
-    if database.deepLinkCreator.quickButtons == nil {
-        database.deepLinkCreator.quickButtons = .init()
-    }
-    let quickButtons = database.deepLinkCreator.quickButtons!
+    let quickButtons = database.deepLinkCreator.quickButtons
     for quickButton in database.quickButtons where quickButton.type != .lut {
         let button = DeepLinkCreatorQuickButton()
         let buttonExists = quickButtons.buttons.contains(where: { button in
@@ -4397,7 +6011,7 @@ private func addScenesToGameController(database: Database) {
 }
 
 private func getDefaultMic() -> SettingsMic {
-    if ProcessInfo().isiOSAppOnMac {
+    if isMac() {
         return .bottom
     }
     let session = AVAudioSession.sharedInstance()
@@ -4513,24 +6127,8 @@ final class Settings {
     }
 
     private func migrateFromOlderVersions() {
-        for stream in realDatabase.streams where stream.youTubeVideoId == nil {
-            stream.youTubeVideoId = ""
-            store()
-        }
-        for stream in realDatabase.streams where stream.maxKeyFrameInterval == nil {
-            stream.maxKeyFrameInterval = 2
-            store()
-        }
-        for scene in realDatabase.scenes where scene.cameraPosition == nil {
-            scene.cameraPosition = scene.cameraType
-            store()
-        }
         if realDatabase.zoom.speed == nil {
             realDatabase.zoom.speed = 5.0
-            store()
-        }
-        if realDatabase.show.cameras == nil {
-            realDatabase.show.cameras = false
             store()
         }
         for preset in realDatabase.zoom.back where preset.x == nil {
@@ -4549,78 +6147,8 @@ final class Settings {
             realDatabase.zoom.switchToFront.x = realDatabase.zoom.switchToFront.level / 2
             store()
         }
-        for stream in realDatabase.streams where stream.afreecaTvChannelName == nil {
-            stream.afreecaTvChannelName = ""
-            store()
-        }
-        for stream in realDatabase.streams where stream.afreecaTvStreamId == nil {
-            stream.afreecaTvStreamId = ""
-            store()
-        }
-        for stream in realDatabase.streams where stream.obsWebSocketUrl == nil {
-            stream.obsWebSocketUrl = ""
-            store()
-        }
-        for stream in realDatabase.streams where stream.obsWebSocketPassword == nil {
-            stream.obsWebSocketPassword = ""
-            store()
-        }
-        if realDatabase.show.obsStatus == nil {
-            realDatabase.show.obsStatus = true
-            store()
-        }
-        for stream in realDatabase.streams where stream.obsWebSocketEnabled == nil {
-            stream.obsWebSocketEnabled = true
-            store()
-        }
-        for stream in realDatabase.streams where stream.audioBitrate == nil {
-            stream.audioBitrate = 128_000
-            store()
-        }
-        for stream in realDatabase.streams where stream.chat == nil {
-            stream.chat = .init()
-            store()
-        }
-        for stream in realDatabase.streams where stream.bFrames == nil {
-            stream.bFrames = false
-            store()
-        }
-        for scene in realDatabase.scenes where scene.rtmpCameraId == nil {
-            scene.rtmpCameraId = .init()
-            store()
-        }
-        if realDatabase.show.rtmpSpeed == nil {
-            realDatabase.show.rtmpSpeed = true
-            store()
-        }
         for stream in realDatabase.rtmpServer.streams where stream.latency == nil {
             stream.latency = defaultRtmpLatency
-            store()
-        }
-        for stream in realDatabase.streams where stream.recording == nil {
-            stream.recording = .init()
-            store()
-        }
-        if realDatabase.show.gameController == nil {
-            realDatabase.show.gameController = true
-            store()
-        }
-        for controller in realDatabase.gameControllers {
-            for button in controller.buttons where button.text == nil {
-                button.text = ""
-                store()
-            }
-        }
-        for stream in database.streams where stream.realtimeIrlEnabled == nil {
-            stream.realtimeIrlEnabled = false
-            store()
-        }
-        for stream in database.streams where stream.realtimeIrlPushKey == nil {
-            stream.realtimeIrlPushKey = ""
-            store()
-        }
-        if realDatabase.show.location == nil {
-            realDatabase.show.location = true
             store()
         }
         for button in realDatabase.quickButtons where button.type == .image {
@@ -4637,19 +6165,9 @@ final class Settings {
                 store()
             }
         }
-        for stream in realDatabase.streams where stream.obsSourceName == nil {
-            stream.obsSourceName = ""
-            store()
-        }
         for stream in realDatabase.streams where stream.srt.connectionPriorities == nil {
             stream.srt.connectionPriorities = .init()
             store()
-        }
-        for widget in realDatabase.widgets where widget.type == .browser {
-            if widget.browser.audioOnly == nil {
-                widget.browser.audioOnly = false
-                store()
-            }
         }
         for stream in realDatabase.streams where stream.srt.overheadBandwidth == nil {
             stream.srt.overheadBandwidth = realDatabase.debug.srtOverheadBandwidth
@@ -4667,106 +6185,34 @@ final class Settings {
             realDatabase.remoteControl.password = randomGoodPassword()
             store()
         }
-        for widget in realDatabase.widgets where widget.browser.scaleToFitVideo == nil {
-            widget.browser.scaleToFitVideo = false
-            store()
-        }
-        for widget in realDatabase.widgets where widget.browser.fps == nil {
-            widget.browser.fps = 5.0
-            store()
-        }
         for stream in realDatabase.streams {
             for priority in stream.srt.connectionPriorities!.priorities where priority.enabled == nil {
                 priority.enabled = true
                 store()
             }
         }
-        if realDatabase.show.remoteControl == nil {
-            realDatabase.show.remoteControl = true
-            store()
-        }
-        if realDatabase.show.browserWidgets == nil {
-            realDatabase.show.browserWidgets = true
-            store()
-        }
         if realDatabase.color.diskLuts == nil {
             realDatabase.color.diskLuts = []
-            store()
-        }
-        for scene in realDatabase.scenes where scene.externalCameraId == nil {
-            scene.externalCameraId = ""
-            store()
-        }
-        for scene in realDatabase.scenes where scene.externalCameraName == nil {
-            scene.externalCameraName = ""
             store()
         }
         for stream in database.streams where stream.srt.adaptiveBitrate!.fastIrlSettings == nil {
             stream.srt.adaptiveBitrate!.fastIrlSettings = .init()
             store()
         }
-        for stream in database.streams where stream.rtmp == nil {
-            stream.rtmp = .init()
-            store()
-        }
         for stream in database.streams where stream.srt.adaptiveBitrateEnabled == nil {
-            stream.srt.adaptiveBitrateEnabled = stream.adaptiveBitrate!
+            stream.srt.adaptiveBitrateEnabled = stream.adaptiveBitrate
             store()
         }
-        if realDatabase.watch.chat.timestampEnabled == nil {
-            realDatabase.watch.chat.timestampEnabled = true
+        for stream in realDatabase.streams where stream.recording.autoStartRecording == nil {
+            stream.recording.autoStartRecording = false
             store()
         }
-        if realDatabase.watch.chat.notificationOnMessage == nil {
-            realDatabase.watch.chat.notificationOnMessage = false
+        for stream in realDatabase.streams where stream.recording.autoStopRecording == nil {
+            stream.recording.autoStopRecording = false
             store()
         }
-        for scene in realDatabase.scenes where scene.backCameraId == nil {
-            scene.backCameraId = getBestBackCameraId()
-            store()
-        }
-        for scene in realDatabase.scenes where scene.frontCameraId == nil {
-            scene.frontCameraId = getBestFrontCameraId()
-            store()
-        }
-        for stream in realDatabase.streams where stream.openStreamingPlatformUrl == nil {
-            stream.openStreamingPlatformUrl = ""
-            store()
-        }
-        for stream in realDatabase.streams where stream.openStreamingPlatformChannelId == nil {
-            stream.openStreamingPlatformChannelId = ""
-            store()
-        }
-        for stream in realDatabase.streams where stream.kickChannelName == nil {
-            stream.kickChannelName = ""
-            store()
-        }
-        for stream in database.streams where stream.portrait == nil {
-            stream.portrait = false
-            store()
-        }
-        if realDatabase.watch.show == nil {
-            realDatabase.watch.show = .init()
-            store()
-        }
-        for stream in realDatabase.streams where stream.recording!.autoStartRecording == nil {
-            stream.recording!.autoStartRecording = false
-            store()
-        }
-        for stream in realDatabase.streams where stream.recording!.autoStopRecording == nil {
-            stream.recording!.autoStopRecording = false
-            store()
-        }
-        for stream in realDatabase.streams where stream.rist == nil {
-            stream.rist = .init()
-            store()
-        }
-        for stream in realDatabase.streams where stream.recording!.audioBitrate == nil {
-            stream.recording!.audioBitrate = 128_000
-            store()
-        }
-        if realDatabase.show.bonding == nil {
-            realDatabase.show.bonding = true
+        for stream in realDatabase.streams where stream.recording.audioBitrate == nil {
+            stream.recording.audioBitrate = 128_000
             store()
         }
         var videoEffectWidgets: [SettingsWidget] = []
@@ -4792,34 +6238,10 @@ final class Settings {
             stream.srt.adaptiveBitrate!.customSettings.minimumBitrate = 250
             store()
         }
-        if realDatabase.deepLinkCreator.webBrowser == nil {
-            realDatabase.deepLinkCreator.webBrowser = .init()
-            store()
-        }
-        if realDatabase.deepLinkCreator.quickButtons == nil {
-            realDatabase.deepLinkCreator.quickButtons = .init()
-            store()
-        }
-        if realDatabase.deepLinkCreator.quickButtonsEnabled == nil {
-            realDatabase.deepLinkCreator.quickButtonsEnabled = false
-            store()
-        }
-        if realDatabase.deepLinkCreator.webBrowserEnabled == nil {
-            realDatabase.deepLinkCreator.webBrowserEnabled = false
-            store()
-        }
         for stream in realDatabase.streams
             where stream.srt.adaptiveBitrate!.fastIrlSettings!.minimumBitrate == nil
         {
             stream.srt.adaptiveBitrate!.fastIrlSettings!.minimumBitrate = 250
-            store()
-        }
-        for stream in realDatabase.streams where stream.backgroundStreaming == nil {
-            stream.backgroundStreaming = false
-            store()
-        }
-        for scene in realDatabase.scenes where scene.srtlaCameraId == nil {
-            scene.srtlaCameraId = .init()
             store()
         }
         for stream in realDatabase.rtmpServer.streams where stream.autoSelectMic == nil {
@@ -4838,174 +6260,12 @@ final class Settings {
             stream.srt.adaptiveBitrate!.belaboxSettings = .init()
             store()
         }
-        for stream in realDatabase.deepLinkCreator.streams where stream.video.bFrames == nil {
-            stream.video.bFrames = false
-            store()
-        }
-        for stream in realDatabase.deepLinkCreator.streams where stream.twitch == nil {
-            stream.twitch = .init()
-            store()
-        }
-        for stream in realDatabase.deepLinkCreator.streams where stream.kick == nil {
-            stream.kick = .init()
-            store()
-        }
-        for stream in realDatabase.deepLinkCreator.streams where stream.video.resolution == nil {
-            stream.video.resolution = .r1920x1080
-            store()
-        }
-        for stream in realDatabase.deepLinkCreator.streams where stream.video.fps == nil {
-            stream.video.fps = 30
-            store()
-        }
-        for stream in realDatabase.deepLinkCreator.streams where stream.video.bitrate == nil {
-            stream.video.bitrate = 5_000_000
-            store()
-        }
-        for stream in realDatabase.deepLinkCreator.streams where stream.video.maxKeyFrameInterval == nil {
-            stream.video.maxKeyFrameInterval = 2
-            store()
-        }
-        for stream in realDatabase.deepLinkCreator.streams where stream.audio == nil {
-            stream.audio = .init()
-            store()
-        }
-        for stream in realDatabase.streams where stream.obsBrbScene == nil {
-            stream.obsBrbScene = ""
-            store()
-        }
         for widget in realDatabase.widgets where widget.map.northUp == nil {
             widget.map.northUp = false
             store()
         }
-        for widget in realDatabase.widgets where widget.text.backgroundColor == nil {
-            widget.text.backgroundColor = .init(red: 0, green: 0, blue: 0, opacity: 0.75)
-            store()
-        }
-        for widget in realDatabase.widgets where widget.text.clearBackgroundColor == nil {
-            widget.text.clearBackgroundColor = false
-            store()
-        }
-        for widget in realDatabase.widgets where widget.text.foregroundColor == nil {
-            widget.text.foregroundColor = .init(red: 255, green: 255, blue: 255)
-            store()
-        }
-        for widget in realDatabase.widgets where widget.text.clearForegroundColor == nil {
-            widget.text.clearForegroundColor = false
-            store()
-        }
-        for widget in realDatabase.widgets where widget.text.fontSize == nil {
-            widget.text.fontSize = 30
-            store()
-        }
-        for widget in realDatabase.widgets where widget.text.fontDesign == nil {
-            widget.text.fontDesign = .default
-            store()
-        }
-        for widget in realDatabase.widgets where widget.text.fontWeight == nil {
-            widget.text.fontWeight = .regular
-            store()
-        }
-        for stream in realDatabase.streams where stream.obsAutoStartStream == nil {
-            stream.obsAutoStartStream = false
-            store()
-        }
-        for stream in realDatabase.streams where stream.obsAutoStopStream == nil {
-            stream.obsAutoStopStream = false
-            store()
-        }
-        for stream in realDatabase.streams where stream.obsAutoStartRecording == nil {
-            stream.obsAutoStartRecording = false
-            store()
-        }
-        for stream in realDatabase.streams where stream.obsAutoStopRecording == nil {
-            stream.obsAutoStopRecording = false
-            store()
-        }
-        for stream in realDatabase.streams where stream.obsBrbSceneVideoSourceBroken == nil {
-            stream.obsBrbSceneVideoSourceBroken = false
-            store()
-        }
-        for device in realDatabase.djiDevices.devices where device.rtmpUrlType == nil {
-            device.rtmpUrlType = .server
-            store()
-        }
-        for device in realDatabase.djiDevices.devices where device.serverRtmpStreamId == nil {
-            device.serverRtmpStreamId = .init()
-            store()
-        }
-        for device in realDatabase.djiDevices.devices where device.serverRtmpUrl == nil {
-            device.serverRtmpUrl = ""
-            store()
-        }
-        for device in realDatabase.djiDevices.devices where device.customRtmpUrl == nil {
-            device.customRtmpUrl = ""
-            store()
-        }
-        for device in realDatabase.djiDevices.devices where device.autoRestartStream == nil {
-            device.autoRestartStream = false
-            store()
-        }
-        for device in realDatabase.djiDevices.devices where device.imageStabilization == nil {
-            device.imageStabilization = .off
-            store()
-        }
-        for device in realDatabase.djiDevices.devices where device.resolution == nil {
-            device.resolution = .r1080p
-            store()
-        }
-        for device in realDatabase.djiDevices.devices where device.bitrate == nil {
-            device.bitrate = 6_000_000
-            store()
-        }
-        for device in realDatabase.djiDevices.devices where device.isStarted == nil {
-            device.isStarted = false
-            store()
-        }
-        for device in realDatabase.djiDevices.devices where device.fps == nil {
-            device.fps = 30
-            store()
-        }
-        for device in realDatabase.djiDevices.devices where device.model == nil {
-            device.model = .unknown
-            store()
-        }
-        for widget in database.widgets where widget.text.delay == nil {
-            widget.text.delay = 0.0
-            store()
-        }
         for widget in database.widgets where widget.map.delay == nil {
             widget.map.delay = 0.0
-            store()
-        }
-        for widget in database.widgets where widget.text.timers == nil {
-            widget.text.timers = []
-            store()
-        }
-        for widget in database.widgets where widget.text.needsWeather == nil {
-            widget.text.needsWeather = false
-            store()
-        }
-        for widget in database.widgets where widget.text.clearForegroundColor! {
-            widget.text.foregroundColor!.opacity = 0.0
-            widget.text.clearForegroundColor = false
-            store()
-        }
-        for widget in database.widgets where widget.text.clearBackgroundColor! {
-            widget.text.backgroundColor!.opacity = 0.0
-            widget.text.clearBackgroundColor = false
-            store()
-        }
-        for widget in database.widgets where widget.text.needsGeography == nil {
-            widget.text.needsGeography = false
-            store()
-        }
-        for widget in database.widgets where widget.text.checkboxes == nil {
-            widget.text.checkboxes = []
-            store()
-        }
-        for stream in realDatabase.streams where stream.twitchAccessToken == nil {
-            stream.twitchAccessToken = ""
             store()
         }
         for widget in realDatabase.widgets where widget.alerts.twitch == nil {
@@ -5062,23 +6322,7 @@ final class Settings {
                 store()
             }
         }
-        for widget in database.widgets where widget.text.ratings == nil {
-            widget.text.ratings = []
-            store()
-        }
-        for stream in realDatabase.streams where stream.twitchLoggedIn == nil {
-            stream.twitchLoggedIn = false
-            store()
-        }
         updateBundledAlertsMediaGallery(database: realDatabase)
-        if realDatabase.show.events == nil {
-            realDatabase.show.events = true
-            store()
-        }
-        for stream in realDatabase.streams where stream.twitchRewards == nil {
-            stream.twitchRewards = .init()
-            store()
-        }
         for widget in realDatabase.widgets where widget.map.migrated == nil {
             widget.map.migrated = false
             store()
@@ -5123,10 +6367,6 @@ final class Settings {
             }
             store()
         }
-        for widget in database.widgets where widget.text.needsSubtitles == nil {
-            widget.text.needsSubtitles = false
-            store()
-        }
         for widget in realDatabase.widgets where widget.alerts.chatBot == nil {
             widget.alerts.chatBot = .init()
             store()
@@ -5153,20 +6393,8 @@ final class Settings {
             realDatabase.quickButtons = newButtons
             store()
         }
-        for stream in realDatabase.streams where stream.obsMainScene == nil {
-            stream.obsMainScene = ""
-            store()
-        }
         for widget in database.widgets where widget.alerts.twitch!.raids == nil {
             widget.alerts.twitch!.raids = .init()
-            store()
-        }
-        for device in realDatabase.catPrinters.devices where device.printChat == nil {
-            device.printChat = true
-            store()
-        }
-        if realDatabase.watch.chat.badges == nil {
-            realDatabase.watch.chat.badges = true
             store()
         }
         if realDatabase.chat.botCommandPermissions.tts.subscribersEnabled == nil {
@@ -5189,24 +6417,12 @@ final class Settings {
             realDatabase.chat.botCommandPermissions.fax!.subscribersEnabled = false
             store()
         }
-        for stream in realDatabase.streams where stream.discordSnapshotWebhook == nil {
-            stream.discordSnapshotWebhook = ""
-            store()
-        }
-        for stream in realDatabase.streams where stream.discordSnapshotWebhookOnlyWhenLive == nil {
-            stream.discordSnapshotWebhookOnlyWhenLive = true
-            store()
-        }
         if realDatabase.chat.botCommandPermissions.snapshot == nil {
             realDatabase.chat.botCommandPermissions.snapshot = .init()
             store()
         }
         if realDatabase.chat.botCommandPermissions.filter == nil {
             realDatabase.chat.botCommandPermissions.filter = .init()
-            store()
-        }
-        for device in realDatabase.catPrinters.devices where device.faxMeowSound == nil {
-            device.faxMeowSound = true
             store()
         }
         if realDatabase.chat.botCommandPermissions.tts.minimumSubscriberTier == nil {
@@ -5241,97 +6457,25 @@ final class Settings {
             widget.alerts.twitch!.cheers = .init()
             store()
         }
-        for widget in realDatabase.widgets where widget.browser.styleSheet == nil {
-            widget.browser.styleSheet = ""
-            store()
-        }
-        for widget in realDatabase.widgets where widget.videoSource.cameraPosition == nil {
-            widget.videoSource.cameraPosition = .screenCapture
-            store()
-        }
-        for widget in realDatabase.widgets where widget.videoSource.backCameraId == nil {
-            widget.videoSource.backCameraId = getBestBackCameraId()
-            store()
-        }
-        for widget in realDatabase.widgets where widget.videoSource.frontCameraId == nil {
-            widget.videoSource.frontCameraId = getBestFrontCameraId()
-            store()
-        }
-        for widget in realDatabase.widgets where widget.videoSource.rtmpCameraId == nil {
-            widget.videoSource.rtmpCameraId = .init()
-            store()
-        }
-        for widget in realDatabase.widgets where widget.videoSource.srtlaCameraId == nil {
-            widget.videoSource.srtlaCameraId = .init()
-            store()
-        }
-        for widget in realDatabase.widgets where widget.videoSource.mediaPlayerCameraId == nil {
-            widget.videoSource.mediaPlayerCameraId = .init()
-            store()
-        }
-        for widget in realDatabase.widgets where widget.videoSource.externalCameraId == nil {
-            widget.videoSource.externalCameraId = ""
-            store()
-        }
-        for widget in realDatabase.widgets where widget.videoSource.externalCameraName == nil {
-            widget.videoSource.externalCameraName = ""
-            store()
-        }
-        for widget in realDatabase.widgets where widget.videoSource.cropEnabled == nil {
-            widget.videoSource.cropEnabled = false
-            store()
-        }
-        for widget in realDatabase.widgets where widget.videoSource.cropX == nil {
-            widget.videoSource.cropX = 0.25
-            store()
-        }
-        for widget in realDatabase.widgets where widget.videoSource.cropY == nil {
-            widget.videoSource.cropY = 0.0
-            store()
-        }
-        for widget in realDatabase.widgets where widget.videoSource.cropWidth == nil {
-            widget.videoSource.cropWidth = 0.5
-            store()
-        }
-        for widget in realDatabase.widgets where widget.videoSource.cropHeight == nil {
-            widget.videoSource.cropHeight = 1.0
-            store()
-        }
-        for widget in realDatabase.widgets where widget.videoSource.cropX! > 1.0 {
+        for widget in realDatabase.widgets where widget.videoSource.cropX > 1.0 {
             widget.videoSource.cropX = 0.0
             store()
         }
-        for widget in realDatabase.widgets where widget.videoSource.cropY! > 1.0 {
+        for widget in realDatabase.widgets where widget.videoSource.cropY > 1.0 {
             widget.videoSource.cropY = 0.0
             store()
         }
-        for widget in realDatabase.widgets where widget.videoSource.cropWidth! > 1.0 {
+        for widget in realDatabase.widgets where widget.videoSource.cropWidth > 1.0 {
             widget.videoSource.cropWidth = 1.0
             store()
         }
-        for widget in realDatabase.widgets where widget.videoSource.cropHeight! > 1.0 {
+        for widget in realDatabase.widgets where widget.videoSource.cropHeight > 1.0 {
             widget.videoSource.cropHeight = 1.0
-            store()
-        }
-        for widget in realDatabase.widgets where widget.videoSource.rotation == nil {
-            widget.videoSource.rotation = 0.0
             store()
         }
         for widget in database.widgets where widget.alerts.twitch!.cheerBits == nil {
             widget.alerts.twitch!.cheerBits = createDefaultCheerBits()
             widget.alerts.twitch!.cheerBits![0].alert = widget.alerts.twitch!.cheers!.clone()
-            store()
-        }
-        for stream in database.streams where stream.adaptiveEncoderResolution == nil {
-            stream.adaptiveEncoderResolution = false
-            store()
-        }
-        for stream in realDatabase.streams where stream.discordChatBotSnapshotWebhook == nil {
-            stream.discordChatBotSnapshotWebhook = stream.discordSnapshotWebhook
-            store()
-        }
-        for stream in realDatabase.streams where stream.estimatedViewerDelay == nil {
-            stream.estimatedViewerDelay = 8.0
             store()
         }
         if realDatabase.remoteControl.client.relay == nil {
@@ -5342,20 +6486,8 @@ final class Settings {
             realDatabase.chat.botCommandPermissions.tesla = .init()
             store()
         }
-        if realDatabase.watch.viaRemoteControl == nil {
-            realDatabase.watch.viaRemoteControl = false
-            store()
-        }
-        for stream in realDatabase.streams where stream.twitchMultiTrackEnabled == nil {
-            stream.twitchMultiTrackEnabled = false
-            store()
-        }
         if realDatabase.chat.botCommandPermissions.audio == nil {
             realDatabase.chat.botCommandPermissions.audio = .init()
-            store()
-        }
-        for scene in realDatabase.scenes where scene.videoSourceRotation == nil {
-            scene.videoSourceRotation = 0.0
             store()
         }
         for widget in realDatabase.widgets where widget.alerts.speechToText == nil {
@@ -5366,28 +6498,8 @@ final class Settings {
             widget.alerts.needsSubtitles = false
             store()
         }
-        for stream in realDatabase.streams where stream.ntpPoolAddress == nil {
-            stream.ntpPoolAddress = "time.apple.com"
-            store()
-        }
-        for stream in realDatabase.streams where stream.timecodesEnabled == nil {
-            stream.timecodesEnabled = false
-            store()
-        }
         for stream in realDatabase.streams where stream.srt.dnsLookupStrategy == nil {
             stream.srt.dnsLookupStrategy = .system
-            store()
-        }
-        for stream in realDatabase.deepLinkCreator.streams where stream.srt.dnsLookupStrategy == nil {
-            stream.srt.dnsLookupStrategy = .system
-            store()
-        }
-        if realDatabase.show.djiDevices == nil {
-            realDatabase.show.djiDevices = true
-            store()
-        }
-        for stream in realDatabase.streams where stream.autoFps == nil {
-            stream.autoFps = false
             store()
         }
         if realDatabase.color.diskLutsPng == nil {
@@ -5398,22 +6510,6 @@ final class Settings {
             realDatabase.color.diskLutsCube = []
             store()
         }
-        if realDatabase.show.bondingRtts == nil {
-            realDatabase.show.bondingRtts = false
-            store()
-        }
-        if realDatabase.show.moblink == nil {
-            realDatabase.show.moblink = true
-            store()
-        }
-        for scene in realDatabase.scenes where scene.videoStabilizationMode == nil {
-            scene.videoStabilizationMode = .off
-            store()
-        }
-        for scene in realDatabase.scenes where scene.overrideVideoStabilizationMode == nil {
-            scene.overrideVideoStabilizationMode = false
-            store()
-        }
         for key in realDatabase.keyboard.keys where key.widgetId == nil {
             key.widgetId = .init()
             store()
@@ -5422,52 +6518,12 @@ final class Settings {
             realDatabase.location.distance = 0.0
             store()
         }
-        if realDatabase.catPrinters.backgroundPrinting == nil {
-            realDatabase.catPrinters.backgroundPrinting = false
+        for stream in realDatabase.streams where stream.recording.cleanRecordings == nil {
+            stream.recording.cleanRecordings = false
             store()
         }
-        if realDatabase.show.catPrinter == nil {
-            realDatabase.show.catPrinter = true
-            store()
-        }
-        for widget in realDatabase.widgets where widget.text.alignment == nil {
-            widget.text.alignment = .leading
-            store()
-        }
-        for stream in realDatabase.streams where stream.recording!.cleanRecordings == nil {
-            stream.recording!.cleanRecordings = false
-            store()
-        }
-        for stream in realDatabase.streams where stream.recording!.cleanSnapshots == nil {
-            stream.recording!.cleanSnapshots = false
-            store()
-        }
-        for widget in realDatabase.widgets where widget.text.horizontalAlignment == nil {
-            widget.text.horizontalAlignment = widget.text.alignment!
-            store()
-        }
-        for widget in realDatabase.widgets where widget.text.verticalAlignment == nil {
-            widget.text.verticalAlignment = .top
-            store()
-        }
-        if realDatabase.show.cyclingPowerDevice == nil {
-            realDatabase.show.cyclingPowerDevice = true
-            store()
-        }
-        if realDatabase.show.heartRateDevice == nil {
-            realDatabase.show.heartRateDevice = true
-            store()
-        }
-        for widget in database.widgets where widget.text.lapTimes == nil {
-            widget.text.lapTimes = []
-            store()
-        }
-        for widget in realDatabase.widgets where widget.text.fontMonospacedDigits == nil {
-            widget.text.fontMonospacedDigits = false
-            store()
-        }
-        for scene in realDatabase.scenes where scene.fillFrame == nil {
-            scene.fillFrame = false
+        for stream in realDatabase.streams where stream.recording.cleanSnapshots == nil {
+            stream.recording.cleanSnapshots = false
             store()
         }
         if realDatabase.chat.botCommandPermissions.reaction == nil {
@@ -5480,10 +6536,6 @@ final class Settings {
         }
         if realDatabase.location.resetWhenGoingLive == nil {
             realDatabase.location.resetWhenGoingLive = false
-            store()
-        }
-        for widget in realDatabase.widgets where widget.videoSource.trackFaceEnabled == nil {
-            widget.videoSource.trackFaceEnabled = false
             store()
         }
         if realDatabase.chat.botCommandPermissions.tts.sendChatMessages == nil {
@@ -5530,18 +6582,6 @@ final class Settings {
             realDatabase.chat.botCommandPermissions.scene!.sendChatMessages = false
             store()
         }
-        for device in realDatabase.catPrinters.devices where device.printSnapshots == nil {
-            device.printSnapshots = true
-            store()
-        }
-        for widget in realDatabase.widgets where widget.videoSource.mirror == nil {
-            widget.videoSource.mirror = false
-            store()
-        }
-        for widget in realDatabase.widgets where widget.videoSource.trackFaceZoom == nil {
-            widget.videoSource.trackFaceZoom = 0.75
-            store()
-        }
         for widget in realDatabase.widgets {
             for command in widget.alerts.chatBot!.commands where command.imageType == nil {
                 command.imageType = .file
@@ -5552,24 +6592,8 @@ final class Settings {
                 store()
             }
         }
-        for launchLiveStream in realDatabase.goPro.launchLiveStream where launchLiveStream.isHero12Or13 == nil {
-            launchLiveStream.isHero12Or13 = true
-            store()
-        }
-        for widget in realDatabase.widgets where widget.videoSource.borderWidth == nil {
-            widget.videoSource.borderWidth = 0
-            store()
-        }
-        for widget in realDatabase.widgets where widget.videoSource.borderColor == nil {
-            widget.videoSource.borderColor = .init(red: 0, green: 0, blue: 0)
-            store()
-        }
         if realDatabase.tesla.enabled == nil {
             realDatabase.tesla.enabled = true
-            store()
-        }
-        for stream in realDatabase.streams where stream.twitchShowFollows == nil {
-            stream.twitchShowFollows = true
             store()
         }
         if realDatabase.replay.position == nil {
@@ -5584,28 +6608,16 @@ final class Settings {
             realDatabase.replay.stop = 30.0
             store()
         }
-        for stream in realDatabase.streams where stream.replay == nil {
-            stream.replay = .init()
-            store()
-        }
-        for stream in realDatabase.streams where stream.replay!.fade == nil {
-            stream.replay!.fade = true
-            store()
-        }
-        for widget in realDatabase.widgets where widget.browser.moblinAccess == nil {
-            widget.browser.moblinAccess = false
-            store()
-        }
-        if realDatabase.autoSceneSwitchers == nil {
-            realDatabase.autoSceneSwitchers = .init()
+        for stream in realDatabase.streams where stream.replay.fade == nil {
+            stream.replay.fade = true
             store()
         }
         for button in realDatabase.quickButtons where button.page == nil {
             button.page = 1
             store()
         }
-        for widget in database.widgets where widget.text.needsGForce == nil {
-            widget.text.needsGForce = false
+        if realDatabase.chat.botCommandPermissions.stream == nil {
+            realDatabase.chat.botCommandPermissions.stream = .init()
             store()
         }
     }

@@ -62,5 +62,15 @@
     </dict>
     <key>CFBundleIdentifier</key>
     <string></string>
+    <key>WiFiAwareServices</key>
+    <dict>
+        <key>_moblin._udp</key>
+        <dict>
+            <key>Publishable</key>
+            <dict/>
+            <key>Subscribable</key>
+            <dict/>
+        </dict>
+    </dict>
 </dict>
 </plist>

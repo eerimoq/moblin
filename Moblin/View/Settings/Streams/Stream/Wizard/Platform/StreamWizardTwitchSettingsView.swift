@@ -10,8 +10,8 @@ struct StreamWizardTwitchSettingsView: View {
     private func onLoginComplete() {
         model.wizardTwitchChannelName = model.wizardTwitchStream.twitchChannelName
         model.wizardTwitchChannelId = model.wizardTwitchStream.twitchChannelId
-        model.wizardTwitchAccessToken = model.wizardTwitchStream.twitchAccessToken!
-        model.wizardTwitchLoggedIn = model.wizardTwitchStream.twitchLoggedIn!
+        model.wizardTwitchAccessToken = model.wizardTwitchStream.twitchAccessToken
+        model.wizardTwitchLoggedIn = model.wizardTwitchStream.twitchLoggedIn
         TwitchApi(model.wizardTwitchAccessToken, model.urlSession)
             .getStreamKey(broadcasterId: model.wizardTwitchChannelId) { streamKey in
                 if let streamKey {
@@ -23,7 +23,7 @@ struct StreamWizardTwitchSettingsView: View {
     var body: some View {
         Form {
             Section {
-                if model.wizardTwitchStream.twitchAccessToken!.isEmpty {
+                if model.wizardTwitchStream.twitchAccessToken.isEmpty {
                     Button {
                         model.wizardShowTwitchAuth = true
                         model.twitchLogin(stream: model.wizardTwitchStream) {

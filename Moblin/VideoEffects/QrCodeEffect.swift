@@ -24,9 +24,9 @@ final class QrCodeEffect: VideoEffect {
         return "QR code widget"
     }
 
-    func setSceneWidget(sceneWidget: SettingsSceneWidget?) {
+    func setSceneWidget(sceneWidget: SettingsSceneWidget) {
         qrCodeQueue.sync {
-            self.newSceneWidget = sceneWidget?.clone()
+            self.newSceneWidget = sceneWidget.clone()
         }
     }
 

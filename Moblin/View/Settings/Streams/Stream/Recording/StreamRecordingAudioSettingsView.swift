@@ -21,7 +21,7 @@ struct StreamRecordingAudioSettingsView: View {
                             guard !begin else {
                                 return
                             }
-                            stream.recording!.audioBitrate = calcBitrate()
+                            stream.recording.audioBitrate = calcBitrate()
                         }
                     )
                     Text(formatBytesPerSecond(speed: Int64(calcBitrate())))

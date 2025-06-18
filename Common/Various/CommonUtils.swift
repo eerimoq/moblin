@@ -711,6 +711,13 @@ extension RgbColor {
             opacity: opacity ?? 1.0
         )
     }
+
+    func hue() -> Double {
+        let color = UIColor(red: colorScale(red), green: colorScale(green), blue: colorScale(blue), alpha: 1)
+        var hue: CGFloat = 0
+        color.getHue(&hue, saturation: nil, brightness: nil, alpha: nil)
+        return hue
+    }
 }
 
 extension Color {
@@ -728,6 +735,19 @@ extension Color {
             opacity: components.count == 4 ? components[3] : 1.0
         )
     }
+
+    /// Returns an RgbColor within the standard range. meaning the value is clamped to be in between 0 and 255
+    func toStandardRgb() -> RgbColor? {
+        guard let extendedRgbColor = toRgb() else {
+            return nil
+        }
+        return RgbColor(
+            red: min(max(extendedRgbColor.red, 0), 255),
+            green: min(max(extendedRgbColor.green, 0), 255),
+            blue: min(max(extendedRgbColor.blue, 0), 255),
+            opacity: extendedRgbColor.opacity
+        )
+    }
 }
 
 func isSetWin(first: Int, second: Int) -> Bool {
@@ -738,4 +758,16 @@ func isSetWin(first: Int, second: Int) -> Bool {
         return true
     }
     return false
+}
+
+extension KeyedEncodingContainer {
+    mutating func encode<T>(_ key: KeyedEncodingContainer<K>.Key, _ value: T) throws where T: Encodable {
+        try encode(value, forKey: key)
+    }
+}
+
+extension KeyedDecodingContainer {
+    func decode<T>(_ key: KeyedDecodingContainer<K>.Key, _ type: T.Type, _ defaultValue: T) -> T where T: Decodable {
+        return (try? decode(type, forKey: key)) ?? defaultValue
+    }
 }

@@ -19,7 +19,7 @@ private struct QuickButtonGoProLaunchLiveStreamView: View {
         if let launchLiveStream = goPro.launchLiveStream
             .first(where: { $0.id == model.goProLaunchLiveStreamSelection })
         {
-            qrCode = GoPro.generateLaunchLiveStream(isHero12Or13: launchLiveStream.isHero12Or13!)
+            qrCode = GoPro.generateLaunchLiveStream(isHero12Or13: launchLiveStream.isHero12Or13)
         } else {
             qrCode = nil
         }
@@ -214,7 +214,7 @@ struct QuickButtonGoProView: View {
                     NavigationLink {
                         GoProSettingsView()
                     } label: {
-                        IconAndTextView(image: "appletvremote.gen1", text: String(localized: "GoPro"))
+                        Label("GoPro", systemImage: "appletvremote.gen1")
                     }
                 } header: {
                     Text("Shortcut")

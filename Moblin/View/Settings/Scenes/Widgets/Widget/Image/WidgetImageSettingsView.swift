@@ -59,5 +59,6 @@ struct WidgetImageSettingsView: View {
         .onAppear {
             model.checkPhotoLibraryAuthorization()
         }
+        WidgetEffectsView(widget: widget)
     }
 }

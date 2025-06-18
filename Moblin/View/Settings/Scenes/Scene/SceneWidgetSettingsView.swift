@@ -23,26 +23,26 @@ struct SceneWidgetSettingsView: View {
 
     func submitX(value: Double) {
         sceneWidget.x = value
-        model.sceneUpdated(imageEffectChanged: true)
+        model.sceneUpdated()
     }
 
     func submitY(value: Double) {
         sceneWidget.y = value
-        model.sceneUpdated(imageEffectChanged: true)
+        model.sceneUpdated()
     }
 
     func submitWidth(value: Double) {
         sceneWidget.width = value
-        model.sceneUpdated(imageEffectChanged: true)
+        model.sceneUpdated()
     }
 
     func submitHeight(value: Double) {
         sceneWidget.height = value
-        model.sceneUpdated(imageEffectChanged: true)
+        model.sceneUpdated()
     }
 
     private let widgetsWithPosition: [SettingsWidgetType] = [
-        .image, .browser, .text, .crop, .map, .qrCode, .alerts, .videoSource,
+        .image, .browser, .text, .crop, .map, .qrCode, .alerts, .videoSource, .vTuber, .pngTuber,
     ]
 
     private func widgetHasPosition(id: UUID) -> Bool {
@@ -55,7 +55,7 @@ struct SceneWidgetSettingsView: View {
     }
 
     private let widgetsWithSize: [SettingsWidgetType] = [
-        .image, .qrCode, .map, .videoSource,
+        .image, .qrCode, .map, .videoSource, .vTuber, .pngTuber,
     ]
 
     private func widgetHasSize(id: UUID) -> Bool {
@@ -163,8 +163,7 @@ struct SceneWidgetSettingsView: View {
                     NavigationLink {
                         SceneSettingsView(
                             scene: scene,
-                            name: scene.name,
-                            selectedRotation: scene.videoSourceRotation!,
+                            selectedRotation: scene.videoSourceRotation,
                             numericInput: model.database.sceneNumericInput
                         )
                     } label: {

@@ -50,8 +50,8 @@ final class FaceEffect: VideoEffect {
         return "face filter"
     }
 
-    override func needsFaceDetections(_: Double) -> (Bool, UUID?) {
-        return (true, nil)
+    override func needsFaceDetections(_: Double) -> (Bool, UUID?, Double?) {
+        return (true, nil, nil)
     }
 
     private func findFaceNeeded() -> Bool {

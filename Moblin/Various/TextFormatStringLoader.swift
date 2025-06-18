@@ -15,6 +15,7 @@ enum TextFormatPart {
     case distance
     case slope
     case timer
+    case stopwatch
     case conditions
     case temperature
     case country
@@ -80,6 +81,8 @@ class TextFormatLoader {
                     loadItem(part: .slope, offsetBy: 7)
                 } else if formatFromIndex.hasPrefix("{timer}") {
                     loadItem(part: .timer, offsetBy: 7)
+                } else if formatFromIndex.hasPrefix("{stopwatch}") {
+                    loadItem(part: .stopwatch, offsetBy: 11)
                 } else if formatFromIndex.hasPrefix("{conditions}") {
                     loadItem(part: .conditions, offsetBy: 12)
                 } else if formatFromIndex.hasPrefix("{temperature}") {

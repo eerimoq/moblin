@@ -13,7 +13,7 @@ struct StreamSrtSettingsView: View {
             return
         }
         stream.srt.latency = latency
-        model.storeAndReloadStreamIfEnabled(stream: stream)
+        model.reloadStreamIfEnabled(stream: stream)
     }
 
     func submitOverheadBandwidth(value: String) {
@@ -50,7 +50,7 @@ struct StreamSrtSettingsView: View {
                         stream.srt.adaptiveBitrateEnabled!
                     }, set: { value in
                         stream.srt.adaptiveBitrateEnabled = value
-                        model.storeAndReloadStreamIfEnabled(stream: stream)
+                        model.reloadStreamIfEnabled(stream: stream)
                     }))
                     .disabled(stream.enabled && model.isLive)
                 }
@@ -63,7 +63,7 @@ struct StreamSrtSettingsView: View {
                     stream.srt.maximumBandwidthFollowInput!
                 }, set: { value in
                     stream.srt.maximumBandwidthFollowInput = value
-                    model.storeAndReloadStreamIfEnabled(stream: stream)
+                    model.reloadStreamIfEnabled(stream: stream)
                 }))
                 .disabled(stream.enabled && model.isLive)
                 TextEditNavigationView(
@@ -82,7 +82,7 @@ struct StreamSrtSettingsView: View {
                     } else {
                         stream.srt.mpegtsPacketsPerPacket = 6
                     }
-                    model.storeAndReloadStreamIfEnabled(stream: stream)
+                    model.reloadStreamIfEnabled(stream: stream)
                 }))
                 .disabled(stream.enabled && model.isLive)
             } footer: {

@@ -8,8 +8,8 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
         stream.srt.adaptiveBitrate!
     }
 
-    private func handleAlgorithmChange(value: String) {
-        adaptiveBitrate.algorithm = SettingsStreamSrtAdaptiveBitrateAlgorithm.fromString(value: value)
+    private func handleAlgorithmChange(value: SettingsStreamSrtAdaptiveBitrateAlgorithm) {
+        adaptiveBitrate.algorithm = value
         if stream.srt.adaptiveBitrateEnabled! {
             model.setAdaptiveBitrateSrtAlgorithm(stream: stream)
         }
@@ -93,10 +93,11 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
                     Text("Algorithm")
                     Spacer()
                     Picker("", selection: Binding(get: {
-                        adaptiveBitrate.algorithm.toString()
+                        adaptiveBitrate.algorithm
                     }, set: handleAlgorithmChange)) {
-                        ForEach(adaptiveBitrateAlgorithms, id: \.self) {
-                            Text($0)
+                        ForEach(SettingsStreamSrtAdaptiveBitrateAlgorithm.allCases, id: \.self) {
+                            Text($0.toString())
+                                .tag($0)
                         }
                     }
                 }

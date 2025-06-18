@@ -35,7 +35,7 @@ func formatDjiDeviceState(state: DjiDeviceState?) -> String {
 private struct DjiDeviceSelectDeviceSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject private var djiScanner: DjiDeviceScanner = .shared
-    var device: SettingsDjiDevice
+    @ObservedObject var device: SettingsDjiDevice
 
     private func onDeviceChange(value: String) {
         guard let deviceId = UUID(uuidString: value) else {
@@ -74,7 +74,7 @@ private struct DjiDeviceSelectDeviceSettingsView: View {
 
 private struct DjiDeviceWiFiSettingsView: View {
     @EnvironmentObject var model: Model
-    var device: SettingsDjiDevice
+    @ObservedObject var device: SettingsDjiDevice
 
     var body: some View {
         Section {
@@ -105,10 +105,10 @@ private struct DjiDeviceWiFiSettingsView: View {
 
 private struct DjiDeviceRtmpSettingsView: View {
     @EnvironmentObject var model: Model
-    var device: SettingsDjiDevice
+    @ObservedObject var device: SettingsDjiDevice
 
     private func serverUrls() -> [String] {
-        guard let stream = model.getRtmpStream(id: device.serverRtmpStreamId!) else {
+        guard let stream = model.getRtmpStream(id: device.serverRtmpStreamId) else {
             return []
         }
         var serverUrls: [String] = []
@@ -136,14 +136,9 @@ private struct DjiDeviceRtmpSettingsView: View {
 
     var body: some View {
         Section {
-            Picker("Type", selection: Binding(get: {
-                device.rtmpUrlType!.toString()
-            }, set: { value in
-                device.rtmpUrlType = SettingsDjiDeviceUrlType.fromString(value: value)
-                model.objectWillChange.send()
-            })) {
-                ForEach(djiDeviceUrlTypes, id: \.self) {
-                    Text($0)
+            Picker("Type", selection: $device.rtmpUrlType) {
+                ForEach(SettingsDjiDeviceUrlType.allCases, id: \.self) {
+                    Text($0.toString())
                 }
             }
             .disabled(model.isDjiDeviceStarted(device: device))
@@ -151,25 +146,17 @@ private struct DjiDeviceRtmpSettingsView: View {
                 if model.database.rtmpServer.streams.isEmpty {
                     Text("No RTMP server streams exists")
                 } else {
-                    Picker("Stream", selection: Binding(get: {
-                        device.serverRtmpStreamId!
-                    }, set: { value in
-                        device.serverRtmpStreamId = value
-                        device.serverRtmpUrl = serverUrls().first ?? ""
-                        model.objectWillChange.send()
-                    })) {
+                    Picker("Stream", selection: $device.serverRtmpStreamId) {
                         ForEach(model.database.rtmpServer.streams) { stream in
                             Text(stream.name)
                                 .tag(stream.id)
                         }
                     }
+                    .onChange(of: device.serverRtmpStreamId) { _ in
+                        device.serverRtmpUrl = serverUrls().first ?? ""
+                    }
                     .disabled(model.isDjiDeviceStarted(device: device))
-                    Picker("URL", selection: Binding(get: {
-                        device.serverRtmpUrl!
-                    }, set: { value in
-                        device.serverRtmpUrl = value
-                        model.objectWillChange.send()
-                    })) {
+                    Picker("URL", selection: $device.serverRtmpUrl) {
                         ForEach(serverUrls(), id: \.self) { serverUrl in
                             Text(serverUrl)
                                 .tag(serverUrl)
@@ -183,7 +170,7 @@ private struct DjiDeviceRtmpSettingsView: View {
             } else if device.rtmpUrlType == .custom {
                 TextEditNavigationView(
                     title: String(localized: "URL"),
-                    value: device.customRtmpUrl!,
+                    value: device.customRtmpUrl,
                     onSubmit: { value in
                         device.customRtmpUrl = value
                     }
@@ -202,17 +189,17 @@ private struct DjiDeviceRtmpSettingsView: View {
         .onAppear {
             let streams = model.database.rtmpServer.streams
             if !streams.isEmpty {
-                if !streams.contains(where: { $0.id == device.serverRtmpStreamId! }) {
+                if !streams.contains(where: { $0.id == device.serverRtmpStreamId }) {
                     device.serverRtmpStreamId = streams.first!.id
                 }
-                if !serverUrls().contains(where: { $0 == device.serverRtmpUrl! }) {
+                if !serverUrls().contains(where: { $0 == device.serverRtmpUrl }) {
                     device.serverRtmpUrl = serverUrls().first ?? ""
                 }
             }
         }
         Section {
             NavigationLink {
-                RtmpServerSettingsView()
+                RtmpServerSettingsView(database: model.database)
             } label: {
                 Text("RTMP server")
             }
@@ -224,57 +211,34 @@ private struct DjiDeviceRtmpSettingsView: View {
 
 private struct DjiDeviceSettingsSettingsView: View {
     @EnvironmentObject var model: Model
-    var device: SettingsDjiDevice
+    @ObservedObject var device: SettingsDjiDevice
 
     var body: some View {
         Section {
-            Picker("Resolution", selection: Binding(get: {
-                device.resolution!.rawValue
-            }, set: { value in
-                device.resolution = SettingsDjiDeviceResolution(rawValue: value) ?? .r1080p
-                model.objectWillChange.send()
-            })) {
-                ForEach(djiDeviceResolutions, id: \.self) { resolution in
-                    Text(resolution)
+            Picker("Resolution", selection: $device.resolution) {
+                ForEach(SettingsDjiDeviceResolution.allCases, id: \.self) {
+                    Text($0.rawValue)
                 }
             }
             .disabled(model.isDjiDeviceStarted(device: device))
-            Picker("Bitrate", selection: Binding(get: {
-                device.bitrate!
-            }, set: { value in
-                device.bitrate = value
-                model.objectWillChange.send()
-            })) {
-                ForEach(djiDeviceBitrates, id: \.self) { bitrate in
-                    Text(formatBytesPerSecond(speed: Int64(bitrate)))
-                        .tag(bitrate)
+            Picker("Bitrate", selection: $device.bitrate) {
+                ForEach(djiDeviceBitrates, id: \.self) {
+                    Text(formatBytesPerSecond(speed: Int64($0)))
                 }
             }
             .disabled(model.isDjiDeviceStarted(device: device))
             if device.model == .osmoAction4 || device.model == .osmoAction5Pro {
-                Picker("Image stabilization", selection: Binding(get: {
-                    device.imageStabilization!.toString()
-                }, set: { value in
-                    device.imageStabilization = SettingsDjiDeviceImageStabilization
-                        .fromString(value: value)
-                    model.objectWillChange.send()
-                })) {
-                    ForEach(djiDeviceImageStabilizations, id: \.self) { imageStabilization in
-                        Text(imageStabilization)
+                Picker("Image stabilization", selection: $device.imageStabilization) {
+                    ForEach(SettingsDjiDeviceImageStabilization.allCases, id: \.self) {
+                        Text($0.toString())
                     }
                 }
                 .disabled(model.isDjiDeviceStarted(device: device))
             }
             if device.model == .osmoPocket3 {
-                Picker("FPS", selection: Binding(get: {
-                    device.fps!
-                }, set: { value in
-                    device.fps = value
-                    model.objectWillChange.send()
-                })) {
-                    ForEach(djiDeviceFpss, id: \.self) { fps in
-                        Text(String(fps))
-                            .tag(fps)
+                Picker("FPS", selection: $device.fps) {
+                    ForEach(djiDeviceFpss, id: \.self) {
+                        Text(String($0))
                     }
                 }
                 .disabled(model.isDjiDeviceStarted(device: device))
@@ -289,17 +253,12 @@ private struct DjiDeviceSettingsSettingsView: View {
 
 private struct DjiDeviceAutoRestartSettingsView: View {
     @EnvironmentObject var model: Model
-    var device: SettingsDjiDevice
+    @ObservedObject var device: SettingsDjiDevice
 
     var body: some View {
         if device.rtmpUrlType == .server {
             Section {
-                Toggle(isOn: Binding(get: {
-                    device.autoRestartStream!
-                }, set: { value in
-                    device.autoRestartStream = value
-                    model.objectWillChange.send()
-                })) {
+                Toggle(isOn: $device.autoRestartStream) {
                     Text("Auto-restart live stream when broken")
                 }
             }
@@ -345,8 +304,7 @@ private struct DjiDeviceStartStopButtonSettingsView: View {
 
 struct DjiDeviceSettingsView: View {
     @EnvironmentObject var model: Model
-    var device: SettingsDjiDevice
-    @Binding var name: String
+    @ObservedObject var device: SettingsDjiDevice
 
     func state() -> String {
         return formatDjiDeviceState(state: model.djiDeviceStreamingState)
@@ -355,9 +313,8 @@ struct DjiDeviceSettingsView: View {
     var body: some View {
         Form {
             Section {
-                TextEditNavigationView(title: "Name", value: device.name, onSubmit: { value in
-                    name = value
-                    device.name = value
+                TextEditNavigationView(title: "Name", value: device.name, onSubmit: {
+                    device.name = $0
                 })
             }
             DjiDeviceSelectDeviceSettingsView(device: device)

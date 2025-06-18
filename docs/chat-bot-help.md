@@ -33,6 +33,7 @@
 | !moblin filter 4:3 on | Turn on the 4:3 filter. |
 | !moblin filter 4:3 off | Turn off the 4:3 filter. |
 | !moblin scene \<name> | Change scene. |
+| !moblin stream title \<title> | Set stream title. |
 | !moblin reaction fireworks | Trigger Apple fireworks reaction. |
 | !moblin reaction balloons | Trigger Apple balloons reaction. |
 | !moblin reaction heart | Trigger Apple heart reaction. |

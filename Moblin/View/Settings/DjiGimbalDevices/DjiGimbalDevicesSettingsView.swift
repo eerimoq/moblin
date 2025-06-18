@@ -27,10 +27,7 @@ struct DjiGimbalDevicesSettingsView: View {
         Form {
             Section {
                 HCenter {
-                    Image("DjiOsmoMobile7p")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(height: 130)
+                    IntegrationImageView(imageName: "DjiOsmoMobile7p")
                 }
             }
             Section {

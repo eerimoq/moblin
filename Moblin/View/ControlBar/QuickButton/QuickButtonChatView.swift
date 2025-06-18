@@ -24,14 +24,11 @@ private struct HighlightMessageView: View {
 
 private struct LineView: View {
     var post: ChatPost
-    var chat: SettingsChat
-
-    private func usernameColor() -> Color {
-        return post.userColor.color()
-    }
+    @ObservedObject var chat: SettingsChat
+    var platform: Bool
 
     var body: some View {
-        let usernameColor = usernameColor()
+        let usernameColor = post.userColor.color()
         WrappingHStack(
             alignment: .leading,
             horizontalSpacing: 0,
@@ -41,6 +38,13 @@ private struct LineView: View {
             if chat.timestampColorEnabled {
                 Text("\(post.timestamp) ")
                     .foregroundColor(.gray)
+            }
+            if chat.platform, platform, let image = post.platform?.imageName() {
+                Image(image)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .padding(2)
+                    .frame(height: CGFloat(chat.fontSize * 1.4))
             }
             if chat.badges {
                 ForEach(post.userBadges, id: \.self) { url in
@@ -94,158 +98,75 @@ private struct LineView: View {
     }
 }
 
-struct ChildSizeReader<Content: View>: View {
-    // periphery:ignore
-    @Binding var size: CGSize
-    let content: () -> Content
-
-    var body: some View {
-        content()
-            .background(
-                GeometryReader { proxy in
-                    Color.clear.preference(key: SizePreferenceKey.self, value: proxy.size)
-                }
-            )
-            .onPreferenceChange(SizePreferenceKey.self) { preferences in
-                self.size = preferences
-            }
-    }
-}
-
-struct SizePreferenceKey: PreferenceKey {
-    static var defaultValue: CGSize = .zero
-
-    static func reduce(value _: inout CGSize, nextValue: () -> CGSize) {
-        _ = nextValue()
-    }
-}
-
-private var previousOffset = 0.0
-
 private struct MessagesView: View {
-    @EnvironmentObject var model: Model
+    var model: Model
+    @ObservedObject var chatSettings: SettingsChat
     @ObservedObject var chat: ChatProvider
-    private let spaceName = "scroll"
-    @State var wholeSize: CGSize = .zero
-    @State var scrollViewSize: CGSize = .zero
-
-    private func getRotation() -> Double {
-        if model.database.chat.newMessagesAtTop {
-            return 0.0
-        } else {
-            return 180.0
-        }
-    }
-
-    private func getScaleX() -> Double {
-        if model.database.chat.newMessagesAtTop {
-            return 1.0
-        } else {
-            return -1.0
-        }
-    }
-
-    private func isCloseToStart(offset: Double) -> Bool {
-        if model.database.chat.newMessagesAtTop {
-            return offset < 50
-        } else {
-            return offset >= scrollViewSize.height - wholeSize.height - 50.0
-        }
-    }
-
-    private func isMirrored() -> CGFloat {
-        if model.database.chat.mirrored {
-            return -1
-        } else {
-            return 1
-        }
-    }
 
     var body: some View {
-        let rotation = getRotation()
-        let scaleX = getScaleX()
+        let rotation = chatSettings.getRotation()
+        let scaleX = chatSettings.getScaleX()
         GeometryReader { metrics in
-            ChildSizeReader(size: $wholeSize) {
-                ScrollView {
-                    ChildSizeReader(size: $scrollViewSize) {
-                        VStack {
-                            LazyVStack(alignment: .leading, spacing: 1) {
-                                ForEach(chat.posts) { post in
-                                    if post.user != nil {
-                                        if let highlight = post.highlight {
-                                            HStack(spacing: 0) {
-                                                Rectangle()
-                                                    .frame(width: 3)
-                                                    .foregroundColor(highlight.color)
-                                                VStack(alignment: .leading, spacing: 1) {
-                                                    HighlightMessageView(
-                                                        image: highlight.image,
-                                                        name: highlight.title
-                                                    )
-                                                    LineView(
-                                                        post: post,
-                                                        chat: model.database.chat
-                                                    )
-                                                }
-                                            }
-                                            .rotationEffect(Angle(degrees: rotation))
-                                            .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
-                                        } else {
-                                            LineView(post: post, chat: model.database.chat)
-                                                .padding([.leading], 3)
-                                                .rotationEffect(Angle(degrees: rotation))
-                                                .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
-                                        }
-                                    } else {
-                                        Rectangle()
-                                            .fill(.red)
-                                            .frame(width: metrics.size.width, height: 1.5)
-                                            .padding(2)
-                                            .rotationEffect(Angle(degrees: rotation))
-                                            .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
-                                    }
-                                }
-                            }
-                            Spacer(minLength: 0)
+            ScrollView {
+                LazyVStack(alignment: .leading, spacing: 1) {
+                    Color.clear
+                        .onAppear {
+                            model.endOfQuickButtonChatReachedWhenPaused()
                         }
-                        .background(
-                            GeometryReader { proxy in
-                                Color.clear.preference(
-                                    key: ViewOffsetKey.self,
-                                    value: -1 * proxy.frame(in: .named(spaceName)).origin.y
-                                )
-                            }
-                        )
-                        .onPreferenceChange(
-                            ViewOffsetKey.self,
-                            perform: { scrollViewOffsetFromTop in
-                                let offset = max(scrollViewOffsetFromTop, 0)
-                                if isCloseToStart(offset: offset) {
-                                    if chat.paused, offset >= previousOffset {
-                                        model.endOfQuickButtonChatReachedWhenPaused()
-                                    }
-                                } else if !chat.paused {
-                                    if !chat.posts.isEmpty {
-                                        model.pauseQuickButtonChat()
+                        .onDisappear {
+                            model.pauseQuickButtonChat()
+                        }
+                        .frame(height: 1)
+                    ForEach(chat.posts) { post in
+                        if post.user != nil {
+                            if let highlight = post.highlight {
+                                HStack(spacing: 0) {
+                                    Rectangle()
+                                        .frame(width: 3)
+                                        .foregroundColor(highlight.color)
+                                    VStack(alignment: .leading, spacing: 1) {
+                                        HighlightMessageView(
+                                            image: highlight.image,
+                                            name: highlight.title
+                                        )
+                                        LineView(post: post,
+                                                 chat: chatSettings,
+                                                 platform: chat.moreThanOneStreamingPlatform)
                                     }
                                 }
-                                previousOffset = offset
+                                .rotationEffect(Angle(degrees: rotation))
+                                .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
+                            } else {
+                                LineView(post: post,
+                                         chat: chatSettings,
+                                         platform: chat.moreThanOneStreamingPlatform)
+                                    .padding([.leading], 3)
+                                    .rotationEffect(Angle(degrees: rotation))
+                                    .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
                             }
-                        )
-                        .frame(minHeight: metrics.size.height)
+                        } else {
+                            Rectangle()
+                                .fill(.red)
+                                .frame(width: metrics.size.width, height: 1.5)
+                                .padding(2)
+                                .rotationEffect(Angle(degrees: rotation))
+                                .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
+                        }
                     }
+                    Spacer(minLength: 0)
                 }
-                .foregroundColor(.white)
-                .rotationEffect(Angle(degrees: rotation))
-                .scaleEffect(x: scaleX * isMirrored(), y: 1.0, anchor: .center)
-                .coordinateSpace(name: spaceName)
             }
+            .frame(minHeight: metrics.size.height)
         }
+        .foregroundColor(.white)
+        .rotationEffect(Angle(degrees: rotation))
+        .scaleEffect(x: scaleX * chatSettings.isMirrored(), y: 1.0, anchor: .center)
     }
 }
 
 private struct HypeTrainView: View {
-    @EnvironmentObject var model: Model
+    var model: Model
+    @ObservedObject var hypeTrain: HypeTrain
 
     var body: some View {
         VStack(spacing: 0) {
@@ -254,7 +175,7 @@ private struct HypeTrainView: View {
                 .background(.clear)
                 .frame(height: 1)
             VStack {
-                if let level = model.hypeTrainLevel {
+                if let level = hypeTrain.level {
                     HStack(spacing: 0) {
                         let train = HStack(spacing: 0) {
                             Image(systemName: "train.side.rear.car")
@@ -290,7 +211,7 @@ private struct HypeTrainView: View {
                     .foregroundColor(.white)
                     .padding(10)
                 }
-                if let progress = model.hypeTrainProgress, let goal = model.hypeTrainGoal {
+                if let progress = hypeTrain.progress, let goal = hypeTrain.goal {
                     ProgressView(value: Float(progress), total: Float(goal))
                         .accentColor(.white)
                         .scaleEffect(x: 1, y: 4, anchor: .center)
@@ -305,27 +226,27 @@ private struct HypeTrainView: View {
 }
 
 private struct ChatView: View {
+    var model: Model
     @ObservedObject var chat: ChatProvider
 
     var body: some View {
         ZStack {
-            MessagesView(chat: chat)
+            MessagesView(model: model, chatSettings: model.database.chat, chat: chat)
             if chat.paused {
                 ChatInfo(
                     message: String(localized: "Chat paused: \(chat.pausedPostsCount) new messages")
                 )
                 .padding(2)
             }
-            HypeTrainView()
+            HypeTrainView(model: model, hypeTrain: model.hypeTrain)
         }
     }
 }
 
 private struct AlertsMessagesView: View {
     @EnvironmentObject var model: Model
-    private let spaceName = "scroll"
-    @State var wholeSize: CGSize = .zero
-    @State var scrollViewSize: CGSize = .zero
+    @ObservedObject var chatSettings: SettingsChat
+    @ObservedObject var chat: ChatProvider
 
     private func shouldShowMessage(highlight: ChatHighlight) -> Bool {
         if highlight.kind == .firstMessage && !model.showFirstTimeChatterMessage {
@@ -334,123 +255,72 @@ private struct AlertsMessagesView: View {
         if highlight.kind == .newFollower && !model.showNewFollowerMessage {
             return false
         }
+        if highlight.kind == .reply {
+            return false
+        }
         return true
     }
 
-    private func getRotation() -> Double {
-        if model.database.chat.newMessagesAtTop {
-            return 0.0
-        } else {
-            return 180.0
-        }
-    }
-
-    private func getScaleX() -> Double {
-        if model.database.chat.newMessagesAtTop {
-            return 1.0
-        } else {
-            return -1.0
-        }
-    }
-
-    private func isCloseToStart(offset: Double) -> Bool {
-        if model.database.chat.newMessagesAtTop {
-            return offset < 50
-        } else {
-            return offset >= scrollViewSize.height - wholeSize.height - 50.0
-        }
-    }
-
-    private func isMirrored() -> CGFloat {
-        if model.database.chat.mirrored {
-            return -1
-        } else {
-            return 1
-        }
-    }
-
     var body: some View {
-        let rotation = getRotation()
-        let scaleX = getScaleX()
+        let rotation = chatSettings.getRotation()
+        let scaleX = chatSettings.getScaleX()
         GeometryReader { metrics in
-            ChildSizeReader(size: $wholeSize) {
-                ScrollView {
-                    ChildSizeReader(size: $scrollViewSize) {
-                        VStack {
-                            LazyVStack(alignment: .leading, spacing: 1) {
-                                ForEach(model.quickButtonChatAlertsPosts) { post in
-                                    if post.user != nil {
-                                        if let highlight = post.highlight {
-                                            if shouldShowMessage(highlight: highlight) {
-                                                HStack(spacing: 0) {
-                                                    Rectangle()
-                                                        .frame(width: 3)
-                                                        .foregroundColor(highlight.color)
-                                                    VStack(alignment: .leading, spacing: 1) {
-                                                        HighlightMessageView(
-                                                            image: highlight.image,
-                                                            name: highlight.title
-                                                        )
-                                                        LineView(
-                                                            post: post,
-                                                            chat: model.database.chat
-                                                        )
-                                                    }
-                                                }
-                                                .rotationEffect(Angle(degrees: rotation))
-                                                .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
-                                            }
-                                        } else {
-                                            LineView(post: post, chat: model.database.chat)
-                                                .padding([.leading], 3)
-                                                .rotationEffect(Angle(degrees: rotation))
-                                                .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
-                                        }
-                                    } else {
-                                        Rectangle()
-                                            .fill(.red)
-                                            .frame(width: metrics.size.width, height: 1.5)
-                                            .padding(2)
-                                            .rotationEffect(Angle(degrees: rotation))
-                                            .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
-                                    }
-                                }
-                            }
-                            Spacer(minLength: 0)
+            ScrollView {
+                LazyVStack(alignment: .leading, spacing: 1) {
+                    Color.clear
+                        .onAppear {
+                            model.endOfQuickButtonChatAlertsReachedWhenPaused()
                         }
-                        .background(
-                            GeometryReader { proxy in
-                                Color.clear.preference(
-                                    key: ViewOffsetKey.self,
-                                    value: -1 * proxy.frame(in: .named(spaceName)).origin.y
-                                )
-                            }
-                        )
-                        .onPreferenceChange(
-                            ViewOffsetKey.self,
-                            perform: { scrollViewOffsetFromTop in
-                                let offset = max(scrollViewOffsetFromTop, 0)
-                                if isCloseToStart(offset: offset) {
-                                    if model.quickButtonChatAlertsPaused, offset >= previousOffset {
-                                        model.endOfQuickButtonChatAlertsReachedWhenPaused()
+                        .onDisappear {
+                            model.pauseQuickButtonChatAlerts()
+                        }
+                        .frame(height: 1)
+                    ForEach(model.quickButtonChatAlertsPosts) { post in
+                        if post.user != nil {
+                            if let highlight = post.highlight {
+                                if shouldShowMessage(highlight: highlight) {
+                                    HStack(spacing: 0) {
+                                        Rectangle()
+                                            .frame(width: 3)
+                                            .foregroundColor(highlight.color)
+                                        VStack(alignment: .leading, spacing: 1) {
+                                            HighlightMessageView(
+                                                image: highlight.image,
+                                                name: highlight.title
+                                            )
+                                            LineView(post: post,
+                                                     chat: chatSettings,
+                                                     platform: chat.moreThanOneStreamingPlatform)
+                                        }
                                     }
-                                } else if !model.quickButtonChatAlertsPaused {
-                                    if !model.quickButtonChatAlertsPosts.isEmpty {
-                                        model.pauseQuickButtonChatAlerts()
-                                    }
+                                    .rotationEffect(Angle(degrees: rotation))
+                                    .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
                                 }
-                                previousOffset = offset
+                            } else {
+                                LineView(post: post,
+                                         chat: chatSettings,
+                                         platform: chat.moreThanOneStreamingPlatform)
+                                    .padding([.leading], 3)
+                                    .rotationEffect(Angle(degrees: rotation))
+                                    .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
                             }
-                        )
-                        .frame(minHeight: metrics.size.height)
+                        } else {
+                            Rectangle()
+                                .fill(.red)
+                                .frame(width: metrics.size.width, height: 1.5)
+                                .padding(2)
+                                .rotationEffect(Angle(degrees: rotation))
+                                .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
+                        }
                     }
+                    Spacer(minLength: 0)
                 }
-                .foregroundColor(.white)
-                .rotationEffect(Angle(degrees: rotation))
-                .scaleEffect(x: scaleX * isMirrored(), y: 1.0, anchor: .center)
-                .coordinateSpace(name: spaceName)
             }
+            .frame(minHeight: metrics.size.height)
         }
+        .foregroundColor(.white)
+        .rotationEffect(Angle(degrees: rotation))
+        .scaleEffect(x: scaleX * chatSettings.isMirrored(), y: 1.0, anchor: .center)
     }
 }
 
@@ -459,14 +329,14 @@ private struct ChatAlertsView: View {
 
     var body: some View {
         ZStack {
-            AlertsMessagesView()
+            AlertsMessagesView(chatSettings: model.database.chat, chat: model.chat)
             if model.quickButtonChatAlertsPaused {
                 ChatInfo(
                     message: String(localized: "Chat paused: \(model.pausedQuickButtonChatAlertsPostsCount) new alerts")
                 )
                 .padding(2)
             }
-            HypeTrainView()
+            HypeTrainView(model: model, hypeTrain: model.hypeTrain)
         }
     }
 }
@@ -542,7 +412,7 @@ struct QuickButtonChatView: View {
     var body: some View {
         VStack {
             if model.showAllQuickButtonChatMessage {
-                ChatView(chat: model.quickButtonChat)
+                ChatView(model: model, chat: model.quickButtonChat)
             } else {
                 ChatAlertsView()
             }

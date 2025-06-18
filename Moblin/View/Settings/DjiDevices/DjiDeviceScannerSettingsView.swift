@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct DjiDeviceScannerSettingsView: View {
+    @EnvironmentObject var model: Model
     @ObservedObject private var djiScanner: DjiDeviceScanner = .shared
     @Environment(\.dismiss) var dismiss
     var onChange: (String) -> Void
@@ -9,7 +10,9 @@ struct DjiDeviceScannerSettingsView: View {
     var body: some View {
         Form {
             Section {
-                if djiScanner.discoveredDevices.isEmpty {
+                if !model.bluetoothAllowed {
+                    Text(bluetoothNotAllowedMessage)
+                } else if djiScanner.discoveredDevices.isEmpty {
                     HCenter {
                         ProgressView()
                     }

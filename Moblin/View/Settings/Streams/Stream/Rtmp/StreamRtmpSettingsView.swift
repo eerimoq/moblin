@@ -8,10 +8,10 @@ struct StreamRtmpSettingsView: View {
         Form {
             Section {
                 Toggle("Adaptive bitrate", isOn: Binding(get: {
-                    stream.rtmp!.adaptiveBitrateEnabled
+                    stream.rtmp.adaptiveBitrateEnabled
                 }, set: { value in
-                    stream.rtmp!.adaptiveBitrateEnabled = value
-                    model.storeAndReloadStreamIfEnabled(stream: stream)
+                    stream.rtmp.adaptiveBitrateEnabled = value
+                    model.reloadStreamIfEnabled(stream: stream)
                 }))
                 .disabled(stream.enabled && model.isLive)
             }
