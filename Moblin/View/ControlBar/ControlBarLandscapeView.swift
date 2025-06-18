@@ -190,8 +190,12 @@ private struct PagesView: View {
             .scrollIndicators(.never)
             .ignoresSafeArea()
         } else {
-            MainPageView(width: width)
-                .ignoresSafeArea()
+            ScrollView(.horizontal) {
+                MainPageView(width: width)
+                    .padding([.leading], 5)
+            }
+            .scrollIndicators(.never)
+            .ignoresSafeArea()
         }
     }
 }
