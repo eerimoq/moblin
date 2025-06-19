@@ -540,7 +540,7 @@ struct MainView: View {
                     model.toggleBlackScreen()
                 }
                 .onAppear {
-                    model.blackScreenButtonColor = .black
+                    showBlackScreenButtons()
                 }
                 if quickButtons.blackScreenShowChat {
                     GeometryReader { metrics in
