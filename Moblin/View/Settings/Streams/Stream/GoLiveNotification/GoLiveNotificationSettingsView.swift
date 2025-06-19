@@ -6,7 +6,7 @@ private struct GoLiveNotificationDiscordSettingsView: View {
     var body: some View {
         Form {
             Section {
-                MultiLineTextField(value: $stream.goLiveNotificationDiscordMessage)
+                MultiLineTextFieldView(value: $stream.goLiveNotificationDiscordMessage)
                     .keyboardType(.default)
                     .textInputAutocapitalization(.never)
                     .disableAutocorrection(true)

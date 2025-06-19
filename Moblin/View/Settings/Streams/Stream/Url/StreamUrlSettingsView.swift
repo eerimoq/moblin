@@ -29,7 +29,7 @@ struct StreamUrlSettingsView: View {
         Form {
             Section {
                 ZStack(alignment: .leading) {
-                    MultiLineTextField(value: $value)
+                    MultiLineTextFieldView(value: $value)
                         .textInputAutocapitalization(.never)
                         .onSubmit {
                             submitUrl()

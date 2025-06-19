@@ -2,7 +2,7 @@ import SwiftUI
 
 struct TextEditNavigationView: View {
     var title: String
-    var value: String
+    @State var value: String
     var onSubmit: (String) -> Void
     var footers: [String] = []
     var capitalize: Bool = false
@@ -14,9 +14,9 @@ struct TextEditNavigationView: View {
 
     var body: some View {
         NavigationLink {
-            TextEditView(
+            TextEditBindingView(
                 title: title,
-                value: value,
+                value: $value,
                 footers: footers,
                 capitalize: capitalize,
                 keyboardType: keyboardType,
@@ -24,7 +24,10 @@ struct TextEditNavigationView: View {
                 onSubmit: onSubmit
             )
         } label: {
-            TextItemView(name: title, value: valueFormat?(value) ?? value, sensitive: sensitive, color: color)
+            TextItemView(name: title,
+                         value: valueFormat?(value) ?? value,
+                         sensitive: sensitive,
+                         color: color)
         }
     }
 }

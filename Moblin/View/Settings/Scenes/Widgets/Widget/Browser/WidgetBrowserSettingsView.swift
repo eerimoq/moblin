@@ -52,10 +52,17 @@ struct WidgetBrowserSettingsView: View {
     var body: some View {
         Section {
             TextEditNavigationView(title: "URL", value: browser.url, onSubmit: submitUrl)
-            TextEditNavigationView(
-                title: "Style sheet",
+            MultiLineTextFieldNavigationView(
+                title: String(localized: "Style sheet"),
                 value: browser.styleSheet,
-                onSubmit: submitStyleSheet
+                onSubmit: submitStyleSheet,
+                footers: [
+                    String(localized: "For example:"),
+                    "",
+                    "body {background-color: powderblue;}",
+                    "h1 {color: blue;}",
+                    "p {color: red;}",
+                ]
             )
             Toggle("Audio only", isOn: $browser.audioOnly)
                 .onChange(of: browser.audioOnly) { _ in

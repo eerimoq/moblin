@@ -282,7 +282,7 @@ private struct TextSelectionView: View {
     var body: some View {
         Form {
             Section {
-                MultiLineTextField(value: $value)
+                MultiLineTextFieldView(value: $value)
                     .keyboardType(.default)
                     .textInputAutocapitalization(.never)
                     .disableAutocorrection(true)

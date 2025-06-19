@@ -1,9 +1,29 @@
 import SwiftUI
 
 struct TextEditView: View {
-    @Environment(\.dismiss) var dismiss
     var title: String
     @State var value: String
+    var footers: [String] = []
+    var capitalize: Bool = false
+    var keyboardType: UIKeyboardType = .default
+    var placeholder: String = ""
+    var onSubmit: (String) -> Void
+
+    var body: some View {
+        TextEditBindingView(title: title,
+                            value: $value,
+                            footers: footers,
+                            capitalize: capitalize,
+                            keyboardType: keyboardType,
+                            placeholder: placeholder,
+                            onSubmit: onSubmit)
+    }
+}
+
+struct TextEditBindingView: View {
+    @Environment(\.dismiss) var dismiss
+    var title: String
+    @Binding var value: String
     var footers: [String] = []
     var capitalize: Bool = false
     var keyboardType: UIKeyboardType = .default
