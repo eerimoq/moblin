@@ -141,7 +141,9 @@ private struct MenuView: View {
         case .quickButtonSettings:
             NavigationStack {
                 if let button = model.quickButtonSettingsButton {
-                    QuickButtonsButtonSettingsView(button: button, shortcut: true)
+                    QuickButtonsButtonSettingsView(quickButtons: model.database.quickButtonsGeneral,
+                                                   button: button,
+                                                   shortcut: true)
                 }
             }
         case .none:
@@ -258,19 +260,21 @@ struct MainView: View {
     @State var showAreYouReallySure = false
     @FocusState private var focused: Bool
     @ObservedObject var replay: ReplayProvider
+    @ObservedObject var quickButtons: SettingsQuickButtons
 
     init(webBrowserController: WebBrowserController,
          streamView: StreamView,
-         replay: ReplayProvider)
+         replay: ReplayProvider,
+         quickButtons: SettingsQuickButtons)
     {
         self.webBrowserController = webBrowserController
         self.streamView = streamView
         self.replay = replay
+        self.quickButtons = quickButtons
         UITextField.appearance().clearButtonMode = .always
     }
 
     func drawFocus(context: GraphicsContext, metrics: GeometryProxy, focusPoint: CGPoint) {
-        logger.info("xxx draw")
         let sideLength = 70.0
         let x = metrics.size.width * focusPoint.x - sideLength / 2
         let y = metrics.size.height * focusPoint.y - sideLength / 2
@@ -495,8 +499,14 @@ struct MainView: View {
         }
     }
 
+    private func showBlackScreenButtons() {
+        model.blackScreenButtonColor = .white
+        model.blackScreenHideButtonsTimer.startSingleShot(timeout: 3) {
+            model.blackScreenButtonColor = .black
+        }
+    }
+
     var body: some View {
-        // let _ = Self._printChanges()
         let all = ZStack {
             if model.isPortrait() {
                 portrait()
@@ -506,12 +516,40 @@ struct MainView: View {
             WebBrowserAlertsView()
                 .opacity(webBrowserController.showAlert ? 1 : 0)
             if model.blackScreen {
-                Text("")
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(.black)
-                    .onTapGesture(count: 2) { _ in
-                        model.toggleBlackScreen()
+                HStack {
+                    Spacer()
+                    VStack {
+                        Spacer()
+                        Image(systemName: quickButtons.blackScreenShowChat ? "message.fill" : "message")
+                            .font(.system(size: 20))
+                            .frame(width: controlBarQuickButtonSingleQuickButtonSize,
+                                   height: controlBarQuickButtonSingleQuickButtonSize)
+                            .foregroundColor(model.blackScreenButtonColor)
+                            .onTapGesture(count: 2) { _ in
+                                quickButtons.blackScreenShowChat.toggle()
+                                showBlackScreenButtons()
+                            }
                     }
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(.black)
+                .onTapGesture(count: 1) {
+                    showBlackScreenButtons()
+                }
+                .onTapGesture(count: 2) { _ in
+                    model.toggleBlackScreen()
+                }
+                .onAppear {
+                    showBlackScreenButtons()
+                }
+                if quickButtons.blackScreenShowChat {
+                    GeometryReader { metrics in
+                        ChatOverlayView(chatSettings: model.database.chat,
+                                        chat: model.chat,
+                                        height: metrics.size.height)
+                            .allowsHitTesting(model.chat.interactiveChat)
+                    }
+                }
             }
             if model.lockScreen {
                 Text("")

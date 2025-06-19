@@ -46,7 +46,7 @@ private struct ChatPausedView: View {
     }
 }
 
-private struct ChatOverlayView: View {
+struct ChatOverlayView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var chatSettings: SettingsChat
     @ObservedObject var chat: ChatProvider

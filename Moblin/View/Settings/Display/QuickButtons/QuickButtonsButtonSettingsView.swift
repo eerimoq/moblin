@@ -2,6 +2,7 @@ import SwiftUI
 
 struct QuickButtonsButtonSettingsView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var quickButtons: SettingsQuickButtons
     @ObservedObject var button: SettingsQuickButton
     let shortcut: Bool
 

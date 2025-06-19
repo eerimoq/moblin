@@ -177,6 +177,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var showingPanel: ShowingPanel = .none
     @Published var panelHidden = false
     @Published var blackScreen = false
+    @Published var blackScreenShowChat = false
+    @Published var blackScreenButtonColor: Color = .white
+    var blackScreenHideButtonsTimer = SimpleTimer(queue: .main)
     @Published var lockScreen = false
     @Published var findFace = false
     @Published var currentMic = noMic
