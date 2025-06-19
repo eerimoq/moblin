@@ -141,10 +141,7 @@ private struct MenuView: View {
         case .quickButtonSettings:
             NavigationStack {
                 if let button = model.quickButtonSettingsButton {
-                    QuickButtonsButtonSettingsView(
-                        button: button,
-                        shortcut: true
-                    )
+                    QuickButtonsButtonSettingsView(button: button, shortcut: true)
                 }
             }
         case .none:
