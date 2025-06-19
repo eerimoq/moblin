@@ -16,6 +16,15 @@ private struct ControlBarPageScrollTargetBehavior: ScrollTargetBehavior {
 private struct QuickButtonsView: View {
     @EnvironmentObject var model: Model
     var page: Int
+    var height: Double
+
+    private func buttonSize() -> Double {
+        if model.database.quickButtonsGeneral.bigButtons {
+            return controlBarQuickButtonSingleQuickButtonSize
+        } else {
+            return controlBarButtonSize
+        }
+    }
 
     var body: some View {
         HStack {
@@ -25,37 +34,39 @@ private struct QuickButtonsView: View {
                         if let second = pair.second {
                             QuickButtonsInnerView(
                                 state: second,
-                                size: controlBarButtonSize,
-                                nameSize: controlBarQuickButtonNameSize,
-                                nameWidth: controlBarButtonSize,
+                                size: buttonSize(),
+                                nameSize: buttonSize(),
+                                nameWidth: buttonSize(),
                             )
                         } else {
-                            QuickButtonPlaceholderImage(size: controlBarButtonSize)
+                            QuickButtonPlaceholderImage(size: buttonSize())
                         }
                         QuickButtonsInnerView(
                             state: pair.first,
-                            size: controlBarButtonSize,
-                            nameSize: controlBarQuickButtonNameSize,
-                            nameWidth: controlBarButtonSize,
+                            size: buttonSize(),
+                            nameSize: buttonSize(),
+                            nameWidth: buttonSize(),
                         )
                     }
                 } else {
                     if let second = pair.second {
                         QuickButtonsInnerView(
                             state: second,
-                            size: controlBarQuickButtonSingleQuickButtonSize,
-                            nameSize: controlBarQuickButtonNameSingleColumnSize,
-                            nameWidth: controlBarQuickButtonSingleQuickButtonSize,
+                            size: buttonSize(),
+                            nameSize: buttonSize(),
+                            nameWidth: buttonSize(),
                         )
+                        .frame(height: height - 10)
                     } else {
                         EmptyView()
                     }
                     QuickButtonsInnerView(
                         state: pair.first,
-                        size: controlBarQuickButtonSingleQuickButtonSize,
-                        nameSize: controlBarQuickButtonNameSingleColumnSize,
-                        nameWidth: controlBarQuickButtonSingleQuickButtonSize,
+                        size: buttonSize(),
+                        nameSize: buttonSize(),
+                        nameWidth: buttonSize(),
                     )
+                    .frame(height: height - 10)
                 }
             }
         }
@@ -65,10 +76,11 @@ private struct QuickButtonsView: View {
 private struct PageView: View {
     @EnvironmentObject var model: Model
     var page: Int
+    var height: Double
 
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            QuickButtonsView(page: page)
+            QuickButtonsView(page: page, height: height)
         }
         .scrollDisabled(!model.database.quickButtonsGeneral.enableScroll)
         .rotationEffect(.degrees(180))
@@ -113,7 +125,7 @@ private struct MainPageView: View {
 
     var body: some View {
         HStack(spacing: 0) {
-            PageView(page: 0)
+            PageView(page: 0, height: height)
                 .padding([.top, .leading], 5)
                 .padding([.trailing], 0)
             VStack(spacing: 0) {
@@ -147,20 +159,24 @@ private struct PagesView: View {
                         MainPageView(height: height)
                         ForEach(1 ..< controlBarPages, id: \.self) { page in
                             if !model.buttonPairs[page].isEmpty {
-                                PageView(page: page)
+                                PageView(page: page, height: height)
                                     .padding([.top, .leading, .trailing], 5)
                             }
                         }
                     }
-                    .containerRelativeFrame(.vertical, count: 1, spacing: 0)
+                    .containerRelativeFrame(.vertical, count: 1, spacing: 0, alignment: .top)
                 }
                 .scrollTargetLayout()
             }
             .scrollTargetBehavior(ControlBarPageScrollTargetBehavior(model: model))
             .scrollIndicators(.never)
-            .frame(height: height - 1)
+            .ignoresSafeArea(.all, edges: [.bottom])
         } else {
-            MainPageView(height: height)
+            ScrollView(.vertical) {
+                MainPageView(height: height)
+            }
+            .scrollIndicators(.never)
+            .ignoresSafeArea(.all, edges: [.bottom])
         }
     }
 }
