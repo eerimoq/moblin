@@ -16,6 +16,8 @@ import TrueTime
 import WatchConnectivity
 import WebKit
 
+private let blackScreenImagePath = URL.documentsDirectory.appending(component: "blackScreenImage.img")
+
 enum ShowingPanel {
     case none
     case settings
@@ -178,7 +180,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var panelHidden = false
     @Published var blackScreen = false
     @Published var blackScreenShowChat = false
-    @Published var blackScreenButtonColor: Color = .white
+    @Published var blackScreenShowButtons = true
+    @Published var blackScreenImage: UIImage?
     var blackScreenHideButtonsTimer = SimpleTimer(queue: .main)
     @Published var lockScreen = false
     @Published var findFace = false
@@ -992,6 +995,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         replay.speed = database.replay.speed
         gForceManager = GForceManager(motionManager: motionManager)
         startGForceManager()
+        loadBlackScreenImage()
     }
 
     @objc func applicationDidChangeActive(notification: NSNotification) {
@@ -2749,6 +2753,21 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func isStatusBrowserWidgetsActive() -> Bool {
         return !browserWidgetsStatus.isEmpty && browserWidgetsStatusChanged
+    }
+
+    func saveBlackScreenImage(data: Data) {
+        try? data.write(to: blackScreenImagePath)
+    }
+
+    func loadBlackScreenImage() {
+        guard let data = try? Data(contentsOf: blackScreenImagePath) else {
+            return
+        }
+        blackScreenImage = UIImage(data: data)
+    }
+
+    func deleteBlackScreenImage() {
+        try? FileManager.default.removeItem(at: blackScreenImagePath)
     }
 }
 

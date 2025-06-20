@@ -258,28 +258,40 @@ private struct BlackScreenView: View {
     @ObservedObject var quickButtons: SettingsQuickButtons
 
     private func showBlackScreenButtons() {
-        model.blackScreenButtonColor = .white
+        model.blackScreenShowButtons = true
         model.blackScreenHideButtonsTimer.startSingleShot(timeout: 3) {
-            model.blackScreenButtonColor = .black
+            model.blackScreenShowButtons = false
         }
     }
 
     var body: some View {
-        HStack {
-            Spacer()
-            VStack {
+        ZStack {
+            if let image = model.blackScreenImage {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFit()
+            }
+            HStack {
                 Spacer()
-                Image(systemName: quickButtons.blackScreenShowChat ? "message.fill" : "message")
-                    .font(.system(size: 20))
-                    .frame(width: controlBarQuickButtonSingleQuickButtonSize,
-                           height: controlBarQuickButtonSingleQuickButtonSize)
-                    .foregroundColor(model.blackScreenButtonColor)
-                    .onTapGesture(count: 2) { _ in
-                        quickButtons.blackScreenShowChat.toggle()
-                        showBlackScreenButtons()
+                VStack {
+                    Spacer()
+                    if model.blackScreenShowButtons {
+                        Image(systemName: quickButtons.blackScreenShowChat ? "message.fill" : "message")
+                            .font(.system(size: 20))
+                            .frame(width: controlBarQuickButtonSingleQuickButtonSize,
+                                   height: controlBarQuickButtonSingleQuickButtonSize)
+                            .foregroundColor(.white)
+                            .onTapGesture(count: 2) { _ in
+                                quickButtons.blackScreenShowChat.toggle()
+                                showBlackScreenButtons()
+                            }
                     }
+                }
+                .padding([.bottom], 20)
+                .padding([.trailing], 50)
             }
         }
+        .ignoresSafeArea()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(.black)
         .onTapGesture(count: 1) {
