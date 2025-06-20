@@ -57,23 +57,43 @@ private func createSuggestions() -> [Suggestion] {
     return suggestions
 }
 
+private struct SuggestionView: View {
+    var suggestion: Suggestion
+    @Binding var text: String
+    var dismiss: () -> Void
+    @State var isPresentingConfirmation = false
+
+    var body: some View {
+        VStack(alignment: .leading) {
+            Button {
+                isPresentingConfirmation = true
+            } label: {
+                Text(suggestion.name)
+                    .font(.title3)
+            }
+            .confirmationDialog("", isPresented: $isPresentingConfirmation) {
+                Button("Yes", role: .destructive) {
+                    text = suggestion.text
+                    dismiss()
+                }
+            } message: {
+                Text("Are you sure you want to replace the current text widget content?")
+            }
+            Text(suggestion.text)
+        }
+    }
+}
+
 private struct SuggestionsView: View {
     @Environment(\.dismiss) var dismiss
-    @Binding var value: String
+    @Binding var text: String
 
     var body: some View {
         Form {
             Section {
                 ForEach(suggestions) { suggestion in
-                    VStack(alignment: .leading) {
-                        Button {
-                            value = suggestion.text
-                            dismiss()
-                        } label: {
-                            Text(suggestion.name)
-                                .font(.title3)
-                        }
-                        Text(suggestion.text)
+                    SuggestionView(suggestion: suggestion, text: $text) {
+                        dismiss()
                     }
                     .tag(suggestion.id)
                 }
@@ -289,7 +309,7 @@ private struct TextSelectionView: View {
             }
             Section {
                 NavigationLink {
-                    SuggestionsView(value: $value)
+                    SuggestionsView(text: $value)
                 } label: {
                     Text("Suggestions")
                 }
