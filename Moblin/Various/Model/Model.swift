@@ -16,8 +16,6 @@ import TrueTime
 import WatchConnectivity
 import WebKit
 
-private let blackScreenImagePath = URL.documentsDirectory.appending(component: "blackScreenImage.img")
-
 enum ShowingPanel {
     case none
     case settings
@@ -2084,10 +2082,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         showBrowser.toggle()
     }
 
-    func toggleBlackScreen() {
-        blackScreen.toggle()
-    }
-
     func toggleLockScreen() {
         lockScreen.toggle()
         setGlobalButtonState(type: .lockScreen, isOn: lockScreen)
@@ -2753,21 +2747,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func isStatusBrowserWidgetsActive() -> Bool {
         return !browserWidgetsStatus.isEmpty && browserWidgetsStatusChanged
-    }
-
-    func saveBlackScreenImage(data: Data) {
-        try? data.write(to: blackScreenImagePath)
-    }
-
-    func loadBlackScreenImage() {
-        guard let data = try? Data(contentsOf: blackScreenImagePath) else {
-            return
-        }
-        blackScreenImage = UIImage(data: data)
-    }
-
-    func deleteBlackScreenImage() {
-        try? FileManager.default.removeItem(at: blackScreenImagePath)
     }
 }
 
