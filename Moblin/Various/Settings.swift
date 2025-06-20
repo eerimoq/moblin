@@ -4364,7 +4364,7 @@ enum SettingsGameControllerButtonFunction: String, Codable, CaseIterable {
         case .torch:
             return String(localized: "Torch")
         case .blackScreen:
-            return String(localized: "Black screen")
+            return String(localized: "Stealth mode")
         case .chat:
             return String(localized: "Chat")
         case .scene:
@@ -4563,7 +4563,7 @@ enum SettingsKeyboardKeyFunction: String, Codable, CaseIterable {
         case .torch:
             return String(localized: "Torch")
         case .blackScreen:
-            return String(localized: "Black screen")
+            return String(localized: "Stealth mode")
         case .scene:
             return String(localized: "Scene")
         case .widget:
@@ -5605,7 +5605,7 @@ private func addMissingQuickButtons(database: Database) {
     button.systemImageNameOff = "arrow.up.message"
     updateQuickButton(database: database, button: button)
 
-    button = SettingsQuickButton(name: String(localized: "Black screen"))
+    button = SettingsQuickButton(name: String(localized: "Stealth mode"))
     button.id = UUID()
     button.type = .blackScreen
     button.imageType = "System name"

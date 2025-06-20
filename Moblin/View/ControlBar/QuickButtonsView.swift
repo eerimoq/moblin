@@ -156,7 +156,7 @@ struct QuickButtonsInnerView: View {
     private func blackScreenAction() {
         model.toggleBlackScreen()
         model.makeToast(
-            title: String(localized: "Black screen"),
+            title: String(localized: "Stealth mode"),
             subTitle: String(localized: "Double tap to return to main view")
         )
         model.updateQuickButtonStates()
