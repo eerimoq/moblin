@@ -257,6 +257,24 @@ class MpegTsWriter {
         }
         return packetizedElementaryStream.arrayOfPackets(packetId, programClockReference)
     }
+
+    private func addStreamSpecificDatasToProgramMappingTable(packetId: UInt16, data: ElementaryStreamSpecificData) {
+        if let index = programMappingTable.elementaryStreamSpecificDatas.firstIndex(where: {
+            $0.elementaryPacketId == packetId
+        }) {
+            programMappingTable.elementaryStreamSpecificDatas[index] = data
+        } else {
+            programMappingTable.elementaryStreamSpecificDatas.append(data)
+        }
+    }
+
+    private func addAudioSpecificDatas(data: ElementaryStreamSpecificData) {
+        addStreamSpecificDatasToProgramMappingTable(packetId: MpegTsWriter.audioPacketId, data: data)
+    }
+
+    private func addVideoSpecificDatas(data: ElementaryStreamSpecificData) {
+        addStreamSpecificDatasToProgramMappingTable(packetId: MpegTsWriter.videoPacketId, data: data)
+    }
 }
 
 extension MpegTsWriter: AudioCodecDelegate {
@@ -273,7 +291,7 @@ extension MpegTsWriter: AudioCodecDelegate {
             return
         }
         data.elementaryPacketId = MpegTsWriter.audioPacketId
-        programMappingTable.elementaryStreamSpecificDatas.append(data)
+        addAudioSpecificDatas(data: data)
         audioContinuityCounter = 0
         setAudioConfig(MpegTsAudioConfig(formatDescription: format.formatDescription))
     }
@@ -320,16 +338,6 @@ extension MpegTsWriter: VideoEncoderDelegate {
             data.streamType = .h265
             addVideoSpecificDatas(data: data)
             setVideoConfig(MpegTsVideoConfigHevc(data: hvcC))
-        }
-    }
-
-    private func addVideoSpecificDatas(data: ElementaryStreamSpecificData) {
-        if let index = programMappingTable.elementaryStreamSpecificDatas.firstIndex(where: {
-            $0.elementaryPacketId == MpegTsWriter.videoPacketId
-        }) {
-            programMappingTable.elementaryStreamSpecificDatas[index] = data
-        } else {
-            programMappingTable.elementaryStreamSpecificDatas.append(data)
         }
     }
 
