@@ -253,6 +253,55 @@ private struct WebBrowserAlertsView: UIViewControllerRepresentable {
     func updateUIViewController(_: WebBrowserController, context _: Context) {}
 }
 
+private struct BlackScreenView: View {
+    @EnvironmentObject var model: Model
+    @ObservedObject var quickButtons: SettingsQuickButtons
+
+    private func showBlackScreenButtons() {
+        model.blackScreenButtonColor = .white
+        model.blackScreenHideButtonsTimer.startSingleShot(timeout: 3) {
+            model.blackScreenButtonColor = .black
+        }
+    }
+
+    var body: some View {
+        HStack {
+            Spacer()
+            VStack {
+                Spacer()
+                Image(systemName: quickButtons.blackScreenShowChat ? "message.fill" : "message")
+                    .font(.system(size: 20))
+                    .frame(width: controlBarQuickButtonSingleQuickButtonSize,
+                           height: controlBarQuickButtonSingleQuickButtonSize)
+                    .foregroundColor(model.blackScreenButtonColor)
+                    .onTapGesture(count: 2) { _ in
+                        quickButtons.blackScreenShowChat.toggle()
+                        showBlackScreenButtons()
+                    }
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(.black)
+        .onTapGesture(count: 1) {
+            showBlackScreenButtons()
+        }
+        .onTapGesture(count: 2) { _ in
+            model.toggleBlackScreen()
+        }
+        .onAppear {
+            showBlackScreenButtons()
+        }
+        if quickButtons.blackScreenShowChat {
+            GeometryReader { metrics in
+                ChatOverlayView(chatSettings: model.database.chat,
+                                chat: model.chat,
+                                height: metrics.size.height)
+                    .allowsHitTesting(model.chat.interactiveChat)
+            }
+        }
+    }
+}
+
 struct MainView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var webBrowserController: WebBrowserController
@@ -260,17 +309,14 @@ struct MainView: View {
     @State var showAreYouReallySure = false
     @FocusState private var focused: Bool
     @ObservedObject var replay: ReplayProvider
-    @ObservedObject var quickButtons: SettingsQuickButtons
 
     init(webBrowserController: WebBrowserController,
          streamView: StreamView,
-         replay: ReplayProvider,
-         quickButtons: SettingsQuickButtons)
+         replay: ReplayProvider)
     {
         self.webBrowserController = webBrowserController
         self.streamView = streamView
         self.replay = replay
-        self.quickButtons = quickButtons
         UITextField.appearance().clearButtonMode = .always
     }
 
@@ -499,13 +545,6 @@ struct MainView: View {
         }
     }
 
-    private func showBlackScreenButtons() {
-        model.blackScreenButtonColor = .white
-        model.blackScreenHideButtonsTimer.startSingleShot(timeout: 3) {
-            model.blackScreenButtonColor = .black
-        }
-    }
-
     var body: some View {
         let all = ZStack {
             if model.isPortrait() {
@@ -516,40 +555,7 @@ struct MainView: View {
             WebBrowserAlertsView()
                 .opacity(webBrowserController.showAlert ? 1 : 0)
             if model.blackScreen {
-                HStack {
-                    Spacer()
-                    VStack {
-                        Spacer()
-                        Image(systemName: quickButtons.blackScreenShowChat ? "message.fill" : "message")
-                            .font(.system(size: 20))
-                            .frame(width: controlBarQuickButtonSingleQuickButtonSize,
-                                   height: controlBarQuickButtonSingleQuickButtonSize)
-                            .foregroundColor(model.blackScreenButtonColor)
-                            .onTapGesture(count: 2) { _ in
-                                quickButtons.blackScreenShowChat.toggle()
-                                showBlackScreenButtons()
-                            }
-                    }
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(.black)
-                .onTapGesture(count: 1) {
-                    showBlackScreenButtons()
-                }
-                .onTapGesture(count: 2) { _ in
-                    model.toggleBlackScreen()
-                }
-                .onAppear {
-                    showBlackScreenButtons()
-                }
-                if quickButtons.blackScreenShowChat {
-                    GeometryReader { metrics in
-                        ChatOverlayView(chatSettings: model.database.chat,
-                                        chat: model.chat,
-                                        height: metrics.size.height)
-                            .allowsHitTesting(model.chat.interactiveChat)
-                    }
-                }
+                BlackScreenView(quickButtons: model.database.quickButtonsGeneral)
             }
             if model.lockScreen {
                 Text("")

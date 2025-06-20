@@ -19,8 +19,7 @@ struct MoblinApp: App {
                     cameraPreviewView: CameraPreviewView(),
                     streamPreviewView: StreamPreviewView()
                 ),
-                replay: model.replay,
-                quickButtons: model.database.quickButtonsGeneral
+                replay: model.replay
             )
             .environmentObject(model)
         }
