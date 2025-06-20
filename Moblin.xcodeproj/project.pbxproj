@@ -260,7 +260,7 @@
 		0364662E2B456B3B005AB9FA /* StreamWizardCustomRtmpSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0364662D2B456B3B005AB9FA /* StreamWizardCustomRtmpSettingsView.swift */; };
 		0364B6212BD36806002F828D /* StreamButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0364B6202BD36806002F828D /* StreamButton.swift */; };
 		0364B6232BD3683F002F828D /* ControlBarPortraitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0364B6222BD3683F002F828D /* ControlBarPortraitView.swift */; };
-		0364D4B32E05768F0096304F /* ModelBlackScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0364D4B22E05768A0096304F /* ModelBlackScreen.swift */; };
+		0364D4B32E05768F0096304F /* ModelStealthMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0364D4B22E05768A0096304F /* ModelStealthMode.swift */; };
 		036BE2CC2ABBF0BA0048F9C5 /* StreamUrlSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036BE2CB2ABBF0BA0048F9C5 /* StreamUrlSettingsView.swift */; };
 		036BE2CF2ABD4CA60048F9C5 /* KickPusher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036BE2CE2ABD4CA60048F9C5 /* KickPusher.swift */; };
 		036BE2D22ABD518E0048F9C5 /* StreamKickSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036BE2D12ABD518E0048F9C5 /* StreamKickSettingsView.swift */; };
@@ -939,7 +939,7 @@
 		0364662D2B456B3B005AB9FA /* StreamWizardCustomRtmpSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardCustomRtmpSettingsView.swift; sourceTree = "<group>"; };
 		0364B6202BD36806002F828D /* StreamButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamButton.swift; sourceTree = "<group>"; };
 		0364B6222BD3683F002F828D /* ControlBarPortraitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlBarPortraitView.swift; sourceTree = "<group>"; };
-		0364D4B22E05768A0096304F /* ModelBlackScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelBlackScreen.swift; sourceTree = "<group>"; };
+		0364D4B22E05768A0096304F /* ModelStealthMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelStealthMode.swift; sourceTree = "<group>"; };
 		036BE2CB2ABBF0BA0048F9C5 /* StreamUrlSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamUrlSettingsView.swift; sourceTree = "<group>"; };
 		036BE2CE2ABD4CA60048F9C5 /* KickPusher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KickPusher.swift; sourceTree = "<group>"; };
 		036BE2D12ABD518E0048F9C5 /* StreamKickSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamKickSettingsView.swift; sourceTree = "<group>"; };
@@ -2822,7 +2822,7 @@
 				03BA73BE2DDCDD1100075CD6 /* ModelAppleWatch.swift */,
 				03BA73C22DDCE24B00075CD6 /* ModelAudio.swift */,
 				032F81C32DDCF57C00E14CC5 /* ModelAutoSceneSwitcher.swift */,
-				0364D4B22E05768A0096304F /* ModelBlackScreen.swift */,
+				0364D4B22E05768A0096304F /* ModelStealthMode.swift */,
 				03DA0B962DF45A0900AE83C3 /* ModelBluetooth.swift */,
 				03BA73B42DDCD72900075CD6 /* ModelCamera.swift */,
 				03BA73AC2DDC5AE200075CD6 /* ModelCatPrinters.swift */,
@@ -3755,7 +3755,7 @@
 				0379E66D2C8980160021AB59 /* CatPrintersSettingsView.swift in Sources */,
 				03FE41482DE9E0200085D4E1 /* StreamOverlayRightPinchView.swift in Sources */,
 				032A6F132DDD6E6F00453B0A /* ModelSettingsUrl.swift in Sources */,
-				0364D4B32E05768F0096304F /* ModelBlackScreen.swift in Sources */,
+				0364D4B32E05768F0096304F /* ModelStealthMode.swift in Sources */,
 				032D858A2DDD824400A6128A /* ModelSnapshot.swift in Sources */,
 				030EFE752BDAD7C7004208B6 /* SwipeLeftToDeleteHelpView.swift in Sources */,
 				03A3F4C72AF4C0AD00F465D1 /* AdaptiveBitrate.swift in Sources */,

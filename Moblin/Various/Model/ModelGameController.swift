@@ -63,7 +63,7 @@ extension Model {
             }
         case .blackScreen:
             if !pressed {
-                toggleBlackScreen()
+                toggleStealthMode()
                 updateQuickButtonStates()
             }
         case .chat:

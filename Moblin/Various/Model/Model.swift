@@ -176,11 +176,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var goProRtmpUrlSelection: UUID?
     @Published var showingPanel: ShowingPanel = .none
     @Published var panelHidden = false
-    @Published var blackScreen = false
-    @Published var blackScreenShowChat = false
-    @Published var blackScreenShowButtons = true
-    @Published var blackScreenImage: UIImage?
-    var blackScreenHideButtonsTimer = SimpleTimer(queue: .main)
+    @Published var stealthMode = false
+    @Published var stealthModeShowChat = false
+    @Published var stealthModeShowButtons = true
+    @Published var stealthModeImage: UIImage?
+    var stealthModeHideButtonsTimer = SimpleTimer(queue: .main)
     @Published var lockScreen = false
     @Published var findFace = false
     @Published var currentMic = noMic
@@ -993,7 +993,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         replay.speed = database.replay.speed
         gForceManager = GForceManager(motionManager: motionManager)
         startGForceManager()
-        loadBlackScreenImage()
+        loadStealthModeImage()
     }
 
     @objc func applicationDidChangeActive(notification: NSNotification) {

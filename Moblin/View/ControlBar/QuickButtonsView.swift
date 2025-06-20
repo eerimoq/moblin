@@ -153,8 +153,8 @@ struct QuickButtonsInnerView: View {
         model.sceneUpdated()
     }
 
-    private func blackScreenAction() {
-        model.toggleBlackScreen()
+    private func stealthModeAction() {
+        model.toggleStealthMode()
         model.makeToast(
             title: String(localized: "Stealth mode"),
             subTitle: String(localized: "Double tap to return to main view")
@@ -417,7 +417,7 @@ struct QuickButtonsInnerView: View {
                 }
             case .blackScreen:
                 QuickButtonImage(state: state, buttonSize: size) {
-                    blackScreenAction()
+                    stealthModeAction()
                 }
             case .lockScreen:
                 QuickButtonImage(state: state, buttonSize: size) {

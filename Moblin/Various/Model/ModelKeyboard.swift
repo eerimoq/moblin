@@ -52,7 +52,7 @@ extension Model {
             toggleMute()
             toggleGlobalButton(type: .mute)
         case .blackScreen:
-            toggleBlackScreen()
+            toggleStealthMode()
         case .scene:
             selectScene(id: key.sceneId)
         case .widget:

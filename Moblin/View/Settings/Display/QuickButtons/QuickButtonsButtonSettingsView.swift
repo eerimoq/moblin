@@ -1,14 +1,14 @@
 import PhotosUI
 import SwiftUI
 
-private struct BlackScreenView: View {
+private struct StealthModeView: View {
     @EnvironmentObject var model: Model
     @State var selectedImageItem: PhotosPickerItem?
 
     var body: some View {
         Section {
             PhotosPicker(selection: $selectedImageItem, matching: .images) {
-                if let image = model.blackScreenImage {
+                if let image = model.stealthModeImage {
                     HCenter {
                         Image(uiImage: image)
                             .resizable()
@@ -25,19 +25,19 @@ private struct BlackScreenView: View {
                 imageItem?.loadTransferable(type: Data.self) { result in
                     switch result {
                     case let .success(data?):
-                        model.saveBlackScreenImage(data: data)
+                        model.saveStealthModeImage(data: data)
                         DispatchQueue.main.async {
-                            self.model.blackScreenImage = UIImage(data: data)
+                            self.model.stealthModeImage = UIImage(data: data)
                         }
                     default:
                         break
                     }
                 }
             }
-            if model.blackScreenImage != nil {
+            if model.stealthModeImage != nil {
                 Button {
-                    model.blackScreenImage = nil
-                    model.deleteBlackScreenImage()
+                    model.stealthModeImage = nil
+                    model.deleteStealthModeImage()
                 } label: {
                     HCenter {
                         Text("Delete image")
@@ -102,7 +102,7 @@ struct QuickButtonsButtonSettingsView: View {
             }
             switch button.type {
             case .blackScreen:
-                BlackScreenView()
+                StealthModeView()
             default:
                 EmptyView()
             }

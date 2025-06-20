@@ -253,20 +253,20 @@ private struct WebBrowserAlertsView: UIViewControllerRepresentable {
     func updateUIViewController(_: WebBrowserController, context _: Context) {}
 }
 
-private struct BlackScreenView: View {
+private struct StealthModeView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var quickButtons: SettingsQuickButtons
 
-    private func showBlackScreenButtons() {
-        model.blackScreenShowButtons = true
-        model.blackScreenHideButtonsTimer.startSingleShot(timeout: 3) {
-            model.blackScreenShowButtons = false
+    private func showButtons() {
+        model.stealthModeShowButtons = true
+        model.stealthModeHideButtonsTimer.startSingleShot(timeout: 3) {
+            model.stealthModeShowButtons = false
         }
     }
 
     var body: some View {
         ZStack {
-            if let image = model.blackScreenImage {
+            if let image = model.stealthModeImage {
                 Image(uiImage: image)
                     .resizable()
                     .scaledToFit()
@@ -275,7 +275,7 @@ private struct BlackScreenView: View {
                 Spacer()
                 VStack {
                     Spacer()
-                    if model.blackScreenShowButtons {
+                    if model.stealthModeShowButtons {
                         Image(systemName: quickButtons.blackScreenShowChat ? "message.fill" : "message")
                             .font(.system(size: 20))
                             .frame(width: controlBarQuickButtonSingleQuickButtonSize,
@@ -283,7 +283,7 @@ private struct BlackScreenView: View {
                             .foregroundColor(.white)
                             .onTapGesture(count: 2) { _ in
                                 quickButtons.blackScreenShowChat.toggle()
-                                showBlackScreenButtons()
+                                showButtons()
                             }
                     }
                 }
@@ -295,13 +295,13 @@ private struct BlackScreenView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(.black)
         .onTapGesture(count: 1) {
-            showBlackScreenButtons()
+            showButtons()
         }
         .onTapGesture(count: 2) { _ in
-            model.toggleBlackScreen()
+            model.toggleStealthMode()
         }
         .onAppear {
-            showBlackScreenButtons()
+            showButtons()
         }
         if quickButtons.blackScreenShowChat {
             GeometryReader { metrics in
@@ -579,8 +579,8 @@ struct MainView: View {
             }
             WebBrowserAlertsView()
                 .opacity(webBrowserController.showAlert ? 1 : 0)
-            if model.blackScreen {
-                BlackScreenView(quickButtons: model.database.quickButtonsGeneral)
+            if model.stealthMode {
+                StealthModeView(quickButtons: model.database.quickButtonsGeneral)
             }
             if model.lockScreen {
                 LockScreenView()
