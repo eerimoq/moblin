@@ -5222,6 +5222,7 @@ class Database: Codable, ObservableObject {
     @Published var whirlpoolAngle: Float = .pi / 2
     @Published var pinchScale: Float = 0.5
     var selfieStick: SettingsSelfieStick = .init()
+    @Published var bigButtons: Bool = false
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -5313,7 +5314,8 @@ class Database: Codable, ObservableObject {
              fixedHorizon,
              whirlpoolAngle,
              pinchScale,
-             selfieStick
+             selfieStick,
+             bigButtons
     }
 
     func encode(to encoder: Encoder) throws {
@@ -5380,6 +5382,7 @@ class Database: Codable, ObservableObject {
         try container.encode(.whirlpoolAngle, whirlpoolAngle)
         try container.encode(.pinchScale, pinchScale)
         try container.encode(.selfieStick, selfieStick)
+        try container.encode(.bigButtons, bigButtons)
     }
 
     init() {}
@@ -5448,6 +5451,7 @@ class Database: Codable, ObservableObject {
         whirlpoolAngle = container.decode(.whirlpoolAngle, Float.self, .pi / 2)
         pinchScale = container.decode(.pinchScale, Float.self, 0.5)
         selfieStick = container.decode(.selfieStick, SettingsSelfieStick.self, .init())
+        bigButtons = container.decode(.bigButtons, Bool.self, false)
     }
 }
 

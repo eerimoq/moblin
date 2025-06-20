@@ -1,7 +1,9 @@
 import SwiftUI
 
 let zoomSegmentWidth = 50.0
+let zoomSegmentWidthBig = 60.0
 let segmentHeight = 40.0
+let segmentHeightBig = 60.0
 let sceneSegmentWidth = 70.0
 let sliderWidth = 250.0
 let sliderHeight = 40.0

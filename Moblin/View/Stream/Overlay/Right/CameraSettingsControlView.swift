@@ -13,6 +13,7 @@ private struct CameraSettingButtonView: View {
     var value: String
     var locked: Bool
     var on: Bool
+    var height: Double
 
     var body: some View {
         VStack(spacing: 0) {
@@ -27,7 +28,7 @@ private struct CameraSettingButtonView: View {
             .font(.footnote)
             .padding([.trailing], 7)
         }
-        .frame(width: cameraButtonWidth, height: segmentHeight)
+        .frame(width: cameraButtonWidth, height: height)
         .background(pickerBackgroundColor)
         .foregroundColor(.white)
         .cornerRadius(7)
@@ -246,6 +247,7 @@ struct FocusView: View {
 
 private struct ButtonsView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var database: Database
     @ObservedObject var camera: CameraState
 
     private func formatExposureBias() -> String {
@@ -272,6 +274,14 @@ private struct ButtonsView: View {
         return String(Int(camera.manualFocus * 100))
     }
 
+    private func height() -> Double {
+        if database.bigButtons {
+            return segmentHeightBig
+        } else {
+            return segmentHeight
+        }
+    }
+
     var body: some View {
         HStack {
             Button {
@@ -286,7 +296,8 @@ private struct ButtonsView: View {
                     title: String(localized: "EXB"),
                     value: formatExposureBias(),
                     locked: true,
-                    on: model.showingCameraBias
+                    on: model.showingCameraBias,
+                    height: height()
                 )
             }
             Button {
@@ -301,7 +312,8 @@ private struct ButtonsView: View {
                     title: String(localized: "WB"),
                     value: formatWhiteBalance(),
                     locked: camera.manualWhiteBalanceEnabled,
-                    on: model.showingCameraWhiteBalance
+                    on: model.showingCameraWhiteBalance,
+                    height: height()
                 )
             }
             Button {
@@ -316,7 +328,8 @@ private struct ButtonsView: View {
                     title: String(localized: "ISO"),
                     value: formatIso(),
                     locked: camera.manualIsoEnabled,
-                    on: model.showingCameraIso
+                    on: model.showingCameraIso,
+                    height: height()
                 )
             }
             Button {
@@ -331,7 +344,8 @@ private struct ButtonsView: View {
                     title: String(localized: "FOC"),
                     value: formatFocus(),
                     locked: camera.manualFocusEnabled,
-                    on: model.showingCameraFocus
+                    on: model.showingCameraFocus,
+                    height: height()
                 )
             }
         }
@@ -355,7 +369,7 @@ struct StreamOverlayRightCameraSettingsControlView: View {
             if model.showingCameraFocus {
                 FocusView(camera: model.camera)
             }
-            ButtonsView(camera: model.camera)
+            ButtonsView(database: model.database, camera: model.camera)
                 .onAppear {
                     model.startObservingFocus()
                     model.startObservingIso()

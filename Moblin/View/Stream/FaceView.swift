@@ -5,11 +5,12 @@ private let faceSliderWidth = 200.0
 private struct FaceButtonView: View {
     var title: String
     var on: Bool
+    var height: Double
 
     var body: some View {
         Text(title)
             .font(.subheadline)
-            .frame(width: cameraButtonWidth, height: segmentHeight)
+            .frame(width: cameraButtonWidth, height: height)
             .background(pickerBackgroundColor)
             .foregroundColor(.white)
             .cornerRadius(7)
@@ -132,6 +133,7 @@ private struct FaceViewBeautySmooth: View {
 private struct FaceViewBeautyButtons: View {
     @EnvironmentObject var model: Model
     @Binding var beauty: Bool
+    var height: Double
 
     var body: some View {
         HStack {
@@ -140,7 +142,9 @@ private struct FaceViewBeautyButtons: View {
                 model.showFaceBeautySmooth = false
                 model.updateFaceFilterButtonState()
             } label: {
-                FaceButtonView(title: String(localized: "Shape"), on: model.showFaceBeautyShape)
+                FaceButtonView(title: String(localized: "Shape"),
+                               on: model.showFaceBeautyShape,
+                               height: height)
             }
             if model.database.color.space != .appleLog && model.database.debug.metalPetalFilters {
                 Button {
@@ -148,7 +152,9 @@ private struct FaceViewBeautyButtons: View {
                     model.showFaceBeautySmooth.toggle()
                     model.updateFaceFilterButtonState()
                 } label: {
-                    FaceButtonView(title: String(localized: "Smooth"), on: model.showFaceBeautySmooth)
+                    FaceButtonView(title: String(localized: "Smooth"),
+                                   on: model.showFaceBeautySmooth,
+                                   height: height)
                 }
             }
             Button {
@@ -158,7 +164,9 @@ private struct FaceViewBeautyButtons: View {
                 beauty = model.database.debug.beautyFilterSettings.showBeauty
                 model.updateFaceFilterButtonState()
             } label: {
-                FaceButtonView(title: String(localized: "Enabled"), on: beauty)
+                FaceButtonView(title: String(localized: "Enabled"),
+                               on: beauty,
+                               height: height)
             }
         }
         .padding([.bottom], 5)
@@ -167,8 +175,17 @@ private struct FaceViewBeautyButtons: View {
 
 struct FaceView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var database: Database
     @ObservedObject var debug: SettingsDebug
     @ObservedObject var settings: SettingsDebugBeautyFilter
+
+    private func height() -> Double {
+        if database.bigButtons {
+            return segmentHeightBig
+        } else {
+            return segmentHeight
+        }
+    }
 
     var body: some View {
         HStack {
@@ -183,7 +200,7 @@ struct FaceView: View {
                     {
                         FaceViewBeautySmooth()
                     }
-                    FaceViewBeautyButtons(beauty: $settings.showBeauty)
+                    FaceViewBeautyButtons(beauty: $settings.showBeauty, height: height())
                 }
                 HStack {
                     Button {
@@ -194,7 +211,8 @@ struct FaceView: View {
                     } label: {
                         FaceButtonView(
                             title: String(localized: "Crop"),
-                            on: debug.beautyFilter
+                            on: debug.beautyFilter,
+                            height: height()
                         )
                     }
                     Button {
@@ -205,7 +223,8 @@ struct FaceView: View {
                     } label: {
                         FaceButtonView(
                             title: String(localized: "Mouth"),
-                            on: settings.showMoblin
+                            on: settings.showMoblin,
+                            height: height()
                         )
                     }
                     Button {
@@ -215,7 +234,8 @@ struct FaceView: View {
                     } label: {
                         FaceButtonView(
                             title: String(localized: "Blur"),
-                            on: settings.showBlur
+                            on: settings.showBlur,
+                            height: height()
                         )
                     }
                     Button {
@@ -226,7 +246,8 @@ struct FaceView: View {
                     } label: {
                         FaceButtonView(
                             title: String(localized: "Privacy"),
-                            on: settings.showBlurBackground
+                            on: settings.showBlurBackground,
+                            height: height()
                         )
                     }
                     Button {
@@ -234,7 +255,8 @@ struct FaceView: View {
                     } label: {
                         FaceButtonView(
                             title: String(localized: "Beauty"),
-                            on: debug.beautyFilter || model.showFaceBeauty
+                            on: debug.beautyFilter || model.showFaceBeauty,
+                            height: height()
                         )
                     }
                 }

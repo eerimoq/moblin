@@ -2,7 +2,16 @@ import SwiftUI
 
 struct StreamOverlayRightSceneSelectorView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var database: Database
     let width: CGFloat
+
+    private func height() -> Double {
+        if database.bigButtons {
+            return segmentHeightBig
+        } else {
+            return segmentHeight
+        }
+    }
 
     var body: some View {
         SegmentedPicker(model.enabledScenes, selectedItem: Binding(get: {
@@ -22,7 +31,7 @@ struct StreamOverlayRightSceneSelectorView: View {
                 .font(.subheadline)
                 .frame(
                     width: min(sceneSegmentWidth, (width - 20) / CGFloat(model.enabledScenes.count)),
-                    height: segmentHeight
+                    height: height()
                 )
         } onLongPress: { index in
             if index < model.enabledScenes.count {

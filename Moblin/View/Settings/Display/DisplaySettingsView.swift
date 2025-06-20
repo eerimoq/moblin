@@ -32,6 +32,7 @@ struct DisplaySettingsView: View {
                 } label: {
                     Text("Quick buttons")
                 }
+                Toggle("Big buttons", isOn: $database.bigButtons)
                 if database.showAllSettings {
                     NavigationLink {
                         StreamButtonsSettingsView(background: database.streamButtonColor.color())
