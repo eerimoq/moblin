@@ -247,14 +247,14 @@ extension Model {
     }
 
     func removeOldChatMessages(now: ContinuousClock.Instant) {
-        if quickButtonChat.paused {
+        if chat.paused {
             return
         }
         guard database.chat.maximumAgeEnabled else {
             return
         }
         while let post = chat.posts.last {
-            if now > post.timestampTime + .seconds(database.chat.maximumAge) {
+            if post.timestampTime.duration(to: now) > .seconds(database.chat.maximumAge) {
                 chat.posts.removeLast()
             } else {
                 break
