@@ -149,6 +149,8 @@ extension Model {
             return .front
         case .back:
             return .back
+        case .top:
+            return .top
         default:
             return nil
         }

@@ -14,7 +14,8 @@ struct QuickButtonMicView: View {
                     selectedMic = mic
                 })) {
                     ForEach(model.listMics()) { mic in
-                        Text(mic.name).tag(mic)
+                        Text(mic.name)
+                            .tag(mic)
                     }
                 }
                 .onChange(of: selectedMic) { mic in
