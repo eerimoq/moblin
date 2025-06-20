@@ -79,6 +79,7 @@ struct ChatPost: Identifiable, Equatable {
 
     var id: Int
     var user: String?
+    var userId: String?
     var userColor: RgbColor
     var userBadges: [URL]
     var segments: [ChatPostSegment]
@@ -448,6 +449,7 @@ extension Model {
         let post = ChatPost(
             id: chatPostId,
             user: user,
+            userId: userId,
             userColor: userColor?.makeReadableOnDarkBackground() ?? database.chat.usernameColor,
             userBadges: userBadges,
             segments: segments,
@@ -582,5 +584,21 @@ extension Model {
                 catPrinter.print(image: ciImage, feedPaperDelay: 3)
             }
         }
+    }
+
+    func banUser(post: ChatPost) {
+        logger.info("xxx BAN \(post.user) \(post.userId)")
+    }
+
+    func timeoutUser(post: ChatPost) {
+        logger.info("xxx TIMEOUT \(post.user) \(post.userId)")
+    }
+
+    func deleteMessage(post: ChatPost) {
+        logger.info("xxx DELETE \(post.user) \(post.userId)")
+    }
+
+    func copyMessage(post: ChatPost) {
+        logger.info("xxx COPY \(post.user) \(post.userId)")
     }
 }
