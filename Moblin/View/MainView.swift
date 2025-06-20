@@ -302,6 +302,19 @@ private struct BlackScreenView: View {
     }
 }
 
+private struct LockScreenView: View {
+    @EnvironmentObject var model: Model
+
+    var body: some View {
+        Text("")
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(.black.opacity(0.01))
+            .onTapGesture(count: 2) { _ in
+                model.toggleLockScreen()
+            }
+    }
+}
+
 struct MainView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var webBrowserController: WebBrowserController
@@ -558,12 +571,7 @@ struct MainView: View {
                 BlackScreenView(quickButtons: model.database.quickButtonsGeneral)
             }
             if model.lockScreen {
-                Text("")
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(.black.opacity(0.01))
-                    .onTapGesture(count: 2) { _ in
-                        model.toggleLockScreen()
-                    }
+                LockScreenView()
             }
             if model.findFace {
                 FindFaceView()
