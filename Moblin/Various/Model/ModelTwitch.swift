@@ -484,8 +484,6 @@ extension Model: TwitchEventSubDelegate {
     }
 
     func twitchEventSubNotification(message _: String) {}
-
-    func twitchEventSubChannelChatMessageDelete(event _: TwitchEventSubChannelChatMessageDeleteEvent) {}
 }
 
 extension Model: TwitchChatMoblinDelegate {
