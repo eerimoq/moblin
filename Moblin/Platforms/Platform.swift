@@ -1,5 +1,7 @@
 import Foundation
 
+let chatReplyMessageImage = "arrowshape.turn.up.left"
+
 enum Platform: Codable {
     case afreecaTv
     case kick

@@ -472,7 +472,7 @@ extension Model: TwitchEventSubDelegate {
                           bits: nil,
                           highlight: .init(
                               kind: kind ?? .redemption,
-                              color: color,
+                              barColor: color,
                               image: image ?? "medal",
                               title: title
                           ),

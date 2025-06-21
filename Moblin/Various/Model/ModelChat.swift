@@ -40,7 +40,7 @@ enum ChatHighlightKind: Codable {
 
 struct ChatHighlight {
     let kind: ChatHighlightKind
-    let color: Color
+    let barColor: Color
     let image: String
     let title: String
 
@@ -58,10 +58,10 @@ struct ChatHighlight {
         case .reply:
             watchProtocolKind = .other
         }
-        let color = color.toRgb() ?? .init(red: 0, green: 255, blue: 0)
+        let barColor = barColor.toRgb() ?? .init(red: 0, green: 255, blue: 0)
         return WatchProtocolChatHighlight(
             kind: watchProtocolKind,
-            color: .init(red: color.red, green: color.green, blue: color.blue),
+            barColor: .init(red: barColor.red, green: barColor.green, blue: barColor.blue),
             image: image,
             title: title
         )

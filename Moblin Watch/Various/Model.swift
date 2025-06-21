@@ -46,14 +46,14 @@ enum ChatPostHighlightKind {
 
 struct ChatPostHighlight {
     let kind: ChatPostHighlightKind
-    let color: Color
+    let barColor: Color
     let image: String
     let title: String
 
     static func fromWatchProtocol(highlight: WatchProtocolChatHighlight) -> ChatPostHighlight {
         return ChatPostHighlight(
             kind: ChatPostHighlightKind.fromWatchProtocol(kind: highlight.kind),
-            color: highlight.color.color(),
+            barColor: highlight.barColor.color(),
             image: highlight.image,
             title: highlight.title
         )

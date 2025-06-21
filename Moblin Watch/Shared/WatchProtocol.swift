@@ -99,7 +99,7 @@ enum WatchProtocolChatHighlightKind: Codable {
 // periphery:ignore
 struct WatchProtocolChatHighlight: Codable {
     let kind: WatchProtocolChatHighlightKind
-    let color: WatchProtocolColor
+    let barColor: WatchProtocolColor
     let image: String
     let title: String
 }

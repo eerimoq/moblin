@@ -81,7 +81,7 @@ private struct NormalView: View {
             HStack(spacing: 0) {
                 Rectangle()
                     .frame(width: 3)
-                    .foregroundColor(highlight.color)
+                    .foregroundColor(highlight.barColor)
                     .padding([.trailing], 3)
                 VStack(alignment: .leading) {
                     HighlightView(image: highlight.image, name: highlight.title)

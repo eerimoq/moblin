@@ -126,7 +126,7 @@ private struct MessagesView: View {
                                     HStack(spacing: 0) {
                                         Rectangle()
                                             .frame(width: 3)
-                                            .foregroundColor(highlight.color)
+                                            .foregroundColor(highlight.barColor)
                                         VStack(alignment: .leading, spacing: 1) {
                                             HighlightMessageView(
                                                 chat: chatSettings,

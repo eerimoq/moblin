@@ -234,7 +234,7 @@ final class KickPusher: NSObject {
                         title += " \(text.trim())"
                     }
                 }
-                return ChatHighlight(kind: .reply, color: .gray, image: "arrowshape.turn.up.left", title: title)
+                return ChatHighlight(kind: .reply, barColor: .gray, image: chatReplyMessageImage, title: title)
             }
         }
         return nil

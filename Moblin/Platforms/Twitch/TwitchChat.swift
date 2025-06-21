@@ -602,14 +602,14 @@ final class TwitchChat {
         if message.announcement {
             return .init(
                 kind: .other,
-                color: .green,
+                barColor: .green,
                 image: "horn.blast",
                 title: String(localized: "Announcement")
             )
         } else if message.firstMessage {
             return .init(
                 kind: .firstMessage,
-                color: .yellow,
+                barColor: .yellow,
                 image: "bubble.left",
                 title: String(localized: "First time chatter")
             )
@@ -620,7 +620,7 @@ final class TwitchChat {
                     title += " \(text.trim())"
                 }
             }
-            return ChatHighlight(kind: .reply, color: .gray, image: "arrowshape.turn.up.left", title: title)
+            return ChatHighlight(kind: .reply, barColor: .gray, image: chatReplyMessageImage, title: title)
         } else {
             return nil
         }
