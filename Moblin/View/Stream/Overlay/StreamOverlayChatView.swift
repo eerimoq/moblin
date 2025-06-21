@@ -266,6 +266,7 @@ struct StreamOverlayChatView: View {
                         proxy.scrollTo(startId, anchor: .bottom)
                     }
                     .onAppear {
+                        // Trigger after tryPause() of bottom of chat detector.
                         DispatchQueue.main.async {
                             tryUnpause()
                         }
