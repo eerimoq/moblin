@@ -345,7 +345,7 @@ private struct ChatAlertsView: View {
     var body: some View {
         ZStack {
             AlertsMessagesView(chatSettings: model.database.chat,
-                               chat: model.chat,
+                               chat: model.quickButtonChat,
                                selectedPost: $selectedPost)
             if model.quickButtonChatAlertsPaused {
                 ChatInfo(

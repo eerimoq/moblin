@@ -291,20 +291,6 @@ extension Model {
                     sendChatMessageToWatch(post: post)
                 }
             }
-            if isTextToSpeechEnabledForMessage(post: post), let user = post.user {
-                let message = post.text()
-                if !message.trimmingCharacters(in: .whitespaces).isEmpty {
-                    chatTextToSpeech.say(
-                        messageId: post.messageId,
-                        user: user,
-                        message: message,
-                        isRedemption: post.isRedemption()
-                    )
-                }
-            }
-            if post.filter?.print != false, isAnyConnectedCatPrinterPrintingChat() {
-                printChatMessage(post: post)
-            }
             streamTotalChatMessages += 1
         }
         chat.update()
@@ -488,7 +474,21 @@ extension Model {
             platform: platform
         )
         chatPostId += 1
-        if filter?.showOnScreen != false || filter?.textToSpeech != false {
+        if isTextToSpeechEnabledForMessage(post: post), let user = post.user {
+            let message = post.text()
+            if !message.trimmingCharacters(in: .whitespaces).isEmpty {
+                chatTextToSpeech.say(
+                    messageId: post.messageId,
+                    user: user,
+                    message: message,
+                    isRedemption: post.isRedemption()
+                )
+            }
+        }
+        if filter?.print != false, isAnyConnectedCatPrinterPrintingChat() {
+            printChatMessage(post: post)
+        }
+        if filter?.showOnScreen != false {
             chat.appendMessage(post: post)
         }
         if filter?.showOnScreen != false {
