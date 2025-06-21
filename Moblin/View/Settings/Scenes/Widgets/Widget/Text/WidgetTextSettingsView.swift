@@ -77,7 +77,7 @@ private struct SuggestionView: View {
                     dismiss()
                 }
             } message: {
-                Text("Are you sure you want to replace the current text widget content?")
+                Text("Are you sure you want to replace the content of the current text widget?")
             }
             Text(suggestion.text)
         }
