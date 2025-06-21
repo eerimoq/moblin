@@ -86,6 +86,14 @@ private struct LineView: View {
         }
     }
 
+    private func frameHeightBadges() -> CGFloat {
+        return CGFloat(chat.fontSize * 1.4)
+    }
+
+    private func frameHeightEmotes() -> CGFloat {
+        return CGFloat(chat.fontSize * 1.7)
+    }
+
     var body: some View {
         let timestampColor = chat.timestampColor.color()
         let usernameColor = usernameColor()
@@ -106,7 +114,7 @@ private struct LineView: View {
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .padding(2)
-                    .frame(height: CGFloat(chat.fontSize * 1.4))
+                    .frame(height: frameHeightBadges())
             }
             if chat.badges {
                 ForEach(post.userBadges, id: \.self) { url in
@@ -118,7 +126,7 @@ private struct LineView: View {
                         EmptyView()
                     }
                     .padding(2)
-                    .frame(height: CGFloat(chat.fontSize * 1.4))
+                    .frame(height: frameHeightBadges())
                 }
             }
             Text(post.user!)
@@ -144,7 +152,7 @@ private struct LineView: View {
                             .resizable()
                             .aspectRatio(contentMode: .fit)
                             .padding([.top, .bottom], chat.shadowColorEnabled ? 1.5 : 0)
-                            .frame(height: CGFloat(chat.fontSize * 1.7))
+                            .frame(height: frameHeightEmotes())
                     } else {
                         CacheAsyncImage(url: url) { image in
                             image
@@ -154,7 +162,7 @@ private struct LineView: View {
                             EmptyView()
                         }
                         .padding([.top, .bottom], chat.shadowColorEnabled ? 1.5 : 0)
-                        .frame(height: CGFloat(chat.fontSize * 1.7))
+                        .frame(height: frameHeightEmotes())
                     }
                     Text(" ")
                 }
