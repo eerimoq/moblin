@@ -525,6 +525,7 @@ extension Model: TwitchChatMoblinDelegate {
         chat.deleteMessage(messageId: messageId)
         quickButtonChat.deleteMessage(messageId: messageId)
         externalDisplayChat.deleteMessage(messageId: messageId)
+        chatTextToSpeech.delete(messageId: messageId)
     }
 }
 

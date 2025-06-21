@@ -5,6 +5,7 @@ import NaturalLanguage
 private let textToSpeechDispatchQueue = DispatchQueue(label: "com.eerimoq.textToSpeech", qos: .utility)
 
 private struct TextToSpeechMessage {
+    let messageId: String?
     let user: String
     let message: String
     let isRedemption: Bool
@@ -43,14 +44,29 @@ class ChatTextToSpeech: NSObject {
     private var streamerMentions: [String] = []
     private var running = true
     private var paused = false
+    private var currentlyPlayingMessage: TextToSpeechMessage?
 
-    func say(user: String, message: String, isRedemption: Bool) {
+    func say(messageId: String?, user: String, message: String, isRedemption: Bool) {
         textToSpeechDispatchQueue.async {
             guard self.running else {
                 return
             }
-            self.messageQueue.append(.init(user: user, message: message, isRedemption: isRedemption))
+            self.messageQueue.append(.init(
+                messageId: messageId,
+                user: user,
+                message: message,
+                isRedemption: isRedemption
+            ))
             self.trySayNextMessage()
+        }
+    }
+
+    func delete(messageId: String) {
+        textToSpeechDispatchQueue.async {
+            self.messageQueue = self.messageQueue.filter { $0.messageId != messageId }
+            if self.currentlyPlayingMessage?.messageId == messageId {
+                self.skipCurrentMessageInternal()
+            }
         }
     }
 
@@ -122,10 +138,7 @@ class ChatTextToSpeech: NSObject {
 
     func skipCurrentMessage() {
         textToSpeechDispatchQueue.async {
-            self.synthesizer.stopSpeaking(at: .word)
-            self.synthesizer = AVSpeechSynthesizer()
-            self.synthesizer.delegate = self
-            self.trySayNextMessage()
+            self.skipCurrentMessageInternal()
         }
     }
 
@@ -140,6 +153,14 @@ class ChatTextToSpeech: NSObject {
         textToSpeechDispatchQueue.async {
             self.paused = true
         }
+    }
+
+    private func skipCurrentMessageInternal() {
+        synthesizer.stopSpeaking(at: .word)
+        synthesizer = AVSpeechSynthesizer()
+        synthesizer.delegate = self
+        currentlyPlayingMessage = nil
+        trySayNextMessage()
     }
 
     private func isFilteredOut(message: String) -> Bool {
@@ -247,6 +268,7 @@ class ChatTextToSpeech: NSObject {
         guard let message = messageQueue.popFirst() else {
             return
         }
+        currentlyPlayingMessage = message
         guard let (voice, says) = getVoice(message: message.message) else {
             return
         }
@@ -287,6 +309,7 @@ class ChatTextToSpeech: NSObject {
 extension ChatTextToSpeech: AVSpeechSynthesizerDelegate {
     func speechSynthesizer(_: AVSpeechSynthesizer, didFinish _: AVSpeechUtterance) {
         textToSpeechDispatchQueue.async {
+            self.currentlyPlayingMessage = nil
             self.trySayNextMessage()
         }
     }

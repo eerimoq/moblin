@@ -294,7 +294,12 @@ extension Model {
             if isTextToSpeechEnabledForMessage(post: post), let user = post.user {
                 let message = post.text()
                 if !message.trimmingCharacters(in: .whitespaces).isEmpty {
-                    chatTextToSpeech.say(user: user, message: message, isRedemption: post.isRedemption())
+                    chatTextToSpeech.say(
+                        messageId: post.messageId,
+                        user: user,
+                        message: message,
+                        isRedemption: post.isRedemption()
+                    )
                 }
             }
             if post.filter?.print != false, isAnyConnectedCatPrinterPrintingChat() {

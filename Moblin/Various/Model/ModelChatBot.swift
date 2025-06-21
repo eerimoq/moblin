@@ -98,7 +98,7 @@ extension Model {
             command: command
         ) {
             let user = command.user() ?? "Unknown"
-            self.chatTextToSpeech.say(user: user, message: command.rest(), isRedemption: false)
+            self.chatTextToSpeech.say(messageId: nil, user: user, message: command.rest(), isRedemption: false)
         }
     }
 
