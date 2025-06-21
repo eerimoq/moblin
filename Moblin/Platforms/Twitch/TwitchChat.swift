@@ -61,7 +61,9 @@ private struct Emote2 {
                   let rangeEndIndexString = rangeIndexStrings.last,
                   let rangeStartIndex = Int(rangeStartIndexString),
                   let rangeEndIndex = Int(rangeEndIndexString)
-            else { return nil }
+            else {
+                return nil
+            }
             return rangeStartIndex ... rangeEndIndex
         }
         return emoteRanges.map { Emote2(identifier: String(emoteID), range: $0) }
