@@ -265,6 +265,11 @@ struct StreamOverlayChatView: View {
                     .onChange(of: chat.triggerScrollToBottom) { _ in
                         proxy.scrollTo(startId, anchor: .bottom)
                     }
+                    .onAppear {
+                        DispatchQueue.main.async {
+                            tryUnpause()
+                        }
+                    }
                 }
             }
         }
