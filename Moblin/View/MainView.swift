@@ -256,11 +256,22 @@ private struct WebBrowserAlertsView: UIViewControllerRepresentable {
 private struct StealthModeView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var quickButtons: SettingsQuickButtons
+    @ObservedObject var chat: ChatProvider
 
     private func showButtons() {
         model.stealthModeShowButtons = true
         model.stealthModeHideButtonsTimer.startSingleShot(timeout: 3) {
             model.stealthModeShowButtons = false
+        }
+    }
+
+    private func tryUnpause() {
+        guard chat.interactiveChat else {
+            return
+        }
+        if chat.paused {
+            model.endOfChatReachedWhenPaused()
+            chat.triggerScrollToBottom.toggle()
         }
     }
 
@@ -302,6 +313,12 @@ private struct StealthModeView: View {
         }
         .onAppear {
             showButtons()
+        }
+        .onDisappear {
+            // Trigger after tryPause() of bottom of chat detector.
+            DispatchQueue.main.async {
+                self.tryUnpause()
+            }
         }
         if quickButtons.blackScreenShowChat {
             GeometryReader { metrics in
@@ -582,7 +599,7 @@ struct MainView: View {
             WebBrowserAlertsView()
                 .opacity(webBrowserController.showAlert ? 1 : 0)
             if model.stealthMode {
-                StealthModeView(quickButtons: model.database.quickButtonsGeneral)
+                StealthModeView(quickButtons: model.database.quickButtonsGeneral, chat: model.chat)
             }
             if model.lockScreen {
                 LockScreenView()

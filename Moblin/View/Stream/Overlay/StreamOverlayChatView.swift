@@ -176,6 +176,26 @@ struct StreamOverlayChatView: View {
     @ObservedObject var chatSettings: SettingsChat
     @ObservedObject var chat: ChatProvider
 
+    private func tryPause() {
+        guard chat.interactiveChat else {
+            return
+        }
+        if !chat.paused {
+            if !chat.posts.isEmpty {
+                model.pauseChat()
+            }
+        }
+    }
+
+    private func tryUnpause() {
+        guard chat.interactiveChat else {
+            return
+        }
+        if chat.paused {
+            model.endOfChatReachedWhenPaused()
+        }
+    }
+
     var body: some View {
         let rotation = chatSettings.getRotation()
         let scaleX = chatSettings.getScaleX()
@@ -187,22 +207,10 @@ struct StreamOverlayChatView: View {
                         LazyVStack(alignment: .leading, spacing: 1) {
                             Color.clear
                                 .onAppear {
-                                    guard chat.interactiveChat else {
-                                        return
-                                    }
-                                    if chat.paused {
-                                        model.endOfChatReachedWhenPaused()
-                                    }
+                                    tryUnpause()
                                 }
                                 .onDisappear {
-                                    guard chat.interactiveChat else {
-                                        return
-                                    }
-                                    if !chat.paused {
-                                        if !chat.posts.isEmpty {
-                                            model.pauseChat()
-                                        }
-                                    }
+                                    tryPause()
                                 }
                                 .frame(height: 1)
                                 .id(startId)
@@ -252,6 +260,9 @@ struct StreamOverlayChatView: View {
                     .frame(width: metrics.size.width * chatSettings.width,
                            height: metrics.size.height * chatSettings.height)
                     .onChange(of: chat.interactiveChat) { _ in
+                        proxy.scrollTo(startId, anchor: .bottom)
+                    }
+                    .onChange(of: chat.triggerScrollToBottom) { _ in
                         proxy.scrollTo(startId, anchor: .bottom)
                     }
                 }
