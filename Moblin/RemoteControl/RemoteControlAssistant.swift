@@ -37,7 +37,7 @@ class RemoteControlAssistant: NSObject {
     private var salt = ""
     private var encryption: RemoteControlEncryption
     private var twitchEventSub: TwitchEventSub?
-    private var twitchChat: TwitchChatMoblin?
+    private var twitchChat: TwitchChat?
     private var twitchChannelName: String?
     private var twitchChannelId: String?
     private var twitchAccessToken: String?
@@ -505,7 +505,7 @@ class RemoteControlAssistant: NSObject {
         twitchEventSub?.start()
         twitchChat?.stop()
         if let channelName {
-            twitchChat = TwitchChatMoblin(delegate: self)
+            twitchChat = TwitchChat(delegate: self)
             twitchChat?.start(channelName: channelName,
                               channelId: channelId,
                               settings: SettingsStreamChat(),
@@ -613,10 +613,10 @@ extension RemoteControlAssistant: TwitchEventSubDelegate {
     }
 }
 
-extension RemoteControlAssistant: TwitchChatMoblinDelegate {
-    func twitchChatMoblinMakeErrorToast(title _: String, subTitle _: String?) {}
+extension RemoteControlAssistant: TwitchChatDelegate {
+    func twitchChatMakeErrorToast(title _: String, subTitle _: String?) {}
 
-    func twitchChatMoblinAppendMessage(
+    func twitchChatAppendMessage(
         messageId: String?,
         user: String?,
         userId: String?,
@@ -650,7 +650,7 @@ extension RemoteControlAssistant: TwitchChatMoblinDelegate {
         sendChatMessage(message: message)
     }
 
-    func twitchChatMoblinDeleteMessage(messageId _: String) {}
+    func twitchChatDeleteMessage(messageId _: String) {}
 
-    func twitchChatMoblinDeleteUser(userId _: String) {}
+    func twitchChatDeleteUser(userId _: String) {}
 }

@@ -371,7 +371,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     let audio = AudioProvider()
     var settings = Settings()
     var selectedSceneId = UUID()
-    var twitchChat: TwitchChatMoblin!
+    var twitchChat: TwitchChat!
     var twitchEventSub: TwitchEventSub?
     var kickPusher: KickPusher?
     var kickViewers: KickViewers?
@@ -861,7 +861,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         streamPreviewView.videoGravity = .resizeAspect
         externalDisplayStreamPreviewView.videoGravity = .resizeAspect
         updateDigitalClock(now: Date())
-        twitchChat = TwitchChatMoblin(delegate: self)
+        twitchChat = TwitchChat(delegate: self)
         setMic()
         reloadStream()
         resetSelectedScene()

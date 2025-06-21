@@ -599,9 +599,9 @@ private class Cheermotes {
     }
 }
 
-protocol TwitchChatMoblinDelegate: AnyObject {
-    func twitchChatMoblinMakeErrorToast(title: String, subTitle: String?)
-    func twitchChatMoblinAppendMessage(
+protocol TwitchChatDelegate: AnyObject {
+    func twitchChatMakeErrorToast(title: String, subTitle: String?)
+    func twitchChatAppendMessage(
         messageId: String?,
         user: String?,
         userId: String?,
@@ -614,8 +614,8 @@ protocol TwitchChatMoblinDelegate: AnyObject {
         bits: String?,
         highlight: ChatHighlight?
     )
-    func twitchChatMoblinDeleteMessage(messageId: String)
-    func twitchChatMoblinDeleteUser(userId: String)
+    func twitchChatDeleteMessage(messageId: String)
+    func twitchChatDeleteUser(userId: String)
 }
 
 final class TwitchChat {
@@ -624,9 +624,9 @@ final class TwitchChat {
     private var badges: Badges
     private var cheermotes: Cheermotes
     private var channelName: String
-    private weak var delegate: (any TwitchChatMoblinDelegate)?
+    private weak var delegate: (any TwitchChatDelegate)?
 
-    init(delegate: TwitchChatMoblinDelegate) {
+    init(delegate: TwitchChatDelegate) {
         self.delegate = delegate
         channelName = ""
         emotes = Emotes()
@@ -711,7 +711,7 @@ final class TwitchChat {
             emotesManager: self.emotes,
             bits: message.bits
         )
-        delegate?.twitchChatMoblinAppendMessage(
+        delegate?.twitchChatAppendMessage(
             messageId: message.id,
             user: message.sender,
             userId: message.userId,
@@ -730,14 +730,14 @@ final class TwitchChat {
         guard let targetMessageId = message.tags["target-msg-id"] else {
             return
         }
-        delegate?.twitchChatMoblinDeleteMessage(messageId: targetMessageId)
+        delegate?.twitchChatDeleteMessage(messageId: targetMessageId)
     }
 
     private func handleClearChat(message: Message) {
         guard let targetUserId = message.tags["target-user-id"] else {
             return
         }
-        delegate?.twitchChatMoblinDeleteUser(userId: targetUserId)
+        delegate?.twitchChatDeleteUser(userId: targetUserId)
     }
 
     func createSegmentsNoTwitchEmotes(text: String, bits: String?) -> [ChatPostSegment] {
@@ -782,13 +782,13 @@ final class TwitchChat {
 
     private func handleError(title: String, subTitle: String) {
         DispatchQueue.main.async {
-            self.delegate?.twitchChatMoblinMakeErrorToast(title: title, subTitle: subTitle)
+            self.delegate?.twitchChatMakeErrorToast(title: title, subTitle: subTitle)
         }
     }
 
     private func handleOk(title: String) {
         DispatchQueue.main.async {
-            self.delegate?.twitchChatMoblinMakeErrorToast(title: title, subTitle: nil)
+            self.delegate?.twitchChatMakeErrorToast(title: title, subTitle: nil)
         }
     }
 
