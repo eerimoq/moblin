@@ -131,6 +131,10 @@ private struct ChatMessage {
         replySender = message.replySender
         replyText = message.replyText
     }
+
+    func isAction() -> Bool {
+        return text.starts(with: "\u{01}ACTION")
+    }
 }
 
 private enum MessageTagStringParser {
@@ -509,6 +513,18 @@ final class TwitchChat {
         webSocket.stop()
     }
 
+    func createSegmentsNoTwitchEmotes(text: String, bits: String?) -> [ChatPostSegment] {
+        return createSegments(text: text, emotes: [], emotesManager: emotes, bits: bits)
+    }
+
+    func isConnected() -> Bool {
+        return webSocket.isConnected()
+    }
+
+    func hasEmotes() -> Bool {
+        return emotes.isReady()
+    }
+
     private func handleMessage(message: String) throws {
         let message = try Message(string: message)
         switch message.command {
@@ -519,7 +535,7 @@ final class TwitchChat {
         case .clearChat:
             handleClearChat(message: message)
         case .ping:
-            webSocket.send(string: "PONG \(message.parameters.joined(separator: " "))")
+            handlePing(message: message)
         }
     }
 
@@ -576,8 +592,8 @@ final class TwitchChat {
         delegate?.twitchChatDeleteUser(userId: targetUserId)
     }
 
-    func createSegmentsNoTwitchEmotes(text: String, bits: String?) -> [ChatPostSegment] {
-        return createSegments(text: text, emotes: [], emotesManager: emotes, bits: bits)
+    private func handlePing(message: Message) {
+        webSocket.send(string: "PONG \(message.parameters.joined(separator: " "))")
     }
 
     private func createHighlight(message: ChatMessage, emotes: [ChatMessageEmote]) -> ChatHighlight? {
@@ -606,14 +622,6 @@ final class TwitchChat {
         } else {
             return nil
         }
-    }
-
-    func isConnected() -> Bool {
-        return webSocket.isConnected()
-    }
-
-    func hasEmotes() -> Bool {
-        return emotes.isReady()
     }
 
     private func handleError(title: String, subTitle: String) {
@@ -731,12 +739,6 @@ final class TwitchChat {
             newSegments.append(.init(id: id, text: "\(bits) "))
         }
         return newSegments
-    }
-}
-
-extension ChatMessage {
-    func isAction() -> Bool {
-        return text.starts(with: "\u{01}ACTION")
     }
 }
 
