@@ -527,6 +527,13 @@ extension Model: TwitchChatMoblinDelegate {
         externalDisplayChat.deleteMessage(messageId: messageId)
         chatTextToSpeech.delete(messageId: messageId)
     }
+
+    func twitchChatMoblinDeleteUser(userId: String) {
+        chat.deleteUser(userId: userId)
+        quickButtonChat.deleteUser(userId: userId)
+        externalDisplayChat.deleteUser(userId: userId)
+        chatTextToSpeech.delete(userId: userId)
+    }
 }
 
 extension Model: TwitchApiDelegate {

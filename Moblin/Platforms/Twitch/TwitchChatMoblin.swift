@@ -615,6 +615,7 @@ protocol TwitchChatMoblinDelegate: AnyObject {
         highlight: ChatHighlight?
     )
     func twitchChatMoblinDeleteMessage(messageId: String)
+    func twitchChatMoblinDeleteUser(userId: String)
 }
 
 final class TwitchChatMoblin {
@@ -676,10 +677,12 @@ final class TwitchChatMoblin {
         switch message.command {
         case .privateMessage, .userNotice:
             if let chatMessage = ChatMessage(message) {
-                try handleChatMessage(message: chatMessage)
+                handleChatMessage(message: chatMessage)
             }
         case .clearMsg:
-            try handleClearMessage(message: message)
+            handleClearMessage(message: message)
+        case .clearChat:
+            handleClearChat(message: message)
         case .ping:
             webSocket.send(string: "PONG \(message.parameters.joined(separator: " "))")
         default:
@@ -687,7 +690,7 @@ final class TwitchChatMoblin {
         }
     }
 
-    private func handleChatMessage(message: ChatMessage) throws {
+    private func handleChatMessage(message: ChatMessage) {
         let emotes = getEmotes(from: message)
         var badgeUrls: [URL] = []
         for badge in message.badges {
@@ -723,11 +726,18 @@ final class TwitchChatMoblin {
         )
     }
 
-    private func handleClearMessage(message: Message) throws {
+    private func handleClearMessage(message: Message) {
         guard let targetMessageId = message.tags["target-msg-id"] else {
             return
         }
         delegate?.twitchChatMoblinDeleteMessage(messageId: targetMessageId)
+    }
+
+    private func handleClearChat(message: Message) {
+        guard let targetUserId = message.tags["target-user-id"] else {
+            return
+        }
+        delegate?.twitchChatMoblinDeleteUser(userId: targetUserId)
     }
 
     func createSegmentsNoTwitchEmotes(text: String, bits: String?) -> [ChatPostSegment] {

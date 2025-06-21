@@ -6,6 +6,7 @@ private let textToSpeechDispatchQueue = DispatchQueue(label: "com.eerimoq.textTo
 
 private struct TextToSpeechMessage {
     let messageId: String?
+    let userId: String?
     let user: String
     let message: String
     let isRedemption: Bool
@@ -46,13 +47,14 @@ class ChatTextToSpeech: NSObject {
     private var paused = false
     private var currentlyPlayingMessage: TextToSpeechMessage?
 
-    func say(messageId: String?, user: String, message: String, isRedemption: Bool) {
+    func say(messageId: String?, user: String, userId: String?, message: String, isRedemption: Bool) {
         textToSpeechDispatchQueue.async {
             guard self.running else {
                 return
             }
             self.messageQueue.append(.init(
                 messageId: messageId,
+                userId: userId,
                 user: user,
                 message: message,
                 isRedemption: isRedemption
@@ -65,6 +67,15 @@ class ChatTextToSpeech: NSObject {
         textToSpeechDispatchQueue.async {
             self.messageQueue = self.messageQueue.filter { $0.messageId != messageId }
             if self.currentlyPlayingMessage?.messageId == messageId {
+                self.skipCurrentMessageInternal()
+            }
+        }
+    }
+
+    func delete(userId: String) {
+        textToSpeechDispatchQueue.async {
+            self.messageQueue = self.messageQueue.filter { $0.userId != userId }
+            if self.currentlyPlayingMessage?.userId == userId {
                 self.skipCurrentMessageInternal()
             }
         }

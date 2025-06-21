@@ -651,4 +651,6 @@ extension RemoteControlAssistant: TwitchChatMoblinDelegate {
     }
 
     func twitchChatMoblinDeleteMessage(messageId _: String) {}
+
+    func twitchChatMoblinDeleteUser(userId _: String) {}
 }

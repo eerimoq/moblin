@@ -136,8 +136,10 @@ class ChatProvider: ObservableObject {
         posts = deleteMessage(posts: posts, messageId: messageId)
     }
 
-    private func deleteMessage(posts: Deque<ChatPost>, messageId: String) -> Deque<ChatPost> {
-        return posts.filter { $0.messageId != messageId }
+    func deleteUser(userId: String) {
+        newPosts = deleteUser(posts: newPosts, userId: userId)
+        pausedPosts = deleteUser(posts: pausedPosts, userId: userId)
+        posts = deleteUser(posts: posts, userId: userId)
     }
 
     func update() {
@@ -154,6 +156,14 @@ class ChatProvider: ObservableObject {
                 posts.prepend(post)
             }
         }
+    }
+
+    private func deleteMessage(posts: Deque<ChatPost>, messageId: String) -> Deque<ChatPost> {
+        return posts.filter { $0.messageId != messageId }
+    }
+
+    private func deleteUser(posts: Deque<ChatPost>, userId: String) -> Deque<ChatPost> {
+        return posts.filter { $0.userId != userId }
     }
 }
 
@@ -480,6 +490,7 @@ extension Model {
                 chatTextToSpeech.say(
                     messageId: post.messageId,
                     user: user,
+                    userId: post.userId,
                     message: message,
                     isRedemption: post.isRedemption()
                 )
