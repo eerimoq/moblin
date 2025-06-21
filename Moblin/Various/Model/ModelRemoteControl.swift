@@ -583,6 +583,7 @@ extension Model: RemoteControlStreamerDelegate {
         let live = !history || remoteControlStreamerLatestReceivedChatMessageId != -1
         for message in messages where message.id > remoteControlStreamerLatestReceivedChatMessageId {
             appendChatMessage(platform: message.platform,
+                              messageId: message.messageId,
                               user: message.user,
                               userId: message.userId,
                               userColor: message.userColor,

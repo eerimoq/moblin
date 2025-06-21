@@ -56,6 +56,7 @@ enum RemoteControlEvent: Codable {
 struct RemoteControlChatMessage: Codable {
     var id: Int
     var platform: Platform
+    var messageId: String?
     var user: String?
     var userId: String?
     var userColor: RgbColor?

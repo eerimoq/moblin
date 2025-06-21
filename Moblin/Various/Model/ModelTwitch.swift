@@ -234,6 +234,36 @@ extension Model {
                 }
             }
     }
+
+    func banUser(user: String, userId: String, duration: Int?) {
+        TwitchApi(stream.twitchAccessToken, urlSession)
+            .banUser(broadcasterId: stream.twitchChannelId, userId: userId, duration: duration) { ok in
+                if ok {
+                    if duration == nil {
+                        self.makeToast(title: String(localized: "Successfully banned \(user)"))
+                    } else {
+                        self.makeToast(title: String(localized: "Successfully timed out \(user)"))
+                    }
+                } else {
+                    if duration == nil {
+                        self.makeErrorToast(title: String(localized: "Failed to ban \(user)"))
+                    } else {
+                        self.makeErrorToast(title: String(localized: "Failed to timeout \(user)"))
+                    }
+                }
+            }
+    }
+
+    func deleteMessage(messageId: String) {
+        TwitchApi(stream.twitchAccessToken, urlSession)
+            .deleteChatMessage(broadcasterId: stream.twitchChannelId, messageId: messageId) { ok in
+                if ok {
+                    self.makeToast(title: String(localized: "Successfully deleted chat message"))
+                } else {
+                    self.makeErrorToast(title: String(localized: "Failed to delete chat message"))
+                }
+            }
+    }
 }
 
 extension Model: TwitchEventSubDelegate {
@@ -428,6 +458,7 @@ extension Model: TwitchEventSubDelegate {
         bits: String? = nil
     ) {
         appendChatMessage(platform: .twitch,
+                          messageId: nil,
                           user: user,
                           userId: nil,
                           userColor: nil,
@@ -461,6 +492,7 @@ extension Model: TwitchChatMoblinDelegate {
     }
 
     func twitchChatMoblinAppendMessage(
+        messageId: String?,
         user: String?,
         userId: String?,
         userColor: RgbColor?,
@@ -473,6 +505,7 @@ extension Model: TwitchChatMoblinDelegate {
         highlight: ChatHighlight?
     ) {
         appendChatMessage(platform: .twitch,
+                          messageId: messageId,
                           user: user,
                           userId: userId,
                           userColor: userColor,

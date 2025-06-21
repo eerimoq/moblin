@@ -58,6 +58,7 @@ extension Model: KickOusherDelegate {
         highlight: ChatHighlight?
     ) {
         appendChatMessage(platform: .kick,
+                          messageId: nil,
                           user: user,
                           userId: nil,
                           userColor: userColor,

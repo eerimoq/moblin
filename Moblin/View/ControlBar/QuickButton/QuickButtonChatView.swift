@@ -96,9 +96,9 @@ private struct LineView: View {
             }
         }
         .padding([.leading], 5)
-        // .onTapGesture {
-        //     selectedPost = post
-        // }
+        .onTapGesture {
+            selectedPost = post
+        }
     }
 }
 
@@ -443,6 +443,98 @@ private struct ActionButtonView: View {
     }
 }
 
+private struct ActionButtonsView: View {
+    @EnvironmentObject var model: Model
+    @Binding var selectedPost: ChatPost?
+    @State var isPresentingBanConfirm = false
+    @State var isPresentingTimeoutConfirm = false
+    @State var isPresentingDeleteConfirm = false
+
+    private func banButton(selectedPost: ChatPost) -> some View {
+        ActionButtonView(image: "nosign", text: "Ban", foreground: .red) {
+            isPresentingBanConfirm = true
+        }
+        .confirmationDialog("", isPresented: $isPresentingBanConfirm) {
+            Button("Ban", role: .destructive) {
+                model.banUser(post: selectedPost)
+            }
+        }
+    }
+
+    private func timeoutButton(selectedPost: ChatPost) -> some View {
+        ActionButtonView(image: "timer", text: "Timeout") {
+            isPresentingTimeoutConfirm = true
+        }
+        .confirmationDialog("", isPresented: $isPresentingTimeoutConfirm) {
+            Button("5 minutes timeout", role: .destructive) {
+                model.timeoutUser(post: selectedPost, duration: 5 * 60)
+            }
+            Button("1 hour timeout", role: .destructive) {
+                model.timeoutUser(post: selectedPost, duration: 3600)
+            }
+            Button("24 hours timeout", role: .destructive) {
+                model.timeoutUser(post: selectedPost, duration: 24 * 3600)
+            }
+        }
+    }
+
+    private func deleteButton(selectedPost: ChatPost) -> some View {
+        ActionButtonView(image: "trash", text: "Delete") {
+            isPresentingDeleteConfirm = true
+        }
+        .confirmationDialog("", isPresented: $isPresentingDeleteConfirm) {
+            Button("Delete message", role: .destructive) {
+                model.deleteMessage(post: selectedPost)
+            }
+        }
+    }
+
+    private func copyButton(selectedPost: ChatPost) -> some View {
+        ActionButtonView(image: "document.on.document", text: "Copy") {
+            model.copyMessage(post: selectedPost)
+        }
+    }
+
+    var body: some View {
+        if let selectedPost {
+            VStack {
+                Spacer()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        self.selectedPost = nil
+                    }
+                VStack(alignment: .leading) {
+                    ScrollView {
+                        LineView(post: selectedPost,
+                                 chat: model.database.chat,
+                                 platform: model.chat.moreThanOneStreamingPlatform,
+                                 selectedPost: $selectedPost)
+                            .foregroundColor(.white)
+                    }
+                    .frame(height: 100)
+                    .padding([.top, .bottom], 5)
+                    HStack {
+                        Spacer()
+                        banButton(selectedPost: selectedPost)
+                        Spacer()
+                        timeoutButton(selectedPost: selectedPost)
+                        Spacer()
+                        deleteButton(selectedPost: selectedPost)
+                        Spacer()
+                        copyButton(selectedPost: selectedPost)
+                        Spacer()
+                    }
+                    .padding([.bottom], 5)
+                }
+                .border(.gray)
+                .padding([.leading, .trailing], 5)
+                .background(.black)
+            }
+        }
+    }
+}
+
 struct QuickButtonChatView: View {
     @EnvironmentObject var model: Model
     @State var message: String = ""
@@ -467,49 +559,7 @@ struct QuickButtonChatView: View {
                 .border(.gray)
                 .padding([.leading, .trailing], 5)
             }
-            if let selectedPost {
-                VStack {
-                    Spacer()
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            self.selectedPost = nil
-                        }
-                    VStack(alignment: .leading) {
-                        ScrollView {
-                            LineView(post: selectedPost,
-                                     chat: model.database.chat,
-                                     platform: false,
-                                     selectedPost: $selectedPost)
-                        }
-                        .frame(height: 100)
-                        .padding([.top, .bottom], 5)
-                        HStack {
-                            Spacer()
-                            ActionButtonView(image: "nosign", text: "Ban", foreground: .red) {
-                                model.banUser(post: selectedPost)
-                            }
-                            Spacer()
-                            ActionButtonView(image: "timer", text: "Timeout") {
-                                model.timeoutUser(post: selectedPost)
-                            }
-                            Spacer()
-                            ActionButtonView(image: "trash", text: "Delete") {
-                                model.deleteMessage(post: selectedPost)
-                            }
-                            Spacer()
-                            ActionButtonView(image: "document.on.document", text: "Copy") {
-                                model.copyMessage(post: selectedPost)
-                            }
-                            Spacer()
-                        }
-                        .padding([.bottom], 5)
-                    }
-                    .border(.gray)
-                    .padding([.leading, .trailing], 5)
-                    .background(.black)
-                }
-            }
+            ActionButtonsView(selectedPost: $selectedPost)
         }
         .background(.black)
         .navigationTitle("Chat")

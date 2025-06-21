@@ -298,6 +298,7 @@ final class YouTubeLiveChat: NSObject {
         let nonMutSegments = segments
         await MainActor.run {
             model.appendChatMessage(platform: .youTube,
+                                    messageId: nil,
                                     user: chatDescription.authorName.simpleText,
                                     userId: nil,
                                     userColor: nil,

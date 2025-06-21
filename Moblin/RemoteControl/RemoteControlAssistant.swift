@@ -617,6 +617,7 @@ extension RemoteControlAssistant: TwitchChatMoblinDelegate {
     func twitchChatMoblinMakeErrorToast(title _: String, subTitle _: String?) {}
 
     func twitchChatMoblinAppendMessage(
+        messageId: String?,
         user: String?,
         userId: String?,
         userColor: RgbColor?,
@@ -631,6 +632,7 @@ extension RemoteControlAssistant: TwitchChatMoblinDelegate {
         let timestamp = digitalClockFormatter.string(from: Date())
         let message = RemoteControlChatMessage(id: getNextChatMessageId(),
                                                platform: .twitch,
+                                               messageId: messageId,
                                                user: user,
                                                userId: userId,
                                                userColor: userColor,

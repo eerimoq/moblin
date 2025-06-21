@@ -153,6 +153,7 @@ private class Cheermotes {
 protocol TwitchChatMoblinDelegate: AnyObject {
     func twitchChatMoblinMakeErrorToast(title: String, subTitle: String?)
     func twitchChatMoblinAppendMessage(
+        messageId: String?,
         user: String?,
         userId: String?,
         userColor: RgbColor?,
@@ -251,6 +252,7 @@ final class TwitchChatMoblin {
             bits: message.bits
         )
         delegate?.twitchChatMoblinAppendMessage(
+            messageId: message.id,
             user: message.sender,
             userId: message.userId,
             userColor: RgbColor.fromHex(string: message.senderColor ?? ""),

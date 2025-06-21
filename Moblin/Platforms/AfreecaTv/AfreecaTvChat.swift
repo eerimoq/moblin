@@ -243,6 +243,7 @@ final class AfreecaTvChat: NSObject {
         await MainActor.run {
             self.model.appendChatMessage(
                 platform: .afreecaTv,
+                messageId: nil,
                 user: user,
                 userId: nil,
                 userColor: nil,

@@ -262,6 +262,47 @@ class TwitchApi {
         })
     }
 
+    func banUser(broadcasterId: String, userId: String, duration: Int?, onComplete: @escaping (Bool) -> Void) {
+        let body: String
+        if let duration {
+            body = """
+            {
+                "data": {
+                    "user_id": "\(userId)",
+                    "duration": \(duration)
+                }
+            }
+            """
+        } else {
+            body = """
+            {
+                "data": {
+                    "user_id": "\(userId)"
+                }
+            }
+            """
+        }
+        doPost(subPath: "moderation/bans?broadcaster_id=\(broadcasterId)&moderator_id=\(broadcasterId)",
+               body: body.utf8Data,
+               onComplete: { data in
+                   onComplete(data != nil)
+               })
+    }
+
+    func deleteChatMessage(broadcasterId: String, messageId: String, onComplete: @escaping (Bool) -> Void) {
+        doDelete(
+            subPath: """
+            moderation/chat\
+            ?broadcaster_id=\(broadcasterId)\
+            &moderator_id=\(broadcasterId)\
+            &message_id=\(messageId)
+            """,
+            onComplete: { data in
+                onComplete(data != nil)
+            }
+        )
+    }
+
     func createStreamMarker(
         userId: String,
         onComplete: @escaping (TwitchApiCreateStreamMarkerData?) -> Void
@@ -454,6 +495,26 @@ class TwitchApi {
         .resume()
     }
 
+    private func doDelete(subPath: String, onComplete: @escaping (Data?) -> Void) {
+        guard let url = URL(string: "https://api.twitch.tv/helix/\(subPath)") else {
+            return
+        }
+        var request = createDeleteRequest(url: url)
+        urlSession.dataTask(with: request) { data, response, error in
+            DispatchQueue.main.async {
+                guard error == nil, let data, response?.http?.isSuccessful == true else {
+                    if response?.http?.isUnauthorized == true {
+                        self.delegate?.twitchApiUnauthorized()
+                    }
+                    onComplete(nil)
+                    return
+                }
+                onComplete(data)
+            }
+        }
+        .resume()
+    }
+
     private func createGetRequest(url: URL) -> URLRequest {
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
@@ -477,6 +538,14 @@ class TwitchApi {
         request.setValue(clientId, forHTTPHeaderField: "client-id")
         request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "authorization")
         request.setValue("application/json", forHTTPHeaderField: "content-type")
+        return request
+    }
+
+    private func createDeleteRequest(url: URL) -> URLRequest {
+        var request = URLRequest(url: url)
+        request.httpMethod = "DELETE"
+        request.setValue(clientId, forHTTPHeaderField: "client-id")
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "authorization")
         return request
     }
 }

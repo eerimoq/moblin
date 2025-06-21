@@ -220,6 +220,7 @@ class OpenStreamingPlatformChat {
         let segments = createSegments(message: message.body)
         await MainActor.run {
             model.appendChatMessage(platform: .openStreamingPlatform,
+                                    messageId: nil,
                                     user: message.user() ?? "unknown",
                                     userId: nil,
                                     userColor: nil,
