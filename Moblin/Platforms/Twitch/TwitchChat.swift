@@ -513,9 +513,7 @@ final class TwitchChat {
         let message = try Message(string: message)
         switch message.command {
         case .privateMessage, .userNotice:
-            if let chatMessage = ChatMessage(message) {
-                handleChatMessage(message: chatMessage)
-            }
+            handleChatMessage(message: message)
         case .clearMsg:
             handleClearMessage(message: message)
         case .clearChat:
@@ -525,7 +523,10 @@ final class TwitchChat {
         }
     }
 
-    private func handleChatMessage(message: ChatMessage) {
+    private func handleChatMessage(message: Message) {
+        guard let message = ChatMessage(message) else {
+            return
+        }
         let emotes = getEmotes(from: message)
         var badgeUrls: [URL] = []
         for badge in message.badges {
