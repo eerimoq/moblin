@@ -51,12 +51,13 @@ struct ChatOverlayView: View {
     @ObservedObject var chatSettings: SettingsChat
     @ObservedObject var chat: ChatProvider
     let height: CGFloat
+    let fullSize: Bool
 
     var body: some View {
         if model.isPortrait() {
             VStack {
                 ZStack {
-                    StreamOverlayChatView(model: model, chatSettings: chatSettings, chat: chat)
+                    StreamOverlayChatView(model: model, chatSettings: chatSettings, chat: chat, fullSize: fullSize)
                     ChatPausedView(chat: chat)
                 }
                 Rectangle()
@@ -66,15 +67,29 @@ struct ChatOverlayView: View {
         } else {
             VStack {
                 ZStack {
-                    GeometryReader { metrics in
-                        StreamOverlayChatView(model: model, chatSettings: chatSettings, chat: chat)
+                    HStack(spacing: 0) {
+                        GeometryReader { metrics in
+                            StreamOverlayChatView(
+                                model: model,
+                                chatSettings: chatSettings,
+                                chat: chat,
+                                fullSize: fullSize
+                            )
                             .frame(width: metrics.size.width * 0.95)
+                        }
+                        if fullSize {
+                            Rectangle()
+                                .foregroundColor(.clear)
+                                .frame(width: 100)
+                        }
                     }
                     ChatPausedView(chat: chat)
                 }
-                Rectangle()
-                    .foregroundColor(.clear)
-                    .frame(height: chatSettings.bottomPoints)
+                if !fullSize {
+                    Rectangle()
+                        .foregroundColor(.clear)
+                        .frame(height: chatSettings.bottomPoints)
+                }
             }
         }
     }
@@ -148,9 +163,14 @@ struct StreamOverlayView: View {
             }
             ZStack {
                 if model.showingPanel != .chat {
-                    ChatOverlayView(chatSettings: model.database.chat, chat: model.chat, height: height)
-                        .opacity(model.database.chat.enabled ? 1 : 0)
-                        .allowsHitTesting(model.chat.interactiveChat)
+                    ChatOverlayView(
+                        chatSettings: model.database.chat,
+                        chat: model.chat,
+                        height: height,
+                        fullSize: false
+                    )
+                    .opacity(model.database.chat.enabled ? 1 : 0)
+                    .allowsHitTesting(model.chat.interactiveChat)
                 }
                 HStack {
                     Spacer()

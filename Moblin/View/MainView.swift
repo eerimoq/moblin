@@ -324,7 +324,8 @@ private struct StealthModeView: View {
             GeometryReader { metrics in
                 ChatOverlayView(chatSettings: model.database.chat,
                                 chat: model.chat,
-                                height: metrics.size.height)
+                                height: metrics.size.height,
+                                fullSize: true)
                     .allowsHitTesting(model.chat.interactiveChat)
             }
         }

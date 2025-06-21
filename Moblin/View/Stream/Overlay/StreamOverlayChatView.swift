@@ -183,6 +183,7 @@ struct StreamOverlayChatView: View {
     var model: Model
     @ObservedObject var chatSettings: SettingsChat
     @ObservedObject var chat: ChatProvider
+    let fullSize: Bool
 
     private func tryPause() {
         guard chat.interactiveChat else {
@@ -201,6 +202,22 @@ struct StreamOverlayChatView: View {
         }
         if chat.paused {
             model.endOfChatReachedWhenPaused()
+        }
+    }
+
+    private func heightFactor() -> CGFloat {
+        if fullSize {
+            return 1
+        } else {
+            return chatSettings.height
+        }
+    }
+
+    private func widthFactor() -> CGFloat {
+        if fullSize {
+            return 1
+        } else {
+            return chatSettings.width
         }
     }
 
@@ -265,8 +282,8 @@ struct StreamOverlayChatView: View {
                     .foregroundColor(.white)
                     .rotationEffect(Angle(degrees: rotation))
                     .scaleEffect(x: scaleX * chatSettings.isMirrored(), y: 1.0, anchor: .center)
-                    .frame(width: metrics.size.width * chatSettings.width,
-                           height: metrics.size.height * chatSettings.height)
+                    .frame(width: metrics.size.width * widthFactor(),
+                           height: metrics.size.height * heightFactor())
                     .onChange(of: chat.interactiveChat) { _ in
                         proxy.scrollTo(startId, anchor: .bottom)
                     }
