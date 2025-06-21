@@ -611,6 +611,8 @@ extension RemoteControlAssistant: TwitchEventSubDelegate {
         twitchEventSubNotitications.append(message)
         tryNextTwitchEventSubNotification()
     }
+
+    func twitchEventSubChannelChatMessageDelete(event _: TwitchEventSubChannelChatMessageDeleteEvent) {}
 }
 
 extension RemoteControlAssistant: TwitchChatMoblinDelegate {
