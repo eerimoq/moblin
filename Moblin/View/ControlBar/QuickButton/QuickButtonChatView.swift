@@ -450,6 +450,10 @@ private struct ActionButtonsView: View {
     @State var isPresentingTimeoutConfirm = false
     @State var isPresentingDeleteConfirm = false
 
+    private func dismiss() {
+        selectedPost = nil
+    }
+
     private func banButton(selectedPost: ChatPost) -> some View {
         ActionButtonView(image: "nosign", text: "Ban", foreground: .red) {
             isPresentingBanConfirm = true
@@ -457,6 +461,7 @@ private struct ActionButtonsView: View {
         .confirmationDialog("", isPresented: $isPresentingBanConfirm) {
             Button("Ban", role: .destructive) {
                 model.banUser(post: selectedPost)
+                dismiss()
             }
         }
     }
@@ -468,12 +473,15 @@ private struct ActionButtonsView: View {
         .confirmationDialog("", isPresented: $isPresentingTimeoutConfirm) {
             Button("5 minutes timeout", role: .destructive) {
                 model.timeoutUser(post: selectedPost, duration: 5 * 60)
+                dismiss()
             }
             Button("1 hour timeout", role: .destructive) {
                 model.timeoutUser(post: selectedPost, duration: 3600)
+                dismiss()
             }
             Button("24 hours timeout", role: .destructive) {
                 model.timeoutUser(post: selectedPost, duration: 24 * 3600)
+                dismiss()
             }
         }
     }
@@ -485,6 +493,7 @@ private struct ActionButtonsView: View {
         .confirmationDialog("", isPresented: $isPresentingDeleteConfirm) {
             Button("Delete message", role: .destructive) {
                 model.deleteMessage(post: selectedPost)
+                dismiss()
             }
         }
     }
@@ -492,6 +501,7 @@ private struct ActionButtonsView: View {
     private func copyButton(selectedPost: ChatPost) -> some View {
         ActionButtonView(image: "document.on.document", text: "Copy") {
             model.copyMessage(post: selectedPost)
+            dismiss()
         }
     }
 
