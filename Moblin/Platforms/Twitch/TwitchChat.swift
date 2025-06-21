@@ -618,7 +618,7 @@ protocol TwitchChatMoblinDelegate: AnyObject {
     func twitchChatMoblinDeleteUser(userId: String)
 }
 
-final class TwitchChatMoblin {
+final class TwitchChat {
     private var webSocket: WebSocketClient
     private var emotes: Emotes
     private var badges: Badges
@@ -904,7 +904,7 @@ extension ChatMessage {
     }
 }
 
-extension TwitchChatMoblin: WebSocketClientDelegate {
+extension TwitchChat: WebSocketClientDelegate {
     func webSocketClientConnected(_ webSocket: WebSocketClient) {
         logger.debug("twitch: chat: Connected")
         webSocket.send(string: "CAP REQ :twitch.tv/membership")
