@@ -219,6 +219,7 @@ struct CameraSettingsView: View {
                     CameraControlsView(database: database)
                 }
                 MirrorFrontCameraOnStreamView()
+                SelfieStickDoesNotWorkView(database: database, selfieStick: database.selfieStick)
             } footer: {
                 Text(
                     "\"Mirror front camera on stream\" is only supported when streaming in landscape, not portrait."

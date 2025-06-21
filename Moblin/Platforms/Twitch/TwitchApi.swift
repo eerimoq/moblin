@@ -499,7 +499,7 @@ class TwitchApi {
         guard let url = URL(string: "https://api.twitch.tv/helix/\(subPath)") else {
             return
         }
-        var request = createDeleteRequest(url: url)
+        let request = createDeleteRequest(url: url)
         urlSession.dataTask(with: request) { data, response, error in
             DispatchQueue.main.async {
                 guard error == nil, let data, response?.http?.isSuccessful == true else {

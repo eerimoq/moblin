@@ -1,7 +1,19 @@
 import SwiftUI
 
+struct SelfieStickDoesNotWorkView: View {
+    @ObservedObject var database: Database
+    @ObservedObject var selfieStick: SettingsSelfieStick
+
+    var body: some View {
+        if database.cameraControlsEnabled, selfieStick.buttonEnabled {
+            Text("⚠️ Selfie stick button does not work with Camera controls enabled.")
+        }
+    }
+}
+
 struct SelfieStickSettingsView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var database: Database
     @ObservedObject var selfieStick: SettingsSelfieStick
 
     var body: some View {
@@ -16,6 +28,7 @@ struct SelfieStickSettingsView: View {
                 } label: {
                     Text("Function")
                 }
+                SelfieStickDoesNotWorkView(database: database, selfieStick: selfieStick)
             } header: {
                 Text("Button")
             } footer: {
