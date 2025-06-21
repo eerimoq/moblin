@@ -520,6 +520,12 @@ extension Model: TwitchChatMoblinDelegate {
                           highlight: highlight,
                           live: true)
     }
+
+    func twitchChatMoblinDeleteMessage(messageId: String) {
+        chat.deleteMessage(messageId: messageId)
+        quickButtonChat.deleteMessage(messageId: messageId)
+        externalDisplayChat.deleteMessage(messageId: messageId)
+    }
 }
 
 extension Model: TwitchApiDelegate {

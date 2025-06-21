@@ -649,4 +649,6 @@ extension RemoteControlAssistant: TwitchChatMoblinDelegate {
         }
         sendChatMessage(message: message)
     }
+
+    func twitchChatMoblinDeleteMessage(messageId _: String) {}
 }

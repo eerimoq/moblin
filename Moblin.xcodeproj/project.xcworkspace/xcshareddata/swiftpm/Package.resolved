@@ -1,5 +1,5 @@
 {
-  "originHash" : "d8d7fa218f0fc5fe025b58ad3365ee171bab30016d5e401f38644c8927c1ea89",
+  "originHash" : "3ad8149f36d884643f15479cbff2bfbf61b798bbd22a4dba671215c8715a1256",
   "pins" : [
     {
       "identity" : "alerttoast",
@@ -161,15 +161,6 @@
       "state" : {
         "revision" : "78f7945469ad8dd6344987f8e62afc13b8c32bc2",
         "version" : "5.2.0"
-      }
-    },
-    {
-      "identity" : "twitch-chat",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/eerimoq/twitch-chat",
-      "state" : {
-        "branch" : "trunk",
-        "revision" : "45240ed69799a1ce14fdf50da35fac595c27a29f"
       }
     },
     {

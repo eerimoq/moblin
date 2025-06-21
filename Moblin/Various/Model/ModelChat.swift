@@ -130,6 +130,16 @@ class ChatProvider: ObservableObject {
         }
     }
 
+    func deleteMessage(messageId: String) {
+        newPosts = deleteMessage(posts: newPosts, messageId: messageId)
+        pausedPosts = deleteMessage(posts: pausedPosts, messageId: messageId)
+        posts = deleteMessage(posts: posts, messageId: messageId)
+    }
+
+    private func deleteMessage(posts: Deque<ChatPost>, messageId: String) -> Deque<ChatPost> {
+        return posts.filter { $0.messageId != messageId }
+    }
+
     func update() {
         if paused {
             let count = max(pausedPosts.count - 1, 0)

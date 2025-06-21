@@ -381,7 +381,6 @@
 		03A9300E2C1442E500BB9679 /* HevcNalUnit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A9300D2C1442E500BB9679 /* HevcNalUnit.swift */; };
 		03A930112C14460600BB9679 /* AudioSpecificConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A930102C14460600BB9679 /* AudioSpecificConfig.swift */; };
 		03A974282AC137A000610E21 /* Collections in Frameworks */ = {isa = PBXBuildFile; productRef = 03A974272AC137A000610E21 /* Collections */; };
-		03A983422A9A03D3008FF0DB /* TwitchChat in Frameworks */ = {isa = PBXBuildFile; productRef = 03A983412A9A03D3008FF0DB /* TwitchChat */; };
 		03A983612A9A05D7008FF0DB /* StreamsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A983552A9A05D7008FF0DB /* StreamsSettingsView.swift */; };
 		03A983622A9A05D7008FF0DB /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A983562A9A05D7008FF0DB /* MainView.swift */; };
 		03A983632A9A05D7008FF0DB /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A983572A9A05D7008FF0DB /* SettingsView.swift */; };
@@ -1259,7 +1258,6 @@
 				0307869A2AEC23FB0061FDE2 /* StoreKit.framework in Frameworks */,
 				03BC11672AE5654700C38FC4 /* SDWebImageSwiftUI in Frameworks */,
 				0318D36A2CF51D6900E12F3B /* SwiftProtobuf in Frameworks */,
-				03A983422A9A03D3008FF0DB /* TwitchChat in Frameworks */,
 				03AC6B952D17786700832A7E /* TrueTime in Frameworks */,
 				0320D8762AED36860030418F /* WrappingHStack in Frameworks */,
 				032815D52AC855A5001F8A85 /* LicenseList in Frameworks */,
@@ -3342,7 +3340,6 @@
 			);
 			name = Moblin;
 			packageProductDependencies = (
-				03A983412A9A03D3008FF0DB /* TwitchChat */,
 				03A974272AC137A000610E21 /* Collections */,
 				03A08B7B2AC295620018BA95 /* AlertToast */,
 				032815D42AC855A5001F8A85 /* LicenseList */,
@@ -3462,7 +3459,6 @@
 			);
 			mainGroup = 035E9E2A2A9A02D6009D4F5A;
 			packageReferences = (
-				03A983402A9A03D3008FF0DB /* XCRemoteSwiftPackageReference "twitch-chat" */,
 				03A974262AC137A000610E21 /* XCRemoteSwiftPackageReference "swift-collections" */,
 				03A08B7A2AC295620018BA95 /* XCRemoteSwiftPackageReference "AlertToast" */,
 				032815D32AC855A5001F8A85 /* XCRemoteSwiftPackageReference "LicenseList" */,
@@ -4715,14 +4711,6 @@
 				minimumVersion = 1.0.0;
 			};
 		};
-		03A983402A9A03D3008FF0DB /* XCRemoteSwiftPackageReference "twitch-chat" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/eerimoq/twitch-chat";
-			requirement = {
-				branch = trunk;
-				kind = branch;
-			};
-		};
 		03AC6B932D17786700832A7E /* XCRemoteSwiftPackageReference "TrueTime" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Gisman4ik/TrueTime.swift";
@@ -4855,11 +4843,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 03A974262AC137A000610E21 /* XCRemoteSwiftPackageReference "swift-collections" */;
 			productName = Collections;
-		};
-		03A983412A9A03D3008FF0DB /* TwitchChat */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 03A983402A9A03D3008FF0DB /* XCRemoteSwiftPackageReference "twitch-chat" */;
-			productName = TwitchChat;
 		};
 		03AC6B942D17786700832A7E /* TrueTime */ = {
 			isa = XCSwiftPackageProductDependency;
