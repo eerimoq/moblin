@@ -68,6 +68,14 @@ struct ChatHighlight {
     }
 }
 
+class ObservablePostData: ObservableObject {
+    @Published var deleted: Bool
+    
+    init(deleted: Bool) {
+        self.deleted = deleted
+    }
+}
+
 struct ChatPost: Identifiable, Equatable {
     static func == (lhs: ChatPost, rhs: ChatPost) -> Bool {
         return lhs.id == rhs.id
@@ -93,6 +101,8 @@ struct ChatPost: Identifiable, Equatable {
     var live: Bool
     var filter: SettingsChatFilter?
     var platform: Platform?
+    
+    @ObservedObject var data: ObservablePostData
 
     func text() -> String {
         return segments.filter { $0.text != nil }.map { $0.text! }.joined(separator: "").trim()
@@ -131,15 +141,43 @@ class ChatProvider: ObservableObject {
     }
 
     func deleteMessage(messageId: String) {
-        newPosts = deleteMessage(posts: newPosts, messageId: messageId)
-        pausedPosts = deleteMessage(posts: pausedPosts, messageId: messageId)
-        posts = deleteMessage(posts: posts, messageId: messageId)
+        for post in newPosts {
+            if (post.messageId == messageId) {
+                post.data.deleted = true
+            }
+        }
+        
+        for post in pausedPosts {
+            if (post.messageId == messageId) {
+                post.data.deleted = true
+            }
+        }
+        
+        for post in posts {
+            if (post.messageId == messageId) {
+                post.data.deleted = true
+            }
+        }
     }
 
     func deleteUser(userId: String) {
-        newPosts = deleteUser(posts: newPosts, userId: userId)
-        pausedPosts = deleteUser(posts: pausedPosts, userId: userId)
-        posts = deleteUser(posts: posts, userId: userId)
+        for post in newPosts {
+            if (post.userId == userId) {
+                post.data.deleted = true
+            }
+        }
+        
+        for post in pausedPosts {
+            if (post.userId == userId) {
+                post.data.deleted = true
+            }
+        }
+        
+        for post in posts {
+            if (post.userId == userId) {
+                post.data.deleted = true
+            }
+        }
     }
 
     func update() {
@@ -156,14 +194,6 @@ class ChatProvider: ObservableObject {
                 posts.prepend(post)
             }
         }
-    }
-
-    private func deleteMessage(posts: Deque<ChatPost>, messageId: String) -> Deque<ChatPost> {
-        return posts.filter { $0.messageId != messageId }
-    }
-
-    private func deleteUser(posts: Deque<ChatPost>, userId: String) -> Deque<ChatPost> {
-        return posts.filter { $0.userId != userId }
     }
 }
 
@@ -198,7 +228,8 @@ extension Model {
             highlight: nil,
             live: true,
             filter: nil,
-            platform: nil
+            platform: nil,
+            data: ObservablePostData(deleted: false)
         )
     }
 
@@ -481,7 +512,8 @@ extension Model {
             highlight: highlight,
             live: live,
             filter: filter,
-            platform: platform
+            platform: platform,
+            data: ObservablePostData(deleted: false)
         )
         chatPostId += 1
         if isTextToSpeechEnabledForMessage(post: post), let user = post.user {

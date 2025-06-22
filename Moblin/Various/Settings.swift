@@ -3071,6 +3071,7 @@ class SettingsChat: Codable, ObservableObject {
     @Published var newMessagesAtTop: Bool = false
     @Published var textToSpeechPauseBetweenMessages: Double = 1.0
     @Published var platform: Bool = true
+    @Published var showDeletedMessages: Bool = false
 
     enum CodingKeys: CodingKey {
         case fontSize,
@@ -3112,7 +3113,8 @@ class SettingsChat: Codable, ObservableObject {
              bottomPoints,
              newMessagesAtTop,
              textToSpeechPauseBetweenMessages,
-             platform
+             platform,
+             showDeletedMessages
     }
 
     func encode(to encoder: Encoder) throws {
@@ -3157,6 +3159,7 @@ class SettingsChat: Codable, ObservableObject {
         try container.encode(.newMessagesAtTop, newMessagesAtTop)
         try container.encode(.textToSpeechPauseBetweenMessages, textToSpeechPauseBetweenMessages)
         try container.encode(.platform, platform)
+        try container.encode(.showDeletedMessages, showDeletedMessages)
     }
 
     init() {}
@@ -3211,6 +3214,7 @@ class SettingsChat: Codable, ObservableObject {
         newMessagesAtTop = container.decode(.newMessagesAtTop, Bool.self, false)
         textToSpeechPauseBetweenMessages = container.decode(.textToSpeechPauseBetweenMessages, Double.self, 1.0)
         platform = container.decode(.platform, Bool.self, true)
+        showDeletedMessages = container.decode(.showDeletedMessages, Bool.self, false)
     }
 
     func getRotation() -> Double {
@@ -6630,6 +6634,10 @@ final class Settings {
         }
         if realDatabase.chat.botCommandPermissions.stream == nil {
             realDatabase.chat.botCommandPermissions.stream = .init()
+            store()
+        }
+        if realDatabase.chat.showDeletedMessages == nil {
+            realDatabase.chat.showDeletedMessages = false
             store()
         }
     }
