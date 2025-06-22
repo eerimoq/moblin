@@ -6636,9 +6636,5 @@ final class Settings {
             realDatabase.chat.botCommandPermissions.stream = .init()
             store()
         }
-        if realDatabase.chat.showDeletedMessages == nil {
-            realDatabase.chat.showDeletedMessages = false
-            store()
-        }
     }
 }

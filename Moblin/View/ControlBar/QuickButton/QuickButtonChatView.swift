@@ -23,11 +23,15 @@ private struct HighlightMessageView: View {
 }
 
 private struct LineView: View {
-    @ObservedObject var data: ObservablePostData
+    @ObservedObject var postState: ChatPostState
     var post: ChatPost
     @ObservedObject var chat: SettingsChat
     var platform: Bool
     @Binding var selectedPost: ChatPost?
+
+    private func imageOpacity() -> Double {
+        return postState.deleted ? 0.25 : 1
+    }
 
     var body: some View {
         let usernameColor = post.userColor.color()
@@ -47,6 +51,7 @@ private struct LineView: View {
                     .aspectRatio(contentMode: .fit)
                     .padding(2)
                     .frame(height: CGFloat(chat.fontSize * 1.4))
+                    .opacity(imageOpacity())
             }
             if chat.badges {
                 ForEach(post.userBadges, id: \.self) { url in
@@ -59,10 +64,12 @@ private struct LineView: View {
                     }
                     .padding(2)
                     .frame(height: CGFloat(chat.fontSize * 1.4))
+                    .opacity(imageOpacity())
                 }
             }
             Text(post.user!)
-                .foregroundColor(usernameColor)
+                .foregroundColor(postState.deleted ? .gray : usernameColor)
+                .strikethrough(postState.deleted)
                 .lineLimit(1)
                 .padding([.trailing], 0)
                 .bold()
@@ -74,8 +81,8 @@ private struct LineView: View {
             ForEach(post.segments, id: \.id) { segment in
                 if let text = segment.text {
                     Text(text)
-                        .foregroundColor(data.deleted ? .gray : .white)
-                        .strikethrough(data.deleted)
+                        .foregroundColor(postState.deleted ? .gray : .white)
+                        .strikethrough(postState.deleted)
                         .italic(post.isAction)
                 }
                 if let url = segment.url {
@@ -84,6 +91,7 @@ private struct LineView: View {
                             .resizable()
                             .aspectRatio(contentMode: .fit)
                             .frame(height: 25)
+                            .opacity(imageOpacity())
                     } else {
                         CacheAsyncImage(url: url) { image in
                             image
@@ -93,6 +101,7 @@ private struct LineView: View {
                             EmptyView()
                         }
                         .frame(height: 25)
+                        .opacity(imageOpacity())
                     }
                     Text(" ")
                 }
@@ -101,6 +110,61 @@ private struct LineView: View {
         .padding([.leading], 5)
         .onTapGesture {
             selectedPost = post
+        }
+    }
+}
+
+private struct PostView: View {
+    var model: Model
+    @ObservedObject var chatSettings: SettingsChat
+    @ObservedObject var chat: ChatProvider
+    @Binding var selectedPost: ChatPost?
+    let post: ChatPost
+    @ObservedObject var state: ChatPostState
+    let rotation: Double
+    let scaleX: Double
+    let size: CGSize
+
+    var body: some View {
+        if post.user != nil {
+            if !state.deleted || chatSettings.showDeletedMessages {
+                if let highlight = post.highlight {
+                    HStack(spacing: 0) {
+                        Rectangle()
+                            .frame(width: 3)
+                            .foregroundColor(highlight.barColor)
+                        VStack(alignment: .leading, spacing: 1) {
+                            HighlightMessageView(
+                                image: highlight.image,
+                                name: highlight.title
+                            )
+                            LineView(postState: post.state,
+                                     post: post,
+                                     chat: chatSettings,
+                                     platform: chat.moreThanOneStreamingPlatform,
+                                     selectedPost: $selectedPost)
+                        }
+                    }
+                    .rotationEffect(Angle(degrees: rotation))
+                    .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
+                } else {
+                    LineView(postState: post.state,
+                             post: post,
+                             chat: chatSettings,
+                             platform: chat.moreThanOneStreamingPlatform,
+                             selectedPost: $selectedPost)
+                        .padding([.leading], 3)
+                        .rotationEffect(Angle(degrees: rotation))
+                        .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
+                }
+            }
+        } else {
+            Rectangle()
+                .fill(.red)
+                .frame(width: size.width, height: 1.5)
+                .padding(2)
+                .rotationEffect(Angle(degrees: rotation))
+                .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
         }
     }
 }
@@ -126,46 +190,15 @@ private struct MessagesView: View {
                         }
                         .frame(height: 1)
                     ForEach(chat.posts) { post in
-                        if post.user != nil {
-                            if post.data.deleted == false || chatSettings.showDeletedMessages {
-                                if let highlight = post.highlight {
-                                    HStack(spacing: 0) {
-                                        Rectangle()
-                                            .frame(width: 3)
-                                            .foregroundColor(highlight.barColor)
-                                        VStack(alignment: .leading, spacing: 1) {
-                                            HighlightMessageView(
-                                                image: highlight.image,
-                                                name: highlight.title
-                                            )
-                                            LineView(data: post.data,
-                                                     post: post,
-                                                     chat: chatSettings,
-                                                     platform: chat.moreThanOneStreamingPlatform,
-                                                     selectedPost: $selectedPost)
-                                        }
-                                    }
-                                    .rotationEffect(Angle(degrees: rotation))
-                                    .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
-                                } else {
-                                    LineView(data: post.data,
-                                             post: post,
-                                             chat: chatSettings,
-                                             platform: chat.moreThanOneStreamingPlatform,
-                                             selectedPost: $selectedPost)
-                                    .padding([.leading], 3)
-                                    .rotationEffect(Angle(degrees: rotation))
-                                    .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
-                                }
-                            }
-                        } else {
-                            Rectangle()
-                                .fill(.red)
-                                .frame(width: metrics.size.width, height: 1.5)
-                                .padding(2)
-                                .rotationEffect(Angle(degrees: rotation))
-                                .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
-                        }
+                        PostView(model: model,
+                                 chatSettings: chatSettings,
+                                 chat: chat,
+                                 selectedPost: $selectedPost,
+                                 post: post,
+                                 state: post.state,
+                                 rotation: rotation,
+                                 scaleX: scaleX,
+                                 size: metrics.size)
                     }
                     Spacer(minLength: 0)
                 }
@@ -307,7 +340,7 @@ private struct AlertsMessagesView: View {
                                                 image: highlight.image,
                                                 name: highlight.title
                                             )
-                                            LineView(data: post.data,
+                                            LineView(postState: post.state,
                                                      post: post,
                                                      chat: chatSettings,
                                                      platform: chat.moreThanOneStreamingPlatform,
@@ -318,7 +351,7 @@ private struct AlertsMessagesView: View {
                                     .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
                                 }
                             } else {
-                                LineView(data: post.data,
+                                LineView(postState: post.state,
                                          post: post,
                                          chat: chatSettings,
                                          platform: chat.moreThanOneStreamingPlatform,
@@ -525,7 +558,7 @@ private struct ActionButtonsView: View {
                     }
                 VStack(alignment: .leading) {
                     ScrollView {
-                        LineView(data: selectedPost.data,
+                        LineView(postState: selectedPost.state,
                                  post: selectedPost,
                                  chat: model.database.chat,
                                  platform: model.chat.moreThanOneStreamingPlatform,

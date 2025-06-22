@@ -68,11 +68,11 @@ struct ChatHighlight {
     }
 }
 
-class ObservablePostData: ObservableObject {
+class ChatPostState: ObservableObject {
     @Published var deleted: Bool
-    
-    init(deleted: Bool) {
-        self.deleted = deleted
+
+    init() {
+        deleted = false
     }
 }
 
@@ -101,8 +101,7 @@ struct ChatPost: Identifiable, Equatable {
     var live: Bool
     var filter: SettingsChatFilter?
     var platform: Platform?
-    
-    @ObservedObject var data: ObservablePostData
+    var state: ChatPostState
 
     func text() -> String {
         return segments.filter { $0.text != nil }.map { $0.text! }.joined(separator: "").trim()
@@ -141,42 +140,26 @@ class ChatProvider: ObservableObject {
     }
 
     func deleteMessage(messageId: String) {
-        for post in newPosts {
-            if (post.messageId == messageId) {
-                post.data.deleted = true
-            }
+        for post in newPosts where post.messageId == messageId {
+            post.state.deleted = true
         }
-        
-        for post in pausedPosts {
-            if (post.messageId == messageId) {
-                post.data.deleted = true
-            }
+        for post in pausedPosts where post.messageId == messageId {
+            post.state.deleted = true
         }
-        
-        for post in posts {
-            if (post.messageId == messageId) {
-                post.data.deleted = true
-            }
+        for post in posts where post.messageId == messageId {
+            post.state.deleted = true
         }
     }
 
     func deleteUser(userId: String) {
-        for post in newPosts {
-            if (post.userId == userId) {
-                post.data.deleted = true
-            }
+        for post in newPosts where post.userId == userId {
+            post.state.deleted = true
         }
-        
-        for post in pausedPosts {
-            if (post.userId == userId) {
-                post.data.deleted = true
-            }
+        for post in pausedPosts where post.userId == userId {
+            post.state.deleted = true
         }
-        
-        for post in posts {
-            if (post.userId == userId) {
-                post.data.deleted = true
-            }
+        for post in posts where post.userId == userId {
+            post.state.deleted = true
         }
     }
 
@@ -229,7 +212,7 @@ extension Model {
             live: true,
             filter: nil,
             platform: nil,
-            data: ObservablePostData(deleted: false)
+            state: ChatPostState()
         )
     }
 
@@ -513,7 +496,7 @@ extension Model {
             live: live,
             filter: filter,
             platform: platform,
-            data: ObservablePostData(deleted: false)
+            state: ChatPostState()
         )
         chatPostId += 1
         if isTextToSpeechEnabledForMessage(post: post), let user = post.user {

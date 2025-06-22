@@ -59,11 +59,11 @@ struct ChatSettingsView: View {
                     Text(String(Int(chat.fontSize)))
                         .frame(width: 25)
                 }
-                Toggle("Show deleted messages", isOn: $chat.showDeletedMessages)
-                    .onChange(of: chat.showDeletedMessages) { _ in
-                        model.reloadChatMessages()
-                    }
                 if model.database.showAllSettings {
+                    Toggle("Show deleted messages", isOn: $chat.showDeletedMessages)
+                        .onChange(of: chat.showDeletedMessages) { _ in
+                            model.reloadChatMessages()
+                        }
                     Toggle("Timestamp", isOn: $chat.timestampColorEnabled)
                         .onChange(of: chat.timestampColorEnabled) { _ in
                             model.reloadChatMessages()
