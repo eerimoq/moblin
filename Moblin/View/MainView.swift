@@ -285,20 +285,40 @@ private struct StealthModeView: View {
             HStack {
                 Spacer()
                 VStack {
-                    Spacer()
                     if model.stealthModeShowButtons {
-                        Image(systemName: quickButtons.blackScreenShowChat ? "message.fill" : "message")
-                            .font(.system(size: 20))
-                            .frame(width: controlBarQuickButtonSingleQuickButtonSize,
-                                   height: controlBarQuickButtonSingleQuickButtonSize)
-                            .foregroundColor(.white)
-                            .onTapGesture(count: 2) { _ in
-                                quickButtons.blackScreenShowChat.toggle()
-                                showButtons()
-                            }
+                        VStack {
+                            Image(systemName: "arrowshape.turn.up.backward")
+                                .font(.system(size: 20))
+                                .padding([.bottom], 2)
+                            Text("Return")
+                                .font(.body)
+                        }
+                        .frame(width: controlBarQuickButtonSingleQuickButtonSize,
+                               height: controlBarQuickButtonSingleQuickButtonSize)
+                        .foregroundColor(.white)
+                        .onTapGesture { _ in
+                            model.toggleStealthMode()
+                        }
+                        Spacer()
+                        VStack {
+                            Image(systemName: quickButtons.blackScreenShowChat ? "message.fill" : "message")
+                                .font(.system(size: 20))
+                                .padding([.bottom], 2)
+                            Text("Chat")
+                                .font(.body)
+                        }
+                        .frame(width: controlBarQuickButtonSingleQuickButtonSize,
+                               height: controlBarQuickButtonSingleQuickButtonSize)
+                        .foregroundColor(.white)
+                        .onTapGesture { _ in
+                            quickButtons.blackScreenShowChat.toggle()
+                            showButtons()
+                        }
+                    } else {
+                        Spacer()
                     }
                 }
-                .padding([.bottom], 50)
+                .padding([.bottom, .top], 50)
                 .padding([.trailing], 50)
             }
         }
@@ -307,9 +327,6 @@ private struct StealthModeView: View {
         .background(.black)
         .onTapGesture(count: 1) {
             showButtons()
-        }
-        .onTapGesture(count: 2) { _ in
-            model.toggleStealthMode()
         }
         .onAppear {
             showButtons()

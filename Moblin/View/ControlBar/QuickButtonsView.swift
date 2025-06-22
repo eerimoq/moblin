@@ -155,10 +155,6 @@ struct QuickButtonsInnerView: View {
 
     private func stealthModeAction() {
         model.toggleStealthMode()
-        model.makeToast(
-            title: String(localized: "Stealth mode"),
-            subTitle: String(localized: "Double tap to return to main view")
-        )
         model.updateQuickButtonStates()
     }
 
