@@ -264,9 +264,10 @@ private struct ReturnButtonView: View {
             Text("Return")
                 .font(.body)
         }
-        .frame(width: controlBarQuickButtonSingleQuickButtonSize,
-               height: controlBarQuickButtonSingleQuickButtonSize)
+        .frame(width: stealthModeButtonSize, height: stealthModeButtonSize)
         .foregroundColor(.white)
+        .background(.black)
+        .clipShape(Circle())
         .onTapGesture { _ in
             model.toggleStealthMode()
         }
@@ -285,9 +286,10 @@ private struct ChatButtonView: View {
             Text("Chat")
                 .font(.body)
         }
-        .frame(width: controlBarQuickButtonSingleQuickButtonSize,
-               height: controlBarQuickButtonSingleQuickButtonSize)
+        .frame(width: stealthModeButtonSize, height: stealthModeButtonSize)
         .foregroundColor(.white)
+        .background(.black)
+        .clipShape(Circle())
         .onTapGesture { _ in
             quickButtons.blackScreenShowChat.toggle()
             showButtons()
@@ -356,7 +358,6 @@ private struct StealthModeView: View {
                     }
                     .padding([.horizontal], 50)
                     .frame(height: controlBarWidthDefault)
-                    .background(.black)
                 }
             } else {
                 HStack {
@@ -369,7 +370,6 @@ private struct StealthModeView: View {
                     .padding([.top], 50)
                     .padding([.bottom], 25)
                     .frame(width: controlBarWidthDefault)
-                    .background(.black)
                 }
             }
         }
