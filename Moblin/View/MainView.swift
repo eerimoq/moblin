@@ -253,6 +253,48 @@ private struct WebBrowserAlertsView: UIViewControllerRepresentable {
     func updateUIViewController(_: WebBrowserController, context _: Context) {}
 }
 
+private struct ReturnButtonView: View {
+    @EnvironmentObject var model: Model
+
+    var body: some View {
+        VStack {
+            Image(systemName: "arrowshape.turn.up.backward")
+                .font(.system(size: 20))
+                .padding([.bottom], 2)
+            Text("Return")
+                .font(.body)
+        }
+        .frame(width: controlBarQuickButtonSingleQuickButtonSize,
+               height: controlBarQuickButtonSingleQuickButtonSize)
+        .foregroundColor(.white)
+        .onTapGesture { _ in
+            model.toggleStealthMode()
+        }
+    }
+}
+
+private struct ChatButtonView: View {
+    @ObservedObject var quickButtons: SettingsQuickButtons
+    var showButtons: () -> Void
+
+    var body: some View {
+        VStack {
+            Image(systemName: quickButtons.blackScreenShowChat ? "message.fill" : "message")
+                .font(.system(size: 20))
+                .padding([.bottom], 2)
+            Text("Chat")
+                .font(.body)
+        }
+        .frame(width: controlBarQuickButtonSingleQuickButtonSize,
+               height: controlBarQuickButtonSingleQuickButtonSize)
+        .foregroundColor(.white)
+        .onTapGesture { _ in
+            quickButtons.blackScreenShowChat.toggle()
+            showButtons()
+        }
+    }
+}
+
 private struct StealthModeView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var quickButtons: SettingsQuickButtons
@@ -277,54 +319,20 @@ private struct StealthModeView: View {
 
     var body: some View {
         ZStack {
+            VStack {
+                Spacer()
+                HStack {
+                    Spacer()
+                }
+            }
+            .background(.black)
             if let image = model.stealthModeImage {
                 Image(uiImage: image)
                     .resizable()
                     .scaledToFit()
             }
-            HStack {
-                Spacer()
-                VStack {
-                    if model.stealthModeShowButtons {
-                        VStack {
-                            Image(systemName: "arrowshape.turn.up.backward")
-                                .font(.system(size: 20))
-                                .padding([.bottom], 2)
-                            Text("Return")
-                                .font(.body)
-                        }
-                        .frame(width: controlBarQuickButtonSingleQuickButtonSize,
-                               height: controlBarQuickButtonSingleQuickButtonSize)
-                        .foregroundColor(.white)
-                        .onTapGesture { _ in
-                            model.toggleStealthMode()
-                        }
-                        Spacer()
-                        VStack {
-                            Image(systemName: quickButtons.blackScreenShowChat ? "message.fill" : "message")
-                                .font(.system(size: 20))
-                                .padding([.bottom], 2)
-                            Text("Chat")
-                                .font(.body)
-                        }
-                        .frame(width: controlBarQuickButtonSingleQuickButtonSize,
-                               height: controlBarQuickButtonSingleQuickButtonSize)
-                        .foregroundColor(.white)
-                        .onTapGesture { _ in
-                            quickButtons.blackScreenShowChat.toggle()
-                            showButtons()
-                        }
-                    } else {
-                        Spacer()
-                    }
-                }
-                .padding([.bottom, .top], 50)
-                .padding([.trailing], 50)
-            }
         }
         .ignoresSafeArea()
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(.black)
         .onTapGesture(count: 1) {
             showButtons()
         }
@@ -335,6 +343,34 @@ private struct StealthModeView: View {
             // Trigger after tryPause() of bottom of chat detector.
             DispatchQueue.main.async {
                 self.tryUnpause()
+            }
+        }
+        if model.stealthModeShowButtons {
+            if model.isPortrait() {
+                VStack {
+                    Spacer()
+                    HStack {
+                        ChatButtonView(quickButtons: quickButtons, showButtons: showButtons)
+                        Spacer()
+                        ReturnButtonView()
+                    }
+                    .padding([.horizontal], 50)
+                    .frame(height: controlBarWidthDefault)
+                    .background(.black)
+                }
+            } else {
+                HStack {
+                    Spacer()
+                    VStack {
+                        ChatButtonView(quickButtons: quickButtons, showButtons: showButtons)
+                        Spacer()
+                        ReturnButtonView()
+                    }
+                    .padding([.top], 50)
+                    .padding([.bottom], 25)
+                    .frame(width: controlBarWidthDefault)
+                    .background(.black)
+                }
             }
         }
         if quickButtons.blackScreenShowChat {
