@@ -22,10 +22,10 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
 
 ## Main app
 
-- Stream using RTMP, RTMPS, SRT or SRTLA to any platform that supports
+- Stream using RTMP, RTMPS, SRT, SRTLA or RIST to any platform that supports
   them.
 - H.264/AVC and H.265/HEVC video codecs.
-- Up to 4K resolution and 60 FPS.
+- Up to 4K resolution and 60 FPS. Use 120 FPS at your own risk.
 - SRTLA.
   - Can use one cellular, one WiFi and multiple Ethernet connections
     simultaneously. Often called bonding.
@@ -35,6 +35,11 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
   - Chat.
     - Announcements.
     - /me styling.
+    - Ban.
+    - Timeout.
+    - Delete message.
+    - Gray out or hide deleted messages.
+    - Show reply.
   - Optional login.
     - Follow, subscribe and raid alerts.
     - Start ads.
@@ -43,6 +48,7 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
 - Kick integration.
   - Number of viewers.
   - Chat.
+    - Show reply.
 - YouTube integration.
   - Chat.
 - AfreecaTv integration.
@@ -56,6 +62,7 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
     - Weather conditions.
     - Temperature.
     - Timer.
+    - Stopwatch.
     - Country.
     - City.
     - Subtitles. Speech to text.
@@ -68,6 +75,7 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
     - Checkboxes.
     - Ratings.
     - Date.
+    - G-force.
     - ...
   - Browser widget. Show a web page on stream.
     - Optional style sheet.
@@ -78,7 +86,7 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
   - ...
 - Back, front or multi camera.
   - Front camera mirrored on screen for natural experience.
-- Low energy truple and dual cameras.
+- Low energy triple and dual cameras.
 - Back, front, top, bottom or external mic.
   - Automatically changes to external mic when connected.
 - Video stabilization.
@@ -115,6 +123,7 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
   - Noise reduction.
   - Random. A single effect that applies a random effect.
   - Triple. Show center of image three times. Experimental.
+  - ...
 - Alerts.
   - Optional text to speech (TTS).
     - Many voices.
@@ -215,6 +224,8 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
 - Cycling power monitor.
 - Heart rate monitor.
 - Show video on external dispaly. Aka clean HDMI out.
+- Basic VTuber and PNGTuber.
+- Auto scene switcher.
 
 ## Apple Watch companion app
 
