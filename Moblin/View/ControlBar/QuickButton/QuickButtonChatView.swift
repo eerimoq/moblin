@@ -23,6 +23,7 @@ private struct HighlightMessageView: View {
 }
 
 private struct LineView: View {
+    @ObservedObject var data: ObservablePostData
     var post: ChatPost
     @ObservedObject var chat: SettingsChat
     var platform: Bool
@@ -73,6 +74,8 @@ private struct LineView: View {
             ForEach(post.segments, id: \.id) { segment in
                 if let text = segment.text {
                     Text(text)
+                        .foregroundColor(data.deleted ? .gray : .white)
+                        .strikethrough(data.deleted)
                         .italic(post.isAction)
                 }
                 if let url = segment.url {
@@ -124,32 +127,36 @@ private struct MessagesView: View {
                         .frame(height: 1)
                     ForEach(chat.posts) { post in
                         if post.user != nil {
-                            if let highlight = post.highlight {
-                                HStack(spacing: 0) {
-                                    Rectangle()
-                                        .frame(width: 3)
-                                        .foregroundColor(highlight.barColor)
-                                    VStack(alignment: .leading, spacing: 1) {
-                                        HighlightMessageView(
-                                            image: highlight.image,
-                                            name: highlight.title
-                                        )
-                                        LineView(post: post,
-                                                 chat: chatSettings,
-                                                 platform: chat.moreThanOneStreamingPlatform,
-                                                 selectedPost: $selectedPost)
+                            if post.data.deleted == false || chatSettings.showDeletedMessages {
+                                if let highlight = post.highlight {
+                                    HStack(spacing: 0) {
+                                        Rectangle()
+                                            .frame(width: 3)
+                                            .foregroundColor(highlight.barColor)
+                                        VStack(alignment: .leading, spacing: 1) {
+                                            HighlightMessageView(
+                                                image: highlight.image,
+                                                name: highlight.title
+                                            )
+                                            LineView(data: post.data,
+                                                     post: post,
+                                                     chat: chatSettings,
+                                                     platform: chat.moreThanOneStreamingPlatform,
+                                                     selectedPost: $selectedPost)
+                                        }
                                     }
-                                }
-                                .rotationEffect(Angle(degrees: rotation))
-                                .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
-                            } else {
-                                LineView(post: post,
-                                         chat: chatSettings,
-                                         platform: chat.moreThanOneStreamingPlatform,
-                                         selectedPost: $selectedPost)
+                                    .rotationEffect(Angle(degrees: rotation))
+                                    .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
+                                } else {
+                                    LineView(data: post.data,
+                                             post: post,
+                                             chat: chatSettings,
+                                             platform: chat.moreThanOneStreamingPlatform,
+                                             selectedPost: $selectedPost)
                                     .padding([.leading], 3)
                                     .rotationEffect(Angle(degrees: rotation))
                                     .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
+                                }
                             }
                         } else {
                             Rectangle()
@@ -300,7 +307,8 @@ private struct AlertsMessagesView: View {
                                                 image: highlight.image,
                                                 name: highlight.title
                                             )
-                                            LineView(post: post,
+                                            LineView(data: post.data,
+                                                     post: post,
                                                      chat: chatSettings,
                                                      platform: chat.moreThanOneStreamingPlatform,
                                                      selectedPost: $selectedPost)
@@ -310,7 +318,8 @@ private struct AlertsMessagesView: View {
                                     .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
                                 }
                             } else {
-                                LineView(post: post,
+                                LineView(data: post.data,
+                                         post: post,
                                          chat: chatSettings,
                                          platform: chat.moreThanOneStreamingPlatform,
                                          selectedPost: $selectedPost)
@@ -516,7 +525,8 @@ private struct ActionButtonsView: View {
                     }
                 VStack(alignment: .leading) {
                     ScrollView {
-                        LineView(post: selectedPost,
+                        LineView(data: selectedPost.data,
+                                 post: selectedPost,
                                  chat: model.database.chat,
                                  platform: model.chat.moreThanOneStreamingPlatform,
                                  selectedPost: $selectedPost)

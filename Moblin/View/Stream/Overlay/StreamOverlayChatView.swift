@@ -54,6 +54,7 @@ private struct HighlightMessageView: View {
 }
 
 private struct LineView: View {
+    @ObservedObject var data: ObservablePostData
     var post: ChatPost
     @ObservedObject var chat: SettingsChat
     var platform: Bool
@@ -142,7 +143,8 @@ private struct LineView: View {
             ForEach(post.segments, id: \.id) { segment in
                 if let text = segment.text {
                     Text(text)
-                        .foregroundColor(messageColor)
+                        .foregroundColor(data.deleted ? .gray : messageColor)
+                        .strikethrough(data.deleted)
                         .bold(chat.boldMessage)
                         .italic(post.isAction)
                 }
@@ -241,31 +243,35 @@ struct StreamOverlayChatView: View {
                                 .id(startId)
                             ForEach(chat.posts) { post in
                                 if post.user != nil {
-                                    if let highlight = post.highlight {
-                                        HStack(spacing: 0) {
-                                            Rectangle()
-                                                .frame(width: 3)
-                                                .foregroundColor(highlight.barColor)
-                                            VStack(alignment: .leading, spacing: 1) {
-                                                HighlightMessageView(
-                                                    chat: chatSettings,
-                                                    image: highlight.image,
-                                                    name: highlight.title
-                                                )
-                                                LineView(post: post,
-                                                         chat: chatSettings,
-                                                         platform: chat.moreThanOneStreamingPlatform)
+                                    if post.data.deleted == false || chatSettings.showDeletedMessages {
+                                        if let highlight = post.highlight {
+                                            HStack(spacing: 0) {
+                                                Rectangle()
+                                                    .frame(width: 3)
+                                                    .foregroundColor(highlight.barColor)
+                                                VStack(alignment: .leading, spacing: 1) {
+                                                    HighlightMessageView(
+                                                        chat: chatSettings,
+                                                        image: highlight.image,
+                                                        name: highlight.title
+                                                    )
+                                                    LineView(data: post.data,
+                                                             post: post,
+                                                             chat: chatSettings,
+                                                             platform: chat.moreThanOneStreamingPlatform)
+                                                }
                                             }
-                                        }
-                                        .rotationEffect(Angle(degrees: rotation))
-                                        .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
-                                    } else {
-                                        LineView(post: post,
-                                                 chat: chatSettings,
-                                                 platform: chat.moreThanOneStreamingPlatform)
+                                            .rotationEffect(Angle(degrees: rotation))
+                                            .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
+                                        } else {
+                                            LineView(data: post.data,
+                                                     post: post,
+                                                     chat: chatSettings,
+                                                     platform: chat.moreThanOneStreamingPlatform)
                                             .padding([.leading], 3)
                                             .rotationEffect(Angle(degrees: rotation))
                                             .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
+                                        }
                                     }
                                 } else {
                                     Rectangle()
