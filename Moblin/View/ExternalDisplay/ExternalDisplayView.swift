@@ -8,8 +8,15 @@ private let fontSizeScaleFactor = 3.0
 
 private struct HighlightMessageView: View {
     var chat: SettingsChat
-    let image: String
-    let name: String
+    let highlight: ChatHighlight
+
+    private func messageColor() -> Color {
+        if highlight.kind == .reply {
+            return .gray
+        } else {
+            return .white
+        }
+    }
 
     var body: some View {
         WrappingHStack(
@@ -18,10 +25,11 @@ private struct HighlightMessageView: View {
             verticalSpacing: 0,
             fitContentWidth: true
         ) {
-            Image(systemName: image)
+            Image(systemName: highlight.image)
             Text(" ")
-            Text(name)
+            Text(highlight.title)
         }
+        .foregroundColor(messageColor())
         .padding([.leading], 5)
         .font(.system(size: fontSizeScaleFactor * CGFloat(chat.fontSize)))
     }
@@ -139,11 +147,7 @@ private struct PostView: View {
                             .frame(width: 3)
                             .foregroundColor(highlight.barColor)
                         VStack(alignment: .leading, spacing: 1) {
-                            HighlightMessageView(
-                                chat: chatSettings,
-                                image: highlight.image,
-                                name: highlight.title
-                            )
+                            HighlightMessageView(chat: chatSettings, highlight: highlight)
                             LineView(postState: post.state,
                                      post: post,
                                      chat: chatSettings,

@@ -7,11 +7,14 @@ private let borderWidth = 1.5
 
 private struct HighlightMessageView: View {
     let chat: SettingsChat
-    let image: String
-    let name: String
+    let highlight: ChatHighlight
 
     private func messageColor() -> Color {
-        return chat.messageColor.color()
+        if highlight.kind == .reply {
+            return .gray
+        } else {
+            return chat.messageColor.color()
+        }
     }
 
     private func backgroundColor() -> Color {
@@ -31,20 +34,18 @@ private struct HighlightMessageView: View {
     }
 
     var body: some View {
-        let messageColor = messageColor()
-        let shadowColor = shadowColor()
         WrappingHStack(
             alignment: .leading,
             horizontalSpacing: 0,
             verticalSpacing: 0,
             fitContentWidth: true
         ) {
-            Image(systemName: image)
+            Image(systemName: highlight.image)
             Text(" ")
-            Text(name)
+            Text(highlight.title)
         }
-        .foregroundColor(messageColor)
-        .stroke(color: shadowColor, width: chat.shadowColorEnabled ? borderWidth : 0)
+        .foregroundColor(messageColor())
+        .stroke(color: shadowColor(), width: chat.shadowColorEnabled ? borderWidth : 0)
         .padding([.leading], 5)
         .font(.system(size: CGFloat(chat.fontSize)))
         .background(backgroundColor())
@@ -210,11 +211,7 @@ private struct PostView: View {
                             .frame(width: 3)
                             .foregroundColor(highlight.barColor)
                         VStack(alignment: .leading, spacing: 1) {
-                            HighlightMessageView(
-                                chat: chatSettings,
-                                image: highlight.image,
-                                name: highlight.title
-                            )
+                            HighlightMessageView(chat: chatSettings, highlight: highlight)
                             LineView(postState: post.state,
                                      post: post,
                                      chat: chatSettings,
