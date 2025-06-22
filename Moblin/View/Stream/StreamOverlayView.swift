@@ -60,35 +60,47 @@ struct ChatOverlayView: View {
                     StreamOverlayChatView(model: model, chatSettings: chatSettings, chat: chat, fullSize: fullSize)
                     ChatPausedView(chat: chat)
                 }
-                Rectangle()
-                    .foregroundColor(.clear)
-                    .frame(height: 85)
-            }
-        } else {
-            VStack {
-                ZStack {
-                    HStack(spacing: 0) {
-                        GeometryReader { metrics in
-                            StreamOverlayChatView(
-                                model: model,
-                                chatSettings: chatSettings,
-                                chat: chat,
-                                fullSize: fullSize
-                            )
-                            .frame(width: metrics.size.width * 0.95)
-                        }
-                        if fullSize {
-                            Rectangle()
-                                .foregroundColor(.clear)
-                                .frame(width: 100)
-                        }
-                    }
-                    ChatPausedView(chat: chat)
-                }
                 if !fullSize {
                     Rectangle()
                         .foregroundColor(.clear)
-                        .frame(height: chatSettings.bottomPoints)
+                        .frame(height: 85)
+                } else {
+                    Divider()
+                        .background(.gray)
+                    Rectangle()
+                        .foregroundColor(.clear)
+                        .frame(height: controlBarWidthDefault)
+                }
+            }
+        } else {
+            HStack(spacing: 0) {
+                VStack {
+                    ZStack {
+                        HStack(spacing: 0) {
+                            GeometryReader { metrics in
+                                StreamOverlayChatView(
+                                    model: model,
+                                    chatSettings: chatSettings,
+                                    chat: chat,
+                                    fullSize: fullSize
+                                )
+                                .frame(width: metrics.size.width * 0.95)
+                            }
+                        }
+                        ChatPausedView(chat: chat)
+                    }
+                    if !fullSize {
+                        Rectangle()
+                            .foregroundColor(.clear)
+                            .frame(height: chatSettings.bottomPoints)
+                    }
+                }
+                if fullSize {
+                    Divider()
+                        .background(.gray)
+                    Rectangle()
+                        .foregroundColor(.clear)
+                        .frame(width: controlBarWidthDefault)
                 }
             }
         }

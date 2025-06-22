@@ -298,7 +298,7 @@ private struct StealthModeView: View {
                             }
                     }
                 }
-                .padding([.bottom], 20)
+                .padding([.bottom], 50)
                 .padding([.trailing], 50)
             }
         }
