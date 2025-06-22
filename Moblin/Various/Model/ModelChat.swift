@@ -66,6 +66,14 @@ struct ChatHighlight {
             title: title
         )
     }
+
+    func messageColor(defaultColor: Color = .white) -> Color {
+        if kind == .reply {
+            return .gray
+        } else {
+            return defaultColor
+        }
+    }
 }
 
 class ChatPostState: ObservableObject {

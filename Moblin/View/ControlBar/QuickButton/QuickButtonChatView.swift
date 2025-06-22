@@ -6,14 +6,6 @@ import WrappingHStack
 private struct HighlightMessageView: View {
     let highlight: ChatHighlight
 
-    private func messageColor() -> Color {
-        if highlight.kind == .reply {
-            return .gray
-        } else {
-            return .white
-        }
-    }
-
     var body: some View {
         WrappingHStack(
             alignment: .leading,
@@ -25,7 +17,7 @@ private struct HighlightMessageView: View {
             Text(" ")
             Text(highlight.title)
         }
-        .foregroundColor(messageColor())
+        .foregroundColor(highlight.messageColor())
         .padding([.leading], 5)
     }
 }

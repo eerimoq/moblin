@@ -9,14 +9,6 @@ private struct HighlightMessageView: View {
     let chat: SettingsChat
     let highlight: ChatHighlight
 
-    private func messageColor() -> Color {
-        if highlight.kind == .reply {
-            return .gray
-        } else {
-            return chat.messageColor.color()
-        }
-    }
-
     private func backgroundColor() -> Color {
         if chat.backgroundColorEnabled {
             return chat.backgroundColor.color().opacity(0.6)
@@ -44,7 +36,7 @@ private struct HighlightMessageView: View {
             Text(" ")
             Text(highlight.title)
         }
-        .foregroundColor(messageColor())
+        .foregroundColor(highlight.messageColor(defaultColor: chat.messageColor.color()))
         .stroke(color: shadowColor(), width: chat.shadowColorEnabled ? borderWidth : 0)
         .padding([.leading], 5)
         .font(.system(size: CGFloat(chat.fontSize)))
