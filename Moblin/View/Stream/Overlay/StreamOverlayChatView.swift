@@ -93,10 +93,8 @@ private struct LineView: View {
     }
 
     var body: some View {
-        let timestampColor = chat.timestampColor.color()
         let usernameColor = usernameColor()
         let messageColor = messageColor(usernameColor: usernameColor)
-        let shadowColor = shadowColor()
         WrappingHStack(
             alignment: .leading,
             horizontalSpacing: 0,
@@ -105,7 +103,7 @@ private struct LineView: View {
         ) {
             if chat.timestampColorEnabled {
                 Text("\(post.timestamp) ")
-                    .foregroundColor(timestampColor)
+                    .foregroundColor(chat.timestampColor.color())
             }
             if chat.platform, platform, let image = post.platform?.imageName() {
                 Image(image)
@@ -172,7 +170,7 @@ private struct LineView: View {
                 }
             }
         }
-        .stroke(color: shadowColor, width: chat.shadowColorEnabled ? borderWidth : 0)
+        .stroke(color: shadowColor(), width: chat.shadowColorEnabled ? borderWidth : 0)
         .padding([.leading], 5)
         .font(.system(size: CGFloat(chat.fontSize)))
         .background(backgroundColor())

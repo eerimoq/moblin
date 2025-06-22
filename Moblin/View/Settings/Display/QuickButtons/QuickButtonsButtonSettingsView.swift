@@ -1,7 +1,7 @@
 import PhotosUI
 import SwiftUI
 
-private struct StealthModeView: View {
+private struct QuickButtonStealthModeView: View {
     @EnvironmentObject var model: Model
     @State var selectedImageItem: PhotosPickerItem?
 
@@ -102,7 +102,7 @@ struct QuickButtonsButtonSettingsView: View {
             }
             switch button.type {
             case .blackScreen:
-                StealthModeView()
+                QuickButtonStealthModeView()
             default:
                 EmptyView()
             }
