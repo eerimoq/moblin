@@ -20,10 +20,10 @@ def do_constant(args):
 
 def do_square(args):
     while True:
-        set_speed(args.lowbitrate)
-        time.sleep(15)
-        set_speed(args.highbitrate)
-        time.sleep(15)
+        set_speed(args.low_bitrate)
+        time.sleep(args.low_time)
+        set_speed(args.high_bitrate)
+        time.sleep(args.high_time)
 
 
 def do_random(args):
@@ -35,6 +35,10 @@ def do_random(args):
         time.sleep(15)
 
 
+def do_reset(args):
+    subprocess.run(f'sudo tc qdisc del dev eno1 root', shell=True, check=True)
+
+
 def main():
     parser = argparse.ArgumentParser()
 
@@ -43,13 +47,30 @@ def main():
                                        dest='subcommand')
     subparsers.required = True
 
+    subparser = subparsers.add_parser('reset')
+    subparser.set_defaults(func=do_reset)
+
     subparser = subparsers.add_parser('constant')
-    subparser.add_argument('bitrate', type=float)
+    subparser.add_argument('bitrate', type=float, help='Bitrate in Mbps.')
     subparser.set_defaults(func=do_constant)
 
     subparser = subparsers.add_parser('square')
-    subparser.add_argument('lowbitrate', type=float)
-    subparser.add_argument('highbitrate', type=float)
+    subparser.add_argument('--low-bitrate',
+                           default=2,
+                           type=float,
+                           help='Low bitrate in Mbps.')
+    subparser.add_argument('--high-bitrate',
+                           default=10,
+                           type=float,
+                           help='High bitrate in Mbps.')
+    subparser.add_argument('--low-time',
+                           default=15,
+                           type=float,
+                           help='Low bitrate time in seconds.')
+    subparser.add_argument('--high-time',
+                           default=15,
+                           type=float,
+                           help='High bitrate time in seconds.')
     subparser.set_defaults(func=do_square)
 
     subparser = subparsers.add_parser('random')
