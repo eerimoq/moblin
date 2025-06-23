@@ -161,6 +161,10 @@ struct QuickButtonsInnerView: View {
     private func lockScreenAction() {
         model.toggleLockScreen()
     }
+    
+    private func cameraDisableAction() {
+        model.toggleDisableCamera()
+    }
 
     private func imageAction() {
         model.showingCamera.toggle()
@@ -418,6 +422,10 @@ struct QuickButtonsInnerView: View {
             case .lockScreen:
                 QuickButtonImage(state: state, buttonSize: size) {
                     lockScreenAction()
+                }
+            case .disableCamera:
+                QuickButtonImage(state: state, buttonSize: size) {
+                    cameraDisableAction()
                 }
             case .record:
                 QuickButtonImage(state: state, buttonSize: size) {

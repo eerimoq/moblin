@@ -37,10 +37,12 @@ struct StreamView: View {
     var streamPreviewView: StreamPreviewView
 
     var body: some View {
-        if model.showCameraPreview {
-            cameraPreviewView
-        } else {
-            streamPreviewView
+        if !model.disableCamera {
+            if model.showCameraPreview {
+                cameraPreviewView
+            } else {
+                streamPreviewView
+            }
         }
     }
 }

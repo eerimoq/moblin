@@ -100,42 +100,43 @@ extension Model {
     }
 
     @objc func handleAudioRouteChange(notification _: Notification) {
-        guard let inputPort = AVAudioSession.sharedInstance().currentRoute.inputs.first
-        else {
-            return
-        }
-        var newMic: Mic
-        if let dataSource = inputPort.preferredDataSource {
-            var name: String
-            var builtInMicOrientation: SettingsMic?
-            if inputPort.portType == .builtInMic {
-                name = dataSource.dataSourceName
-                builtInMicOrientation = getBuiltInMicOrientation(orientation: dataSource.orientation)
-            } else {
-                name = "\(inputPort.portName): \(dataSource.dataSourceName)"
-            }
-            newMic = Mic(
-                name: name,
-                inputUid: inputPort.uid,
-                dataSourceID: dataSource.dataSourceID,
-                builtInOrientation: builtInMicOrientation
-            )
-        } else if inputPort.portType != .builtInMic {
-            newMic = Mic(name: inputPort.portName, inputUid: inputPort.uid)
-        } else {
-            return
-        }
-        if newMic == micChange {
-            return
-        }
-        if micChange != noMic {
-            makeToast(title: newMic.name)
-        }
-        if newMic != currentMic {
-            selectMicDefault(mic: newMic)
-        }
-        logger.info("Mic: \(newMic.name)")
-        micChange = newMic
+        resetSelectedScene(changeScene: false)
+//        guard let inputPort = AVAudioSession.sharedInstance().currentRoute.inputs.first
+//        else {
+//            return
+//        }
+//        var newMic: Mic
+//        if let dataSource = inputPort.preferredDataSource {
+//            var name: String
+//            var builtInMicOrientation: SettingsMic?
+//            if inputPort.portType == .builtInMic {
+//                name = dataSource.dataSourceName
+//                builtInMicOrientation = getBuiltInMicOrientation(orientation: dataSource.orientation)
+//            } else {
+//                name = "\(inputPort.portName): \(dataSource.dataSourceName)"
+//            }
+//            newMic = Mic(
+//                name: name,
+//                inputUid: inputPort.uid,
+//                dataSourceID: dataSource.dataSourceID,
+//                builtInOrientation: builtInMicOrientation
+//            )
+//        } else if inputPort.portType != .builtInMic {
+//            newMic = Mic(name: inputPort.portName, inputUid: inputPort.uid)
+//        } else {
+//            return
+//        }
+//        if newMic == micChange {
+//            return
+//        }
+//        if micChange != noMic {
+//            makeToast(title: newMic.name)
+//        }
+//        if newMic != currentMic {
+//            selectMicDefault(mic: newMic)
+//        }
+//        logger.info("Mic: \(newMic.name)")
+//        micChange = newMic
     }
 
     private func getBuiltInMicOrientation(orientation: AVAudioSession.Orientation?) -> SettingsMic? {

@@ -182,6 +182,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var stealthModeImage: UIImage?
     var stealthModeHideButtonsTimer = SimpleTimer(queue: .main)
     @Published var lockScreen = false
+    @Published var disableCamera = false
     @Published var findFace = false
     @Published var currentMic = noMic
     @Published var isLive = false
@@ -2093,6 +2094,20 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             )
         } else {
             makeToast(title: String(localized: "Screen unlocked"))
+        }
+    }
+
+    func toggleDisableCamera() {
+        disableCamera.toggle()
+        setGlobalButtonState(type: .disableCamera, isOn: disableCamera)
+        updateQuickButtonStates()
+        if disableCamera {
+            makeToast(
+                title: String(localized: "Camera preview disabled"),
+                subTitle: String(localized: "It is still being transmited to the server.")
+            )
+        } else {
+            makeToast(title: String(localized: "Camera preview enabled"))
         }
     }
 

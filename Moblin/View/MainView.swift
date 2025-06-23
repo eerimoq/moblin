@@ -470,6 +470,14 @@ struct MainView: View {
             if model.lockScreen {
                 LockScreenView()
             }
+            if model.disableCamera {
+                Text("")
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(.black.opacity(0.01))
+                    .onTapGesture(count: 2) { _ in
+                        model.toggleDisableCamera()
+                    }
+            }
             if model.findFace {
                 FindFaceView()
             }
