@@ -79,7 +79,7 @@ class DriftTracker {
             if estimatedFillLevel < highWaterMark() - 0.1 {
                 adjustDriftDirection = .none
             }
-            adjustDrift(drift: drift - min(0.02, estimatedFillLevel - highWaterMark()))
+            adjustDrift(drift: drift - max(0.02, estimatedFillLevel - highWaterMark()))
         case .none:
             return nil
         }
