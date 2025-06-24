@@ -9,12 +9,7 @@ private func createPaidMessageHighlight(chatDescription: ChatDescription) -> Cha
     if let text = chatDescription.purchaseAmountText?.simpleText {
         amount = ", \(text)"
     }
-    return ChatHighlight(
-        kind: .other,
-        barColor: .orange,
-        image: "message",
-        title: String(localized: "Super Chat\(amount)")
-    )
+    return ChatHighlight.makePaidMessage(amount: amount)
 }
 
 private func createPaidStickerHighlight(chatDescription: ChatDescription) -> ChatHighlight {
@@ -22,16 +17,11 @@ private func createPaidStickerHighlight(chatDescription: ChatDescription) -> Cha
     if let text = chatDescription.purchaseAmountText?.simpleText {
         amount = ", \(text)"
     }
-    return ChatHighlight(
-        kind: .other,
-        barColor: .green,
-        image: "doc.plaintext",
-        title: String(localized: "Super Sticker\(amount)")
-    )
+    return ChatHighlight.makePaidSticker(amount: amount)
 }
 
 private func createMemberHighlight() -> ChatHighlight {
-    return ChatHighlight(kind: .other, barColor: .blue, image: "medal", title: String(localized: "Member"))
+    return ChatHighlight.makeMember()
 }
 
 private struct InvalidationContinuationData: Codable {

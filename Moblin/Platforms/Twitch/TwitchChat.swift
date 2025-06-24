@@ -600,27 +600,14 @@ final class TwitchChat {
 
     private func createHighlight(message: ChatMessage, emotes: [ChatMessageEmote]) -> ChatHighlight? {
         if message.announcement {
-            return .init(
-                kind: .other,
-                barColor: .green,
-                image: "horn.blast",
-                title: String(localized: "Announcement")
-            )
+            return ChatHighlight.makeAnnouncement()
         } else if message.firstMessage {
-            return .init(
-                kind: .firstMessage,
-                barColor: .yellow,
-                image: "bubble.left",
-                title: String(localized: "First time chatter")
-            )
+            return ChatHighlight.makeFirstMessage()
         } else if let sender = message.replySender, let text = message.replyText {
-            var title = "Replying to \(sender):"
-            for segment in createSegments(text: text, emotes: emotes, emotesManager: self.emotes, bits: nil) {
-                if let text = segment.text {
-                    title += " \(text.trim())"
-                }
-            }
-            return ChatHighlight(kind: .reply, barColor: .purple, image: chatReplyMessageImage, title: title)
+            return ChatHighlight.makeReply(
+                user: sender,
+                segments: createSegments(text: text, emotes: emotes, emotesManager: self.emotes, bits: nil)
+            )
         } else {
             return nil
         }

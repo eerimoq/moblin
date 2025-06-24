@@ -228,13 +228,7 @@ final class KickPusher: NSObject {
             if let username = message.metadata?.original_sender?.username,
                let content = message.metadata?.original_message?.content
             {
-                var title = "Replying to \(username):"
-                for segment in makeChatPostSegments(content: content) {
-                    if let text = segment.text {
-                        title += " \(text.trim())"
-                    }
-                }
-                return ChatHighlight(kind: .reply, barColor: .purple, image: chatReplyMessageImage, title: title)
+                return ChatHighlight.makeReply(user: username, segments: makeChatPostSegments(content: content))
             }
         }
         return nil

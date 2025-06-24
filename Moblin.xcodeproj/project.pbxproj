@@ -347,6 +347,7 @@
 		0393E07F2E088B44008396CD /* LockScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0393E07E2E088B3F008396CD /* LockScreenView.swift */; };
 		0393E0812E088BC5008396CD /* FindFaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0393E0802E088BC2008396CD /* FindFaceView.swift */; };
 		0393E0832E088BFE008396CD /* SnapshotCountdownView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0393E0822E088BFD008396CD /* SnapshotCountdownView.swift */; };
+		0393E0862E0A6A43008396CD /* ChatPost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0393E0852E0A6A3F008396CD /* ChatPost.swift */; };
 		03941A1C2C0CDABD0061DA81 /* DeepLinkCreatorStreamSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03941A1B2C0CDABD0061DA81 /* DeepLinkCreatorStreamSettingsView.swift */; };
 		03941A1F2C0CDC810061DA81 /* DeepLinkCreatorWebBrowserSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03941A1E2C0CDC810061DA81 /* DeepLinkCreatorWebBrowserSettingsView.swift */; };
 		03941A222C0CDD940061DA81 /* DeepLinkCreatorStreamsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03941A212C0CDD940061DA81 /* DeepLinkCreatorStreamsSettingsView.swift */; };
@@ -1028,6 +1029,7 @@
 		0393E07E2E088B3F008396CD /* LockScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LockScreenView.swift; sourceTree = "<group>"; };
 		0393E0802E088BC2008396CD /* FindFaceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindFaceView.swift; sourceTree = "<group>"; };
 		0393E0822E088BFD008396CD /* SnapshotCountdownView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapshotCountdownView.swift; sourceTree = "<group>"; };
+		0393E0852E0A6A3F008396CD /* ChatPost.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatPost.swift; sourceTree = "<group>"; };
 		03941A1B2C0CDABD0061DA81 /* DeepLinkCreatorStreamSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkCreatorStreamSettingsView.swift; sourceTree = "<group>"; };
 		03941A1E2C0CDC810061DA81 /* DeepLinkCreatorWebBrowserSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkCreatorWebBrowserSettingsView.swift; sourceTree = "<group>"; };
 		03941A212C0CDD940061DA81 /* DeepLinkCreatorStreamsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkCreatorStreamsSettingsView.swift; sourceTree = "<group>"; };
@@ -2962,6 +2964,7 @@
 				03E6F7F82CE5B4AB00D9198A /* BondingStatisticsFormatter.swift */,
 				03D445E12AE5966B00A0F6E9 /* CacheAsyncImage.swift */,
 				03C357362D0803B100B8B29F /* ChatBotCommand.swift */,
+				0393E0852E0A6A3F008396CD /* ChatPost.swift */,
 				03C380DB2BC24F7800394625 /* ChatTextToSpeech.swift */,
 				038F03932DE426E500A72CA2 /* Detection.swift */,
 				0323F3822D21346F00A57AC2 /* DnsLookup.swift */,
@@ -3772,6 +3775,7 @@
 				0359F8D02BD3DA61005BFDA8 /* AudioUnit.swift in Sources */,
 				0379E66D2C8980160021AB59 /* CatPrintersSettingsView.swift in Sources */,
 				03FE41482DE9E0200085D4E1 /* StreamOverlayRightPinchView.swift in Sources */,
+				0393E0862E0A6A43008396CD /* ChatPost.swift in Sources */,
 				032A6F132DDD6E6F00453B0A /* ModelSettingsUrl.swift in Sources */,
 				0364D4B32E05768F0096304F /* ModelStealthMode.swift in Sources */,
 				032D858A2DDD824400A6128A /* ModelSnapshot.swift in Sources */,
