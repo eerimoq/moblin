@@ -138,6 +138,8 @@ class VideoEncoder {
             return .init(width: 854, height: 480)
         } else if settings.bitRate < 750_000 {
             return .init(width: 1280, height: 720)
+        } else if settings.bitRate < 1_500_000 {
+            return .init(width: 1920, height: 1080)
         } else {
             return settings.videoSize
         }
@@ -152,6 +154,8 @@ class VideoEncoder {
             return .init(width: 480, height: 854)
         } else if settings.bitRate < 750_000 {
             return .init(width: 720, height: 1280)
+        } else if settings.bitRate < 1_500_000 {
+            return .init(width: 1080, height: 1920)
         } else {
             return settings.videoSize
         }
