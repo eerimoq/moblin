@@ -76,7 +76,7 @@ open class NetStream: NSObject {
 
     func setAudioEncoderSettings(settings: AudioEncoderSettings) {
         netStreamLockQueue.async {
-            self.mixer.audio.getEncoders().first!.settings = settings
+            self.mixer.audio.getEncoders().first!.setSettings(settings: settings)
         }
     }
 

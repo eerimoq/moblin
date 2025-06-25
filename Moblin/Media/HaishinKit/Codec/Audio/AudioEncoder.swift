@@ -11,22 +11,10 @@ class AudioEncoder {
     private let lockQueue: DispatchQueue
     private var ringBuffer: AudioEncoderRingBuffer?
     private var audioConverter: AVAudioConverter?
-
-    var settings = AudioEncoderSettings() {
-        didSet {
-            audioConverter?.setBitrate(to: settings.bitrate)
-        }
-    }
-
-    var inSourceFormat: AudioStreamBasicDescription? {
-        didSet {
-            guard var inSourceFormat, inSourceFormat != oldValue else {
-                return
-            }
-            ringBuffer = .init(&inSourceFormat)
-            audioConverter = makeAudioConverter(&inSourceFormat)
-        }
-    }
+    private var settings = AudioEncoderSettings()
+    private var bitrate: Atomic<Int> = .init(128_000)
+    private var sampleRate: Atomic<Double?> = .init(nil)
+    private var inSourceFormat: AudioStreamBasicDescription?
 
     init(lockQueue: DispatchQueue) {
         self.lockQueue = lockQueue
@@ -54,6 +42,31 @@ class AudioEncoder {
         case .opus:
             appendSampleBufferOutputOpus(sampleBuffer, presentationTimeStamp)
         }
+    }
+
+    func setSettings(settings: AudioEncoderSettings) {
+        lockQueue.async {
+            self.settings = settings
+            self.audioConverter?.setBitrate(to: settings.bitrate)
+            self.bitrate.mutate { $0 = settings.bitrate }
+        }
+    }
+
+    func setInSourceFormat(_ newInSourceFormat: AudioStreamBasicDescription?) {
+        guard var newInSourceFormat, newInSourceFormat != inSourceFormat else {
+            return
+        }
+        ringBuffer = .init(&newInSourceFormat)
+        audioConverter = makeAudioConverter(&newInSourceFormat)
+        sampleRate.mutate { $0 = newInSourceFormat.mSampleRate }
+    }
+
+    func getBitrate() -> Int {
+        return bitrate.value
+    }
+
+    func getSampleRate() -> Double? {
+        return sampleRate.value
     }
 
     static func makeAudioFormat(_ basicDescription: inout AudioStreamBasicDescription) -> AVAudioFormat? {

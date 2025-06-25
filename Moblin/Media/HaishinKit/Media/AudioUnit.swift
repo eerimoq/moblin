@@ -238,7 +238,7 @@ final class AudioUnit: NSObject {
                 return
             }
             for encoder in encoders {
-                encoder.inSourceFormat = inputSourceFormat
+                encoder.setInSourceFormat(inputSourceFormat)
             }
         }
     }
@@ -283,7 +283,9 @@ final class AudioUnit: NSObject {
             encoder.stopRunning()
             encoder.delegate = nil
         }
-        inputSourceFormat = nil
+        mixerLockQueue.async {
+            self.inputSourceFormat = nil
+        }
     }
 
     func setSpeechToText(enabled: Bool) {
