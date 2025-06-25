@@ -14,10 +14,7 @@ class AudioEncoder {
 
     var settings = AudioEncoderSettings() {
         didSet {
-            guard let audioConverter else {
-                return
-            }
-            settings.apply(audioConverter, oldValue: oldValue)
+            audioConverter?.setBitrate(to: settings.bitrate)
         }
     }
 
@@ -123,7 +120,7 @@ class AudioEncoder {
             numberOfOutputChannels: Int(outputFormat.channelCount),
             outputToInputChannelsMap: settings.channelsMap
         )
-        settings.apply(converter, oldValue: nil)
+        converter.setBitrate(to: settings.bitrate)
         delegate?.audioCodecOutputFormat(outputFormat)
         return converter
     }
@@ -147,5 +144,20 @@ class AudioEncoder {
             self.ringBuffer = nil
             self.isRunning.mutate { $0 = false }
         }
+    }
+}
+
+extension AVAudioConverter {
+    func setBitrate(to bitrate: Int) {
+        guard bitrate != bitRate else {
+            return
+        }
+        guard let bitrates = applicableEncodeBitRates else {
+            return
+        }
+        let minBitrate = bitrates.min(by: { $0.intValue < $1.intValue })?.intValue ?? bitrate
+        let maxBitrate = bitrates.max(by: { $0.intValue < $1.intValue })?.intValue ?? bitrate
+        bitRate = bitrate.clamped(to: minBitrate ... maxBitrate)
+        logger.debug("audio-encoder: \(bitRate), maximum: \(maxBitrate)")
     }
 }

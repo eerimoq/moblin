@@ -57,18 +57,4 @@ struct AudioEncoderSettings {
     var bitrate = 64 * 1000
     var channelsMap: [Int: Int] = [0: 0, 1: 1]
     var format: AudioEncoderSettings.Format = .aac
-
-    func apply(_ converter: AVAudioConverter, oldValue: AudioEncoderSettings?) {
-        guard bitrate != oldValue?.bitrate else {
-            return
-        }
-        let minAvailableBitRate = converter.applicableEncodeBitRates?.min(by: {
-            $0.intValue < $1.intValue
-        })?.intValue ?? bitrate
-        let maxAvailableBitRate = converter.applicableEncodeBitRates?.max(by: {
-            $0.intValue < $1.intValue
-        })?.intValue ?? bitrate
-        converter.bitRate = min(maxAvailableBitRate, max(minAvailableBitRate, bitrate))
-        logger.debug("Audio bitrate: \(converter.bitRate), maximum: \(maxAvailableBitRate)")
-    }
 }
