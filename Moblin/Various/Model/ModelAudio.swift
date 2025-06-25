@@ -279,7 +279,6 @@ extension Model {
     }
 
     func setMicFromSettings() {
-        let mics = listMics()
         if let mic = mics.first(where: { mic in mic.builtInOrientation == database.mic }) {
             selectMic(mic: mic)
         } else if let mic = mics.first {
@@ -290,7 +289,7 @@ extension Model {
     }
 
     func selectMicById(id: String) {
-        guard let mic = listMics().first(where: { mic in mic.id == id }) else {
+        guard let mic = mics.first(where: { mic in mic.id == id }) else {
             logger.info("Mic with id \(id) not found")
             makeErrorToast(
                 title: String(localized: "Mic not found"),

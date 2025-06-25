@@ -995,6 +995,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         gForceManager = GForceManager(motionManager: motionManager)
         startGForceManager()
         loadStealthModeImage()
+        updateMicsList()
     }
 
     @objc func applicationDidChangeActive(notification: NSNotification) {

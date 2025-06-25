@@ -13,7 +13,7 @@ struct QuickButtonMicView: View {
                 }, set: { mic, _ in
                     selectedMic = mic
                 })) {
-                    ForEach(model.listMics()) { mic in
+                    ForEach(model.mics) { mic in
                         Text(mic.name)
                             .tag(mic)
                     }

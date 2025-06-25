@@ -462,7 +462,7 @@ extension Model: RemoteControlStreamerDelegate {
         let scenes = enabledScenes.map { scene in
             RemoteControlSettingsScene(id: scene.id, name: scene.name)
         }
-        let mics = listMics().map { mic in
+        let mics = mics.map { mic in
             RemoteControlSettingsMic(id: mic.id, name: mic.name)
         }
         let bitratePresets = database.bitratePresets.map { preset in
