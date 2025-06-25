@@ -230,6 +230,7 @@ final class AudioUnit: NSObject {
     let session = AVCaptureSession()
     private var speechToTextEnabled = false
     private var bufferedBuiltinAudio: BufferedAudio?
+    private var latestAudioStatusTime = 0.0
 
     private var inputSourceFormat: AudioStreamBasicDescription? {
         didSet {
@@ -388,13 +389,12 @@ final class AudioUnit: NSObject {
         bufferedAudios[cameraId]?.setTargetLatency(latency: latency)
     }
 
-    private func appendNewSampleBuffer(sampleBuffer: CMSampleBuffer, audioLevel: Float, numberOfAudioChannels: Int) {
+    private func appendNewSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
         guard let mixer else {
             return
         }
         // Workaround for audio drift on iPhone 15 Pro Max running iOS 17. Probably issue on more models.
         let presentationTimeStamp = syncTimeToVideo(mixer: mixer, sampleBuffer: sampleBuffer)
-        mixer.delegate?.mixer(audioLevel: audioLevel, numberOfAudioChannels: numberOfAudioChannels)
         guard let sampleBuffer = sampleBuffer.muted(muted) else {
             return
         }
@@ -423,6 +423,16 @@ final class AudioUnit: NSObject {
         bufferedBuiltinAudio.appendSampleBuffer(sampleBuffer)
         return bufferedBuiltinAudio
     }
+
+    private func shouldUpdateAudioLevel(_ sampleBuffer: CMSampleBuffer) -> Bool {
+        let now = sampleBuffer.presentationTimeStamp.seconds
+        if now - latestAudioStatusTime > 0.2 {
+            latestAudioStatusTime = now
+            return true
+        } else {
+            return false
+        }
+    }
 }
 
 extension AudioUnit: AVCaptureAudioDataOutputSampleBufferDelegate {
@@ -438,19 +448,18 @@ extension AudioUnit: AVCaptureAudioDataOutputSampleBufferDelegate {
         guard selectedBufferedAudioId == nil else {
             return
         }
-        var audioLevel: Float
-        if muted {
-            audioLevel = .nan
-        } else if let channel = connection.audioChannels.first {
-            audioLevel = channel.averagePowerLevel
-        } else {
-            audioLevel = 0.0
+        if shouldUpdateAudioLevel(sampleBuffer) {
+            var audioLevel: Float
+            if muted {
+                audioLevel = .nan
+            } else if let channel = connection.audioChannels.first {
+                audioLevel = channel.averagePowerLevel
+            } else {
+                audioLevel = 0.0
+            }
+            mixer?.delegate?.mixer(audioLevel: audioLevel, numberOfAudioChannels: connection.audioChannels.count)
         }
-        appendNewSampleBuffer(
-            sampleBuffer: sampleBuffer,
-            audioLevel: audioLevel,
-            numberOfAudioChannels: connection.audioChannels.count
-        )
+        appendNewSampleBuffer(sampleBuffer)
     }
 }
 
@@ -459,12 +468,11 @@ extension AudioUnit: BufferedAudioSampleBufferDelegate {
         guard selectedBufferedAudioId == cameraId else {
             return
         }
-        let numberOfAudioChannels = Int(sampleBuffer.formatDescription?.numberOfAudioChannels() ?? 0)
-        appendNewSampleBuffer(
-            sampleBuffer: sampleBuffer,
-            audioLevel: .infinity,
-            numberOfAudioChannels: numberOfAudioChannels
-        )
+        if shouldUpdateAudioLevel(sampleBuffer) {
+            let numberOfAudioChannels = Int(sampleBuffer.formatDescription?.numberOfAudioChannels() ?? 0)
+            mixer?.delegate?.mixer(audioLevel: .infinity, numberOfAudioChannels: numberOfAudioChannels)
+        }
+        appendNewSampleBuffer(sampleBuffer)
     }
 }
 
