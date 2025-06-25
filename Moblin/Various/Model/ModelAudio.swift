@@ -104,6 +104,7 @@ extension Model {
         else {
             return
         }
+        updateMicsList()
         var newMic: Mic
         if let dataSource = inputPort.preferredDataSource {
             var name: String
@@ -134,8 +135,11 @@ extension Model {
         if newMic != currentMic {
             selectMicDefault(mic: newMic)
         }
-        logger.info("Mic: \(newMic.name)")
         micChange = newMic
+    }
+
+    func updateMicsList() {
+        mics = listMics()
     }
 
     private func getBuiltInMicOrientation(orientation: AVAudioSession.Orientation?) -> SettingsMic? {

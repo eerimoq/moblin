@@ -70,6 +70,7 @@ extension Model {
                 }
             }
             self.markDjiIsStreamingIfNeeded(rtmpServerStreamId: stream.id)
+            self.updateMicsList()
         }
     }
 
@@ -98,6 +99,7 @@ extension Model {
             }
             restartDjiLiveStreamIfNeededAfterDelay(device: device)
         }
+        updateMicsList()
     }
 
     func handleRtmpServerFrame(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
