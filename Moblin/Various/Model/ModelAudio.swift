@@ -140,6 +140,15 @@ extension Model {
 
     func updateMicsList() {
         mics = listMics()
+        for mic in mics {
+            let micsMic = SettingsMicsMic()
+            micsMic.name = mic.name
+            micsMic.inputUid = mic.inputUid
+            micsMic.dataSourceID = mic.dataSourceID?.intValue
+            if !database.mics.mics.contains(where: { $0 == micsMic }) {
+                database.mics.mics.append(micsMic)
+            }
+        }
     }
 
     private func getBuiltInMicOrientation(orientation: AVAudioSession.Orientation?) -> SettingsMic? {

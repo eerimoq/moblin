@@ -3254,6 +3254,59 @@ enum SettingsMic: String, Codable, CaseIterable {
     }
 }
 
+class SettingsMicsMic: Codable, Equatable {
+    static func == (lhs: SettingsMicsMic, rhs: SettingsMicsMic) -> Bool {
+        return lhs.inputUid == rhs.inputUid && lhs.dataSourceID == rhs.dataSourceID
+    }
+
+    var name: String = ""
+    var inputUid: String = ""
+    var dataSourceID: Int?
+    // var builtInOrientation: SettingsMic?
+
+    enum CodingKeys: CodingKey {
+        case name,
+             inputUid,
+             dataSourceID
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.name, name)
+        try container.encode(.inputUid, inputUid)
+        try container.encode(.dataSourceID, dataSourceID)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        name = container.decode(.name, String.self, "")
+        inputUid = container.decode(.inputUid, String.self, "")
+        dataSourceID = container.decode(.dataSourceID, Int?.self, nil)
+    }
+}
+
+class SettingsMics: Codable, ObservableObject {
+    @Published var mics: [SettingsMicsMic] = []
+
+    enum CodingKeys: CodingKey {
+        case mics
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.mics, mics)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        mics = container.decode(.mics, [SettingsMicsMic].self, [])
+    }
+}
+
 enum SettingsLogLevel: String, Codable, CaseIterable {
     case error = "Error"
     case info = "Info"
@@ -5176,6 +5229,7 @@ class Database: Codable, ObservableObject {
     var chat: SettingsChat = .init()
     var batteryPercentage: Bool = true
     var mic: SettingsMic = getDefaultMic()
+    var mics: SettingsMics = .init()
     var debug: SettingsDebug = .init()
     var quickButtonsGeneral: SettingsQuickButtons = .init()
     var quickButtons: [SettingsQuickButton] = []
@@ -5269,6 +5323,7 @@ class Database: Codable, ObservableObject {
              chat,
              batteryPercentage,
              mic,
+             mics,
              debug,
              quickButtons,
              globalButtons,
@@ -5336,6 +5391,7 @@ class Database: Codable, ObservableObject {
         try container.encode(.chat, chat)
         try container.encode(.batteryPercentage, batteryPercentage)
         try container.encode(.mic, mic)
+        try container.encode(.mics, mics)
         try container.encode(.debug, debug)
         try container.encode(.quickButtons, quickButtonsGeneral)
         try container.encode(.globalButtons, quickButtons)
@@ -5405,6 +5461,7 @@ class Database: Codable, ObservableObject {
         chat = container.decode(.chat, SettingsChat.self, .init())
         batteryPercentage = container.decode(.batteryPercentage, Bool.self, true)
         mic = container.decode(.mic, SettingsMic.self, getDefaultMic())
+        mics = container.decode(.mics, SettingsMics.self, .init())
         debug = container.decode(.debug, SettingsDebug.self, .init())
         quickButtonsGeneral = container.decode(.quickButtons, SettingsQuickButtons.self, .init())
         quickButtons = container.decode(.globalButtons, [SettingsQuickButton].self, [])
