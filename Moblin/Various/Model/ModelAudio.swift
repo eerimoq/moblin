@@ -426,8 +426,11 @@ extension Model {
         if newAudioLevel == audio.level {
             return
         }
-        if abs(audio.level - newAudioLevel) > 5 || newAudioLevel
-            .isNaN || newAudioLevel == .infinity || audio.level.isNaN || audio.level == .infinity
+        if abs(audio.level - newAudioLevel) > 5
+            || newAudioLevel.isNaN
+            || newAudioLevel == .infinity
+            || audio.level.isNaN
+            || audio.level == .infinity
         {
             audio.level = newAudioLevel
             if isWatchLocal() {
