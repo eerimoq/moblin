@@ -7,7 +7,7 @@ protocol AudioCodecDelegate: AnyObject {
 
 class AudioEncoder {
     weak var delegate: (any AudioCodecDelegate)?
-    private var isRunning: Atomic<Bool> = .init(false)
+    private var isRunning = false
     private let lockQueue: DispatchQueue
     private var ringBuffer: AudioEncoderRingBuffer?
     private var audioConverter: AVAudioConverter?
@@ -47,7 +47,7 @@ class AudioEncoder {
     }
 
     func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer, _ presentationTimeStamp: CMTime) {
-        guard isRunning.value else {
+        guard isRunning else {
             return
         }
         switch settings.format {
@@ -127,13 +127,13 @@ class AudioEncoder {
 
     func startRunning() {
         lockQueue.async {
-            guard !self.isRunning.value else {
+            guard !self.isRunning else {
                 return
             }
             if let audioConverter = self.audioConverter {
                 self.delegate?.audioCodecOutputFormat(audioConverter.outputFormat)
             }
-            self.isRunning.mutate { $0 = true }
+            self.isRunning = true
         }
     }
 
@@ -142,7 +142,7 @@ class AudioEncoder {
             self.inSourceFormat = nil
             self.audioConverter = nil
             self.ringBuffer = nil
-            self.isRunning.mutate { $0 = false }
+            self.isRunning = false
         }
     }
 }
