@@ -32,18 +32,16 @@ class AudioEncoder {
         self.lockQueue = lockQueue
     }
 
-    static func makeAudioFormat(_ basicDescription: inout AudioStreamBasicDescription) -> AVAudioFormat? {
-        return AVAudioFormat(
-            streamDescription: &basicDescription,
-            channelLayout: makeChannelLayout(basicDescription.mChannelsPerFrame)
-        )
+    func startRunning() {
+        lockQueue.async {
+            self.startRunningInternal()
+        }
     }
 
-    private static func makeChannelLayout(_ numberOfChannels: UInt32) -> AVAudioChannelLayout? {
-        guard numberOfChannels > 2 else {
-            return nil
+    func stopRunning() {
+        lockQueue.async {
+            self.stopRunningInternal()
         }
-        return AVAudioChannelLayout(layoutTag: kAudioChannelLayoutTag_DiscreteInOrder | numberOfChannels)
     }
 
     func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer, _ presentationTimeStamp: CMTime) {
@@ -56,6 +54,37 @@ class AudioEncoder {
         case .opus:
             appendSampleBufferOutputOpus(sampleBuffer, presentationTimeStamp)
         }
+    }
+
+    static func makeAudioFormat(_ basicDescription: inout AudioStreamBasicDescription) -> AVAudioFormat? {
+        return AVAudioFormat(
+            streamDescription: &basicDescription,
+            channelLayout: makeChannelLayout(basicDescription.mChannelsPerFrame)
+        )
+    }
+
+    private func startRunningInternal() {
+        guard !isRunning else {
+            return
+        }
+        if let audioConverter = audioConverter {
+            delegate?.audioCodecOutputFormat(audioConverter.outputFormat)
+        }
+        isRunning = true
+    }
+
+    private func stopRunningInternal() {
+        inSourceFormat = nil
+        audioConverter = nil
+        ringBuffer = nil
+        isRunning = false
+    }
+
+    private static func makeChannelLayout(_ numberOfChannels: UInt32) -> AVAudioChannelLayout? {
+        guard numberOfChannels > 2 else {
+            return nil
+        }
+        return AVAudioChannelLayout(layoutTag: kAudioChannelLayoutTag_DiscreteInOrder | numberOfChannels)
     }
 
     private func appendSampleBufferOutputAac(_ sampleBuffer: CMSampleBuffer, _ presentationTimeStamp: CMTime) {
@@ -123,27 +152,6 @@ class AudioEncoder {
         converter.setBitrate(to: settings.bitrate)
         delegate?.audioCodecOutputFormat(outputFormat)
         return converter
-    }
-
-    func startRunning() {
-        lockQueue.async {
-            guard !self.isRunning else {
-                return
-            }
-            if let audioConverter = self.audioConverter {
-                self.delegate?.audioCodecOutputFormat(audioConverter.outputFormat)
-            }
-            self.isRunning = true
-        }
-    }
-
-    func stopRunning() {
-        lockQueue.async {
-            self.inSourceFormat = nil
-            self.audioConverter = nil
-            self.ringBuffer = nil
-            self.isRunning = false
-        }
     }
 }
 
