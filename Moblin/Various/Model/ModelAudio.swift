@@ -158,29 +158,50 @@ extension Model {
 
     func listMics() -> [Mic] {
         var mics: [Mic] = []
-        let session = AVAudioSession.sharedInstance()
-        for inputPort in session.availableInputs ?? [] {
+        listAudioSessionMics(&mics)
+        listRtmpMics(&mics)
+        listSrtlaMics(&mics)
+        listMediaPlayerMics(&mics)
+        return mics
+    }
+
+    private func listAudioSessionMics(_ mics: inout [Mic]) {
+        for inputPort in AVAudioSession.sharedInstance().availableInputs ?? [] {
             if let dataSources = inputPort.dataSources, !dataSources.isEmpty {
-                for dataSource in dataSources {
-                    var name: String
-                    var builtInOrientation: SettingsMic?
-                    if inputPort.portType == .builtInMic {
-                        name = dataSource.dataSourceName
-                        builtInOrientation = getBuiltInMicOrientation(orientation: dataSource.orientation)
-                    } else {
-                        name = "\(inputPort.portName): \(dataSource.dataSourceName)"
-                    }
-                    mics.append(Mic(
-                        name: name,
-                        inputUid: inputPort.uid,
-                        dataSourceID: dataSource.dataSourceID,
-                        builtInOrientation: builtInOrientation
-                    ))
-                }
+                addAudioSessionBuiltinMics(&mics, inputPort, dataSources)
             } else {
-                mics.append(Mic(name: inputPort.portName, inputUid: inputPort.uid))
+                addAudioSessionExternalMics(&mics, inputPort)
             }
         }
+    }
+
+    private func addAudioSessionBuiltinMics(_ mics: inout [Mic],
+                                            _ inputPort: AVAudioSessionPortDescription,
+                                            _ dataSources: [AVAudioSessionDataSourceDescription])
+    {
+        for dataSource in dataSources {
+            var name: String
+            var builtInOrientation: SettingsMic?
+            if inputPort.portType == .builtInMic {
+                name = dataSource.dataSourceName
+                builtInOrientation = getBuiltInMicOrientation(orientation: dataSource.orientation)
+            } else {
+                name = "\(inputPort.portName): \(dataSource.dataSourceName)"
+            }
+            mics.append(Mic(
+                name: name,
+                inputUid: inputPort.uid,
+                dataSourceID: dataSource.dataSourceID,
+                builtInOrientation: builtInOrientation
+            ))
+        }
+    }
+
+    private func addAudioSessionExternalMics(_ mics: inout [Mic], _ inputPort: AVAudioSessionPortDescription) {
+        mics.append(Mic(name: inputPort.portName, inputUid: inputPort.uid))
+    }
+
+    private func listRtmpMics(_ mics: inout [Mic]) {
         for rtmpCamera in rtmpCameras() {
             guard let stream = getRtmpStream(camera: rtmpCamera) else {
                 continue
@@ -193,6 +214,9 @@ extension Model {
                 ))
             }
         }
+    }
+
+    private func listSrtlaMics(_ mics: inout [Mic]) {
         for srtlaCamera in srtlaCameras() {
             guard let stream = getSrtlaStream(camera: srtlaCamera) else {
                 continue
@@ -205,6 +229,9 @@ extension Model {
                 ))
             }
         }
+    }
+
+    private func listMediaPlayerMics(_ mics: inout [Mic]) {
         for mediaPlayerCamera in mediaPlayerCameras() {
             guard let mediaPlayer = getMediaPlayer(camera: mediaPlayerCamera) else {
                 continue
@@ -215,7 +242,6 @@ extension Model {
                 builtInOrientation: nil
             ))
         }
-        return mics
     }
 
     func setMic() {
