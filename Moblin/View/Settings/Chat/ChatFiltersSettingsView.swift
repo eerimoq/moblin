@@ -129,12 +129,12 @@ struct ChatFiltersSettingsView: View {
                     ForEach(chat.filters) { filter in
                         ChatFilterSettingsView(filter: filter)
                     }
-                    .onMove(perform: { froms, to in
+                    .onMove { froms, to in
                         chat.filters.move(fromOffsets: froms, toOffset: to)
-                    })
-                    .onDelete(perform: { offsets in
+                    }
+                    .onDelete { offsets in
                         chat.filters.remove(atOffsets: offsets)
-                    })
+                    }
                 }
                 AddButtonView(action: {
                     chat.filters.append(SettingsChatFilter())

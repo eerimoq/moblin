@@ -28,9 +28,9 @@ struct CyclingPowerDevicesSettingsView: View {
                     ForEach(model.database.cyclingPowerDevices.devices) { device in
                         CyclingPowerDeviceSettingsWrapperView(device: device, name: device.name)
                     }
-                    .onDelete(perform: { offsets in
+                    .onDelete { offsets in
                         model.database.cyclingPowerDevices.devices.remove(atOffsets: offsets)
-                    })
+                    }
                 }
                 CreateButtonView {
                     let device = SettingsCyclingPowerDevice()

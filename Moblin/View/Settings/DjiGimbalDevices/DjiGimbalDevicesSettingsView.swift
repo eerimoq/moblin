@@ -35,12 +35,12 @@ struct DjiGimbalDevicesSettingsView: View {
                     ForEach(model.database.djiGimbalDevices.devices) { device in
                         DjiGimbalDeviceSettingsWrapperView(device: device, name: device.name)
                     }
-                    .onMove(perform: { froms, to in
+                    .onMove { froms, to in
                         model.database.djiGimbalDevices.devices.move(fromOffsets: froms, toOffset: to)
-                    })
-                    .onDelete(perform: { offsets in
+                    }
+                    .onDelete { offsets in
                         model.removeDjiGimbalDevices(offsets: offsets)
-                    })
+                    }
                 }
                 CreateButtonView {
                     let device = SettingsDjiGimbalDevice()

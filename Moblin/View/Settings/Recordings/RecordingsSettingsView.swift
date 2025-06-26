@@ -65,14 +65,14 @@ private struct RecordingsSettingsRecordingsView: View {
                             }
                         }
                     }
-                    .onDelete(perform: { indexSet in
+                    .onDelete { indexSet in
                         for index in indexSet {
                             recordingsStorage.database.recordings[index].url().remove()
                         }
                         recordingsStorage.database.recordings.remove(atOffsets: indexSet)
                         recordingsStorage.store()
                         model.objectWillChange.send()
-                    })
+                    }
                 }
             } footer: {
                 if !recordingsStorage.database.recordings.isEmpty {

@@ -66,10 +66,10 @@ private struct StreamingHistorySettingsStreamsView: View {
                             }
                         }
                     }
-                    .onDelete(perform: { offsets in
+                    .onDelete { offsets in
                         model.streamingHistory.database.streams.remove(atOffsets: offsets)
                         model.streamingHistory.store()
-                    })
+                    }
                 }
             }
         }

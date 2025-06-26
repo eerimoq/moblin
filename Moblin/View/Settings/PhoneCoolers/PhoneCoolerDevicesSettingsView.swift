@@ -23,9 +23,9 @@ struct PhoneCoolerDevicesSettingsView: View {
                     ForEach(phoneCoolerDevices.devices) { device in
                         PhoneCoolerDeviceSettingsView(device: device)
                     }
-                    .onDelete(perform: { offsets in
+                    .onDelete { offsets in
                         phoneCoolerDevices.devices.remove(atOffsets: offsets)
-                    })
+                    }
                 }
                 CreateButtonView {
                     let device = SettingsPhoneCoolerDevice()

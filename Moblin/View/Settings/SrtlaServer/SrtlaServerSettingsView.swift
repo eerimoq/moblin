@@ -87,10 +87,10 @@ struct SrtlaServerSettingsView: View {
                         }
                     }
                     if !model.srtlaServerEnabled() {
-                        list.onDelete(perform: { indexes in
+                        list.onDelete { indexes in
                             database.srtlaServer.streams.remove(atOffsets: indexes)
                             model.reloadSrtlaServer()
-                        })
+                        }
                     } else {
                         list
                     }

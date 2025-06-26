@@ -73,11 +73,11 @@ struct StreamSrtConnectionPriorityView: View {
                     PriorityItemView(priority: priority, prio: Float(priority.priority))
                         .deleteDisabled(["Cellular", "WiFi"].contains(priority.name))
                 }
-                .onDelete(perform: { offsets in
+                .onDelete { offsets in
                     stream.srt.connectionPriorities!.priorities.remove(atOffsets: offsets)
                     model.updateSrtlaPriorities()
                     model.objectWillChange.send()
-                })
+                }
             } footer: {
                 VStack(alignment: .leading) {
                     Text("""

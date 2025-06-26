@@ -94,11 +94,11 @@ private struct SoundGalleryView: View {
                             Text(sound.name)
                         }
                     }
-                    .onDelete(perform: { offsets in
+                    .onDelete { offsets in
                         model.database.alertsMediaGallery.customSounds.remove(atOffsets: offsets)
                         model.fixAlertMedias()
                         soundId = alert.soundId
-                    })
+                    }
                 }
                 Button {
                     let sound = SettingsAlertsMediaGalleryItem(name: "My sound")

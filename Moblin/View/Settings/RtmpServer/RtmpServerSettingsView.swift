@@ -70,10 +70,10 @@ struct RtmpServerSettingsView: View {
                         }
                     }
                     if !model.rtmpServerEnabled() {
-                        list.onDelete(perform: { indexes in
+                        list.onDelete { indexes in
                             database.rtmpServer.streams.remove(atOffsets: indexes)
                             model.reloadRtmpServer()
-                        })
+                        }
                     } else {
                         list
                     }

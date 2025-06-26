@@ -506,14 +506,14 @@ private struct TwitchCheerBitsView: View {
                     ForEach(twitch.cheerBits!) { cheerBit in
                         TwitchCheerBitsItemView(cheerBit: cheerBit)
                     }
-                    .onMove(perform: { froms, to in
+                    .onMove { froms, to in
                         twitch.cheerBits!.move(fromOffsets: froms, toOffset: to)
                         model.updateAlertsSettings()
-                    })
-                    .onDelete(perform: { offsets in
+                    }
+                    .onDelete { offsets in
                         twitch.cheerBits!.remove(atOffsets: offsets)
                         model.updateAlertsSettings()
-                    })
+                    }
                 }
                 CreateButtonView {
                     let cheerBits = SettingsWidgetAlertsCheerBitsAlert()
@@ -759,10 +759,10 @@ private struct WidgetAlertsSettingsChatBotView: View {
                              imagePlaygroundImageType: command.imagePlaygroundImageId! */
                         )
                     }
-                    .onDelete(perform: { indexes in
+                    .onDelete { indexes in
                         chatBot.commands.remove(atOffsets: indexes)
                         model.updateAlertsSettings()
-                    })
+                    }
                 }
                 CreateButtonView {
                     let command = SettingsWidgetAlertsChatBotCommand()
@@ -846,10 +846,10 @@ private struct WidgetAlertsSettingsSpeechToTextView: View {
                     ForEach(speechToText.strings) { string in
                         SpeechToTextStringView(string: string, text: string.string)
                     }
-                    .onDelete(perform: { indexes in
+                    .onDelete { indexes in
                         speechToText.strings.remove(atOffsets: indexes)
                         model.updateAlertsSettings()
-                    })
+                    }
                 }
                 CreateButtonView {
                     let string = SettingsWidgetAlertsSpeechToTextString()

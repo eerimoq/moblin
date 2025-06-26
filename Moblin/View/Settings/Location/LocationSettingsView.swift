@@ -81,10 +81,10 @@ struct LocationSettingsView: View {
                             )
                         ))
                     }
-                    .onDelete(perform: { indexes in
+                    .onDelete { indexes in
                         model.database.location.privacyRegions.remove(atOffsets: indexes)
                         model.reloadLocation()
-                    })
+                    }
                 }
                 CreateButtonView {
                     let privacyRegion = SettingsPrivacyRegion()

@@ -11,12 +11,12 @@ struct DeepLinkCreatorStreamsSettingsView: View {
                     ForEach(deepLinkCreator.streams) { stream in
                         DeepLinkCreatorStreamSettingsView(stream: stream)
                     }
-                    .onMove(perform: { froms, to in
+                    .onMove { froms, to in
                         deepLinkCreator.streams.move(fromOffsets: froms, toOffset: to)
-                    })
-                    .onDelete(perform: { offsets in
+                    }
+                    .onDelete { offsets in
                         deepLinkCreator.streams.remove(atOffsets: offsets)
-                    })
+                    }
                 }
                 CreateButtonView {
                     deepLinkCreator.streams.append(DeepLinkCreatorStream())

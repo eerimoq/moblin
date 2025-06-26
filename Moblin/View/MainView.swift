@@ -313,9 +313,9 @@ struct MainView: View {
                                     .onTapGesture(count: 1) {
                                         handleTapToFocus(metrics: metrics, location: $0)
                                     }
-                                    .onLongPressGesture(perform: {
+                                    .onLongPressGesture {
                                         handleLeaveTapToFocus()
-                                    })
+                                    }
                                 if model.database.tapToFocus, let focusPoint = model.manualFocusPoint {
                                     tapToFocusIndicator(metrics: metrics, focusPoint: focusPoint)
                                 }
@@ -387,9 +387,9 @@ struct MainView: View {
                                     .onTapGesture(count: 1) {
                                         handleTapToFocus(metrics: metrics, location: $0)
                                     }
-                                    .onLongPressGesture(perform: {
+                                    .onLongPressGesture {
                                         handleLeaveTapToFocus()
-                                    })
+                                    }
                                 if model.database.tapToFocus, let focusPoint = model.manualFocusPoint {
                                     tapToFocusIndicator(metrics: metrics, focusPoint: focusPoint)
                                 }

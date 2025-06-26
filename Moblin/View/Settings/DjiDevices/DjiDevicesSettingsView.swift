@@ -35,12 +35,12 @@ struct DjiDevicesSettingsView: View {
                     ForEach(djiDevices.devices) { device in
                         DjiDeviceSettingsWrapperView(device: device)
                     }
-                    .onMove(perform: { froms, to in
+                    .onMove { froms, to in
                         djiDevices.devices.move(fromOffsets: froms, toOffset: to)
-                    })
-                    .onDelete(perform: { offsets in
+                    }
+                    .onDelete { offsets in
                         model.removeDjiDevices(offsets: offsets)
-                    })
+                    }
                 }
                 CreateButtonView {
                     let device = SettingsDjiDevice()

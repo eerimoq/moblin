@@ -25,16 +25,16 @@ private struct PlayersView: View {
                         Text(player.name)
                     }
                 }
-                .onMove(perform: { froms, to in
+                .onMove { froms, to in
                     model.database.scoreboardPlayers.move(fromOffsets: froms, toOffset: to)
                     model.resetSelectedScene(changeScene: false)
                     model.sendScoreboardPlayersToWatch()
-                })
-                .onDelete(perform: { offsets in
+                }
+                .onDelete { offsets in
                     model.database.scoreboardPlayers.remove(atOffsets: offsets)
                     model.resetSelectedScene(changeScene: false)
                     model.sendScoreboardPlayersToWatch()
-                })
+                }
             }
             CreateButtonView {
                 model.database.scoreboardPlayers.append(.init())

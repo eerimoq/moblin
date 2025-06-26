@@ -60,10 +60,10 @@ private struct CameraSettingsCubeLutsView: View {
                     CustomLutView(lut: lut, name: lut.name)
                         .tag(lut.id)
                 }
-                .onDelete(perform: { offsets in
+                .onDelete { offsets in
                     model.removeLutCube(offsets: offsets)
                     model.objectWillChange.send()
-                })
+                }
             }
             Button {
                 showPicker = true
@@ -93,10 +93,10 @@ private struct CameraSettingsPngLutsView: View {
                     CustomLutView(lut: lut, name: lut.name)
                         .tag(lut.id)
                 }
-                .onDelete(perform: { offsets in
+                .onDelete { offsets in
                     model.removeLutPng(offsets: offsets)
                     model.objectWillChange.send()
-                })
+                }
             }
             PhotosPicker(selection: $selectedImageItem, matching: .images) {
                 HCenter {

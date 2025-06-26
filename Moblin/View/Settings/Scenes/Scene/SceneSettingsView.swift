@@ -188,11 +188,11 @@ struct SceneSettingsView: View {
                             }
                         }
                     }
-                    .onMove(perform: { froms, to in
+                    .onMove { froms, to in
                         scene.widgets.move(fromOffsets: froms, toOffset: to)
                         model.sceneUpdated()
-                    })
-                    .onDelete(perform: { offsets in
+                    }
+                    .onDelete { offsets in
                         var attachCamera = false
                         if scene.id == model.getSelectedScene()?.id {
                             for offset in offsets {
@@ -203,7 +203,7 @@ struct SceneSettingsView: View {
                         }
                         scene.widgets.remove(atOffsets: offsets)
                         model.sceneUpdated(attachCamera: attachCamera)
-                    })
+                    }
                 }
                 AddButtonView(action: {
                     showingAddWidget = true

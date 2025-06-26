@@ -90,12 +90,12 @@ private struct AutoSwitcherScenesSettingsView: View {
                     time: scene.time
                 )
             }
-            .onMove(perform: { froms, to in
+            .onMove { froms, to in
                 autoSwitcher.scenes.move(fromOffsets: froms, toOffset: to)
-            })
-            .onDelete(perform: { offsets in
+            }
+            .onDelete { offsets in
                 autoSwitcher.scenes.remove(atOffsets: offsets)
-            })
+            }
             AddButtonView {
                 autoSwitcher.scenes.append(SettingsAutoSceneSwitcherScene())
                 model.objectWillChange.send()
@@ -160,12 +160,12 @@ struct AutoSwitchersSettingsView: View {
             ForEach(autoSceneSwitchers.switchers) { autoSwitcher in
                 AutoSwitcherSettingsItemView(autoSwitcher: autoSwitcher)
             }
-            .onMove(perform: { froms, to in
+            .onMove { froms, to in
                 autoSceneSwitchers.switchers.move(fromOffsets: froms, toOffset: to)
-            })
-            .onDelete(perform: { offsets in
+            }
+            .onDelete { offsets in
                 model.deleteAutoSceneSwitchers(offsets: offsets)
-            })
+            }
             CreateButtonView {
                 autoSceneSwitchers.switchers.append(SettingsAutoSceneSwitcher())
             }

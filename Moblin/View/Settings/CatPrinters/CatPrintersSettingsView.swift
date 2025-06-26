@@ -47,9 +47,9 @@ struct CatPrintersSettingsView: View {
                     ForEach(catPrinters.devices) { device in
                         CatPrinterSettingsWrapperView(device: device)
                     }
-                    .onDelete(perform: { offsets in
+                    .onDelete { offsets in
                         catPrinters.devices.remove(atOffsets: offsets)
-                    })
+                    }
                 }
                 CreateButtonView {
                     let device = SettingsCatPrinter()

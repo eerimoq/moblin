@@ -95,11 +95,11 @@ private struct ImageGalleryView: View {
                             Text(image.name)
                         }
                     }
-                    .onDelete(perform: { offsets in
+                    .onDelete { offsets in
                         model.database.alertsMediaGallery.customImages.remove(atOffsets: offsets)
                         model.fixAlertMedias()
                         imageId = alert.imageId
-                    })
+                    }
                 }
                 Button {
                     let image = SettingsAlertsMediaGalleryItem(name: "My image")

@@ -72,14 +72,14 @@ struct MediaPlayerSettingsView: View {
                                 }
                             }
                         }
-                        .onMove(perform: { froms, to in
+                        .onMove { froms, to in
                             player.playlist.move(fromOffsets: froms, toOffset: to)
                             model.updateMediaPlayerSettings(playerId: player.id, settings: player)
-                        })
-                        .onDelete(perform: { indexes in
+                        }
+                        .onDelete { indexes in
                             player.playlist.remove(atOffsets: indexes)
                             model.updateMediaPlayerSettings(playerId: player.id, settings: player)
-                        })
+                        }
                     }
                     PhotosPicker(selection: $selectedVideoItem, matching: .videos) {
                         HCenter {

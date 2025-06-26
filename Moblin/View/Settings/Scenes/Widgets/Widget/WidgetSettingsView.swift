@@ -168,14 +168,14 @@ struct WidgetEffectsView: View {
                     effect: effect
                 )
             }
-            .onMove(perform: { froms, to in
+            .onMove { froms, to in
                 widget.effects.move(fromOffsets: froms, toOffset: to)
                 model.resetSelectedScene(changeScene: false)
-            })
-            .onDelete(perform: { offsets in
+            }
+            .onDelete { offsets in
                 widget.effects.remove(atOffsets: offsets)
                 model.resetSelectedScene(changeScene: false)
-            })
+            }
             AddButtonView {
                 widget.effects.append(SettingsVideoEffect())
                 model.resetSelectedScene(changeScene: false)

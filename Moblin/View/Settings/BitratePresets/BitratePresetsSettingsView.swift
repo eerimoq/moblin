@@ -12,12 +12,12 @@ struct BitratePresetsSettingsView: View {
                         BitratePresetsPresetSettingsView(preset: preset)
                             .deleteDisabled(database.bitratePresets.count == 1)
                     }
-                    .onMove(perform: { froms, to in
+                    .onMove { froms, to in
                         database.bitratePresets.move(fromOffsets: froms, toOffset: to)
-                    })
-                    .onDelete(perform: { offsets in
+                    }
+                    .onDelete { offsets in
                         database.bitratePresets.remove(atOffsets: offsets)
-                    })
+                    }
                 }
                 CreateButtonView {
                     database.bitratePresets.append(SettingsBitratePreset(

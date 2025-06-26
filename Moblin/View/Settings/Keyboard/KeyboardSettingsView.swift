@@ -13,9 +13,9 @@ struct KeyboardSettingsView: View {
                     ForEach(keyboard.keys) { key in
                         KeyboardKeySettingsView(key: key)
                     }
-                    .onDelete(perform: { indexSet in
+                    .onDelete { indexSet in
                         keyboard.keys.remove(atOffsets: indexSet)
-                    })
+                    }
                 }
                 CreateButtonView {
                     keyboard.keys.append(SettingsKeyboardKey())

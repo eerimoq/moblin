@@ -77,11 +77,11 @@ private struct ButtonsSettingsView: View {
                 ForEach(model.database.quickButtons) { button in
                     ButtonSettingsView(button: button)
                 }
-                .onMove(perform: { froms, to in
+                .onMove { froms, to in
                     model.database.quickButtons.move(fromOffsets: froms, toOffset: to)
                     model.updateQuickButtonStates()
                     model.sceneUpdated(updateRemoteScene: false)
-                })
+                }
             }
         } header: {
             Text("Quick buttons")

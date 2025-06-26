@@ -61,9 +61,9 @@ struct StreamsSettingsView: View {
                     ForEach(database.streams) { stream in
                         StreamItemView(database: database, stream: stream)
                     }
-                    .onMove(perform: { froms, to in
+                    .onMove { froms, to in
                         database.streams.move(fromOffsets: froms, toOffset: to)
-                    })
+                    }
                 }
                 CreateButtonView {
                     model.resetWizard()

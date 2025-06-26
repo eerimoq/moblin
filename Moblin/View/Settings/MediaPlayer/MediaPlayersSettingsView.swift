@@ -20,12 +20,12 @@ struct MediaPlayersSettingsView: View {
                     ForEach(mediaPlayers.players) { player in
                         MediaPlayerSettingsView(player: player)
                     }
-                    .onDelete(perform: { indexes in
+                    .onDelete { indexes in
                         for index in indexes {
                             model.deleteMediaPlayer(playerId: mediaPlayers.players[index].id)
                         }
                         mediaPlayers.players.remove(atOffsets: indexes)
-                    })
+                    }
                 }
                 CreateButtonView {
                     let settings = SettingsMediaPlayer()

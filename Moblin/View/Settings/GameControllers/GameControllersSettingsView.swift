@@ -27,9 +27,9 @@ struct GameControllersSettingsView: View {
                             Text("Controller \(gameControllerIndex(gameController: gameController))")
                         }
                     }
-                    .onDelete(perform: { indexSet in
+                    .onDelete { indexSet in
                         database.gameControllers.remove(atOffsets: indexSet)
-                    })
+                    }
                 }
                 CreateButtonView {
                     database.gameControllers.append(SettingsGameController())

@@ -54,10 +54,10 @@ private struct ScenesListView: View {
                 ForEach(database.scenes) { scene in
                     SceneItemView(database: database, scene: scene)
                 }
-                .onMove(perform: { froms, to in
+                .onMove { froms, to in
                     database.scenes.move(fromOffsets: froms, toOffset: to)
                     model.resetSelectedScene()
-                })
+                }
             }
             CreateButtonView {
                 database.scenes.append(SettingsScene(name: String(localized: "My scene")))

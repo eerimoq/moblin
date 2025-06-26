@@ -120,14 +120,14 @@ struct WidgetsSettingsView: View {
             ForEach(database.widgets) { widget in
                 WidgetsSettingsItemView(widget: widget)
             }
-            .onMove(perform: { froms, to in
+            .onMove { froms, to in
                 database.widgets.move(fromOffsets: froms, toOffset: to)
-            })
-            .onDelete(perform: { offsets in
+            }
+            .onDelete { offsets in
                 database.widgets.remove(atOffsets: offsets)
                 model.removeDeadWidgetsFromScenes()
                 model.resetSelectedScene()
-            })
+            }
             CreateButtonView {
                 database.widgets.append(SettingsWidget(name: String(localized: "My widget")))
                 model.fixAlertMedias()

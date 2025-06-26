@@ -311,16 +311,16 @@ private struct GoProLaunchLiveStream: View {
                 ForEach(goPro.launchLiveStream) { launchLiveStream in
                     GoProLaunchLiveStreamSettingsEntryView(launchLiveStream: launchLiveStream)
                 }
-                .onMove(perform: { froms, to in
+                .onMove { froms, to in
                     goPro.launchLiveStream.move(fromOffsets: froms, toOffset: to)
-                })
-                .onDelete(perform: { offsets in
+                }
+                .onDelete { offsets in
                     goPro.launchLiveStream.remove(atOffsets: offsets)
                     if !goPro.launchLiveStream.contains(where: { $0.id == goPro.selectedLaunchLiveStream }) {
                         goPro.selectedLaunchLiveStream = goPro.launchLiveStream.first?.id
                         model.goProLaunchLiveStreamSelection = goPro.selectedLaunchLiveStream
                     }
-                })
+                }
             }
             CreateButtonView {
                 let launchLiveStream = SettingsGoProLaunchLiveStream()
@@ -348,16 +348,16 @@ private struct GoProWifiCredentials: View {
                 ForEach(goPro.wifiCredentials) { wifiCredentials in
                     GoProWifiCredentialsSettingsEntryView(wifiCredentials: wifiCredentials)
                 }
-                .onMove(perform: { froms, to in
+                .onMove { froms, to in
                     goPro.wifiCredentials.move(fromOffsets: froms, toOffset: to)
-                })
-                .onDelete(perform: { offsets in
+                }
+                .onDelete { offsets in
                     goPro.wifiCredentials.remove(atOffsets: offsets)
                     if !goPro.wifiCredentials.contains(where: { $0.id == goPro.selectedWifiCredentials }) {
                         goPro.selectedWifiCredentials = goPro.wifiCredentials.first?.id
                         model.goProWifiCredentialsSelection = goPro.selectedWifiCredentials
                     }
-                })
+                }
             }
             CreateButtonView {
                 let wifiCredentials = SettingsGoProWifiCredentials()
@@ -385,16 +385,16 @@ private struct GoProRtmpUrls: View {
                 ForEach(goPro.rtmpUrls) { rtmpUrl in
                     GoProRtmpUrlSettingsEntryView(rtmpUrl: rtmpUrl)
                 }
-                .onMove(perform: { froms, to in
+                .onMove { froms, to in
                     goPro.rtmpUrls.move(fromOffsets: froms, toOffset: to)
-                })
-                .onDelete(perform: { offsets in
+                }
+                .onDelete { offsets in
                     goPro.rtmpUrls.remove(atOffsets: offsets)
                     if !goPro.rtmpUrls.contains(where: { $0.id == goPro.selectedRtmpUrl }) {
                         goPro.selectedRtmpUrl = goPro.rtmpUrls.first?.id
                         model.goProRtmpUrlSelection = goPro.selectedRtmpUrl
                     }
-                })
+                }
             }
             CreateButtonView {
                 let rtmpUrl = SettingsGoProRtmpUrl()

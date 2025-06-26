@@ -41,9 +41,9 @@ struct DeepLinkCreatorQuickButtonsSettingsView: View {
                     ForEach(quickButtons.buttons) { button in
                         DeepLinkCreatorQuickButtonSettingsView(button: button)
                     }
-                    .onMove(perform: { froms, to in
+                    .onMove { froms, to in
                         quickButtons.buttons.move(fromOffsets: froms, toOffset: to)
-                    })
+                    }
                 }
             }
         }

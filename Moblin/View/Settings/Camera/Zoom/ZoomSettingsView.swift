@@ -44,16 +44,16 @@ struct ZoomSettingsView: View {
                         }
                         .deleteDisabled(model.database.zoom.back.count == 1)
                     }
-                    .onMove(perform: { froms, to in
+                    .onMove { froms, to in
                         model.database.zoom.back.move(fromOffsets: froms, toOffset: to)
                         model.backZoomUpdated()
                         model.objectWillChange.send()
-                    })
-                    .onDelete(perform: { offsets in
+                    }
+                    .onDelete { offsets in
                         model.database.zoom.back.remove(atOffsets: offsets)
                         model.backZoomUpdated()
                         model.objectWillChange.send()
-                    })
+                    }
                 }
                 CreateButtonView {
                     model.database.zoom.back.append(SettingsZoomPreset(
@@ -90,16 +90,16 @@ struct ZoomSettingsView: View {
                         }
                         .deleteDisabled(model.database.zoom.front.count == 1)
                     }
-                    .onMove(perform: { froms, to in
+                    .onMove { froms, to in
                         model.database.zoom.front.move(fromOffsets: froms, toOffset: to)
                         model.frontZoomUpdated()
                         model.objectWillChange.send()
-                    })
-                    .onDelete(perform: { offsets in
+                    }
+                    .onDelete { offsets in
                         model.database.zoom.front.remove(atOffsets: offsets)
                         model.frontZoomUpdated()
                         model.objectWillChange.send()
-                    })
+                    }
                 }
                 CreateButtonView {
                     model.database.zoom.front.append(SettingsZoomPreset(
