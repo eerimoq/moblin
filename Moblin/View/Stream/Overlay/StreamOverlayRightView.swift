@@ -120,18 +120,17 @@ private struct CollapsedAdsRemainingTimerView: View {
 }
 
 private struct CollapsedBitrateView: View {
-    @EnvironmentObject var model: Model
-    @ObservedObject var streamStatus: Bitrate
+    @ObservedObject var bitrate: Bitrate
 
     var body: some View {
         HStack(spacing: 1) {
             Image(systemName: "speedometer")
                 .frame(width: 17, height: 17)
                 .padding([.leading], 2)
-                .foregroundColor(model.bitrateStatusColor)
-                .background(model.bitrateStatusIconColor ?? .clear)
-            if !streamStatus.speedMbpsOneDecimal.isEmpty {
-                Text(streamStatus.speedMbpsOneDecimal)
+                .foregroundColor(bitrate.statusColor)
+                .background(bitrate.statusIconColor ?? .clear)
+            if !bitrate.speedMbpsOneDecimal.isEmpty {
+                Text(bitrate.speedMbpsOneDecimal)
                     .foregroundColor(.white)
                     .padding([.trailing], 2)
             }
@@ -152,14 +151,14 @@ private struct BitrateStatusView: View {
 
     var body: some View {
         if textPlacement == .hide {
-            CollapsedBitrateView(streamStatus: model.bitrate)
+            CollapsedBitrateView(bitrate: model.bitrate)
         } else {
             StreamOverlayIconAndTextView(
                 icon: "speedometer",
                 text: bitrate.speedAndTotal,
                 textPlacement: textPlacement,
-                color: model.bitrateStatusColor,
-                iconBackgroundColor: model.bitrateStatusIconColor ?? backgroundColor
+                color: bitrate.statusColor,
+                iconBackgroundColor: bitrate.statusIconColor ?? backgroundColor
             )
         }
     }

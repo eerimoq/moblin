@@ -572,8 +572,8 @@ extension Model {
             } else {
                 bitrateStatusIconColor = nil
             }
-            if bitrateStatusIconColor != self.bitrateStatusIconColor {
-                self.bitrateStatusIconColor = bitrateStatusIconColor
+            if bitrateStatusIconColor != bitrate.statusIconColor {
+                bitrate.statusIconColor = bitrateStatusIconColor
             }
             if isWatchLocal() {
                 sendSpeedAndTotalToWatch(speedAndTotal: bitrate.speedAndTotal)
@@ -731,8 +731,8 @@ extension Model {
         } else {
             newBitrateStatusColor = .white
         }
-        if newBitrateStatusColor != bitrateStatusColor {
-            bitrateStatusColor = newBitrateStatusColor
+        if newBitrateStatusColor != bitrate.statusColor {
+            bitrate.statusColor = newBitrateStatusColor
         }
     }
 

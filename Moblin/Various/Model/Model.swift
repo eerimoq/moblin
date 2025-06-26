@@ -135,6 +135,8 @@ class Servers: ObservableObject {
 class Bitrate: ObservableObject {
     @Published var speedAndTotal = noValue
     @Published var speedMbpsOneDecimal = noValue
+    @Published var statusColor: Color = .white
+    @Published var statusIconColor: Color?
 }
 
 class Bonding: ObservableObject {
@@ -205,8 +207,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var numberOfViewers = noValue
     @Published var batteryLevel = Double(UIDevice.current.batteryLevel)
     @Published var batteryState: UIDevice.BatteryState = .full
-    @Published var bitrateStatusColor: Color = .white
-    @Published var bitrateStatusIconColor: Color?
     @Published var thermalState = ProcessInfo.processInfo.thermalState
     @Published var remoteControlPreview: UIImage?
     @Published var showCameraPreview = false
