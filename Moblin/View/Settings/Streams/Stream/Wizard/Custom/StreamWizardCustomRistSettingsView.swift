@@ -2,14 +2,15 @@ import SwiftUI
 
 struct StreamWizardCustomRistSettingsView: View {
     @EnvironmentObject private var model: Model
+    @ObservedObject var createStreamWizard: CreateStreamWizard
     @State var urlError = ""
 
     private func nextDisabled() -> Bool {
-        return model.wizardCustomRistUrl.isEmpty || !urlError.isEmpty
+        return createStreamWizard.customRistUrl.isEmpty || !urlError.isEmpty
     }
 
     private func updateUrlError() {
-        let url = cleanUrl(url: model.wizardCustomRistUrl)
+        let url = cleanUrl(url: createStreamWizard.customRistUrl)
         if url.isEmpty {
             urlError = ""
         } else {
@@ -20,10 +21,10 @@ struct StreamWizardCustomRistSettingsView: View {
     var body: some View {
         Form {
             Section {
-                TextField("rist://120.35.234.2:2030", text: $model.wizardCustomRistUrl)
+                TextField("rist://120.35.234.2:2030", text: $createStreamWizard.customRistUrl)
                     .textInputAutocapitalization(.never)
                     .disableAutocorrection(true)
-                    .onChange(of: model.wizardCustomRistUrl) { _ in
+                    .onChange(of: createStreamWizard.customRistUrl) { _ in
                         updateUrlError()
                     }
             } header: {
@@ -33,7 +34,7 @@ struct StreamWizardCustomRistSettingsView: View {
             }
             Section {
                 NavigationLink {
-                    StreamWizardSummarySettingsView()
+                    StreamWizardSummarySettingsView(createStreamWizard: createStreamWizard)
                 } label: {
                     WizardNextButtonView()
                 }
@@ -41,12 +42,12 @@ struct StreamWizardCustomRistSettingsView: View {
             }
         }
         .onAppear {
-            model.wizardCustomProtocol = .rist
-            model.wizardName = "Custom RIST"
+            createStreamWizard.customProtocol = .rist
+            createStreamWizard.name = "Custom RIST"
         }
         .navigationTitle("RIST")
         .toolbar {
-            CreateStreamWizardToolbar()
+            CreateStreamWizardToolbar(createStreamWizard: createStreamWizard)
         }
     }
 }

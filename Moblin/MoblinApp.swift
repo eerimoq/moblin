@@ -19,7 +19,8 @@ struct MoblinApp: App {
                     cameraPreviewView: CameraPreviewView(),
                     streamPreviewView: StreamPreviewView()
                 ),
-                replay: model.replay
+                replay: model.replay,
+                createStreamWizard: model.createStreamWizard
             )
             .environmentObject(model)
         }

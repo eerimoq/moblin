@@ -2,15 +2,16 @@ import SwiftUI
 
 struct StreamWizardNetworkSetupMyServersRtmpSettingsView: View {
     @EnvironmentObject private var model: Model
+    @ObservedObject var createStreamWizard: CreateStreamWizard
     @State var urlError = ""
 
     private func nextDisabled() -> Bool {
-        return model.wizardCustomRtmpUrl.isEmpty || model.wizardCustomRtmpStreamKey.isEmpty || !urlError
+        return createStreamWizard.customRtmpUrl.isEmpty || createStreamWizard.customRtmpStreamKey.isEmpty || !urlError
             .isEmpty
     }
 
     private func updateUrlError() {
-        let url = cleanUrl(url: model.wizardCustomRtmpUrl)
+        let url = cleanUrl(url: createStreamWizard.customRtmpUrl)
         if url.isEmpty {
             urlError = ""
         } else {
@@ -26,10 +27,10 @@ struct StreamWizardNetworkSetupMyServersRtmpSettingsView: View {
     var body: some View {
         Form {
             Section {
-                TextField("rtmp://arn03.contribute.live-video.net/app/", text: $model.wizardCustomRtmpUrl)
+                TextField("rtmp://arn03.contribute.live-video.net/app/", text: $createStreamWizard.customRtmpUrl)
                     .textInputAutocapitalization(.never)
                     .disableAutocorrection(true)
-                    .onChange(of: model.wizardCustomRtmpUrl) { _ in
+                    .onChange(of: createStreamWizard.customRtmpUrl) { _ in
                         updateUrlError()
                     }
             } header: {
@@ -40,7 +41,7 @@ struct StreamWizardNetworkSetupMyServersRtmpSettingsView: View {
             Section {
                 TextField(
                     "live_48950233_okF4f455GRWEF443fFr23GRbt5rEv",
-                    text: $model.wizardCustomRtmpStreamKey
+                    text: $createStreamWizard.customRtmpStreamKey
                 )
                 .textInputAutocapitalization(.never)
                 .disableAutocorrection(true)
@@ -49,7 +50,7 @@ struct StreamWizardNetworkSetupMyServersRtmpSettingsView: View {
             }
             Section {
                 NavigationLink {
-                    StreamWizardChatSettingsView()
+                    StreamWizardChatSettingsView(createStreamWizard: createStreamWizard)
                 } label: {
                     WizardNextButtonView()
                 }
@@ -57,11 +58,11 @@ struct StreamWizardNetworkSetupMyServersRtmpSettingsView: View {
             }
         }
         .onAppear {
-            model.wizardCustomProtocol = .rtmp
+            createStreamWizard.customProtocol = .rtmp
         }
         .navigationTitle("RTMP(S)")
         .toolbar {
-            CreateStreamWizardToolbar()
+            CreateStreamWizardToolbar(createStreamWizard: createStreamWizard)
         }
     }
 }

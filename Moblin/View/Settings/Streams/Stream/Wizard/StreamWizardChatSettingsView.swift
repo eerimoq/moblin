@@ -1,31 +1,31 @@
 import SwiftUI
 
 struct StreamWizardChatSettingsView: View {
-    @EnvironmentObject private var model: Model
+    @ObservedObject var createStreamWizard: CreateStreamWizard
 
     var body: some View {
         Form {
             Section {
-                Toggle(isOn: $model.wizardChatBttv, label: {
+                Toggle(isOn: $createStreamWizard.chatBttv, label: {
                     Text("BTTV emotes")
                 })
-                Toggle(isOn: $model.wizardChatFfz, label: {
+                Toggle(isOn: $createStreamWizard.chatFfz, label: {
                     Text("FFZ emotes")
                 })
-                Toggle(isOn: $model.wizardChatSeventv, label: {
+                Toggle(isOn: $createStreamWizard.chatSeventv, label: {
                     Text("7TV emotes")
                 })
             }
             Section {
-                if model.wizardNetworkSetup == .direct {
+                if createStreamWizard.networkSetup == .direct {
                     NavigationLink {
-                        StreamWizardSummarySettingsView()
+                        StreamWizardSummarySettingsView(createStreamWizard: createStreamWizard)
                     } label: {
                         WizardNextButtonView()
                     }
                 } else {
                     NavigationLink {
-                        StreamWizardObsRemoteControlSettingsView()
+                        StreamWizardObsRemoteControlSettingsView(createStreamWizard: createStreamWizard)
                     } label: {
                         WizardNextButtonView()
                     }
@@ -34,7 +34,7 @@ struct StreamWizardChatSettingsView: View {
         }
         .navigationTitle("Chat")
         .toolbar {
-            CreateStreamWizardToolbar()
+            CreateStreamWizardToolbar(createStreamWizard: createStreamWizard)
         }
     }
 }

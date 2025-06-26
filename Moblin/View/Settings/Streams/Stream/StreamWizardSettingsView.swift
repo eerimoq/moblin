@@ -23,14 +23,14 @@ struct WizardSkipButtonView: View {
 }
 
 struct CreateStreamWizardToolbar: ToolbarContent {
-    @EnvironmentObject var model: Model
+    @ObservedObject var createStreamWizard: CreateStreamWizard
 
     var body: some ToolbarContent {
         ToolbarItem(placement: .navigationBarTrailing) {
             HStack {
                 Button {
-                    model.isPresentingWizard = false
-                    model.isPresentingSetupWizard = false
+                    createStreamWizard.isPresenting = false
+                    createStreamWizard.isPresentingSetup = false
                 } label: {
                     Text("Close")
                 }
@@ -40,31 +40,33 @@ struct CreateStreamWizardToolbar: ToolbarContent {
 }
 
 struct StreamWizardSettingsView: View {
+    var createStreamWizard: CreateStreamWizard
+
     var body: some View {
         Form {
             Section {
                 NavigationLink {
-                    StreamWizardTwitchSettingsView()
+                    StreamWizardTwitchSettingsView(createStreamWizard: createStreamWizard)
                 } label: {
                     Text("Twitch")
                 }
                 NavigationLink {
-                    StreamWizardKickSettingsView()
+                    StreamWizardKickSettingsView(createStreamWizard: createStreamWizard)
                 } label: {
                     Text("Kick")
                 }
                 NavigationLink {
-                    StreamWizardYouTubeSettingsView()
+                    StreamWizardYouTubeSettingsView(createStreamWizard: createStreamWizard)
                 } label: {
                     Text("YouTube")
                 }
                 NavigationLink {
-                    StreamWizardAfreecaTvSettingsView()
+                    StreamWizardAfreecaTvSettingsView(createStreamWizard: createStreamWizard)
                 } label: {
                     Text("AfreecaTV")
                 }
                 NavigationLink {
-                    StreamWizardObsSettingsView()
+                    StreamWizardObsSettingsView(createStreamWizard: createStreamWizard)
                 } label: {
                     Text("OBS")
                 }
@@ -73,7 +75,7 @@ struct StreamWizardSettingsView: View {
             }
             Section {
                 NavigationLink {
-                    StreamWizardCustomSettingsView()
+                    StreamWizardCustomSettingsView(createStreamWizard: createStreamWizard)
                 } label: {
                     Text("Custom")
                 }
@@ -83,7 +85,7 @@ struct StreamWizardSettingsView: View {
         }
         .navigationTitle("Create stream wizard")
         .toolbar {
-            CreateStreamWizardToolbar()
+            CreateStreamWizardToolbar(createStreamWizard: createStreamWizard)
         }
     }
 }

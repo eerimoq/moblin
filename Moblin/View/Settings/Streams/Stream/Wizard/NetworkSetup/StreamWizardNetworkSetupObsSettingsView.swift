@@ -1,16 +1,16 @@
 import SwiftUI
 
 struct StreamWizardNetworkSetupObsSettingsView: View {
-    @EnvironmentObject private var model: Model
+    @ObservedObject var createStreamWizard: CreateStreamWizard
     @State var portError = ""
 
     private func nextDisabled() -> Bool {
-        return model.wizardObsAddress.trim().isEmpty || model.wizardObsPort.trim().isEmpty || !portError
+        return createStreamWizard.obsAddress.trim().isEmpty || createStreamWizard.obsPort.trim().isEmpty || !portError
             .isEmpty
     }
 
     private func updatePortError() {
-        let port = model.wizardObsPort.trim()
+        let port = createStreamWizard.obsPort.trim()
         if port.isEmpty {
             portError = ""
         } else if let port = UInt16(port), port > 0 {
@@ -23,7 +23,7 @@ struct StreamWizardNetworkSetupObsSettingsView: View {
     var body: some View {
         Form {
             Section {
-                TextField("213.33.45.132", text: $model.wizardObsAddress)
+                TextField("213.33.45.132", text: $createStreamWizard.obsAddress)
                     .textInputAutocapitalization(.never)
                     .disableAutocorrection(true)
             } header: {
@@ -32,10 +32,10 @@ struct StreamWizardNetworkSetupObsSettingsView: View {
                 Text("Your public IP address if streaming over the internet.")
             }
             Section {
-                TextField("7654", text: $model.wizardObsPort)
+                TextField("7654", text: $createStreamWizard.obsPort)
                     .textInputAutocapitalization(.never)
                     .disableAutocorrection(true)
-                    .onChange(of: model.wizardObsPort) { _ in
+                    .onChange(of: createStreamWizard.obsPort) { _ in
                         updatePortError()
                     }
             } header: {
@@ -62,7 +62,7 @@ struct StreamWizardNetworkSetupObsSettingsView: View {
             }
             Section {
                 NavigationLink {
-                    StreamWizardChatSettingsView()
+                    StreamWizardChatSettingsView(createStreamWizard: createStreamWizard)
                 } label: {
                     WizardNextButtonView()
                 }
@@ -70,12 +70,12 @@ struct StreamWizardNetworkSetupObsSettingsView: View {
             }
         }
         .onAppear {
-            model.wizardNetworkSetup = .obs
+            createStreamWizard.networkSetup = .obs
             updatePortError()
         }
         .navigationTitle("OBS")
         .toolbar {
-            CreateStreamWizardToolbar()
+            CreateStreamWizardToolbar(createStreamWizard: createStreamWizard)
         }
     }
 }

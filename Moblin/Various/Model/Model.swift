@@ -170,6 +170,43 @@ class Zoom: ObservableObject {
     @Published var zoomX: Float = 1.0
 }
 
+class CreateStreamWizard: ObservableObject {
+    var platform: WizardPlatform = .custom
+    var networkSetup: WizardNetworkSetup = .none
+    var customProtocol: WizardCustomProtocol = .none
+    let twitchStream = SettingsStream(name: "")
+    var twitchAccessToken = ""
+    var twitchLoggedIn: Bool = false
+    @Published var isPresenting = false
+    @Published var isPresentingSetup = false
+    @Published var showTwitchAuth = false
+    @Published var name = ""
+    @Published var twitchChannelName = ""
+    @Published var twitchChannelId = ""
+    @Published var kickChannelName = ""
+    @Published var youTubeVideoId = ""
+    @Published var afreecaTvChannelName = ""
+    @Published var afreecsTvCStreamId = ""
+    @Published var obsAddress = ""
+    @Published var obsPort = ""
+    @Published var obsRemoteControlEnabled = false
+    @Published var obsRemoteControlUrl = ""
+    @Published var obsRemoteControlPassword = ""
+    @Published var obsRemoteControlSourceName = ""
+    @Published var obsRemoteControlBrbScene = ""
+    @Published var directIngest = ""
+    @Published var directStreamKey = ""
+    @Published var chatBttv = false
+    @Published var chatFfz = false
+    @Published var chatSeventv = false
+    @Published var belaboxUrl = ""
+    @Published var customSrtUrl = ""
+    @Published var customSrtStreamId = ""
+    @Published var customRtmpUrl = ""
+    @Published var customRtmpStreamKey = ""
+    @Published var customRistUrl = ""
+}
+
 final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var manualFocusPoint: CGPoint?
     @Published var isPresentingWidgetWizard = false
@@ -264,34 +301,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var drawOnStreamSelectedColor: Color = .pink
     @Published var drawOnStreamSelectedWidth: CGFloat = 4
     @Published var webBrowserUrl: String = ""
-    @Published var isPresentingWizard = false
-    @Published var isPresentingSetupWizard = false
-    @Published var wizardShowTwitchAuth = false
-    @Published var wizardName = ""
-    @Published var wizardTwitchChannelName = ""
-    @Published var wizardTwitchChannelId = ""
-    @Published var wizardKickChannelName = ""
-    @Published var wizardYouTubeVideoId = ""
-    @Published var wizardAfreecaTvChannelName = ""
-    @Published var wizardAfreecsTvCStreamId = ""
-    @Published var wizardObsAddress = ""
-    @Published var wizardObsPort = ""
-    @Published var wizardObsRemoteControlEnabled = false
-    @Published var wizardObsRemoteControlUrl = ""
-    @Published var wizardObsRemoteControlPassword = ""
-    @Published var wizardObsRemoteControlSourceName = ""
-    @Published var wizardObsRemoteControlBrbScene = ""
-    @Published var wizardDirectIngest = ""
-    @Published var wizardDirectStreamKey = ""
-    @Published var wizardChatBttv = false
-    @Published var wizardChatFfz = false
-    @Published var wizardChatSeventv = false
-    @Published var wizardBelaboxUrl = ""
-    @Published var wizardCustomSrtUrl = ""
-    @Published var wizardCustomSrtStreamId = ""
-    @Published var wizardCustomRtmpUrl = ""
-    @Published var wizardCustomRtmpStreamKey = ""
-    @Published var wizardCustomRistUrl = ""
     @Published var teslaVehicleState: TeslaVehicleState?
     @Published var teslaVehicleVehicleSecurityConnected = false
     @Published var teslaVehicleInfotainmentConnected = false
@@ -334,6 +343,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
+    let createStreamWizard = CreateStreamWizard()
     let zoom = Zoom()
     let camera = CameraState()
     let mediaPlayerPlayer = MediaPlayerPlayer()
@@ -462,12 +472,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var webBrowser: WKWebView?
     let webBrowserController = WebBrowserController()
     var lowFpsImageFps: UInt64 = 1
-    var wizardPlatform: WizardPlatform = .custom
-    var wizardNetworkSetup: WizardNetworkSetup = .none
-    var wizardCustomProtocol: WizardCustomProtocol = .none
-    let wizardTwitchStream = SettingsStream(name: "")
-    var wizardTwitchAccessToken = ""
-    var wizardTwitchLoggedIn: Bool = false
     let chatTextToSpeech = ChatTextToSpeech()
     var teslaVehicle: TeslaVehicle?
     var teslaChargeState = CarServer_ChargeState()

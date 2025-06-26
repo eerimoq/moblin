@@ -135,7 +135,7 @@ extension Model {
         } catch {
             return error.localizedDescription
         }
-        if isPresentingWizard || isPresentingSetupWizard {
+        if createStreamWizard.isPresenting || createStreamWizard.isPresentingSetup {
             handleSettingsUrlsInWizard(settings: settings)
         } else {
             handleSettingsUrlsDefault(settings: settings)

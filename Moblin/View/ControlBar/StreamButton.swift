@@ -18,6 +18,7 @@ private struct StreamButtonText: View {
 
 struct StreamButton: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var createStreamWizard: CreateStreamWizard
     @State private var isPresentingGoLiveConfirm = false
     @State private var isPresentingGoLiveNotificationConfirm = false
     @State private var isPresentingStopConfirm = false
@@ -73,13 +74,13 @@ struct StreamButton: View {
         } else {
             Button {
                 model.resetWizard()
-                model.isPresentingSetupWizard = true
+                createStreamWizard.isPresentingSetup = true
             } label: {
                 StreamButtonText(text: String(localized: "Setup"))
             }
-            .sheet(isPresented: $model.isPresentingSetupWizard) {
+            .sheet(isPresented: $createStreamWizard.isPresentingSetup) {
                 NavigationStack {
-                    StreamWizardSettingsView()
+                    StreamWizardSettingsView(createStreamWizard: createStreamWizard)
                 }
             }
         }

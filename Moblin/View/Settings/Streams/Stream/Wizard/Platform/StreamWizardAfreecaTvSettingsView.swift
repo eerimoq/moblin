@@ -2,17 +2,18 @@ import SwiftUI
 
 struct StreamWizardAfreecaTvSettingsView: View {
     @EnvironmentObject private var model: Model
+    @ObservedObject var createStreamWizard: CreateStreamWizard
 
     var body: some View {
         Form {
             Section {
-                TextField("MyChannel", text: $model.wizardAfreecaTvChannelName)
+                TextField("MyChannel", text: $createStreamWizard.afreecaTvChannelName)
                     .disableAutocorrection(true)
             } header: {
                 Text("Channel name")
             }
             Section {
-                TextField("908123903", text: $model.wizardAfreecsTvCStreamId)
+                TextField("908123903", text: $createStreamWizard.afreecsTvCStreamId)
                     .textInputAutocapitalization(.never)
                     .disableAutocorrection(true)
             } header: {
@@ -20,19 +21,22 @@ struct StreamWizardAfreecaTvSettingsView: View {
             }
             Section {
                 NavigationLink {
-                    StreamWizardNetworkSetupSettingsView(platform: String(localized: "AfreecaTV"))
+                    StreamWizardNetworkSetupSettingsView(
+                        createStreamWizard: createStreamWizard,
+                        platform: String(localized: "AfreecaTV")
+                    )
                 } label: {
                     WizardNextButtonView()
                 }
             }
         }
         .onAppear {
-            model.wizardPlatform = .afreecaTv
-            model.wizardName = "AfreecaTV"
+            createStreamWizard.platform = .afreecaTv
+            createStreamWizard.name = "AfreecaTV"
         }
         .navigationTitle("AfreecaTV")
         .toolbar {
-            CreateStreamWizardToolbar()
+            CreateStreamWizardToolbar(createStreamWizard: createStreamWizard)
         }
     }
 }

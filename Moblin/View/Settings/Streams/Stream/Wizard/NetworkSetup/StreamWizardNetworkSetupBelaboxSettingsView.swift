@@ -1,15 +1,15 @@
 import SwiftUI
 
 struct StreamWizardNetworkSetupBelaboxSettingsView: View {
-    @EnvironmentObject private var model: Model
+    @ObservedObject var createStreamWizard: CreateStreamWizard
     @State var urlError = ""
 
     private func nextDisabled() -> Bool {
-        return model.wizardBelaboxUrl.trim().isEmpty || !urlError.isEmpty
+        return createStreamWizard.belaboxUrl.trim().isEmpty || !urlError.isEmpty
     }
 
     private func updateUrlError() {
-        let url = cleanUrl(url: model.wizardBelaboxUrl)
+        let url = cleanUrl(url: createStreamWizard.belaboxUrl)
         if url.isEmpty {
             urlError = ""
         } else {
@@ -22,11 +22,11 @@ struct StreamWizardNetworkSetupBelaboxSettingsView: View {
             Section {
                 TextField(
                     "srtla://uk.srt.belabox.net:5000?streamid=jO4ijfFgrlpv4m2375msdoG3DDr2",
-                    text: $model.wizardBelaboxUrl
+                    text: $createStreamWizard.belaboxUrl
                 )
                 .textInputAutocapitalization(.never)
                 .disableAutocorrection(true)
-                .onChange(of: model.wizardBelaboxUrl) { _ in
+                .onChange(of: createStreamWizard.belaboxUrl) { _ in
                     updateUrlError()
                 }
             } header: {
@@ -48,7 +48,7 @@ struct StreamWizardNetworkSetupBelaboxSettingsView: View {
             }
             Section {
                 NavigationLink {
-                    StreamWizardChatSettingsView()
+                    StreamWizardChatSettingsView(createStreamWizard: createStreamWizard)
                 } label: {
                     WizardNextButtonView()
                 }
@@ -56,12 +56,12 @@ struct StreamWizardNetworkSetupBelaboxSettingsView: View {
             }
         }
         .onAppear {
-            model.wizardNetworkSetup = .belaboxCloudObs
+            createStreamWizard.networkSetup = .belaboxCloudObs
             updateUrlError()
         }
         .navigationTitle("BELABOX cloud and OBS")
         .toolbar {
-            CreateStreamWizardToolbar()
+            CreateStreamWizardToolbar(createStreamWizard: createStreamWizard)
         }
     }
 }

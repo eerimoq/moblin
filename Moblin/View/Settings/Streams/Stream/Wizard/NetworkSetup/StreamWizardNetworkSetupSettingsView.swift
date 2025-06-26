@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct StreamWizardNetworkSetupSettingsView: View {
+    var createStreamWizard: CreateStreamWizard
     let platform: String
 
     var body: some View {
@@ -8,7 +9,7 @@ struct StreamWizardNetworkSetupSettingsView: View {
             Form {
                 Section {
                     NavigationLink {
-                        StreamWizardNetworkSetupObsSettingsView()
+                        StreamWizardNetworkSetupObsSettingsView(createStreamWizard: createStreamWizard)
                     } label: {
                         HStack {
                             Text("Moblin")
@@ -23,7 +24,7 @@ struct StreamWizardNetworkSetupSettingsView: View {
                 }
                 Section {
                     NavigationLink {
-                        StreamWizardNetworkSetupBelaboxSettingsView()
+                        StreamWizardNetworkSetupBelaboxSettingsView(createStreamWizard: createStreamWizard)
                     } label: {
                         HStack {
                             Text("Moblin")
@@ -40,7 +41,7 @@ struct StreamWizardNetworkSetupSettingsView: View {
                 }
                 Section {
                     NavigationLink {
-                        StreamWizardNetworkSetupDirectSettingsView()
+                        StreamWizardNetworkSetupDirectSettingsView(createStreamWizard: createStreamWizard)
                     } label: {
                         HStack {
                             Text("Moblin")
@@ -58,7 +59,7 @@ struct StreamWizardNetworkSetupSettingsView: View {
                 }
                 Section {
                     NavigationLink {
-                        StreamWizardNetworkSetupMyServersSettingsView()
+                        StreamWizardNetworkSetupMyServersSettingsView(createStreamWizard: createStreamWizard)
                     } label: {
                         HStack {
                             Text("Moblin")
@@ -76,7 +77,7 @@ struct StreamWizardNetworkSetupSettingsView: View {
         }
         .navigationTitle("Network setup")
         .toolbar {
-            CreateStreamWizardToolbar()
+            CreateStreamWizardToolbar(createStreamWizard: createStreamWizard)
         }
     }
 }

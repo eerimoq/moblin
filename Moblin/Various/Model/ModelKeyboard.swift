@@ -11,13 +11,13 @@ extension Model {
         if showTwitchAuth {
             return false
         }
-        if isPresentingWizard {
+        if createStreamWizard.isPresenting {
             return false
         }
-        if isPresentingSetupWizard {
+        if createStreamWizard.isPresentingSetup {
             return false
         }
-        if wizardShowTwitchAuth {
+        if createStreamWizard.showTwitchAuth {
             return false
         }
         return true

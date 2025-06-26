@@ -51,46 +51,46 @@ extension Model {
     }
 
     private func createStreamFromWizardCustomUrl() -> String? {
-        switch wizardCustomProtocol {
+        switch createStreamWizard.customProtocol {
         case .none:
             break
         case .srt:
-            if var urlComponents = URLComponents(string: wizardCustomSrtUrl.trim()) {
+            if var urlComponents = URLComponents(string: createStreamWizard.customSrtUrl.trim()) {
                 urlComponents.queryItems = [
-                    URLQueryItem(name: "streamid", value: wizardCustomSrtStreamId.trim()),
+                    URLQueryItem(name: "streamid", value: createStreamWizard.customSrtStreamId.trim()),
                 ]
                 if let fullUrl = urlComponents.url {
                     return fullUrl.absoluteString
                 }
             }
         case .rtmp:
-            let rtmpUrl = wizardCustomRtmpUrl
+            let rtmpUrl = createStreamWizard.customRtmpUrl
                 .trim()
                 .trimmingCharacters(in: CharacterSet(charactersIn: "/"))
-            return "\(rtmpUrl)/\(wizardCustomRtmpStreamKey.trim())"
+            return "\(rtmpUrl)/\(createStreamWizard.customRtmpStreamKey.trim())"
         case .rist:
-            return wizardCustomRistUrl.trim()
+            return createStreamWizard.customRistUrl.trim()
         }
         return nil
     }
 
     private func createStreamFromWizardUrl() -> String {
         var url = defaultStreamUrl
-        if wizardPlatform == .custom {
+        if createStreamWizard.platform == .custom {
             if let customUrl = createStreamFromWizardCustomUrl() {
                 url = customUrl
             }
         } else {
-            switch wizardNetworkSetup {
+            switch createStreamWizard.networkSetup {
             case .none:
                 break
             case .obs:
-                url = "srt://\(wizardObsAddress):\(wizardObsPort)"
+                url = "srt://\(createStreamWizard.obsAddress):\(createStreamWizard.obsPort)"
             case .belaboxCloudObs:
-                url = wizardBelaboxUrl
+                url = createStreamWizard.belaboxUrl
             case .direct:
-                let ingestUrl = wizardDirectIngest.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
-                url = "\(ingestUrl)/\(wizardDirectStreamKey)"
+                let ingestUrl = createStreamWizard.directIngest.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+                url = "\(ingestUrl)/\(createStreamWizard.directStreamKey)"
             case .myServers:
                 if let customUrl = createStreamFromWizardCustomUrl() {
                     url = customUrl
@@ -101,50 +101,50 @@ extension Model {
     }
 
     func createStreamFromWizard() {
-        let stream = SettingsStream(name: wizardName.trim())
-        if wizardPlatform != .custom {
-            if wizardNetworkSetup != .direct {
-                if wizardObsRemoteControlEnabled {
-                    let url = cleanUrl(url: wizardObsRemoteControlUrl.trim())
+        let stream = SettingsStream(name: createStreamWizard.name.trim())
+        if createStreamWizard.platform != .custom {
+            if createStreamWizard.networkSetup != .direct {
+                if createStreamWizard.obsRemoteControlEnabled {
+                    let url = cleanUrl(url: createStreamWizard.obsRemoteControlUrl.trim())
                     if isValidWebSocketUrl(url: url) == nil {
                         stream.obsWebSocketEnabled = true
                         stream.obsWebSocketUrl = url
-                        stream.obsWebSocketPassword = wizardObsRemoteControlPassword.trim()
-                        stream.obsSourceName = wizardObsRemoteControlSourceName.trim()
-                        stream.obsBrbScene = wizardObsRemoteControlBrbScene.trim()
+                        stream.obsWebSocketPassword = createStreamWizard.obsRemoteControlPassword.trim()
+                        stream.obsSourceName = createStreamWizard.obsRemoteControlSourceName.trim()
+                        stream.obsBrbScene = createStreamWizard.obsRemoteControlBrbScene.trim()
                     }
                 }
             }
         }
-        switch wizardPlatform {
+        switch createStreamWizard.platform {
         case .twitch:
-            stream.twitchChannelName = wizardTwitchChannelName.trim()
-            stream.twitchChannelId = wizardTwitchChannelId.trim()
-            stream.twitchAccessToken = wizardTwitchAccessToken
-            stream.twitchLoggedIn = wizardTwitchLoggedIn
+            stream.twitchChannelName = createStreamWizard.twitchChannelName.trim()
+            stream.twitchChannelId = createStreamWizard.twitchChannelId.trim()
+            stream.twitchAccessToken = createStreamWizard.twitchAccessToken
+            stream.twitchLoggedIn = createStreamWizard.twitchLoggedIn
         case .kick:
-            stream.kickChannelName = wizardKickChannelName.trim()
+            stream.kickChannelName = createStreamWizard.kickChannelName.trim()
         case .youTube:
-            if !wizardYouTubeVideoId.isEmpty {
-                stream.youTubeVideoId = wizardYouTubeVideoId.trim()
+            if !createStreamWizard.youTubeVideoId.isEmpty {
+                stream.youTubeVideoId = createStreamWizard.youTubeVideoId.trim()
             }
         case .afreecaTv:
-            if !wizardAfreecaTvChannelName.isEmpty, !wizardAfreecsTvCStreamId.isEmpty {
-                stream.afreecaTvChannelName = wizardAfreecaTvChannelName.trim()
-                stream.afreecaTvStreamId = wizardAfreecsTvCStreamId.trim()
+            if !createStreamWizard.afreecaTvChannelName.isEmpty, !createStreamWizard.afreecsTvCStreamId.isEmpty {
+                stream.afreecaTvChannelName = createStreamWizard.afreecaTvChannelName.trim()
+                stream.afreecaTvStreamId = createStreamWizard.afreecsTvCStreamId.trim()
             }
         case .obs:
             break
         case .custom:
             break
         }
-        stream.chat.bttvEmotes = wizardChatBttv
-        stream.chat.ffzEmotes = wizardChatFfz
-        stream.chat.seventvEmotes = wizardChatSeventv
+        stream.chat.bttvEmotes = createStreamWizard.chatBttv
+        stream.chat.ffzEmotes = createStreamWizard.chatFfz
+        stream.chat.seventvEmotes = createStreamWizard.chatSeventv
         stream.url = createStreamFromWizardUrl()
-        switch wizardNetworkSetup {
+        switch createStreamWizard.networkSetup {
         case .none:
-            stream.codec = wizardCustomProtocol.toDefaultCodec()
+            stream.codec = createStreamWizard.customProtocol.toDefaultCodec()
         case .obs:
             stream.codec = .h265hevc
         case .belaboxCloudObs:
@@ -152,7 +152,7 @@ extension Model {
         case .direct:
             stream.codec = .h264avc
         case .myServers:
-            stream.codec = wizardCustomProtocol.toDefaultCodec()
+            stream.codec = createStreamWizard.customProtocol.toDefaultCodec()
         }
         stream.audioBitrate = 128_000
         database.streams.append(stream)
@@ -162,39 +162,39 @@ extension Model {
     }
 
     func resetWizard() {
-        wizardPlatform = .custom
-        wizardNetworkSetup = .none
-        wizardName = ""
-        wizardTwitchChannelName = ""
-        wizardTwitchChannelId = ""
-        wizardTwitchAccessToken = ""
-        wizardKickChannelName = ""
-        wizardYouTubeVideoId = ""
-        wizardAfreecaTvChannelName = ""
-        wizardAfreecsTvCStreamId = ""
-        wizardObsAddress = ""
-        wizardObsPort = ""
-        wizardObsRemoteControlEnabled = false
-        wizardObsRemoteControlUrl = ""
-        wizardObsRemoteControlPassword = ""
-        wizardDirectIngest = ""
-        wizardDirectStreamKey = ""
-        wizardChatBttv = false
-        wizardChatFfz = false
-        wizardChatSeventv = false
-        wizardBelaboxUrl = ""
+        createStreamWizard.platform = .custom
+        createStreamWizard.networkSetup = .none
+        createStreamWizard.name = ""
+        createStreamWizard.twitchChannelName = ""
+        createStreamWizard.twitchChannelId = ""
+        createStreamWizard.twitchAccessToken = ""
+        createStreamWizard.kickChannelName = ""
+        createStreamWizard.youTubeVideoId = ""
+        createStreamWizard.afreecaTvChannelName = ""
+        createStreamWizard.afreecsTvCStreamId = ""
+        createStreamWizard.obsAddress = ""
+        createStreamWizard.obsPort = ""
+        createStreamWizard.obsRemoteControlEnabled = false
+        createStreamWizard.obsRemoteControlUrl = ""
+        createStreamWizard.obsRemoteControlPassword = ""
+        createStreamWizard.directIngest = ""
+        createStreamWizard.directStreamKey = ""
+        createStreamWizard.chatBttv = false
+        createStreamWizard.chatFfz = false
+        createStreamWizard.chatSeventv = false
+        createStreamWizard.belaboxUrl = ""
     }
 
     func handleSettingsUrlsInWizard(settings: MoblinSettingsUrl) {
-        switch wizardNetworkSetup {
+        switch createStreamWizard.networkSetup {
         case .none:
             break
         case .obs:
             break
         case .belaboxCloudObs:
             for stream in settings.streams ?? [] {
-                wizardName = stream.name
-                wizardBelaboxUrl = stream.url
+                createStreamWizard.name = stream.name
+                createStreamWizard.belaboxUrl = stream.url
             }
         case .direct:
             break

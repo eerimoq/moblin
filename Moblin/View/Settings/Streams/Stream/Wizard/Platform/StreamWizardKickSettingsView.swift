@@ -2,9 +2,10 @@ import SwiftUI
 
 struct StreamWizardKickSettingsView: View {
     @EnvironmentObject private var model: Model
+    @ObservedObject var createStreamWizard: CreateStreamWizard
 
     private func channelName() -> String {
-        return model.wizardKickChannelName.trim()
+        return createStreamWizard.kickChannelName.trim()
     }
 
     private func nextDisabled() -> Bool {
@@ -14,14 +15,17 @@ struct StreamWizardKickSettingsView: View {
     var body: some View {
         Form {
             Section {
-                TextField("MyChannel", text: $model.wizardKickChannelName)
+                TextField("MyChannel", text: $createStreamWizard.kickChannelName)
                     .disableAutocorrection(true)
             } header: {
                 Text("Channel name")
             }
             Section {
                 NavigationLink {
-                    StreamWizardNetworkSetupSettingsView(platform: String(localized: "Kick"))
+                    StreamWizardNetworkSetupSettingsView(
+                        createStreamWizard: createStreamWizard,
+                        platform: String(localized: "Kick")
+                    )
                 } label: {
                     WizardNextButtonView()
                 }
@@ -29,12 +33,12 @@ struct StreamWizardKickSettingsView: View {
             }
         }
         .onAppear {
-            model.wizardPlatform = .kick
-            model.wizardName = "Kick"
+            createStreamWizard.platform = .kick
+            createStreamWizard.name = "Kick"
         }
         .navigationTitle("Kick")
         .toolbar {
-            CreateStreamWizardToolbar()
+            CreateStreamWizardToolbar(createStreamWizard: createStreamWizard)
         }
     }
 }

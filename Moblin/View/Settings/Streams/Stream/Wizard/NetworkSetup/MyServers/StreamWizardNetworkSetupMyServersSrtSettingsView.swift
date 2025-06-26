@@ -2,14 +2,16 @@ import SwiftUI
 
 struct StreamWizardNetworkSetupMyServersSrtSettingsView: View {
     @EnvironmentObject private var model: Model
+    @ObservedObject var createStreamWizard: CreateStreamWizard
     @State var urlError = ""
 
     private func nextDisabled() -> Bool {
-        return model.wizardCustomSrtUrl.isEmpty || model.wizardCustomSrtStreamId.isEmpty || !urlError.isEmpty
+        return createStreamWizard.customSrtUrl.isEmpty || createStreamWizard.customSrtStreamId.isEmpty || !urlError
+            .isEmpty
     }
 
     private func updateUrlError() {
-        let url = cleanUrl(url: model.wizardCustomSrtUrl)
+        let url = cleanUrl(url: createStreamWizard.customSrtUrl)
         if url.isEmpty {
             urlError = ""
         } else {
@@ -20,10 +22,10 @@ struct StreamWizardNetworkSetupMyServersSrtSettingsView: View {
     var body: some View {
         Form {
             Section {
-                TextField("srt://107.32.12.132:5000", text: $model.wizardCustomSrtUrl)
+                TextField("srt://107.32.12.132:5000", text: $createStreamWizard.customSrtUrl)
                     .textInputAutocapitalization(.never)
                     .disableAutocorrection(true)
-                    .onChange(of: model.wizardCustomSrtUrl) { _ in
+                    .onChange(of: createStreamWizard.customSrtUrl) { _ in
                         updateUrlError()
                     }
             } header: {
@@ -34,7 +36,7 @@ struct StreamWizardNetworkSetupMyServersSrtSettingsView: View {
             Section {
                 TextField(
                     "#!::r=stream/-NDZ1WPA4zjMBTJTyNwU,m=publish,...",
-                    text: $model.wizardCustomSrtStreamId
+                    text: $createStreamWizard.customSrtStreamId
                 )
                 .textInputAutocapitalization(.never)
                 .disableAutocorrection(true)
@@ -43,7 +45,7 @@ struct StreamWizardNetworkSetupMyServersSrtSettingsView: View {
             }
             Section {
                 NavigationLink {
-                    StreamWizardChatSettingsView()
+                    StreamWizardChatSettingsView(createStreamWizard: createStreamWizard)
                 } label: {
                     WizardNextButtonView()
                 }
@@ -51,11 +53,11 @@ struct StreamWizardNetworkSetupMyServersSrtSettingsView: View {
             }
         }
         .onAppear {
-            model.wizardCustomProtocol = .srt
+            createStreamWizard.customProtocol = .srt
         }
         .navigationTitle("SRT(LA)")
         .toolbar {
-            CreateStreamWizardToolbar()
+            CreateStreamWizardToolbar(createStreamWizard: createStreamWizard)
         }
     }
 }

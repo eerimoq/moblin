@@ -19,7 +19,7 @@ struct SettingsView: View {
             }
             Section {
                 NavigationLink {
-                    StreamsSettingsView(database: database)
+                    StreamsSettingsView(createStreamWizard: model.createStreamWizard, database: database)
                 } label: {
                     Label("Streams", systemImage: "dot.radiowaves.left.and.right")
                 }

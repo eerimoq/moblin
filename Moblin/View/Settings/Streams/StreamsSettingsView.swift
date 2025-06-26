@@ -52,6 +52,7 @@ private struct StreamItemView: View {
 
 struct StreamsSettingsView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var createStreamWizard: CreateStreamWizard
     @ObservedObject var database: Database
 
     var body: some View {
@@ -67,12 +68,12 @@ struct StreamsSettingsView: View {
                 }
                 CreateButtonView {
                     model.resetWizard()
-                    model.isPresentingWizard = true
+                    createStreamWizard.isPresenting = true
                 }
                 .disabled(model.isLive || model.isRecording)
-                .sheet(isPresented: $model.isPresentingWizard) {
+                .sheet(isPresented: $createStreamWizard.isPresenting) {
                     NavigationStack {
-                        StreamWizardSettingsView()
+                        StreamWizardSettingsView(createStreamWizard: createStreamWizard)
                     }
                 }
             } footer: {

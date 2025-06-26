@@ -1,18 +1,18 @@
 import SwiftUI
 
 struct StreamWizardNetworkSetupMyServersSettingsView: View {
-    @EnvironmentObject private var model: Model
+    @ObservedObject var createStreamWizard: CreateStreamWizard
 
     var body: some View {
         Form {
             Section {
                 NavigationLink {
-                    StreamWizardNetworkSetupMyServersSrtSettingsView()
+                    StreamWizardNetworkSetupMyServersSrtSettingsView(createStreamWizard: createStreamWizard)
                 } label: {
                     Text("SRT(LA)")
                 }
                 NavigationLink {
-                    StreamWizardNetworkSetupMyServersRtmpSettingsView()
+                    StreamWizardNetworkSetupMyServersRtmpSettingsView(createStreamWizard: createStreamWizard)
                 } label: {
                     Text("RTMP(S)")
                 }
@@ -21,11 +21,11 @@ struct StreamWizardNetworkSetupMyServersSettingsView: View {
             }
         }
         .onAppear {
-            model.wizardNetworkSetup = .myServers
+            createStreamWizard.networkSetup = .myServers
         }
         .navigationTitle("My server(s)")
         .toolbar {
-            CreateStreamWizardToolbar()
+            CreateStreamWizardToolbar(createStreamWizard: createStreamWizard)
         }
     }
 }

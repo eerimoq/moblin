@@ -2,11 +2,12 @@ import SwiftUI
 
 struct StreamWizardObsRemoteControlSettingsView: View {
     @EnvironmentObject private var model: Model
+    @ObservedObject var createStreamWizard: CreateStreamWizard
     @State var urlError = ""
 
     private func nextDisabled() -> Bool {
-        if model.wizardObsRemoteControlEnabled {
-            if model.wizardObsRemoteControlUrl.isEmpty || model.wizardObsRemoteControlPassword
+        if createStreamWizard.obsRemoteControlEnabled {
+            if createStreamWizard.obsRemoteControlUrl.isEmpty || createStreamWizard.obsRemoteControlPassword
                 .isEmpty || !urlError.isEmpty
             {
                 return true
@@ -16,7 +17,7 @@ struct StreamWizardObsRemoteControlSettingsView: View {
     }
 
     private func updateUrlError() {
-        let url = cleanUrl(url: model.wizardObsRemoteControlUrl)
+        let url = cleanUrl(url: createStreamWizard.obsRemoteControlUrl)
         if let message = isValidWebSocketUrl(url: url) {
             urlError = message
         } else {
@@ -27,16 +28,16 @@ struct StreamWizardObsRemoteControlSettingsView: View {
     var body: some View {
         Form {
             Section {
-                Toggle(isOn: $model.wizardObsRemoteControlEnabled, label: {
+                Toggle(isOn: $createStreamWizard.obsRemoteControlEnabled, label: {
                     Text("Enabled")
                 })
             }
-            if model.wizardObsRemoteControlEnabled {
+            if createStreamWizard.obsRemoteControlEnabled {
                 Section {
-                    TextField("ws://213.33.45.132:4567", text: $model.wizardObsRemoteControlUrl)
+                    TextField("ws://213.33.45.132:4567", text: $createStreamWizard.obsRemoteControlUrl)
                         .textInputAutocapitalization(.never)
                         .disableAutocorrection(true)
-                        .onChange(of: model.wizardObsRemoteControlUrl) { _ in
+                        .onChange(of: createStreamWizard.obsRemoteControlUrl) { _ in
                             updateUrlError()
                         }
                 } header: {
@@ -50,7 +51,7 @@ struct StreamWizardObsRemoteControlSettingsView: View {
                     }
                 }
                 Section {
-                    TextField("po3Gg4pflp3s", text: $model.wizardObsRemoteControlPassword)
+                    TextField("po3Gg4pflp3s", text: $createStreamWizard.obsRemoteControlPassword)
                         .textInputAutocapitalization(.never)
                         .disableAutocorrection(true)
                 } header: {
@@ -73,7 +74,7 @@ struct StreamWizardObsRemoteControlSettingsView: View {
                     }
                 }
                 Section {
-                    TextField("My BRB scene", text: $model.wizardObsRemoteControlBrbScene)
+                    TextField("My BRB scene", text: $createStreamWizard.obsRemoteControlBrbScene)
                         .disableAutocorrection(true)
                 } header: {
                     Text("BRB scene")
@@ -84,7 +85,7 @@ struct StreamWizardObsRemoteControlSettingsView: View {
                     """)
                 }
                 Section {
-                    TextField("My source", text: $model.wizardObsRemoteControlSourceName)
+                    TextField("My source", text: $createStreamWizard.obsRemoteControlSourceName)
                         .disableAutocorrection(true)
                 } header: {
                     Text("Source name")
@@ -94,7 +95,7 @@ struct StreamWizardObsRemoteControlSettingsView: View {
             }
             Section {
                 NavigationLink {
-                    StreamWizardSummarySettingsView()
+                    StreamWizardSummarySettingsView(createStreamWizard: createStreamWizard)
                 } label: {
                     WizardNextButtonView()
                         .disabled(nextDisabled())
@@ -106,7 +107,7 @@ struct StreamWizardObsRemoteControlSettingsView: View {
         }
         .navigationTitle("OBS remote control")
         .toolbar {
-            CreateStreamWizardToolbar()
+            CreateStreamWizardToolbar(createStreamWizard: createStreamWizard)
         }
     }
 }

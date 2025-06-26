@@ -217,14 +217,17 @@ struct MainView: View {
     @State var showAreYouReallySure = false
     @FocusState private var focused: Bool
     @ObservedObject var replay: ReplayProvider
+    @ObservedObject var createStreamWizard: CreateStreamWizard
 
     init(webBrowserController: WebBrowserController,
          streamView: StreamView,
-         replay: ReplayProvider)
+         replay: ReplayProvider,
+         createStreamWizard: CreateStreamWizard)
     {
         self.webBrowserController = webBrowserController
         self.streamView = streamView
         self.replay = replay
+        self.createStreamWizard = createStreamWizard
         UITextField.appearance().clearButtonMode = .always
     }
 
@@ -537,13 +540,13 @@ struct MainView: View {
                 .onChange(of: model.showTwitchAuth) { _ in
                     focused = model.isKeyboardActive()
                 }
-                .onChange(of: model.isPresentingWizard) { _ in
+                .onChange(of: createStreamWizard.isPresenting) { _ in
                     focused = model.isKeyboardActive()
                 }
-                .onChange(of: model.isPresentingSetupWizard) { _ in
+                .onChange(of: createStreamWizard.isPresentingSetup) { _ in
                     focused = model.isKeyboardActive()
                 }
-                .onChange(of: model.wizardShowTwitchAuth) { _ in
+                .onChange(of: createStreamWizard.showTwitchAuth) { _ in
                     focused = model.isKeyboardActive()
                 }
                 .onAppear {

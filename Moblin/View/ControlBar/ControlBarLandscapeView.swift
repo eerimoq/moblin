@@ -146,13 +146,14 @@ private struct PageView: View {
 }
 
 private struct MainPageView: View {
+    let createStreamWizard: CreateStreamWizard
     let width: Double
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             IconAndSettingsView()
             PageView(page: 0, width: width)
-            StreamButton()
+            StreamButton(createStreamWizard: createStreamWizard)
                 .padding([.top], 10)
                 .frame(width: width - 10)
         }
@@ -181,7 +182,7 @@ private struct PagesView: View {
             ScrollView(.horizontal) {
                 HStack {
                     Group {
-                        MainPageView(width: width)
+                        MainPageView(createStreamWizard: model.createStreamWizard, width: width)
                         ForEach(1 ..< controlBarPages, id: \.self) { page in
                             if !model.buttonPairs[page].isEmpty {
                                 PageView(page: page, width: width)
@@ -198,7 +199,7 @@ private struct PagesView: View {
             .ignoresSafeArea(.all, edges: edgesToIgnore())
         } else {
             ScrollView(.horizontal) {
-                MainPageView(width: width)
+                MainPageView(createStreamWizard: model.createStreamWizard, width: width)
                     .padding([.leading], 5)
             }
             .scrollIndicators(.never)

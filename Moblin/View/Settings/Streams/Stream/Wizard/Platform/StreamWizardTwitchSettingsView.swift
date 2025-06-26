@@ -2,20 +2,21 @@ import SwiftUI
 
 struct StreamWizardTwitchSettingsView: View {
     @EnvironmentObject private var model: Model
+    @ObservedObject var createStreamWizard: CreateStreamWizard
 
     private func nextDisabled() -> Bool {
-        return model.wizardTwitchChannelName.trim().isEmpty
+        return createStreamWizard.twitchChannelName.trim().isEmpty
     }
 
     private func onLoginComplete() {
-        model.wizardTwitchChannelName = model.wizardTwitchStream.twitchChannelName
-        model.wizardTwitchChannelId = model.wizardTwitchStream.twitchChannelId
-        model.wizardTwitchAccessToken = model.wizardTwitchStream.twitchAccessToken
-        model.wizardTwitchLoggedIn = model.wizardTwitchStream.twitchLoggedIn
-        TwitchApi(model.wizardTwitchAccessToken, model.urlSession)
-            .getStreamKey(broadcasterId: model.wizardTwitchChannelId) { streamKey in
+        createStreamWizard.twitchChannelName = createStreamWizard.twitchStream.twitchChannelName
+        createStreamWizard.twitchChannelId = createStreamWizard.twitchStream.twitchChannelId
+        createStreamWizard.twitchAccessToken = createStreamWizard.twitchStream.twitchAccessToken
+        createStreamWizard.twitchLoggedIn = createStreamWizard.twitchStream.twitchLoggedIn
+        TwitchApi(createStreamWizard.twitchAccessToken, model.urlSession)
+            .getStreamKey(broadcasterId: createStreamWizard.twitchChannelId) { streamKey in
                 if let streamKey {
-                    model.wizardDirectStreamKey = streamKey
+                    createStreamWizard.directStreamKey = streamKey
                 }
             }
     }
@@ -23,10 +24,10 @@ struct StreamWizardTwitchSettingsView: View {
     var body: some View {
         Form {
             Section {
-                if model.wizardTwitchStream.twitchAccessToken.isEmpty {
+                if createStreamWizard.twitchStream.twitchAccessToken.isEmpty {
                     Button {
-                        model.wizardShowTwitchAuth = true
-                        model.twitchLogin(stream: model.wizardTwitchStream) {
+                        createStreamWizard.showTwitchAuth = true
+                        model.twitchLogin(stream: createStreamWizard.twitchStream) {
                             onLoginComplete()
                         }
                     } label: {
@@ -38,7 +39,7 @@ struct StreamWizardTwitchSettingsView: View {
                     }
                 } else {
                     Button {
-                        model.twitchLogout(stream: model.wizardTwitchStream)
+                        model.twitchLogout(stream: createStreamWizard.twitchStream)
                     } label: {
                         HStack {
                             Spacer()
@@ -51,13 +52,13 @@ struct StreamWizardTwitchSettingsView: View {
                 Text("Optional, but simplifies the setup.")
             }
             Section {
-                TextField("MyChannel", text: $model.wizardTwitchChannelName)
+                TextField("MyChannel", text: $createStreamWizard.twitchChannelName)
                     .disableAutocorrection(true)
             } header: {
                 Text("Channel name")
             }
             Section {
-                TextField("908123903", text: $model.wizardTwitchChannelId)
+                TextField("908123903", text: $createStreamWizard.twitchChannelId)
                     .textInputAutocapitalization(.never)
                     .disableAutocorrection(true)
             } header: {
@@ -76,19 +77,22 @@ struct StreamWizardTwitchSettingsView: View {
             }
             Section {
                 NavigationLink {
-                    StreamWizardNetworkSetupSettingsView(platform: String(localized: "Twitch"))
+                    StreamWizardNetworkSetupSettingsView(
+                        createStreamWizard: createStreamWizard,
+                        platform: String(localized: "Twitch")
+                    )
                 } label: {
                     WizardNextButtonView()
                 }
                 .disabled(nextDisabled())
             }
         }
-        .sheet(isPresented: $model.wizardShowTwitchAuth) {
+        .sheet(isPresented: $createStreamWizard.showTwitchAuth) {
             VStack {
                 HStack {
                     Spacer()
                     Button {
-                        model.wizardShowTwitchAuth = false
+                        createStreamWizard.showTwitchAuth = false
                     } label: {
                         Text("Close").padding()
                     }
@@ -100,13 +104,13 @@ struct StreamWizardTwitchSettingsView: View {
             }
         }
         .onAppear {
-            model.wizardPlatform = .twitch
-            model.wizardName = "Twitch"
-            model.wizardTwitchStream.twitchAccessToken = ""
+            createStreamWizard.platform = .twitch
+            createStreamWizard.name = "Twitch"
+            createStreamWizard.twitchStream.twitchAccessToken = ""
         }
         .navigationTitle("Twitch")
         .toolbar {
-            CreateStreamWizardToolbar()
+            CreateStreamWizardToolbar(createStreamWizard: createStreamWizard)
         }
     }
 }
