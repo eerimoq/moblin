@@ -207,6 +207,21 @@ class CreateStreamWizard: ObservableObject {
     @Published var customRistUrl = ""
 }
 
+class RemoteControl: ObservableObject {
+    @Published var remoteControlGeneral: RemoteControlStatusGeneral?
+    @Published var remoteControlTopLeft: RemoteControlStatusTopLeft?
+    @Published var remoteControlTopRight: RemoteControlStatusTopRight?
+    @Published var remoteControlSettings: RemoteControlSettings?
+    @Published var remoteControlScene = UUID()
+    @Published var remoteControlMic = ""
+    @Published var remoteControlBitrate = UUID()
+    @Published var remoteControlZoom = ""
+    @Published var remoteControlDebugLogging = false
+    @Published var remoteControlAssistantShowPreview = true
+    @Published var remoteControlAssistantShowPreviewFullScreen = false
+    @Published var remoteControlPreview: UIImage?
+}
+
 final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var manualFocusPoint: CGPoint?
     @Published var isPresentingWidgetWizard = false
@@ -245,7 +260,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var batteryLevel = Double(UIDevice.current.batteryLevel)
     @Published var batteryState: UIDevice.BatteryState = .full
     @Published var thermalState = ProcessInfo.processInfo.thermalState
-    @Published var remoteControlPreview: UIImage?
     @Published var showCameraPreview = false
     @Published var browsers: [Browser] = []
     @Published var sceneIndex = 0
@@ -304,18 +318,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var teslaVehicleState: TeslaVehicleState?
     @Published var teslaVehicleVehicleSecurityConnected = false
     @Published var teslaVehicleInfotainmentConnected = false
-    @Published var remoteControlGeneral: RemoteControlStatusGeneral?
-    @Published var remoteControlTopLeft: RemoteControlStatusTopLeft?
-    @Published var remoteControlTopRight: RemoteControlStatusTopRight?
-    @Published var remoteControlSettings: RemoteControlSettings?
-    @Published var remoteControlScene = UUID()
-    @Published var remoteControlMic = ""
-    @Published var remoteControlBitrate = UUID()
-    @Published var remoteControlZoom = ""
-    @Published var remoteControlDebugLogging = false
     @Published var quickButtonSettingsButton: SettingsQuickButton?
-    @Published var remoteControlAssistantShowPreview = true
-    @Published var remoteControlAssistantShowPreviewFullScreen = false
     @Published var djiDeviceStreamingState: DjiDeviceState?
     @Published var djiGimbalDeviceStreamingState: DjiGimbalDeviceState?
     @Published var catPrinterState: CatPrinterState?
@@ -343,6 +346,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
+    let remoteControl = RemoteControl()
     let createStreamWizard = CreateStreamWizard()
     let zoom = Zoom()
     let camera = CameraState()

@@ -191,6 +191,7 @@ private struct RemoteControlAudioLevelView: View {
 
 private struct ControlBarRemoteControlAssistantStatusView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var remoteControl: RemoteControl
 
     private func batteryStatus(status: RemoteControlStatusGeneral) -> RemoteControlStatusItem? {
         guard let charging = status.batteryCharging, let level = status.batteryLevel else {
@@ -221,19 +222,19 @@ private struct ControlBarRemoteControlAssistantStatusView: View {
 
     var body: some View {
         Section {
-            if model.remoteControlAssistantShowPreview {
-                if let preview = model.remoteControlPreview {
+            if remoteControl.remoteControlAssistantShowPreview {
+                if let preview = remoteControl.remoteControlPreview {
                     Image(uiImage: preview)
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(maxWidth: .infinity)
                         .padding([.bottom], 3)
                         .onTapGesture(count: 2) { _ in
-                            model.remoteControlAssistantShowPreviewFullScreen = true
+                            remoteControl.remoteControlAssistantShowPreviewFullScreen = true
                         }
                         .onTapGesture(count: 1) { _ in
                             model.remoteControlAssistantStopPreview(user: .panel)
-                            model.remoteControlAssistantShowPreview = false
+                            remoteControl.remoteControlAssistantShowPreview = false
                         }
                 } else {
                     Text("No preview received yet.")
@@ -241,7 +242,7 @@ private struct ControlBarRemoteControlAssistantStatusView: View {
             } else {
                 Button {
                     model.remoteControlAssistantStartPreview(user: .panel)
-                    model.remoteControlAssistantShowPreview = true
+                    remoteControl.remoteControlAssistantShowPreview = true
                 } label: {
                     HStack {
                         Spacer()
@@ -253,12 +254,12 @@ private struct ControlBarRemoteControlAssistantStatusView: View {
         } header: {
             Text("Preview")
         } footer: {
-            if model.remoteControlAssistantShowPreview {
+            if remoteControl.remoteControlAssistantShowPreview {
                 Text("Tap the preview to hide it. Double tap to toggle full screen.")
             }
         }
         Section {
-            if let status = model.remoteControlGeneral {
+            if let status = remoteControl.remoteControlGeneral {
                 VStack(alignment: .leading, spacing: 3) {
                     StatusItemView(
                         icon: "battery.0",
@@ -274,7 +275,7 @@ private struct ControlBarRemoteControlAssistantStatusView: View {
             Text("General")
         }
         Section {
-            if let status = model.remoteControlTopLeft {
+            if let status = remoteControl.remoteControlTopLeft {
                 VStack(alignment: .leading, spacing: 3) {
                     StatusItemView(
                         icon: "dot.radiowaves.left.and.right",
@@ -295,7 +296,7 @@ private struct ControlBarRemoteControlAssistantStatusView: View {
             Text("Top left")
         }
         Section {
-            if let status = model.remoteControlTopRight {
+            if let status = remoteControl.remoteControlTopRight {
                 VStack(alignment: .leading, spacing: 3) {
                     if let audioInfo = status.audioInfo {
                         RemoteControlAudioLevelView(
@@ -375,11 +376,12 @@ private struct RecordingView: View {
 
 private struct ZoomView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var remoteControl: RemoteControl
 
     private func submitZoom(value: String) {
         guard let x = Float(value) else {
             if let zoom = model.remoteControlState.zoom {
-                model.remoteControlZoom = String(zoom)
+                remoteControl.remoteControlZoom = String(zoom)
             }
             return
         }
@@ -390,17 +392,17 @@ private struct ZoomView: View {
         HStack {
             Text("Zoom")
             Spacer()
-            TextField("", text: $model.remoteControlZoom)
+            TextField("", text: $remoteControl.remoteControlZoom)
                 .multilineTextAlignment(.trailing)
                 .disableAutocorrection(true)
                 .onSubmit {
                     guard let zoom = model.remoteControlState.zoom else {
                         return
                     }
-                    guard model.remoteControlZoom != String(zoom) else {
+                    guard remoteControl.remoteControlZoom != String(zoom) else {
                         return
                     }
-                    submitZoom(value: model.remoteControlZoom)
+                    submitZoom(value: remoteControl.remoteControlZoom)
                 }
         }
     }
@@ -408,53 +410,56 @@ private struct ZoomView: View {
 
 private struct ScenePickerView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var remoteControl: RemoteControl
 
     var body: some View {
-        Picker(selection: $model.remoteControlScene) {
-            ForEach(model.remoteControlSettings?.scenes ?? []) { scene in
+        Picker(selection: $remoteControl.remoteControlScene) {
+            ForEach(remoteControl.remoteControlSettings?.scenes ?? []) { scene in
                 Text(scene.name)
                     .tag(scene.id)
             }
         } label: {
             Text("Scene")
         }
-        .onChange(of: model.remoteControlScene) { _ in
-            guard model.remoteControlScene != model.remoteControlState.scene
+        .onChange(of: remoteControl.remoteControlScene) { _ in
+            guard remoteControl.remoteControlScene != model.remoteControlState.scene
             else {
                 return
             }
-            model.remoteControlAssistantSetScene(id: model.remoteControlScene)
+            model.remoteControlAssistantSetScene(id: remoteControl.remoteControlScene)
         }
     }
 }
 
 private struct MicView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var remoteControl: RemoteControl
 
     var body: some View {
-        Picker(selection: $model.remoteControlMic) {
-            ForEach(model.remoteControlSettings?.mics ?? []) { mic in
+        Picker(selection: $remoteControl.remoteControlMic) {
+            ForEach(remoteControl.remoteControlSettings?.mics ?? []) { mic in
                 Text(mic.name)
                     .tag(mic.id)
             }
         } label: {
             Text("Mic")
         }
-        .onChange(of: model.remoteControlMic) { _ in
-            guard model.remoteControlMic != model.remoteControlState.mic else {
+        .onChange(of: remoteControl.remoteControlMic) { _ in
+            guard remoteControl.remoteControlMic != model.remoteControlState.mic else {
                 return
             }
-            model.remoteControlAssistantSetMic(id: model.remoteControlMic)
+            model.remoteControlAssistantSetMic(id: remoteControl.remoteControlMic)
         }
     }
 }
 
 private struct BitrateView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var remoteControl: RemoteControl
 
     var body: some View {
-        Picker(selection: $model.remoteControlBitrate) {
-            ForEach(model.remoteControlSettings?.bitratePresets ?? []) { preset in
+        Picker(selection: $remoteControl.remoteControlBitrate) {
+            ForEach(remoteControl.remoteControlSettings?.bitratePresets ?? []) { preset in
                 Text(preset.bitrate > 0 ?
                     formatBytesPerSecond(speed: Int64(preset.bitrate)) :
                     "Unknown")
@@ -463,20 +468,21 @@ private struct BitrateView: View {
         } label: {
             Text("Bitrate")
         }
-        .onChange(of: model.remoteControlBitrate) { _ in
-            guard model.remoteControlBitrate != model.remoteControlState.bitrate else {
+        .onChange(of: remoteControl.remoteControlBitrate) { _ in
+            guard remoteControl.remoteControlBitrate != model.remoteControlState.bitrate else {
                 return
             }
-            model.remoteControlAssistantSetBitratePreset(id: model.remoteControlBitrate)
+            model.remoteControlAssistantSetBitratePreset(id: remoteControl.remoteControlBitrate)
         }
     }
 }
 
 private struct SrtConnectionPrioritiesView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var remoteControl: RemoteControl
 
     var body: some View {
-        if let settings = model.remoteControlSettings {
+        if let settings = remoteControl.remoteControlSettings {
             NavigationLink {
                 RemoteControlSrtConnectionPrioritiesView(
                     srt: settings.srt,
@@ -491,16 +497,17 @@ private struct SrtConnectionPrioritiesView: View {
 
 private struct DebugLoggingView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var remoteControl: RemoteControl
 
     var body: some View {
         Toggle(isOn: Binding(get: {
-            model.remoteControlDebugLogging
+            remoteControl.remoteControlDebugLogging
         }, set: {
-            model.remoteControlDebugLogging = $0
-            guard model.remoteControlDebugLogging != model.remoteControlState.debugLogging else {
+            remoteControl.remoteControlDebugLogging = $0
+            guard remoteControl.remoteControlDebugLogging != model.remoteControlState.debugLogging else {
                 return
             }
-            model.remoteControlAssistantSetDebugLogging(on: model.remoteControlDebugLogging)
+            model.remoteControlAssistantSetDebugLogging(on: remoteControl.remoteControlDebugLogging)
         })) {
             Text("Debug logging")
         }
@@ -509,18 +516,19 @@ private struct DebugLoggingView: View {
 
 private struct ControlBarRemoteControlAssistantControlView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var remoteControl: RemoteControl
 
     var body: some View {
         Section {
-            if model.remoteControlSettings != nil {
+            if remoteControl.remoteControlSettings != nil {
                 LiveView()
                 RecordingView()
-                ZoomView()
-                ScenePickerView()
-                MicView()
-                BitrateView()
-                SrtConnectionPrioritiesView()
-                DebugLoggingView()
+                ZoomView(remoteControl: remoteControl)
+                ScenePickerView(remoteControl: remoteControl)
+                MicView(remoteControl: remoteControl)
+                BitrateView(remoteControl: remoteControl)
+                SrtConnectionPrioritiesView(remoteControl: remoteControl)
+                DebugLoggingView(remoteControl: remoteControl)
             } else {
                 HCenter {
                     ProgressView()
@@ -570,19 +578,20 @@ private struct ControlBarRemoteControlAssistantControlView: View {
 
 struct ControlBarRemoteControlAssistantView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var remoteControl: RemoteControl
     @State var didDetachCamera = false
 
     var body: some View {
         ZStack {
-            if model.remoteControlAssistantShowPreviewFullScreen {
+            if remoteControl.remoteControlAssistantShowPreviewFullScreen {
                 if model.isRemoteControlAssistantConnected() {
-                    if let preview = model.remoteControlPreview {
+                    if let preview = remoteControl.remoteControlPreview {
                         Image(uiImage: preview)
                             .resizable()
                             .aspectRatio(contentMode: .fit)
                             .frame(maxWidth: .infinity)
                             .onTapGesture(count: 2) { _ in
-                                model.remoteControlAssistantShowPreviewFullScreen = false
+                                remoteControl.remoteControlAssistantShowPreviewFullScreen = false
                             }
                     } else {
                         Text("No preview received yet.")
@@ -598,15 +607,15 @@ struct ControlBarRemoteControlAssistantView: View {
                         }
                     } else if model.isPortrait() {
                         Form {
-                            ControlBarRemoteControlAssistantStatusView()
-                            ControlBarRemoteControlAssistantControlView()
+                            ControlBarRemoteControlAssistantStatusView(remoteControl: remoteControl)
+                            ControlBarRemoteControlAssistantControlView(remoteControl: remoteControl)
                         }
                     } else {
                         Form {
-                            ControlBarRemoteControlAssistantStatusView()
+                            ControlBarRemoteControlAssistantStatusView(remoteControl: remoteControl)
                         }
                         Form {
-                            ControlBarRemoteControlAssistantControlView()
+                            ControlBarRemoteControlAssistantControlView(remoteControl: remoteControl)
                         }
                     }
                 }
@@ -619,7 +628,7 @@ struct ControlBarRemoteControlAssistantView: View {
                 model.detachCamera()
             }
             model.updateScreenAutoOff()
-            if model.remoteControlAssistantShowPreview {
+            if remoteControl.remoteControlAssistantShowPreview {
                 model.remoteControlAssistantStartPreview(user: .panel)
             }
             model.remoteControlAssistantStartStatus()

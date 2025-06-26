@@ -284,7 +284,7 @@ extension Model {
     }
 
     private func sendScenesToWatchRemoteControl() {
-        guard let scenes = remoteControlSettings?.scenes else {
+        guard let scenes = remoteControl.remoteControlSettings?.scenes else {
             return
         }
         sendScenesToWatch(scenes: scenes.map { WatchProtocolScene(id: $0.id, name: $0.name) })
@@ -329,7 +329,7 @@ extension Model {
     }
 
     func sendRemoteControlAssistantStatusToWatch() {
-        if let general = remoteControlGeneral {
+        if let general = remoteControl.remoteControlGeneral {
             if let thermalState = general.flame?.toThermalState() {
                 sendThermalStateToWatch(thermalState: thermalState)
             }
@@ -343,12 +343,12 @@ extension Model {
                 sendIsMutedToWatch(isMuteOn: isMuted)
             }
         }
-        if let topLeft = remoteControlTopLeft {
+        if let topLeft = remoteControl.remoteControlTopLeft {
             if let zoom = topLeft.zoom {
                 sendZoomToWatch(x: Float(zoom.message) ?? 0.0)
             }
         }
-        if let topRight = remoteControlTopRight {
+        if let topRight = remoteControl.remoteControlTopRight {
             if let recordingMessage = topRight.recording?.message {
                 sendRecordingLengthToWatch(recordingLength: recordingMessage)
             }
@@ -360,7 +360,7 @@ extension Model {
             }
         }
         sendScenesToWatchRemoteControl()
-        sendSceneToWatch(id: remoteControlScene)
+        sendSceneToWatch(id: remoteControl.remoteControlScene)
     }
 
     func isWatchRemoteControl() -> Bool {

@@ -109,15 +109,15 @@ extension Model {
             return
         }
         remoteControlAssistant?.getStatus { general, topLeft, topRight in
-            self.remoteControlGeneral = general
-            self.remoteControlTopLeft = topLeft
-            self.remoteControlTopRight = topRight
+            self.remoteControl.remoteControlGeneral = general
+            self.remoteControl.remoteControlTopLeft = topLeft
+            self.remoteControl.remoteControlTopRight = topRight
             if self.isWatchRemoteControl() {
                 self.sendRemoteControlAssistantStatusToWatch()
             }
         }
         remoteControlAssistant?.getSettings { settings in
-            self.remoteControlSettings = settings
+            self.remoteControl.remoteControlSettings = settings
         }
     }
 
@@ -672,31 +672,31 @@ extension Model: RemoteControlAssistantDelegate {
 
     func remoteControlAssistantDisconnected() {
         makeToast(title: String(localized: "Remote control streamer disconnected"))
-        remoteControlTopLeft = nil
-        remoteControlTopRight = nil
+        remoteControl.remoteControlTopLeft = nil
+        remoteControl.remoteControlTopRight = nil
         updateRemoteControlStatus()
     }
 
     func remoteControlAssistantStateChanged(state: RemoteControlState) {
         if let scene = state.scene {
             remoteControlState.scene = scene
-            remoteControlScene = scene
+            remoteControl.remoteControlScene = scene
         }
         if let mic = state.mic {
             remoteControlState.mic = mic
-            remoteControlMic = mic
+            remoteControl.remoteControlMic = mic
         }
         if let bitrate = state.bitrate {
             remoteControlState.bitrate = bitrate
-            remoteControlBitrate = bitrate
+            remoteControl.remoteControlBitrate = bitrate
         }
         if let zoom = state.zoom {
             remoteControlState.zoom = zoom
-            remoteControlZoom = String(zoom)
+            remoteControl.remoteControlZoom = String(zoom)
         }
         if let debugLogging = state.debugLogging {
             remoteControlState.debugLogging = debugLogging
-            remoteControlDebugLogging = debugLogging
+            remoteControl.remoteControlDebugLogging = debugLogging
         }
         if let streaming = state.streaming {
             remoteControlState.streaming = streaming
@@ -710,7 +710,7 @@ extension Model: RemoteControlAssistantDelegate {
     }
 
     func remoteControlAssistantPreview(preview: Data) {
-        remoteControlPreview = UIImage(data: preview)
+        remoteControl.remoteControlPreview = UIImage(data: preview)
         if isWatchRemoteControl() {
             sendPreviewToWatch(image: preview)
         }
@@ -729,7 +729,7 @@ extension Model: RemoteControlAssistantDelegate {
                                       topRight: RemoteControlStatusTopRight?)
     {
         if let topRight {
-            remoteControlTopRight = topRight
+            remoteControl.remoteControlTopRight = topRight
         }
     }
 }

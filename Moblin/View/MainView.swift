@@ -351,7 +351,7 @@ struct MainView: View {
                 }
                 if model.showingRemoteControl {
                     NavigationStack {
-                        ControlBarRemoteControlAssistantView()
+                        ControlBarRemoteControlAssistantView(remoteControl: model.remoteControl)
                     }
                     CloseButtonRemoteView()
                 }
@@ -424,7 +424,7 @@ struct MainView: View {
                 if model.showingRemoteControl {
                     ZStack {
                         NavigationStack {
-                            ControlBarRemoteControlAssistantView()
+                            ControlBarRemoteControlAssistantView(remoteControl: model.remoteControl)
                         }
                         CloseButtonRemoteView()
                     }
