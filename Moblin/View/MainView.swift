@@ -456,6 +456,7 @@ struct MainView: View {
     }
 
     var body: some View {
+        // let _ = Self._printChanges()
         let all = ZStack {
             if model.isPortrait() {
                 portrait()
