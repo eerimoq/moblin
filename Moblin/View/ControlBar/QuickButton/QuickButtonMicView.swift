@@ -1,28 +1,62 @@
 import Foundation
 import SwiftUI
 
+private struct QuickButtonMicMicView: View {
+    @EnvironmentObject var model: Model
+    @ObservedObject var mic: SettingsMicsMic
+
+    var body: some View {
+        HStack {
+            DraggableItemPrefixView()
+            if !mic.isAlwaysConnected() && !mic.isExternal() {
+                Image(systemName: mic.connected ? "cable.connector" : "cable.connector.slash")
+            }
+            Text(mic.name)
+                .lineLimit(1)
+            Spacer()
+            Image(systemName: "checkmark")
+                .foregroundColor(mic == model.currentMic ? .blue : .clear)
+                .bold()
+        }
+        .contentShape(Rectangle())
+        .onTapGesture {
+            model.manualSelectMicById(id: mic.id)
+        }
+    }
+}
+
 struct QuickButtonMicView: View {
     @EnvironmentObject var model: Model
-    @State var selectedMic: Mic
+    @ObservedObject var mics: SettingsMics
 
     var body: some View {
         Form {
             Section {
-                Picker("", selection: Binding(get: {
-                    model.currentMic
-                }, set: { mic, _ in
-                    selectedMic = mic
-                })) {
-                    ForEach(model.mics) { mic in
-                        Text(mic.name)
-                            .tag(mic)
+                List {
+                    ForEach(mics.mics) { mic in
+                        QuickButtonMicMicView(mic: mic)
+                            .deleteDisabled(mic == model.currentMic)
+                    }
+                    .onDelete { offsets in
+                        mics.mics.remove(atOffsets: offsets)
+                    }
+                    .onMove { froms, to in
+                        mics.mics.move(fromOffsets: froms, toOffset: to)
                     }
                 }
-                .onChange(of: selectedMic) { mic in
-                    model.manualSelectMicById(id: mic.id)
+            } footer: {
+                VStack(alignment: .leading) {
+                    Text("Highest priority mic at the top of the list.")
+                    Text("")
+                    SwipeLeftToDeleteHelpView(kind: String(localized: "a mic"))
                 }
-                .pickerStyle(.inline)
-                .labelsHidden()
+            }
+            if false {
+                Section {
+                    Toggle("Auto switch", isOn: $mics.autoSwitch)
+                } footer: {
+                    Text("Automatically switch to highest priority mic when plugged in.")
+                }
             }
         }
         .navigationTitle("Mic")

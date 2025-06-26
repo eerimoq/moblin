@@ -80,6 +80,7 @@ struct SrtlaServerSettingsView: View {
                         list.onDelete { indexes in
                             srtlaServer.streams.remove(atOffsets: indexes)
                             model.reloadSrtlaServer()
+                            model.updateMicsList()
                         }
                     } else {
                         list
@@ -94,6 +95,7 @@ struct SrtlaServerSettingsView: View {
                         }
                     }
                     srtlaServer.streams.append(stream)
+                    model.updateMicsList()
                 }
                 .disabled(srtlaServer.enabled)
             } header: {

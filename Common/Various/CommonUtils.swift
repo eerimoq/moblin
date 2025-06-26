@@ -578,7 +578,7 @@ func rtmpCamera(name: String) -> String {
     return "\(name) \(cameraPositionRtmp)"
 }
 
-func isRtmpCamera(camera: String) -> Bool {
+func isRtmpCameraOrMic(camera: String) -> Bool {
     return camera.hasSuffix(cameraPositionRtmp)
 }
 
@@ -586,7 +586,7 @@ func srtlaCamera(name: String) -> String {
     return "\(name) \(cameraPositionSrtla)"
 }
 
-func isSrtlaCamera(camera: String) -> Bool {
+func isSrtlaCameraOrMic(camera: String) -> Bool {
     return camera.hasSuffix(cameraPositionSrtla)
 }
 
@@ -594,7 +594,7 @@ func mediaPlayerCamera(name: String) -> String {
     return "\(name) \(cameraPositionMediaPlayer)"
 }
 
-func isMediaPlayerCamera(camera: String) -> Bool {
+func isMediaPlayerCameraOrMic(camera: String) -> Bool {
     return camera.hasSuffix(cameraPositionMediaPlayer)
 }
 

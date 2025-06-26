@@ -27,10 +27,12 @@ extension Model {
         let mediaPlayer = MediaPlayer(settings: settings, mediaStorage: mediaStorage)
         mediaPlayer.delegate = self
         mediaPlayers[settings.id] = mediaPlayer
+        updateMicsList()
     }
 
     func deleteMediaPlayer(playerId: UUID) {
         mediaPlayers.removeValue(forKey: playerId)
+        updateMicsList()
     }
 
     func updateMediaPlayerSettings(playerId: UUID, settings: SettingsMediaPlayer) {

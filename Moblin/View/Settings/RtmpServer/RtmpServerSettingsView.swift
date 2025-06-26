@@ -61,6 +61,7 @@ struct RtmpServerSettingsView: View {
                         list.onDelete { indexes in
                             rtmpServer.streams.remove(atOffsets: indexes)
                             model.reloadRtmpServer()
+                            model.updateMicsList()
                         }
                     } else {
                         list
@@ -75,6 +76,7 @@ struct RtmpServerSettingsView: View {
                         }
                     }
                     rtmpServer.streams.append(stream)
+                    model.updateMicsList()
                 }
                 .disabled(model.rtmpServerEnabled())
             } header: {

@@ -76,12 +76,6 @@ struct SrtlaServerStreamSettingsView: View {
                     Text("The stream name is shown in the list of cameras in scene settings.")
                 }
                 Section {
-                    Toggle("Auto select mic", isOn: $stream.autoSelectMic)
-                        .disabled(srtlaServer.enabled)
-                } footer: {
-                    Text("Automatically select the stream's audio as mic when connected.")
-                }
-                Section {
                     if srtlaServer.enabled {
                         UrlsView(
                             model: model,

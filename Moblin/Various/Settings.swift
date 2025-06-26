@@ -3269,27 +3269,76 @@ enum SettingsMic: String, Codable, CaseIterable {
     }
 }
 
-class SettingsMicsMic: Codable, Equatable {
+class SettingsMicsMic: Codable, Identifiable, Equatable, ObservableObject {
     static func == (lhs: SettingsMicsMic, rhs: SettingsMicsMic) -> Bool {
-        return lhs.inputUid == rhs.inputUid && lhs.dataSourceID == rhs.dataSourceID
+        return lhs.inputUid == rhs.inputUid && lhs.dataSourceId == rhs.dataSourceId
+    }
+
+    var id: String {
+        "\(inputUid) \(dataSourceId ?? 0)"
     }
 
     var name: String = ""
     var inputUid: String = ""
-    var dataSourceID: Int?
-    // var builtInOrientation: SettingsMic?
+    var dataSourceId: Int?
+    var builtInOrientation: SettingsMic?
+    @Published var connected: Bool = false
+
+    func isAudioSession() -> Bool {
+        return isBuiltin() || isExternal()
+    }
+
+    func isBuiltin() -> Bool {
+        return builtInOrientation != nil
+    }
+
+    func isExternal() -> Bool {
+        if isBuiltin() {
+            return false
+        }
+        if isRtmpCameraOrMic(camera: name) {
+            return false
+        }
+        if isSrtlaCameraOrMic(camera: name) {
+            return false
+        }
+        if isMediaPlayerCameraOrMic(camera: name) {
+            return false
+        }
+        return true
+    }
+
+    func isAlwaysConnected() -> Bool {
+        if builtInOrientation != nil {
+            return true
+        }
+        if isMediaPlayerCameraOrMic(camera: name) {
+            return true
+        }
+        return false
+    }
+
+    func isRtmp() -> Bool {
+        return isRtmpCameraOrMic(camera: name)
+    }
+
+    func isSrtla() -> Bool {
+        return isSrtlaCameraOrMic(camera: name)
+    }
 
     enum CodingKeys: CodingKey {
         case name,
              inputUid,
-             dataSourceID
+             dataSourceID,
+             builtInOrientation
     }
 
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.name, name)
         try container.encode(.inputUid, inputUid)
-        try container.encode(.dataSourceID, dataSourceID)
+        try container.encode(.dataSourceID, dataSourceId)
+        try container.encode(.builtInOrientation, builtInOrientation)
     }
 
     init() {}
@@ -3298,27 +3347,32 @@ class SettingsMicsMic: Codable, Equatable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         name = container.decode(.name, String.self, "")
         inputUid = container.decode(.inputUid, String.self, "")
-        dataSourceID = container.decode(.dataSourceID, Int?.self, nil)
+        dataSourceId = container.decode(.dataSourceID, Int?.self, nil)
+        builtInOrientation = container.decode(.builtInOrientation, SettingsMic?.self, nil)
     }
 }
 
 class SettingsMics: Codable, ObservableObject {
     @Published var mics: [SettingsMicsMic] = []
+    @Published var autoSwitch: Bool = true
 
     enum CodingKeys: CodingKey {
-        case mics
+        case all,
+             autoSwitch
     }
 
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(.mics, mics)
+        try container.encode(.all, mics)
+        try container.encode(.autoSwitch, autoSwitch)
     }
 
     init() {}
 
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        mics = container.decode(.mics, [SettingsMicsMic].self, [])
+        mics = container.decode(.all, [SettingsMicsMic].self, [])
+        autoSwitch = container.decode(.autoSwitch, Bool.self, true)
     }
 }
 
@@ -3650,14 +3704,12 @@ class SettingsRtmpServerStream: Codable, Identifiable, ObservableObject {
     @Published var streamKey: String = ""
     @Published var latency: Int32 = defaultRtmpLatency
     @Published var latencyString: String = .init(defaultRtmpLatency)
-    @Published var autoSelectMic: Bool = true
 
     enum CodingKeys: CodingKey {
         case id,
              name,
              streamKey,
-             latency,
-             autoSelectMic
+             latency
     }
 
     func encode(to encoder: Encoder) throws {
@@ -3666,7 +3718,6 @@ class SettingsRtmpServerStream: Codable, Identifiable, ObservableObject {
         try container.encode(.name, name)
         try container.encode(.streamKey, streamKey)
         try container.encode(.latency, latency)
-        try container.encode(.autoSelectMic, autoSelectMic)
     }
 
     init() {}
@@ -3678,7 +3729,6 @@ class SettingsRtmpServerStream: Codable, Identifiable, ObservableObject {
         streamKey = container.decode(.streamKey, String.self, "")
         latency = container.decode(.latency, Int32.self, defaultRtmpLatency)
         latencyString = String(latency)
-        autoSelectMic = container.decode(.autoSelectMic, Bool.self, true)
     }
 
     func camera() -> String {
@@ -3691,7 +3741,6 @@ class SettingsRtmpServerStream: Codable, Identifiable, ObservableObject {
         new.name = name
         new.streamKey = streamKey
         new.latency = latency
-        new.autoSelectMic = autoSelectMic
         return new
     }
 }
@@ -3741,13 +3790,11 @@ class SettingsSrtlaServerStream: Codable, Identifiable, ObservableObject {
     var id: UUID = .init()
     @Published var name: String = "My stream"
     @Published var streamId: String = ""
-    @Published var autoSelectMic: Bool = true
 
     enum CodingKeys: CodingKey {
         case id,
              name,
-             streamId,
-             autoSelectMic
+             streamId
     }
 
     func encode(to encoder: Encoder) throws {
@@ -3755,7 +3802,6 @@ class SettingsSrtlaServerStream: Codable, Identifiable, ObservableObject {
         try container.encode(.id, id)
         try container.encode(.name, name)
         try container.encode(.streamId, streamId)
-        try container.encode(.autoSelectMic, autoSelectMic)
     }
 
     init() {}
@@ -3765,7 +3811,6 @@ class SettingsSrtlaServerStream: Codable, Identifiable, ObservableObject {
         id = container.decode(.id, UUID.self, .init())
         name = container.decode(.name, String.self, "My stream")
         streamId = container.decode(.streamId, String.self, "")
-        autoSelectMic = container.decode(.autoSelectMic, Bool.self, true)
     }
 
     func camera() -> String {
@@ -3776,7 +3821,6 @@ class SettingsSrtlaServerStream: Codable, Identifiable, ObservableObject {
         let new = SettingsSrtlaServerStream()
         new.name = name
         new.streamId = streamId
-        new.autoSelectMic = autoSelectMic
         return new
     }
 }
@@ -5464,7 +5508,7 @@ class Database: Codable, ObservableObject {
     var videoStabilizationMode: SettingsVideoStabilizationMode = .off
     var chat: SettingsChat = .init()
     var batteryPercentage: Bool = true
-    var mic: SettingsMic = getDefaultMic()
+    var mic_to_remove: SettingsMic = getDefaultMic()
     var mics: SettingsMics = .init()
     var debug: SettingsDebug = .init()
     var quickButtonsGeneral: SettingsQuickButtons = .init()
@@ -5626,7 +5670,7 @@ class Database: Codable, ObservableObject {
         try container.encode(.videoStabilizationMode, videoStabilizationMode)
         try container.encode(.chat, chat)
         try container.encode(.batteryPercentage, batteryPercentage)
-        try container.encode(.mic, mic)
+        try container.encode(.mic, mic_to_remove)
         try container.encode(.mics, mics)
         try container.encode(.debug, debug)
         try container.encode(.quickButtons, quickButtonsGeneral)
@@ -5696,7 +5740,6 @@ class Database: Codable, ObservableObject {
         videoStabilizationMode = container.decode(.videoStabilizationMode, SettingsVideoStabilizationMode.self, .off)
         chat = container.decode(.chat, SettingsChat.self, .init())
         batteryPercentage = container.decode(.batteryPercentage, Bool.self, true)
-        mic = container.decode(.mic, SettingsMic.self, getDefaultMic())
         mics = container.decode(.mics, SettingsMics.self, .init())
         debug = container.decode(.debug, SettingsDebug.self, .init())
         quickButtonsGeneral = container.decode(.quickButtons, SettingsQuickButtons.self, .init())

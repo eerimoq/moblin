@@ -362,27 +362,10 @@ extension Model {
             return
         }
         if let index = findEnabledSceneIndex(id: id) {
-            if getSelectedScene()?.overrideMic != true {
-                previousMic = currentMic
-            }
             sceneSelector.sceneIndex = index
             setSceneId(id: id)
             sceneUpdated(attachCamera: true, updateRemoteScene: false)
-            if database.debug.overrideSceneMic {
-                if let scene = findEnabledScene(id: id) {
-                    if scene.overrideMic {
-                        if currentMic.id != scene.micId {
-                            selectMicById(id: scene.micId)
-                        }
-                    } else if currentMic.id != previousMic.id {
-                        if isMicAvailableById(id: previousMic.id) {
-                            selectMicById(id: previousMic.id)
-                        } else {
-                            setMicFromSettings()
-                        }
-                    }
-                }
-            }
+            switchMicIfNeededAfterSceneSwitch()
         }
     }
 

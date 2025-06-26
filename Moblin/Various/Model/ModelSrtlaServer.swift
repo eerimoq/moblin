@@ -72,12 +72,10 @@ extension Model: SrtlaServerDelegate {
         let latency = srtServerClientLatency
         media.addBufferedVideo(cameraId: stream.id, name: name, latency: latency)
         media.addBufferedAudio(cameraId: stream.id, name: name, latency: latency)
-        if stream.autoSelectMic {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-                self.selectMicById(id: "\(stream.id) 0")
-            }
+        markMicAsConnected(id: "\(stream.id) 0")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+            self.switchMicIfNeededAfterNetworkCameraChange()
         }
-        updateMicsList()
     }
 
     private func srtlaServerOnClientStopInternal(streamId: String) {
@@ -88,11 +86,9 @@ extension Model: SrtlaServerDelegate {
         }
         media.removeBufferedVideo(cameraId: stream.id)
         media.removeBufferedAudio(cameraId: stream.id)
-        if currentMic.id == "\(stream.id) 0" {
-            setMicFromSettings()
-        }
         updateAutoSceneSwitcherVideoSourceDisconnected()
-        updateMicsList()
+        markMicAsDisconnected(id: "\(stream.id) 0")
+        switchMicIfNeededAfterNetworkCameraChange()
     }
 
     func srtlaServerOnAudioBuffer(streamId: String, sampleBuffer: CMSampleBuffer) {

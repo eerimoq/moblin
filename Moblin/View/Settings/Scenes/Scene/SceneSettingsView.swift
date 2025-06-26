@@ -37,7 +37,7 @@ private struct MicView: View {
             InlinePickerView(
                 title: String(localized: "Mic"),
                 onChange: onMicChange,
-                items: model.mics.map {
+                items: model.database.mics.mics.map {
                     InlinePickerItem(id: $0.id, text: $0.name)
                 },
                 selectedId: scene.micId
@@ -147,19 +147,6 @@ struct SceneSettingsView: View {
         model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
     }
 
-    private func onOverrideMicChange() {
-        guard model.getSelectedScene() === scene else {
-            return
-        }
-        if scene.overrideMic && scene.micId != "" {
-            model.selectMicById(id: scene.micId)
-        } else if model.isMicAvailableById(id: model.previousMic.id) {
-            model.selectMicById(id: model.previousMic.id)
-        } else {
-            model.setMicFromSettings()
-        }
-    }
-
     var body: some View {
         Form {
             NavigationLink {
@@ -228,7 +215,7 @@ struct SceneSettingsView: View {
                 Section {
                     Toggle("Override", isOn: $scene.overrideMic)
                         .onChange(of: scene.overrideMic) { _ in
-                            onOverrideMicChange()
+                            model.switchMicIfNeededAfterSceneSwitch()
                         }
                     if scene.overrideMic {
                         MicView(model: model, scene: scene)

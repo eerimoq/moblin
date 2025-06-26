@@ -513,11 +513,11 @@ extension Model {
     }
 
     func cameraIdToSettingsCameraId(cameraId: String) -> SettingsCameraId {
-        if isSrtlaCamera(camera: cameraId) {
+        if isSrtlaCameraOrMic(camera: cameraId) {
             return .srtla(id: getSrtlaStream(camera: cameraId)?.id ?? .init())
-        } else if isRtmpCamera(camera: cameraId) {
+        } else if isRtmpCameraOrMic(camera: cameraId) {
             return .rtmp(id: getRtmpStream(camera: cameraId)?.id ?? .init())
-        } else if isMediaPlayerCamera(camera: cameraId) {
+        } else if isMediaPlayerCameraOrMic(camera: cameraId) {
             return .mediaPlayer(id: getMediaPlayer(camera: cameraId)?.id ?? .init())
         } else if isBackCamera(cameraId: cameraId) {
             return .back(id: cameraId)
