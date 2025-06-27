@@ -29,7 +29,7 @@ struct StreamWizardYouTubeSettingsView: View {
         .onAppear {
             createStreamWizard.platform = .youTube
             createStreamWizard.name = "YouTube"
-            createStreamWizard.directIngest = ""
+            createStreamWizard.directIngest = "rtmp://a.rtmp.youtube.com/live2"
         }
         .navigationTitle("YouTube")
         .toolbar {
