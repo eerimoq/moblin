@@ -282,6 +282,7 @@ class StreamOverlay: ObservableObject {
 }
 
 final class Model: NSObject, ObservableObject, @unchecked Sendable {
+    @Published var digitalClock = noValue
     @Published var isPresentingWidgetWizard = false
     @Published var goProLaunchLiveStreamSelection: UUID?
     @Published var goProWifiCredentialsSelection: UUID?
@@ -299,7 +300,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var mics: [Mic] = []
     @Published var isLive = false
     @Published var isRecording = false
-    @Published var digitalClock = noValue
     @Published var externalDisplayChatEnabled = false
     @Published var showAllQuickButtonChatMessage = true
     @Published var showFirstTimeChatterMessage = true
