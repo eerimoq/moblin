@@ -50,7 +50,9 @@ extension Model: KickOusherDelegate {
     }
 
     func kickPusherAppendMessage(
+        messageId: String?,
         user: String,
+        userId: String?,
         userColor: RgbColor?,
         segments: [ChatPostSegment],
         isSubscriber: Bool,
@@ -58,9 +60,9 @@ extension Model: KickOusherDelegate {
         highlight: ChatHighlight?
     ) {
         appendChatMessage(platform: .kick,
-                          messageId: nil,
+                          messageId: messageId,
                           user: user,
-                          userId: nil,
+                          userId: userId,
                           userColor: userColor,
                           userBadges: [],
                           segments: segments,
@@ -72,5 +74,19 @@ extension Model: KickOusherDelegate {
                           bits: nil,
                           highlight: highlight,
                           live: true)
+    }
+
+    func kickPusherDeleteMessage(messageId: String) {
+        chat.deleteMessage(messageId: messageId)
+        quickButtonChat.deleteMessage(messageId: messageId)
+        externalDisplayChat.deleteMessage(messageId: messageId)
+        chatTextToSpeech.delete(messageId: messageId)
+    }
+
+    func kickPusherDeleteUser(userId: String) {
+        chat.deleteUser(userId: userId)
+        quickButtonChat.deleteUser(userId: userId)
+        externalDisplayChat.deleteUser(userId: userId)
+        chatTextToSpeech.delete(userId: userId)
     }
 }
