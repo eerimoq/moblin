@@ -269,6 +269,7 @@ class SceneSelector: ObservableObject {
 
 class StreamOverlay: ObservableObject {
     @Published var showMediaPlayerControls = false
+    @Published var isFrontCameraSelected = false
 }
 
 final class Model: NSObject, ObservableObject, @unchecked Sendable {
@@ -301,7 +302,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var showCameraPreview = false
     @Published var browsers: [Browser] = []
     @Published var isTorchOn = false
-    @Published var isFrontCameraSelected = false
     @Published var buttonPairs: [[QuickButtonPair]] = Array(repeating: [], count: controlBarPages)
     @Published var showingCamera = false
     @Published var showingReplay = false
@@ -2799,7 +2799,7 @@ extension Model {
             videoSize: media.getVideoSize(),
             size: drawOnStreamSize,
             lines: drawOnStreamLines,
-            mirror: isFrontCameraSelected && !database.mirrorFrontCameraOnStream
+            mirror: streamOverlay.isFrontCameraSelected && !database.mirrorFrontCameraOnStream
         )
         media.registerEffect(drawOnStreamEffect)
         drawOnStreamUpdateButtonState()
@@ -2811,7 +2811,7 @@ extension Model {
             videoSize: media.getVideoSize(),
             size: drawOnStreamSize,
             lines: drawOnStreamLines,
-            mirror: isFrontCameraSelected && !database.mirrorFrontCameraOnStream
+            mirror: streamOverlay.isFrontCameraSelected && !database.mirrorFrontCameraOnStream
         )
         media.unregisterEffect(drawOnStreamEffect)
         drawOnStreamUpdateButtonState()
@@ -2826,7 +2826,7 @@ extension Model {
             videoSize: media.getVideoSize(),
             size: drawOnStreamSize,
             lines: drawOnStreamLines,
-            mirror: isFrontCameraSelected && !database.mirrorFrontCameraOnStream
+            mirror: streamOverlay.isFrontCameraSelected && !database.mirrorFrontCameraOnStream
         )
         if drawOnStreamLines.isEmpty {
             media.unregisterEffect(drawOnStreamEffect)

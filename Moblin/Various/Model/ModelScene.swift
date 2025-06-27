@@ -310,7 +310,7 @@ extension Model {
             videoSize: media.getVideoSize(),
             size: drawOnStreamSize,
             lines: drawOnStreamLines,
-            mirror: isFrontCameraSelected && !database.mirrorFrontCameraOnStream
+            mirror: streamOverlay.isFrontCameraSelected && !database.mirrorFrontCameraOnStream
         )
         for lutEffect in lutEffects.values {
             media.unregisterEffect(lutEffect)
@@ -500,7 +500,7 @@ extension Model {
                 videoSize: media.getVideoSize(),
                 size: drawOnStreamSize,
                 lines: drawOnStreamLines,
-                mirror: isFrontCameraSelected && !database.mirrorFrontCameraOnStream
+                mirror: streamOverlay.isFrontCameraSelected && !database.mirrorFrontCameraOnStream
             )
         }
     }
@@ -683,14 +683,14 @@ extension Model {
     }
 
     func attachSingleLayout(scene: SettingsScene) {
-        isFrontCameraSelected = false
+        streamOverlay.isFrontCameraSelected = false
         deactivateAllMediaPlayers()
         switch scene.cameraPosition {
         case .back:
             attachCamera(scene: scene, position: .back)
         case .front:
             attachCamera(scene: scene, position: .front)
-            isFrontCameraSelected = true
+            streamOverlay.isFrontCameraSelected = true
         case .rtmp:
             attachBufferedCamera(cameraId: scene.rtmpCameraId, scene: scene)
         case .srtla:

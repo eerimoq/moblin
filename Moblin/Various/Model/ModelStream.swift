@@ -646,7 +646,7 @@ extension Model {
 
     private func handleNoTorch() {
         DispatchQueue.main.async { [self] in
-            if !isFrontCameraSelected {
+            if !streamOverlay.isFrontCameraSelected {
                 makeErrorToast(
                     title: String(localized: "Torch unavailable in this scene."),
                     subTitle: String(localized: "Normally only available for built-in cameras.")

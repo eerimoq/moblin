@@ -157,6 +157,7 @@ private struct FrontTorchView: View {
 
 struct StreamOverlayView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var streamOverlay: StreamOverlay
     let width: CGFloat
     let height: CGFloat
 
@@ -170,7 +171,7 @@ struct StreamOverlayView: View {
 
     var body: some View {
         ZStack {
-            if model.isTorchOn && model.isFrontCameraSelected {
+            if model.isTorchOn && streamOverlay.isFrontCameraSelected {
                 FrontTorchView()
             }
             ZStack {

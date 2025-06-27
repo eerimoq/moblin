@@ -343,7 +343,9 @@ struct MainView: View {
                 .ignoresSafeArea()
                 .edgesIgnoringSafeArea(.all)
                 GeometryReader { metrics in
-                    StreamOverlayView(width: metrics.size.width, height: metrics.size.height)
+                    StreamOverlayView(streamOverlay: model.streamOverlay,
+                                      width: metrics.size.width,
+                                      height: metrics.size.height)
                         .opacity(model.showLocalOverlays ? 1 : 0)
                 }
                 if model.showFace && !model.showDrawOnStream {
@@ -412,7 +414,9 @@ struct MainView: View {
                 .ignoresSafeArea()
                 .edgesIgnoringSafeArea(.all)
                 GeometryReader { metrics in
-                    StreamOverlayView(width: metrics.size.width, height: metrics.size.height)
+                    StreamOverlayView(streamOverlay: model.streamOverlay,
+                                      width: metrics.size.width,
+                                      height: metrics.size.height)
                         .opacity(model.showLocalOverlays ? 1 : 0)
                 }
                 if model.showDrawOnStream {
