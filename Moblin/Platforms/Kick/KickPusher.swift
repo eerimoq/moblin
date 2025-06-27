@@ -10,6 +10,7 @@ private struct Identity: Decodable {
 }
 
 private struct Sender: Decodable {
+    var id: Int?
     var username: String
     var identity: Identity
 }
@@ -28,6 +29,7 @@ private struct Metadata: Decodable {
 }
 
 private struct ChatMessage: Decodable {
+    var id: String?
     var type: String?
     var content: String
     var sender: Sender
@@ -40,6 +42,22 @@ private struct ChatMessage: Decodable {
     func isSubscriber() -> Bool {
         return sender.identity.badges.contains(where: { $0.type == "subscriber" })
     }
+}
+
+private struct DeletedMessage: Decodable {
+    var id: String
+}
+
+private struct MessageDeletedEvent: Decodable {
+    var message: DeletedMessage
+}
+
+private struct BannedUser: Decodable {
+    var id: Int
+}
+
+private struct UserBannedEvent: Decodable {
+    var user: BannedUser
 }
 
 private func decodeEvent(message: String) throws -> (String, String) {
@@ -66,6 +84,20 @@ private func decodeChatMessage(data: String) throws -> ChatMessage {
     )
 }
 
+private func decodeMessageDeletedEvent(data: String) throws -> MessageDeletedEvent {
+    return try JSONDecoder().decode(
+        MessageDeletedEvent.self,
+        from: data.data(using: String.Encoding.utf8)!
+    )
+}
+
+private func decodeUserBannedEvent(data: String) throws -> UserBannedEvent {
+    return try JSONDecoder().decode(
+        UserBannedEvent.self,
+        from: data.data(using: String.Encoding.utf8)!
+    )
+}
+
 private var url =
     URL(
         string: "wss://ws-us2.pusher.com/app/32cbd69e4b950bf97679?protocol=7&client=js&version=7.6.0&flash=false"
@@ -74,13 +106,17 @@ private var url =
 protocol KickOusherDelegate: AnyObject {
     func kickPusherMakeErrorToast(title: String, subTitle: String?)
     func kickPusherAppendMessage(
+        messageId: String?,
         user: String,
+        userId: String?,
         userColor: RgbColor?,
         segments: [ChatPostSegment],
         isSubscriber: Bool,
         isModerator: Bool,
         highlight: ChatHighlight?
     )
+    func kickPusherDeleteMessage(messageId: String)
+    func kickPusherDeleteUser(userId: String)
 }
 
 final class KickPusher: NSObject {
@@ -184,6 +220,10 @@ final class KickPusher: NSObject {
             let (type, data) = try decodeEvent(message: message)
             if type == "App\\Events\\ChatMessageEvent" {
                 try handleChatMessageEvent(data: data)
+            } else if type == "App\\Events\\MessageDeletedEvent" {
+                try handleMessageDeletedEvent(data: data)
+            } else if type == "App\\Events\\UserBannedEvent" {
+                try handleUserBannedEvent(data: data)
             } else {
                 logger.debug("kick: pusher: \(channelId): Unsupported type: \(type)")
             }
@@ -199,13 +239,25 @@ final class KickPusher: NSObject {
     private func handleChatMessageEvent(data: String) throws {
         let message = try decodeChatMessage(data: data)
         delegate?.kickPusherAppendMessage(
+            messageId: message.id,
             user: message.sender.username,
+            userId: message.sender.id != nil ? String(message.sender.id!) : nil,
             userColor: RgbColor.fromHex(string: message.sender.identity.color),
             segments: makeChatPostSegments(content: message.content),
             isSubscriber: message.isSubscriber(),
             isModerator: message.isModerator(),
             highlight: makeHighlight(message: message)
         )
+    }
+
+    private func handleMessageDeletedEvent(data: String) throws {
+        let event = try decodeMessageDeletedEvent(data: data)
+        delegate?.kickPusherDeleteMessage(messageId: event.message.id)
+    }
+    
+    private func handleUserBannedEvent(data: String) throws {
+        let event = try decodeUserBannedEvent(data: data)
+        delegate?.kickPusherDeleteUser(userId: String(event.user.id))
     }
 
     private func makeChatPostSegments(content: String) -> [ChatPostSegment] {
