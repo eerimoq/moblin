@@ -77,16 +77,10 @@ extension Model: KickOusherDelegate {
     }
 
     func kickPusherDeleteMessage(messageId: String) {
-        chat.deleteMessage(messageId: messageId)
-        quickButtonChat.deleteMessage(messageId: messageId)
-        externalDisplayChat.deleteMessage(messageId: messageId)
-        chatTextToSpeech.delete(messageId: messageId)
+        deleteChatMessage(messageId: messageId)
     }
 
     func kickPusherDeleteUser(userId: String) {
-        chat.deleteUser(userId: userId)
-        quickButtonChat.deleteUser(userId: userId)
-        externalDisplayChat.deleteUser(userId: userId)
-        chatTextToSpeech.delete(userId: userId)
+        deleteChatUser(userId: userId)
     }
 }

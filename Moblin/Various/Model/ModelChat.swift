@@ -559,4 +559,18 @@ extension Model {
         UIPasteboard.general.string = post.text()
         makeToast(title: String(localized: "Message copied to clipboard"))
     }
+
+    func deleteChatMessage(messageId: String) {
+        chat.deleteMessage(messageId: messageId)
+        quickButtonChat.deleteMessage(messageId: messageId)
+        externalDisplayChat.deleteMessage(messageId: messageId)
+        chatTextToSpeech.delete(messageId: messageId)
+    }
+
+    func deleteChatUser(userId: String) {
+        chat.deleteUser(userId: userId)
+        quickButtonChat.deleteUser(userId: userId)
+        externalDisplayChat.deleteUser(userId: userId)
+        chatTextToSpeech.delete(userId: userId)
+    }
 }
