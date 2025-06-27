@@ -433,8 +433,8 @@ extension Model: RemoteControlStreamerDelegate {
         setLowFpsImage()
         updateRemoteControlStatus()
         var state = RemoteControlState()
-        if sceneIndex < enabledScenes.count {
-            state.scene = enabledScenes[sceneIndex].id
+        if sceneSelector.sceneIndex < enabledScenes.count {
+            state.scene = enabledScenes[sceneSelector.sceneIndex].id
         }
         state.mic = currentMic.id
         if let preset = getBitratePresetByBitrate(bitrate: stream.bitrate) {

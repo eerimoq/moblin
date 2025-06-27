@@ -3,6 +3,7 @@ import SwiftUI
 struct StreamOverlayRightSceneSelectorView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var database: Database
+    @ObservedObject var sceneSelector: SceneSelector
     let width: CGFloat
 
     private func height() -> Double {
@@ -15,16 +16,16 @@ struct StreamOverlayRightSceneSelectorView: View {
 
     var body: some View {
         SegmentedPicker(model.enabledScenes, selectedItem: Binding(get: {
-            if model.sceneIndex < model.enabledScenes.count {
-                model.enabledScenes[model.sceneIndex]
+            if sceneSelector.sceneIndex < model.enabledScenes.count {
+                model.enabledScenes[sceneSelector.sceneIndex]
             } else {
                 nil
             }
         }, set: { value in
             if let value, let index = model.enabledScenes.firstIndex(of: value) {
-                model.sceneIndex = index
+                sceneSelector.sceneIndex = index
             } else {
-                model.sceneIndex = 0
+                sceneSelector.sceneIndex = 0
             }
         })) {
             Text($0.name)
@@ -38,7 +39,7 @@ struct StreamOverlayRightSceneSelectorView: View {
                 model.showSceneSettings(scene: model.enabledScenes[index])
             }
         }
-        .onChange(of: model.sceneIndex) { tag in
+        .onChange(of: sceneSelector.sceneIndex) { tag in
             model.selectScene(id: model.enabledScenes[tag].id)
         }
         .background(pickerBackgroundColor)

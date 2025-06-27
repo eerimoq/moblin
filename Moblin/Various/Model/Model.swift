@@ -263,6 +263,14 @@ class Toast: ObservableObject {
     }
 }
 
+class SceneSelector: ObservableObject {
+    @Published var sceneIndex = 0
+}
+
+class StreamOverlay: ObservableObject {
+    @Published var showMediaPlayerControls = false
+}
+
 final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var manualFocusPoint: CGPoint?
     @Published var isPresentingWidgetWizard = false
@@ -292,11 +300,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var quickButtonChatAlertsPaused = false
     @Published var showCameraPreview = false
     @Published var browsers: [Browser] = []
-    @Published var sceneIndex = 0
     @Published var isTorchOn = false
     @Published var isFrontCameraSelected = false
     @Published var buttonPairs: [[QuickButtonPair]] = Array(repeating: [], count: controlBarPages)
-    @Published var showMediaPlayerControls = false
     @Published var showingCamera = false
     @Published var showingReplay = false
     @Published var showingCameraBias = false
@@ -356,6 +362,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
+    let streamOverlay = StreamOverlay()
+    let sceneSelector = SceneSelector()
     let toast = Toast()
     let status = Status()
     let battery = Battery()

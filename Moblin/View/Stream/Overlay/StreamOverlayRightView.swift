@@ -464,6 +464,7 @@ struct RightOverlayTopView: View {
 struct RightOverlayBottomView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var show: SettingsShow
+    @ObservedObject var streamOverlay: StreamOverlay
     let width: CGFloat
 
     var body: some View {
@@ -473,7 +474,7 @@ struct RightOverlayBottomView: View {
                 if model.showingReplay {
                     StreamOverlayRightReplayView(replay: model.replay)
                 } else {
-                    if model.showMediaPlayerControls {
+                    if streamOverlay.showMediaPlayerControls {
                         StreamOverlayRightMediaPlayerControlsView(mediaPlayer: model.mediaPlayerPlayer)
                     } else {
                         if model.showingPixellate {
@@ -494,7 +495,9 @@ struct RightOverlayBottomView: View {
                                                                     width: width)
                         }
                     }
-                    StreamOverlayRightSceneSelectorView(database: model.database, width: width)
+                    StreamOverlayRightSceneSelectorView(database: model.database,
+                                                        sceneSelector: model.sceneSelector,
+                                                        width: width)
                 }
             }
         }

@@ -303,7 +303,7 @@ extension Model {
     func resetSelectedScene(changeScene: Bool = true) {
         if !enabledScenes.isEmpty, changeScene {
             setSceneId(id: enabledScenes[0].id)
-            sceneIndex = 0
+            sceneSelector.sceneIndex = 0
         }
         resetVideoEffects(widgets: getLocalAndRemoteWidgets())
         drawOnStreamEffect.updateOverlay(
@@ -334,7 +334,10 @@ extension Model {
             sendZoomPresetsToWatch()
             sendZoomPresetToWatch()
         }
-        showMediaPlayerControls = enabledScenes.first(where: { $0.id == id })?.cameraPosition == .mediaPlayer
+        let showMediaPlayerControls = enabledScenes.first(where: { $0.id == id })?.cameraPosition == .mediaPlayer
+        if showMediaPlayerControls != streamOverlay.showMediaPlayerControls {
+            streamOverlay.showMediaPlayerControls = showMediaPlayerControls
+        }
     }
 
     func getSelectedScene() -> SettingsScene? {
@@ -361,7 +364,7 @@ extension Model {
         if let index = enabledScenes.firstIndex(where: { scene in
             scene.id == id
         }) {
-            sceneIndex = index
+            sceneSelector.sceneIndex = index
             setSceneId(id: id)
             sceneUpdated(attachCamera: true, updateRemoteScene: false)
         }
