@@ -98,7 +98,7 @@ private struct CollapsedHypeTrainView: View {
 }
 
 private struct CollapsedAdsRemainingTimerView: View {
-    @EnvironmentObject var model: Model
+    @ObservedObject var status: Status
 
     var body: some View {
         HStack(spacing: 1) {
@@ -106,7 +106,7 @@ private struct CollapsedAdsRemainingTimerView: View {
                 .frame(width: 17, height: 17)
                 .padding([.leading, .trailing], 2)
                 .foregroundColor(.white)
-            Text(model.adsRemainingTimerStatus)
+            Text(status.adsRemainingTimerStatus)
                 .foregroundColor(.white)
                 .padding([.leading, .trailing], 2)
         }
@@ -268,6 +268,7 @@ private struct ServersStatusView: View {
 private struct StatusesView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var show: SettingsShow
+    @ObservedObject var status: Status
     let textPlacement: StreamOverlayIconAndTextPlacement
 
     private func remoteControlColor() -> Color {
@@ -310,11 +311,11 @@ private struct StatusesView: View {
         }
         if model.isShowingStatusAdsRemainingTimer() {
             if textPlacement == .hide {
-                CollapsedAdsRemainingTimerView()
+                CollapsedAdsRemainingTimerView(status: status)
             } else {
                 StreamOverlayIconAndTextView(
                     icon: "cup.and.saucer",
-                    text: "\(model.adsRemainingTimerStatus) seconds",
+                    text: "\(status.adsRemainingTimerStatus) seconds",
                     textPlacement: textPlacement
                 )
             }
@@ -328,7 +329,7 @@ private struct StatusesView: View {
         if model.isShowingStatusRemoteControl() {
             StreamOverlayIconAndTextView(
                 icon: "appletvremote.gen1",
-                text: model.remoteControlStatus,
+                text: status.remoteControlStatus,
                 textPlacement: textPlacement,
                 color: remoteControlColor()
             )
@@ -336,7 +337,7 @@ private struct StatusesView: View {
         if model.isShowingStatusDjiDevices() {
             StreamOverlayIconAndTextView(
                 icon: "appletvremote.gen1",
-                text: model.djiDevicesStatus,
+                text: status.djiDevicesStatus,
                 textPlacement: textPlacement,
                 color: djiDevicesColor()
             )
@@ -344,7 +345,7 @@ private struct StatusesView: View {
         if model.isShowingStatusGameController() {
             StreamOverlayIconAndTextView(
                 icon: "gamecontroller",
-                text: model.gameControllersTotal,
+                text: status.gameControllersTotal,
                 textPlacement: textPlacement
             )
         }
@@ -375,14 +376,14 @@ private struct StatusesView: View {
         if model.isShowingStatusBrowserWidgets() {
             StreamOverlayIconAndTextView(
                 icon: "globe",
-                text: model.browserWidgetsStatus,
+                text: status.browserWidgetsStatus,
                 textPlacement: textPlacement
             )
         }
         if model.isShowingStatusCatPrinter() {
             StreamOverlayIconAndTextView(
                 icon: "pawprint",
-                text: model.catPrinterStatus,
+                text: status.catPrinterStatus,
                 textPlacement: textPlacement,
                 color: catPrinterColor()
             )
@@ -390,7 +391,7 @@ private struct StatusesView: View {
         if model.isShowingStatusCyclingPowerDevice() {
             StreamOverlayIconAndTextView(
                 icon: "bicycle",
-                text: model.cyclingPowerDeviceStatus,
+                text: status.cyclingPowerDeviceStatus,
                 textPlacement: textPlacement,
                 color: cyclingPowerDeviceColor()
             )
@@ -398,7 +399,7 @@ private struct StatusesView: View {
         if model.isShowingStatusHeartRateDevice() {
             StreamOverlayIconAndTextView(
                 icon: "heart",
-                text: model.heartRateDeviceStatus,
+                text: status.heartRateDeviceStatus,
                 textPlacement: textPlacement,
                 color: heartRateDeviceColor()
             )
@@ -406,14 +407,17 @@ private struct StatusesView: View {
         if model.isShowingStatusFixedHorizon() {
             StreamOverlayIconAndTextView(
                 icon: "circle.and.line.horizontal",
-                text: model.fixedHorizonStatus,
+                text: status.fixedHorizonStatus,
                 textPlacement: textPlacement
             )
         }
-        if model.phoneCoolerDeviceState == .connected {
+        if status.phoneCoolerDeviceState == .connected {
             StreamOverlayIconAndTextView(
                 icon: "fan",
-                text: "\(String(model.phoneCoolerPhoneTemp ?? 0)) °C / \(String(model.phoneCoolerExhaustTemp ?? 0)) °C",
+                text: """
+                \(String(status.phoneCoolerPhoneTemp ?? 0)) °C / \
+                \(String(status.phoneCoolerExhaustTemp ?? 0)) °C
+                """,
                 textPlacement: .beforeIcon
             )
         }
@@ -442,10 +446,10 @@ struct RightOverlayTopView: View {
             VStack(alignment: .trailing, spacing: 1) {
                 AudioView(audio: model.audio)
                 if database.verboseStatuses {
-                    StatusesView(show: database.show, textPlacement: .beforeIcon)
+                    StatusesView(show: database.show, status: model.status, textPlacement: .beforeIcon)
                 } else {
                     HStack(spacing: 1) {
-                        StatusesView(show: database.show, textPlacement: .hide)
+                        StatusesView(show: database.show, status: model.status, textPlacement: .hide)
                     }
                 }
             }

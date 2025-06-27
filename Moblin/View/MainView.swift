@@ -218,16 +218,19 @@ struct MainView: View {
     @FocusState private var focused: Bool
     @ObservedObject var replay: ReplayProvider
     @ObservedObject var createStreamWizard: CreateStreamWizard
+    @ObservedObject var toast: Toast
 
     init(webBrowserController: WebBrowserController,
          streamView: StreamView,
          replay: ReplayProvider,
-         createStreamWizard: CreateStreamWizard)
+         createStreamWizard: CreateStreamWizard,
+         toast: Toast)
     {
         self.webBrowserController = webBrowserController
         self.streamView = streamView
         self.replay = replay
         self.createStreamWizard = createStreamWizard
+        self.toast = toast
         UITextField.appearance().clearButtonMode = .always
     }
 
@@ -454,7 +457,7 @@ struct MainView: View {
                 }
                 .frame(width: model.panelHidden ? 1 : settingsHalfWidth)
             }
-            ControlBarLandscapeView()
+            ControlBarLandscapeView(model: model)
         }
     }
 
@@ -506,8 +509,8 @@ struct MainView: View {
                 }
             }
         }
-        .toast(isPresenting: $model.showingToast, duration: 5) {
-            model.toast
+        .toast(isPresenting: $toast.showingToast, duration: 5) {
+            toast.toast
         }
         .alert("⚠️ Failed to load settings ⚠️", isPresented: $model.showLoadSettingsFailed) {
             Button("Delete old settings and continue", role: .cancel) {

@@ -50,6 +50,7 @@ extension Model {
 
     private func registerGlobalVideoEffects(scene: SettingsScene) -> [VideoEffect] {
         var effects: [VideoEffect] = []
+        let fixedHorizonStatus: String
         if isFixedHorizonEnabled(scene: scene) {
             fixedHorizonEffect.start()
             fixedHorizonStatus = "Enabled"
@@ -57,6 +58,9 @@ extension Model {
         } else {
             fixedHorizonStatus = "Disabled"
             fixedHorizonEffect.stop()
+        }
+        if fixedHorizonStatus != status.fixedHorizonStatus {
+            status.fixedHorizonStatus = fixedHorizonStatus
         }
         if isFaceEnabled() {
             effects.append(faceEffect)

@@ -106,13 +106,14 @@ private struct DjiDeviceWiFiSettingsView: View {
 private struct DjiDeviceRtmpSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var device: SettingsDjiDevice
+    @ObservedObject var status: Status
 
     private func serverUrls() -> [String] {
         guard let stream = model.getRtmpStream(id: device.serverRtmpStreamId) else {
             return []
         }
         var serverUrls: [String] = []
-        for status in model.ipStatuses.filter({ $0.ipType == .ipv4 }) {
+        for status in status.ipStatuses.filter({ $0.ipType == .ipv4 }) {
             serverUrls.append(rtmpStreamUrl(
                 address: status.ipType.formatAddress(status.ip),
                 port: model.database.rtmpServer.port,
@@ -124,7 +125,7 @@ private struct DjiDeviceRtmpSettingsView: View {
             port: model.database.rtmpServer.port,
             streamKey: stream.streamKey
         ))
-        for status in model.ipStatuses.filter({ $0.ipType == .ipv6 }) {
+        for status in status.ipStatuses.filter({ $0.ipType == .ipv6 }) {
             serverUrls.append(rtmpStreamUrl(
                 address: status.ipType.formatAddress(status.ip),
                 port: model.database.rtmpServer.port,
@@ -319,7 +320,7 @@ struct DjiDeviceSettingsView: View {
             }
             DjiDeviceSelectDeviceSettingsView(device: device)
             DjiDeviceWiFiSettingsView(device: device)
-            DjiDeviceRtmpSettingsView(device: device)
+            DjiDeviceRtmpSettingsView(device: device, status: model.status)
             DjiDeviceSettingsSettingsView(device: device)
             DjiDeviceAutoRestartSettingsView(device: device)
             Section {

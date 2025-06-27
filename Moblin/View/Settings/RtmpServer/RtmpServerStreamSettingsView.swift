@@ -38,6 +38,7 @@ private struct InterfaceView: View {
 
 struct RtmpServerStreamSettingsView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var status: Status
     var port: UInt16
     var stream: SettingsRtmpServerStream
 
@@ -112,7 +113,7 @@ struct RtmpServerStreamSettingsView: View {
             Section {
                 if model.rtmpServerEnabled() {
                     List {
-                        ForEach(model.ipStatuses.filter { $0.ipType == .ipv4 }) { status in
+                        ForEach(status.ipStatuses.filter { $0.ipType == .ipv4 }) { status in
                             InterfaceView(
                                 port: port,
                                 streamKey: stream.streamKey,
@@ -126,7 +127,7 @@ struct RtmpServerStreamSettingsView: View {
                             image: "personalhotspot",
                             ip: personalHotspotLocalAddress
                         )
-                        ForEach(model.ipStatuses.filter { $0.ipType == .ipv6 }) { status in
+                        ForEach(status.ipStatuses.filter { $0.ipType == .ipv6 }) { status in
                             InterfaceView(
                                 port: port,
                                 streamKey: stream.streamKey,

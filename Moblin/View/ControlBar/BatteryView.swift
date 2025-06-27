@@ -1,7 +1,8 @@
 import SwiftUI
 
 struct BatteryView: View {
-    @EnvironmentObject var model: Model
+    var model: Model
+    @ObservedObject var battery: Battery
 
     private func color(level: Double) -> Color {
         if level < 0.2 {
@@ -44,7 +45,7 @@ struct BatteryView: View {
                         RoundedRectangle(cornerRadius: 2)
                             .foregroundColor(.white)
                             .frame(width: 24, height: 12)
-                        Text(percentage(level: model.batteryLevel))
+                        Text(percentage(level: battery.level))
                             .foregroundColor(.black)
                             .font(.system(size: 12))
                             .fixedSize()
@@ -56,9 +57,9 @@ struct BatteryView: View {
                             .stroke(.gray)
                             .frame(width: 24, height: 12)
                         RoundedRectangle(cornerRadius: 1)
-                            .foregroundColor(color(level: model.batteryLevel))
+                            .foregroundColor(color(level: battery.level))
                             .padding([.leading], 1)
-                            .frame(width: width(level: model.batteryLevel), height: 10)
+                            .frame(width: width(level: battery.level), height: 10)
                     }
                 }
                 Circle()

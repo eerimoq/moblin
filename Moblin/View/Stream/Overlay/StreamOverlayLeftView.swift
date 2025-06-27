@@ -2,7 +2,7 @@ import SwiftUI
 import WebKit
 
 private struct CollapsedViewersView: View {
-    @EnvironmentObject var model: Model
+    @ObservedObject var status: Status
     var color: Color
 
     var body: some View {
@@ -11,8 +11,8 @@ private struct CollapsedViewersView: View {
                 .frame(width: 17, height: 17)
                 .padding([.leading], 2)
                 .foregroundColor(color)
-            if !model.numberOfViewers.isEmpty {
-                Text(model.numberOfViewers)
+            if !status.numberOfViewers.isEmpty {
+                Text(status.numberOfViewers)
                     .foregroundColor(.white)
                     .padding([.leading, .trailing], 2)
             }
@@ -29,6 +29,7 @@ private struct CollapsedViewersView: View {
 private struct StatusesView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var show: SettingsShow
+    @ObservedObject var status: Status
     let textPlacement: StreamOverlayIconAndTextPlacement
 
     func eventsColor() -> Color {
@@ -115,7 +116,7 @@ private struct StatusesView: View {
         if model.isShowingStatusEvents() {
             StreamOverlayIconAndTextView(
                 icon: "megaphone",
-                text: model.statusEventsText,
+                text: status.statusEventsText,
                 textPlacement: textPlacement,
                 color: eventsColor()
             )
@@ -123,14 +124,14 @@ private struct StatusesView: View {
         if model.isShowingStatusChat() {
             StreamOverlayIconAndTextView(
                 icon: "message",
-                text: model.statusChatText,
+                text: status.statusChatText,
                 textPlacement: textPlacement,
                 color: chatColor()
             )
         }
         if model.isShowingStatusViewers() {
             if textPlacement == .hide {
-                CollapsedViewersView(color: .white)
+                CollapsedViewersView(status: status, color: .white)
             } else {
                 StreamOverlayIconAndTextView(
                     icon: "eye",
@@ -150,10 +151,10 @@ struct LeftOverlayView: View {
         VStack(alignment: .leading, spacing: 1) {
             VStack(alignment: .leading, spacing: 1) {
                 if database.verboseStatuses {
-                    StatusesView(show: database.show, textPlacement: .afterIcon)
+                    StatusesView(show: database.show, status: model.status, textPlacement: .afterIcon)
                 } else {
                     HStack(spacing: 1) {
-                        StatusesView(show: database.show, textPlacement: .hide)
+                        StatusesView(show: database.show, status: model.status, textPlacement: .hide)
                     }
                 }
             }

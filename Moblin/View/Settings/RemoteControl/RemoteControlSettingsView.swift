@@ -260,6 +260,7 @@ private struct RemoteControlSettingsRelayView: View {
 struct RemoteControlSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var database: Database
+    @ObservedObject var status: Status
 
     private func submitPassword(value: String) {
         database.remoteControl.password = value.trim()
@@ -316,7 +317,7 @@ struct RemoteControlSettingsView: View {
             if database.remoteControl.client.enabled {
                 Section {
                     List {
-                        ForEach(model.ipStatuses.filter { $0.ipType == .ipv4 }) { status in
+                        ForEach(status.ipStatuses.filter { $0.ipType == .ipv4 }) { status in
                             InterfaceView(
                                 ip: status.ipType.formatAddress(status.ip),
                                 port: database.remoteControl.client.port,
@@ -328,7 +329,7 @@ struct RemoteControlSettingsView: View {
                             port: database.remoteControl.client.port,
                             image: "personalhotspot"
                         )
-                        ForEach(model.ipStatuses.filter { $0.ipType == .ipv6 }) { status in
+                        ForEach(status.ipStatuses.filter { $0.ipType == .ipv6 }) { status in
                             InterfaceView(
                                 ip: status.ipType.formatAddress(status.ip),
                                 port: database.remoteControl.client.port,

@@ -40,7 +40,7 @@ extension Model {
             resetWorkoutStats()
             trySendNextChatPostToWatch()
             sendAudioLevelToWatch(audioLevel: audio.level)
-            sendThermalStateToWatch(thermalState: thermalState)
+            sendThermalStateToWatch(thermalState: status.thermalState)
             sendIsLiveToWatch(isLive: isLive)
             sendIsRecordingToWatch(isRecording: isRecording)
             sendIsMutedToWatch(isMuteOn: isMuteOn)
@@ -121,7 +121,7 @@ extension Model {
         guard isWatchReachable() else {
             return
         }
-        sendMessageToWatch(type: .viewerCount, data: numberOfViewers)
+        sendMessageToWatch(type: .viewerCount, data: status.numberOfViewers)
     }
 
     func sendUpdatePadelScoreboardToWatch(id: UUID, scoreboard: SettingsWidgetScoreboard) {

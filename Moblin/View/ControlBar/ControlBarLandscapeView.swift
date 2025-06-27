@@ -78,14 +78,15 @@ private struct QuickButtonsView: View {
 
 private struct StatusView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var status: Status
 
     var body: some View {
         HStack(spacing: 0) {
             if isPhone() {
-                BatteryView()
+                BatteryView(model: model, battery: model.battery)
             }
             Spacer(minLength: 0)
-            ThermalStateView(thermalState: model.thermalState)
+            ThermalStateView(thermalState: status.thermalState)
             Spacer(minLength: 0)
             if isPhone() {
                 Text(model.digitalClock)
@@ -209,7 +210,7 @@ private struct PagesView: View {
 }
 
 struct ControlBarLandscapeView: View {
-    @EnvironmentObject var model: Model
+    var model: Model
     @Environment(\.accessibilityShowButtonShapes)
     private var accessibilityShowButtonShapes
 
@@ -223,7 +224,7 @@ struct ControlBarLandscapeView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            StatusView()
+            StatusView(status: model.status)
             PagesView(width: controlBarWidth())
         }
         .padding([.top, .bottom], 0)

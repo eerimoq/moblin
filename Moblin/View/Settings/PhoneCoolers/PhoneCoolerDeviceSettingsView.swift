@@ -25,9 +25,10 @@ struct PhoneCoolerDeviceSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject private var scanner = phoneCoolerScanner
     @ObservedObject var device: SettingsPhoneCoolerDevice
+    @ObservedObject var status: Status
 
     func state() -> String {
-        return formatPhoneCoolerDeviceState(state: model.phoneCoolerDeviceState)
+        return formatPhoneCoolerDeviceState(state: status.phoneCoolerDeviceState)
     }
 
     private func canEnable() -> Bool {
@@ -94,7 +95,7 @@ struct PhoneCoolerDeviceSettingsView: View {
                 } header: {
                     Text("Device")
                 } footer: {
-                    if let phoneTemp = model.phoneCoolerPhoneTemp, let exhaustTemp = model.phoneCoolerExhaustTemp {
+                    if let phoneTemp = status.phoneCoolerPhoneTemp, let exhaustTemp = status.phoneCoolerExhaustTemp {
                         HStack {
                             Text("Phone: \(phoneTemp) °C")
                             Spacer()

@@ -144,6 +144,7 @@ private func rtmpStreamUrl(address: String, port: UInt16, streamKey: String) -> 
 
 private struct GoProRtmpUrlSettingsView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var status: Status
     @ObservedObject var rtmpUrl: SettingsGoProRtmpUrl
     @State var qrCode: UIImage?
 
@@ -161,7 +162,7 @@ private struct GoProRtmpUrlSettingsView: View {
             return []
         }
         var serverUrls: [String] = []
-        for status in model.ipStatuses.filter({ $0.ipType == .ipv4 }) {
+        for status in status.ipStatuses.filter({ $0.ipType == .ipv4 }) {
             serverUrls.append(rtmpStreamUrl(
                 address: status.ipType.formatAddress(status.ip),
                 port: model.database.rtmpServer.port,
@@ -173,7 +174,7 @@ private struct GoProRtmpUrlSettingsView: View {
             port: model.database.rtmpServer.port,
             streamKey: stream.streamKey
         ))
-        for status in model.ipStatuses.filter({ $0.ipType == .ipv6 }) {
+        for status in status.ipStatuses.filter({ $0.ipType == .ipv6 }) {
             serverUrls.append(rtmpStreamUrl(
                 address: status.ipType.formatAddress(status.ip),
                 port: model.database.rtmpServer.port,
@@ -286,11 +287,12 @@ private struct GoProRtmpUrlSettingsView: View {
 }
 
 private struct GoProRtmpUrlSettingsEntryView: View {
+    var status: Status
     @ObservedObject var rtmpUrl: SettingsGoProRtmpUrl
 
     var body: some View {
         NavigationLink {
-            GoProRtmpUrlSettingsView(rtmpUrl: rtmpUrl)
+            GoProRtmpUrlSettingsView(status: status, rtmpUrl: rtmpUrl)
         } label: {
             HStack {
                 DraggableItemPrefixView()
@@ -377,13 +379,14 @@ private struct GoProWifiCredentials: View {
 
 private struct GoProRtmpUrls: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var status: Status
     @ObservedObject var goPro: SettingsGoPro
 
     var body: some View {
         Section {
             List {
                 ForEach(goPro.rtmpUrls) { rtmpUrl in
-                    GoProRtmpUrlSettingsEntryView(rtmpUrl: rtmpUrl)
+                    GoProRtmpUrlSettingsEntryView(status: status, rtmpUrl: rtmpUrl)
                 }
                 .onMove { froms, to in
                     goPro.rtmpUrls.move(fromOffsets: froms, toOffset: to)
@@ -424,7 +427,7 @@ struct GoProSettingsView: View {
             }
             GoProLaunchLiveStream(goPro: model.database.goPro)
             GoProWifiCredentials(goPro: model.database.goPro)
-            GoProRtmpUrls(goPro: model.database.goPro)
+            GoProRtmpUrls(status: model.status, goPro: model.database.goPro)
         }
         .navigationTitle("GoPro")
     }

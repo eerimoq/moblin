@@ -193,8 +193,8 @@ extension Model {
             statuses.append(status)
         }
         let status = statuses.joined(separator: ", ")
-        if status != djiDevicesStatus {
-            djiDevicesStatus = status
+        if status != self.status.djiDevicesStatus {
+            self.status.djiDevicesStatus = status
         }
     }
 }

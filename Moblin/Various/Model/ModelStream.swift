@@ -64,8 +64,8 @@ extension Model {
             obsStartRecording()
         }
         streamingHistoryStream = StreamingHistoryStream(settings: stream.clone())
-        streamingHistoryStream!.updateHighestThermalState(thermalState: ThermalState(from: thermalState))
-        streamingHistoryStream!.updateLowestBatteryLevel(level: batteryLevel)
+        streamingHistoryStream!.updateHighestThermalState(thermalState: ThermalState(from: status.thermalState))
+        streamingHistoryStream!.updateLowestBatteryLevel(level: battery.level)
     }
 
     func isGoLiveNotificationConfigured() -> Bool {

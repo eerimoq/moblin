@@ -222,6 +222,42 @@ class RemoteControl: ObservableObject {
     @Published var remoteControlPreview: UIImage?
 }
 
+class Battery: ObservableObject {
+    var levelLowCounter = -1
+    @Published var level = Double(UIDevice.current.batteryLevel)
+    @Published var state: UIDevice.BatteryState = .full
+}
+
+class Status: ObservableObject {
+    var browserWidgetsStatusChanged = false
+    @Published var numberOfViewers = noValue
+    @Published var remoteControlStatus = noValue
+    @Published var djiDevicesStatus = noValue
+    @Published var browserWidgetsStatus = noValue
+    @Published var catPrinterStatus = noValue
+    @Published var cyclingPowerDeviceStatus = noValue
+    @Published var heartRateDeviceStatus = noValue
+    @Published var fixedHorizonStatus = noValue
+    @Published var statusEventsText = noValue
+    @Published var statusChatText = noValue
+    @Published var adsRemainingTimerStatus = noValue
+    @Published var ipStatuses: [IPMonitor.Status] = []
+    @Published var thermalState = ProcessInfo.processInfo.thermalState
+    @Published var phoneCoolerPhoneTemp: Int?
+    @Published var phoneCoolerExhaustTemp: Int?
+    @Published var phoneCoolerDeviceState: PhoneCoolerDeviceState?
+    @Published var gameControllersTotal = noValue
+}
+
+class Toast: ObservableObject {
+    @Published var showingToast = false
+    @Published var toast = AlertToast(type: .regular, title: "") {
+        didSet {
+            showingToast.toggle()
+        }
+    }
+}
+
 final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var manualFocusPoint: CGPoint?
     @Published var isPresentingWidgetWizard = false
@@ -241,14 +277,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var mics: [Mic] = []
     @Published var isLive = false
     @Published var isRecording = false
-    @Published var browserWidgetsStatus = noValue
-    @Published var catPrinterStatus = noValue
-    @Published var cyclingPowerDeviceStatus = noValue
-    @Published var heartRateDeviceStatus = noValue
-    @Published var fixedHorizonStatus = noValue
     @Published var digitalClock = noValue
-    @Published var statusEventsText = noValue
-    @Published var statusChatText = noValue
     @Published var externalDisplayChatEnabled = false
     @Published var showAllQuickButtonChatMessage = true
     @Published var showFirstTimeChatterMessage = true
@@ -256,26 +285,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var quickButtonChatAlertsPosts: Deque<ChatPost> = []
     @Published var pausedQuickButtonChatAlertsPostsCount: Int = 0
     @Published var quickButtonChatAlertsPaused = false
-    @Published var numberOfViewers = noValue
-    @Published var batteryLevel = Double(UIDevice.current.batteryLevel)
-    @Published var batteryState: UIDevice.BatteryState = .full
-    @Published var thermalState = ProcessInfo.processInfo.thermalState
     @Published var showCameraPreview = false
     @Published var browsers: [Browser] = []
     @Published var sceneIndex = 0
     @Published var isTorchOn = false
     @Published var isFrontCameraSelected = false
     @Published var buttonPairs: [[QuickButtonPair]] = Array(repeating: [], count: controlBarPages)
-    @Published var showingToast = false
-    @Published var toast = AlertToast(type: .regular, title: "") {
-        didSet {
-            showingToast.toggle()
-        }
-    }
-
-    @Published var adsRemainingTimerStatus = noValue
-    @Published var phoneCoolerPhoneTemp: Int?
-    @Published var phoneCoolerExhaustTemp: Int?
     @Published var showMediaPlayerControls = false
     @Published var showingCamera = false
     @Published var showingReplay = false
@@ -324,28 +339,26 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var catPrinterState: CatPrinterState?
     @Published var cyclingPowerDeviceState: CyclingPowerDeviceState?
     @Published var heartRateDeviceState: HeartRateDeviceState?
-    @Published var phoneCoolerDeviceState: PhoneCoolerDeviceState?
     @Published var debugOverlay = DebugOverlayProvider()
     @Published var streamingHistory = StreamingHistory()
     @Published var bluetoothAllowed = false
-    @Published var djiDevicesStatus = noValue
     @Published var sceneSettingsPanelSceneId = 1
     @Published var snapshotCountdown = 0
     @Published var currentSnapshotJob: SnapshotJob?
-    @Published var gameControllersTotal = noValue
     @Published var location = noValue
     @Published var showLoadSettingsFailed = false
-    @Published var remoteControlStatus = noValue
     @Published var cameraControlEnabled = false
     @Published var myIcons: [Icon] = []
     @Published var iconsInStore: [Icon] = []
-    @Published var ipStatuses: [IPMonitor.Status] = []
     var streamState = StreamState.disconnected {
         didSet {
             logger.info("stream: State \(oldValue) -> \(streamState)")
         }
     }
 
+    let toast = Toast()
+    let status = Status()
+    let battery = Battery()
     let remoteControl = RemoteControl()
     let createStreamWizard = CreateStreamWizard()
     let zoom = Zoom()
@@ -380,7 +393,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var workoutType: WatchProtocolWorkoutType?
     var currentRecording: Recording?
     let recording = RecordingProvider()
-    private var browserWidgetsStatusChanged = false
     private var subscriptions = Set<AnyCancellable>()
     var streamUptime = StreamUptimeProvider()
     let audio = AudioProvider()
@@ -404,7 +416,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var pausedQuickButtonChatAlertsPosts: Deque<ChatPost> = []
     var watchChatPosts: Deque<WatchProtocolChatMessage> = []
     var nextWatchChatPostId = 1
-    private var batteryLevelLowCounter = -1
     var previousBitrateStatusColorSrtDroppedPacketsTotal: Int32 = 0
     var previousBitrateStatusNumberOfFailedEncodings = 0
     let streamPreviewView = PreviewView()
@@ -720,14 +731,14 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func makeToast(title: String, subTitle: String? = nil) {
-        toast = AlertToast(type: .regular, title: title, subTitle: subTitle)
-        showingToast = true
+        toast.toast = AlertToast(type: .regular, title: title, subTitle: subTitle)
+        toast.showingToast = true
         logger.debug("toast: Info: \(title): \(subTitle ?? "-")")
     }
 
     func makeWarningToast(title: String, subTitle: String? = nil, vibrate: Bool = false) {
-        toast = AlertToast(type: .regular, title: formatWarning(title), subTitle: subTitle)
-        showingToast = true
+        toast.toast = AlertToast(type: .regular, title: formatWarning(title), subTitle: subTitle)
+        toast.showingToast = true
         logger.debug("toast: Warning: \(title): \(subTitle ?? "-")")
         if vibrate {
             UIDevice.vibrate()
@@ -735,13 +746,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func makeErrorToast(title: String, font: Font? = nil, subTitle: String? = nil, vibrate: Bool = false) {
-        toast = AlertToast(
+        toast.toast = AlertToast(
             type: .regular,
             title: title,
             subTitle: subTitle,
             style: .style(titleColor: .red, titleFont: font)
         )
-        showingToast = true
+        toast.showingToast = true
         logger.debug("toast: Error: \(title): \(subTitle ?? "-")")
         if vibrate {
             UIDevice.vibrate()
@@ -1199,7 +1210,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func handleIpStatusUpdate(statuses: [IPMonitor.Status]) {
-        ipStatuses = statuses
+        status.ipStatuses = statuses
         for status in statuses where status.interfaceType == .wiredEthernet {
             for stream in database.streams
                 where !stream.srt.connectionPriorities!.priorities.contains(where: { $0.name == status.name })
@@ -1446,7 +1457,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         periodicTimer5s.startPeriodic(interval: 5) {
             self.updateRemoteControlAssistantStatus()
             if self.isWatchLocal() {
-                self.sendThermalStateToWatch(thermalState: self.thermalState)
+                self.sendThermalStateToWatch(thermalState: self.status.thermalState)
             }
             self.teslaGetMediaState()
         }
@@ -1492,9 +1503,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         let secondsLeft = adsEndDate.timeIntervalSince(now)
         if secondsLeft < 0 {
             self.adsEndDate = nil
-            adsRemainingTimerStatus = noValue
+            status.adsRemainingTimerStatus = noValue
         } else {
-            adsRemainingTimerStatus = String(Int(secondsLeft))
+            status.adsRemainingTimerStatus = String(Int(secondsLeft))
         }
     }
 
@@ -1549,8 +1560,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if !isLive {
             newValue = noValue
         }
-        if newValue != numberOfViewers {
-            numberOfViewers = newValue
+        if newValue != status.numberOfViewers {
+            status.numberOfViewers = newValue
             sendViewerCountWatch()
         }
     }
@@ -2026,14 +2037,14 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func updateBrowserWidgetStatus() {
-        browserWidgetsStatusChanged = false
+        status.browserWidgetsStatusChanged = false
         var messages: [String] = []
         for browser in browsers {
             let progress = browser.browserEffect.progress
             if browser.browserEffect.isLoaded {
                 messages.append("\(browser.browserEffect.host): \(progress)%")
                 if progress != 100 || browser.browserEffect.startLoadingTime + .seconds(5) > .now {
-                    browserWidgetsStatusChanged = true
+                    status.browserWidgetsStatusChanged = true
                 }
             }
         }
@@ -2043,8 +2054,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         } else {
             message = messages.joined(separator: ", ")
         }
-        if browserWidgetsStatus != message {
-            browserWidgetsStatus = message
+        if status.browserWidgetsStatus != message {
+            status.browserWidgetsStatus = message
         }
     }
 
@@ -2155,27 +2166,33 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func updateBatteryLevel() {
-        batteryLevel = Double(UIDevice.current.batteryLevel)
-        streamingHistoryStream?.updateLowestBatteryLevel(level: batteryLevel)
-        if batteryLevel <= 0.07, !isBatteryCharging(), !isMac() {
-            batteryLevelLowCounter += 1
-            if (batteryLevelLowCounter % 3) == 0 {
+        let level = Double(UIDevice.current.batteryLevel)
+        if level != battery.level {
+            battery.level = level
+        }
+        streamingHistoryStream?.updateLowestBatteryLevel(level: battery.level)
+        if battery.level <= 0.07, !isBatteryCharging(), !isMac() {
+            battery.levelLowCounter += 1
+            if (battery.levelLowCounter % 3) == 0 {
                 makeWarningToast(title: lowBatteryMessage, vibrate: true)
                 if database.chat.botEnabled, database.chat.botSendLowBatteryWarning {
                     sendChatMessage(message: "Moblin bot: \(lowBatteryMessage)")
                 }
             }
         } else {
-            batteryLevelLowCounter = -1
+            battery.levelLowCounter = -1
         }
     }
 
     private func updateBatteryState() {
-        batteryState = UIDevice.current.batteryState
+        let state = UIDevice.current.batteryState
+        if state != battery.state {
+            battery.state = state
+        }
     }
 
     func isBatteryCharging() -> Bool {
-        return batteryState == .charging || batteryState == .full
+        return battery.state == .charging || battery.state == .full
     }
 
     private func updateServersSpeed() {
@@ -2248,13 +2265,16 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func updateThermalState() {
-        thermalState = ProcessInfo.processInfo.thermalState
-        streamingHistoryStream?.updateHighestThermalState(thermalState: ThermalState(from: thermalState))
-        if isWatchLocal() {
-            sendThermalStateToWatch(thermalState: thermalState)
+        let state = ProcessInfo.processInfo.thermalState
+        if state != status.thermalState {
+            status.thermalState = state
         }
-        logger.info("Thermal state: \(thermalState.string())")
-        if thermalState == .critical {
+        streamingHistoryStream?.updateHighestThermalState(thermalState: ThermalState(from: state))
+        if isWatchLocal() {
+            sendThermalStateToWatch(thermalState: state)
+        }
+        logger.info("Thermal state: \(state.string())")
+        if status.thermalState == .critical {
             makeFlameRedToast()
         }
     }
@@ -2662,14 +2682,14 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 status = String(localized: "Disconnected")
             }
         }
-        if status != statusEventsText {
-            statusEventsText = status
+        if status != self.status.statusEventsText {
+            self.status.statusEventsText = status
         }
     }
 
     func statusViewersText() -> String {
         if isViewersConfigured() {
-            return numberOfViewers
+            return status.numberOfViewers
         } else {
             return String(localized: "Not configured")
         }
@@ -2680,7 +2700,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func isShowingStatusAdsRemainingTimer() -> Bool {
-        return adsRemainingTimerStatus != noValue
+        return status.adsRemainingTimerStatus != noValue
     }
 
     func isShowingStatusServers() -> Bool {
@@ -2700,7 +2720,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func isShowingStatusDjiDevices() -> Bool {
-        return database.show.djiDevices && djiDevicesStatus != noValue
+        return database.show.djiDevices && status.djiDevicesStatus != noValue
     }
 
     func isShowingStatusBitrate() -> Bool {
@@ -2756,7 +2776,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func isStatusBrowserWidgetsActive() -> Bool {
-        return !browserWidgetsStatus.isEmpty && browserWidgetsStatusChanged
+        return !status.browserWidgetsStatus.isEmpty && status.browserWidgetsStatusChanged
     }
 }
 

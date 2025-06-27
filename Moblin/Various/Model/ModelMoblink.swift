@@ -183,7 +183,7 @@ extension Model: MoblinkRelayDelegate {
     }
 
     func moblinkRelayGetBatteryPercentage() -> Int {
-        return Int(100 * batteryLevel)
+        return Int(100 * battery.level)
     }
 }
 

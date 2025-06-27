@@ -94,7 +94,7 @@ extension Model {
     }
 
     private func updateGameControllers() {
-        gameControllersTotal = String(numberOfGameControllers())
+        status.gameControllersTotal = String(numberOfGameControllers())
     }
 
     private func gameControllerNumber(gameController: GCController) -> Int? {

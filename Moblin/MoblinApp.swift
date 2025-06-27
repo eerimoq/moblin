@@ -20,7 +20,8 @@ struct MoblinApp: App {
                     streamPreviewView: StreamPreviewView()
                 ),
                 replay: model.replay,
-                createStreamWizard: model.createStreamWizard
+                createStreamWizard: model.createStreamWizard,
+                toast: model.toast
             )
             .environmentObject(model)
         }

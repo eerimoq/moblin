@@ -261,6 +261,7 @@ private struct StreamerView: View {
 
 struct MoblinkSettingsView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var status: Status
     @State var streamerEnabled: Bool
 
     private func submitPassword(value: String) {
@@ -298,7 +299,7 @@ struct MoblinkSettingsView: View {
             if streamerEnabled {
                 Section {
                     List {
-                        ForEach(model.ipStatuses.filter { $0.ipType == .ipv4 }) { status in
+                        ForEach(status.ipStatuses.filter { $0.ipType == .ipv4 }) { status in
                             InterfaceView(
                                 ip: status.ipType.formatAddress(status.ip),
                                 port: model.database.moblink.server.port,
@@ -310,7 +311,7 @@ struct MoblinkSettingsView: View {
                             port: model.database.moblink.server.port,
                             image: "personalhotspot"
                         )
-                        ForEach(model.ipStatuses.filter { $0.ipType == .ipv6 }) { status in
+                        ForEach(status.ipStatuses.filter { $0.ipType == .ipv6 }) { status in
                             InterfaceView(
                                 ip: status.ipType.formatAddress(status.ip),
                                 port: model.database.moblink.server.port,

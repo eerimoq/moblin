@@ -38,6 +38,7 @@ private struct InterfaceView: View {
 
 struct SrtlaServerStreamSettingsView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var status: Status
     var srtlaPort: UInt16
     var stream: SettingsSrtlaServerStream
 
@@ -94,7 +95,7 @@ struct SrtlaServerStreamSettingsView: View {
             Section {
                 if model.srtlaServerEnabled() {
                     List {
-                        ForEach(model.ipStatuses.filter { $0.ipType == .ipv4 }) { status in
+                        ForEach(status.ipStatuses.filter { $0.ipType == .ipv4 }) { status in
                             InterfaceView(
                                 srtlaPort: srtlaPort,
                                 streamId: stream.streamId,
@@ -108,7 +109,7 @@ struct SrtlaServerStreamSettingsView: View {
                             image: "personalhotspot",
                             ip: personalHotspotLocalAddress
                         )
-                        ForEach(model.ipStatuses.filter { $0.ipType == .ipv6 }) { status in
+                        ForEach(status.ipStatuses.filter { $0.ipType == .ipv6 }) { status in
                             InterfaceView(
                                 srtlaPort: srtlaPort,
                                 streamId: stream.streamId,

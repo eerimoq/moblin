@@ -21,7 +21,7 @@ struct PhoneCoolerDevicesSettingsView: View {
             Section {
                 List {
                     ForEach(phoneCoolerDevices.devices) { device in
-                        PhoneCoolerDeviceSettingsView(device: device)
+                        PhoneCoolerDeviceSettingsView(device: device, status: model.status)
                     }
                     .onDelete { offsets in
                         phoneCoolerDevices.devices.remove(atOffsets: offsets)
