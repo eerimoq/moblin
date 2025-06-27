@@ -13,7 +13,7 @@ struct StreamWizardAfreecaTvSettingsView: View {
                 Text("Channel name")
             }
             Section {
-                TextField("908123903", text: $createStreamWizard.afreecsTvCStreamId)
+                TextField("908123903", text: $createStreamWizard.afreecaTvStreamId)
                     .textInputAutocapitalization(.never)
                     .disableAutocorrection(true)
             } header: {

@@ -129,9 +129,9 @@ extension Model {
                 stream.youTubeVideoId = createStreamWizard.youTubeVideoId.trim()
             }
         case .afreecaTv:
-            if !createStreamWizard.afreecaTvChannelName.isEmpty, !createStreamWizard.afreecsTvCStreamId.isEmpty {
+            if !createStreamWizard.afreecaTvChannelName.isEmpty, !createStreamWizard.afreecaTvStreamId.isEmpty {
                 stream.afreecaTvChannelName = createStreamWizard.afreecaTvChannelName.trim()
-                stream.afreecaTvStreamId = createStreamWizard.afreecsTvCStreamId.trim()
+                stream.afreecaTvStreamId = createStreamWizard.afreecaTvStreamId.trim()
             }
         case .obs:
             break
@@ -171,7 +171,7 @@ extension Model {
         createStreamWizard.kickChannelName = ""
         createStreamWizard.youTubeVideoId = ""
         createStreamWizard.afreecaTvChannelName = ""
-        createStreamWizard.afreecsTvCStreamId = ""
+        createStreamWizard.afreecaTvStreamId = ""
         createStreamWizard.obsAddress = ""
         createStreamWizard.obsPort = ""
         createStreamWizard.obsRemoteControlEnabled = false

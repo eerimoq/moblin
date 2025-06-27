@@ -195,7 +195,7 @@ class CreateStreamWizard: ObservableObject {
     @Published var kickChannelName = ""
     @Published var youTubeVideoId = ""
     @Published var afreecaTvChannelName = ""
-    @Published var afreecsTvCStreamId = ""
+    @Published var afreecaTvStreamId = ""
     @Published var obsAddress = ""
     @Published var obsPort = ""
     @Published var obsRemoteControlEnabled = false

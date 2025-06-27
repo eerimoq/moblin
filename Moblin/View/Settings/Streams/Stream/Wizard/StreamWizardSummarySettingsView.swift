@@ -33,7 +33,7 @@ private struct PlatformView: View {
                     name: String(localized: "Channel name"),
                     value: createStreamWizard.afreecaTvChannelName
                 )
-                TextValueView(name: String(localized: "Video id"), value: createStreamWizard.afreecsTvCStreamId)
+                TextValueView(name: String(localized: "Video id"), value: createStreamWizard.afreecaTvStreamId)
             } header: {
                 Text("AfreecaTV")
             }
