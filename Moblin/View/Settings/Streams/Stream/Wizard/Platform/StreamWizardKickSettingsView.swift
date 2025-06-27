@@ -35,6 +35,7 @@ struct StreamWizardKickSettingsView: View {
         .onAppear {
             createStreamWizard.platform = .kick
             createStreamWizard.name = "Kick"
+            createStreamWizard.directIngest = ""
         }
         .navigationTitle("Kick")
         .toolbar {

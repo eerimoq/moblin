@@ -33,6 +33,7 @@ struct StreamWizardAfreecaTvSettingsView: View {
         .onAppear {
             createStreamWizard.platform = .afreecaTv
             createStreamWizard.name = "AfreecaTV"
+            createStreamWizard.directIngest = ""
         }
         .navigationTitle("AfreecaTV")
         .toolbar {

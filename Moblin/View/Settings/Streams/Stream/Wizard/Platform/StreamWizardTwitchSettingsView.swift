@@ -106,6 +106,7 @@ struct StreamWizardTwitchSettingsView: View {
         .onAppear {
             createStreamWizard.platform = .twitch
             createStreamWizard.name = "Twitch"
+            createStreamWizard.directIngest = "rtmp://ingest.global-contribute.live-video.net/app"
             createStreamWizard.twitchStream.twitchAccessToken = ""
         }
         .navigationTitle("Twitch")

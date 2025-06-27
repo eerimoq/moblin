@@ -29,6 +29,7 @@ struct StreamWizardYouTubeSettingsView: View {
         .onAppear {
             createStreamWizard.platform = .youTube
             createStreamWizard.name = "YouTube"
+            createStreamWizard.directIngest = ""
         }
         .navigationTitle("YouTube")
         .toolbar {
