@@ -410,7 +410,7 @@ private struct GoProRtmpUrls: View {
         } header: {
             Text("RTMP URLs")
         } footer: {
-            SwipeLeftToDeleteHelpView(kind: String(localized: "an entry"))
+            SwipeLeftToDeleteHelpView(kind: String(localized: "a URL"))
         }
     }
 }
