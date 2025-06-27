@@ -89,7 +89,7 @@ private struct StatusView: View {
             ThermalStateView(thermalState: status.thermalState)
             Spacer(minLength: 0)
             if isPhone() {
-                Text(model.digitalClock)
+                Text(status.digitalClock)
                     .foregroundColor(.white)
                     .font(smallFont)
             }

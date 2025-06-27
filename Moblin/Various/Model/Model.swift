@@ -261,6 +261,7 @@ class Status: ObservableObject {
     @Published var catPrinterState: CatPrinterState?
     @Published var cyclingPowerDeviceState: CyclingPowerDeviceState?
     @Published var heartRateDeviceState: HeartRateDeviceState?
+    @Published var digitalClock = noValue
 }
 
 class Toast: ObservableObject {
@@ -282,7 +283,6 @@ class StreamOverlay: ObservableObject {
 }
 
 final class Model: NSObject, ObservableObject, @unchecked Sendable {
-    @Published var digitalClock = noValue
     @Published var isPresentingWidgetWizard = false
     @Published var goProLaunchLiveStreamSelection: UUID?
     @Published var goProWifiCredentialsSelection: UUID?
@@ -2175,9 +2175,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func updateDigitalClock(now: Date) {
-        let newDigitalClock = digitalClockFormatter.string(from: now)
-        if digitalClock != newDigitalClock {
-            digitalClock = newDigitalClock
+        let digitalClock = digitalClockFormatter.string(from: now)
+        if status.digitalClock != digitalClock {
+            status.digitalClock = digitalClock
         }
     }
 

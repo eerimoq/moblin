@@ -226,7 +226,7 @@ class OpenStreamingPlatformChat {
                                     userColor: nil,
                                     userBadges: [],
                                     segments: segments,
-                                    timestamp: model.digitalClock,
+                                    timestamp: model.status.digitalClock,
                                     timestampTime: .now,
                                     isAction: false,
                                     isSubscriber: false,
