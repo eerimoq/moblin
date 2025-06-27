@@ -65,14 +65,14 @@ extension Model {
     }
 
     func changeZoomX(amount: Float, rate: Float? = nil) {
-        guard hasZoom else {
+        guard zoom.hasZoom else {
             return
         }
         setZoomX(x: zoomXPinch * amount, rate: rate, setPinch: false)
     }
 
     func commitZoomX(amount: Float, rate: Float? = nil) {
-        guard hasZoom else {
+        guard zoom.hasZoom else {
             return
         }
         setZoomX(x: zoomXPinch * amount, rate: rate)
@@ -186,7 +186,7 @@ extension Model {
     }
 
     func isShowingStatusZoom() -> Bool {
-        return database.show.zoom && hasZoom
+        return database.show.zoom && zoom.hasZoom
     }
 
     func statusZoomText() -> String {

@@ -163,6 +163,7 @@ class CameraState: ObservableObject {
     @Published var manualWhiteBalance: Float = 0
     @Published var manualWhiteBalanceEnabled = false
     @Published var manualFocusPoint: CGPoint?
+    @Published var showCameraPreview = false
 
     func setManualFocusPoint(value: CGPoint?) {
         if value != manualFocusPoint {
@@ -175,6 +176,7 @@ class Zoom: ObservableObject {
     @Published var backZoomPresetId = UUID()
     @Published var frontZoomPresetId = UUID()
     @Published var zoomX: Float = 1.0
+    @Published var hasZoom = true
 }
 
 class CreateStreamWizard: ObservableObject {
@@ -305,7 +307,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var quickButtonChatAlertsPosts: Deque<ChatPost> = []
     @Published var pausedQuickButtonChatAlertsPostsCount: Int = 0
     @Published var quickButtonChatAlertsPaused = false
-    @Published var showCameraPreview = false
     @Published var browsers: [Browser] = []
     @Published var isTorchOn = false
     @Published var buttonPairs: [[QuickButtonPair]] = Array(repeating: [], count: controlBarPages)
@@ -334,7 +335,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var obsFixOngoing = false
     @Published var obsScreenshot: CGImage?
     @Published var iconImage: String = plainIcon.id
-    @Published var hasZoom = true
     @Published var showTwitchAuth = false
     @Published var showDrawOnStream = false
     @Published var showFace = false
@@ -1219,8 +1219,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if camera.manualFocusEnabled {
             isOn = true
         }
-        setGlobalButtonState(type: .image, isOn: isOn)
-        updateQuickButtonStates()
+        if isOn != getGlobalButton(type: .image)?.isOn {
+            setGlobalButtonState(type: .image, isOn: isOn)
+            updateQuickButtonStates()
+        }
     }
 
     private func handleIpStatusUpdate(statuses: [IPMonitor.Status]) {
@@ -2501,7 +2503,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             }
         )
         zoomXPinch = zoom.zoomX
-        hasZoom = true
+        zoom.hasZoom = true
     }
 
     private func getIgnoreFramesAfterAttachSeconds() -> Double {
@@ -2521,7 +2523,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         cameraPosition = nil
         streamPreviewView.isMirrored = false
         externalDisplayStreamPreviewView.isMirrored = false
-        hasZoom = false
+        zoom.hasZoom = false
         media.attachBufferedCamera(
             devices: getBuiltinCameraDevices(scene: scene, sceneDevice: nil),
             builtinDelay: database.debug.builtinAudioAndVideoDelay,

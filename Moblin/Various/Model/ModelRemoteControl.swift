@@ -331,7 +331,7 @@ extension Model {
         }
         topLeft.camera = RemoteControlStatusItem(message: statusCameraText())
         topLeft.mic = RemoteControlStatusItem(message: currentMic.name)
-        if hasZoom {
+        if zoom.hasZoom {
             topLeft.zoom = RemoteControlStatusItem(message: statusZoomText())
         }
         if isObsRemoteControlConfigured() {

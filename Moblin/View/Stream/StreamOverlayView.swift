@@ -189,6 +189,7 @@ struct StreamOverlayView: View {
                     Spacer()
                     RightOverlayBottomView(show: model.database.show,
                                            streamOverlay: model.streamOverlay,
+                                           zoom: model.zoom,
                                            width: width)
                 }
                 HStack {

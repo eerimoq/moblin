@@ -32,12 +32,12 @@ struct CameraPreviewView: UIViewRepresentable {
 }
 
 struct StreamView: View {
-    @EnvironmentObject var model: Model
+    @ObservedObject var camera: CameraState
     var cameraPreviewView: CameraPreviewView
     var streamPreviewView: StreamPreviewView
 
     var body: some View {
-        if model.showCameraPreview {
+        if camera.showCameraPreview {
             cameraPreviewView
         } else {
             streamPreviewView

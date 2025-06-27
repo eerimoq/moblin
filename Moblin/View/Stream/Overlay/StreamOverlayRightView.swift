@@ -465,6 +465,7 @@ struct RightOverlayBottomView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var show: SettingsShow
     @ObservedObject var streamOverlay: StreamOverlay
+    @ObservedObject var zoom: Zoom
     let width: CGFloat
 
     var body: some View {
@@ -489,7 +490,7 @@ struct RightOverlayBottomView: View {
                         if model.showingCamera {
                             StreamOverlayRightCameraSettingsControlView()
                         }
-                        if show.zoomPresets && model.hasZoom {
+                        if show.zoomPresets && zoom.hasZoom {
                             StreamOverlayRightZoomPresetSelctorView(database: model.database,
                                                                     zoom: model.zoom,
                                                                     width: width)
