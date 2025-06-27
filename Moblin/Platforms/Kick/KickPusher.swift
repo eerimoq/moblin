@@ -254,7 +254,7 @@ final class KickPusher: NSObject {
         let event = try decodeMessageDeletedEvent(data: data)
         delegate?.kickPusherDeleteMessage(messageId: event.message.id)
     }
-    
+
     private func handleUserBannedEvent(data: String) throws {
         let event = try decodeUserBannedEvent(data: data)
         delegate?.kickPusherDeleteUser(userId: String(event.user.id))
