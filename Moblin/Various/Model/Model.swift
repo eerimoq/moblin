@@ -162,6 +162,13 @@ class CameraState: ObservableObject {
     @Published var manualIsoEnabled = false
     @Published var manualWhiteBalance: Float = 0
     @Published var manualWhiteBalanceEnabled = false
+    @Published var manualFocusPoint: CGPoint?
+
+    func setManualFocusPoint(value: CGPoint?) {
+        if value != manualFocusPoint {
+            manualFocusPoint = value
+        }
+    }
 }
 
 class Zoom: ObservableObject {
@@ -273,7 +280,6 @@ class StreamOverlay: ObservableObject {
 }
 
 final class Model: NSObject, ObservableObject, @unchecked Sendable {
-    @Published var manualFocusPoint: CGPoint?
     @Published var isPresentingWidgetWizard = false
     @Published var goProLaunchLiveStreamSelection: UUID?
     @Published var goProWifiCredentialsSelection: UUID?

@@ -39,7 +39,7 @@ extension Model {
             device.exposurePointOfInterest = focusPointOfInterest
             device.exposureMode = .autoExpose
             device.unlockForConfiguration()
-            manualFocusPoint = focusPoint
+            camera.setManualFocusPoint(value: focusPoint)
             startMotionDetection()
         } catch let error as NSError {
             logger.error("while locking device for focusPointOfInterest: \(error)")
@@ -60,7 +60,7 @@ extension Model {
             device.exposurePointOfInterest = CGPoint(x: 0.5, y: 0.5)
             device.exposureMode = .continuousAutoExposure
             device.unlockForConfiguration()
-            manualFocusPoint = nil
+            camera.setManualFocusPoint(value: nil)
         } catch let error as NSError {
             logger.error("while locking device for focusPointOfInterest: \(error)")
         }
@@ -83,7 +83,7 @@ extension Model {
         } catch let error as NSError {
             logger.error("while locking device for manual focus: \(error)")
         }
-        manualFocusPoint = nil
+        camera.setManualFocusPoint(value: nil)
         manualFocusesEnabled[device] = true
         camera.manualFocusEnabled = true
         manualFocuses[device] = lensPosition

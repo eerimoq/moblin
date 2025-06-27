@@ -210,6 +210,41 @@ private struct WebBrowserAlertsView: UIViewControllerRepresentable {
     func updateUIViewController(_: WebBrowserController, context _: Context) {}
 }
 
+private struct StreamOverlayTapGridView: View {
+    @EnvironmentObject var model: Model
+    @ObservedObject var camera: CameraState
+    let size: CGSize
+
+    func drawFocus(context: GraphicsContext, size: CGSize, focusPoint: CGPoint) {
+        let sideLength = 70.0
+        let x = size.width * focusPoint.x - sideLength / 2
+        let y = size.height * focusPoint.y - sideLength / 2
+        let origin = CGPoint(x: x, y: y)
+        let size = CGSize(width: sideLength, height: sideLength)
+        context.stroke(
+            Path(roundedRect: CGRect(origin: origin, size: size), cornerRadius: 2.0),
+            with: .color(.yellow),
+            lineWidth: 1
+        )
+    }
+
+    private func tapToFocusIndicator(size: CGSize, focusPoint: CGPoint) -> some View {
+        Canvas { context, _ in
+            drawFocus(context: context, size: size, focusPoint: focusPoint)
+        }
+        .allowsHitTesting(false)
+    }
+
+    var body: some View {
+        if model.database.tapToFocus, let focusPoint = camera.manualFocusPoint {
+            tapToFocusIndicator(size: size, focusPoint: focusPoint)
+        }
+        if model.showingGrid {
+            StreamGridView()
+        }
+    }
+}
+
 struct MainView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var webBrowserController: WebBrowserController
@@ -234,19 +269,6 @@ struct MainView: View {
         UITextField.appearance().clearButtonMode = .always
     }
 
-    func drawFocus(context: GraphicsContext, metrics: GeometryProxy, focusPoint: CGPoint) {
-        let sideLength = 70.0
-        let x = metrics.size.width * focusPoint.x - sideLength / 2
-        let y = metrics.size.height * focusPoint.y - sideLength / 2
-        let origin = CGPoint(x: x, y: y)
-        let size = CGSize(width: sideLength, height: sideLength)
-        context.stroke(
-            Path(roundedRect: CGRect(origin: origin, size: size), cornerRadius: 2.0),
-            with: .color(.yellow),
-            lineWidth: 1
-        )
-    }
-
     private func handleTapToFocus(metrics: GeometryProxy, location: CGPoint) {
         guard model.database.tapToFocus else {
             return
@@ -261,13 +283,6 @@ struct MainView: View {
             return
         }
         model.setAutoFocus()
-    }
-
-    private func tapToFocusIndicator(metrics: GeometryProxy, focusPoint: CGPoint) -> some View {
-        Canvas { context, _ in
-            drawFocus(context: context, metrics: metrics, focusPoint: focusPoint)
-        }
-        .allowsHitTesting(false)
     }
 
     private func browserWidgets() -> some View {
@@ -322,12 +337,7 @@ struct MainView: View {
                                     .onLongPressGesture {
                                         handleLeaveTapToFocus()
                                     }
-                                if model.database.tapToFocus, let focusPoint = model.manualFocusPoint {
-                                    tapToFocusIndicator(metrics: metrics, focusPoint: focusPoint)
-                                }
-                                if model.showingGrid {
-                                    StreamGridView()
-                                }
+                                StreamOverlayTapGridView(camera: model.camera, size: metrics.size)
                             }
                             .offset(CGSize(
                                 width: 0,
@@ -398,12 +408,7 @@ struct MainView: View {
                                     .onLongPressGesture {
                                         handleLeaveTapToFocus()
                                     }
-                                if model.database.tapToFocus, let focusPoint = model.manualFocusPoint {
-                                    tapToFocusIndicator(metrics: metrics, focusPoint: focusPoint)
-                                }
-                                if model.showingGrid {
-                                    StreamGridView()
-                                }
+                                StreamOverlayTapGridView(camera: model.camera, size: metrics.size)
                             }
                         }
                         .aspectRatio(16 / 9, contentMode: .fit)
