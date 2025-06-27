@@ -52,7 +52,7 @@ extension Model {
 
     func setCurrentCatPrinter(device: SettingsCatPrinter) {
         currentCatPrinterSettings = device
-        catPrinterState = getCatPrinterState(device: device)
+        status.catPrinterState = getCatPrinterState(device: device)
     }
 
     func getCatPrinterState(device: SettingsCatPrinter) -> CatPrinterState {
@@ -95,7 +95,7 @@ extension Model: CatPrinterDelegate {
                 return
             }
             if device === self.currentCatPrinterSettings {
-                self.catPrinterState = state
+                self.status.catPrinterState = state
             }
         }
     }

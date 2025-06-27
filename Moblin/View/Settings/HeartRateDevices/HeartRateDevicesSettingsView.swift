@@ -1,12 +1,13 @@
 import SwiftUI
 
 private struct HeartRateDeviceSettingsWrapperView: View {
-    var device: SettingsHeartRateDevice
+    let device: SettingsHeartRateDevice
+    let status: Status
     @State var name: String
 
     var body: some View {
         NavigationLink {
-            HeartRateDeviceSettingsView(device: device, name: $name)
+            HeartRateDeviceSettingsView(status: status, device: device, name: $name)
         } label: {
             Text(name)
         }
@@ -31,7 +32,7 @@ struct HeartRateDevicesSettingsView: View {
             Section {
                 List {
                     ForEach(model.database.heartRateDevices.devices) { device in
-                        HeartRateDeviceSettingsWrapperView(device: device, name: device.name)
+                        HeartRateDeviceSettingsWrapperView(device: device, status: model.status, name: device.name)
                     }
                     .onDelete { offsets in
                         model.database.heartRateDevices.devices.remove(atOffsets: offsets)

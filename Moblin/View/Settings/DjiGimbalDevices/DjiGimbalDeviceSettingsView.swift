@@ -58,10 +58,11 @@ private struct DjiGimbalDeviceSelectDeviceSettingsView: View {
 struct DjiGimbalDeviceSettingsView: View {
     @EnvironmentObject var model: Model
     var device: SettingsDjiGimbalDevice
+    @ObservedObject var status: Status
     @Binding var name: String
 
     func state() -> String {
-        return formatDjiGimbalDeviceState(state: model.djiGimbalDeviceStreamingState)
+        return formatDjiGimbalDeviceState(state: status.djiGimbalDeviceStreamingState)
     }
 
     private func canEnable() -> Bool {

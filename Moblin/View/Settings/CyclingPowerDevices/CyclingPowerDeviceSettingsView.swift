@@ -17,11 +17,12 @@ private func formatCyclingPowerDeviceState(state: CyclingPowerDeviceState?) -> S
 struct CyclingPowerDeviceSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject private var scanner = cyclingPowerScanner
+    @ObservedObject var status: Status
     var device: SettingsCyclingPowerDevice
     @Binding var name: String
 
     func state() -> String {
-        return formatCyclingPowerDeviceState(state: model.cyclingPowerDeviceState)
+        return formatCyclingPowerDeviceState(state: status.cyclingPowerDeviceState)
     }
 
     private func canEnable() -> Bool {

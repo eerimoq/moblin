@@ -1,12 +1,13 @@
 import SwiftUI
 
 private struct CyclingPowerDeviceSettingsWrapperView: View {
-    var device: SettingsCyclingPowerDevice
+    let device: SettingsCyclingPowerDevice
+    let status: Status
     @State var name: String
 
     var body: some View {
         NavigationLink {
-            CyclingPowerDeviceSettingsView(device: device, name: $name)
+            CyclingPowerDeviceSettingsView(status: status, device: device, name: $name)
         } label: {
             Text(name)
         }
@@ -26,7 +27,7 @@ struct CyclingPowerDevicesSettingsView: View {
             Section {
                 List {
                     ForEach(model.database.cyclingPowerDevices.devices) { device in
-                        CyclingPowerDeviceSettingsWrapperView(device: device, name: device.name)
+                        CyclingPowerDeviceSettingsWrapperView(device: device, status: model.status, name: device.name)
                     }
                     .onDelete { offsets in
                         model.database.cyclingPowerDevices.devices.remove(atOffsets: offsets)

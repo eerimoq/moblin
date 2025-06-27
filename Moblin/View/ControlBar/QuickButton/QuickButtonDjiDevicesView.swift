@@ -1,5 +1,30 @@
 import SwiftUI
 
+private struct DeviceView: View {
+    @EnvironmentObject var model: Model
+    @ObservedObject var device: SettingsDjiDevice
+
+    var body: some View {
+        Toggle(isOn: Binding(get: {
+            device.isStarted
+        }, set: { value in
+            if value {
+                model.startDjiDeviceLiveStream(device: device)
+            } else {
+                model.stopDjiDeviceLiveStream(device: device)
+            }
+        })) {
+            HStack {
+                Text(device.name)
+                Spacer()
+                Text(formatDjiDeviceState(state: device.state))
+                    .foregroundColor(.gray)
+            }
+        }
+        .disabled(!device.canStartLive())
+    }
+}
+
 struct QuickButtonDjiDevicesView: View {
     @EnvironmentObject var model: Model
 
@@ -8,23 +33,7 @@ struct QuickButtonDjiDevicesView: View {
             Section {
                 List {
                     ForEach(model.database.djiDevices.devices) { device in
-                        Toggle(isOn: Binding(get: {
-                            model.isDjiDeviceStarted(device: device)
-                        }, set: { value in
-                            if value {
-                                model.startDjiDeviceLiveStream(device: device)
-                            } else {
-                                model.stopDjiDeviceLiveStream(device: device)
-                            }
-                        })) {
-                            HStack {
-                                Text(device.name)
-                                Spacer()
-                                Text(formatDjiDeviceState(state: model.getDjiDeviceState(device: device)))
-                                    .foregroundColor(.gray)
-                            }
-                        }
-                        .disabled(!device.canStartLive())
+                        DeviceView(device: device)
                     }
                 }
             }

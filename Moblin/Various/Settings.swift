@@ -3891,8 +3891,9 @@ class SettingsDjiDevice: Codable, Identifiable, ObservableObject {
     @Published var resolution: SettingsDjiDeviceResolution = .r1080p
     @Published var fps: Int = 30
     @Published var bitrate: UInt32 = 6_000_000
-    var isStarted: Bool = false
+    @Published var isStarted: Bool = false
     @Published var model: SettingsDjiDeviceModel = .unknown
+    @Published var state: DjiDeviceState?
 
     init() {
         bluetoothPeripheralName = nil

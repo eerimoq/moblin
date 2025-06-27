@@ -17,11 +17,12 @@ private func formatHeartRateDeviceState(state: HeartRateDeviceState?) -> String 
 struct HeartRateDeviceSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject private var scanner = heartRateScanner
+    @ObservedObject var status: Status
     var device: SettingsHeartRateDevice
     @Binding var name: String
 
     func state() -> String {
-        return formatHeartRateDeviceState(state: model.heartRateDeviceState)
+        return formatHeartRateDeviceState(state: status.heartRateDeviceState)
     }
 
     private func canEnable() -> Bool {

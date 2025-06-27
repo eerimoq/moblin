@@ -247,6 +247,11 @@ class Status: ObservableObject {
     @Published var phoneCoolerExhaustTemp: Int?
     @Published var phoneCoolerDeviceState: PhoneCoolerDeviceState?
     @Published var gameControllersTotal = noValue
+    @Published var djiDeviceStreamingState: DjiDeviceState?
+    @Published var djiGimbalDeviceStreamingState: DjiGimbalDeviceState?
+    @Published var catPrinterState: CatPrinterState?
+    @Published var cyclingPowerDeviceState: CyclingPowerDeviceState?
+    @Published var heartRateDeviceState: HeartRateDeviceState?
 }
 
 class Toast: ObservableObject {
@@ -334,11 +339,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var teslaVehicleVehicleSecurityConnected = false
     @Published var teslaVehicleInfotainmentConnected = false
     @Published var quickButtonSettingsButton: SettingsQuickButton?
-    @Published var djiDeviceStreamingState: DjiDeviceState?
-    @Published var djiGimbalDeviceStreamingState: DjiGimbalDeviceState?
-    @Published var catPrinterState: CatPrinterState?
-    @Published var cyclingPowerDeviceState: CyclingPowerDeviceState?
-    @Published var heartRateDeviceState: HeartRateDeviceState?
     @Published var debugOverlay = DebugOverlayProvider()
     @Published var streamingHistory = StreamingHistory()
     @Published var bluetoothAllowed = false

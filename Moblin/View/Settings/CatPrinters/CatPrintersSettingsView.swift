@@ -13,10 +13,11 @@ struct IntegrationImageView: View {
 
 private struct CatPrinterSettingsWrapperView: View {
     @ObservedObject var device: SettingsCatPrinter
+    let status: Status
 
     var body: some View {
         NavigationLink {
-            CatPrinterSettingsView(device: device)
+            CatPrinterSettingsView(device: device, status: status)
         } label: {
             Text(device.name)
         }
@@ -45,7 +46,7 @@ struct CatPrintersSettingsView: View {
             Section {
                 List {
                     ForEach(catPrinters.devices) { device in
-                        CatPrinterSettingsWrapperView(device: device)
+                        CatPrinterSettingsWrapperView(device: device, status: model.status)
                     }
                     .onDelete { offsets in
                         catPrinters.devices.remove(atOffsets: offsets)

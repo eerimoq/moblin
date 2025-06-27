@@ -10,10 +10,6 @@ class DjiDeviceWrapper {
 }
 
 extension Model {
-    func isDjiDeviceStarted(device: SettingsDjiDevice) -> Bool {
-        return device.isStarted
-    }
-
     func startDjiDeviceLiveStream(device: SettingsDjiDevice) {
         if !djiDeviceWrappers.keys.contains(device.id) {
             let djiDevice = DjiDevice()
@@ -137,7 +133,7 @@ extension Model {
 
     func setCurrentDjiDevice(device: SettingsDjiDevice) {
         currentDjiDeviceSettings = device
-        djiDeviceStreamingState = getDjiDeviceState(device: device)
+        status.djiDeviceStreamingState = getDjiDeviceState(device: device)
     }
 
     func reloadDjiDevices() {
@@ -207,8 +203,9 @@ extension Model: DjiDeviceDelegate {
         guard let djiDeviceWrapper = djiDeviceWrappers[device.id] else {
             return
         }
+        device.state = state
         if device === currentDjiDeviceSettings {
-            djiDeviceStreamingState = state
+            status.djiDeviceStreamingState = state
         }
         switch state {
         case .connecting:

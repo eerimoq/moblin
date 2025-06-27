@@ -6,13 +6,13 @@ private struct DjiDeviceSettingsWrapperView: View {
 
     var body: some View {
         NavigationLink {
-            DjiDeviceSettingsView(device: device)
+            DjiDeviceSettingsView(device: device, status: model.status)
         } label: {
             HStack {
                 DraggableItemPrefixView()
                 Text(device.name)
                 Spacer()
-                Text(formatDjiDeviceState(state: model.getDjiDeviceState(device: device)))
+                Text(formatDjiDeviceState(state: device.state))
                     .foregroundColor(.gray)
             }
         }
