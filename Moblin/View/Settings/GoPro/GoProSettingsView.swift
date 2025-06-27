@@ -407,7 +407,7 @@ private struct GoProRtmpUrls: View {
         } header: {
             Text("RTMP URLs")
         } footer: {
-            SwipeLeftToDeleteHelpView(kind: String(localized: "a stream"))
+            SwipeLeftToDeleteHelpView(kind: String(localized: "a URL"))
         }
     }
 }
