@@ -167,7 +167,7 @@ struct QuickButtonObsView: View {
                 ObsStartStopStreamingView(model: model, obsQuickButton: obsQuickButton)
                 ObsStartStopRecordingView(model: model, obsQuickButton: obsQuickButton)
                 Section {
-                    if let image = obsQuickButton.obsScreenshot {
+                    if let image = obsQuickButton.screenshot {
                         Image(image, scale: 1, label: Text(""))
                             .resizable()
                             .aspectRatio(contentMode: .fit)
@@ -179,16 +179,16 @@ struct QuickButtonObsView: View {
                     Text("Current scene snapshot")
                 }
                 Section {
-                    Picker("", selection: $obsQuickButton.obsCurrentScenePicker) {
-                        ForEach(obsQuickButton.obsScenes, id: \.self) { scene in
+                    Picker("", selection: $obsQuickButton.currentScenePicker) {
+                        ForEach(obsQuickButton.scenes, id: \.self) { scene in
                             Text(scene)
                         }
                     }
-                    .onChange(of: obsQuickButton.obsCurrentScenePicker) { _ in
-                        guard obsQuickButton.obsCurrentScene != obsQuickButton.obsCurrentScenePicker else {
+                    .onChange(of: obsQuickButton.currentScenePicker) { _ in
+                        guard obsQuickButton.currentScene != obsQuickButton.currentScenePicker else {
                             return
                         }
-                        model.setObsScene(name: obsQuickButton.obsCurrentScenePicker)
+                        model.setObsScene(name: obsQuickButton.currentScenePicker)
                     }
                     .pickerStyle(.inline)
                     .labelsHidden()
@@ -196,7 +196,7 @@ struct QuickButtonObsView: View {
                     Text("Scenes")
                 }
                 Section {
-                    ForEach(obsQuickButton.obsSceneInputs) { input in
+                    ForEach(obsQuickButton.sceneInputs) { input in
                         if let muted = input.muted {
                             HStack {
                                 Text(input.name)
@@ -218,7 +218,7 @@ struct QuickButtonObsView: View {
                     Text("Scene audio inputs")
                 }
                 if !model.stream.obsSourceName.isEmpty {
-                    if !obsQuickButton.obsFixOngoing {
+                    if !obsQuickButton.fixOngoing {
                         Section {
                             HStack {
                                 Spacer()
@@ -258,8 +258,8 @@ struct QuickButtonObsView: View {
                     Section {
                         ValueEditView(
                             title: "Delay",
-                            number: Float(obsQuickButton.obsAudioDelay),
-                            value: "\(obsQuickButton.obsAudioDelay)",
+                            number: Float(obsQuickButton.audioDelay),
+                            value: "\(obsQuickButton.audioDelay)",
                             minimum: Float(obsMinimumAudioDelay),
                             maximum: Float(min(obsMaximumAudioDelay, 9999)),
                             onSubmit: submitAudioDelay,
@@ -271,8 +271,8 @@ struct QuickButtonObsView: View {
                     }
                     Section {
                         if model.isLive {
-                            if !obsQuickButton.obsAudioVolume.isEmpty {
-                                Text(obsQuickButton.obsAudioVolume)
+                            if !obsQuickButton.audioVolume.isEmpty {
+                                Text(obsQuickButton.audioVolume)
                             } else {
                                 Text("No audio levels received yet.")
                             }

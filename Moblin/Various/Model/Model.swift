@@ -347,22 +347,22 @@ class ExternalDisplay: ObservableObject {
 }
 
 class QuickButtonObs: ObservableObject {
-    var obsSourceFetchScreenshot = false
-    var obsSourceScreenshotIsFetching = false
-    var obsRecording = false
-    var obsAudioVolumeLatest: String = ""
-    var obsSceneBeforeSwitchToBrbScene: String?
+    var sourceFetchScreenshot = false
+    var sourceScreenshotIsFetching = false
+    var recording = false
+    var audioVolumeLatest: String = ""
+    var sceneBeforeSwitchToBrbScene: String?
     @Published var streamingState: ObsOutputState = .stopped
     @Published var recordingState: ObsOutputState = .stopped
-    @Published var obsSceneInputs: [ObsSceneInput] = []
-    @Published var obsAudioVolume: String = noValue
-    @Published var obsCurrentScenePicker: String = ""
-    @Published var obsCurrentScene: String = ""
-    @Published var obsScenes: [String] = []
-    @Published var obsScreenshot: CGImage?
-    @Published var obsStreaming = false
-    @Published var obsFixOngoing = false
-    @Published var obsAudioDelay: Int = 0
+    @Published var sceneInputs: [ObsSceneInput] = []
+    @Published var audioVolume: String = noValue
+    @Published var currentScenePicker: String = ""
+    @Published var currentScene: String = ""
+    @Published var scenes: [String] = []
+    @Published var screenshot: CGImage?
+    @Published var streaming = false
+    @Published var fixOngoing = false
+    @Published var audioDelay: Int = 0
 }
 
 final class Model: NSObject, ObservableObject, @unchecked Sendable {
