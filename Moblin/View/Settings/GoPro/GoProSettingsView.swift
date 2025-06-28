@@ -306,6 +306,7 @@ private struct GoProRtmpUrlSettingsEntryView: View {
 private struct GoProLaunchLiveStream: View {
     @EnvironmentObject var model: Model
     @ObservedObject var goPro: SettingsGoPro
+    @ObservedObject var goProState: GoProState
 
     var body: some View {
         Section {
@@ -320,7 +321,7 @@ private struct GoProLaunchLiveStream: View {
                     goPro.launchLiveStream.remove(atOffsets: offsets)
                     if !goPro.launchLiveStream.contains(where: { $0.id == goPro.selectedLaunchLiveStream }) {
                         goPro.selectedLaunchLiveStream = goPro.launchLiveStream.first?.id
-                        model.goProLaunchLiveStreamSelection = goPro.selectedLaunchLiveStream
+                        goProState.launchLiveStreamSelection = goPro.selectedLaunchLiveStream
                     }
                 }
             }
@@ -328,7 +329,7 @@ private struct GoProLaunchLiveStream: View {
                 let launchLiveStream = SettingsGoProLaunchLiveStream()
                 if goPro.launchLiveStream.isEmpty {
                     goPro.selectedLaunchLiveStream = launchLiveStream.id
-                    model.goProLaunchLiveStreamSelection = goPro.selectedLaunchLiveStream
+                    goProState.launchLiveStreamSelection = goPro.selectedLaunchLiveStream
                 }
                 goPro.launchLiveStream.append(launchLiveStream)
             }
@@ -343,6 +344,7 @@ private struct GoProLaunchLiveStream: View {
 private struct GoProWifiCredentials: View {
     @EnvironmentObject var model: Model
     @ObservedObject var goPro: SettingsGoPro
+    @ObservedObject var goProState: GoProState
 
     var body: some View {
         Section {
@@ -357,7 +359,7 @@ private struct GoProWifiCredentials: View {
                     goPro.wifiCredentials.remove(atOffsets: offsets)
                     if !goPro.wifiCredentials.contains(where: { $0.id == goPro.selectedWifiCredentials }) {
                         goPro.selectedWifiCredentials = goPro.wifiCredentials.first?.id
-                        model.goProWifiCredentialsSelection = goPro.selectedWifiCredentials
+                        goProState.wifiCredentialsSelection = goPro.selectedWifiCredentials
                     }
                 }
             }
@@ -365,7 +367,7 @@ private struct GoProWifiCredentials: View {
                 let wifiCredentials = SettingsGoProWifiCredentials()
                 if goPro.wifiCredentials.isEmpty {
                     goPro.selectedWifiCredentials = wifiCredentials.id
-                    model.goProWifiCredentialsSelection = goPro.selectedWifiCredentials
+                    goProState.wifiCredentialsSelection = goPro.selectedWifiCredentials
                 }
                 goPro.wifiCredentials.append(wifiCredentials)
             }
@@ -381,6 +383,7 @@ private struct GoProRtmpUrls: View {
     @EnvironmentObject var model: Model
     @ObservedObject var status: Status
     @ObservedObject var goPro: SettingsGoPro
+    @ObservedObject var goProState: GoProState
 
     var body: some View {
         Section {
@@ -395,7 +398,7 @@ private struct GoProRtmpUrls: View {
                     goPro.rtmpUrls.remove(atOffsets: offsets)
                     if !goPro.rtmpUrls.contains(where: { $0.id == goPro.selectedRtmpUrl }) {
                         goPro.selectedRtmpUrl = goPro.rtmpUrls.first?.id
-                        model.goProRtmpUrlSelection = goPro.selectedRtmpUrl
+                        goProState.rtmpUrlSelection = goPro.selectedRtmpUrl
                     }
                 }
             }
@@ -403,7 +406,7 @@ private struct GoProRtmpUrls: View {
                 let rtmpUrl = SettingsGoProRtmpUrl()
                 if goPro.rtmpUrls.isEmpty {
                     goPro.selectedRtmpUrl = rtmpUrl.id
-                    model.goProRtmpUrlSelection = goPro.selectedRtmpUrl
+                    goProState.rtmpUrlSelection = goPro.selectedRtmpUrl
                 }
                 goPro.rtmpUrls.append(rtmpUrl)
             }
@@ -425,9 +428,9 @@ struct GoProSettingsView: View {
                     IntegrationImageView(imageName: "GoPro")
                 }
             }
-            GoProLaunchLiveStream(goPro: model.database.goPro)
-            GoProWifiCredentials(goPro: model.database.goPro)
-            GoProRtmpUrls(status: model.status, goPro: model.database.goPro)
+            GoProLaunchLiveStream(goPro: model.database.goPro, goProState: model.goPro)
+            GoProWifiCredentials(goPro: model.database.goPro, goProState: model.goPro)
+            GoProRtmpUrls(status: model.status, goPro: model.database.goPro, goProState: model.goPro)
         }
         .navigationTitle("GoPro")
     }

@@ -23,7 +23,7 @@ class QuickButtonObs: ObservableObject {
     @Published var streaming = false
     @Published var fixOngoing = false
     @Published var audioDelay: Int = 0
-    
+
     func startObsSourceScreenshot() {
         screenshot = nil
         sourceFetchScreenshot = true

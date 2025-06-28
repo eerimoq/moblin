@@ -346,11 +346,14 @@ class ExternalDisplay: ObservableObject {
     @Published var chatEnabled = false
 }
 
+class GoProState: ObservableObject {
+    @Published var launchLiveStreamSelection: UUID?
+    @Published var wifiCredentialsSelection: UUID?
+    @Published var rtmpUrlSelection: UUID?
+}
+
 final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var isPresentingWidgetWizard = false
-    @Published var goProLaunchLiveStreamSelection: UUID?
-    @Published var goProWifiCredentialsSelection: UUID?
-    @Published var goProRtmpUrlSelection: UUID?
     @Published var showingPanel: ShowingPanel = .none
     @Published var panelHidden = false
     @Published var showStealthMode = false
@@ -386,6 +389,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
+    let goPro = GoProState()
     let obsQuickButton = QuickButtonObs()
     let streamingHistory = StreamingHistory()
     let quickButtonChatState = QuickButtonChat()
@@ -1040,9 +1044,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         setCameraControlsEnabled()
         resetAverageSpeed()
         resetSlope()
-        goProLaunchLiveStreamSelection = database.goPro.selectedLaunchLiveStream
-        goProWifiCredentialsSelection = database.goPro.selectedWifiCredentials
-        goProRtmpUrlSelection = database.goPro.selectedRtmpUrl
+        goPro.launchLiveStreamSelection = database.goPro.selectedLaunchLiveStream
+        goPro.wifiCredentialsSelection = database.goPro.selectedWifiCredentials
+        goPro.rtmpUrlSelection = database.goPro.selectedRtmpUrl
         replay.speed = database.replay.speed
         gForceManager = GForceManager(motionManager: motionManager)
         startGForceManager()

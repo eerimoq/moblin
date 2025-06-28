@@ -7,6 +7,7 @@ private struct PickerEntry: Identifiable {
 
 private struct QuickButtonGoProLaunchLiveStreamView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var goProState: GoProState
     var height: Double
     @State var qrCode: UIImage?
     @State var entries: [PickerEntry] = []
@@ -17,7 +18,7 @@ private struct QuickButtonGoProLaunchLiveStreamView: View {
 
     private func generate() {
         if let launchLiveStream = goPro.launchLiveStream
-            .first(where: { $0.id == model.goProLaunchLiveStreamSelection })
+            .first(where: { $0.id == goProState.launchLiveStreamSelection })
         {
             qrCode = GoPro.generateLaunchLiveStream(isHero12Or13: launchLiveStream.isHero12Or13)
         } else {
@@ -27,17 +28,17 @@ private struct QuickButtonGoProLaunchLiveStreamView: View {
 
     var body: some View {
         VStack {
-            if model.goProLaunchLiveStreamSelection != nil {
+            if goProState.launchLiveStreamSelection != nil {
                 HStack {
                     Text("Launch live stream")
                     Spacer()
-                    Picker("", selection: $model.goProLaunchLiveStreamSelection) {
+                    Picker("", selection: $goProState.launchLiveStreamSelection) {
                         ForEach(entries) { entry in
                             Text(entry.name)
                                 .tag(entry.id as UUID?)
                         }
                     }
-                    .onChange(of: model.goProLaunchLiveStreamSelection) {
+                    .onChange(of: goProState.launchLiveStreamSelection) {
                         goPro.selectedLaunchLiveStream = $0
                         generate()
                     }
@@ -59,6 +60,7 @@ private struct QuickButtonGoProLaunchLiveStreamView: View {
 
 private struct QuickButtonGoProWifiCredentialsView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var goProState: GoProState
     var height: Double
     @State var qrCode: UIImage?
     @State var entries: [PickerEntry] = []
@@ -68,7 +70,9 @@ private struct QuickButtonGoProWifiCredentialsView: View {
     }
 
     private func generate() {
-        if let wifiCredentials = goPro.wifiCredentials.first(where: { $0.id == model.goProWifiCredentialsSelection }) {
+        if let wifiCredentials = goPro.wifiCredentials
+            .first(where: { $0.id == goProState.wifiCredentialsSelection })
+        {
             qrCode = GoPro.generateWifiCredentialsQrCode(
                 ssid: wifiCredentials.ssid,
                 password: wifiCredentials.password
@@ -80,17 +84,17 @@ private struct QuickButtonGoProWifiCredentialsView: View {
 
     var body: some View {
         VStack {
-            if model.goProWifiCredentialsSelection != nil {
+            if goProState.wifiCredentialsSelection != nil {
                 HStack {
                     Text("WiFi credentials")
                     Spacer()
-                    Picker("", selection: $model.goProWifiCredentialsSelection) {
+                    Picker("", selection: $goProState.wifiCredentialsSelection) {
                         ForEach(entries) { entry in
                             Text(entry.name)
                                 .tag(entry.id as UUID?)
                         }
                     }
-                    .onChange(of: model.goProWifiCredentialsSelection) {
+                    .onChange(of: goProState.wifiCredentialsSelection) {
                         goPro.selectedWifiCredentials = $0
                         generate()
                     }
@@ -112,6 +116,7 @@ private struct QuickButtonGoProWifiCredentialsView: View {
 
 private struct QuickButtonGoProRtmpUrlView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var goProState: GoProState
     var height: Double
     @State var qrCode: UIImage?
     @State var entries: [PickerEntry] = []
@@ -121,7 +126,7 @@ private struct QuickButtonGoProRtmpUrlView: View {
     }
 
     private func generate() {
-        if let rtmpUrl = goPro.rtmpUrls.first(where: { $0.id == model.goProRtmpUrlSelection }) {
+        if let rtmpUrl = goPro.rtmpUrls.first(where: { $0.id == goProState.rtmpUrlSelection }) {
             switch rtmpUrl.type {
             case .server:
                 qrCode = GoPro.generateRtmpUrlQrCode(url: rtmpUrl.serverUrl)
@@ -135,17 +140,17 @@ private struct QuickButtonGoProRtmpUrlView: View {
 
     var body: some View {
         VStack {
-            if model.goProRtmpUrlSelection != nil {
+            if goProState.rtmpUrlSelection != nil {
                 HStack {
                     Text("RTMP URL")
                     Spacer()
-                    Picker("", selection: $model.goProRtmpUrlSelection) {
+                    Picker("", selection: $goProState.rtmpUrlSelection) {
                         ForEach(entries) { entry in
                             Text(entry.name)
                                 .tag(entry.id as UUID?)
                         }
                     }
-                    .onChange(of: model.goProRtmpUrlSelection) {
+                    .onChange(of: goProState.rtmpUrlSelection) {
                         goPro.selectedRtmpUrl = $0
                         generate()
                     }
@@ -181,11 +186,17 @@ struct QuickButtonGoProView: View {
                         ScrollView(.horizontal) {
                             HStack {
                                 Group {
-                                    QuickButtonGoProLaunchLiveStreamView(height: metrics.size.height)
-                                        .id(0)
-                                    QuickButtonGoProWifiCredentialsView(height: metrics.size.height)
-                                        .id(1)
-                                    QuickButtonGoProRtmpUrlView(height: metrics.size.height)
+                                    QuickButtonGoProLaunchLiveStreamView(
+                                        goProState: model.goPro,
+                                        height: metrics.size.height
+                                    )
+                                    .id(0)
+                                    QuickButtonGoProWifiCredentialsView(
+                                        goProState: model.goPro,
+                                        height: metrics.size.height
+                                    )
+                                    .id(1)
+                                    QuickButtonGoProRtmpUrlView(goProState: model.goPro, height: metrics.size.height)
                                         .id(2)
                                 }
                                 .containerRelativeFrame(.horizontal, count: 1, spacing: 0)
