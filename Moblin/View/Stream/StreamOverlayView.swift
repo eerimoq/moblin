@@ -171,7 +171,7 @@ struct StreamOverlayView: View {
 
     var body: some View {
         ZStack {
-            if model.isTorchOn && streamOverlay.isFrontCameraSelected {
+            if streamOverlay.isTorchOn && streamOverlay.isFrontCameraSelected {
                 FrontTorchView()
             }
             ZStack {

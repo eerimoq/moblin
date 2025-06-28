@@ -302,6 +302,7 @@ class StreamOverlay: ObservableObject {
     @Published var showingReplay = false
     @Published var showingPixellate = false
     @Published var showingWhirlpool = false
+    @Published var isTorchOn = false
 }
 
 class Cosmetics: ObservableObject {
@@ -364,7 +365,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var isLive = false
     @Published var isRecording = false
     @Published var browsers: [Browser] = []
-    @Published var isTorchOn = false
     @Published var buttonPairs: [[QuickButtonPair]] = Array(repeating: [], count: controlBarPages)
     @Published var showingGrid = false
     @Published var showingRemoteControl = false
@@ -2598,12 +2598,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func toggleTorch() {
-        isTorchOn.toggle()
+        streamOverlay.isTorchOn.toggle()
         updateTorch()
     }
 
     func updateTorch() {
-        media.setTorch(on: isTorchOn)
+        media.setTorch(on: streamOverlay.isTorchOn)
     }
 
     func toggleMute() {

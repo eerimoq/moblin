@@ -541,11 +541,7 @@ extension Model: RemoteControlStreamerDelegate {
     }
 
     func remoteControlStreamerSetTorch(on: Bool) {
-        if on {
-            isTorchOn = true
-        } else {
-            isTorchOn = false
-        }
+        streamOverlay.isTorchOn = on
         updateTorch()
         toggleGlobalButton(type: .torch)
         updateQuickButtonStates()
