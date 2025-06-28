@@ -195,13 +195,16 @@ class Show: ObservableObject {
 }
 
 class Zoom: ObservableObject {
-    @Published var backZoomPresetId = UUID()
-    @Published var frontZoomPresetId = UUID()
-    @Published var zoomX: Float = 1.0
+    var xPinch: Float = 1.0
+    var backX: Float = 0.5
+    var frontX: Float = 1.0
+    @Published var backPresetId = UUID()
+    @Published var frontPresetId = UUID()
+    @Published var x: Float = 1.0
     @Published var hasZoom = true
 
     func statusText() -> String {
-        return String(format: "%.1f", zoomX)
+        return String(format: "%.1f", x)
     }
 }
 
@@ -508,9 +511,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var mediaPlayers: [UUID: MediaPlayer] = [:]
     var previousSrtDroppedPacketsTotal: Int32 = 0
     var streamBecameBrokenTime: ContinuousClock.Instant?
-    var zoomXPinch: Float = 1.0
-    var backZoomX: Float = 0.5
-    var frontZoomX: Float = 1.0
     var cameraPosition: AVCaptureDevice.Position?
     private let motionManager = CMMotionManager()
     var gForceManager: GForceManager?
@@ -907,14 +907,14 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             (cameraZoomXMinimum, cameraZoomXMaximum) = cameraDevice
                 .getUIZoomRange(hasUltraWideCamera: hasUltraWideBackCamera())
             if let preset = backZoomPresets().first {
-                zoom.backZoomPresetId = preset.id
-                backZoomX = preset.x!
+                zoom.backPresetId = preset.id
+                zoom.backX = preset.x!
             } else {
-                backZoomX = cameraZoomXMinimum
+                zoom.backX = cameraZoomXMinimum
             }
-            zoom.zoomX = backZoomX
+            zoom.x = zoom.backX
         }
-        zoom.frontZoomPresetId = database.zoom.front[0].id
+        zoom.frontPresetId = database.zoom.front[0].id
         streamPreviewView.videoGravity = .resizeAspect
         externalDisplayStreamPreviewView.videoGravity = .resizeAspect
         updateDigitalClock(now: Date())
@@ -2384,7 +2384,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func attachBackTripleLowEnergyCamera(force: Bool = true) {
         cameraPosition = .back
         lowEnergyCameraUpdateBackZoom(force: force)
-        zoom.zoomX = backZoomX
+        zoom.x = zoom.backX
         guard let bestDevice = AVCaptureDevice.default(.builtInTripleCamera, for: .video, position: .back),
               let lastZoomFactor = bestDevice.virtualDeviceSwitchOverVideoZoomFactors.last
         else {
@@ -2393,9 +2393,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         let scale = bestDevice.getZoomFactorScale(hasUltraWideCamera: hasUltraWideBackCamera())
         let x = (Float(truncating: lastZoomFactor) * scale).rounded()
         var device: AVCaptureDevice?
-        if backZoomX < 1.0 {
+        if zoom.backX < 1.0 {
             device = AVCaptureDevice.default(.builtInUltraWideCamera, for: .video, position: .back)
-        } else if backZoomX < x {
+        } else if zoom.backX < x {
             device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back)
         } else {
             device = AVCaptureDevice.default(.builtInTelephotoCamera, for: .video, position: .back)
@@ -2416,7 +2416,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func attachBackDualLowEnergyCamera(force: Bool = true) {
         cameraPosition = .back
         lowEnergyCameraUpdateBackZoom(force: force)
-        zoom.zoomX = backZoomX
+        zoom.x = zoom.backX
         guard let bestDevice = AVCaptureDevice.default(.builtInDualCamera, for: .video, position: .back),
               let lastZoomFactor = bestDevice.virtualDeviceSwitchOverVideoZoomFactors.last
         else {
@@ -2425,7 +2425,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         let scale = bestDevice.getZoomFactorScale(hasUltraWideCamera: hasUltraWideBackCamera())
         let x = (Float(truncating: lastZoomFactor) * scale).rounded()
         var device: AVCaptureDevice?
-        if backZoomX < x {
+        if zoom.backX < x {
             device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back)
         } else {
             device = AVCaptureDevice.default(.builtInTelephotoCamera, for: .video, position: .back)
@@ -2446,7 +2446,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func attachBackWideDualLowEnergyCamera(force: Bool = true) {
         cameraPosition = .back
         lowEnergyCameraUpdateBackZoom(force: force)
-        zoom.zoomX = backZoomX
+        zoom.x = zoom.backX
         guard let bestDevice = AVCaptureDevice.default(.builtInDualWideCamera, for: .video, position: .back),
               let lastZoomFactor = bestDevice.virtualDeviceSwitchOverVideoZoomFactors.last
         else {
@@ -2455,7 +2455,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         let scale = bestDevice.getZoomFactorScale(hasUltraWideCamera: hasUltraWideBackCamera())
         let x = (Float(truncating: lastZoomFactor) * scale).rounded()
         var device: AVCaptureDevice?
-        if backZoomX < x {
+        if zoom.backX < x {
             device = AVCaptureDevice.default(.builtInUltraWideCamera, for: .video, position: .back)
         } else {
             device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back)
@@ -2483,10 +2483,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         switch position {
         case .back:
             updateBackZoomSwitchTo()
-            zoom.zoomX = backZoomX
+            zoom.x = zoom.backX
         case .front:
             updateFrontZoomSwitchTo()
-            zoom.zoomX = frontZoomX
+            zoom.x = zoom.frontX
         default:
             break
         }
@@ -2511,7 +2511,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             onSuccess: {
                 self.streamPreviewView.isMirrored = isMirrored
                 self.externalDisplayStreamPreviewView.isMirrored = isMirrored
-                if let x = self.setCameraZoomX(x: self.zoom.zoomX) {
+                if let x = self.setCameraZoomX(x: self.zoom.x) {
                     self.setZoomXWhenInRange(x: x)
                 }
                 if let device = self.cameraDevice {
@@ -2525,7 +2525,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 self.updateCameraPreviewRotation()
             }
         )
-        zoomXPinch = zoom.zoomX
+        zoom.xPinch = zoom.x
         zoom.hasZoom = true
     }
 

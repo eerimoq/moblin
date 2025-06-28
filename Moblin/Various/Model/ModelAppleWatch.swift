@@ -31,7 +31,7 @@ extension Model {
             }
             sendRemoteControlAssistantStatusToWatch()
         } else {
-            sendZoomToWatch(x: zoom.zoomX)
+            sendZoomToWatch(x: zoom.x)
             sendZoomPresetsToWatch()
             sendZoomPresetToWatch()
             sendScenesToWatchLocal()
@@ -263,9 +263,9 @@ extension Model {
         }
         let zoomPreset: UUID
         if cameraPosition == .front {
-            zoomPreset = zoom.frontZoomPresetId
+            zoomPreset = zoom.frontPresetId
         } else {
-            zoomPreset = zoom.backZoomPresetId
+            zoomPreset = zoom.backPresetId
         }
         sendMessageToWatch(type: .zoomPreset, data: zoomPreset.uuidString)
     }

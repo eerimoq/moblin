@@ -440,7 +440,7 @@ extension Model: RemoteControlStreamerDelegate {
         if let preset = getBitratePresetByBitrate(bitrate: stream.bitrate) {
             state.bitrate = preset.id
         }
-        state.zoom = zoom.zoomX
+        state.zoom = zoom.x
         state.debugLogging = database.debug.logLevel == .debug
         state.streaming = isLive
         state.recording = isRecording

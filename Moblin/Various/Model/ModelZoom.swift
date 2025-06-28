@@ -8,9 +8,9 @@ extension Model {
     func setZoomPreset(id: UUID) {
         switch cameraPosition {
         case .back:
-            zoom.backZoomPresetId = id
+            zoom.backPresetId = id
         case .front:
-            zoom.frontZoomPresetId = id
+            zoom.frontPresetId = id
         default:
             break
         }
@@ -46,21 +46,21 @@ extension Model {
     func setZoomXWhenInRange(x: Float, setPinch: Bool = true) {
         switch cameraPosition {
         case .back:
-            backZoomX = x
+            zoom.backX = x
             updateBackZoomPresetId()
         case .front:
-            frontZoomX = x
+            zoom.frontX = x
             updateFrontZoomPresetId()
         default:
             break
         }
-        zoom.zoomX = x
+        zoom.x = x
         remoteControlStreamer?.stateChanged(state: RemoteControlState(zoom: x))
         if isWatchLocal() {
             sendZoomToWatch(x: x)
         }
         if setPinch {
-            zoomXPinch = zoom.zoomX
+            zoom.xPinch = zoom.x
         }
     }
 
@@ -68,22 +68,22 @@ extension Model {
         guard zoom.hasZoom else {
             return
         }
-        setZoomX(x: zoomXPinch * amount, rate: rate, setPinch: false)
+        setZoomX(x: zoom.xPinch * amount, rate: rate, setPinch: false)
     }
 
     func commitZoomX(amount: Float, rate: Float? = nil) {
         guard zoom.hasZoom else {
             return
         }
-        setZoomX(x: zoomXPinch * amount, rate: rate)
+        setZoomX(x: zoom.xPinch * amount, rate: rate)
     }
 
     private func clearZoomPresetId() {
         switch cameraPosition {
         case .back:
-            zoom.backZoomPresetId = noBackZoomPresetId
+            zoom.backPresetId = noBackZoomPresetId
         case .front:
-            zoom.frontZoomPresetId = noFrontZoomPresetId
+            zoom.frontPresetId = noFrontZoomPresetId
         default:
             break
         }
@@ -109,18 +109,18 @@ extension Model {
 
     func backZoomUpdated() {
         if !database.zoom.back.contains(where: { level in
-            level.id == zoom.backZoomPresetId
+            level.id == zoom.backPresetId
         }) {
-            zoom.backZoomPresetId = database.zoom.back[0].id
+            zoom.backPresetId = database.zoom.back[0].id
         }
         sceneUpdated(updateRemoteScene: false)
     }
 
     func frontZoomUpdated() {
         if !database.zoom.front.contains(where: { level in
-            level.id == zoom.frontZoomPresetId
+            level.id == zoom.frontPresetId
         }) {
-            zoom.frontZoomPresetId = database.zoom.front[0].id
+            zoom.frontPresetId = database.zoom.front[0].id
         }
         sceneUpdated(updateRemoteScene: false)
     }
@@ -132,21 +132,21 @@ extension Model {
     }
 
     private func updateBackZoomPresetId() {
-        for preset in database.zoom.back where preset.x == backZoomX {
-            zoom.backZoomPresetId = preset.id
+        for preset in database.zoom.back where preset.x == zoom.backX {
+            zoom.backPresetId = preset.id
         }
     }
 
     private func updateFrontZoomPresetId() {
-        for preset in database.zoom.front where preset.x == frontZoomX {
-            zoom.frontZoomPresetId = preset.id
+        for preset in database.zoom.front where preset.x == zoom.frontX {
+            zoom.frontPresetId = preset.id
         }
     }
 
     func updateBackZoomSwitchTo() {
         if database.zoom.switchToBack.enabled {
             clearZoomPresetId()
-            backZoomX = database.zoom.switchToBack.x!
+            zoom.backX = database.zoom.switchToBack.x!
             updateBackZoomPresetId()
         }
     }
@@ -154,7 +154,7 @@ extension Model {
     func updateFrontZoomSwitchTo() {
         if database.zoom.switchToFront.enabled {
             clearZoomPresetId()
-            frontZoomX = database.zoom.switchToFront.x!
+            zoom.frontX = database.zoom.switchToFront.x!
             updateFrontZoomPresetId()
         }
     }

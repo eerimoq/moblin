@@ -27,7 +27,7 @@ struct StreamOverlayRightZoomPresetSelctorView: View {
             if model.cameraPosition == .front {
                 let presets = model.frontZoomPresets()
                 SegmentedPicker(presets, selectedItem: Binding(get: {
-                    presets.first { $0.id == zoom.frontZoomPresetId }
+                    presets.first { $0.id == zoom.frontPresetId }
                 }, set: { value in
                     if let value {
                         model.setZoomPreset(id: value.id)
@@ -52,7 +52,7 @@ struct StreamOverlayRightZoomPresetSelctorView: View {
             } else {
                 let presets = model.backZoomPresets()
                 SegmentedPicker(presets, selectedItem: Binding(get: {
-                    presets.first { $0.id == zoom.backZoomPresetId }
+                    presets.first { $0.id == zoom.backPresetId }
                 }, set: { value in
                     if let value {
                         model.setZoomPreset(id: value.id)
