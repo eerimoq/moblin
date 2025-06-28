@@ -472,22 +472,22 @@ struct RightOverlayBottomView: View {
         VStack(alignment: .trailing, spacing: 1) {
             Spacer()
             if !(model.showDrawOnStream || model.showFace) {
-                if model.showingReplay {
+                if streamOverlay.showingReplay {
                     StreamOverlayRightReplayView(replay: model.replay)
                 } else {
                     if streamOverlay.showMediaPlayerControls {
                         StreamOverlayRightMediaPlayerControlsView(mediaPlayer: model.mediaPlayerPlayer)
                     } else {
-                        if model.showingPixellate {
+                        if streamOverlay.showingPixellate {
                             StreamOverlayRightPixellateView(database: model.database)
                         }
-                        if model.showingWhirlpool {
+                        if streamOverlay.showingWhirlpool {
                             StreamOverlayRightWhirlpoolView(database: model.database)
                         }
-                        if model.showingPinch {
+                        if streamOverlay.showingPinch {
                             StreamOverlayRightPinchView(database: model.database)
                         }
-                        if model.showingCamera {
+                        if streamOverlay.showingCamera {
                             StreamOverlayRightCameraSettingsControlView(model: model, show: model.show)
                         }
                         if show.zoomPresets && zoom.hasZoom {

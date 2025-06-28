@@ -347,7 +347,7 @@ extension Model {
                 type = .twin
             case "pixellate":
                 type = .pixellate
-                self.showingPixellate = state == "on"
+                self.streamOverlay.showingPixellate = state == "on"
             case "4:3":
                 type = .fourThree
             default:

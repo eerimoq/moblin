@@ -287,6 +287,11 @@ class SceneSelector: ObservableObject {
 class StreamOverlay: ObservableObject {
     @Published var showMediaPlayerControls = false
     @Published var isFrontCameraSelected = false
+    @Published var showingCamera = false
+    @Published var showingPinch = false
+    @Published var showingReplay = false
+    @Published var showingPixellate = false
+    @Published var showingWhirlpool = false
 }
 
 final class Model: NSObject, ObservableObject, @unchecked Sendable {
@@ -317,11 +322,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var browsers: [Browser] = []
     @Published var isTorchOn = false
     @Published var buttonPairs: [[QuickButtonPair]] = Array(repeating: [], count: controlBarPages)
-    @Published var showingCamera = false
-    @Published var showingReplay = false
-    @Published var showingPixellate = false
-    @Published var showingWhirlpool = false
-    @Published var showingPinch = false
     @Published var showingGrid = false
     @Published var showingRemoteControl = false
     @Published var obsScenes: [String] = []
@@ -1210,7 +1210,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func updateImageButtonState() {
-        var isOn = showingCamera
+        var isOn = streamOverlay.showingCamera
         if camera.bias != 0.0 {
             isOn = true
         }

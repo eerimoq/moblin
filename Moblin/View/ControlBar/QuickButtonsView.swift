@@ -163,7 +163,7 @@ struct QuickButtonsInnerView: View {
     }
 
     private func imageAction() {
-        model.showingCamera.toggle()
+        model.streamOverlay.showingCamera.toggle()
         model.updateImageButtonState()
     }
 
@@ -188,12 +188,12 @@ struct QuickButtonsInnerView: View {
 
     private func whirlpoolAction(state: ButtonState) {
         videoEffectAction(state: state, type: .whirlpool)
-        model.showingWhirlpool.toggle()
+        model.streamOverlay.showingWhirlpool.toggle()
     }
 
     private func pinchAction(state: ButtonState) {
         videoEffectAction(state: state, type: .pinch)
-        model.showingPinch.toggle()
+        model.streamOverlay.showingPinch.toggle()
     }
 
     private func fourThreeAction(state: ButtonState) {
@@ -218,7 +218,7 @@ struct QuickButtonsInnerView: View {
 
     private func pixellateAction(state: ButtonState) {
         videoEffectAction(state: state, type: .pixellate)
-        model.showingPixellate.toggle()
+        model.streamOverlay.showingPixellate.toggle()
     }
 
     private func streamAction() {
@@ -363,7 +363,7 @@ struct QuickButtonsInnerView: View {
     }
 
     private func replayAction(state: ButtonState) {
-        model.showingReplay.toggle()
+        model.streamOverlay.showingReplay.toggle()
         state.button.isOn.toggle()
         model.setGlobalButtonState(type: .replay, isOn: state.button.isOn)
         model.updateQuickButtonStates()
