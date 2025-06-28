@@ -187,6 +187,10 @@ class Zoom: ObservableObject {
     @Published var frontZoomPresetId = UUID()
     @Published var zoomX: Float = 1.0
     @Published var hasZoom = true
+
+    func statusText() -> String {
+        return String(format: "%.1f", zoomX)
+    }
 }
 
 class CreateStreamWizard: ObservableObject {
@@ -272,6 +276,7 @@ class Status: ObservableObject {
     @Published var cyclingPowerDeviceState: CyclingPowerDeviceState?
     @Published var heartRateDeviceState: HeartRateDeviceState?
     @Published var digitalClock = noValue
+    @Published var streamText = noValue
 }
 
 class Toast: ObservableObject {
@@ -2670,7 +2675,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return database.show.viewers && isViewersConfigured() && isLive
     }
 
-    func statusStreamText() -> String {
+    private func statusStreamText() -> String {
         let proto = stream.protocolString()
         let resolution = stream.resolutionString()
         let codec = stream.codecString()
@@ -2687,6 +2692,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         \(stream.name) (\(resolution), \(fps), \(proto), \(codec) \(bitrate), \
         \(audioCodec) \(audioBitrate))
         """
+    }
+
+    func updateStatusStreamText() {
+        let status = statusStreamText()
+        if status != self.status.streamText {
+            self.status.streamText = status
+        }
     }
 
     private func updateStatusEventsText() {

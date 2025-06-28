@@ -189,10 +189,6 @@ extension Model {
         return database.show.zoom && zoom.hasZoom
     }
 
-    func statusZoomText() -> String {
-        return String(format: "%.1f", zoom.zoomX)
-    }
-
     private func showPreset(preset: SettingsZoomPreset) -> Bool {
         let x = preset.x!
         return x >= cameraZoomXMinimum && x <= cameraZoomXMaximum

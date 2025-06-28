@@ -281,6 +281,7 @@ extension Model {
         }
         currentStreamId = stream.id
         updateOrientationLock()
+        updateStatusStreamText()
     }
 
     func setCurrentStream(streamId: UUID) -> Bool {
@@ -321,6 +322,7 @@ extension Model {
         resetChat()
         reloadLocation()
         reloadRtmpStreams()
+        updateStatusStreamText()
     }
 
     func reloadStreamIfEnabled(stream: SettingsStream) {
@@ -681,6 +683,7 @@ extension Model {
 
     func setStreamBitrate(stream: SettingsStream) {
         media.setVideoStreamBitrate(bitrate: stream.bitrate)
+        updateStatusStreamText()
     }
 
     func getBitratePresetByBitrate(bitrate: UInt32) -> SettingsBitratePreset? {
@@ -704,10 +707,12 @@ extension Model {
 
     func setAudioStreamBitrate(stream: SettingsStream) {
         media.setAudioStreamBitrate(bitrate: stream.audioBitrate)
+        updateStatusStreamText()
     }
 
     func setAudioStreamFormat(format: AudioEncoderSettings.Format) {
         media.setAudioStreamFormat(format: format)
+        updateStatusStreamText()
     }
 
     func setAudioChannelsMap(channelsMap: [Int: Int]) {
@@ -848,6 +853,7 @@ extension Model: MediaDelegate {
         DispatchQueue.main.async {
             self.selectedFps = Int(fps)
             self.autoFps = auto
+            self.updateStatusStreamText()
         }
     }
 

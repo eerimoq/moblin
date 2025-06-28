@@ -26,6 +26,32 @@ private struct CollapsedViewersView: View {
     }
 }
 
+private struct StreamStatusView: View {
+    @ObservedObject var status: Status
+    let textPlacement: StreamOverlayIconAndTextPlacement
+
+    var body: some View {
+        StreamOverlayIconAndTextView(
+            icon: "dot.radiowaves.left.and.right",
+            text: status.streamText,
+            textPlacement: textPlacement
+        )
+    }
+}
+
+private struct ZoomView: View {
+    @ObservedObject var zoom: Zoom
+    let textPlacement: StreamOverlayIconAndTextPlacement
+
+    var body: some View {
+        StreamOverlayIconAndTextView(
+            icon: "magnifyingglass",
+            text: zoom.statusText(),
+            textPlacement: textPlacement
+        )
+    }
+}
+
 private struct StatusesView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var show: SettingsShow
@@ -78,11 +104,7 @@ private struct StatusesView: View {
 
     var body: some View {
         if model.isShowingStatusStream() {
-            StreamOverlayIconAndTextView(
-                icon: "dot.radiowaves.left.and.right",
-                text: model.statusStreamText(),
-                textPlacement: textPlacement
-            )
+            StreamStatusView(status: status, textPlacement: textPlacement)
         }
         if model.isShowingStatusCamera() {
             StreamOverlayIconAndTextView(
@@ -99,11 +121,7 @@ private struct StatusesView: View {
             )
         }
         if textPlacement != .hide, model.isShowingStatusZoom() {
-            StreamOverlayIconAndTextView(
-                icon: "magnifyingglass",
-                text: model.statusZoomText(),
-                textPlacement: textPlacement
-            )
+            ZoomView(zoom: model.zoom, textPlacement: textPlacement)
         }
         if model.isShowingStatusObs() {
             StreamOverlayIconAndTextView(
