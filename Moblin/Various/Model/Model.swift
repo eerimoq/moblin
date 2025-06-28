@@ -333,12 +333,12 @@ class Tesla: ObservableObject {
 }
 
 class QuickButtonChat: ObservableObject {
-    @Published var showAllQuickButtonChatMessage = true
+    @Published var showAllChatMessages = true
     @Published var showFirstTimeChatterMessage = true
     @Published var showNewFollowerMessage = true
-    @Published var quickButtonChatAlertsPosts: Deque<ChatPost> = []
-    @Published var pausedQuickButtonChatAlertsPostsCount: Int = 0
-    @Published var quickButtonChatAlertsPaused = false
+    @Published var chatAlertsPosts: Deque<ChatPost> = []
+    @Published var pausedChatAlertsPostsCount: Int = 0
+    @Published var chatAlertsPaused = false
 }
 
 class ExternalDisplay: ObservableObject {

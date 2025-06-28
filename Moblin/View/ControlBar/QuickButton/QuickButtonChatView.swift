@@ -325,7 +325,7 @@ private struct AlertsMessagesView: View {
                             model.pauseQuickButtonChatAlerts()
                         }
                         .frame(height: 1)
-                    ForEach(quickButtonChat.quickButtonChatAlertsPosts) { post in
+                    ForEach(quickButtonChat.chatAlertsPosts) { post in
                         if post.user != nil {
                             if let highlight = post.highlight {
                                 if shouldShowMessage(highlight: highlight) {
@@ -386,10 +386,10 @@ private struct ChatAlertsView: View {
                                chat: model.quickButtonChat,
                                quickButtonChat: quickButtonChat,
                                selectedPost: $selectedPost)
-            if quickButtonChat.quickButtonChatAlertsPaused {
+            if quickButtonChat.chatAlertsPaused {
                 ChatInfo(
                     message: String(
-                        localized: "Chat paused: \(quickButtonChat.pausedQuickButtonChatAlertsPostsCount) new alerts"
+                        localized: "Chat paused: \(quickButtonChat.pausedChatAlertsPostsCount) new alerts"
                     )
                 )
                 .padding(2)
@@ -405,9 +405,9 @@ private struct ControlAlertsButtonView: View {
 
     var body: some View {
         Button {
-            quickButtonChat.showAllQuickButtonChatMessage.toggle()
+            quickButtonChat.showAllChatMessages.toggle()
         } label: {
-            Image(systemName: quickButtonChat.showAllQuickButtonChatMessage ? "megaphone" : "megaphone.fill")
+            Image(systemName: quickButtonChat.showAllChatMessages ? "megaphone" : "megaphone.fill")
                 .font(.title)
                 .padding(5)
         }
@@ -596,13 +596,13 @@ struct QuickButtonChatView: View {
     var body: some View {
         ZStack {
             VStack {
-                if quickButtonChat.showAllQuickButtonChatMessage {
+                if quickButtonChat.showAllChatMessages {
                     ChatView(model: model, chat: model.quickButtonChat, selectedPost: $selectedPost)
                 } else {
                     ChatAlertsView(quickButtonChat: quickButtonChat, selectedPost: $selectedPost)
                 }
                 HStack {
-                    if quickButtonChat.showAllQuickButtonChatMessage {
+                    if quickButtonChat.showAllChatMessages {
                         ControlView(message: $message)
                     } else {
                         AlertsControlView(quickButtonChat: quickButtonChat)

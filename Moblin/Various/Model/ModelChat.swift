@@ -164,26 +164,26 @@ extension Model {
     }
 
     func pauseQuickButtonChatAlerts() {
-        quickButtonChatState.quickButtonChatAlertsPaused = true
-        quickButtonChatState.pausedQuickButtonChatAlertsPostsCount = 0
+        quickButtonChatState.chatAlertsPaused = true
+        quickButtonChatState.pausedChatAlertsPostsCount = 0
     }
 
     func endOfQuickButtonChatAlertsReachedWhenPaused() {
         while let post = pausedQuickButtonChatAlertsPosts.popFirst() {
             if post.user == nil {
-                if let lastPost = quickButtonChatState.quickButtonChatAlertsPosts.first, lastPost.user == nil {
+                if let lastPost = quickButtonChatState.chatAlertsPosts.first, lastPost.user == nil {
                     continue
                 }
                 if pausedQuickButtonChatAlertsPosts.isEmpty {
                     continue
                 }
             }
-            if quickButtonChatState.quickButtonChatAlertsPosts.count > maximumNumberOfInteractiveChatMessages - 1 {
-                quickButtonChatState.quickButtonChatAlertsPosts.removeLast()
+            if quickButtonChatState.chatAlertsPosts.count > maximumNumberOfInteractiveChatMessages - 1 {
+                quickButtonChatState.chatAlertsPosts.removeLast()
             }
-            quickButtonChatState.quickButtonChatAlertsPosts.prepend(post)
+            quickButtonChatState.chatAlertsPosts.prepend(post)
         }
-        quickButtonChatState.quickButtonChatAlertsPaused = false
+        quickButtonChatState.chatAlertsPaused = false
     }
 
     func removeOldChatMessages(now: ContinuousClock.Instant) {
@@ -220,18 +220,18 @@ extension Model {
         if externalDisplay.chatEnabled {
             externalDisplayChat.update()
         }
-        if quickButtonChatState.quickButtonChatAlertsPaused {
+        if quickButtonChatState.chatAlertsPaused {
             // The red line is one post.
-            quickButtonChatState.pausedQuickButtonChatAlertsPostsCount = max(
+            quickButtonChatState.pausedChatAlertsPostsCount = max(
                 pausedQuickButtonChatAlertsPosts.count - 1,
                 0
             )
         } else {
             while let post = newQuickButtonChatAlertsPosts.popFirst() {
-                if quickButtonChatState.quickButtonChatAlertsPosts.count > maximumNumberOfInteractiveChatMessages - 1 {
-                    quickButtonChatState.quickButtonChatAlertsPosts.removeLast()
+                if quickButtonChatState.chatAlertsPosts.count > maximumNumberOfInteractiveChatMessages - 1 {
+                    quickButtonChatState.chatAlertsPosts.removeLast()
                 }
-                quickButtonChatState.quickButtonChatAlertsPosts.prepend(post)
+                quickButtonChatState.chatAlertsPosts.prepend(post)
             }
         }
     }
@@ -320,7 +320,7 @@ extension Model {
         chat.reset()
         quickButtonChat.reset()
         externalDisplayChat.reset()
-        quickButtonChatState.quickButtonChatAlertsPosts = []
+        quickButtonChatState.chatAlertsPosts = []
         pausedQuickButtonChatAlertsPosts = []
         newQuickButtonChatAlertsPosts = []
         chatBotMessages = []
@@ -427,7 +427,7 @@ extension Model {
                 externalDisplayChat.appendMessage(post: post)
             }
             if highlight != nil {
-                if quickButtonChatState.quickButtonChatAlertsPaused {
+                if quickButtonChatState.chatAlertsPaused {
                     if pausedQuickButtonChatAlertsPosts.count < 2 * maximumNumberOfInteractiveChatMessages {
                         pausedQuickButtonChatAlertsPosts.append(post)
                     }
@@ -443,7 +443,7 @@ extension Model {
         quickButtonChat.posts = newPostIds(posts: quickButtonChat.posts)
         externalDisplayChat.posts = newPostIds(posts: externalDisplayChat.posts)
         quickButtonChatState
-            .quickButtonChatAlertsPosts = newPostIds(posts: quickButtonChatState.quickButtonChatAlertsPosts)
+            .chatAlertsPosts = newPostIds(posts: quickButtonChatState.chatAlertsPosts)
     }
 
     private func newPostIds(posts: Deque<ChatPost>) -> Deque<ChatPost> {
