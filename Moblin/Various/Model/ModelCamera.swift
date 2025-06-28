@@ -401,10 +401,10 @@ extension Model {
 
     func updateShowCameraPreview() -> Bool {
         let show = shouldShowCameraPreview()
-        if show != camera.showCameraPreview {
-            camera.showCameraPreview = show
+        if show != self.show.showCameraPreview {
+            self.show.showCameraPreview = show
         }
-        return camera.showCameraPreview
+        return show
     }
 
     private func shouldShowCameraPreview() -> Bool {

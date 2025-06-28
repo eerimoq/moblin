@@ -249,6 +249,7 @@ private struct ButtonsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var database: Database
     @ObservedObject var camera: CameraState
+    @ObservedObject var show: Show
 
     private func formatExposureBias() -> String {
         var value = formatOneDecimal(camera.bias)
@@ -285,66 +286,66 @@ private struct ButtonsView: View {
     var body: some View {
         HStack {
             Button {
-                model.showingCameraBias.toggle()
-                if model.showingCameraBias {
-                    model.showingCameraWhiteBalance = false
-                    model.showingCameraIso = false
-                    model.showingCameraFocus = false
+                show.showingCameraBias.toggle()
+                if show.showingCameraBias {
+                    show.showingCameraWhiteBalance = false
+                    show.showingCameraIso = false
+                    show.showingCameraFocus = false
                 }
             } label: {
                 CameraSettingButtonView(
                     title: String(localized: "EXB"),
                     value: formatExposureBias(),
                     locked: true,
-                    on: model.showingCameraBias,
+                    on: show.showingCameraBias,
                     height: height()
                 )
             }
             Button {
-                model.showingCameraWhiteBalance.toggle()
-                if model.showingCameraWhiteBalance {
-                    model.showingCameraBias = false
-                    model.showingCameraIso = false
-                    model.showingCameraFocus = false
+                show.showingCameraWhiteBalance.toggle()
+                if show.showingCameraWhiteBalance {
+                    show.showingCameraBias = false
+                    show.showingCameraIso = false
+                    show.showingCameraFocus = false
                 }
             } label: {
                 CameraSettingButtonView(
                     title: String(localized: "WB"),
                     value: formatWhiteBalance(),
                     locked: camera.manualWhiteBalanceEnabled,
-                    on: model.showingCameraWhiteBalance,
+                    on: show.showingCameraWhiteBalance,
                     height: height()
                 )
             }
             Button {
-                model.showingCameraIso.toggle()
-                if model.showingCameraIso {
-                    model.showingCameraBias = false
-                    model.showingCameraWhiteBalance = false
-                    model.showingCameraFocus = false
+                show.showingCameraIso.toggle()
+                if show.showingCameraIso {
+                    show.showingCameraBias = false
+                    show.showingCameraWhiteBalance = false
+                    show.showingCameraFocus = false
                 }
             } label: {
                 CameraSettingButtonView(
                     title: String(localized: "ISO"),
                     value: formatIso(),
                     locked: camera.manualIsoEnabled,
-                    on: model.showingCameraIso,
+                    on: show.showingCameraIso,
                     height: height()
                 )
             }
             Button {
-                model.showingCameraFocus.toggle()
-                if model.showingCameraFocus {
-                    model.showingCameraBias = false
-                    model.showingCameraWhiteBalance = false
-                    model.showingCameraIso = false
+                show.showingCameraFocus.toggle()
+                if show.showingCameraFocus {
+                    show.showingCameraBias = false
+                    show.showingCameraWhiteBalance = false
+                    show.showingCameraIso = false
                 }
             } label: {
                 CameraSettingButtonView(
                     title: String(localized: "FOC"),
                     value: formatFocus(),
                     locked: camera.manualFocusEnabled,
-                    on: model.showingCameraFocus,
+                    on: show.showingCameraFocus,
                     height: height()
                 )
             }
@@ -353,23 +354,24 @@ private struct ButtonsView: View {
 }
 
 struct StreamOverlayRightCameraSettingsControlView: View {
-    @EnvironmentObject var model: Model
+    var model: Model
+    @ObservedObject var show: Show
 
     var body: some View {
         VStack(alignment: .trailing, spacing: 1) {
-            if model.showingCameraBias {
+            if show.showingCameraBias {
                 ExposureBiasView(camera: model.camera)
             }
-            if model.showingCameraWhiteBalance {
+            if show.showingCameraWhiteBalance {
                 WhiteBalanceView(camera: model.camera)
             }
-            if model.showingCameraIso {
+            if show.showingCameraIso {
                 IsoView(camera: model.camera)
             }
-            if model.showingCameraFocus {
+            if show.showingCameraFocus {
                 FocusView(camera: model.camera)
             }
-            ButtonsView(database: model.database, camera: model.camera)
+            ButtonsView(database: model.database, camera: model.camera, show: show)
                 .onAppear {
                     model.startObservingFocus()
                     model.startObservingIso()

@@ -488,7 +488,7 @@ struct RightOverlayBottomView: View {
                             StreamOverlayRightPinchView(database: model.database)
                         }
                         if model.showingCamera {
-                            StreamOverlayRightCameraSettingsControlView()
+                            StreamOverlayRightCameraSettingsControlView(model: model, show: model.show)
                         }
                         if show.zoomPresets && zoom.hasZoom {
                             StreamOverlayRightZoomPresetSelctorView(database: model.database,

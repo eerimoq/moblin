@@ -163,13 +163,20 @@ class CameraState: ObservableObject {
     @Published var manualWhiteBalance: Float = 0
     @Published var manualWhiteBalanceEnabled = false
     @Published var manualFocusPoint: CGPoint?
-    @Published var showCameraPreview = false
 
     func setManualFocusPoint(value: CGPoint?) {
         if value != manualFocusPoint {
             manualFocusPoint = value
         }
     }
+}
+
+class Show: ObservableObject {
+    @Published var showCameraPreview = false
+    @Published var showingCameraBias = false
+    @Published var showingCameraWhiteBalance = false
+    @Published var showingCameraIso = false
+    @Published var showingCameraFocus = false
 }
 
 class Zoom: ObservableObject {
@@ -312,10 +319,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var buttonPairs: [[QuickButtonPair]] = Array(repeating: [], count: controlBarPages)
     @Published var showingCamera = false
     @Published var showingReplay = false
-    @Published var showingCameraBias = false
-    @Published var showingCameraWhiteBalance = false
-    @Published var showingCameraIso = false
-    @Published var showingCameraFocus = false
     @Published var showingPixellate = false
     @Published var showingWhirlpool = false
     @Published var showingPinch = false
@@ -368,6 +371,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
+    let show = Show()
     let streamOverlay = StreamOverlay()
     let sceneSelector = SceneSelector()
     let toast = Toast()
