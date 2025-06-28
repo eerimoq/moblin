@@ -231,18 +231,18 @@ class CreateStreamWizard: ObservableObject {
 }
 
 class RemoteControl: ObservableObject {
-    @Published var remoteControlGeneral: RemoteControlStatusGeneral?
-    @Published var remoteControlTopLeft: RemoteControlStatusTopLeft?
-    @Published var remoteControlTopRight: RemoteControlStatusTopRight?
-    @Published var remoteControlSettings: RemoteControlSettings?
-    @Published var remoteControlScene = UUID()
-    @Published var remoteControlMic = ""
-    @Published var remoteControlBitrate = UUID()
-    @Published var remoteControlZoom = ""
-    @Published var remoteControlDebugLogging = false
-    @Published var remoteControlAssistantShowPreview = true
-    @Published var remoteControlAssistantShowPreviewFullScreen = false
-    @Published var remoteControlPreview: UIImage?
+    @Published var general: RemoteControlStatusGeneral?
+    @Published var topLeft: RemoteControlStatusTopLeft?
+    @Published var topRight: RemoteControlStatusTopRight?
+    @Published var settings: RemoteControlSettings?
+    @Published var scene = UUID()
+    @Published var mic = ""
+    @Published var bitrate = UUID()
+    @Published var zoom = ""
+    @Published var debugLogging = false
+    @Published var assistantShowPreview = true
+    @Published var assistantShowPreviewFullScreen = false
+    @Published var preview: UIImage?
 }
 
 class Battery: ObservableObject {
