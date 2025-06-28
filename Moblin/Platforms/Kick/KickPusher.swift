@@ -28,7 +28,7 @@ private struct Metadata: Decodable {
     var original_message: OriginalMessage?
 }
 
-private struct ChatMessage: Decodable {
+private struct ChatMessageEvent: Decodable {
     var id: String?
     var type: String?
     var content: String
@@ -44,20 +44,20 @@ private struct ChatMessage: Decodable {
     }
 }
 
-private struct DeletedMessage: Decodable {
+private struct Message: Decodable {
     var id: String
 }
 
 private struct MessageDeletedEvent: Decodable {
-    var message: DeletedMessage
+    var message: Message
 }
 
-private struct BannedUser: Decodable {
+private struct User: Decodable {
     var id: Int
 }
 
 private struct UserBannedEvent: Decodable {
-    var user: BannedUser
+    var user: User
 }
 
 private func decodeEvent(message: String) throws -> (String, String) {
@@ -77,9 +77,9 @@ private func decodeEvent(message: String) throws -> (String, String) {
     throw "Failed to get message event type"
 }
 
-private func decodeChatMessage(data: String) throws -> ChatMessage {
+private func decodeChatMessageEvent(data: String) throws -> ChatMessageEvent {
     return try JSONDecoder().decode(
-        ChatMessage.self,
+        ChatMessageEvent.self,
         from: data.data(using: String.Encoding.utf8)!
     )
 }
@@ -238,16 +238,16 @@ final class KickPusher: NSObject {
     }
 
     private func handleChatMessageEvent(data: String) throws {
-        let message = try decodeChatMessage(data: data)
+        let event = try decodeChatMessageEvent(data: data)
         delegate?.kickPusherAppendMessage(
-            messageId: message.id,
-            user: message.sender.username,
-            userId: message.sender.id != nil ? String(message.sender.id!) : nil,
-            userColor: RgbColor.fromHex(string: message.sender.identity.color),
-            segments: makeChatPostSegments(content: message.content),
-            isSubscriber: message.isSubscriber(),
-            isModerator: message.isModerator(),
-            highlight: makeHighlight(message: message)
+            messageId: event.id,
+            user: event.sender.username,
+            userId: event.sender.id != nil ? String(event.sender.id!) : nil,
+            userColor: RgbColor.fromHex(string: event.sender.identity.color),
+            segments: makeChatPostSegments(content: event.content),
+            isSubscriber: event.isSubscriber(),
+            isModerator: event.isModerator(),
+            highlight: makeHighlight(message: event)
         )
     }
 
@@ -276,7 +276,7 @@ final class KickPusher: NSObject {
         return segments
     }
 
-    private func makeHighlight(message: ChatMessage) -> ChatHighlight? {
+    private func makeHighlight(message: ChatMessageEvent) -> ChatHighlight? {
         if message.type == "reply" {
             if let username = message.metadata?.original_sender?.username,
                let content = message.metadata?.original_message?.content
