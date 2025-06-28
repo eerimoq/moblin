@@ -314,6 +314,13 @@ class DrawOnStream: ObservableObject {
     @Published var selectedWidth: CGFloat = 4
 }
 
+class StealthMode: ObservableObject {
+    var hideButtonsTimer = SimpleTimer(queue: .main)
+    @Published var showChat = false
+    @Published var showButtons = true
+    @Published var image: UIImage?
+}
+
 final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var isPresentingWidgetWizard = false
     @Published var goProLaunchLiveStreamSelection: UUID?
@@ -321,11 +328,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var goProRtmpUrlSelection: UUID?
     @Published var showingPanel: ShowingPanel = .none
     @Published var panelHidden = false
-    @Published var stealthMode = false
-    @Published var stealthModeShowChat = false
-    @Published var stealthModeShowButtons = true
-    @Published var stealthModeImage: UIImage?
-    var stealthModeHideButtonsTimer = SimpleTimer(queue: .main)
+    @Published var showStealthMode = false
     @Published var lockScreen = false
     @Published var findFace = false
     @Published var currentMic = noMic
@@ -382,6 +385,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
+    let stealthMode = StealthMode()
     let drawOnStream = DrawOnStream()
     let cosmetics = Cosmetics()
     let show = Show()

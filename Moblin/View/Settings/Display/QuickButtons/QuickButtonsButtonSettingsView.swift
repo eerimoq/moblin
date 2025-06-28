@@ -3,12 +3,13 @@ import SwiftUI
 
 private struct QuickButtonStealthModeView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var stealthMode: StealthMode
     @State var selectedImageItem: PhotosPickerItem?
 
     var body: some View {
         Section {
             PhotosPicker(selection: $selectedImageItem, matching: .images) {
-                if let image = model.stealthModeImage {
+                if let image = stealthMode.image {
                     HCenter {
                         Image(uiImage: image)
                             .resizable()
@@ -27,16 +28,16 @@ private struct QuickButtonStealthModeView: View {
                     case let .success(data?):
                         model.saveStealthModeImage(data: data)
                         DispatchQueue.main.async {
-                            self.model.stealthModeImage = UIImage(data: data)
+                            self.stealthMode.image = UIImage(data: data)
                         }
                     default:
                         break
                     }
                 }
             }
-            if model.stealthModeImage != nil {
+            if stealthMode.image != nil {
                 Button {
-                    model.stealthModeImage = nil
+                    stealthMode.image = nil
                     model.deleteStealthModeImage()
                 } label: {
                     HCenter {
@@ -102,7 +103,7 @@ struct QuickButtonsButtonSettingsView: View {
             }
             switch button.type {
             case .blackScreen:
-                QuickButtonStealthModeView()
+                QuickButtonStealthModeView(stealthMode: model.stealthMode)
             default:
                 EmptyView()
             }

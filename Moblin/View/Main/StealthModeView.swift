@@ -48,11 +48,12 @@ struct StealthModeView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var quickButtons: SettingsQuickButtons
     @ObservedObject var chat: ChatProvider
+    @ObservedObject var stealthMode: StealthMode
 
     private func showButtons() {
-        model.stealthModeShowButtons = true
-        model.stealthModeHideButtonsTimer.startSingleShot(timeout: 3) {
-            model.stealthModeShowButtons = false
+        stealthMode.showButtons = true
+        stealthMode.hideButtonsTimer.startSingleShot(timeout: 3) {
+            stealthMode.showButtons = false
         }
     }
 
@@ -75,7 +76,7 @@ struct StealthModeView: View {
                 }
             }
             .background(.black)
-            if let image = model.stealthModeImage {
+            if let image = stealthMode.image {
                 Image(uiImage: image)
                     .resizable()
                     .scaledToFit()
@@ -94,7 +95,7 @@ struct StealthModeView: View {
                 self.tryUnpause()
             }
         }
-        if model.stealthModeShowButtons {
+        if stealthMode.showButtons {
             if model.isPortrait() {
                 VStack {
                     Spacer()

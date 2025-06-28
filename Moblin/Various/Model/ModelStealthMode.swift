@@ -5,7 +5,7 @@ private let stealthModeImagePath = URL.documentsDirectory.appending(component: "
 
 extension Model {
     func toggleStealthMode() {
-        stealthMode.toggle()
+        showStealthMode.toggle()
     }
 
     func saveStealthModeImage(data: Data) {
@@ -16,7 +16,7 @@ extension Model {
         guard let data = try? Data(contentsOf: stealthModeImagePath) else {
             return
         }
-        stealthModeImage = UIImage(data: data)
+        stealthMode.image = UIImage(data: data)
     }
 
     func deleteStealthModeImage() {

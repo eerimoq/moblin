@@ -481,8 +481,12 @@ struct MainView: View {
             }
             WebBrowserAlertsView()
                 .opacity(webBrowserController.showAlert ? 1 : 0)
-            if model.stealthMode {
-                StealthModeView(quickButtons: model.database.quickButtonsGeneral, chat: model.chat)
+            if model.showStealthMode {
+                StealthModeView(
+                    quickButtons: model.database.quickButtonsGeneral,
+                    chat: model.chat,
+                    stealthMode: model.stealthMode
+                )
             }
             if model.lockScreen {
                 LockScreenView()
