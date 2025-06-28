@@ -8,7 +8,8 @@ private struct ObsStartStopStreamingView: View {
     @State private var isPresentingStopStreamingConfirm = false
 
     var body: some View {
-        if obsQuickButton.obsStreamingState == .stopped {
+        switch obsQuickButton.obsStreamingState {
+        case .stopped:
             Section {
                 HStack {
                     Spacer()
@@ -29,7 +30,7 @@ private struct ObsStartStopStreamingView: View {
                 .foregroundColor(Color(uiColor: .secondarySystemGroupedBackground))
                 .overlay(RoundedRectangle(cornerRadius: 10)
                     .stroke(.blue, lineWidth: 2)))
-        } else if obsQuickButton.obsStreamingState == .starting {
+        case .starting:
             Section {
                 HStack {
                     Spacer()
@@ -39,7 +40,7 @@ private struct ObsStartStopStreamingView: View {
             }
             .foregroundColor(.white)
             .listRowBackground(Color.gray)
-        } else if obsQuickButton.obsStreamingState == .started {
+        case .started:
             Section {
                 HStack {
                     Spacer()
@@ -58,7 +59,7 @@ private struct ObsStartStopStreamingView: View {
             }
             .foregroundColor(.white)
             .listRowBackground(Color.blue)
-        } else if obsQuickButton.obsStreamingState == .stopping {
+        case .stopping:
             Section {
                 HStack {
                     Spacer()
@@ -68,14 +69,6 @@ private struct ObsStartStopStreamingView: View {
             }
             .foregroundColor(.white)
             .listRowBackground(Color.gray)
-        } else {
-            Section {
-                HStack {
-                    Spacer()
-                    Text("Unknown streaming state.")
-                    Spacer()
-                }
-            }
         }
     }
 }
@@ -87,7 +80,8 @@ private struct ObsStartStopRecordingView: View {
     @State private var isPresentingStopRecordingConfirm: Bool = false
 
     var body: some View {
-        if obsQuickButton.obsRecordingState == .stopped {
+        switch obsQuickButton.obsRecordingState {
+        case .stopped:
             Section {
                 HStack {
                     Spacer()
@@ -108,7 +102,7 @@ private struct ObsStartStopRecordingView: View {
                 .foregroundColor(Color(uiColor: .secondarySystemGroupedBackground))
                 .overlay(RoundedRectangle(cornerRadius: 10)
                     .stroke(.blue, lineWidth: 2)))
-        } else if obsQuickButton.obsRecordingState == .starting {
+        case .starting:
             Section {
                 HStack {
                     Spacer()
@@ -118,7 +112,7 @@ private struct ObsStartStopRecordingView: View {
             }
             .foregroundColor(.white)
             .listRowBackground(Color.gray)
-        } else if obsQuickButton.obsRecordingState == .started {
+        case .started:
             Section {
                 HStack {
                     Spacer()
@@ -137,7 +131,7 @@ private struct ObsStartStopRecordingView: View {
             }
             .foregroundColor(.white)
             .listRowBackground(Color.blue)
-        } else if obsQuickButton.obsRecordingState == .stopping {
+        case .stopping:
             Section {
                 HStack {
                     Spacer()
@@ -147,14 +141,6 @@ private struct ObsStartStopRecordingView: View {
             }
             .foregroundColor(.white)
             .listRowBackground(Color.gray)
-        } else {
-            Section {
-                HStack {
-                    Spacer()
-                    Text("Unknown recording state.")
-                    Spacer()
-                }
-            }
         }
     }
 }
