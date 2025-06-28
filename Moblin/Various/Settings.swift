@@ -876,21 +876,21 @@ enum SettingsCameraId {
 class SettingsScene: Codable, Identifiable, Equatable, ObservableObject {
     @Published var name: String
     var id: UUID = .init()
-    var enabled: Bool = true
-    var cameraType: SettingsSceneCameraPosition = .back
-    var cameraPosition: SettingsSceneCameraPosition = .back
-    var backCameraId: String = getBestBackCameraId()
-    var frontCameraId: String = getBestFrontCameraId()
-    var rtmpCameraId: UUID = .init()
-    var srtlaCameraId: UUID = .init()
-    var mediaPlayerCameraId: UUID = .init()
-    var externalCameraId: String = ""
+    @Published var enabled: Bool = true
+    @Published var cameraType: SettingsSceneCameraPosition = .back
+    @Published var cameraPosition: SettingsSceneCameraPosition = .back
+    @Published var backCameraId: String = getBestBackCameraId()
+    @Published var frontCameraId: String = getBestFrontCameraId()
+    @Published var rtmpCameraId: UUID = .init()
+    @Published var srtlaCameraId: UUID = .init()
+    @Published var mediaPlayerCameraId: UUID = .init()
+    @Published var externalCameraId: String = ""
     var externalCameraName: String = ""
     var widgets: [SettingsSceneWidget] = []
-    var videoSourceRotation: Double = 0.0
-    var videoStabilizationMode: SettingsVideoStabilizationMode = .off
-    var overrideVideoStabilizationMode: Bool = false
-    var fillFrame: Bool = false
+    @Published var videoSourceRotation: Double = 0.0
+    @Published var videoStabilizationMode: SettingsVideoStabilizationMode = .off
+    @Published var overrideVideoStabilizationMode: Bool = false
+    @Published var fillFrame: Bool = false
 
     init(name: String) {
         self.name = name
