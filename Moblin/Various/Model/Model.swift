@@ -258,6 +258,8 @@ class RemoteControl: ObservableObject {
     @Published var assistantShowPreview = true
     @Published var assistantShowPreviewFullScreen = false
     @Published var preview: UIImage?
+    @Published var recording: Bool = false
+    @Published var streaming: Bool = false
 }
 
 class Battery: ObservableObject {

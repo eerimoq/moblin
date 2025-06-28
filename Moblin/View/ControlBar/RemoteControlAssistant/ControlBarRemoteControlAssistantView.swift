@@ -332,6 +332,7 @@ private struct ControlBarRemoteControlAssistantStatusView: View {
 
 private struct LiveView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var remoteControl: RemoteControl
     @State private var isPresentingConfirm: Bool = false
     @State private var pendingValue = false
 
@@ -354,6 +355,7 @@ private struct LiveView: View {
 
 private struct RecordingView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var remoteControl: RemoteControl
     @State private var isPresentingConfirm: Bool = false
     @State private var pendingValue = false
 
@@ -521,8 +523,8 @@ private struct ControlBarRemoteControlAssistantControlView: View {
     var body: some View {
         Section {
             if remoteControl.settings != nil {
-                LiveView()
-                RecordingView()
+                LiveView(remoteControl: remoteControl)
+                RecordingView(remoteControl: remoteControl)
                 ZoomView(remoteControl: remoteControl)
                 ScenePickerView(remoteControl: remoteControl)
                 MicView(remoteControl: remoteControl)

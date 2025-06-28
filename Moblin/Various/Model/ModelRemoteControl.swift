@@ -700,9 +700,11 @@ extension Model: RemoteControlAssistantDelegate {
         }
         if let streaming = state.streaming {
             remoteControlState.streaming = streaming
+            remoteControl.streaming = streaming
         }
         if let recording = state.recording {
             remoteControlState.recording = recording
+            remoteControl.recording = recording
         }
         if isWatchRemoteControl() {
             sendRemoteControlAssistantStatusToWatch()
