@@ -97,6 +97,7 @@ extension Model {
             if updateAudioInputs {
                 self.updateObsAudioInputs(sceneName: list.current)
             }
+            self.updateObsStatus()
         }, onError: { _ in
         })
     }
