@@ -62,7 +62,7 @@ private struct TeslaSettingsConfigurationView: View {
                     }
                 }
                 .disabled(database.tesla.vin.isEmpty || database.tesla.privateKey.isEmpty || tesla
-                    .teslaVehicleState != .connected)
+                    .vehicleState != .connected)
             } footer: {
                 Text("Remove keys in Controls → Locks on your Tesla's center screen.")
             }
@@ -101,7 +101,7 @@ struct TeslaSettingsView: View {
             }
             Section {
                 HCenter {
-                    Text(formatTeslaVehicleState(state: tesla.teslaVehicleState))
+                    Text(formatTeslaVehicleState(state: tesla.vehicleState))
                 }
             }
             Section {
@@ -112,7 +112,7 @@ struct TeslaSettingsView: View {
                         Text("Flash lights")
                     }
                 }
-                .disabled(!tesla.teslaVehicleInfotainmentConnected)
+                .disabled(!tesla.vehicleInfotainmentConnected)
             }
             Section {
                 Button {
@@ -122,7 +122,7 @@ struct TeslaSettingsView: View {
                         Text("Honk")
                     }
                 }
-                .disabled(!tesla.teslaVehicleInfotainmentConnected)
+                .disabled(!tesla.vehicleInfotainmentConnected)
             }
             Section {
                 Button {
@@ -132,7 +132,7 @@ struct TeslaSettingsView: View {
                         Text("Open trunk")
                     }
                 }
-                .disabled(!tesla.teslaVehicleVehicleSecurityConnected)
+                .disabled(!tesla.vehicleVehicleSecurityConnected)
             }
             Section {
                 Button {
@@ -142,7 +142,7 @@ struct TeslaSettingsView: View {
                         Text("Close trunk")
                     }
                 }
-                .disabled(!tesla.teslaVehicleVehicleSecurityConnected)
+                .disabled(!tesla.vehicleVehicleSecurityConnected)
             }
             Section {
                 Button {
@@ -152,7 +152,7 @@ struct TeslaSettingsView: View {
                         Text("Next media track")
                     }
                 }
-                .disabled(!tesla.teslaVehicleInfotainmentConnected)
+                .disabled(!tesla.vehicleInfotainmentConnected)
             }
             Section {
                 Button {
@@ -162,7 +162,7 @@ struct TeslaSettingsView: View {
                         Text("Previous media  track")
                     }
                 }
-                .disabled(!tesla.teslaVehicleInfotainmentConnected)
+                .disabled(!tesla.vehicleInfotainmentConnected)
             }
             Section {
                 Button {
@@ -172,7 +172,7 @@ struct TeslaSettingsView: View {
                         Text("Toggle media playback")
                     }
                 }
-                .disabled(!tesla.teslaVehicleInfotainmentConnected)
+                .disabled(!tesla.vehicleInfotainmentConnected)
             }
         }
         .navigationTitle("Tesla")

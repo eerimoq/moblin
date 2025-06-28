@@ -323,13 +323,13 @@ class StealthMode: ObservableObject {
 }
 
 class Tesla: ObservableObject {
-    var teslaVehicle: TeslaVehicle?
-    var teslaChargeState = CarServer_ChargeState()
-    var teslaDriveState = CarServer_DriveState()
-    var teslaMediaState = CarServer_MediaState()
-    @Published var teslaVehicleState: TeslaVehicleState?
-    @Published var teslaVehicleVehicleSecurityConnected = false
-    @Published var teslaVehicleInfotainmentConnected = false
+    var vehicle: TeslaVehicle?
+    var chargeState = CarServer_ChargeState()
+    var driveState = CarServer_DriveState()
+    var mediaState = CarServer_MediaState()
+    @Published var vehicleState: TeslaVehicleState?
+    @Published var vehicleVehicleSecurityConnected = false
+    @Published var vehicleInfotainmentConnected = false
 }
 
 class QuickButtonChat: ObservableObject {

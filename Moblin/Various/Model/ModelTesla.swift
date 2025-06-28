@@ -2,84 +2,84 @@ extension Model {
     func reloadTeslaVehicle() {
         stopTeslaVehicle()
         if database.tesla.enabled!, database.tesla.vin != "", database.tesla.privateKey != "" {
-            tesla.teslaVehicle = TeslaVehicle(vin: database.tesla.vin, privateKeyPem: database.tesla.privateKey)
-            tesla.teslaVehicle?.delegate = self
-            tesla.teslaVehicle?.start()
+            tesla.vehicle = TeslaVehicle(vin: database.tesla.vin, privateKeyPem: database.tesla.privateKey)
+            tesla.vehicle?.delegate = self
+            tesla.vehicle?.start()
         }
     }
 
     func stopTeslaVehicle() {
-        tesla.teslaVehicle?.delegate = nil
-        tesla.teslaVehicle?.stop()
-        tesla.teslaVehicle = nil
-        tesla.teslaVehicleState = nil
-        tesla.teslaChargeState = .init()
-        tesla.teslaDriveState = .init()
-        tesla.teslaMediaState = .init()
-        tesla.teslaVehicleVehicleSecurityConnected = false
-        tesla.teslaVehicleInfotainmentConnected = false
+        tesla.vehicle?.delegate = nil
+        tesla.vehicle?.stop()
+        tesla.vehicle = nil
+        tesla.vehicleState = nil
+        tesla.chargeState = .init()
+        tesla.driveState = .init()
+        tesla.mediaState = .init()
+        tesla.vehicleVehicleSecurityConnected = false
+        tesla.vehicleInfotainmentConnected = false
     }
 
     func teslaAddKeyToVehicle() {
-        tesla.teslaVehicle?.addKeyRequestWithRole(privateKeyPem: database.tesla.privateKey)
+        tesla.vehicle?.addKeyRequestWithRole(privateKeyPem: database.tesla.privateKey)
         makeToast(title: String(localized: "Tap Locks → Add Key in your Tesla and tap your key card"))
     }
 
     func teslaFlashLights() {
-        tesla.teslaVehicle?.flashLights()
+        tesla.vehicle?.flashLights()
     }
 
     func teslaHonk() {
-        tesla.teslaVehicle?.honk()
+        tesla.vehicle?.honk()
     }
 
     func teslaGetChargeState() {
-        tesla.teslaVehicle?.getChargeState { state in
-            self.tesla.teslaChargeState = state
+        tesla.vehicle?.getChargeState { state in
+            self.tesla.chargeState = state
         }
     }
 
     func teslaGetDriveState() {
-        tesla.teslaVehicle?.getDriveState { state in
-            self.tesla.teslaDriveState = state
+        tesla.vehicle?.getDriveState { state in
+            self.tesla.driveState = state
         }
     }
 
     func teslaGetMediaState() {
-        tesla.teslaVehicle?.getMediaState { state in
-            self.tesla.teslaMediaState = state
+        tesla.vehicle?.getMediaState { state in
+            self.tesla.mediaState = state
         }
     }
 
     func teslaOpenTrunk() {
-        tesla.teslaVehicle?.openTrunk()
+        tesla.vehicle?.openTrunk()
     }
 
     func teslaCloseTrunk() {
-        tesla.teslaVehicle?.closeTrunk()
+        tesla.vehicle?.closeTrunk()
     }
 
     func mediaNextTrack() {
-        tesla.teslaVehicle?.mediaNextTrack()
+        tesla.vehicle?.mediaNextTrack()
     }
 
     func mediaPreviousTrack() {
-        tesla.teslaVehicle?.mediaPreviousTrack()
+        tesla.vehicle?.mediaPreviousTrack()
     }
 
     func mediaTogglePlayback() {
-        tesla.teslaVehicle?.mediaTogglePlayback()
+        tesla.vehicle?.mediaTogglePlayback()
     }
 
     func textEffectTeslaBatteryLevel() -> String {
         var teslaBatteryLevel = "-"
-        if tesla.teslaChargeState.optionalBatteryLevel != nil {
-            teslaBatteryLevel = "\(tesla.teslaChargeState.batteryLevel) %"
-            if tesla.teslaChargeState.chargerPower != 0 {
-                teslaBatteryLevel += " \(tesla.teslaChargeState.chargerPower) kW"
+        if tesla.chargeState.optionalBatteryLevel != nil {
+            teslaBatteryLevel = "\(tesla.chargeState.batteryLevel) %"
+            if tesla.chargeState.chargerPower != 0 {
+                teslaBatteryLevel += " \(tesla.chargeState.chargerPower) kW"
             }
-            if tesla.teslaChargeState.optionalMinutesToChargeLimit != nil {
-                teslaBatteryLevel += " \(tesla.teslaChargeState.minutesToChargeLimit) minutes left"
+            if tesla.chargeState.optionalMinutesToChargeLimit != nil {
+                teslaBatteryLevel += " \(tesla.chargeState.minutesToChargeLimit) minutes left"
             }
         }
         return teslaBatteryLevel
@@ -87,7 +87,7 @@ extension Model {
 
     func textEffectTeslaDrive() -> String {
         var teslaDrive = "-"
-        if let shift = tesla.teslaDriveState.shiftState.type {
+        if let shift = tesla.driveState.shiftState.type {
             switch shift {
             case .invalid:
                 teslaDrive = "-"
@@ -103,10 +103,10 @@ extension Model {
                 teslaDrive = "SNA"
             }
             if teslaDrive != "P" {
-                if case let .speed(speed) = tesla.teslaDriveState.optionalSpeed {
+                if case let .speed(speed) = tesla.driveState.optionalSpeed {
                     teslaDrive += " \(speed) mph"
                 }
-                if case let .power(power) = tesla.teslaDriveState.optionalPower {
+                if case let .power(power) = tesla.driveState.optionalPower {
                     teslaDrive += " \(power) kW"
                 }
             }
@@ -116,8 +116,8 @@ extension Model {
 
     func textEffectTeslaMedia() -> String {
         var teslaMedia = "-"
-        if case let .nowPlayingArtist(artist) = tesla.teslaMediaState.optionalNowPlayingArtist,
-           case let .nowPlayingTitle(title) = tesla.teslaMediaState.optionalNowPlayingTitle
+        if case let .nowPlayingArtist(artist) = tesla.mediaState.optionalNowPlayingArtist,
+           case let .nowPlayingTitle(title) = tesla.mediaState.optionalNowPlayingTitle
         {
             if artist.isEmpty {
                 teslaMedia = title
@@ -139,14 +139,14 @@ extension Model: TeslaVehicleDelegate {
         default:
             break
         }
-        tesla.teslaVehicleState = state
+        tesla.vehicleState = state
     }
 
     func teslaVehicleVehicleSecurityConnected(_: TeslaVehicle) {
-        tesla.teslaVehicleVehicleSecurityConnected = true
+        tesla.vehicleVehicleSecurityConnected = true
     }
 
     func teslaVehicleInfotainmentConnected(_: TeslaVehicle) {
-        tesla.teslaVehicleInfotainmentConnected = true
+        tesla.vehicleInfotainmentConnected = true
     }
 }
