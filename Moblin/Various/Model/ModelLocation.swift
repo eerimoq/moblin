@@ -2,12 +2,12 @@ import CoreLocation
 
 extension Model {
     func updateLocation() {
-        var newLocation = locationManager.status()
+        var location = locationManager.status()
         if let realtimeIrl {
-            newLocation += realtimeIrl.status()
+            location += realtimeIrl.status()
         }
-        if location != newLocation {
-            location = newLocation
+        if location != status.location {
+            status.location = location
         }
     }
 

@@ -381,7 +381,7 @@ extension Model {
             topRight.uptime = RemoteControlStatusItem(message: streamUptime.uptime)
         }
         if isLocationEnabled() {
-            topRight.location = RemoteControlStatusItem(message: location)
+            topRight.location = RemoteControlStatusItem(message: status.location)
         }
         if isStatusBondingActive() {
             topRight.srtla = RemoteControlStatusItem(message: bonding.statistics)

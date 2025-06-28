@@ -277,6 +277,7 @@ class Status: ObservableObject {
     @Published var heartRateDeviceState: HeartRateDeviceState?
     @Published var digitalClock = noValue
     @Published var streamText = noValue
+    @Published var location = noValue
 }
 
 class Toast: ObservableObject {
@@ -370,13 +371,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var teslaVehicleVehicleSecurityConnected = false
     @Published var teslaVehicleInfotainmentConnected = false
     @Published var quickButtonSettingsButton: SettingsQuickButton?
-    @Published var debugOverlay = DebugOverlayProvider()
     @Published var streamingHistory = StreamingHistory()
     @Published var bluetoothAllowed = false
     @Published var sceneSettingsPanelSceneId = 1
     @Published var snapshotCountdown = 0
     @Published var currentSnapshotJob: SnapshotJob?
-    @Published var location = noValue
     @Published var showLoadSettingsFailed = false
     @Published var cameraControlEnabled = false
     var streamState = StreamState.disconnected {
@@ -385,6 +384,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
+    var debugOverlay = DebugOverlayProvider()
     let stealthMode = StealthMode()
     let drawOnStream = DrawOnStream()
     let cosmetics = Cosmetics()

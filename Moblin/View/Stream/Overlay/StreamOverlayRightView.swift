@@ -366,7 +366,7 @@ private struct StatusesView: View {
         if model.isShowingStatusLocation() {
             StreamOverlayIconAndTextView(
                 icon: "location",
-                text: model.location,
+                text: status.location,
                 textPlacement: textPlacement
             )
         }
