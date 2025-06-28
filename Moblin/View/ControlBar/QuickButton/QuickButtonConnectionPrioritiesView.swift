@@ -1,6 +1,22 @@
 import Foundation
 import SwiftUI
 
+private struct NoConnectionPrioritiesView: View {
+    let protocolName: String
+
+    var body: some View {
+        Form {
+            Section {
+                Text("""
+                Connection priorities are not supported by \(protocolName). Only SRTLA supports \
+                connection priorities.
+                """)
+            }
+        }
+        .navigationTitle("Connection priorities")
+    }
+}
+
 struct QuickButtonConnectionPrioritiesView: View {
     @EnvironmentObject var model: Model
 
@@ -9,7 +25,7 @@ struct QuickButtonConnectionPrioritiesView: View {
         case .srt:
             StreamSrtConnectionPriorityView(stream: model.stream)
         default:
-            EmptyView()
+            NoConnectionPrioritiesView(protocolName: model.stream.protocolString())
         }
     }
 }
