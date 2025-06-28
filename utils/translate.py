@@ -56,7 +56,12 @@ def main():
 
                     print(f'Translating "{english}" to {xcode_language}')
                     translator = GoogleTranslator(source='en', target=google_language)
-                    translated = translator.translate(english)
+
+                    try:
+                        translated = translator.translate(english)
+                    except:
+                        translated = english
+
                     localizations[xcode_language] = {
                         'stringUnit': {
                             'state': 'needs_review',
