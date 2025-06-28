@@ -2,12 +2,13 @@ import AVFoundation
 import SwiftUI
 
 private struct ObsStartStopStreamingView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
+    @ObservedObject var obsQuickButton: QuickButtonObs
     @State private var isPresentingStartStreamingConfirm = false
     @State private var isPresentingStopStreamingConfirm = false
 
     var body: some View {
-        if model.obsStreamingState == .stopped {
+        if obsQuickButton.obsStreamingState == .stopped {
             Section {
                 HStack {
                     Spacer()
@@ -28,7 +29,7 @@ private struct ObsStartStopStreamingView: View {
                 .foregroundColor(Color(uiColor: .secondarySystemGroupedBackground))
                 .overlay(RoundedRectangle(cornerRadius: 10)
                     .stroke(.blue, lineWidth: 2)))
-        } else if model.obsStreamingState == .starting {
+        } else if obsQuickButton.obsStreamingState == .starting {
             Section {
                 HStack {
                     Spacer()
@@ -38,7 +39,7 @@ private struct ObsStartStopStreamingView: View {
             }
             .foregroundColor(.white)
             .listRowBackground(Color.gray)
-        } else if model.obsStreamingState == .started {
+        } else if obsQuickButton.obsStreamingState == .started {
             Section {
                 HStack {
                     Spacer()
@@ -57,7 +58,7 @@ private struct ObsStartStopStreamingView: View {
             }
             .foregroundColor(.white)
             .listRowBackground(Color.blue)
-        } else if model.obsStreamingState == .stopping {
+        } else if obsQuickButton.obsStreamingState == .stopping {
             Section {
                 HStack {
                     Spacer()
@@ -80,12 +81,13 @@ private struct ObsStartStopStreamingView: View {
 }
 
 private struct ObsStartStopRecordingView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
+    @ObservedObject var obsQuickButton: QuickButtonObs
     @State private var isPresentingStartRecordingConfirm: Bool = false
     @State private var isPresentingStopRecordingConfirm: Bool = false
 
     var body: some View {
-        if model.obsRecordingState == .stopped {
+        if obsQuickButton.obsRecordingState == .stopped {
             Section {
                 HStack {
                     Spacer()
@@ -106,7 +108,7 @@ private struct ObsStartStopRecordingView: View {
                 .foregroundColor(Color(uiColor: .secondarySystemGroupedBackground))
                 .overlay(RoundedRectangle(cornerRadius: 10)
                     .stroke(.blue, lineWidth: 2)))
-        } else if model.obsRecordingState == .starting {
+        } else if obsQuickButton.obsRecordingState == .starting {
             Section {
                 HStack {
                     Spacer()
@@ -116,7 +118,7 @@ private struct ObsStartStopRecordingView: View {
             }
             .foregroundColor(.white)
             .listRowBackground(Color.gray)
-        } else if model.obsRecordingState == .started {
+        } else if obsQuickButton.obsRecordingState == .started {
             Section {
                 HStack {
                     Spacer()
@@ -135,7 +137,7 @@ private struct ObsStartStopRecordingView: View {
             }
             .foregroundColor(.white)
             .listRowBackground(Color.blue)
-        } else if model.obsRecordingState == .stopping {
+        } else if obsQuickButton.obsRecordingState == .stopping {
             Section {
                 HStack {
                     Spacer()
@@ -175,8 +177,8 @@ struct QuickButtonObsView: View {
                     Text("Unable to connect the OBS server. Retrying every 5 seconds.")
                 }
             } else {
-                ObsStartStopStreamingView()
-                ObsStartStopRecordingView()
+                ObsStartStopStreamingView(model: model, obsQuickButton: model.obsQuickButton)
+                ObsStartStopRecordingView(model: model, obsQuickButton: model.obsQuickButton)
                 Section {
                     if let image = model.obsScreenshot {
                         Image(image, scale: 1, label: Text(""))

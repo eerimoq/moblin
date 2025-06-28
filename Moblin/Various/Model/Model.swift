@@ -345,7 +345,10 @@ class ExternalDisplay: ObservableObject {
     @Published var chatEnabled = false
 }
 
-class QuickButtonObs: ObservableObject {}
+class QuickButtonObs: ObservableObject {
+    @Published var obsStreamingState: ObsOutputState = .stopped
+    @Published var obsRecordingState: ObsOutputState = .stopped
+}
 
 final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var isPresentingWidgetWizard = false
@@ -375,8 +378,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var obsCurrentScene: String = ""
     @Published var currentStreamId = UUID()
     @Published var obsStreaming = false
-    @Published var obsStreamingState: ObsOutputState = .stopped
-    @Published var obsRecordingState: ObsOutputState = .stopped
     @Published var obsFixOngoing = false
     @Published var obsScreenshot: CGImage?
     @Published var showTwitchAuth = false
@@ -398,6 +399,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
+    let obsQuickButton = QuickButtonObs()
     let streamingHistory = StreamingHistory()
     let quickButtonChatState = QuickButtonChat()
     let externalDisplay = ExternalDisplay()
