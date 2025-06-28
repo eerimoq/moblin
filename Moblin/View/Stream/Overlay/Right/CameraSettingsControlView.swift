@@ -102,7 +102,7 @@ private struct WhiteBalanceView: View {
                     in: 0 ... 1,
                     step: 0.01,
                     onEditingChanged: { begin in
-                        model.editingManualWhiteBalance = begin
+                        model.camera.editingManualWhiteBalance = begin
                         guard !begin else {
                             return
                         }
@@ -110,7 +110,7 @@ private struct WhiteBalanceView: View {
                     }
                 )
                 .onChange(of: camera.manualWhiteBalance) { _ in
-                    if model.editingManualWhiteBalance {
+                    if model.camera.editingManualWhiteBalance {
                         model.setManualWhiteBalance(factor: camera.manualWhiteBalance)
                     }
                 }
@@ -155,7 +155,7 @@ private struct IsoView: View {
                     in: 0 ... 1,
                     step: 0.01,
                     onEditingChanged: { begin in
-                        model.editingManualIso = begin
+                        camera.editingManualIso = begin
                         guard !begin else {
                             return
                         }
@@ -163,7 +163,7 @@ private struct IsoView: View {
                     }
                 )
                 .onChange(of: camera.manualIso) { _ in
-                    if model.editingManualIso {
+                    if camera.editingManualIso {
                         model.setManualIso(factor: camera.manualIso)
                     }
                 }
@@ -208,7 +208,7 @@ struct FocusView: View {
                     in: 0 ... 1,
                     step: 0.01,
                     onEditingChanged: { begin in
-                        model.editingManualFocus = begin
+                        camera.editingManualFocus = begin
                         guard !begin else {
                             return
                         }
@@ -216,7 +216,7 @@ struct FocusView: View {
                     }
                 )
                 .onChange(of: camera.manualFocus) { _ in
-                    if model.editingManualFocus {
+                    if camera.editingManualFocus {
                         model.setManualFocus(lensPosition: camera.manualFocus)
                     }
                 }

@@ -44,7 +44,7 @@ extension Model {
         } catch let error as NSError {
             logger.error("while locking device for focusPointOfInterest: \(error)")
         }
-        manualFocusesEnabled[device] = false
+        camera.manualFocusesEnabled[device] = false
         camera.manualFocusEnabled = false
     }
 
@@ -64,7 +64,7 @@ extension Model {
         } catch let error as NSError {
             logger.error("while locking device for focusPointOfInterest: \(error)")
         }
-        manualFocusesEnabled[device] = false
+        camera.manualFocusesEnabled[device] = false
         camera.manualFocusEnabled = false
     }
 
@@ -84,21 +84,21 @@ extension Model {
             logger.error("while locking device for manual focus: \(error)")
         }
         camera.setManualFocusPoint(value: nil)
-        manualFocusesEnabled[device] = true
+        camera.manualFocusesEnabled[device] = true
         camera.manualFocusEnabled = true
-        manualFocuses[device] = lensPosition
+        camera.manualFocuses[device] = lensPosition
     }
 
     func setFocusAfterCameraAttach() {
         guard let device = cameraDevice else {
             return
         }
-        camera.manualFocus = manualFocuses[device] ?? device.lensPosition
-        camera.manualFocusEnabled = manualFocusesEnabled[device] ?? false
+        camera.manualFocus = camera.manualFocuses[device] ?? device.lensPosition
+        camera.manualFocusEnabled = camera.manualFocusesEnabled[device] ?? false
         if !camera.manualFocusEnabled {
             setAutoFocus()
         }
-        if focusObservation != nil {
+        if camera.focusObservation != nil {
             stopObservingFocus()
             startObservingFocus()
         }
@@ -117,20 +117,20 @@ extension Model {
             return
         }
         camera.manualFocus = device.lensPosition
-        focusObservation = device.observe(\.lensPosition) { [weak self] _, _ in
+        camera.focusObservation = device.observe(\.lensPosition) { [weak self] _, _ in
             guard let self else {
                 return
             }
-            guard !self.editingManualFocus else {
+            guard !self.camera.editingManualFocus else {
                 return
             }
-            self.manualFocuses[device] = device.lensPosition
+            self.camera.manualFocuses[device] = device.lensPosition
             self.camera.manualFocus = device.lensPosition
         }
     }
 
     func stopObservingFocus() {
-        focusObservation = nil
+        camera.focusObservation = nil
     }
 
     func setAutoIso() {
@@ -147,7 +147,7 @@ extension Model {
         } catch let error as NSError {
             logger.error("while locking device for continuous auto exposure: \(error)")
         }
-        manualIsosEnabled[device] = false
+        camera.manualIsosEnabled[device] = false
         camera.manualIsoEnabled = false
     }
 
@@ -167,18 +167,18 @@ extension Model {
         } catch let error as NSError {
             logger.error("while locking device for manual exposure: \(error)")
         }
-        manualIsosEnabled[device] = true
+        camera.manualIsosEnabled[device] = true
         camera.manualIsoEnabled = true
-        manualIsos[device] = iso
+        camera.manualIsos[device] = iso
     }
 
     func setIsoAfterCameraAttach(device: AVCaptureDevice) {
-        camera.manualIso = manualIsos[device] ?? factorFromIso(device: device, iso: device.iso)
-        camera.manualIsoEnabled = manualIsosEnabled[device] ?? false
+        camera.manualIso = camera.manualIsos[device] ?? factorFromIso(device: device, iso: device.iso)
+        camera.manualIsoEnabled = camera.manualIsosEnabled[device] ?? false
         if camera.manualIsoEnabled {
             setManualIso(factor: camera.manualIso)
         }
-        if isoObservation != nil {
+        if camera.isoObservation != nil {
             stopObservingIso()
             startObservingIso()
         }
@@ -197,21 +197,21 @@ extension Model {
             return
         }
         camera.manualIso = factorFromIso(device: device, iso: device.iso)
-        isoObservation = device.observe(\.iso) { [weak self] _, _ in
+        camera.isoObservation = device.observe(\.iso) { [weak self] _, _ in
             guard let self else {
                 return
             }
-            guard !self.editingManualIso else {
+            guard !self.camera.editingManualIso else {
                 return
             }
             let iso = factorFromIso(device: device, iso: device.iso)
-            self.manualIsos[device] = iso
+            self.camera.manualIsos[device] = iso
             self.camera.manualIso = iso
         }
     }
 
     func stopObservingIso() {
-        isoObservation = nil
+        camera.isoObservation = nil
     }
 
     func setAutoWhiteBalance() {
@@ -230,7 +230,7 @@ extension Model {
         } catch let error as NSError {
             logger.error("while locking device for continuous auto white balance: \(error)")
         }
-        manualWhiteBalancesEnabled[device] = false
+        camera.manualWhiteBalancesEnabled[device] = false
         camera.manualWhiteBalanceEnabled = false
         updateImageButtonState()
     }
@@ -249,18 +249,18 @@ extension Model {
         } catch let error as NSError {
             logger.error("while locking device for manual white balance: \(error)")
         }
-        manualWhiteBalancesEnabled[device] = true
+        camera.manualWhiteBalancesEnabled[device] = true
         camera.manualWhiteBalanceEnabled = true
-        manualWhiteBalances[device] = factor
+        camera.manualWhiteBalances[device] = factor
     }
 
     func setWhiteBalanceAfterCameraAttach(device: AVCaptureDevice) {
-        camera.manualWhiteBalance = manualWhiteBalances[device] ?? 0.5
-        camera.manualWhiteBalanceEnabled = manualWhiteBalancesEnabled[device] ?? false
+        camera.manualWhiteBalance = camera.manualWhiteBalances[device] ?? 0.5
+        camera.manualWhiteBalanceEnabled = camera.manualWhiteBalancesEnabled[device] ?? false
         if camera.manualWhiteBalanceEnabled {
             setManualWhiteBalance(factor: camera.manualWhiteBalance)
         }
-        if whiteBalanceObservation != nil {
+        if camera.whiteBalanceObservation != nil {
             stopObservingWhiteBalance()
             startObservingWhiteBalance()
         }
@@ -282,24 +282,24 @@ extension Model {
             device: device,
             gains: device.deviceWhiteBalanceGains.clamped(maxGain: device.maxWhiteBalanceGain)
         )
-        whiteBalanceObservation = device.observe(\.deviceWhiteBalanceGains) { [weak self] _, _ in
+        camera.whiteBalanceObservation = device.observe(\.deviceWhiteBalanceGains) { [weak self] _, _ in
             guard let self else {
                 return
             }
-            guard !self.editingManualWhiteBalance else {
+            guard !self.camera.editingManualWhiteBalance else {
                 return
             }
             let factor = factorFromWhiteBalance(
                 device: device,
                 gains: device.deviceWhiteBalanceGains.clamped(maxGain: device.maxWhiteBalanceGain)
             )
-            self.manualWhiteBalances[device] = factor
+            self.camera.manualWhiteBalances[device] = factor
             self.camera.manualWhiteBalance = factor
         }
     }
 
     func stopObservingWhiteBalance() {
-        whiteBalanceObservation = nil
+        camera.whiteBalanceObservation = nil
     }
 
     func listCameras(position: AVCaptureDevice.Position) -> [Camera] {

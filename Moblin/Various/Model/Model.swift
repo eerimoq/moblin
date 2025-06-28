@@ -155,6 +155,18 @@ class MediaPlayerPlayer: ObservableObject {
 }
 
 class CameraState: ObservableObject {
+    var manualFocusesEnabled: [AVCaptureDevice: Bool] = [:]
+    var manualFocuses: [AVCaptureDevice: Float] = [:]
+    var editingManualFocus = false
+    var focusObservation: NSKeyValueObservation?
+    var manualIsosEnabled: [AVCaptureDevice: Bool] = [:]
+    var manualIsos: [AVCaptureDevice: Float] = [:]
+    var editingManualIso = false
+    var isoObservation: NSKeyValueObservation?
+    var manualWhiteBalancesEnabled: [AVCaptureDevice: Bool] = [:]
+    var manualWhiteBalances: [AVCaptureDevice: Float] = [:]
+    var editingManualWhiteBalance = false
+    var whiteBalanceObservation: NSKeyValueObservation?
     @Published var bias: Float = 0.0
     @Published var manualFocus: Float = 1.0
     @Published var manualFocusEnabled = false
@@ -418,18 +430,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     let bonding = Bonding()
     var selectedFps: Int?
     var autoFps = false
-    var manualFocusesEnabled: [AVCaptureDevice: Bool] = [:]
-    var manualFocuses: [AVCaptureDevice: Float] = [:]
-    var editingManualFocus = false
-    var focusObservation: NSKeyValueObservation?
-    var manualIsosEnabled: [AVCaptureDevice: Bool] = [:]
-    var manualIsos: [AVCaptureDevice: Float] = [:]
-    var editingManualIso = false
-    var isoObservation: NSKeyValueObservation?
-    var manualWhiteBalancesEnabled: [AVCaptureDevice: Bool] = [:]
-    var manualWhiteBalances: [AVCaptureDevice: Float] = [:]
-    var editingManualWhiteBalance = false
-    var whiteBalanceObservation: NSKeyValueObservation?
     private var manualFocusMotionAttitude: CMAttitude?
     private var findFaceTimer: Timer?
     var streaming = false
