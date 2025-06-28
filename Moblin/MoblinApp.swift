@@ -37,7 +37,7 @@ struct ExternalScreenContentView: View {
     }
 
     var body: some View {
-        ExternalDisplayView()
+        ExternalDisplayView(externalDisplay: model.externalDisplay)
             .ignoresSafeArea()
             .environmentObject(model)
     }

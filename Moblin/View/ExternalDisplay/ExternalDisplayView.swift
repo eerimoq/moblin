@@ -225,10 +225,11 @@ private struct ExternalDisplayStreamPreviewView: UIViewRepresentable {
 
 struct ExternalDisplayView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var externalDisplay: ExternalDisplay
 
     var body: some View {
         ZStack {
-            if model.externalDisplayChatEnabled {
+            if externalDisplay.chatEnabled {
                 ChatView(chat: model.externalDisplayChat)
             } else {
                 ExternalDisplayStreamPreviewView()

@@ -110,7 +110,7 @@ private struct MenuView: View {
             }
         case .chat:
             NavigationStack {
-                QuickButtonChatView()
+                QuickButtonChatView(quickButtonChat: model.quickButtonChatState)
             }
         case .djiDevices:
             NavigationStack {

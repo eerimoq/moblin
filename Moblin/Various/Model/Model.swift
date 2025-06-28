@@ -332,6 +332,21 @@ class Tesla: ObservableObject {
     @Published var teslaVehicleInfotainmentConnected = false
 }
 
+class QuickButtonChat: ObservableObject {
+    @Published var showAllQuickButtonChatMessage = true
+    @Published var showFirstTimeChatterMessage = true
+    @Published var showNewFollowerMessage = true
+    @Published var quickButtonChatAlertsPosts: Deque<ChatPost> = []
+    @Published var pausedQuickButtonChatAlertsPostsCount: Int = 0
+    @Published var quickButtonChatAlertsPaused = false
+}
+
+class ExternalDisplay: ObservableObject {
+    @Published var chatEnabled = false
+}
+
+class QuickButtonObs: ObservableObject {}
+
 final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var isPresentingWidgetWizard = false
     @Published var goProLaunchLiveStreamSelection: UUID?
@@ -346,13 +361,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var mics: [Mic] = []
     @Published var isLive = false
     @Published var isRecording = false
-    @Published var externalDisplayChatEnabled = false
-    @Published var showAllQuickButtonChatMessage = true
-    @Published var showFirstTimeChatterMessage = true
-    @Published var showNewFollowerMessage = true
-    @Published var quickButtonChatAlertsPosts: Deque<ChatPost> = []
-    @Published var pausedQuickButtonChatAlertsPostsCount: Int = 0
-    @Published var quickButtonChatAlertsPaused = false
     @Published var browsers: [Browser] = []
     @Published var isTorchOn = false
     @Published var buttonPairs: [[QuickButtonPair]] = Array(repeating: [], count: controlBarPages)
@@ -378,7 +386,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var showBrowser = false
     @Published var webBrowserUrl: String = ""
     @Published var quickButtonSettingsButton: SettingsQuickButton?
-    let streamingHistory = StreamingHistory()
     @Published var bluetoothAllowed = false
     @Published var sceneSettingsPanelSceneId = 1
     @Published var snapshotCountdown = 0
@@ -391,6 +398,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
+    let streamingHistory = StreamingHistory()
+    let quickButtonChatState = QuickButtonChat()
+    let externalDisplay = ExternalDisplay()
     let tesla = Tesla()
     let debugOverlay = DebugOverlayProvider()
     let stealthMode = StealthMode()
@@ -886,8 +896,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         setExternalDisplayContent()
         portraitVideoOffsetFromTop = database.portraitVideoOffsetFromTop
         audioUnitRemoveWindNoise = database.debug.removeWindNoise
-        showFirstTimeChatterMessage = database.chat.showFirstTimeChatterMessage
-        showNewFollowerMessage = database.chat.showNewFollowerMessage
+        quickButtonChatState.showFirstTimeChatterMessage = database.chat.showFirstTimeChatterMessage
+        quickButtonChatState.showNewFollowerMessage = database.chat.showNewFollowerMessage
         autoSceneSwitcher.currentSwitcherId = database.autoSceneSwitchers.switcherId
         supportsAppleLog = hasAppleLog()
         chat.interactiveChat = getGlobalButton(type: .interactiveChat)?.isOn ?? false
@@ -1173,13 +1183,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func setExternalDisplayContent() {
         switch database.externalDisplayContent {
         case .stream:
-            externalDisplayChatEnabled = false
+            externalDisplay.chatEnabled = false
         case .cleanStream:
-            externalDisplayChatEnabled = false
+            externalDisplay.chatEnabled = false
         case .chat:
-            externalDisplayChatEnabled = true
+            externalDisplay.chatEnabled = true
         case .mirror:
-            externalDisplayChatEnabled = false
+            externalDisplay.chatEnabled = false
         }
         setCleanExternalDisplay()
         updateExternalMonitorWindow()

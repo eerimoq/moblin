@@ -295,13 +295,14 @@ private struct AlertsMessagesView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var chatSettings: SettingsChat
     @ObservedObject var chat: ChatProvider
+    @ObservedObject var quickButtonChat: QuickButtonChat
     @Binding var selectedPost: ChatPost?
 
     private func shouldShowMessage(highlight: ChatHighlight) -> Bool {
-        if highlight.kind == .firstMessage && !model.showFirstTimeChatterMessage {
+        if highlight.kind == .firstMessage && !quickButtonChat.showFirstTimeChatterMessage {
             return false
         }
-        if highlight.kind == .newFollower && !model.showNewFollowerMessage {
+        if highlight.kind == .newFollower && !quickButtonChat.showNewFollowerMessage {
             return false
         }
         if highlight.kind == .reply {
@@ -324,7 +325,7 @@ private struct AlertsMessagesView: View {
                             model.pauseQuickButtonChatAlerts()
                         }
                         .frame(height: 1)
-                    ForEach(model.quickButtonChatAlertsPosts) { post in
+                    ForEach(quickButtonChat.quickButtonChatAlertsPosts) { post in
                         if post.user != nil {
                             if let highlight = post.highlight {
                                 if shouldShowMessage(highlight: highlight) {
@@ -376,16 +377,20 @@ private struct AlertsMessagesView: View {
 
 private struct ChatAlertsView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var quickButtonChat: QuickButtonChat
     @Binding var selectedPost: ChatPost?
 
     var body: some View {
         ZStack {
             AlertsMessagesView(chatSettings: model.database.chat,
                                chat: model.quickButtonChat,
+                               quickButtonChat: quickButtonChat,
                                selectedPost: $selectedPost)
-            if model.quickButtonChatAlertsPaused {
+            if quickButtonChat.quickButtonChatAlertsPaused {
                 ChatInfo(
-                    message: String(localized: "Chat paused: \(model.pausedQuickButtonChatAlertsPostsCount) new alerts")
+                    message: String(
+                        localized: "Chat paused: \(quickButtonChat.pausedQuickButtonChatAlertsPostsCount) new alerts"
+                    )
                 )
                 .padding(2)
             }
@@ -396,13 +401,13 @@ private struct ChatAlertsView: View {
 
 private struct ControlAlertsButtonView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var quickButtonChat: QuickButtonChat
 
     var body: some View {
         Button {
-            model.showAllQuickButtonChatMessage.toggle()
+            quickButtonChat.showAllQuickButtonChatMessage.toggle()
         } label: {
-            Image(systemName: model
-                .showAllQuickButtonChatMessage ? "megaphone" : "megaphone.fill")
+            Image(systemName: quickButtonChat.showAllQuickButtonChatMessage ? "megaphone" : "megaphone.fill")
                 .font(.title)
                 .padding(5)
         }
@@ -427,34 +432,34 @@ private struct ControlView: View {
         }
         .padding(5)
         .foregroundColor(.white)
-        ControlAlertsButtonView()
+        ControlAlertsButtonView(quickButtonChat: model.quickButtonChatState)
     }
 }
 
 private struct AlertsControlView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var quickButtonChat: QuickButtonChat
     @State var message: String = ""
 
     var body: some View {
         Button {
-            model.showFirstTimeChatterMessage.toggle()
-            model.database.chat.showFirstTimeChatterMessage = model.showFirstTimeChatterMessage
+            quickButtonChat.showFirstTimeChatterMessage.toggle()
+            model.database.chat.showFirstTimeChatterMessage = quickButtonChat.showFirstTimeChatterMessage
         } label: {
-            Image(systemName: model
-                .showFirstTimeChatterMessage ? "bubble.left.fill" : "bubble.left")
+            Image(systemName: quickButtonChat.showFirstTimeChatterMessage ? "bubble.left.fill" : "bubble.left")
                 .font(.title)
                 .padding(5)
         }
         Button {
-            model.showNewFollowerMessage.toggle()
-            model.database.chat.showNewFollowerMessage = model.showNewFollowerMessage
+            quickButtonChat.showNewFollowerMessage.toggle()
+            model.database.chat.showNewFollowerMessage = quickButtonChat.showNewFollowerMessage
         } label: {
-            Image(systemName: model.showNewFollowerMessage ? "medal.fill" : "medal")
+            Image(systemName: quickButtonChat.showNewFollowerMessage ? "medal.fill" : "medal")
                 .font(.title)
                 .padding(5)
         }
         Spacer()
-        ControlAlertsButtonView()
+        ControlAlertsButtonView(quickButtonChat: quickButtonChat)
     }
 }
 
@@ -584,22 +589,23 @@ private struct ActionButtonsView: View {
 
 struct QuickButtonChatView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var quickButtonChat: QuickButtonChat
     @State var message: String = ""
     @State var selectedPost: ChatPost?
 
     var body: some View {
         ZStack {
             VStack {
-                if model.showAllQuickButtonChatMessage {
+                if quickButtonChat.showAllQuickButtonChatMessage {
                     ChatView(model: model, chat: model.quickButtonChat, selectedPost: $selectedPost)
                 } else {
-                    ChatAlertsView(selectedPost: $selectedPost)
+                    ChatAlertsView(quickButtonChat: quickButtonChat, selectedPost: $selectedPost)
                 }
                 HStack {
-                    if model.showAllQuickButtonChatMessage {
+                    if quickButtonChat.showAllQuickButtonChatMessage {
                         ControlView(message: $message)
                     } else {
-                        AlertsControlView()
+                        AlertsControlView(quickButtonChat: quickButtonChat)
                     }
                 }
                 .frame(height: 50)

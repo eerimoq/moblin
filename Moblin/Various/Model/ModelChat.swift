@@ -164,26 +164,26 @@ extension Model {
     }
 
     func pauseQuickButtonChatAlerts() {
-        quickButtonChatAlertsPaused = true
-        pausedQuickButtonChatAlertsPostsCount = 0
+        quickButtonChatState.quickButtonChatAlertsPaused = true
+        quickButtonChatState.pausedQuickButtonChatAlertsPostsCount = 0
     }
 
     func endOfQuickButtonChatAlertsReachedWhenPaused() {
         while let post = pausedQuickButtonChatAlertsPosts.popFirst() {
             if post.user == nil {
-                if let lastPost = quickButtonChatAlertsPosts.first, lastPost.user == nil {
+                if let lastPost = quickButtonChatState.quickButtonChatAlertsPosts.first, lastPost.user == nil {
                     continue
                 }
                 if pausedQuickButtonChatAlertsPosts.isEmpty {
                     continue
                 }
             }
-            if quickButtonChatAlertsPosts.count > maximumNumberOfInteractiveChatMessages - 1 {
-                quickButtonChatAlertsPosts.removeLast()
+            if quickButtonChatState.quickButtonChatAlertsPosts.count > maximumNumberOfInteractiveChatMessages - 1 {
+                quickButtonChatState.quickButtonChatAlertsPosts.removeLast()
             }
-            quickButtonChatAlertsPosts.prepend(post)
+            quickButtonChatState.quickButtonChatAlertsPosts.prepend(post)
         }
-        quickButtonChatAlertsPaused = false
+        quickButtonChatState.quickButtonChatAlertsPaused = false
     }
 
     func removeOldChatMessages(now: ContinuousClock.Instant) {
@@ -217,18 +217,21 @@ extension Model {
         }
         chat.update()
         quickButtonChat.update()
-        if externalDisplayChatEnabled {
+        if externalDisplay.chatEnabled {
             externalDisplayChat.update()
         }
-        if quickButtonChatAlertsPaused {
+        if quickButtonChatState.quickButtonChatAlertsPaused {
             // The red line is one post.
-            pausedQuickButtonChatAlertsPostsCount = max(pausedQuickButtonChatAlertsPosts.count - 1, 0)
+            quickButtonChatState.pausedQuickButtonChatAlertsPostsCount = max(
+                pausedQuickButtonChatAlertsPosts.count - 1,
+                0
+            )
         } else {
             while let post = newQuickButtonChatAlertsPosts.popFirst() {
-                if quickButtonChatAlertsPosts.count > maximumNumberOfInteractiveChatMessages - 1 {
-                    quickButtonChatAlertsPosts.removeLast()
+                if quickButtonChatState.quickButtonChatAlertsPosts.count > maximumNumberOfInteractiveChatMessages - 1 {
+                    quickButtonChatState.quickButtonChatAlertsPosts.removeLast()
                 }
-                quickButtonChatAlertsPosts.prepend(post)
+                quickButtonChatState.quickButtonChatAlertsPosts.prepend(post)
             }
         }
     }
@@ -317,7 +320,7 @@ extension Model {
         chat.reset()
         quickButtonChat.reset()
         externalDisplayChat.reset()
-        quickButtonChatAlertsPosts = []
+        quickButtonChatState.quickButtonChatAlertsPosts = []
         pausedQuickButtonChatAlertsPosts = []
         newQuickButtonChatAlertsPosts = []
         chatBotMessages = []
@@ -420,11 +423,11 @@ extension Model {
             for browserEffect in browserEffects.values {
                 browserEffect.sendChatMessage(post: post)
             }
-            if externalDisplayChatEnabled {
+            if externalDisplay.chatEnabled {
                 externalDisplayChat.appendMessage(post: post)
             }
             if highlight != nil {
-                if quickButtonChatAlertsPaused {
+                if quickButtonChatState.quickButtonChatAlertsPaused {
                     if pausedQuickButtonChatAlertsPosts.count < 2 * maximumNumberOfInteractiveChatMessages {
                         pausedQuickButtonChatAlertsPosts.append(post)
                     }
@@ -439,7 +442,8 @@ extension Model {
         chat.posts = newPostIds(posts: chat.posts)
         quickButtonChat.posts = newPostIds(posts: quickButtonChat.posts)
         externalDisplayChat.posts = newPostIds(posts: externalDisplayChat.posts)
-        quickButtonChatAlertsPosts = newPostIds(posts: quickButtonChatAlertsPosts)
+        quickButtonChatState
+            .quickButtonChatAlertsPosts = newPostIds(posts: quickButtonChatState.quickButtonChatAlertsPosts)
     }
 
     private func newPostIds(posts: Deque<ChatPost>) -> Deque<ChatPost> {
