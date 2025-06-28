@@ -126,7 +126,7 @@ private struct StatusesView: View {
         if model.isShowingStatusObs() {
             StreamOverlayIconAndTextView(
                 icon: "xserve",
-                text: model.statusObsText(),
+                text: status.statusObsText,
                 textPlacement: textPlacement,
                 color: obsStatusColor()
             )

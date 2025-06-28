@@ -278,6 +278,7 @@ class Status: ObservableObject {
     @Published var digitalClock = noValue
     @Published var streamText = noValue
     @Published var location = noValue
+    @Published var statusObsText = noValue
 }
 
 class Toast: ObservableObject {

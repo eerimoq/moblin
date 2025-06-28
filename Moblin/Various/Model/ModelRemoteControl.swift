@@ -335,7 +335,7 @@ extension Model {
             topLeft.zoom = RemoteControlStatusItem(message: zoom.statusText())
         }
         if isObsRemoteControlConfigured() {
-            topLeft.obs = RemoteControlStatusItem(message: statusObsText())
+            topLeft.obs = RemoteControlStatusItem(message: status.statusObsText)
         }
         if isEventsConfigured() {
             topLeft.events = RemoteControlStatusItem(message: status.statusEventsText)

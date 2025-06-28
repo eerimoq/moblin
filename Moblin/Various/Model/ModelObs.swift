@@ -354,7 +354,7 @@ extension Model {
         return database.show.obsStatus && isObsRemoteControlConfigured()
     }
 
-    func statusObsText() -> String {
+    private func statusObsText() -> String {
         if !isObsRemoteControlConfigured() {
             return String(localized: "Not configured")
         } else if isObsConnected() {
@@ -372,6 +372,10 @@ extension Model {
         }
     }
 
+    func updateStatusObsText() {
+        status.statusObsText = statusObsText()
+    }
+
     func isObsRemoteControlConfigured() -> Bool {
         return stream.obsWebSocketEnabled && stream.obsWebSocketUrl != "" && stream.obsWebSocketPassword != ""
     }
@@ -380,12 +384,14 @@ extension Model {
 extension Model: ObsWebsocketDelegate {
     func obsWebsocketConnected() {
         updateObsStatus()
+        updateStatusObsText()
     }
 
     func obsWebsocketSceneChanged(sceneName: String) {
         obsQuickButton.obsCurrentScenePicker = sceneName
         obsQuickButton.obsCurrentScene = sceneName
         updateObsAudioInputs(sceneName: sceneName)
+        updateStatusObsText()
     }
 
     func obsWebsocketInputMuteStateChangedEvent(inputName: String, muted: Bool) {
@@ -396,6 +402,7 @@ extension Model: ObsWebsocketDelegate {
             }
             return input
         }
+        updateStatusObsText()
     }
 
     func obsWebsocketStreamStatusChanged(active: Bool, state: ObsOutputState?) {
@@ -407,6 +414,7 @@ extension Model: ObsWebsocketDelegate {
         } else {
             obsQuickButton.streamingState = .stopped
         }
+        updateStatusObsText()
     }
 
     func obsWebsocketRecordStatusChanged(active: Bool, state: ObsOutputState?) {
@@ -418,6 +426,7 @@ extension Model: ObsWebsocketDelegate {
         } else {
             obsQuickButton.recordingState = .stopped
         }
+        updateStatusObsText()
     }
 
     func obsWebsocketAudioVolume(volumes: [ObsAudioInputVolume]) {
