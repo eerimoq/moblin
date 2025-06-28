@@ -286,66 +286,66 @@ private struct ButtonsView: View {
     var body: some View {
         HStack {
             Button {
-                show.showingCameraBias.toggle()
-                if show.showingCameraBias {
-                    show.showingCameraWhiteBalance = false
-                    show.showingCameraIso = false
-                    show.showingCameraFocus = false
+                show.cameraBias.toggle()
+                if show.cameraBias {
+                    show.cameraWhiteBalance = false
+                    show.cameraIso = false
+                    show.cameraFocus = false
                 }
             } label: {
                 CameraSettingButtonView(
                     title: String(localized: "EXB"),
                     value: formatExposureBias(),
                     locked: true,
-                    on: show.showingCameraBias,
+                    on: show.cameraBias,
                     height: height()
                 )
             }
             Button {
-                show.showingCameraWhiteBalance.toggle()
-                if show.showingCameraWhiteBalance {
-                    show.showingCameraBias = false
-                    show.showingCameraIso = false
-                    show.showingCameraFocus = false
+                show.cameraWhiteBalance.toggle()
+                if show.cameraWhiteBalance {
+                    show.cameraBias = false
+                    show.cameraIso = false
+                    show.cameraFocus = false
                 }
             } label: {
                 CameraSettingButtonView(
                     title: String(localized: "WB"),
                     value: formatWhiteBalance(),
                     locked: camera.manualWhiteBalanceEnabled,
-                    on: show.showingCameraWhiteBalance,
+                    on: show.cameraWhiteBalance,
                     height: height()
                 )
             }
             Button {
-                show.showingCameraIso.toggle()
-                if show.showingCameraIso {
-                    show.showingCameraBias = false
-                    show.showingCameraWhiteBalance = false
-                    show.showingCameraFocus = false
+                show.cameraIso.toggle()
+                if show.cameraIso {
+                    show.cameraBias = false
+                    show.cameraWhiteBalance = false
+                    show.cameraFocus = false
                 }
             } label: {
                 CameraSettingButtonView(
                     title: String(localized: "ISO"),
                     value: formatIso(),
                     locked: camera.manualIsoEnabled,
-                    on: show.showingCameraIso,
+                    on: show.cameraIso,
                     height: height()
                 )
             }
             Button {
-                show.showingCameraFocus.toggle()
-                if show.showingCameraFocus {
-                    show.showingCameraBias = false
-                    show.showingCameraWhiteBalance = false
-                    show.showingCameraIso = false
+                show.cameraFocus.toggle()
+                if show.cameraFocus {
+                    show.cameraBias = false
+                    show.cameraWhiteBalance = false
+                    show.cameraIso = false
                 }
             } label: {
                 CameraSettingButtonView(
                     title: String(localized: "FOC"),
                     value: formatFocus(),
                     locked: camera.manualFocusEnabled,
-                    on: show.showingCameraFocus,
+                    on: show.cameraFocus,
                     height: height()
                 )
             }
@@ -359,16 +359,16 @@ struct StreamOverlayRightCameraSettingsControlView: View {
 
     var body: some View {
         VStack(alignment: .trailing, spacing: 1) {
-            if show.showingCameraBias {
+            if show.cameraBias {
                 ExposureBiasView(camera: model.camera)
             }
-            if show.showingCameraWhiteBalance {
+            if show.cameraWhiteBalance {
                 WhiteBalanceView(camera: model.camera)
             }
-            if show.showingCameraIso {
+            if show.cameraIso {
                 IsoView(camera: model.camera)
             }
-            if show.showingCameraFocus {
+            if show.cameraFocus {
                 FocusView(camera: model.camera)
             }
             ButtonsView(database: model.database, camera: model.camera, show: show)

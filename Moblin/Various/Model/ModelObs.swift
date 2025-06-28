@@ -6,17 +6,36 @@ struct ObsSceneInput: Identifiable {
     var muted: Bool?
 }
 
-extension Model {
+class QuickButtonObs: ObservableObject {
+    var sourceFetchScreenshot = false
+    var sourceScreenshotIsFetching = false
+    var recording = false
+    var audioVolumeLatest: String = ""
+    var sceneBeforeSwitchToBrbScene: String?
+    @Published var streamingState: ObsOutputState = .stopped
+    @Published var recordingState: ObsOutputState = .stopped
+    @Published var sceneInputs: [ObsSceneInput] = []
+    @Published var audioVolume: String = noValue
+    @Published var currentScenePicker: String = ""
+    @Published var currentScene: String = ""
+    @Published var scenes: [String] = []
+    @Published var screenshot: CGImage?
+    @Published var streaming = false
+    @Published var fixOngoing = false
+    @Published var audioDelay: Int = 0
+    
     func startObsSourceScreenshot() {
-        obsQuickButton.screenshot = nil
-        obsQuickButton.sourceFetchScreenshot = true
-        obsQuickButton.sourceScreenshotIsFetching = false
+        screenshot = nil
+        sourceFetchScreenshot = true
+        sourceScreenshotIsFetching = false
     }
 
     func stopObsSourceScreenshot() {
-        obsQuickButton.sourceFetchScreenshot = false
+        sourceFetchScreenshot = false
     }
+}
 
+extension Model {
     func updateObsSourceScreenshot() {
         guard obsQuickButton.sourceFetchScreenshot else {
             return

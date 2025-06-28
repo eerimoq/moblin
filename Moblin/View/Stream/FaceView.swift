@@ -139,22 +139,22 @@ private struct FaceViewBeautyButtons: View {
     var body: some View {
         HStack {
             Button {
-                show.showFaceBeautyShape.toggle()
-                show.showFaceBeautySmooth = false
+                show.faceBeautyShape.toggle()
+                show.faceBeautySmooth = false
                 model.updateFaceFilterButtonState()
             } label: {
                 FaceButtonView(title: String(localized: "Shape"),
-                               on: show.showFaceBeautyShape,
+                               on: show.faceBeautyShape,
                                height: height)
             }
             if model.database.color.space != .appleLog && model.database.debug.metalPetalFilters {
                 Button {
-                    show.showFaceBeautyShape = false
-                    show.showFaceBeautySmooth.toggle()
+                    show.faceBeautyShape = false
+                    show.faceBeautySmooth.toggle()
                     model.updateFaceFilterButtonState()
                 } label: {
                     FaceButtonView(title: String(localized: "Smooth"),
-                                   on: show.showFaceBeautySmooth,
+                                   on: show.faceBeautySmooth,
                                    height: height)
                 }
             }
@@ -194,10 +194,10 @@ struct FaceView: View {
             Spacer()
             VStack(alignment: .trailing, spacing: 1) {
                 Spacer()
-                if show.showFaceBeauty {
-                    if show.showFaceBeautyShape {
+                if show.faceBeauty {
+                    if show.faceBeautyShape {
                         FaceViewBeautyShape()
-                    } else if show.showFaceBeautySmooth && model.database.color.space != .appleLog && model.database
+                    } else if show.faceBeautySmooth && model.database.color.space != .appleLog && model.database
                         .debug.metalPetalFilters
                     {
                         FaceViewBeautySmooth()
@@ -253,11 +253,11 @@ struct FaceView: View {
                         )
                     }
                     Button {
-                        show.showFaceBeauty.toggle()
+                        show.faceBeauty.toggle()
                     } label: {
                         FaceButtonView(
                             title: String(localized: "Beauty"),
-                            on: debug.beautyFilter || show.showFaceBeauty,
+                            on: debug.beautyFilter || show.faceBeauty,
                             height: height()
                         )
                     }

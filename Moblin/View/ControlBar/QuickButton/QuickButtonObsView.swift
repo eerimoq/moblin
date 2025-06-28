@@ -293,12 +293,12 @@ struct QuickButtonObsView: View {
         }
         .onAppear {
             model.listObsScenes(updateAudioInputs: true)
-            model.startObsSourceScreenshot()
+            obsQuickButton.startObsSourceScreenshot()
             model.startObsAudioVolume()
             model.updateObsAudioDelay()
         }
         .onDisappear {
-            model.stopObsSourceScreenshot()
+            obsQuickButton.stopObsSourceScreenshot()
             model.stopObsAudioVolume()
         }
         .navigationTitle("OBS remote control")

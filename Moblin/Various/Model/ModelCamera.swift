@@ -401,8 +401,8 @@ extension Model {
 
     func updateShowCameraPreview() -> Bool {
         let show = shouldShowCameraPreview()
-        if show != self.show.showCameraPreview {
-            self.show.showCameraPreview = show
+        if show != self.show.cameraPreview {
+            self.show.cameraPreview = show
         }
         return show
     }

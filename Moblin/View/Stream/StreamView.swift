@@ -37,7 +37,7 @@ struct StreamView: View {
     var streamPreviewView: StreamPreviewView
 
     var body: some View {
-        if show.showCameraPreview {
+        if show.cameraPreview {
             cameraPreviewView
         } else {
             streamPreviewView

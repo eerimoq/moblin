@@ -172,14 +172,14 @@ class CameraState: ObservableObject {
 }
 
 class Show: ObservableObject {
-    @Published var showCameraPreview = false
-    @Published var showingCameraBias = false
-    @Published var showingCameraWhiteBalance = false
-    @Published var showingCameraIso = false
-    @Published var showingCameraFocus = false
-    @Published var showFaceBeauty = false
-    @Published var showFaceBeautyShape = false
-    @Published var showFaceBeautySmooth = false
+    @Published var cameraPreview = false
+    @Published var cameraBias = false
+    @Published var cameraWhiteBalance = false
+    @Published var cameraIso = false
+    @Published var cameraFocus = false
+    @Published var faceBeauty = false
+    @Published var faceBeautyShape = false
+    @Published var faceBeautySmooth = false
 }
 
 class Zoom: ObservableObject {
@@ -344,25 +344,6 @@ class QuickButtonChat: ObservableObject {
 
 class ExternalDisplay: ObservableObject {
     @Published var chatEnabled = false
-}
-
-class QuickButtonObs: ObservableObject {
-    var sourceFetchScreenshot = false
-    var sourceScreenshotIsFetching = false
-    var recording = false
-    var audioVolumeLatest: String = ""
-    var sceneBeforeSwitchToBrbScene: String?
-    @Published var streamingState: ObsOutputState = .stopped
-    @Published var recordingState: ObsOutputState = .stopped
-    @Published var sceneInputs: [ObsSceneInput] = []
-    @Published var audioVolume: String = noValue
-    @Published var currentScenePicker: String = ""
-    @Published var currentScene: String = ""
-    @Published var scenes: [String] = []
-    @Published var screenshot: CGImage?
-    @Published var streaming = false
-    @Published var fixOngoing = false
-    @Published var audioDelay: Int = 0
 }
 
 final class Model: NSObject, ObservableObject, @unchecked Sendable {
