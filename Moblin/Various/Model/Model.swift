@@ -378,7 +378,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var showBrowser = false
     @Published var webBrowserUrl: String = ""
     @Published var quickButtonSettingsButton: SettingsQuickButton?
-    @Published var streamingHistory = StreamingHistory()
+    let streamingHistory = StreamingHistory()
     @Published var bluetoothAllowed = false
     @Published var sceneSettingsPanelSceneId = 1
     @Published var snapshotCountdown = 0
