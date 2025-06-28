@@ -132,28 +132,29 @@ private struct FaceViewBeautySmooth: View {
 
 private struct FaceViewBeautyButtons: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var show: Show
     @Binding var beauty: Bool
     var height: Double
 
     var body: some View {
         HStack {
             Button {
-                model.showFaceBeautyShape.toggle()
-                model.showFaceBeautySmooth = false
+                show.showFaceBeautyShape.toggle()
+                show.showFaceBeautySmooth = false
                 model.updateFaceFilterButtonState()
             } label: {
                 FaceButtonView(title: String(localized: "Shape"),
-                               on: model.showFaceBeautyShape,
+                               on: show.showFaceBeautyShape,
                                height: height)
             }
             if model.database.color.space != .appleLog && model.database.debug.metalPetalFilters {
                 Button {
-                    model.showFaceBeautyShape = false
-                    model.showFaceBeautySmooth.toggle()
+                    show.showFaceBeautyShape = false
+                    show.showFaceBeautySmooth.toggle()
                     model.updateFaceFilterButtonState()
                 } label: {
                     FaceButtonView(title: String(localized: "Smooth"),
-                                   on: model.showFaceBeautySmooth,
+                                   on: show.showFaceBeautySmooth,
                                    height: height)
                 }
             }
@@ -178,6 +179,7 @@ struct FaceView: View {
     @ObservedObject var database: Database
     @ObservedObject var debug: SettingsDebug
     @ObservedObject var settings: SettingsDebugBeautyFilter
+    @ObservedObject var show: Show
 
     private func height() -> Double {
         if database.bigButtons {
@@ -192,15 +194,15 @@ struct FaceView: View {
             Spacer()
             VStack(alignment: .trailing, spacing: 1) {
                 Spacer()
-                if model.showFaceBeauty {
-                    if model.showFaceBeautyShape {
+                if show.showFaceBeauty {
+                    if show.showFaceBeautyShape {
                         FaceViewBeautyShape()
-                    } else if model.showFaceBeautySmooth && model.database.color.space != .appleLog && model.database
+                    } else if show.showFaceBeautySmooth && model.database.color.space != .appleLog && model.database
                         .debug.metalPetalFilters
                     {
                         FaceViewBeautySmooth()
                     }
-                    FaceViewBeautyButtons(beauty: $settings.showBeauty, height: height())
+                    FaceViewBeautyButtons(show: show, beauty: $settings.showBeauty, height: height())
                 }
                 HStack {
                     Button {
@@ -251,11 +253,11 @@ struct FaceView: View {
                         )
                     }
                     Button {
-                        model.showFaceBeauty.toggle()
+                        show.showFaceBeauty.toggle()
                     } label: {
                         FaceButtonView(
                             title: String(localized: "Beauty"),
-                            on: debug.beautyFilter || model.showFaceBeauty,
+                            on: debug.beautyFilter || show.showFaceBeauty,
                             height: height()
                         )
                     }

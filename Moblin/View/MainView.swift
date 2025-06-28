@@ -303,7 +303,8 @@ struct MainView: View {
     private func face() -> some View {
         FaceView(database: model.database,
                  debug: model.database.debug,
-                 settings: model.database.debug.beautyFilterSettings)
+                 settings: model.database.debug.beautyFilterSettings,
+                 show: model.show)
     }
 
     private func portraitAspectRatio() -> CGFloat {

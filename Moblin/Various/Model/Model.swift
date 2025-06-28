@@ -177,6 +177,9 @@ class Show: ObservableObject {
     @Published var showingCameraWhiteBalance = false
     @Published var showingCameraIso = false
     @Published var showingCameraFocus = false
+    @Published var showFaceBeauty = false
+    @Published var showFaceBeautyShape = false
+    @Published var showFaceBeautySmooth = false
 }
 
 class Zoom: ObservableObject {
@@ -341,9 +344,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var showTwitchAuth = false
     @Published var showDrawOnStream = false
     @Published var showFace = false
-    @Published var showFaceBeauty = false
-    @Published var showFaceBeautyShape = false
-    @Published var showFaceBeautySmooth = false
     @Published var showLocalOverlays = true
     @Published var showBrowser = false
     @Published var drawOnStreamLines: [DrawOnStreamLine] = []
