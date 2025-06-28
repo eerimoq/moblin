@@ -154,7 +154,7 @@ struct SettingsView: View {
             }
             Section {
                 NavigationLink {
-                    CosmeticsSettingsView()
+                    CosmeticsSettingsView(cosmetics: model.cosmetics)
                 } label: {
                     Label {
                         Text("Cosmetics")

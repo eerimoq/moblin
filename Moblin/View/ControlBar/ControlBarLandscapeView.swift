@@ -101,13 +101,14 @@ private struct StatusView: View {
 
 private struct IconAndSettingsView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var cosmetics: Cosmetics
 
     var body: some View {
         HStack(spacing: 0) {
             Button {
                 model.toggleShowingPanel(type: nil, panel: .cosmetics)
             } label: {
-                Image("\(model.iconImage)NoBackground")
+                Image("\(cosmetics.iconImage)NoBackground")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: controlBarButtonSize, height: controlBarButtonSize)
@@ -147,12 +148,13 @@ private struct PageView: View {
 }
 
 private struct MainPageView: View {
+    let cosmetics: Cosmetics
     let createStreamWizard: CreateStreamWizard
     let width: Double
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            IconAndSettingsView()
+            IconAndSettingsView(cosmetics: cosmetics)
             PageView(page: 0, width: width)
             StreamButton(createStreamWizard: createStreamWizard)
                 .padding([.top], 10)
@@ -183,7 +185,9 @@ private struct PagesView: View {
             ScrollView(.horizontal) {
                 HStack {
                     Group {
-                        MainPageView(createStreamWizard: model.createStreamWizard, width: width)
+                        MainPageView(cosmetics: model.cosmetics,
+                                     createStreamWizard: model.createStreamWizard,
+                                     width: width)
                         ForEach(1 ..< controlBarPages, id: \.self) { page in
                             if !model.buttonPairs[page].isEmpty {
                                 PageView(page: page, width: width)
@@ -200,7 +204,9 @@ private struct PagesView: View {
             .ignoresSafeArea(.all, edges: edgesToIgnore())
         } else {
             ScrollView(.horizontal) {
-                MainPageView(createStreamWizard: model.createStreamWizard, width: width)
+                MainPageView(cosmetics: model.cosmetics,
+                             createStreamWizard: model.createStreamWizard,
+                             width: width)
                     .padding([.leading], 5)
             }
             .scrollIndicators(.never)

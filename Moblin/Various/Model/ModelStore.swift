@@ -120,8 +120,8 @@ extension Model {
                 ))
             }
         }
-        self.myIcons = myIcons
-        self.iconsInStore = iconsInStore
+        cosmetics.myIcons = myIcons
+        cosmetics.iconsInStore = iconsInStore
     }
 
     private func findProduct(id: String) -> Product? {
@@ -150,7 +150,7 @@ extension Model {
     }
 
     private func isInMyIcons(id: String) -> Bool {
-        return myIcons.contains(where: { icon in
+        return cosmetics.myIcons.contains(where: { icon in
             icon.id == id
         })
     }
@@ -160,6 +160,6 @@ extension Model {
             logger.warning("Database icon image \(database.iconImage) is not mine")
             database.iconImage = plainIcon.id
         }
-        iconImage = database.iconImage
+        cosmetics.iconImage = database.iconImage
     }
 }

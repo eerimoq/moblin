@@ -297,6 +297,12 @@ class StreamOverlay: ObservableObject {
     @Published var showingWhirlpool = false
 }
 
+class Cosmetics: ObservableObject {
+    @Published var myIcons: [Icon] = []
+    @Published var iconsInStore: [Icon] = []
+    @Published var iconImage: String = plainIcon.id
+}
+
 final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var isPresentingWidgetWizard = false
     @Published var goProLaunchLiveStreamSelection: UUID?
@@ -340,7 +346,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var obsRecordingState: ObsOutputState = .stopped
     @Published var obsFixOngoing = false
     @Published var obsScreenshot: CGImage?
-    @Published var iconImage: String = plainIcon.id
     @Published var showTwitchAuth = false
     @Published var showDrawOnStream = false
     @Published var showFace = false
@@ -363,14 +368,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var location = noValue
     @Published var showLoadSettingsFailed = false
     @Published var cameraControlEnabled = false
-    @Published var myIcons: [Icon] = []
-    @Published var iconsInStore: [Icon] = []
     var streamState = StreamState.disconnected {
         didSet {
             logger.info("stream: State \(oldValue) -> \(streamState)")
         }
     }
 
+    let cosmetics = Cosmetics()
     let show = Show()
     let streamOverlay = StreamOverlay()
     let sceneSelector = SceneSelector()
@@ -914,7 +918,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                                                selector: #selector(orientationDidChange),
                                                name: UIDevice.orientationDidChangeNotification,
                                                object: nil)
-        iconImage = database.iconImage
+        cosmetics.iconImage = database.iconImage
         Task {
             appStoreUpdateListenerTask = listenForAppStoreTransactions()
             await getProductsFromAppStore()

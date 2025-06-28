@@ -106,7 +106,7 @@ private struct MenuView: View {
             }
         case .cosmetics:
             NavigationStack {
-                CosmeticsSettingsView()
+                CosmeticsSettingsView(cosmetics: model.cosmetics)
             }
         case .chat:
             NavigationStack {
