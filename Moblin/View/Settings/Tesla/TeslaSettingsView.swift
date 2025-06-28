@@ -16,13 +16,14 @@ private func formatTeslaVehicleState(state: TeslaVehicleState?) -> String {
 
 private struct TeslaSettingsConfigurationView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var tesla: Tesla
 
-    private var tesla: SettingsTesla {
-        return model.database.tesla
+    private var database: Database {
+        return model.database
     }
 
     private func onSubmitVin(value: String) {
-        tesla.vin = value.trim()
+        database.tesla.vin = value.trim()
         model.reloadTeslaVehicle()
     }
 
@@ -31,7 +32,7 @@ private struct TeslaSettingsConfigurationView: View {
             Section {
                 TextEditNavigationView(
                     title: String(localized: "VIN"),
-                    value: tesla.vin,
+                    value: database.tesla.vin,
                     onSubmit: onSubmitVin
                 )
             } footer: {
@@ -39,7 +40,7 @@ private struct TeslaSettingsConfigurationView: View {
             }
             Section {
                 Button {
-                    tesla.privateKey = teslaGeneratePrivateKey().pemRepresentation
+                    database.tesla.privateKey = teslaGeneratePrivateKey().pemRepresentation
                     model.reloadTeslaVehicle()
                 } label: {
                     HCenter {
@@ -60,7 +61,8 @@ private struct TeslaSettingsConfigurationView: View {
                         Text("Add key to vehicle")
                     }
                 }
-                .disabled(tesla.vin.isEmpty || tesla.privateKey.isEmpty || model.teslaVehicleState != .connected)
+                .disabled(database.tesla.vin.isEmpty || database.tesla.privateKey.isEmpty || tesla
+                    .teslaVehicleState != .connected)
             } footer: {
                 Text("Remove keys in Controls → Locks on your Tesla's center screen.")
             }
@@ -71,6 +73,7 @@ private struct TeslaSettingsConfigurationView: View {
 
 struct TeslaSettingsView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var tesla: Tesla
 
     var body: some View {
         Form {
@@ -91,14 +94,14 @@ struct TeslaSettingsView: View {
                     Text("Enabled")
                 }
                 NavigationLink {
-                    TeslaSettingsConfigurationView()
+                    TeslaSettingsConfigurationView(tesla: tesla)
                 } label: {
                     Text("Configuration")
                 }
             }
             Section {
                 HCenter {
-                    Text(formatTeslaVehicleState(state: model.teslaVehicleState))
+                    Text(formatTeslaVehicleState(state: tesla.teslaVehicleState))
                 }
             }
             Section {
@@ -109,7 +112,7 @@ struct TeslaSettingsView: View {
                         Text("Flash lights")
                     }
                 }
-                .disabled(!model.teslaVehicleInfotainmentConnected)
+                .disabled(!tesla.teslaVehicleInfotainmentConnected)
             }
             Section {
                 Button {
@@ -119,7 +122,7 @@ struct TeslaSettingsView: View {
                         Text("Honk")
                     }
                 }
-                .disabled(!model.teslaVehicleInfotainmentConnected)
+                .disabled(!tesla.teslaVehicleInfotainmentConnected)
             }
             Section {
                 Button {
@@ -129,7 +132,7 @@ struct TeslaSettingsView: View {
                         Text("Open trunk")
                     }
                 }
-                .disabled(!model.teslaVehicleVehicleSecurityConnected)
+                .disabled(!tesla.teslaVehicleVehicleSecurityConnected)
             }
             Section {
                 Button {
@@ -139,7 +142,7 @@ struct TeslaSettingsView: View {
                         Text("Close trunk")
                     }
                 }
-                .disabled(!model.teslaVehicleVehicleSecurityConnected)
+                .disabled(!tesla.teslaVehicleVehicleSecurityConnected)
             }
             Section {
                 Button {
@@ -149,7 +152,7 @@ struct TeslaSettingsView: View {
                         Text("Next media track")
                     }
                 }
-                .disabled(!model.teslaVehicleInfotainmentConnected)
+                .disabled(!tesla.teslaVehicleInfotainmentConnected)
             }
             Section {
                 Button {
@@ -159,7 +162,7 @@ struct TeslaSettingsView: View {
                         Text("Previous media  track")
                     }
                 }
-                .disabled(!model.teslaVehicleInfotainmentConnected)
+                .disabled(!tesla.teslaVehicleInfotainmentConnected)
             }
             Section {
                 Button {
@@ -169,7 +172,7 @@ struct TeslaSettingsView: View {
                         Text("Toggle media playback")
                     }
                 }
-                .disabled(!model.teslaVehicleInfotainmentConnected)
+                .disabled(!tesla.teslaVehicleInfotainmentConnected)
             }
         }
         .navigationTitle("Tesla")

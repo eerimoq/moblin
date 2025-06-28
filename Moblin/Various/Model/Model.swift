@@ -322,6 +322,16 @@ class StealthMode: ObservableObject {
     @Published var image: UIImage?
 }
 
+class Tesla: ObservableObject {
+    var teslaVehicle: TeslaVehicle?
+    var teslaChargeState = CarServer_ChargeState()
+    var teslaDriveState = CarServer_DriveState()
+    var teslaMediaState = CarServer_MediaState()
+    @Published var teslaVehicleState: TeslaVehicleState?
+    @Published var teslaVehicleVehicleSecurityConnected = false
+    @Published var teslaVehicleInfotainmentConnected = false
+}
+
 final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var isPresentingWidgetWizard = false
     @Published var goProLaunchLiveStreamSelection: UUID?
@@ -367,9 +377,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var showLocalOverlays = true
     @Published var showBrowser = false
     @Published var webBrowserUrl: String = ""
-    @Published var teslaVehicleState: TeslaVehicleState?
-    @Published var teslaVehicleVehicleSecurityConnected = false
-    @Published var teslaVehicleInfotainmentConnected = false
     @Published var quickButtonSettingsButton: SettingsQuickButton?
     @Published var streamingHistory = StreamingHistory()
     @Published var bluetoothAllowed = false
@@ -384,7 +391,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    var debugOverlay = DebugOverlayProvider()
+    let tesla = Tesla()
+    let debugOverlay = DebugOverlayProvider()
     let stealthMode = StealthMode()
     let drawOnStream = DrawOnStream()
     let cosmetics = Cosmetics()
@@ -523,10 +531,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     let webBrowserController = WebBrowserController()
     var lowFpsImageFps: UInt64 = 1
     let chatTextToSpeech = ChatTextToSpeech()
-    var teslaVehicle: TeslaVehicle?
-    var teslaChargeState = CarServer_ChargeState()
-    var teslaDriveState = CarServer_DriveState()
-    var teslaMediaState = CarServer_MediaState()
     private var lastAttachCompletedTime: ContinuousClock.Instant?
     private var relaxedBitrateStartTime: ContinuousClock.Instant?
     var relaxedBitrate = false

@@ -131,7 +131,7 @@ struct SettingsView: View {
                         Label("Cat printers", systemImage: "pawprint")
                     }
                     NavigationLink {
-                        TeslaSettingsView()
+                        TeslaSettingsView(tesla: model.tesla)
                     } label: {
                         Label("Tesla", systemImage: "car.side")
                     }

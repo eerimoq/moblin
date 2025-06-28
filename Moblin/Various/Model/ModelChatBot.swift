@@ -378,9 +378,9 @@ extension Model {
     private func handleChatBotMessageTeslaTrunk(command: ChatBotCommand) {
         switch command.popFirst() {
         case "open":
-            teslaVehicle?.openTrunk()
+            tesla.teslaVehicle?.openTrunk()
         case "close":
-            teslaVehicle?.closeTrunk()
+            tesla.teslaVehicle?.closeTrunk()
         default:
             break
         }
@@ -389,11 +389,11 @@ extension Model {
     private func handleChatBotMessageTeslaMedia(command: ChatBotCommand) {
         switch command.popFirst() {
         case "next":
-            teslaVehicle?.mediaNextTrack()
+            tesla.teslaVehicle?.mediaNextTrack()
         case "previous":
-            teslaVehicle?.mediaPreviousTrack()
+            tesla.teslaVehicle?.mediaPreviousTrack()
         case "toggle-playback":
-            teslaVehicle?.mediaTogglePlayback()
+            tesla.teslaVehicle?.mediaTogglePlayback()
         default:
             break
         }
