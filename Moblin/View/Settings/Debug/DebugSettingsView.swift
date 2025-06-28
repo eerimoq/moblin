@@ -33,6 +33,9 @@ struct DebugSettingsView: View {
                     onSubmit: submitLogLines
                 )
                 Toggle("Debug overlay", isOn: $debug.srtOverlay)
+                    .onChange(of: debug.srtOverlay) { _ in
+                        model.updateAdaptiveBitrateDebug()
+                    }
             }
             Section {
                 NavigationLink {
