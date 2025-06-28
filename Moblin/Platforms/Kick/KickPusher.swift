@@ -218,13 +218,14 @@ final class KickPusher: NSObject {
     private func handleMessage(message: String) {
         do {
             let (type, data) = try decodeEvent(message: message)
-            if type == "App\\Events\\ChatMessageEvent" {
+            switch type {
+            case "App\\Events\\ChatMessageEvent":
                 try handleChatMessageEvent(data: data)
-            } else if type == "App\\Events\\MessageDeletedEvent" {
+            case "App\\Events\\MessageDeletedEvent":
                 try handleMessageDeletedEvent(data: data)
-            } else if type == "App\\Events\\UserBannedEvent" {
+            case "App\\Events\\UserBannedEvent":
                 try handleUserBannedEvent(data: data)
-            } else {
+            default:
                 logger.debug("kick: pusher: \(channelId): Unsupported type: \(type)")
             }
         } catch {
