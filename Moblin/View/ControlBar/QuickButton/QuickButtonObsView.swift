@@ -8,7 +8,7 @@ private struct ObsStartStopStreamingView: View {
     @State private var isPresentingStopStreamingConfirm = false
 
     var body: some View {
-        switch obsQuickButton.obsStreamingState {
+        switch obsQuickButton.streamingState {
         case .stopped:
             Section {
                 HStack {
@@ -80,7 +80,7 @@ private struct ObsStartStopRecordingView: View {
     @State private var isPresentingStopRecordingConfirm: Bool = false
 
     var body: some View {
-        switch obsQuickButton.obsRecordingState {
+        switch obsQuickButton.recordingState {
         case .stopped:
             Section {
                 HStack {

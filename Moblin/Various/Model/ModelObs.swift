@@ -401,22 +401,22 @@ extension Model: ObsWebsocketDelegate {
     func obsWebsocketStreamStatusChanged(active: Bool, state: ObsOutputState?) {
         obsStreaming = active
         if let state {
-            obsQuickButton.obsStreamingState = state
+            obsQuickButton.streamingState = state
         } else if active {
-            obsQuickButton.obsStreamingState = .started
+            obsQuickButton.streamingState = .started
         } else {
-            obsQuickButton.obsStreamingState = .stopped
+            obsQuickButton.streamingState = .stopped
         }
     }
 
     func obsWebsocketRecordStatusChanged(active: Bool, state: ObsOutputState?) {
         obsRecording = active
         if let state {
-            obsQuickButton.obsRecordingState = state
+            obsQuickButton.recordingState = state
         } else if active {
-            obsQuickButton.obsRecordingState = .started
+            obsQuickButton.recordingState = .started
         } else {
-            obsQuickButton.obsRecordingState = .stopped
+            obsQuickButton.recordingState = .stopped
         }
     }
 

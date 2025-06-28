@@ -346,8 +346,8 @@ class ExternalDisplay: ObservableObject {
 }
 
 class QuickButtonObs: ObservableObject {
-    @Published var obsStreamingState: ObsOutputState = .stopped
-    @Published var obsRecordingState: ObsOutputState = .stopped
+    @Published var streamingState: ObsOutputState = .stopped
+    @Published var recordingState: ObsOutputState = .stopped
 }
 
 final class Model: NSObject, ObservableObject, @unchecked Sendable {
