@@ -346,8 +346,22 @@ class ExternalDisplay: ObservableObject {
 }
 
 class QuickButtonObs: ObservableObject {
+    var obsSourceFetchScreenshot = false
+    var obsSourceScreenshotIsFetching = false
+    var obsRecording = false
+    var obsAudioVolumeLatest: String = ""
+    var obsSceneBeforeSwitchToBrbScene: String?
     @Published var streamingState: ObsOutputState = .stopped
     @Published var recordingState: ObsOutputState = .stopped
+    @Published var obsSceneInputs: [ObsSceneInput] = []
+    @Published var obsAudioVolume: String = noValue
+    @Published var obsCurrentScenePicker: String = ""
+    @Published var obsCurrentScene: String = ""
+    @Published var obsScenes: [String] = []
+    @Published var obsScreenshot: CGImage?
+    @Published var obsStreaming = false
+    @Published var obsFixOngoing = false
+    @Published var obsAudioDelay: Int = 0
 }
 
 final class Model: NSObject, ObservableObject, @unchecked Sendable {
@@ -369,17 +383,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var buttonPairs: [[QuickButtonPair]] = Array(repeating: [], count: controlBarPages)
     @Published var showingGrid = false
     @Published var showingRemoteControl = false
-    @Published var obsScenes: [String] = []
-    @Published var obsSceneInputs: [ObsSceneInput] = []
-    @Published var obsAudioVolume: String = noValue
-    @Published var obsAudioDelay: Int = 0
     @Published var portraitVideoOffsetFromTop = 0.0
-    @Published var obsCurrentScenePicker: String = ""
-    @Published var obsCurrentScene: String = ""
     @Published var currentStreamId = UUID()
-    @Published var obsStreaming = false
-    @Published var obsFixOngoing = false
-    @Published var obsScreenshot: CGImage?
     @Published var showTwitchAuth = false
     @Published var showDrawOnStream = false
     @Published var showFace = false
@@ -515,13 +520,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var pollVotes: [Int] = [0, 0, 0]
     var pollEnabled = false
     var mediaPlayers: [UUID: MediaPlayer] = [:]
-    var obsAudioVolumeLatest: String = ""
-    var obsSceneBeforeSwitchToBrbScene: String?
     var previousSrtDroppedPacketsTotal: Int32 = 0
     var streamBecameBrokenTime: ContinuousClock.Instant?
-    var obsSourceFetchScreenshot = false
-    var obsSourceScreenshotIsFetching = false
-    var obsRecording = false
     var zoomXPinch: Float = 1.0
     var backZoomX: Float = 0.5
     var frontZoomX: Float = 1.0

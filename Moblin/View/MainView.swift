@@ -94,7 +94,7 @@ private struct MenuView: View {
             }
         case .obs:
             NavigationStack {
-                QuickButtonObsView()
+                QuickButtonObsView(obsQuickButton: model.obsQuickButton)
             }
         case .widgets:
             NavigationStack {

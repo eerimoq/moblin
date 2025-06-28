@@ -147,6 +147,7 @@ private struct ObsStartStopRecordingView: View {
 
 struct QuickButtonObsView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var obsQuickButton: QuickButtonObs
 
     private func submitAudioDelay(value: String) -> String {
         let offsetDouble = Double(value) ?? 0
@@ -163,10 +164,10 @@ struct QuickButtonObsView: View {
                     Text("Unable to connect the OBS server. Retrying every 5 seconds.")
                 }
             } else {
-                ObsStartStopStreamingView(model: model, obsQuickButton: model.obsQuickButton)
-                ObsStartStopRecordingView(model: model, obsQuickButton: model.obsQuickButton)
+                ObsStartStopStreamingView(model: model, obsQuickButton: obsQuickButton)
+                ObsStartStopRecordingView(model: model, obsQuickButton: obsQuickButton)
                 Section {
-                    if let image = model.obsScreenshot {
+                    if let image = obsQuickButton.obsScreenshot {
                         Image(image, scale: 1, label: Text(""))
                             .resizable()
                             .aspectRatio(contentMode: .fit)
@@ -178,16 +179,16 @@ struct QuickButtonObsView: View {
                     Text("Current scene snapshot")
                 }
                 Section {
-                    Picker("", selection: $model.obsCurrentScenePicker) {
-                        ForEach(model.obsScenes, id: \.self) { scene in
+                    Picker("", selection: $obsQuickButton.obsCurrentScenePicker) {
+                        ForEach(obsQuickButton.obsScenes, id: \.self) { scene in
                             Text(scene)
                         }
                     }
-                    .onChange(of: model.obsCurrentScenePicker) { _ in
-                        guard model.obsCurrentScene != model.obsCurrentScenePicker else {
+                    .onChange(of: obsQuickButton.obsCurrentScenePicker) { _ in
+                        guard obsQuickButton.obsCurrentScene != obsQuickButton.obsCurrentScenePicker else {
                             return
                         }
-                        model.setObsScene(name: model.obsCurrentScenePicker)
+                        model.setObsScene(name: obsQuickButton.obsCurrentScenePicker)
                     }
                     .pickerStyle(.inline)
                     .labelsHidden()
@@ -195,7 +196,7 @@ struct QuickButtonObsView: View {
                     Text("Scenes")
                 }
                 Section {
-                    ForEach(model.obsSceneInputs) { input in
+                    ForEach(obsQuickButton.obsSceneInputs) { input in
                         if let muted = input.muted {
                             HStack {
                                 Text(input.name)
@@ -217,7 +218,7 @@ struct QuickButtonObsView: View {
                     Text("Scene audio inputs")
                 }
                 if !model.stream.obsSourceName.isEmpty {
-                    if !model.obsFixOngoing {
+                    if !obsQuickButton.obsFixOngoing {
                         Section {
                             HStack {
                                 Spacer()
@@ -257,8 +258,8 @@ struct QuickButtonObsView: View {
                     Section {
                         ValueEditView(
                             title: "Delay",
-                            number: Float(model.obsAudioDelay),
-                            value: "\(model.obsAudioDelay)",
+                            number: Float(obsQuickButton.obsAudioDelay),
+                            value: "\(obsQuickButton.obsAudioDelay)",
                             minimum: Float(obsMinimumAudioDelay),
                             maximum: Float(min(obsMaximumAudioDelay, 9999)),
                             onSubmit: submitAudioDelay,
@@ -270,8 +271,8 @@ struct QuickButtonObsView: View {
                     }
                     Section {
                         if model.isLive {
-                            if !model.obsAudioVolume.isEmpty {
-                                Text(model.obsAudioVolume)
+                            if !obsQuickButton.obsAudioVolume.isEmpty {
+                                Text(obsQuickButton.obsAudioVolume)
                             } else {
                                 Text("No audio levels received yet.")
                             }
