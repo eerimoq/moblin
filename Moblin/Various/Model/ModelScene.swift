@@ -309,7 +309,7 @@ extension Model {
         drawOnStreamEffect.updateOverlay(
             videoSize: media.getVideoSize(),
             size: drawOnStreamSize,
-            lines: drawOnStreamLines,
+            lines: drawOnStream.lines,
             mirror: streamOverlay.isFrontCameraSelected && !database.mirrorFrontCameraOnStream
         )
         for lutEffect in lutEffects.values {
@@ -470,7 +470,7 @@ extension Model {
             &enabledAlertsEffects,
             &needsSpeechToText
         )
-        if !drawOnStreamLines.isEmpty {
+        if !drawOnStream.lines.isEmpty {
             effects.append(drawOnStreamEffect)
         }
         effects += registerGlobalVideoEffectsOnTop()
@@ -495,11 +495,11 @@ extension Model {
             media.usePendingAfterAttachEffects()
         }
         // To do: Should update on first frame in draw effect instead.
-        if !drawOnStreamLines.isEmpty {
+        if !drawOnStream.lines.isEmpty {
             drawOnStreamEffect.updateOverlay(
                 videoSize: media.getVideoSize(),
                 size: drawOnStreamSize,
-                lines: drawOnStreamLines,
+                lines: drawOnStream.lines,
                 mirror: streamOverlay.isFrontCameraSelected && !database.mirrorFrontCameraOnStream
             )
         }

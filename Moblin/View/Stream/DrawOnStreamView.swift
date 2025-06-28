@@ -10,7 +10,8 @@ struct DrawOnStreamLine: Identifiable {
 private var drawing = false
 
 private struct DrawOnStreamCanvasView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
+    @ObservedObject var drawOnStream: DrawOnStream
 
     var body: some View {
         HStack {
@@ -18,7 +19,7 @@ private struct DrawOnStreamCanvasView: View {
             VStack {
                 Spacer(minLength: 0)
                 Canvas { context, size in
-                    for line in model.drawOnStreamLines {
+                    for line in drawOnStream.lines {
                         let width = line.width
                         if line.points.count > 1 {
                             context.stroke(
@@ -41,18 +42,18 @@ private struct DrawOnStreamCanvasView: View {
                             let position = value.location
                             if value.translation == .zero {
                                 if !drawing {
-                                    model.drawOnStreamLines.append(DrawOnStreamLine(
+                                    drawOnStream.lines.append(DrawOnStreamLine(
                                         points: [position],
-                                        width: model.drawOnStreamSelectedWidth,
-                                        color: model.drawOnStreamSelectedColor
+                                        width: drawOnStream.selectedWidth,
+                                        color: drawOnStream.selectedColor
                                     ))
                                 }
                                 drawing = true
                             } else {
-                                guard let lastIndex = model.drawOnStreamLines.indices.last else {
+                                guard let lastIndex = drawOnStream.lines.indices.last else {
                                     return
                                 }
-                                model.drawOnStreamLines[lastIndex].points.append(position)
+                                drawOnStream.lines[lastIndex].points.append(position)
                             }
                         }
                         .onEnded { _ in
@@ -70,10 +71,11 @@ private struct DrawOnStreamCanvasView: View {
 }
 
 private struct DrawOnStreamControlsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
+    @ObservedObject var drawOnStream: DrawOnStream
 
     private func buttonColor() -> Color {
-        if model.drawOnStreamLines.isEmpty {
+        if drawOnStream.lines.isEmpty {
             return .gray
         } else {
             return .white
@@ -93,7 +95,7 @@ private struct DrawOnStreamControlsView: View {
                             .font(.title)
                             .foregroundColor(buttonColor())
                     }
-                    .disabled(model.drawOnStreamLines.isEmpty)
+                    .disabled(drawOnStream.lines.isEmpty)
                     Button {
                         model.drawOnStreamUndo()
                     } label: {
@@ -101,12 +103,12 @@ private struct DrawOnStreamControlsView: View {
                             .font(.title)
                             .foregroundColor(buttonColor())
                     }
-                    .disabled(model.drawOnStreamLines.isEmpty)
-                    ColorPicker("Color", selection: $model.drawOnStreamSelectedColor)
+                    .disabled(drawOnStream.lines.isEmpty)
+                    ColorPicker("Color", selection: $drawOnStream.selectedColor)
                         .labelsHidden()
-                    Slider(value: $model.drawOnStreamSelectedWidth, in: 1 ... 20)
+                    Slider(value: $drawOnStream.selectedWidth, in: 1 ... 20)
                         .frame(width: 150)
-                        .accentColor(model.drawOnStreamSelectedColor)
+                        .accentColor(drawOnStream.selectedColor)
                 }
                 .padding(8)
                 .background(backgroundColor)
@@ -118,10 +120,12 @@ private struct DrawOnStreamControlsView: View {
 }
 
 struct DrawOnStreamView: View {
+    let model: Model
+
     var body: some View {
         ZStack {
-            DrawOnStreamCanvasView()
-            DrawOnStreamControlsView()
+            DrawOnStreamCanvasView(model: model, drawOnStream: model.drawOnStream)
+            DrawOnStreamControlsView(model: model, drawOnStream: model.drawOnStream)
         }
     }
 }

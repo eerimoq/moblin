@@ -426,7 +426,7 @@ struct MainView: View {
                         .opacity(model.showLocalOverlays ? 1 : 0)
                 }
                 if model.showDrawOnStream {
-                    DrawOnStreamView()
+                    DrawOnStreamView(model: model)
                 }
                 if model.showFace && !model.showDrawOnStream {
                     face()

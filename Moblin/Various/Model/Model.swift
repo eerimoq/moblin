@@ -308,6 +308,12 @@ class Cosmetics: ObservableObject {
     @Published var iconImage: String = plainIcon.id
 }
 
+class DrawOnStream: ObservableObject {
+    @Published var lines: [DrawOnStreamLine] = []
+    @Published var selectedColor: Color = .pink
+    @Published var selectedWidth: CGFloat = 4
+}
+
 final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var isPresentingWidgetWizard = false
     @Published var goProLaunchLiveStreamSelection: UUID?
@@ -356,9 +362,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var showFace = false
     @Published var showLocalOverlays = true
     @Published var showBrowser = false
-    @Published var drawOnStreamLines: [DrawOnStreamLine] = []
-    @Published var drawOnStreamSelectedColor: Color = .pink
-    @Published var drawOnStreamSelectedWidth: CGFloat = 4
     @Published var webBrowserUrl: String = ""
     @Published var teslaVehicleState: TeslaVehicleState?
     @Published var teslaVehicleVehicleSecurityConnected = false
@@ -379,6 +382,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
+    let drawOnStream = DrawOnStream()
     let cosmetics = Cosmetics()
     let show = Show()
     let streamOverlay = StreamOverlay()
@@ -2826,7 +2830,7 @@ extension Model {
         drawOnStreamEffect.updateOverlay(
             videoSize: media.getVideoSize(),
             size: drawOnStreamSize,
-            lines: drawOnStreamLines,
+            lines: drawOnStream.lines,
             mirror: streamOverlay.isFrontCameraSelected && !database.mirrorFrontCameraOnStream
         )
         media.registerEffect(drawOnStreamEffect)
@@ -2834,11 +2838,11 @@ extension Model {
     }
 
     func drawOnStreamWipe() {
-        drawOnStreamLines = []
+        drawOnStream.lines = []
         drawOnStreamEffect.updateOverlay(
             videoSize: media.getVideoSize(),
             size: drawOnStreamSize,
-            lines: drawOnStreamLines,
+            lines: drawOnStream.lines,
             mirror: streamOverlay.isFrontCameraSelected && !database.mirrorFrontCameraOnStream
         )
         media.unregisterEffect(drawOnStreamEffect)
@@ -2846,24 +2850,24 @@ extension Model {
     }
 
     func drawOnStreamUndo() {
-        guard !drawOnStreamLines.isEmpty else {
+        guard !drawOnStream.lines.isEmpty else {
             return
         }
-        drawOnStreamLines.removeLast()
+        drawOnStream.lines.removeLast()
         drawOnStreamEffect.updateOverlay(
             videoSize: media.getVideoSize(),
             size: drawOnStreamSize,
-            lines: drawOnStreamLines,
+            lines: drawOnStream.lines,
             mirror: streamOverlay.isFrontCameraSelected && !database.mirrorFrontCameraOnStream
         )
-        if drawOnStreamLines.isEmpty {
+        if drawOnStream.lines.isEmpty {
             media.unregisterEffect(drawOnStreamEffect)
         }
         drawOnStreamUpdateButtonState()
     }
 
     func drawOnStreamUpdateButtonState() {
-        setGlobalButtonState(type: .draw, isOn: showDrawOnStream || !drawOnStreamLines.isEmpty)
+        setGlobalButtonState(type: .draw, isOn: showDrawOnStream || !drawOnStream.lines.isEmpty)
         updateQuickButtonStates()
     }
 }
