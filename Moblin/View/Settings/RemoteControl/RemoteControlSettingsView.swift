@@ -131,6 +131,7 @@ private struct RemoteControlSettingsStreamerView: View {
             }, set: { value in
                 database.remoteControl.server.enabled = value
                 model.reloadRemoteControlStreamer()
+                model.objectWillChange.send()
             })) {
                 Text("Enabled")
             }
@@ -236,6 +237,7 @@ private struct RemoteControlSettingsRelayView: View {
             }, set: { value in
                 database.remoteControl.client.relay!.enabled = value
                 model.reloadRemoteControlRelay()
+                model.objectWillChange.send()
             })) {
                 Text("Enabled")
             }
