@@ -350,6 +350,10 @@ extension Model {
                 self.streamOverlay.showingPixellate = state == "on"
             case "4:3":
                 type = .fourThree
+            case "whirlpool":
+                type = .whirlpool
+            case "pinch":
+                type = .pinch
             default:
                 return
             }

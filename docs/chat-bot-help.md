@@ -32,6 +32,10 @@
 | !moblin filter pixellate off | Turn off the pixellate filter. |
 | !moblin filter 4:3 on | Turn on the 4:3 filter. |
 | !moblin filter 4:3 off | Turn off the 4:3 filter. |
+| !moblin filter whirlpool on | Turn on the whirlpool filter. |
+| !moblin filter whirlpool off | Turn off the whirlpool filter. |
+| !moblin filter pinch on | Turn on the pinch filter. |
+| !moblin filter pinch off | Turn off the pinch filter. |
 | !moblin scene \<name> | Change scene. |
 | !moblin stream title \<title> | Set stream title. |
 | !moblin reaction fireworks | Trigger Apple fireworks reaction. |
