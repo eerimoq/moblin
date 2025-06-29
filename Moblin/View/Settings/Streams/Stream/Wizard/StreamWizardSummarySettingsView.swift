@@ -23,7 +23,7 @@ private struct PlatformView: View {
             }
         } else if createStreamWizard.platform == .youTube {
             Section {
-                TextValueView(name: String(localized: "Video id"), value: createStreamWizard.youTubeVideoId)
+                TextValueView(name: String(localized: "Channel handle"), value: createStreamWizard.youTubeHandle)
             } header: {
                 Text("YouTube")
             }

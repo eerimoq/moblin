@@ -404,7 +404,8 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject {
     var kickChatroomId: String = ""
     var kickChannelName: String = ""
     var youTubeApiKey: String = ""
-    var youTubeVideoId: String = ""
+    @Published var youTubeVideoId: String = ""
+    @Published var youTubeHandle: String = ""
     var afreecaTvChannelName: String = ""
     var afreecaTvStreamId: String = ""
     var openStreamingPlatformUrl: String = ""
@@ -476,6 +477,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject {
              kickChannelName,
              youTubeApiKey,
              youTubeVideoId,
+             youTubeHandle,
              afreecaTvChannelName,
              afreecaTvStreamId,
              openStreamingPlatformUrl,
@@ -541,6 +543,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject {
         try container.encode(.kickChannelName, kickChannelName)
         try container.encode(.youTubeApiKey, youTubeApiKey)
         try container.encode(.youTubeVideoId, youTubeVideoId)
+        try container.encode(.youTubeHandle, youTubeHandle)
         try container.encode(.afreecaTvChannelName, afreecaTvChannelName)
         try container.encode(.afreecaTvStreamId, afreecaTvStreamId)
         try container.encode(.openStreamingPlatformUrl, openStreamingPlatformUrl)
@@ -606,6 +609,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject {
         kickChannelName = container.decode(.kickChannelName, String.self, "")
         youTubeApiKey = container.decode(.youTubeApiKey, String.self, "")
         youTubeVideoId = container.decode(.youTubeVideoId, String.self, "")
+        youTubeHandle = container.decode(.youTubeHandle, String.self, "")
         afreecaTvChannelName = container.decode(.afreecaTvChannelName, String.self, "")
         afreecaTvStreamId = container.decode(.afreecaTvStreamId, String.self, "")
         openStreamingPlatformUrl = container.decode(.openStreamingPlatformUrl, String.self, "")
@@ -664,6 +668,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject {
         new.kickChannelName = kickChannelName
         new.youTubeApiKey = youTubeApiKey
         new.youTubeVideoId = youTubeVideoId
+        new.youTubeHandle = youTubeHandle
         new.afreecaTvChannelName = afreecaTvChannelName
         new.afreecaTvStreamId = afreecaTvStreamId
         new.openStreamingPlatformUrl = openStreamingPlatformUrl

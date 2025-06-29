@@ -1,6 +1,38 @@
 import Foundation
 
 private let userAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:124.0) Gecko/20100101 Firefox/124.0"
+
+func fetchYouTubeVideoId(handle: String) async throws -> String {
+    guard let url = URL(string: "https://www.youtube.com/\(handle)/live") else {
+        throw "Cannot create URL"
+    }
+    var request = URLRequest(url: url)
+    request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
+    request.setValue("CONSENT=YES+1", forHTTPHeaderField: "Cookie")
+    let (data, response) = try await httpGet(request: request)
+    if !response.isSuccessful {
+        throw "Not successful"
+    }
+    guard let html = String(data: data, encoding: .utf8) else {
+        throw "Not html"
+    }
+    let patterns = [
+        #"<link rel="shortlinkUrl" href="https://youtu\.be/([^"]+)""#,
+        #"<link rel='shortlinkUrl' href='https://youtu\.be/([^']+)'"#,
+        #"shortlinkUrl[^>]*href=[\"\']https://youtu\.be/([^\"\']+)"#,
+    ]
+    for pattern in patterns {
+        if let regex = try? NSRegularExpression(pattern: pattern, options: []),
+           let match = regex.firstMatch(in: html, options: [], range: NSRange(html.startIndex..., in: html)),
+           let videoIdRange = Range(match.range(at: 1), in: html)
+        {
+            let videoId = String(html[videoIdRange])
+            return videoId
+        }
+    }
+    throw "Video id not found"
+}
+
 private let minimumPollDelayMs = 200
 private let maximumPollDelayMs = 3000
 

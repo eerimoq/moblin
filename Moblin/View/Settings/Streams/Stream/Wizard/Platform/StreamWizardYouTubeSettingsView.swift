@@ -7,11 +7,11 @@ struct StreamWizardYouTubeSettingsView: View {
     var body: some View {
         Form {
             Section {
-                TextField("jo304F4gr", text: $createStreamWizard.youTubeVideoId)
+                TextField(String("@erimo144"), text: $createStreamWizard.youTubeHandle)
                     .textInputAutocapitalization(.never)
                     .disableAutocorrection(true)
             } header: {
-                Text("Video id")
+                Text("Channel handle")
             } footer: {
                 Text("Only needed for chat.")
             }
