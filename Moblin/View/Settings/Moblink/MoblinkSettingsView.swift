@@ -259,6 +259,42 @@ private struct StreamerView: View {
     }
 }
 
+private struct UrlsView: View {
+    @EnvironmentObject var model: Model
+    @ObservedObject var status: StatusOther
+
+    var body: some View {
+        NavigationLink {
+            Form {
+                List {
+                    ForEach(status.ipStatuses.filter { $0.ipType == .ipv4 }) { status in
+                        InterfaceView(
+                            ip: status.ipType.formatAddress(status.ip),
+                            port: model.database.moblink.server.port,
+                            image: urlImage(interfaceType: status.interfaceType)
+                        )
+                    }
+                    InterfaceView(
+                        ip: personalHotspotLocalAddress,
+                        port: model.database.moblink.server.port,
+                        image: "personalhotspot"
+                    )
+                    ForEach(status.ipStatuses.filter { $0.ipType == .ipv6 }) { status in
+                        InterfaceView(
+                            ip: status.ipType.formatAddress(status.ip),
+                            port: model.database.moblink.server.port,
+                            image: urlImage(interfaceType: status.interfaceType)
+                        )
+                    }
+                }
+            }
+            .navigationTitle("URLs")
+        } label: {
+            Text("URLs")
+        }
+    }
+}
+
 struct MoblinkSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var status: StatusOther
@@ -298,27 +334,7 @@ struct MoblinkSettingsView: View {
             StreamerView(enabled: $streamerEnabled)
             if streamerEnabled {
                 Section {
-                    List {
-                        ForEach(status.ipStatuses.filter { $0.ipType == .ipv4 }) { status in
-                            InterfaceView(
-                                ip: status.ipType.formatAddress(status.ip),
-                                port: model.database.moblink.server.port,
-                                image: urlImage(interfaceType: status.interfaceType)
-                            )
-                        }
-                        InterfaceView(
-                            ip: personalHotspotLocalAddress,
-                            port: model.database.moblink.server.port,
-                            image: "personalhotspot"
-                        )
-                        ForEach(status.ipStatuses.filter { $0.ipType == .ipv6 }) { status in
-                            InterfaceView(
-                                ip: status.ipType.formatAddress(status.ip),
-                                port: model.database.moblink.server.port,
-                                image: urlImage(interfaceType: status.interfaceType)
-                            )
-                        }
-                    }
+                    UrlsView(status: status)
                 } footer: {
                     VStack(alignment: .leading) {
                         Text("""
