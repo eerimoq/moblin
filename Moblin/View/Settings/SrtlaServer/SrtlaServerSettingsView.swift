@@ -72,6 +72,7 @@ struct SrtlaServerSettingsView: View {
                         NavigationLink {
                             SrtlaServerStreamSettingsView(
                                 status: model.statusOther,
+                                srtPort: database.srtlaServer.srtPort,
                                 srtlaPort: database.srtlaServer.srtlaPort,
                                 stream: stream
                             )

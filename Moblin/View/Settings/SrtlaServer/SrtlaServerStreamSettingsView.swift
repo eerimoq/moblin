@@ -1,23 +1,72 @@
 import Network
 import SwiftUI
 
-private func srtlaStreamUrl(address: String, srtlaPort: UInt16, streamId: String) -> String {
-    var url = "srtla://\(address):\(srtlaPort)"
+private func makeStreamUrl(proto: String, address: String, port: UInt16, streamId: String) -> String {
+    var url = "\(proto)://\(address):\(port)"
     if !streamId.isEmpty {
         url += "?streamid=\(streamId)"
     }
     return url
 }
 
+private struct ProtocolUrlsView: View {
+    @ObservedObject var status: StatusOther
+    let proto: String
+    let port: UInt16
+    let streamId: String
+
+    private func title() -> String {
+        return "\(proto.uppercased()) URLs"
+    }
+
+    var body: some View {
+        NavigationLink {
+            Form {
+                List {
+                    ForEach(status.ipStatuses.filter { $0.ipType == .ipv4 }) { status in
+                        InterfaceView(
+                            proto: proto,
+                            ip: status.ipType.formatAddress(status.ip),
+                            port: port,
+                            streamId: streamId,
+                            image: urlImage(interfaceType: status.interfaceType)
+                        )
+                    }
+                    InterfaceView(
+                        proto: proto,
+                        ip: personalHotspotLocalAddress,
+                        port: port,
+                        streamId: streamId,
+                        image: "personalhotspot"
+                    )
+                    ForEach(status.ipStatuses.filter { $0.ipType == .ipv6 }) { status in
+                        InterfaceView(
+                            proto: proto,
+                            ip: status.ipType.formatAddress(status.ip),
+                            port: port,
+                            streamId: streamId,
+                            image: urlImage(interfaceType: status.interfaceType)
+                        )
+                    }
+                }
+            }
+            .navigationTitle(title())
+        } label: {
+            Text(title())
+        }
+    }
+}
+
 private struct InterfaceView: View {
     @EnvironmentObject var model: Model
-    var srtlaPort: UInt16
-    var streamId: String
-    var image: String
-    var ip: String
+    let proto: String
+    let ip: String
+    let port: UInt16
+    let streamId: String
+    let image: String
 
     private func streamUrl() -> String {
-        return srtlaStreamUrl(address: ip, srtlaPort: srtlaPort, streamId: streamId)
+        return makeStreamUrl(proto: proto, address: ip, port: port, streamId: streamId)
     }
 
     var body: some View {
@@ -39,6 +88,7 @@ private struct InterfaceView: View {
 struct SrtlaServerStreamSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var status: StatusOther
+    var srtPort: UInt16
     var srtlaPort: UInt16
     var stream: SettingsSrtlaServerStream
 
@@ -94,30 +144,8 @@ struct SrtlaServerStreamSettingsView: View {
             }
             Section {
                 if model.srtlaServerEnabled() {
-                    List {
-                        ForEach(status.ipStatuses.filter { $0.ipType == .ipv4 }) { status in
-                            InterfaceView(
-                                srtlaPort: srtlaPort,
-                                streamId: stream.streamId,
-                                image: urlImage(interfaceType: status.interfaceType),
-                                ip: status.ipType.formatAddress(status.ip)
-                            )
-                        }
-                        InterfaceView(
-                            srtlaPort: srtlaPort,
-                            streamId: stream.streamId,
-                            image: "personalhotspot",
-                            ip: personalHotspotLocalAddress
-                        )
-                        ForEach(status.ipStatuses.filter { $0.ipType == .ipv6 }) { status in
-                            InterfaceView(
-                                srtlaPort: srtlaPort,
-                                streamId: stream.streamId,
-                                image: urlImage(interfaceType: status.interfaceType),
-                                ip: status.ipType.formatAddress(status.ip)
-                            )
-                        }
-                    }
+                    ProtocolUrlsView(status: status, proto: "srt", port: srtPort, streamId: stream.streamId)
+                    ProtocolUrlsView(status: status, proto: "srtla", port: srtlaPort, streamId: stream.streamId)
                 } else {
                     Text("Enable the SRT(LA) server to see URLs.")
                 }
