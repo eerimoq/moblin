@@ -24,7 +24,7 @@ extension Model {
 
     func setCurrentCyclingPowerDevice(device: SettingsCyclingPowerDevice) {
         currentCyclingPowerDeviceSettings = device
-        status.cyclingPowerDeviceState = getCyclingPowerDeviceState(device: device)
+        statusTopRight.cyclingPowerDeviceState = getCyclingPowerDeviceState(device: device)
     }
 
     func getCyclingPowerDeviceState(device: SettingsCyclingPowerDevice) -> CyclingPowerDeviceState {
@@ -61,7 +61,7 @@ extension Model: CyclingPowerDeviceDelegate {
                 return
             }
             if device === self.currentCyclingPowerDeviceSettings {
-                self.status.cyclingPowerDeviceState = state
+                self.statusTopRight.cyclingPowerDeviceState = state
             }
         }
     }

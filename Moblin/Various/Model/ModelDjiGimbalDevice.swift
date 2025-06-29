@@ -20,7 +20,7 @@ extension Model {
 
     func setCurrentDjiGimbalDevice(device: SettingsDjiGimbalDevice) {
         currentDjiGimbalDeviceSettings = device
-        status.djiGimbalDeviceStreamingState = getDjiGimbalDeviceState(device: device)
+        statusTopRight.djiGimbalDeviceStreamingState = getDjiGimbalDeviceState(device: device)
     }
 
     private func getDjiGimbalDeviceSettings(djiDevice: DjiGimbalDevice) -> SettingsDjiGimbalDevice? {
@@ -59,7 +59,7 @@ extension Model: DjiGimbalDeviceDelegate {
                 return
             }
             if device === self.currentDjiGimbalDeviceSettings {
-                self.status.djiGimbalDeviceStreamingState = state
+                self.statusTopRight.djiGimbalDeviceStreamingState = state
             }
         }
     }

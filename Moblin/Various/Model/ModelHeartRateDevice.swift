@@ -24,7 +24,7 @@ extension Model {
 
     func setCurrentHeartRateDevice(device: SettingsHeartRateDevice) {
         currentHeartRateDeviceSettings = device
-        status.heartRateDeviceState = getHeartRateDeviceState(device: device)
+        statusTopRight.heartRateDeviceState = getHeartRateDeviceState(device: device)
     }
 
     func getHeartRateDeviceState(device: SettingsHeartRateDevice) -> HeartRateDeviceState {
@@ -62,7 +62,7 @@ extension Model: HeartRateDeviceDelegate {
             }
             self.heartRates.removeValue(forKey: device.name.lowercased())
             if device === self.currentHeartRateDeviceSettings {
-                self.status.heartRateDeviceState = state
+                self.statusTopRight.heartRateDeviceState = state
             }
         }
     }

@@ -25,7 +25,7 @@ struct PhoneCoolerDeviceSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject private var scanner = phoneCoolerScanner
     @ObservedObject var device: SettingsPhoneCoolerDevice
-    @ObservedObject var status: Status
+    @ObservedObject var status: StatusTopRight
 
     func state() -> String {
         return formatPhoneCoolerDeviceState(state: status.phoneCoolerDeviceState)

@@ -249,7 +249,7 @@ final class AfreecaTvChat: NSObject {
                 userColor: nil,
                 userBadges: [],
                 segments: segments,
-                timestamp: model.status.digitalClock,
+                timestamp: model.statusOther.digitalClock,
                 timestampTime: .now,
                 isAction: false,
                 isSubscriber: false,

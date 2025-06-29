@@ -38,7 +38,7 @@ private struct InterfaceView: View {
 
 struct SrtlaServerStreamSettingsView: View {
     @EnvironmentObject var model: Model
-    @ObservedObject var status: Status
+    @ObservedObject var status: StatusOther
     var srtlaPort: UInt16
     var stream: SettingsSrtlaServerStream
 

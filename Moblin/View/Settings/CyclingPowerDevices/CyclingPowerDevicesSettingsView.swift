@@ -2,7 +2,7 @@ import SwiftUI
 
 private struct CyclingPowerDeviceSettingsWrapperView: View {
     let device: SettingsCyclingPowerDevice
-    let status: Status
+    let status: StatusTopRight
     @State var name: String
 
     var body: some View {
@@ -27,7 +27,9 @@ struct CyclingPowerDevicesSettingsView: View {
             Section {
                 List {
                     ForEach(model.database.cyclingPowerDevices.devices) { device in
-                        CyclingPowerDeviceSettingsWrapperView(device: device, status: model.status, name: device.name)
+                        CyclingPowerDeviceSettingsWrapperView(device: device,
+                                                              status: model.statusTopRight,
+                                                              name: device.name)
                     }
                     .onDelete { offsets in
                         model.database.cyclingPowerDevices.devices.remove(atOffsets: offsets)

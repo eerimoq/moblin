@@ -2,7 +2,7 @@ import SwiftUI
 import WebKit
 
 private struct CollapsedViewersView: View {
-    @ObservedObject var status: Status
+    @ObservedObject var status: StatusTopLeft
     var color: Color
 
     var body: some View {
@@ -27,7 +27,7 @@ private struct CollapsedViewersView: View {
 }
 
 private struct StreamStatusView: View {
-    @ObservedObject var status: Status
+    @ObservedObject var status: StatusTopLeft
     let textPlacement: StreamOverlayIconAndTextPlacement
 
     var body: some View {
@@ -55,7 +55,7 @@ private struct ZoomView: View {
 private struct StatusesView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var show: SettingsShow
-    @ObservedObject var status: Status
+    @ObservedObject var status: StatusTopLeft
     let textPlacement: StreamOverlayIconAndTextPlacement
 
     func eventsColor() -> Color {
@@ -169,10 +169,10 @@ struct LeftOverlayView: View {
         VStack(alignment: .leading, spacing: 1) {
             VStack(alignment: .leading, spacing: 1) {
                 if database.verboseStatuses {
-                    StatusesView(show: database.show, status: model.status, textPlacement: .afterIcon)
+                    StatusesView(show: database.show, status: model.statusTopLeft, textPlacement: .afterIcon)
                 } else {
                     HStack(spacing: 1) {
-                        StatusesView(show: database.show, status: model.status, textPlacement: .hide)
+                        StatusesView(show: database.show, status: model.statusTopLeft, textPlacement: .hide)
                     }
                 }
             }

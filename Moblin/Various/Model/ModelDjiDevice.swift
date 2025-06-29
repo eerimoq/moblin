@@ -133,7 +133,7 @@ extension Model {
 
     func setCurrentDjiDevice(device: SettingsDjiDevice) {
         currentDjiDeviceSettings = device
-        status.djiDeviceStreamingState = getDjiDeviceState(device: device)
+        statusTopRight.djiDeviceStreamingState = getDjiDeviceState(device: device)
     }
 
     func reloadDjiDevices() {
@@ -189,8 +189,8 @@ extension Model {
             statuses.append(status)
         }
         let status = statuses.joined(separator: ", ")
-        if status != self.status.djiDevicesStatus {
-            self.status.djiDevicesStatus = status
+        if status != statusTopRight.djiDevicesStatus {
+            statusTopRight.djiDevicesStatus = status
         }
     }
 }
@@ -205,7 +205,7 @@ extension Model: DjiDeviceDelegate {
         }
         device.state = state
         if device === currentDjiDeviceSettings {
-            status.djiDeviceStreamingState = state
+            statusTopRight.djiDeviceStreamingState = state
         }
         switch state {
         case .connecting:

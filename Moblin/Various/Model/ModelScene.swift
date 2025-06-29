@@ -59,8 +59,8 @@ extension Model {
             fixedHorizonStatus = "Disabled"
             fixedHorizonEffect.stop()
         }
-        if fixedHorizonStatus != status.fixedHorizonStatus {
-            status.fixedHorizonStatus = fixedHorizonStatus
+        if fixedHorizonStatus != statusTopRight.fixedHorizonStatus {
+            statusTopRight.fixedHorizonStatus = fixedHorizonStatus
         }
         if isFaceEnabled() {
             effects.append(faceEffect)

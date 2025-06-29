@@ -261,7 +261,7 @@ private struct StreamerView: View {
 
 struct MoblinkSettingsView: View {
     @EnvironmentObject var model: Model
-    @ObservedObject var status: Status
+    @ObservedObject var status: StatusOther
     @State var streamerEnabled: Bool
 
     private func submitPassword(value: String) {

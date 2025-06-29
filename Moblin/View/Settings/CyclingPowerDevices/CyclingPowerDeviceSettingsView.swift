@@ -17,7 +17,7 @@ private func formatCyclingPowerDeviceState(state: CyclingPowerDeviceState?) -> S
 struct CyclingPowerDeviceSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject private var scanner = cyclingPowerScanner
-    @ObservedObject var status: Status
+    @ObservedObject var status: StatusTopRight
     var device: SettingsCyclingPowerDevice
     @Binding var name: String
 

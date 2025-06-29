@@ -26,14 +26,14 @@ extension Model {
 extension Model: PhoneCoolerDeviceDelegate {
     func phoneCoolerDeviceState(_: PhoneCoolerDevice, state: PhoneCoolerDeviceState) {
         DispatchQueue.main.async {
-            self.status.phoneCoolerDeviceState = state
+            self.statusTopRight.phoneCoolerDeviceState = state
         }
     }
 
     func phoneCoolerStatus(_: PhoneCoolerDevice, status: BlackSharkLib.CoolingState) {
         DispatchQueue.main.async {
-            self.status.phoneCoolerPhoneTemp = status.phoneTemperature
-            self.status.phoneCoolerExhaustTemp = status.heatsinkTemperature
+            self.statusTopRight.phoneCoolerPhoneTemp = status.phoneTemperature
+            self.statusTopRight.phoneCoolerExhaustTemp = status.heatsinkTemperature
         }
     }
 

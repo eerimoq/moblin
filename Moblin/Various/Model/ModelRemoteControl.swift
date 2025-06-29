@@ -70,8 +70,8 @@ extension Model {
                 status = noValue
             }
         }
-        if status != self.status.remoteControlStatus {
-            self.status.remoteControlStatus = status
+        if status != statusTopRight.remoteControlStatus {
+            statusTopRight.remoteControlStatus = status
         }
     }
 
@@ -305,7 +305,7 @@ extension Model {
         var general = RemoteControlStatusGeneral()
         general.batteryCharging = isBatteryCharging()
         general.batteryLevel = Int(100 * battery.level)
-        switch status.thermalState {
+        switch statusOther.thermalState {
         case .nominal:
             general.flame = .white
         case .fair:
@@ -327,21 +327,21 @@ extension Model {
     private func remoteControlStreamerCreateStatusTopLeft() -> RemoteControlStatusTopLeft {
         var topLeft = RemoteControlStatusTopLeft()
         if isStreamConfigured() {
-            topLeft.stream = RemoteControlStatusItem(message: status.streamText)
+            topLeft.stream = RemoteControlStatusItem(message: statusTopLeft.streamText)
         }
-        topLeft.camera = RemoteControlStatusItem(message: status.statusCameraText)
+        topLeft.camera = RemoteControlStatusItem(message: statusTopLeft.statusCameraText)
         topLeft.mic = RemoteControlStatusItem(message: currentMic.name)
         if zoom.hasZoom {
             topLeft.zoom = RemoteControlStatusItem(message: zoom.statusText())
         }
         if isObsRemoteControlConfigured() {
-            topLeft.obs = RemoteControlStatusItem(message: status.statusObsText)
+            topLeft.obs = RemoteControlStatusItem(message: statusTopLeft.statusObsText)
         }
         if isEventsConfigured() {
-            topLeft.events = RemoteControlStatusItem(message: status.statusEventsText)
+            topLeft.events = RemoteControlStatusItem(message: statusTopLeft.statusEventsText)
         }
         if isChatConfigured() {
-            topLeft.chat = RemoteControlStatusItem(message: status.statusChatText)
+            topLeft.chat = RemoteControlStatusItem(message: statusTopLeft.statusChatText)
         }
         if isViewersConfigured() && isLive {
             topLeft.viewers = RemoteControlStatusItem(message: statusViewersText())
@@ -369,10 +369,10 @@ extension Model {
             topRight.rtmpServer = RemoteControlStatusItem(message: servers.speedAndTotal)
         }
         if isAnyRemoteControlConfigured() {
-            topRight.remoteControl = RemoteControlStatusItem(message: status.remoteControlStatus)
+            topRight.remoteControl = RemoteControlStatusItem(message: statusTopRight.remoteControlStatus)
         }
         if isGameControllerConnected() {
-            topRight.gameController = RemoteControlStatusItem(message: status.gameControllersTotal)
+            topRight.gameController = RemoteControlStatusItem(message: statusTopRight.gameControllersTotal)
         }
         if isLive {
             topRight.bitrate = RemoteControlStatusItem(message: bitrate.speedAndTotal)
@@ -381,7 +381,7 @@ extension Model {
             topRight.uptime = RemoteControlStatusItem(message: streamUptime.uptime)
         }
         if isLocationEnabled() {
-            topRight.location = RemoteControlStatusItem(message: status.location)
+            topRight.location = RemoteControlStatusItem(message: statusTopRight.location)
         }
         if isStatusBondingActive() {
             topRight.srtla = RemoteControlStatusItem(message: bonding.statistics)
@@ -396,13 +396,13 @@ extension Model {
             topRight.replay = RemoteControlStatusItem(message: String(localized: "Enabled"))
         }
         if isStatusBrowserWidgetsActive() {
-            topRight.browserWidgets = RemoteControlStatusItem(message: status.browserWidgetsStatus)
+            topRight.browserWidgets = RemoteControlStatusItem(message: statusTopRight.browserWidgetsStatus)
         }
         if isAnyMoblinkConfigured() {
             topRight.moblink = RemoteControlStatusItem(message: moblink.status)
         }
-        if !status.djiDevicesStatus.isEmpty {
-            topRight.djiDevices = RemoteControlStatusItem(message: status.djiDevicesStatus)
+        if !statusTopRight.djiDevicesStatus.isEmpty {
+            topRight.djiDevices = RemoteControlStatusItem(message: statusTopRight.djiDevicesStatus)
         }
         return topRight
     }

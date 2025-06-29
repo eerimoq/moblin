@@ -393,7 +393,7 @@ extension Model {
     }
 
     func updateStatusObsText() {
-        status.statusObsText = statusObsText()
+        statusTopLeft.statusObsText = statusObsText()
     }
 
     func isObsRemoteControlConfigured() -> Bool {

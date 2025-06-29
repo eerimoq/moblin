@@ -476,8 +476,8 @@ extension Model {
         } else {
             status = String(localized: "Disconnected")
         }
-        if status != self.status.statusChatText {
-            self.status.statusChatText = status
+        if status != statusTopLeft.statusChatText {
+            statusTopLeft.statusChatText = status
         }
     }
 

@@ -268,9 +268,23 @@ class Battery: ObservableObject {
     @Published var state: UIDevice.BatteryState = .full
 }
 
-class Status: ObservableObject {
-    var browserWidgetsStatusChanged = false
+class StatusOther: ObservableObject {
+    @Published var ipStatuses: [IPMonitor.Status] = []
+    @Published var thermalState = ProcessInfo.processInfo.thermalState
+    @Published var digitalClock = noValue
+}
+
+class StatusTopLeft: ObservableObject {
     @Published var numberOfViewers = noValue
+    @Published var statusEventsText = noValue
+    @Published var statusChatText = noValue
+    @Published var streamText = noValue
+    @Published var statusCameraText = noValue
+    @Published var statusObsText = noValue
+}
+
+class StatusTopRight: ObservableObject {
+    var browserWidgetsStatusChanged = false
     @Published var remoteControlStatus = noValue
     @Published var djiDevicesStatus = noValue
     @Published var browserWidgetsStatus = noValue
@@ -278,11 +292,7 @@ class Status: ObservableObject {
     @Published var cyclingPowerDeviceStatus = noValue
     @Published var heartRateDeviceStatus = noValue
     @Published var fixedHorizonStatus = noValue
-    @Published var statusEventsText = noValue
-    @Published var statusChatText = noValue
     @Published var adsRemainingTimerStatus = noValue
-    @Published var ipStatuses: [IPMonitor.Status] = []
-    @Published var thermalState = ProcessInfo.processInfo.thermalState
     @Published var phoneCoolerPhoneTemp: Int?
     @Published var phoneCoolerExhaustTemp: Int?
     @Published var phoneCoolerDeviceState: PhoneCoolerDeviceState?
@@ -292,11 +302,7 @@ class Status: ObservableObject {
     @Published var catPrinterState: CatPrinterState?
     @Published var cyclingPowerDeviceState: CyclingPowerDeviceState?
     @Published var heartRateDeviceState: HeartRateDeviceState?
-    @Published var digitalClock = noValue
-    @Published var streamText = noValue
     @Published var location = noValue
-    @Published var statusObsText = noValue
-    @Published var statusCameraText = noValue
 }
 
 class Toast: ObservableObject {
@@ -421,7 +427,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     let streamOverlay = StreamOverlay()
     let sceneSelector = SceneSelector()
     let toast = Toast()
-    let status = Status()
+    let statusOther = StatusOther()
+    let statusTopLeft = StatusTopLeft()
+    let statusTopRight = StatusTopRight()
     let battery = Battery()
     let remoteControl = RemoteControl()
     let createStreamWizard = CreateStreamWizard()
@@ -1252,7 +1260,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func handleIpStatusUpdate(statuses: [IPMonitor.Status]) {
-        status.ipStatuses = statuses
+        statusOther.ipStatuses = statuses
         for status in statuses where status.interfaceType == .wiredEthernet {
             for stream in database.streams
                 where !stream.srt.connectionPriorities!.priorities.contains(where: { $0.name == status.name })
@@ -1499,7 +1507,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         periodicTimer5s.startPeriodic(interval: 5) {
             self.updateRemoteControlAssistantStatus()
             if self.isWatchLocal() {
-                self.sendThermalStateToWatch(thermalState: self.status.thermalState)
+                self.sendThermalStateToWatch(thermalState: self.statusOther.thermalState)
             }
             self.teslaGetMediaState()
         }
@@ -1545,9 +1553,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         let secondsLeft = adsEndDate.timeIntervalSince(now)
         if secondsLeft < 0 {
             self.adsEndDate = nil
-            status.adsRemainingTimerStatus = noValue
+            statusTopRight.adsRemainingTimerStatus = noValue
         } else {
-            status.adsRemainingTimerStatus = String(Int(secondsLeft))
+            statusTopRight.adsRemainingTimerStatus = String(Int(secondsLeft))
         }
     }
 
@@ -1602,8 +1610,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if !isLive {
             newValue = noValue
         }
-        if newValue != status.numberOfViewers {
-            status.numberOfViewers = newValue
+        if newValue != statusTopLeft.numberOfViewers {
+            statusTopLeft.numberOfViewers = newValue
             sendViewerCountWatch()
         }
     }
@@ -2079,14 +2087,14 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func updateBrowserWidgetStatus() {
-        status.browserWidgetsStatusChanged = false
+        statusTopRight.browserWidgetsStatusChanged = false
         var messages: [String] = []
         for browser in browsers {
             let progress = browser.browserEffect.progress
             if browser.browserEffect.isLoaded {
                 messages.append("\(browser.browserEffect.host): \(progress)%")
                 if progress != 100 || browser.browserEffect.startLoadingTime + .seconds(5) > .now {
-                    status.browserWidgetsStatusChanged = true
+                    statusTopRight.browserWidgetsStatusChanged = true
                 }
             }
         }
@@ -2096,8 +2104,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         } else {
             message = messages.joined(separator: ", ")
         }
-        if status.browserWidgetsStatus != message {
-            status.browserWidgetsStatus = message
+        if statusTopRight.browserWidgetsStatus != message {
+            statusTopRight.browserWidgetsStatus = message
         }
     }
 
@@ -2202,8 +2210,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func updateDigitalClock(now: Date) {
         let digitalClock = digitalClockFormatter.string(from: now)
-        if status.digitalClock != digitalClock {
-            status.digitalClock = digitalClock
+        if statusOther.digitalClock != digitalClock {
+            statusOther.digitalClock = digitalClock
         }
     }
 
@@ -2308,15 +2316,15 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func updateThermalState() {
         let state = ProcessInfo.processInfo.thermalState
-        if state != status.thermalState {
-            status.thermalState = state
+        if state != statusOther.thermalState {
+            statusOther.thermalState = state
         }
         streamingHistoryStream?.updateHighestThermalState(thermalState: ThermalState(from: state))
         if isWatchLocal() {
             sendThermalStateToWatch(thermalState: state)
         }
         logger.info("Thermal state: \(state.string())")
-        if status.thermalState == .critical {
+        if statusOther.thermalState == .critical {
             makeFlameRedToast()
         }
     }
@@ -2709,8 +2717,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func updateStatusStreamText() {
         let status = statusStreamText()
-        if status != self.status.streamText {
-            self.status.streamText = status
+        if status != statusTopLeft.streamText {
+            statusTopLeft.streamText = status
         }
     }
 
@@ -2731,14 +2739,14 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 status = String(localized: "Disconnected")
             }
         }
-        if status != self.status.statusEventsText {
-            self.status.statusEventsText = status
+        if status != statusTopLeft.statusEventsText {
+            statusTopLeft.statusEventsText = status
         }
     }
 
     func statusViewersText() -> String {
         if isViewersConfigured() {
-            return status.numberOfViewers
+            return statusTopLeft.numberOfViewers
         } else {
             return String(localized: "Not configured")
         }
@@ -2749,7 +2757,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func isShowingStatusAdsRemainingTimer() -> Bool {
-        return status.adsRemainingTimerStatus != noValue
+        return statusTopRight.adsRemainingTimerStatus != noValue
     }
 
     func isShowingStatusServers() -> Bool {
@@ -2769,7 +2777,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func isShowingStatusDjiDevices() -> Bool {
-        return database.show.djiDevices && status.djiDevicesStatus != noValue
+        return database.show.djiDevices && statusTopRight.djiDevicesStatus != noValue
     }
 
     func isShowingStatusBitrate() -> Bool {
@@ -2825,7 +2833,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func isStatusBrowserWidgetsActive() -> Bool {
-        return !status.browserWidgetsStatus.isEmpty && status.browserWidgetsStatusChanged
+        return !statusTopRight.browserWidgetsStatus.isEmpty && statusTopRight.browserWidgetsStatusChanged
     }
 }
 

@@ -66,7 +66,7 @@ extension Model: KickOusherDelegate {
                           userColor: userColor,
                           userBadges: [],
                           segments: segments,
-                          timestamp: status.digitalClock,
+                          timestamp: statusOther.digitalClock,
                           timestampTime: .now,
                           isAction: false,
                           isSubscriber: isSubscriber,

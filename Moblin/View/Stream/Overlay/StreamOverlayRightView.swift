@@ -98,7 +98,7 @@ private struct CollapsedHypeTrainView: View {
 }
 
 private struct CollapsedAdsRemainingTimerView: View {
-    @ObservedObject var status: Status
+    @ObservedObject var status: StatusTopRight
 
     var body: some View {
         HStack(spacing: 1) {
@@ -268,7 +268,7 @@ private struct ServersStatusView: View {
 private struct StatusesView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var show: SettingsShow
-    @ObservedObject var status: Status
+    @ObservedObject var status: StatusTopRight
     let textPlacement: StreamOverlayIconAndTextPlacement
 
     private func remoteControlColor() -> Color {
@@ -446,10 +446,10 @@ struct RightOverlayTopView: View {
             VStack(alignment: .trailing, spacing: 1) {
                 AudioView(audio: model.audio)
                 if database.verboseStatuses {
-                    StatusesView(show: database.show, status: model.status, textPlacement: .beforeIcon)
+                    StatusesView(show: database.show, status: model.statusTopRight, textPlacement: .beforeIcon)
                 } else {
                     HStack(spacing: 1) {
-                        StatusesView(show: database.show, status: model.status, textPlacement: .hide)
+                        StatusesView(show: database.show, status: model.statusTopRight, textPlacement: .hide)
                     }
                 }
             }

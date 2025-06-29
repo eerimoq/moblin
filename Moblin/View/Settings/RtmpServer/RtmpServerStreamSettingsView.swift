@@ -38,7 +38,7 @@ private struct InterfaceView: View {
 
 struct RtmpServerStreamSettingsView: View {
     @EnvironmentObject var model: Model
-    @ObservedObject var status: Status
+    @ObservedObject var status: StatusOther
     var port: UInt16
     var stream: SettingsRtmpServerStream
 

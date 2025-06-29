@@ -78,7 +78,7 @@ private struct QuickButtonsView: View {
 
 private struct StatusView: View {
     @EnvironmentObject var model: Model
-    @ObservedObject var status: Status
+    @ObservedObject var status: StatusOther
 
     var body: some View {
         HStack(spacing: 0) {
@@ -230,7 +230,7 @@ struct ControlBarLandscapeView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            StatusView(status: model.status)
+            StatusView(status: model.statusOther)
             PagesView(width: controlBarWidth())
         }
         .padding([.top, .bottom], 0)

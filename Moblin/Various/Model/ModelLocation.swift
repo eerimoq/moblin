@@ -6,8 +6,8 @@ extension Model {
         if let realtimeIrl {
             location += realtimeIrl.status()
         }
-        if location != status.location {
-            status.location = location
+        if location != statusTopRight.location {
+            statusTopRight.location = location
         }
     }
 

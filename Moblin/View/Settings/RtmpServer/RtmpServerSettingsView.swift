@@ -54,7 +54,7 @@ struct RtmpServerSettingsView: View {
                     let list = ForEach(database.rtmpServer.streams) { stream in
                         NavigationLink {
                             RtmpServerStreamSettingsView(
-                                status: model.status,
+                                status: model.statusOther,
                                 port: database.rtmpServer.port,
                                 stream: stream
                             )

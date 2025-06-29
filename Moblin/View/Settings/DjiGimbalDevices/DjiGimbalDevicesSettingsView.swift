@@ -7,7 +7,7 @@ private struct DjiGimbalDeviceSettingsWrapperView: View {
 
     var body: some View {
         NavigationLink {
-            DjiGimbalDeviceSettingsView(device: device, status: model.status, name: $name)
+            DjiGimbalDeviceSettingsView(device: device, status: model.statusTopRight, name: $name)
         } label: {
             HStack {
                 DraggableItemPrefixView()

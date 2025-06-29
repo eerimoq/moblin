@@ -58,7 +58,7 @@ private struct DjiGimbalDeviceSelectDeviceSettingsView: View {
 struct DjiGimbalDeviceSettingsView: View {
     @EnvironmentObject var model: Model
     var device: SettingsDjiGimbalDevice
-    @ObservedObject var status: Status
+    @ObservedObject var status: StatusTopRight
     @Binding var name: String
 
     func state() -> String {

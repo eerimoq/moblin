@@ -122,7 +122,7 @@ private struct IconAndSettingsView: View {
 
 private struct MainPageView: View {
     @EnvironmentObject var model: Model
-    @ObservedObject var status: Status
+    @ObservedObject var status: StatusOther
     var height: Double
 
     var body: some View {
@@ -158,7 +158,7 @@ private struct PagesView: View {
             ScrollView(.vertical) {
                 LazyVStack {
                     Group {
-                        MainPageView(status: model.status, height: height)
+                        MainPageView(status: model.statusOther, height: height)
                         ForEach(1 ..< controlBarPages, id: \.self) { page in
                             if !model.buttonPairs[page].isEmpty {
                                 PageView(page: page, height: height)
@@ -175,7 +175,7 @@ private struct PagesView: View {
             .ignoresSafeArea(.all, edges: [.bottom])
         } else {
             ScrollView(.vertical) {
-                MainPageView(status: model.status, height: height)
+                MainPageView(status: model.statusOther, height: height)
             }
             .scrollIndicators(.never)
             .ignoresSafeArea(.all, edges: [.bottom])

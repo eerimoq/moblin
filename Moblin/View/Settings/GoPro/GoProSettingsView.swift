@@ -144,7 +144,7 @@ private func rtmpStreamUrl(address: String, port: UInt16, streamKey: String) -> 
 
 private struct GoProRtmpUrlSettingsView: View {
     @EnvironmentObject var model: Model
-    @ObservedObject var status: Status
+    @ObservedObject var status: StatusOther
     @ObservedObject var rtmpUrl: SettingsGoProRtmpUrl
     @State var qrCode: UIImage?
 
@@ -287,7 +287,7 @@ private struct GoProRtmpUrlSettingsView: View {
 }
 
 private struct GoProRtmpUrlSettingsEntryView: View {
-    var status: Status
+    var status: StatusOther
     @ObservedObject var rtmpUrl: SettingsGoProRtmpUrl
 
     var body: some View {
@@ -381,7 +381,7 @@ private struct GoProWifiCredentials: View {
 
 private struct GoProRtmpUrls: View {
     @EnvironmentObject var model: Model
-    @ObservedObject var status: Status
+    @ObservedObject var status: StatusOther
     @ObservedObject var goPro: SettingsGoPro
     @ObservedObject var goProState: GoProState
 
@@ -430,7 +430,7 @@ struct GoProSettingsView: View {
             }
             GoProLaunchLiveStream(goPro: model.database.goPro, goProState: model.goPro)
             GoProWifiCredentials(goPro: model.database.goPro, goProState: model.goPro)
-            GoProRtmpUrls(status: model.status, goPro: model.database.goPro, goProState: model.goPro)
+            GoProRtmpUrls(status: model.statusOther, goPro: model.database.goPro, goProState: model.goPro)
         }
         .navigationTitle("GoPro")
     }

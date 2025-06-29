@@ -262,7 +262,7 @@ private struct RemoteControlSettingsRelayView: View {
 struct RemoteControlSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var database: Database
-    @ObservedObject var status: Status
+    @ObservedObject var status: StatusOther
 
     private func submitPassword(value: String) {
         database.remoteControl.password = value.trim()

@@ -106,7 +106,7 @@ private struct DjiDeviceWiFiSettingsView: View {
 private struct DjiDeviceRtmpSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var device: SettingsDjiDevice
-    @ObservedObject var status: Status
+    @ObservedObject var status: StatusOther
 
     private func serverUrls() -> [String] {
         guard let stream = model.getRtmpStream(id: device.serverRtmpStreamId) else {
@@ -306,7 +306,7 @@ private struct DjiDeviceStartStopButtonSettingsView: View {
 struct DjiDeviceSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var device: SettingsDjiDevice
-    @ObservedObject var status: Status
+    @ObservedObject var status: StatusTopRight
 
     func state() -> String {
         return formatDjiDeviceState(state: status.djiDeviceStreamingState)
@@ -321,7 +321,7 @@ struct DjiDeviceSettingsView: View {
             }
             DjiDeviceSelectDeviceSettingsView(device: device)
             DjiDeviceWiFiSettingsView(device: device)
-            DjiDeviceRtmpSettingsView(device: device, status: model.status)
+            DjiDeviceRtmpSettingsView(device: device, status: model.statusOther)
             DjiDeviceSettingsSettingsView(device: device)
             DjiDeviceAutoRestartSettingsView(device: device)
             Section {

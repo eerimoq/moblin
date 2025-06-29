@@ -702,8 +702,8 @@ extension Model {
 
     func updateStatusCameraText() {
         let status = statusCameraText()
-        if status != self.status.statusCameraText {
-            self.status.statusCameraText = status
+        if status != statusTopLeft.statusCameraText {
+            statusTopLeft.statusCameraText = status
         }
     }
 
