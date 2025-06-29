@@ -886,7 +886,7 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject {
     @Published var mediaPlayerCameraId: UUID = .init()
     @Published var externalCameraId: String = ""
     var externalCameraName: String = ""
-    var widgets: [SettingsSceneWidget] = []
+    @Published var widgets: [SettingsSceneWidget] = []
     @Published var videoSourceRotation: Double = 0.0
     @Published var videoStabilizationMode: SettingsVideoStabilizationMode = .off
     @Published var overrideVideoStabilizationMode: Bool = false
@@ -5272,7 +5272,7 @@ class Database: Codable, ObservableObject {
     var phoneCoolerDevices: SettingsPhoneCoolerDevices = .init()
     var djiGimbalDevices: SettingsDjiGimbalDevices = .init()
     var remoteSceneId: UUID?
-    var sceneNumericInput: Bool = false
+    @Published var sceneNumericInput: Bool = false
     var goPro: SettingsGoPro = .init()
     var replay: SettingsReplay = .init()
     var portraitVideoOffsetFromTop: Double = 0.0

@@ -161,11 +161,7 @@ struct SceneWidgetSettingsView: View {
                    let scene = model.database.scenes.first(where: { $0.id == widget.scene.sceneId })
                 {
                     NavigationLink {
-                        SceneSettingsView(
-                            scene: scene,
-                            selectedRotation: scene.videoSourceRotation,
-                            numericInput: model.database.sceneNumericInput
-                        )
+                        SceneSettingsView(database: model.database, scene: scene)
                     } label: {
                         Text("Scene")
                     }

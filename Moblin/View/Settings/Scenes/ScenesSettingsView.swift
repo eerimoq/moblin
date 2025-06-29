@@ -7,11 +7,7 @@ private struct SceneItemView: View {
 
     var body: some View {
         NavigationLink {
-            SceneSettingsView(
-                scene: scene,
-                selectedRotation: scene.videoSourceRotation,
-                numericInput: model.database.sceneNumericInput
-            )
+            SceneSettingsView(database: model.database, scene: scene)
         } label: {
             HStack {
                 DraggableItemPrefixView()

@@ -118,9 +118,7 @@ private struct MenuView: View {
             }
         case .sceneSettings:
             NavigationStack {
-                SceneSettingsView(scene: model.sceneSettingsPanelScene,
-                                  selectedRotation: model.sceneSettingsPanelScene.videoSourceRotation,
-                                  numericInput: model.database.sceneNumericInput)
+                SceneSettingsView(database: model.database, scene: model.sceneSettingsPanelScene)
             }
             .id(model.sceneSettingsPanelSceneId)
         case .goPro:

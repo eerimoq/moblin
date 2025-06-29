@@ -1,23 +1,64 @@
 import SwiftUI
 
 private struct VideoStabilizationView: View {
-    @EnvironmentObject var model: Model
-    var scene: SettingsScene
-    @State var mode: SettingsVideoStabilizationMode
+    var model: Model
+    @ObservedObject var scene: SettingsScene
 
     var body: some View {
         HStack {
             Text("Video stabilization")
             Spacer()
-            Picker("", selection: $mode) {
+            Picker("", selection: $scene.videoStabilizationMode) {
                 ForEach(videoStabilizationModes, id: \.self) {
                     Text($0.toString())
                         .tag($0)
                 }
             }
-            .onChange(of: mode) {
-                scene.videoStabilizationMode = $0
+            .onChange(of: scene.videoStabilizationMode) { _ in
                 model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
+            }
+        }
+    }
+}
+
+private struct SceneWidgetView: View {
+    @EnvironmentObject var model: Model
+    @ObservedObject var database: Database
+    var sceneWidget: SettingsSceneWidget
+
+    var body: some View {
+        if let widget = database.widgets.first(where: { item in item.id == sceneWidget.widgetId }) {
+            NavigationLink {
+                SceneWidgetSettingsView(
+                    sceneWidget: sceneWidget,
+                    widget: widget,
+                    numericInput: $database.sceneNumericInput,
+                    x: sceneWidget.x,
+                    y: sceneWidget.y,
+                    width: sceneWidget.width,
+                    height: sceneWidget.height,
+                    xString: String(sceneWidget.x),
+                    yString: String(sceneWidget.y),
+                    widthString: String(sceneWidget.width),
+                    heightString: String(sceneWidget.height)
+                )
+            } label: {
+                Toggle(isOn: Binding(get: {
+                    widget.enabled
+                }, set: { value in
+                    widget.enabled = value
+                    model.sceneUpdated(attachCamera: model.isCaptureDeviceWidget(widget: widget))
+                })) {
+                    HStack {
+                        DraggableItemPrefixView()
+                        HStack {
+                            Text("")
+                            Image(systemName: widgetImage(widget: widget))
+                            Text(widget.name)
+                        }
+                        Spacer()
+                    }
+                }
             }
         }
     }
@@ -25,11 +66,9 @@ private struct VideoStabilizationView: View {
 
 struct SceneSettingsView: View {
     @EnvironmentObject var model: Model
-    @State private var showingAddWidget = false
-    @State private var expandedWidget: SettingsSceneWidget?
+    @ObservedObject var database: Database
     @ObservedObject var scene: SettingsScene
-    @State var selectedRotation: Double
-    @State var numericInput: Bool
+    @State private var showingAddWidget = false
 
     var widgets: [SettingsWidget] {
         model.database.widgets
@@ -116,30 +155,21 @@ struct SceneSettingsView: View {
                             .lineLimit(1)
                     }
                 }
-                VideoSourceRotationView(selectedRotation: $selectedRotation)
-                    .onChange(of: selectedRotation) { rotation in
-                        scene.videoSourceRotation = rotation
+                VideoSourceRotationView(selectedRotation: $scene.videoSourceRotation)
+                    .onChange(of: scene.videoSourceRotation) { _ in
                         model.sceneUpdated(updateRemoteScene: false)
                     }
-                Toggle(isOn: Binding(get: {
-                    scene.overrideVideoStabilizationMode
-                }, set: { value in
-                    scene.overrideVideoStabilizationMode = value
-                    model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
-                })) {
-                    Text("Override video stabilization")
-                }
+                Toggle("Override video stabilization", isOn: $scene.overrideVideoStabilizationMode)
+                    .onChange(of: scene.overrideVideoStabilizationMode) { _ in
+                        model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
+                    }
                 if scene.overrideVideoStabilizationMode {
-                    VideoStabilizationView(scene: scene, mode: scene.videoStabilizationMode)
+                    VideoStabilizationView(model: model, scene: scene)
                 }
-                Toggle(isOn: Binding(get: {
-                    scene.fillFrame
-                }, set: { value in
-                    scene.fillFrame = value
-                    model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
-                })) {
-                    Text("Fill frame")
-                }
+                Toggle("Fill frame", isOn: $scene.fillFrame)
+                    .onChange(of: scene.fillFrame) { _ in
+                        model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
+                    }
             } header: {
                 Text("Video source")
             } footer: {
@@ -151,42 +181,7 @@ struct SceneSettingsView: View {
             Section {
                 List {
                     ForEach(scene.widgets) { sceneWidget in
-                        if let widget = widgets.first(where: { item in item.id == sceneWidget.widgetId }) {
-                            NavigationLink {
-                                SceneWidgetSettingsView(
-                                    sceneWidget: sceneWidget,
-                                    widget: widget,
-                                    numericInput: $numericInput,
-                                    x: sceneWidget.x,
-                                    y: sceneWidget.y,
-                                    width: sceneWidget.width,
-                                    height: sceneWidget.height,
-                                    xString: String(sceneWidget.x),
-                                    yString: String(sceneWidget.y),
-                                    widthString: String(sceneWidget.width),
-                                    heightString: String(sceneWidget.height)
-                                )
-                            } label: {
-                                Toggle(isOn: Binding(get: {
-                                    widget.enabled
-                                }, set: { value in
-                                    widget.enabled = value
-                                    model
-                                        .sceneUpdated(attachCamera: model
-                                            .isCaptureDeviceWidget(widget: widget))
-                                })) {
-                                    HStack {
-                                        DraggableItemPrefixView()
-                                        HStack {
-                                            Text("")
-                                            Image(systemName: widgetImage(widget: widget))
-                                            Text(widget.name)
-                                        }
-                                        Spacer()
-                                    }
-                                }
-                            }
-                        }
+                        SceneWidgetView(database: database, sceneWidget: sceneWidget)
                     }
                     .onMove { froms, to in
                         scene.widgets.move(fromOffsets: froms, toOffset: to)
