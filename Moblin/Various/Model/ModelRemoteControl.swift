@@ -329,7 +329,7 @@ extension Model {
         if isStreamConfigured() {
             topLeft.stream = RemoteControlStatusItem(message: status.streamText)
         }
-        topLeft.camera = RemoteControlStatusItem(message: statusCameraText())
+        topLeft.camera = RemoteControlStatusItem(message: status.statusCameraText)
         topLeft.mic = RemoteControlStatusItem(message: currentMic.name)
         if zoom.hasZoom {
             topLeft.zoom = RemoteControlStatusItem(message: zoom.statusText())

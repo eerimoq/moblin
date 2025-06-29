@@ -296,6 +296,7 @@ class Status: ObservableObject {
     @Published var streamText = noValue
     @Published var location = noValue
     @Published var statusObsText = noValue
+    @Published var statusCameraText = noValue
 }
 
 class Toast: ObservableObject {

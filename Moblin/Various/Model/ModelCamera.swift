@@ -696,8 +696,15 @@ extension Model {
         return cameraDevice?.isGlobalToneMappingEnabled ?? false
     }
 
-    func statusCameraText() -> String {
+    private func statusCameraText() -> String {
         return getCameraPositionName(scene: findEnabledScene(id: selectedSceneId))
+    }
+
+    func updateStatusCameraText() {
+        let status = statusCameraText()
+        if status != self.status.statusCameraText {
+            self.status.statusCameraText = status
+        }
     }
 
     func getVideoSourceId(cameraId: SettingsCameraId) -> UUID? {

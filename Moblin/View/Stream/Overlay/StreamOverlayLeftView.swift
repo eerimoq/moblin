@@ -109,7 +109,7 @@ private struct StatusesView: View {
         if model.isShowingStatusCamera() {
             StreamOverlayIconAndTextView(
                 icon: "camera",
-                text: model.statusCameraText(),
+                text: status.statusCameraText,
                 textPlacement: textPlacement
             )
         }

@@ -397,6 +397,7 @@ extension Model {
         if updateRemoteScene {
             remoteSceneSettingsUpdated()
         }
+        updateStatusCameraText()
     }
 
     func getSceneName(id: UUID) -> String {
