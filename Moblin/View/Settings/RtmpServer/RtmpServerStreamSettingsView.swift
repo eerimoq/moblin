@@ -36,6 +36,50 @@ private struct InterfaceView: View {
     }
 }
 
+private struct ProtocolUrlsView: View {
+    @ObservedObject var status: StatusOther
+    let port: UInt16
+    let streamKey: String
+
+    private func title() -> String {
+        return "URLs"
+    }
+
+    var body: some View {
+        NavigationLink {
+            Form {
+                List {
+                    ForEach(status.ipStatuses.filter { $0.ipType == .ipv4 }) { status in
+                        InterfaceView(
+                            port: port,
+                            streamKey: streamKey,
+                            image: urlImage(interfaceType: status.interfaceType),
+                            ip: status.ipType.formatAddress(status.ip)
+                        )
+                    }
+                    InterfaceView(
+                        port: port,
+                        streamKey: streamKey,
+                        image: "personalhotspot",
+                        ip: personalHotspotLocalAddress
+                    )
+                    ForEach(status.ipStatuses.filter { $0.ipType == .ipv6 }) { status in
+                        InterfaceView(
+                            port: port,
+                            streamKey: streamKey,
+                            image: urlImage(interfaceType: status.interfaceType),
+                            ip: status.ipType.formatAddress(status.ip)
+                        )
+                    }
+                }
+            }
+            .navigationTitle(title())
+        } label: {
+            Text(title())
+        }
+    }
+}
+
 struct RtmpServerStreamSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var status: StatusOther
@@ -112,30 +156,7 @@ struct RtmpServerStreamSettingsView: View {
             }
             Section {
                 if model.rtmpServerEnabled() {
-                    List {
-                        ForEach(status.ipStatuses.filter { $0.ipType == .ipv4 }) { status in
-                            InterfaceView(
-                                port: port,
-                                streamKey: stream.streamKey,
-                                image: urlImage(interfaceType: status.interfaceType),
-                                ip: status.ipType.formatAddress(status.ip)
-                            )
-                        }
-                        InterfaceView(
-                            port: port,
-                            streamKey: stream.streamKey,
-                            image: "personalhotspot",
-                            ip: personalHotspotLocalAddress
-                        )
-                        ForEach(status.ipStatuses.filter { $0.ipType == .ipv6 }) { status in
-                            InterfaceView(
-                                port: port,
-                                streamKey: stream.streamKey,
-                                image: urlImage(interfaceType: status.interfaceType),
-                                ip: status.ipType.formatAddress(status.ip)
-                            )
-                        }
-                    }
+                    ProtocolUrlsView(status: status, port: port, streamKey: stream.streamKey)
                 } else {
                     Text("Enable the RTMP server to see URLs.")
                 }
