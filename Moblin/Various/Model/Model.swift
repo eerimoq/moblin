@@ -813,6 +813,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
+    func makePortErrorToast(port: String) {
+        makeErrorToast(title: String(localized: "Invalid port \(port.trim())"))
+    }
+
     func updateQuickButtonStates() {
         for page in 0 ..< controlBarPages {
             let states = database.quickButtons.filter { button in

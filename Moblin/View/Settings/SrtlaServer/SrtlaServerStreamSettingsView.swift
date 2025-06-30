@@ -1,86 +1,34 @@
 import Network
 import SwiftUI
 
-private func makeStreamUrl(proto: String, address: String, port: UInt16, streamId: String) -> String {
-    var url = "\(proto)://\(address):\(port)"
-    if !streamId.isEmpty {
-        url += "?streamid=\(streamId)"
-    }
-    return url
-}
-
-private struct ProtocolUrlsView: View {
+private struct UrlsView: View {
+    let model: Model
     @ObservedObject var status: StatusOther
     let proto: String
     let port: UInt16
     let streamId: String
 
     private func title() -> String {
-        return "\(proto.uppercased()) URLs"
+        return String(localized: "\(proto.uppercased()) URLs")
+    }
+
+    private func formatUrl(ip: String) -> String {
+        var url = "\(proto)://\(ip):\(port)"
+        if !streamId.isEmpty {
+            url += "?streamid=\(streamId)"
+        }
+        return url
     }
 
     var body: some View {
         NavigationLink {
             Form {
-                List {
-                    ForEach(status.ipStatuses.filter { $0.ipType == .ipv4 }) { status in
-                        InterfaceView(
-                            proto: proto,
-                            ip: status.ipType.formatAddress(status.ip),
-                            port: port,
-                            streamId: streamId,
-                            image: urlImage(interfaceType: status.interfaceType)
-                        )
-                    }
-                    InterfaceView(
-                        proto: proto,
-                        ip: personalHotspotLocalAddress,
-                        port: port,
-                        streamId: streamId,
-                        image: "personalhotspot"
-                    )
-                    ForEach(status.ipStatuses.filter { $0.ipType == .ipv6 }) { status in
-                        InterfaceView(
-                            proto: proto,
-                            ip: status.ipType.formatAddress(status.ip),
-                            port: port,
-                            streamId: streamId,
-                            image: urlImage(interfaceType: status.interfaceType)
-                        )
-                    }
-                }
+                UrlsIpv4View(model: model, status: status, formatUrl: formatUrl)
+                UrlsIpv6View(model: model, status: status, formatUrl: formatUrl)
             }
             .navigationTitle(title())
         } label: {
             Text(title())
-        }
-    }
-}
-
-private struct InterfaceView: View {
-    @EnvironmentObject var model: Model
-    let proto: String
-    let ip: String
-    let port: UInt16
-    let streamId: String
-    let image: String
-
-    private func streamUrl() -> String {
-        return makeStreamUrl(proto: proto, address: ip, port: port, streamId: streamId)
-    }
-
-    var body: some View {
-        HStack {
-            Image(systemName: image)
-            Text(streamUrl())
-            Spacer()
-            Button {
-                UIPasteboard.general.string = streamUrl()
-                model.makeToast(title: "URL copied to clipboard")
-            } label: {
-                Image(systemName: "doc.on.doc")
-            }
-            .disabled(streamId.isEmpty)
         }
     }
 }
@@ -144,8 +92,8 @@ struct SrtlaServerStreamSettingsView: View {
             }
             Section {
                 if model.srtlaServerEnabled() {
-                    ProtocolUrlsView(status: status, proto: "srt", port: srtPort, streamId: stream.streamId)
-                    ProtocolUrlsView(status: status, proto: "srtla", port: srtlaPort, streamId: stream.streamId)
+                    UrlsView(model: model, status: status, proto: "srt", port: srtPort, streamId: stream.streamId)
+                    UrlsView(model: model, status: status, proto: "srtla", port: srtlaPort, streamId: stream.streamId)
                 } else {
                     Text("Enable the SRT(LA) server to see URLs.")
                 }

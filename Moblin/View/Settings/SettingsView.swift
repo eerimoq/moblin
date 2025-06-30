@@ -77,7 +77,7 @@ struct SettingsView: View {
                     }
                 }
                 NavigationLink {
-                    MoblinkSettingsView(status: model.statusOther, streamerEnabled: database.moblink.server.enabled)
+                    MoblinkSettingsView(status: model.statusOther, streamer: database.moblink.server)
                 } label: {
                     Label("Moblink", systemImage: "app.connected.to.app.below.fill")
                 }
@@ -109,7 +109,9 @@ struct SettingsView: View {
                         }
                     }
                     NavigationLink {
-                        RemoteControlSettingsView(database: database, status: model.statusOther)
+                        RemoteControlSettingsView(database: database,
+                                                  status: model.statusOther,
+                                                  client: database.remoteControl.client)
                     } label: {
                         Label("Remote control", systemImage: "appletvremote.gen1")
                     }

@@ -4693,12 +4693,32 @@ class SettingsKeyboard: Codable, ObservableObject {
     }
 }
 
-class SettingsRemoteControlAssistant: Codable {
-    var enabled: Bool = false
-    // periphery:ignore
-    var address: String? = ""
-    var port: UInt16 = 2345
-    var relay: SettingsRemoteControlServerRelay? = .init()
+class SettingsRemoteControlAssistant: Codable, ObservableObject {
+    @Published var enabled: Bool = false
+    @Published var port: UInt16 = 2345
+    var relay: SettingsRemoteControlServerRelay = .init()
+
+    enum CodingKeys: CodingKey {
+        case enabled,
+             port,
+             relay
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.enabled, enabled)
+        try container.encode(.port, port)
+        try container.encode(.relay, relay)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        enabled = container.decode(.enabled, Bool.self, false)
+        port = container.decode(.port, UInt16.self, 2345)
+        relay = container.decode(.relay, SettingsRemoteControlServerRelay.self, .init())
+    }
 }
 
 class SettingsRemoteControlStreamer: Codable {
@@ -4707,10 +4727,32 @@ class SettingsRemoteControlStreamer: Codable {
     var previewFps: Float? = 1.0
 }
 
-class SettingsRemoteControlServerRelay: Codable {
-    var enabled: Bool = false
-    var baseUrl: String = "wss://moblin.mys-lang.org/moblin-remote-control-relay"
-    var bridgeId: String = UUID().uuidString.lowercased()
+class SettingsRemoteControlServerRelay: Codable, ObservableObject {
+    @Published var enabled: Bool = false
+    @Published var baseUrl: String = "wss://moblin.mys-lang.org/moblin-remote-control-relay"
+    @Published var bridgeId: String = UUID().uuidString.lowercased()
+
+    enum CodingKeys: CodingKey {
+        case enabled,
+             baseUrl,
+             bridgeId
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.enabled, enabled)
+        try container.encode(.baseUrl, baseUrl)
+        try container.encode(.bridgeId, bridgeId)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        enabled = container.decode(.enabled, Bool.self, false)
+        baseUrl = container.decode(.baseUrl, String.self, "wss://moblin.mys-lang.org/moblin-remote-control-relay")
+        bridgeId = container.decode(.bridgeId, String.self, UUID().uuidString.lowercased())
+    }
 }
 
 class SettingsRemoteControl: Codable {
@@ -4719,9 +4761,28 @@ class SettingsRemoteControl: Codable {
     var password: String? = randomGoodPassword()
 }
 
-class SettingsMoblinkStreamer: Codable {
-    var enabled: Bool = false
-    var port: UInt16 = 7777
+class SettingsMoblinkStreamer: Codable, ObservableObject {
+    @Published var enabled: Bool = false
+    @Published var port: UInt16 = 7777
+
+    enum CodingKeys: CodingKey {
+        case enabled,
+             port
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.enabled, enabled)
+        try container.encode(.port, port)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        enabled = container.decode(.enabled, Bool.self, false)
+        port = container.decode(.port, UInt16.self, 7777)
+    }
 }
 
 class SettingsMoblinkRelay: Codable, ObservableObject {

@@ -5,7 +5,8 @@ struct RtmpServerSettingsView: View {
     @ObservedObject var database: Database
 
     private func submitPort(value: String) {
-        guard let port = UInt16(value.trim()) else {
+        guard let port = UInt16(value.trim()), port > 0 else {
+            model.makePortErrorToast(port: value)
             return
         }
         database.rtmpServer.port = port

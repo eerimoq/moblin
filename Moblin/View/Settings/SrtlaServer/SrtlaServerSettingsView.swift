@@ -5,7 +5,8 @@ struct SrtlaServerSettingsView: View {
     @ObservedObject var database: Database
 
     private func submitSrtPort(value: String) {
-        guard let port = UInt16(value.trim()) else {
+        guard let port = UInt16(value.trim()), port > 0 else {
+            model.makePortErrorToast(port: value)
             return
         }
         database.srtlaServer.srtPort = port
@@ -13,7 +14,8 @@ struct SrtlaServerSettingsView: View {
     }
 
     private func submitSrtlaPort(value: String) {
-        guard let port = UInt16(value.trim()) else {
+        guard let port = UInt16(value.trim()), port > 0 else {
+            model.makePortErrorToast(port: value)
             return
         }
         database.srtlaServer.srtlaPort = port

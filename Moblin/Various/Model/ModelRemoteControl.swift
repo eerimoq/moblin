@@ -271,15 +271,15 @@ extension Model {
             return
         }
         remoteControlRelay = RemoteControlRelay(
-            baseUrl: database.remoteControl.client.relay!.baseUrl,
-            bridgeId: database.remoteControl.client.relay!.bridgeId,
+            baseUrl: database.remoteControl.client.relay.baseUrl,
+            bridgeId: database.remoteControl.client.relay.bridgeId,
             assistantUrl: assistantUrl
         )
         remoteControlRelay?.start()
     }
 
     func isRemoteControlRelayConfigured() -> Bool {
-        let relay = database.remoteControl.client.relay!
+        let relay = database.remoteControl.client.relay
         return relay.enabled && !relay.baseUrl.isEmpty
     }
 

@@ -1,81 +1,25 @@
 import Network
 import SwiftUI
 
-private func rtmpStreamUrl(address: String, port: UInt16, streamKey: String) -> String {
-    return "rtmp://\(address):\(port)\(rtmpServerApp)/\(streamKey)"
-}
-
-private struct InterfaceView: View {
-    @EnvironmentObject var model: Model
-    var port: UInt16
-    var streamKey: String
-    var image: String
-    var ip: String
-
-    private func streamUrl() -> String {
-        return rtmpStreamUrl(address: ip, port: port, streamKey: streamKey)
-    }
-
-    var body: some View {
-        HStack {
-            if streamKey.isEmpty {
-                Text("Stream key missing")
-            } else {
-                Image(systemName: image)
-                Text(streamUrl())
-            }
-            Spacer()
-            Button {
-                UIPasteboard.general.string = streamUrl()
-                model.makeToast(title: "URL copied to clipboard")
-            } label: {
-                Image(systemName: "doc.on.doc")
-            }
-            .disabled(streamKey.isEmpty)
-        }
-    }
-}
-
-private struct ProtocolUrlsView: View {
+private struct UrlsView: View {
+    let model: Model
     @ObservedObject var status: StatusOther
     let port: UInt16
     let streamKey: String
 
-    private func title() -> String {
-        return "URLs"
+    private func formatUrl(ip: String) -> String {
+        return "rtmp://\(ip):\(port)\(rtmpServerApp)/\(streamKey)"
     }
 
     var body: some View {
         NavigationLink {
             Form {
-                List {
-                    ForEach(status.ipStatuses.filter { $0.ipType == .ipv4 }) { status in
-                        InterfaceView(
-                            port: port,
-                            streamKey: streamKey,
-                            image: urlImage(interfaceType: status.interfaceType),
-                            ip: status.ipType.formatAddress(status.ip)
-                        )
-                    }
-                    InterfaceView(
-                        port: port,
-                        streamKey: streamKey,
-                        image: "personalhotspot",
-                        ip: personalHotspotLocalAddress
-                    )
-                    ForEach(status.ipStatuses.filter { $0.ipType == .ipv6 }) { status in
-                        InterfaceView(
-                            port: port,
-                            streamKey: streamKey,
-                            image: urlImage(interfaceType: status.interfaceType),
-                            ip: status.ipType.formatAddress(status.ip)
-                        )
-                    }
-                }
+                UrlsIpv4View(model: model, status: status, formatUrl: formatUrl)
+                UrlsIpv6View(model: model, status: status, formatUrl: formatUrl)
             }
-            .navigationTitle(title())
+            .navigationTitle("URLs")
         } label: {
-            Text(title())
+            Text("URLs")
         }
     }
 }
@@ -156,7 +100,7 @@ struct RtmpServerStreamSettingsView: View {
             }
             Section {
                 if model.rtmpServerEnabled() {
-                    ProtocolUrlsView(status: status, port: port, streamKey: stream.streamKey)
+                    UrlsView(model: model, status: status, port: port, streamKey: stream.streamKey)
                 } else {
                     Text("Enable the RTMP server to see URLs.")
                 }
