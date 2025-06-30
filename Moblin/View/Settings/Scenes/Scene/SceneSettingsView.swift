@@ -115,6 +115,10 @@ struct SceneSettingsView: View {
     }
 
     private func onMicChange(micId: String) {
+        let currentScene = model.getSelectedScene()
+        if currentScene == scene {
+            model.selectMicById(id: micId)
+        }
         scene.micId = micId
     }
 
@@ -185,6 +189,11 @@ struct SceneSettingsView: View {
             if database.debug.sceneOverrideMic {
                 Section {
                     Toggle("Enabled", isOn: $scene.overrideMic)
+                        .onChange(of: scene.overrideMic) { _ in
+                            if model.getSelectedScene() == scene && !scene.overrideMic {
+                                model.selectMicById(id: model.previousMic.id)
+                            }
+                        }
                     if scene.overrideMic {
                         NavigationLink {
                             InlinePickerView(
