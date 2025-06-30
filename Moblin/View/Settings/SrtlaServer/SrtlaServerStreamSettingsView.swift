@@ -9,6 +9,38 @@ private func makeStreamUrl(proto: String, address: String, port: UInt16, streamI
     return url
 }
 
+private struct ProtocolUrlsViewIPv6: View {
+    @ObservedObject var status: StatusOther
+    let proto: String
+    let port: UInt16
+    let streamId: String
+
+    private func title() -> String {
+        return "\(proto.uppercased()) IPv6 URLs"
+    }
+
+    var body: some View {
+        NavigationLink {
+            Form {
+                List {
+                    ForEach(status.ipStatuses.filter { $0.ipType == .ipv6 }) { status in
+                        InterfaceView(
+                            proto: proto,
+                            ip: status.ipType.formatAddress(status.ip),
+                            port: port,
+                            streamId: streamId,
+                            image: urlImage(interfaceType: status.interfaceType)
+                        )
+                    }
+                }
+            }
+            .navigationTitle(title())
+        } label: {
+            Text(title())
+        }
+    }
+}
+
 private struct ProtocolUrlsView: View {
     @ObservedObject var status: StatusOther
     let proto: String
@@ -22,32 +54,28 @@ private struct ProtocolUrlsView: View {
     var body: some View {
         NavigationLink {
             Form {
-                List {
-                    ForEach(status.ipStatuses.filter { $0.ipType == .ipv4 }) { status in
+                Section {
+                    List {
+                        ForEach(status.ipStatuses.filter { $0.ipType == .ipv4 }) { status in
+                            InterfaceView(
+                                proto: proto,
+                                ip: status.ipType.formatAddress(status.ip),
+                                port: port,
+                                streamId: streamId,
+                                image: urlImage(interfaceType: status.interfaceType)
+                            )
+                        }
                         InterfaceView(
                             proto: proto,
-                            ip: status.ipType.formatAddress(status.ip),
+                            ip: personalHotspotLocalAddress,
                             port: port,
                             streamId: streamId,
-                            image: urlImage(interfaceType: status.interfaceType)
+                            image: "personalhotspot"
                         )
                     }
-                    InterfaceView(
-                        proto: proto,
-                        ip: personalHotspotLocalAddress,
-                        port: port,
-                        streamId: streamId,
-                        image: "personalhotspot"
-                    )
-                    ForEach(status.ipStatuses.filter { $0.ipType == .ipv6 }) { status in
-                        InterfaceView(
-                            proto: proto,
-                            ip: status.ipType.formatAddress(status.ip),
-                            port: port,
-                            streamId: streamId,
-                            image: urlImage(interfaceType: status.interfaceType)
-                        )
-                    }
+                }
+                Section {
+                    ProtocolUrlsViewIPv6(status: status, proto: proto, port: port, streamId: streamId)
                 }
             }
             .navigationTitle(title())

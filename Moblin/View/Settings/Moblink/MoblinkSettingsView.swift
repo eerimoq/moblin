@@ -259,7 +259,7 @@ private struct StreamerView: View {
     }
 }
 
-private struct UrlsView: View {
+private struct UrlsViewIPv6: View {
     @EnvironmentObject var model: Model
     @ObservedObject var status: StatusOther
 
@@ -267,18 +267,6 @@ private struct UrlsView: View {
         NavigationLink {
             Form {
                 List {
-                    ForEach(status.ipStatuses.filter { $0.ipType == .ipv4 }) { status in
-                        InterfaceView(
-                            ip: status.ipType.formatAddress(status.ip),
-                            port: model.database.moblink.server.port,
-                            image: urlImage(interfaceType: status.interfaceType)
-                        )
-                    }
-                    InterfaceView(
-                        ip: personalHotspotLocalAddress,
-                        port: model.database.moblink.server.port,
-                        image: "personalhotspot"
-                    )
                     ForEach(status.ipStatuses.filter { $0.ipType == .ipv6 }) { status in
                         InterfaceView(
                             ip: status.ipType.formatAddress(status.ip),
@@ -286,6 +274,40 @@ private struct UrlsView: View {
                             image: urlImage(interfaceType: status.interfaceType)
                         )
                     }
+                }
+            }
+            .navigationTitle("IPv6 URLs")
+        } label: {
+            Text("IPv6 URLs")
+        }
+    }
+}
+
+private struct UrlsView: View {
+    @EnvironmentObject var model: Model
+    @ObservedObject var status: StatusOther
+
+    var body: some View {
+        NavigationLink {
+            Form {
+                Section {
+                    List {
+                        ForEach(status.ipStatuses.filter { $0.ipType == .ipv4 }) { status in
+                            InterfaceView(
+                                ip: status.ipType.formatAddress(status.ip),
+                                port: model.database.moblink.server.port,
+                                image: urlImage(interfaceType: status.interfaceType)
+                            )
+                        }
+                        InterfaceView(
+                            ip: personalHotspotLocalAddress,
+                            port: model.database.moblink.server.port,
+                            image: "personalhotspot"
+                        )
+                    }
+                }
+                Section {
+                    UrlsViewIPv6(status: status)
                 }
             }
             .navigationTitle("URLs")
