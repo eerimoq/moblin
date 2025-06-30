@@ -66,12 +66,12 @@ struct SettingsView: View {
             Section {
                 if database.showAllSettings {
                     NavigationLink {
-                        RtmpServerSettingsView(database: database)
+                        RtmpServerSettingsView(rtmpServer: database.rtmpServer)
                     } label: {
                         Label("RTMP server", systemImage: "server.rack")
                     }
                     NavigationLink {
-                        SrtlaServerSettingsView(database: database)
+                        SrtlaServerSettingsView(srtlaServer: database.srtlaServer)
                     } label: {
                         Label("SRT(LA) server", systemImage: "server.rack")
                     }

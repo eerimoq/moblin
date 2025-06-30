@@ -3655,15 +3655,40 @@ class SettingsRtmpServerStream: Codable, Identifiable {
     }
 }
 
-class SettingsRtmpServer: Codable {
-    var enabled: Bool = false
-    var port: UInt16 = 1935
-    var streams: [SettingsRtmpServerStream] = []
+class SettingsRtmpServer: Codable, ObservableObject {
+    @Published var enabled: Bool = false
+    @Published var port: UInt16 = 1935
+    @Published var portString: String = "1935"
+    @Published var streams: [SettingsRtmpServerStream] = []
+
+    enum CodingKeys: CodingKey {
+        case enabled,
+             port,
+             streams
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.enabled, enabled)
+        try container.encode(.port, port)
+        try container.encode(.streams, streams)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        enabled = container.decode(.enabled, Bool.self, false)
+        port = container.decode(.port, UInt16.self, 1935)
+        portString = String(port)
+        streams = container.decode(.streams, [SettingsRtmpServerStream].self, [])
+    }
 
     func clone() -> SettingsRtmpServer {
         let new = SettingsRtmpServer()
         new.enabled = enabled
         new.port = port
+        new.portString = portString
         for stream in streams {
             new.streams.append(stream.clone())
         }
@@ -3690,17 +3715,48 @@ class SettingsSrtlaServerStream: Codable, Identifiable {
     }
 }
 
-class SettingsSrtlaServer: Codable {
-    var enabled: Bool = false
-    var srtPort: UInt16 = 4000
-    var srtlaPort: UInt16 = 5000
-    var streams: [SettingsSrtlaServerStream] = []
+class SettingsSrtlaServer: Codable, ObservableObject {
+    @Published var enabled: Bool = false
+    @Published var srtPort: UInt16 = 4000
+    @Published var srtPortString: String = "4000"
+    @Published var srtlaPort: UInt16 = 5000
+    @Published var srtlaPortString: String = "5000"
+    @Published var streams: [SettingsSrtlaServerStream] = []
+
+    enum CodingKeys: CodingKey {
+        case enabled,
+             srtPort,
+             srtlaPort,
+             streams
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.enabled, enabled)
+        try container.encode(.srtPort, srtPort)
+        try container.encode(.srtlaPort, srtlaPort)
+        try container.encode(.streams, streams)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        enabled = container.decode(.enabled, Bool.self, false)
+        srtPort = container.decode(.srtPort, UInt16.self, 4000)
+        srtPortString = String(srtPort)
+        srtlaPort = container.decode(.srtlaPort, UInt16.self, 5000)
+        srtlaPortString = String(srtlaPort)
+        streams = container.decode(.streams, [SettingsSrtlaServerStream].self, [])
+    }
 
     func clone() -> SettingsSrtlaServer {
         let new = SettingsSrtlaServer()
         new.enabled = enabled
         new.srtPort = srtPort
+        new.srtPortString = srtPortString
         new.srtlaPort = srtlaPort
+        new.srtlaPortString = srtlaPortString
         for stream in streams {
             new.streams.append(stream.clone())
         }
