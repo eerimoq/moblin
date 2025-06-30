@@ -3633,12 +3633,40 @@ class SettingsDebug: Codable, ObservableObject {
     }
 }
 
-class SettingsRtmpServerStream: Codable, Identifiable {
+class SettingsRtmpServerStream: Codable, Identifiable, ObservableObject {
     var id: UUID = .init()
-    var name: String = "My stream"
-    var streamKey: String = ""
-    var latency: Int32? = defaultRtmpLatency
-    var autoSelectMic: Bool? = true
+    @Published var name: String = "My stream"
+    @Published var streamKey: String = ""
+    @Published var latency: Int32 = defaultRtmpLatency
+    @Published var autoSelectMic: Bool = true
+
+    enum CodingKeys: CodingKey {
+        case id,
+             name,
+             streamKey,
+             latency,
+             autoSelectMic
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.name, name)
+        try container.encode(.streamKey, streamKey)
+        try container.encode(.latency, latency)
+        try container.encode(.autoSelectMic, autoSelectMic)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        name = container.decode(.name, String.self, "My stream")
+        streamKey = container.decode(.streamKey, String.self, "")
+        latency = container.decode(.latency, Int32.self, defaultRtmpLatency)
+        autoSelectMic = container.decode(.autoSelectMic, Bool.self, true)
+    }
 
     func camera() -> String {
         return rtmpCamera(name: name)
@@ -6368,10 +6396,6 @@ final class Settings {
             realDatabase.zoom.switchToFront.x = realDatabase.zoom.switchToFront.level / 2
             store()
         }
-        for stream in realDatabase.rtmpServer.streams where stream.latency == nil {
-            stream.latency = defaultRtmpLatency
-            store()
-        }
         for button in realDatabase.quickButtons where button.type == .image {
             if button.name != String(localized: "Camera") {
                 button.name = String(localized: "Camera")
@@ -6463,10 +6487,6 @@ final class Settings {
             where stream.srt.adaptiveBitrate!.fastIrlSettings!.minimumBitrate == nil
         {
             stream.srt.adaptiveBitrate!.fastIrlSettings!.minimumBitrate = 250
-            store()
-        }
-        for stream in realDatabase.rtmpServer.streams where stream.autoSelectMic == nil {
-            stream.autoSelectMic = true
             store()
         }
         for stream in realDatabase.srtlaServer.streams where stream.autoSelectMic == nil {

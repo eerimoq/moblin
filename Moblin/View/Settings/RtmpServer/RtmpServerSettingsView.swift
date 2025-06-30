@@ -54,8 +54,8 @@ struct RtmpServerSettingsView: View {
                         NavigationLink {
                             RtmpServerStreamSettingsView(
                                 status: model.statusOther,
-                                port: rtmpServer.port,
-                                stream: stream
+                                stream: stream,
+                                port: rtmpServer.port
                             )
                         } label: {
                             HStack {

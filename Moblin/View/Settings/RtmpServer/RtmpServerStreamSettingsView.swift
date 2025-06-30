@@ -27,8 +27,8 @@ private struct UrlsView: View {
 struct RtmpServerStreamSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var status: StatusOther
+    @ObservedObject var stream: SettingsRtmpServerStream
     var port: UInt16
-    var stream: SettingsRtmpServerStream
 
     private func submitName(value: String) {
         stream.name = value.trim()
@@ -76,7 +76,7 @@ struct RtmpServerStreamSettingsView: View {
             Section {
                 TextEditNavigationView(
                     title: String(localized: "Latency"),
-                    value: String(stream.latency!),
+                    value: String(stream.latency),
                     onSubmit: submitLatency,
                     footers: [String(localized: "250 or more milliseconds. 2000 ms by default.")],
                     keyboardType: .numbersAndPunctuation,
@@ -88,7 +88,7 @@ struct RtmpServerStreamSettingsView: View {
             }
             Section {
                 Toggle("Auto select mic", isOn: Binding(get: {
-                    stream.autoSelectMic!
+                    stream.autoSelectMic
                 }, set: { value in
                     stream.autoSelectMic = value
                     model.reloadRtmpServer()
