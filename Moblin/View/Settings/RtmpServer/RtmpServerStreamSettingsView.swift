@@ -32,7 +32,6 @@ struct RtmpServerStreamSettingsView: View {
 
     private func submitName(value: String) {
         stream.name = value.trim()
-        model.objectWillChange.send()
     }
 
     private func submitStreamKey(value: String) {
@@ -41,25 +40,23 @@ struct RtmpServerStreamSettingsView: View {
             return
         }
         stream.streamKey = streamKey
-        model.reloadRtmpServer()
-        model.objectWillChange.send()
     }
 
     func submitLatency(value: String) {
         guard let latency = Int32(value) else {
+            stream.latencyString = String(stream.latency)
             return
         }
-        stream.latency = max(latency, 250)
-        model.reloadRtmpServer()
-        model.objectWillChange.send()
+        stream.latency = latency.clamped(to: 250 ... 10000)
+        stream.latencyString = String(stream.latency)
     }
 
     var body: some View {
         Form {
             Section {
-                TextEditNavigationView(
+                TextEditBindingNavigationView(
                     title: String(localized: "Name"),
-                    value: stream.name,
+                    value: $stream.name,
                     onSubmit: submitName,
                     capitalize: true
                 )
@@ -74,9 +71,9 @@ struct RtmpServerStreamSettingsView: View {
                 Text("The stream name is shown in the list of cameras in scene settings.")
             }
             Section {
-                TextEditNavigationView(
+                TextEditBindingNavigationView(
                     title: String(localized: "Latency"),
-                    value: String(stream.latency),
+                    value: $stream.latencyString,
                     onSubmit: submitLatency,
                     footers: [String(localized: "250 or more milliseconds. 2000 ms by default.")],
                     keyboardType: .numbersAndPunctuation,
@@ -87,14 +84,8 @@ struct RtmpServerStreamSettingsView: View {
                 Text("The higher, the lower risk of stuttering.")
             }
             Section {
-                Toggle("Auto select mic", isOn: Binding(get: {
-                    stream.autoSelectMic
-                }, set: { value in
-                    stream.autoSelectMic = value
-                    model.reloadRtmpServer()
-                    model.objectWillChange.send()
-                }))
-                .disabled(model.rtmpServerEnabled())
+                Toggle("Auto select mic", isOn: $stream.autoSelectMic)
+                    .disabled(model.rtmpServerEnabled())
             } footer: {
                 Text("Automatically select the stream's audio as mic when connected.")
             }

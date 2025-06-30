@@ -3638,6 +3638,7 @@ class SettingsRtmpServerStream: Codable, Identifiable, ObservableObject {
     @Published var name: String = "My stream"
     @Published var streamKey: String = ""
     @Published var latency: Int32 = defaultRtmpLatency
+    @Published var latencyString: String = .init(defaultRtmpLatency)
     @Published var autoSelectMic: Bool = true
 
     enum CodingKeys: CodingKey {
@@ -3665,6 +3666,7 @@ class SettingsRtmpServerStream: Codable, Identifiable, ObservableObject {
         name = container.decode(.name, String.self, "My stream")
         streamKey = container.decode(.streamKey, String.self, "")
         latency = container.decode(.latency, Int32.self, defaultRtmpLatency)
+        latencyString = String(latency)
         autoSelectMic = container.decode(.autoSelectMic, Bool.self, true)
     }
 
