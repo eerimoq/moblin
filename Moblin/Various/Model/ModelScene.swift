@@ -367,10 +367,14 @@ extension Model {
             sceneSelector.sceneIndex = index
             setSceneId(id: id)
             sceneUpdated(attachCamera: true, updateRemoteScene: false)
-            if let scene = enabledScenes.first(where: { $0.id == id }) {
-                if scene.micSwitch, mics.contains(where: { $0.id == scene.micId }), currentMic.id != scene.micId {
+            if let scene = findEnabledScene(id: id),
+               scene.micOverride,
+               isMicAvailableById(id: scene.micId) {
+                if currentMic.id != scene.micId {
                     selectMicById(id: scene.micId)
                 }
+            } else {
+                setMicFromSettings()
             }
         }
     }

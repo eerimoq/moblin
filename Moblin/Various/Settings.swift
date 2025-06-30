@@ -896,7 +896,7 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject {
     @Published var videoStabilizationMode: SettingsVideoStabilizationMode = .off
     @Published var overrideVideoStabilizationMode: Bool = false
     @Published var fillFrame: Bool = false
-    @Published var micSwitch: Bool = false
+    @Published var micOverride: Bool = false
     @Published var micId: String = ""
 
     init(name: String) {
@@ -948,7 +948,7 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject {
         try container.encode(.videoStabilizationMode, videoStabilizationMode)
         try container.encode(.overrideVideoStabilizationMode, overrideVideoStabilizationMode)
         try container.encode(.fillFrame, fillFrame)
-        try container.encode(.micSwitch, micSwitch)
+        try container.encode(.micSwitch, micOverride)
         try container.encode(.micId, micId)
     }
 
@@ -971,7 +971,7 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject {
         videoStabilizationMode = container.decode(.videoStabilizationMode, SettingsVideoStabilizationMode.self, .off)
         overrideVideoStabilizationMode = container.decode(.overrideVideoStabilizationMode, Bool.self, false)
         fillFrame = container.decode(.fillFrame, Bool.self, false)
-        micSwitch = container.decode(.micSwitch, Bool.self, false)
+        micOverride = container.decode(.micSwitch, Bool.self, false)
         micId = container.decode(.micId, String.self, "")
     }
 
@@ -991,7 +991,7 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject {
             new.widgets.append(widget.clone())
         }
         new.videoSourceRotation = videoSourceRotation
-        new.micSwitch = micSwitch
+        new.micOverride = micOverride
         new.micId = micId
         return new
     }

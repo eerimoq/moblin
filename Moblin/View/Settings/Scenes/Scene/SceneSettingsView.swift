@@ -183,10 +183,8 @@ struct SceneSettingsView: View {
                 """)
             }
             Section {
-                Toggle("Automatic Switch", isOn: $scene.micSwitch)
-                    .onChange(of: scene.micSwitch) { _ in
-                    }
-                if scene.micSwitch {
+                Toggle("Enabled", isOn: $scene.micOverride)
+                if scene.micOverride {
                     NavigationLink {
                         InlinePickerView(
                             title: String(localized: "Name"),
@@ -200,20 +198,17 @@ struct SceneSettingsView: View {
                         HStack {
                             Text("Name")
                             Spacer()
-                            if !model.isSceneVideoSourceActive(scene: scene) {
-                                Image(systemName: "cable.connector.slash")
-                            }
-                            Text(model.mics.first(where: { mic in mic.id == scene.micId })?.name ?? "None")
+                            Text(model.getMicById(id: scene.micId)?.name ?? "Unknown 😢")
                                 .foregroundColor(.gray)
                                 .lineLimit(1)
                         }
                     }
                 }
             } header: {
-                Text("Audio source")
+                Text("Mic override")
             } footer: {
                 Text("""
-                Try to use this Audio source, when switching to the scene and the selected audio source is available.
+                Use the selected mic, when switching to the scene and the mic is available.
                 """)
             }
             Section {
