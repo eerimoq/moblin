@@ -44,7 +44,7 @@ extension Model {
             )
             return
         }
-        if database.location.resetWhenGoingLive! {
+        if database.location.resetWhenGoingLive {
             resetLocationData()
         }
         streamLog.removeAll()

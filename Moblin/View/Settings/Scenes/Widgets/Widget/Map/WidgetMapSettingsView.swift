@@ -20,7 +20,7 @@ struct WidgetMapSettingsView: View {
         }
         Section {
             NavigationLink {
-                LocationSettingsView()
+                LocationSettingsView(location: model.database.location)
             } label: {
                 Label("Location", systemImage: "location")
             }

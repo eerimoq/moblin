@@ -51,7 +51,7 @@ struct SettingsView: View {
                     }
                 }
                 NavigationLink {
-                    LocationSettingsView()
+                    LocationSettingsView(location: database.location)
                 } label: {
                     Label("Location", systemImage: "location")
                 }

@@ -1,7 +1,7 @@
 import MapKit
 import SwiftUI
 
-struct PrivacyRegionView: View {
+private struct PrivacyRegionView: View {
     @EnvironmentObject var model: Model
     var region: SettingsPrivacyRegion
     @State var current: MKCoordinateRegion
@@ -23,26 +23,19 @@ struct PrivacyRegionView: View {
 
 struct LocationSettingsView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var location: SettingsLocation
 
     var body: some View {
         Form {
             Section {
-                Toggle("Enabled", isOn: Binding(get: {
-                    model.database.location.enabled
-                }, set: { value in
-                    model.database.location.enabled = value
-                    model.reloadLocation()
-                    model.objectWillChange.send()
-                }))
+                Toggle("Enabled", isOn: $location.enabled)
+                    .onChange(of: location.enabled) { _ in
+                        model.reloadLocation()
+                        model.objectWillChange.send()
+                    }
             }
             Section {
-                Toggle(isOn: Binding(get: {
-                    model.database.location.resetWhenGoingLive!
-                }, set: { value in
-                    model.database.location.resetWhenGoingLive = value
-                })) {
-                    Text("Reset when going live")
-                }
+                Toggle("Reset when going live", isOn: $location.resetWhenGoingLive)
                 Button {
                     model.resetLocationData()
                 } label: {
@@ -72,10 +65,9 @@ struct LocationSettingsView: View {
             }
             Section {
                 List {
-                    ForEach(model.database.location.privacyRegions) { region in
+                    ForEach(location.privacyRegions) { region in
                         PrivacyRegionView(region: region, current: MKCoordinateRegion(
-                            center: CLLocationCoordinate2D(latitude: region.latitude,
-                                                           longitude: region.longitude),
+                            center: CLLocationCoordinate2D(latitude: region.latitude, longitude: region.longitude),
                             span: MKCoordinateSpan(
                                 latitudeDelta: region.latitudeDelta,
                                 longitudeDelta: region.longitudeDelta
@@ -83,7 +75,7 @@ struct LocationSettingsView: View {
                         ))
                     }
                     .onDelete { indexes in
-                        model.database.location.privacyRegions.remove(atOffsets: indexes)
+                        location.privacyRegions.remove(atOffsets: indexes)
                         model.reloadLocation()
                     }
                 }
@@ -95,8 +87,7 @@ struct LocationSettingsView: View {
                         privacyRegion.latitudeDelta = 0.02
                         privacyRegion.longitudeDelta = 0.02
                     }
-                    model.database.location.privacyRegions.append(privacyRegion)
-                    model.objectWillChange.send()
+                    location.privacyRegions.append(privacyRegion)
                     model.reloadLocation()
                 }
             } header: {

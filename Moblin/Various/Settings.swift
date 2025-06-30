@@ -441,7 +441,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject {
     var audioBitrate: Int = 128_000
     var chat: SettingsStreamChat = .init()
     var recording: SettingsStreamRecording = .init()
-    var realtimeIrlEnabled: Bool = false
+    @Published var realtimeIrlEnabled: Bool = false
     var realtimeIrlPushKey: String = ""
     @Published var portrait: Bool = false
     var backgroundStreaming: Bool = false
@@ -4945,11 +4945,36 @@ class SettingsPrivacyRegion: Codable, Identifiable {
     var longitudeDelta: Double = 30
 }
 
-class SettingsLocation: Codable {
-    var enabled: Bool = false
-    var privacyRegions: [SettingsPrivacyRegion] = []
-    var distance: Double? = 0.0
-    var resetWhenGoingLive: Bool? = false
+class SettingsLocation: Codable, ObservableObject {
+    @Published var enabled: Bool = false
+    @Published var privacyRegions: [SettingsPrivacyRegion] = []
+    @Published var distance: Double = 0.0
+    @Published var resetWhenGoingLive: Bool = false
+
+    enum CodingKeys: CodingKey {
+        case enabled,
+             privacyRegions,
+             distance,
+             resetWhenGoingLive
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.enabled, enabled)
+        try container.encode(.privacyRegions, privacyRegions)
+        try container.encode(.distance, distance)
+        try container.encode(.resetWhenGoingLive, resetWhenGoingLive)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        enabled = container.decode(.enabled, Bool.self, false)
+        privacyRegions = container.decode(.privacyRegions, [SettingsPrivacyRegion].self, [])
+        distance = container.decode(.distance, Double.self, 0.0)
+        resetWhenGoingLive = container.decode(.resetWhenGoingLive, Bool.self, false)
+    }
 }
 
 class SettingsAudioOutputToInputChannelsMap: Codable {
@@ -6674,10 +6699,6 @@ final class Settings {
             widget.alerts.twitch!.cheerBits![0].alert = widget.alerts.twitch!.cheers!.clone()
             store()
         }
-        if realDatabase.remoteControl.client.relay == nil {
-            realDatabase.remoteControl.client.relay = .init()
-            store()
-        }
         if realDatabase.chat.botCommandPermissions.tesla == nil {
             realDatabase.chat.botCommandPermissions.tesla = .init()
             store()
@@ -6710,10 +6731,6 @@ final class Settings {
             key.widgetId = .init()
             store()
         }
-        if realDatabase.location.distance == nil {
-            realDatabase.location.distance = 0.0
-            store()
-        }
         for stream in realDatabase.streams where stream.recording.cleanRecordings == nil {
             stream.recording.cleanRecordings = false
             store()
@@ -6728,10 +6745,6 @@ final class Settings {
         }
         if realDatabase.chat.botCommandPermissions.scene == nil {
             realDatabase.chat.botCommandPermissions.scene = .init()
-            store()
-        }
-        if realDatabase.location.resetWhenGoingLive == nil {
-            realDatabase.location.resetWhenGoingLive = false
             store()
         }
         if realDatabase.chat.botCommandPermissions.tts.sendChatMessages == nil {
