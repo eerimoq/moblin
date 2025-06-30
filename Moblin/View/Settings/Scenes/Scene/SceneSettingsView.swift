@@ -206,7 +206,7 @@ struct SceneSettingsView: View {
                         }
                     }
                 } header: {
-                    Text("Mic override")
+                    Text("Override mic")
                 } footer: {
                     Text("""
                     Use the selected mic, when switching to the scene and the mic is available.
