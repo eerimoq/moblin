@@ -320,7 +320,6 @@ extension Model {
             selectMicDefault(mic: mic)
         }
     }
-    
 
     private func isRtmpMic(mic: Mic) -> Bool {
         guard let id = UUID(uuidString: mic.inputUid) else {
@@ -363,11 +362,11 @@ extension Model {
         media.attachBufferedAudio(cameraId: cameraId)
         remoteControlStreamer?.stateChanged(state: RemoteControlState(mic: mic.id))
     }
-    
+
     func getMicById(id: String) -> Mic? {
         return mics.first(where: { mic in mic.id == id })
     }
-    
+
     func isMicAvailableById(id: String) -> Bool {
         return mics.contains(where: { $0.id == id })
     }

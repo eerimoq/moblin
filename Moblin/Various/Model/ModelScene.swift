@@ -369,7 +369,8 @@ extension Model {
             sceneUpdated(attachCamera: true, updateRemoteScene: false)
             if let scene = findEnabledScene(id: id),
                scene.micOverride,
-               isMicAvailableById(id: scene.micId) {
+               isMicAvailableById(id: scene.micId)
+            {
                 if currentMic.id != scene.micId {
                     selectMicById(id: scene.micId)
                 }
