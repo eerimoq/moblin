@@ -297,29 +297,29 @@ extension Model {
         }
     }
 
-    func manualSelectMicById(id: String) {
+    private func micExistsById(id: String) -> Mic? {
         guard let mic = mics.first(where: { mic in mic.id == id }) else {
             logger.info("Mic with id \(id) not found")
             makeErrorToast(
                 title: String(localized: "Mic not found"),
                 subTitle: String(localized: "Mic id \(id)")
             )
-            return
+            return nil
         }
-        selectMic(mic: mic)
-        previousMic = mic
+        return mic
+    }
+
+    func manualSelectMicById(id: String) {
+        if let mic = micExistsById(id: id) {
+            selectMic(mic: mic)
+            previousMic = mic
+        }
     }
 
     func selectMicById(id: String) {
-        guard let mic = mics.first(where: { mic in mic.id == id }) else {
-            logger.info("Mic with id \(id) not found")
-            makeErrorToast(
-                title: String(localized: "Mic not found"),
-                subTitle: String(localized: "Mic id \(id)")
-            )
-            return
+        if let mic = micExistsById(id: id) {
+            selectMic(mic: mic)
         }
-        selectMic(mic: mic)
     }
 
     private func selectMic(mic: Mic) {
