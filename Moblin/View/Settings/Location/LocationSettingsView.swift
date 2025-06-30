@@ -32,6 +32,7 @@ struct LocationSettingsView: View {
                 }, set: { value in
                     model.database.location.enabled = value
                     model.reloadLocation()
+                    model.objectWillChange.send()
                 }))
             }
             Section {
