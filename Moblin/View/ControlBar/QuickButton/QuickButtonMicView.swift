@@ -19,7 +19,7 @@ struct QuickButtonMicView: View {
                     }
                 }
                 .onChange(of: selectedMic) { mic in
-                    model.selectMicById(id: mic.id)
+                    model.manualSelectMicById(id: mic.id)
                 }
                 .pickerStyle(.inline)
                 .labelsHidden()

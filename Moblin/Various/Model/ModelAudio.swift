@@ -297,6 +297,19 @@ extension Model {
         }
     }
 
+    func manualSelectMicById(id: String) {
+        guard let mic = mics.first(where: { mic in mic.id == id }) else {
+            logger.info("Mic with id \(id) not found")
+            makeErrorToast(
+                title: String(localized: "Mic not found"),
+                subTitle: String(localized: "Mic id \(id)")
+            )
+            return
+        }
+        selectMic(mic: mic)
+        previousMic = mic
+    }
+
     func selectMicById(id: String) {
         guard let mic = mics.first(where: { mic in mic.id == id }) else {
             logger.info("Mic with id \(id) not found")
@@ -364,7 +377,7 @@ extension Model {
     }
 
     func getMicById(id: String) -> Mic? {
-        return mics.first(where: { mic in mic.id == id })
+        return mics.first(where: { $0.id == id })
     }
 
     func isMicAvailableById(id: String) -> Bool {

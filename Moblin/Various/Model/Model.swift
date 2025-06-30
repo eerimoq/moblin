@@ -385,6 +385,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var lockScreen = false
     @Published var findFace = false
     @Published var currentMic = noMic
+    @Published var previousMic = noMic
     @Published var mics: [Mic] = []
     @Published var isLive = false
     @Published var isRecording = false

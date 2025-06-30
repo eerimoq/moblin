@@ -896,7 +896,7 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject {
     @Published var videoStabilizationMode: SettingsVideoStabilizationMode = .off
     @Published var overrideVideoStabilizationMode: Bool = false
     @Published var fillFrame: Bool = false
-    @Published var micOverride: Bool = false
+    @Published var overrideMic: Bool = false
     @Published var micId: String = ""
 
     init(name: String) {
@@ -948,7 +948,7 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject {
         try container.encode(.videoStabilizationMode, videoStabilizationMode)
         try container.encode(.overrideVideoStabilizationMode, overrideVideoStabilizationMode)
         try container.encode(.fillFrame, fillFrame)
-        try container.encode(.micSwitch, micOverride)
+        try container.encode(.micSwitch, overrideMic)
         try container.encode(.micId, micId)
     }
 
@@ -971,7 +971,7 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject {
         videoStabilizationMode = container.decode(.videoStabilizationMode, SettingsVideoStabilizationMode.self, .off)
         overrideVideoStabilizationMode = container.decode(.overrideVideoStabilizationMode, Bool.self, false)
         fillFrame = container.decode(.fillFrame, Bool.self, false)
-        micOverride = container.decode(.micSwitch, Bool.self, false)
+        overrideMic = container.decode(.micSwitch, Bool.self, false)
         micId = container.decode(.micId, String.self, "")
     }
 
@@ -991,7 +991,7 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject {
             new.widgets.append(widget.clone())
         }
         new.videoSourceRotation = videoSourceRotation
-        new.micOverride = micOverride
+        new.overrideMic = overrideMic
         new.micId = micId
         return new
     }
@@ -3524,6 +3524,7 @@ class SettingsDebug: Codable, ObservableObject {
     var replay: Bool = false
     var recordSegmentLength: Double = 5.0
     @Published var builtinAudioAndVideoDelay: Double = 0.0
+    @Published var sceneOverrideMic: Bool = false
 
     enum CodingKeys: CodingKey {
         case logLevel,
@@ -3558,7 +3559,8 @@ class SettingsDebug: Codable, ObservableObject {
              srtlaBatchSendEnabled,
              replay,
              recordSegmentLength,
-             builtinAudioAndVideoDelay
+             builtinAudioAndVideoDelay,
+             sceneOverrideMic
     }
 
     func encode(to encoder: Encoder) throws {
@@ -3596,6 +3598,7 @@ class SettingsDebug: Codable, ObservableObject {
         try container.encode(.replay, replay)
         try container.encode(.recordSegmentLength, recordSegmentLength)
         try container.encode(.builtinAudioAndVideoDelay, builtinAudioAndVideoDelay)
+        try container.encode(.sceneOverrideMic, sceneOverrideMic)
     }
 
     init() {}
@@ -3640,6 +3643,7 @@ class SettingsDebug: Codable, ObservableObject {
         replay = (try? container.decode(Bool.self, forKey: .replay)) ?? false
         recordSegmentLength = (try? container.decode(Double.self, forKey: .recordSegmentLength)) ?? 5.0
         builtinAudioAndVideoDelay = (try? container.decode(Double.self, forKey: .builtinAudioAndVideoDelay)) ?? 0.0
+        sceneOverrideMic = (try? container.decode(Bool.self, forKey: .sceneOverrideMic)) ?? false
     }
 }
 

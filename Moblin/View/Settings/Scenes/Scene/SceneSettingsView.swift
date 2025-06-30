@@ -182,34 +182,36 @@ struct SceneSettingsView: View {
                 stabilization in this scene.
                 """)
             }
-            Section {
-                Toggle("Enabled", isOn: $scene.micOverride)
-                if scene.micOverride {
-                    NavigationLink {
-                        InlinePickerView(
-                            title: String(localized: "Name"),
-                            onChange: onMicChange,
-                            items: model.mics.map {
-                                InlinePickerItem(id: $0.id, text: $0.name)
-                            },
-                            selectedId: scene.micId
-                        )
-                    } label: {
-                        HStack {
-                            Text("Name")
-                            Spacer()
-                            Text(model.getMicById(id: scene.micId)?.name ?? "Unknown 😢")
-                                .foregroundColor(.gray)
-                                .lineLimit(1)
+            if database.debug.sceneOverrideMic {
+                Section {
+                    Toggle("Enabled", isOn: $scene.overrideMic)
+                    if scene.overrideMic {
+                        NavigationLink {
+                            InlinePickerView(
+                                title: String(localized: "Name"),
+                                onChange: onMicChange,
+                                items: model.mics.map {
+                                    InlinePickerItem(id: $0.id, text: $0.name)
+                                },
+                                selectedId: scene.micId
+                            )
+                        } label: {
+                            HStack {
+                                Text("Name")
+                                Spacer()
+                                Text(model.getMicById(id: scene.micId)?.name ?? "Unknown 😢")
+                                    .foregroundColor(.gray)
+                                    .lineLimit(1)
+                            }
                         }
                     }
+                } header: {
+                    Text("Mic override")
+                } footer: {
+                    Text("""
+                    Use the selected mic, when switching to the scene and the mic is available.
+                    """)
                 }
-            } header: {
-                Text("Mic override")
-            } footer: {
-                Text("""
-                Use the selected mic, when switching to the scene and the mic is available.
-                """)
             }
             Section {
                 List {
