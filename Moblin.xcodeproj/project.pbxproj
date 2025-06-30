@@ -35,6 +35,7 @@
 		030EFE722BDA2D9E004208B6 /* MpegTsVideoConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030EFE712BDA2D9E004208B6 /* MpegTsVideoConfig.swift */; };
 		030EFE752BDAD7C7004208B6 /* SwipeLeftToDeleteHelpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030EFE742BDAD7C7004208B6 /* SwipeLeftToDeleteHelpView.swift */; };
 		030EFE782BDADBC6004208B6 /* SwipeLeftToRemoveHelpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030EFE772BDADBC6004208B6 /* SwipeLeftToRemoveHelpView.swift */; };
+		030FF8822E12556A0004A695 /* UrlsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030FF8812E1255640004A695 /* UrlsView.swift */; };
 		0312E4302C00F24E00C6F878 /* ReplayKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0312E42F2C00F24E00C6F878 /* ReplayKit.framework */; };
 		0312E4332C00F24E00C6F878 /* SampleHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0312E4322C00F24E00C6F878 /* SampleHandler.swift */; };
 		0312E4372C00F24E00C6F878 /* Moblin Screen Recording.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 0312E42E2C00F24E00C6F878 /* Moblin Screen Recording.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -675,6 +676,7 @@
 		030EFE712BDA2D9E004208B6 /* MpegTsVideoConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MpegTsVideoConfig.swift; sourceTree = "<group>"; };
 		030EFE742BDAD7C7004208B6 /* SwipeLeftToDeleteHelpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeLeftToDeleteHelpView.swift; sourceTree = "<group>"; };
 		030EFE772BDADBC6004208B6 /* SwipeLeftToRemoveHelpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeLeftToRemoveHelpView.swift; sourceTree = "<group>"; };
+		030FF8812E1255640004A695 /* UrlsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UrlsView.swift; sourceTree = "<group>"; };
 		0312E42E2C00F24E00C6F878 /* Moblin Screen Recording.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Moblin Screen Recording.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0312E42F2C00F24E00C6F878 /* ReplayKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ReplayKit.framework; path = System/Library/Frameworks/ReplayKit.framework; sourceTree = SDKROOT; };
 		0312E4322C00F24E00C6F878 /* SampleHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleHandler.swift; sourceTree = "<group>"; };
@@ -1485,7 +1487,6 @@
 		0315A34F2AA322ED00295443 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
-				03952C6B2E013994007C28B4 /* WiFiAwareView.swift */,
 				03A9835A2A9A05D7008FF0DB /* AddButtonView.swift */,
 				03A9835D2A9A05D7008FF0DB /* CreateButtonView.swift */,
 				031A2DFF2ADBE34F005CE350 /* DraggableItemPrefixView.swift */,
@@ -1506,9 +1507,11 @@
 				0315A37D2AA43DCC00295443 /* TextEditView.swift */,
 				0315A3792AA39DA800295443 /* TextItemView.swift */,
 				03D691522B36EDB600038F13 /* TextValueView.swift */,
+				030FF8812E1255640004A695 /* UrlsView.swift */,
 				032FDBFB2B0B1183007BE85E /* ValueEditView.swift */,
 				03F655EF2D147C040054D73E /* VideoSourceRotationView.swift */,
 				03980C542C5E74A9000ED476 /* VoicesView.swift */,
+				03952C6B2E013994007C28B4 /* WiFiAwareView.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -3585,6 +3588,7 @@
 			files = (
 				032BAEF12C0C78FF005D5DA7 /* DeepLinkCreatorSettingsView.swift in Sources */,
 				03C354682CF98DD900B8B29F /* HCenter.swift in Sources */,
+				030FF8822E12556A0004A695 /* UrlsView.swift in Sources */,
 				0359F8F52BD3DA61005BFDA8 /* RtmpStreamInfo.swift in Sources */,
 				033FD71E2CC8A4A50073C6EC /* WidgetScoreboardSettingsView.swift in Sources */,
 				0359F8C12BD3DA61005BFDA8 /* ExpressibleByIntegerLiteral+Extension.swift in Sources */,

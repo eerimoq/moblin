@@ -1,35 +1,5 @@
 import SwiftUI
 
-private struct InterfaceViewUrl: View {
-    @EnvironmentObject var model: Model
-    var url: String
-    var image: String
-
-    var body: some View {
-        HStack {
-            Image(systemName: image)
-            Text(url)
-            Spacer()
-            Button {
-                UIPasteboard.general.string = url
-                model.makeToast(title: "URL copied to clipboard")
-            } label: {
-                Image(systemName: "doc.on.doc")
-            }
-        }
-    }
-}
-
-private struct InterfaceView: View {
-    var ip: String
-    var port: UInt16
-    var image: String
-
-    var body: some View {
-        InterfaceViewUrl(url: "ws://\(ip):\(port)", image: image)
-    }
-}
-
 private struct PasswordView: View {
     @EnvironmentObject var model: Model
     @State var value: String
@@ -174,7 +144,8 @@ private struct RemoteControlSettingsAssistantView: View {
     @ObservedObject var database: Database
 
     private func submitAssistantPort(value: String) {
-        guard let port = UInt16(value.trim()) else {
+        guard let port = UInt16(value.trim()), port > 0 else {
+            model.makePortErrorToast(port: value)
             return
         }
         database.remoteControl.client.port = port
@@ -218,7 +189,7 @@ private struct RemoteControlSettingsRelayView: View {
         guard isValidWebSocketUrl(url: value) == nil else {
             return
         }
-        database.remoteControl.client.relay!.baseUrl = value
+        database.remoteControl.client.relay.baseUrl = value
         model.reloadRemoteControlRelay()
     }
 
@@ -226,16 +197,16 @@ private struct RemoteControlSettingsRelayView: View {
         guard !value.isEmpty else {
             return
         }
-        database.remoteControl.client.relay!.bridgeId = value
+        database.remoteControl.client.relay.bridgeId = value
         model.reloadRemoteControlRelay()
     }
 
     var body: some View {
         Section {
             Toggle(isOn: Binding(get: {
-                database.remoteControl.client.relay!.enabled
+                database.remoteControl.client.relay.enabled
             }, set: { value in
-                database.remoteControl.client.relay!.enabled = value
+                database.remoteControl.client.relay.enabled = value
                 model.reloadRemoteControlRelay()
                 model.objectWillChange.send()
             })) {
@@ -243,12 +214,12 @@ private struct RemoteControlSettingsRelayView: View {
             }
             TextEditNavigationView(
                 title: String(localized: "Base URL"),
-                value: database.remoteControl.client.relay!.baseUrl,
+                value: database.remoteControl.client.relay.baseUrl,
                 onSubmit: submitAssistantRelayUrl
             )
             TextEditNavigationView(
                 title: String(localized: "Bridge id"),
-                value: database.remoteControl.client.relay!.bridgeId,
+                value: database.remoteControl.client.relay.bridgeId,
                 onSubmit: submitAssistantRelayBridgeId
             )
         } header: {
@@ -259,20 +230,48 @@ private struct RemoteControlSettingsRelayView: View {
     }
 }
 
+private struct UrlsView: View {
+    let model: Model
+    @ObservedObject var relay: SettingsRemoteControlServerRelay
+    @Binding var port: UInt16
+    let status: StatusOther
+
+    private func formatUrl(ip: String) -> String {
+        return "ws://\(ip):\(port)"
+    }
+
+    var body: some View {
+        NavigationLink {
+            Form {
+                if relay.enabled {
+                    Section {
+                        UrlCopyView(model: model,
+                                    url: "\(relay.baseUrl)/streamer/\(relay.bridgeId)",
+                                    image: "globe")
+                    } header: {
+                        Text("Relay")
+                    }
+                }
+                UrlsIpv4View(model: model, status: status, formatUrl: formatUrl)
+                UrlsIpv6View(model: model, status: status, formatUrl: formatUrl)
+            }
+            .navigationTitle("URLs")
+        } label: {
+            Text("URLs")
+        }
+    }
+}
+
 struct RemoteControlSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var database: Database
     @ObservedObject var status: StatusOther
+    @ObservedObject var client: SettingsRemoteControlAssistant
 
     private func submitPassword(value: String) {
         database.remoteControl.password = value.trim()
         model.reloadRemoteControlStreamer()
         model.reloadRemoteControlAssistant()
-    }
-
-    private func relayUrl() -> String {
-        let relay = database.remoteControl.client.relay!
-        return "\(relay.baseUrl)/streamer/\(relay.bridgeId)"
     }
 
     var body: some View {
@@ -316,32 +315,12 @@ struct RemoteControlSettingsView: View {
             RemoteControlSettingsStreamerView(database: database)
             RemoteControlSettingsAssistantView(database: database)
             RemoteControlSettingsRelayView(database: database)
-            if database.remoteControl.client.enabled {
+            if client.enabled {
                 Section {
-                    List {
-                        ForEach(status.ipStatuses.filter { $0.ipType == .ipv4 }) { status in
-                            InterfaceView(
-                                ip: status.ipType.formatAddress(status.ip),
-                                port: database.remoteControl.client.port,
-                                image: urlImage(interfaceType: status.interfaceType)
-                            )
-                        }
-                        InterfaceView(
-                            ip: personalHotspotLocalAddress,
-                            port: database.remoteControl.client.port,
-                            image: "personalhotspot"
-                        )
-                        ForEach(status.ipStatuses.filter { $0.ipType == .ipv6 }) { status in
-                            InterfaceView(
-                                ip: status.ipType.formatAddress(status.ip),
-                                port: database.remoteControl.client.port,
-                                image: urlImage(interfaceType: status.interfaceType)
-                            )
-                        }
-                        if database.remoteControl.client.relay!.enabled {
-                            InterfaceViewUrl(url: relayUrl(), image: "globe")
-                        }
-                    }
+                    UrlsView(model: model,
+                             relay: client.relay,
+                             port: $client.port,
+                             status: status)
                 } footer: {
                     VStack(alignment: .leading) {
                         Text("""

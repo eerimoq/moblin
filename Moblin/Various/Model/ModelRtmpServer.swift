@@ -61,10 +61,10 @@ extension Model {
                 return
             }
             let name = "RTMP \(camera)"
-            let latency = Double(stream.latency!) / 1000.0
+            let latency = Double(stream.latency) / 1000.0
             self.media.addBufferedVideo(cameraId: stream.id, name: name, latency: latency)
             self.media.addBufferedAudio(cameraId: stream.id, name: name, latency: latency)
-            if stream.autoSelectMic! {
+            if stream.autoSelectMic {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                     self.selectMicById(id: "\(stream.id) 0")
                 }

@@ -441,7 +441,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject {
     var audioBitrate: Int = 128_000
     var chat: SettingsStreamChat = .init()
     var recording: SettingsStreamRecording = .init()
-    var realtimeIrlEnabled: Bool = false
+    @Published var realtimeIrlEnabled: Bool = false
     var realtimeIrlPushKey: String = ""
     @Published var portrait: Bool = false
     var backgroundStreaming: Bool = false
@@ -3647,12 +3647,42 @@ class SettingsDebug: Codable, ObservableObject {
     }
 }
 
-class SettingsRtmpServerStream: Codable, Identifiable {
+class SettingsRtmpServerStream: Codable, Identifiable, ObservableObject {
     var id: UUID = .init()
-    var name: String = "My stream"
-    var streamKey: String = ""
-    var latency: Int32? = defaultRtmpLatency
-    var autoSelectMic: Bool? = true
+    @Published var name: String = "My stream"
+    @Published var streamKey: String = ""
+    @Published var latency: Int32 = defaultRtmpLatency
+    @Published var latencyString: String = .init(defaultRtmpLatency)
+    @Published var autoSelectMic: Bool = true
+
+    enum CodingKeys: CodingKey {
+        case id,
+             name,
+             streamKey,
+             latency,
+             autoSelectMic
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.name, name)
+        try container.encode(.streamKey, streamKey)
+        try container.encode(.latency, latency)
+        try container.encode(.autoSelectMic, autoSelectMic)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        name = container.decode(.name, String.self, "My stream")
+        streamKey = container.decode(.streamKey, String.self, "")
+        latency = container.decode(.latency, Int32.self, defaultRtmpLatency)
+        latencyString = String(latency)
+        autoSelectMic = container.decode(.autoSelectMic, Bool.self, true)
+    }
 
     func camera() -> String {
         return rtmpCamera(name: name)
@@ -3669,15 +3699,40 @@ class SettingsRtmpServerStream: Codable, Identifiable {
     }
 }
 
-class SettingsRtmpServer: Codable {
-    var enabled: Bool = false
-    var port: UInt16 = 1935
-    var streams: [SettingsRtmpServerStream] = []
+class SettingsRtmpServer: Codable, ObservableObject {
+    @Published var enabled: Bool = false
+    @Published var port: UInt16 = 1935
+    @Published var portString: String = "1935"
+    @Published var streams: [SettingsRtmpServerStream] = []
+
+    enum CodingKeys: CodingKey {
+        case enabled,
+             port,
+             streams
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.enabled, enabled)
+        try container.encode(.port, port)
+        try container.encode(.streams, streams)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        enabled = container.decode(.enabled, Bool.self, false)
+        port = container.decode(.port, UInt16.self, 1935)
+        portString = String(port)
+        streams = container.decode(.streams, [SettingsRtmpServerStream].self, [])
+    }
 
     func clone() -> SettingsRtmpServer {
         let new = SettingsRtmpServer()
         new.enabled = enabled
         new.port = port
+        new.portString = portString
         for stream in streams {
             new.streams.append(stream.clone())
         }
@@ -3685,11 +3740,36 @@ class SettingsRtmpServer: Codable {
     }
 }
 
-class SettingsSrtlaServerStream: Codable, Identifiable {
+class SettingsSrtlaServerStream: Codable, Identifiable, ObservableObject {
     var id: UUID = .init()
-    var name: String = "My stream"
-    var streamId: String = ""
-    var autoSelectMic: Bool? = true
+    @Published var name: String = "My stream"
+    @Published var streamId: String = ""
+    @Published var autoSelectMic: Bool = true
+
+    enum CodingKeys: CodingKey {
+        case id,
+             name,
+             streamId,
+             autoSelectMic
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.name, name)
+        try container.encode(.streamId, streamId)
+        try container.encode(.autoSelectMic, autoSelectMic)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        name = container.decode(.name, String.self, "My stream")
+        streamId = container.decode(.streamId, String.self, "")
+        autoSelectMic = container.decode(.autoSelectMic, Bool.self, true)
+    }
 
     func camera() -> String {
         return srtlaCamera(name: name)
@@ -3704,17 +3784,48 @@ class SettingsSrtlaServerStream: Codable, Identifiable {
     }
 }
 
-class SettingsSrtlaServer: Codable {
-    var enabled: Bool = false
-    var srtPort: UInt16 = 4000
-    var srtlaPort: UInt16 = 5000
-    var streams: [SettingsSrtlaServerStream] = []
+class SettingsSrtlaServer: Codable, ObservableObject {
+    @Published var enabled: Bool = false
+    @Published var srtPort: UInt16 = 4000
+    @Published var srtPortString: String = "4000"
+    @Published var srtlaPort: UInt16 = 5000
+    @Published var srtlaPortString: String = "5000"
+    @Published var streams: [SettingsSrtlaServerStream] = []
+
+    enum CodingKeys: CodingKey {
+        case enabled,
+             srtPort,
+             srtlaPort,
+             streams
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.enabled, enabled)
+        try container.encode(.srtPort, srtPort)
+        try container.encode(.srtlaPort, srtlaPort)
+        try container.encode(.streams, streams)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        enabled = container.decode(.enabled, Bool.self, false)
+        srtPort = container.decode(.srtPort, UInt16.self, 4000)
+        srtPortString = String(srtPort)
+        srtlaPort = container.decode(.srtlaPort, UInt16.self, 5000)
+        srtlaPortString = String(srtlaPort)
+        streams = container.decode(.streams, [SettingsSrtlaServerStream].self, [])
+    }
 
     func clone() -> SettingsSrtlaServer {
         let new = SettingsSrtlaServer()
         new.enabled = enabled
         new.srtPort = srtPort
+        new.srtPortString = srtPortString
         new.srtlaPort = srtlaPort
+        new.srtlaPortString = srtlaPortString
         for stream in streams {
             new.streams.append(stream.clone())
         }
@@ -4707,12 +4818,32 @@ class SettingsKeyboard: Codable, ObservableObject {
     }
 }
 
-class SettingsRemoteControlAssistant: Codable {
-    var enabled: Bool = false
-    // periphery:ignore
-    var address: String? = ""
-    var port: UInt16 = 2345
-    var relay: SettingsRemoteControlServerRelay? = .init()
+class SettingsRemoteControlAssistant: Codable, ObservableObject {
+    @Published var enabled: Bool = false
+    @Published var port: UInt16 = 2345
+    var relay: SettingsRemoteControlServerRelay = .init()
+
+    enum CodingKeys: CodingKey {
+        case enabled,
+             port,
+             relay
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.enabled, enabled)
+        try container.encode(.port, port)
+        try container.encode(.relay, relay)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        enabled = container.decode(.enabled, Bool.self, false)
+        port = container.decode(.port, UInt16.self, 2345)
+        relay = container.decode(.relay, SettingsRemoteControlServerRelay.self, .init())
+    }
 }
 
 class SettingsRemoteControlStreamer: Codable {
@@ -4721,10 +4852,32 @@ class SettingsRemoteControlStreamer: Codable {
     var previewFps: Float? = 1.0
 }
 
-class SettingsRemoteControlServerRelay: Codable {
-    var enabled: Bool = false
-    var baseUrl: String = "wss://moblin.mys-lang.org/moblin-remote-control-relay"
-    var bridgeId: String = UUID().uuidString.lowercased()
+class SettingsRemoteControlServerRelay: Codable, ObservableObject {
+    @Published var enabled: Bool = false
+    @Published var baseUrl: String = "wss://moblin.mys-lang.org/moblin-remote-control-relay"
+    @Published var bridgeId: String = UUID().uuidString.lowercased()
+
+    enum CodingKeys: CodingKey {
+        case enabled,
+             baseUrl,
+             bridgeId
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.enabled, enabled)
+        try container.encode(.baseUrl, baseUrl)
+        try container.encode(.bridgeId, bridgeId)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        enabled = container.decode(.enabled, Bool.self, false)
+        baseUrl = container.decode(.baseUrl, String.self, "wss://moblin.mys-lang.org/moblin-remote-control-relay")
+        bridgeId = container.decode(.bridgeId, String.self, UUID().uuidString.lowercased())
+    }
 }
 
 class SettingsRemoteControl: Codable {
@@ -4733,9 +4886,28 @@ class SettingsRemoteControl: Codable {
     var password: String? = randomGoodPassword()
 }
 
-class SettingsMoblinkStreamer: Codable {
-    var enabled: Bool = false
-    var port: UInt16 = 7777
+class SettingsMoblinkStreamer: Codable, ObservableObject {
+    @Published var enabled: Bool = false
+    @Published var port: UInt16 = 7777
+
+    enum CodingKeys: CodingKey {
+        case enabled,
+             port
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.enabled, enabled)
+        try container.encode(.port, port)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        enabled = container.decode(.enabled, Bool.self, false)
+        port = container.decode(.port, UInt16.self, 7777)
+    }
 }
 
 class SettingsMoblinkRelay: Codable, ObservableObject {
@@ -4842,11 +5014,36 @@ class SettingsPrivacyRegion: Codable, Identifiable {
     var longitudeDelta: Double = 30
 }
 
-class SettingsLocation: Codable {
-    var enabled: Bool = false
-    var privacyRegions: [SettingsPrivacyRegion] = []
-    var distance: Double? = 0.0
-    var resetWhenGoingLive: Bool? = false
+class SettingsLocation: Codable, ObservableObject {
+    @Published var enabled: Bool = false
+    @Published var privacyRegions: [SettingsPrivacyRegion] = []
+    @Published var distance: Double = 0.0
+    @Published var resetWhenGoingLive: Bool = false
+
+    enum CodingKeys: CodingKey {
+        case enabled,
+             privacyRegions,
+             distance,
+             resetWhenGoingLive
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.enabled, enabled)
+        try container.encode(.privacyRegions, privacyRegions)
+        try container.encode(.distance, distance)
+        try container.encode(.resetWhenGoingLive, resetWhenGoingLive)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        enabled = container.decode(.enabled, Bool.self, false)
+        privacyRegions = container.decode(.privacyRegions, [SettingsPrivacyRegion].self, [])
+        distance = container.decode(.distance, Double.self, 0.0)
+        resetWhenGoingLive = container.decode(.resetWhenGoingLive, Bool.self, false)
+    }
 }
 
 class SettingsAudioOutputToInputChannelsMap: Codable {
@@ -6240,10 +6437,6 @@ final class Settings {
             realDatabase.zoom.switchToFront.x = realDatabase.zoom.switchToFront.level / 2
             store()
         }
-        for stream in realDatabase.rtmpServer.streams where stream.latency == nil {
-            stream.latency = defaultRtmpLatency
-            store()
-        }
         for button in realDatabase.quickButtons where button.type == .image {
             if button.name != String(localized: "Camera") {
                 button.name = String(localized: "Camera")
@@ -6335,14 +6528,6 @@ final class Settings {
             where stream.srt.adaptiveBitrate!.fastIrlSettings!.minimumBitrate == nil
         {
             stream.srt.adaptiveBitrate!.fastIrlSettings!.minimumBitrate = 250
-            store()
-        }
-        for stream in realDatabase.rtmpServer.streams where stream.autoSelectMic == nil {
-            stream.autoSelectMic = true
-            store()
-        }
-        for stream in realDatabase.srtlaServer.streams where stream.autoSelectMic == nil {
-            stream.autoSelectMic = true
             store()
         }
         if realDatabase.remoteControl.server.previewFps == nil {
@@ -6571,10 +6756,6 @@ final class Settings {
             widget.alerts.twitch!.cheerBits![0].alert = widget.alerts.twitch!.cheers!.clone()
             store()
         }
-        if realDatabase.remoteControl.client.relay == nil {
-            realDatabase.remoteControl.client.relay = .init()
-            store()
-        }
         if realDatabase.chat.botCommandPermissions.tesla == nil {
             realDatabase.chat.botCommandPermissions.tesla = .init()
             store()
@@ -6607,10 +6788,6 @@ final class Settings {
             key.widgetId = .init()
             store()
         }
-        if realDatabase.location.distance == nil {
-            realDatabase.location.distance = 0.0
-            store()
-        }
         for stream in realDatabase.streams where stream.recording.cleanRecordings == nil {
             stream.recording.cleanRecordings = false
             store()
@@ -6625,10 +6802,6 @@ final class Settings {
         }
         if realDatabase.chat.botCommandPermissions.scene == nil {
             realDatabase.chat.botCommandPermissions.scene = .init()
-            store()
-        }
-        if realDatabase.location.resetWhenGoingLive == nil {
-            realDatabase.location.resetWhenGoingLive = false
             store()
         }
         if realDatabase.chat.botCommandPermissions.tts.sendChatMessages == nil {

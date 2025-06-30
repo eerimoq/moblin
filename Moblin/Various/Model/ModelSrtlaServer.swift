@@ -72,7 +72,7 @@ extension Model: SrtlaServerDelegate {
         let latency = srtServerClientLatency
         media.addBufferedVideo(cameraId: stream.id, name: name, latency: latency)
         media.addBufferedAudio(cameraId: stream.id, name: name, latency: latency)
-        if stream.autoSelectMic! {
+        if stream.autoSelectMic {
             DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
                 self.selectMicById(id: "\(stream.id) 0")
             }

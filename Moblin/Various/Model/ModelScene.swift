@@ -334,7 +334,7 @@ extension Model {
             sendZoomPresetsToWatch()
             sendZoomPresetToWatch()
         }
-        let showMediaPlayerControls = enabledScenes.first(where: { $0.id == id })?.cameraPosition == .mediaPlayer
+        let showMediaPlayerControls = findEnabledScene(id: id)?.cameraPosition == .mediaPlayer
         if showMediaPlayerControls != streamOverlay.showMediaPlayerControls {
             streamOverlay.showMediaPlayerControls = showMediaPlayerControls
         }
@@ -361,9 +361,7 @@ extension Model {
         guard id != selectedSceneId else {
             return
         }
-        if let index = enabledScenes.firstIndex(where: { scene in
-            scene.id == id
-        }) {
+        if let index = findEnabledSceneIndex(id: id) {
             if let currentScene = getSelectedScene(),
                !currentScene.overrideMic
             {
@@ -767,10 +765,11 @@ extension Model {
     }
 
     func findEnabledScene(id: UUID) -> SettingsScene? {
-        for scene in enabledScenes where id == scene.id {
-            return scene
-        }
-        return nil
+        return enabledScenes.first(where: { $0.id == id })
+    }
+
+    func findEnabledSceneIndex(id: UUID) -> Int? {
+        return enabledScenes.firstIndex(where: { $0.id == id })
     }
 
     func isCaptureDeviceWidget(widget: SettingsWidget) -> Bool {
@@ -1002,7 +1001,7 @@ extension Model {
     }
 
     func isSceneVideoSourceActive(sceneId: UUID) -> Bool {
-        guard let scene = enabledScenes.first(where: { $0.id == sceneId }) else {
+        guard let scene = findEnabledScene(id: sceneId) else {
             return false
         }
         return isSceneVideoSourceActive(scene: scene)
@@ -1111,7 +1110,7 @@ extension Model {
     }
 
     func switchToNextSceneRoundRobin() {
-        guard let currentSceneIndex = enabledScenes.firstIndex(where: { $0.id == selectedSceneId }) else {
+        guard let currentSceneIndex = findEnabledSceneIndex(id: selectedSceneId) else {
             return
         }
         let nextSceneIndex = (currentSceneIndex + 1) % enabledScenes.count

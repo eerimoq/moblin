@@ -51,7 +51,7 @@ struct SettingsView: View {
                     }
                 }
                 NavigationLink {
-                    LocationSettingsView()
+                    LocationSettingsView(location: database.location)
                 } label: {
                     Label("Location", systemImage: "location")
                 }
@@ -66,18 +66,18 @@ struct SettingsView: View {
             Section {
                 if database.showAllSettings {
                     NavigationLink {
-                        RtmpServerSettingsView(database: database)
+                        RtmpServerSettingsView(rtmpServer: database.rtmpServer)
                     } label: {
                         Label("RTMP server", systemImage: "server.rack")
                     }
                     NavigationLink {
-                        SrtlaServerSettingsView(database: database)
+                        SrtlaServerSettingsView(srtlaServer: database.srtlaServer)
                     } label: {
                         Label("SRT(LA) server", systemImage: "server.rack")
                     }
                 }
                 NavigationLink {
-                    MoblinkSettingsView(status: model.statusOther, streamerEnabled: database.moblink.server.enabled)
+                    MoblinkSettingsView(status: model.statusOther, streamer: database.moblink.server)
                 } label: {
                     Label("Moblink", systemImage: "app.connected.to.app.below.fill")
                 }
@@ -109,7 +109,9 @@ struct SettingsView: View {
                         }
                     }
                     NavigationLink {
-                        RemoteControlSettingsView(database: database, status: model.statusOther)
+                        RemoteControlSettingsView(database: database,
+                                                  status: model.statusOther,
+                                                  client: database.remoteControl.client)
                     } label: {
                         Label("Remote control", systemImage: "appletvremote.gen1")
                     }

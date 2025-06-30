@@ -258,11 +258,11 @@ class RtmpServerChunkStream {
             .filter({ !$0.streamKey.isEmpty })
             .first(where: { $0.streamKey == streamKey })
         {
-            client.latency = stream.latency!
+            client.latency = stream.latency
             client.cameraId = stream.id
             client
                 .targetLatenciesSynchronizer =
-                TargetLatenciesSynchronizer(targetLatency: Double(stream.latency!) / 1000.0)
+                TargetLatenciesSynchronizer(targetLatency: Double(stream.latency) / 1000.0)
             isStreamKeyConfigured = true
         } else {
             isStreamKeyConfigured = false

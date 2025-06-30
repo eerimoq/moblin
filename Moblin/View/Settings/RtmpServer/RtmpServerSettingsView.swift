@@ -2,13 +2,15 @@ import SwiftUI
 
 struct RtmpServerSettingsView: View {
     @EnvironmentObject var model: Model
-    @ObservedObject var database: Database
+    @ObservedObject var rtmpServer: SettingsRtmpServer
 
     private func submitPort(value: String) {
-        guard let port = UInt16(value.trim()) else {
+        guard let port = UInt16(value.trim()), port > 0 else {
+            rtmpServer.portString = String(rtmpServer.port)
+            model.makePortErrorToast(port: value)
             return
         }
-        database.rtmpServer.port = port
+        rtmpServer.port = port
         model.reloadRtmpServer()
     }
 
@@ -21,15 +23,12 @@ struct RtmpServerSettingsView: View {
                 """)
             }
             Section {
-                Toggle("Enabled", isOn: Binding(get: {
-                    database.rtmpServer.enabled
-                }, set: { value in
-                    database.rtmpServer.enabled = value
-                    model.reloadRtmpServer()
-                    model.objectWillChange.send()
-                }))
+                Toggle("Enabled", isOn: $rtmpServer.enabled)
+                    .onChange(of: rtmpServer.enabled) { _ in
+                        model.reloadRtmpServer()
+                    }
             }
-            if model.rtmpServerEnabled() {
+            if rtmpServer.enabled {
                 Section {
                     HStack {
                         Image(systemName: "info.circle.fill")
@@ -39,40 +38,28 @@ struct RtmpServerSettingsView: View {
                 }
             }
             Section {
-                TextEditNavigationView(
+                TextEditBindingNavigationView(
                     title: String(localized: "Port"),
-                    value: String(database.rtmpServer.port),
+                    value: $rtmpServer.portString,
                     onSubmit: submitPort,
                     keyboardType: .numbersAndPunctuation
                 )
-                .disabled(model.rtmpServerEnabled())
+                .disabled(rtmpServer.enabled)
             } footer: {
                 Text("The TCP port the RTMP server listens for RTMP publishers on.")
             }
             Section {
                 List {
-                    let list = ForEach(database.rtmpServer.streams) { stream in
-                        NavigationLink {
-                            RtmpServerStreamSettingsView(
-                                status: model.statusOther,
-                                port: database.rtmpServer.port,
-                                stream: stream
-                            )
-                        } label: {
-                            HStack {
-                                if model.isRtmpStreamConnected(streamKey: stream.streamKey) {
-                                    Image(systemName: "cable.connector")
-                                } else {
-                                    Image(systemName: "cable.connector.slash")
-                                }
-                                Text(stream.name)
-                                Spacer()
-                            }
-                        }
+                    let list = ForEach(rtmpServer.streams) { stream in
+                        RtmpServerStreamSettingsView(
+                            status: model.statusOther,
+                            rtmpServer: rtmpServer,
+                            stream: stream
+                        )
                     }
-                    if !model.rtmpServerEnabled() {
+                    if !rtmpServer.enabled {
                         list.onDelete { indexes in
-                            database.rtmpServer.streams.remove(atOffsets: indexes)
+                            rtmpServer.streams.remove(atOffsets: indexes)
                             model.reloadRtmpServer()
                         }
                     } else {
@@ -87,8 +74,7 @@ struct RtmpServerSettingsView: View {
                             break
                         }
                     }
-                    database.rtmpServer.streams.append(stream)
-                    model.objectWillChange.send()
+                    rtmpServer.streams.append(stream)
                 }
                 .disabled(model.rtmpServerEnabled())
             } header: {

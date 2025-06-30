@@ -85,7 +85,7 @@ extension Model {
         if let latestKnownLocation {
             let distance = location?.distance(from: latestKnownLocation) ?? 0
             if distance > latestKnownLocation.horizontalAccuracy {
-                database.location.distance! += distance
+                database.location.distance += distance
                 self.latestKnownLocation = location
             }
         } else {
@@ -96,18 +96,18 @@ extension Model {
     func resetSlope() {
         slopePercent = 0.0
         previousSlopeAltitude = nil
-        previousSlopeDistance = database.location.distance!
+        previousSlopeDistance = database.location.distance
     }
 
     func updateSlope() {
         guard let location = locationManager.getLatestKnownLocation() else {
             return
         }
-        let deltaDistance = database.location.distance! - previousSlopeDistance
+        let deltaDistance = database.location.distance - previousSlopeDistance
         guard deltaDistance != 0 else {
             return
         }
-        previousSlopeDistance = database.location.distance!
+        previousSlopeDistance = database.location.distance
         let deltaAltitude = location.altitude - (previousSlopeAltitude ?? location.altitude)
         previousSlopeAltitude = location.altitude
         slopePercent = 0.7 * slopePercent + 0.3 * (100 * deltaAltitude / deltaDistance)
@@ -116,17 +116,17 @@ extension Model {
     func resetAverageSpeed() {
         averageSpeed = 0.0
         averageSpeedStartTime = .now
-        averageSpeedStartDistance = database.location.distance!
+        averageSpeedStartDistance = database.location.distance
     }
 
     func updateAverageSpeed(now: ContinuousClock.Instant) {
-        let distance = database.location.distance! - averageSpeedStartDistance
+        let distance = database.location.distance - averageSpeedStartDistance
         let elapsed = averageSpeedStartTime.duration(to: now)
         averageSpeed = distance / elapsed.seconds
     }
 
     func getDistance() -> String {
-        return format(distance: database.location.distance!)
+        return format(distance: database.location.distance)
     }
 
     func isShowingStatusLocation() -> Bool {
