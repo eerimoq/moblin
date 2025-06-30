@@ -36,13 +36,11 @@ private struct UrlsView: View {
 struct SrtlaServerStreamSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var status: StatusOther
-    var srtPort: UInt16
-    var srtlaPort: UInt16
-    var stream: SettingsSrtlaServerStream
+    @ObservedObject var srtlaServer: SettingsSrtlaServer
+    @ObservedObject var stream: SettingsSrtlaServerStream
 
     private func submitName(value: String) {
         stream.name = value.trim()
-        model.objectWillChange.send()
     }
 
     private func submitStreamId(value: String) {
@@ -54,60 +52,76 @@ struct SrtlaServerStreamSettingsView: View {
             return
         }
         stream.streamId = streamId
-        model.reloadSrtlaServer()
-        model.objectWillChange.send()
     }
 
     var body: some View {
-        Form {
-            Section {
-                TextEditNavigationView(
-                    title: String(localized: "Name"),
-                    value: stream.name,
-                    onSubmit: submitName,
-                    capitalize: true
-                )
-                .disabled(model.srtlaServerEnabled())
-                TextEditNavigationView(
-                    title: String(localized: "Stream id"),
-                    value: stream.streamId,
-                    onSubmit: submitStreamId,
-                    footers: [String(localized: "May only contain lower case letters.")]
-                )
-                .disabled(model.srtlaServerEnabled())
-            } footer: {
-                Text("The stream name is shown in the list of cameras in scene settings.")
+        NavigationLink {
+            Form {
+                Section {
+                    TextEditNavigationView(
+                        title: String(localized: "Name"),
+                        value: stream.name,
+                        onSubmit: submitName,
+                        capitalize: true
+                    )
+                    .disabled(srtlaServer.enabled)
+                    TextEditNavigationView(
+                        title: String(localized: "Stream id"),
+                        value: stream.streamId,
+                        onSubmit: submitStreamId,
+                        footers: [String(localized: "May only contain lower case letters.")]
+                    )
+                    .disabled(srtlaServer.enabled)
+                } footer: {
+                    Text("The stream name is shown in the list of cameras in scene settings.")
+                }
+                Section {
+                    Toggle("Auto select mic", isOn: $stream.autoSelectMic)
+                        .disabled(srtlaServer.enabled)
+                } footer: {
+                    Text("Automatically select the stream's audio as mic when connected.")
+                }
+                Section {
+                    if srtlaServer.enabled {
+                        UrlsView(
+                            model: model,
+                            status: status,
+                            proto: "srt",
+                            port: srtlaServer.srtPort,
+                            streamId: stream.streamId
+                        )
+                        UrlsView(
+                            model: model,
+                            status: status,
+                            proto: "srtla",
+                            port: srtlaServer.srtlaPort,
+                            streamId: stream.streamId
+                        )
+                    } else {
+                        Text("Enable the SRT(LA) server to see URLs.")
+                    }
+                } header: {
+                    Text("Publish URLs")
+                } footer: {
+                    VStack(alignment: .leading) {
+                        Text("""
+                        Enter one of the URLs into the SRT(LA) publisher device to send video \
+                        to this stream. Usually enter the WiFi or Personal Hotspot URL.
+                        """)
+                    }
+                }
             }
-            Section {
-                Toggle("Auto select mic", isOn: Binding(get: {
-                    stream.autoSelectMic!
-                }, set: { value in
-                    stream.autoSelectMic = value
-                    model.reloadSrtlaServer()
-                    model.objectWillChange.send()
-                }))
-                .disabled(model.srtlaServerEnabled())
-            } footer: {
-                Text("Automatically select the stream's audio as mic when connected.")
-            }
-            Section {
-                if model.srtlaServerEnabled() {
-                    UrlsView(model: model, status: status, proto: "srt", port: srtPort, streamId: stream.streamId)
-                    UrlsView(model: model, status: status, proto: "srtla", port: srtlaPort, streamId: stream.streamId)
+            .navigationTitle("Stream")
+        } label: {
+            HStack {
+                if model.isSrtlaStreamConnected(streamId: stream.streamId) {
+                    Image(systemName: "cable.connector")
                 } else {
-                    Text("Enable the SRT(LA) server to see URLs.")
+                    Image(systemName: "cable.connector.slash")
                 }
-            } header: {
-                Text("Publish URLs")
-            } footer: {
-                VStack(alignment: .leading) {
-                    Text("""
-                    Enter one of the URLs into the SRT(LA) publisher device to send video \
-                    to this stream. Usually enter the WiFi or Personal Hotspot URL.
-                    """)
-                }
+                Text(stream.name)
+                Spacer()
             }
         }
-        .navigationTitle("Stream")
     }
 }

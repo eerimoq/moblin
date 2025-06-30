@@ -3726,11 +3726,36 @@ class SettingsRtmpServer: Codable, ObservableObject {
     }
 }
 
-class SettingsSrtlaServerStream: Codable, Identifiable {
+class SettingsSrtlaServerStream: Codable, Identifiable, ObservableObject {
     var id: UUID = .init()
-    var name: String = "My stream"
-    var streamId: String = ""
-    var autoSelectMic: Bool? = true
+    @Published var name: String = "My stream"
+    @Published var streamId: String = ""
+    @Published var autoSelectMic: Bool = true
+
+    enum CodingKeys: CodingKey {
+        case id,
+             name,
+             streamId,
+             autoSelectMic
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.name, name)
+        try container.encode(.streamId, streamId)
+        try container.encode(.autoSelectMic, autoSelectMic)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        name = container.decode(.name, String.self, "My stream")
+        streamId = container.decode(.streamId, String.self, "")
+        autoSelectMic = container.decode(.autoSelectMic, Bool.self, true)
+    }
 
     func camera() -> String {
         return srtlaCamera(name: name)
@@ -6489,10 +6514,6 @@ final class Settings {
             where stream.srt.adaptiveBitrate!.fastIrlSettings!.minimumBitrate == nil
         {
             stream.srt.adaptiveBitrate!.fastIrlSettings!.minimumBitrate = 250
-            store()
-        }
-        for stream in realDatabase.srtlaServer.streams where stream.autoSelectMic == nil {
-            stream.autoSelectMic = true
             store()
         }
         if realDatabase.remoteControl.server.previewFps == nil {

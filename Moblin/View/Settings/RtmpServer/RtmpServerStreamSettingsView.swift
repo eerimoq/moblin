@@ -27,8 +27,8 @@ private struct UrlsView: View {
 struct RtmpServerStreamSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var status: StatusOther
+    @ObservedObject var rtmpServer: SettingsRtmpServer
     @ObservedObject var stream: SettingsRtmpServerStream
-    var port: UInt16
 
     private func submitName(value: String) {
         stream.name = value.trim()
@@ -52,60 +52,72 @@ struct RtmpServerStreamSettingsView: View {
     }
 
     var body: some View {
-        Form {
-            Section {
-                TextEditBindingNavigationView(
-                    title: String(localized: "Name"),
-                    value: $stream.name,
-                    onSubmit: submitName,
-                    capitalize: true
-                )
-                .disabled(model.rtmpServerEnabled())
-                TextEditNavigationView(
-                    title: String(localized: "Stream key"),
-                    value: stream.streamKey,
-                    onSubmit: submitStreamKey
-                )
-                .disabled(model.rtmpServerEnabled())
-            } footer: {
-                Text("The stream name is shown in the list of cameras in scene settings.")
-            }
-            Section {
-                TextEditBindingNavigationView(
-                    title: String(localized: "Latency"),
-                    value: $stream.latencyString,
-                    onSubmit: submitLatency,
-                    footers: [String(localized: "250 or more milliseconds. 2000 ms by default.")],
-                    keyboardType: .numbersAndPunctuation,
-                    valueFormat: { "\($0) ms" }
-                )
-                .disabled(model.rtmpServerEnabled())
-            } footer: {
-                Text("The higher, the lower risk of stuttering.")
-            }
-            Section {
-                Toggle("Auto select mic", isOn: $stream.autoSelectMic)
+        NavigationLink {
+            Form {
+                Section {
+                    TextEditNavigationView(
+                        title: String(localized: "Name"),
+                        value: stream.name,
+                        onSubmit: submitName,
+                        capitalize: true
+                    )
                     .disabled(model.rtmpServerEnabled())
-            } footer: {
-                Text("Automatically select the stream's audio as mic when connected.")
+                    TextEditNavigationView(
+                        title: String(localized: "Stream key"),
+                        value: stream.streamKey,
+                        onSubmit: submitStreamKey
+                    )
+                    .disabled(model.rtmpServerEnabled())
+                } footer: {
+                    Text("The stream name is shown in the list of cameras in scene settings.")
+                }
+                Section {
+                    TextEditBindingNavigationView(
+                        title: String(localized: "Latency"),
+                        value: $stream.latencyString,
+                        onSubmit: submitLatency,
+                        footers: [String(localized: "250 or more milliseconds. 2000 ms by default.")],
+                        keyboardType: .numbersAndPunctuation,
+                        valueFormat: { "\($0) ms" }
+                    )
+                    .disabled(model.rtmpServerEnabled())
+                } footer: {
+                    Text("The higher, the lower risk of stuttering.")
+                }
+                Section {
+                    Toggle("Auto select mic", isOn: $stream.autoSelectMic)
+                        .disabled(model.rtmpServerEnabled())
+                } footer: {
+                    Text("Automatically select the stream's audio as mic when connected.")
+                }
+                Section {
+                    if model.rtmpServerEnabled() {
+                        UrlsView(model: model, status: status, port: rtmpServer.port, streamKey: stream.streamKey)
+                    } else {
+                        Text("Enable the RTMP server to see URLs.")
+                    }
+                } header: {
+                    Text("Publish URLs")
+                } footer: {
+                    VStack(alignment: .leading) {
+                        Text("""
+                        Enter one of the URLs into the RTMP publisher device to send video \
+                        to this stream. Usually enter the WiFi or Personal Hotspot URL.
+                        """)
+                    }
+                }
             }
-            Section {
-                if model.rtmpServerEnabled() {
-                    UrlsView(model: model, status: status, port: port, streamKey: stream.streamKey)
+            .navigationTitle("Stream")
+        } label: {
+            HStack {
+                if model.isRtmpStreamConnected(streamKey: stream.streamKey) {
+                    Image(systemName: "cable.connector")
                 } else {
-                    Text("Enable the RTMP server to see URLs.")
+                    Image(systemName: "cable.connector.slash")
                 }
-            } header: {
-                Text("Publish URLs")
-            } footer: {
-                VStack(alignment: .leading) {
-                    Text("""
-                    Enter one of the URLs into the RTMP publisher device to send video \
-                    to this stream. Usually enter the WiFi or Personal Hotspot URL.
-                    """)
-                }
+                Text(stream.name)
+                Spacer()
             }
         }
-        .navigationTitle("Stream")
     }
 }

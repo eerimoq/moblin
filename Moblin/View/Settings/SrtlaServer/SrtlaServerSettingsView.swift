@@ -70,24 +70,11 @@ struct SrtlaServerSettingsView: View {
             Section {
                 List {
                     let list = ForEach(srtlaServer.streams) { stream in
-                        NavigationLink {
-                            SrtlaServerStreamSettingsView(
-                                status: model.statusOther,
-                                srtPort: srtlaServer.srtPort,
-                                srtlaPort: srtlaServer.srtlaPort,
-                                stream: stream
-                            )
-                        } label: {
-                            HStack {
-                                if model.isSrtlaStreamConnected(streamId: stream.streamId) {
-                                    Image(systemName: "cable.connector")
-                                } else {
-                                    Image(systemName: "cable.connector.slash")
-                                }
-                                Text(stream.name)
-                                Spacer()
-                            }
-                        }
+                        SrtlaServerStreamSettingsView(
+                            status: model.statusOther,
+                            srtlaServer: srtlaServer,
+                            stream: stream
+                        )
                     }
                     if !model.srtlaServerEnabled() {
                         list.onDelete { indexes in

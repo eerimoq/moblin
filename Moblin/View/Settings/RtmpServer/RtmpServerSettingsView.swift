@@ -51,23 +51,11 @@ struct RtmpServerSettingsView: View {
             Section {
                 List {
                     let list = ForEach(rtmpServer.streams) { stream in
-                        NavigationLink {
-                            RtmpServerStreamSettingsView(
-                                status: model.statusOther,
-                                stream: stream,
-                                port: rtmpServer.port
-                            )
-                        } label: {
-                            HStack {
-                                if model.isRtmpStreamConnected(streamKey: stream.streamKey) {
-                                    Image(systemName: "cable.connector")
-                                } else {
-                                    Image(systemName: "cable.connector.slash")
-                                }
-                                Text(stream.name)
-                                Spacer()
-                            }
-                        }
+                        RtmpServerStreamSettingsView(
+                            status: model.statusOther,
+                            rtmpServer: rtmpServer,
+                            stream: stream
+                        )
                     }
                     if !rtmpServer.enabled {
                         list.onDelete { indexes in
