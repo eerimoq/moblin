@@ -896,6 +896,8 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject {
     @Published var videoStabilizationMode: SettingsVideoStabilizationMode = .off
     @Published var overrideVideoStabilizationMode: Bool = false
     @Published var fillFrame: Bool = false
+    @Published var micSwitch: Bool = false
+    @Published var micId: String = ""
 
     init(name: String) {
         self.name = name
@@ -922,7 +924,9 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject {
              videoSourceRotation,
              videoStabilizationMode,
              overrideVideoStabilizationMode,
-             fillFrame
+             fillFrame,
+             micSwitch,
+             micId
     }
 
     func encode(to encoder: Encoder) throws {
@@ -944,6 +948,8 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject {
         try container.encode(.videoStabilizationMode, videoStabilizationMode)
         try container.encode(.overrideVideoStabilizationMode, overrideVideoStabilizationMode)
         try container.encode(.fillFrame, fillFrame)
+        try container.encode(.micSwitch, micSwitch)
+        try container.encode(.micId, micId)
     }
 
     required init(from decoder: Decoder) throws {
@@ -965,6 +971,8 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject {
         videoStabilizationMode = container.decode(.videoStabilizationMode, SettingsVideoStabilizationMode.self, .off)
         overrideVideoStabilizationMode = container.decode(.overrideVideoStabilizationMode, Bool.self, false)
         fillFrame = container.decode(.fillFrame, Bool.self, false)
+        micSwitch = container.decode(.micSwitch, Bool.self, false)
+        micId = container.decode(.micId, String.self, "")
     }
 
     func clone() -> SettingsScene {
@@ -983,6 +991,8 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject {
             new.widgets.append(widget.clone())
         }
         new.videoSourceRotation = videoSourceRotation
+        new.micSwitch = micSwitch
+        new.micId = micId
         return new
     }
 

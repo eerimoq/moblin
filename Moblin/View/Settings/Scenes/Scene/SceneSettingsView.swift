@@ -114,6 +114,10 @@ struct SceneSettingsView: View {
         model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
     }
 
+    private func onMicChange(micId: String) {
+        scene.micId = micId
+    }
+
     var body: some View {
         Form {
             NavigationLink {
@@ -176,6 +180,40 @@ struct SceneSettingsView: View {
                 Text("""
                 Enable Override video stabilization to override Settings → Camera → Video \
                 stabilization in this scene.
+                """)
+            }
+            Section {
+                Toggle("Automatic Switch", isOn: $scene.micSwitch)
+                    .onChange(of: scene.micSwitch) { _ in
+                    }
+                if scene.micSwitch {
+                    NavigationLink {
+                        InlinePickerView(
+                            title: String(localized: "Name"),
+                            onChange: onMicChange,
+                            items: model.mics.map {
+                                InlinePickerItem(id: $0.id, text: $0.name)
+                            },
+                            selectedId: scene.micId
+                        )
+                    } label: {
+                        HStack {
+                            Text("Name")
+                            Spacer()
+                            if !model.isSceneVideoSourceActive(scene: scene) {
+                                Image(systemName: "cable.connector.slash")
+                            }
+                            Text(model.mics.first(where: { mic in mic.id == scene.micId })?.name ?? "None")
+                                .foregroundColor(.gray)
+                                .lineLimit(1)
+                        }
+                    }
+                }
+            } header: {
+                Text("Audio source")
+            } footer: {
+                Text("""
+                Try to use this Audio source, when switching to the scene and the selected audio source is available.
                 """)
             }
             Section {
