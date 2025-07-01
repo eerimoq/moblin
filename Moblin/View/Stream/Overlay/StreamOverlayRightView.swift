@@ -35,6 +35,8 @@ private struct CollapsedBondingView: View {
 
 private struct BondingStatusView: View {
     @EnvironmentObject var model: Model
+    // To trigger updates.
+    @ObservedObject var show: SettingsShow
     @ObservedObject var bonding: Bonding
     let textPlacement: StreamOverlayIconAndTextPlacement
 
@@ -60,6 +62,23 @@ private struct BondingStatusView: View {
                 text: bonding.rtts,
                 textPlacement: textPlacement,
                 color: netStreamColor(model: model)
+            )
+        }
+    }
+}
+
+private struct ReplayStatusView: View {
+    @EnvironmentObject var model: Model
+    // To trigger updates.
+    @ObservedObject var show: SettingsShow
+    let textPlacement: StreamOverlayIconAndTextPlacement
+
+    var body: some View {
+        if model.isShowingStatusReplay() {
+            StreamOverlayIconAndTextView(
+                icon: "play",
+                text: String(localized: "Enabled"),
+                textPlacement: textPlacement
             )
         }
     }
@@ -119,6 +138,26 @@ private struct CollapsedAdsRemainingTimerView: View {
     }
 }
 
+private struct AdsRemainingTimerView: View {
+    let model: Model
+    @ObservedObject var status: StatusTopRight
+    let textPlacement: StreamOverlayIconAndTextPlacement
+
+    var body: some View {
+        if model.isShowingStatusAdsRemainingTimer() {
+            if textPlacement == .hide {
+                CollapsedAdsRemainingTimerView(status: status)
+            } else {
+                StreamOverlayIconAndTextView(
+                    icon: "cup.and.saucer",
+                    text: "\(status.adsRemainingTimerStatus) seconds",
+                    textPlacement: textPlacement
+                )
+            }
+        }
+    }
+}
+
 private struct CollapsedBitrateView: View {
     @ObservedObject var bitrate: Bitrate
 
@@ -145,21 +184,25 @@ private struct CollapsedBitrateView: View {
 }
 
 private struct BitrateStatusView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
+    // To trigger updates.
+    @ObservedObject var show: SettingsShow
     @ObservedObject var bitrate: Bitrate
     let textPlacement: StreamOverlayIconAndTextPlacement
 
     var body: some View {
-        if textPlacement == .hide {
-            CollapsedBitrateView(bitrate: model.bitrate)
-        } else {
-            StreamOverlayIconAndTextView(
-                icon: "speedometer",
-                text: bitrate.speedAndTotal,
-                textPlacement: textPlacement,
-                color: bitrate.statusColor,
-                iconBackgroundColor: bitrate.statusIconColor ?? backgroundColor
-            )
+        if model.isShowingStatusBitrate() {
+            if textPlacement == .hide {
+                CollapsedBitrateView(bitrate: model.bitrate)
+            } else {
+                StreamOverlayIconAndTextView(
+                    icon: "speedometer",
+                    text: bitrate.speedAndTotal,
+                    textPlacement: textPlacement,
+                    color: bitrate.statusColor,
+                    iconBackgroundColor: bitrate.statusIconColor ?? backgroundColor
+                )
+            }
         }
     }
 }
@@ -181,16 +224,20 @@ private func netStreamColor(model: Model) -> Color {
 
 private struct StreamUptimeStatusView: View {
     @EnvironmentObject var model: Model
+    // To trigger updates.
+    @ObservedObject var show: SettingsShow
     @ObservedObject var streamUptime: StreamUptimeProvider
     let textPlacement: StreamOverlayIconAndTextPlacement
 
     var body: some View {
-        StreamOverlayIconAndTextView(
-            icon: "deskclock",
-            text: streamUptime.uptime,
-            textPlacement: textPlacement,
-            color: netStreamColor(model: model)
-        )
+        if model.isShowingStatusStreamUptime() {
+            StreamOverlayIconAndTextView(
+                icon: "deskclock",
+                text: streamUptime.uptime,
+                textPlacement: textPlacement,
+                color: netStreamColor(model: model)
+            )
+        }
     }
 }
 
@@ -209,26 +256,34 @@ private struct RecordingStatusView: View {
 }
 
 private struct HypeTrainStatusView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var hypeTrain: HypeTrain
     let textPlacement: StreamOverlayIconAndTextPlacement
 
     var body: some View {
-        if textPlacement == .hide {
-            CollapsedHypeTrainView(status: hypeTrain.status, color: .white)
-        } else {
-            StreamOverlayIconAndTextView(
-                icon: "train.side.front.car",
-                text: hypeTrain.status,
-                textPlacement: textPlacement
-            )
+        if model.isShowingStatusHypeTrain() {
+            if textPlacement == .hide {
+                CollapsedHypeTrainView(status: hypeTrain.status, color: .white)
+            } else {
+                StreamOverlayIconAndTextView(
+                    icon: "train.side.front.car",
+                    text: hypeTrain.status,
+                    textPlacement: textPlacement
+                )
+            }
         }
     }
 }
 
 private struct MoblinkStatusView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
+    // To trigger updates.
+    @ObservedObject var show: SettingsShow
     @ObservedObject var moblink: Moblink
+    // To trigger updates.
+    @ObservedObject var streamer: SettingsMoblinkStreamer
+    // To trigger updates.
+    @ObservedObject var relay: SettingsMoblinkRelay
     let textPlacement: StreamOverlayIconAndTextPlacement
 
     private func color() -> Color {
@@ -242,33 +297,26 @@ private struct MoblinkStatusView: View {
     }
 
     var body: some View {
-        StreamOverlayIconAndTextView(
-            icon: "app.connected.to.app.below.fill",
-            text: moblink.status,
-            textPlacement: textPlacement,
-            color: color()
-        )
+        if model.isShowingStatusMoblink() {
+            StreamOverlayIconAndTextView(
+                icon: "app.connected.to.app.below.fill",
+                text: moblink.status,
+                textPlacement: textPlacement,
+                color: color()
+            )
+        }
     }
 }
 
-private struct ServersStatusView: View {
-    @EnvironmentObject var model: Model
-    @ObservedObject var servers: Servers
-    let textPlacement: StreamOverlayIconAndTextPlacement
-
-    var body: some View {
-        StreamOverlayIconAndTextView(
-            icon: "server.rack",
-            text: servers.speedAndTotal,
-            textPlacement: textPlacement
-        )
-    }
-}
-
-private struct StatusesView: View {
-    @EnvironmentObject var model: Model
+private struct RemoteControlStatusView: View {
+    let model: Model
+    // To trigger updates.
     @ObservedObject var show: SettingsShow
     @ObservedObject var status: StatusTopRight
+    // To trigger updates.
+    @ObservedObject var streamer: SettingsRemoteControlStreamer
+    // To trigger updates.
+    @ObservedObject var assistant: SettingsRemoteControlAssistant
     let textPlacement: StreamOverlayIconAndTextPlacement
 
     private func remoteControlColor() -> Color {
@@ -280,9 +328,82 @@ private struct StatusesView: View {
         return .white
     }
 
-    private func djiDevicesColor() -> Color {
-        return .white
+    var body: some View {
+        if model.isShowingStatusRemoteControl() {
+            StreamOverlayIconAndTextView(
+                icon: "appletvremote.gen1",
+                text: status.remoteControlStatus,
+                textPlacement: textPlacement,
+                color: remoteControlColor()
+            )
+        }
     }
+}
+
+private struct DjiDevicesStatusView: View {
+    let model: Model
+    // To trigger updates.
+    @ObservedObject var show: SettingsShow
+    @ObservedObject var status: StatusTopRight
+    let textPlacement: StreamOverlayIconAndTextPlacement
+
+    var body: some View {
+        if model.isShowingStatusDjiDevices() {
+            StreamOverlayIconAndTextView(
+                icon: "appletvremote.gen1",
+                text: status.djiDevicesStatus,
+                textPlacement: textPlacement,
+                color: .white
+            )
+        }
+    }
+}
+
+private struct GameControllersStatusView: View {
+    let model: Model
+    // To trigger updates.
+    @ObservedObject var show: SettingsShow
+    @ObservedObject var status: StatusTopRight
+    let textPlacement: StreamOverlayIconAndTextPlacement
+
+    var body: some View {
+        if model.isShowingStatusGameController() {
+            StreamOverlayIconAndTextView(
+                icon: "gamecontroller",
+                text: status.gameControllersTotal,
+                textPlacement: textPlacement
+            )
+        }
+    }
+}
+
+private struct ServersStatusView: View {
+    let model: Model
+    // To trigger updates.
+    @ObservedObject var show: SettingsShow
+    @ObservedObject var servers: Servers
+    // To trigger updates.
+    @ObservedObject var rtmpServer: SettingsRtmpServer
+    // To trigger updates.
+    @ObservedObject var srtlaServer: SettingsSrtlaServer
+    let textPlacement: StreamOverlayIconAndTextPlacement
+
+    var body: some View {
+        if model.isShowingStatusServers() {
+            StreamOverlayIconAndTextView(
+                icon: "server.rack",
+                text: servers.speedAndTotal,
+                textPlacement: textPlacement
+            )
+        }
+    }
+}
+
+private struct StatusesView: View {
+    @EnvironmentObject var model: Model
+    @ObservedObject var show: SettingsShow
+    @ObservedObject var status: StatusTopRight
+    let textPlacement: StreamOverlayIconAndTextPlacement
 
     private func catPrinterColor() -> Color {
         if model.isAnyCatPrinterConfigured() && !model.areAllCatPrintersConnected() {
@@ -306,63 +427,49 @@ private struct StatusesView: View {
     }
 
     var body: some View {
-        if model.isShowingStatusHypeTrain() {
-            HypeTrainStatusView(hypeTrain: model.hypeTrain, textPlacement: textPlacement)
-        }
-        if model.isShowingStatusAdsRemainingTimer() {
-            if textPlacement == .hide {
-                CollapsedAdsRemainingTimerView(status: status)
-            } else {
-                StreamOverlayIconAndTextView(
-                    icon: "cup.and.saucer",
-                    text: "\(status.adsRemainingTimerStatus) seconds",
-                    textPlacement: textPlacement
-                )
-            }
-        }
-        if model.isShowingStatusServers() {
-            ServersStatusView(servers: model.servers, textPlacement: textPlacement)
-        }
-        if model.isShowingStatusMoblink() {
-            MoblinkStatusView(moblink: model.moblink, textPlacement: textPlacement)
-        }
-        if model.isShowingStatusRemoteControl() {
-            StreamOverlayIconAndTextView(
-                icon: "appletvremote.gen1",
-                text: status.remoteControlStatus,
-                textPlacement: textPlacement,
-                color: remoteControlColor()
-            )
-        }
-        if model.isShowingStatusDjiDevices() {
-            StreamOverlayIconAndTextView(
-                icon: "appletvremote.gen1",
-                text: status.djiDevicesStatus,
-                textPlacement: textPlacement,
-                color: djiDevicesColor()
-            )
-        }
-        if model.isShowingStatusGameController() {
-            StreamOverlayIconAndTextView(
-                icon: "gamecontroller",
-                text: status.gameControllersTotal,
-                textPlacement: textPlacement
-            )
-        }
-        if model.isShowingStatusBitrate() {
-            BitrateStatusView(bitrate: model.bitrate, textPlacement: textPlacement)
-        }
-        BondingStatusView(bonding: model.bonding, textPlacement: textPlacement)
-        if model.isShowingStatusReplay() {
-            StreamOverlayIconAndTextView(
-                icon: "play",
-                text: String(localized: "Enabled"),
-                textPlacement: textPlacement
-            )
-        }
-        if model.isShowingStatusStreamUptime() {
-            StreamUptimeStatusView(streamUptime: model.streamUptime, textPlacement: textPlacement)
-        }
+        HypeTrainStatusView(model: model,
+                            hypeTrain: model.hypeTrain,
+                            textPlacement: textPlacement)
+        AdsRemainingTimerView(model: model,
+                              status: model.statusTopRight,
+                              textPlacement: textPlacement)
+        ServersStatusView(model: model,
+                          show: model.database.show,
+                          servers: model.servers,
+                          rtmpServer: model.database.rtmpServer,
+                          srtlaServer: model.database.srtlaServer,
+                          textPlacement: textPlacement)
+        MoblinkStatusView(model: model,
+                          show: model.database.show,
+                          moblink: model.moblink,
+                          streamer: model.database.moblink.server,
+                          relay: model.database.moblink.client,
+                          textPlacement: textPlacement)
+        RemoteControlStatusView(model: model,
+                                show: model.database.show,
+                                status: model.statusTopRight,
+                                streamer: model.database.remoteControl.server,
+                                assistant: model.database.remoteControl.client,
+                                textPlacement: textPlacement)
+        DjiDevicesStatusView(model: model,
+                             show: model.database.show,
+                             status: model.statusTopRight,
+                             textPlacement: textPlacement)
+        GameControllersStatusView(model: model,
+                                  show: model.database.show,
+                                  status: model.statusTopRight,
+                                  textPlacement: textPlacement)
+        BitrateStatusView(model: model,
+                          show: model.database.show,
+                          bitrate: model.bitrate,
+                          textPlacement: textPlacement)
+        BondingStatusView(show: model.database.show,
+                          bonding: model.bonding,
+                          textPlacement: textPlacement)
+        ReplayStatusView(show: model.database.show, textPlacement: textPlacement)
+        StreamUptimeStatusView(show: model.database.show,
+                               streamUptime: model.streamUptime,
+                               textPlacement: textPlacement)
         if model.isShowingStatusLocation() {
             StreamOverlayIconAndTextView(
                 icon: "location",

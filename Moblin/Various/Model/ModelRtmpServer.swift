@@ -143,7 +143,7 @@ extension Model {
     }
 
     func rtmpServerEnabled() -> Bool {
-        return servers.rtmp != nil
+        return database.rtmpServer.enabled
     }
 }
 

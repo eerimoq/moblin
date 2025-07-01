@@ -4846,10 +4846,32 @@ class SettingsRemoteControlAssistant: Codable, ObservableObject {
     }
 }
 
-class SettingsRemoteControlStreamer: Codable {
-    var enabled: Bool = false
-    var url: String = ""
-    var previewFps: Float? = 1.0
+class SettingsRemoteControlStreamer: Codable, ObservableObject {
+    @Published var enabled: Bool = false
+    @Published var url: String = ""
+    @Published var previewFps: Float = 1.0
+
+    enum CodingKeys: CodingKey {
+        case enabled,
+             url,
+             previewFps
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.enabled, enabled)
+        try container.encode(.url, url)
+        try container.encode(.previewFps, previewFps)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        enabled = container.decode(.enabled, Bool.self, false)
+        url = container.decode(.url, String.self, "")
+        previewFps = container.decode(.previewFps, Float.self, 1.0)
+    }
 }
 
 class SettingsRemoteControlServerRelay: Codable, ObservableObject {
@@ -6528,10 +6550,6 @@ final class Settings {
             where stream.srt.adaptiveBitrate!.fastIrlSettings!.minimumBitrate == nil
         {
             stream.srt.adaptiveBitrate!.fastIrlSettings!.minimumBitrate = 250
-            store()
-        }
-        if realDatabase.remoteControl.server.previewFps == nil {
-            realDatabase.remoteControl.server.previewFps = 1.0
             store()
         }
         for stream in realDatabase.streams where stream.srt.adaptiveBitrate!.belaboxSettings == nil {

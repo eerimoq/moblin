@@ -119,7 +119,7 @@ private struct RemoteControlSettingsStreamerView: View {
             HStack {
                 Text("Preview FPS")
                 SliderView(
-                    value: database.remoteControl.server.previewFps!,
+                    value: database.remoteControl.server.previewFps,
                     minimum: 1,
                     maximum: 5,
                     step: 1,

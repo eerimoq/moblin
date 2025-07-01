@@ -17,7 +17,7 @@ extension Model {
     }
 
     func srtlaServerEnabled() -> Bool {
-        return servers.srtla != nil
+        return database.srtlaServer.enabled
     }
 
     func srtlaCameras() -> [String] {
