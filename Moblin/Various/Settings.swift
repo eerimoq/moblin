@@ -925,7 +925,7 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject {
              videoStabilizationMode,
              overrideVideoStabilizationMode,
              fillFrame,
-             micSwitch,
+             overrideMic,
              micId
     }
 
@@ -948,7 +948,7 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject {
         try container.encode(.videoStabilizationMode, videoStabilizationMode)
         try container.encode(.overrideVideoStabilizationMode, overrideVideoStabilizationMode)
         try container.encode(.fillFrame, fillFrame)
-        try container.encode(.micSwitch, overrideMic)
+        try container.encode(.overrideMic, overrideMic)
         try container.encode(.micId, micId)
     }
 
@@ -971,7 +971,7 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject {
         videoStabilizationMode = container.decode(.videoStabilizationMode, SettingsVideoStabilizationMode.self, .off)
         overrideVideoStabilizationMode = container.decode(.overrideVideoStabilizationMode, Bool.self, false)
         fillFrame = container.decode(.fillFrame, Bool.self, false)
-        overrideMic = container.decode(.micSwitch, Bool.self, false)
+        overrideMic = container.decode(.overrideMic, Bool.self, false)
         micId = container.decode(.micId, String.self, "")
     }
 
