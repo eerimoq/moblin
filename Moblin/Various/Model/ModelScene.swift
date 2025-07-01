@@ -374,13 +374,11 @@ extension Model {
                         if currentMic.id != scene.micId {
                             selectMicById(id: scene.micId)
                         }
-                    } else {
-                        if currentMic.id != previousMic.id {
-                            if isMicAvailableById(id: previousMic.id) {
-                                selectMicById(id: previousMic.id)
-                            } else {
-                                setMicFromSettings()
-                            }
+                    } else if currentMic.id != previousMic.id {
+                        if isMicAvailableById(id: previousMic.id) {
+                            selectMicById(id: previousMic.id)
+                        } else {
+                            setMicFromSettings()
                         }
                     }
                 }
