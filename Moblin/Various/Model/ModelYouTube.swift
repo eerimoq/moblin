@@ -3,7 +3,6 @@ import Foundation
 extension Model {
     func startFetchingYouTubeChatVideoId() {
         youTubeFetchVideoIdStartTime = .now
-        tryToFetchYouTubeVideoId()
     }
 
     func stopFetchingYouTubeChatVideoId() {
@@ -22,12 +21,14 @@ extension Model {
         }
         Task { @MainActor in
             if let videoId = try? await fetchYouTubeVideoId(handle: stream.youTubeHandle) {
-                self.stopFetchingYouTubeChatVideoId()
-                self.stream.youTubeVideoId = videoId
-                if self.stream.enabled {
-                    self.youTubeVideoIdUpdated()
+                stopFetchingYouTubeChatVideoId()
+                guard videoId != stream.youTubeVideoId else {
+                    return
                 }
-                makeToast(title: String(localized: "Fetched YouTube Video ID (for chat)"))
+                stream.youTubeVideoId = videoId
+                if stream.enabled {
+                    youTubeVideoIdUpdated()
+                }
             }
         }
     }
