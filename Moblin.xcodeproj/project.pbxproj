@@ -36,6 +36,7 @@
 		030EFE752BDAD7C7004208B6 /* SwipeLeftToDeleteHelpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030EFE742BDAD7C7004208B6 /* SwipeLeftToDeleteHelpView.swift */; };
 		030EFE782BDADBC6004208B6 /* SwipeLeftToRemoveHelpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030EFE772BDADBC6004208B6 /* SwipeLeftToRemoveHelpView.swift */; };
 		030FF8822E12556A0004A695 /* UrlsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030FF8812E1255640004A695 /* UrlsView.swift */; };
+		030FF8842E144CE30004A695 /* ModelYouTube.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030FF8832E144CDC0004A695 /* ModelYouTube.swift */; };
 		0312E4302C00F24E00C6F878 /* ReplayKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0312E42F2C00F24E00C6F878 /* ReplayKit.framework */; };
 		0312E4332C00F24E00C6F878 /* SampleHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0312E4322C00F24E00C6F878 /* SampleHandler.swift */; };
 		0312E4372C00F24E00C6F878 /* Moblin Screen Recording.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 0312E42E2C00F24E00C6F878 /* Moblin Screen Recording.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -677,6 +678,7 @@
 		030EFE742BDAD7C7004208B6 /* SwipeLeftToDeleteHelpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeLeftToDeleteHelpView.swift; sourceTree = "<group>"; };
 		030EFE772BDADBC6004208B6 /* SwipeLeftToRemoveHelpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeLeftToRemoveHelpView.swift; sourceTree = "<group>"; };
 		030FF8812E1255640004A695 /* UrlsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UrlsView.swift; sourceTree = "<group>"; };
+		030FF8832E144CDC0004A695 /* ModelYouTube.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelYouTube.swift; sourceTree = "<group>"; };
 		0312E42E2C00F24E00C6F878 /* Moblin Screen Recording.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Moblin Screen Recording.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0312E42F2C00F24E00C6F878 /* ReplayKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ReplayKit.framework; path = System/Library/Frameworks/ReplayKit.framework; sourceTree = SDKROOT; };
 		0312E4322C00F24E00C6F878 /* SampleHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleHandler.swift; sourceTree = "<group>"; };
@@ -2879,6 +2881,7 @@
 				03BA73BA2DDCDA4500075CD6 /* ModelTesla.swift */,
 				032F81BD2DDCF27400E14CC5 /* ModelTextToSpeech.swift */,
 				03BA73B62DDCD84600075CD6 /* ModelTwitch.swift */,
+				030FF8832E144CDC0004A695 /* ModelYouTube.swift */,
 				03E8D69E2DDE2E2A0080BEB4 /* ModelZoom.swift */,
 			);
 			path = Model;
@@ -3668,6 +3671,7 @@
 				0324CD072BEBFBBA004AA063 /* RistStream.swift in Sources */,
 				03D37EE02CE0892B006D14C2 /* UrlSession.swift in Sources */,
 				0359F8E52BD3DA61005BFDA8 /* NetStream.swift in Sources */,
+				030FF8842E144CE30004A695 /* ModelYouTube.swift in Sources */,
 				038E7BE32C32F391008994BA /* MediaPlayerSettingsView.swift in Sources */,
 				882D0C222DF785520035BFAF /* PhoneCoolerDevice.swift in Sources */,
 				03E3E3922C431E0900932B00 /* DjiDeviceSettingsView.swift in Sources */,

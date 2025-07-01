@@ -32,15 +32,15 @@ struct StreamYouTubeSettingsView: View {
                 )
                 HCenter {
                     Button {
-                        Task {
+                        Task { @MainActor in
                             do {
                                 let videoId = try await fetchYouTubeVideoId(handle: stream.youTubeHandle)
                                 submitVideoId(value: videoId)
                             } catch {
-                                model.makeErrorToast(title: String(localized: "Failed to fetch YouTube Video ID"),
-                                                     subTitle: String(
-                                                         localized: "You must be live on YouTube for this to work."
-                                                     ))
+                                model.makeErrorToast(
+                                    title: String(localized: "Failed to fetch YouTube Video ID"),
+                                    subTitle: String(localized: "You must be live on YouTube for this to work.")
+                                )
                             }
                         }
                     } label: {

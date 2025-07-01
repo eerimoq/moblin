@@ -466,6 +466,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var youTubeLiveChat: YouTubeLiveChat?
     private var afreecaTvChat: AfreecaTvChat?
     private var openStreamingPlatformChat: OpenStreamingPlatformChat!
+    var youTubeFetchVideoIdStartTime: ContinuousClock.Instant?
     var obsWebSocket: ObsWebSocket?
     var chatPostId = 0
     var chat = ChatProvider(maximumNumberOfMessages: maximumNumberOfChatMessages)
@@ -1533,6 +1534,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             self.updateDjiDevicesStatus()
             self.updateTwitchStream(monotonicNow: monotonicNow)
             self.updateAvailableDiskSpace()
+            self.tryToFetchYouTubeVideoId()
         }
     }
 

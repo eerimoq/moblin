@@ -54,6 +54,7 @@ extension Model {
         streamTotalChatMessages = 0
         updateScreenAutoOff()
         startNetStream()
+        startFetchingYouTubeChatVideoId()
         if stream.recording.autoStartRecording! {
             startRecording()
         }
@@ -66,6 +67,40 @@ extension Model {
         streamingHistoryStream = StreamingHistoryStream(settings: stream.clone())
         streamingHistoryStream!.updateHighestThermalState(thermalState: ThermalState(from: statusOther.thermalState))
         streamingHistoryStream!.updateLowestBatteryLevel(level: battery.level)
+    }
+
+    func stopStream(stopObsStreamIfEnabled: Bool = true, stopObsRecordingIfEnabled: Bool = true) {
+        setIsLive(value: false)
+        updateScreenAutoOff()
+        realtimeIrl?.stop()
+        stopFetchingYouTubeChatVideoId()
+        if !streaming {
+            return
+        }
+        logger.info("stream: Stop")
+        streamTotalBytes += UInt64(media.streamTotal())
+        streaming = false
+        if stream.recording.autoStopRecording! {
+            stopRecording()
+        }
+        if stopObsStreamIfEnabled, stream.obsAutoStopStream {
+            obsStopStream()
+        }
+        if stopObsRecordingIfEnabled, stream.obsAutoStopRecording {
+            obsStopRecording()
+        }
+        stopNetStream()
+        streamState = .disconnected
+        if let streamingHistoryStream {
+            if let logId = streamingHistoryStream.logId {
+                logsStorage.write(id: logId, data: streamLog.joined(separator: "\n").utf8Data)
+            }
+            streamingHistoryStream.stopTime = Date()
+            streamingHistoryStream.totalBytes = streamTotalBytes
+            streamingHistoryStream.numberOfChatMessages = streamTotalChatMessages
+            streamingHistory.append(stream: streamingHistoryStream)
+            streamingHistory.store()
+        }
     }
 
     func isGoLiveNotificationConfigured() -> Bool {
@@ -102,39 +137,6 @@ extension Model {
             image: image,
             message: stream.goLiveNotificationDiscordMessage
         ) { _ in }
-    }
-
-    func stopStream(stopObsStreamIfEnabled: Bool = true, stopObsRecordingIfEnabled: Bool = true) {
-        setIsLive(value: false)
-        updateScreenAutoOff()
-        realtimeIrl?.stop()
-        if !streaming {
-            return
-        }
-        logger.info("stream: Stop")
-        streamTotalBytes += UInt64(media.streamTotal())
-        streaming = false
-        if stream.recording.autoStopRecording! {
-            stopRecording()
-        }
-        if stopObsStreamIfEnabled, stream.obsAutoStopStream {
-            obsStopStream()
-        }
-        if stopObsRecordingIfEnabled, stream.obsAutoStopRecording {
-            obsStopRecording()
-        }
-        stopNetStream()
-        streamState = .disconnected
-        if let streamingHistoryStream {
-            if let logId = streamingHistoryStream.logId {
-                logsStorage.write(id: logId, data: streamLog.joined(separator: "\n").utf8Data)
-            }
-            streamingHistoryStream.stopTime = Date()
-            streamingHistoryStream.totalBytes = streamTotalBytes
-            streamingHistoryStream.numberOfChatMessages = streamTotalChatMessages
-            streamingHistory.append(stream: streamingHistoryStream)
-            streamingHistory.store()
-        }
     }
 
     private func startNetStream() {
