@@ -241,20 +241,6 @@ private struct StreamUptimeStatusView: View {
     }
 }
 
-private struct RecordingStatusView: View {
-    @EnvironmentObject var model: Model
-    @ObservedObject var recording: RecordingProvider
-    let textPlacement: StreamOverlayIconAndTextPlacement
-
-    var body: some View {
-        StreamOverlayIconAndTextView(
-            icon: "record.circle",
-            text: recording.length,
-            textPlacement: textPlacement
-        )
-    }
-}
-
 private struct HypeTrainStatusView: View {
     let model: Model
     @ObservedObject var hypeTrain: HypeTrain
@@ -399,8 +385,63 @@ private struct ServersStatusView: View {
     }
 }
 
-private struct StatusesView: View {
+private struct LocationStatusView: View {
     @EnvironmentObject var model: Model
+    // To trigger updates.
+    @ObservedObject var show: SettingsShow
+    @ObservedObject var status: StatusTopRight
+    let textPlacement: StreamOverlayIconAndTextPlacement
+
+    var body: some View {
+        if model.isShowingStatusLocation() {
+            StreamOverlayIconAndTextView(
+                icon: "location",
+                text: status.location,
+                textPlacement: textPlacement
+            )
+        }
+    }
+}
+
+private struct RecordingStatusView: View {
+    @EnvironmentObject var model: Model
+    // To trigger updates.
+    @ObservedObject var show: SettingsShow
+    @ObservedObject var recording: RecordingProvider
+    let textPlacement: StreamOverlayIconAndTextPlacement
+
+    var body: some View {
+        if model.isShowingStatusRecording() {
+            StreamOverlayIconAndTextView(
+                icon: "record.circle",
+                text: recording.length,
+                textPlacement: textPlacement
+            )
+        }
+    }
+}
+
+private struct BrowserWidgetsStatusView: View {
+    @EnvironmentObject var model: Model
+    // To trigger updates.
+    @ObservedObject var show: SettingsShow
+    @ObservedObject var status: StatusTopRight
+    let textPlacement: StreamOverlayIconAndTextPlacement
+
+    var body: some View {
+        if model.isShowingStatusBrowserWidgets() {
+            StreamOverlayIconAndTextView(
+                icon: "globe",
+                text: status.browserWidgetsStatus,
+                textPlacement: textPlacement
+            )
+        }
+    }
+}
+
+private struct CatPrinterStatusView: View {
+    @EnvironmentObject var model: Model
+    // To trigger updates.
     @ObservedObject var show: SettingsShow
     @ObservedObject var status: StatusTopRight
     let textPlacement: StreamOverlayIconAndTextPlacement
@@ -412,6 +453,25 @@ private struct StatusesView: View {
         return .white
     }
 
+    var body: some View {
+        if model.isShowingStatusCatPrinter() {
+            StreamOverlayIconAndTextView(
+                icon: "pawprint",
+                text: status.catPrinterStatus,
+                textPlacement: textPlacement,
+                color: catPrinterColor()
+            )
+        }
+    }
+}
+
+private struct CyclingPowerDeviceStatusView: View {
+    @EnvironmentObject var model: Model
+    // To trigger updates.
+    @ObservedObject var show: SettingsShow
+    @ObservedObject var status: StatusTopRight
+    let textPlacement: StreamOverlayIconAndTextPlacement
+
     private func cyclingPowerDeviceColor() -> Color {
         if model.isAnyCyclingPowerDeviceConfigured() && !model.areAllCyclingPowerDevicesConnected() {
             return .red
@@ -419,12 +479,88 @@ private struct StatusesView: View {
         return .white
     }
 
+    var body: some View {
+        if model.isShowingStatusCyclingPowerDevice() {
+            StreamOverlayIconAndTextView(
+                icon: "bicycle",
+                text: status.cyclingPowerDeviceStatus,
+                textPlacement: textPlacement,
+                color: cyclingPowerDeviceColor()
+            )
+        }
+    }
+}
+
+private struct HeartRateDeviceStatusView: View {
+    @EnvironmentObject var model: Model
+    // To trigger updates.
+    @ObservedObject var show: SettingsShow
+    @ObservedObject var status: StatusTopRight
+    let textPlacement: StreamOverlayIconAndTextPlacement
+
     private func heartRateDeviceColor() -> Color {
         if model.isAnyHeartRateDeviceConfigured() && !model.areAllHeartRateDevicesConnected() {
             return .red
         }
         return .white
     }
+
+    var body: some View {
+        if model.isShowingStatusHeartRateDevice() {
+            StreamOverlayIconAndTextView(
+                icon: "heart",
+                text: status.heartRateDeviceStatus,
+                textPlacement: textPlacement,
+                color: heartRateDeviceColor()
+            )
+        }
+    }
+}
+
+private struct FixedHorizonStatusView: View {
+    let model: Model
+    // To trigger updates.
+    @ObservedObject var show: SettingsShow
+    @ObservedObject var status: StatusTopRight
+    let textPlacement: StreamOverlayIconAndTextPlacement
+
+    var body: some View {
+        if model.isShowingStatusFixedHorizon() {
+            StreamOverlayIconAndTextView(
+                icon: "circle.and.line.horizontal",
+                text: status.fixedHorizonStatus,
+                textPlacement: textPlacement
+            )
+        }
+    }
+}
+
+private struct PhoneCoolerDeviceStatusView: View {
+    let model: Model
+    // To trigger updates.
+    @ObservedObject var show: SettingsShow
+    @ObservedObject var status: StatusTopRight
+    let textPlacement: StreamOverlayIconAndTextPlacement
+
+    var body: some View {
+        if status.phoneCoolerDeviceState == .connected {
+            StreamOverlayIconAndTextView(
+                icon: "fan",
+                text: """
+                \(String(status.phoneCoolerPhoneTemp ?? 0)) °C / \
+                \(String(status.phoneCoolerExhaustTemp ?? 0)) °C
+                """,
+                textPlacement: .beforeIcon
+            )
+        }
+    }
+}
+
+private struct StatusesView: View {
+    @EnvironmentObject var model: Model
+    @ObservedObject var show: SettingsShow
+    @ObservedObject var status: StatusTopRight
+    let textPlacement: StreamOverlayIconAndTextPlacement
 
     var body: some View {
         HypeTrainStatusView(model: model,
@@ -470,64 +606,48 @@ private struct StatusesView: View {
         StreamUptimeStatusView(show: model.database.show,
                                streamUptime: model.streamUptime,
                                textPlacement: textPlacement)
-        if model.isShowingStatusLocation() {
-            StreamOverlayIconAndTextView(
-                icon: "location",
-                text: status.location,
-                textPlacement: textPlacement
-            )
-        }
-        if model.isShowingStatusRecording() {
-            RecordingStatusView(recording: model.recording, textPlacement: textPlacement)
-        }
-        if model.isShowingStatusBrowserWidgets() {
-            StreamOverlayIconAndTextView(
-                icon: "globe",
-                text: status.browserWidgetsStatus,
-                textPlacement: textPlacement
-            )
-        }
-        if model.isShowingStatusCatPrinter() {
-            StreamOverlayIconAndTextView(
-                icon: "pawprint",
-                text: status.catPrinterStatus,
-                textPlacement: textPlacement,
-                color: catPrinterColor()
-            )
-        }
-        if model.isShowingStatusCyclingPowerDevice() {
-            StreamOverlayIconAndTextView(
-                icon: "bicycle",
-                text: status.cyclingPowerDeviceStatus,
-                textPlacement: textPlacement,
-                color: cyclingPowerDeviceColor()
-            )
-        }
-        if model.isShowingStatusHeartRateDevice() {
-            StreamOverlayIconAndTextView(
-                icon: "heart",
-                text: status.heartRateDeviceStatus,
-                textPlacement: textPlacement,
-                color: heartRateDeviceColor()
-            )
-        }
-        if model.isShowingStatusFixedHorizon() {
-            StreamOverlayIconAndTextView(
-                icon: "circle.and.line.horizontal",
-                text: status.fixedHorizonStatus,
-                textPlacement: textPlacement
-            )
-        }
-        if status.phoneCoolerDeviceState == .connected {
-            StreamOverlayIconAndTextView(
-                icon: "fan",
-                text: """
-                \(String(status.phoneCoolerPhoneTemp ?? 0)) °C / \
-                \(String(status.phoneCoolerExhaustTemp ?? 0)) °C
-                """,
-                textPlacement: .beforeIcon
-            )
-        }
+        LocationStatusView(
+            show: model.database.show,
+            status: model.statusTopRight,
+            textPlacement: textPlacement
+        )
+        RecordingStatusView(
+            show: model.database.show,
+            recording: model.recording,
+            textPlacement: textPlacement
+        )
+        BrowserWidgetsStatusView(
+            show: model.database.show,
+            status: model.statusTopRight,
+            textPlacement: textPlacement
+        )
+        CatPrinterStatusView(
+            show: model.database.show,
+            status: model.statusTopRight,
+            textPlacement: textPlacement
+        )
+        CyclingPowerDeviceStatusView(
+            show: model.database.show,
+            status: model.statusTopRight,
+            textPlacement: textPlacement
+        )
+        HeartRateDeviceStatusView(
+            show: model.database.show,
+            status: model.statusTopRight,
+            textPlacement: textPlacement
+        )
+        FixedHorizonStatusView(
+            model: model,
+            show: model.database.show,
+            status: model.statusTopRight,
+            textPlacement: textPlacement
+        )
+        PhoneCoolerDeviceStatusView(
+            model: model,
+            show: model.database.show,
+            status: model.statusTopRight,
+            textPlacement: textPlacement
+        )
     }
 }
 

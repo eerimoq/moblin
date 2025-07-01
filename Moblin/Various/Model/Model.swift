@@ -284,7 +284,7 @@ class StatusTopLeft: ObservableObject {
 }
 
 class StatusTopRight: ObservableObject {
-    var browserWidgetsStatusChanged = false
+    @Published var browserWidgetsStatusChanged = false
     @Published var remoteControlStatus = noValue
     @Published var djiDevicesStatus = noValue
     @Published var browserWidgetsStatus = noValue
@@ -2092,14 +2092,18 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func updateBrowserWidgetStatus() {
-        statusTopRight.browserWidgetsStatusChanged = false
+        if statusTopRight.browserWidgetsStatusChanged {
+            statusTopRight.browserWidgetsStatusChanged = false
+        }
         var messages: [String] = []
         for browser in browsers {
             let progress = browser.browserEffect.progress
             if browser.browserEffect.isLoaded {
                 messages.append("\(browser.browserEffect.host): \(progress)%")
                 if progress != 100 || browser.browserEffect.startLoadingTime + .seconds(5) > .now {
-                    statusTopRight.browserWidgetsStatusChanged = true
+                    if !statusTopRight.browserWidgetsStatusChanged {
+                        statusTopRight.browserWidgetsStatusChanged = true
+                    }
                 }
             }
         }
