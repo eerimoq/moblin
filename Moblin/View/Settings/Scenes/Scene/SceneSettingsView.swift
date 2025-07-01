@@ -114,6 +114,27 @@ struct SceneSettingsView: View {
         model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
     }
 
+    private func onMicChange(micId: String) {
+        if model.getSelectedScene() === scene && scene.overrideMic {
+            model.selectMicById(id: micId)
+        }
+        scene.micId = micId
+    }
+
+    private func onOverrideMicChange(overrideMic _: Bool) {
+        if model.getSelectedScene() === scene {
+            if scene.overrideMic && scene.micId != "" {
+                model.selectMicById(id: scene.micId)
+            } else {
+                if model.isMicAvailableById(id: model.previousMic.id) {
+                    model.selectMicById(id: model.previousMic.id)
+                } else {
+                    model.setMicFromSettings()
+                }
+            }
+        }
+    }
+
     var body: some View {
         Form {
             NavigationLink {
@@ -177,6 +198,40 @@ struct SceneSettingsView: View {
                 Enable Override video stabilization to override Settings → Camera → Video \
                 stabilization in this scene.
                 """)
+            }
+            if database.debug.sceneOverrideMic {
+                Section {
+                    Toggle("Enabled", isOn: $scene.overrideMic)
+                        .onChange(of: scene.overrideMic) { _ in
+                            onOverrideMicChange(overrideMic: scene.overrideMic)
+                        }
+                    if scene.overrideMic {
+                        NavigationLink {
+                            InlinePickerView(
+                                title: String(localized: "Name"),
+                                onChange: onMicChange,
+                                items: model.mics.map {
+                                    InlinePickerItem(id: $0.id, text: $0.name)
+                                },
+                                selectedId: scene.micId
+                            )
+                        } label: {
+                            HStack {
+                                Text("Name")
+                                Spacer()
+                                Text(model.getMicById(id: scene.micId)?.name ?? "Unknown 😢")
+                                    .foregroundColor(.gray)
+                                    .lineLimit(1)
+                            }
+                        }
+                    }
+                } header: {
+                    Text("Override mic")
+                } footer: {
+                    Text("""
+                    Use the selected mic, when switching to the scene and the mic is available.
+                    """)
+                }
             }
             Section {
                 List {
