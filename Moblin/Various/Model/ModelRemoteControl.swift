@@ -498,7 +498,7 @@ extension Model: RemoteControlStreamerDelegate {
     }
 
     func remoteControlStreamerSetMic(id: String) {
-        selectMicById(id: id)
+        manualSelectMicById(id: id)
     }
 
     func remoteControlStreamerSetBitratePreset(id: UUID) {

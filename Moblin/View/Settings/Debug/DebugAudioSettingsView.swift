@@ -7,7 +7,7 @@ struct DebugAudioSettingsView: View {
         Form {
             Section {
                 Toggle("Remove wind noise", isOn: $debug.removeWindNoise)
-                Toggle("Scene override mic", isOn: $debug.sceneOverrideMic)
+                Toggle("Override scene mic", isOn: $debug.overrideSceneMic)
             } footer: {
                 Text("App restart needed to take effect.")
             }

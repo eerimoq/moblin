@@ -3524,7 +3524,7 @@ class SettingsDebug: Codable, ObservableObject {
     var replay: Bool = false
     var recordSegmentLength: Double = 5.0
     @Published var builtinAudioAndVideoDelay: Double = 0.0
-    @Published var sceneOverrideMic: Bool = false
+    @Published var overrideSceneMic: Bool = false
 
     enum CodingKeys: CodingKey {
         case logLevel,
@@ -3560,7 +3560,7 @@ class SettingsDebug: Codable, ObservableObject {
              replay,
              recordSegmentLength,
              builtinAudioAndVideoDelay,
-             sceneOverrideMic
+             overrideSceneMic
     }
 
     func encode(to encoder: Encoder) throws {
@@ -3598,7 +3598,7 @@ class SettingsDebug: Codable, ObservableObject {
         try container.encode(.replay, replay)
         try container.encode(.recordSegmentLength, recordSegmentLength)
         try container.encode(.builtinAudioAndVideoDelay, builtinAudioAndVideoDelay)
-        try container.encode(.sceneOverrideMic, sceneOverrideMic)
+        try container.encode(.overrideSceneMic, overrideSceneMic)
     }
 
     init() {}
@@ -3643,7 +3643,7 @@ class SettingsDebug: Codable, ObservableObject {
         replay = (try? container.decode(Bool.self, forKey: .replay)) ?? false
         recordSegmentLength = (try? container.decode(Double.self, forKey: .recordSegmentLength)) ?? 5.0
         builtinAudioAndVideoDelay = (try? container.decode(Double.self, forKey: .builtinAudioAndVideoDelay)) ?? 0.0
-        sceneOverrideMic = (try? container.decode(Bool.self, forKey: .sceneOverrideMic)) ?? false
+        overrideSceneMic = container.decode(.overrideSceneMic, Bool.self, false)
     }
 }
 

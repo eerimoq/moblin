@@ -21,6 +21,39 @@ private struct VideoStabilizationView: View {
     }
 }
 
+private struct MicView: View {
+    var model: Model
+    @ObservedObject var scene: SettingsScene
+
+    private func onMicChange(micId: String) {
+        if model.getSelectedScene() === scene && scene.overrideMic {
+            model.selectMicById(id: micId)
+        }
+        scene.micId = micId
+    }
+
+    var body: some View {
+        NavigationLink {
+            InlinePickerView(
+                title: String(localized: "Mic"),
+                onChange: onMicChange,
+                items: model.mics.map {
+                    InlinePickerItem(id: $0.id, text: $0.name)
+                },
+                selectedId: scene.micId
+            )
+        } label: {
+            HStack {
+                Text("Mic")
+                Spacer()
+                Text(model.getMicById(id: scene.micId)?.name ?? "Unknown 😢")
+                    .foregroundColor(.gray)
+                    .lineLimit(1)
+            }
+        }
+    }
+}
+
 private struct SceneWidgetView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var database: Database
@@ -114,24 +147,16 @@ struct SceneSettingsView: View {
         model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
     }
 
-    private func onMicChange(micId: String) {
-        if model.getSelectedScene() === scene && scene.overrideMic {
-            model.selectMicById(id: micId)
+    private func onOverrideMicChange() {
+        guard model.getSelectedScene() === scene else {
+            return
         }
-        scene.micId = micId
-    }
-
-    private func onOverrideMicChange(overrideMic _: Bool) {
-        if model.getSelectedScene() === scene {
-            if scene.overrideMic && scene.micId != "" {
-                model.selectMicById(id: scene.micId)
-            } else {
-                if model.isMicAvailableById(id: model.previousMic.id) {
-                    model.selectMicById(id: model.previousMic.id)
-                } else {
-                    model.setMicFromSettings()
-                }
-            }
+        if scene.overrideMic && scene.micId != "" {
+            model.selectMicById(id: scene.micId)
+        } else if model.isMicAvailableById(id: model.previousMic.id) {
+            model.selectMicById(id: model.previousMic.id)
+        } else {
+            model.setMicFromSettings()
         }
     }
 
@@ -199,38 +224,19 @@ struct SceneSettingsView: View {
                 stabilization in this scene.
                 """)
             }
-            if database.debug.sceneOverrideMic {
+            if database.debug.overrideSceneMic {
                 Section {
-                    Toggle("Enabled", isOn: $scene.overrideMic)
+                    Toggle("Override", isOn: $scene.overrideMic)
                         .onChange(of: scene.overrideMic) { _ in
-                            onOverrideMicChange(overrideMic: scene.overrideMic)
+                            onOverrideMicChange()
                         }
                     if scene.overrideMic {
-                        NavigationLink {
-                            InlinePickerView(
-                                title: String(localized: "Name"),
-                                onChange: onMicChange,
-                                items: model.mics.map {
-                                    InlinePickerItem(id: $0.id, text: $0.name)
-                                },
-                                selectedId: scene.micId
-                            )
-                        } label: {
-                            HStack {
-                                Text("Name")
-                                Spacer()
-                                Text(model.getMicById(id: scene.micId)?.name ?? "Unknown 😢")
-                                    .foregroundColor(.gray)
-                                    .lineLimit(1)
-                            }
-                        }
+                        MicView(model: model, scene: scene)
                     }
                 } header: {
-                    Text("Override mic")
+                    Text("Mic")
                 } footer: {
-                    Text("""
-                    Use the selected mic, when switching to the scene and the mic is available.
-                    """)
+                    Text("Enable Override to automatically switch to selected mic when switching to this scene.")
                 }
             }
             Section {
