@@ -284,7 +284,7 @@ extension Model {
 
     func listMics() -> [SettingsMicsMic] {
         var mics: [SettingsMicsMic] = []
-        listMediaPlayerMics(&mics)
+        // listMediaPlayerMics(&mics)
         listSrtlaMics(&mics)
         listRtmpMics(&mics)
         listAudioSessionMics(&mics)
@@ -408,6 +408,9 @@ extension Model {
     }
 
     private func selectMic(mic: SettingsMicsMic) {
+        guard mic != currentMic else {
+            return
+        }
         if isRtmpMic(mic: mic) {
             selectMicRtmp(mic: mic)
         } else if isSrtlaMic(mic: mic) {

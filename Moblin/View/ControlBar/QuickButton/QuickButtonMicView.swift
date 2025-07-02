@@ -8,9 +8,7 @@ private struct QuickButtonMicMicView: View {
     var body: some View {
         HStack {
             DraggableItemPrefixView()
-            if !mic.isAlwaysConnected() && !mic.isExternal() {
-                Image(systemName: mic.connected ? "cable.connector" : "cable.connector.slash")
-            }
+            Image(systemName: mic.connected ? "cable.connector" : "cable.connector.slash")
             Text(mic.name)
                 .lineLimit(1)
             Spacer()
@@ -20,7 +18,9 @@ private struct QuickButtonMicMicView: View {
         }
         .contentShape(Rectangle())
         .onTapGesture {
-            model.manualSelectMicById(id: mic.id)
+            if mic.connected {
+                model.manualSelectMicById(id: mic.id)
+            }
         }
     }
 }
