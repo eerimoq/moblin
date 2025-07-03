@@ -99,7 +99,7 @@ extension Model {
         }
     }
 
-    @objc func handleAudioRouteChange(notification: Notification) {
+    @objc func handleAudioRouteChange(notification _: Notification) {
         // Not sure about this...
         if isMac() {
             return
