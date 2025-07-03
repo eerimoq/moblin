@@ -99,7 +99,19 @@ extension Model {
         }
     }
 
-    @objc func handleAudioRouteChange(notification _: Notification) {
+    @objc func handleAudioRouteChange(notification: Notification) {
+        guard let userInfo = notification.userInfo,
+              let reason = userInfo[AVAudioSessionRouteChangeReasonKey] as? UInt,
+              let reason = AVAudioSession.RouteChangeReason(rawValue: reason)
+        else {
+            return
+        }
+        switch reason {
+        case .categoryChange:
+            return
+        default:
+            break
+        }
         switchMicIfNeededAfterRouteChange()
     }
 
@@ -107,7 +119,7 @@ extension Model {
         guard let inputPort = AVAudioSession.sharedInstance().currentRoute.inputs.first else {
             return nil
         }
-        var newMic: SettingsMicsMic?
+        var newMic: SettingsMicsMic
         if let dataSource = inputPort.preferredDataSource {
             var name: String
             var builtInMicOrientation: SettingsMic?
@@ -118,28 +130,23 @@ extension Model {
                 name = "\(inputPort.portName): \(dataSource.dataSourceName)"
             }
             newMic = SettingsMicsMic()
-            newMic!.name = name
-            newMic!.inputUid = inputPort.uid
-            newMic!.dataSourceId = dataSource.dataSourceID.intValue
-            newMic!.builtInOrientation = builtInMicOrientation
-        } else if inputPort.portType != .builtInMic {
+            newMic.name = name
+            newMic.inputUid = inputPort.uid
+            newMic.dataSourceId = dataSource.dataSourceID.intValue
+            newMic.builtInOrientation = builtInMicOrientation
+        } else {
             newMic = SettingsMicsMic()
-            newMic!.name = inputPort.portName
-            newMic!.inputUid = inputPort.uid
+            newMic.name = inputPort.portName
+            newMic.inputUid = inputPort.uid
         }
         return newMic
     }
 
     func switchMicIfNeededAfterSceneSwitch() {
-        guard database.debug.overrideSceneMic else {
-            return
-        }
+        updateMicsList()
         if database.mics.autoSwitch {
-            updateMicsList()
             if database.debug.overrideSceneMic, let scene = getSelectedScene(), scene.overrideMic {
-                if currentMic.id != scene.micId {
-                    selectMicById(id: scene.micId)
-                }
+                selectMicById(id: scene.micId)
             } else if currentMic != defaultMic {
                 if defaultMic.connected {
                     selectMic(mic: defaultMic)
@@ -156,19 +163,15 @@ extension Model {
         if database.mics.autoSwitch {
             updateMicsList()
             if database.debug.overrideSceneMic, let scene = getSelectedScene(), scene.overrideMic {
-                if currentMic.id != scene.micId {
-                    selectMicById(id: scene.micId)
-                }
+                selectMicById(id: scene.micId)
                 if let highestPrioMic = getHighestPriorityConnectedMic() {
                     defaultMic = highestPrioMic
                 }
             } else if let highestPrioMic = getHighestPriorityConnectedMic() {
-                if currentMic != highestPrioMic {
-                    selectMic(mic: highestPrioMic)
-                    defaultMic = highestPrioMic
-                }
+                selectMic(mic: highestPrioMic)
+                defaultMic = highestPrioMic
             }
-        } else if currentMic !== defaultMic {
+        } else if currentMic != defaultMic {
             selectMic(mic: defaultMic)
         }
     }
@@ -191,13 +194,23 @@ extension Model {
             }
             defaultMic = getHighestPriorityConnectedMic() ?? currentMic
         } else {
-            if currentMic.connected,
-               let activeMic = getActiveAudioSessionMic(),
-               getMicPriority(mic: currentMic) > getMicPriority(mic: activeMic)
-            {
-                selectMicDefault(mic: currentMic)
-            } else if let highestPrioMic = getHighestPriorityConnectedMic() {
-                if highestPrioMic != currentMic {
+            if currentMic.isAudioSession() {
+                if currentMic.connected,
+                   let activeMic = getActiveAudioSessionMic(),
+                   getMicPriority(mic: currentMic) <= getMicPriority(mic: activeMic)
+                {
+                    selectMic(mic: currentMic)
+                } else if let highestPrioMic = getHighestPriorityConnectedMic() {
+                    selectMic(mic: highestPrioMic)
+                    defaultMic = highestPrioMic
+                }
+            } else {
+                if currentMic.connected,
+                   let activeMic = getActiveAudioSessionMic(),
+                   getMicPriority(mic: currentMic) < getMicPriority(mic: activeMic)
+                {
+                    selectMicDefault(mic: activeMic)
+                } else if let highestPrioMic = getHighestPriorityConnectedMic() {
                     selectMic(mic: highestPrioMic)
                     defaultMic = highestPrioMic
                 }
@@ -225,7 +238,6 @@ extension Model {
 
     private func micHasHigherPriorityThanCurrent(mic: SettingsMicsMic) -> Bool {
         for databaseMic in database.mics.mics {
-            // logger.info("xxx micHasHigherPriorityThanCurrent \(databaseMic.name) \(databaseMic.connected)")
             if !databaseMic.connected {
                 continue
             }
@@ -284,7 +296,7 @@ extension Model {
 
     func listMics() -> [SettingsMicsMic] {
         var mics: [SettingsMicsMic] = []
-        // listMediaPlayerMics(&mics)
+        listMediaPlayerMics(&mics)
         listSrtlaMics(&mics)
         listRtmpMics(&mics)
         listAudioSessionMics(&mics)
@@ -420,6 +432,7 @@ extension Model {
         } else {
             selectMicDefault(mic: mic)
         }
+        currentMic = mic
     }
 
     private func isRtmpMic(mic: SettingsMicsMic) -> Bool {
@@ -444,21 +457,18 @@ extension Model {
     }
 
     private func selectMicRtmp(mic: SettingsMicsMic) {
-        currentMic = mic
         let cameraId = getRtmpStream(camera: mic.name)?.id ?? .init()
         media.attachBufferedAudio(cameraId: cameraId)
         remoteControlStreamer?.stateChanged(state: RemoteControlState(mic: mic.id))
     }
 
     private func selectMicSrtla(mic: SettingsMicsMic) {
-        currentMic = mic
         let cameraId = getSrtlaStream(camera: mic.name)?.id ?? .init()
         media.attachBufferedAudio(cameraId: cameraId)
         remoteControlStreamer?.stateChanged(state: RemoteControlState(mic: mic.id))
     }
 
     private func selectMicMediaPlayer(mic: SettingsMicsMic) {
-        currentMic = mic
         let cameraId = getMediaPlayer(camera: mic.name)?.id ?? .init()
         media.attachBufferedAudio(cameraId: cameraId)
         remoteControlStreamer?.stateChanged(state: RemoteControlState(mic: mic.id))
@@ -486,7 +496,6 @@ extension Model {
             }
         }
         media.attachDefaultAudioDevice(builtinDelay: database.debug.builtinAudioAndVideoDelay)
-        currentMic = mic
         remoteControlStreamer?.stateChanged(state: RemoteControlState(mic: mic.id))
     }
 
