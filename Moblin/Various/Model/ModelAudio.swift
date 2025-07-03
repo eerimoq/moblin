@@ -100,17 +100,9 @@ extension Model {
     }
 
     @objc func handleAudioRouteChange(notification: Notification) {
-        guard let userInfo = notification.userInfo,
-              let reason = userInfo[AVAudioSessionRouteChangeReasonKey] as? UInt,
-              let reason = AVAudioSession.RouteChangeReason(rawValue: reason)
-        else {
+        // Not sure about this...
+        if isMac() {
             return
-        }
-        switch reason {
-        case .categoryChange:
-            return
-        default:
-            break
         }
         switchMicIfNeededAfterRouteChange()
     }
