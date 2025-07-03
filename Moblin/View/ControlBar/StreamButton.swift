@@ -70,6 +70,8 @@ struct StreamButton: View {
                         isPresentingGoLiveNotificationConfirm = true
                     }
                 }
+            } message: {
+                Text("You are about to go live to \(model.stream.name)!")
             }
         } else {
             Button {
