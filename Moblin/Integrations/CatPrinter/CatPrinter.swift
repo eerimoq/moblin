@@ -40,11 +40,13 @@ private class CurrentJob {
     let mtu: Int
     var state: JobState = .idle
     let feedPaperDelay: Double?
+    let printMode: CatPrinterPrintMode
 
-    init(data: Data, mtu: Int, feedPaperDelay: Double?) {
+    init(data: Data, mtu: Int, feedPaperDelay: Double?, printMode: CatPrinterPrintMode) {
         self.data = data
         self.mtu = mtu
         self.feedPaperDelay = feedPaperDelay
+        self.printMode = printMode
     }
 
     func setState(state: JobState) {
@@ -81,6 +83,7 @@ private let dataCharacteristicId = CBUUID(string: "AE03")
 private struct PrintJob {
     let image: CIImage
     let feedPaperDelay: Double?
+    let printMode: CatPrinterPrintMode
 }
 
 class CatPrinter: NSObject {
@@ -149,7 +152,7 @@ class CatPrinter: NSObject {
         guard printJobs.count < 50 else {
             return
         }
-        printJobs.append(PrintJob(image: image, feedPaperDelay: feedPaperDelay))
+        printJobs.append(PrintJob(image: image, feedPaperDelay: feedPaperDelay, printMode: .blackAndWhite))
         tryPrintNext()
     }
 
@@ -164,9 +167,9 @@ class CatPrinter: NSObject {
         guard let printJob = printJobs.popFirst() else {
             return
         }
-        let image: [[Bool]]
+        let image: [[UInt8]]
         do {
-            image = try processImage(image: printJob.image)
+            image = try processImage(image: printJob.image, printMode: printJob.printMode)
         } catch {
             logger.info("cat-printer: \(error)")
             return
@@ -181,12 +184,13 @@ class CatPrinter: NSObject {
         }
     }
 
-    private func tryPrintNextMxw01(printJob: PrintJob, image: [[Bool]], peripheral: CBPeripheral) {
-        let data = catPrinterPackPrintImageCommandsMxw01(image: image)
+    private func tryPrintNextMxw01(printJob: PrintJob, image: [[UInt8]], peripheral: CBPeripheral) {
+        let data = catPrinterPackPrintImageCommandsMxw01(image: image, printMode: printJob.printMode)
         currentJob = CurrentJob(
             data: data,
             mtu: peripheral.maximumWriteValueLength(for: .withoutResponse),
-            feedPaperDelay: printJob.feedPaperDelay
+            feedPaperDelay: printJob.feedPaperDelay,
+            printMode: printJob.printMode
         )
         guard let printCharacteristic, let currentJob else {
             reconnect()
@@ -197,12 +201,17 @@ class CatPrinter: NSObject {
         startJobCompleteTimer()
     }
 
-    private func tryPrintNextDefault(printJob: PrintJob, image: [[Bool]], peripheral: CBPeripheral) {
-        let data = catPrinterPackPrintImageCommands(image: image, feedPaper: printJob.feedPaperDelay == nil)
+    private func tryPrintNextDefault(printJob: PrintJob, image: [[UInt8]], peripheral: CBPeripheral) {
+        let data = catPrinterPackPrintImageCommands(
+            image: image,
+            feedPaper: printJob.feedPaperDelay == nil,
+            printMode: printJob.printMode
+        )
         currentJob = CurrentJob(
             data: data,
             mtu: peripheral.maximumWriteValueLength(for: .withoutResponse),
-            feedPaperDelay: printJob.feedPaperDelay
+            feedPaperDelay: printJob.feedPaperDelay,
+            printMode: printJob.printMode
         )
         stopFeedPaperTimer()
         guard let printCharacteristic, let currentJob else {
@@ -280,17 +289,24 @@ class CatPrinter: NSObject {
         }
     }
 
-    private func processImage(image: CIImage) throws -> [[Bool]] {
+    private func processImage(image: CIImage, printMode: CatPrinterPrintMode) throws -> [[UInt8]] {
         var image = makeMonochrome(image: image)
         image = scaleToPrinterWidth(image: image)
         var pixels = try convertToPixels(image: image)
-        switch ditheringAlgorithm {
-        case .floydSteinberg:
-            pixels = FloydSteinbergDithering().apply(image: pixels)
-        case .atkinson:
-            pixels = AtkinsonDithering().apply(image: pixels)
+        if printMode == .blackAndWhite {
+            switch ditheringAlgorithm {
+            case .floydSteinberg:
+                pixels = FloydSteinbergDithering().apply(image: pixels)
+            case .atkinson:
+                pixels = AtkinsonDithering().apply(image: pixels)
+            }
         }
-        return pixels.map { $0.map { $0 < 127 } }
+        switch printMode {
+        case .blackAndWhite:
+            return pixels.map { $0.map { (255 - $0) / 128 } }
+        case .grayscale:
+            return pixels.map { $0.map { (255 - $0) / 16 } }
+        }
     }
 
     private func makeMonochrome(image: CIImage) -> CIImage {
@@ -523,7 +539,15 @@ extension CatPrinter: CBPeripheralDelegate {
         switch command {
         case .statusResponse:
             currentJob.setState(state: .waitingForPrintResponse)
-            send(command: .printRequest(count: UInt16(currentJob.data.count * 8 / catPrinterWidthPixels)),
+            let bytesPerLine: Int
+            switch currentJob.printMode {
+            case .blackAndWhite:
+                bytesPerLine = catPrinterWidthPixels / 8
+            case .grayscale:
+                bytesPerLine = catPrinterWidthPixels / 2
+            }
+            let lineCount = UInt16(currentJob.data.count / bytesPerLine)
+            send(command: .printRequest(printMode: currentJob.printMode, count: lineCount),
                  peripheral,
                  printCharacteristic)
         default:
@@ -587,14 +611,23 @@ extension CatPrinter: CBPeripheralDelegate {
     }
 }
 
-func catPrinterEncodeImageRow(_ imageRow: [Bool]) -> Data {
-    var data = Data(count: imageRow.count / 8)
-    for byteIndex in 0 ..< data.count {
-        var byte: UInt8 = 0
-        for bitIndex in 0 ..< 8 where imageRow[8 * byteIndex + bitIndex] {
-            byte |= (1 << bitIndex)
+func catPrinterEncodeImageRow(_ imageRow: [UInt8], _ printMode: CatPrinterPrintMode) -> Data {
+    switch printMode {
+    case .blackAndWhite:
+        var data = Data(count: imageRow.count / 8)
+        for byteIndex in 0 ..< data.count {
+            var byte: UInt8 = 0
+            for bitIndex in 0 ..< 8 where imageRow[8 * byteIndex + bitIndex] == 1 {
+                byte |= (1 << bitIndex)
+            }
+            data[byteIndex] = byte
         }
-        data[byteIndex] = byte
+        return data
+    case .grayscale:
+        var data = Data(count: imageRow.count / 2)
+        for byteIndex in 0 ..< data.count {
+            data[byteIndex] = (imageRow[2 * byteIndex] << 4) | imageRow[2 * byteIndex + 1]
+        }
+        return data
     }
-    return data
 }

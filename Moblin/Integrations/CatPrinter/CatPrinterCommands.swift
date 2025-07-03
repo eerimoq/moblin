@@ -37,7 +37,7 @@ enum CatPrinterCommand {
     case setEnergy(energy: UInt16)
     case feedPaper(pixels: UInt16)
     case setDrawMode(mode: CatPrinterDrawMode)
-    case drawRow(imageRow: [Bool])
+    case drawRow(imageRow: [UInt8], printMode: CatPrinterPrintMode)
     case lattice(data: Data)
 
     static let latticeStartData = Data([
@@ -98,9 +98,9 @@ enum CatPrinterCommand {
         case let .setDrawMode(mode):
             command = .setDrawMode
             data = Data([mode.rawValue])
-        case let .drawRow(imageRow):
+        case let .drawRow(imageRow, printMode):
             command = .drawRow
-            data = catPrinterEncodeImageRow(imageRow)
+            data = catPrinterEncodeImageRow(imageRow, printMode)
         case let .lattice(latticeData):
             command = .lattice
             data = latticeData
@@ -151,7 +151,7 @@ enum CatPrinterCommand {
 }
 
 // One bit per pixel, often 384 pixels wide.
-func catPrinterPackPrintImageCommands(image: [[Bool]], feedPaper: Bool) -> Data {
+func catPrinterPackPrintImageCommands(image: [[UInt8]], feedPaper: Bool, printMode: CatPrinterPrintMode) -> Data {
     var commands: [CatPrinterCommand] = [
         .setQuality(level: 0x35),
         .lattice(data: CatPrinterCommand.latticeStartData),
@@ -159,7 +159,7 @@ func catPrinterPackPrintImageCommands(image: [[Bool]], feedPaper: Bool) -> Data 
         .setDrawMode(mode: .image),
     ]
     for imageRow in image {
-        commands.append(.drawRow(imageRow: imageRow))
+        commands.append(.drawRow(imageRow: imageRow, printMode: printMode))
     }
     if feedPaper {
         commands.append(.feedPaper(pixels: catPrinterFeedPaperPixels))

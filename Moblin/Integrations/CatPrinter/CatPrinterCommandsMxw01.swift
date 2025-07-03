@@ -8,12 +8,17 @@ private enum CatPrinterCommandId: UInt8 {
     case printComplete = 0xAA
 }
 
+enum CatPrinterPrintMode: UInt8 {
+    case blackAndWhite = 0
+    case grayscale = 2
+}
+
 enum CatPrinterCommandMxw01 {
     case getVersionRequest
     case getVersionResponse(value: String)
     case statusRequest
     case statusResponse(ok: Bool, tooHot: Bool, hasPaper: Bool)
-    case printRequest(count: UInt16)
+    case printRequest(printMode: CatPrinterPrintMode, count: UInt16)
     case printResponse(status: UInt8)
     case printCompleteIndication(value: Data)
 
@@ -59,12 +64,12 @@ enum CatPrinterCommandMxw01 {
         case .statusRequest:
             command = .status
             data = Data([0x00])
-        case let .printRequest(count: count):
+        case let .printRequest(printMode: printMode, count: count):
             command = .print
             data = ByteWriter()
                 .writeUInt16Le(count)
                 .writeUInt8(0x30)
-                .writeUInt8(0)
+                .writeUInt8(printMode.rawValue)
                 .data
         default:
             return Data()
@@ -108,10 +113,10 @@ enum CatPrinterCommandMxw01 {
 }
 
 // One bit per pixel, often 384 pixels wide.
-func catPrinterPackPrintImageCommandsMxw01(image: [[Bool]]) -> Data {
+func catPrinterPackPrintImageCommandsMxw01(image: [[UInt8]], printMode: CatPrinterPrintMode) -> Data {
     var data = Data()
     for imageRow in image {
-        data.append(catPrinterEncodeImageRow(imageRow))
+        data.append(catPrinterEncodeImageRow(imageRow, printMode))
     }
     // Doesn't print if smaller. There is probably a better way to do this.
     while data.count < 90 * catPrinterWidthPixels / 8 {

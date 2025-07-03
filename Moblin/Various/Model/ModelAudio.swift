@@ -215,7 +215,7 @@ extension Model {
     }
 
     private func makeMicChangeToast(name: String) {
-        makeToast(title: String(localized: "Switched mic too '\(name)'"))
+        makeToast(title: String(localized: "Switched mic to '\(name)'"))
     }
 
     private func micHasHigherPriorityThanCurrent(mic: SettingsMicsMic) -> Bool {
