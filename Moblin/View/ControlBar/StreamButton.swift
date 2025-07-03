@@ -71,7 +71,7 @@ struct StreamButton: View {
                     }
                 }
             } message: {
-                Text("You are about to go live to \(model.stream.name)!")
+                Text("You are about to go live to '\(model.stream.name)'!")
             }
         } else {
             Button {
