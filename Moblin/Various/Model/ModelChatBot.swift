@@ -352,8 +352,10 @@ extension Model {
                 type = .fourThree
             case "whirlpool":
                 type = .whirlpool
+                self.streamOverlay.showingWhirlpool = state == "on"
             case "pinch":
                 type = .pinch
+                self.streamOverlay.showingPinch = state == "on"
             default:
                 return
             }
