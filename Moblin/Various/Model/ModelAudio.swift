@@ -215,7 +215,7 @@ extension Model {
     }
 
     private func makeMicChangeToast(name: String) {
-        makeToast(title: name)
+        makeToast(title: String(localized: "Switched mic too '\(name)'"))
     }
 
     private func micHasHigherPriorityThanCurrent(mic: SettingsMicsMic) -> Bool {
@@ -405,6 +405,7 @@ extension Model {
         guard mic != currentMic else {
             return
         }
+        makeMicChangeToast(name: mic.name)
         if isRtmpMic(mic: mic) {
             selectMicRtmp(mic: mic)
         } else if isSrtlaMic(mic: mic) {
