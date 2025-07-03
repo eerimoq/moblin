@@ -3578,7 +3578,6 @@ class SettingsDebug: Codable, ObservableObject {
     var replay: Bool = false
     var recordSegmentLength: Double = 5.0
     @Published var builtinAudioAndVideoDelay: Double = 0.0
-    @Published var overrideSceneMic: Bool = false
 
     enum CodingKeys: CodingKey {
         case logLevel,
@@ -3652,7 +3651,6 @@ class SettingsDebug: Codable, ObservableObject {
         try container.encode(.replay, replay)
         try container.encode(.recordSegmentLength, recordSegmentLength)
         try container.encode(.builtinAudioAndVideoDelay, builtinAudioAndVideoDelay)
-        try container.encode(.overrideSceneMic, overrideSceneMic)
     }
 
     init() {}
@@ -3694,7 +3692,6 @@ class SettingsDebug: Codable, ObservableObject {
         replay = container.decode(.replay, Bool.self, false)
         recordSegmentLength = container.decode(.recordSegmentLength, Double.self, 5.0)
         builtinAudioAndVideoDelay = container.decode(.builtinAudioAndVideoDelay, Double.self, 0.0)
-        overrideSceneMic = container.decode(.overrideSceneMic, Bool.self, false)
     }
 }
 

@@ -211,20 +211,18 @@ struct SceneSettingsView: View {
                 stabilization in this scene.
                 """)
             }
-            if database.debug.overrideSceneMic {
-                Section {
-                    Toggle("Override", isOn: $scene.overrideMic)
-                        .onChange(of: scene.overrideMic) { _ in
-                            model.switchMicIfNeededAfterSceneSwitch()
-                        }
-                    if scene.overrideMic {
-                        MicView(model: model, scene: scene)
+            Section {
+                Toggle("Override", isOn: $scene.overrideMic)
+                    .onChange(of: scene.overrideMic) { _ in
+                        model.switchMicIfNeededAfterSceneSwitch()
                     }
-                } header: {
-                    Text("Mic")
-                } footer: {
-                    Text("Enable Override to automatically switch to selected mic when switching to this scene.")
+                if scene.overrideMic {
+                    MicView(model: model, scene: scene)
                 }
+            } header: {
+                Text("Mic")
+            } footer: {
+                Text("Enable Override to automatically switch to selected mic when switching to this scene.")
             }
             Section {
                 List {
