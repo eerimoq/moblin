@@ -18,6 +18,7 @@ private struct QuickButtonMicMicView: View {
         }
         .contentShape(Rectangle())
         .onTapGesture {
+            model.updateMicsList()
             if mic.connected {
                 model.manualSelectMicById(id: mic.id)
             }
@@ -58,6 +59,9 @@ struct QuickButtonMicView: View {
                     Text("Automatically switch to highest priority mic when plugged in.")
                 }
             }
+        }
+        .onAppear {
+            model.updateMicsList()
         }
         .navigationTitle("Mic")
     }
