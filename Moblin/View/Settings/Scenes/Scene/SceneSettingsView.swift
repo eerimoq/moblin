@@ -51,6 +51,11 @@ private struct MicView: View {
                     .lineLimit(1)
             }
         }
+        .onAppear {
+            if scene.micId.isEmpty {
+                scene.micId = model.currentMic.id
+            }
+        }
     }
 }
 

@@ -8,6 +8,20 @@ class AudioProvider: ObservableObject {
 }
 
 extension Model {
+    func setupAudio() {
+        updateMicsList()
+        if let mic = getMicById(id: database.mics.defaultMic), mic.connected {
+            defaultMic = mic
+        } else {
+            defaultMic = getHighestPriorityConnectedMic() ?? noMic
+        }
+        if let scene = getSelectedScene(), scene.overrideMic {
+            selectMicById(id: scene.micId)
+        } else {
+            selectMicById(id: defaultMic.id)
+        }
+    }
+
     func reloadAudioSession() {
         teardownAudioSession()
         setupAudioSession()

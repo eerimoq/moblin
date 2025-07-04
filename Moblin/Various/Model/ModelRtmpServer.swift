@@ -83,6 +83,7 @@ extension Model {
             }
             self.stopRtmpServerStream(stream: stream, showToast: true, reason: reason)
             self.updateAutoSceneSwitcherVideoSourceDisconnected()
+            self.switchMicIfNeededAfterNetworkCameraChange()
         }
     }
 
@@ -93,7 +94,6 @@ extension Model {
         media.removeBufferedVideo(cameraId: stream.id)
         media.removeBufferedAudio(cameraId: stream.id)
         markMicAsDisconnected(id: "\(stream.id) 0")
-        switchMicIfNeededAfterNetworkCameraChange()
         for device in database.djiDevices.devices {
             guard device.rtmpUrlType == .server, device.serverRtmpStreamId == stream.id else {
                 continue

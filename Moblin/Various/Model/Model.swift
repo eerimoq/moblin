@@ -373,8 +373,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var showStealthMode = false
     @Published var lockScreen = false
     @Published var findFace = false
-    @Published var currentMic = noMic
-    var defaultMic = noMic
     @Published var isLive = false
     @Published var isRecording = false
     @Published var browsers: [Browser] = []
@@ -396,9 +394,21 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var currentSnapshotJob: SnapshotJob?
     @Published var showLoadSettingsFailed = false
     @Published var cameraControlEnabled = false
+    @Published var currentMic = noMic /* {
+         didSet {
+             logger.info("xxx current switch \(currentMic.name)")
+         }
+     } */
+
     var streamState = StreamState.disconnected {
         didSet {
             logger.info("stream: State \(oldValue) -> \(streamState)")
+        }
+    }
+
+    var defaultMic = noMic {
+        didSet {
+            database.mics.defaultMic = defaultMic.id
         }
     }
 
@@ -924,10 +934,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         externalDisplayStreamPreviewView.videoGravity = .resizeAspect
         updateDigitalClock(now: Date())
         twitchChat = TwitchChat(delegate: self)
-        updateMicsList()
-        defaultMic = getHighestPriorityConnectedMic() ?? noMic
         reloadStream()
         resetSelectedScene()
+        setupAudio()
         setupPeriodicTimers()
         setupThermalState()
         updateQuickButtonStates()

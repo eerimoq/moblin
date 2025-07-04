@@ -3355,16 +3355,19 @@ class SettingsMicsMic: Codable, Identifiable, Equatable, ObservableObject {
 class SettingsMics: Codable, ObservableObject {
     @Published var mics: [SettingsMicsMic] = []
     @Published var autoSwitch: Bool = true
+    var defaultMic: String = ""
 
     enum CodingKeys: CodingKey {
         case all,
-             autoSwitch
+             autoSwitch,
+             defaultMic
     }
 
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.all, mics)
         try container.encode(.autoSwitch, autoSwitch)
+        try container.encode(.defaultMic, defaultMic)
     }
 
     init() {}
@@ -3373,6 +3376,7 @@ class SettingsMics: Codable, ObservableObject {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         mics = container.decode(.all, [SettingsMicsMic].self, [])
         autoSwitch = container.decode(.autoSwitch, Bool.self, true)
+        defaultMic = container.decode(.defaultMic, String.self, "")
     }
 }
 
