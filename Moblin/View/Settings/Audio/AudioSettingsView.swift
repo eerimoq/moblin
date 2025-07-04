@@ -8,12 +8,15 @@ private struct MicView: View {
         NavigationLink {
             QuickButtonMicView(mics: mics)
         } label: {
-            HStack {
-                QuickButtonSettingsIconView(model: model, name: "music.mic", type: .mic)
-                Text("Mic")
-                Spacer()
-                Text(model.currentMic.name)
-                    .foregroundColor(.gray)
+            Label {
+                HStack {
+                    Text("Mic")
+                    Spacer()
+                    Text(model.currentMic.name)
+                        .foregroundColor(.gray)
+                }
+            } icon: {
+                Image(systemName: "music.mic")
             }
         }
     }

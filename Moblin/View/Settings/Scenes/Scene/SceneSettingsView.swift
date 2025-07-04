@@ -182,15 +182,19 @@ struct SceneSettingsView: View {
                         selectedId: model.getCameraPositionId(scene: scene)
                     )
                 } label: {
-                    HStack {
-                        Text("Name")
-                        Spacer()
-                        if !model.isSceneVideoSourceActive(scene: scene) {
-                            Image(systemName: "cable.connector.slash")
+                    Label {
+                        HStack {
+                            Text("Name")
+                            Spacer()
+                            if !model.isSceneVideoSourceActive(scene: scene) {
+                                Image(systemName: "cable.connector.slash")
+                            }
+                            Text(model.getCameraPositionName(scene: scene))
+                                .foregroundColor(.gray)
+                                .lineLimit(1)
                         }
-                        Text(model.getCameraPositionName(scene: scene))
-                            .foregroundColor(.gray)
-                            .lineLimit(1)
+                    } icon: {
+                        Image(systemName: "camera")
                     }
                 }
                 VideoSourceRotationView(selectedRotation: $scene.videoSourceRotation)

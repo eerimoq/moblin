@@ -113,21 +113,24 @@ struct StreamVideoSettingsView: View {
                     """)
                 }
                 Section {
-                    HStack {
-                        QuickButtonSettingsIconView(model: model, name: "speedometer", type: .bitrate)
-                        Text("Bitrate")
-                        Spacer()
-                        Picker("", selection: $stream.bitrate) {
-                            ForEach(database.bitratePresets) { preset in
-                                Text(formatBytesPerSecond(speed: Int64(preset.bitrate)))
-                                    .tag(preset.bitrate)
+                    Label {
+                        HStack {
+                            Text("Bitrate")
+                            Spacer()
+                            Picker("", selection: $stream.bitrate) {
+                                ForEach(database.bitratePresets) { preset in
+                                    Text(formatBytesPerSecond(speed: Int64(preset.bitrate)))
+                                        .tag(preset.bitrate)
+                                }
+                            }
+                            .onChange(of: stream.bitrate) { _ in
+                                if stream.enabled {
+                                    model.setStreamBitrate(stream: stream)
+                                }
                             }
                         }
-                        .onChange(of: stream.bitrate) { _ in
-                            if stream.enabled {
-                                model.setStreamBitrate(stream: stream)
-                            }
-                        }
+                    } icon: {
+                        Image(systemName: "speedometer")
                     }
                     NavigationLink {
                         BitratePresetsSettingsView(database: model.database)
