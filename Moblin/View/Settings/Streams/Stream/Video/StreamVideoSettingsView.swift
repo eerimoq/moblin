@@ -114,6 +114,7 @@ struct StreamVideoSettingsView: View {
                 }
                 Section {
                     HStack {
+                        QuickButtonSettingsIconView(model: model, name: "speedometer", type: .bitrate)
                         Text("Bitrate")
                         Spacer()
                         Picker("", selection: $stream.bitrate) {

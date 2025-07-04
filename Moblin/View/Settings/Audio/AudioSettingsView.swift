@@ -9,6 +9,7 @@ private struct MicView: View {
             QuickButtonMicView(mics: mics)
         } label: {
             HStack {
+                QuickButtonSettingsIconView(model: model, name: "music.mic", type: .mic)
                 Text("Mic")
                 Spacer()
                 Text(model.currentMic.name)

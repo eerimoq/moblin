@@ -426,6 +426,7 @@
 		03B374072AA0EA650028DDD5 /* MovieEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B374062AA0EA650028DDD5 /* MovieEffect.swift */; };
 		03B374092AA0EA700028DDD5 /* ImageEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B374082AA0EA700028DDD5 /* ImageEffect.swift */; };
 		03B374132AA277570028DDD5 /* SrtlaClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B374122AA277570028DDD5 /* SrtlaClient.swift */; };
+		03B4D3F42E18555D00C4C273 /* QuickButtonSettingsIconView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B4D3F32E18555400C4C273 /* QuickButtonSettingsIconView.swift */; };
 		03B507A72C88B8F6003CDEDF /* CatPrinter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B507A62C88B8F6003CDEDF /* CatPrinter.swift */; };
 		03B77ADA2B9446210053F106 /* WatchSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B77AD92B9446210053F106 /* WatchSettings.swift */; };
 		03B77ADB2B9446210053F106 /* WatchSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B77AD92B9446210053F106 /* WatchSettings.swift */; };
@@ -1103,6 +1104,7 @@
 		03B374082AA0EA700028DDD5 /* ImageEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEffect.swift; sourceTree = "<group>"; };
 		03B374122AA277570028DDD5 /* SrtlaClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SrtlaClient.swift; sourceTree = "<group>"; };
 		03B4D3F22E18430200C4C273 /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/AppShortcuts.strings; sourceTree = "<group>"; };
+		03B4D3F32E18555400C4C273 /* QuickButtonSettingsIconView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickButtonSettingsIconView.swift; sourceTree = "<group>"; };
 		03B507A62C88B8F6003CDEDF /* CatPrinter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatPrinter.swift; sourceTree = "<group>"; };
 		03B77AD92B9446210053F106 /* WatchSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchSettings.swift; sourceTree = "<group>"; };
 		03B7DAB12BA63F7400CEFC1B /* OpenStreamingPlatformChat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenStreamingPlatformChat.swift; sourceTree = "<group>"; };
@@ -1501,6 +1503,7 @@
 				0315A37B2AA439B500295443 /* NameEditView.swift */,
 				032FDBFE2B0B11B0007BE85E /* PositionEditView.swift */,
 				03E363802DB0BB59007A3CBB /* QrCodeImageView.swift */,
+				03B4D3F32E18555400C4C273 /* QuickButtonSettingsIconView.swift */,
 				032FDC012B0B11C5007BE85E /* SizeEditView.swift */,
 				03C2C2822B5F906E00E2F30B /* SliderView.swift */,
 				03CFF9CA2CA82EDF00FEC614 /* StrokeModifier.swift */,
@@ -3616,6 +3619,7 @@
 				035735802BC62FDC00F4E87D /* WatchLocalOverlaysSettingsView.swift in Sources */,
 				03BA73A42DDC562D00075CD6 /* ModelReplay.swift in Sources */,
 				0377239E2DE354A7007D040D /* VTuberEffect.swift in Sources */,
+				03B4D3F42E18555D00C4C273 /* QuickButtonSettingsIconView.swift in Sources */,
 				03D445E22AE5966B00A0F6E9 /* CacheAsyncImage.swift in Sources */,
 				03F3BF192ADAAA94009A8D3E /* TextEffect.swift in Sources */,
 				038ED3DB2B403664005DEC08 /* LocalOverlaysNetworkInterfaceNamesSettingsView.swift in Sources */,
