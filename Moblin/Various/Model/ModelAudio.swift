@@ -146,8 +146,6 @@ extension Model {
                     selectMic(mic: mic)
                 }
             }
-        } else if currentMic != defaultMic {
-            selectMic(mic: defaultMic)
         }
     }
 
@@ -163,8 +161,6 @@ extension Model {
                 selectMic(mic: highestPrioMic)
                 defaultMic = highestPrioMic
             }
-        } else if currentMic != defaultMic {
-            selectMic(mic: defaultMic)
         }
     }
 
@@ -180,19 +176,28 @@ extension Model {
     private func autoSwitchMicIfNeededAfterRouteChange() {
         if let scene = getSelectedScene(), scene.overrideMic {
             if currentMic.isAudioSession() {
-                if getActiveAudioSessionMic() != currentMic {
+                if let activeMic = getActiveAudioSessionMic(), activeMic != currentMic {
+                    if getMicPriority(mic: activeMic) > getMicPriority(mic: defaultMic) {
+                        defaultMic = activeMic
+                    }
                     selectMicDefault(mic: currentMic)
                 }
+            } else {
+                if let activeMic = getActiveAudioSessionMic(),
+                   getMicPriority(mic: activeMic) > getMicPriority(mic: defaultMic)
+                {
+                    defaultMic = activeMic
+                }
             }
-            defaultMic = getHighestPriorityConnectedMic() ?? currentMic
         } else {
             if let activeMic = getActiveAudioSessionMic(),
                getMicPriority(mic: activeMic) > getMicPriority(mic: currentMic)
             {
                 selectMic(mic: activeMic)
                 defaultMic = activeMic
+            } else if getActiveAudioSessionMic() == currentMic {
             } else if currentMic.connected, currentMic.isAudioSession() {
-                selectMic(mic: currentMic)
+                selectMicDefault(mic: currentMic)
             } else if let highestPrioMic = getHighestPriorityConnectedMic() {
                 selectMic(mic: highestPrioMic)
                 defaultMic = highestPrioMic
@@ -200,7 +205,13 @@ extension Model {
         }
     }
 
-    private func manualSwitchMicIfNeededAfterRouteChange() {}
+    private func manualSwitchMicIfNeededAfterRouteChange() {
+        if currentMic.isAudioSession(),
+           getActiveAudioSessionMic() != currentMic
+        {
+            selectMicDefault(mic: currentMic)
+        }
+    }
 
     private func getMicPriority(mic: SettingsMicsMic) -> Int {
         if let priority = database.mics.mics.firstIndex(where: { $0.id == mic.id }) {
