@@ -243,20 +243,6 @@ extension Model {
         makeToast(title: String(localized: "Switched mic to '\(name)'"))
     }
 
-    private func micHasHigherPriorityThanCurrent(mic: SettingsMicsMic) -> Bool {
-        for databaseMic in database.mics.mics {
-            if !databaseMic.connected {
-                continue
-            }
-            if mic == databaseMic {
-                return true
-            } else if currentMic == databaseMic {
-                return false
-            }
-        }
-        return true
-    }
-
     func markMicAsConnected(id: String) {
         database.mics.mics.first(where: { $0.id == id })?.connected = true
     }

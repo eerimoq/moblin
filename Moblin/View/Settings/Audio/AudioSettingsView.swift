@@ -1,5 +1,23 @@
 import SwiftUI
 
+private struct MicView: View {
+    @EnvironmentObject var model: Model
+    @ObservedObject var mics: SettingsMics
+
+    var body: some View {
+        NavigationLink {
+            QuickButtonMicView(mics: mics)
+        } label: {
+            HStack {
+                Text("Mic")
+                Spacer()
+                Text(model.currentMic.name)
+                    .foregroundColor(.gray)
+            }
+        }
+    }
+}
+
 struct AudioSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var database: Database
@@ -37,6 +55,9 @@ struct AudioSettingsView: View {
                 } header: {
                     Text("Shortcut")
                 }
+            }
+            Section {
+                MicView(mics: database.mics)
             }
             Section {
                 Toggle("Bluetooth output only", isOn: Binding(get: {
