@@ -1,3 +1,15 @@
+import SwiftUI
+
+class Tesla: ObservableObject {
+    var vehicle: TeslaVehicle?
+    var chargeState = CarServer_ChargeState()
+    var driveState = CarServer_DriveState()
+    var mediaState = CarServer_MediaState()
+    @Published var vehicleState: TeslaVehicleState?
+    @Published var vehicleVehicleSecurityConnected = false
+    @Published var vehicleInfotainmentConnected = false
+}
+
 extension Model {
     func reloadTeslaVehicle() {
         stopTeslaVehicle()

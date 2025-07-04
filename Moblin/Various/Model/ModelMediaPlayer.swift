@@ -1,6 +1,14 @@
 import CoreMedia
 import Foundation
 
+class MediaPlayerPlayer: ObservableObject {
+    @Published var playing = false
+    @Published var position: Float = 0
+    @Published var time = "0:00"
+    @Published var fileName = "Media name"
+    @Published var seeking = false
+}
+
 extension Model {
     func initMediaPlayers() {
         for settings in database.mediaPlayers.players {

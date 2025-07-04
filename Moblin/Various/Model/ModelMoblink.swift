@@ -1,6 +1,16 @@
 import Foundation
 import Network
 
+class Moblink: ObservableObject {
+    var streamer: MoblinkStreamer?
+    var relays: [MoblinkRelay] = []
+    var scanner: MoblinkScanner?
+    var relayState: MoblinkRelayState = .waitingForStreamers
+    @Published var streamerOk = true
+    @Published var status = noValue
+    @Published var scannerDiscoveredStreamers: [MoblinkScannerStreamer] = []
+}
+
 extension Model {
     func stopMoblinkStreamer() {
         moblink.streamer?.stop()

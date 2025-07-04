@@ -6,6 +6,35 @@ struct Camera: Identifiable, Equatable {
     var name: String
 }
 
+class CameraState: ObservableObject {
+    var manualFocusesEnabled: [AVCaptureDevice: Bool] = [:]
+    var manualFocuses: [AVCaptureDevice: Float] = [:]
+    var editingManualFocus = false
+    var focusObservation: NSKeyValueObservation?
+    var manualIsosEnabled: [AVCaptureDevice: Bool] = [:]
+    var manualIsos: [AVCaptureDevice: Float] = [:]
+    var editingManualIso = false
+    var isoObservation: NSKeyValueObservation?
+    var manualWhiteBalancesEnabled: [AVCaptureDevice: Bool] = [:]
+    var manualWhiteBalances: [AVCaptureDevice: Float] = [:]
+    var editingManualWhiteBalance = false
+    var whiteBalanceObservation: NSKeyValueObservation?
+    @Published var bias: Float = 0.0
+    @Published var manualFocus: Float = 1.0
+    @Published var manualFocusEnabled = false
+    @Published var manualIso: Float = 1.0
+    @Published var manualIsoEnabled = false
+    @Published var manualWhiteBalance: Float = 0
+    @Published var manualWhiteBalanceEnabled = false
+    @Published var manualFocusPoint: CGPoint?
+
+    func setManualFocusPoint(value: CGPoint?) {
+        if value != manualFocusPoint {
+            manualFocusPoint = value
+        }
+    }
+}
+
 let screenCaptureCameraId = UUID(uuidString: "00000000-cafe-babe-beef-000000000000")!
 let builtinBackCameraId = UUID(uuidString: "00000000-cafe-dead-beef-000000000000")!
 let builtinFrontCameraId = UUID(uuidString: "00000000-cafe-dead-beef-000000000001")!

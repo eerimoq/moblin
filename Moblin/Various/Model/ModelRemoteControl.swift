@@ -2,6 +2,23 @@ import CoreLocation
 import Foundation
 import UIKit
 
+class RemoteControl: ObservableObject {
+    @Published var general: RemoteControlStatusGeneral?
+    @Published var topLeft: RemoteControlStatusTopLeft?
+    @Published var topRight: RemoteControlStatusTopRight?
+    @Published var settings: RemoteControlSettings?
+    @Published var scene = UUID()
+    @Published var mic = ""
+    @Published var bitrate = UUID()
+    @Published var zoom = ""
+    @Published var debugLogging = false
+    @Published var assistantShowPreview = true
+    @Published var assistantShowPreviewFullScreen = false
+    @Published var preview: UIImage?
+    @Published var recording: Bool = false
+    @Published var streaming: Bool = false
+}
+
 enum RemoteControlAssistantPreviewUser {
     case panel
     case watch

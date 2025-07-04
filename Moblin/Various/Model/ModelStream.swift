@@ -14,6 +14,43 @@ let fffffMessage = String(localized: "😢 FFFFF 😢")
 let lowBitrateMessage = String(localized: "Low bitrate")
 let lowBatteryMessage = String(localized: "Low battery")
 
+class CreateStreamWizard: ObservableObject {
+    var platform: WizardPlatform = .custom
+    var networkSetup: WizardNetworkSetup = .none
+    var customProtocol: WizardCustomProtocol = .none
+    let twitchStream = SettingsStream(name: "")
+    var twitchAccessToken = ""
+    var twitchLoggedIn: Bool = false
+    @Published var isPresenting = false
+    @Published var isPresentingSetup = false
+    @Published var showTwitchAuth = false
+    @Published var name = ""
+    @Published var twitchChannelName = ""
+    @Published var twitchChannelId = ""
+    @Published var kickChannelName = ""
+    @Published var youTubeHandle = ""
+    @Published var afreecaTvChannelName = ""
+    @Published var afreecaTvStreamId = ""
+    @Published var obsAddress = ""
+    @Published var obsPort = ""
+    @Published var obsRemoteControlEnabled = false
+    @Published var obsRemoteControlUrl = ""
+    @Published var obsRemoteControlPassword = ""
+    @Published var obsRemoteControlSourceName = ""
+    @Published var obsRemoteControlBrbScene = ""
+    @Published var directIngest = ""
+    @Published var directStreamKey = ""
+    @Published var chatBttv = false
+    @Published var chatFfz = false
+    @Published var chatSeventv = false
+    @Published var belaboxUrl = ""
+    @Published var customSrtUrl = ""
+    @Published var customSrtStreamId = ""
+    @Published var customRtmpUrl = ""
+    @Published var customRtmpStreamKey = ""
+    @Published var customRistUrl = ""
+}
+
 enum StreamState {
     case connecting
     case connected

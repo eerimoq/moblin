@@ -105,16 +105,6 @@ class HypeTrain: ObservableObject {
     var timer = SimpleTimer(queue: .main)
 }
 
-class Moblink: ObservableObject {
-    var streamer: MoblinkStreamer?
-    var relays: [MoblinkRelay] = []
-    var scanner: MoblinkScanner?
-    var relayState: MoblinkRelayState = .waitingForStreamers
-    @Published var streamerOk = true
-    @Published var status = noValue
-    @Published var scannerDiscoveredStreamers: [MoblinkScannerStreamer] = []
-}
-
 class Servers: ObservableObject {
     var rtmp: RtmpServer?
     var srtla: SrtlaServer?
@@ -135,43 +125,6 @@ class Bonding: ObservableObject {
     var statisticsFormatter = BondingStatisticsFormatter()
 }
 
-class MediaPlayerPlayer: ObservableObject {
-    @Published var playing = false
-    @Published var position: Float = 0
-    @Published var time = "0:00"
-    @Published var fileName = "Media name"
-    @Published var seeking = false
-}
-
-class CameraState: ObservableObject {
-    var manualFocusesEnabled: [AVCaptureDevice: Bool] = [:]
-    var manualFocuses: [AVCaptureDevice: Float] = [:]
-    var editingManualFocus = false
-    var focusObservation: NSKeyValueObservation?
-    var manualIsosEnabled: [AVCaptureDevice: Bool] = [:]
-    var manualIsos: [AVCaptureDevice: Float] = [:]
-    var editingManualIso = false
-    var isoObservation: NSKeyValueObservation?
-    var manualWhiteBalancesEnabled: [AVCaptureDevice: Bool] = [:]
-    var manualWhiteBalances: [AVCaptureDevice: Float] = [:]
-    var editingManualWhiteBalance = false
-    var whiteBalanceObservation: NSKeyValueObservation?
-    @Published var bias: Float = 0.0
-    @Published var manualFocus: Float = 1.0
-    @Published var manualFocusEnabled = false
-    @Published var manualIso: Float = 1.0
-    @Published var manualIsoEnabled = false
-    @Published var manualWhiteBalance: Float = 0
-    @Published var manualWhiteBalanceEnabled = false
-    @Published var manualFocusPoint: CGPoint?
-
-    func setManualFocusPoint(value: CGPoint?) {
-        if value != manualFocusPoint {
-            manualFocusPoint = value
-        }
-    }
-}
-
 class Show: ObservableObject {
     @Published var cameraPreview = false
     @Published var cameraBias = false
@@ -181,74 +134,6 @@ class Show: ObservableObject {
     @Published var faceBeauty = false
     @Published var faceBeautyShape = false
     @Published var faceBeautySmooth = false
-}
-
-class Zoom: ObservableObject {
-    var xPinch: Float = 1.0
-    var backX: Float = 0.5
-    var frontX: Float = 1.0
-    @Published var backPresetId = UUID()
-    @Published var frontPresetId = UUID()
-    @Published var x: Float = 1.0
-    @Published var hasZoom = true
-
-    func statusText() -> String {
-        return String(format: "%.1f", x)
-    }
-}
-
-class CreateStreamWizard: ObservableObject {
-    var platform: WizardPlatform = .custom
-    var networkSetup: WizardNetworkSetup = .none
-    var customProtocol: WizardCustomProtocol = .none
-    let twitchStream = SettingsStream(name: "")
-    var twitchAccessToken = ""
-    var twitchLoggedIn: Bool = false
-    @Published var isPresenting = false
-    @Published var isPresentingSetup = false
-    @Published var showTwitchAuth = false
-    @Published var name = ""
-    @Published var twitchChannelName = ""
-    @Published var twitchChannelId = ""
-    @Published var kickChannelName = ""
-    @Published var youTubeHandle = ""
-    @Published var afreecaTvChannelName = ""
-    @Published var afreecaTvStreamId = ""
-    @Published var obsAddress = ""
-    @Published var obsPort = ""
-    @Published var obsRemoteControlEnabled = false
-    @Published var obsRemoteControlUrl = ""
-    @Published var obsRemoteControlPassword = ""
-    @Published var obsRemoteControlSourceName = ""
-    @Published var obsRemoteControlBrbScene = ""
-    @Published var directIngest = ""
-    @Published var directStreamKey = ""
-    @Published var chatBttv = false
-    @Published var chatFfz = false
-    @Published var chatSeventv = false
-    @Published var belaboxUrl = ""
-    @Published var customSrtUrl = ""
-    @Published var customSrtStreamId = ""
-    @Published var customRtmpUrl = ""
-    @Published var customRtmpStreamKey = ""
-    @Published var customRistUrl = ""
-}
-
-class RemoteControl: ObservableObject {
-    @Published var general: RemoteControlStatusGeneral?
-    @Published var topLeft: RemoteControlStatusTopLeft?
-    @Published var topRight: RemoteControlStatusTopRight?
-    @Published var settings: RemoteControlSettings?
-    @Published var scene = UUID()
-    @Published var mic = ""
-    @Published var bitrate = UUID()
-    @Published var zoom = ""
-    @Published var debugLogging = false
-    @Published var assistantShowPreview = true
-    @Published var assistantShowPreviewFullScreen = false
-    @Published var preview: UIImage?
-    @Published var recording: Bool = false
-    @Published var streaming: Bool = false
 }
 
 class Battery: ObservableObject {
@@ -335,16 +220,6 @@ class StealthMode: ObservableObject {
     @Published var showChat = false
     @Published var showButtons = true
     @Published var image: UIImage?
-}
-
-class Tesla: ObservableObject {
-    var vehicle: TeslaVehicle?
-    var chargeState = CarServer_ChargeState()
-    var driveState = CarServer_DriveState()
-    var mediaState = CarServer_MediaState()
-    @Published var vehicleState: TeslaVehicleState?
-    @Published var vehicleVehicleSecurityConnected = false
-    @Published var vehicleInfotainmentConnected = false
 }
 
 class QuickButtonChat: ObservableObject {
