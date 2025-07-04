@@ -24,6 +24,7 @@ private struct VideoStabilizationView: View {
 private struct MicView: View {
     var model: Model
     @ObservedObject var scene: SettingsScene
+    @ObservedObject var mic: Mic
 
     private func onMicChange(micId: String) {
         if model.getSelectedScene() === scene && scene.overrideMic {
@@ -53,7 +54,7 @@ private struct MicView: View {
         }
         .onAppear {
             if scene.micId.isEmpty {
-                scene.micId = model.currentMic.id
+                scene.micId = mic.current.id
             }
         }
     }
@@ -226,7 +227,7 @@ struct SceneSettingsView: View {
                         model.switchMicIfNeededAfterSceneSwitch()
                     }
                 if scene.overrideMic {
-                    MicView(model: model, scene: scene)
+                    MicView(model: model, scene: scene, mic: model.mic)
                 }
             } header: {
                 Text("Mic")

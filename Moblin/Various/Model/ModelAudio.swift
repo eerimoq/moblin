@@ -7,6 +7,10 @@ class AudioProvider: ObservableObject {
     @Published var numberOfChannels: Int = 0
 }
 
+class Mic: ObservableObject {
+    @Published var current: SettingsMicsMic = noMic
+}
+
 extension Model {
     func setupAudio() {
         updateMicsList()
@@ -153,7 +157,7 @@ extension Model {
         if database.mics.autoSwitch {
             if let scene = getSelectedScene(), scene.overrideMic {
                 selectMicById(id: scene.micId)
-            } else if currentMic != defaultMic {
+            } else if mic.current != defaultMic {
                 if defaultMic.connected {
                     selectMic(mic: defaultMic)
                 } else if let mic = getHighestPriorityConnectedMic() {
@@ -189,12 +193,12 @@ extension Model {
 
     private func autoSwitchMicIfNeededAfterRouteChange() {
         if let scene = getSelectedScene(), scene.overrideMic {
-            if currentMic.isAudioSession() {
-                if let activeMic = getActiveAudioSessionMic(), activeMic != currentMic {
+            if mic.current.isAudioSession() {
+                if let activeMic = getActiveAudioSessionMic(), activeMic != mic.current {
                     if getMicPriority(mic: activeMic) > getMicPriority(mic: defaultMic) {
                         defaultMic = activeMic
                     }
-                    selectMicDefault(mic: currentMic)
+                    selectMicDefault(mic: mic.current)
                 }
             } else {
                 if let activeMic = getActiveAudioSessionMic(),
@@ -205,13 +209,13 @@ extension Model {
             }
         } else {
             if let activeMic = getActiveAudioSessionMic(),
-               getMicPriority(mic: activeMic) > getMicPriority(mic: currentMic)
+               getMicPriority(mic: activeMic) > getMicPriority(mic: mic.current)
             {
                 selectMic(mic: activeMic)
                 defaultMic = activeMic
-            } else if getActiveAudioSessionMic() == currentMic {
-            } else if currentMic.connected, currentMic.isAudioSession() {
-                selectMicDefault(mic: currentMic)
+            } else if getActiveAudioSessionMic() == mic.current {
+            } else if mic.current.connected, mic.current.isAudioSession() {
+                selectMicDefault(mic: mic.current)
             } else if let highestPrioMic = getHighestPriorityConnectedMic() {
                 selectMic(mic: highestPrioMic)
                 defaultMic = highestPrioMic
@@ -220,10 +224,10 @@ extension Model {
     }
 
     private func manualSwitchMicIfNeededAfterRouteChange() {
-        if currentMic.isAudioSession(),
-           getActiveAudioSessionMic() != currentMic
+        if mic.current.isAudioSession(),
+           getActiveAudioSessionMic() != mic.current
         {
-            selectMicDefault(mic: currentMic)
+            selectMicDefault(mic: mic.current)
         }
     }
 
@@ -413,7 +417,7 @@ extension Model {
     }
 
     private func selectMic(mic: SettingsMicsMic) {
-        guard mic != currentMic else {
+        guard mic != self.mic.current else {
             return
         }
         makeMicChangeToast(name: mic.name)
@@ -426,7 +430,7 @@ extension Model {
         } else {
             selectMicDefault(mic: mic)
         }
-        currentMic = mic
+        self.mic.current = mic
     }
 
     private func isRtmpMic(mic: SettingsMicsMic) -> Bool {

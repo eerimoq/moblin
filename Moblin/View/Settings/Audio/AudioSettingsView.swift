@@ -3,16 +3,17 @@ import SwiftUI
 private struct MicView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var mics: SettingsMics
+    @ObservedObject var mic: Mic
 
     var body: some View {
         NavigationLink {
-            QuickButtonMicView(mics: mics)
+            QuickButtonMicView(mics: mics, modelMic: mic)
         } label: {
             Label {
                 HStack {
                     Text("Mic")
                     Spacer()
-                    Text(model.currentMic.name)
+                    Text(mic.current.name)
                         .foregroundColor(.gray)
                 }
             } icon: {
@@ -25,6 +26,7 @@ private struct MicView: View {
 struct AudioSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var database: Database
+    @ObservedObject var mic: Mic
 
     private func submitOutputChannel1(value: String) {
         guard let channel = Int(value) else {
@@ -61,7 +63,7 @@ struct AudioSettingsView: View {
                 }
             }
             Section {
-                MicView(mics: database.mics)
+                MicView(mics: database.mics, mic: model.mic)
             }
             Section {
                 Toggle("Bluetooth output only", isOn: Binding(get: {
@@ -78,9 +80,9 @@ struct AudioSettingsView: View {
                     database.debug.preferStereoMic
                 }, set: {
                     database.debug.preferStereoMic = $0
-                    if model.currentMic.isAudioSession() {
+                    if mic.current.isAudioSession() {
                         model.reloadAudioSession()
-                        model.selectMicDefault(mic: model.currentMic)
+                        model.selectMicDefault(mic: mic.current)
                     }
                 }))
             } footer: {

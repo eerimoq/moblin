@@ -45,7 +45,7 @@ struct SettingsView: View {
                 }
                 if database.showAllSettings {
                     NavigationLink {
-                        AudioSettingsView(database: database)
+                        AudioSettingsView(database: database, mic: model.mic)
                     } label: {
                         Label("Audio", systemImage: "waveform")
                     }

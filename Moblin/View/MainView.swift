@@ -82,7 +82,7 @@ private struct MenuView: View {
             }
         case .mic:
             NavigationStack {
-                QuickButtonMicView(mics: model.database.mics)
+                QuickButtonMicView(mics: model.database.mics, modelMic: model.mic)
             }
         case .streamSwitcher:
             NavigationStack {

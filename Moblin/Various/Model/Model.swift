@@ -394,11 +394,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var currentSnapshotJob: SnapshotJob?
     @Published var showLoadSettingsFailed = false
     @Published var cameraControlEnabled = false
-    @Published var currentMic = noMic /* {
-         didSet {
-             logger.info("xxx current switch \(currentMic.name)")
-         }
-     } */
 
     var streamState = StreamState.disconnected {
         didSet {
@@ -412,6 +407,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
+    let mic = Mic()
     let goPro = GoProState()
     let obsQuickButton = QuickButtonObs()
     let streamingHistory = StreamingHistory()

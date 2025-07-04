@@ -330,7 +330,7 @@ extension Model {
             topLeft.stream = RemoteControlStatusItem(message: statusTopLeft.streamText)
         }
         topLeft.camera = RemoteControlStatusItem(message: statusTopLeft.statusCameraText)
-        topLeft.mic = RemoteControlStatusItem(message: currentMic.name)
+        topLeft.mic = RemoteControlStatusItem(message: mic.current.name)
         if zoom.hasZoom {
             topLeft.zoom = RemoteControlStatusItem(message: zoom.statusText())
         }
@@ -436,7 +436,7 @@ extension Model: RemoteControlStreamerDelegate {
         if sceneSelector.sceneIndex < enabledScenes.count {
             state.scene = enabledScenes[sceneSelector.sceneIndex].id
         }
-        state.mic = currentMic.id
+        state.mic = mic.current.id
         if let preset = getBitratePresetByBitrate(bitrate: stream.bitrate) {
             state.bitrate = preset.id
         }

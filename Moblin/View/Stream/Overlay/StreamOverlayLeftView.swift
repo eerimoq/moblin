@@ -56,6 +56,7 @@ private struct StatusesView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var show: SettingsShow
     @ObservedObject var status: StatusTopLeft
+    @ObservedObject var mic: Mic
     let textPlacement: StreamOverlayIconAndTextPlacement
 
     func eventsColor() -> Color {
@@ -116,7 +117,7 @@ private struct StatusesView: View {
         if model.isShowingStatusMic() {
             StreamOverlayIconAndTextView(
                 icon: "music.mic",
-                text: model.currentMic.name,
+                text: mic.current.name,
                 textPlacement: textPlacement
             )
         }
@@ -169,10 +170,16 @@ struct LeftOverlayView: View {
         VStack(alignment: .leading, spacing: 1) {
             VStack(alignment: .leading, spacing: 1) {
                 if database.verboseStatuses {
-                    StatusesView(show: database.show, status: model.statusTopLeft, textPlacement: .afterIcon)
+                    StatusesView(show: database.show,
+                                 status: model.statusTopLeft,
+                                 mic: model.mic,
+                                 textPlacement: .afterIcon)
                 } else {
                     HStack(spacing: 1) {
-                        StatusesView(show: database.show, status: model.statusTopLeft, textPlacement: .hide)
+                        StatusesView(show: database.show,
+                                     status: model.statusTopLeft,
+                                     mic: model.mic,
+                                     textPlacement: .hide)
                     }
                 }
             }

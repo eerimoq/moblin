@@ -47,10 +47,10 @@ extension Model {
             }
             if isRtmpStreamConnected(streamKey: stream.streamKey) {
                 let micId = "\(stream.id.uuidString) 0"
-                let isLastMic = (currentMic.id == micId)
+                let isLastMic = (mic.current.id == micId)
                 handleRtmpServerPublishStop(streamKey: stream.streamKey, reason: nil)
                 handleRtmpServerPublishStart(streamKey: stream.streamKey)
-                if currentMic.id != micId, isLastMic {
+                if mic.current.id != micId, isLastMic {
                     selectMicById(id: micId)
                 }
             }
