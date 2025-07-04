@@ -9,6 +9,12 @@
             "value" : "Moblin"
           }
         },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin"
+          }
+        },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
@@ -47,6 +53,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Widget Moblin."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin widget."
           }
         },
         "ru" : {

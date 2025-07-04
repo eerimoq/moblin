@@ -1102,6 +1102,7 @@
 		03B374062AA0EA650028DDD5 /* MovieEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieEffect.swift; sourceTree = "<group>"; };
 		03B374082AA0EA700028DDD5 /* ImageEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEffect.swift; sourceTree = "<group>"; };
 		03B374122AA277570028DDD5 /* SrtlaClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SrtlaClient.swift; sourceTree = "<group>"; };
+		03B4D3F22E18430200C4C273 /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/AppShortcuts.strings; sourceTree = "<group>"; };
 		03B507A62C88B8F6003CDEDF /* CatPrinter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatPrinter.swift; sourceTree = "<group>"; };
 		03B77AD92B9446210053F106 /* WatchSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchSettings.swift; sourceTree = "<group>"; };
 		03B7DAB12BA63F7400CEFC1B /* OpenStreamingPlatformChat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenStreamingPlatformChat.swift; sourceTree = "<group>"; };
@@ -4162,6 +4163,7 @@
 				036C39A92D193CCF00F74D37 /* zh-Hant */,
 				03F6E3042D40267A00942826 /* zh-HK */,
 				0354BDC92E020F4D005C881D /* tr */,
+				03B4D3F22E18430200C4C273 /* nl */,
 			);
 			name = AppShortcuts.strings;
 			sourceTree = "<group>";

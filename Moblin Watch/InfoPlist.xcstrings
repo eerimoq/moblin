@@ -11,6 +11,12 @@
             "value" : "Moblin"
           }
         },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -39,6 +45,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Yes"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ja"
           }
         },
         "tr" : {
@@ -71,6 +83,12 @@
             "value" : "Moblin peut afficher votre fréquence cardiaque sur le stream"
           }
         },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin kan je hartslag op je stream laten zien."
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -99,6 +117,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Moblin peut afficher votre fréquence cardiaque sur le stream"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin kan je hartslag op je stream laten zien."
           }
         },
         "tr" : {
@@ -131,6 +155,12 @@
             "value" : "Moblin peut afficher votre fréquence cardiaque sur le stream"
           }
         },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin kan je hartslag op je stream laten zien."
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -155,6 +185,12 @@
             "value" : "Yes"
           }
         },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ja"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -173,6 +209,12 @@
             "value" : "Yes"
           }
         },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ja"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -189,6 +231,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Yes"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ja"
           }
         },
         "zh-Hant" : {

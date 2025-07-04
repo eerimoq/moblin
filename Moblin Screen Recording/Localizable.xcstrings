@@ -9,6 +9,12 @@
             "value" : " %lld ch"
           }
         },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : " %lld ch"
+          }
+        },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
@@ -32,6 +38,12 @@
     "%lld dB," : {
       "localizations" : {
         "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld dB,"
+          }
+        },
+        "nl" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld dB,"
@@ -75,6 +87,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "HOST non trovato"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Host ontbreekt"
           }
         },
         "ru" : {
@@ -121,6 +139,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "URL IRL non valido"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Foutieve IRL URL"
           }
         },
         "ru" : {
@@ -170,6 +194,12 @@
             "value" : "URL RLToolkit non valido"
           }
         },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Foutieve IRLToolkit URL"
+          }
+        },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
@@ -214,6 +244,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "URL RIST non valido"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Foutieve RIST URL"
           }
         },
         "ru" : {
@@ -262,6 +298,12 @@
             "value" : "URL RTMP non valido"
           }
         },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Foutieve RTMP URL"
+          }
+        },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
@@ -306,6 +348,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "URL SRT(LA) non valido"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Foutieve SRT(LA) URL"
           }
         },
         "ru" : {
@@ -354,6 +402,12 @@
             "value" : "URL non valido"
           }
         },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Foutieve URL"
+          }
+        },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
@@ -398,6 +452,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Numero di porta RIST non trovato"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RIST port nummer ontbreekt"
           }
         },
         "ru" : {
@@ -446,6 +506,12 @@
             "value" : "Nome flusso RTMP non trovato"
           }
         },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RTMP stream naam ontbreekt"
+          }
+        },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
@@ -492,6 +558,12 @@
             "value" : "Schema non trovato"
           }
         },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schema ontbreekt"
+          }
+        },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
@@ -524,6 +596,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Numéro de port SRT(LA) manquant"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SRT(LA) port nummer ontbreekt"
           }
         },
         "ru" : {
@@ -564,6 +642,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Schéma non supporté"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Niet-ondersteund schema %@"
           }
         },
         "ru" : {

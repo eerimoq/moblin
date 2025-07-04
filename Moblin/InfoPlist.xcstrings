@@ -29,6 +29,12 @@
             "value" : "Moblin"
           }
         },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -66,6 +72,12 @@
           }
         },
         "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin"
+          }
+        },
+        "nl" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Moblin"
@@ -111,6 +123,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Moblin tcomunica con DJI usando il Bluetooth."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin communiceert met DJI-camera's via Bluetooth."
           }
         },
         "ru" : {
@@ -173,6 +191,12 @@
             "value" : "Moblin은 카메라에서 비디오를 실시간 스트리밍합니다."
           }
         },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin streamt live video van de camera."
+          }
+        },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
@@ -221,6 +245,12 @@
             "value" : "Moblin può mostrare la tua frequenza cardiaca in live."
           }
         },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin kan je hartslag weergeven in de stream."
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -263,6 +293,12 @@
             "value" : "Moblin può mostrare la tua frequenza cardiaca in live."
           }
         },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin kan je hartslag weergeven in de stream."
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -303,6 +339,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Moblin può mostrare la tua frequenza cardiaca in live."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin kan je hartslag weergeven in de stream."
           }
         },
         "tr" : {
@@ -359,6 +401,12 @@
             "value" : "Moblin은 SRT 라이브러리에 대한 입력 및 출력으로 localhost를 사용합니다."
           }
         },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin gebruikt localhost als invoer en uitvoer naar de SRT-bibliotheek."
+          }
+        },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
@@ -405,6 +453,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Moblin può visualizzare la tua posizione e/o la velocità sullo schermo e in streaming."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin kan uw locatie en/of snelheid op het scherm weergeven en streamen."
           }
         },
         "ru" : {
@@ -467,6 +521,12 @@
             "value" : "Moblin은 마이크에서 오디오를 실시간 스트리밍합니다."
           }
         },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin streamt live audio via de microfoon."
+          }
+        },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
@@ -525,6 +585,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Moblin은 선택한 이미지를 오버레이로 표시합니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin toont geselecteerde afbeeldingen als overlays."
           }
         },
         "ru" : {
@@ -587,6 +653,12 @@
             "value" : "Moblin은 선택한 이미지를 오버레이로 표시합니다."
           }
         },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin toont geselecteerde afbeeldingen als overlays."
+          }
+        },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
@@ -633,6 +705,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Moblin può aggiungere la trascrizione alla stream."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin kan transcriptie aan de stream toevoegen."
           }
         },
         "tr" : {

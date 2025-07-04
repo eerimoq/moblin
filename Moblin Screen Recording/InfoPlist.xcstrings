@@ -17,6 +17,12 @@
             "value" : "Moblin"
           }
         },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -53,6 +59,12 @@
             "value" : "Registrazione schermo Moblin"
           }
         },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin scherm opname"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -81,6 +93,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Si"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ja"
           }
         },
         "zh-Hant" : {
@@ -125,6 +143,12 @@
             "value" : "Si"
           }
         },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ja"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -155,6 +179,12 @@
             "value" : "Si"
           }
         },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ja"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -183,6 +213,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Si"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ja"
           }
         },
         "zh-Hant" : {
