@@ -9,6 +9,8 @@ class AudioProvider: ObservableObject {
 
 class Mic: ObservableObject {
     @Published var current: SettingsMicsMic = noMic
+    var requested: SettingsMicsMic?
+    var isSwitchTimerRunning: Bool = false
 }
 
 extension Model {
@@ -157,7 +159,7 @@ extension Model {
         if database.mics.autoSwitch {
             if let scene = getSelectedScene(), scene.overrideMic {
                 selectMicById(id: scene.micId)
-            } else if mic.current != defaultMic {
+            } else {
                 if defaultMic.connected {
                     selectMic(mic: defaultMic)
                 } else if let mic = getHighestPriorityConnectedMic() {
@@ -417,6 +419,19 @@ extension Model {
     }
 
     private func selectMic(mic: SettingsMicsMic) {
+        self.mic.requested = mic
+        // logger.info("xxx requested \(mic.name)")
+        trySwitchMic()
+    }
+
+    private func trySwitchMic() {
+        guard !mic.isSwitchTimerRunning else {
+            return
+        }
+        guard let mic = mic.requested else {
+            return
+        }
+        self.mic.requested = nil
         guard mic != self.mic.current else {
             return
         }
@@ -431,6 +446,11 @@ extension Model {
             selectMicDefault(mic: mic)
         }
         self.mic.current = mic
+        self.mic.isSwitchTimerRunning = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            self.mic.isSwitchTimerRunning = false
+            self.trySwitchMic()
+        }
     }
 
     private func isRtmpMic(mic: SettingsMicsMic) -> Bool {
