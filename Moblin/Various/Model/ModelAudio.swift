@@ -468,7 +468,7 @@ extension Model {
         remoteControlStreamer?.stateChanged(state: RemoteControlState(mic: mic.id))
     }
 
-    private func selectMicDefault(mic: SettingsMicsMic) {
+    func selectMicDefault(mic: SettingsMicsMic) {
         media.attachBufferedAudio(cameraId: nil)
         let preferStereoMic = database.debug.preferStereoMic
         netStreamLockQueue.async {

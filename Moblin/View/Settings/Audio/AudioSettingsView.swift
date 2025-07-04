@@ -75,8 +75,10 @@ struct AudioSettingsView: View {
                     database.debug.preferStereoMic
                 }, set: {
                     database.debug.preferStereoMic = $0
-                    model.reloadAudioSession()
-                    // model.setMic()
+                    if model.currentMic.isAudioSession() {
+                        model.reloadAudioSession()
+                        model.selectMicDefault(mic: model.currentMic)
+                    }
                 }))
             } footer: {
                 VStack(alignment: .leading) {
