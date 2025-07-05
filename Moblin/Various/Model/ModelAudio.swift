@@ -449,7 +449,9 @@ extension Model {
         guard mic != self.mic.current else {
             return
         }
-        makeMicChangeToast(name: mic.name)
+        if self.mic.current != noMic {
+            makeMicChangeToast(name: mic.name)
+        }
         if isRtmpMic(mic: mic) {
             selectMicRtmp(mic: mic)
         } else if isSrtlaMic(mic: mic) {
