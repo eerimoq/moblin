@@ -27,10 +27,10 @@ private struct MicView: View {
     @ObservedObject var mic: Mic
 
     private func onMicChange(micId: String) {
-        if model.getSelectedScene() === scene && scene.overrideMic {
-            model.selectMicById(id: micId)
-        }
         scene.micId = micId
+        if model.getSelectedScene() === scene {
+            model.switchMicIfNeededAfterSceneSwitch()
+        }
     }
 
     var body: some View {
@@ -232,7 +232,10 @@ struct SceneSettingsView: View {
             } header: {
                 Text("Mic")
             } footer: {
-                Text("Enable Override to automatically switch to selected mic when switching to this scene.")
+                Text("""
+                Enable Override to automatically switch to selected mic (if available) when \
+                switching to this scene.
+                """)
             }
             Section {
                 List {

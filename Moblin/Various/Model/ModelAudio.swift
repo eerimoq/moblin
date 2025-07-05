@@ -26,10 +26,10 @@ extension Model {
         } else {
             defaultMic = getHighestPriorityConnectedMic() ?? noMic
         }
-        if let scene = getSelectedScene(), scene.overrideMic {
-            selectMicById(id: scene.micId)
+        if let scene = getSelectedScene(), scene.overrideMic, let mic = getConnectedMicById(id: scene.micId) {
+            selectMic(mic: mic)
         } else {
-            selectMicById(id: defaultMic.id)
+            selectMic(mic: defaultMic)
         }
     }
 
@@ -162,8 +162,8 @@ extension Model {
     func switchMicIfNeededAfterSceneSwitch() {
         updateMicsList()
         if database.mics.autoSwitch {
-            if let scene = getSelectedScene(), scene.overrideMic {
-                selectMicById(id: scene.micId)
+            if let scene = getSelectedScene(), scene.overrideMic, let mic = getConnectedMicById(id: scene.micId) {
+                selectMic(mic: mic)
             } else {
                 if defaultMic.connected {
                     selectMic(mic: defaultMic)
@@ -177,8 +177,8 @@ extension Model {
     func switchMicIfNeededAfterNetworkCameraChange() {
         if database.mics.autoSwitch {
             updateMicsList()
-            if let scene = getSelectedScene(), scene.overrideMic {
-                selectMicById(id: scene.micId)
+            if let scene = getSelectedScene(), scene.overrideMic, let mic = getConnectedMicById(id: scene.micId) {
+                selectMic(mic: mic)
                 if let highestPrioMic = getHighestPriorityConnectedMic() {
                     defaultMic = highestPrioMic
                 }
@@ -403,8 +403,11 @@ extension Model {
         return database.mics.mics.first(where: { $0.id == id })
     }
 
-    func isMicAvailableById(id: String) -> Bool {
-        return database.mics.mics.contains(where: { $0.id == id })
+    func getConnectedMicById(id: String) -> SettingsMicsMic? {
+        guard let mic = database.mics.mics.first(where: { $0.id == id }), mic.connected else {
+            return nil
+        }
+        return mic
     }
 
     private func getAvailableMicById(id: String) -> SettingsMicsMic? {
