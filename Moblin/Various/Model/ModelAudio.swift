@@ -16,6 +16,11 @@ class Mic: ObservableObject {
 extension Model {
     func setupAudio() {
         updateMicsList()
+        if database.mics.defaultMic.isEmpty {
+            database.mics.defaultMic = database.mics.mics
+                .first(where: { $0.builtInOrientation == database.mic })?
+                .id ?? ""
+        }
         if let mic = getMicById(id: database.mics.defaultMic), mic.connected {
             defaultMic = mic
         } else {
@@ -318,6 +323,7 @@ extension Model {
                                             _ inputPort: AVAudioSessionPortDescription,
                                             _ dataSources: [AVAudioSessionDataSourceDescription])
     {
+        var builtInMics: [SettingsMicsMic] = []
         for dataSource in dataSources {
             var name: String
             var builtInOrientation: SettingsMic?
@@ -333,8 +339,14 @@ extension Model {
             mic.dataSourceId = dataSource.dataSourceID.intValue
             mic.builtInOrientation = builtInOrientation
             mic.connected = true
-            mics.append(mic)
+            switch mic.builtInOrientation {
+            case .bottom, .top:
+                builtInMics.append(mic)
+            default:
+                builtInMics.insert(mic, at: 0)
+            }
         }
+        mics += builtInMics
     }
 
     private func addAudioSessionExternalMics(

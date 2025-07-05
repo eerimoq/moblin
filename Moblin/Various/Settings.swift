@@ -5504,7 +5504,7 @@ class Database: Codable, ObservableObject {
     var videoStabilizationMode: SettingsVideoStabilizationMode = .off
     var chat: SettingsChat = .init()
     var batteryPercentage: Bool = true
-    var mic_to_remove: SettingsMic = getDefaultMic()
+    var mic: SettingsMic = getDefaultMic()
     var mics: SettingsMics = .init()
     var debug: SettingsDebug = .init()
     var quickButtonsGeneral: SettingsQuickButtons = .init()
@@ -5666,7 +5666,7 @@ class Database: Codable, ObservableObject {
         try container.encode(.videoStabilizationMode, videoStabilizationMode)
         try container.encode(.chat, chat)
         try container.encode(.batteryPercentage, batteryPercentage)
-        try container.encode(.mic, mic_to_remove)
+        try container.encode(.mic, mic)
         try container.encode(.mics, mics)
         try container.encode(.debug, debug)
         try container.encode(.quickButtons, quickButtonsGeneral)
@@ -5736,6 +5736,7 @@ class Database: Codable, ObservableObject {
         videoStabilizationMode = container.decode(.videoStabilizationMode, SettingsVideoStabilizationMode.self, .off)
         chat = container.decode(.chat, SettingsChat.self, .init())
         batteryPercentage = container.decode(.batteryPercentage, Bool.self, true)
+        mic = container.decode(.mic, SettingsMic.self, getDefaultMic())
         mics = container.decode(.mics, SettingsMics.self, .init())
         debug = container.decode(.debug, SettingsDebug.self, .init())
         quickButtonsGeneral = container.decode(.quickButtons, SettingsQuickButtons.self, .init())
