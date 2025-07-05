@@ -267,6 +267,8 @@ extension Model {
             } else if let connectedMic = connectedMics.first(where: { $0 == mic }) {
                 mic.connected = connectedMic.connected
                 databaseMics.append(mic)
+            } else {
+                databaseMics.append(mic)
             }
         }
         for mic in connectedMics where !databaseMics.contains(mic) {
