@@ -159,9 +159,6 @@ extension Model {
                 if let url = URL(string: self.stream.goLiveNotificationDiscordWebhookUrl) {
                     self.tryUploadGoLiveNotificationToDiscord(imageJpeg, url)
                 }
-                if self.stream.goLiveNotificationDiscordIAmLive {
-                    self.tryUploadGoLiveNotificationToDiscord(imageJpeg, iAmLiveWebhookUrl)
-                }
             }
         }
     }

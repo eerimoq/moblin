@@ -32,14 +32,6 @@ private struct GoLiveNotificationDiscordSettingsView: View {
                     placeholder: "https://discord.com/api/webhooks/foobar"
                 )
             }
-            Section {
-                Toggle("Send to #i-am-live", isOn: $stream.goLiveNotificationDiscordIAmLive)
-            } footer: {
-                Text("""
-                When enabled, the notification will be sent to the #i-am-live \
-                channel in Moblin's Discord server as well.
-                """)
-            }
         }
         .navigationTitle("Discord")
     }
