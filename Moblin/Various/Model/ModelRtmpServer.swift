@@ -69,8 +69,11 @@ extension Model {
             self.media.addBufferedVideo(cameraId: stream.id, name: name, latency: latency)
             self.media.addBufferedAudio(cameraId: stream.id, name: name, latency: latency)
             self.markDjiIsStreamingIfNeeded(rtmpServerStreamId: stream.id)
-            self.markMicAsConnected(id: "\(stream.id) 0")
+            stream.connected = true
             DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                if stream.connected {
+                    self.markMicAsConnected(id: "\(stream.id) 0")
+                }
                 self.switchMicIfNeededAfterNetworkCameraChange()
             }
         }
@@ -93,6 +96,7 @@ extension Model {
         }
         media.removeBufferedVideo(cameraId: stream.id)
         media.removeBufferedAudio(cameraId: stream.id)
+        stream.connected = false
         markMicAsDisconnected(id: "\(stream.id) 0")
         for device in database.djiDevices.devices {
             guard device.rtmpUrlType == .server, device.serverRtmpStreamId == stream.id else {
