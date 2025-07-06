@@ -4739,10 +4739,10 @@
 		};
 		03A08B7A2AC295620018BA95 /* XCRemoteSwiftPackageReference "AlertToast" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/elai950/AlertToast.git";
+			repositoryURL = "https://github.com/eerimoq/AlertToast.git";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.0;
+				branch = master;
+				kind = branch;
 			};
 		};
 		03A974262AC137A000610E21 /* XCRemoteSwiftPackageReference "swift-collections" */ = {

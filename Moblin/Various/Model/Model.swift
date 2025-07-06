@@ -651,13 +651,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func makeToast(title: String, subTitle: String? = nil) {
         toast.toast = AlertToast(type: .regular, title: title, subTitle: subTitle)
-        toast.showingToast = true
+        showToast()
         logger.debug("toast: Info: \(title): \(subTitle ?? "-")")
     }
 
     func makeWarningToast(title: String, subTitle: String? = nil, vibrate: Bool = false) {
         toast.toast = AlertToast(type: .regular, title: formatWarning(title), subTitle: subTitle)
-        toast.showingToast = true
+        showToast()
         logger.debug("toast: Warning: \(title): \(subTitle ?? "-")")
         if vibrate {
             UIDevice.vibrate()
@@ -671,7 +671,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             subTitle: subTitle,
             style: .style(titleColor: .red, titleFont: font)
         )
-        toast.showingToast = true
+        showToast()
         logger.debug("toast: Error: \(title): \(subTitle ?? "-")")
         if vibrate {
             UIDevice.vibrate()
@@ -681,6 +681,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func makeErrorToastMain(title: String, font: Font? = nil, subTitle: String? = nil, vibrate: Bool = false) {
         DispatchQueue.main.async {
             self.makeErrorToast(title: title, font: font, subTitle: subTitle, vibrate: vibrate)
+        }
+    }
+
+    private func showToast() {
+        toast.showingToast = false
+        DispatchQueue.main.async {
+            self.toast.showingToast = true
         }
     }
 
