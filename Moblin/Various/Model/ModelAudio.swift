@@ -72,10 +72,156 @@ extension Model {
         }
     }
 
+    func switchMicIfNeededAfterSceneSwitch() {
+        updateMicsList()
+        if database.mics.autoSwitch {
+            if let scene = getSelectedScene(), scene.overrideMic, let mic = getConnectedMicById(id: scene.micId) {
+                selectMic(mic: mic)
+            } else {
+                if defaultMic.connected {
+                    selectMic(mic: defaultMic)
+                } else if let mic = getHighestPriorityConnectedMic() {
+                    selectMic(mic: mic)
+                }
+            }
+        }
+    }
+
+    func switchMicIfNeededAfterNetworkCameraChange() {
+        if database.mics.autoSwitch {
+            updateMicsList()
+            if let scene = getSelectedScene(), scene.overrideMic, let mic = getConnectedMicById(id: scene.micId) {
+                selectMic(mic: mic)
+                if let highestPrioMic = getHighestPriorityConnectedMic() {
+                    defaultMic = highestPrioMic
+                }
+            } else if let highestPrioMic = getHighestPriorityConnectedMic() {
+                selectMic(mic: highestPrioMic)
+                defaultMic = highestPrioMic
+            }
+        }
+    }
+
+    func markMicAsConnected(id: String) {
+        database.mics.mics.first(where: { $0.id == id })?.connected = true
+    }
+
+    func markMicAsDisconnected(id: String) {
+        database.mics.mics.first(where: { $0.id == id })?.connected = false
+    }
+
+    func updateMicsList() {
+        let connectedMics = listMics()
+        var databaseMics: [SettingsMicsMic] = []
+        for mic in database.mics.mics {
+            if mic.isExternal() {
+                mic.connected = connectedMics.contains(where: { $0 == mic })
+                databaseMics.append(mic)
+            } else if let connectedMic = connectedMics.first(where: { $0 == mic }) {
+                mic.connected = connectedMic.connected
+                databaseMics.append(mic)
+            } else {
+                databaseMics.append(mic)
+            }
+        }
+        for mic in connectedMics where !databaseMics.contains(mic) {
+            databaseMics.insert(mic, at: 0)
+        }
+        database.mics.mics = databaseMics
+    }
+
+    func getMicById(id: String) -> SettingsMicsMic? {
+        return database.mics.mics.first(where: { $0.id == id })
+    }
+
+    func manualSelectMicById(id: String) {
+        if let mic = getAvailableMicById(id: id) {
+            selectMic(mic: mic)
+            defaultMic = mic
+        }
+    }
+
+    func selectMicById(id: String) {
+        if let mic = getAvailableMicById(id: id) {
+            selectMic(mic: mic)
+        }
+    }
+
+    func selectMicDefault(mic: SettingsMicsMic) {
+        media.attachBufferedAudio(cameraId: nil)
+        let preferStereoMic = database.debug.preferStereoMic
+        netStreamLockQueue.async {
+            let session = AVAudioSession.sharedInstance()
+            for inputPort in session.availableInputs ?? [] {
+                if mic.inputUid != inputPort.uid {
+                    continue
+                }
+                try? session.setPreferredInput(inputPort)
+                if let dataSourceID = mic.dataSourceId as? NSNumber {
+                    for dataSource in inputPort.dataSources ?? [] {
+                        if dataSourceID != dataSource.dataSourceID {
+                            continue
+                        }
+                        try? self.setBuiltInMicAudioMode(dataSource: dataSource, preferStereoMic: preferStereoMic)
+                        try? session.setInputDataSource(dataSource)
+                    }
+                }
+            }
+        }
+        media.attachDefaultAudioDevice(builtinDelay: database.debug.builtinAudioAndVideoDelay)
+        remoteControlStreamer?.stateChanged(state: RemoteControlState(mic: mic.id))
+    }
+
+    func keepSpeakerAlive(now: ContinuousClock.Instant) {
+        guard keepSpeakerAliveLatestPlayed.duration(to: now) > .seconds(5 * 60) else {
+            return
+        }
+        keepSpeakerAliveLatestPlayed = now
+        guard let soundUrl = Bundle.main.url(forResource: "Alerts.bundle/Silence", withExtension: "mp3")
+        else {
+            return
+        }
+        keepSpeakerAlivePlayer = try? AVAudioPlayer(contentsOf: soundUrl)
+        keepSpeakerAlivePlayer?.play()
+    }
+
+    func updateAudioLevel() {
+        if database.show.audioLevel != audio.showing {
+            audio.showing = database.show.audioLevel
+        }
+        let newAudioLevel = media.getAudioLevel()
+        let newNumberOfAudioChannels = media.getNumberOfAudioChannels()
+        if newNumberOfAudioChannels != audio.numberOfChannels {
+            audio.numberOfChannels = newNumberOfAudioChannels
+        }
+        if newAudioLevel == audio.level {
+            return
+        }
+        if abs(audio.level - newAudioLevel) > 5
+            || newAudioLevel.isNaN
+            || newAudioLevel == .infinity
+            || audio.level.isNaN
+            || audio.level == .infinity
+        {
+            audio.level = newAudioLevel
+            if isWatchLocal() {
+                sendAudioLevelToWatch(audioLevel: audio.level)
+            }
+        }
+    }
+
     @objc func systemVolumeDidChange(notification: NSNotification) {
         DispatchQueue.main.async {
             self.handleSystemVolumeDidChange(notification: notification)
         }
+    }
+
+    @objc func handleAudioRouteChange(notification _: Notification) {
+        // Not sure about this...
+        if isMac() {
+            return
+        }
+        switchMicIfNeededAfterRouteChange()
     }
 
     private func handleSystemVolumeDidChange(notification: NSNotification) {
@@ -124,12 +270,13 @@ extension Model {
         }
     }
 
-    @objc func handleAudioRouteChange(notification _: Notification) {
-        // Not sure about this...
-        if isMac() {
-            return
+    private func switchMicIfNeededAfterRouteChange() {
+        updateMicsList()
+        if database.mics.autoSwitch {
+            autoSwitchMicIfNeededAfterRouteChange()
+        } else {
+            manualSwitchMicIfNeededAfterRouteChange()
         }
-        switchMicIfNeededAfterRouteChange()
     }
 
     private func getActiveAudioSessionMic() -> SettingsMicsMic? {
@@ -157,45 +304,6 @@ extension Model {
             newMic.inputUid = inputPort.uid
         }
         return newMic
-    }
-
-    func switchMicIfNeededAfterSceneSwitch() {
-        updateMicsList()
-        if database.mics.autoSwitch {
-            if let scene = getSelectedScene(), scene.overrideMic, let mic = getConnectedMicById(id: scene.micId) {
-                selectMic(mic: mic)
-            } else {
-                if defaultMic.connected {
-                    selectMic(mic: defaultMic)
-                } else if let mic = getHighestPriorityConnectedMic() {
-                    selectMic(mic: mic)
-                }
-            }
-        }
-    }
-
-    func switchMicIfNeededAfterNetworkCameraChange() {
-        if database.mics.autoSwitch {
-            updateMicsList()
-            if let scene = getSelectedScene(), scene.overrideMic, let mic = getConnectedMicById(id: scene.micId) {
-                selectMic(mic: mic)
-                if let highestPrioMic = getHighestPriorityConnectedMic() {
-                    defaultMic = highestPrioMic
-                }
-            } else if let highestPrioMic = getHighestPriorityConnectedMic() {
-                selectMic(mic: highestPrioMic)
-                defaultMic = highestPrioMic
-            }
-        }
-    }
-
-    func switchMicIfNeededAfterRouteChange() {
-        updateMicsList()
-        if database.mics.autoSwitch {
-            autoSwitchMicIfNeededAfterRouteChange()
-        } else {
-            manualSwitchMicIfNeededAfterRouteChange()
-        }
     }
 
     private func autoSwitchMicIfNeededAfterRouteChange() {
@@ -246,40 +354,12 @@ extension Model {
         }
     }
 
-    func getHighestPriorityConnectedMic() -> SettingsMicsMic? {
+    private func getHighestPriorityConnectedMic() -> SettingsMicsMic? {
         return database.mics.mics.first(where: { $0.connected })
     }
 
     private func makeMicChangeToast(name: String) {
         makeToast(title: String(localized: "Switched mic to '\(name)'"))
-    }
-
-    func markMicAsConnected(id: String) {
-        database.mics.mics.first(where: { $0.id == id })?.connected = true
-    }
-
-    func markMicAsDisconnected(id: String) {
-        database.mics.mics.first(where: { $0.id == id })?.connected = false
-    }
-
-    func updateMicsList() {
-        let connectedMics = listMics()
-        var databaseMics: [SettingsMicsMic] = []
-        for mic in database.mics.mics {
-            if mic.isExternal() {
-                mic.connected = connectedMics.contains(where: { $0 == mic })
-                databaseMics.append(mic)
-            } else if let connectedMic = connectedMics.first(where: { $0 == mic }) {
-                mic.connected = connectedMic.connected
-                databaseMics.append(mic)
-            } else {
-                databaseMics.append(mic)
-            }
-        }
-        for mic in connectedMics where !databaseMics.contains(mic) {
-            databaseMics.insert(mic, at: 0)
-        }
-        database.mics.mics = databaseMics
     }
 
     private func getBuiltInMicOrientation(orientation: AVAudioSession.Orientation?) -> SettingsMic? {
@@ -300,7 +380,7 @@ extension Model {
         }
     }
 
-    func listMics() -> [SettingsMicsMic] {
+    private func listMics() -> [SettingsMicsMic] {
         var mics: [SettingsMicsMic] = []
         listMediaPlayerMics(&mics)
         listSrtlaMics(&mics)
@@ -399,11 +479,7 @@ extension Model {
         }
     }
 
-    func getMicById(id: String) -> SettingsMicsMic? {
-        return database.mics.mics.first(where: { $0.id == id })
-    }
-
-    func getConnectedMicById(id: String) -> SettingsMicsMic? {
+    private func getConnectedMicById(id: String) -> SettingsMicsMic? {
         guard let mic = database.mics.mics.first(where: { $0.id == id }), mic.connected else {
             return nil
         }
@@ -422,22 +498,8 @@ extension Model {
         return mic
     }
 
-    func manualSelectMicById(id: String) {
-        if let mic = getAvailableMicById(id: id) {
-            selectMic(mic: mic)
-            defaultMic = mic
-        }
-    }
-
-    func selectMicById(id: String) {
-        if let mic = getAvailableMicById(id: id) {
-            selectMic(mic: mic)
-        }
-    }
-
     private func selectMic(mic: SettingsMicsMic) {
         self.mic.requested = mic
-        // logger.info("xxx requested \(mic.name)")
         trySwitchMic()
     }
 
@@ -511,31 +573,6 @@ extension Model {
         remoteControlStreamer?.stateChanged(state: RemoteControlState(mic: mic.id))
     }
 
-    func selectMicDefault(mic: SettingsMicsMic) {
-        media.attachBufferedAudio(cameraId: nil)
-        let preferStereoMic = database.debug.preferStereoMic
-        netStreamLockQueue.async {
-            let session = AVAudioSession.sharedInstance()
-            for inputPort in session.availableInputs ?? [] {
-                if mic.inputUid != inputPort.uid {
-                    continue
-                }
-                try? session.setPreferredInput(inputPort)
-                if let dataSourceID = mic.dataSourceId as? NSNumber {
-                    for dataSource in inputPort.dataSources ?? [] {
-                        if dataSourceID != dataSource.dataSourceID {
-                            continue
-                        }
-                        try? self.setBuiltInMicAudioMode(dataSource: dataSource, preferStereoMic: preferStereoMic)
-                        try? session.setInputDataSource(dataSource)
-                    }
-                }
-            }
-        }
-        media.attachDefaultAudioDevice(builtinDelay: database.debug.builtinAudioAndVideoDelay)
-        remoteControlStreamer?.stateChanged(state: RemoteControlState(mic: mic.id))
-    }
-
     private func setBuiltInMicAudioMode(dataSource: AVAudioSessionDataSourceDescription, preferStereoMic: Bool) throws {
         if preferStereoMic {
             if dataSource.supportedPolarPatterns?.contains(.stereo) == true {
@@ -545,44 +582,6 @@ extension Model {
             }
         } else {
             try dataSource.setPreferredPolarPattern(.none)
-        }
-    }
-
-    func keepSpeakerAlive(now: ContinuousClock.Instant) {
-        guard keepSpeakerAliveLatestPlayed.duration(to: now) > .seconds(5 * 60) else {
-            return
-        }
-        keepSpeakerAliveLatestPlayed = now
-        guard let soundUrl = Bundle.main.url(forResource: "Alerts.bundle/Silence", withExtension: "mp3")
-        else {
-            return
-        }
-        keepSpeakerAlivePlayer = try? AVAudioPlayer(contentsOf: soundUrl)
-        keepSpeakerAlivePlayer?.play()
-    }
-
-    func updateAudioLevel() {
-        if database.show.audioLevel != audio.showing {
-            audio.showing = database.show.audioLevel
-        }
-        let newAudioLevel = media.getAudioLevel()
-        let newNumberOfAudioChannels = media.getNumberOfAudioChannels()
-        if newNumberOfAudioChannels != audio.numberOfChannels {
-            audio.numberOfChannels = newNumberOfAudioChannels
-        }
-        if newAudioLevel == audio.level {
-            return
-        }
-        if abs(audio.level - newAudioLevel) > 5
-            || newAudioLevel.isNaN
-            || newAudioLevel == .infinity
-            || audio.level.isNaN
-            || audio.level == .infinity
-        {
-            audio.level = newAudioLevel
-            if isWatchLocal() {
-                sendAudioLevelToWatch(audioLevel: audio.level)
-            }
         }
     }
 }
