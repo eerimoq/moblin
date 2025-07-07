@@ -152,21 +152,17 @@ extension Model {
         let preferStereoMic = database.debug.preferStereoMic
         netStreamLockQueue.async {
             let session = AVAudioSession.sharedInstance()
-            for inputPort in session.availableInputs ?? [] {
-                if mic.inputUid != inputPort.uid {
-                    continue
-                }
-                try? session.setPreferredInput(inputPort)
-                if let dataSourceID = mic.dataSourceId as? NSNumber {
-                    for dataSource in inputPort.dataSources ?? [] {
-                        if dataSourceID != dataSource.dataSourceID {
-                            continue
-                        }
-                        try? self.setBuiltInMicAudioMode(dataSource: dataSource, preferStereoMic: preferStereoMic)
-                        try? session.setInputDataSource(dataSource)
-                    }
-                }
+            guard let inputPort = session.availableInputs?.first(where: { $0.uid == mic.inputUid }) else {
+                return
             }
+            try? session.setPreferredInput(inputPort)
+            guard let dataSourceId = mic.dataSourceId as? NSNumber,
+                  let dataSource = inputPort.dataSources?.first(where: { $0.dataSourceID == dataSourceId })
+            else {
+                return
+            }
+            try? setBuiltInMicAudioMode(dataSource: dataSource, preferStereoMic: preferStereoMic)
+            try? session.setInputDataSource(dataSource)
         }
         media.attachDefaultAudioDevice(builtinDelay: database.debug.builtinAudioAndVideoDelay)
         remoteControlStreamer?.stateChanged(state: RemoteControlState(mic: mic.id))
@@ -572,16 +568,16 @@ extension Model {
         media.attachBufferedAudio(cameraId: cameraId)
         remoteControlStreamer?.stateChanged(state: RemoteControlState(mic: mic.id))
     }
+}
 
-    private func setBuiltInMicAudioMode(dataSource: AVAudioSessionDataSourceDescription, preferStereoMic: Bool) throws {
-        if preferStereoMic {
-            if dataSource.supportedPolarPatterns?.contains(.stereo) == true {
-                try dataSource.setPreferredPolarPattern(.stereo)
-            } else {
-                try dataSource.setPreferredPolarPattern(.none)
-            }
+private func setBuiltInMicAudioMode(dataSource: AVAudioSessionDataSourceDescription, preferStereoMic: Bool) throws {
+    if preferStereoMic {
+        if dataSource.supportedPolarPatterns?.contains(.stereo) == true {
+            try dataSource.setPreferredPolarPattern(.stereo)
         } else {
             try dataSource.setPreferredPolarPattern(.none)
         }
+    } else {
+        try dataSource.setPreferredPolarPattern(.none)
     }
 }
