@@ -887,11 +887,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         lutUpdated()
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(handleCaptureDeviceWasConnected),
-                                               name: NSNotification.Name.AVCaptureDeviceWasConnected,
+                                               name: AVCaptureDevice.wasConnectedNotification,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(handleCaptureDeviceWasDisconnected),
-                                               name: NSNotification.Name.AVCaptureDeviceWasDisconnected,
+                                               name: AVCaptureDevice.wasDisconnectedNotification,
                                                object: nil)
 
         if WCSession.isSupported() {
@@ -1160,12 +1160,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     @objc func handleCaptureDeviceWasConnected(_: Notification) {
-        logger.info("Capture device connected")
         updateCameraLists()
     }
 
     @objc func handleCaptureDeviceWasDisconnected(_: Notification) {
-        logger.info("Capture device disconnected")
         updateCameraLists()
     }
 
