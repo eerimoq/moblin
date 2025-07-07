@@ -231,6 +231,10 @@ extension Model {
         switchMicIfNeededAfterRouteChange()
     }
 
+    @objc func handleAvailableInputsChangeNotification(notification _: NSNotification) {
+        updateMicsListAsync()
+    }
+
     private func handleSystemVolumeDidChange(notification: NSNotification) {
         guard let userInfo = notification.userInfo,
               let volume = userInfo["Volume"] as? Float,
