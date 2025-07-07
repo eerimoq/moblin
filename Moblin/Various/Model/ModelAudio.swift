@@ -112,6 +112,17 @@ extension Model {
 
     func updateMicsList() {
         let connectedMics = listMics()
+        updateMicsListDatabase(connectedMics: connectedMics)
+    }
+
+    func updateMicsListAsync(onCompleted: (() -> Void)? = nil) {
+        listMicsAsync { connectedMics in
+            self.updateMicsListDatabase(connectedMics: connectedMics)
+            onCompleted?()
+        }
+    }
+
+    private func updateMicsListDatabase(connectedMics: [SettingsMicsMic]) {
         var databaseMics: [SettingsMicsMic] = []
         for mic in database.mics.mics {
             if mic.isExternal() {
@@ -267,11 +278,12 @@ extension Model {
     }
 
     private func switchMicIfNeededAfterRouteChange() {
-        updateMicsList()
-        if database.mics.autoSwitch {
-            autoSwitchMicIfNeededAfterRouteChange()
-        } else {
-            manualSwitchMicIfNeededAfterRouteChange()
+        updateMicsListAsync {
+            if self.database.mics.autoSwitch {
+                self.autoSwitchMicIfNeededAfterRouteChange()
+            } else {
+                self.manualSwitchMicIfNeededAfterRouteChange()
+            }
         }
     }
 
@@ -319,6 +331,7 @@ extension Model {
                 }
             }
         } else {
+            // logger.info("xxx ACTIVE: \(getActiveAudioSessionMic()?.id)")
             if let activeMic = getActiveAudioSessionMic(),
                getMicPriority(mic: activeMic) > getMicPriority(mic: mic.current)
             {
@@ -383,6 +396,19 @@ extension Model {
         listRtmpMics(&mics)
         listAudioSessionMics(&mics)
         return mics
+    }
+
+    private func listMicsAsync(onCompleted: @escaping ([SettingsMicsMic]) -> Void) {
+        var mics: [SettingsMicsMic] = []
+        listMediaPlayerMics(&mics)
+        listSrtlaMics(&mics)
+        listRtmpMics(&mics)
+        netStreamLockQueue.async {
+            self.listAudioSessionMics(&mics)
+            DispatchQueue.main.async {
+                onCompleted(mics)
+            }
+        }
     }
 
     private func listAudioSessionMics(_ mics: inout [SettingsMicsMic]) {

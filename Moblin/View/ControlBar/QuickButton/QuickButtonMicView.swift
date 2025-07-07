@@ -19,9 +19,10 @@ private struct QuickButtonMicMicView: View {
         }
         .contentShape(Rectangle())
         .onTapGesture {
-            model.updateMicsList()
-            if mic.connected {
-                model.manualSelectMicById(id: mic.id)
+            model.updateMicsListAsync {
+                if mic.connected {
+                    model.manualSelectMicById(id: mic.id)
+                }
             }
         }
     }
@@ -63,7 +64,7 @@ struct QuickButtonMicView: View {
             }
         }
         .onAppear {
-            model.updateMicsList()
+            model.updateMicsListAsync()
         }
         .navigationTitle("Mic")
     }
