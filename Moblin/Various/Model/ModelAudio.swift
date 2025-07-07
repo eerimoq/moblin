@@ -110,7 +110,7 @@ extension Model {
         database.mics.mics.first(where: { $0.id == id })?.connected = false
     }
 
-    func updateMicsList() {
+    private func updateMicsList() {
         let connectedMics = listMics()
         updateMicsListDatabase(connectedMics: connectedMics)
     }
