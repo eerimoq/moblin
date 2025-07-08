@@ -33,8 +33,8 @@ class SrtServerClient {
 
     func run(clientSocket: Int32) {
         let packetSize = 2048
-        var packet = Data(count: packetSize)
         while server?.running == true {
+            var packet = Data(count: packetSize)
             let count = packet.withUnsafeMutableBytes { pointer in
                 srt_recvmsg(clientSocket, pointer.baseAddress, Int32(packetSize))
             }
@@ -47,7 +47,6 @@ class SrtServerClient {
             do {
                 while reader.bytesAvailable >= MpegTsPacket.size {
                     let packet = try MpegTsPacket(reader: reader)
-                    // logger.info("Packet: \(packet)")
                     if packet.id == MpegTsPacket.programAssociationTableId {
                         try handleProgramAssociationTable(packet: packet)
                     } else if let programNumber = programs[packet.id] {
