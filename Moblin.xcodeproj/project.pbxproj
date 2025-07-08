@@ -1930,16 +1930,12 @@
 		0359F83B2BD3DA5F005BFDA8 /* Media */ = {
 			isa = PBXGroup;
 			children = (
-				0359F8352BD3DA5F005BFDA8 /* AudioUnit.swift */,
-				03CDC36D2E1D44E400311FC7 /* BufferedAudio.swift */,
-				03CDC36B2E1D446C00311FC7 /* BufferedVideo.swift */,
+				03CDC36F2E1D457800311FC7 /* Audio */,
+				03CDC3702E1D457D00311FC7 /* Video */,
 				03EEC76A2CED8C8B00749D4E /* DriftTracker.swift */,
 				0359F8362BD3DA5F005BFDA8 /* Mixer.swift */,
-				0359F8392BD3DA5F005BFDA8 /* PreviewView.swift */,
 				0359F8372BD3DA5F005BFDA8 /* Recorder.swift */,
 				0318D35D2CF04C2B00E12F3B /* TargetLatenciesSynchronizer.swift */,
-				0359F83A2BD3DA5F005BFDA8 /* VideoEffect.swift */,
-				0359F8382BD3DA5F005BFDA8 /* VideoUnit.swift */,
 			);
 			path = Media;
 			sourceTree = "<group>";
@@ -3097,6 +3093,26 @@
 				03CBFC742BFD3C7E0029A888 /* MirrorFrontCameraView.swift */,
 			);
 			path = MirrorFrontCamera;
+			sourceTree = "<group>";
+		};
+		03CDC36F2E1D457800311FC7 /* Audio */ = {
+			isa = PBXGroup;
+			children = (
+				0359F8352BD3DA5F005BFDA8 /* AudioUnit.swift */,
+				03CDC36D2E1D44E400311FC7 /* BufferedAudio.swift */,
+			);
+			path = Audio;
+			sourceTree = "<group>";
+		};
+		03CDC3702E1D457D00311FC7 /* Video */ = {
+			isa = PBXGroup;
+			children = (
+				03CDC36B2E1D446C00311FC7 /* BufferedVideo.swift */,
+				0359F8392BD3DA5F005BFDA8 /* PreviewView.swift */,
+				0359F83A2BD3DA5F005BFDA8 /* VideoEffect.swift */,
+				0359F8382BD3DA5F005BFDA8 /* VideoUnit.swift */,
+			);
+			path = Video;
 			sourceTree = "<group>";
 		};
 		03CDEAA02C0AB8BB006121D0 /* Integrations */ = {
