@@ -505,6 +505,7 @@
 		03CBFC752BFD3C7E0029A888 /* MirrorFrontCameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CBFC742BFD3C7E0029A888 /* MirrorFrontCameraView.swift */; };
 		03CD92A72DC9D23700202D49 /* WhirlpoolEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CD92A62DC9D23100202D49 /* WhirlpoolEffect.swift */; };
 		03CD92A92DC9D76100202D49 /* PinchEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CD92A82DC9D75E00202D49 /* PinchEffect.swift */; };
+		03CDC36C2E1D447400311FC7 /* BufferedVideo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CDC36B2E1D446C00311FC7 /* BufferedVideo.swift */; };
 		03CFF9CB2CA82EEF00FEC614 /* StrokeModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CFF9CA2CA82EDF00FEC614 /* StrokeModifier.swift */; };
 		03D10E7A2B64099500B1E436 /* TextEditNavigationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D10E792B64099500B1E436 /* TextEditNavigationView.swift */; };
 		03D151AF2BFA73C100D29D8E /* MetalPetal in Frameworks */ = {isa = PBXBuildFile; productRef = 03D151AE2BFA73C100D29D8E /* MetalPetal */; };
@@ -1178,6 +1179,7 @@
 		03CBFC742BFD3C7E0029A888 /* MirrorFrontCameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MirrorFrontCameraView.swift; sourceTree = "<group>"; };
 		03CD92A62DC9D23100202D49 /* WhirlpoolEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhirlpoolEffect.swift; sourceTree = "<group>"; };
 		03CD92A82DC9D75E00202D49 /* PinchEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinchEffect.swift; sourceTree = "<group>"; };
+		03CDC36B2E1D446C00311FC7 /* BufferedVideo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BufferedVideo.swift; sourceTree = "<group>"; };
 		03CFF9CA2CA82EDF00FEC614 /* StrokeModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StrokeModifier.swift; sourceTree = "<group>"; };
 		03D10E792B64099500B1E436 /* TextEditNavigationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextEditNavigationView.swift; sourceTree = "<group>"; };
 		03D15CED2DABD72C007DA935 /* GoPro.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoPro.swift; sourceTree = "<group>"; };
@@ -1927,6 +1929,7 @@
 			isa = PBXGroup;
 			children = (
 				0359F8352BD3DA5F005BFDA8 /* AudioUnit.swift */,
+				03CDC36B2E1D446C00311FC7 /* BufferedVideo.swift */,
 				03EEC76A2CED8C8B00749D4E /* DriftTracker.swift */,
 				0359F8362BD3DA5F005BFDA8 /* Mixer.swift */,
 				0359F8392BD3DA5F005BFDA8 /* PreviewView.swift */,
@@ -3901,6 +3904,7 @@
 				03BA73A82DDC583500075CD6 /* ModelHeartRateDevice.swift in Sources */,
 				035E775C2ACC969D00738DCE /* ZoomPresetSettingsView.swift in Sources */,
 				03C5AE422C536FE10056B6C7 /* WeatherManager.swift in Sources */,
+				03CDC36C2E1D447400311FC7 /* BufferedVideo.swift in Sources */,
 				0391D2052CB30029008AB44B /* UnmuteIntent.swift in Sources */,
 				03D10E7A2B64099500B1E436 /* TextEditNavigationView.swift in Sources */,
 				03ADC6FD2CDDE01100E625BF /* SimpleTimer.swift in Sources */,
