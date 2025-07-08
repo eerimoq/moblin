@@ -118,10 +118,7 @@ final class AudioUnit: NSObject {
                 if input!.isWindNoiseRemovalSupported {
                     input!.multichannelAudioMode = .stereo
                     input!.isWindNoiseRemovalEnabled = true
-                    logger
-                        .info(
-                            "audio-unit: Wind noise removal enabled is \(input!.isWindNoiseRemovalEnabled)"
-                        )
+                    logger.info("audio-unit: Wind noise removal enabled is \(input!.isWindNoiseRemovalEnabled)")
                 } else {
                     logger.info("audio-unit: Wind noise removal is not supported on this device")
                 }
