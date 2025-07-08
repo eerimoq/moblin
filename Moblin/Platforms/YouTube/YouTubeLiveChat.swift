@@ -17,17 +17,13 @@ func fetchYouTubeVideoId(handle: String) async throws -> String {
         throw "Not html"
     }
     let patterns = [
-        #"<link rel="shortlinkUrl" href="https://youtu\.be/([^"]+)""#,
-        #"<link rel='shortlinkUrl' href='https://youtu\.be/([^']+)'"#,
-        #"shortlinkUrl[^>]*href=[\"\']https://youtu\.be/([^\"\']+)"#,
+        /<link rel="shortlinkUrl" href="https:\/\/youtu\.be\/([^"]+)"/,
+        /<link rel='shortlinkUrl' href='https:\/\/youtu\.be\/([^']+)'/,
+        /shortlinkUrl[^>]*href=[\"\']https:\/\/youtu\.be\/([^\"\']+)/,
     ]
     for pattern in patterns {
-        if let regex = try? NSRegularExpression(pattern: pattern, options: []),
-           let match = regex.firstMatch(in: html, options: [], range: NSRange(html.startIndex..., in: html)),
-           let videoIdRange = Range(match.range(at: 1), in: html)
-        {
-            let videoId = String(html[videoIdRange])
-            return videoId
+        if let match = try? pattern.firstMatch(in: html) {
+            return String(match.1)
         }
     }
     throw "Video id not found"
