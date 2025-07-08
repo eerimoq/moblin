@@ -3657,7 +3657,7 @@ class SettingsDebug: Codable, ObservableObject {
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         logLevel = container.decode(.logLevel, SettingsLogLevel.self, .error)
-        srtOverlay = container.decode(.logLevel, Bool.self, false)
+        srtOverlay = container.decode(.srtOverlay, Bool.self, false)
         srtOverheadBandwidth = container.decode(.srtOverheadBandwidth, Int32.self, 25)
         cameraSwitchRemoveBlackish = container.decode(.cameraSwitchRemoveBlackish, Float.self, 0.3)
         maximumBandwidthFollowInput = container.decode(.maximumBandwidthFollowInput, Bool.self, true)
