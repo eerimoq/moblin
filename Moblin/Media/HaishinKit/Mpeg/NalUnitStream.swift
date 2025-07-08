@@ -12,13 +12,38 @@ func addNalUnitStartCodes(_ data: inout Data) {
     }
 }
 
-// Should unescape as well? Why can length be 3 or 4 bytes? Correct?
+// Should unescape as well?
 func removeNalUnitStartCodes(_ data: inout Data) {
+    var nalUnits: [(Int, Int, Int)] = []
+    var numberOfThreeBytesStartCodes = 0
     parseNalUnits(data) { startCodeIndex, startCodeLength, length in
-        data.replaceSubrange(
-            startCodeIndex ..< startCodeIndex + startCodeLength,
-            with: Int32(length).bigEndian.data[(4 - startCodeLength)...]
-        )
+        nalUnits.append((startCodeIndex, startCodeLength, length))
+        if startCodeLength != 4 {
+            numberOfThreeBytesStartCodes += 1
+        }
+    }
+    if numberOfThreeBytesStartCodes == 0 {
+        for (startCodeIndex, _, length) in nalUnits {
+            data.replaceSubrange(startCodeIndex ..< startCodeIndex + 4, with: Int32(length).bigEndian.data)
+        }
+    } else {
+        data += Data(count: numberOfThreeBytesStartCodes)
+        var endOffset = data.count
+        for (startCodeIndex, startCodeLength, length) in nalUnits {
+            let dataOffset = startCodeIndex + startCodeLength
+            if numberOfThreeBytesStartCodes > 0 {
+                // Require iOS 18 and later for now.
+                if #available(iOS 18, *) {
+                    data.moveSubranges(.init(dataOffset ..< dataOffset + length), to: endOffset)
+                }
+            }
+            endOffset -= length
+            data.replaceSubrange(endOffset - 4 ..< endOffset, with: Int32(length).bigEndian.data)
+            endOffset -= 4
+            if startCodeLength != 4 {
+                numberOfThreeBytesStartCodes -= 1
+            }
+        }
     }
 }
 
