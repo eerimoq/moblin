@@ -290,12 +290,13 @@ struct MpegTsPacketizedElementaryStream {
     }
 
     mutating func makeVideoSampleBuffer(
+        _ nalUnits: [NalUnitInfo],
         _ basePresentationTimeStamp: CMTime,
         _ firstReceivedPresentationTimeStamp: CMTime?,
         _ previousReceivedPresentationTimeStamp: CMTime?,
         _ formatDescription: CMFormatDescription?
     ) -> (CMSampleBuffer, CMTime, CMTime)? {
-        removeNalUnitStartCodes(&data)
+        removeNalUnitStartCodes(&data, nalUnits)
         let blockBuffer = data.makeBlockBuffer()
         var sampleSizes = [blockBuffer?.dataLength ?? 0]
         return makeSampleBuffer(

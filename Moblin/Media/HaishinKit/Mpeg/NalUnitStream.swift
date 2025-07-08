@@ -2,6 +2,26 @@ import CoreMedia
 
 let nalUnitStartCode = Data([0x00, 0x00, 0x00, 0x01])
 
+struct NalUnitInfo {
+    let startCodeOffset: Int
+    let startCodeLength: Int
+    let dataLength: Int
+
+    func dataOffset() -> Int {
+        return startCodeOffset + startCodeLength
+    }
+}
+
+func getNalUnits(data: Data) -> [NalUnitInfo] {
+    var nalUnits: [NalUnitInfo] = []
+    parseNalUnits(data) { startCodeIndex, startCodeLength, dataLength in
+        nalUnits.append(NalUnitInfo(startCodeOffset: startCodeIndex,
+                                    startCodeLength: startCodeLength,
+                                    dataLength: dataLength))
+    }
+    return nalUnits
+}
+
 // Should escape as well?
 func addNalUnitStartCodes(_ data: inout Data) {
     var index = 0
@@ -13,34 +33,28 @@ func addNalUnitStartCodes(_ data: inout Data) {
 }
 
 // Should unescape as well?
-func removeNalUnitStartCodes(_ data: inout Data) {
-    var nalUnits: [(Int, Int, Int)] = []
-    var numberOfThreeBytesStartCodes = 0
-    parseNalUnits(data) { startCodeIndex, startCodeLength, length in
-        nalUnits.append((startCodeIndex, startCodeLength, length))
-        if startCodeLength != 4 {
-            numberOfThreeBytesStartCodes += 1
-        }
-    }
+func removeNalUnitStartCodes(_ data: inout Data, _ nalUnits: [NalUnitInfo]) {
+    var numberOfThreeBytesStartCodes = nalUnits.count(where: { $0.startCodeLength != 4 })
     if numberOfThreeBytesStartCodes == 0 {
-        for (startCodeIndex, _, length) in nalUnits {
-            data.replaceSubrange(startCodeIndex ..< startCodeIndex + 4, with: Int32(length).bigEndian.data)
+        for nalUnit in nalUnits {
+            data.replaceSubrange(nalUnit.startCodeOffset ..< nalUnit.startCodeOffset + 4,
+                                 with: Int32(nalUnit.dataLength).bigEndian.data)
         }
     } else {
         data += Data(count: numberOfThreeBytesStartCodes)
         var endOffset = data.count
-        for (startCodeIndex, startCodeLength, length) in nalUnits {
-            let dataOffset = startCodeIndex + startCodeLength
+        for nalUnit in nalUnits {
+            let dataOffset = nalUnit.dataOffset()
             if numberOfThreeBytesStartCodes > 0 {
                 // Require iOS 18 and later for now.
                 if #available(iOS 18, *) {
-                    data.moveSubranges(.init(dataOffset ..< dataOffset + length), to: endOffset)
+                    data.moveSubranges(.init(dataOffset ..< dataOffset + nalUnit.dataLength), to: endOffset)
                 }
             }
-            endOffset -= length
-            data.replaceSubrange(endOffset - 4 ..< endOffset, with: Int32(length).bigEndian.data)
+            endOffset -= nalUnit.dataLength
+            data.replaceSubrange(endOffset - 4 ..< endOffset, with: Int32(nalUnit.dataLength).bigEndian.data)
             endOffset -= 4
-            if startCodeLength != 4 {
+            if nalUnit.startCodeLength != 4 {
                 numberOfThreeBytesStartCodes -= 1
             }
         }
@@ -51,24 +65,27 @@ protocol NalUnit {
     init(_ data: Data)
 }
 
-func readH264NalUnits(_ data: Data, _ filter: [AVCNALUnitType]) -> [AvcNalUnit] {
-    return readNalUnits(data) { byte in
+func readH264NalUnits(data: Data, nalUnits: [NalUnitInfo], filter: [AVCNALUnitType]) -> [AvcNalUnit] {
+    return readNalUnits(data, nalUnits) { byte in
         filter.contains(AVCNALUnitType(rawValue: byte & 0x1F) ?? .unspec)
     }
 }
 
-func readH265NalUnits(_ data: Data, _ filter: [HevcNalUnitType]) -> [HevcNalUnit] {
-    return readNalUnits(data) { byte in
+func readH265NalUnits(data: Data, nalUnits: [NalUnitInfo], filter: [HevcNalUnitType]) -> [HevcNalUnit] {
+    return readNalUnits(data, nalUnits) { byte in
         filter.contains(HevcNalUnitType(rawValue: (byte & 0x7E) >> 1) ?? .unspec)
     }
 }
 
-private func readNalUnits<T: NalUnit>(_ data: Data, _ filter: (UInt8) -> Bool) -> [T] {
-    var units: [T] = []
-    parseNalUnits(data) { startCodeIndex, startCodeLength, length in
-        let nalUnitIndex = startCodeIndex + startCodeLength
-        if filter(data[nalUnitIndex]) {
-            units.append(T(data.subdata(in: nalUnitIndex ..< nalUnitIndex + length)))
+private func readNalUnits<TNalUnit: NalUnit>(_ data: Data,
+                                             _ nalUnits: [NalUnitInfo],
+                                             _ filter: (UInt8) -> Bool) -> [TNalUnit]
+{
+    var units: [TNalUnit] = []
+    for nalUnit in nalUnits {
+        let dataOffset = nalUnit.dataOffset()
+        if filter(data[dataOffset]) {
+            units.append(TNalUnit(data.subdata(in: dataOffset ..< dataOffset + nalUnit.dataLength)))
         }
     }
     return units
@@ -87,13 +104,13 @@ private func parseNalUnits(_ data: Data, _ onNalUnit: (Int, Int, Int) -> Void) {
             continue
         }
         let startCodeLength = index - 1 >= 0 && data[index - 1] == 0 ? 4 : 3
-        let length = lastIndexOf - index - 2
-        guard length > 0 else {
+        let dataLength = lastIndexOf - index - 2
+        guard dataLength > 0 else {
             index -= 1
             continue
         }
         let startCodeIndex = index + 3 - startCodeLength
-        onNalUnit(startCodeIndex, startCodeLength, length)
+        onNalUnit(startCodeIndex, startCodeLength, dataLength)
         lastIndexOf = startCodeIndex - 1
         index = lastIndexOf
     }
