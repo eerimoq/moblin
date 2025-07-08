@@ -506,6 +506,7 @@
 		03CD92A72DC9D23700202D49 /* WhirlpoolEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CD92A62DC9D23100202D49 /* WhirlpoolEffect.swift */; };
 		03CD92A92DC9D76100202D49 /* PinchEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CD92A82DC9D75E00202D49 /* PinchEffect.swift */; };
 		03CDC36C2E1D447400311FC7 /* BufferedVideo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CDC36B2E1D446C00311FC7 /* BufferedVideo.swift */; };
+		03CDC36E2E1D44E700311FC7 /* BufferedAudio.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CDC36D2E1D44E400311FC7 /* BufferedAudio.swift */; };
 		03CFF9CB2CA82EEF00FEC614 /* StrokeModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CFF9CA2CA82EDF00FEC614 /* StrokeModifier.swift */; };
 		03D10E7A2B64099500B1E436 /* TextEditNavigationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D10E792B64099500B1E436 /* TextEditNavigationView.swift */; };
 		03D151AF2BFA73C100D29D8E /* MetalPetal in Frameworks */ = {isa = PBXBuildFile; productRef = 03D151AE2BFA73C100D29D8E /* MetalPetal */; };
@@ -1180,6 +1181,7 @@
 		03CD92A62DC9D23100202D49 /* WhirlpoolEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhirlpoolEffect.swift; sourceTree = "<group>"; };
 		03CD92A82DC9D75E00202D49 /* PinchEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinchEffect.swift; sourceTree = "<group>"; };
 		03CDC36B2E1D446C00311FC7 /* BufferedVideo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BufferedVideo.swift; sourceTree = "<group>"; };
+		03CDC36D2E1D44E400311FC7 /* BufferedAudio.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BufferedAudio.swift; sourceTree = "<group>"; };
 		03CFF9CA2CA82EDF00FEC614 /* StrokeModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StrokeModifier.swift; sourceTree = "<group>"; };
 		03D10E792B64099500B1E436 /* TextEditNavigationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextEditNavigationView.swift; sourceTree = "<group>"; };
 		03D15CED2DABD72C007DA935 /* GoPro.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoPro.swift; sourceTree = "<group>"; };
@@ -1929,6 +1931,7 @@
 			isa = PBXGroup;
 			children = (
 				0359F8352BD3DA5F005BFDA8 /* AudioUnit.swift */,
+				03CDC36D2E1D44E400311FC7 /* BufferedAudio.swift */,
 				03CDC36B2E1D446C00311FC7 /* BufferedVideo.swift */,
 				03EEC76A2CED8C8B00749D4E /* DriftTracker.swift */,
 				0359F8362BD3DA5F005BFDA8 /* Mixer.swift */,
@@ -3675,6 +3678,7 @@
 				0391BB3D2B36CAC5004852EA /* AboutVersionHistorySettingsView.swift in Sources */,
 				033AB2F12DC8659400B764A9 /* ByteReader.swift in Sources */,
 				0317646D2DB66CD5000080A5 /* ReplayEffect.swift in Sources */,
+				03CDC36E2E1D44E700311FC7 /* BufferedAudio.swift in Sources */,
 				03A9D1332C0E65A400F0B917 /* SrtlaServer.swift in Sources */,
 				0324CD072BEBFBBA004AA063 /* RistStream.swift in Sources */,
 				03D37EE02CE0892B006D14C2 /* UrlSession.swift in Sources */,
