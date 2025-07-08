@@ -29,7 +29,7 @@ struct AdtsHeader: Equatable {
         copyrightIdBit = (data[3] & 0b0000_1000) == 0b0000_1000
         copyrightIdStart = (data[3] & 0b0000_0100) == 0b0000_0100
         aacFrameLength = UInt16(data[3] & 0b0000_0011) << 11 | UInt16(data[4]) << 3 | UInt16(data[5] >> 5)
-        guard aacFrameLength > 0 else {
+        guard aacFrameLength >= AdtsHeader.size else {
             return nil
         }
     }
@@ -100,6 +100,6 @@ struct ADTSReaderIterator: IteratorProtocol {
         defer {
             cursor += Int(header.aacFrameLength)
         }
-        return Int(header.aacFrameLength)
+        return Int(header.aacFrameLength) - AdtsHeader.size
     }
 }
