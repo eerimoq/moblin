@@ -139,44 +139,56 @@ private struct ChatMessage {
     }
 }
 
-private enum MessageTagStringParser {
-    static func tags(from string: String) -> [String: String] {
-        let tagsString = string.removingPrefix("@")
-        let tagSpecifiers = tagsString.split(separator: ";")
-        let tagPairs = tagSpecifiers.compactMap { Self.tagKeyAndValue(from: $0) }
-        return [String: String](tagPairs, uniquingKeysWith: { key, _ in key })
-    }
+private func parseTags(from string: String) -> [String: String] {
+    let tagsString = string.removingPrefix("@")
+    let tagSpecifiers = tagsString.split(separator: ";")
+    let tagPairs = tagSpecifiers.compactMap { tagKeyAndValue(from: $0) }
+    return [String: String](tagPairs, uniquingKeysWith: { key, _ in key })
+}
 
-    private static func tagKeyAndValue(from specifier: Substring) -> (String, String)? {
-        let parts = specifier.split(separator: "=")
-        guard parts.count == 2, let keyPart = parts.first, let valuePart = parts.last else {
-            return nil
-        }
-        guard valuePart.isEmpty == false else {
-            return nil
-        }
-        var unescapedValue = ""
-        let scanner = Scanner(string: String(valuePart))
-        while scanner.isAtEnd == false {
-            unescapedValue.append(scanner.scanUpToString("\\"))
-            _ = scanner.scanString("\\")
-            if let escapedCharacter = scanner.scanCharacter() {
-                switch escapedCharacter {
-                case ":":
-                    unescapedValue.append(";")
-                case "s":
-                    unescapedValue.append(" ")
-                case "r":
-                    unescapedValue.append("\r")
-                case "n":
-                    unescapedValue.append("\n")
-                default:
-                    unescapedValue.append(escapedCharacter)
-                }
+private func tagKeyAndValue(from specifier: Substring) -> (String, String)? {
+    let parts = specifier.split(separator: "=")
+    guard parts.count == 2, let keyPart = parts.first, let valuePart = parts.last else {
+        return nil
+    }
+    guard valuePart.isEmpty == false else {
+        return nil
+    }
+    var unescapedValue = ""
+    let scanner = Scanner(string: String(valuePart))
+    while scanner.isAtEnd == false {
+        unescapedValue.append(scanner.scanUpToString("\\"))
+        _ = scanner.scanString("\\")
+        if let escapedCharacter = scanner.scanCharacter() {
+            switch escapedCharacter {
+            case ":":
+                unescapedValue.append(";")
+            case "s":
+                unescapedValue.append(" ")
+            case "r":
+                unescapedValue.append("\r")
+            case "n":
+                unescapedValue.append("\n")
+            default:
+                unescapedValue.append(escapedCharacter)
             }
         }
-        return (String(keyPart), unescapedValue)
     }
+    return (String(keyPart), unescapedValue)
+}
+
+private func parseParameters(from parts: [String]) -> [String] {
+    var parameters = [String]()
+    for index in parts.startIndex ..< parts.endIndex {
+        let part = parts[index]
+        guard part.hasPrefix(":") else {
+            parameters.append(String(part))
+            continue
+        }
+        let finalPart = parts.suffix(from: index).joined(separator: " ").removingPrefix(":")
+        return parameters + [String(finalPart)]
+    }
+    return parameters
 }
 
 private struct Message {
@@ -188,7 +200,7 @@ private struct Message {
     init(string: String) throws {
         var parts = string.components(separatedBy: .whitespaces)
         if let tagsPart = parts.first, tagsPart.hasPrefix("@") {
-            tags = MessageTagStringParser.tags(from: tagsPart)
+            tags = parseTags(from: tagsPart)
             parts.removeFirst()
         } else {
             tags = [:]
@@ -208,21 +220,7 @@ private struct Message {
         }
         self.command = command
         parts.removeFirst()
-        parameters = Self.parameters(from: parts)
-    }
-
-    private static func parameters(from parts: [String]) -> [String] {
-        var parameters = [String]()
-        for index in parts.startIndex ..< parts.endIndex {
-            let part = parts[index]
-            guard part.hasPrefix(":") else {
-                parameters.append(String(part))
-                continue
-            }
-            let finalPart = parts.suffix(from: index).joined(separator: " ").removingPrefix(":")
-            return parameters + [String(finalPart)]
-        }
-        return parameters
+        parameters = parseParameters(from: parts)
     }
 
     var sender: String? {
