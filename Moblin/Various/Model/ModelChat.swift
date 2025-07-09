@@ -316,17 +316,7 @@ extension Model {
             hasYouTubeLiveChatEmotes() || hasAfreecaTvChatEmotes() || hasOpenStreamingPlatformChatEmotes()
     }
 
-    func resetChat() {
-        chat.reset()
-        quickButtonChat.reset()
-        externalDisplayChat.reset()
-        quickButtonChatState.chatAlertsPosts = []
-        pausedQuickButtonChatAlertsPosts = []
-        newQuickButtonChatAlertsPosts = []
-        chatBotMessages = []
-        chatTextToSpeech.reset(running: true)
-        remoteControlStreamerLatestReceivedChatMessageId = -1
-    }
+    func resetChat() {}
 
     func sendChatMessage(message: String) {
         guard isTwitchAccessTokenConfigured() else {
