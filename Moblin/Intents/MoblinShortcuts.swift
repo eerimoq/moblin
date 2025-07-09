@@ -1,7 +1,7 @@
 import AppIntents
 import IntentsUI
 
-class MoblinShortcuts: AppShortcutsProvider {
+final class MoblinShortcuts: AppShortcutsProvider {
     static var shortcutTileColor = ShortcutTileColor.navy
 
     static var appShortcuts: [AppShortcut] = [
