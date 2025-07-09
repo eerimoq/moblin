@@ -168,4 +168,8 @@ struct ChatPost: Identifiable, Equatable {
     func text() -> String {
         return segments.filter { $0.text != nil }.map { $0.text! }.joined(separator: "").trim()
     }
+
+    func isRedLine() -> Bool {
+        return user == nil
+    }
 }

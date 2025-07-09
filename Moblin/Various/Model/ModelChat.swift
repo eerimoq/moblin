@@ -122,8 +122,8 @@ extension Model {
 
     func endOfQuickButtonChatReachedWhenPaused() {
         while let post = quickButtonChat.pausedPosts.popFirst() {
-            if post.user == nil {
-                if let lastPost = quickButtonChat.posts.first, lastPost.user == nil {
+            if post.isRedLine() {
+                if quickButtonChat.posts.first?.isRedLine() == true {
                     continue
                 }
                 if quickButtonChat.pausedPosts.isEmpty {
@@ -146,8 +146,8 @@ extension Model {
     private func appendPausedChatPosts(maximumNumberOfPostsToAppend: Int) -> Int {
         var numberOfPostsAppended = 0
         while numberOfPostsAppended < maximumNumberOfPostsToAppend, let post = chat.pausedPosts.popFirst() {
-            if post.user == nil {
-                if let lastPost = chat.posts.first, lastPost.user == nil {
+            if post.isRedLine() {
+                if chat.posts.first?.isRedLine() == true {
                     continue
                 }
                 if chat.pausedPosts.isEmpty {
@@ -170,8 +170,8 @@ extension Model {
 
     func endOfQuickButtonChatAlertsReachedWhenPaused() {
         while let post = pausedQuickButtonChatAlertsPosts.popFirst() {
-            if post.user == nil {
-                if let lastPost = quickButtonChatState.chatAlertsPosts.first, lastPost.user == nil {
+            if post.isRedLine() {
+                if quickButtonChatState.chatAlertsPosts.first?.isRedLine() == true {
                     continue
                 }
                 if pausedQuickButtonChatAlertsPosts.isEmpty {
@@ -442,8 +442,7 @@ extension Model {
         chat.posts = newPostIds(posts: chat.posts)
         quickButtonChat.posts = newPostIds(posts: quickButtonChat.posts)
         externalDisplayChat.posts = newPostIds(posts: externalDisplayChat.posts)
-        quickButtonChatState
-            .chatAlertsPosts = newPostIds(posts: quickButtonChatState.chatAlertsPosts)
+        quickButtonChatState.chatAlertsPosts = newPostIds(posts: quickButtonChatState.chatAlertsPosts)
     }
 
     private func newPostIds(posts: Deque<ChatPost>) -> Deque<ChatPost> {
