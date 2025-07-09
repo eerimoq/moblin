@@ -502,10 +502,16 @@ final class VideoUnit: NSObject {
 
     func setCaptureSize(size: CGSize) {
         captureSize = size
+        updateDevicesFormat()
     }
 
     func setOutputSize(size: CGSize) {
         outputSize = size
+        mixerLockQueue.async {
+            self.blackImage = nil
+            self.pool = nil
+            self.bufferedPool = nil
+        }
     }
 
     private func startFrameTimer() {

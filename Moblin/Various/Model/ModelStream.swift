@@ -401,7 +401,7 @@ extension Model {
         }
     }
 
-    private func setStreamResolution() {
+    func setStreamResolution() {
         var captureSize: CGSize
         var outputSize: CGSize
         switch stream.resolution {

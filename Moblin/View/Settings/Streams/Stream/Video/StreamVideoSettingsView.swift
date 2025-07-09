@@ -57,9 +57,10 @@ struct StreamVideoSettingsView: View {
                     }
                 }
                 .onChange(of: stream.resolution) { _ in
-                    model.reloadStreamIfEnabled(stream: stream)
+                    if stream.enabled {
+                        model.setStreamResolution()
+                    }
                 }
-                .disabled(stream.enabled && (model.isLive || model.isRecording))
             }
             Section {
                 HStack {
