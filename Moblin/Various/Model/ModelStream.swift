@@ -401,10 +401,10 @@ extension Model {
         }
     }
 
-    func setStreamResolution() {
+    func setStreamResolution(resolution: SettingsStreamResolution? = nil) {
         var captureSize: CGSize
         var outputSize: CGSize
-        switch stream.resolution {
+        switch resolution ?? stream.resolution {
         case .r3840x2160:
             captureSize = .init(width: 3840, height: 2160)
             outputSize = .init(width: 3840, height: 2160)
@@ -709,8 +709,8 @@ extension Model {
         remoteControlStreamer?.stateChanged(state: RemoteControlState(streaming: isLive))
     }
 
-    func setStreamFps() {
-        media.setStreamFps(fps: stream.fps)
+    func setStreamFps(fps: Int? = nil) {
+        media.setStreamFps(fps: fps ?? stream.fps)
     }
 
     func setStreamPreferAutoFps() {
@@ -805,6 +805,22 @@ extension Model {
             logger.info("Setting pixel format \(format)")
             pixelFormatType = type
         }
+    }
+
+    func startLowPowerMode() {
+        logger.info("stream: Starting low power mode")
+        setStreamFps(fps: 15)
+        setStreamResolution(resolution: .r426x240)
+        media.setVideoStreamBitrate(bitrate: 1_000_000)
+        // Remove all widgets that are constantly on.
+    }
+
+    func stopLowPowerMode() {
+        logger.info("stream: Stopping low power mode")
+        setStreamFps()
+        setStreamResolution()
+        setBitrate(bitrate: stream.bitrate)
+        // Add all widgets that are constantly on.
     }
 }
 
