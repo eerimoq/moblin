@@ -3,6 +3,8 @@ import Foundation
 import SwiftUI
 import VideoToolbox
 
+private let lowPowerBitrate: UInt32 = 2_000_000
+
 private let iAmLiveWebhookUrl =
     URL(
         string: """
@@ -261,7 +263,7 @@ extension Model {
         switch stream.getProtocol() {
         case .rtmp:
             media.rtmpStartStream(url: stream.url,
-                                  targetBitrate: stream.bitrate,
+                                  targetBitrate: getBitrate(),
                                   adaptiveBitrate: stream.rtmp.adaptiveBitrateEnabled)
             updateAdaptiveBitrateRtmpIfEnabled()
         case .srt:
@@ -270,9 +272,10 @@ extension Model {
                 isSrtla: stream.isSrtla(),
                 url: stream.url,
                 reconnectTime: 5,
-                targetBitrate: stream.bitrate,
-                adaptiveBitrateAlgorithm: stream.srt.adaptiveBitrateEnabled! ? stream.srt.adaptiveBitrate!
-                    .algorithm : nil,
+                targetBitrate: getBitrate(),
+                adaptiveBitrateAlgorithm: stream.srt.adaptiveBitrateEnabled!
+                    ? stream.srt.adaptiveBitrate!.algorithm
+                    : nil,
                 latency: stream.srt.latency,
                 overheadBandwidth: database.debug.srtOverheadBandwidth,
                 maximumBandwidthFollowInput: database.debug.maximumBandwidthFollowInput,
@@ -285,7 +288,7 @@ extension Model {
         case .rist:
             media.ristStartStream(url: stream.url,
                                   bonding: stream.rist.bonding,
-                                  targetBitrate: stream.bitrate,
+                                  targetBitrate: getBitrate(),
                                   adaptiveBitrate: stream.rist.adaptiveBitrateEnabled)
             updateAdaptiveBitrateRistIfEnabled()
         case .irl:
@@ -741,6 +744,10 @@ extension Model {
         remoteControlStreamer?.stateChanged(state: RemoteControlState(bitrate: preset.id))
     }
 
+    private func getBitrate() -> UInt32 {
+        return statusTopRight.isLowPowerMode ? lowPowerBitrate : stream.bitrate
+    }
+
     func setAudioStreamBitrate(stream: SettingsStream) {
         media.setAudioStreamBitrate(bitrate: stream.audioBitrate)
         updateStatusStreamText()
@@ -808,19 +815,45 @@ extension Model {
     }
 
     func startLowPowerMode() {
-        logger.info("stream: Starting low power mode")
-        setStreamFps(fps: 15)
-        setStreamResolution(resolution: .r426x240)
-        media.setVideoStreamBitrate(bitrate: 1_000_000)
-        // Remove all widgets that are constantly on.
+        guard database.debug.autoLowPowerMode else {
+            return
+        }
+        guard !statusTopRight.isLowPowerMode else {
+            return
+        }
+        statusTopRight.isLowPowerMode = true
+        logger.info("Starting low power mode")
+        switch stream.fps {
+        case 50, 100:
+            setStreamFps(fps: 25)
+        case 60, 120:
+            setStreamFps(fps: 30)
+        default:
+            break
+        }
+        switch stream.resolution {
+        case .r3840x2160, .r2560x1440, .r1920x1080:
+            setStreamResolution(resolution: .r1280x720)
+        default:
+            break
+        }
+        if stream.bitrate > lowPowerBitrate {
+            media.setVideoStreamBitrate(bitrate: lowPowerBitrate)
+        }
     }
 
     func stopLowPowerMode() {
-        logger.info("stream: Stopping low power mode")
+        guard database.debug.autoLowPowerMode else {
+            return
+        }
+        guard statusTopRight.isLowPowerMode else {
+            return
+        }
+        statusTopRight.isLowPowerMode = false
+        logger.info("Stopping low power mode")
         setStreamFps()
         setStreamResolution()
         setBitrate(bitrate: stream.bitrate)
-        // Add all widgets that are constantly on.
     }
 }
 

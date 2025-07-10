@@ -177,6 +177,7 @@ class StatusTopRight: ObservableObject {
     @Published var cyclingPowerDeviceState: CyclingPowerDeviceState?
     @Published var heartRateDeviceState: HeartRateDeviceState?
     @Published var location = noValue
+    @Published var isLowPowerMode = false
 }
 
 class Toast: ObservableObject {
@@ -2215,6 +2216,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         logger.info("Thermal state: \(state.string())")
         if statusOther.thermalState == .critical {
             makeFlameRedToast()
+            startLowPowerMode()
+        } else {
+            stopLowPowerMode()
         }
     }
 

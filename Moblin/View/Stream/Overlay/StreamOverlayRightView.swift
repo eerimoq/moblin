@@ -550,7 +550,24 @@ private struct PhoneCoolerDeviceStatusView: View {
                 \(String(status.phoneCoolerPhoneTemp ?? 0)) °C / \
                 \(String(status.phoneCoolerExhaustTemp ?? 0)) °C
                 """,
-                textPlacement: .beforeIcon
+                textPlacement: textPlacement
+            )
+        }
+    }
+}
+
+private struct LowPowerModeStatusView: View {
+    let model: Model
+    @ObservedObject var status: StatusTopRight
+    let textPlacement: StreamOverlayIconAndTextPlacement
+
+    var body: some View {
+        if status.isLowPowerMode {
+            StreamOverlayIconAndTextView(
+                icon: "flame",
+                text: String(localized: "Low power mode"),
+                textPlacement: textPlacement,
+                color: .red
             )
         }
     }
@@ -645,6 +662,11 @@ private struct StatusesView: View {
         PhoneCoolerDeviceStatusView(
             model: model,
             show: model.database.show,
+            status: model.statusTopRight,
+            textPlacement: textPlacement
+        )
+        LowPowerModeStatusView(
+            model: model,
             status: model.statusTopRight,
             textPlacement: textPlacement
         )
