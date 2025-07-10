@@ -956,7 +956,7 @@ final class Media: NSObject {
 }
 
 extension Media: NetStreamDelegate {
-    func stream(_: NetStream, audioLevel: Float, numberOfAudioChannels: Int, sampleRate: Double) {
+    func stream(audioLevel: Float, numberOfAudioChannels: Int, sampleRate: Double) {
         DispatchQueue.main.async {
             if becameMuted(old: self.currentAudioLevel, new: audioLevel) || becameUnmuted(
                 old: self.currentAudioLevel,
@@ -972,31 +972,31 @@ extension Media: NetStreamDelegate {
         }
     }
 
-    func streamVideo(_: NetStream, presentationTimestamp _: Double) {}
+    func streamVideo(presentationTimestamp _: Double) {}
 
-    func streamVideo(_: NetStream, failedEffect: String?) {
+    func streamVideo(failedEffect: String?) {
         DispatchQueue.main.async {
             self.failedVideoEffect = failedEffect
         }
     }
 
-    func streamVideo(_: NetStream, lowFpsImage: Data?, frameNumber: UInt64) {
+    func streamVideo(lowFpsImage: Data?, frameNumber: UInt64) {
         delegate?.mediaOnLowFpsImage(lowFpsImage, frameNumber)
     }
 
-    func streamVideo(_: NetStream, findVideoFormatError: String, activeFormat: String) {
+    func streamVideo(findVideoFormatError: String, activeFormat: String) {
         delegate?.mediaOnFindVideoFormatError(findVideoFormatError, activeFormat)
     }
 
-    func streamVideoAttachCameraError(_: NetStream) {
+    func streamVideoAttachCameraError() {
         delegate?.mediaOnAttachCameraError()
     }
 
-    func streamVideoCaptureSessionError(_: NetStream, _ message: String) {
+    func streamVideoCaptureSessionError(_ message: String) {
         delegate?.mediaOnCaptureSessionError(message)
     }
 
-    func streamAudio(_: NetStream, sampleBuffer: CMSampleBuffer) {
+    func streamAudio(sampleBuffer: CMSampleBuffer) {
         delegate?.mediaOnAudioBuffer(sampleBuffer)
     }
 

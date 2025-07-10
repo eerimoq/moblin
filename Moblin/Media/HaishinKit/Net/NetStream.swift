@@ -2,17 +2,17 @@ import AVFoundation
 import UIKit
 
 protocol NetStreamDelegate: AnyObject {
-    func stream(_ stream: NetStream, audioLevel: Float, numberOfAudioChannels: Int, sampleRate: Double)
-    func streamVideo(_ stream: NetStream, presentationTimestamp: Double)
-    func streamVideo(_ stream: NetStream, failedEffect: String?)
-    func streamVideo(_ stream: NetStream, lowFpsImage: Data?, frameNumber: UInt64)
-    func streamVideo(_ stream: NetStream, findVideoFormatError: String, activeFormat: String)
-    func streamVideoAttachCameraError(_ stream: NetStream)
-    func streamVideoCaptureSessionError(_ stream: NetStream, _ message: String)
+    func stream(audioLevel: Float, numberOfAudioChannels: Int, sampleRate: Double)
+    func streamVideo(presentationTimestamp: Double)
+    func streamVideo(failedEffect: String?)
+    func streamVideo(lowFpsImage: Data?, frameNumber: UInt64)
+    func streamVideo(findVideoFormatError: String, activeFormat: String)
+    func streamVideoAttachCameraError()
+    func streamVideoCaptureSessionError(_ message: String)
     func streamRecorderInitSegment(data: Data)
     func streamRecorderDataSegment(segment: RecorderDataSegment)
     func streamRecorderFinished()
-    func streamAudio(_ stream: NetStream, sampleBuffer: CMSampleBuffer)
+    func streamAudio(sampleBuffer: CMSampleBuffer)
     func streamNoTorch()
     func streamSetZoomX(x: Float)
     func streamSetExposureBias(bias: Float)
@@ -231,34 +231,33 @@ open class NetStream: NSObject {
 
 extension NetStream: MixerDelegate {
     func mixer(audioLevel: Float, numberOfAudioChannels: Int, sampleRate: Double) {
-        delegate?.stream(self,
-                         audioLevel: audioLevel,
+        delegate?.stream(audioLevel: audioLevel,
                          numberOfAudioChannels: numberOfAudioChannels,
                          sampleRate: sampleRate)
     }
 
     func mixerVideo(presentationTimestamp: Double) {
-        delegate?.streamVideo(self, presentationTimestamp: presentationTimestamp)
+        delegate?.streamVideo(presentationTimestamp: presentationTimestamp)
     }
 
     func mixerVideo(failedEffect: String?) {
-        delegate?.streamVideo(self, failedEffect: failedEffect)
+        delegate?.streamVideo(failedEffect: failedEffect)
     }
 
     func mixerVideo(lowFpsImage: Data?, frameNumber: UInt64) {
-        delegate?.streamVideo(self, lowFpsImage: lowFpsImage, frameNumber: frameNumber)
+        delegate?.streamVideo(lowFpsImage: lowFpsImage, frameNumber: frameNumber)
     }
 
     func mixer(findVideoFormatError: String, activeFormat: String) {
-        delegate?.streamVideo(self, findVideoFormatError: findVideoFormatError, activeFormat: activeFormat)
+        delegate?.streamVideo(findVideoFormatError: findVideoFormatError, activeFormat: activeFormat)
     }
 
     func mixerAttachCameraError() {
-        delegate?.streamVideoAttachCameraError(self)
+        delegate?.streamVideoAttachCameraError()
     }
 
     func mixerCaptureSessionError(message: String) {
-        delegate?.streamVideoCaptureSessionError(self, message)
+        delegate?.streamVideoCaptureSessionError(message)
     }
 
     func mixerRecorderInitSegment(data: Data) {
@@ -274,7 +273,7 @@ extension NetStream: MixerDelegate {
     }
 
     func mixer(audioSampleBuffer: CMSampleBuffer) {
-        delegate?.streamAudio(self, sampleBuffer: audioSampleBuffer)
+        delegate?.streamAudio(sampleBuffer: audioSampleBuffer)
     }
 
     func mixerNoTorch() {
