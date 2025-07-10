@@ -183,7 +183,7 @@ class RtmpStream: NetStream {
         let settings = videoEncoder.settings.value
         metadata["width"] = settings.videoSize.width
         metadata["height"] = settings.videoSize.height
-        metadata["framerate"] = mixer.video.frameRate
+        metadata["framerate"] = mixer.video.getFps()
         switch settings.format {
         case .h264:
             metadata["videocodecid"] = FlvVideoCodec.avc.rawValue

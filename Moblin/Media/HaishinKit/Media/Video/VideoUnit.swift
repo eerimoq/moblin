@@ -118,64 +118,6 @@ final class VideoUnit: NSObject {
     private var pendingAfterAttachRotation: Double?
     private var videoUnitBuiltinDevice: VideoUnitBuiltinDevice!
     private var sceneVideoSourceId = UUID()
-
-    var frameRate = VideoUnit.defaultFrameRate {
-        didSet {
-            updateDevicesFormat()
-            startFrameTimer()
-        }
-    }
-
-    var preferAutoFrameRate = false {
-        didSet {
-            updateDevicesFormat()
-        }
-    }
-
-    var colorSpace: AVCaptureColorSpace = .sRGB {
-        didSet {
-            updateDevicesFormat()
-        }
-    }
-
-    private func updateDevicesFormat() {
-        for device in captureSessionDevices {
-            setDeviceFormat(
-                device: device.device,
-                frameRate: frameRate,
-                preferAutoFrameRate: preferAutoFrameRate,
-                colorSpace: colorSpace
-            )
-        }
-    }
-
-    var videoOrientation: AVCaptureVideoOrientation = .portrait {
-        didSet {
-            guard videoOrientation != oldValue else {
-                return
-            }
-            session.beginConfiguration()
-            for device in captureSessionDevices {
-                for connection in device.output.connections.filter({ $0.isVideoOrientationSupported }) {
-                    setOrientation(device: device.device, connection: connection, orientation: videoOrientation)
-                }
-            }
-            session.commitConfiguration()
-        }
-    }
-
-    var torch = false {
-        didSet {
-            guard let device else {
-                if torch {
-                    mixer?.delegate?.mixerNoTorch()
-                }
-                return
-            }
-            setTorchMode(device, torch ? .on : .off)
-        }
-    }
-
     private var selectedBufferedVideoCameraId: UUID?
     fileprivate var bufferedVideos: [UUID: BufferedVideo] = [:]
     fileprivate var bufferedVideoBuiltins: [AVCaptureDevice?: BufferedVideo] = [:]
@@ -214,6 +156,36 @@ final class VideoUnit: NSObject {
     private var sceneSwitchTransition: SceneSwitchTransition = .blur
     private var pixelTransferSession: VTPixelTransferSession?
     private var previousFaceDetectionTimes: [UUID: Double] = [:]
+    private var frameRate = VideoUnit.defaultFrameRate
+    private var preferAutoFrameRate = false
+    private var colorSpace: AVCaptureColorSpace = .sRGB
+
+    var videoOrientation: AVCaptureVideoOrientation = .portrait {
+        didSet {
+            guard videoOrientation != oldValue else {
+                return
+            }
+            session.beginConfiguration()
+            for device in captureSessionDevices {
+                for connection in device.output.connections.filter({ $0.isVideoOrientationSupported }) {
+                    setOrientation(device: device.device, connection: connection, orientation: videoOrientation)
+                }
+            }
+            session.commitConfiguration()
+        }
+    }
+
+    var torch = false {
+        didSet {
+            guard let device else {
+                if torch {
+                    mixer?.delegate?.mixerNoTorch()
+                }
+                return
+            }
+            setTorchMode(device, torch ? .on : .off)
+        }
+    }
 
     override init() {
         if let metalDevice = MTLCreateSystemDefaultDevice() {
@@ -260,6 +232,25 @@ final class VideoUnit: NSObject {
         isRunning = false
         removeSessionObservers()
         session.stopRunning()
+    }
+
+    func setFps(fps: Float64) {
+        frameRate = fps
+        updateDevicesFormat()
+        startFrameTimer()
+    }
+
+    func getFps() -> Double {
+        return frameRate
+    }
+
+    func setPreferAutoFrameRate(value: Bool) {
+        preferAutoFrameRate = value
+        updateDevicesFormat()
+    }
+
+    func setColorSpace(colorSpace _: AVCaptureColorSpace) {
+        updateDevicesFormat()
     }
 
     func setCameraControl(enabled: Bool) {
@@ -361,6 +352,17 @@ final class VideoUnit: NSObject {
         params.cameraPreviewLayer.session = nil
         if params.showCameraPreview {
             params.cameraPreviewLayer.session = session
+        }
+    }
+
+    private func updateDevicesFormat() {
+        for device in captureSessionDevices {
+            setDeviceFormat(
+                device: device.device,
+                frameRate: frameRate,
+                preferAutoFrameRate: preferAutoFrameRate,
+                colorSpace: colorSpace
+            )
         }
     }
 

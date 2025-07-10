@@ -38,19 +38,19 @@ open class NetStream: NSObject {
 
     func setFrameRate(value: Float64) {
         netStreamLockQueue.async {
-            self.mixer.video.frameRate = value
+            self.mixer.video.setFps(fps: value)
         }
     }
 
     func setPreferFrameRate(value: Bool) {
         netStreamLockQueue.async {
-            self.mixer.video.preferAutoFrameRate = value
+            self.mixer.video.setPreferAutoFrameRate(value: value)
         }
     }
 
     func setColorSpace(colorSpace: AVCaptureColorSpace, onComplete: @escaping () -> Void) {
         netStreamLockQueue.async {
-            self.mixer.video.colorSpace = colorSpace
+            self.mixer.video.setColorSpace(colorSpace: colorSpace)
             onComplete()
         }
     }
