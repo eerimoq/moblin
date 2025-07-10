@@ -3,7 +3,7 @@ import AVFoundation
 let mixerLockQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.Mixer", qos: .userInteractive)
 
 protocol MixerDelegate: AnyObject {
-    func mixer(audioLevel: Float, numberOfAudioChannels: Int)
+    func mixer(audioLevel: Float, numberOfAudioChannels: Int, sampleRate: Double)
     func mixerVideo(presentationTimestamp: Double)
     func mixerVideo(failedEffect: String?)
     func mixerVideo(lowFpsImage: Data?, frameNumber: UInt64)

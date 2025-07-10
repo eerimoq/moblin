@@ -263,7 +263,10 @@ extension AudioUnit: AVCaptureAudioDataOutputSampleBufferDelegate {
             } else {
                 audioLevel = 0.0
             }
-            mixer?.delegate?.mixer(audioLevel: audioLevel, numberOfAudioChannels: connection.audioChannels.count)
+            mixer?.delegate?.mixer(audioLevel: audioLevel,
+                                   numberOfAudioChannels: connection.audioChannels.count,
+                                   sampleRate: sampleBuffer.formatDescription?.audioStreamBasicDescription?
+                                       .mSampleRate ?? 0)
         }
         appendNewSampleBuffer(sampleBuffer)
     }
@@ -276,7 +279,10 @@ extension AudioUnit: BufferedAudioSampleBufferDelegate {
         }
         if shouldUpdateAudioLevel(sampleBuffer) {
             let numberOfAudioChannels = Int(sampleBuffer.formatDescription?.numberOfAudioChannels() ?? 0)
-            mixer?.delegate?.mixer(audioLevel: .infinity, numberOfAudioChannels: numberOfAudioChannels)
+            mixer?.delegate?.mixer(audioLevel: .infinity,
+                                   numberOfAudioChannels: numberOfAudioChannels,
+                                   sampleRate: sampleBuffer.formatDescription?.audioStreamBasicDescription?
+                                       .mSampleRate ?? 0)
         }
         appendNewSampleBuffer(sampleBuffer)
     }
