@@ -39,7 +39,7 @@ extension Model {
             sendWorkoutToWatch()
             resetWorkoutStats()
             trySendNextChatPostToWatch()
-            sendAudioLevelToWatch(audioLevel: audio.level)
+            sendAudioLevelToWatch(audioLevel: audio.level.level)
             sendThermalStateToWatch(thermalState: statusOther.thermalState)
             sendIsLiveToWatch(isLive: isLive)
             sendIsRecordingToWatch(isRecording: isRecording)

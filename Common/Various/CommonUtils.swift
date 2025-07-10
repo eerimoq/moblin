@@ -17,6 +17,7 @@ let personalHotspotLocalAddress = "172.20.10.1"
 let backgroundColor = Color(white: 0, opacity: 0.4)
 let scoreboardBlueColor = RgbColor(red: 0x0B, green: 0x10, blue: 0xAC).color()
 let scoreboardDarkBlueColor = RgbColor(red: 0, green: 3, blue: 0x5B).color()
+let defaultAudioLevel: Float = -160.0
 
 extension String: @retroactive Error {}
 

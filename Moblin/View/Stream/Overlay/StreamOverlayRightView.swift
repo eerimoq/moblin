@@ -669,12 +669,13 @@ private struct StatusesView: View {
 }
 
 private struct AudioView: View {
+    let model: Model
     @ObservedObject var show: SettingsShow
-    @ObservedObject var audio: AudioProvider
+    let textPlacement: StreamOverlayIconAndTextPlacement
 
     var body: some View {
         if show.audioLevel {
-            AudioLevelView(level: audio.level, channels: audio.numberOfChannels, sampleRate: audio.sampleRate)
+            AudioLevelView(model: model, textPlacement: textPlacement)
                 .padding(20)
                 .contentShape(Rectangle())
                 .padding(-20)
@@ -689,10 +690,11 @@ struct RightOverlayTopView: View {
     var body: some View {
         VStack(alignment: .trailing, spacing: 1) {
             VStack(alignment: .trailing, spacing: 1) {
-                AudioView(show: database.show, audio: model.audio)
                 if database.verboseStatuses {
+                    AudioView(model: model, show: database.show, textPlacement: .beforeIcon)
                     StatusesView(show: database.show, status: model.statusTopRight, textPlacement: .beforeIcon)
                 } else {
+                    AudioView(model: model, show: database.show, textPlacement: .hide)
                     HStack(spacing: 1) {
                         StatusesView(show: database.show, status: model.statusTopRight, textPlacement: .hide)
                     }

@@ -95,7 +95,7 @@ struct PreviewView: View {
                             }
                         }
                         if model.isShowingStatusAudioLevel() {
-                            AudioLevelView(level: model.audioLevel)
+                            // AudioLevelView(level: model.audioLevel)
                         }
                     }
                     .onTapGesture {

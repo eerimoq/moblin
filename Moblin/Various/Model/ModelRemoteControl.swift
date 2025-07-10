@@ -368,19 +368,19 @@ extension Model {
 
     private func remoteControlStreamerCreateStatusTopRight() -> RemoteControlStatusTopRight {
         var topRight = RemoteControlStatusTopRight()
-        let level = formatAudioLevel(level: audio.level) +
+        let level = formatAudioLevel(level: audio.level.level) +
             formatAudioLevelChannels(channels: audio.numberOfChannels)
         topRight.audioLevel = RemoteControlStatusItem(message: level)
         topRight.audioInfo = .init(
             audioLevel: .unknown,
             numberOfAudioChannels: audio.numberOfChannels
         )
-        if audio.level.isNaN {
+        if audio.level.level.isNaN {
             topRight.audioInfo!.audioLevel = .muted
-        } else if audio.level.isInfinite {
+        } else if audio.level.level.isInfinite {
             topRight.audioInfo!.audioLevel = .unknown
         } else {
-            topRight.audioInfo!.audioLevel = .value(audio.level)
+            topRight.audioInfo!.audioLevel = .value(audio.level.level)
         }
         if isServersConfigured() {
             topRight.rtmpServer = RemoteControlStatusItem(message: servers.speedAndTotal)

@@ -1,8 +1,12 @@
 import AVFAudio
 import UIKit
 
-class AudioProvider: ObservableObject {
+class AudioLevel: ObservableObject {
     @Published var level: Float = defaultAudioLevel
+}
+
+class AudioProvider: ObservableObject {
+    let level = AudioLevel()
     @Published var numberOfChannels: Int = 0
     @Published var sampleRate: Double = 0
 }
@@ -202,18 +206,18 @@ extension Model {
         if newSampleRate != audio.sampleRate {
             audio.sampleRate = newSampleRate
         }
-        if newAudioLevel == audio.level {
+        if newAudioLevel == audio.level.level {
             return
         }
-        if abs(audio.level - newAudioLevel) > 5
+        if abs(audio.level.level - newAudioLevel) > 10
             || newAudioLevel.isNaN
             || newAudioLevel == .infinity
-            || audio.level.isNaN
-            || audio.level == .infinity
+            || audio.level.level.isNaN
+            || audio.level.level == .infinity
         {
-            audio.level = newAudioLevel
+            audio.level.level = newAudioLevel
             if isWatchLocal() {
-                sendAudioLevelToWatch(audioLevel: audio.level)
+                sendAudioLevelToWatch(audioLevel: audio.level.level)
             }
         }
     }

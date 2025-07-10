@@ -81,7 +81,6 @@
 		031C15B92B93339C00BA967D /* WatchSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031C15B82B93339C00BA967D /* WatchSettingsView.swift */; };
 		031C15C02B9336D700BA967D /* ControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031C15BE2B9336D200BA967D /* ControlView.swift */; };
 		031C15C42B9340FB00BA967D /* AudioLevelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031C15C32B9340FB00BA967D /* AudioLevelView.swift */; };
-		031C15C52B9340FB00BA967D /* AudioLevelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031C15C32B9340FB00BA967D /* AudioLevelView.swift */; };
 		031C15C62B9341F400BA967D /* StreamOverlayIconAndTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BBA12AAD824600B718B6 /* StreamOverlayIconAndTextView.swift */; };
 		031C15C82B93425200BA967D /* StreamOverlayTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB9F2AAD823900B718B6 /* StreamOverlayTextView.swift */; };
 		031E9FBB2C5ABCC9009FF4D8 /* TwitchAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031E9FBA2C5ABCC9009FF4D8 /* TwitchAuth.swift */; };
@@ -1626,7 +1625,6 @@
 			children = (
 				0379BB9F2AAD823900B718B6 /* StreamOverlayTextView.swift */,
 				0379BBA12AAD824600B718B6 /* StreamOverlayIconAndTextView.swift */,
-				031C15C32B9340FB00BA967D /* AudioLevelView.swift */,
 				03B373FE2A9FCA790028DDD5 /* ThermalStateView.swift */,
 			);
 			path = View;
@@ -1690,6 +1688,7 @@
 		032B4ED22C3490DF00204547 /* Right */ = {
 			isa = PBXGroup;
 			children = (
+				031C15C32B9340FB00BA967D /* AudioLevelView.swift */,
 				032B4EDB2C3491F200204547 /* CameraSettingsControlView.swift */,
 				032B4ED32C34910A00204547 /* MediaPlayerControlsView.swift */,
 				031764682DB60554000080A5 /* ReplayView.swift */,
@@ -4145,7 +4144,6 @@
 				03A707BD2B8F0F61003BB7BE /* CommonUtils.swift in Sources */,
 				03ECDF602B8E738A00BD920E /* Model.swift in Sources */,
 				03A01ACE2B9F738200D20AE3 /* CacheImage.swift in Sources */,
-				031C15C52B9340FB00BA967D /* AudioLevelView.swift in Sources */,
 				0339F9162CE1C78A00F8D6FC /* AVAudioPCMBuffer+Extension.swift in Sources */,
 				C7E682562BC2E3FE004EB747 /* ThermalStateView.swift in Sources */,
 				03B21A3B2CD09A6200E22590 /* PadelScoreboardView.swift in Sources */,
