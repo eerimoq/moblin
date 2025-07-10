@@ -1,13 +1,14 @@
 import SwiftUI
 
 private struct ControlLiveView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
+    @ObservedObject var control: Control
     @State private var isPresentingConfirm: Bool = false
     @State private var pendingValue = false
 
     var body: some View {
         Toggle(isOn: Binding(get: {
-            model.isLive
+            control.isLive
         }, set: { value in
             pendingValue = value
             isPresentingConfirm = true
@@ -24,13 +25,14 @@ private struct ControlLiveView: View {
 }
 
 private struct ControlRecordingView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
+    @ObservedObject var control: Control
     @State private var isPresentingConfirm: Bool = false
     @State private var pendingValue = false
 
     var body: some View {
         Toggle(isOn: Binding(get: {
-            model.isRecording
+            control.isRecording
         }, set: { value in
             pendingValue = value
             isPresentingConfirm = true
@@ -47,11 +49,12 @@ private struct ControlRecordingView: View {
 }
 
 private struct ControlMutedView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
+    @ObservedObject var control: Control
 
     var body: some View {
         Toggle(isOn: Binding(get: {
-            model.isMuted
+            control.isMuted
         }, set: { value in
             model.setIsMuted(value: value)
         })) {
@@ -108,18 +111,25 @@ private struct ControlCreateStreamMarkersView: View {
     }
 }
 
+class Control: ObservableObject {
+    @Published var isLive = false
+    @Published var isRecording = false
+    @Published var isMuted = false
+}
+
 struct ControlView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var preview: Preview
 
     var body: some View {
         ScrollView {
             VStack(spacing: 10) {
-                ControlLiveView()
-                ControlRecordingView()
-                ControlMutedView()
+                ControlLiveView(model: model, control: model.control)
+                ControlRecordingView(model: model, control: model.control)
+                ControlMutedView(model: model, control: model.control)
                 ControlInstantReplayView()
                 ControlSaveReplayView()
-                if !model.viaRemoteControl {
+                if !preview.viaRemoteControl {
                     ControlSkipCurrentTtsView()
                     ControlCreateStreamMarkersView()
                 }

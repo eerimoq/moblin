@@ -12,7 +12,7 @@ struct MoblinWatchApp: App {
 
     var body: some Scene {
         WindowGroup {
-            MainView()
+            MainView(preview: model.preview)
                 .environmentObject(model)
         }
     }

@@ -81,43 +81,13 @@ enum PadelScoreboardScoreIncrement {
 }
 
 class Model: NSObject, ObservableObject {
-    @Published var chatPosts = Deque<ChatPost>()
+    let chat = Chat()
+    let preview = Preview()
+    let control = Control()
     @Published var speedAndTotal = noValue
-    private var latestSpeedAndTotalTime = ContinuousClock.now
     @Published var recordingLength = noValue
-    private var latestRecordingLengthTime = ContinuousClock.now
-    @Published var audioLevel: Float = defaultAudioLevel
-    private var latestAudioLevelTime = ContinuousClock.now
-    @Published var preview: UIImage?
-    @Published var showPreviewDisconnected = true
-    private var latestPreviewTime = ContinuousClock.now
-    var settings = WatchSettings()
-    private var latestChatMessageTime = ContinuousClock.now
-    private var numberOfNormalPostsInChat = 0
-    private var nextExpectedWatchChatPostId = 1
-    private var nextNonNormalChatLineId = -1
-    private var logId = 1
-    var numberOfMessagesReceived = 0
-    @Published var viaRemoteControl = false
-    @Published var isLive = false
-    @Published var isRecording = false
-    @Published var isMuted = false
     @Published var thermalState = ProcessInfo.ThermalState.nominal
-    private var latestThermalStateTime = ContinuousClock.now
-    @Published var zoomX = 0.0
-    @Published var isZooming = false
-    @Published var zoomPresets: [WatchProtocolZoomPreset] = []
-    @Published var zoomPresetId: UUID = .init()
-    @Published var zoomPresetIdPicker: UUID?
-    @Published var scenes: [WatchProtocolScene] = []
-    @Published var sceneId: UUID = .init()
-    @Published var sceneIdPicker: UUID = .init()
-    @Published var verboseStatuses = false
-    private var healthStore = HKHealthStore()
-    private var workoutSession: HKWorkoutSession?
-    private var workoutBuilder: HKLiveWorkoutBuilder?
     @Published var workoutType = noValue
-    @Published var viewerCount = noValue
     @Published var showPadelScoreBoard = false
     @Published var padelScoreboard: PadelScoreboard = .init(
         id: .init(),
@@ -126,8 +96,23 @@ class Model: NSObject, ObservableObject {
         score: []
     )
     @Published var scoreboardPlayers: [PadelScoreboardPlayersPlayer] = []
-    private var padelScoreboardScoreChanges: [PadelScoreboardScoreIncrement] = []
     @Published var padelScoreboardIncrementTintColor: Color?
+    private var latestSpeedAndTotalTime = ContinuousClock.now
+    private var latestRecordingLengthTime = ContinuousClock.now
+    private var latestAudioLevelTime = ContinuousClock.now
+    private var latestPreviewTime = ContinuousClock.now
+    var settings = WatchSettings()
+    private var latestChatMessageTime = ContinuousClock.now
+    private var numberOfNormalPostsInChat = 0
+    private var nextExpectedWatchChatPostId = 1
+    private var nextNonNormalChatLineId = -1
+    private var logId = 1
+    var numberOfMessagesReceived = 0
+    private var latestThermalStateTime = ContinuousClock.now
+    private var healthStore = HKHealthStore()
+    private var workoutSession: HKWorkoutSession?
+    private var workoutBuilder: HKLiveWorkoutBuilder?
+    private var padelScoreboardScoreChanges: [PadelScoreboardScoreIncrement] = []
 
     func setup() {
         if WCSession.isSupported() {
@@ -147,8 +132,8 @@ class Model: NSObject, ObservableObject {
 
     private func updatePreview() {
         let deadline = ContinuousClock.now - previewTimeout
-        if latestPreviewTime < deadline, !showPreviewDisconnected {
-            showPreviewDisconnected = true
+        if latestPreviewTime < deadline, !preview.showPreviewDisconnected {
+            preview.showPreviewDisconnected = true
         }
         if latestSpeedAndTotalTime < deadline, speedAndTotal != noValue {
             speedAndTotal = noValue
@@ -156,8 +141,8 @@ class Model: NSObject, ObservableObject {
         if latestRecordingLengthTime < deadline, recordingLength != noValue {
             recordingLength = noValue
         }
-        if latestAudioLevelTime < deadline, audioLevel != defaultAudioLevel {
-            audioLevel = defaultAudioLevel
+        if latestAudioLevelTime < deadline, preview.audioLevel != defaultAudioLevel {
+            preview.audioLevel = defaultAudioLevel
         }
         if latestThermalStateTime < deadline, thermalState != ProcessInfo.ThermalState.nominal {
             thermalState = ProcessInfo.ThermalState.nominal
@@ -173,24 +158,24 @@ class Model: NSObject, ObservableObject {
 
     private func appendInfoMessage(message: WatchProtocolChatMessage, segments: [ChatPostSegment]) {
         nextNonNormalChatLineId -= 1
-        chatPosts.prepend(ChatPost(id: nextNonNormalChatLineId,
-                                   kind: .info,
-                                   user: "",
-                                   userColor: .white,
-                                   userBadges: [],
-                                   segments: segments,
-                                   timestamp: message.timestamp))
+        chat.posts.prepend(ChatPost(id: nextNonNormalChatLineId,
+                                    kind: .info,
+                                    user: "",
+                                    userColor: .white,
+                                    userBadges: [],
+                                    segments: segments,
+                                    timestamp: message.timestamp))
     }
 
     private func appendRedLineMessage(message: WatchProtocolChatMessage) {
         nextNonNormalChatLineId -= 1
-        chatPosts.prepend(ChatPost(id: nextNonNormalChatLineId,
-                                   kind: .redLine,
-                                   user: "",
-                                   userColor: .red,
-                                   userBadges: [],
-                                   segments: [],
-                                   timestamp: message.timestamp))
+        chat.posts.prepend(ChatPost(id: nextNonNormalChatLineId,
+                                    kind: .redLine,
+                                    user: "",
+                                    userColor: .red,
+                                    userBadges: [],
+                                    segments: [],
+                                    timestamp: message.timestamp))
     }
 
     private func handleChatMessage(_ data: Any) throws {
@@ -199,12 +184,12 @@ class Model: NSObject, ObservableObject {
         }
         let message = try JSONDecoder().decode(WatchProtocolChatMessage.self, from: data)
         // Latest received message is often retransmitted. Just ignore it if so (or likely so).
-        if message.id == chatPosts.first?.id {
+        if message.id == chat.posts.first?.id {
             return
         }
         if message.id < nextExpectedWatchChatPostId {
             nextExpectedWatchChatPostId = message.id
-            chatPosts.removeAll()
+            chat.posts.removeAll()
             numberOfNormalPostsInChat = 0
             latestChatMessageTime = .now
             appendInfoMessage(message: message, segments: [
@@ -228,7 +213,7 @@ class Model: NSObject, ObservableObject {
             }
         }
         latestChatMessageTime = now
-        chatPosts.prepend(
+        chat.posts.prepend(
             ChatPost(id: message.id,
                      kind: .normal,
                      user: message.user,
@@ -243,7 +228,7 @@ class Model: NSObject, ObservableObject {
         )
         numberOfNormalPostsInChat += 1
         while numberOfNormalPostsInChat > maximumNumberOfWatchChatMessages {
-            if chatPosts.popLast()?.kind == .normal {
+            if chat.posts.popLast()?.kind == .normal {
                 numberOfNormalPostsInChat -= 1
             }
         }
@@ -269,7 +254,7 @@ class Model: NSObject, ObservableObject {
         guard let audioLevel = data as? Float else {
             return
         }
-        self.audioLevel = audioLevel
+        preview.audioLevel = audioLevel
         latestAudioLevelTime = .now
     }
 
@@ -277,21 +262,21 @@ class Model: NSObject, ObservableObject {
         guard let value = data as? Bool else {
             return
         }
-        isLive = value
+        control.isLive = value
     }
 
     private func handleIsRecording(_ data: Any) throws {
         guard let value = data as? Bool else {
             return
         }
-        isRecording = value
+        control.isRecording = value
     }
 
     private func handleIsMuted(_ data: Any) throws {
         guard let value = data as? Bool else {
             return
         }
-        isMuted = value
+        control.isMuted = value
     }
 
     private func handleSettings(_ data: Any) throws {
@@ -299,7 +284,7 @@ class Model: NSObject, ObservableObject {
             return
         }
         self.settings = try JSONDecoder().decode(WatchSettings.self, from: settings)
-        viaRemoteControl = self.settings.viaRemoteControl
+        preview.viaRemoteControl = self.settings.viaRemoteControl
     }
 
     private func handleThermalState(_ data: Any) throws {
@@ -316,8 +301,8 @@ class Model: NSObject, ObservableObject {
         guard let image = data as? Data else {
             return
         }
-        preview = UIImage(data: image)
-        showPreviewDisconnected = false
+        preview.image = UIImage(data: image)
+        preview.showPreviewDisconnected = false
         latestPreviewTime = .now
     }
 
@@ -325,17 +310,17 @@ class Model: NSObject, ObservableObject {
         guard let x = data as? Float else {
             return
         }
-        guard !isZooming else {
+        guard !preview.isZooming else {
             return
         }
-        zoomX = Double(x)
+        preview.zoomX = Double(x)
     }
 
     private func handleZoomPresets(_ data: Any) throws {
         guard let data = data as? Data else {
             return
         }
-        zoomPresets = try JSONDecoder().decode([WatchProtocolZoomPreset].self, from: data)
+        preview.zoomPresets = try JSONDecoder().decode([WatchProtocolZoomPreset].self, from: data)
         updateZoomPresets()
     }
 
@@ -346,15 +331,15 @@ class Model: NSObject, ObservableObject {
         guard let zoomPresetId = UUID(uuidString: data) else {
             return
         }
-        self.zoomPresetId = zoomPresetId
+        preview.zoomPresetId = zoomPresetId
         updateZoomPresets()
     }
 
     private func updateZoomPresets() {
-        if zoomPresets.contains(where: { $0.id == zoomPresetId }) {
-            zoomPresetIdPicker = zoomPresetId
+        if preview.zoomPresets.contains(where: { $0.id == preview.zoomPresetId }) {
+            preview.zoomPresetIdPicker = preview.zoomPresetId
         } else {
-            zoomPresetIdPicker = nil
+            preview.zoomPresetIdPicker = nil
         }
     }
 
@@ -362,7 +347,7 @@ class Model: NSObject, ObservableObject {
         guard let data = data as? Data else {
             return
         }
-        scenes = try JSONDecoder().decode([WatchProtocolScene].self, from: data)
+        preview.scenes = try JSONDecoder().decode([WatchProtocolScene].self, from: data)
     }
 
     private func handleScene(_ data: Any) throws {
@@ -372,8 +357,8 @@ class Model: NSObject, ObservableObject {
         guard let sceneId = UUID(uuidString: data) else {
             return
         }
-        self.sceneId = sceneId
-        sceneIdPicker = sceneId
+        preview.sceneId = sceneId
+        preview.sceneIdPicker = sceneId
     }
 
     private func handleStartWorkout(_ data: Any) throws {
@@ -425,7 +410,7 @@ class Model: NSObject, ObservableObject {
         guard let value = data as? String else {
             return
         }
-        viewerCount = value
+        preview.viewerCount = value
     }
 
     private func handlePadelScoreboard(_ data: Any) throws {
@@ -527,11 +512,11 @@ class Model: NSObject, ObservableObject {
     }
 
     func isShowingStatusBitrate() -> Bool {
-        return settings.show.speed && isLive
+        return settings.show.speed && control.isLive
     }
 
     func isShowingStatusRecording() -> Bool {
-        return isRecording
+        return control.isRecording
     }
 
     func isShowingWorkout() -> Bool {

@@ -2,17 +2,18 @@ import SwiftUI
 
 struct MainView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var preview: Preview
 
     var body: some View {
         TabView {
-            PreviewView()
-            if !model.viaRemoteControl {
-                ChatView()
+            PreviewView(model: model, preview: model.preview)
+            if !preview.viaRemoteControl {
+                ChatView(chatSettings: model.settings.chat, chat: model.chat)
             }
-            if model.showPadelScoreBoard && !model.viaRemoteControl {
+            if model.showPadelScoreBoard && !preview.viaRemoteControl {
                 PadelScoreboardView()
             }
-            ControlView()
+            ControlView(preview: preview)
         }
         .onAppear {
             model.setup()
