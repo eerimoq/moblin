@@ -674,7 +674,7 @@ private struct AudioView: View {
 
     var body: some View {
         if show.audioLevel {
-            AudioLevelView(level: audio.level, channels: audio.numberOfChannels)
+            AudioLevelView(level: audio.level, channels: audio.numberOfChannels, sampleRate: audio.sampleRate)
                 .padding(20)
                 .contentShape(Rectangle())
                 .padding(-20)

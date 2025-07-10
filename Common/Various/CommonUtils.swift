@@ -616,6 +616,10 @@ func formatAudioLevelChannels(channels: Int) -> String {
     return String(localized: " \(channels) ch")
 }
 
+func formatAudioLevelSampleRate(sampleRate: Double) -> String {
+    return String(localized: " \(Int(sampleRate / 1000)) kHz")
+}
+
 let noValue = ""
 
 func urlImage(interfaceType: NWInterface.InterfaceType) -> String {

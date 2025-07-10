@@ -150,6 +150,10 @@ final class Media: NSObject {
         return numberOfAudioChannels
     }
 
+    func getAudioSampleRate() -> Double {
+        return audioSampleRate
+    }
+
     func srtStartStream(
         isSrtla: Bool,
         url: String,

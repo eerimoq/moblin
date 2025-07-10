@@ -10,9 +10,9 @@ let defaultAudioLevel: Float = -160.0
 // Approx 60 * 0.3 = 20
 private let maxBars = "||||||||||||||||||||"
 
-struct AudioLevelView: View {
-    var level: Float
-    var channels: Int?
+private struct AudioBarView: View {
+    let level: Float
+    let channels: Int?
 
     private func bars(count: Float) -> Substring {
         let barCount = Int(count.rounded(.toNearestOrAwayFromZero))
@@ -53,45 +53,75 @@ struct AudioLevelView: View {
     }
 
     var body: some View {
+        if level.isNaN {
+            if channels == nil {
+                Text("Muted")
+                    .foregroundColor(.white)
+            } else {
+                Text("Muted,")
+                    .foregroundColor(.white)
+            }
+        } else if level == .infinity {
+            if channels == nil {
+                Text("Unknown")
+                    .foregroundColor(.white)
+            } else {
+                Text("Unknown,")
+                    .foregroundColor(.white)
+            }
+        } else {
+            HStack(spacing: 0) {
+                if isClipping() {
+                    Text(clippingText())
+                        .foregroundColor(.red)
+                } else {
+                    Text(redText())
+                        .foregroundColor(.red)
+                    Text(yellowText())
+                        .foregroundColor(.yellow)
+                    Text(greenText())
+                        .foregroundColor(.green)
+                }
+            }
+            .padding([.bottom], 2)
+            .bold()
+        }
+    }
+}
+
+private struct ChannelsView: View {
+    var channels: Int?
+
+    var body: some View {
+        if let channels {
+            Text(formatAudioLevelChannels(channels: channels))
+                .foregroundColor(.white)
+        }
+    }
+}
+
+private struct SampleRateView: View {
+    var sampleRate: Double?
+
+    var body: some View {
+        if let sampleRate {
+            Text(formatAudioLevelSampleRate(sampleRate: sampleRate))
+                .foregroundColor(.white)
+        }
+    }
+}
+
+struct AudioLevelView: View {
+    var level: Float
+    var channels: Int?
+    var sampleRate: Double?
+
+    var body: some View {
         HStack(spacing: 1) {
             HStack(spacing: 1) {
-                if level.isNaN {
-                    if channels == nil {
-                        Text("Muted")
-                            .foregroundColor(.white)
-                    } else {
-                        Text("Muted,")
-                            .foregroundColor(.white)
-                    }
-                } else if level == .infinity {
-                    if channels == nil {
-                        Text("Unknown")
-                            .foregroundColor(.white)
-                    } else {
-                        Text("Unknown,")
-                            .foregroundColor(.white)
-                    }
-                } else {
-                    HStack(spacing: 0) {
-                        if isClipping() {
-                            Text(clippingText())
-                                .foregroundColor(.red)
-                        } else {
-                            Text(redText())
-                                .foregroundColor(.red)
-                            Text(yellowText())
-                                .foregroundColor(.yellow)
-                            Text(greenText())
-                                .foregroundColor(.green)
-                        }
-                    }
-                    .padding([.bottom], 2)
-                    .bold()
-                }
-                if let channels {
-                    Text(formatAudioLevelChannels(channels: channels))
-                        .foregroundColor(.white)
-                }
+                AudioBarView(level: level, channels: channels)
+                ChannelsView(channels: channels)
+                SampleRateView(sampleRate: sampleRate)
             }
             .padding([.leading, .trailing], 2)
             .background(backgroundColor)

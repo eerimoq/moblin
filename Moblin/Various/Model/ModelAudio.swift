@@ -4,6 +4,7 @@ import UIKit
 class AudioProvider: ObservableObject {
     @Published var level: Float = defaultAudioLevel
     @Published var numberOfChannels: Int = 0
+    @Published var sampleRate: Double = 0
 }
 
 class Mic: ObservableObject {
@@ -194,8 +195,12 @@ extension Model {
     func updateAudioLevel() {
         let newAudioLevel = media.getAudioLevel()
         let newNumberOfAudioChannels = media.getNumberOfAudioChannels()
+        let newSampleRate = media.getAudioSampleRate()
         if newNumberOfAudioChannels != audio.numberOfChannels {
             audio.numberOfChannels = newNumberOfAudioChannels
+        }
+        if newSampleRate != audio.sampleRate {
+            audio.sampleRate = newSampleRate
         }
         if newAudioLevel == audio.level {
             return
