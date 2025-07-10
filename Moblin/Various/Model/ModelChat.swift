@@ -316,7 +316,9 @@ extension Model {
             hasYouTubeLiveChatEmotes() || hasAfreecaTvChatEmotes() || hasOpenStreamingPlatformChatEmotes()
     }
 
-    func resetChat() {}
+    func resetChat() {
+        chatTextToSpeech.reset(running: true)
+    }
 
     func sendChatMessage(message: String) {
         guard isTwitchAccessTokenConfigured() else {
