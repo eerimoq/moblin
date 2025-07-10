@@ -128,6 +128,23 @@ struct AudioLevelView: View {
     }
 }
 
+private struct IconView: View {
+    let name: String
+    let foregroundColor: Color
+    let backgroundColor: Color
+
+    var body: some View {
+        Image(systemName: name)
+            .frame(width: 17, height: 17)
+            .font(smallFont)
+            .padding([.leading, .trailing], 2)
+            .padding([.bottom], 2)
+            .foregroundColor(foregroundColor)
+            .background(backgroundColor)
+            .cornerRadius(5)
+    }
+}
+
 struct CompactAudioBarView: View {
     @ObservedObject var level: AudioLevel
 
@@ -149,24 +166,10 @@ struct CompactAudioBarView: View {
 
     var body: some View {
         if level.level.isNaN {
-            Image(systemName: "microphone.slash")
-                .frame(width: 17, height: 17)
-                .font(smallFont)
-                .padding([.leading, .trailing], 2)
-                .padding([.bottom], 2)
-                .foregroundColor(.white)
-                .background(backgroundColor)
-                .cornerRadius(5)
+            IconView(name: "microphone.slash", foregroundColor: .white, backgroundColor: backgroundColor)
         } else {
             let (foregroundColor, backgroundColor) = colors()
-            Image(systemName: "waveform")
-                .frame(width: 17, height: 17)
-                .font(smallFont)
-                .padding([.leading, .trailing], 2)
-                .padding([.bottom], 2)
-                .foregroundColor(foregroundColor)
-                .background(backgroundColor)
-                .cornerRadius(5)
+            IconView(name: "waveform", foregroundColor: foregroundColor, backgroundColor: backgroundColor)
         }
     }
 }
