@@ -2,7 +2,6 @@ import AVFAudio
 import UIKit
 
 class AudioProvider: ObservableObject {
-    @Published var showing = false
     @Published var level: Float = defaultAudioLevel
     @Published var numberOfChannels: Int = 0
 }
@@ -193,9 +192,6 @@ extension Model {
     }
 
     func updateAudioLevel() {
-        if database.show.audioLevel != audio.showing {
-            audio.showing = database.show.audioLevel
-        }
         let newAudioLevel = media.getAudioLevel()
         let newNumberOfAudioChannels = media.getNumberOfAudioChannels()
         if newNumberOfAudioChannels != audio.numberOfChannels {
