@@ -34,6 +34,7 @@ enum SettingsStreamResolution: String, Codable, CaseIterable {
     case r2560x1440 = "2560x1440"
     case r1920x1080 = "1920x1080"
     case r1280x720 = "1280x720"
+    case r960x540 = "960x540"
     case r854x480 = "854x480"
     case r640x360 = "640x360"
     case r426x240 = "426x240"
@@ -53,6 +54,8 @@ enum SettingsStreamResolution: String, Codable, CaseIterable {
             return "1080p"
         case .r1280x720:
             return "720p"
+        case .r960x540:
+            return "540p"
         case .r854x480:
             return "480p"
         case .r640x360:
@@ -73,6 +76,8 @@ enum SettingsStreamResolution: String, Codable, CaseIterable {
             size = .init(width: 1920, height: 1080)
         case .r1280x720:
             size = .init(width: 1280, height: 720)
+        case .r960x540:
+            size = .init(width: 960, height: 540)
         case .r854x480:
             size = .init(width: 854, height: 480)
         case .r640x360:
@@ -6687,6 +6692,9 @@ final class Settings {
                         case .r1280x720:
                             width = 1280
                             height = 720
+                        case .r960x540:
+                            width = 960
+                            height = 540
                         case .r854x480:
                             width = 854
                             height = 480
@@ -6697,10 +6705,8 @@ final class Settings {
                             width = 426
                             height = 240
                         }
-                        sceneWidget.width = (100 * Double(widget.map.width) / width)
-                            .clamped(to: 1 ... 100)
-                        sceneWidget.height = (100 * Double(widget.map.height) / height)
-                            .clamped(to: 1 ... 100)
+                        sceneWidget.width = (100 * Double(widget.map.width) / width).clamped(to: 1 ... 100)
+                        sceneWidget.height = (100 * Double(widget.map.height) / height).clamped(to: 1 ... 100)
                     }
                 }
             }

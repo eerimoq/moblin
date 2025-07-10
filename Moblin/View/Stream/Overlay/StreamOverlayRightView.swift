@@ -565,7 +565,7 @@ private struct LowPowerModeStatusView: View {
         if status.isLowPowerMode {
             StreamOverlayIconAndTextView(
                 icon: "flame",
-                text: String(localized: "Low power mode"),
+                text: "Low power mode",
                 textPlacement: textPlacement,
                 color: .red
             )
@@ -662,11 +662,6 @@ private struct StatusesView: View {
         PhoneCoolerDeviceStatusView(
             model: model,
             show: model.database.show,
-            status: model.statusTopRight,
-            textPlacement: textPlacement
-        )
-        LowPowerModeStatusView(
-            model: model,
             status: model.statusTopRight,
             textPlacement: textPlacement
         )

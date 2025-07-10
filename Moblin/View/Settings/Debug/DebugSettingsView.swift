@@ -121,14 +121,14 @@ struct DebugSettingsView: View {
                             .frame(width: 40)
                     }
                 }
-                Toggle("Auto low power mode", isOn: $debug.autoLowPowerMode)
-                    .onChange(of: debug.autoLowPowerMode) { _ in
-                        if model.statusOther.thermalState == .critical {
-                            model.startLowPowerMode()
-                        } else {
-                            model.stopLowPowerMode()
-                        }
-                    }
+                // Toggle("Auto low power mode", isOn: $debug.autoLowPowerMode)
+                //     .onChange(of: debug.autoLowPowerMode) { _ in
+                //         if model.statusOther.thermalState == .critical {
+                //             model.startLowPowerMode()
+                //         } else {
+                //             model.stopLowPowerMode()
+                //         }
+                //     }
             } header: {
                 Text("Experimental")
             }

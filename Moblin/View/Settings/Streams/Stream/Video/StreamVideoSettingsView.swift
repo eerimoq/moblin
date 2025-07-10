@@ -57,10 +57,9 @@ struct StreamVideoSettingsView: View {
                     }
                 }
                 .onChange(of: stream.resolution) { _ in
-                    if stream.enabled {
-                        model.setStreamResolution()
-                    }
+                    model.reloadStreamIfEnabled(stream: stream)
                 }
+                .disabled(stream.enabled && (model.isLive || model.isRecording))
             }
             Section {
                 HStack {
@@ -73,10 +72,9 @@ struct StreamVideoSettingsView: View {
                     }
                 }
                 .onChange(of: stream.fps) { _ in
-                    if stream.enabled {
-                        model.setStreamFps()
-                    }
+                    model.reloadStreamIfEnabled(stream: stream)
                 }
+                .disabled(stream.enabled && (model.isLive || model.isRecording))
             } footer: {
                 Text("Lower FPS generally gives brighter image in low light conditions.")
             }
@@ -84,9 +82,7 @@ struct StreamVideoSettingsView: View {
                 Section {
                     Toggle("Low light boost (LLB)", isOn: $stream.autoFps)
                         .onChange(of: stream.autoFps) { _ in
-                            if stream.enabled {
-                                model.setStreamPreferAutoFps()
-                            }
+                            model.setStreamPreferAutoFps()
                         }
                 } footer: {
                     Text("""

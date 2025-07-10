@@ -421,14 +421,20 @@ extension Model {
         case .r1280x720:
             captureSize = .init(width: 1280, height: 720)
             outputSize = .init(width: 1280, height: 720)
+        case .r960x540:
+            captureSize = .init(width: 960, height: 540)
+            outputSize = .init(width: 960, height: 540)
         case .r854x480:
-            captureSize = .init(width: 1280, height: 720)
+            // Use 540p camera and downscale to 480p.
+            captureSize = .init(width: 960, height: 540)
             outputSize = .init(width: 854, height: 480)
         case .r640x360:
-            captureSize = .init(width: 1280, height: 720)
+            // Use 540p camera and downscale to 360p.
+            captureSize = .init(width: 960, height: 540)
             outputSize = .init(width: 640, height: 360)
         case .r426x240:
-            captureSize = .init(width: 1280, height: 720)
+            // Use 540p camera and downscale to 240p.
+            captureSize = .init(width: 960, height: 540)
             outputSize = .init(width: 426, height: 240)
         }
         if stream.portrait {
