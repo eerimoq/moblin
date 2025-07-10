@@ -209,7 +209,7 @@ extension Model {
         if newAudioLevel == audio.level.level {
             return
         }
-        if abs(audio.level.level - newAudioLevel) > 10
+        if abs(audio.level.level - newAudioLevel) > 7
             || newAudioLevel.isNaN
             || newAudioLevel == .infinity
             || audio.level.level.isNaN

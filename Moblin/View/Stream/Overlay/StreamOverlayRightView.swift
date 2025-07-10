@@ -665,6 +665,9 @@ private struct StatusesView: View {
             status: model.statusTopRight,
             textPlacement: textPlacement
         )
+        if show.audioLevel, textPlacement == .hide {
+            CompactAudioBarView(level: model.audio.level)
+        }
     }
 }
 
@@ -675,7 +678,7 @@ private struct AudioView: View {
 
     var body: some View {
         if show.audioLevel {
-            AudioLevelView(model: model, textPlacement: textPlacement)
+            AudioLevelView(model: model)
                 .padding(20)
                 .contentShape(Rectangle())
                 .padding(-20)
@@ -694,7 +697,6 @@ struct RightOverlayTopView: View {
                     AudioView(model: model, show: database.show, textPlacement: .beforeIcon)
                     StatusesView(show: database.show, status: model.statusTopRight, textPlacement: .beforeIcon)
                 } else {
-                    AudioView(model: model, show: database.show, textPlacement: .hide)
                     HStack(spacing: 1) {
                         StatusesView(show: database.show, status: model.statusTopRight, textPlacement: .hide)
                     }

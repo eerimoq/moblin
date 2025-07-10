@@ -1,11 +1,11 @@
 import SwiftUI
 
-private let barsPerDb: Float = 0.8
+private let barsPerDb: Float = 1.0
 private let clippingThresholdDb: Float = -1.0
 private let redThresholdDb: Float = -8.5
 private let yellowThresholdDb: Float = -20
 private let zeroThresholdDb: Float = -60
-private let barHeight: CGFloat = 13
+private let barHeight: CGFloat = 5
 
 private struct AudioBarView: View {
     @ObservedObject var audio: AudioProvider
@@ -45,10 +45,10 @@ private struct AudioBarView: View {
 
     var body: some View {
         if level.level.isNaN {
-            Text("Muted,")
+            Text("Muted")
                 .foregroundColor(.white)
         } else if level.level == .infinity {
-            Text("Unknown,")
+            Text("Unknown")
                 .foregroundColor(.white)
         } else {
             HStack(spacing: 0) {
@@ -79,38 +79,6 @@ private struct AudioBarView: View {
     }
 }
 
-private struct CompactAudioBarView: View {
-    @ObservedObject var level: AudioLevel
-
-    private func dotColor() -> Color {
-        if level.level > clippingThresholdDb {
-            return .white
-        } else if level.level > redThresholdDb {
-            return .red
-        } else if level.level > yellowThresholdDb {
-            return .yellow
-        } else {
-            return .green
-        }
-    }
-
-    var body: some View {
-        if level.level.isNaN {
-            Text("Muted,")
-                .foregroundColor(.white)
-        } else if level.level == .infinity {
-            Text("Unknown,")
-                .foregroundColor(.white)
-        } else {
-            Circle()
-                .frame(width: 14, height: 14)
-                .foregroundColor(dotColor())
-                .padding([.vertical], 2)
-                .padding([.horizontal], 1)
-        }
-    }
-}
-
 private struct ChannelsView: View {
     @ObservedObject var audio: AudioProvider
 
@@ -135,18 +103,13 @@ private struct SampleRateView: View {
 
 struct AudioLevelView: View {
     let model: Model
-    let textPlacement: StreamOverlayIconAndTextPlacement
 
     var body: some View {
         HStack(spacing: 1) {
             HStack(spacing: 1) {
-                if textPlacement != .hide {
-                    AudioBarView(audio: model.audio, level: model.audio.level)
-                    ChannelsView(audio: model.audio)
-                    SampleRateView(audio: model.audio)
-                } else {
-                    CompactAudioBarView(level: model.audio.level)
-                }
+                AudioBarView(audio: model.audio, level: model.audio.level)
+                ChannelsView(audio: model.audio)
+                SampleRateView(audio: model.audio)
             }
             .padding([.leading, .trailing], 2)
             .background(backgroundColor)
@@ -162,5 +125,48 @@ struct AudioLevelView: View {
                 .cornerRadius(5)
         }
         .padding(0)
+    }
+}
+
+struct CompactAudioBarView: View {
+    @ObservedObject var level: AudioLevel
+
+    private func colors() -> (Color, Color) {
+        if level.level == .infinity {
+            return (.brown, backgroundColor)
+        } else if level.level > clippingThresholdDb {
+            return (.white, .red)
+        } else if level.level > redThresholdDb {
+            return (.red, backgroundColor)
+        } else if level.level > yellowThresholdDb {
+            return (.yellow, backgroundColor)
+        } else if level.level > zeroThresholdDb {
+            return (.green, backgroundColor)
+        } else {
+            return (.white, backgroundColor)
+        }
+    }
+
+    var body: some View {
+        if level.level.isNaN {
+            Image(systemName: "microphone.slash")
+                .frame(width: 17, height: 17)
+                .font(smallFont)
+                .padding([.leading, .trailing], 2)
+                .padding([.bottom], 2)
+                .foregroundColor(.white)
+                .background(backgroundColor)
+                .cornerRadius(5)
+        } else {
+            let (foregroundColor, backgroundColor) = colors()
+            Image(systemName: "waveform")
+                .frame(width: 17, height: 17)
+                .font(smallFont)
+                .padding([.leading, .trailing], 2)
+                .padding([.bottom], 2)
+                .foregroundColor(foregroundColor)
+                .background(backgroundColor)
+                .cornerRadius(5)
+        }
     }
 }
