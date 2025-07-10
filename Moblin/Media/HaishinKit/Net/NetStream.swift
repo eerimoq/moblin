@@ -42,9 +42,9 @@ open class NetStream: NSObject {
         }
     }
 
-    func setPreferFrameRate(value: Bool) {
+    func setPreferFps(value: Bool) {
         netStreamLockQueue.async {
-            self.mixer.video.setPreferAutoFrameRate(value: value)
+            self.mixer.video.setPreferAutoFps(value: value)
         }
     }
 

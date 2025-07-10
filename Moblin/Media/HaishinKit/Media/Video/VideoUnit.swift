@@ -156,8 +156,8 @@ final class VideoUnit: NSObject {
     private var sceneSwitchTransition: SceneSwitchTransition = .blur
     private var pixelTransferSession: VTPixelTransferSession?
     private var previousFaceDetectionTimes: [UUID: Double] = [:]
-    private var frameRate = VideoUnit.defaultFrameRate
-    private var preferAutoFrameRate = false
+    private var fps = VideoUnit.defaultFrameRate
+    private var preferAutoFps = false
     private var colorSpace: AVCaptureColorSpace = .sRGB
 
     var videoOrientation: AVCaptureVideoOrientation = .portrait {
@@ -235,17 +235,17 @@ final class VideoUnit: NSObject {
     }
 
     func setFps(fps: Float64) {
-        frameRate = fps
+        self.fps = fps
         updateDevicesFormat()
         startFrameTimer()
     }
 
     func getFps() -> Double {
-        return frameRate
+        return fps
     }
 
-    func setPreferAutoFrameRate(value: Bool) {
-        preferAutoFrameRate = value
+    func setPreferAutoFps(value: Bool) {
+        preferAutoFps = value
         updateDevicesFormat()
     }
 
@@ -313,8 +313,8 @@ final class VideoUnit: NSObject {
         for device in params.devices.devices {
             setDeviceFormat(
                 device: device.device,
-                frameRate: frameRate,
-                preferAutoFrameRate: preferAutoFrameRate,
+                frameRate: fps,
+                preferAutoFrameRate: preferAutoFps,
                 colorSpace: colorSpace
             )
         }
@@ -359,8 +359,8 @@ final class VideoUnit: NSObject {
         for device in captureSessionDevices {
             setDeviceFormat(
                 device: device.device,
-                frameRate: frameRate,
-                preferAutoFrameRate: preferAutoFrameRate,
+                frameRate: fps,
+                preferAutoFrameRate: preferAutoFps,
                 colorSpace: colorSpace
             )
         }
@@ -517,7 +517,7 @@ final class VideoUnit: NSObject {
     }
 
     private func startFrameTimer() {
-        let frameInterval = 1 / frameRate
+        let frameInterval = 1 / fps
         frameTimer.startPeriodic(interval: frameInterval) { [weak self] in
             self?.handleFrameTimer()
         }

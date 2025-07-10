@@ -671,7 +671,7 @@ final class Media: NSObject {
     }
 
     func setStreamPreferAutoFps(value: Bool) {
-        netStream?.setPreferFrameRate(value: value)
+        netStream?.setPreferFps(value: value)
     }
 
     func setColorSpace(colorSpace: AVCaptureColorSpace, onComplete: @escaping () -> Void) {
