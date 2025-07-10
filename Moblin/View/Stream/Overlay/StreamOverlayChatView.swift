@@ -188,8 +188,6 @@ private struct PostView: View {
     let fullSize: Bool
     let post: ChatPost
     @ObservedObject var state: ChatPostState
-    let rotation: Double
-    let scaleX: Double
     let size: CGSize
 
     var body: some View {
@@ -208,16 +206,12 @@ private struct PostView: View {
                                      platform: chat.moreThanOneStreamingPlatform)
                         }
                     }
-                    .rotationEffect(Angle(degrees: rotation))
-                    .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
                 } else {
                     LineView(postState: post.state,
                              post: post,
                              chat: chatSettings,
                              platform: chat.moreThanOneStreamingPlatform)
                         .padding([.leading], 3)
-                        .rotationEffect(Angle(degrees: rotation))
-                        .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
                 }
             }
         } else {
@@ -225,8 +219,6 @@ private struct PostView: View {
                 .fill(.red)
                 .frame(width: size.width, height: 1.5)
                 .padding(2)
-                .rotationEffect(Angle(degrees: rotation))
-                .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
         }
     }
 }
@@ -298,9 +290,9 @@ struct StreamOverlayChatView: View {
                                          fullSize: fullSize,
                                          post: post,
                                          state: post.state,
-                                         rotation: rotation,
-                                         scaleX: scaleX,
                                          size: metrics.size)
+                                    .rotationEffect(Angle(degrees: rotation))
+                                    .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
                             }
                             Spacer(minLength: 0)
                         }
