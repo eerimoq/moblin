@@ -1,10 +1,6 @@
 import SwiftUI
 
 private let barsPerDb: Float = 1.0
-private let clippingThresholdDb: Float = -1.0
-private let redThresholdDb: Float = -8.5
-private let yellowThresholdDb: Float = -20
-private let zeroThresholdDb: Float = -60
 private let barHeight: CGFloat = 5
 
 private struct AudioBarView: View {
@@ -128,48 +124,23 @@ struct AudioLevelView: View {
     }
 }
 
-private struct IconView: View {
-    let name: String
-    let foregroundColor: Color
-    let backgroundColor: Color
-
-    var body: some View {
-        Image(systemName: name)
-            .frame(width: 17, height: 17)
-            .font(smallFont)
-            .padding([.leading, .trailing], 2)
-            .padding([.bottom], 2)
-            .foregroundColor(foregroundColor)
-            .background(backgroundColor)
-            .cornerRadius(5)
-    }
-}
-
 struct CompactAudioBarView: View {
     @ObservedObject var level: AudioLevel
 
-    private func colors() -> (Color, Color) {
-        if level.level == .infinity {
-            return (.brown, backgroundColor)
-        } else if level.level > clippingThresholdDb {
-            return (.white, .red)
-        } else if level.level > redThresholdDb {
-            return (.red, backgroundColor)
-        } else if level.level > yellowThresholdDb {
-            return (.yellow, backgroundColor)
-        } else if level.level > zeroThresholdDb {
-            return (.green, backgroundColor)
-        } else {
-            return (.white, backgroundColor)
-        }
-    }
-
     var body: some View {
         if level.level.isNaN {
-            IconView(name: "microphone.slash", foregroundColor: .white, backgroundColor: backgroundColor)
+            CompactAudioLevelIconView(
+                name: "microphone.slash",
+                foregroundColor: .white,
+                backgroundColor: backgroundColor
+            )
         } else {
-            let (foregroundColor, backgroundColor) = colors()
-            IconView(name: "waveform", foregroundColor: foregroundColor, backgroundColor: backgroundColor)
+            let (foregroundColor, backgroundColor) = compactAudioLevelColors(level: level.level)
+            CompactAudioLevelIconView(
+                name: "waveform",
+                foregroundColor: foregroundColor,
+                backgroundColor: backgroundColor
+            )
         }
     }
 }

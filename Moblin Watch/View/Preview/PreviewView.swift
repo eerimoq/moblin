@@ -1,5 +1,26 @@
 import SwiftUI
 
+private struct AudioLevelView: View {
+    var level: Float
+
+    var body: some View {
+        if level.isNaN {
+            CompactAudioLevelIconView(
+                name: "microphone.slash",
+                foregroundColor: .white,
+                backgroundColor: backgroundColor
+            )
+        } else {
+            let (foregroundColor, backgroundColor) = compactAudioLevelColors(level: level)
+            CompactAudioLevelIconView(
+                name: "waveform",
+                foregroundColor: foregroundColor,
+                backgroundColor: backgroundColor
+            )
+        }
+    }
+}
+
 private struct StatusesView: View {
     @EnvironmentObject var model: Model
     var textPlacement: StreamOverlayIconAndTextPlacement
@@ -95,7 +116,7 @@ struct PreviewView: View {
                             }
                         }
                         if model.isShowingStatusAudioLevel() {
-                            // AudioLevelView(level: model.audioLevel)
+                            AudioLevelView(level: model.audioLevel)
                         }
                     }
                     .onTapGesture {
