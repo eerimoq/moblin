@@ -1304,7 +1304,7 @@ class SettingsWidgetTextLapTimes: Codable, Identifiable {
 }
 
 class SettingsWidgetText: Codable, ObservableObject {
-    var formatString: String = "{shortTime}"
+    @Published var formatString: String = "{shortTime}"
     var backgroundColor: RgbColor = .init(red: 0, green: 0, blue: 0, opacity: 0.75)
     @Published var backgroundColorColor: Color
     var clearBackgroundColor: Bool = false
