@@ -198,10 +198,12 @@ struct SceneSettingsView: View {
                         Image(systemName: "camera")
                     }
                 }
-                VideoSourceRotationView(selectedRotation: $scene.videoSourceRotation)
-                    .onChange(of: scene.videoSourceRotation) { _ in
-                        model.sceneUpdated(updateRemoteScene: false)
-                    }
+                if scene.cameraPosition != .none {
+                    VideoSourceRotationView(selectedRotation: $scene.videoSourceRotation)
+                        .onChange(of: scene.videoSourceRotation) { _ in
+                            model.sceneUpdated(updateRemoteScene: false)
+                        }
+                }
                 Toggle("Override video stabilization", isOn: $scene.overrideVideoStabilizationMode)
                     .onChange(of: scene.overrideVideoStabilizationMode) { _ in
                         model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
@@ -209,10 +211,12 @@ struct SceneSettingsView: View {
                 if scene.overrideVideoStabilizationMode {
                     VideoStabilizationView(model: model, scene: scene)
                 }
-                Toggle("Fill frame", isOn: $scene.fillFrame)
-                    .onChange(of: scene.fillFrame) { _ in
-                        model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
-                    }
+                if scene.cameraPosition != .none {
+                    Toggle("Fill frame", isOn: $scene.fillFrame)
+                        .onChange(of: scene.fillFrame) { _ in
+                            model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
+                        }
+                }
             } header: {
                 Text("Video source")
             } footer: {
