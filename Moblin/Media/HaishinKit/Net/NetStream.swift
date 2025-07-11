@@ -36,15 +36,9 @@ open class NetStream: NSObject {
         }
     }
 
-    func setFrameRate(value: Float64) {
+    func setFps(value: Float64, preferAutoFps: Bool) {
         netStreamLockQueue.async {
-            self.mixer.video.setFps(fps: value)
-        }
-    }
-
-    func setPreferFps(value: Bool) {
-        netStreamLockQueue.async {
-            self.mixer.video.setPreferAutoFps(value: value)
+            self.mixer.video.setFps(fps: value, preferAutoFps: preferAutoFps)
         }
     }
 

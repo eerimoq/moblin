@@ -671,12 +671,8 @@ final class Media: NSObject {
         return CGSize(width: CGFloat(size.width), height: CGFloat(size.height))
     }
 
-    func setStreamFps(fps: Int) {
-        netStream?.setFrameRate(value: Double(fps))
-    }
-
-    func setStreamPreferAutoFps(value: Bool) {
-        netStream?.setPreferFps(value: value)
+    func setStreamFps(fps: Int, preferAutoFps: Bool) {
+        netStream?.setFps(value: Double(fps), preferAutoFps: preferAutoFps)
     }
 
     func setColorSpace(colorSpace: AVCaptureColorSpace, onComplete: @escaping () -> Void) {

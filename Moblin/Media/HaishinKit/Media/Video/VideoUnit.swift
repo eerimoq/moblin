@@ -234,8 +234,9 @@ final class VideoUnit: NSObject {
         session.stopRunning()
     }
 
-    func setFps(fps: Float64) {
+    func setFps(fps: Float64, preferAutoFps: Bool) {
         self.fps = fps
+        self.preferAutoFps = preferAutoFps
         updateDevicesFormat()
         startFrameTimer()
     }
@@ -244,12 +245,8 @@ final class VideoUnit: NSObject {
         return fps
     }
 
-    func setPreferAutoFps(value: Bool) {
-        preferAutoFps = value
-        updateDevicesFormat()
-    }
-
-    func setColorSpace(colorSpace _: AVCaptureColorSpace) {
+    func setColorSpace(colorSpace: AVCaptureColorSpace) {
+        self.colorSpace = colorSpace
         updateDevicesFormat()
     }
 

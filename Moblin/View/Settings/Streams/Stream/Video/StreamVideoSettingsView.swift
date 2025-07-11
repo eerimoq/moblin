@@ -82,7 +82,7 @@ struct StreamVideoSettingsView: View {
                 Section {
                     Toggle("Low light boost (LLB)", isOn: $stream.autoFps)
                         .onChange(of: stream.autoFps) { _ in
-                            model.setStreamPreferAutoFps()
+                            model.setStreamFps()
                         }
                 } footer: {
                     Text("""

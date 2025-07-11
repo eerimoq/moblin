@@ -344,7 +344,6 @@ extension Model {
         setNetStream()
         setStreamResolution()
         setStreamFps()
-        setStreamPreferAutoFps()
         setColorSpace()
         setStreamCodec()
         setStreamAdaptiveResolution()
@@ -719,11 +718,7 @@ extension Model {
     }
 
     func setStreamFps(fps: Int? = nil) {
-        media.setStreamFps(fps: fps ?? stream.fps)
-    }
-
-    func setStreamPreferAutoFps() {
-        media.setStreamPreferAutoFps(value: stream.autoFps)
+        media.setStreamFps(fps: fps ?? stream.fps, preferAutoFps: stream.autoFps)
     }
 
     func setStreamBitrate(stream: SettingsStream) {
