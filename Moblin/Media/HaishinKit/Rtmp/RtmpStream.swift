@@ -98,7 +98,6 @@ class RtmpStream {
     }
 
     deinit {
-        mediaProcessor.mixer.stopRunning()
         removeEventListener(.rtmpStatus, selector: #selector(on(status:)), observer: self)
         connection.removeEventListener(.rtmpStatus, selector: #selector(on(status:)), observer: self)
     }
