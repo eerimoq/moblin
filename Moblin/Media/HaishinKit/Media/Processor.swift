@@ -30,15 +30,14 @@ private class Stream {
     }
 }
 
-final class Processor: NSObject {
+final class Processor {
     let audio = AudioUnit()
     let video = VideoUnit()
     let recorder = Recorder()
     private var streams: [Stream] = []
     weak var delegate: (any ProcessorDelegate)?
 
-    override init() {
-        super.init()
+    init() {
         audio.processor = self
         video.processor = self
         recorder.delegate = self
