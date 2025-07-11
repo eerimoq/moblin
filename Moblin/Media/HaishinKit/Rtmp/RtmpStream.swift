@@ -83,6 +83,7 @@ class RtmpStream {
     private var prevRebasedVideoTimeStamp = -1.0
     private let compositionTimeOffset = CMTime(value: 3, timescale: 30).seconds
     private let processor: Processor
+    var url: String = ""
 
     init(processor: Processor) {
         self.processor = processor

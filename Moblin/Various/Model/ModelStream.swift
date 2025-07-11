@@ -377,7 +377,8 @@ extension Model {
             proto: stream.getProtocol(),
             portrait: stream.portrait,
             timecodesEnabled: isTimecodesEnabled(),
-            builtinAudioDelay: database.debug.builtinAudioAndVideoDelay
+            builtinAudioDelay: database.debug.builtinAudioAndVideoDelay,
+            destinations: stream.multiStreaming.destinations
         )
         updateTorch()
         updateMute()

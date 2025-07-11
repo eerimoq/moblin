@@ -105,7 +105,8 @@ final class Media: NSObject {
     func setNetStream(proto: SettingsStreamProtocol,
                       portrait: Bool,
                       timecodesEnabled: Bool,
-                      builtinAudioDelay: Double)
+                      builtinAudioDelay: Double,
+                      destinations: [SettingsStreamMultiStreamingDestination])
     {
         processor?.stop()
         srtStopStream()
@@ -116,7 +117,11 @@ final class Media: NSObject {
         switch proto {
         case .rtmp:
             rtmpStreams.append(RtmpStream(processor: processor))
-            // rtmpStreams.append(RtmpStream(processor: processor))
+            for destination in destinations {
+                let rtmpStream = RtmpStream(processor: processor)
+                rtmpStream.url = destination.url
+                rtmpStreams.append(rtmpStream)
+            }
             srtStream = nil
             ristStream = nil
             irlStream = nil
@@ -533,14 +538,13 @@ final class Media: NSObject {
         rtmpStream?.connection.connect(makeRtmpUri(url: url))
         if rtmpStreams.count > 1 {
             for rtmpStream in rtmpStreams.suffix(from: 1) {
-                let url = "rtmp://192.168.50.181:1935/live/1"
-                rtmpStream.setStreamKey(makeRtmpStreamName(url: url))
+                rtmpStream.setStreamKey(makeRtmpStreamName(url: rtmpStream.url))
                 rtmpStream.connection.addEventListener(
                     .rtmpStatus,
                     selector: #selector(rtmp2StatusHandler),
                     observer: self
                 )
-                rtmpStream.connection.connect(makeRtmpUri(url: url))
+                rtmpStream.connection.connect(makeRtmpUri(url: rtmpStream.url))
             }
         }
     }

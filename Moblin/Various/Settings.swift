@@ -395,6 +395,45 @@ class SettingsStreamTwitchReward: Codable, Identifiable {
     var alert: SettingsWidgetAlertsAlert = .init()
 }
 
+class SettingsStreamMultiStreamingDestination: Codable, Identifiable {
+    var id: UUID = .init()
+    var url: String = defaultStreamUrl
+
+    func clone() -> SettingsStreamMultiStreamingDestination {
+        let new = SettingsStreamMultiStreamingDestination()
+        new.url = url
+        return new
+    }
+}
+
+class SettingsStreamMultiStreaming: Codable, ObservableObject {
+    @Published var destinations: [SettingsStreamMultiStreamingDestination] = []
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case destinations
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.destinations, destinations)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        destinations = container.decode(.destinations, [SettingsStreamMultiStreamingDestination].self, [])
+    }
+
+    func clone() -> SettingsStreamMultiStreaming {
+        let new = SettingsStreamMultiStreaming()
+        for destination in destinations {
+            new.destinations.append(destination.clone())
+        }
+        return new
+    }
+}
+
 class SettingsStream: Codable, Identifiable, Equatable, ObservableObject {
     @Published var name: String
     var id: UUID = .init()
@@ -457,6 +496,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject {
     var replay: SettingsStreamReplay = .init()
     @Published var goLiveNotificationDiscordMessage: String = ""
     @Published var goLiveNotificationDiscordWebhookUrl: String = ""
+    @Published var multiStreaming: SettingsStreamMultiStreaming = .init()
 
     static func == (lhs: SettingsStream, rhs: SettingsStream) -> Bool {
         lhs.id == rhs.id
@@ -527,7 +567,8 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject {
              timecodesEnabled,
              replay,
              goLiveNotificationDiscordMessage,
-             goLiveNotificationDiscordWebhookUrl
+             goLiveNotificationDiscordWebhookUrl,
+             multiStreaming
     }
 
     func encode(to encoder: Encoder) throws {
@@ -593,6 +634,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject {
         try container.encode(.replay, replay)
         try container.encode(.goLiveNotificationDiscordMessage, goLiveNotificationDiscordMessage)
         try container.encode(.goLiveNotificationDiscordWebhookUrl, goLiveNotificationDiscordWebhookUrl)
+        try container.encode(.multiStreaming, multiStreaming)
     }
 
     required init(from decoder: Decoder) throws {
@@ -658,6 +700,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject {
         replay = container.decode(.replay, SettingsStreamReplay.self, .init())
         goLiveNotificationDiscordMessage = container.decode(.goLiveNotificationDiscordMessage, String.self, "")
         goLiveNotificationDiscordWebhookUrl = container.decode(.goLiveNotificationDiscordWebhookUrl, String.self, "")
+        multiStreaming = container.decode(.multiStreaming, SettingsStreamMultiStreaming.self, .init())
     }
 
     func clone() -> SettingsStream {
@@ -714,6 +757,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject {
         new.replay = replay.clone()
         new.goLiveNotificationDiscordMessage = goLiveNotificationDiscordMessage
         new.goLiveNotificationDiscordWebhookUrl = goLiveNotificationDiscordWebhookUrl
+        new.multiStreaming = multiStreaming.clone()
         return new
     }
 
