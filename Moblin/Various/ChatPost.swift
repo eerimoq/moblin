@@ -110,7 +110,7 @@ struct ChatHighlight {
         case .firstMessage:
             watchProtocolKind = .other
         case .reply:
-            watchProtocolKind = .other
+            watchProtocolKind = .reply
         }
         let barColor = barColor.toRgb() ?? .init(red: 0, green: 255, blue: 0)
         return WatchProtocolChatHighlight(

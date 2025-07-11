@@ -31,11 +31,14 @@ enum ChatPostKind {
 }
 
 enum ChatPostHighlightKind {
+    case reply
     case redemption
     case other
 
     static func fromWatchProtocol(kind: WatchProtocolChatHighlightKind) -> ChatPostHighlightKind {
         switch kind {
+        case .reply:
+            return .reply
         case .redemption:
             return .redemption
         case .other:

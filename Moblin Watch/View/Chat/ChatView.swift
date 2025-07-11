@@ -60,6 +60,7 @@ private struct LineView: View {
 private struct HighlightView: View {
     let image: String
     let name: String
+    let color: Color
 
     var body: some View {
         WrappingHStack(
@@ -72,12 +73,21 @@ private struct HighlightView: View {
             Text(" ")
             Text(name)
         }
+        .foregroundColor(color)
     }
 }
 
 private struct NormalView: View {
     @ObservedObject var chatSettings: WatchSettingsChat
     let post: ChatPost
+
+    func highlightColor(highlight: ChatPostHighlight) -> Color {
+        if highlight.kind == .reply {
+            return .gray
+        } else {
+            return .white
+        }
+    }
 
     var body: some View {
         if let highlight = post.highlight {
@@ -87,7 +97,9 @@ private struct NormalView: View {
                     .foregroundColor(highlight.barColor)
                     .padding([.trailing], 3)
                 VStack(alignment: .leading) {
-                    HighlightView(image: highlight.image, name: highlight.title)
+                    HighlightView(image: highlight.image,
+                                  name: highlight.title,
+                                  color: highlightColor(highlight: highlight))
                     LineView(chatSettings: chatSettings, post: post)
                 }
             }
