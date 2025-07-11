@@ -1,6 +1,6 @@
 import SwiftUI
 
-private let barsPerDb: Float = 1.0
+private let barWidthPerDb: Float = 1.0
 private let barHeight: CGFloat = 5
 
 private struct AudioBarView: View {
@@ -12,7 +12,7 @@ private struct AudioBarView: View {
             return nil
         }
         let db = -zeroThresholdDb
-        return CGFloat(db * barsPerDb)
+        return CGFloat(db * barWidthPerDb)
     }
 
     private func redBar() -> CGFloat? {
@@ -20,7 +20,7 @@ private struct AudioBarView: View {
             return nil
         }
         let db = level.level - redThresholdDb
-        return CGFloat(db * barsPerDb)
+        return CGFloat(db * barWidthPerDb)
     }
 
     private func yellowBar() -> CGFloat? {
@@ -28,7 +28,7 @@ private struct AudioBarView: View {
             return nil
         }
         let db = min(level.level - yellowThresholdDb, redThresholdDb - yellowThresholdDb)
-        return CGFloat(db * barsPerDb)
+        return CGFloat(db * barWidthPerDb)
     }
 
     private func greenBar() -> CGFloat? {
@@ -36,7 +36,7 @@ private struct AudioBarView: View {
             return nil
         }
         let db = min(level.level - zeroThresholdDb, yellowThresholdDb - zeroThresholdDb)
-        return CGFloat(db * barsPerDb)
+        return CGFloat(db * barWidthPerDb)
     }
 
     var body: some View {
