@@ -39,7 +39,7 @@ struct SettingsView: View {
                     Label("Display", systemImage: "rectangle.inset.topright.fill")
                 }
                 NavigationLink {
-                    CameraSettingsView(database: database)
+                    CameraSettingsView(database: database, color: database.color)
                 } label: {
                     Label("Camera", systemImage: "camera")
                 }

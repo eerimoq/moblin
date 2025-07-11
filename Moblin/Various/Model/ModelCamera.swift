@@ -379,32 +379,32 @@ extension Model {
     func addLutCube(url: URL) {
         let lut = SettingsColorLut(type: .diskCube, name: "My LUT")
         imageStorage.write(id: lut.id, url: url)
-        database.color.diskLutsCube!.append(lut)
+        database.color.diskLutsCube.append(lut)
         resetSelectedScene()
     }
 
     func removeLutCube(offsets: IndexSet) {
         for offset in offsets {
-            let lut = database.color.diskLutsCube![offset]
+            let lut = database.color.diskLutsCube[offset]
             imageStorage.remove(id: lut.id)
         }
-        database.color.diskLutsCube!.remove(atOffsets: offsets)
+        database.color.diskLutsCube.remove(atOffsets: offsets)
         resetSelectedScene()
     }
 
     func addLutPng(data: Data) {
         let lut = SettingsColorLut(type: .disk, name: "My LUT")
         imageStorage.write(id: lut.id, data: data)
-        database.color.diskLutsPng!.append(lut)
+        database.color.diskLutsPng.append(lut)
         resetSelectedScene()
     }
 
     func removeLutPng(offsets: IndexSet) {
         for offset in offsets {
-            let lut = database.color.diskLutsPng![offset]
+            let lut = database.color.diskLutsPng[offset]
             imageStorage.remove(id: lut.id)
         }
-        database.color.diskLutsPng!.remove(atOffsets: offsets)
+        database.color.diskLutsPng.remove(atOffsets: offsets)
         resetSelectedScene()
     }
 
@@ -413,7 +413,7 @@ extension Model {
     }
 
     func allLuts() -> [SettingsColorLut] {
-        return database.color.bundledLuts + database.color.diskLutsCube! + database.color.diskLutsPng!
+        return database.color.bundledLuts + database.color.diskLutsCube + database.color.diskLutsPng
     }
 
     func getLogLutById(id: UUID) -> SettingsColorLut? {

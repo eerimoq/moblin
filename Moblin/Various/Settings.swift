@@ -2715,21 +2715,55 @@ enum SettingsColorSpace: String, Codable, CaseIterable {
     }
 }
 
-let colorSpaces = SettingsColorSpace.allCases.map { $0.rawValue }
+let colorSpaces = SettingsColorSpace.allCases
 
 private let allBundledLuts = [
     SettingsColorLut(type: .bundled, name: "Apple Log To Rec 709"),
     SettingsColorLut(type: .bundled, name: "Moblin Meme"),
 ]
 
-class SettingsColor: Codable {
-    var space: SettingsColorSpace = .srgb
-    var lutEnabled: Bool = true
-    var lut: UUID = .init()
+class SettingsColor: Codable, ObservableObject {
+    @Published var space: SettingsColorSpace = .srgb
+    @Published var lutEnabled: Bool = true
+    @Published var lut: UUID = .init()
     var bundledLuts = allBundledLuts
-    var diskLuts: [SettingsColorLut]? = []
-    var diskLutsPng: [SettingsColorLut]? = []
-    var diskLutsCube: [SettingsColorLut]? = []
+    @Published var diskLuts: [SettingsColorLut] = []
+    @Published var diskLutsPng: [SettingsColorLut] = []
+    @Published var diskLutsCube: [SettingsColorLut] = []
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case space,
+             lutEnabled,
+             lut,
+             bundledLuts,
+             diskLuts,
+             diskLutsPng,
+             diskLutsCube
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.space, space)
+        try container.encode(.lutEnabled, lutEnabled)
+        try container.encode(.lut, lut)
+        try container.encode(.bundledLuts, bundledLuts)
+        try container.encode(.diskLuts, diskLuts)
+        try container.encode(.diskLutsPng, diskLutsPng)
+        try container.encode(.diskLutsCube, diskLutsCube)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        space = container.decode(.space, SettingsColorSpace.self, .srgb)
+        lutEnabled = container.decode(.lutEnabled, Bool.self, true)
+        lut = container.decode(.lut, UUID.self, .init())
+        bundledLuts = container.decode(.bundledLuts, [SettingsColorLut].self, [])
+        diskLuts = container.decode(.diskLuts, [SettingsColorLut].self, [])
+        diskLutsPng = container.decode(.diskLutsPng, [SettingsColorLut].self, [])
+        diskLutsCube = container.decode(.diskLutsCube, [SettingsColorLut].self, [])
+    }
 }
 
 class SettingsShow: Codable, ObservableObject {
@@ -6547,10 +6581,6 @@ final class Settings {
                 store()
             }
         }
-        if realDatabase.color.diskLuts == nil {
-            realDatabase.color.diskLuts = []
-            store()
-        }
         for stream in database.streams where stream.srt.adaptiveBitrate!.fastIrlSettings == nil {
             stream.srt.adaptiveBitrate!.fastIrlSettings = .init()
             store()
@@ -6724,7 +6754,7 @@ final class Settings {
             realDatabase.chat.botCommandPermissions.fax = .init()
             store()
         }
-        let allLuts = realDatabase.color.bundledLuts + (realDatabase.color.diskLuts ?? [])
+        let allLuts = realDatabase.color.bundledLuts + realDatabase.color.diskLuts
         for lut in allLuts where lut.enabled == nil {
             if let button = realDatabase.quickButtons.first(where: { $0.id == lut.buttonId }) {
                 lut.enabled = button.isOn
@@ -6841,14 +6871,6 @@ final class Settings {
         }
         for stream in realDatabase.streams where stream.srt.dnsLookupStrategy == nil {
             stream.srt.dnsLookupStrategy = .system
-            store()
-        }
-        if realDatabase.color.diskLutsPng == nil {
-            realDatabase.color.diskLutsPng = realDatabase.color.diskLuts
-            store()
-        }
-        if realDatabase.color.diskLutsCube == nil {
-            realDatabase.color.diskLutsCube = []
             store()
         }
         for key in realDatabase.keyboard.keys where key.widgetId == nil {
