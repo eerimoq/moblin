@@ -42,7 +42,7 @@ final class ImageEffect: VideoEffect {
     }
 
     func setSceneWidget(sceneWidget: SettingsSceneWidget) {
-        mixerLockQueue.async {
+        processorPipelineQueue.async {
             self.sceneWidget = sceneWidget
         }
     }

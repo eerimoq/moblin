@@ -181,7 +181,7 @@ class RistStream {
             logger.info("rist: Failed to start")
             return
         }
-        netStreamLockQueue.async {
+        processorControlQueue.async {
             self.processor.startEncoding(self.writer)
             self.writer.startRunning()
         }
@@ -195,7 +195,7 @@ class RistStream {
         state = .disconnected
         networkPathMonitor?.cancel()
         networkPathMonitor = nil
-        netStreamLockQueue.async {
+        processorControlQueue.async {
             self.writer.stopRunning()
             self.processor.stopEncoding()
         }

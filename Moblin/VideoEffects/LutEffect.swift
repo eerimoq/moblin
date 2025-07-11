@@ -199,7 +199,7 @@ final class LutEffect: VideoEffect {
             sc3dLut.size = 64
         }
         let filter = try sc3dLut.ciFilter()
-        mixerLockQueue.async {
+        processorPipelineQueue.async {
             self.filter = filter
         }
     }
@@ -212,7 +212,7 @@ final class LutEffect: VideoEffect {
         filter.colorSpace = CGColorSpaceCreateDeviceRGB()
         let filterMetalPetal = MTIColorLookupFilter()
         filterMetalPetal.inputColorLookupTable = MTIImage(cgImage: image.cgImage!, isOpaque: true)
-        mixerLockQueue.async {
+        processorPipelineQueue.async {
             self.filter = filter
             self.filterMetalPetal = filterMetalPetal
         }

@@ -75,7 +75,7 @@ class SrtStream {
     }
 
     func close() {
-        netStreamLockQueue.async {
+        processorControlQueue.async {
             self.readyState = .initialized
             guard self.socket != SRT_INVALID_SOCK else {
                 return
@@ -201,7 +201,7 @@ extension SrtStream: MpegTsWriterDelegate {
             }
             return srt_sendmsg2(socket, buffer, Int32(data.count), nil)
         }) != data.count {
-            netStreamLockQueue.async {
+            processorControlQueue.async {
                 self.readyState = .initialized
                 self.srtStreamDelegate?.srtStreamError()
             }
@@ -213,7 +213,7 @@ extension SrtStream: MpegTsWriterDelegate {
             return
         }
         if srt_sendmsg2(socket, buffer, Int32(count), nil) != count {
-            netStreamLockQueue.async {
+            processorControlQueue.async {
                 self.readyState = .initialized
                 self.srtStreamDelegate?.srtStreamError()
             }

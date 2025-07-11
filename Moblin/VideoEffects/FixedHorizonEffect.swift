@@ -37,7 +37,7 @@ final class FixedHorizonEffect: VideoEffect {
 
     override init() {
         super.init()
-        operationQueue.underlyingQueue = mixerLockQueue
+        operationQueue.underlyingQueue = processorPipelineQueue
     }
 
     deinit {

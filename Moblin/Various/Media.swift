@@ -107,7 +107,7 @@ final class Media: NSObject {
                       timecodesEnabled: Bool,
                       builtinAudioDelay: Double)
     {
-        processor?.stopMixer()
+        processor?.stop()
         srtStopStream()
         rtmpStopStream()
         ristStopStream()
@@ -1072,7 +1072,7 @@ extension Media: ProcessorDelegate {
 
 extension Media: SrtlaDelegate {
     func srtlaReady(port: UInt16) {
-        netStreamLockQueue.async {
+        processorControlQueue.async {
             do {
                 try self.srtStream?.open(self.makeLocalhostSrtUrl(
                     url: self.srtUrl,

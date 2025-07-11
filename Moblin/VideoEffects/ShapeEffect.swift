@@ -23,7 +23,7 @@ final class ShapeEffect: VideoEffect {
     }
 
     func setSettings(settings: ShapeEffectSettings) {
-        mixerLockQueue.async {
+        processorPipelineQueue.async {
             self.settings = settings
         }
     }

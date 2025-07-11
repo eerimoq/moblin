@@ -11,14 +11,14 @@ class MirlStream {
     }
 
     func start() {
-        netStreamLockQueue.async {
+        processorControlQueue.async {
             self.client?.start()
             self.processor.startEncoding(self)
         }
     }
 
     func stop() {
-        netStreamLockQueue.async {
+        processorControlQueue.async {
             self.client?.stop()
             self.client = nil
             self.processor.stopEncoding()

@@ -32,7 +32,7 @@ final class MapEffect: VideoEffect {
     }
 
     func zoomOutTemporarily() {
-        mixerLockQueue.async {
+        processorPipelineQueue.async {
             if self.zoomOutFactor == nil {
                 self.zoomOutFactor = 2
             }
@@ -40,13 +40,13 @@ final class MapEffect: VideoEffect {
     }
 
     func setSceneWidget(sceneWidget: SettingsSceneWidget?) {
-        mixerLockQueue.async {
+        processorPipelineQueue.async {
             self.sceneWidget = sceneWidget
         }
     }
 
     func updateLocation(location: CLLocation) {
-        mixerLockQueue.async {
+        processorPipelineQueue.async {
             self.isLocationUpdated = true
             self.newLocations.append(location)
             if self.newLocations.count > 10 {
@@ -85,7 +85,7 @@ final class MapEffect: VideoEffect {
             guard let snapshot, error == nil, let image = snapshot.image.cgImage else {
                 return
             }
-            mixerLockQueue.async {
+            processorPipelineQueue.async {
                 self.mapSnapshot = CIImage(cgImage: image)
                 self.dotOffsetRatio = dotOffsetRatio
             }

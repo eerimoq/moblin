@@ -14,7 +14,7 @@ class BufferedAudio {
     private var sampleRate: Double = 0.0
     private var frameLength: Double = 0.0
     private var sampleBuffers: Deque<CMSampleBuffer> = []
-    private var outputTimer = SimpleTimer(queue: mixerLockQueue)
+    private var outputTimer = SimpleTimer(queue: processorPipelineQueue)
     private var isInitialized: Bool = false
     private var isOutputting: Bool = false
     private var latestSampleBuffer: CMSampleBuffer?

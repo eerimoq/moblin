@@ -12,7 +12,7 @@ final class PixellateEffect: VideoEffect {
     }
 
     func setSettings(strength: Float) {
-        mixerLockQueue.async {
+        processorPipelineQueue.async {
             self.strength = strength
         }
     }

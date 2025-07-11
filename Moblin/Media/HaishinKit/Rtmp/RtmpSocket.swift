@@ -75,7 +75,7 @@ final class RtmpSocket {
         if let connection {
             connection.viabilityUpdateHandler = viabilityDidChange
             connection.stateUpdateHandler = stateDidChange
-            connection.start(queue: netStreamLockQueue)
+            connection.start(queue: processorControlQueue)
             receive(on: connection)
         }
         timeoutHandler = DispatchWorkItem { [weak self] in
@@ -84,7 +84,7 @@ final class RtmpSocket {
             }
             self.handleConnectTimeout()
         }
-        netStreamLockQueue.asyncAfter(deadline: .now() + .seconds(10), execute: timeoutHandler!)
+        processorControlQueue.asyncAfter(deadline: .now() + .seconds(10), execute: timeoutHandler!)
     }
 
     func close(isDisconnected: Bool = false) {

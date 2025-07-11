@@ -102,7 +102,7 @@ final class DrawOnStreamEffect: VideoEffect {
                 return
             }
             let imageMetalPetal = MTIImage(cgImage: cgImage, isOpaque: true)
-            mixerLockQueue.async {
+            processorPipelineQueue.async {
                 self.overlay = image
                 self.overlayMetalPetal = imageMetalPetal
             }

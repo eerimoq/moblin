@@ -45,7 +45,7 @@ extension Model {
 
     func setupAudioSession() {
         let bluetoothOutputOnly = database.debug.bluetoothOutputOnly
-        netStreamLockQueue.async {
+        processorControlQueue.async {
             let session = AVAudioSession.sharedInstance()
             do {
                 let bluetoothOption: AVAudioSession.CategoryOptions
@@ -67,7 +67,7 @@ extension Model {
     }
 
     func teardownAudioSession() {
-        netStreamLockQueue.async {
+        processorControlQueue.async {
             do {
                 try AVAudioSession.sharedInstance().setActive(false)
             } catch {
@@ -165,7 +165,7 @@ extension Model {
     func selectMicDefault(mic: SettingsMicsMic) {
         media.attachBufferedAudio(cameraId: nil)
         let preferStereoMic = database.debug.preferStereoMic
-        netStreamLockQueue.async {
+        processorControlQueue.async {
             let session = AVAudioSession.sharedInstance()
             guard let inputPort = session.availableInputs?.first(where: { $0.uid == mic.inputUid }) else {
                 return
@@ -412,7 +412,7 @@ extension Model {
         listMediaPlayerMics(&mics)
         listSrtlaMics(&mics)
         listRtmpMics(&mics)
-        netStreamLockQueue.async {
+        processorControlQueue.async {
             self.listAudioSessionMics(&mics)
             DispatchQueue.main.async {
                 onCompleted(mics)

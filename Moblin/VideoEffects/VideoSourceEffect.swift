@@ -68,19 +68,19 @@ final class VideoSourceEffect: VideoEffect {
     }
 
     func setVideoSourceId(videoSourceId: UUID) {
-        mixerLockQueue.async {
+        processorPipelineQueue.async {
             self.videoSourceId = videoSourceId
         }
     }
 
     func setSceneWidget(sceneWidget: SettingsSceneWidget) {
-        mixerLockQueue.async {
+        processorPipelineQueue.async {
             self.sceneWidget = sceneWidget
         }
     }
 
     func setSettings(settings: VideoSourceEffectSettings) {
-        mixerLockQueue.async {
+        processorPipelineQueue.async {
             self.settings = settings
         }
     }

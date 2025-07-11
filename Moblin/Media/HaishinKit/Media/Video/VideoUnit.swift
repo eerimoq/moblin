@@ -111,7 +111,7 @@ final class VideoUnit: NSObject {
     private var outputSize = CGSize(width: 1920, height: 1080)
     private var fillFrame = true
     let session = makeCaptureSession()
-    private var encoders = [VideoEncoder(lockQueue: mixerLockQueue)]
+    private var encoders = [VideoEncoder(lockQueue: processorPipelineQueue)]
     weak var processor: Processor?
     private var effects: [VideoEffect] = []
     private var pendingAfterAttachEffects: [VideoEffect]?
@@ -126,7 +126,7 @@ final class VideoUnit: NSObject {
     private var blackPixelBufferPool: CVPixelBufferPool?
     private var latestSampleBuffer: CMSampleBuffer?
     private var latestSampleBufferTime: ContinuousClock.Instant?
-    private var frameTimer = SimpleTimer(queue: mixerLockQueue)
+    private var frameTimer = SimpleTimer(queue: processorPipelineQueue)
     private var firstFrameTime: ContinuousClock.Instant?
     private var isFirstAfterAttach = false
     private var ignoreFramesAfterAttachSeconds = 0.0
@@ -244,102 +244,102 @@ final class VideoUnit: NSObject {
     }
 
     func registerEffect(_ effect: VideoEffect) {
-        mixerLockQueue.async {
+        processorPipelineQueue.async {
             self.registerEffectInner(effect)
         }
     }
 
     func registerEffectBack(_ effect: VideoEffect) {
-        mixerLockQueue.async {
+        processorPipelineQueue.async {
             self.registerEffectBackInner(effect)
         }
     }
 
     func unregisterEffect(_ effect: VideoEffect) {
-        mixerLockQueue.async {
+        processorPipelineQueue.async {
             self.unregisterEffectInner(effect)
         }
     }
 
     func setPendingAfterAttachEffects(effects: [VideoEffect], rotation: Double) {
-        netStreamLockQueue.async {
-            mixerLockQueue.async {
+        processorControlQueue.async {
+            processorPipelineQueue.async {
                 self.setPendingAfterAttachEffectsInner(effects: effects, rotation: rotation)
             }
         }
     }
 
     func usePendingAfterAttachEffects() {
-        netStreamLockQueue.async {
-            mixerLockQueue.async {
+        processorControlQueue.async {
+            processorPipelineQueue.async {
                 self.usePendingAfterAttachEffectsInner()
             }
         }
     }
 
     func setLowFpsImage(fps: Float) {
-        mixerLockQueue.async {
+        processorPipelineQueue.async {
             self.setLowFpsImageInner(fps: fps)
         }
     }
 
     func setSceneSwitchTransition(sceneSwitchTransition: SceneSwitchTransition) {
-        mixerLockQueue.async {
+        processorPipelineQueue.async {
             self.sceneSwitchTransition = sceneSwitchTransition
         }
     }
 
     func takeSnapshot(age: Float, onComplete: @escaping (UIImage, CIImage) -> Void) {
-        mixerLockQueue.async {
+        processorPipelineQueue.async {
             self.takeSnapshotAge = age
             self.takeSnapshotComplete = onComplete
         }
     }
 
     func setCleanRecordings(enabled: Bool) {
-        mixerLockQueue.async {
+        processorPipelineQueue.async {
             self.cleanRecordings = enabled
         }
     }
 
     func setCleanSnapshots(enabled: Bool) {
-        mixerLockQueue.async {
+        processorPipelineQueue.async {
             self.cleanSnapshots = enabled
         }
     }
 
     func setCleanExternalDisplay(enabled: Bool) {
-        mixerLockQueue.async {
+        processorPipelineQueue.async {
             self.cleanExternalDisplay = enabled
         }
     }
 
     func appendBufferedVideoSampleBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
-        mixerLockQueue.async {
+        processorPipelineQueue.async {
             self.appendBufferedVideoSampleBufferInner(cameraId: cameraId, sampleBuffer)
         }
     }
 
     func addBufferedVideo(cameraId: UUID, name: String, latency: Double) {
-        mixerLockQueue.async {
+        processorPipelineQueue.async {
             self.addBufferedVideoInner(cameraId: cameraId, name: name, latency: latency)
         }
     }
 
     func removeBufferedVideo(cameraId: UUID) {
-        mixerLockQueue.async {
+        processorPipelineQueue.async {
             self.removeBufferedVideoInner(cameraId: cameraId)
         }
     }
 
     func setBufferedVideoDrift(cameraId: UUID, drift: Double) {
-        mixerLockQueue.async {
+        processorPipelineQueue.async {
             self.setBufferedVideoDriftInner(cameraId: cameraId, drift: drift)
         }
     }
 
     func setBufferedVideoTargetLatency(cameraId: UUID, latency: Double) {
-        mixerLockQueue.async {
+        processorPipelineQueue.async {
             self.setBufferedVideoTargetLatencyInner(cameraId: cameraId, latency: latency)
         }
     }
@@ -362,7 +362,7 @@ final class VideoUnit: NSObject {
         captureSize = capture
         outputSize = output
         updateDevicesFormat()
-        mixerLockQueue.async {
+        processorPipelineQueue.async {
             self.blackImage = nil
             self.pool = nil
             self.bufferedPool = nil
@@ -384,9 +384,9 @@ final class VideoUnit: NSObject {
 
     func attach(params: VideoUnitAttachParams) throws {
         for device in captureSessionDevices {
-            device.output.setSampleBufferDelegate(nil, queue: mixerLockQueue)
+            device.output.setSampleBufferDelegate(nil, queue: processorPipelineQueue)
         }
-        mixerLockQueue.async {
+        processorPipelineQueue.async {
             self.configuredIgnoreFramesAfterAttachSeconds = params.ignoreFramesAfterAttachSeconds
             self.selectedBufferedVideoCameraId = params.bufferedVideo
             self.prepareFirstFrame()
@@ -452,9 +452,9 @@ final class VideoUnit: NSObject {
         }
         for (i, device) in captureSessionDevices.enumerated() {
             if params.devices.hasSceneDevice, i == 0 {
-                device.output.setSampleBufferDelegate(self, queue: mixerLockQueue)
+                device.output.setSampleBufferDelegate(self, queue: processorPipelineQueue)
             } else {
-                device.output.setSampleBufferDelegate(videoUnitBuiltinDevice, queue: mixerLockQueue)
+                device.output.setSampleBufferDelegate(videoUnitBuiltinDevice, queue: processorPipelineQueue)
             }
         }
         updateCameraControls()
@@ -471,7 +471,7 @@ final class VideoUnit: NSObject {
         }
         let message = error._nsError.localizedFailureReason ?? "\(error.code)"
         processor?.delegate?.streamVideoCaptureSessionError(message)
-        netStreamLockQueue.asyncAfter(deadline: .now() + .milliseconds(500)) {
+        processorControlQueue.asyncAfter(deadline: .now() + .milliseconds(500)) {
             if self.isRunning {
                 self.session.startRunning()
             }
@@ -1142,7 +1142,7 @@ final class VideoUnit: NSObject {
                 detectionsQueue.async {
                     let imageRequestHandler = VNImageRequestHandler(cvPixelBuffer: imageBuffer)
                     let faceLandmarksRequest = VNDetectFaceLandmarksRequest { request, error in
-                        mixerLockQueue.async {
+                        processorPipelineQueue.async {
                             guard error == nil else {
                                 completion.faceDetections[videoSourceId] = []
                                 self.faceDetectionsComplete(completion)
@@ -1164,7 +1164,7 @@ final class VideoUnit: NSObject {
                     do {
                         try imageRequestHandler.perform([faceLandmarksRequest])
                     } catch {
-                        mixerLockQueue.async {
+                        processorPipelineQueue.async {
                             completion.faceDetections[videoSourceId] = []
                             self.faceDetectionsComplete(completion)
                         }
@@ -1459,7 +1459,7 @@ final class VideoUnit: NSObject {
     @objc
     private func sessionWasInterrupted(_: Notification) {
         logger.debug("Video session interruption started")
-        mixerLockQueue.async {
+        processorPipelineQueue.async {
             self.prepareFirstFrame()
         }
     }
@@ -1714,7 +1714,7 @@ final class VideoUnit: NSObject {
         if session.canAddControl(exposureBiasSlider) {
             session.addControl(exposureBiasSlider)
         }
-        session.setControlsDelegate(self, queue: netStreamLockQueue)
+        session.setControlsDelegate(self, queue: processorControlQueue)
     }
 
     @available(iOS 18.0, *)

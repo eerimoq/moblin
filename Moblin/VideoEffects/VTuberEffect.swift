@@ -30,7 +30,7 @@ final class VTuberEffect: VideoEffect {
                 logger.info("v-tuber: Failed to load VRM file with error: \(error)")
                 return
             }
-            mixerLockQueue.async {
+            processorPipelineQueue.async {
                 let camera = SCNCamera()
                 camera.fieldOfView = cameraFieldOfView
                 let cameraNode = SCNNode()
@@ -49,13 +49,13 @@ final class VTuberEffect: VideoEffect {
     }
 
     func setVideoSourceId(videoSourceId: UUID) {
-        mixerLockQueue.async {
+        processorPipelineQueue.async {
             self.videoSourceId = videoSourceId
         }
     }
 
     func setSettings(cameraFieldOfView: Double, cameraPositionY: Double, mirror: Bool) {
-        mixerLockQueue.async {
+        processorPipelineQueue.async {
             self.cameraNode?.camera?.fieldOfView = cameraFieldOfView
             self.cameraNode?.position = SCNVector3(0, cameraPositionY, -1.8)
             self.mirror = mirror
@@ -63,7 +63,7 @@ final class VTuberEffect: VideoEffect {
     }
 
     func setSceneWidget(sceneWidget: SettingsSceneWidget) {
-        mixerLockQueue.async {
+        processorPipelineQueue.async {
             self.sceneWidget = sceneWidget
         }
     }

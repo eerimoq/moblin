@@ -8,7 +8,7 @@ final class PinchEffect: VideoEffect {
     }
 
     func setSettings(scale: Float) {
-        mixerLockQueue.async {
+        processorPipelineQueue.async {
             self.scale = scale
         }
     }

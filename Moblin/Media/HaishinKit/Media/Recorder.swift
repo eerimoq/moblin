@@ -30,13 +30,13 @@ class Recorder: NSObject {
     weak var delegate: RecorderDelegate?
 
     func setAudioChannelsMap(map: [Int: Int]) {
-        mixerLockQueue.async {
+        processorPipelineQueue.async {
             self.outputChannelsMap = map
         }
     }
 
     func startRunning(url: URL?, replay: Bool, audioOutputSettings: [String: Any], videoOutputSettings: [String: Any]) {
-        mixerLockQueue.async {
+        processorPipelineQueue.async {
             self.startRunningInner(
                 url: url,
                 replay: replay,
@@ -47,7 +47,7 @@ class Recorder: NSObject {
     }
 
     func stopRunning() {
-        mixerLockQueue.async {
+        processorPipelineQueue.async {
             self.stopRunningInner()
         }
     }

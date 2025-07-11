@@ -19,8 +19,8 @@ protocol ProcessorDelegate: AnyObject {
     func streamSelectedFps(fps: Double, auto: Bool)
 }
 
-let mixerLockQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.Mixer", qos: .userInteractive)
-let netStreamLockQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.NetStream.lock")
+let processorPipelineQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.Processor.Pipeline", qos: .userInteractive)
+let processorControlQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.Processor.Control")
 
 private class Stream {
     weak var delegate: (any AudioCodecDelegate & VideoEncoderDelegate)?
@@ -48,13 +48,13 @@ final class Processor {
     }
 
     func setTorch(value: Bool) {
-        netStreamLockQueue.async {
+        processorControlQueue.async {
             self.video.torch = value
         }
     }
 
     func setFps(value: Float64, preferAutoFps: Bool) {
-        netStreamLockQueue.async {
+        processorControlQueue.async {
             self.video.setFps(fps: value, preferAutoFps: preferAutoFps)
         }
     }
@@ -64,38 +64,38 @@ final class Processor {
     }
 
     func setColorSpace(colorSpace: AVCaptureColorSpace, onComplete: @escaping () -> Void) {
-        netStreamLockQueue.async {
+        processorControlQueue.async {
             self.video.setColorSpace(colorSpace: colorSpace)
             onComplete()
         }
     }
 
     func setVideoSize(capture: CGSize, output: CGSize) {
-        netStreamLockQueue.async {
+        processorControlQueue.async {
             self.video.setSize(capture: capture, output: output)
         }
     }
 
     func setVideoOrientation(value: AVCaptureVideoOrientation) {
-        netStreamLockQueue.async {
+        processorControlQueue.async {
             self.video.videoOrientation = value
         }
     }
 
     func setHasAudio(value: Bool) {
-        netStreamLockQueue.async {
+        processorControlQueue.async {
             self.audio.muted = !value
         }
     }
 
     func setAudioEncoderSettings(settings: AudioEncoderSettings) {
-        netStreamLockQueue.async {
+        processorControlQueue.async {
             self.audio.getEncoders().first!.setSettings(settings: settings)
         }
     }
 
     func setVideoEncoderSettings(settings: VideoEncoderSettings) {
-        netStreamLockQueue.async {
+        processorControlQueue.async {
             self.video.getEncoders().first!.settings.mutate { $0 = settings }
         }
     }
@@ -105,7 +105,7 @@ final class Processor {
         onError: ((_ error: Error) -> Void)? = nil,
         onSuccess: (() -> Void)? = nil
     ) {
-        netStreamLockQueue.async {
+        processorControlQueue.async {
             do {
                 try self.attachCameraInternal(params: params)
                 onSuccess?()
@@ -116,7 +116,7 @@ final class Processor {
     }
 
     func attachAudio(params: AudioUnitAttachParams, onError: ((_ error: Error) -> Void)? = nil) {
-        netStreamLockQueue.async {
+        processorControlQueue.async {
             do {
                 try self.attachAudioInternal(params: params)
             } catch {
@@ -126,7 +126,7 @@ final class Processor {
     }
 
     func setCameraControls(enabled: Bool) {
-        netStreamLockQueue.async {
+        processorControlQueue.async {
             self.video.setCameraControl(enabled: enabled)
         }
     }
@@ -236,8 +236,8 @@ final class Processor {
         recorder.setReplayBuffering(enabled: enabled)
     }
 
-    func stopMixer() {
-        netStreamLockQueue.async {
+    func stop() {
+        processorControlQueue.async {
             self.stopRunning()
         }
     }

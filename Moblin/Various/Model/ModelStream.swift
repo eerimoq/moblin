@@ -395,7 +395,7 @@ extension Model {
             processor = nil
             return
         }
-        netStreamLockQueue.async {
+        processorControlQueue.async {
             processor.setDrawable(drawable: self.streamPreviewView)
             processor.setExternalDisplayDrawable(drawable: self.externalDisplayStreamPreviewView)
             self.processor = processor

@@ -117,19 +117,19 @@ final class PngTuberEffect: VideoEffect {
     }
 
     func setVideoSourceId(videoSourceId: UUID) {
-        mixerLockQueue.async {
+        processorPipelineQueue.async {
             self.videoSourceId = videoSourceId
         }
     }
 
     func setSceneWidget(sceneWidget: SettingsSceneWidget) {
-        mixerLockQueue.async {
+        processorPipelineQueue.async {
             self.sceneWidget = sceneWidget
         }
     }
 
     func setSettings(mirror: Bool) {
-        mixerLockQueue.async {
+        processorPipelineQueue.async {
             self.mirror = mirror
         }
     }

@@ -54,7 +54,7 @@ final class RemoveBackgroundEffect: VideoEffect {
             self.updating = true
             DispatchQueue.global().async {
                 let filter = makeFilter(fromHue: fromHue, toHue: toHue)
-                mixerLockQueue.async {
+                processorPipelineQueue.async {
                     self.filter = filter
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
                         self.updating = false

@@ -57,7 +57,7 @@ class RtmpConnection: RtmpEventDispatcher {
     }
 
     private var nextTransactionId = 0
-    private var timer = SimpleTimer(queue: netStreamLockQueue)
+    private var timer = SimpleTimer(queue: processorControlQueue)
     private var messages: [UInt16: RtmpMessage] = [:]
     private var currentChunk: RtmpChunk?
     private var fragmentedChunks: [UInt16: RtmpChunk] = [:]
@@ -74,13 +74,13 @@ class RtmpConnection: RtmpEventDispatcher {
     }
 
     func connect(_ url: String) {
-        netStreamLockQueue.async {
+        processorControlQueue.async {
             self.connectInternal(url)
         }
     }
 
     func disconnect() {
-        netStreamLockQueue.async {
+        processorControlQueue.async {
             self.disconnectInternal()
         }
     }
@@ -164,7 +164,7 @@ class RtmpConnection: RtmpEventDispatcher {
         guard let event = RtmpEvent.from(status) else {
             return
         }
-        netStreamLockQueue.async {
+        processorControlQueue.async {
             self.onInternal(event: event)
         }
     }

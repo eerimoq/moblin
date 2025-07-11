@@ -190,7 +190,7 @@ final class ReplayEffect: VideoEffect {
     }
 
     func cancel() {
-        mixerLockQueue.async {
+        processorPipelineQueue.async {
             self.cancelled = true
         }
     }

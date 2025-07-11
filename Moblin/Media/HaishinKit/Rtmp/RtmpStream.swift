@@ -107,13 +107,13 @@ class RtmpStream {
     }
 
     func publish() {
-        netStreamLockQueue.async {
+        processorControlQueue.async {
             self.publishInner()
         }
     }
 
     func close() {
-        netStreamLockQueue.async {
+        processorControlQueue.async {
             self.closeInternal()
         }
     }
@@ -282,7 +282,7 @@ class RtmpStream {
         guard let event = RtmpEvent.from(status) else {
             return
         }
-        netStreamLockQueue.async {
+        processorControlQueue.async {
             self.onInternal(event: event)
         }
     }
@@ -490,13 +490,13 @@ extension RtmpStream: RtmpEventDispatcherConvertible {
 
 extension RtmpStream: AudioCodecDelegate {
     func audioCodecOutputFormat(_ format: AVAudioFormat) {
-        netStreamLockQueue.async {
+        processorControlQueue.async {
             self.audioCodecOutputFormatInner(format)
         }
     }
 
     func audioCodecOutputBuffer(_ buffer: AVAudioBuffer, _ presentationTimeStamp: CMTime) {
-        netStreamLockQueue.async {
+        processorControlQueue.async {
             self.audioCodecOutputBufferInner(buffer, presentationTimeStamp)
         }
     }
@@ -505,14 +505,14 @@ extension RtmpStream: AudioCodecDelegate {
 extension RtmpStream: VideoEncoderDelegate {
     func videoEncoderOutputFormat(_ codec: VideoEncoder, _ formatDescription: CMFormatDescription) {
         let format = codec.settings.value.format
-        netStreamLockQueue.async {
+        processorControlQueue.async {
             self.videoCodecOutputFormatInner(format, formatDescription)
         }
     }
 
     func videoEncoderOutputSampleBuffer(_ codec: VideoEncoder, _ sampleBuffer: CMSampleBuffer) {
         let format = codec.settings.value.format
-        netStreamLockQueue.async {
+        processorControlQueue.async {
             self.videoCodecOutputSampleBufferInner(format, sampleBuffer)
         }
     }

@@ -27,7 +27,7 @@ func makeChannelMap(
 }
 
 final class AudioUnit: NSObject {
-    private var encoders = [AudioEncoder(lockQueue: mixerLockQueue)]
+    private var encoders = [AudioEncoder(lockQueue: processorPipelineQueue)]
     private var input: AVCaptureDeviceInput?
     private var output: AVCaptureAudioDataOutput?
     var muted = false
@@ -63,7 +63,7 @@ final class AudioUnit: NSObject {
     }
 
     func attach(params: AudioUnitAttachParams) throws {
-        mixerLockQueue.async {
+        processorPipelineQueue.async {
             self.selectedBufferedAudioId = params.bufferedAudio
             self.bufferedBuiltinAudio = BufferedAudio(
                 cameraId: UUID(),
@@ -90,13 +90,13 @@ final class AudioUnit: NSObject {
             encoder.stopRunning()
             encoder.delegate = nil
         }
-        mixerLockQueue.async {
+        processorPipelineQueue.async {
             self.inputSourceFormat = nil
         }
     }
 
     func setSpeechToText(enabled: Bool) {
-        mixerLockQueue.async {
+        processorPipelineQueue.async {
             self.speechToTextEnabled = enabled
         }
     }
@@ -130,7 +130,7 @@ final class AudioUnit: NSObject {
             session.addInput(input!)
         }
         output = AVCaptureAudioDataOutput()
-        output?.setSampleBufferDelegate(self, queue: mixerLockQueue)
+        output?.setSampleBufferDelegate(self, queue: processorPipelineQueue)
         if session.canAddOutput(output!) {
             session.addOutput(output!)
         }
@@ -138,31 +138,31 @@ final class AudioUnit: NSObject {
     }
 
     func addBufferedAudio(cameraId: UUID, name: String, latency: Double) {
-        mixerLockQueue.async {
+        processorPipelineQueue.async {
             self.addBufferedAudioInner(cameraId: cameraId, name: name, latency: latency)
         }
     }
 
     func removeBufferedAudio(cameraId: UUID) {
-        mixerLockQueue.async {
+        processorPipelineQueue.async {
             self.removeBufferedAudioInner(cameraId: cameraId)
         }
     }
 
     func appendBufferedAudioSampleBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
-        mixerLockQueue.async {
+        processorPipelineQueue.async {
             self.appendBufferedAudioSampleBufferInner(cameraId: cameraId, sampleBuffer)
         }
     }
 
     func setBufferedAudioDrift(cameraId: UUID, drift: Double) {
-        mixerLockQueue.async {
+        processorPipelineQueue.async {
             self.setBufferedAudioDriftInner(cameraId: cameraId, drift: drift)
         }
     }
 
     func setBufferedAudioTargetLatency(cameraId: UUID, latency: Double) {
-        mixerLockQueue.async {
+        processorPipelineQueue.async {
             self.setBufferedAudioTargetLatencyInner(cameraId: cameraId, latency: latency)
         }
     }

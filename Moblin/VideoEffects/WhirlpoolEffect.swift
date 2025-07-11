@@ -8,7 +8,7 @@ final class WhirlpoolEffect: VideoEffect {
     }
 
     func setSettings(angle: Float) {
-        mixerLockQueue.async {
+        processorPipelineQueue.async {
             self.angle = angle
         }
     }

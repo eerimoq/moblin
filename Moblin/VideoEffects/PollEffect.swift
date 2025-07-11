@@ -41,7 +41,7 @@ final class PollEffect: VideoEffect {
             .cornerRadius(10)
             let renderer = ImageRenderer(content: content)
             let image = renderer.uiImage
-            mixerLockQueue.async {
+            processorPipelineQueue.async {
                 self.image = image
             }
         }
