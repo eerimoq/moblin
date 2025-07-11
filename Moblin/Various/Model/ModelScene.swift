@@ -708,6 +708,8 @@ extension Model {
             attachBackDualLowEnergyCamera()
         case .backWideDualLowEnergy:
             attachBackWideDualLowEnergyCamera()
+        case .none:
+            attachBufferedCamera(cameraId: noneCameraId, scene: scene)
         }
     }
 

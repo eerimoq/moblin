@@ -5,6 +5,10 @@ extension Model {
         return cameraId == screenCaptureCamera
     }
 
+    func isNoneCamera(cameraId: String) -> Bool {
+        return cameraId == noneCamera
+    }
+
     private func handleSampleBufferSenderConnected() {
         makeToast(title: String(localized: "Screen capture started"))
         media.addBufferedVideo(

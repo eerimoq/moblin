@@ -35,10 +35,12 @@ class CameraState: ObservableObject {
     }
 }
 
+let noneCameraId = UUID(uuidString: "00000000-feed-b1ac-cafe-000000000000")!
 let screenCaptureCameraId = UUID(uuidString: "00000000-cafe-babe-beef-000000000000")!
 let builtinBackCameraId = UUID(uuidString: "00000000-cafe-dead-beef-000000000000")!
 let builtinFrontCameraId = UUID(uuidString: "00000000-cafe-dead-beef-000000000001")!
 let externalCameraId = UUID(uuidString: "00000000-cafe-dead-beef-000000000002")!
+let noneCamera = "None"
 let screenCaptureCamera = "Screen capture"
 private let backTripleLowEnergyCamera = "Back Triple (low power)"
 private let backDualLowEnergyCamera = "Back Dual (low power)"
@@ -503,6 +505,7 @@ extension Model {
             ($0, $0)
         }
         cameras.append((screenCaptureCamera, screenCaptureCamera))
+        cameras.append((noneCamera, noneCamera))
         return cameras
     }
 
@@ -561,6 +564,8 @@ extension Model {
             return .backDualLowEnergy
         } else if isBackWideDualLowEnergyAutoCamera(cameraId: cameraId) {
             return .backWideDualLowEnergy
+        } else if isNoneCamera(cameraId: cameraId) {
+            return .none
         } else {
             return .external(id: cameraId, name: getExternalCameraName(cameraId: cameraId))
         }
@@ -591,6 +596,8 @@ extension Model {
             return backDualLowEnergyCamera
         case .backWideDualLowEnergy:
             return backWideDualLowEnergyCamera
+        case .none:
+            return noneCamera
         }
     }
 
@@ -647,6 +654,8 @@ extension Model {
             return backDualLowEnergyCamera
         case .backWideDualLowEnergy:
             return backWideDualLowEnergyCamera
+        case .none:
+            return noneCamera
         }
     }
 
@@ -759,6 +768,8 @@ extension Model {
             return nil
         case .backWideDualLowEnergy:
             return nil
+        case .none:
+            return noneCameraId
         }
     }
 

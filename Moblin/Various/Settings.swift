@@ -846,6 +846,7 @@ enum SettingsSceneCameraPosition: String, Codable, CaseIterable {
     case backTripleLowEnergy = "Back triple"
     case backDualLowEnergy = "Back dual"
     case backWideDualLowEnergy = "Back wide dual"
+    case none = "None"
 
     public init(from decoder: Decoder) throws {
         self = try SettingsSceneCameraPosition(rawValue: decoder.singleValueContainer()
@@ -873,6 +874,7 @@ enum SettingsCameraId {
     case mediaPlayer(id: UUID)
     case external(id: String, name: String)
     case screenCapture
+    case none
     case backTripleLowEnergy
     case backDualLowEnergy
     case backWideDualLowEnergy
@@ -1022,6 +1024,8 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject {
             return .backDualLowEnergy
         case .backWideDualLowEnergy:
             return .backWideDualLowEnergy
+        case .none:
+            return .none
         }
     }
 
@@ -1054,6 +1058,8 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject {
             cameraPosition = .backDualLowEnergy
         case .backWideDualLowEnergy:
             cameraPosition = .backWideDualLowEnergy
+        case .none:
+            cameraPosition = .none
         }
     }
 }
@@ -1876,6 +1882,8 @@ class SettingsWidgetVideoSource: Codable, ObservableObject {
             return .backDualLowEnergy
         case .backWideDualLowEnergy:
             return .backWideDualLowEnergy
+        case .none:
+            return .none
         }
     }
 
@@ -1908,6 +1916,8 @@ class SettingsWidgetVideoSource: Codable, ObservableObject {
             cameraPosition = .backDualLowEnergy
         case .backWideDualLowEnergy:
             cameraPosition = .backWideDualLowEnergy
+        case .none:
+            cameraPosition = .none
         }
     }
 }
@@ -2300,6 +2310,8 @@ class SettingsWidgetVTuber: Codable, ObservableObject {
             return .backDualLowEnergy
         case .backWideDualLowEnergy:
             return .backWideDualLowEnergy
+        case .none:
+            return .none
         }
     }
 
@@ -2332,6 +2344,8 @@ class SettingsWidgetVTuber: Codable, ObservableObject {
             cameraPosition = .backDualLowEnergy
         case .backWideDualLowEnergy:
             cameraPosition = .backWideDualLowEnergy
+        case .none:
+            cameraPosition = .none
         }
     }
 }
@@ -2417,6 +2431,8 @@ class SettingsWidgetPngTuber: Codable, ObservableObject {
             return .backDualLowEnergy
         case .backWideDualLowEnergy:
             return .backWideDualLowEnergy
+        case .none:
+            return .none
         }
     }
 
@@ -2449,6 +2465,8 @@ class SettingsWidgetPngTuber: Codable, ObservableObject {
             cameraPosition = .backDualLowEnergy
         case .backWideDualLowEnergy:
             cameraPosition = .backWideDualLowEnergy
+        case .none:
+            cameraPosition = .none
         }
     }
 }
