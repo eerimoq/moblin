@@ -589,7 +589,7 @@ func getTaskPower() -> Float? {
     guard let previousTaskEnergy else {
         return nil
     }
-    return Float(info.task_energy - previousTaskEnergy) / 1_000_000.0
+    return Float(info.task_energy - previousTaskEnergy) / 1_000_000_000.0
 }
 
 extension FileManager {
