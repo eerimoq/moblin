@@ -21,6 +21,14 @@ protocol MediaProcessorDelegate: AnyObject {
 
 let netStreamLockQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.NetStream.lock")
 
+private class Stream {
+    weak var delegate: (any AudioCodecDelegate & VideoEncoderDelegate)?
+
+    init(delegate: (any AudioCodecDelegate & VideoEncoderDelegate)? = nil) {
+        self.delegate = delegate
+    }
+}
+
 final class MediaProcessor: NSObject {
     let mixer = Mixer()
     weak var delegate: (any MediaProcessorDelegate)?
@@ -221,14 +229,45 @@ final class MediaProcessor: NSObject {
         }
     }
 
+    private var streams: [Stream] = []
+
     func startEncoding(_ delegate: any AudioCodecDelegate & VideoEncoderDelegate) {
-        mixer.video.startEncoding(delegate)
-        mixer.audio.startEncoding(delegate)
+        streams.append(Stream(delegate: delegate))
+        mixer.video.startEncoding(self)
+        mixer.audio.startEncoding(self)
     }
 
     func stopEncoding() {
         mixer.video.stopEncoding()
         mixer.audio.stopEncoding()
+    }
+}
+
+extension MediaProcessor: AudioCodecDelegate {
+    func audioCodecOutputFormat(_ format: AVAudioFormat) {
+        for stream in streams {
+            stream.delegate?.audioCodecOutputFormat(format)
+        }
+    }
+
+    func audioCodecOutputBuffer(_ buffer: AVAudioBuffer, _ presentationTimeStamp: CMTime) {
+        for stream in streams {
+            stream.delegate?.audioCodecOutputBuffer(buffer, presentationTimeStamp)
+        }
+    }
+}
+
+extension MediaProcessor: VideoEncoderDelegate {
+    func videoEncoderOutputFormat(_ codec: VideoEncoder, _ formatDescription: CMFormatDescription) {
+        for stream in streams {
+            stream.delegate?.videoEncoderOutputFormat(codec, formatDescription)
+        }
+    }
+
+    func videoEncoderOutputSampleBuffer(_ codec: VideoEncoder, _ sampleBuffer: CMSampleBuffer) {
+        for stream in streams {
+            stream.delegate?.videoEncoderOutputSampleBuffer(codec, sampleBuffer)
+        }
     }
 }
 

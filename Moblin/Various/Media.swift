@@ -39,7 +39,11 @@ protocol MediaDelegate: AnyObject {
 }
 
 final class Media: NSObject {
-    private var rtmpStream: RtmpStream?
+    private var rtmpStreams: [RtmpStream] = []
+    private var rtmpStream: RtmpStream? {
+        rtmpStreams.first
+    }
+
     private var srtStream: SrtStream?
     private var ristStream: RistStream?
     private var irlStream: MirlStream?
@@ -91,7 +95,7 @@ final class Media: NSObject {
         rtmpStopStream()
         ristStopStream()
         irlStopStream()
-        rtmpStream = nil
+        rtmpStreams.removeAll()
         srtStream = nil
         ristStream = nil
         irlStream = nil
@@ -111,24 +115,25 @@ final class Media: NSObject {
         let mediaProcessor = MediaProcessor()
         switch proto {
         case .rtmp:
-            rtmpStream = RtmpStream(mediaProcessor: mediaProcessor)
+            rtmpStreams.append(RtmpStream(mediaProcessor: mediaProcessor))
+            // rtmpStreams.append(RtmpStream(mediaProcessor: mediaProcessor))
             srtStream = nil
             ristStream = nil
             irlStream = nil
         case .srt:
             srtStream = SrtStream(mediaProcessor: mediaProcessor, timecodesEnabled: timecodesEnabled, delegate: self)
-            rtmpStream = nil
+            rtmpStreams.removeAll()
             ristStream = nil
             irlStream = nil
         case .rist:
             ristStream = RistStream(mediaProcessor: mediaProcessor, delegate: self)
             srtStream = nil
-            rtmpStream = nil
+            rtmpStreams.removeAll()
             irlStream = nil
         case .irl:
             irlStream = MirlStream(mediaProcessor: mediaProcessor)
             srtStream = nil
-            rtmpStream = nil
+            rtmpStreams.removeAll()
             ristStream = nil
         }
         self.mediaProcessor = mediaProcessor
@@ -526,6 +531,18 @@ final class Media: NSObject {
             adaptiveBitrate = nil
         }
         rtmpStream?.connection.connect(makeRtmpUri(url: url))
+        if rtmpStreams.count > 1 {
+            for rtmpStream in rtmpStreams.suffix(from: 1) {
+                let url = "rtmp://192.168.50.181:1935/live/1"
+                rtmpStream.setStreamKey(makeRtmpStreamName(url: url))
+                rtmpStream.connection.addEventListener(
+                    .rtmpStatus,
+                    selector: #selector(rtmp2StatusHandler),
+                    observer: self
+                )
+                rtmpStream.connection.connect(makeRtmpUri(url: url))
+            }
+        }
     }
 
     func rtmpStopStream() {
@@ -536,6 +553,17 @@ final class Media: NSObject {
         )
         rtmpStream?.close()
         rtmpStream?.connection.disconnect()
+        if rtmpStreams.count > 1 {
+            for rtmpStream in rtmpStreams.suffix(from: 1) {
+                rtmpStream.connection.removeEventListener(
+                    .rtmpStatus,
+                    selector: #selector(rtmp2StatusHandler),
+                    observer: self
+                )
+                rtmpStream.close()
+                rtmpStream.connection.disconnect()
+            }
+        }
         adaptiveBitrate = nil
     }
 
@@ -561,6 +589,24 @@ final class Media: NSObject {
                 self.delegate?.mediaOnRtmpConnected()
             case .connectFailed, .connectClosed:
                 self.delegate?.mediaOnRtmpDisconnected("\(code)")
+            default:
+                break
+            }
+        }
+    }
+
+    @objc
+    private func rtmp2StatusHandler(_ notification: Notification) {
+        guard let event = RtmpEvent.from(notification),
+              let data = event.data as? AsObject,
+              let code = data["code"] as? String
+        else {
+            return
+        }
+        DispatchQueue.main.async {
+            switch RtmpConnectionCode(rawValue: code) {
+            case .connectSuccess:
+                self.rtmpStreams[1].publish()
             default:
                 break
             }
