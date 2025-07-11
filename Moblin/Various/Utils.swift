@@ -252,6 +252,18 @@ func getBestBackCameraId() -> String {
     return device.uniqueID
 }
 
+func getDefaultBackCameraPosition() -> SettingsSceneCameraPosition {
+    if hasTripleBackCamera() {
+        return .backTripleLowEnergy
+    } else if hasWideDualBackCamera() {
+        return .backWideDualLowEnergy
+    } else if hasDualBackCamera() {
+        return .backDualLowEnergy
+    } else {
+        return .back
+    }
+}
+
 func getBestFrontCameraId() -> String {
     guard let device = getBestFrontCameraDevice() else {
         return ""

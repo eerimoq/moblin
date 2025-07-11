@@ -883,7 +883,7 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject {
     var id: UUID = .init()
     @Published var enabled: Bool = true
     @Published var cameraType: SettingsSceneCameraPosition = .back
-    @Published var cameraPosition: SettingsSceneCameraPosition = .back
+    @Published var cameraPosition: SettingsSceneCameraPosition = getDefaultBackCameraPosition()
     @Published var backCameraId: String = getBestBackCameraId()
     @Published var frontCameraId: String = getBestFrontCameraId()
     @Published var rtmpCameraId: UUID = .init()
@@ -958,7 +958,11 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject {
         id = container.decode(.id, UUID.self, .init())
         enabled = container.decode(.enabled, Bool.self, true)
         cameraType = container.decode(.cameraType, SettingsSceneCameraPosition.self, .back)
-        cameraPosition = container.decode(.cameraPosition, SettingsSceneCameraPosition.self, .back)
+        cameraPosition = container.decode(
+            .cameraPosition,
+            SettingsSceneCameraPosition.self,
+            getDefaultBackCameraPosition()
+        )
         backCameraId = container.decode(.backCameraId, String.self, getBestBackCameraId())
         frontCameraId = container.decode(.frontCameraId, String.self, getBestFrontCameraId())
         rtmpCameraId = container.decode(.rtmpCameraId, UUID.self, .init())
@@ -5839,7 +5843,7 @@ class Database: Codable, ObservableObject {
 
 private func addDefaultScenes(database: Database) {
     var scene = SettingsScene(name: String(localized: "Back"))
-    scene.cameraPosition = .back
+    scene.cameraPosition = getDefaultBackCameraPosition()
     scene.backCameraId = getBestBackCameraId()
     database.scenes.append(scene)
 
