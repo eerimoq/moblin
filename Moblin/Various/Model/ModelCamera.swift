@@ -354,7 +354,8 @@ extension Model {
     }
 
     func colorSpaceUpdated() {
-        reloadStreamIfEnabled(stream: stream)
+        setColorSpace()
+        resetSelectedScene(changeScene: false)
     }
 
     func lutEnabledUpdated() {
