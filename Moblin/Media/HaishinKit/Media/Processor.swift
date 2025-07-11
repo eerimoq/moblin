@@ -19,8 +19,8 @@ protocol ProcessorDelegate: AnyObject {
     func streamSelectedFps(fps: Double, auto: Bool)
 }
 
-let processorPipelineQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.Processor.Pipeline", qos: .userInteractive)
 let processorControlQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.Processor.Control")
+let processorPipelineQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.Processor.Pipeline", qos: .userInteractive)
 
 private class Stream {
     weak var delegate: (any AudioCodecDelegate & VideoEncoderDelegate)?
@@ -244,13 +244,18 @@ final class Processor {
 
     func startEncoding(_ delegate: any AudioCodecDelegate & VideoEncoderDelegate) {
         streams.append(Stream(delegate: delegate))
+        logger.info("processor: Starting encoding")
         video.startEncoding(self)
         audio.startEncoding(self)
     }
 
-    func stopEncoding() {
-        video.stopEncoding()
-        audio.stopEncoding()
+    func stopEncoding(_ delegate: any AudioCodecDelegate & VideoEncoderDelegate) {
+        streams.removeAll(where: { $0.delegate === delegate })
+        if streams.isEmpty {
+            logger.info("processor: Stopping encoding")
+            video.stopEncoding()
+            audio.stopEncoding()
+        }
     }
 
     func startRunning() {

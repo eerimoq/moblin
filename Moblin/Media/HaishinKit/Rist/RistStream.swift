@@ -197,7 +197,7 @@ class RistStream {
         networkPathMonitor = nil
         processorControlQueue.async {
             self.writer.stopRunning()
-            self.processor.stopEncoding()
+            self.processor.stopEncoding(self.writer)
         }
         peers.removeAll()
         context = nil

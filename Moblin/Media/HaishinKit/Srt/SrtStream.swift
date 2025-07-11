@@ -38,7 +38,7 @@ class SrtStream {
             case .publishing:
                 logger.info("srt: Stop publishing")
                 writer.stopRunning()
-                processor.stopEncoding()
+                processor.stopEncoding(writer)
             default:
                 break
             }

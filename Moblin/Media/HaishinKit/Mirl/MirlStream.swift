@@ -21,7 +21,7 @@ class MirlStream {
         processorControlQueue.async {
             self.client?.stop()
             self.client = nil
-            self.processor.stopEncoding()
+            self.processor.stopEncoding(self)
         }
     }
 }

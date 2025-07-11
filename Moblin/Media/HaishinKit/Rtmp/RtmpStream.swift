@@ -225,6 +225,7 @@ class RtmpStream {
 
     func closeInternal() {
         setReadyState(state: .initialized)
+        processor.stopEncoding(self)
     }
 
     private func didChangeReadyState(_ readyState: ReadyState, oldReadyState: ReadyState) {
@@ -232,7 +233,7 @@ class RtmpStream {
             sendFCUnpublish()
             sendDeleteStream()
             closeStream()
-            processor.stopEncoding()
+            processor.stopEncoding(self)
         }
         switch readyState {
         case .open:
