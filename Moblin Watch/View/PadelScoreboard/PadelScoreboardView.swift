@@ -2,6 +2,18 @@ import SwiftUI
 
 private let teamRowHeight: CGFloat = 32
 
+class Padel: ObservableObject {
+    @Published var scoreboard: PadelScoreboard = .init(
+        id: .init(),
+        home: .init(players: []),
+        away: .init(players: []),
+        score: []
+    )
+    @Published var players: [PadelScoreboardPlayersPlayer] = []
+    @Published var incrementTintColor: Color?
+    var scoreChanges: [PadelScoreboardScoreIncrement] = []
+}
+
 struct PadelScoreboardScore: Identifiable {
     let id: UUID = .init()
     var home: Int
@@ -37,7 +49,7 @@ struct PadelScoreboard {
 }
 
 private struct TeamPlayersView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @Binding var players: [PadelScoreboardPlayer]
 
     var body: some View {
@@ -68,13 +80,14 @@ private struct TeamScoreView: View {
 }
 
 private struct ScoreboardView: View {
+    let model: Model
     @Binding var scoreboard: PadelScoreboard
 
     var body: some View {
         HStack(alignment: .center) {
             VStack(alignment: .leading) {
-                TeamPlayersView(players: $scoreboard.home.players)
-                TeamPlayersView(players: $scoreboard.away.players)
+                TeamPlayersView(model: model, players: $scoreboard.home.players)
+                TeamPlayersView(model: model, players: $scoreboard.away.players)
             }
             .padding([.bottom], 2)
             ForEach(scoreboard.score) { score in
@@ -97,7 +110,8 @@ private struct ScoreboardView: View {
 }
 
 private struct PlayerPickerView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
+    @ObservedObject var padel: Padel
     @Binding var player: PadelScoreboardPlayer
     @State var isPresentingPlayerPicker = false
 
@@ -110,7 +124,7 @@ private struct PlayerPickerView: View {
         .sheet(isPresented: $isPresentingPlayerPicker) {
             List {
                 Picker("", selection: $player.id) {
-                    ForEach(model.scoreboardPlayers) { player in
+                    ForEach(padel.players) { player in
                         Text(player.name)
                     }
                 }
@@ -126,15 +140,17 @@ private struct PlayerPickerView: View {
 }
 
 private struct TeamPickerView: View {
+    let model: Model
+    let padel: Padel
     let side: String
     @Binding var team: PadelScoreboardTeam
 
     var body: some View {
         VStack {
             Text(side)
-            PlayerPickerView(player: $team.players[0])
+            PlayerPickerView(model: model, padel: padel, player: $team.players[0])
             if team.players.count > 1 {
-                PlayerPickerView(player: $team.players[1])
+                PlayerPickerView(model: model, padel: padel, player: $team.players[1])
             }
             Spacer()
         }
@@ -142,7 +158,7 @@ private struct TeamPickerView: View {
 }
 
 private struct PadelScoreboardUndoButtonView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
 
     var body: some View {
         Button {
@@ -154,7 +170,8 @@ private struct PadelScoreboardUndoButtonView: View {
 }
 
 private struct PadelScoreboardIncrementHomeButtonView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
+    @ObservedObject var padel: Padel
 
     var body: some View {
         Button {
@@ -162,12 +179,13 @@ private struct PadelScoreboardIncrementHomeButtonView: View {
         } label: {
             Image(systemName: "plus")
         }
-        .tint(model.padelScoreboardIncrementTintColor)
+        .tint(padel.incrementTintColor)
     }
 }
 
 private struct PadelScoreboardIncrementAwayButtonView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
+    @ObservedObject var padel: Padel
 
     var body: some View {
         Button {
@@ -175,12 +193,12 @@ private struct PadelScoreboardIncrementAwayButtonView: View {
         } label: {
             Image(systemName: "plus")
         }
-        .tint(model.padelScoreboardIncrementTintColor)
+        .tint(padel.incrementTintColor)
     }
 }
 
 private struct PadelScoreboardResetScoreButtonView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @State var isPresentingResetConfirimation = false
 
     var body: some View {
@@ -200,24 +218,25 @@ private struct PadelScoreboardResetScoreButtonView: View {
 }
 
 struct PadelScoreboardView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
+    @ObservedObject var padel: Padel
 
     var body: some View {
         TabView {
             VStack(spacing: 5) {
-                ScoreboardView(scoreboard: $model.padelScoreboard)
+                ScoreboardView(model: model, scoreboard: $padel.scoreboard)
                 HStack {
-                    PadelScoreboardUndoButtonView()
-                    PadelScoreboardIncrementHomeButtonView()
+                    PadelScoreboardUndoButtonView(model: model)
+                    PadelScoreboardIncrementHomeButtonView(model: model, padel: padel)
                 }
                 HStack {
-                    PadelScoreboardResetScoreButtonView()
-                    PadelScoreboardIncrementAwayButtonView()
+                    PadelScoreboardResetScoreButtonView(model: model)
+                    PadelScoreboardIncrementAwayButtonView(model: model, padel: padel)
                 }
                 Spacer()
             }
-            TeamPickerView(side: String(localized: "Home"), team: $model.padelScoreboard.home)
-            TeamPickerView(side: String(localized: "Away"), team: $model.padelScoreboard.away)
+            TeamPickerView(model: model, padel: padel, side: String(localized: "Home"), team: $padel.scoreboard.home)
+            TeamPickerView(model: model, padel: padel, side: String(localized: "Away"), team: $padel.scoreboard.away)
         }
         .tabViewStyle(.verticalPage)
     }
