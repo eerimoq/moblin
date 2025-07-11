@@ -91,9 +91,9 @@ class RistStream {
     private weak var ristDelegate: (any RistStreamDelegate)?
     private let mediaProcessor: MediaProcessor
 
-    init(mediaProcessor: MediaProcessor, deletate: RistStreamDelegate) {
+    init(mediaProcessor: MediaProcessor, delegate: RistStreamDelegate) {
         self.mediaProcessor = mediaProcessor
-        ristDelegate = deletate
+        ristDelegate = delegate
         writer.delegate = self
     }
 

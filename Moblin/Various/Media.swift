@@ -124,7 +124,7 @@ final class Media: NSObject {
             ristStream = nil
             irlStream = nil
         case .rist:
-            ristStream = RistStream(mediaProcessor: mediaProcessor, deletate: self)
+            ristStream = RistStream(mediaProcessor: mediaProcessor, delegate: self)
             srtStream = nil
             rtmpStream = nil
             irlStream = nil
