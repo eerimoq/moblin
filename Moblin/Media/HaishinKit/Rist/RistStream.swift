@@ -89,10 +89,10 @@ class RistStream {
     private var url: String = ""
     private var state: RistStreamState = .connecting
     private weak var ristDelegate: (any RistStreamDelegate)?
-    private let mediaProcessor: MediaProcessor
+    private let processor: Processor
 
-    init(mediaProcessor: MediaProcessor, delegate: RistStreamDelegate) {
-        self.mediaProcessor = mediaProcessor
+    init(processor: Processor, delegate: RistStreamDelegate) {
+        self.processor = processor
         ristDelegate = delegate
         writer.delegate = self
     }
@@ -182,7 +182,7 @@ class RistStream {
             return
         }
         netStreamLockQueue.async {
-            self.mediaProcessor.startEncoding(self.writer)
+            self.processor.startEncoding(self.writer)
             self.writer.startRunning()
         }
         guard let url = URL(string: url), let host = url.host(), let port = url.port else {
@@ -197,7 +197,7 @@ class RistStream {
         networkPathMonitor = nil
         netStreamLockQueue.async {
             self.writer.stopRunning()
-            self.mediaProcessor.stopEncoding()
+            self.processor.stopEncoding()
         }
         peers.removeAll()
         context = nil

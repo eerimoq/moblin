@@ -26,7 +26,7 @@ class SrtStream {
     private var perf = CBytePerfMon()
     private var socket: SRTSOCKET = SRT_INVALID_SOCK
     weak var srtStreamDelegate: SrtStreamDelegate?
-    private let mediaProcessor: MediaProcessor
+    private let processor: Processor
 
     private var readyState: ReadyState = .initialized {
         didSet {
@@ -38,14 +38,14 @@ class SrtStream {
             case .publishing:
                 logger.info("srt: Stop publishing")
                 writer.stopRunning()
-                mediaProcessor.stopEncoding()
+                processor.stopEncoding()
             default:
                 break
             }
             switch readyState {
             case .publishing:
                 logger.info("srt: Start publishing")
-                mediaProcessor.startEncoding(writer)
+                processor.startEncoding(writer)
                 writer.startRunning()
             default:
                 break
@@ -53,8 +53,8 @@ class SrtStream {
         }
     }
 
-    init(mediaProcessor: MediaProcessor, timecodesEnabled: Bool, delegate: SrtStreamDelegate) {
-        self.mediaProcessor = mediaProcessor
+    init(processor: Processor, timecodesEnabled: Bool, delegate: SrtStreamDelegate) {
+        self.processor = processor
         writer = MpegTsWriter(timecodesEnabled: timecodesEnabled)
         srtStreamDelegate = delegate
         writer.delegate = self

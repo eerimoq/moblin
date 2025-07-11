@@ -10,7 +10,7 @@ protocol BufferedAudioSampleBufferDelegate: AnyObject {
 class BufferedAudio {
     private var cameraId: UUID
     private let name: String
-    private weak var mixer: Mixer?
+    private weak var processor: Processor?
     private var sampleRate: Double = 0.0
     private var frameLength: Double = 0.0
     private var sampleBuffers: Deque<CMSampleBuffer> = []
@@ -26,11 +26,11 @@ class BufferedAudio {
     private var hasBufferBeenAppended = false
     let latency: Double
 
-    init(cameraId: UUID, name: String, latency: Double, mixer: Mixer?, manualOutput: Bool) {
+    init(cameraId: UUID, name: String, latency: Double, processor: Processor?, manualOutput: Bool) {
         self.cameraId = cameraId
         self.name = name
         self.latency = latency
-        self.mixer = mixer
+        self.processor = processor
         if manualOutput {
             isOutputting = true
         }
@@ -121,7 +121,7 @@ class BufferedAudio {
         if !isInitialBuffering, hasBufferBeenAppended {
             hasBufferBeenAppended = false
             if let drift = driftTracker.update(outputPresentationTimeStamp, sampleBuffers) {
-                mixer?.setBufferedVideoDrift(cameraId: cameraId, drift: drift)
+                processor?.setBufferedVideoDrift(cameraId: cameraId, drift: drift)
             }
         }
         return sampleBuffer

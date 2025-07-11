@@ -391,15 +391,15 @@ extension Model {
     }
 
     private func attachStream() {
-        guard let mediaProcessor = media.getMediaProcessor() else {
-            mediaProcessor = nil
+        guard let processor = media.getProcessor() else {
+            processor = nil
             return
         }
         netStreamLockQueue.async {
-            mediaProcessor.setDrawable(drawable: self.streamPreviewView)
-            mediaProcessor.setExternalDisplayDrawable(drawable: self.externalDisplayStreamPreviewView)
-            self.mediaProcessor = mediaProcessor
-            mediaProcessor.startRunning()
+            processor.setDrawable(drawable: self.streamPreviewView)
+            processor.setExternalDisplayDrawable(drawable: self.externalDisplayStreamPreviewView)
+            self.processor = processor
+            processor.startRunning()
         }
     }
 

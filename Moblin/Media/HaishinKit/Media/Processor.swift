@@ -1,7 +1,7 @@
 import AVFoundation
 import UIKit
 
-protocol MediaProcessorDelegate: AnyObject {
+protocol ProcessorDelegate: AnyObject {
     func stream(audioLevel: Float, numberOfAudioChannels: Int, sampleRate: Double)
     func streamVideo(presentationTimestamp: Double)
     func streamVideo(failedEffect: String?)
@@ -19,6 +19,7 @@ protocol MediaProcessorDelegate: AnyObject {
     func streamSelectedFps(fps: Double, auto: Bool)
 }
 
+let mixerLockQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.Mixer", qos: .userInteractive)
 let netStreamLockQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.NetStream.lock")
 
 private class Stream {
@@ -29,68 +30,74 @@ private class Stream {
     }
 }
 
-final class MediaProcessor: NSObject {
-    private let mixer = Mixer()
+final class Processor: NSObject {
+    let audio = AudioUnit()
+    let video = VideoUnit()
+    let recorder = Recorder()
     private var streams: [Stream] = []
+    weak var delegate: (any ProcessorDelegate)?
 
     override init() {
         super.init()
+        audio.processor = self
+        video.processor = self
+        recorder.delegate = self
     }
 
-    func setDelegate(delegate: MediaProcessorDelegate) {
-        mixer.delegate = delegate
+    func setDelegate(delegate: ProcessorDelegate) {
+        self.delegate = delegate
     }
 
     func setTorch(value: Bool) {
         netStreamLockQueue.async {
-            self.mixer.video.torch = value
+            self.video.torch = value
         }
     }
 
     func setFps(value: Float64, preferAutoFps: Bool) {
         netStreamLockQueue.async {
-            self.mixer.video.setFps(fps: value, preferAutoFps: preferAutoFps)
+            self.video.setFps(fps: value, preferAutoFps: preferAutoFps)
         }
     }
 
     func getFps() -> Double {
-        return mixer.video.getFps()
+        return video.getFps()
     }
 
     func setColorSpace(colorSpace: AVCaptureColorSpace, onComplete: @escaping () -> Void) {
         netStreamLockQueue.async {
-            self.mixer.video.setColorSpace(colorSpace: colorSpace)
+            self.video.setColorSpace(colorSpace: colorSpace)
             onComplete()
         }
     }
 
     func setVideoSize(capture: CGSize, output: CGSize) {
         netStreamLockQueue.async {
-            self.mixer.video.setSize(capture: capture, output: output)
+            self.video.setSize(capture: capture, output: output)
         }
     }
 
     func setVideoOrientation(value: AVCaptureVideoOrientation) {
         netStreamLockQueue.async {
-            self.mixer.video.videoOrientation = value
+            self.video.videoOrientation = value
         }
     }
 
     func setHasAudio(value: Bool) {
         netStreamLockQueue.async {
-            self.mixer.audio.muted = !value
+            self.audio.muted = !value
         }
     }
 
     func setAudioEncoderSettings(settings: AudioEncoderSettings) {
         netStreamLockQueue.async {
-            self.mixer.audio.getEncoders().first!.setSettings(settings: settings)
+            self.audio.getEncoders().first!.setSettings(settings: settings)
         }
     }
 
     func setVideoEncoderSettings(settings: VideoEncoderSettings) {
         netStreamLockQueue.async {
-            self.mixer.video.getEncoders().first!.settings.mutate { $0 = settings }
+            self.video.getEncoders().first!.settings.mutate { $0 = settings }
         }
     }
 
@@ -101,7 +108,7 @@ final class MediaProcessor: NSObject {
     ) {
         netStreamLockQueue.async {
             do {
-                try self.mixer.attachCamera(params: params)
+                try self.attachCameraInternal(params: params)
                 onSuccess?()
             } catch {
                 onError?(error)
@@ -112,7 +119,7 @@ final class MediaProcessor: NSObject {
     func attachAudio(params: AudioUnitAttachParams, onError: ((_ error: Error) -> Void)? = nil) {
         netStreamLockQueue.async {
             do {
-                try self.mixer.attachAudio(params: params)
+                try self.attachAudioInternal(params: params)
             } catch {
                 onError?(error)
             }
@@ -121,96 +128,96 @@ final class MediaProcessor: NSObject {
 
     func setCameraControls(enabled: Bool) {
         netStreamLockQueue.async {
-            self.mixer.video.setCameraControl(enabled: enabled)
+            self.video.setCameraControl(enabled: enabled)
         }
     }
 
     func addBufferedVideo(cameraId: UUID, name: String, latency: Double) {
-        mixer.video.addBufferedVideo(cameraId: cameraId, name: name, latency: latency)
+        video.addBufferedVideo(cameraId: cameraId, name: name, latency: latency)
     }
 
     func removeBufferedVideo(cameraId: UUID) {
-        mixer.video.removeBufferedVideo(cameraId: cameraId)
+        video.removeBufferedVideo(cameraId: cameraId)
     }
 
     func appendBufferedVideoSampleBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
-        mixer.video.appendBufferedVideoSampleBuffer(cameraId: cameraId, sampleBuffer)
+        video.appendBufferedVideoSampleBuffer(cameraId: cameraId, sampleBuffer)
     }
 
     func setBufferedVideoTargetLatency(cameraId: UUID, _ latency: Double) {
-        mixer.video.setBufferedVideoTargetLatency(cameraId: cameraId, latency: latency)
+        video.setBufferedVideoTargetLatency(cameraId: cameraId, latency: latency)
     }
 
     func addBufferedAudio(cameraId: UUID, name: String, latency: Double) {
-        mixer.audio.addBufferedAudio(cameraId: cameraId, name: name, latency: latency)
+        audio.addBufferedAudio(cameraId: cameraId, name: name, latency: latency)
     }
 
     func removeBufferedAudio(cameraId: UUID) {
-        mixer.audio.removeBufferedAudio(cameraId: cameraId)
+        audio.removeBufferedAudio(cameraId: cameraId)
     }
 
     func appendBufferedAudioSampleBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
-        mixer.audio.appendBufferedAudioSampleBuffer(cameraId: cameraId, sampleBuffer)
+        audio.appendBufferedAudioSampleBuffer(cameraId: cameraId, sampleBuffer)
     }
 
     func setBufferedAudioTargetLatency(cameraId: UUID, _ latency: Double) {
-        mixer.audio.setBufferedAudioTargetLatency(cameraId: cameraId, latency: latency)
+        audio.setBufferedAudioTargetLatency(cameraId: cameraId, latency: latency)
     }
 
     func registerVideoEffect(_ effect: VideoEffect) {
-        mixer.video.registerEffect(effect)
+        video.registerEffect(effect)
     }
 
     func registerVideoEffectBack(_ effect: VideoEffect) {
-        mixer.video.registerEffectBack(effect)
+        video.registerEffectBack(effect)
     }
 
     func unregisterVideoEffect(_ effect: VideoEffect) {
-        mixer.video.unregisterEffect(effect)
+        video.unregisterEffect(effect)
     }
 
     func setPendingAfterAttachEffects(effects: [VideoEffect], rotation: Double) {
-        mixer.video.setPendingAfterAttachEffects(effects: effects, rotation: rotation)
+        video.setPendingAfterAttachEffects(effects: effects, rotation: rotation)
     }
 
     func usePendingAfterAttachEffects() {
-        mixer.video.usePendingAfterAttachEffects()
+        video.usePendingAfterAttachEffects()
     }
 
     func setLowFpsImage(fps: Float) {
-        mixer.video.setLowFpsImage(fps: fps)
+        video.setLowFpsImage(fps: fps)
     }
 
     func setSceneSwitchTransition(sceneSwitchTransition: SceneSwitchTransition) {
-        mixer.video.setSceneSwitchTransition(sceneSwitchTransition: sceneSwitchTransition)
+        video.setSceneSwitchTransition(sceneSwitchTransition: sceneSwitchTransition)
     }
 
     func takeSnapshot(age: Float, onComplete: @escaping (UIImage, CIImage) -> Void) {
-        mixer.video.takeSnapshot(age: age, onComplete: onComplete)
+        video.takeSnapshot(age: age, onComplete: onComplete)
     }
 
     func setCleanRecordings(enabled: Bool) {
-        mixer.video.setCleanRecordings(enabled: enabled)
+        video.setCleanRecordings(enabled: enabled)
     }
 
     func setCleanSnapshots(enabled: Bool) {
-        mixer.video.setCleanSnapshots(enabled: enabled)
+        video.setCleanSnapshots(enabled: enabled)
     }
 
     func setCleanExternalDisplay(enabled: Bool) {
-        mixer.video.setCleanExternalDisplay(enabled: enabled)
+        video.setCleanExternalDisplay(enabled: enabled)
     }
 
     func setAudioChannelsMap(map: [Int: Int]) {
-        mixer.recorder.setAudioChannelsMap(map: map)
+        recorder.setAudioChannelsMap(map: map)
     }
 
     func setSpeechToText(enabled: Bool) {
-        mixer.audio.setSpeechToText(enabled: enabled)
+        audio.setSpeechToText(enabled: enabled)
     }
 
     func startRecording(url: URL?, replay: Bool, audioSettings: [String: Any], videoSettings: [String: Any]) {
-        mixer.recorder.startRunning(
+        recorder.startRunning(
             url: url,
             replay: replay,
             audioOutputSettings: audioSettings,
@@ -219,60 +226,78 @@ final class MediaProcessor: NSObject {
     }
 
     func stopRecording() {
-        mixer.recorder.stopRunning()
+        recorder.stopRunning()
     }
 
     func setUrl(url: URL?) {
-        mixer.recorder.setUrl(url: url)
+        recorder.setUrl(url: url)
     }
 
     func setReplayBuffering(enabled: Bool) {
-        mixer.recorder.setReplayBuffering(enabled: enabled)
+        recorder.setReplayBuffering(enabled: enabled)
     }
 
     func stopMixer() {
         netStreamLockQueue.async {
-            self.mixer.stopRunning()
+            self.stopRunning()
         }
     }
 
     func startEncoding(_ delegate: any AudioCodecDelegate & VideoEncoderDelegate) {
         streams.append(Stream(delegate: delegate))
-        mixer.video.startEncoding(self)
-        mixer.audio.startEncoding(self)
+        video.startEncoding(self)
+        audio.startEncoding(self)
     }
 
     func stopEncoding() {
-        mixer.video.stopEncoding()
-        mixer.audio.stopEncoding()
+        video.stopEncoding()
+        audio.stopEncoding()
     }
 
     func startRunning() {
-        mixer.startRunning()
+        video.startRunning()
+        audio.startRunning()
     }
 
     func stopRunning() {
-        mixer.stopRunning()
+        video.stopRunning()
+        audio.stopRunning()
     }
 
     func setDrawable(drawable: PreviewView?) {
-        mixer.video.drawable = drawable
+        video.drawable = drawable
     }
 
     func setExternalDisplayDrawable(drawable: PreviewView?) {
-        mixer.video.externalDisplayDrawable = drawable
+        video.externalDisplayDrawable = drawable
     }
 
     func getAudioEncoders() -> [AudioEncoder] {
-        return mixer.audio.getEncoders()
+        return audio.getEncoders()
     }
 
     func getVideoEncoders() -> [VideoEncoder] {
-        return mixer.video.getEncoders()
+        return video.getEncoders()
+    }
+
+    func setBufferedAudioDrift(cameraId: UUID, drift: Double) {
+        audio.setBufferedAudioDrift(cameraId: cameraId, drift: drift)
+    }
+
+    func setBufferedVideoDrift(cameraId: UUID, drift: Double) {
+        video.setBufferedVideoDrift(cameraId: cameraId, drift: drift)
+    }
+
+    private func attachCameraInternal(params: VideoUnitAttachParams) throws {
+        try video.attach(params: params)
+    }
+
+    private func attachAudioInternal(params: AudioUnitAttachParams) throws {
+        try audio.attach(params: params)
     }
 }
 
-extension MediaProcessor: AudioCodecDelegate {
+extension Processor: AudioCodecDelegate {
     func audioCodecOutputFormat(_ format: AVAudioFormat) {
         for stream in streams {
             stream.delegate?.audioCodecOutputFormat(format)
@@ -286,7 +311,7 @@ extension MediaProcessor: AudioCodecDelegate {
     }
 }
 
-extension MediaProcessor: VideoEncoderDelegate {
+extension Processor: VideoEncoderDelegate {
     func videoEncoderOutputFormat(_ codec: VideoEncoder, _ formatDescription: CMFormatDescription) {
         for stream in streams {
             stream.delegate?.videoEncoderOutputFormat(codec, formatDescription)
@@ -297,5 +322,19 @@ extension MediaProcessor: VideoEncoderDelegate {
         for stream in streams {
             stream.delegate?.videoEncoderOutputSampleBuffer(codec, sampleBuffer)
         }
+    }
+}
+
+extension Processor: RecorderDelegate {
+    func recorderInitSegment(data: Data) {
+        delegate?.streamRecorderInitSegment(data: data)
+    }
+
+    func recorderDataSegment(segment: RecorderDataSegment) {
+        delegate?.streamRecorderDataSegment(segment: segment)
+    }
+
+    func recorderFinished() {
+        delegate?.streamRecorderFinished()
     }
 }

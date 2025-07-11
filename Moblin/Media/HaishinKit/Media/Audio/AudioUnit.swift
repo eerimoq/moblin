@@ -31,7 +31,7 @@ final class AudioUnit: NSObject {
     private var input: AVCaptureDeviceInput?
     private var output: AVCaptureAudioDataOutput?
     var muted = false
-    weak var mixer: Mixer?
+    weak var processor: Processor?
     private var selectedBufferedAudioId: UUID?
     private var bufferedAudios: [UUID: BufferedAudio] = [:]
     let session = AVCaptureSession()
@@ -69,7 +69,7 @@ final class AudioUnit: NSObject {
                 cameraId: UUID(),
                 name: "builtin",
                 latency: params.builtinDelay,
-                mixer: self.mixer,
+                processor: self.processor,
                 manualOutput: true
             )
         }
@@ -172,7 +172,7 @@ final class AudioUnit: NSObject {
             cameraId: cameraId,
             name: name,
             latency: latency,
-            mixer: mixer,
+            processor: processor,
             manualOutput: false
         )
         bufferedAudio.delegate = self
@@ -196,22 +196,22 @@ final class AudioUnit: NSObject {
     }
 
     private func appendNewSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
-        guard let mixer else {
+        guard let processor else {
             return
         }
         // Workaround for audio drift on iPhone 15 Pro Max running iOS 17. Probably issue on more models.
-        let presentationTimeStamp = syncTimeToVideo(mixer: mixer, sampleBuffer: sampleBuffer)
+        let presentationTimeStamp = syncTimeToVideo(processor: processor, sampleBuffer: sampleBuffer)
         guard let sampleBuffer = sampleBuffer.muted(muted) else {
             return
         }
         if speechToTextEnabled {
-            mixer.delegate?.streamAudio(sampleBuffer: sampleBuffer)
+            processor.delegate?.streamAudio(sampleBuffer: sampleBuffer)
         }
         inputSourceFormat = sampleBuffer.formatDescription?.audioStreamBasicDescription
         for encoder in encoders {
             encoder.appendSampleBuffer(sampleBuffer, presentationTimeStamp)
         }
-        mixer.recorder.appendAudio(sampleBuffer)
+        processor.recorder.appendAudio(sampleBuffer)
     }
 
     private func appendBufferedBuiltinAudio(sampleBuffer: CMSampleBuffer) -> BufferedAudio? {
@@ -263,10 +263,10 @@ extension AudioUnit: AVCaptureAudioDataOutputSampleBufferDelegate {
             } else {
                 audioLevel = 0.0
             }
-            mixer?.delegate?.stream(audioLevel: audioLevel,
-                                    numberOfAudioChannels: connection.audioChannels.count,
-                                    sampleRate: sampleBuffer.formatDescription?.audioStreamBasicDescription?
-                                        .mSampleRate ?? 0)
+            processor?.delegate?.stream(audioLevel: audioLevel,
+                                        numberOfAudioChannels: connection.audioChannels.count,
+                                        sampleRate: sampleBuffer.formatDescription?.audioStreamBasicDescription?
+                                            .mSampleRate ?? 0)
         }
         appendNewSampleBuffer(sampleBuffer)
     }
@@ -279,19 +279,19 @@ extension AudioUnit: BufferedAudioSampleBufferDelegate {
         }
         if shouldUpdateAudioLevel(sampleBuffer) {
             let numberOfAudioChannels = Int(sampleBuffer.formatDescription?.numberOfAudioChannels() ?? 0)
-            mixer?.delegate?.stream(audioLevel: .infinity,
-                                    numberOfAudioChannels: numberOfAudioChannels,
-                                    sampleRate: sampleBuffer.formatDescription?.audioStreamBasicDescription?
-                                        .mSampleRate ?? 0)
+            processor?.delegate?.stream(audioLevel: .infinity,
+                                        numberOfAudioChannels: numberOfAudioChannels,
+                                        sampleRate: sampleBuffer.formatDescription?.audioStreamBasicDescription?
+                                            .mSampleRate ?? 0)
         }
         appendNewSampleBuffer(sampleBuffer)
     }
 }
 
-private func syncTimeToVideo(mixer: Mixer, sampleBuffer: CMSampleBuffer) -> CMTime {
+private func syncTimeToVideo(processor: Processor, sampleBuffer: CMSampleBuffer) -> CMTime {
     var presentationTimeStamp = sampleBuffer.presentationTimeStamp
-    if let audioClock = mixer.audio.session.synchronizationClock,
-       let videoClock = mixer.video.session.synchronizationClock
+    if let audioClock = processor.audio.session.synchronizationClock,
+       let videoClock = processor.video.session.synchronizationClock
     {
         let audioTimescale = sampleBuffer.presentationTimeStamp.timescale
         let seconds = audioClock.convertTime(presentationTimeStamp, to: videoClock).seconds

@@ -520,7 +520,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var onDocumentPickerUrl: ((URL) -> Void)?
     private var healthStore = HKHealthStore()
 
-    weak var mediaProcessor: MediaProcessor? {
+    weak var processor: Processor? {
         didSet {
             oldValue?.setDrawable(drawable: nil)
         }

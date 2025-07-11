@@ -112,7 +112,7 @@ final class VideoUnit: NSObject {
     private var fillFrame = true
     let session = makeCaptureSession()
     private var encoders = [VideoEncoder(lockQueue: mixerLockQueue)]
-    weak var mixer: Mixer?
+    weak var processor: Processor?
     private var effects: [VideoEffect] = []
     private var pendingAfterAttachEffects: [VideoEffect]?
     private var pendingAfterAttachRotation: Double?
@@ -179,7 +179,7 @@ final class VideoUnit: NSObject {
         didSet {
             guard let device else {
                 if torch {
-                    mixer?.delegate?.streamNoTorch()
+                    processor?.delegate?.streamNoTorch()
                 }
                 return
             }
@@ -407,7 +407,7 @@ final class VideoUnit: NSObject {
                     name: "builtin",
                     update: false,
                     latency: params.builtinDelay,
-                    mixer: self.mixer
+                    processor: self.processor
                 )
                 self.bufferedVideos[device.id] = bufferedVideo
                 self.bufferedVideoBuiltins[device.device] = bufferedVideo
@@ -470,7 +470,7 @@ final class VideoUnit: NSObject {
             return
         }
         let message = error._nsError.localizedFailureReason ?? "\(error.code)"
-        mixer?.delegate?.streamVideoCaptureSessionError(message)
+        processor?.delegate?.streamVideoCaptureSessionError(message)
         netStreamLockQueue.asyncAfter(deadline: .now() + .milliseconds(500)) {
             if self.isRunning {
                 self.session.startRunning()
@@ -840,7 +840,7 @@ final class VideoUnit: NSObject {
                 failedEffect = "\(effect.getName()) (wrong size)"
             }
         }
-        mixer?.delegate?.streamVideo(failedEffect: failedEffect)
+        processor?.delegate?.streamVideo(failedEffect: failedEffect)
         guard let outputImageBuffer = createPixelBuffer(sampleBuffer: sampleBuffer) else {
             return (nil, nil)
         }
@@ -943,7 +943,7 @@ final class VideoUnit: NSObject {
                 failedEffect = "\(effect.getName()) (wrong size)"
             }
         }
-        mixer?.delegate?.streamVideo(failedEffect: failedEffect)
+        processor?.delegate?.streamVideo(failedEffect: failedEffect)
         guard originalImage != image, let image else {
             return (nil, nil)
         }
@@ -1054,7 +1054,7 @@ final class VideoUnit: NSObject {
             name: name,
             update: true,
             latency: latency,
-            mixer: mixer
+            processor: processor
         )
     }
 
@@ -1122,7 +1122,7 @@ final class VideoUnit: NSObject {
         }
         latestSampleBufferAppendTime = sampleBuffer.presentationTimeStamp
         let presentationTimeStamp = sampleBuffer.presentationTimeStamp.seconds
-        mixer?.delegate?.streamVideo(presentationTimestamp: presentationTimeStamp)
+        processor?.delegate?.streamVideo(presentationTimestamp: presentationTimeStamp)
         let faceDetectionVideoSourceIds = needsFaceDetections(presentationTimeStamp)
         let faceDetectionJobs = prepareFaceDetectionJobs(
             faceDetectionVideoSourceIds,
@@ -1224,9 +1224,9 @@ final class VideoUnit: NSObject {
         // Recordings seems to randomly fail if moved after live stream encoding. Maybe because the
         // sample buffer is copied in appendVideo()
         if cleanRecordings {
-            mixer?.recorder.appendVideo(sampleBuffer)
+            processor?.recorder.appendVideo(sampleBuffer)
         } else {
-            mixer?.recorder.appendVideo(modSampleBuffer)
+            processor?.recorder.appendVideo(modSampleBuffer)
         }
         modSampleBuffer.setAttachmentDisplayImmediately()
         if !showCameraPreview {
@@ -1274,7 +1274,7 @@ final class VideoUnit: NSObject {
         ciImage = ciImage.transformed(by: CGAffineTransform(scaleX: scale, y: scale))
         let cgImage = context.createCGImage(ciImage, from: ciImage.extent)!
         let image = UIImage(cgImage: cgImage)
-        mixer?.delegate?.streamVideo(
+        processor?.delegate?.streamVideo(
             lowFpsImage: image.jpegData(compressionQuality: 0.3),
             frameNumber: lowFpsImageFrameNumber
         )
@@ -1519,7 +1519,7 @@ final class VideoUnit: NSObject {
         """
         logger.info(error)
         logger.info(activeFormat)
-        mixer?.delegate?.streamVideo(findVideoFormatError: error, activeFormat: activeFormat)
+        processor?.delegate?.streamVideo(findVideoFormatError: error, activeFormat: activeFormat)
         for format in device.formats {
             logger.info("Available video format: \(format)")
         }
@@ -1558,10 +1558,10 @@ final class VideoUnit: NSObject {
             device.activeColorSpace = colorSpace
             if useAutoFrameRate {
                 device.setAutoFps()
-                mixer?.delegate?.streamSelectedFps(fps: fps, auto: true)
+                processor?.delegate?.streamSelectedFps(fps: fps, auto: true)
             } else {
                 device.setFps(frameRate: fps)
-                mixer?.delegate?.streamSelectedFps(fps: fps, auto: false)
+                processor?.delegate?.streamSelectedFps(fps: fps, auto: false)
             }
             device.unlockForConfiguration()
         } catch {
@@ -1599,7 +1599,7 @@ final class VideoUnit: NSObject {
             failed = true
         }
         if failed {
-            mixer?.delegate?.streamVideoAttachCameraError()
+            processor?.delegate?.streamVideoAttachCameraError()
         } else {
             captureSessionDevices.append(CaptureSessionDevice(
                 device: device,
@@ -1640,7 +1640,7 @@ final class VideoUnit: NSObject {
     private func setTorchMode(_ device: AVCaptureDevice, _ torchMode: AVCaptureDevice.TorchMode) {
         guard device.isTorchModeSupported(torchMode) else {
             if torchMode == .on {
-                mixer?.delegate?.streamNoTorch()
+                processor?.delegate?.streamNoTorch()
             }
             return
         }
@@ -1703,13 +1703,13 @@ final class VideoUnit: NSObject {
         }
         let zoomSlider = AVCaptureSystemZoomSlider(device: device) { [weak self] zoomFactor in
             let x = Float(device.displayVideoZoomFactorMultiplier * zoomFactor)
-            self?.mixer?.delegate?.streamSetZoomX(x: x)
+            self?.processor?.delegate?.streamSetZoomX(x: x)
         }
         if session.canAddControl(zoomSlider) {
             session.addControl(zoomSlider)
         }
         let exposureBiasSlider = AVCaptureSystemExposureBiasSlider(device: device) { [weak self] exposureBias in
-            self?.mixer?.delegate?.streamSetExposureBias(bias: exposureBias)
+            self?.processor?.delegate?.streamSetExposureBias(bias: exposureBias)
         }
         if session.canAddControl(exposureBiasSlider) {
             session.addControl(exposureBiasSlider)

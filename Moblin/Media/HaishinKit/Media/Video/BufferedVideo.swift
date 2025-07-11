@@ -8,17 +8,17 @@ class BufferedVideo {
     private var cameraId: UUID
     private let name: String
     private let update: Bool
-    private weak var mixer: Mixer?
+    private weak var processor: Processor?
     private let driftTracker: DriftTracker
     private var hasBufferBeenAppended = false
     let latency: Double
 
-    init(cameraId: UUID, name: String, update: Bool, latency: Double, mixer: Mixer?) {
+    init(cameraId: UUID, name: String, update: Bool, latency: Double, processor: Processor?) {
         self.cameraId = cameraId
         self.name = name
         self.update = update
         self.latency = latency
-        self.mixer = mixer
+        self.processor = processor
         driftTracker = DriftTracker(media: "video", name: name, targetFillLevel: latency)
     }
 
@@ -101,7 +101,7 @@ class BufferedVideo {
         if !isInitialBuffering, hasBufferBeenAppended {
             hasBufferBeenAppended = false
             if let drift = driftTracker.update(outputPresentationTimeStamp, sampleBuffers) {
-                mixer?.setBufferedAudioDrift(cameraId: cameraId, drift: drift)
+                processor?.setBufferedAudioDrift(cameraId: cameraId, drift: drift)
             }
         }
     }

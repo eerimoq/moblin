@@ -82,10 +82,10 @@ class RtmpStream {
     private var prevRebasedAudioTimeStamp = -1.0
     private var prevRebasedVideoTimeStamp = -1.0
     private let compositionTimeOffset = CMTime(value: 3, timescale: 30).seconds
-    private let mediaProcessor: MediaProcessor
+    private let processor: Processor
 
-    init(mediaProcessor: MediaProcessor) {
-        self.mediaProcessor = mediaProcessor
+    init(processor: Processor) {
+        self.processor = processor
         connection = RtmpConnection()
         dispatcher = RtmpEventDispatcher(target: self)
         connection.stream = self
@@ -166,8 +166,8 @@ class RtmpStream {
     }
 
     private func createOnMetaData() -> AsObject {
-        let audioEncoders = mediaProcessor.getAudioEncoders()
-        let videoEncoders = mediaProcessor.getVideoEncoders()
+        let audioEncoders = processor.getAudioEncoders()
+        let videoEncoders = processor.getVideoEncoders()
         if audioEncoders.count == 1, videoEncoders.count == 1 {
             return createOnMetaDataLegacy(audioEncoders.first!, videoEncoders.first!)
         } else {
@@ -180,7 +180,7 @@ class RtmpStream {
         let settings = videoEncoder.settings.value
         metadata["width"] = settings.videoSize.width
         metadata["height"] = settings.videoSize.height
-        metadata["framerate"] = mediaProcessor.getFps()
+        metadata["framerate"] = processor.getFps()
         switch settings.format {
         case .h264:
             metadata["videocodecid"] = FlvVideoCodec.avc.rawValue
@@ -232,7 +232,7 @@ class RtmpStream {
             sendFCUnpublish()
             sendDeleteStream()
             closeStream()
-            mediaProcessor.stopEncoding()
+            processor.stopEncoding()
         }
         switch readyState {
         case .open:
@@ -274,7 +274,7 @@ class RtmpStream {
 
     private func handlePublishing() {
         send(handlerName: "@setDataFrame", arguments: "onMetaData", createOnMetaData())
-        mediaProcessor.startEncoding(self)
+        processor.startEncoding(self)
     }
 
     @objc

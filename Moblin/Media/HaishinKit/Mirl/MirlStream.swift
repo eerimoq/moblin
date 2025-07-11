@@ -3,17 +3,17 @@ import Foundation
 
 class MirlStream {
     var client: MirlClient?
-    private let mediaProcessor: MediaProcessor
+    private let processor: Processor
 
-    init(mediaProcessor: MediaProcessor) {
-        self.mediaProcessor = mediaProcessor
+    init(processor: Processor) {
+        self.processor = processor
         client = MirlClient()
     }
 
     func start() {
         netStreamLockQueue.async {
             self.client?.start()
-            self.mediaProcessor.startEncoding(self)
+            self.processor.startEncoding(self)
         }
     }
 
@@ -21,7 +21,7 @@ class MirlStream {
         netStreamLockQueue.async {
             self.client?.stop()
             self.client = nil
-            self.mediaProcessor.stopEncoding()
+            self.processor.stopEncoding()
         }
     }
 }
