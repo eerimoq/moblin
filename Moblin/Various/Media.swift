@@ -45,7 +45,7 @@ final class Media: NSObject {
     private var ristStream: RistStream?
     private var irlStream: MirlStream?
     private var srtlaClient: SrtlaClient?
-    private var netStream: NetStream?
+    private var mediaProcessor: MediaProcessor?
     private var srtTotalByteCount: Int64 = 0
     private var srtPreviousTotalByteCount: Int64 = 0
     private var srtSpeed: Int64 = 0
@@ -97,7 +97,7 @@ final class Media: NSObject {
         srtStream = nil
         ristStream = nil
         irlStream = nil
-        netStream = nil
+        mediaProcessor = nil
     }
 
     func setNetStream(proto: SettingsStreamProtocol,
@@ -105,38 +105,38 @@ final class Media: NSObject {
                       timecodesEnabled: Bool,
                       builtinAudioDelay: Double)
     {
-        netStream?.stopMixer()
+        mediaProcessor?.stopMixer()
         srtStopStream()
         rtmpStopStream()
         ristStopStream()
         irlStopStream()
         rtmpConnection = RtmpConnection()
-        let netStream = NetStream()
+        let mediaProcessor = MediaProcessor()
         switch proto {
         case .rtmp:
-            rtmpStream = RtmpStream(mixer: netStream.mixer, connection: rtmpConnection)
+            rtmpStream = RtmpStream(mediaProcessor: mediaProcessor, connection: rtmpConnection)
             srtStream = nil
             ristStream = nil
             irlStream = nil
         case .srt:
-            srtStream = SrtStream(mixer: netStream.mixer, timecodesEnabled: timecodesEnabled, delegate: self)
+            srtStream = SrtStream(mediaProcessor: mediaProcessor, timecodesEnabled: timecodesEnabled, delegate: self)
             rtmpStream = nil
             ristStream = nil
             irlStream = nil
         case .rist:
-            ristStream = RistStream(mixer: netStream.mixer, deletate: self)
+            ristStream = RistStream(mediaProcessor: mediaProcessor, deletate: self)
             srtStream = nil
             rtmpStream = nil
             irlStream = nil
         case .irl:
-            irlStream = MirlStream(mixer: netStream.mixer)
+            irlStream = MirlStream(mediaProcessor: mediaProcessor)
             srtStream = nil
             rtmpStream = nil
             ristStream = nil
         }
-        self.netStream = netStream
-        netStream.delegate = self
-        netStream.setVideoOrientation(value: portrait ? .portrait : .landscapeRight)
+        self.mediaProcessor = mediaProcessor
+        mediaProcessor.delegate = self
+        mediaProcessor.setVideoOrientation(value: portrait ? .portrait : .landscapeRight)
         attachDefaultAudioDevice(builtinDelay: builtinAudioDelay)
     }
 
@@ -446,11 +446,11 @@ final class Media: NSObject {
     }
 
     func streamSpeed() -> Int64 {
-        if netStream === rtmpStream {
+        if mediaProcessor === rtmpStream {
             return Int64(8 * (rtmpStream?.info.currentBytesPerSecond ?? 0))
-        } else if netStream === srtStream {
+        } else if mediaProcessor === srtStream {
             return 8 * srtSpeed
-        } else if netStream === ristStream {
+        } else if mediaProcessor === ristStream {
             return Int64(ristStream?.getSpeed() ?? 0)
         } else {
             return 0
@@ -458,11 +458,11 @@ final class Media: NSObject {
     }
 
     func streamTotal() -> Int64 {
-        if netStream === rtmpStream {
+        if mediaProcessor === rtmpStream {
             return rtmpStream?.info.byteCount.value ?? 0
-        } else if netStream === srtStream {
+        } else if mediaProcessor === srtStream {
             return srtTotalByteCount
-        } else if netStream === ristStream {
+        } else if mediaProcessor === ristStream {
             return 0
         } else {
             return 0
@@ -600,63 +600,63 @@ final class Media: NSObject {
     }
 
     func setTorch(on: Bool) {
-        netStream?.setTorch(value: on)
+        mediaProcessor?.setTorch(value: on)
     }
 
     func setMute(on: Bool) {
-        netStream?.setHasAudio(value: !on)
+        mediaProcessor?.setHasAudio(value: !on)
     }
 
     func registerEffect(_ effect: VideoEffect) {
-        netStream?.registerVideoEffect(effect)
+        mediaProcessor?.registerVideoEffect(effect)
     }
 
     func registerEffectBack(_ effect: VideoEffect) {
-        netStream?.registerVideoEffectBack(effect)
+        mediaProcessor?.registerVideoEffectBack(effect)
     }
 
     func unregisterEffect(_ effect: VideoEffect) {
-        netStream?.unregisterVideoEffect(effect)
+        mediaProcessor?.unregisterVideoEffect(effect)
     }
 
     func setPendingAfterAttachEffects(effects: [VideoEffect], rotation: Double) {
-        netStream?.setPendingAfterAttachEffects(effects: effects, rotation: rotation)
+        mediaProcessor?.setPendingAfterAttachEffects(effects: effects, rotation: rotation)
     }
 
     func usePendingAfterAttachEffects() {
-        netStream?.usePendingAfterAttachEffects()
+        mediaProcessor?.usePendingAfterAttachEffects()
     }
 
     func setLowFpsImage(fps: Float) {
-        netStream?.setLowFpsImage(fps: fps)
+        mediaProcessor?.setLowFpsImage(fps: fps)
     }
 
     func setSceneSwitchTransition(sceneSwitchTransition: SceneSwitchTransition) {
-        netStream?.setSceneSwitchTransition(sceneSwitchTransition: sceneSwitchTransition)
+        mediaProcessor?.setSceneSwitchTransition(sceneSwitchTransition: sceneSwitchTransition)
     }
 
     func setCameraControls(enabled: Bool) {
-        netStream?.setCameraControls(enabled: enabled)
+        mediaProcessor?.setCameraControls(enabled: enabled)
     }
 
     func takeSnapshot(age: Float, onComplete: @escaping (UIImage, CIImage) -> Void) {
-        netStream?.takeSnapshot(age: age, onComplete: onComplete)
+        mediaProcessor?.takeSnapshot(age: age, onComplete: onComplete)
     }
 
     func setCleanRecordings(enabled: Bool) {
-        netStream?.setCleanRecordings(enabled: enabled)
+        mediaProcessor?.setCleanRecordings(enabled: enabled)
     }
 
     func setCleanSnapshots(enabled: Bool) {
-        netStream?.setCleanSnapshots(enabled: enabled)
+        mediaProcessor?.setCleanSnapshots(enabled: enabled)
     }
 
     func setCleanExternalDisplay(enabled: Bool) {
-        netStream?.setCleanExternalDisplay(enabled: enabled)
+        mediaProcessor?.setCleanExternalDisplay(enabled: enabled)
     }
 
     func setVideoSize(capture: CGSize, output: CGSize) {
-        netStream?.setVideoSize(capture: capture, output: output)
+        mediaProcessor?.setVideoSize(capture: capture, output: output)
         videoEncoderSettings.videoSize = .init(
             width: Int32(output.width),
             height: Int32(output.height)
@@ -670,19 +670,19 @@ final class Media: NSObject {
     }
 
     func setStreamFps(fps: Int, preferAutoFps: Bool) {
-        netStream?.setFps(value: Double(fps), preferAutoFps: preferAutoFps)
+        mediaProcessor?.setFps(value: Double(fps), preferAutoFps: preferAutoFps)
     }
 
     func setColorSpace(colorSpace: AVCaptureColorSpace, onComplete: @escaping () -> Void) {
-        netStream?.setColorSpace(colorSpace: colorSpace, onComplete: onComplete)
+        mediaProcessor?.setColorSpace(colorSpace: colorSpace, onComplete: onComplete)
     }
 
     private func commitVideoEncoderSettings() {
-        netStream?.setVideoEncoderSettings(settings: videoEncoderSettings)
+        mediaProcessor?.setVideoEncoderSettings(settings: videoEncoderSettings)
     }
 
     private func commitAudioEncoderSettings() {
-        netStream?.setAudioEncoderSettings(settings: audioEncoderSettings)
+        mediaProcessor?.setAudioEncoderSettings(settings: audioEncoderSettings)
     }
 
     func updateVideoStreamBitrate(bitrate: UInt32) {
@@ -744,15 +744,15 @@ final class Media: NSObject {
     func setAudioChannelsMap(channelsMap: [Int: Int]) {
         audioEncoderSettings.channelsMap = channelsMap
         commitAudioEncoderSettings()
-        netStream?.setAudioChannelsMap(map: channelsMap)
+        mediaProcessor?.setAudioChannelsMap(map: channelsMap)
     }
 
     func setSpeechToText(enabled: Bool) {
-        netStream?.setSpeechToText(enabled: enabled)
+        mediaProcessor?.setSpeechToText(enabled: enabled)
     }
 
     func setVideoOrientation(value: AVCaptureVideoOrientation) {
-        netStream?.setVideoOrientation(value: value)
+        mediaProcessor?.setVideoOrientation(value: value)
     }
 
     func setCameraZoomLevel(device: AVCaptureDevice?, level: Float, rate: Float?) -> Float? {
@@ -791,7 +791,7 @@ final class Media: NSObject {
     }
 
     func attachCamera(params: VideoUnitAttachParams, onSuccess: (() -> Void)? = nil) {
-        netStream?.attachCamera(
+        mediaProcessor?.attachCamera(
             params: params,
             onError: {
                 self.delegate?.mediaError(error: $0)
@@ -823,44 +823,44 @@ final class Media: NSObject {
                                            isVideoMirrored: false,
                                            ignoreFramesAfterAttachSeconds: ignoreFramesAfterAttachSeconds,
                                            fillFrame: fillFrame)
-        netStream?.attachCamera(params: params)
+        mediaProcessor?.attachCamera(params: params)
     }
 
     func attachBufferedAudio(cameraId: UUID?) {
         let params = AudioUnitAttachParams(device: nil, builtinDelay: 0, bufferedAudio: cameraId)
-        netStream?.attachAudio(params: params)
+        mediaProcessor?.attachAudio(params: params)
     }
 
     func addBufferedAudio(cameraId: UUID, name: String, latency: Double) {
-        netStream?.addBufferedAudio(cameraId: cameraId, name: name, latency: latency)
+        mediaProcessor?.addBufferedAudio(cameraId: cameraId, name: name, latency: latency)
     }
 
     func removeBufferedAudio(cameraId: UUID) {
-        netStream?.removeBufferedAudio(cameraId: cameraId)
+        mediaProcessor?.removeBufferedAudio(cameraId: cameraId)
     }
 
     func appendBufferedAudioSampleBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
-        netStream?.appendBufferedAudioSampleBuffer(cameraId: cameraId, sampleBuffer)
+        mediaProcessor?.appendBufferedAudioSampleBuffer(cameraId: cameraId, sampleBuffer)
     }
 
     func setBufferedAudioTargetLatency(cameraId: UUID, latency: Double) {
-        netStream?.setBufferedAudioTargetLatency(cameraId: cameraId, latency)
+        mediaProcessor?.setBufferedAudioTargetLatency(cameraId: cameraId, latency)
     }
 
     func addBufferedVideo(cameraId: UUID, name: String, latency: Double) {
-        netStream?.addBufferedVideo(cameraId: cameraId, name: name, latency: latency)
+        mediaProcessor?.addBufferedVideo(cameraId: cameraId, name: name, latency: latency)
     }
 
     func removeBufferedVideo(cameraId: UUID) {
-        netStream?.removeBufferedVideo(cameraId: cameraId)
+        mediaProcessor?.removeBufferedVideo(cameraId: cameraId)
     }
 
     func appendBufferedVideoSampleBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
-        netStream?.appendBufferedVideoSampleBuffer(cameraId: cameraId, sampleBuffer)
+        mediaProcessor?.appendBufferedVideoSampleBuffer(cameraId: cameraId, sampleBuffer)
     }
 
     func setBufferedVideoTargetLatency(cameraId: UUID, latency: Double) {
-        netStream?.setBufferedVideoTargetLatency(cameraId: cameraId, latency)
+        mediaProcessor?.setBufferedVideoTargetLatency(cameraId: cameraId, latency)
     }
 
     func attachDefaultAudioDevice(builtinDelay: Double) {
@@ -869,13 +869,13 @@ final class Media: NSObject {
             builtinDelay: builtinDelay,
             bufferedAudio: nil
         )
-        netStream?.attachAudio(params: params) {
+        mediaProcessor?.attachAudio(params: params) {
             self.delegate?.mediaError(error: $0)
         }
     }
 
-    func getNetStream() -> NetStream? {
-        return netStream
+    func getMediaProcessor() -> MediaProcessor? {
+        return mediaProcessor
     }
 
     func startRecording(
@@ -885,22 +885,22 @@ final class Media: NSObject {
         keyFrameInterval: Int?,
         audioBitrate: Int?
     ) {
-        netStream?.startRecording(url: url,
-                                  replay: replay,
-                                  audioSettings: makeAudioCompressionSettings(audioBitrate: audioBitrate),
-                                  videoSettings: makeVideoCompressionSettings(
-                                      videoCodec: videoCodec,
-                                      videoBitrate: videoBitrate,
-                                      keyFrameInterval: keyFrameInterval
-                                  ))
+        mediaProcessor?.startRecording(url: url,
+                                       replay: replay,
+                                       audioSettings: makeAudioCompressionSettings(audioBitrate: audioBitrate),
+                                       videoSettings: makeVideoCompressionSettings(
+                                           videoCodec: videoCodec,
+                                           videoBitrate: videoBitrate,
+                                           keyFrameInterval: keyFrameInterval
+                                       ))
     }
 
     func setRecordUrl(url: URL?) {
-        netStream?.setUrl(url: url)
+        mediaProcessor?.setUrl(url: url)
     }
 
     func setReplayBuffering(enabled: Bool) {
-        netStream?.setReplayBuffering(enabled: enabled)
+        mediaProcessor?.setReplayBuffering(enabled: enabled)
     }
 
     private func makeVideoCompressionSettings(videoCodec: SettingsStreamCodec,
@@ -945,7 +945,7 @@ final class Media: NSObject {
     }
 
     func stopRecording() {
-        netStream?.stopRecording()
+        mediaProcessor?.stopRecording()
     }
 
     func getFailedVideoEffect() -> String? {
@@ -953,7 +953,7 @@ final class Media: NSObject {
     }
 }
 
-extension Media: NetStreamDelegate {
+extension Media: MediaProcessorDelegate {
     func stream(audioLevel: Float, numberOfAudioChannels: Int, sampleRate: Double) {
         DispatchQueue.main.async {
             if becameMuted(old: self.currentAudioLevel, new: audioLevel) || becameUnmuted(

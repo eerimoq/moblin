@@ -82,11 +82,10 @@ class RtmpStream {
     private var prevRebasedAudioTimeStamp = -1.0
     private var prevRebasedVideoTimeStamp = -1.0
     private let compositionTimeOffset = CMTime(value: 3, timescale: 30).seconds
+    private let mediaProcessor: MediaProcessor
 
-    private let mixer: Mixer
-
-    init(mixer: Mixer, connection: RtmpConnection) {
-        self.mixer = mixer
+    init(mediaProcessor: MediaProcessor, connection: RtmpConnection) {
+        self.mediaProcessor = mediaProcessor
         rtmpConnection = connection
         dispatcher = RtmpEventDispatcher(target: self)
         connection.streams.append(self)
@@ -99,7 +98,7 @@ class RtmpStream {
     }
 
     deinit {
-        mixer.stopRunning()
+        mediaProcessor.mixer.stopRunning()
         removeEventListener(.rtmpStatus, selector: #selector(on(status:)), observer: self)
         rtmpConnection?.removeEventListener(.rtmpStatus, selector: #selector(on(status:)), observer: self)
     }
@@ -171,8 +170,8 @@ class RtmpStream {
     }
 
     private func createOnMetaData() -> AsObject {
-        let audioEncoders = mixer.audio.getEncoders()
-        let videoEncoders = mixer.video.getEncoders()
+        let audioEncoders = mediaProcessor.mixer.audio.getEncoders()
+        let videoEncoders = mediaProcessor.mixer.video.getEncoders()
         if audioEncoders.count == 1, videoEncoders.count == 1 {
             return createOnMetaDataLegacy(audioEncoders.first!, videoEncoders.first!)
         } else {
@@ -185,7 +184,7 @@ class RtmpStream {
         let settings = videoEncoder.settings.value
         metadata["width"] = settings.videoSize.width
         metadata["height"] = settings.videoSize.height
-        metadata["framerate"] = mixer.video.getFps()
+        metadata["framerate"] = mediaProcessor.mixer.video.getFps()
         switch settings.format {
         case .h264:
             metadata["videocodecid"] = FlvVideoCodec.avc.rawValue
@@ -237,7 +236,7 @@ class RtmpStream {
             sendFCUnpublish()
             sendDeleteStream()
             closeStream()
-            mixer.stopEncoding()
+            mediaProcessor.stopEncoding()
         }
         switch readyState {
         case .open:
@@ -282,7 +281,7 @@ class RtmpStream {
 
     private func handlePublishing() {
         send(handlerName: "@setDataFrame", arguments: "onMetaData", createOnMetaData())
-        mixer.startEncoding(self)
+        mediaProcessor.startEncoding(self)
     }
 
     @objc

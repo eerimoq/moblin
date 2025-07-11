@@ -224,7 +224,7 @@
 		0359F8E12BD3DA61005BFDA8 /* MpegTsPacket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8472BD3DA5F005BFDA8 /* MpegTsPacket.swift */; };
 		0359F8E22BD3DA61005BFDA8 /* MpegTsProgram.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8482BD3DA5F005BFDA8 /* MpegTsProgram.swift */; };
 		0359F8E42BD3DA61005BFDA8 /* MpegTsWriter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F84A2BD3DA5F005BFDA8 /* MpegTsWriter.swift */; };
-		0359F8E52BD3DA61005BFDA8 /* NetStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F84C2BD3DA5F005BFDA8 /* NetStream.swift */; };
+		0359F8E52BD3DA61005BFDA8 /* MediaProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F84C2BD3DA5F005BFDA8 /* MediaProcessor.swift */; };
 		0359F8E72BD3DA61005BFDA8 /* Amf0Serializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F84F2BD3DA5F005BFDA8 /* Amf0Serializer.swift */; };
 		0359F8E92BD3DA61005BFDA8 /* AmfFoundation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8512BD3DA5F005BFDA8 /* AmfFoundation.swift */; };
 		0359F8EA2BD3DA61005BFDA8 /* RtmpEventDispatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8522BD3DA5F005BFDA8 /* RtmpEventDispatcher.swift */; };
@@ -867,7 +867,7 @@
 		0359F8472BD3DA5F005BFDA8 /* MpegTsPacket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MpegTsPacket.swift; sourceTree = "<group>"; };
 		0359F8482BD3DA5F005BFDA8 /* MpegTsProgram.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MpegTsProgram.swift; sourceTree = "<group>"; };
 		0359F84A2BD3DA5F005BFDA8 /* MpegTsWriter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MpegTsWriter.swift; sourceTree = "<group>"; };
-		0359F84C2BD3DA5F005BFDA8 /* NetStream.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetStream.swift; sourceTree = "<group>"; };
+		0359F84C2BD3DA5F005BFDA8 /* MediaProcessor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediaProcessor.swift; sourceTree = "<group>"; };
 		0359F84F2BD3DA5F005BFDA8 /* Amf0Serializer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Amf0Serializer.swift; sourceTree = "<group>"; };
 		0359F8512BD3DA5F005BFDA8 /* AmfFoundation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AmfFoundation.swift; sourceTree = "<group>"; };
 		0359F8522BD3DA5F005BFDA8 /* RtmpEventDispatcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RtmpEventDispatcher.swift; sourceTree = "<group>"; };
@@ -1883,7 +1883,6 @@
 				0359F83B2BD3DA5F005BFDA8 /* Media */,
 				03FB42282C68D99A0009FB26 /* Mirl */,
 				0359F84B2BD3DA5F005BFDA8 /* Mpeg */,
-				0359F84E2BD3DA5F005BFDA8 /* Net */,
 				0324CD052BEBFB93004AA063 /* Rist */,
 				0359F85F2BD3DA5F005BFDA8 /* Rtmp */,
 				0359F8682BD3DA5F005BFDA8 /* Srt */,
@@ -1936,6 +1935,7 @@
 				03CDC36F2E1D457800311FC7 /* Audio */,
 				03CDC3702E1D457D00311FC7 /* Video */,
 				03EEC76A2CED8C8B00749D4E /* DriftTracker.swift */,
+				0359F84C2BD3DA5F005BFDA8 /* MediaProcessor.swift */,
 				0359F8362BD3DA5F005BFDA8 /* Mixer.swift */,
 				0359F8372BD3DA5F005BFDA8 /* Recorder.swift */,
 				0318D35D2CF04C2B00E12F3B /* TargetLatenciesSynchronizer.swift */,
@@ -1964,14 +1964,6 @@
 				0359F83F2BD3DA5F005BFDA8 /* NalUnitStream.swift */,
 			);
 			path = Mpeg;
-			sourceTree = "<group>";
-		};
-		0359F84E2BD3DA5F005BFDA8 /* Net */ = {
-			isa = PBXGroup;
-			children = (
-				0359F84C2BD3DA5F005BFDA8 /* NetStream.swift */,
-			);
-			path = Net;
 			sourceTree = "<group>";
 		};
 		0359F85F2BD3DA5F005BFDA8 /* Rtmp */ = {
@@ -3703,7 +3695,7 @@
 				03A9D1332C0E65A400F0B917 /* SrtlaServer.swift in Sources */,
 				0324CD072BEBFBBA004AA063 /* RistStream.swift in Sources */,
 				03D37EE02CE0892B006D14C2 /* UrlSession.swift in Sources */,
-				0359F8E52BD3DA61005BFDA8 /* NetStream.swift in Sources */,
+				0359F8E52BD3DA61005BFDA8 /* MediaProcessor.swift in Sources */,
 				030FF8842E144CE30004A695 /* ModelYouTube.swift in Sources */,
 				038E7BE32C32F391008994BA /* MediaPlayerSettingsView.swift in Sources */,
 				882D0C222DF785520035BFAF /* PhoneCoolerDevice.swift in Sources */,

@@ -520,7 +520,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var onDocumentPickerUrl: ((URL) -> Void)?
     private var healthStore = HKHealthStore()
 
-    weak var currentStream: NetStream? {
+    weak var mediaProcessor: MediaProcessor? {
         didSet {
             oldValue?.mixer.video.drawable = nil
         }

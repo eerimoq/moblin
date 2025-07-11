@@ -1,7 +1,7 @@
 import AVFoundation
 import UIKit
 
-protocol NetStreamDelegate: AnyObject {
+protocol MediaProcessorDelegate: AnyObject {
     func stream(audioLevel: Float, numberOfAudioChannels: Int, sampleRate: Double)
     func streamVideo(presentationTimestamp: Double)
     func streamVideo(failedEffect: String?)
@@ -21,9 +21,9 @@ protocol NetStreamDelegate: AnyObject {
 
 let netStreamLockQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.NetStream.lock")
 
-final class NetStream: NSObject {
+final class MediaProcessor: NSObject {
     let mixer = Mixer()
-    weak var delegate: (any NetStreamDelegate)?
+    weak var delegate: (any MediaProcessorDelegate)?
 
     override init() {
         super.init()
@@ -220,9 +220,19 @@ final class NetStream: NSObject {
             self.mixer.stopRunning()
         }
     }
+
+    func startEncoding(_ delegate: any AudioCodecDelegate & VideoEncoderDelegate) {
+        mixer.video.startEncoding(delegate)
+        mixer.audio.startEncoding(delegate)
+    }
+
+    func stopEncoding() {
+        mixer.video.stopEncoding()
+        mixer.audio.stopEncoding()
+    }
 }
 
-extension NetStream: MixerDelegate {
+extension MediaProcessor: MixerDelegate {
     func mixer(audioLevel: Float, numberOfAudioChannels: Int, sampleRate: Double) {
         delegate?.stream(audioLevel: audioLevel,
                          numberOfAudioChannels: numberOfAudioChannels,
