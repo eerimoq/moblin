@@ -51,8 +51,7 @@ open class NetStream: NSObject {
 
     func setVideoSize(capture: CGSize, output: CGSize) {
         netStreamLockQueue.async {
-            self.mixer.video.setCaptureSize(size: capture)
-            self.mixer.video.setOutputSize(size: output)
+            self.mixer.video.setSize(capture: capture, output: output)
         }
     }
 

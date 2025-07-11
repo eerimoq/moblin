@@ -208,20 +208,6 @@ final class VideoUnit: NSObject {
         stopFrameTimer()
     }
 
-    @objc
-    private func handleSessionRuntimeError(_ notification: NSNotification) {
-        guard let error = notification.userInfo?[AVCaptureSessionErrorKey] as? AVError else {
-            return
-        }
-        let message = error._nsError.localizedFailureReason ?? "\(error.code)"
-        mixer?.delegate?.mixerCaptureSessionError(message: message)
-        netStreamLockQueue.asyncAfter(deadline: .now() + .milliseconds(500)) {
-            if self.isRunning {
-                self.session.startRunning()
-            }
-        }
-    }
-
     func startRunning() {
         isRunning = true
         addSessionObservers()
@@ -255,125 +241,6 @@ final class VideoUnit: NSObject {
         session.beginConfiguration()
         updateCameraControls()
         session.commitConfiguration()
-    }
-
-    func getEncoders() -> [VideoEncoder] {
-        return encoders
-    }
-
-    func getCIImage(_ videoSourceId: UUID, _ presentationTimeStamp: CMTime) -> CIImage? {
-        guard let sampleBuffer = bufferedVideos[videoSourceId]?.getSampleBuffer(presentationTimeStamp),
-              let imageBuffer = sampleBuffer.imageBuffer
-        else {
-            return nil
-        }
-        return CIImage(cvPixelBuffer: imageBuffer)
-    }
-
-    func attach(params: VideoUnitAttachParams) throws {
-        for device in captureSessionDevices {
-            device.output.setSampleBufferDelegate(nil, queue: mixerLockQueue)
-        }
-        mixerLockQueue.async {
-            self.configuredIgnoreFramesAfterAttachSeconds = params.ignoreFramesAfterAttachSeconds
-            self.selectedBufferedVideoCameraId = params.bufferedVideo
-            self.prepareFirstFrame()
-            self.showCameraPreview = params.showCameraPreview
-            self.externalDisplayPreview = params.externalDisplayPreview
-            self.fillFrame = params.fillFrame
-            if let bufferedVideo = params.bufferedVideo {
-                self.sceneVideoSourceId = bufferedVideo
-            } else if params.devices.hasSceneDevice, let id = params.devices.devices.first?.id {
-                self.sceneVideoSourceId = id
-            } else {
-                self.sceneVideoSourceId = UUID()
-            }
-            self.bufferedVideoBuiltins.removeAll()
-            for device in params.devices.devices {
-                let bufferedVideo = BufferedVideo(
-                    cameraId: device.id,
-                    name: "builtin",
-                    update: false,
-                    latency: params.builtinDelay,
-                    mixer: self.mixer
-                )
-                self.bufferedVideos[device.id] = bufferedVideo
-                self.bufferedVideoBuiltins[device.device] = bufferedVideo
-            }
-            if self.pendingAfterAttachEffects == nil {
-                self.pendingAfterAttachEffects = self.effects
-            }
-            for effect in self.effects where effect is VideoSourceEffect {
-                self.unregisterEffectInner(effect)
-            }
-        }
-        for device in params.devices.devices {
-            setDeviceFormat(
-                device: device.device,
-                fps: fps,
-                preferAutoFrameRate: preferAutoFps,
-                colorSpace: colorSpace
-            )
-        }
-        session.beginConfiguration()
-        defer {
-            session.commitConfiguration()
-        }
-        try removeDevices(session)
-        for device in params.devices.devices {
-            try attachDevice(device.device, session)
-        }
-        session.automaticallyConfiguresCaptureDeviceForWideColor = false
-        device = params.devices.hasSceneDevice ? params.devices.devices.first?.device : nil
-        for device in captureSessionDevices {
-            for connection in device.output.connections {
-                if connection.isVideoMirroringSupported {
-                    connection.isVideoMirrored = params.isVideoMirrored
-                }
-                if connection.isVideoOrientationSupported {
-                    setOrientation(device: device.device, connection: connection, orientation: videoOrientation)
-                }
-                if connection.isVideoStabilizationSupported {
-                    connection.preferredVideoStabilizationMode = params.preferredVideoStabilizationMode
-                }
-            }
-        }
-        for (i, device) in captureSessionDevices.enumerated() {
-            if params.devices.hasSceneDevice, i == 0 {
-                device.output.setSampleBufferDelegate(self, queue: mixerLockQueue)
-            } else {
-                device.output.setSampleBufferDelegate(videoUnitBuiltinDevice, queue: mixerLockQueue)
-            }
-        }
-        updateCameraControls()
-        params.cameraPreviewLayer.session = nil
-        if params.showCameraPreview {
-            params.cameraPreviewLayer.session = session
-        }
-    }
-
-    private func updateDevicesFormat() {
-        for device in captureSessionDevices {
-            setDeviceFormat(
-                device: device.device,
-                fps: fps,
-                preferAutoFrameRate: preferAutoFps,
-                colorSpace: colorSpace
-            )
-        }
-    }
-
-    private func getBufferedVideoForDevice(device: CaptureDevice?) -> BufferedVideo? {
-        switch device?.device?.position {
-        case .back:
-            return bufferedVideos[builtinBackCameraId]!
-        case .front:
-            return bufferedVideos[builtinFrontCameraId]!
-        case .unspecified:
-            return bufferedVideos[externalCameraId]!
-        default:
-            return nil
-        }
     }
 
     func registerEffect(_ effect: VideoEffect) {
@@ -471,18 +338,10 @@ final class VideoUnit: NSObject {
         }
     }
 
-    private func setBufferedVideoDriftInner(cameraId: UUID, drift: Double) {
-        bufferedVideos[cameraId]?.setDrift(drift: drift)
-    }
-
     func setBufferedVideoTargetLatency(cameraId: UUID, latency: Double) {
         mixerLockQueue.async {
             self.setBufferedVideoTargetLatencyInner(cameraId: cameraId, latency: latency)
         }
-    }
-
-    private func setBufferedVideoTargetLatencyInner(cameraId: UUID, latency: Double) {
-        bufferedVideos[cameraId]?.setTargetLatency(latency: latency)
     }
 
     func startEncoding(_ delegate: any VideoEncoderDelegate) {
@@ -499,18 +358,156 @@ final class VideoUnit: NSObject {
         }
     }
 
-    func setCaptureSize(size: CGSize) {
-        captureSize = size
+    func setSize(capture: CGSize, output: CGSize) {
+        captureSize = capture
+        outputSize = output
         updateDevicesFormat()
-    }
-
-    func setOutputSize(size: CGSize) {
-        outputSize = size
         mixerLockQueue.async {
             self.blackImage = nil
             self.pool = nil
             self.bufferedPool = nil
         }
+    }
+
+    func getEncoders() -> [VideoEncoder] {
+        return encoders
+    }
+
+    func getCIImage(_ videoSourceId: UUID, _ presentationTimeStamp: CMTime) -> CIImage? {
+        guard let sampleBuffer = bufferedVideos[videoSourceId]?.getSampleBuffer(presentationTimeStamp),
+              let imageBuffer = sampleBuffer.imageBuffer
+        else {
+            return nil
+        }
+        return CIImage(cvPixelBuffer: imageBuffer)
+    }
+
+    func attach(params: VideoUnitAttachParams) throws {
+        for device in captureSessionDevices {
+            device.output.setSampleBufferDelegate(nil, queue: mixerLockQueue)
+        }
+        mixerLockQueue.async {
+            self.configuredIgnoreFramesAfterAttachSeconds = params.ignoreFramesAfterAttachSeconds
+            self.selectedBufferedVideoCameraId = params.bufferedVideo
+            self.prepareFirstFrame()
+            self.showCameraPreview = params.showCameraPreview
+            self.externalDisplayPreview = params.externalDisplayPreview
+            self.fillFrame = params.fillFrame
+            if let bufferedVideo = params.bufferedVideo {
+                self.sceneVideoSourceId = bufferedVideo
+            } else if params.devices.hasSceneDevice, let id = params.devices.devices.first?.id {
+                self.sceneVideoSourceId = id
+            } else {
+                self.sceneVideoSourceId = UUID()
+            }
+            self.bufferedVideoBuiltins.removeAll()
+            for device in params.devices.devices {
+                let bufferedVideo = BufferedVideo(
+                    cameraId: device.id,
+                    name: "builtin",
+                    update: false,
+                    latency: params.builtinDelay,
+                    mixer: self.mixer
+                )
+                self.bufferedVideos[device.id] = bufferedVideo
+                self.bufferedVideoBuiltins[device.device] = bufferedVideo
+            }
+            if self.pendingAfterAttachEffects == nil {
+                self.pendingAfterAttachEffects = self.effects
+            }
+            for effect in self.effects where effect is VideoSourceEffect {
+                self.unregisterEffectInner(effect)
+            }
+        }
+        for device in params.devices.devices {
+            setDeviceFormat(
+                device: device.device,
+                fps: fps,
+                preferAutoFrameRate: preferAutoFps,
+                colorSpace: colorSpace
+            )
+        }
+        session.beginConfiguration()
+        defer {
+            session.commitConfiguration()
+        }
+        try removeDevices(session)
+        for device in params.devices.devices {
+            try attachDevice(device.device, session)
+        }
+        session.automaticallyConfiguresCaptureDeviceForWideColor = false
+        device = params.devices.hasSceneDevice ? params.devices.devices.first?.device : nil
+        for device in captureSessionDevices {
+            for connection in device.output.connections {
+                if connection.isVideoMirroringSupported {
+                    connection.isVideoMirrored = params.isVideoMirrored
+                }
+                if connection.isVideoOrientationSupported {
+                    setOrientation(device: device.device, connection: connection, orientation: videoOrientation)
+                }
+                if connection.isVideoStabilizationSupported {
+                    connection.preferredVideoStabilizationMode = params.preferredVideoStabilizationMode
+                }
+            }
+        }
+        for (i, device) in captureSessionDevices.enumerated() {
+            if params.devices.hasSceneDevice, i == 0 {
+                device.output.setSampleBufferDelegate(self, queue: mixerLockQueue)
+            } else {
+                device.output.setSampleBufferDelegate(videoUnitBuiltinDevice, queue: mixerLockQueue)
+            }
+        }
+        updateCameraControls()
+        params.cameraPreviewLayer.session = nil
+        if params.showCameraPreview {
+            params.cameraPreviewLayer.session = session
+        }
+    }
+
+    @objc
+    private func handleSessionRuntimeError(_ notification: NSNotification) {
+        guard let error = notification.userInfo?[AVCaptureSessionErrorKey] as? AVError else {
+            return
+        }
+        let message = error._nsError.localizedFailureReason ?? "\(error.code)"
+        mixer?.delegate?.mixerCaptureSessionError(message: message)
+        netStreamLockQueue.asyncAfter(deadline: .now() + .milliseconds(500)) {
+            if self.isRunning {
+                self.session.startRunning()
+            }
+        }
+    }
+
+    private func updateDevicesFormat() {
+        for device in captureSessionDevices {
+            setDeviceFormat(
+                device: device.device,
+                fps: fps,
+                preferAutoFrameRate: preferAutoFps,
+                colorSpace: colorSpace
+            )
+        }
+    }
+
+    private func getBufferedVideoForDevice(device: CaptureDevice?) -> BufferedVideo? {
+        switch device?.device?.position {
+        case .back:
+            return bufferedVideos[builtinBackCameraId]!
+        case .front:
+            return bufferedVideos[builtinFrontCameraId]!
+        case .unspecified:
+            return bufferedVideos[externalCameraId]!
+        default:
+            return nil
+        }
+    }
+
+    private func setBufferedVideoDriftInner(cameraId: UUID, drift: Double) {
+        bufferedVideos[cameraId]?.setDrift(drift: drift)
+    }
+
+    private func setBufferedVideoTargetLatencyInner(cameraId: UUID, latency: Double) {
+        bufferedVideos[cameraId]?.setTargetLatency(latency: latency)
     }
 
     private func startFrameTimer() {
