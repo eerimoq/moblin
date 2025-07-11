@@ -32,11 +32,13 @@ private class Stream {
 final class MediaProcessor: NSObject {
     private let mixer = Mixer()
     private var streams: [Stream] = []
-    weak var delegate: (any MediaProcessorDelegate)?
 
     override init() {
         super.init()
-        mixer.delegate = self
+    }
+
+    func setDelegate(delegate: MediaProcessorDelegate) {
+        mixer.delegate = delegate
     }
 
     func setTorch(value: Bool) {
@@ -295,69 +297,5 @@ extension MediaProcessor: VideoEncoderDelegate {
         for stream in streams {
             stream.delegate?.videoEncoderOutputSampleBuffer(codec, sampleBuffer)
         }
-    }
-}
-
-extension MediaProcessor: MixerDelegate {
-    func mixer(audioLevel: Float, numberOfAudioChannels: Int, sampleRate: Double) {
-        delegate?.stream(audioLevel: audioLevel,
-                         numberOfAudioChannels: numberOfAudioChannels,
-                         sampleRate: sampleRate)
-    }
-
-    func mixerVideo(presentationTimestamp: Double) {
-        delegate?.streamVideo(presentationTimestamp: presentationTimestamp)
-    }
-
-    func mixerVideo(failedEffect: String?) {
-        delegate?.streamVideo(failedEffect: failedEffect)
-    }
-
-    func mixerVideo(lowFpsImage: Data?, frameNumber: UInt64) {
-        delegate?.streamVideo(lowFpsImage: lowFpsImage, frameNumber: frameNumber)
-    }
-
-    func mixer(findVideoFormatError: String, activeFormat: String) {
-        delegate?.streamVideo(findVideoFormatError: findVideoFormatError, activeFormat: activeFormat)
-    }
-
-    func mixerAttachCameraError() {
-        delegate?.streamVideoAttachCameraError()
-    }
-
-    func mixerCaptureSessionError(message: String) {
-        delegate?.streamVideoCaptureSessionError(message)
-    }
-
-    func mixerRecorderInitSegment(data: Data) {
-        delegate?.streamRecorderInitSegment(data: data)
-    }
-
-    func mixerRecorderDataSegment(segment: RecorderDataSegment) {
-        delegate?.streamRecorderDataSegment(segment: segment)
-    }
-
-    func mixerRecorderFinished() {
-        delegate?.streamRecorderFinished()
-    }
-
-    func mixer(audioSampleBuffer: CMSampleBuffer) {
-        delegate?.streamAudio(sampleBuffer: audioSampleBuffer)
-    }
-
-    func mixerNoTorch() {
-        delegate?.streamNoTorch()
-    }
-
-    func mixerSetZoomX(x: Float) {
-        delegate?.streamSetZoomX(x: x)
-    }
-
-    func mixerSetExposureBias(bias: Float) {
-        delegate?.streamSetExposureBias(bias: bias)
-    }
-
-    func mixerSelectedFps(fps: Double, auto: Bool) {
-        delegate?.streamSelectedFps(fps: fps, auto: auto)
     }
 }

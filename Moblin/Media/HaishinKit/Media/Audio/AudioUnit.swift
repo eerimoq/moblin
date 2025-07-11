@@ -205,7 +205,7 @@ final class AudioUnit: NSObject {
             return
         }
         if speechToTextEnabled {
-            mixer.delegate?.mixer(audioSampleBuffer: sampleBuffer)
+            mixer.delegate?.streamAudio(sampleBuffer: sampleBuffer)
         }
         inputSourceFormat = sampleBuffer.formatDescription?.audioStreamBasicDescription
         for encoder in encoders {
@@ -263,10 +263,10 @@ extension AudioUnit: AVCaptureAudioDataOutputSampleBufferDelegate {
             } else {
                 audioLevel = 0.0
             }
-            mixer?.delegate?.mixer(audioLevel: audioLevel,
-                                   numberOfAudioChannels: connection.audioChannels.count,
-                                   sampleRate: sampleBuffer.formatDescription?.audioStreamBasicDescription?
-                                       .mSampleRate ?? 0)
+            mixer?.delegate?.stream(audioLevel: audioLevel,
+                                    numberOfAudioChannels: connection.audioChannels.count,
+                                    sampleRate: sampleBuffer.formatDescription?.audioStreamBasicDescription?
+                                        .mSampleRate ?? 0)
         }
         appendNewSampleBuffer(sampleBuffer)
     }
@@ -279,10 +279,10 @@ extension AudioUnit: BufferedAudioSampleBufferDelegate {
         }
         if shouldUpdateAudioLevel(sampleBuffer) {
             let numberOfAudioChannels = Int(sampleBuffer.formatDescription?.numberOfAudioChannels() ?? 0)
-            mixer?.delegate?.mixer(audioLevel: .infinity,
-                                   numberOfAudioChannels: numberOfAudioChannels,
-                                   sampleRate: sampleBuffer.formatDescription?.audioStreamBasicDescription?
-                                       .mSampleRate ?? 0)
+            mixer?.delegate?.stream(audioLevel: .infinity,
+                                    numberOfAudioChannels: numberOfAudioChannels,
+                                    sampleRate: sampleBuffer.formatDescription?.audioStreamBasicDescription?
+                                        .mSampleRate ?? 0)
         }
         appendNewSampleBuffer(sampleBuffer)
     }

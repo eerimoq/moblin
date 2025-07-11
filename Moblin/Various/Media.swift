@@ -137,7 +137,7 @@ final class Media: NSObject {
             ristStream = nil
         }
         self.mediaProcessor = mediaProcessor
-        mediaProcessor.delegate = self
+        mediaProcessor.setDelegate(delegate: self)
         mediaProcessor.setVideoOrientation(value: portrait ? .portrait : .landscapeRight)
         attachDefaultAudioDevice(builtinDelay: builtinAudioDelay)
     }

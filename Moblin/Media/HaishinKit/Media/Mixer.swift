@@ -2,26 +2,8 @@ import AVFoundation
 
 let mixerLockQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.Mixer", qos: .userInteractive)
 
-protocol MixerDelegate: AnyObject {
-    func mixer(audioLevel: Float, numberOfAudioChannels: Int, sampleRate: Double)
-    func mixerVideo(presentationTimestamp: Double)
-    func mixerVideo(failedEffect: String?)
-    func mixerVideo(lowFpsImage: Data?, frameNumber: UInt64)
-    func mixerRecorderInitSegment(data: Data)
-    func mixerRecorderDataSegment(segment: RecorderDataSegment)
-    func mixerRecorderFinished()
-    func mixer(findVideoFormatError: String, activeFormat: String)
-    func mixerAttachCameraError()
-    func mixerCaptureSessionError(message: String)
-    func mixer(audioSampleBuffer: CMSampleBuffer)
-    func mixerNoTorch()
-    func mixerSetZoomX(x: Float)
-    func mixerSetExposureBias(bias: Float)
-    func mixerSelectedFps(fps: Double, auto: Bool)
-}
-
 class Mixer {
-    weak var delegate: (any MixerDelegate)?
+    weak var delegate: (any MediaProcessorDelegate)?
     let audio = AudioUnit()
     let video = VideoUnit()
     let recorder = Recorder()
@@ -71,14 +53,14 @@ class Mixer {
 
 extension Mixer: RecorderDelegate {
     func recorderInitSegment(data: Data) {
-        delegate?.mixerRecorderInitSegment(data: data)
+        delegate?.streamRecorderInitSegment(data: data)
     }
 
     func recorderDataSegment(segment: RecorderDataSegment) {
-        delegate?.mixerRecorderDataSegment(segment: segment)
+        delegate?.streamRecorderDataSegment(segment: segment)
     }
 
     func recorderFinished() {
-        delegate?.mixerRecorderFinished()
+        delegate?.streamRecorderFinished()
     }
 }
