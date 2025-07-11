@@ -1568,7 +1568,7 @@ final class VideoUnit: NSObject {
             }
             device.unlockForConfiguration()
         } catch {
-            logger.error("while locking device for fps: \(error)")
+            logger.error("Error while locking device: \(error)")
         }
     }
 
