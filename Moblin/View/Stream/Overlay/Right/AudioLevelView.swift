@@ -115,7 +115,6 @@ struct AudioLevelView: View {
                 .frame(width: 17, height: 17)
                 .font(smallFont)
                 .padding([.leading, .trailing], 2)
-                .padding([.bottom], 2)
                 .foregroundColor(.white)
                 .background(backgroundColor)
                 .cornerRadius(5)
