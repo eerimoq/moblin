@@ -80,7 +80,7 @@ protocol RistStreamDelegate: AnyObject {
     func ristStreamRelayDestinationAddress(address: String, port: UInt16)
 }
 
-class RistStream: NetStream {
+class RistStream {
     private var context: RistContext?
     private var peers: [RistRemotePeer] = []
     private let writer = MpegTsWriter(timecodesEnabled: false)
@@ -89,10 +89,11 @@ class RistStream: NetStream {
     private var url: String = ""
     private var state: RistStreamState = .connecting
     private weak var ristDelegate: (any RistStreamDelegate)?
+    private let mixer: Mixer
 
-    init(deletate: RistStreamDelegate) {
+    init(mixer: Mixer, deletate: RistStreamDelegate) {
+        self.mixer = mixer
         ristDelegate = deletate
-        super.init()
         writer.delegate = self
     }
 

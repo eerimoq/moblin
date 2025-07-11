@@ -111,34 +111,32 @@ final class Media: NSObject {
         ristStopStream()
         irlStopStream()
         rtmpConnection = RtmpConnection()
+        let netStream = NetStream()
         switch proto {
         case .rtmp:
-            rtmpStream = RtmpStream(connection: rtmpConnection)
+            rtmpStream = RtmpStream(mixer: netStream.mixer, connection: rtmpConnection)
             srtStream = nil
             ristStream = nil
             irlStream = nil
-            netStream = rtmpStream
         case .srt:
-            srtStream = SrtStream(timecodesEnabled: timecodesEnabled, delegate: self)
+            srtStream = SrtStream(mixer: netStream.mixer, timecodesEnabled: timecodesEnabled, delegate: self)
             rtmpStream = nil
             ristStream = nil
             irlStream = nil
-            netStream = srtStream
         case .rist:
-            ristStream = RistStream(deletate: self)
+            ristStream = RistStream(mixer: netStream.mixer, deletate: self)
             srtStream = nil
             rtmpStream = nil
             irlStream = nil
-            netStream = ristStream
         case .irl:
-            irlStream = MirlStream()
+            irlStream = MirlStream(mixer: netStream.mixer)
             srtStream = nil
             rtmpStream = nil
             ristStream = nil
-            netStream = irlStream
         }
-        netStream!.delegate = self
-        netStream!.setVideoOrientation(value: portrait ? .portrait : .landscapeRight)
+        self.netStream = netStream
+        netStream.delegate = self
+        netStream.setVideoOrientation(value: portrait ? .portrait : .landscapeRight)
         attachDefaultAudioDevice(builtinDelay: builtinAudioDelay)
     }
 

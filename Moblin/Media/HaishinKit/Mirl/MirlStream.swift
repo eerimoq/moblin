@@ -1,12 +1,13 @@
 import AVFoundation
 import Foundation
 
-class MirlStream: NetStream {
+class MirlStream {
     var client: MirlClient?
+    private let mixer: Mixer
 
-    override init() {
+    init(mixer: Mixer) {
+        self.mixer = mixer
         client = MirlClient()
-        super.init()
     }
 
     func start() {

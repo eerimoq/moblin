@@ -19,13 +19,14 @@ private class SendHook {
     }
 }
 
-class SrtStream: NetStream {
+class SrtStream {
     private let writer: MpegTsWriter
     private var sendHook = SendHook(closure: nil)
     private var options: [SrtSocketOption: String] = [:]
     private var perf = CBytePerfMon()
     private var socket: SRTSOCKET = SRT_INVALID_SOCK
     weak var srtStreamDelegate: SrtStreamDelegate?
+    private let mixer: Mixer
 
     private var readyState: ReadyState = .initialized {
         didSet {
@@ -52,10 +53,10 @@ class SrtStream: NetStream {
         }
     }
 
-    init(timecodesEnabled: Bool, delegate: SrtStreamDelegate) {
+    init(mixer: Mixer, timecodesEnabled: Bool, delegate: SrtStreamDelegate) {
+        self.mixer = mixer
         writer = MpegTsWriter(timecodesEnabled: timecodesEnabled)
         srtStreamDelegate = delegate
-        super.init()
         writer.delegate = self
         srt_startup()
     }

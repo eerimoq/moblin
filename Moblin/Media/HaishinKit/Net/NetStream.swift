@@ -21,7 +21,7 @@ protocol NetStreamDelegate: AnyObject {
 
 let netStreamLockQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.NetStream.lock")
 
-open class NetStream: NSObject {
+final class NetStream: NSObject {
     let mixer = Mixer()
     weak var delegate: (any NetStreamDelegate)?
 

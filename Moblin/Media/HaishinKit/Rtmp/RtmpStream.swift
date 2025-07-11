@@ -39,7 +39,7 @@ enum RtmpStreamCode: String {
     case videoDimensionChange = "NetStream.Video.DimensionChange"
 }
 
-class RtmpStream: NetStream {
+class RtmpStream {
     enum ReadyState: UInt8 {
         case initialized
         case open
@@ -83,9 +83,11 @@ class RtmpStream: NetStream {
     private var prevRebasedVideoTimeStamp = -1.0
     private let compositionTimeOffset = CMTime(value: 3, timescale: 30).seconds
 
-    init(connection: RtmpConnection) {
+    private let mixer: Mixer
+
+    init(mixer: Mixer, connection: RtmpConnection) {
+        self.mixer = mixer
         rtmpConnection = connection
-        super.init()
         dispatcher = RtmpEventDispatcher(target: self)
         connection.streams.append(self)
         addEventListener(.rtmpStatus, selector: #selector(on(status:)), observer: self)
