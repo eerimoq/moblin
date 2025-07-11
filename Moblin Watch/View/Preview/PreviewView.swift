@@ -23,6 +23,7 @@ private struct AudioLevelView: View {
 
 private struct StatusesView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var preview: Preview
     var textPlacement: StreamOverlayIconAndTextPlacement
 
     var body: some View {
@@ -31,38 +32,44 @@ private struct StatusesView: View {
                 .frame(width: 17, height: 17)
                 .font(smallFont)
                 .padding([.leading, .trailing], 2)
-                .foregroundColor(model.thermalState.color())
+                .foregroundColor(preview.thermalState.color())
                 .background(backgroundColor)
                 .cornerRadius(5)
         }
         if model.isShowingWorkout() {
             StreamOverlayIconAndTextView(
                 icon: "figure.run",
-                text: model.workoutType,
+                text: preview.workoutType,
                 textPlacement: textPlacement
             )
         }
         if model.isShowingStatusBitrate() {
             StreamOverlayIconAndTextView(
                 icon: "speedometer",
-                text: model.speedAndTotal,
+                text: preview.speedAndTotal,
                 textPlacement: textPlacement
             )
         }
         if model.isShowingStatusRecording() {
             StreamOverlayIconAndTextView(
                 icon: "record.circle",
-                text: model.recordingLength,
+                text: preview.recordingLength,
                 textPlacement: textPlacement
             )
+        }
+        if model.isShowingStatusAudioLevel() {
+            AudioLevelView(level: preview.audioLevel)
         }
     }
 }
 
 class Preview: ObservableObject {
+    @Published var speedAndTotal = noValue
+    @Published var recordingLength = noValue
+    @Published var thermalState = ProcessInfo.ThermalState.nominal
+    @Published var workoutType = noValue
     @Published var image: UIImage?
     @Published var showPreviewDisconnected = true
-    @Published var viaRemoteControl = false
     @Published var viewerCount = noValue
     @Published var zoomX = 0.0
     @Published var isZooming = false
@@ -77,7 +84,7 @@ class Preview: ObservableObject {
 }
 
 struct PreviewView: View {
-    var model: Model
+    @EnvironmentObject var model: Model
     @ObservedObject var preview: Preview
 
     var body: some View {
@@ -110,7 +117,7 @@ struct PreviewView: View {
                 HStack {
                     VStack(alignment: .leading, spacing: 1) {
                         Spacer()
-                        if !preview.viaRemoteControl, preview.viewerCount != noValue {
+                        if !model.viaRemoteControl, preview.viewerCount != noValue {
                             StreamOverlayIconAndTextView(
                                 icon: "eye",
                                 text: preview.viewerCount,
@@ -127,14 +134,11 @@ struct PreviewView: View {
                     VStack(alignment: .trailing, spacing: 1) {
                         Spacer()
                         if preview.verboseStatuses {
-                            StatusesView(textPlacement: .beforeIcon)
+                            StatusesView(preview: preview, textPlacement: .beforeIcon)
                         } else {
                             HStack(spacing: 1) {
-                                StatusesView(textPlacement: .hide)
+                                StatusesView(preview: preview, textPlacement: .hide)
                             }
-                        }
-                        if model.isShowingStatusAudioLevel() {
-                            AudioLevelView(level: preview.audioLevel)
                         }
                     }
                     .onTapGesture {
@@ -160,7 +164,7 @@ struct PreviewView: View {
             }
             .padding([.bottom], 3)
             List {
-                if !preview.viaRemoteControl {
+                if !model.viaRemoteControl {
                     Picker(selection: $preview.zoomPresetIdPicker) {
                         ForEach(preview.zoomPresets) { zoomPreset in
                             Text(zoomPreset.name)

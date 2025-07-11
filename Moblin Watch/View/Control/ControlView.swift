@@ -129,7 +129,7 @@ struct ControlView: View {
                 ControlMutedView(model: model, control: model.control)
                 ControlInstantReplayView()
                 ControlSaveReplayView()
-                if !preview.viaRemoteControl {
+                if !model.viaRemoteControl {
                     ControlSkipCurrentTtsView()
                     ControlCreateStreamMarkersView()
                 }

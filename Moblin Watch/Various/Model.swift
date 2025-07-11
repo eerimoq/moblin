@@ -85,11 +85,8 @@ class Model: NSObject, ObservableObject {
     let preview = Preview()
     let control = Control()
     let padel = Padel()
-    @Published var speedAndTotal = noValue
-    @Published var recordingLength = noValue
-    @Published var thermalState = ProcessInfo.ThermalState.nominal
-    @Published var workoutType = noValue
     @Published var showPadelScoreBoard = false
+    @Published var viaRemoteControl = false
     private var latestSpeedAndTotalTime = ContinuousClock.now
     private var latestRecordingLengthTime = ContinuousClock.now
     private var latestAudioLevelTime = ContinuousClock.now
@@ -127,17 +124,17 @@ class Model: NSObject, ObservableObject {
         if latestPreviewTime < deadline, !preview.showPreviewDisconnected {
             preview.showPreviewDisconnected = true
         }
-        if latestSpeedAndTotalTime < deadline, speedAndTotal != noValue {
-            speedAndTotal = noValue
+        if latestSpeedAndTotalTime < deadline, preview.speedAndTotal != noValue {
+            preview.speedAndTotal = noValue
         }
-        if latestRecordingLengthTime < deadline, recordingLength != noValue {
-            recordingLength = noValue
+        if latestRecordingLengthTime < deadline, preview.recordingLength != noValue {
+            preview.recordingLength = noValue
         }
         if latestAudioLevelTime < deadline, preview.audioLevel != defaultAudioLevel {
             preview.audioLevel = defaultAudioLevel
         }
-        if latestThermalStateTime < deadline, thermalState != ProcessInfo.ThermalState.nominal {
-            thermalState = ProcessInfo.ThermalState.nominal
+        if latestThermalStateTime < deadline, preview.thermalState != ProcessInfo.ThermalState.nominal {
+            preview.thermalState = ProcessInfo.ThermalState.nominal
         }
     }
 
@@ -230,7 +227,7 @@ class Model: NSObject, ObservableObject {
         guard let speedAndTotal = data as? String else {
             return
         }
-        self.speedAndTotal = speedAndTotal
+        preview.speedAndTotal = speedAndTotal
         latestSpeedAndTotalTime = .now
     }
 
@@ -238,7 +235,7 @@ class Model: NSObject, ObservableObject {
         guard let recordingLength = data as? String else {
             return
         }
-        self.recordingLength = recordingLength
+        preview.recordingLength = recordingLength
         latestRecordingLengthTime = .now
     }
 
@@ -276,7 +273,7 @@ class Model: NSObject, ObservableObject {
             return
         }
         self.settings = try JSONDecoder().decode(WatchSettings.self, from: settings)
-        preview.viaRemoteControl = self.settings.viaRemoteControl
+        viaRemoteControl = self.settings.viaRemoteControl
     }
 
     private func handleThermalState(_ data: Any) throws {
@@ -285,7 +282,7 @@ class Model: NSObject, ObservableObject {
         else {
             return
         }
-        self.thermalState = thermalState
+        preview.thermalState = thermalState
         latestThermalStateTime = .now
     }
 
@@ -364,13 +361,13 @@ class Model: NSObject, ObservableObject {
         switch message.type {
         case .walking:
             activityType = .walking
-            workoutType = "Walking"
+            preview.workoutType = "Walking"
         case .running:
             activityType = .running
-            workoutType = "Running"
+            preview.workoutType = "Running"
         case .cycling:
             activityType = .cycling
-            workoutType = "Cycling"
+            preview.workoutType = "Cycling"
         }
         configuration.activityType = activityType
         configuration.locationType = .outdoor

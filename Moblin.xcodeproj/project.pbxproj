@@ -416,6 +416,9 @@
 		03B2189F2C3E4E4E001FDE57 /* WidgetSceneSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B2189E2C3E4E4E001FDE57 /* WidgetSceneSettingsView.swift */; };
 		03B21A3B2CD09A6200E22590 /* PadelScoreboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B21A3A2CD09A5E00E22590 /* PadelScoreboardView.swift */; };
 		03B279832D45EB9C007DEDB2 /* SwiftCube in Frameworks */ = {isa = PBXBuildFile; productRef = 03B279822D45EB9C007DEDB2 /* SwiftCube */; };
+		03B34C2C2E20B5BD00A1FC84 /* AudioLevel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B34C2B2E20B5BA00A1FC84 /* AudioLevel.swift */; };
+		03B34C2D2E20B5BD00A1FC84 /* AudioLevel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B34C2B2E20B5BA00A1FC84 /* AudioLevel.swift */; };
+		03B34C2E2E20B5BD00A1FC84 /* AudioLevel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B34C2B2E20B5BA00A1FC84 /* AudioLevel.swift */; };
 		03B373F62A9EF98E0028DDD5 /* ControlBarLandscapeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B373F52A9EF98E0028DDD5 /* ControlBarLandscapeView.swift */; };
 		03B373F92A9EFB340028DDD5 /* BatteryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B373F82A9EFB340028DDD5 /* BatteryView.swift */; };
 		03B373FD2A9F35EF0028DDD5 /* CommonUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B373FC2A9F35EF0028DDD5 /* CommonUtils.swift */; };
@@ -1095,6 +1098,7 @@
 		03B16A302B35D74800E5AB07 /* DisplaySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplaySettingsView.swift; sourceTree = "<group>"; };
 		03B2189E2C3E4E4E001FDE57 /* WidgetSceneSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetSceneSettingsView.swift; sourceTree = "<group>"; };
 		03B21A3A2CD09A5E00E22590 /* PadelScoreboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PadelScoreboardView.swift; sourceTree = "<group>"; };
+		03B34C2B2E20B5BA00A1FC84 /* AudioLevel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioLevel.swift; sourceTree = "<group>"; };
 		03B373F52A9EF98E0028DDD5 /* ControlBarLandscapeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlBarLandscapeView.swift; sourceTree = "<group>"; };
 		03B373F82A9EFB340028DDD5 /* BatteryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatteryView.swift; sourceTree = "<group>"; };
 		03B373FC2A9F35EF0028DDD5 /* CommonUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonUtils.swift; sourceTree = "<group>"; };
@@ -2795,6 +2799,7 @@
 		03B77ADD2B9446470053F106 /* Various */ = {
 			isa = PBXGroup;
 			children = (
+				03B34C2B2E20B5BA00A1FC84 /* AudioLevel.swift */,
 				0339F9142CE1C78800F8D6FC /* AVAudioPCMBuffer+Extension.swift */,
 				03B373FC2A9F35EF0028DDD5 /* CommonUtils.swift */,
 				03DC9DAE2C4F846D005E2104 /* CMBlockBuffer+Extension.swift */,
@@ -3601,6 +3606,7 @@
 			files = (
 				03C656112C02E13000E017B2 /* SampleBufferSender.swift in Sources */,
 				03DC9DB12C4F846D005E2104 /* CMBlockBuffer+Extension.swift in Sources */,
+				03B34C2E2E20B5BD00A1FC84 /* AudioLevel.swift in Sources */,
 				0312E43D2C00F62400C6F878 /* SampleBufferCommon.swift in Sources */,
 				033BB53E2D50A5510071662A /* CMFormatDescription+Extension.swift in Sources */,
 				0312E4422C00F75A00C6F878 /* CommonUtils.swift in Sources */,
@@ -3904,6 +3910,7 @@
 				0359F8E42BD3DA61005BFDA8 /* MpegTsWriter.swift in Sources */,
 				03BC11642AE4BEC400C38FC4 /* Emotes.swift in Sources */,
 				03A983722A9A0659008FF0DB /* TwitchChat.swift in Sources */,
+				03B34C2C2E20B5BD00A1FC84 /* AudioLevel.swift in Sources */,
 				03FBD1812B3B0DE500757CA9 /* RtmpServerClient.swift in Sources */,
 				038605432D80099300B9C3CE /* HeartRateDevicesSettingsView.swift in Sources */,
 				03BA73BB2DDCDA4900075CD6 /* ModelTesla.swift in Sources */,
@@ -4144,6 +4151,7 @@
 				03A707BD2B8F0F61003BB7BE /* CommonUtils.swift in Sources */,
 				03ECDF602B8E738A00BD920E /* Model.swift in Sources */,
 				03A01ACE2B9F738200D20AE3 /* CacheImage.swift in Sources */,
+				03B34C2D2E20B5BD00A1FC84 /* AudioLevel.swift in Sources */,
 				0339F9162CE1C78A00F8D6FC /* AVAudioPCMBuffer+Extension.swift in Sources */,
 				C7E682562BC2E3FE004EB747 /* ThermalStateView.swift in Sources */,
 				03B21A3B2CD09A6200E22590 /* PadelScoreboardView.swift in Sources */,

@@ -17,7 +17,6 @@ let personalHotspotLocalAddress = "172.20.10.1"
 let backgroundColor = Color(white: 0, opacity: 0.4)
 let scoreboardBlueColor = RgbColor(red: 0x0B, green: 0x10, blue: 0xAC).color()
 let scoreboardDarkBlueColor = RgbColor(red: 0, green: 3, blue: 0x5B).color()
-let defaultAudioLevel: Float = -160.0
 
 extension String: @retroactive Error {}
 
@@ -784,43 +783,5 @@ extension KeyedEncodingContainer {
 extension KeyedDecodingContainer {
     func decode<T>(_ key: KeyedDecodingContainer<K>.Key, _ type: T.Type, _ defaultValue: T) -> T where T: Decodable {
         return (try? decode(type, forKey: key)) ?? defaultValue
-    }
-}
-
-let clippingThresholdDb: Float = -1.0
-let redThresholdDb: Float = -8.5
-let yellowThresholdDb: Float = -20
-let zeroThresholdDb: Float = -60
-
-struct CompactAudioLevelIconView: View {
-    let name: String
-    let foregroundColor: Color
-    let backgroundColor: Color
-
-    var body: some View {
-        Image(systemName: name)
-            .frame(width: 17, height: 17)
-            .font(smallFont)
-            .padding([.leading, .trailing], 2)
-            .padding([.bottom], 2)
-            .foregroundColor(foregroundColor)
-            .background(backgroundColor)
-            .cornerRadius(5)
-    }
-}
-
-func compactAudioLevelColors(level: Float) -> (Color, Color) {
-    if level == .infinity {
-        return (.brown, backgroundColor)
-    } else if level > clippingThresholdDb {
-        return (.white, .red)
-    } else if level > redThresholdDb {
-        return (.red, backgroundColor)
-    } else if level > yellowThresholdDb {
-        return (.yellow, backgroundColor)
-    } else if level > zeroThresholdDb {
-        return (.green, backgroundColor)
-    } else {
-        return (.white, backgroundColor)
     }
 }
