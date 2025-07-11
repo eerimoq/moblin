@@ -396,10 +396,10 @@ extension Model {
             return
         }
         netStreamLockQueue.async {
-            mediaProcessor.mixer.video.drawable = self.streamPreviewView
-            mediaProcessor.mixer.video.externalDisplayDrawable = self.externalDisplayStreamPreviewView
+            mediaProcessor.setDrawable(drawable: self.streamPreviewView)
+            mediaProcessor.setExternalDisplayDrawable(drawable: self.externalDisplayStreamPreviewView)
             self.mediaProcessor = mediaProcessor
-            mediaProcessor.mixer.startRunning()
+            mediaProcessor.startRunning()
         }
     }
 

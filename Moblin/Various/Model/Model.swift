@@ -522,7 +522,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     weak var mediaProcessor: MediaProcessor? {
         didSet {
-            oldValue?.mixer.video.drawable = nil
+            oldValue?.setDrawable(drawable: nil)
         }
     }
 

@@ -30,9 +30,9 @@ private class Stream {
 }
 
 final class MediaProcessor: NSObject {
-    let mixer = Mixer()
-    weak var delegate: (any MediaProcessorDelegate)?
+    private let mixer = Mixer()
     private var streams: [Stream] = []
+    weak var delegate: (any MediaProcessorDelegate)?
 
     override init() {
         super.init()
@@ -49,6 +49,10 @@ final class MediaProcessor: NSObject {
         netStreamLockQueue.async {
             self.mixer.video.setFps(fps: value, preferAutoFps: preferAutoFps)
         }
+    }
+
+    func getFps() -> Double {
+        return mixer.video.getFps()
     }
 
     func setColorSpace(colorSpace: AVCaptureColorSpace, onComplete: @escaping () -> Void) {
@@ -239,6 +243,30 @@ final class MediaProcessor: NSObject {
     func stopEncoding() {
         mixer.video.stopEncoding()
         mixer.audio.stopEncoding()
+    }
+
+    func startRunning() {
+        mixer.startRunning()
+    }
+
+    func stopRunning() {
+        mixer.stopRunning()
+    }
+
+    func setDrawable(drawable: PreviewView?) {
+        mixer.video.drawable = drawable
+    }
+
+    func setExternalDisplayDrawable(drawable: PreviewView?) {
+        mixer.video.externalDisplayDrawable = drawable
+    }
+
+    func getAudioEncoders() -> [AudioEncoder] {
+        return mixer.audio.getEncoders()
+    }
+
+    func getVideoEncoders() -> [VideoEncoder] {
+        return mixer.video.getEncoders()
     }
 }
 

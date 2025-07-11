@@ -166,8 +166,8 @@ class RtmpStream {
     }
 
     private func createOnMetaData() -> AsObject {
-        let audioEncoders = mediaProcessor.mixer.audio.getEncoders()
-        let videoEncoders = mediaProcessor.mixer.video.getEncoders()
+        let audioEncoders = mediaProcessor.getAudioEncoders()
+        let videoEncoders = mediaProcessor.getVideoEncoders()
         if audioEncoders.count == 1, videoEncoders.count == 1 {
             return createOnMetaDataLegacy(audioEncoders.first!, videoEncoders.first!)
         } else {
@@ -180,7 +180,7 @@ class RtmpStream {
         let settings = videoEncoder.settings.value
         metadata["width"] = settings.videoSize.width
         metadata["height"] = settings.videoSize.height
-        metadata["framerate"] = mediaProcessor.mixer.video.getFps()
+        metadata["framerate"] = mediaProcessor.getFps()
         switch settings.format {
         case .h264:
             metadata["videocodecid"] = FlvVideoCodec.avc.rawValue
