@@ -40,9 +40,9 @@ let builtinBackCameraId = UUID(uuidString: "00000000-cafe-dead-beef-000000000000
 let builtinFrontCameraId = UUID(uuidString: "00000000-cafe-dead-beef-000000000001")!
 let externalCameraId = UUID(uuidString: "00000000-cafe-dead-beef-000000000002")!
 let screenCaptureCamera = "Screen capture"
-private let backTripleLowEnergyCamera = "Back Triple (low energy)"
-private let backDualLowEnergyCamera = "Back Dual (low energy)"
-private let backWideDualLowEnergyCamera = "Back Wide dual (low energy)"
+private let backTripleLowEnergyCamera = "Back Triple (low power)"
+private let backDualLowEnergyCamera = "Back Dual (low power)"
+private let backWideDualLowEnergyCamera = "Back Wide dual (low power)"
 
 extension Model {
     func setFocusPointOfInterest(focusPoint: CGPoint) {
