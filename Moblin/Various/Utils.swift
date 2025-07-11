@@ -570,6 +570,28 @@ func getCpuUsage() -> Float {
     }.reduce(0, +)
 }
 
+private var previousTaskEnergy: UInt64?
+
+func getTaskPower() -> Float? {
+    var info = task_power_info_v2_data_t()
+    var count = mach_msg_type_number_t(MemoryLayout<task_power_info_v2_data_t>.stride / MemoryLayout<natural_t>.stride)
+    let status = withUnsafeMutablePointer(to: &info) { infoPtr in
+        infoPtr.withMemoryRebound(to: integer_t.self, capacity: Int(count)) { intPtr in
+            task_info(mach_task_self_, task_flavor_t(TASK_POWER_INFO_V2), intPtr, &count)
+        }
+    }
+    guard status == KERN_SUCCESS else {
+        return nil
+    }
+    defer {
+        previousTaskEnergy = info.task_energy
+    }
+    guard let previousTaskEnergy else {
+        return nil
+    }
+    return Float(info.task_energy - previousTaskEnergy) / 1_000_000.0
+}
+
 extension FileManager {
     func ids(directory: String) -> [UUID] {
         var ids: [UUID] = []
