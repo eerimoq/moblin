@@ -28,11 +28,19 @@ enum RtmpConnectionCode: String {
     }
 }
 
+class RtmpStreamWeak {
+    weak var stream: RtmpStream?
+
+    init(stream: RtmpStream) {
+        self.stream = stream
+    }
+}
+
 class RtmpConnection: RtmpEventDispatcher {
     private var uri: URL?
     private(set) var connected = false
     var socket: RtmpSocket!
-    var streams: [RtmpStream] = []
+    weak var stream: RtmpStream?
     private var chunkStreamIdToStreamId: [UInt16: UInt32] = [:]
     var callCompletions: [Int: ([Any?]) -> Void] = [:]
     var windowSizeFromServer: Int64 = 250_000 {
@@ -61,7 +69,7 @@ class RtmpConnection: RtmpEventDispatcher {
 
     deinit {
         timer.stop()
-        streams.removeAll()
+        stream = nil
         removeEventListener(.rtmpStatus, selector: #selector(on(status:)))
     }
 
@@ -132,9 +140,7 @@ class RtmpConnection: RtmpEventDispatcher {
 
     func disconnectInternal() {
         timer.stop()
-        for stream in streams {
-            stream.closeInternal()
-        }
+        stream?.closeInternal()
         socket?.close()
     }
 
@@ -265,9 +271,7 @@ class RtmpConnection: RtmpEventDispatcher {
             guard let self else {
                 return
             }
-            for stream in self.streams {
-                stream.onTimeout()
-            }
+            stream?.onTimeout()
         })
     }
 
@@ -294,7 +298,7 @@ extension RtmpConnection: RtmpSocketDelegate {
     }
 
     func socketUpdateStats(_: RtmpSocket, totalBytesOut: Int64) {
-        streams.first?.info.onWritten(sequence: totalBytesOut)
+        stream?.info.onWritten(sequence: totalBytesOut)
     }
 
     func socketDataReceived(_ socket: RtmpSocket, data: Data) -> Data {

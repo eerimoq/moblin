@@ -72,7 +72,7 @@ class RtmpStream {
     private var audioChunkType: RtmpChunkType = .zero
     private var videoChunkType: RtmpChunkType = .zero
     private var dataTimeStamps: [String: Date] = [:]
-    private weak var rtmpConnection: RtmpConnection?
+    let connection: RtmpConnection
     private var streamKey = ""
 
     // Outbound
@@ -84,11 +84,11 @@ class RtmpStream {
     private let compositionTimeOffset = CMTime(value: 3, timescale: 30).seconds
     private let mediaProcessor: MediaProcessor
 
-    init(mediaProcessor: MediaProcessor, connection: RtmpConnection) {
+    init(mediaProcessor: MediaProcessor) {
         self.mediaProcessor = mediaProcessor
-        rtmpConnection = connection
+        connection = RtmpConnection()
         dispatcher = RtmpEventDispatcher(target: self)
-        connection.streams.append(self)
+        connection.stream = self
         addEventListener(.rtmpStatus, selector: #selector(on(status:)), observer: self)
         connection.addEventListener(.rtmpStatus, selector: #selector(on(status:)), observer: self)
         if connection.connected {
@@ -100,7 +100,7 @@ class RtmpStream {
     deinit {
         mediaProcessor.mixer.stopRunning()
         removeEventListener(.rtmpStatus, selector: #selector(on(status:)), observer: self)
-        rtmpConnection?.removeEventListener(.rtmpStatus, selector: #selector(on(status:)), observer: self)
+        connection.removeEventListener(.rtmpStatus, selector: #selector(on(status:)), observer: self)
     }
 
     func setStreamKey(_ streamKey: String) {
@@ -120,13 +120,10 @@ class RtmpStream {
     }
 
     private func publishInner() {
-        guard let rtmpConnection else {
-            return
-        }
         info.resourceName = streamKey
         let message = RtmpCommandMessage(
             streamId: id,
-            transactionId: rtmpConnection.getNextTransactionId(),
+            transactionId: connection.getNextTransactionId(),
             objectEncoding: .amf0,
             commandName: "publish",
             commandObject: nil,
@@ -137,7 +134,7 @@ class RtmpStream {
             messages.append(message)
         default:
             setReadyState(state: .publish)
-            _ = rtmpConnection.socket.write(chunk: RtmpChunk(message: message))
+            _ = connection.socket.write(chunk: RtmpChunk(message: message))
         }
     }
 
@@ -146,7 +143,7 @@ class RtmpStream {
     }
 
     private func send(handlerName: String, arguments: Any?...) {
-        guard let rtmpConnection = rtmpConnection, readyState == .publishing else {
+        guard readyState == .publishing else {
             return
         }
         let dataWasSent = dataTimeStamps[handlerName] != nil
@@ -164,7 +161,7 @@ class RtmpStream {
                 arguments: arguments
             )
         )
-        let length = rtmpConnection.socket.write(chunk: chunk)
+        let length = connection.socket.write(chunk: chunk)
         dataTimeStamps[handlerName] = .init()
         info.byteCount.mutate { $0 += Int64(length) }
     }
@@ -251,20 +248,17 @@ class RtmpStream {
     }
 
     private func handleOpen() {
-        guard let rtmpConnection else {
-            return
-        }
         info.clear()
         for message in messages {
             message.streamId = id
-            message.transactionId = rtmpConnection.getNextTransactionId()
+            message.transactionId = connection.getNextTransactionId()
             switch message.commandName {
             case "publish":
                 setReadyState(state: .publish)
             default:
                 break
             }
-            _ = rtmpConnection.socket.write(chunk: RtmpChunk(message: message))
+            _ = connection.socket.write(chunk: RtmpChunk(message: message))
         }
         messages.removeAll()
     }
@@ -295,10 +289,7 @@ class RtmpStream {
     }
 
     private func onInternal(event: RtmpEvent) {
-        guard let rtmpConnection,
-              let data = event.data as? AsObject,
-              let code = data["code"] as? String
-        else {
+        guard let data = event.data as? AsObject, let code = data["code"] as? String else {
             return
         }
         logger.info("rtmp: Got event: \(code)")
@@ -306,7 +297,7 @@ class RtmpStream {
         case RtmpConnectionCode.connectSuccess.rawValue:
             setReadyState(state: .initialized)
             sendFCPublish()
-            rtmpConnection.createStream(self)
+            connection.createStream(self)
         case RtmpStreamCode.publishStart.rawValue:
             if readyState != .initialized {
                 setReadyState(state: .publishing)
@@ -317,15 +308,15 @@ class RtmpStream {
     }
 
     private func sendFCPublish() {
-        rtmpConnection?.call("FCPublish", arguments: [streamKey])
+        connection.call("FCPublish", arguments: [streamKey])
     }
 
     private func sendFCUnpublish() {
-        rtmpConnection?.call("FCUnpublish", arguments: [info.resourceName])
+        connection.call("FCUnpublish", arguments: [info.resourceName])
     }
 
     private func sendDeleteStream() {
-        _ = rtmpConnection?.socket.write(chunk: RtmpChunk(message: RtmpCommandMessage(
+        _ = connection.socket.write(chunk: RtmpChunk(message: RtmpCommandMessage(
             streamId: id,
             transactionId: 0,
             objectEncoding: .amf0,
@@ -336,7 +327,7 @@ class RtmpStream {
     }
 
     private func closeStream() {
-        _ = rtmpConnection?.socket.write(chunk: RtmpChunk(
+        _ = connection.socket.write(chunk: RtmpChunk(
             type: .zero,
             chunkStreamId: RtmpChunk.ChunkStreamId.command.rawValue,
             message: RtmpCommandMessage(
@@ -351,10 +342,10 @@ class RtmpStream {
     }
 
     private func handleEncodedAudioBuffer(_ buffer: Data, _ timestamp: UInt32) {
-        guard let rtmpConnection, readyState == .publishing else {
+        guard readyState == .publishing else {
             return
         }
-        let length = rtmpConnection.socket.write(chunk: RtmpChunk(
+        let length = connection.socket.write(chunk: RtmpChunk(
             type: audioChunkType,
             chunkStreamId: FlvTagType.audio.streamId,
             message: RtmpAudioMessage(streamId: id, timestamp: timestamp, payload: buffer)
@@ -364,10 +355,10 @@ class RtmpStream {
     }
 
     private func handleEncodedVideoBuffer(_ buffer: Data, _ timestamp: UInt32) {
-        guard let rtmpConnection, readyState == .publishing else {
+        guard readyState == .publishing else {
             return
         }
-        let length = rtmpConnection.socket.write(chunk: RtmpChunk(
+        let length = connection.socket.write(chunk: RtmpChunk(
             type: videoChunkType,
             chunkStreamId: FlvTagType.video.streamId,
             message: RtmpVideoMessage(streamId: id, timestamp: timestamp, payload: buffer)

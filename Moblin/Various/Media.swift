@@ -39,7 +39,6 @@ protocol MediaDelegate: AnyObject {
 }
 
 final class Media: NSObject {
-    private var rtmpConnection = RtmpConnection()
     private var rtmpStream: RtmpStream?
     private var srtStream: SrtStream?
     private var ristStream: RistStream?
@@ -88,7 +87,6 @@ final class Media: NSObject {
     }
 
     func stopAllNetStreams() {
-        rtmpConnection = RtmpConnection()
         srtStopStream()
         rtmpStopStream()
         ristStopStream()
@@ -110,11 +108,10 @@ final class Media: NSObject {
         rtmpStopStream()
         ristStopStream()
         irlStopStream()
-        rtmpConnection = RtmpConnection()
         let mediaProcessor = MediaProcessor()
         switch proto {
         case .rtmp:
-            rtmpStream = RtmpStream(mediaProcessor: mediaProcessor, connection: rtmpConnection)
+            rtmpStream = RtmpStream(mediaProcessor: mediaProcessor)
             srtStream = nil
             ristStream = nil
             irlStream = nil
@@ -515,7 +512,7 @@ final class Media: NSObject {
                          adaptiveBitrate adaptiveBitrateEnabled: Bool)
     {
         rtmpStream?.setStreamKey(makeRtmpStreamName(url: url))
-        rtmpConnection.addEventListener(
+        rtmpStream?.connection.addEventListener(
             .rtmpStatus,
             selector: #selector(rtmpStatusHandler),
             observer: self
@@ -528,17 +525,17 @@ final class Media: NSObject {
         } else {
             adaptiveBitrate = nil
         }
-        rtmpConnection.connect(makeRtmpUri(url: url))
+        rtmpStream?.connection.connect(makeRtmpUri(url: url))
     }
 
     func rtmpStopStream() {
-        rtmpConnection.removeEventListener(
+        rtmpStream?.connection.removeEventListener(
             .rtmpStatus,
             selector: #selector(rtmpStatusHandler),
             observer: self
         )
         rtmpStream?.close()
-        rtmpConnection.disconnect()
+        rtmpStream?.connection.disconnect()
         adaptiveBitrate = nil
     }
 

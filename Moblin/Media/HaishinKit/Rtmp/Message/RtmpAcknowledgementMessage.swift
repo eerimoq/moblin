@@ -8,11 +8,7 @@ final class RtmpAcknowledgementMessage: RtmpMessage {
     }
 
     override func execute(_ connection: RtmpConnection) {
-        // We only have one stream
-        guard let stream = connection.streams.first else {
-            return
-        }
-        stream.info.onAck(sequence: sequence)
+        connection.stream?.info.onAck(sequence: sequence)
     }
 
     override var encoded: Data {
