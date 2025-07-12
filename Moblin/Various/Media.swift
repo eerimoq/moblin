@@ -527,12 +527,12 @@ final class Media: NSObject {
         } else {
             adaptiveBitrate = nil
         }
-        rtmpStream?.connection.connect(makeRtmpUri(url: url))
+        rtmpStream?.connect(makeRtmpUri(url: url))
         if rtmpStreams.count > 1 {
             for rtmpStream in rtmpStreams.suffix(from: 1) {
                 rtmpStream.setStreamKey(makeRtmpStreamName(url: rtmpStream.url))
                 rtmpStream.addEventListener(.rtmpStatus, selector: #selector(rtmp2StatusHandler), observer: self)
-                rtmpStream.connection.connect(makeRtmpUri(url: rtmpStream.url))
+                rtmpStream.connect(makeRtmpUri(url: rtmpStream.url))
             }
         }
     }
@@ -540,12 +540,12 @@ final class Media: NSObject {
     func rtmpStopStream() {
         rtmpStream?.removeEventListener(.rtmpStatus, observer: self)
         rtmpStream?.close()
-        rtmpStream?.connection.disconnect()
+        rtmpStream?.disconnect()
         if rtmpStreams.count > 1 {
             for rtmpStream in rtmpStreams.suffix(from: 1) {
                 rtmpStream.removeEventListener(.rtmpStatus, observer: self)
                 rtmpStream.close()
-                rtmpStream.connection.disconnect()
+                rtmpStream.disconnect()
             }
         }
         adaptiveBitrate = nil

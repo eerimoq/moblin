@@ -60,7 +60,7 @@ class RtmpStream {
     private var audioChunkType: RtmpChunkType = .zero
     private var videoChunkType: RtmpChunkType = .zero
     private var dataTimeStamps: [String: Date] = [:]
-    let connection: RtmpConnection
+    private let connection: RtmpConnection
     private var streamKey = ""
     var url: String = ""
 
@@ -96,6 +96,14 @@ class RtmpStream {
 
     func setStreamKey(_ streamKey: String) {
         self.streamKey = streamKey
+    }
+
+    func connect(_ url: String) {
+        connection.connect(url)
+    }
+
+    func disconnect() {
+        connection.disconnect()
     }
 
     func publish() {
