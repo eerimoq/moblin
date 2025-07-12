@@ -453,11 +453,11 @@ final class Media: NSObject {
     }
 
     func streamSpeed() -> Int64 {
-        if processor === rtmpStream {
+        if rtmpStream != nil {
             return Int64(8 * (rtmpStream?.info.currentBytesPerSecond ?? 0))
-        } else if processor === srtStream {
+        } else if srtStream != nil {
             return 8 * srtSpeed
-        } else if processor === ristStream {
+        } else if ristStream != nil {
             return Int64(ristStream?.getSpeed() ?? 0)
         } else {
             return 0
