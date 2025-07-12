@@ -59,14 +59,7 @@ struct StreamMultiStreamingSettingsView: View {
                     VStack(alignment: .leading) {
                         Text("Stream to additional destinations directly from this device.")
                         Text("")
-                        Text("⚠️ This will increase bandwidth usage, system load and device heat.")
-                        Text("")
-                        Text("""
-                        ⚠️ Not recommended to use on the road, but only in the comfort of your \
-                        home where internet is good and it's close to a fire extinguisher. 🤣
-                        """)
-                        Text("")
-                        Text("YOU HAVE BEEN WARNED!!!")
+                        Text("⚠️ This will increase network bandwidth usage, system load and device heat.")
                     }
                 }
                 Section {
