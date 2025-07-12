@@ -216,7 +216,7 @@ struct StreamMultiStreamingUrlView: View {
             return
         }
         value = cleanUrl(url: value)
-        if let message = isValidUrl(url: value) {
+        if let message = isValidUrl(url: value, allowedSchemes: ["rtmp", "rtmps"]) {
             error = message
             return
         }

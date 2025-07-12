@@ -15,7 +15,6 @@ private struct DestinationView: View {
                     }
                 }
                 Section {
-                    Toggle("Enabled", isOn: $destination.enabled)
                     NavigationLink {
                         StreamMultiStreamingUrlView(stream: stream, destination: destination, value: destination.url)
                     } label: {
@@ -25,11 +24,13 @@ private struct DestinationView: View {
             }
             .navigationTitle("Destination")
         } label: {
-            HStack {
-                Text("Name")
-                Spacer()
-                Text(destination.name)
-                    .foregroundColor(.gray)
+            Toggle(isOn: $destination.enabled) {
+                HStack {
+                    Text("Destination")
+                    Spacer()
+                    Text(destination.name)
+                        .foregroundColor(.gray)
+                }
             }
         }
     }

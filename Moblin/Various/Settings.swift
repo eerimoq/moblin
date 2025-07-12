@@ -2,6 +2,7 @@ import AVFoundation
 import SwiftUI
 
 let defaultStreamUrl = "srt://my_public_ip:4000"
+let defaultRtmpStreamUrl = "rtmp://my_public_ip:1935/live/foobar"
 let defaultQuickButtonColor = RgbColor(red: 255 / 4, green: 255 / 4, blue: 255 / 4)
 let defaultStreamButtonColor = RgbColor(red: 255, green: 59, blue: 48)
 let defaultSrtLatency: Int32 = 3000
@@ -398,8 +399,8 @@ class SettingsStreamTwitchReward: Codable, Identifiable {
 class SettingsStreamMultiStreamingDestination: Codable, Identifiable, ObservableObject {
     var id: UUID = .init()
     @Published var name: String = "My destination"
-    @Published var url: String = defaultStreamUrl
-    @Published var enabled: Bool = true
+    @Published var url: String = defaultRtmpStreamUrl
+    @Published var enabled: Bool = false
 
     init() {}
 
@@ -419,8 +420,8 @@ class SettingsStreamMultiStreamingDestination: Codable, Identifiable, Observable
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         name = container.decode(.name, String.self, "My destination")
-        url = container.decode(.url, String.self, defaultStreamUrl)
-        enabled = container.decode(.enabled, Bool.self, true)
+        url = container.decode(.url, String.self, defaultRtmpStreamUrl)
+        enabled = container.decode(.enabled, Bool.self, false)
     }
 
     func clone() -> SettingsStreamMultiStreamingDestination {
