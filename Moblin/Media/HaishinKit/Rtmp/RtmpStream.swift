@@ -38,6 +38,11 @@ enum RtmpStreamCode: String {
     case publishStart = "NetStream.Publish.Start"
 }
 
+private let aac = FlvAudioCodec.aac.rawValue << 4
+    | FlvSoundRate.kHz44.rawValue << 2
+    | FlvSoundSize.snd16bit.rawValue << 1
+    | FlvSoundType.stereo.rawValue
+
 class RtmpStream {
     enum ReadyState: UInt8 {
         case initialized
@@ -49,11 +54,6 @@ class RtmpStream {
     var info = RtmpStreamInfo()
     var id: UInt32 = 0
     private var readyState: ReadyState = .initialized
-
-    static let aac = FlvAudioCodec.aac.rawValue << 4
-        | FlvSoundRate.kHz44.rawValue << 2
-        | FlvSoundSize.snd16bit.rawValue << 1
-        | FlvSoundType.stereo.rawValue
 
     private var messages: [RtmpCommandMessage] = []
     private var startedAt = Date()
@@ -375,7 +375,7 @@ class RtmpStream {
     }
 
     private func audioCodecOutputFormatInner(_ format: AVAudioFormat) {
-        var buffer = Data([RtmpStream.aac, FlvAacPacketType.seq.rawValue])
+        var buffer = Data([aac, FlvAacPacketType.seq.rawValue])
         buffer.append(contentsOf: MpegTsAudioConfig(formatDescription: format.formatDescription).bytes)
         handleEncodedAudioBuffer(buffer, 0)
     }
@@ -391,7 +391,7 @@ class RtmpStream {
         guard let audioBuffer = buffer as? AVAudioCompressedBuffer, delta >= 0 else {
             return
         }
-        var buffer = Data([RtmpStream.aac, FlvAacPacketType.raw.rawValue])
+        var buffer = Data([aac, FlvAacPacketType.raw.rawValue])
         buffer.append(
             audioBuffer.data.assumingMemoryBound(to: UInt8.self),
             count: Int(audioBuffer.byteLength)
