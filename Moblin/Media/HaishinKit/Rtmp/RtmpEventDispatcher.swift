@@ -26,30 +26,3 @@ class RtmpEvent {
         self.data = data
     }
 }
-
-class RtmpEventDispatcher {
-    func addEventListener(_ type: RtmpEvent.Name, selector: Selector, observer: AnyObject) {
-        NotificationCenter.default.addObserver(
-            observer,
-            selector: selector,
-            name: Notification.Name(rawValue: type.rawValue),
-            object: self
-        )
-    }
-
-    func removeEventListener(_ type: RtmpEvent.Name, selector _: Selector, observer: AnyObject) {
-        NotificationCenter.default.removeObserver(
-            observer,
-            name: Notification.Name(rawValue: type.rawValue),
-            object: self
-        )
-    }
-
-    func post(event: RtmpEvent) {
-        NotificationCenter.default.post(
-            name: Notification.Name(rawValue: event.type.rawValue),
-            object: self,
-            userInfo: ["event": event]
-        )
-    }
-}

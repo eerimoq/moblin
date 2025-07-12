@@ -36,7 +36,7 @@ class RtmpStreamWeak {
     }
 }
 
-class RtmpConnection: RtmpEventDispatcher {
+class RtmpConnection {
     private var uri: URL?
     private(set) var connected = false
     var socket: RtmpSocket!
@@ -62,8 +62,7 @@ class RtmpConnection: RtmpEventDispatcher {
     private var currentChunk: RtmpChunk?
     private var fragmentedChunks: [UInt16: RtmpChunk] = [:]
 
-    override init() {
-        super.init()
+    init() {
         addEventListener(.rtmpStatus, selector: #selector(on(status:)), observer: self)
     }
 
@@ -127,7 +126,7 @@ class RtmpConnection: RtmpEventDispatcher {
         guard let uri = URL(string: url),
               let scheme = uri.scheme,
               let host = uri.host,
-              !connected && supportedProtocols.contains(scheme)
+              !connected, supportedProtocols.contains(scheme)
         else {
             return
         }
@@ -287,6 +286,31 @@ class RtmpConnection: RtmpEventDispatcher {
         messages.removeAll()
         callCompletions.removeAll()
         fragmentedChunks.removeAll()
+    }
+
+    func addEventListener(_ type: RtmpEvent.Name, selector: Selector, observer: AnyObject) {
+        NotificationCenter.default.addObserver(
+            observer,
+            selector: selector,
+            name: Notification.Name(rawValue: type.rawValue),
+            object: self
+        )
+    }
+
+    func removeEventListener(_ type: RtmpEvent.Name, selector _: Selector, observer: AnyObject) {
+        NotificationCenter.default.removeObserver(
+            observer,
+            name: Notification.Name(rawValue: type.rawValue),
+            object: self
+        )
+    }
+
+    private func post(event: RtmpEvent) {
+        NotificationCenter.default.post(
+            name: Notification.Name(rawValue: event.type.rawValue),
+            object: self,
+            userInfo: ["event": event]
+        )
     }
 }
 
