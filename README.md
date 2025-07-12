@@ -226,6 +226,7 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
 - Show video on external dispaly. Aka clean HDMI out.
 - Basic VTuber and PNGTuber.
 - Auto scene switcher.
+- RTMP(S) multi streaming.
 
 ## Apple Watch companion app
 
