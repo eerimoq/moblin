@@ -51,18 +51,10 @@ class RtmpStream {
     var id: UInt32 = 0
     private var readyState: ReadyState = .initialized
 
-    func setReadyState(state: ReadyState) {
-        guard state != readyState else {
-            return
-        }
-        let oldState = readyState
-        readyState = state
-        logger.info("rtmp: Settings stream state \(oldState) -> \(state)")
-        didChangeReadyState(state, oldReadyState: oldState)
-    }
-
-    static let aac = FlvAudioCodec.aac.rawValue << 4 | FlvSoundRate.kHz44.rawValue << 2 | FlvSoundSize
-        .snd16bit.rawValue << 1 | FlvSoundType.stereo.rawValue
+    static let aac = FlvAudioCodec.aac.rawValue << 4
+        | FlvSoundRate.kHz44.rawValue << 2
+        | FlvSoundSize.snd16bit.rawValue << 1
+        | FlvSoundType.stereo.rawValue
 
     private var messages: [RtmpCommandMessage] = []
     private var startedAt = Date()
@@ -72,6 +64,7 @@ class RtmpStream {
     private var dataTimeStamps: [String: Date] = [:]
     let connection: RtmpConnection
     private var streamKey = ""
+    var url: String = ""
 
     // Outbound
     private var baseTimeStamp = -1.0
@@ -81,7 +74,6 @@ class RtmpStream {
     private var prevRebasedVideoTimeStamp = -1.0
     private let compositionTimeOffset = CMTime(value: 3, timescale: 30).seconds
     private let processor: Processor
-    var url: String = ""
 
     init(processor: Processor) {
         self.processor = processor
@@ -95,6 +87,16 @@ class RtmpStream {
     deinit {
         removeEventListener(.rtmpStatus, selector: #selector(on(status:)), observer: self)
         connection.removeEventListener(.rtmpStatus, selector: #selector(on(status:)), observer: self)
+    }
+
+    func setReadyState(state: ReadyState) {
+        guard state != readyState else {
+            return
+        }
+        let oldState = readyState
+        readyState = state
+        logger.info("rtmp: Settings stream state \(oldState) -> \(state)")
+        didChangeReadyState(state, oldReadyState: oldState)
     }
 
     func setStreamKey(_ streamKey: String) {
