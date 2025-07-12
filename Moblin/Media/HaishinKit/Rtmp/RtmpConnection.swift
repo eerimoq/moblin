@@ -64,13 +64,13 @@ class RtmpConnection: RtmpEventDispatcher {
 
     override init() {
         super.init()
-        addEventListener(.rtmpStatus, selector: #selector(on(status:)))
+        addEventListener(.rtmpStatus, selector: #selector(on(status:)), observer: self)
     }
 
     deinit {
         timer.stop()
         stream = nil
-        removeEventListener(.rtmpStatus, selector: #selector(on(status:)))
+        removeEventListener(.rtmpStatus, selector: #selector(on(status:)), observer: self)
     }
 
     func connect(_ url: String) {

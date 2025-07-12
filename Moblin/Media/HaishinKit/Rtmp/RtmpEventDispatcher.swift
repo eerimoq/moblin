@@ -1,10 +1,5 @@
 import Foundation
 
-private protocol RtmpEventDispatcherConvertible: AnyObject {
-    func addEventListener(_ type: RtmpEvent.Name, selector: Selector, observer: AnyObject?)
-    func removeEventListener(_ type: RtmpEvent.Name, selector: Selector, observer: AnyObject?)
-}
-
 class RtmpEvent {
     struct Name: RawRepresentable, ExpressibleByStringLiteral {
         static let rtmpStatus: Name = "rtmpStatus"
@@ -32,21 +27,21 @@ class RtmpEvent {
     }
 }
 
-class RtmpEventDispatcher: RtmpEventDispatcherConvertible {
+class RtmpEventDispatcher {
     init() {}
 
-    func addEventListener(_ type: RtmpEvent.Name, selector: Selector, observer: AnyObject? = nil) {
+    func addEventListener(_ type: RtmpEvent.Name, selector: Selector, observer: AnyObject) {
         NotificationCenter.default.addObserver(
-            observer ?? self,
+            observer,
             selector: selector,
             name: Notification.Name(rawValue: type.rawValue),
             object: self
         )
     }
 
-    func removeEventListener(_ type: RtmpEvent.Name, selector _: Selector, observer: AnyObject? = nil) {
+    func removeEventListener(_ type: RtmpEvent.Name, selector _: Selector, observer: AnyObject) {
         NotificationCenter.default.removeObserver(
-            observer ?? self,
+            observer,
             name: Notification.Name(rawValue: type.rawValue),
             object: self
         )
