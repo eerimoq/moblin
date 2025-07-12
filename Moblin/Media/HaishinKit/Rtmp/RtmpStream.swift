@@ -284,7 +284,6 @@ class RtmpStream {
         guard let data = event.data as? AsObject, let code = data["code"] as? String else {
             return
         }
-        logger.info("rtmp: Got connection event: \(code)")
         switch code {
         case RtmpConnectionCode.connectSuccess.rawValue:
             setReadyState(state: .initialized)

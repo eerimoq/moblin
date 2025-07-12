@@ -176,7 +176,6 @@ class RtmpConnection {
         guard let data = event.data as? AsObject, let code = data["code"] as? String else {
             return
         }
-        logger.info("xxx rtmp \(code)")
         switch RtmpConnectionCode(rawValue: code) {
         case .connectSuccess:
             handleConnectSuccess()
@@ -377,7 +376,7 @@ extension RtmpConnection: RtmpSocketDelegate {
         return Data()
     }
 
-    func socketDispatch(_: RtmpSocket, event: RtmpEvent) {
+    func socketPost(_: RtmpSocket, event: RtmpEvent) {
         post(event: event)
     }
 }
