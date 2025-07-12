@@ -91,7 +91,22 @@ class RtmpStream {
         let oldState = readyState
         readyState = state
         logger.info("rtmp: Settings stream state \(oldState) -> \(state)")
-        didChangeReadyState(state, oldReadyState: oldState)
+        if oldState == .publishing {
+            sendFCUnpublish()
+            sendDeleteStream()
+            closeStream()
+            processor.stopEncoding(self)
+        }
+        switch state {
+        case .open:
+            handleOpen()
+        case .publish:
+            handlePublish()
+        case .publishing:
+            handlePublishing()
+        default:
+            break
+        }
     }
 
     func setStreamKey(_ streamKey: String) {
@@ -234,25 +249,6 @@ class RtmpStream {
         // }
         // metadata["videoTrackIdInfoMap"] = videoTrackIdInfoMap
         return metadata
-    }
-
-    private func didChangeReadyState(_ readyState: ReadyState, oldReadyState: ReadyState) {
-        if oldReadyState == .publishing {
-            sendFCUnpublish()
-            sendDeleteStream()
-            closeStream()
-            processor.stopEncoding(self)
-        }
-        switch readyState {
-        case .open:
-            handleOpen()
-        case .publish:
-            handlePublish()
-        case .publishing:
-            handlePublishing()
-        default:
-            break
-        }
     }
 
     private func handleOpen() {
