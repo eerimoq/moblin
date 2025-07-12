@@ -88,11 +88,35 @@ class MoblinQuickButtons: Codable {
     var buttons: [MoblinSettingsButton]?
 }
 
+class MoblinSettingsRemoteControlServerRelay: Codable, ObservableObject {
+    var enabled: Bool
+    var baseUrl: String
+    var bridgeId: String
+}
+
+class MoblinSettingsRemoteControlAssistant: Codable {
+    var enabled: Bool
+    var port: UInt16
+    var relay: MoblinSettingsRemoteControlServerRelay?
+}
+
+class MoblinSettingsRemoteControlStreamer: Codable {
+    var enabled: Bool
+    var url: String
+}
+
+class MoblinSettingsRemoteControl: Codable {
+    var assistant: MoblinSettingsRemoteControlAssistant?
+    var streamer: MoblinSettingsRemoteControlStreamer?
+    var password: String
+}
+
 class MoblinSettingsUrl: Codable {
     // The last enabled stream will be selected (if any).
     var streams: [MoblinSettingsUrlStream]?
     var quickButtons: MoblinQuickButtons?
     var webBrowser: MoblinSettingsWebBrowser?
+    var remoteControl: MoblinSettingsRemoteControl?
 
     func toString() throws -> String {
         let encoder = JSONEncoder()
