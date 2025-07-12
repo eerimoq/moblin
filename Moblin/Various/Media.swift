@@ -117,7 +117,7 @@ final class Media: NSObject {
         switch proto {
         case .rtmp:
             rtmpStreams.append(RtmpStream(processor: processor))
-            for destination in destinations {
+            for destination in destinations where destination.enabled {
                 let rtmpStream = RtmpStream(processor: processor)
                 rtmpStream.url = destination.url
                 rtmpStreams.append(rtmpStream)

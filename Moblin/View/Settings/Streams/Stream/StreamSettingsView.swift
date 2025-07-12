@@ -53,10 +53,7 @@ struct StreamSettingsView: View {
             }
             Section {
                 NavigationLink {
-                    StreamUrlSettingsView(
-                        stream: stream,
-                        value: stream.url
-                    )
+                    StreamUrlSettingsView(stream: stream, value: stream.url)
                 } label: {
                     TextItemView(name: String(localized: "URL"), value: schemeAndAddress(url: stream.url))
                 }
@@ -133,9 +130,9 @@ struct StreamSettingsView: View {
                             Text("RIST")
                         }
                     }
-                    if false {
+                    if true {
                         NavigationLink {
-                            StreamMultiStreamingSettingsView(multiStreaming: stream.multiStreaming)
+                            StreamMultiStreamingSettingsView(stream: stream, multiStreaming: stream.multiStreaming)
                         } label: {
                             Text("Multi streaming")
                         }

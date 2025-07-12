@@ -395,12 +395,37 @@ class SettingsStreamTwitchReward: Codable, Identifiable {
     var alert: SettingsWidgetAlertsAlert = .init()
 }
 
-class SettingsStreamMultiStreamingDestination: Codable, Identifiable {
+class SettingsStreamMultiStreamingDestination: Codable, Identifiable, ObservableObject {
     var id: UUID = .init()
-    var url: String = defaultStreamUrl
+    @Published var name: String = "My destination"
+    @Published var url: String = defaultStreamUrl
+    @Published var enabled: Bool = true
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case name,
+             url,
+             enabled
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.name, name)
+        try container.encode(.url, url)
+        try container.encode(.enabled, enabled)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        name = container.decode(.name, String.self, "My destination")
+        url = container.decode(.url, String.self, defaultStreamUrl)
+        enabled = container.decode(.enabled, Bool.self, true)
+    }
 
     func clone() -> SettingsStreamMultiStreamingDestination {
         let new = SettingsStreamMultiStreamingDestination()
+        new.name = name
         new.url = url
         return new
     }
