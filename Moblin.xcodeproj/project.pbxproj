@@ -227,7 +227,7 @@
 		0359F8E52BD3DA61005BFDA8 /* Processor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F84C2BD3DA5F005BFDA8 /* Processor.swift */; };
 		0359F8E72BD3DA61005BFDA8 /* Amf0Serializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F84F2BD3DA5F005BFDA8 /* Amf0Serializer.swift */; };
 		0359F8E92BD3DA61005BFDA8 /* AmfFoundation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8512BD3DA5F005BFDA8 /* AmfFoundation.swift */; };
-		0359F8EA2BD3DA61005BFDA8 /* RtmpEventDispatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8522BD3DA5F005BFDA8 /* RtmpEventDispatcher.swift */; };
+		0359F8EA2BD3DA61005BFDA8 /* RtmpEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8522BD3DA5F005BFDA8 /* RtmpEvent.swift */; };
 		0359F8EB2BD3DA61005BFDA8 /* RtmpChunk.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8532BD3DA5F005BFDA8 /* RtmpChunk.swift */; };
 		0359F8EC2BD3DA61005BFDA8 /* RtmpConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8542BD3DA5F005BFDA8 /* RtmpConnection.swift */; };
 		0359F8ED2BD3DA61005BFDA8 /* RtmpHandshake.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8552BD3DA5F005BFDA8 /* RtmpHandshake.swift */; };
@@ -870,7 +870,7 @@
 		0359F84C2BD3DA5F005BFDA8 /* Processor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Processor.swift; sourceTree = "<group>"; };
 		0359F84F2BD3DA5F005BFDA8 /* Amf0Serializer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Amf0Serializer.swift; sourceTree = "<group>"; };
 		0359F8512BD3DA5F005BFDA8 /* AmfFoundation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AmfFoundation.swift; sourceTree = "<group>"; };
-		0359F8522BD3DA5F005BFDA8 /* RtmpEventDispatcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RtmpEventDispatcher.swift; sourceTree = "<group>"; };
+		0359F8522BD3DA5F005BFDA8 /* RtmpEvent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RtmpEvent.swift; sourceTree = "<group>"; };
 		0359F8532BD3DA5F005BFDA8 /* RtmpChunk.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RtmpChunk.swift; sourceTree = "<group>"; };
 		0359F8542BD3DA5F005BFDA8 /* RtmpConnection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RtmpConnection.swift; sourceTree = "<group>"; };
 		0359F8552BD3DA5F005BFDA8 /* RtmpHandshake.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RtmpHandshake.swift; sourceTree = "<group>"; };
@@ -1981,7 +1981,7 @@
 				03C357402D081CD700B8B29F /* Message */,
 				0359F8532BD3DA5F005BFDA8 /* RtmpChunk.swift */,
 				0359F8542BD3DA5F005BFDA8 /* RtmpConnection.swift */,
-				0359F8522BD3DA5F005BFDA8 /* RtmpEventDispatcher.swift */,
+				0359F8522BD3DA5F005BFDA8 /* RtmpEvent.swift */,
 				0359F8552BD3DA5F005BFDA8 /* RtmpHandshake.swift */,
 				0359F8582BD3DA5F005BFDA8 /* RtmpObjectEncoding.swift */,
 				0359F85A2BD3DA5F005BFDA8 /* RtmpSocket.swift */,
@@ -3634,7 +3634,7 @@
 				03BC90B02BD580E300529987 /* StreamWizardNetworkSetupMyServersSrtSettingsView.swift in Sources */,
 				03AD440A2B78A8A700B1B9B9 /* StreamButtonsSettingsView.swift in Sources */,
 				03A9836B2A9A05D7008FF0DB /* StreamOverlayView.swift in Sources */,
-				0359F8EA2BD3DA61005BFDA8 /* RtmpEventDispatcher.swift in Sources */,
+				0359F8EA2BD3DA61005BFDA8 /* RtmpEvent.swift in Sources */,
 				038F03942DE426E900A72CA2 /* Detection.swift in Sources */,
 				03DBD1032B300D55004B0BE6 /* StreamWizardNetworkSetupBelaboxSettingsView.swift in Sources */,
 				038F03962DE87F5900A72CA2 /* PngTuberEffect.swift in Sources */,
