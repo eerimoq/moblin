@@ -130,12 +130,10 @@ struct StreamSettingsView: View {
                             Text("RIST")
                         }
                     }
-                    if true {
-                        NavigationLink {
-                            StreamMultiStreamingSettingsView(stream: stream, multiStreaming: stream.multiStreaming)
-                        } label: {
-                            Text("Multi streaming")
-                        }
+                    NavigationLink {
+                        StreamMultiStreamingSettingsView(stream: stream, multiStreaming: stream.multiStreaming)
+                    } label: {
+                        Text("Multi streaming")
                     }
                 }
             } header: {
