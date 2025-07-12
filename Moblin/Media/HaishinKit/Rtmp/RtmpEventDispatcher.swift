@@ -28,8 +28,6 @@ class RtmpEvent {
 }
 
 class RtmpEventDispatcher {
-    init() {}
-
     func addEventListener(_ type: RtmpEvent.Name, selector: Selector, observer: AnyObject) {
         NotificationCenter.default.addObserver(
             observer,
