@@ -63,13 +63,13 @@ class RtmpConnection {
     private var fragmentedChunks: [UInt16: RtmpChunk] = [:]
 
     init() {
-        addEventListener(.rtmpStatus, selector: #selector(on(status:)), observer: self)
+        addEventListener(.rtmpStatus, selector: #selector(on), observer: self)
     }
 
     deinit {
         timer.stop()
         stream = nil
-        removeEventListener(.rtmpStatus, selector: #selector(on(status:)), observer: self)
+        removeEventListener(.rtmpStatus, selector: #selector(on), observer: self)
     }
 
     func connect(_ url: String) {
