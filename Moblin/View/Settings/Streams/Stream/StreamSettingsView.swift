@@ -122,11 +122,7 @@ struct StreamSettingsView: View {
                         } label: {
                             Text("RTMP")
                         }
-                        NavigationLink {
-                            StreamMultiStreamingSettingsView(stream: stream, multiStreaming: stream.multiStreaming)
-                        } label: {
-                            Text("Multi streaming")
-                        }
+                        StreamMultiStreamingSettingsView(stream: stream, multiStreaming: stream.multiStreaming)
                     }
                     if stream.getProtocol() == .rist {
                         NavigationLink {

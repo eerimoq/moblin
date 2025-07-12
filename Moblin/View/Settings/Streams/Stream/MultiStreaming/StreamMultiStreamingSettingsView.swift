@@ -47,44 +47,58 @@ struct StreamMultiStreamingSettingsView: View {
     @ObservedObject var stream: SettingsStream
     @ObservedObject var multiStreaming: SettingsStreamMultiStreaming
 
+    private func numberOfEnabledDestinations() -> String {
+        let count = multiStreaming.destinations.filter { $0.enabled }.count
+        return String(count)
+    }
+
     var body: some View {
-        Form {
-            Section {
-                VStack(alignment: .leading) {
-                    Text("Stream to additional destinations directly from this device.")
-                    Text("")
-                    Text("⚠️ This will increase bandwidth usage, system load and device heat.")
-                    Text("")
-                    Text("""
-                    ⚠️ Not recommended to use on the road, but only in the comfort of your \
-                    home where internet is good and it's close to a fire extinguisher. 🤣
-                    """)
-                    Text("")
-                    Text("YOU HAVE BEEN WARNED!!!")
+        NavigationLink {
+            Form {
+                Section {
+                    VStack(alignment: .leading) {
+                        Text("Stream to additional destinations directly from this device.")
+                        Text("")
+                        Text("⚠️ This will increase bandwidth usage, system load and device heat.")
+                        Text("")
+                        Text("""
+                        ⚠️ Not recommended to use on the road, but only in the comfort of your \
+                        home where internet is good and it's close to a fire extinguisher. 🤣
+                        """)
+                        Text("")
+                        Text("YOU HAVE BEEN WARNED!!!")
+                    }
+                }
+                Section {
+                    List {
+                        let items = ForEach(multiStreaming.destinations) {
+                            DestinationView(stream: stream, destination: $0)
+                        }
+                        if stream.enabled && (model.isLive || model.isRecording) {
+                            items
+                        } else {
+                            items
+                                .onDelete {
+                                    multiStreaming.destinations.remove(atOffsets: $0)
+                                }
+                        }
+                    }
+                    CreateButtonView {
+                        multiStreaming.destinations.append(SettingsStreamMultiStreamingDestination())
+                    }
+                    .disabled(stream.enabled && (model.isLive || model.isRecording))
+                } footer: {
+                    SwipeLeftToDeleteHelpView(kind: String(localized: "a destination"))
                 }
             }
-            Section {
-                List {
-                    let items = ForEach(multiStreaming.destinations) {
-                        DestinationView(stream: stream, destination: $0)
-                    }
-                    if stream.enabled && (model.isLive || model.isRecording) {
-                        items
-                    } else {
-                        items
-                            .onDelete {
-                                multiStreaming.destinations.remove(atOffsets: $0)
-                            }
-                    }
-                }
-                CreateButtonView {
-                    multiStreaming.destinations.append(SettingsStreamMultiStreamingDestination())
-                }
-                .disabled(stream.enabled && (model.isLive || model.isRecording))
-            } footer: {
-                SwipeLeftToDeleteHelpView(kind: String(localized: "a destination"))
+            .navigationTitle("Multi streaming")
+        } label: {
+            HStack {
+                Text("Multi streaming")
+                Spacer()
+                Text(numberOfEnabledDestinations())
+                    .foregroundColor(.gray)
             }
         }
-        .navigationTitle("Multi streaming")
     }
 }
