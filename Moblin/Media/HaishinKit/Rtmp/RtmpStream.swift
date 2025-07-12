@@ -485,8 +485,8 @@ extension RtmpStream: AudioCodecDelegate {
 }
 
 extension RtmpStream: VideoEncoderDelegate {
-    func videoEncoderOutputFormat(_ codec: VideoEncoder, _ formatDescription: CMFormatDescription) {
-        let format = codec.settings.value.format
+    func videoEncoderOutputFormat(_ encoder: VideoEncoder, _ formatDescription: CMFormatDescription) {
+        let format = encoder.settings.value.format
         processorControlQueue.async {
             self.videoCodecOutputFormatInner(format, formatDescription)
         }

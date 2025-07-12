@@ -314,7 +314,7 @@ class RtmpConnection {
 }
 
 extension RtmpConnection: RtmpSocketDelegate {
-    func socketReadyStateChanged(_: RtmpSocket, readyState: RtmpSocketReadyState) {
+    func socketReadyStateChanged(readyState: RtmpSocketReadyState) {
         switch readyState {
         case .handshakeDone:
             handleHandshakeDone()
@@ -325,7 +325,7 @@ extension RtmpConnection: RtmpSocketDelegate {
         }
     }
 
-    func socketUpdateStats(_: RtmpSocket, totalBytesOut: Int64) {
+    func socketUpdateStats(totalBytesOut: Int64) {
         stream?.info.onWritten(sequence: totalBytesOut)
     }
 
@@ -376,7 +376,7 @@ extension RtmpConnection: RtmpSocketDelegate {
         return Data()
     }
 
-    func socketPost(_: RtmpSocket, event: RtmpEvent) {
+    func socketPost(event: RtmpEvent) {
         post(event: event)
     }
 }

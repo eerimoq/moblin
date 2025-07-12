@@ -27,11 +27,11 @@ class MultiTrackVideoEncoder {
 
 // periphery:ignore
 extension MultiTrackVideoEncoder: VideoEncoderDelegate {
-    func videoEncoderOutputFormat(_ codec: VideoEncoder, _ formatDescription: CMFormatDescription) {
-        logger.info("multi-track-video-encoder: Format for \(codec) \(formatDescription)")
+    func videoEncoderOutputFormat(_ encoder: VideoEncoder, _ formatDescription: CMFormatDescription) {
+        logger.info("multi-track-video-encoder: Format for \(encoder) \(formatDescription)")
     }
 
-    func videoEncoderOutputSampleBuffer(_ codec: VideoEncoder, _ sampleBuffer: CMSampleBuffer) {
-        logger.info("multi-track-video-encoder: Frame for \(codec) \(sampleBuffer.presentationTimeStamp)")
+    func videoEncoderOutputSampleBuffer(_ encoder: VideoEncoder, _ sampleBuffer: CMSampleBuffer) {
+        logger.info("multi-track-video-encoder: Frame for \(encoder) \(sampleBuffer.presentationTimeStamp)")
     }
 }

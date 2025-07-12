@@ -11,9 +11,9 @@ enum RtmpSocketReadyState {
 
 protocol RtmpSocketDelegate: AnyObject {
     func socketDataReceived(_ socket: RtmpSocket, data: Data) -> Data
-    func socketReadyStateChanged(_ socket: RtmpSocket, readyState: RtmpSocketReadyState)
-    func socketUpdateStats(_ socket: RtmpSocket, totalBytesOut: Int64)
-    func socketPost(_ socket: RtmpSocket, event: RtmpEvent)
+    func socketReadyStateChanged(readyState: RtmpSocketReadyState)
+    func socketUpdateStats(totalBytesOut: Int64)
+    func socketPost(event: RtmpEvent)
 }
 
 final class RtmpSocket {
@@ -108,7 +108,7 @@ final class RtmpSocket {
             } else {
                 data = RtmpConnectionCode.connectFailed.eventData()
             }
-            delegate?.socketPost(self, event: RtmpEvent(type: .rtmpStatus, data: data))
+            delegate?.socketPost(event: RtmpEvent(type: .rtmpStatus, data: data))
         }
         timeoutHandler?.cancel()
     }
@@ -126,7 +126,7 @@ final class RtmpSocket {
         }
         logger.info("rtmp: Setting socket state \(readyState) -> \(state)")
         readyState = state
-        delegate?.socketReadyStateChanged(self, readyState: readyState)
+        delegate?.socketReadyStateChanged(readyState: readyState)
     }
 
     private func write(data: Data) {
@@ -139,7 +139,7 @@ final class RtmpSocket {
                 return
             }
             self.totalBytesOut.mutate { $0 += Int64(data.count) }
-            self.delegate?.socketUpdateStats(self, totalBytesOut: self.totalBytesOut.value)
+            self.delegate?.socketUpdateStats(totalBytesOut: self.totalBytesOut.value)
         })
     }
 

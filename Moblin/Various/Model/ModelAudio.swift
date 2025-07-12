@@ -340,7 +340,6 @@ extension Model {
                 }
             }
         } else {
-            // logger.info("xxx ACTIVE: \(getActiveAudioSessionMic()?.id)")
             if let activeMic = getActiveAudioSessionMic(),
                getMicPriority(mic: activeMic) > getMicPriority(mic: mic.current)
             {

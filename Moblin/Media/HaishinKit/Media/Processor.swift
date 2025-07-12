@@ -316,15 +316,15 @@ extension Processor: AudioCodecDelegate {
 }
 
 extension Processor: VideoEncoderDelegate {
-    func videoEncoderOutputFormat(_ codec: VideoEncoder, _ formatDescription: CMFormatDescription) {
+    func videoEncoderOutputFormat(_ encoder: VideoEncoder, _ formatDescription: CMFormatDescription) {
         for stream in streams {
-            stream.delegate?.videoEncoderOutputFormat(codec, formatDescription)
+            stream.delegate?.videoEncoderOutputFormat(encoder, formatDescription)
         }
     }
 
-    func videoEncoderOutputSampleBuffer(_ codec: VideoEncoder, _ sampleBuffer: CMSampleBuffer) {
+    func videoEncoderOutputSampleBuffer(_ encoder: VideoEncoder, _ sampleBuffer: CMSampleBuffer) {
         for stream in streams {
-            stream.delegate?.videoEncoderOutputSampleBuffer(codec, sampleBuffer)
+            stream.delegate?.videoEncoderOutputSampleBuffer(encoder, sampleBuffer)
         }
     }
 }

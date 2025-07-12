@@ -4,8 +4,8 @@ import VideoToolbox
 var numberOfFailedEncodings = 0
 
 protocol VideoEncoderDelegate: AnyObject {
-    func videoEncoderOutputFormat(_ codec: VideoEncoder, _ formatDescription: CMFormatDescription)
-    func videoEncoderOutputSampleBuffer(_ codec: VideoEncoder, _ sampleBuffer: CMSampleBuffer)
+    func videoEncoderOutputFormat(_ encoder: VideoEncoder, _ formatDescription: CMFormatDescription)
+    func videoEncoderOutputSampleBuffer(_ encoder: VideoEncoder, _ sampleBuffer: CMSampleBuffer)
 }
 
 class VideoEncoder {

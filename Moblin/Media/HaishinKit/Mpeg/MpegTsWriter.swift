@@ -317,11 +317,11 @@ extension MpegTsWriter: AudioCodecDelegate {
 }
 
 extension MpegTsWriter: VideoEncoderDelegate {
-    func videoEncoderOutputFormat(_ codec: VideoEncoder, _ formatDescription: CMFormatDescription) {
+    func videoEncoderOutputFormat(_ encoder: VideoEncoder, _ formatDescription: CMFormatDescription) {
         var data = ElementaryStreamSpecificData()
         data.elementaryPacketId = MpegTsWriter.videoPacketId
         videoContinuityCounter = 0
-        switch codec.settings.value.format {
+        switch encoder.settings.value.format {
         case .h264:
             guard let avcC = MpegTsVideoConfigAvc.getData(formatDescription) else {
                 logger.info("mpeg-ts: Failed to create avcC")
