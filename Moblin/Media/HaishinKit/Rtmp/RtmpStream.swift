@@ -34,6 +34,10 @@ private func makeHevcExtendedTagHeader(_ frameType: FlvFrameType, _ packetType: 
     return makeVideoHeader(frameType, .hevc, 0, .nal, packetType)
 }
 
+protocol RtmpStreamDelegate: AnyObject {
+    func rtmpStreamStatus(_ rtmpStream: RtmpStream, event: RtmpEvent)
+}
+
 enum RtmpStreamCode: String {
     case publishStart = "NetStream.Publish.Start"
 }
@@ -72,9 +76,11 @@ class RtmpStream {
     private var prevRebasedVideoTimeStamp = -1.0
     private let compositionTimeOffset = CMTime(value: 3, timescale: 30).seconds
     private let processor: Processor
+    weak var delegate: RtmpStreamDelegate?
 
-    init(processor: Processor) {
+    init(processor: Processor, delegate: RtmpStreamDelegate) {
         self.processor = processor
+        self.delegate = delegate
         connection = RtmpConnection()
         connection.stream = self
         connection.addEventListener(.rtmpStatus, selector: #selector(on), observer: self)
@@ -131,14 +137,6 @@ class RtmpStream {
         processorControlQueue.async {
             self.closeInternal()
         }
-    }
-
-    func addEventListener(_ type: RtmpEvent.Name, selector: Selector, observer: AnyObject) {
-        connection.addEventListener(type, selector: selector, observer: observer)
-    }
-
-    func removeEventListener(_ type: RtmpEvent.Name, observer: AnyObject) {
-        connection.removeEventListener(type, observer: observer)
     }
 
     func onTimeout() {
@@ -287,6 +285,7 @@ class RtmpStream {
         guard let event = RtmpEvent.from(status) else {
             return
         }
+        delegate?.rtmpStreamStatus(self, event: event)
         processorControlQueue.async {
             self.onInternal(event: event)
         }

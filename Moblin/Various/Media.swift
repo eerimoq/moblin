@@ -116,9 +116,9 @@ final class Media: NSObject {
         let processor = Processor()
         switch proto {
         case .rtmp:
-            rtmpStreams.append(RtmpStream(processor: processor))
+            rtmpStreams.append(RtmpStream(processor: processor, delegate: self))
             for destination in destinations where destination.enabled {
-                let rtmpStream = RtmpStream(processor: processor)
+                let rtmpStream = RtmpStream(processor: processor, delegate: self)
                 rtmpStream.url = destination.url
                 rtmpStreams.append(rtmpStream)
             }
@@ -521,7 +521,6 @@ final class Media: NSObject {
                          adaptiveBitrate adaptiveBitrateEnabled: Bool)
     {
         rtmpStream?.setStreamKey(makeRtmpStreamName(url: url))
-        rtmpStream?.addEventListener(.rtmpStatus, selector: #selector(rtmpStatusHandler), observer: self)
         if adaptiveBitrateEnabled {
             adaptiveBitrate = AdaptiveBitrateSrtFight(targetBitrate: targetBitrate, delegate: self)
         } else {
@@ -531,19 +530,16 @@ final class Media: NSObject {
         if rtmpStreams.count > 1 {
             for rtmpStream in rtmpStreams.suffix(from: 1) {
                 rtmpStream.setStreamKey(makeRtmpStreamName(url: rtmpStream.url))
-                rtmpStream.addEventListener(.rtmpStatus, selector: #selector(rtmp2StatusHandler), observer: self)
                 rtmpStream.connect(makeRtmpUri(url: rtmpStream.url))
             }
         }
     }
 
     func rtmpStopStream() {
-        rtmpStream?.removeEventListener(.rtmpStatus, observer: self)
         rtmpStream?.close()
         rtmpStream?.disconnect()
         if rtmpStreams.count > 1 {
             for rtmpStream in rtmpStreams.suffix(from: 1) {
-                rtmpStream.removeEventListener(.rtmpStatus, observer: self)
                 rtmpStream.close()
                 rtmpStream.disconnect()
             }
@@ -558,12 +554,8 @@ final class Media: NSObject {
         }
     }
 
-    @objc
-    private func rtmpStatusHandler(_ notification: Notification) {
-        guard let event = RtmpEvent.from(notification),
-              let data = event.data as? AsObject,
-              let code = data["code"] as? String
-        else {
+    private func rtmpStatusHandler(event: RtmpEvent) {
+        guard let data = event.data as? AsObject, let code = data["code"] as? String else {
             return
         }
         DispatchQueue.main.async {
@@ -579,12 +571,8 @@ final class Media: NSObject {
         }
     }
 
-    @objc
-    private func rtmp2StatusHandler(_ notification: Notification) {
-        guard let event = RtmpEvent.from(notification),
-              let data = event.data as? AsObject,
-              let code = data["code"] as? String
-        else {
+    private func rtmp2StatusHandler(event: RtmpEvent) {
+        guard let data = event.data as? AsObject, let code = data["code"] as? String else {
             return
         }
         DispatchQueue.main.async {
@@ -1132,5 +1120,20 @@ extension Media: SrtStreamDelegate {
             self.srtConnected = false
         }
         srtlaError(message: String(localized: "SRT disconnected"))
+    }
+}
+
+extension Media: RtmpStreamDelegate {
+    func rtmpStreamStatus(_ rtmpStream: RtmpStream, event: RtmpEvent) {
+        DispatchQueue.main.async {
+            guard let index = self.rtmpStreams.firstIndex(where: { $0 === rtmpStream }) else {
+                return
+            }
+            if index == 0 {
+                self.rtmpStatusHandler(event: event)
+            } else {
+                self.rtmp2StatusHandler(event: event)
+            }
+        }
     }
 }
