@@ -20,8 +20,7 @@ struct ImportSettingsView: View {
     }
 
     var body: some View {
-        HStack {
-            Spacer()
+        HCenter {
             Button("Import from clipboard") {
                 if let message = model.settings.importFromClipboard() {
                     if let url = URL(string: UIPasteboard.general.string ?? "") {
@@ -38,7 +37,6 @@ struct ImportSettingsView: View {
                 }
             }
             .disabled(model.isLive || model.isRecording)
-            Spacer()
         }
     }
 }
