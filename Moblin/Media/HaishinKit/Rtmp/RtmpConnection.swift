@@ -145,7 +145,7 @@ class RtmpConnection: RtmpEventDispatcher {
     }
 
     func gotCommand(data: Any?) {
-        dispatch(event: RtmpEvent(type: .rtmpStatus, data: data))
+        post(event: RtmpEvent(type: .rtmpStatus, data: data))
     }
 
     func createStream(_ stream: RtmpStream) {
@@ -177,6 +177,7 @@ class RtmpConnection: RtmpEventDispatcher {
         guard let data = event.data as? AsObject, let code = data["code"] as? String else {
             return
         }
+        logger.info("xxx rtmp \(code)")
         switch RtmpConnectionCode(rawValue: code) {
         case .connectSuccess:
             handleConnectSuccess()
@@ -353,6 +354,6 @@ extension RtmpConnection: RtmpSocketDelegate {
     }
 
     func socketDispatch(_: RtmpSocket, event: RtmpEvent) {
-        dispatch(event: event)
+        post(event: event)
     }
 }

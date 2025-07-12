@@ -1,6 +1,6 @@
 import Foundation
 
-protocol RtmpEventDispatcherConvertible: AnyObject {
+private protocol RtmpEventDispatcherConvertible: AnyObject {
     func addEventListener(_ type: RtmpEvent.Name, selector: Selector, observer: AnyObject?)
     func removeEventListener(_ type: RtmpEvent.Name, selector: Selector, observer: AnyObject?)
 }
@@ -33,35 +33,29 @@ class RtmpEvent {
 }
 
 class RtmpEventDispatcher: RtmpEventDispatcherConvertible {
-    private weak var target: AnyObject?
-
     init() {}
-
-    init(target: AnyObject) {
-        self.target = target
-    }
 
     func addEventListener(_ type: RtmpEvent.Name, selector: Selector, observer: AnyObject? = nil) {
         NotificationCenter.default.addObserver(
-            observer ?? target ?? self,
+            observer ?? self,
             selector: selector,
             name: Notification.Name(rawValue: type.rawValue),
-            object: target ?? self
+            object: self
         )
     }
 
     func removeEventListener(_ type: RtmpEvent.Name, selector _: Selector, observer: AnyObject? = nil) {
         NotificationCenter.default.removeObserver(
-            observer ?? target ?? self,
+            observer ?? self,
             name: Notification.Name(rawValue: type.rawValue),
-            object: target ?? self
+            object: self
         )
     }
 
-    func dispatch(event: RtmpEvent) {
+    func post(event: RtmpEvent) {
         NotificationCenter.default.post(
             name: Notification.Name(rawValue: event.type.rawValue),
-            object: target ?? self,
+            object: self,
             userInfo: ["event": event]
         )
     }
