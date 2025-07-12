@@ -470,114 +470,120 @@ struct MainView: View {
     }
 
     var body: some View {
-        let all = ZStack {
-            if model.isPortrait() {
-                portrait()
-            } else {
-                landscape()
-            }
-            WebBrowserAlertsView()
-                .opacity(webBrowserController.showAlert ? 1 : 0)
-            if model.showStealthMode {
-                StealthModeView(
-                    quickButtons: model.database.quickButtonsGeneral,
-                    chat: model.chat,
-                    stealthMode: model.stealthMode
-                )
-            }
-            if model.lockScreen {
-                LockScreenView()
-            }
-            if model.findFace {
-                FindFaceView()
-            }
-            if let snapshotJob = model.currentSnapshotJob, model.snapshotCountdown > 0 {
-                SnapshotCountdownView(message: snapshotJob.message)
-            }
-            if replay.instantReplayCountdown != 0 {
-                InstantReplayCountdownView(replay: replay)
-            }
-        }
-        .overlay(alignment: .topLeading) {
-            browserWidgets()
-        }
-        .onAppear {
-            model.setup()
-        }
-        .sheet(isPresented: $model.showTwitchAuth) {
-            VStack {
-                HStack {
-                    Spacer()
-                    Button {
-                        model.showTwitchAuth = false
-                    } label: {
-                        Text("Close").padding()
-                    }
+        VStack(spacing: 0) {
+            let all = ZStack {
+                if model.isPortrait() {
+                    portrait()
+                } else {
+                    landscape()
                 }
-                ScrollView {
-                    TwitchAuthView(twitchAuth: model.twitchAuth)
-                        .frame(height: 2500)
+                WebBrowserAlertsView()
+                    .opacity(webBrowserController.showAlert ? 1 : 0)
+                if model.showStealthMode {
+                    StealthModeView(
+                        quickButtons: model.database.quickButtonsGeneral,
+                        chat: model.chat,
+                        stealthMode: model.stealthMode
+                    )
+                }
+                if model.lockScreen {
+                    LockScreenView()
+                }
+                if model.findFace {
+                    FindFaceView()
+                }
+                if let snapshotJob = model.currentSnapshotJob, model.snapshotCountdown > 0 {
+                    SnapshotCountdownView(message: snapshotJob.message)
+                }
+                if replay.instantReplayCountdown != 0 {
+                    InstantReplayCountdownView(replay: replay)
                 }
             }
-        }
-        .toast(isPresenting: $toast.showingToast, duration: 5) {
-            toast.toast
-        }
-        .alert("⚠️ Failed to load settings ⚠️", isPresented: $model.showLoadSettingsFailed) {
-            Button("Delete old settings and continue", role: .cancel) {
-                showAreYouReallySure = true
+            .overlay(alignment: .topLeading) {
+                browserWidgets()
             }
-        } message: {
-            Text("Immediately install the old version of the app to keep your old settings.")
-        }
-        .alert("⚠️ Deleting old settings ⚠️", isPresented: $showAreYouReallySure) {
-            Button("OK", role: .cancel) {}
-        } message: {
-            Text(
-                "Immediately install the old version of the app to keep your old settings. This is the last warning!"
-            )
-        }
-        .persistentSystemOverlays(.hidden)
-        if #available(iOS 17.0, *) {
-            let all = all
-                .focusable()
-                .focused($focused)
-                .onKeyPress { press in
-                    model.handleKeyPress(press: press)
-                }
-                .onChange(of: model.showingPanel) { _ in
-                    focused = model.isKeyboardActive()
-                }
-                .onChange(of: model.showBrowser) { _ in
-                    focused = model.isKeyboardActive()
-                }
-                .onChange(of: model.showTwitchAuth) { _ in
-                    focused = model.isKeyboardActive()
-                }
-                .onChange(of: createStreamWizard.isPresenting) { _ in
-                    focused = model.isKeyboardActive()
-                }
-                .onChange(of: createStreamWizard.isPresentingSetup) { _ in
-                    focused = model.isKeyboardActive()
-                }
-                .onChange(of: createStreamWizard.showTwitchAuth) { _ in
-                    focused = model.isKeyboardActive()
-                }
-                .onAppear {
-                    focused = true
-                }
-            if #available(iOS 18.0, *) {
-                all
-                    .onCameraCaptureEvent(isEnabled: model.cameraControlEnabled) { event in
-                        if event.phase == .ended {
-                            // model.takeSnapshot()
+            .onAppear {
+                model.setup()
+            }
+            .sheet(isPresented: $model.showTwitchAuth) {
+                VStack {
+                    HStack {
+                        Spacer()
+                        Button {
+                            model.showTwitchAuth = false
+                        } label: {
+                            Text("Close").padding()
                         }
                     }
+                    ScrollView {
+                        TwitchAuthView(twitchAuth: model.twitchAuth)
+                            .frame(height: 2500)
+                    }
+                }
+            }
+            .toast(isPresenting: $toast.showingToast, duration: 5) {
+                toast.toast
+            }
+            .alert("⚠️ Failed to load settings ⚠️", isPresented: $model.showLoadSettingsFailed) {
+                Button("Delete old settings and continue", role: .cancel) {
+                    showAreYouReallySure = true
+                }
+            } message: {
+                Text("Immediately install the old version of the app to keep your old settings.")
+            }
+            .alert("⚠️ Deleting old settings ⚠️", isPresented: $showAreYouReallySure) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text("""
+                Immediately install the old version of the app to keep your old settings. \
+                This is the last warning!
+                """)
+            }
+            .persistentSystemOverlays(.hidden)
+            if #available(iOS 17.0, *) {
+                let all = all
+                    .focusable()
+                    .focused($focused)
+                    .onKeyPress { press in
+                        model.handleKeyPress(press: press)
+                    }
+                    .onChange(of: model.showingPanel) { _ in
+                        focused = model.isKeyboardActive()
+                    }
+                    .onChange(of: model.showBrowser) { _ in
+                        focused = model.isKeyboardActive()
+                    }
+                    .onChange(of: model.showTwitchAuth) { _ in
+                        focused = model.isKeyboardActive()
+                    }
+                    .onChange(of: createStreamWizard.isPresenting) { _ in
+                        focused = model.isKeyboardActive()
+                    }
+                    .onChange(of: createStreamWizard.isPresentingSetup) { _ in
+                        focused = model.isKeyboardActive()
+                    }
+                    .onChange(of: createStreamWizard.showTwitchAuth) { _ in
+                        focused = model.isKeyboardActive()
+                    }
+                    .onAppear {
+                        focused = true
+                    }
+                if #available(iOS 18.0, *) {
+                    all
+                        .onCameraCaptureEvent(isEnabled: model.cameraControlEnabled) { event in
+                            if event.phase == .ended {
+                                // model.takeSnapshot()
+                            }
+                        }
+                } else {
+                    all
+                }
             } else {
                 all
             }
-        } else {
-            all
+            Rectangle()
+                .foregroundColor(.black)
+                .frame(height: isMac() ? 10 : 0)
         }
     }
 }
