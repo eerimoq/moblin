@@ -465,15 +465,14 @@ final class Media: NSObject {
     }
 
     func streamTotal() -> Int64 {
-        if processor === rtmpStream {
-            return rtmpStream?.info.byteCount.value ?? 0
-        } else if processor === srtStream {
-            return srtTotalByteCount
-        } else if processor === ristStream {
-            return 0
-        } else {
-            return 0
+        var total: Int64 = 0
+        for stream in rtmpStreams {
+            total += stream.info.byteCount.value
         }
+        if srtStream != nil {
+            return srtTotalByteCount
+        }
+        return total
     }
 
     private func queryContains(queryItems: [URLQueryItem], name: String) -> Bool {
