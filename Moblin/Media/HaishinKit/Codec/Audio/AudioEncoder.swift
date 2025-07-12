@@ -77,10 +77,7 @@ class AudioEncoder {
     }
 
     private func startRunningInternal() {
-        guard !isRunning else {
-            return
-        }
-        if let audioConverter = audioConverter {
+        if let audioConverter {
             delegate?.audioCodecOutputFormat(audioConverter.outputFormat)
         }
         isRunning = true

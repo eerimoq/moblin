@@ -34,6 +34,9 @@ private struct DestinationView: View {
                         .foregroundColor(.gray)
                 }
             }
+            .onChange(of: destination.enabled) { _ in
+                model.reloadStreamIfEnabled(stream: stream)
+            }
             .disabled(stream.enabled && (model.isLive || model.isRecording))
         }
     }
@@ -50,10 +53,14 @@ struct StreamMultiStreamingSettingsView: View {
                 VStack(alignment: .leading) {
                     Text("Stream to additional destinations directly from this device.")
                     Text("")
+                    Text("⚠️ This will increase bandwidth usage, system load and device heat.")
+                    Text("")
                     Text("""
-                    ⚠️ Requires more bandwidth and increases the overall load on your \
-                    device. Avoid when streaming IRL!
+                    ⚠️ Not recommended to use on the road, but only in the comfort of your \
+                    home where internet is good and it's close to a fire extinguisher. 🤣
                     """)
+                    Text("")
+                    Text("YOU HAVE BEEN WARNED!!!")
                 }
             }
             Section {
@@ -71,8 +78,7 @@ struct StreamMultiStreamingSettingsView: View {
                     }
                 }
                 CreateButtonView {
-                    let destination = SettingsStreamMultiStreamingDestination()
-                    multiStreaming.destinations.append(destination)
+                    multiStreaming.destinations.append(SettingsStreamMultiStreamingDestination())
                 }
                 .disabled(stream.enabled && (model.isLive || model.isRecording))
             } footer: {

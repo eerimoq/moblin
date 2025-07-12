@@ -160,6 +160,7 @@ class RtmpStream {
         )
         switch readyState {
         case .initialized:
+            logger.info("rtmp: \(streamKey): Is only initialized")
             messages.append(message)
         default:
             setReadyState(state: .publish)

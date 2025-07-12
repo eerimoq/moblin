@@ -343,51 +343,11 @@ struct StreamMultiStreamingUrlView: View {
                         Text("")
                     }
                     Group {
-                        Text("OBS Media Source (SRT)").underline()
-                        Text("Template: srt://my_public_ip:my_public_port")
-                        Text("Example:  srt://134.20.342.12:5000")
-                        Text("")
-                    }
-                    Group {
-                        Group {
-                            Text("BELABOX cloud SRTLA").underline()
-                            Text(
-                                "Example: srtla://uk.srt.belabox.net:5000?streamid=NtlPUqXGFV4Bcm448wgc4fUuLdvDB3"
-                            )
-                            Text("")
-                        }
-                        Group {
-                            Text("BELABOX cloud SRT").underline()
-                            Text(
-                                "Example: srt://uk.srt.belabox.net:4000?streamid=NtlPUqXGFV4Bcm448wgc4fUuLdvDB3"
-                            )
-                            Text("")
-                        }
-                        Group {
-                            Text("SRTLA server").underline()
-                            Text(
-                                "Template: srtla://my_public_ip:my_public_port"
-                            )
-                            Text("Example:  srtla://foobar.org:4432")
-                            Text("")
-                        }
-                        Group {
-                            Text("SRT Live Server (SLS)").underline()
-                            Text(
-                                "Template: srt://my_public_ip:my_public_port?streamid=publish/live/my_key"
-                            )
-                            Text(
-                                "Example:  srt://120.12.32.12:4000?streamid=publish/live/feed"
-                            )
-                            Text("")
-                        }
-                        Group {
-                            Text("RTMP server").underline()
-                            Text(
-                                "Template: rtmp://my_public_ip:my_public_port/my_stream_key"
-                            )
-                            Text("Example:  rtmp://foobar.org:3321/5678")
-                        }
+                        Text("RTMP server").underline()
+                        Text(
+                            "Template: rtmp://my_public_ip:my_public_port/my_stream_key"
+                        )
+                        Text("Example:  rtmp://foobar.org:3321/5678")
                     }
                 }
             }
