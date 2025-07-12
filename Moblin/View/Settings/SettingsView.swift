@@ -111,7 +111,7 @@ struct SettingsView: View {
                     NavigationLink {
                         RemoteControlSettingsView(database: database,
                                                   status: model.statusOther,
-                                                  client: database.remoteControl.client)
+                                                  client: database.remoteControl.assistant)
                     } label: {
                         Label("Remote control", systemImage: "appletvremote.gen1")
                     }

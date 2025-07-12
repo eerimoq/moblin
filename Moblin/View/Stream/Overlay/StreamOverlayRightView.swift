@@ -601,8 +601,8 @@ private struct StatusesView: View {
         RemoteControlStatusView(model: model,
                                 show: model.database.show,
                                 status: model.statusTopRight,
-                                streamer: model.database.remoteControl.server,
-                                assistant: model.database.remoteControl.client,
+                                streamer: model.database.remoteControl.streamer,
+                                assistant: model.database.remoteControl.assistant,
                                 textPlacement: textPlacement)
         DjiDevicesStatusView(model: model,
                              show: model.database.show,

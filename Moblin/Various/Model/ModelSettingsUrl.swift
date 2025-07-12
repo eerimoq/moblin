@@ -110,17 +110,17 @@ extension Model {
             return
         }
         if let assistant = remoteControl.assistant {
-            database.remoteControl.client.enabled = assistant.enabled
-            database.remoteControl.client.port = assistant.port
+            database.remoteControl.assistant.enabled = assistant.enabled
+            database.remoteControl.assistant.port = assistant.port
             if let relay = assistant.relay {
-                database.remoteControl.client.relay.enabled = relay.enabled
-                database.remoteControl.client.relay.baseUrl = relay.baseUrl.trim()
-                database.remoteControl.client.relay.bridgeId = relay.bridgeId.trim()
+                database.remoteControl.assistant.relay.enabled = relay.enabled
+                database.remoteControl.assistant.relay.baseUrl = relay.baseUrl.trim()
+                database.remoteControl.assistant.relay.bridgeId = relay.bridgeId.trim()
             }
         }
         if let streamer = remoteControl.streamer {
-            database.remoteControl.server.enabled = streamer.enabled
-            database.remoteControl.server.url = streamer.url.trim()
+            database.remoteControl.streamer.enabled = streamer.enabled
+            database.remoteControl.streamer.url = streamer.url.trim()
         }
         database.remoteControl.password = remoteControl.password
         reloadRemoteControlStreamer()

@@ -5077,9 +5077,31 @@ class SettingsRemoteControlServerRelay: Codable, ObservableObject {
 }
 
 class SettingsRemoteControl: Codable {
-    var client: SettingsRemoteControlAssistant = .init()
-    var server: SettingsRemoteControlStreamer = .init()
-    var password: String? = randomGoodPassword()
+    var assistant: SettingsRemoteControlAssistant = .init()
+    var streamer: SettingsRemoteControlStreamer = .init()
+    var password: String = randomGoodPassword()
+
+    enum CodingKeys: CodingKey {
+        case client,
+             server,
+             password
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.client, assistant)
+        try container.encode(.server, streamer)
+        try container.encode(.password, password)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        assistant = container.decode(.client, SettingsRemoteControlAssistant.self, .init())
+        streamer = container.decode(.server, SettingsRemoteControlStreamer.self, .init())
+        password = container.decode(.password, String.self, randomGoodPassword())
+    }
 }
 
 class SettingsMoblinkStreamer: Codable, ObservableObject {
@@ -6661,10 +6683,6 @@ final class Settings {
         }
         for stream in realDatabase.streams where stream.srt.adaptiveBitrate == nil {
             stream.srt.adaptiveBitrate = .init()
-            store()
-        }
-        if realDatabase.remoteControl.password == nil {
-            realDatabase.remoteControl.password = randomGoodPassword()
             store()
         }
         for stream in realDatabase.streams {

@@ -45,14 +45,14 @@ extension Model {
             reloadChats()
             return
         }
-        guard let url = URL(string: database.remoteControl.server.url) else {
+        guard let url = URL(string: database.remoteControl.streamer.url) else {
             reloadTwitchEventSub()
             reloadChats()
             return
         }
         remoteControlStreamer = RemoteControlStreamer(
             clientUrl: url,
-            password: database.remoteControl.password!,
+            password: database.remoteControl.password,
             delegate: self
         )
         remoteControlStreamer!.start()
@@ -93,8 +93,8 @@ extension Model {
     }
 
     func isRemoteControlStreamerConfigured() -> Bool {
-        let server = database.remoteControl.server
-        return server.enabled && !server.url.isEmpty && !database.remoteControl.password!.isEmpty
+        let server = database.remoteControl.streamer
+        return server.enabled && !server.url.isEmpty && !database.remoteControl.password.isEmpty
     }
 
     func isRemoteControlStreamerConnected() -> Bool {
@@ -112,8 +112,8 @@ extension Model {
             return
         }
         remoteControlAssistant = RemoteControlAssistant(
-            port: database.remoteControl.client.port,
-            password: database.remoteControl.password!,
+            port: database.remoteControl.assistant.port,
+            password: database.remoteControl.password,
             delegate: self,
             httpProxy: httpProxy(),
             urlSession: urlSession
@@ -143,8 +143,8 @@ extension Model {
     }
 
     func isRemoteControlAssistantConfigured() -> Bool {
-        let client = database.remoteControl.client
-        return client.enabled && client.port > 0 && !database.remoteControl.password!.isEmpty
+        let client = database.remoteControl.assistant
+        return client.enabled && client.port > 0 && !database.remoteControl.password.isEmpty
     }
 
     func remoteControlAssistantSetRemoteSceneSettings() {
@@ -284,19 +284,19 @@ extension Model {
         guard isRemoteControlRelayConfigured() else {
             return
         }
-        guard let assistantUrl = URL(string: "ws://localhost:\(database.remoteControl.client.port)") else {
+        guard let assistantUrl = URL(string: "ws://localhost:\(database.remoteControl.assistant.port)") else {
             return
         }
         remoteControlRelay = RemoteControlRelay(
-            baseUrl: database.remoteControl.client.relay.baseUrl,
-            bridgeId: database.remoteControl.client.relay.bridgeId,
+            baseUrl: database.remoteControl.assistant.relay.baseUrl,
+            bridgeId: database.remoteControl.assistant.relay.bridgeId,
             assistantUrl: assistantUrl
         )
         remoteControlRelay?.start()
     }
 
     func isRemoteControlRelayConfigured() -> Bool {
-        let relay = database.remoteControl.client.relay
+        let relay = database.remoteControl.assistant.relay
         return relay.enabled && !relay.baseUrl.isEmpty
     }
 

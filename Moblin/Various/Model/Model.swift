@@ -2021,7 +2021,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             fps = 1.0
         }
         if isRemoteControlStreamerConnected(), isRemoteControlAssistantRequestingPreview {
-            fps = database.remoteControl.server.previewFps
+            fps = database.remoteControl.streamer.previewFps
         }
         media.setLowFpsImage(fps: fps)
         lowFpsImageFps = max(UInt64(fps), 1)
