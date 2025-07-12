@@ -39,10 +39,8 @@ struct StreamTwitchSettingsView: View {
                         model.showTwitchAuth = true
                         model.twitchLogin(stream: stream, onComplete: onLoggedIn)
                     } label: {
-                        HStack {
-                            Spacer()
+                        HCenter {
                             Text("Login")
-                            Spacer()
                         }
                     }
                 } else {
@@ -50,10 +48,8 @@ struct StreamTwitchSettingsView: View {
                         model.twitchLogout(stream: stream)
                         loggedIn = false
                     } label: {
-                        HStack {
-                            Spacer()
+                        HCenter {
                             Text("Logout")
-                            Spacer()
                         }
                     }
                 }

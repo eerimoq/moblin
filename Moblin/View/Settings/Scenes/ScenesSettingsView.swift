@@ -133,10 +133,8 @@ private struct ReloadBrowserSources: View {
             Button {
                 model.reloadBrowserWidgets()
             } label: {
-                HStack {
-                    Spacer()
+                HCenter {
                     Text("Reload browser widgets")
-                    Spacer()
                 }
             }
         }

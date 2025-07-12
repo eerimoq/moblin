@@ -47,8 +47,7 @@ struct StreamUrlSettingsView: View {
                     Text(replaceSensitive(value: value, sensitive: true))
                         .opacity(show ? 0 : 1)
                 }
-                HStack {
-                    Spacer()
+                HCenter {
                     if show {
                         Button("Hide sensitive URL") {
                             show = false
@@ -58,7 +57,6 @@ struct StreamUrlSettingsView: View {
                             show = true
                         }
                     }
-                    Spacer()
                 }
             } footer: {
                 VStack(alignment: .leading) {
@@ -248,8 +246,7 @@ struct StreamMultiStreamingUrlView: View {
                     Text(replaceSensitive(value: value, sensitive: true))
                         .opacity(show ? 0 : 1)
                 }
-                HStack {
-                    Spacer()
+                HCenter {
                     if show {
                         Button("Hide sensitive URL") {
                             show = false
@@ -259,7 +256,6 @@ struct StreamMultiStreamingUrlView: View {
                             show = true
                         }
                     }
-                    Spacer()
                 }
             } footer: {
                 VStack(alignment: .leading) {

@@ -31,20 +31,16 @@ struct StreamWizardTwitchSettingsView: View {
                             onLoginComplete()
                         }
                     } label: {
-                        HStack {
-                            Spacer()
+                        HCenter {
                             Text("Login")
-                            Spacer()
                         }
                     }
                 } else {
                     Button {
                         model.twitchLogout(stream: createStreamWizard.twitchStream)
                     } label: {
-                        HStack {
-                            Spacer()
+                        HCenter {
                             Text("Logout")
-                            Spacer()
                         }
                     }
                 }

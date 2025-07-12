@@ -5,8 +5,7 @@ struct ResetSettingsView: View {
     @State private var isPresentingResetConfirm: Bool = false
 
     var body: some View {
-        HStack {
-            Spacer()
+        HCenter {
             Button("Reset settings", role: .destructive) {
                 isPresentingResetConfirm = true
             }
@@ -18,7 +17,6 @@ struct ResetSettingsView: View {
                     model.updateQuickButtonStates()
                 }
             }
-            Spacer()
         }
     }
 }

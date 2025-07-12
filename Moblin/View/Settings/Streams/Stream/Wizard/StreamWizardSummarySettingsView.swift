@@ -185,8 +185,7 @@ struct StreamWizardSummarySettingsView: View {
                     .disableAutocorrection(true)
             }
             Section {
-                HStack {
-                    Spacer()
+                HCenter {
                     Button {
                         model.createStreamFromWizard()
                         createStreamWizard.isPresenting = false
@@ -195,7 +194,6 @@ struct StreamWizardSummarySettingsView: View {
                         Text("Create")
                     }
                     .disabled(createStreamWizard.name.isEmpty)
-                    Spacer()
                 }
             }
         }

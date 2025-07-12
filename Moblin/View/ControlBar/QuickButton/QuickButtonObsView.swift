@@ -11,8 +11,7 @@ private struct ObsStartStopStreamingView: View {
         switch obsQuickButton.streamingState {
         case .stopped:
             Section {
-                HStack {
-                    Spacer()
+                HCenter {
                     Button {
                         isPresentingStartStreamingConfirm = true
                     } label: {
@@ -23,7 +22,6 @@ private struct ObsStartStopStreamingView: View {
                             model.obsStartStream()
                         }
                     }
-                    Spacer()
                 }
             }
             .listRowBackground(RoundedRectangle(cornerRadius: 10)
@@ -32,18 +30,15 @@ private struct ObsStartStopStreamingView: View {
                     .stroke(.blue, lineWidth: 2)))
         case .starting:
             Section {
-                HStack {
-                    Spacer()
+                HCenter {
                     Text("Starting...")
-                    Spacer()
                 }
             }
             .foregroundColor(.white)
             .listRowBackground(Color.gray)
         case .started:
             Section {
-                HStack {
-                    Spacer()
+                HCenter {
                     Button {
                         isPresentingStopStreamingConfirm = true
                     } label: {
@@ -54,17 +49,14 @@ private struct ObsStartStopStreamingView: View {
                             model.obsStopStream()
                         }
                     }
-                    Spacer()
                 }
             }
             .foregroundColor(.white)
             .listRowBackground(Color.blue)
         case .stopping:
             Section {
-                HStack {
-                    Spacer()
+                HCenter {
                     Text("Stopping...")
-                    Spacer()
                 }
             }
             .foregroundColor(.white)
@@ -83,8 +75,7 @@ private struct ObsStartStopRecordingView: View {
         switch obsQuickButton.recordingState {
         case .stopped:
             Section {
-                HStack {
-                    Spacer()
+                HCenter {
                     Button {
                         isPresentingStartRecordingConfirm = true
                     } label: {
@@ -95,7 +86,6 @@ private struct ObsStartStopRecordingView: View {
                             model.obsStartRecording()
                         }
                     }
-                    Spacer()
                 }
             }
             .listRowBackground(RoundedRectangle(cornerRadius: 10)
@@ -104,18 +94,15 @@ private struct ObsStartStopRecordingView: View {
                     .stroke(.blue, lineWidth: 2)))
         case .starting:
             Section {
-                HStack {
-                    Spacer()
+                HCenter {
                     Text("Starting...")
-                    Spacer()
                 }
             }
             .foregroundColor(.white)
             .listRowBackground(Color.gray)
         case .started:
             Section {
-                HStack {
-                    Spacer()
+                HCenter {
                     Button {
                         isPresentingStopRecordingConfirm = true
                     } label: {
@@ -126,17 +113,14 @@ private struct ObsStartStopRecordingView: View {
                             model.obsStopRecording()
                         }
                     }
-                    Spacer()
                 }
             }
             .foregroundColor(.white)
             .listRowBackground(Color.blue)
         case .stopping:
             Section {
-                HStack {
-                    Spacer()
+                HCenter {
                     Text("Stopping...")
-                    Spacer()
                 }
             }
             .foregroundColor(.white)
@@ -220,14 +204,12 @@ struct QuickButtonObsView: View {
                 if !model.stream.obsSourceName.isEmpty {
                     if !obsQuickButton.fixOngoing {
                         Section {
-                            HStack {
-                                Spacer()
+                            HCenter {
                                 Button {
                                     model.obsFixStream()
                                 } label: {
                                     Text("Fix \(model.stream.obsSourceName) source")
                                 }
-                                Spacer()
                             }
                         } footer: {
                             Text("""
@@ -241,10 +223,8 @@ struct QuickButtonObsView: View {
                                 .stroke(.blue, lineWidth: 2)))
                     } else {
                         Section {
-                            HStack {
-                                Spacer()
+                            HCenter {
                                 Text("Fixing...")
-                                Spacer()
                             }
                             .foregroundColor(.white)
                         } footer: {

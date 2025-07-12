@@ -2,22 +2,18 @@ import SwiftUI
 
 struct WizardNextButtonView: View {
     var body: some View {
-        HStack {
-            Spacer()
+        HCenter {
             Text("Next")
                 .foregroundColor(.accentColor)
-            Spacer()
         }
     }
 }
 
 struct WizardSkipButtonView: View {
     var body: some View {
-        HStack {
-            Spacer()
+        HCenter {
             Text("Skip")
                 .foregroundColor(.accentColor)
-            Spacer()
         }
     }
 }

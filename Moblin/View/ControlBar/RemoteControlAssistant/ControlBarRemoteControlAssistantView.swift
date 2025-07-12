@@ -244,10 +244,8 @@ private struct ControlBarRemoteControlAssistantStatusView: View {
                     model.remoteControlAssistantStartPreview(user: .panel)
                     remoteControl.assistantShowPreview = true
                 } label: {
-                    HStack {
-                        Spacer()
+                    HCenter {
                         Text("Show")
-                        Spacer()
                     }
                 }
             }

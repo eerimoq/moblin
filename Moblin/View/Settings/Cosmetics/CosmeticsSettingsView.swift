@@ -10,10 +10,8 @@ private struct CosmeticsSettingsRestoreView: View {
                     await model.updateProductFromAppStore()
                 }
             } label: {
-                HStack {
-                    Spacer()
+                HCenter {
                     Text("Restore purchases")
-                    Spacer()
                 }
             }
         }

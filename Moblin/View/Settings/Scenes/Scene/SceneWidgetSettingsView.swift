@@ -177,21 +177,17 @@ struct SceneWidgetSettingsView: View {
                         }
                 }
                 Section {
-                    HStack {
-                        Spacer()
+                    HCenter {
                         Button("Export to clipboard") {
                             exportToClipboard()
                         }
-                        Spacer()
                     }
                 }
                 Section {
-                    HStack {
-                        Spacer()
+                    HCenter {
                         Button("Import from clipboard") {
                             importFromClipboard()
                         }
-                        Spacer()
                     }
                 }
             }

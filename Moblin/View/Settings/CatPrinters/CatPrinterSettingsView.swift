@@ -102,10 +102,8 @@ struct CatPrinterSettingsView: View {
                     Button {
                         model.catPrinterPrintTestImage(device: device)
                     } label: {
-                        HStack {
-                            Spacer()
+                        HCenter {
                             Text("Test")
-                            Spacer()
                         }
                     }
                 }

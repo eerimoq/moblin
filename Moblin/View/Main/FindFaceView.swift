@@ -2,8 +2,7 @@ import SwiftUI
 
 struct FindFaceView: View {
     var body: some View {
-        HStack {
-            Spacer()
+        HCenter {
             VStack {
                 Spacer()
                 VStack {
@@ -17,7 +16,6 @@ struct FindFaceView: View {
                 .cornerRadius(5)
                 Spacer()
             }
-            Spacer()
         }
     }
 }

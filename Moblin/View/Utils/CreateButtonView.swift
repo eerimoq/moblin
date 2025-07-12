@@ -7,10 +7,8 @@ struct CreateButtonView: View {
         Button {
             action()
         } label: {
-            HStack {
-                Spacer()
+            HCenter {
                 Text("Create")
-                Spacer()
             }
         }
     }

@@ -45,10 +45,8 @@ private struct CustomSoundView: View {
                     Button {
                         audioPlayer.play()
                     } label: {
-                        HStack {
-                            Spacer()
+                        HCenter {
                             Text("Play")
-                            Spacer()
                         }
                     }
                 }

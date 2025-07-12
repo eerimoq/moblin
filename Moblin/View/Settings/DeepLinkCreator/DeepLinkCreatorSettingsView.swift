@@ -148,24 +148,20 @@ struct DeepLinkCreatorSettingsView: View {
                 }
                 if deepLink != defaultDeepLink {
                     Section {
-                        HStack {
-                            Spacer()
+                        HCenter {
                             Button("Copy to clipboard") {
                                 UIPasteboard.general.string = deepLink
                                 model.makeToast(title: String(localized: "Deep link copied to clipboard"))
                             }
-                            Spacer()
                         }
                     }
                     Section {
-                        HStack {
-                            Spacer()
+                        HCenter {
                             Image(uiImage: generateQrCode(from: deepLink)!)
                                 .resizable()
                                 .interpolation(.none)
                                 .scaledToFit()
                                 .frame(maxHeight: metrics.size.height)
-                            Spacer()
                         }
                     }
                 } else {
