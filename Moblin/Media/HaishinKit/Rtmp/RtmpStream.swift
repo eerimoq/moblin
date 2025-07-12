@@ -47,10 +47,8 @@ class RtmpStream {
         case publishing
     }
 
-    static let defaultID: UInt32 = 0
     var info = RtmpStreamInfo()
-
-    var id = RtmpStream.defaultID
+    var id: UInt32 = 0
     private var readyState: ReadyState = .initialized
 
     func setReadyState(state: ReadyState) {
