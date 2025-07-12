@@ -554,37 +554,6 @@ final class Media: NSObject {
         }
     }
 
-    private func rtmpStatusHandler(event: RtmpEvent) {
-        guard let data = event.data as? AsObject, let code = data["code"] as? String else {
-            return
-        }
-        DispatchQueue.main.async {
-            switch RtmpConnectionCode(rawValue: code) {
-            case .connectSuccess:
-                self.rtmpStream?.publish()
-                self.delegate?.mediaOnRtmpConnected()
-            case .connectFailed, .connectClosed:
-                self.delegate?.mediaOnRtmpDisconnected("\(code)")
-            default:
-                break
-            }
-        }
-    }
-
-    private func rtmp2StatusHandler(event: RtmpEvent) {
-        guard let data = event.data as? AsObject, let code = data["code"] as? String else {
-            return
-        }
-        DispatchQueue.main.async {
-            switch RtmpConnectionCode(rawValue: code) {
-            case .connectSuccess:
-                self.rtmpStreams[1].publish()
-            default:
-                break
-            }
-        }
-    }
-
     func ristStartStream(
         url: String,
         bonding: Bool,
@@ -1125,14 +1094,22 @@ extension Media: SrtStreamDelegate {
 
 extension Media: RtmpStreamDelegate {
     func rtmpStreamStatus(_ rtmpStream: RtmpStream, event: RtmpEvent) {
+        guard let data = event.data as? AsObject, let code = data["code"] as? String else {
+            return
+        }
         DispatchQueue.main.async {
-            guard let index = self.rtmpStreams.firstIndex(where: { $0 === rtmpStream }) else {
-                return
-            }
-            if index == 0 {
-                self.rtmpStatusHandler(event: event)
-            } else {
-                self.rtmp2StatusHandler(event: event)
+            switch RtmpConnectionCode(rawValue: code) {
+            case .connectSuccess:
+                rtmpStream.publish()
+                if rtmpStream === self.rtmpStream {
+                    self.delegate?.mediaOnRtmpConnected()
+                }
+            case .connectFailed, .connectClosed:
+                if rtmpStream === self.rtmpStream {
+                    self.delegate?.mediaOnRtmpDisconnected("\(code)")
+                }
+            default:
+                break
             }
         }
     }

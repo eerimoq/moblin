@@ -1,6 +1,7 @@
 import SwiftUI
 
 private struct DestinationView: View {
+    @EnvironmentObject var model: Model
     @ObservedObject var stream: SettingsStream
     @ObservedObject var destination: SettingsStreamMultiStreamingDestination
 
@@ -17,6 +18,7 @@ private struct DestinationView: View {
                 Section {
                     NavigationLink {
                         StreamMultiStreamingUrlView(stream: stream, destination: destination, value: destination.url)
+                            .disabled(stream.enabled && (model.isLive || model.isRecording))
                     } label: {
                         TextItemView(name: String(localized: "URL"), value: schemeAndAddress(url: destination.url))
                     }
@@ -32,11 +34,13 @@ private struct DestinationView: View {
                         .foregroundColor(.gray)
                 }
             }
+            .disabled(stream.enabled && (model.isLive || model.isRecording))
         }
     }
 }
 
 struct StreamMultiStreamingSettingsView: View {
+    @EnvironmentObject var model: Model
     @ObservedObject var stream: SettingsStream
     @ObservedObject var multiStreaming: SettingsStreamMultiStreaming
 
@@ -46,22 +50,31 @@ struct StreamMultiStreamingSettingsView: View {
                 VStack(alignment: .leading) {
                     Text("Stream to additional destinations directly from this device.")
                     Text("")
-                    Text("⚠️ Requires more bandwidth and increases the overall load on your device.")
+                    Text("""
+                    ⚠️ Requires more bandwidth and increases the overall load on your \
+                    device. Avoid when streaming IRL!
+                    """)
                 }
             }
             Section {
                 List {
-                    ForEach(multiStreaming.destinations) {
+                    let items = ForEach(multiStreaming.destinations) {
                         DestinationView(stream: stream, destination: $0)
                     }
-                    .onDelete {
-                        multiStreaming.destinations.remove(atOffsets: $0)
+                    if stream.enabled && (model.isLive || model.isRecording) {
+                        items
+                    } else {
+                        items
+                            .onDelete {
+                                multiStreaming.destinations.remove(atOffsets: $0)
+                            }
                     }
                 }
                 CreateButtonView {
                     let destination = SettingsStreamMultiStreamingDestination()
                     multiStreaming.destinations.append(destination)
                 }
+                .disabled(stream.enabled && (model.isLive || model.isRecording))
             } footer: {
                 SwipeLeftToDeleteHelpView(kind: String(localized: "a destination"))
             }
