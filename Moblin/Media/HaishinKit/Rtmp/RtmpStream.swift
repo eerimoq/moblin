@@ -81,7 +81,7 @@ class RtmpStream {
     }
 
     deinit {
-        connection.removeEventListener(.rtmpStatus, selector: #selector(on), observer: self)
+        connection.removeEventListener(.rtmpStatus, observer: self)
     }
 
     func setReadyState(state: ReadyState) {
@@ -110,6 +110,23 @@ class RtmpStream {
         }
     }
 
+    func addEventListener(_ type: RtmpEvent.Name, selector: Selector, observer: AnyObject) {
+        connection.addEventListener(type, selector: selector, observer: observer)
+    }
+
+    func removeEventListener(_ type: RtmpEvent.Name, observer: AnyObject) {
+        connection.removeEventListener(type, observer: observer)
+    }
+
+    func onTimeout() {
+        info.onTimeout()
+    }
+
+    func closeInternal() {
+        setReadyState(state: .initialized)
+        processor.stopEncoding(self)
+    }
+
     private func publishInner() {
         info.resourceName = streamKey
         let message = RtmpCommandMessage(
@@ -127,10 +144,6 @@ class RtmpStream {
             setReadyState(state: .publish)
             _ = connection.socket.write(chunk: RtmpChunk(message: message))
         }
-    }
-
-    func onTimeout() {
-        info.onTimeout()
     }
 
     private func send(handlerName: String, arguments: Any?...) {
@@ -213,11 +226,6 @@ class RtmpStream {
         // }
         // metadata["videoTrackIdInfoMap"] = videoTrackIdInfoMap
         return metadata
-    }
-
-    func closeInternal() {
-        setReadyState(state: .initialized)
-        processor.stopEncoding(self)
     }
 
     private func didChangeReadyState(_ readyState: ReadyState, oldReadyState: ReadyState) {

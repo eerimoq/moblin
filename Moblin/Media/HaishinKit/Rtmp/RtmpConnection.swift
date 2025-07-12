@@ -69,7 +69,7 @@ class RtmpConnection {
     deinit {
         timer.stop()
         stream = nil
-        removeEventListener(.rtmpStatus, selector: #selector(on), observer: self)
+        removeEventListener(.rtmpStatus, observer: self)
     }
 
     func connect(_ url: String) {
@@ -296,7 +296,7 @@ class RtmpConnection {
         )
     }
 
-    func removeEventListener(_ type: RtmpEvent.Name, selector _: Selector, observer: AnyObject) {
+    func removeEventListener(_ type: RtmpEvent.Name, observer: AnyObject) {
         NotificationCenter.default.removeObserver(
             observer,
             name: Notification.Name(rawValue: type.rawValue),

@@ -521,16 +521,9 @@ final class Media: NSObject {
                          adaptiveBitrate adaptiveBitrateEnabled: Bool)
     {
         rtmpStream?.setStreamKey(makeRtmpStreamName(url: url))
-        rtmpStream?.connection.addEventListener(
-            .rtmpStatus,
-            selector: #selector(rtmpStatusHandler),
-            observer: self
-        )
+        rtmpStream?.addEventListener(.rtmpStatus, selector: #selector(rtmpStatusHandler), observer: self)
         if adaptiveBitrateEnabled {
-            adaptiveBitrate = AdaptiveBitrateSrtFight(
-                targetBitrate: targetBitrate,
-                delegate: self
-            )
+            adaptiveBitrate = AdaptiveBitrateSrtFight(targetBitrate: targetBitrate, delegate: self)
         } else {
             adaptiveBitrate = nil
         }
@@ -538,31 +531,19 @@ final class Media: NSObject {
         if rtmpStreams.count > 1 {
             for rtmpStream in rtmpStreams.suffix(from: 1) {
                 rtmpStream.setStreamKey(makeRtmpStreamName(url: rtmpStream.url))
-                rtmpStream.connection.addEventListener(
-                    .rtmpStatus,
-                    selector: #selector(rtmp2StatusHandler),
-                    observer: self
-                )
+                rtmpStream.addEventListener(.rtmpStatus, selector: #selector(rtmp2StatusHandler), observer: self)
                 rtmpStream.connection.connect(makeRtmpUri(url: rtmpStream.url))
             }
         }
     }
 
     func rtmpStopStream() {
-        rtmpStream?.connection.removeEventListener(
-            .rtmpStatus,
-            selector: #selector(rtmpStatusHandler),
-            observer: self
-        )
+        rtmpStream?.removeEventListener(.rtmpStatus, observer: self)
         rtmpStream?.close()
         rtmpStream?.connection.disconnect()
         if rtmpStreams.count > 1 {
             for rtmpStream in rtmpStreams.suffix(from: 1) {
-                rtmpStream.connection.removeEventListener(
-                    .rtmpStatus,
-                    selector: #selector(rtmp2StatusHandler),
-                    observer: self
-                )
+                rtmpStream.removeEventListener(.rtmpStatus, observer: self)
                 rtmpStream.close()
                 rtmpStream.connection.disconnect()
             }
