@@ -65,8 +65,4 @@ class RtmpEventDispatcher: RtmpEventDispatcherConvertible {
             userInfo: ["event": event]
         )
     }
-
-    func dispatch(_ type: RtmpEvent.Name, data: Any?) {
-        dispatch(event: RtmpEvent(type: type, data: data))
-    }
 }

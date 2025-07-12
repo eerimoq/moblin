@@ -144,6 +144,10 @@ class RtmpConnection: RtmpEventDispatcher {
         socket?.close()
     }
 
+    func gotCommand(data: Any?) {
+        dispatch(event: RtmpEvent(type: .rtmpStatus, data: data))
+    }
+
     func createStream(_ stream: RtmpStream) {
         call("createStream", arguments: []) { data in
             guard let id = data[0] as? Double else {

@@ -36,7 +36,6 @@ private func makeHevcExtendedTagHeader(_ frameType: FlvFrameType, _ packetType: 
 
 enum RtmpStreamCode: String {
     case publishStart = "NetStream.Publish.Start"
-    case videoDimensionChange = "NetStream.Video.DimensionChange"
 }
 
 class RtmpStream {
@@ -58,7 +57,6 @@ class RtmpStream {
 
     private var messages: [RtmpCommandMessage] = []
     private var startedAt = Date()
-    private var dispatcher: (any RtmpEventDispatcherConvertible)!
     private var audioChunkType: RtmpChunkType = .zero
     private var videoChunkType: RtmpChunkType = .zero
     private var dataTimeStamps: [String: Date] = [:]
@@ -78,15 +76,12 @@ class RtmpStream {
     init(processor: Processor) {
         self.processor = processor
         connection = RtmpConnection()
-        dispatcher = RtmpEventDispatcher(target: self)
         connection.stream = self
-        addEventListener(.rtmpStatus, selector: #selector(on(status:)), observer: self)
-        connection.addEventListener(.rtmpStatus, selector: #selector(on(status:)), observer: self)
+        connection.addEventListener(.rtmpStatus, selector: #selector(on), observer: self)
     }
 
     deinit {
-        removeEventListener(.rtmpStatus, selector: #selector(on(status:)), observer: self)
-        connection.removeEventListener(.rtmpStatus, selector: #selector(on(status:)), observer: self)
+        connection.removeEventListener(.rtmpStatus, selector: #selector(on), observer: self)
     }
 
     func setReadyState(state: ReadyState) {
@@ -289,7 +284,7 @@ class RtmpStream {
         guard let data = event.data as? AsObject, let code = data["code"] as? String else {
             return
         }
-        logger.info("rtmp: Got event: \(code)")
+        logger.info("rtmp: Got connection event: \(code)")
         switch code {
         case RtmpConnectionCode.connectSuccess.rawValue:
             setReadyState(state: .initialized)
@@ -473,16 +468,6 @@ class RtmpStream {
         } else {
             return nil
         }
-    }
-}
-
-extension RtmpStream: RtmpEventDispatcherConvertible {
-    func addEventListener(_ type: RtmpEvent.Name, selector: Selector, observer: AnyObject? = nil) {
-        dispatcher.addEventListener(type, selector: selector, observer: observer)
-    }
-
-    func removeEventListener(_ type: RtmpEvent.Name, selector: Selector, observer: AnyObject? = nil) {
-        dispatcher.removeEventListener(type, selector: selector, observer: observer)
     }
 }
 

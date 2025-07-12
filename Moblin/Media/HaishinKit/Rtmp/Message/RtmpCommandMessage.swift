@@ -32,7 +32,7 @@ final class RtmpCommandMessage: RtmpMessage {
             case "close":
                 connection.disconnectInternal()
             default:
-                connection.dispatch(.rtmpStatus, data: arguments.first as Any?)
+                connection.gotCommand(data: arguments.first as Any?)
             }
             return
         }
