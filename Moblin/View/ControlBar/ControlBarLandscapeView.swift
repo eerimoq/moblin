@@ -94,8 +94,8 @@ private struct StatusView: View {
                     .font(smallFont)
             }
         }
-        .padding([.leading], 0)
-        .padding([.trailing, .bottom], 5)
+        .padding([.leading, .bottom], 0)
+        .padding([.trailing], 5)
     }
 }
 
@@ -128,6 +128,7 @@ private struct IconAndSettingsView: View {
         }
         .padding([.leading], 0)
         .padding([.trailing], 10)
+        .padding([.top], 3)
         .padding([.bottom], 5)
     }
 }
