@@ -92,10 +92,6 @@ class RtmpStream {
         connection.stream = self
         addEventListener(.rtmpStatus, selector: #selector(on(status:)), observer: self)
         connection.addEventListener(.rtmpStatus, selector: #selector(on(status:)), observer: self)
-        if connection.connected {
-            sendFCPublish()
-            connection.createStream(self)
-        }
     }
 
     deinit {
