@@ -607,7 +607,13 @@ extension Model {
             }
             let speedString = formatBytesPerSecond(speed: speed)
             let total = sizeFormatter.string(fromByteCount: media.streamTotal())
-            let speedAndTotal = String(localized: "\(speedString) (\(total))")
+            let numberOfDestinations = media.getNumberOfDestinations()
+            let speedAndTotal: String
+            if numberOfDestinations == 1 {
+                speedAndTotal = String(localized: "\(speedString) (\(total))")
+            } else {
+                speedAndTotal = String(localized: "\(speedString) x\(numberOfDestinations) (\(total))")
+            }
             if speedAndTotal != bitrate.speedAndTotal {
                 bitrate.speedAndTotal = speedAndTotal
             }

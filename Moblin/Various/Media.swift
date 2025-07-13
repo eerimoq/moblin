@@ -255,6 +255,14 @@ final class Media: NSObject {
         srtlaClient?.setNetworkInterfaceNames(networkInterfaceNames: networkInterfaceNames)
     }
 
+    func getNumberOfDestinations() -> Int {
+        if rtmpStream != nil {
+            return rtmpStreams.count
+        } else {
+            return 1
+        }
+    }
+
     private func is200MsTick() -> Bool {
         return updateTickCount % 10 == 0
     }
