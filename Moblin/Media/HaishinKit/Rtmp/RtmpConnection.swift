@@ -1,5 +1,4 @@
 import AVFoundation
-import Foundation
 
 private let supportedProtocols = ["rtmp", "rtmps", "rtmpt", "rtmpts"]
 
@@ -62,14 +61,11 @@ class RtmpConnection {
     private var currentChunk: RtmpChunk?
     private var fragmentedChunks: [UInt16: RtmpChunk] = [:]
 
-    init() {
-        addEventListener(.rtmpStatus, selector: #selector(on), observer: self)
-    }
+    init() {}
 
     deinit {
         timer.stop()
         stream = nil
-        removeEventListener(.rtmpStatus, observer: self)
     }
 
     func connect(_ url: String) {
@@ -143,8 +139,8 @@ class RtmpConnection {
         socket?.close()
     }
 
-    func gotCommand(data: Any?) {
-        post(event: RtmpEvent(type: .rtmpStatus, data: data))
+    func gotCommand(data: AsObject) {
+        on(data: data)
     }
 
     func createStream(_ stream: RtmpStream) {
@@ -162,18 +158,15 @@ class RtmpConnection {
         return nextTransactionId
     }
 
-    @objc
-    private func on(status: Notification) {
-        guard let event = RtmpEvent.from(status) else {
-            return
-        }
+    private func on(data: AsObject) {
+        stream?.on(data: data)
         processorControlQueue.async {
-            self.onInternal(event: event)
+            self.onInternal(data: data)
         }
     }
 
-    private func onInternal(event: RtmpEvent) {
-        guard let data = event.data as? AsObject, let code = data["code"] as? String else {
+    private func onInternal(data: AsObject) {
+        guard let code = data["code"] as? String else {
             return
         }
         switch RtmpConnectionCode(rawValue: code) {
@@ -286,31 +279,6 @@ class RtmpConnection {
         callCompletions.removeAll()
         fragmentedChunks.removeAll()
     }
-
-    func addEventListener(_ type: RtmpEvent.Name, selector: Selector, observer: AnyObject) {
-        NotificationCenter.default.addObserver(
-            observer,
-            selector: selector,
-            name: Notification.Name(rawValue: type.rawValue),
-            object: self
-        )
-    }
-
-    func removeEventListener(_ type: RtmpEvent.Name, observer: AnyObject) {
-        NotificationCenter.default.removeObserver(
-            observer,
-            name: Notification.Name(rawValue: type.rawValue),
-            object: self
-        )
-    }
-
-    private func post(event: RtmpEvent) {
-        NotificationCenter.default.post(
-            name: Notification.Name(rawValue: event.type.rawValue),
-            object: self,
-            userInfo: ["event": event]
-        )
-    }
 }
 
 extension RtmpConnection: RtmpSocketDelegate {
@@ -376,7 +344,7 @@ extension RtmpConnection: RtmpSocketDelegate {
         return Data()
     }
 
-    func socketPost(event: RtmpEvent) {
-        post(event: event)
+    func socketPost(data: AsObject) {
+        on(data: data)
     }
 }

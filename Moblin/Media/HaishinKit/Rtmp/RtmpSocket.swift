@@ -13,7 +13,7 @@ protocol RtmpSocketDelegate: AnyObject {
     func socketDataReceived(_ socket: RtmpSocket, data: Data) -> Data
     func socketReadyStateChanged(readyState: RtmpSocketReadyState)
     func socketUpdateStats(totalBytesOut: Int64)
-    func socketPost(event: RtmpEvent)
+    func socketPost(data: AsObject)
 }
 
 final class RtmpSocket {
@@ -108,7 +108,7 @@ final class RtmpSocket {
             } else {
                 data = RtmpConnectionCode.connectFailed.eventData()
             }
-            delegate?.socketPost(event: RtmpEvent(type: .rtmpStatus, data: data))
+            delegate?.socketPost(data: data)
         }
         timeoutHandler?.cancel()
     }

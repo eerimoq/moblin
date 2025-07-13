@@ -35,7 +35,7 @@ private func makeHevcExtendedTagHeader(_ frameType: FlvFrameType, _ packetType: 
 }
 
 protocol RtmpStreamDelegate: AnyObject {
-    func rtmpStreamStatus(_ rtmpStream: RtmpStream, event: RtmpEvent)
+    func rtmpStreamStatus(_ rtmpStream: RtmpStream, data: AsObject)
 }
 
 enum RtmpStreamCode: String {
@@ -83,11 +83,6 @@ class RtmpStream {
         self.delegate = delegate
         connection = RtmpConnection()
         connection.stream = self
-        connection.addEventListener(.rtmpStatus, selector: #selector(on), observer: self)
-    }
-
-    deinit {
-        connection.removeEventListener(.rtmpStatus, observer: self)
     }
 
     func setReadyState(state: ReadyState) {
@@ -281,19 +276,15 @@ class RtmpStream {
         processor.startEncoding(self)
     }
 
-    @objc
-    private func on(status: Notification) {
-        guard let event = RtmpEvent.from(status) else {
-            return
-        }
-        delegate?.rtmpStreamStatus(self, event: event)
+    func on(data: AsObject) {
+        delegate?.rtmpStreamStatus(self, data: data)
         processorControlQueue.async {
-            self.onInternal(event: event)
+            self.onInternal(data: data)
         }
     }
 
-    private func onInternal(event: RtmpEvent) {
-        guard let data = event.data as? AsObject, let code = data["code"] as? String else {
+    private func onInternal(data: AsObject) {
+        guard let code = data["code"] as? String else {
             return
         }
         switch code {
