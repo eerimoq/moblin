@@ -125,11 +125,15 @@ class RtmpStream {
     }
 
     func connect(_ url: String) {
-        connection.connect(url)
+        processorControlQueue.async {
+            self.connection.connect(url)
+        }
     }
 
     func disconnect() {
-        connection.disconnect()
+        processorControlQueue.async {
+            self.connection.disconnect()
+        }
     }
 
     func reconnectSoon() {

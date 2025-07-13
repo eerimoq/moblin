@@ -30,7 +30,7 @@ final class RtmpCommandMessage: RtmpMessage {
         guard let responder = connection.callCompletions.removeValue(forKey: transactionId) else {
             switch commandName {
             case "close":
-                connection.disconnectInternal()
+                connection.disconnect()
             default:
                 if let data = arguments.first as? AsObject?, let data {
                     connection.gotCommand(data: data)

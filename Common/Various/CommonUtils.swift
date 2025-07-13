@@ -55,7 +55,7 @@ func makeRtmpUri(url: String) -> String {
     return "\(url)"
 }
 
-func makeRtmpStreamName(url: String) -> String {
+func makeRtmpStreamKey(url: String) -> String {
     let parts = url.split(separator: "/")
     if parts.isEmpty {
         return ""
@@ -70,8 +70,8 @@ func isValidRtmpUrl(url: String, rtmpStreamKeyRequired: Bool) -> String? {
     if makeRtmpUri(url: url) == "" {
         return String(localized: "Malformed RTMP URL")
     }
-    if makeRtmpStreamName(url: url) == "" {
-        return String(localized: "RTMP stream name missing")
+    if makeRtmpStreamKey(url: url) == "" {
+        return String(localized: "RTMP stream key missing")
     }
     return nil
 }

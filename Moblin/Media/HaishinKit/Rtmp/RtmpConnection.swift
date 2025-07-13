@@ -66,21 +66,30 @@ class RtmpConnection {
         self.name = name
     }
 
-    deinit {
-        timer.stop()
-        stream = nil
-    }
-
     func connect(_ url: String) {
-        processorControlQueue.async {
-            self.connectInternal(url)
+        guard let uri = URL(string: url),
+              let scheme = uri.scheme,
+              let host = uri.host,
+              !connected,
+              supportedProtocols.contains(scheme)
+        else {
+            return
+        }
+        self.uri = uri
+        socket = RtmpSocket(name: name)
+        socket.delegate = self
+        if scheme.hasSuffix("s") {
+            socket.connect(host: host, port: uri.port ?? 443, tlsOptions: .init())
+        } else {
+            socket.connect(host: host, port: uri.port ?? 1935, tlsOptions: nil)
         }
     }
 
     func disconnect() {
-        processorControlQueue.async {
-            self.disconnectInternal()
-        }
+        timer.stop()
+        stream?.closeInternal()
+        socket?.close()
+        socket = nil
     }
 
     private static func makeSanJoseAuthCommand(_ url: URL, description: String) -> String {
@@ -119,32 +128,6 @@ class RtmpConnection {
             callCompletions[message.transactionId] = onCompleted
         }
         _ = socket.write(chunk: RtmpChunk(message: message))
-    }
-
-    private func connectInternal(_ url: String) {
-        guard let uri = URL(string: url),
-              let scheme = uri.scheme,
-              let host = uri.host,
-              !connected,
-              supportedProtocols.contains(scheme)
-        else {
-            return
-        }
-        self.uri = uri
-        socket = socket ?? RtmpSocket(name: name)
-        socket.delegate = self
-        if scheme.hasSuffix("s") {
-            socket.connect(host: host, port: uri.port ?? 443, tlsOptions: .init())
-        } else {
-            socket.connect(host: host, port: uri.port ?? 1935, tlsOptions: nil)
-        }
-    }
-
-    func disconnectInternal() {
-        timer.stop()
-        stream?.closeInternal()
-        socket?.close()
-        socket = nil
     }
 
     func gotCommand(data: AsObject) {
@@ -219,7 +202,7 @@ class RtmpConnection {
             connect(command)
         case description.contains("authmod=adobe"):
             if user.isEmpty || password.isEmpty {
-                disconnectInternal()
+                disconnect()
                 break
             }
             let query = uri.query ?? ""
@@ -231,7 +214,7 @@ class RtmpConnection {
     }
 
     private func handleConnectClosed() {
-        disconnectInternal()
+        disconnect()
     }
 
     private func makeConnectChunk() -> RtmpChunk? {
@@ -267,7 +250,7 @@ class RtmpConnection {
 
     private func handleHandshakeDone() {
         guard let chunk = makeConnectChunk() else {
-            disconnectInternal()
+            disconnect()
             return
         }
         _ = socket.write(chunk: chunk)

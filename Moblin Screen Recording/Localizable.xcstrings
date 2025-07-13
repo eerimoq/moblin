@@ -489,7 +489,11 @@
         }
       }
     },
+    "RTMP stream key missing" : {
+
+    },
     "RTMP stream name missing" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
