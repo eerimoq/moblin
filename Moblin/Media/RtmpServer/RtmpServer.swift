@@ -29,7 +29,7 @@ protocol RtmpServerDelegate: AnyObject {
 }
 
 class RtmpServer {
-    private var listener: NWListener!
+    private var listener: NWListener?
     private var clients: [RtmpServerClient]
     weak var delegate: (any RtmpServerDelegate)?
     var settings: SettingsRtmpServer
@@ -55,6 +55,8 @@ class RtmpServer {
                 client.stop(reason: "Server stop")
             }
             self.clients.removeAll()
+            self.listener?.stateUpdateHandler = nil
+            self.listener?.newConnectionHandler = nil
             self.listener?.cancel()
             self.listener = nil
             self.periodicTimer.stop()
@@ -106,15 +108,15 @@ class RtmpServer {
             logger.error("rtmp-server: Failed to create listener with error \(error)")
             return
         }
-        listener.stateUpdateHandler = handleListenerStateChange(to:)
-        listener.newConnectionHandler = handleNewListenerConnection(connection:)
-        listener.start(queue: rtmpServerDispatchQueue)
+        listener?.stateUpdateHandler = handleListenerStateChange(to:)
+        listener?.newConnectionHandler = handleNewListenerConnection(connection:)
+        listener?.start(queue: rtmpServerDispatchQueue)
     }
 
     private func setupPeriodicTimer() {
         periodicTimer.startPeriodic(interval: 3) {
             self.cleanupClients()
-            switch self.listener.state {
+            switch self.listener?.state {
             case .failed:
                 self.setupListener()
             default:
@@ -137,7 +139,7 @@ class RtmpServer {
         logger.info("rtmp-server: State change to \(state)")
         switch state {
         case .ready:
-            if let port = listener.port {
+            if let port = listener?.port {
                 logger.info("rtmp-server: Listening on port \(port.rawValue)")
             }
         default:
