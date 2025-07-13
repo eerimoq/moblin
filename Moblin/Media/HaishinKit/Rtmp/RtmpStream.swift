@@ -1,6 +1,6 @@
 import AVFoundation
 
-private let extendedVideoHeader: UInt8 = 0b1000_0000
+let extendedVideoHeader: UInt8 = 0b1000_0000
 
 private func makeVideoHeader(_ frameType: FlvFrameType,
                              _ fourCc: FlvVideoFourCC,

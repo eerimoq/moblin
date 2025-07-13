@@ -451,18 +451,22 @@ class RtmpServerChunkStream {
             return
         }
         let control = messageBody[0]
-        let frameType = control >> 4
-        let isExVideoHeader = (frameType & 0x8) == 0
-        guard isExVideoHeader else {
-            client.stopInternal(reason: "Unsupported video frame type \(frameType)")
-            return
+        let isExVideoHeader = (control & extendedVideoHeader) == extendedVideoHeader
+        if isExVideoHeader {
+            processMessageVideoExtendedHedaer(client: client, control: control)
+        } else {
+            processMessageVideoDefaultHeader(client: client, control: control)
         }
+    }
+
+    private func processMessageVideoDefaultHeader(client: RtmpServerClient, control: UInt8) {
         guard let format = FlvVideoCodec(rawValue: control & 0xF) else {
             client.stopInternal(reason: "Unsupported video codec \(control & 0xF)")
             return
         }
         guard format == .avc else {
-            client.stopInternal(reason: "Unsupported video codec \(format.toString()). Only H.264/AVC is supported.")
+            client
+                .stopInternal(reason: "Unsupported video codec \(format.toString()). Only H.264/AVC is supported.")
             return
         }
         switch FlvAvcPacketType(rawValue: messageBody[1]) {
@@ -472,6 +476,47 @@ class RtmpServerChunkStream {
             processMessageVideoTypeNal(client: client)
         default:
             client.stopInternal(reason: "Unsupported video H.264/AVC packet type \(messageBody[1])")
+        }
+    }
+
+    private func processMessageVideoExtendedHedaer(client: RtmpServerClient, control: UInt8) {
+        guard messageBody.count >= 5 else {
+            client.stopInternal(reason: "Got \(messageBody.count) bytes video message, expected >= 6")
+            return
+        }
+        let frameType = (control >> 4) & 0b111
+        guard let videoType = FlvFrameType(rawValue: frameType) else {
+            client.stopInternal(reason: "Unsupported video frame type \(frameType)")
+            return
+        }
+        let packetType = control & 0b1111
+        guard let packetType = FlvVideoPacketType(rawValue: packetType) else {
+            client.stopInternal(reason: "Unsupported video packet type \(packetType)")
+            return
+        }
+        let fourCc = UInt32(messageBody[1]) << 24
+            | UInt32(messageBody[2]) << 16
+            | UInt32(messageBody[3]) << 8
+            | UInt32(messageBody[4]) << 0
+        guard let fourCc = FlvVideoFourCC(rawValue: fourCc) else {
+            client.stopInternal(reason: "Unsupported fourCC \(fourCc)")
+            return
+        }
+        guard fourCc == .hevc else {
+            client.stopInternal(reason: "Unsupported fourCC \(fourCc). Only hevc is supported.")
+            return
+        }
+        switch packetType {
+        case .sequenceStart:
+            processMessageVideoTypeSequenceStart(client: client)
+        case .codedFrames:
+            processMessageVideoTypeCodedFrames(client: client, isKeyFrame: videoType == .key)
+        case .sequenceEnd:
+            client.stopInternal(reason: "Stream ended")
+        case .codedFramesX:
+            processMessageVideoTypeCodedFramesX(client: client, isKeyFrame: videoType == .key)
+        default:
+            client.stopInternal(reason: "Unsupported video packet type \(packetType)")
         }
     }
 
@@ -497,7 +542,33 @@ class RtmpServerChunkStream {
             videoDecoder!.delegate = self
             videoDecoder!.startRunning(formatDescription: formatDescription)
         } else {
-            client.stopInternal(reason: "Format description error \(status)")
+            client.stopInternal(reason: "H.264/AVC format description error \(status)")
+        }
+    }
+
+    private func processMessageVideoTypeSequenceStart(client: RtmpServerClient) {
+        guard messageBody.count >= FlvTagType.video.headerSize else {
+            client
+                .stopInternal(
+                    reason: """
+                    Got \(messageBody.count) bytes video message, \
+                    expected >= \(FlvTagType.video.headerSize)
+                    """
+                )
+            return
+        }
+        guard videoDecoder == nil else {
+            return
+        }
+        var config = MpegTsVideoConfigHevc()
+        config.data = messageBody.subdata(in: FlvTagType.video.headerSize ..< messageBody.count)
+        let status = config.makeFormatDescription(&formatDescription)
+        if status == noErr {
+            videoDecoder = VideoDecoder(lockQueue: videoCodecLockQueue)
+            videoDecoder!.delegate = self
+            videoDecoder!.startRunning(formatDescription: formatDescription)
+        } else {
+            client.stopInternal(reason: "H.265/HEVC format description error \(status)")
         }
     }
 
@@ -506,11 +577,19 @@ class RtmpServerChunkStream {
             logger.info("rtmp-server: client: Dropping short packet with data \(messageBody.hexString())")
             return
         }
+        var compositionTime = Int32(data: [0] + messageBody[2 ..< 5]).bigEndian
+        compositionTime <<= 8
+        compositionTime /= 256
+        let isKeyFrame = (messageBody[0] >> 4) & 0b0111 == FlvFrameType.key.rawValue
         if firstVideoFrameTimestamp == nil {
             firstVideoFrameTimestamp = .now
         }
         totalNumberOfVideoFrames += 1
-        if let sampleBuffer = makeVideoSampleBuffer(client: client) {
+        if let sampleBuffer = makeVideoSampleBuffer(client: client,
+                                                    isKeyFrame: isKeyFrame,
+                                                    compositionTime: compositionTime,
+                                                    dataOffset: FlvTagType.video.headerSize)
+        {
             client.targetLatenciesSynchronizer
                 .setLatestVideoPresentationTimeStamp(sampleBuffer.presentationTimeStamp.seconds)
             client.updateTargetLatencies()
@@ -520,10 +599,57 @@ class RtmpServerChunkStream {
         }
     }
 
-    private func makeVideoSampleBuffer(client: RtmpServerClient) -> CMSampleBuffer? {
-        var compositionTime = Int32(data: [0] + messageBody[2 ..< 5]).bigEndian
+    private func processMessageVideoTypeCodedFrames(client: RtmpServerClient, isKeyFrame: Bool) {
+        guard messageBody.count > 9 else {
+            logger.info("rtmp-server: client: Dropping short packet with data \(messageBody.hexString())")
+            return
+        }
+        var compositionTime = Int32(data: [0] + messageBody[5 ..< 8]).bigEndian
         compositionTime <<= 8
         compositionTime /= 256
+        if firstVideoFrameTimestamp == nil {
+            firstVideoFrameTimestamp = .now
+        }
+        totalNumberOfVideoFrames += 1
+        if let sampleBuffer = makeVideoSampleBuffer(client: client,
+                                                    isKeyFrame: isKeyFrame,
+                                                    compositionTime: compositionTime,
+                                                    dataOffset: FlvTagType.video.headerSize + 3)
+        {
+            client.targetLatenciesSynchronizer
+                .setLatestVideoPresentationTimeStamp(sampleBuffer.presentationTimeStamp.seconds)
+            client.updateTargetLatencies()
+            videoCodecLockQueue.async {
+                self.videoDecoder?.decodeSampleBuffer(sampleBuffer)
+            }
+        }
+    }
+
+    private func processMessageVideoTypeCodedFramesX(client: RtmpServerClient, isKeyFrame: Bool) {
+        let compositionTime: Int32 = 0
+        if firstVideoFrameTimestamp == nil {
+            firstVideoFrameTimestamp = .now
+        }
+        totalNumberOfVideoFrames += 1
+        if let sampleBuffer = makeVideoSampleBuffer(client: client,
+                                                    isKeyFrame: isKeyFrame,
+                                                    compositionTime: compositionTime,
+                                                    dataOffset: FlvTagType.video.headerSize)
+        {
+            client.targetLatenciesSynchronizer
+                .setLatestVideoPresentationTimeStamp(sampleBuffer.presentationTimeStamp.seconds)
+            client.updateTargetLatencies()
+            videoCodecLockQueue.async {
+                self.videoDecoder?.decodeSampleBuffer(sampleBuffer)
+            }
+        }
+    }
+
+    private func makeVideoSampleBuffer(client: RtmpServerClient,
+                                       isKeyFrame: Bool,
+                                       compositionTime: Int32,
+                                       dataOffset: Int) -> CMSampleBuffer?
+    {
         var duration: Int64
         if videoTimestamp == -1 {
             duration = 0
@@ -539,8 +665,7 @@ class RtmpServerChunkStream {
             presentationTimeStamp: CMTimeMake(value: presentationTimeStamp, timescale: 1000),
             decodeTimeStamp: CMTimeMake(value: decodeTimeStamp, timescale: 1000)
         )
-        let isKeyFrame = (messageBody[0] >> 4) & 0b0111 == FlvFrameType.key.rawValue
-        let blockBuffer = messageBody.makeBlockBuffer(advancedBy: FlvTagType.video.headerSize)
+        let blockBuffer = messageBody.makeBlockBuffer(advancedBy: dataOffset)
         var sampleBuffer: CMSampleBuffer?
         var sampleSize = blockBuffer?.dataLength ?? 0
         guard CMSampleBufferCreate(
