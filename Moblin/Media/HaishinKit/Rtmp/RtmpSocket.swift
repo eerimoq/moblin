@@ -32,7 +32,6 @@ final class RtmpSocket {
 
     private var inputBuffer = Data()
     weak var delegate: (any RtmpSocketDelegate)?
-    private(set) var totalBytesIn: Atomic<Int64> = .init(0)
     private(set) var totalBytesOut: Atomic<Int64> = .init(0)
     private(set) var connected = false {
         didSet {
@@ -68,7 +67,6 @@ final class RtmpSocket {
         setReadyState(state: .uninitialized)
         maximumChunkSizeToServer = RtmpChunk.defaultSize
         maximumChunkSizeFromServer = RtmpChunk.defaultSize
-        totalBytesIn.mutate { $0 = 0 }
         totalBytesOut.mutate { $0 = 0 }
         inputBuffer.removeAll(keepingCapacity: false)
         connection = NWConnection(
@@ -182,7 +180,6 @@ final class RtmpSocket {
                 return
             }
             self.inputBuffer.append(data)
-            self.totalBytesIn.mutate { $0 += Int64(data.count) }
             self.processInput()
             self.receive(on: connection)
         }
