@@ -19,6 +19,8 @@ protocol MediaDelegate: AnyObject {
     func mediaOnSrtDisconnected(_ reason: String)
     func mediaOnRtmpConnected()
     func mediaOnRtmpDisconnected(_ message: String)
+    func mediaOnRtmpDestinationConnected(_ destination: String)
+    func mediaOnRtmpDestinationDisconnected(_ destination: String)
     func mediaOnRistConnected()
     func mediaOnRistDisconnected()
     func mediaOnAudioMuteChange()
@@ -544,13 +546,9 @@ final class Media: NSObject {
     }
 
     func rtmpStopStream() {
-        rtmpStream?.close()
-        rtmpStream?.disconnect()
-        if rtmpStreams.count > 1 {
-            for rtmpStream in rtmpStreams.suffix(from: 1) {
-                rtmpStream.close()
-                rtmpStream.disconnect()
-            }
+        for rtmpStream in rtmpStreams {
+            rtmpStream.close()
+            rtmpStream.disconnect()
         }
         adaptiveBitrate = nil
     }
@@ -1108,10 +1106,15 @@ extension Media: RtmpStreamDelegate {
                 rtmpStream.publish()
                 if rtmpStream === self.rtmpStream {
                     self.delegate?.mediaOnRtmpConnected()
+                } else {
+                    self.delegate?.mediaOnRtmpDestinationConnected(rtmpStream.name)
                 }
             case .connectFailed, .connectClosed:
                 if rtmpStream === self.rtmpStream {
                     self.delegate?.mediaOnRtmpDisconnected("\(code)")
+                } else {
+                    self.delegate?.mediaOnRtmpDestinationDisconnected(rtmpStream.name)
+                    rtmpStream.reconnectSoon()
                 }
             default:
                 break

@@ -132,6 +132,15 @@ class RtmpStream {
         connection.disconnect()
     }
 
+    func reconnectSoon() {
+        processorControlQueue.asyncAfter(deadline: .now() + 5) { [weak self] in
+            guard let self else {
+                return
+            }
+            self.connection.connect(makeRtmpUri(url: self.url))
+        }
+    }
+
     func publish() {
         processorControlQueue.async {
             self.publishInner()

@@ -140,6 +140,7 @@ class RtmpConnection {
         timer.stop()
         stream?.closeInternal()
         socket?.close()
+        socket = nil
     }
 
     func gotCommand(data: AsObject) {

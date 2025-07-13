@@ -554,6 +554,15 @@ extension Model {
         onDisconnected(reason: "RTMP disconnected with message \(message)")
     }
 
+    private func handleRtmpDestinationConnected(destination: String) {
+        makeToast(title: String(localized: "🎉 You are LIVE at multi stream \(destination) 🎉"))
+    }
+
+    private func handleRtmpDestinationDisconnected(destination: String) {
+        makeErrorToast(title: String(localized: "😢 Multi stream \(destination) failed 😢"),
+                       subTitle: String(localized: "Attempting again in 5 seconds."))
+    }
+
     private func handleRistConnected() {
         DispatchQueue.main.async {
             self.onConnected()
@@ -880,6 +889,14 @@ extension Model: MediaDelegate {
 
     func mediaOnRtmpDisconnected(_ message: String) {
         handleRtmpDisconnected(message: message)
+    }
+
+    func mediaOnRtmpDestinationConnected(_ destination: String) {
+        handleRtmpDestinationConnected(destination: destination)
+    }
+
+    func mediaOnRtmpDestinationDisconnected(_ destination: String) {
+        handleRtmpDestinationDisconnected(destination: destination)
     }
 
     func mediaOnRistConnected() {
