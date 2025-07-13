@@ -12,7 +12,7 @@ enum RtmpSocketReadyState {
 protocol RtmpSocketDelegate: AnyObject {
     func socketDataReceived(_ socket: RtmpSocket, data: Data) -> Data
     func socketReadyStateChanged(readyState: RtmpSocketReadyState)
-    func socketUpdateStats(totalBytesOut: Int64)
+    func socketUpdateStats(totalBytesSent: Int64)
     func socketPost(data: AsObject)
 }
 
@@ -32,7 +32,7 @@ final class RtmpSocket {
 
     private var inputBuffer = Data()
     weak var delegate: (any RtmpSocketDelegate)?
-    private var totalBytesOut: Int64 = 0
+    private var totalBytesSent: Int64 = 0
     private(set) var connected = false {
         didSet {
             if connected {
@@ -67,7 +67,7 @@ final class RtmpSocket {
         setReadyState(state: .uninitialized)
         maximumChunkSizeToServer = RtmpChunk.defaultSize
         maximumChunkSizeFromServer = RtmpChunk.defaultSize
-        totalBytesOut = 0
+        totalBytesSent = 0
         inputBuffer.removeAll(keepingCapacity: false)
         connection = NWConnection(
             to: .hostPort(host: .init(host), port: .init(integerLiteral: NWEndpoint.Port.IntegerLiteralType(port))),
@@ -139,8 +139,8 @@ final class RtmpSocket {
                 self.close(isDisconnected: true)
                 return
             }
-            self.totalBytesOut += Int64(data.count)
-            self.delegate?.socketUpdateStats(totalBytesOut: self.totalBytesOut)
+            self.totalBytesSent += Int64(data.count)
+            self.delegate?.socketUpdateStats(totalBytesSent: self.totalBytesSent)
         })
     }
 

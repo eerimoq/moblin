@@ -297,8 +297,8 @@ extension RtmpConnection: RtmpSocketDelegate {
         }
     }
 
-    func socketUpdateStats(totalBytesOut: Int64) {
-        stream?.info.onWritten(sequence: totalBytesOut)
+    func socketUpdateStats(totalBytesSent: Int64) {
+        stream?.info.onWritten(sequence: totalBytesSent)
     }
 
     func socketDataReceived(_ socket: RtmpSocket, data: Data) -> Data {
