@@ -67,6 +67,7 @@ class RtmpStream {
     private let connection: RtmpConnection
     private var streamKey = ""
     var url: String = ""
+    let name: String
 
     // Outbound
     private var baseTimeStamp = -1.0
@@ -78,10 +79,11 @@ class RtmpStream {
     private let processor: Processor
     weak var delegate: RtmpStreamDelegate?
 
-    init(processor: Processor, delegate: RtmpStreamDelegate) {
+    init(name: String, processor: Processor, delegate: RtmpStreamDelegate) {
+        self.name = name
         self.processor = processor
         self.delegate = delegate
-        connection = RtmpConnection()
+        connection = RtmpConnection(name: name)
         connection.stream = self
     }
 
@@ -91,7 +93,7 @@ class RtmpStream {
         }
         let oldState = readyState
         readyState = state
-        logger.info("rtmp: Settings stream state \(oldState) -> \(state)")
+        logger.info("rtmp: \(name): Settings stream state \(oldState) -> \(state)")
         if oldState == .publishing {
             sendFCUnpublish()
             sendDeleteStream()

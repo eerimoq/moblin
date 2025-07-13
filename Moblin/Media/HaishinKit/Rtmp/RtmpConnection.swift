@@ -60,8 +60,11 @@ class RtmpConnection {
     private var messages: [UInt16: RtmpMessage] = [:]
     private var currentChunk: RtmpChunk?
     private var fragmentedChunks: [UInt16: RtmpChunk] = [:]
+    private let name: String
 
-    init() {}
+    init(name: String) {
+        self.name = name
+    }
 
     deinit {
         timer.stop()
@@ -127,7 +130,7 @@ class RtmpConnection {
             return
         }
         self.uri = uri
-        socket = socket ?? RtmpSocket()
+        socket = socket ?? RtmpSocket(name: name)
         socket.delegate = self
         socket.secure = scheme.hasSuffix("s")
         socket.connect(host: host, port: uri.port ?? (socket.secure ? 443 : 1935))
