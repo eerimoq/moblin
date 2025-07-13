@@ -125,15 +125,19 @@ class RtmpConnection {
         guard let uri = URL(string: url),
               let scheme = uri.scheme,
               let host = uri.host,
-              !connected, supportedProtocols.contains(scheme)
+              !connected,
+              supportedProtocols.contains(scheme)
         else {
             return
         }
         self.uri = uri
         socket = socket ?? RtmpSocket(name: name)
         socket.delegate = self
-        socket.secure = scheme.hasSuffix("s")
-        socket.connect(host: host, port: uri.port ?? (socket.secure ? 443 : 1935))
+        if scheme.hasSuffix("s") {
+            socket.connect(host: host, port: uri.port ?? 443, tlsOptions: .init())
+        } else {
+            socket.connect(host: host, port: uri.port ?? 1935, tlsOptions: nil)
+        }
     }
 
     func disconnectInternal() {

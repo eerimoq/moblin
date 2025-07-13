@@ -20,16 +20,6 @@ final class RtmpSocket {
     var maximumChunkSizeFromServer = RtmpChunk.defaultSize
     var maximumChunkSizeToServer = RtmpChunk.defaultSize
     private var readyState: RtmpSocketReadyState = .uninitialized
-    var secure = false {
-        didSet {
-            if secure {
-                tlsOptions = .init()
-            } else {
-                tlsOptions = nil
-            }
-        }
-    }
-
     private var inputBuffer = Data()
     weak var delegate: (any RtmpSocketDelegate)?
     private var totalBytesSent: Int64 = 0
@@ -55,7 +45,6 @@ final class RtmpSocket {
         }
     }
 
-    private var tlsOptions: NWProtocolTLS.Options?
     private var timeoutHandler: DispatchWorkItem?
     private let name: String
 
@@ -63,7 +52,7 @@ final class RtmpSocket {
         self.name = name
     }
 
-    func connect(host: String, port: Int) {
+    func connect(host: String, port: Int, tlsOptions: NWProtocolTLS.Options?) {
         setReadyState(state: .uninitialized)
         maximumChunkSizeToServer = RtmpChunk.defaultSize
         maximumChunkSizeFromServer = RtmpChunk.defaultSize
