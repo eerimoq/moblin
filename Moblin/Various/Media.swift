@@ -121,7 +121,7 @@ final class Media: NSObject {
             rtmpStreams = [RtmpStream(name: "Main", processor: processor, delegate: self)]
             for destination in destinations where destination.enabled {
                 let rtmpStream = RtmpStream(name: destination.name, processor: processor, delegate: self)
-                rtmpStream.url = destination.url
+                rtmpStream.setUrl(destination.url)
                 rtmpStreams.append(rtmpStream)
             }
             srtStream = nil
@@ -530,17 +530,16 @@ final class Media: NSObject {
                          targetBitrate: UInt32,
                          adaptiveBitrate adaptiveBitrateEnabled: Bool)
     {
-        rtmpStream?.setStreamKey(makeRtmpStreamKey(url: url))
+        rtmpStream?.setUrl(url)
         if adaptiveBitrateEnabled {
             adaptiveBitrate = AdaptiveBitrateSrtFight(targetBitrate: targetBitrate, delegate: self)
         } else {
             adaptiveBitrate = nil
         }
-        rtmpStream?.connect(makeRtmpUri(url: url))
+        rtmpStream?.connect()
         if rtmpStreams.count > 1 {
             for rtmpStream in rtmpStreams.suffix(from: 1) {
-                rtmpStream.setStreamKey(makeRtmpStreamKey(url: rtmpStream.url))
-                rtmpStream.connect(makeRtmpUri(url: rtmpStream.url))
+                rtmpStream.connect()
             }
         }
     }

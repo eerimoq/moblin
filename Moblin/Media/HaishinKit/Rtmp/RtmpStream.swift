@@ -75,7 +75,7 @@ class RtmpStream {
     private var dataTimeStamps: [String: Date] = [:]
     private let connection: RtmpConnection
     private var streamKey = ""
-    var url: String = ""
+    private var url: String = ""
     let name: String
 
     // Outbound
@@ -120,13 +120,14 @@ class RtmpStream {
         }
     }
 
-    func setStreamKey(_ streamKey: String) {
-        self.streamKey = streamKey
+    func setUrl(_ url: String) {
+        streamKey = makeRtmpStreamKey(url: url)
+        self.url = url
     }
 
-    func connect(_ url: String) {
+    func connect() {
         processorControlQueue.async {
-            self.connection.connect(url)
+            self.connection.connect(makeRtmpUri(url: self.url))
         }
     }
 
