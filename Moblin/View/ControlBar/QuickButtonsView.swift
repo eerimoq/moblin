@@ -126,7 +126,9 @@ private struct ButtonTextOverlayView: View {
 }
 
 struct QuickButtonsInnerView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
+    @ObservedObject var quickButtons: QuickButtons
+    @ObservedObject var quickButtonsSettings: SettingsQuickButtons
     var state: ButtonState
     var size: CGFloat
     var nameSize: CGFloat
@@ -356,6 +358,8 @@ struct QuickButtonsInnerView: View {
 
     private func portraitAction() {
         model.setDisplayPortrait(portrait: !model.database.portrait)
+        // To update main view.
+        model.sceneSettingsPanelSceneId += 1
     }
 
     private func goProAction() {
@@ -623,7 +627,7 @@ struct QuickButtonsInnerView: View {
                     pauseTtsAction()
                 }
             }
-            if model.database.quickButtonsGeneral.showName && !model.isPortrait() {
+            if quickButtonsSettings.showName && !model.isPortrait() {
                 Text(state.button.name)
                     .padding(0)
                     .multilineTextAlignment(.center)

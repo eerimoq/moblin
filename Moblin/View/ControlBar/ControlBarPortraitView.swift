@@ -14,12 +14,14 @@ private struct ControlBarPageScrollTargetBehavior: ScrollTargetBehavior {
 }
 
 private struct QuickButtonsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
+    @ObservedObject var quickButtons: QuickButtons
+    @ObservedObject var quickButtonsSettings: SettingsQuickButtons
     var page: Int
     var height: Double
 
     private func buttonSize() -> Double {
-        if model.database.quickButtonsGeneral.bigButtons {
+        if quickButtonsSettings.bigButtons {
             return controlBarQuickButtonSingleQuickButtonSize
         } else {
             return controlBarButtonSize
@@ -29,10 +31,13 @@ private struct QuickButtonsView: View {
     var body: some View {
         HStack {
             ForEach(model.getQuickButtonPairs(page: page)) { pair in
-                if model.database.quickButtonsGeneral.twoColumns {
+                if quickButtonsSettings.twoColumns {
                     VStack(alignment: .leading) {
                         if let second = pair.second {
                             QuickButtonsInnerView(
+                                model: model,
+                                quickButtons: quickButtons,
+                                quickButtonsSettings: quickButtonsSettings,
                                 state: second,
                                 size: buttonSize(),
                                 nameSize: buttonSize(),
@@ -42,6 +47,9 @@ private struct QuickButtonsView: View {
                             QuickButtonPlaceholderImage(size: buttonSize())
                         }
                         QuickButtonsInnerView(
+                            model: model,
+                            quickButtons: quickButtons,
+                            quickButtonsSettings: quickButtonsSettings,
                             state: pair.first,
                             size: buttonSize(),
                             nameSize: buttonSize(),
@@ -51,6 +59,9 @@ private struct QuickButtonsView: View {
                 } else {
                     if let second = pair.second {
                         QuickButtonsInnerView(
+                            model: model,
+                            quickButtons: quickButtons,
+                            quickButtonsSettings: quickButtonsSettings,
                             state: second,
                             size: buttonSize(),
                             nameSize: buttonSize(),
@@ -61,6 +72,9 @@ private struct QuickButtonsView: View {
                         EmptyView()
                     }
                     QuickButtonsInnerView(
+                        model: model,
+                        quickButtons: quickButtons,
+                        quickButtonsSettings: quickButtonsSettings,
                         state: pair.first,
                         size: buttonSize(),
                         nameSize: buttonSize(),
@@ -74,15 +88,21 @@ private struct QuickButtonsView: View {
 }
 
 private struct PageView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
+    let quickButtons: QuickButtons
+    @ObservedObject var quickButtonsSettings: SettingsQuickButtons
     var page: Int
     var height: Double
 
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            QuickButtonsView(page: page, height: height)
+            QuickButtonsView(model: model,
+                             quickButtons: quickButtons,
+                             quickButtonsSettings: quickButtonsSettings,
+                             page: page,
+                             height: height)
         }
-        .scrollDisabled(!model.database.quickButtonsGeneral.enableScroll)
+        .scrollDisabled(!quickButtonsSettings.enableScroll)
         .rotationEffect(.degrees(180))
     }
 }
@@ -121,13 +141,19 @@ private struct IconAndSettingsView: View {
 }
 
 private struct MainPageView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
+    let quickButtons: QuickButtons
+    let quickButtonsSettings: SettingsQuickButtons
     @ObservedObject var status: StatusOther
     var height: Double
 
     var body: some View {
         HStack(spacing: 0) {
-            PageView(page: 0, height: height)
+            PageView(model: model,
+                     quickButtons: quickButtons,
+                     quickButtonsSettings: quickButtonsSettings,
+                     page: 0,
+                     height: height)
                 .padding([.top, .leading], 5)
                 .padding([.trailing], 0)
             VStack(spacing: 0) {
@@ -150,7 +176,9 @@ private struct MainPageView: View {
 }
 
 private struct PagesView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
+    @ObservedObject var quickButtons: QuickButtons
+    let quickButtonsSettings: SettingsQuickButtons
     var height: Double
 
     var body: some View {
@@ -158,10 +186,18 @@ private struct PagesView: View {
             ScrollView(.vertical) {
                 LazyVStack {
                     Group {
-                        MainPageView(status: model.statusOther, height: height)
+                        MainPageView(model: model,
+                                     quickButtons: quickButtons,
+                                     quickButtonsSettings: quickButtonsSettings,
+                                     status: model.statusOther,
+                                     height: height)
                         ForEach(1 ..< controlBarPages, id: \.self) { page in
-                            if !model.buttonPairs[page].isEmpty {
-                                PageView(page: page, height: height)
+                            if !quickButtons.pairs[page].isEmpty {
+                                PageView(model: model,
+                                         quickButtons: quickButtons,
+                                         quickButtonsSettings: quickButtonsSettings,
+                                         page: page,
+                                         height: height)
                                     .padding([.top, .leading, .trailing], 5)
                             }
                         }
@@ -175,7 +211,11 @@ private struct PagesView: View {
             .ignoresSafeArea(.all, edges: [.bottom])
         } else {
             ScrollView(.vertical) {
-                MainPageView(status: model.statusOther, height: height)
+                MainPageView(model: model,
+                             quickButtons: quickButtons,
+                             quickButtonsSettings: quickButtonsSettings,
+                             status: model.statusOther,
+                             height: height)
             }
             .scrollIndicators(.never)
             .ignoresSafeArea(.all, edges: [.bottom])
@@ -197,7 +237,10 @@ struct ControlBarPortraitView: View {
     }
 
     var body: some View {
-        PagesView(height: controlBarHeight())
+        PagesView(model: model,
+                  quickButtons: model.quickButtons,
+                  quickButtonsSettings: model.database.quickButtonsGeneral,
+                  height: controlBarHeight())
             .frame(height: controlBarHeight())
             .background(.black)
     }

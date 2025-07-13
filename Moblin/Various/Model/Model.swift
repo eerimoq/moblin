@@ -242,6 +242,10 @@ class GoProState: ObservableObject {
     @Published var rtmpUrlSelection: UUID?
 }
 
+class QuickButtons: ObservableObject {
+    @Published var pairs: [[QuickButtonPair]] = Array(repeating: [], count: controlBarPages)
+}
+
 final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var isPresentingWidgetWizard = false
     @Published var showingPanel: ShowingPanel = .none
@@ -252,7 +256,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var isLive = false
     @Published var isRecording = false
     @Published var browsers: [Browser] = []
-    @Published var buttonPairs: [[QuickButtonPair]] = Array(repeating: [], count: controlBarPages)
     @Published var showingGrid = false
     @Published var showingRemoteControl = false
     @Published var portraitVideoOffsetFromTop = 0.0
@@ -283,6 +286,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
+    let quickButtons = QuickButtons()
     let mic = Mic()
     let goPro = GoProState()
     let obsQuickButton = QuickButtonObs()
@@ -628,7 +632,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             showingPanel = panel
         }
         panelHidden = false
-        for pageButtonPairs in buttonPairs {
+        for pageButtonPairs in quickButtons.pairs {
             for pair in pageButtonPairs {
                 if isShowingPanelGlobalButton(type: pair.first.button.type) {
                     setGlobalButtonState(type: pair.first.button.type, isOn: false)
@@ -715,12 +719,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                     pairs.append(QuickButtonPair(id: UUID(), first: states[index]))
                 }
             }
-            buttonPairs[page] = pairs
+            quickButtons.pairs[page] = pairs
         }
     }
 
     func getQuickButtonPairs(page: Int) -> [QuickButtonPair] {
-        return buttonPairs[page]
+        return quickButtons.pairs[page]
     }
 
     private func debugLog(message: String) {
@@ -1719,7 +1723,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         for button in database.quickButtons where button.type == type {
             button.isOn = isOn
         }
-        for pageButtonPairs in buttonPairs {
+        for pageButtonPairs in quickButtons.pairs {
             for pair in pageButtonPairs {
                 if pair.first.button.type == type {
                     pair.first.isOn = isOn
@@ -1747,7 +1751,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         for button in database.quickButtons where button.type == type {
             button.isOn.toggle()
         }
-        for pageButtonPairs in buttonPairs {
+        for pageButtonPairs in quickButtons.pairs {
             for pair in pageButtonPairs {
                 if pair.first.button.type == type {
                     pair.first.isOn.toggle()
