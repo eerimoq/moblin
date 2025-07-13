@@ -101,7 +101,7 @@ class RtmpStream {
         }
         let oldState = readyState
         readyState = state
-        logger.info("rtmp: \(name): Settings stream state \(oldState) -> \(state)")
+        logger.info("rtmp: \(name): Stream state \(oldState) -> \(state)")
         if oldState == .publishing {
             sendFCUnpublish()
             sendDeleteStream()

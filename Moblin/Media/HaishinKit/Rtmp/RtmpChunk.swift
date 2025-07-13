@@ -43,9 +43,9 @@ final class RtmpChunk {
 
     static let defaultSize = 128
     static let maxTimestamp: UInt32 = 0xFFFFFF
-    var size = 0
-    var type: RtmpChunkType = .zero
-    var chunkStreamId = RtmpChunk.ChunkStreamId.command.rawValue
+    private var size = 0
+    private(set) var type: RtmpChunkType = .zero
+    private(set) var chunkStreamId = RtmpChunk.ChunkStreamId.command.rawValue
     private(set) var message: RtmpMessage?
     private(set) var fragmented = false
     private var header = Data()

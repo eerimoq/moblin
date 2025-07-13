@@ -530,17 +530,14 @@ final class Media: NSObject {
                          targetBitrate: UInt32,
                          adaptiveBitrate adaptiveBitrateEnabled: Bool)
     {
-        rtmpStream?.setUrl(url)
         if adaptiveBitrateEnabled {
             adaptiveBitrate = AdaptiveBitrateSrtFight(targetBitrate: targetBitrate, delegate: self)
         } else {
             adaptiveBitrate = nil
         }
-        rtmpStream?.connect()
-        if rtmpStreams.count > 1 {
-            for rtmpStream in rtmpStreams.suffix(from: 1) {
-                rtmpStream.connect()
-            }
+        rtmpStream?.setUrl(url)
+        for rtmpStream in rtmpStreams {
+            rtmpStream.connect()
         }
     }
 
