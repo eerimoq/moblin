@@ -37,7 +37,7 @@ final class RtmpSocket {
     private(set) var connected = false {
         didSet {
             if connected {
-                write(data: handshake.createC0C1Packet())
+                write(data: RtmpHandshake.createC0C1Packet())
                 setReadyState(state: .versionSent)
             } else {
                 setReadyState(state: .closed)
@@ -45,7 +45,6 @@ final class RtmpSocket {
         }
     }
 
-    private var handshake = RtmpHandshake()
     private var connection: NWConnection? {
         didSet {
             oldValue?.viabilityUpdateHandler = nil
@@ -66,7 +65,6 @@ final class RtmpSocket {
     }
 
     func connect(host: String, port: Int) {
-        handshake = RtmpHandshake()
         setReadyState(state: .uninitialized)
         maximumChunkSizeToServer = RtmpChunk.defaultSize
         maximumChunkSizeFromServer = RtmpChunk.defaultSize
@@ -207,7 +205,7 @@ final class RtmpSocket {
         guard inputBuffer.count >= RtmpHandshake.sigSize + 1 else {
             return
         }
-        write(data: handshake.createC2Packet(inputBuffer))
+        write(data: RtmpHandshake.createC2Packet(inputBuffer))
         inputBuffer.removeSubrange(0 ... RtmpHandshake.sigSize)
         setReadyState(state: .ackSent)
         processInput()
