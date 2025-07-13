@@ -461,6 +461,8 @@ extension Model: RemoteControlStreamerDelegate {
         state.debugLogging = database.debug.logLevel == .debug
         state.streaming = isLive
         state.recording = isRecording
+        state.torchOn = streamOverlay.isTorchOn
+        state.batteryCharging = isBatteryCharging()
         remoteControlStreamer?.stateChanged(state: state)
     }
 

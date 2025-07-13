@@ -2132,6 +2132,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         let state = UIDevice.current.batteryState
         if state != battery.state {
             battery.state = state
+            remoteControlStreamer?.stateChanged(state: .init(batteryCharging: isBatteryCharging()))
         }
     }
 
@@ -2512,6 +2513,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func updateTorch() {
         media.setTorch(on: streamOverlay.isTorchOn)
+        remoteControlStreamer?.stateChanged(state: .init(torchOn: streamOverlay.isTorchOn))
     }
 
     func toggleMute() {

@@ -586,6 +586,8 @@ struct RemoteControlState: Codable {
     var debugLogging: Bool?
     var streaming: Bool?
     var recording: Bool?
+    var torchOn: Bool?
+    var batteryCharging: Bool?
 }
 
 struct RemoteControlAuthentication: Codable {
