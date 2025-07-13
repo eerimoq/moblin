@@ -35,7 +35,7 @@ private func makeHevcExtendedTagHeader(_ frameType: FlvFrameType, _ packetType: 
 }
 
 protocol RtmpStreamDelegate: AnyObject {
-    func rtmpStreamStatus(_ rtmpStream: RtmpStream, data: AsObject)
+    func rtmpStreamStatus(_ rtmpStream: RtmpStream, code: String)
 }
 
 enum RtmpStreamCode: String {
@@ -155,7 +155,6 @@ class RtmpStream {
         )
         switch readyState {
         case .initialized:
-            logger.info("rtmp: \(streamKey): Is only initialized")
             messages.append(message)
         default:
             setReadyState(state: .publish)
@@ -276,17 +275,11 @@ class RtmpStream {
         processor.startEncoding(self)
     }
 
-    func on(data: AsObject) {
-        delegate?.rtmpStreamStatus(self, data: data)
-        processorControlQueue.async {
-            self.onInternal(data: data)
-        }
-    }
-
-    private func onInternal(data: AsObject) {
+    func onInternal(data: AsObject) {
         guard let code = data["code"] as? String else {
             return
         }
+        delegate?.rtmpStreamStatus(self, code: code)
         switch code {
         case RtmpConnectionCode.connectSuccess.rawValue:
             setReadyState(state: .initialized)

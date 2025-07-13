@@ -32,7 +32,7 @@ final class RtmpCommandMessage: RtmpMessage {
             case "close":
                 connection.disconnectInternal()
             default:
-                if let data = arguments.first as? AsObject {
+                if let data = arguments.first as? AsObject?, let data {
                     connection.gotCommand(data: data)
                 }
             }

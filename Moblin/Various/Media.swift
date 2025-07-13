@@ -1093,10 +1093,7 @@ extension Media: SrtStreamDelegate {
 }
 
 extension Media: RtmpStreamDelegate {
-    func rtmpStreamStatus(_ rtmpStream: RtmpStream, data: AsObject) {
-        guard let code = data["code"] as? String else {
-            return
-        }
+    func rtmpStreamStatus(_ rtmpStream: RtmpStream, code: String) {
         DispatchQueue.main.async {
             switch RtmpConnectionCode(rawValue: code) {
             case .connectSuccess:

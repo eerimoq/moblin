@@ -159,9 +159,9 @@ class RtmpConnection {
     }
 
     private func on(data: AsObject) {
-        stream?.on(data: data)
         processorControlQueue.async {
             self.onInternal(data: data)
+            self.stream?.onInternal(data: data)
         }
     }
 
