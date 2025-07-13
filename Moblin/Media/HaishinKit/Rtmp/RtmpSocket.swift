@@ -32,7 +32,7 @@ final class RtmpSocket {
 
     private var inputBuffer = Data()
     weak var delegate: (any RtmpSocketDelegate)?
-    private(set) var totalBytesOut: Atomic<Int64> = .init(0)
+    private var totalBytesOut: Atomic<Int64> = .init(0)
     private(set) var connected = false {
         didSet {
             if connected {
