@@ -2,6 +2,15 @@ import AVFoundation
 
 let extendedVideoHeader: UInt8 = 0b1000_0000
 
+private func calcVideoCompositionTime(_ sampleBuffer: CMSampleBuffer) -> Int32 {
+    let decodeTimeStamp = sampleBuffer.decodeTimeStamp
+    guard decodeTimeStamp.isValid else {
+        return 0
+    }
+    let presentationTimeStamp = sampleBuffer.presentationTimeStamp
+    return Int32((presentationTimeStamp.seconds - decodeTimeStamp.seconds) * 1000)
+}
+
 private func makeVideoHeader(_ frameType: FlvFrameType,
                              _ fourCc: FlvVideoFourCC,
                              _ trackId: UInt8,
@@ -75,7 +84,6 @@ class RtmpStream {
     private var videoTimeStampDelta = 0.0
     private var prevRebasedAudioTimeStamp = -1.0
     private var prevRebasedVideoTimeStamp = -1.0
-    private let compositionTimeOffset = CMTime(value: 3, timescale: 30).seconds
     private let processor: Processor
     weak var delegate: RtmpStreamDelegate?
 
@@ -419,7 +427,6 @@ class RtmpStream {
         guard let rebasedTimestamp = rebaseTimeStamp(timestamp: decodeTimeStamp) else {
             return
         }
-        let compositionTime = calcVideoCompositionTime(sampleBuffer)
         var delta = 0.0
         if prevRebasedVideoTimeStamp != -1.0 {
             delta = (rebasedTimestamp - prevRebasedVideoTimeStamp) * 1000
@@ -435,24 +442,13 @@ class RtmpStream {
         case .hevc:
             buffer = makeHevcExtendedTagHeader(frameType, .codedFrames)
         }
+        let compositionTime = calcVideoCompositionTime(sampleBuffer)
         buffer.append(contentsOf: compositionTime.bigEndian.data[1 ..< 4])
         buffer.append(data)
         prevRebasedVideoTimeStamp = rebasedTimestamp
         handleEncodedVideoBuffer(buffer, UInt32(videoTimeStampDelta))
         videoTimeStampDelta -= floor(videoTimeStampDelta)
         videoTimeStampDelta += delta
-    }
-
-    private func calcVideoCompositionTime(_ sampleBuffer: CMSampleBuffer) -> Int32 {
-        let presentationTimeStamp = sampleBuffer.presentationTimeStamp
-        let decodeTimeStamp = sampleBuffer.decodeTimeStamp
-        guard decodeTimeStamp.isValid, decodeTimeStamp != presentationTimeStamp else {
-            return 0
-        }
-        guard let rebasedTimestamp = rebaseTimeStamp(timestamp: presentationTimeStamp.seconds) else {
-            return 0
-        }
-        return Int32((rebasedTimestamp - prevRebasedVideoTimeStamp + compositionTimeOffset) * 1000)
     }
 
     private func rebaseTimeStamp(timestamp: Double) -> Double? {
