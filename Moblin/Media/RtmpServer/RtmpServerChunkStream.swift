@@ -328,8 +328,7 @@ class RtmpServerChunkStream {
         guard let client else {
             return
         }
-        guard messageBody.count >= 2 else {
-            client.stopInternal(reason: "Got \(messageBody.count) bytes audio message, expected >= 2")
+        guard checkMessageBodyBigEnough(client: client, minuminSize: 2) else {
             return
         }
         let control = messageBody[0]
@@ -446,14 +445,13 @@ class RtmpServerChunkStream {
         guard let client else {
             return
         }
-        guard messageBody.count >= 2 else {
-            client.stopInternal(reason: "Got \(messageBody.count) bytes video message, expected >= 2")
+        guard checkMessageBodyBigEnough(client: client, minuminSize: 2) else {
             return
         }
         let control = messageBody[0]
         let isExVideoHeader = (control & extendedVideoHeader) == extendedVideoHeader
         if isExVideoHeader {
-            processMessageVideoExtendedHedaer(client: client, control: control)
+            processMessageVideoExtendedHeader(client: client, control: control)
         } else {
             processMessageVideoDefaultHeader(client: client, control: control)
         }
@@ -479,9 +477,8 @@ class RtmpServerChunkStream {
         }
     }
 
-    private func processMessageVideoExtendedHedaer(client: RtmpServerClient, control: UInt8) {
-        guard messageBody.count >= 5 else {
-            client.stopInternal(reason: "Got \(messageBody.count) bytes video message, expected >= 6")
+    private func processMessageVideoExtendedHeader(client: RtmpServerClient, control: UInt8) {
+        guard checkMessageBodyBigEnough(client: client, minuminSize: 5) else {
             return
         }
         let frameType = (control >> 4) & 0b111
@@ -521,55 +518,40 @@ class RtmpServerChunkStream {
     }
 
     private func processMessageVideoTypeSeq(client: RtmpServerClient) {
-        guard messageBody.count >= FlvTagType.video.headerSize else {
-            client
-                .stopInternal(
-                    reason: """
-                    Got \(messageBody.count) bytes video message, \
-                    expected >= \(FlvTagType.video.headerSize)
-                    """
-                )
-            return
-        }
-        guard videoDecoder == nil else {
+        guard checkMessageBodyBigEnough(client: client, minuminSize: FlvTagType.video.headerSize) else {
             return
         }
         var config = MpegTsVideoConfigAvc()
         config.data = messageBody.subdata(in: FlvTagType.video.headerSize ..< messageBody.count)
         let status = config.makeFormatDescription(&formatDescription)
         if status == noErr {
-            videoDecoder = VideoDecoder(lockQueue: videoCodecLockQueue)
-            videoDecoder!.delegate = self
-            videoDecoder!.startRunning(formatDescription: formatDescription)
+            setupVideoEncoderIfNeeded(formatDescription: formatDescription)
         } else {
             client.stopInternal(reason: "H.264/AVC format description error \(status)")
         }
     }
 
     private func processMessageVideoTypeSequenceStart(client: RtmpServerClient) {
-        guard messageBody.count >= FlvTagType.video.headerSize else {
-            client
-                .stopInternal(
-                    reason: """
-                    Got \(messageBody.count) bytes video message, \
-                    expected >= \(FlvTagType.video.headerSize)
-                    """
-                )
-            return
-        }
-        guard videoDecoder == nil else {
+        guard checkMessageBodyBigEnough(client: client, minuminSize: FlvTagType.video.headerSize) else {
             return
         }
         var config = MpegTsVideoConfigHevc()
         config.data = messageBody.subdata(in: FlvTagType.video.headerSize ..< messageBody.count)
         let status = config.makeFormatDescription(&formatDescription)
         if status == noErr {
-            videoDecoder = VideoDecoder(lockQueue: videoCodecLockQueue)
-            videoDecoder!.delegate = self
-            videoDecoder!.startRunning(formatDescription: formatDescription)
+            setupVideoEncoderIfNeeded(formatDescription: formatDescription)
         } else {
             client.stopInternal(reason: "H.265/HEVC format description error \(status)")
         }
+    }
+
+    private func setupVideoEncoderIfNeeded(formatDescription: CMFormatDescription?) {
+        guard videoDecoder == nil else {
+            return
+        }
+        videoDecoder = VideoDecoder(lockQueue: videoCodecLockQueue)
+        videoDecoder!.delegate = self
+        videoDecoder!.startRunning(formatDescription: formatDescription)
     }
 
     private func processMessageVideoTypeNal(client: RtmpServerClient) {
@@ -626,14 +608,13 @@ class RtmpServerChunkStream {
     }
 
     private func processMessageVideoTypeCodedFramesX(client: RtmpServerClient, isKeyFrame: Bool) {
-        let compositionTime: Int32 = 0
         if firstVideoFrameTimestamp == nil {
             firstVideoFrameTimestamp = .now
         }
         totalNumberOfVideoFrames += 1
         if let sampleBuffer = makeVideoSampleBuffer(client: client,
                                                     isKeyFrame: isKeyFrame,
-                                                    compositionTime: compositionTime,
+                                                    compositionTime: 0,
                                                     dataOffset: FlvTagType.video.headerSize)
         {
             client.targetLatenciesSynchronizer
@@ -701,6 +682,14 @@ class RtmpServerChunkStream {
 
     private func getBasePresentationTimeStamp(_ client: RtmpServerClient) -> Double {
         return client.getBasePresentationTimeStamp()
+    }
+
+    private func checkMessageBodyBigEnough(client: RtmpServerClient, minuminSize: Int) -> Bool {
+        if messageBody.count < minuminSize {
+            client.stopInternal(reason: "Got \(messageBody.count) bytes message, expected >= \(minuminSize)")
+            return false
+        }
+        return true
     }
 }
 
