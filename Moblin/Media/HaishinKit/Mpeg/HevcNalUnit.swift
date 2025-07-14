@@ -242,6 +242,43 @@ struct HevcSei {
     }
 }
 
+// 7.3.2.1 Video parameter set RBSP syntax
+struct HevcVps {
+    var vps_video_parameter_set_id: UInt8
+    var vps_base_layer_internal_flag: Bool
+    var vps_base_layer_available_flag: Bool
+    var vps_max_layers_minus1: UInt8
+    var vps_max_sub_layers_minus1: UInt8
+    var vps_temporal_id_nesting_flag: Bool
+    var vps_sub_layer_ordering_info_present_flag: Bool
+    var vps_max_layer_id: UInt8
+    var vps_num_layer_sets_minus1: UInt32
+
+    init?(data: Data) {
+        do {
+            let reader = BitReader(data: data)
+            vps_video_parameter_set_id = try reader.readBits(count: 4)
+            vps_base_layer_internal_flag = try reader.readBit()
+            vps_base_layer_available_flag = try reader.readBit()
+            vps_max_layers_minus1 = try reader.readBits(count: 6)
+            vps_max_sub_layers_minus1 = try reader.readBits(count: 3)
+            vps_temporal_id_nesting_flag = try reader.readBit()
+            try reader.skipBits(count: 16)
+            vps_sub_layer_ordering_info_present_flag = try reader.readBit()
+            let startLayer = vps_sub_layer_ordering_info_present_flag ? 0 : vps_max_sub_layers_minus1
+            for _ in startLayer ... vps_max_layers_minus1 {
+                _ = try reader.readExponentialGolomb()
+                _ = try reader.readExponentialGolomb()
+                _ = try reader.readExponentialGolomb()
+            }
+            vps_max_layer_id = try reader.readBits(count: 6)
+            vps_num_layer_sets_minus1 = try reader.readExponentialGolomb()
+        } catch {
+            return nil
+        }
+    }
+}
+
 // 7.3.2.2 Sequence parameter set RBSP syntax
 struct HevcSps {
     var sps_video_parameter_set_id: UInt8
@@ -260,6 +297,9 @@ struct HevcSps {
             sps_max_sub_layers_minus1 = try reader.readBits(count: 3)
             sps_temporal_id_nesting_flag = try reader.readBit()
             sps_seq_parameter_set_id = try reader.readExponentialGolomb()
+            if sps_seq_parameter_set_id > 15 {
+                throw "sps_seq_parameter_set_id \(sps_seq_parameter_set_id) is greater than 15"
+            }
             chroma_format_idc = try reader.readExponentialGolomb()
             if chroma_format_idc > 3 {
                 throw "chroma_format_idc \(chroma_format_idc) is greater than 3"

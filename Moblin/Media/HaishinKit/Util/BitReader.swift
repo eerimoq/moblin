@@ -23,6 +23,12 @@ final class BitReader {
         return value
     }
 
+    func skipBits(count: Int) throws {
+        for _ in 0 ..< count {
+            _ = try readBit()
+        }
+    }
+
     func readBits(count: Int) throws -> UInt8 {
         var value: UInt8 = 0
         for _ in 0 ..< count {
