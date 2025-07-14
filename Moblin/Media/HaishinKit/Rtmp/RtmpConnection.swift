@@ -141,7 +141,7 @@ class RtmpConnection {
                 return
             }
             stream.id = UInt32(id)
-            stream.setReadyState(state: .open)
+            stream.setState(state: .open)
         }
     }
 

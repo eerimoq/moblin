@@ -57,7 +57,7 @@ private let aac = FlvAudioCodec.aac.rawValue << 4
     | FlvSoundType.stereo.rawValue
 
 class RtmpStream {
-    enum ReadyState: UInt8 {
+    enum State: UInt8 {
         case initialized
         case open
         case publish
@@ -66,8 +66,7 @@ class RtmpStream {
 
     var info = RtmpStreamInfo()
     var id: UInt32 = 0
-    private var readyState: ReadyState = .initialized
-
+    private var state: State = .initialized
     private var messages: [RtmpCommandMessage] = []
     private var startedAt = Date()
     private var audioChunkType: RtmpChunkType = .zero
@@ -95,12 +94,12 @@ class RtmpStream {
         connection.stream = self
     }
 
-    func setReadyState(state: ReadyState) {
-        guard state != readyState else {
+    func setState(state: State) {
+        guard self.state != state else {
             return
         }
-        let oldState = readyState
-        readyState = state
+        let oldState = state
+        self.state = state
         logger.info("rtmp: \(name): Stream state \(oldState) -> \(state)")
         if oldState == .publishing {
             sendFCUnpublish()
@@ -163,7 +162,7 @@ class RtmpStream {
     }
 
     func closeInternal() {
-        setReadyState(state: .initialized)
+        setState(state: .initialized)
         processor.stopEncoding(self)
     }
 
@@ -177,17 +176,17 @@ class RtmpStream {
             commandObject: nil,
             arguments: [streamKey, "live"]
         )
-        switch readyState {
+        switch state {
         case .initialized:
             messages.append(message)
         default:
-            setReadyState(state: .publish)
+            setState(state: .publish)
             _ = connection.socket.write(chunk: RtmpChunk(message: message))
         }
     }
 
     private func send(handlerName: String, arguments: Any?...) {
-        guard readyState == .publishing else {
+        guard state == .publishing else {
             return
         }
         let dataWasSent = dataTimeStamps[handlerName] != nil
@@ -275,7 +274,7 @@ class RtmpStream {
             message.transactionId = connection.getNextTransactionId()
             switch message.commandName {
             case "publish":
-                setReadyState(state: .publish)
+                setState(state: .publish)
             default:
                 break
             }
@@ -306,12 +305,12 @@ class RtmpStream {
         delegate?.rtmpStreamStatus(self, code: code)
         switch code {
         case RtmpConnectionCode.connectSuccess.rawValue:
-            setReadyState(state: .initialized)
+            setState(state: .initialized)
             sendFCPublish()
             connection.createStream(self)
         case RtmpStreamCode.publishStart.rawValue:
-            if readyState != .initialized {
-                setReadyState(state: .publishing)
+            if state != .initialized {
+                setState(state: .publishing)
             }
         default:
             break
@@ -353,7 +352,7 @@ class RtmpStream {
     }
 
     private func handleEncodedAudioBuffer(_ buffer: Data, _ timestamp: UInt32) {
-        guard readyState == .publishing else {
+        guard state == .publishing else {
             return
         }
         let length = connection.socket.write(chunk: RtmpChunk(
@@ -366,7 +365,7 @@ class RtmpStream {
     }
 
     private func handleEncodedVideoBuffer(_ buffer: Data, _ timestamp: UInt32) {
-        guard readyState == .publishing else {
+        guard state == .publishing else {
             return
         }
         let length = connection.socket.write(chunk: RtmpChunk(
