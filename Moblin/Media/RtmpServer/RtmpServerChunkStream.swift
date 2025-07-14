@@ -327,9 +327,9 @@ class RtmpServerChunkStream {
         }
         let control = messageBody[0]
         guard let codec = FlvAudioCodec(rawValue: control >> 4),
-              let soundRate = FlvSoundRate(rawValue: (control & 0x0C) >> 2),
-              let soundSize = FlvSoundSize(rawValue: (control & 0x02) >> 1),
-              let soundType = FlvSoundType(rawValue: control & 0x01)
+              FlvSoundRate(rawValue: (control & 0x0C) >> 2) != nil,
+              FlvSoundSize(rawValue: (control & 0x02) >> 1) != nil,
+              FlvSoundType(rawValue: control & 0x01) != nil
         else {
             client.stopInternal(reason: "Failed to parse audio settings \(control)")
             return
@@ -349,37 +349,36 @@ class RtmpServerChunkStream {
     }
 
     private func processMessageAudioTypeSeq(client _: RtmpServerClient, codec: FlvAudioCodec) {
-        if let config =
-            MpegTsAudioConfig(bytes: [UInt8](messageBody[codec.headerSize ..< messageBody.count]))
-        {
-            var streamDescription = config.audioStreamBasicDescription()
-            logger.info("rtmp-server: client: \(streamDescription)")
-            if let audioFormat = AVAudioFormat(streamDescription: &streamDescription) {
-                logger.info("rtmp-server: client: \(audioFormat)")
-                audioBuffer = AVAudioCompressedBuffer(
-                    format: audioFormat,
-                    packetCapacity: 1,
-                    maximumPacketSize: 4096 * Int(audioFormat.channelCount)
-                )
-                pcmAudioFormat = AVAudioFormat(
-                    commonFormat: .pcmFormatInt16,
-                    sampleRate: audioFormat.sampleRate,
-                    channels: audioFormat.channelCount,
-                    interleaved: audioFormat.isInterleaved
-                )
-                guard let pcmAudioFormat else {
-                    logger.info("rtmp-server: client: Failed to create PCM audio format")
-                    return
-                }
-                audioDecoder = AVAudioConverter(from: audioFormat, to: pcmAudioFormat)
-                if audioDecoder == nil {
-                    logger.info("rtmp-server: client: Failed to create audio decdoer")
-                }
-            } else {
-                logger.info("rtmp-server: client: Failed to create audio format")
-                audioBuffer = nil
-                audioDecoder = nil
-            }
+        guard let config = MpegTsAudioConfig(bytes: [UInt8](messageBody[codec.headerSize ..< messageBody.count])) else {
+            return
+        }
+        var streamDescription = config.audioStreamBasicDescription()
+        logger.info("rtmp-server: client: \(streamDescription)")
+        guard let audioFormat = AVAudioFormat(streamDescription: &streamDescription) else {
+            logger.info("rtmp-server: client: Failed to create audio format")
+            audioBuffer = nil
+            audioDecoder = nil
+            return
+        }
+        logger.info("rtmp-server: client: \(audioFormat)")
+        audioBuffer = AVAudioCompressedBuffer(
+            format: audioFormat,
+            packetCapacity: 1,
+            maximumPacketSize: 4096 * Int(audioFormat.channelCount)
+        )
+        pcmAudioFormat = AVAudioFormat(
+            commonFormat: .pcmFormatInt16,
+            sampleRate: audioFormat.sampleRate,
+            channels: audioFormat.channelCount,
+            interleaved: audioFormat.isInterleaved
+        )
+        guard let pcmAudioFormat else {
+            logger.info("rtmp-server: client: Failed to create PCM audio format")
+            return
+        }
+        audioDecoder = AVAudioConverter(from: audioFormat, to: pcmAudioFormat)
+        if audioDecoder == nil {
+            logger.info("rtmp-server: client: Failed to create audio decdoer")
         }
     }
 
