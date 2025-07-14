@@ -540,8 +540,8 @@ class RtmpServerChunkStream {
             return
         }
         videoDecoder = VideoDecoder(lockQueue: videoCodecLockQueue)
-        videoDecoder!.delegate = self
-        videoDecoder!.startRunning(formatDescription: formatDescription)
+        videoDecoder?.delegate = self
+        videoDecoder?.startRunning(formatDescription: formatDescription)
     }
 
     private func processMessageVideoTypeNal(client: RtmpServerClient) {
