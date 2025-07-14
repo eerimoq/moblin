@@ -231,7 +231,6 @@
 		0359F8EC2BD3DA61005BFDA8 /* RtmpConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8542BD3DA5F005BFDA8 /* RtmpConnection.swift */; };
 		0359F8ED2BD3DA61005BFDA8 /* RtmpHandshake.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8552BD3DA5F005BFDA8 /* RtmpHandshake.swift */; };
 		0359F8EE2BD3DA61005BFDA8 /* RtmpMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8562BD3DA5F005BFDA8 /* RtmpMessage.swift */; };
-		0359F8F02BD3DA61005BFDA8 /* RtmpObjectEncoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8582BD3DA5F005BFDA8 /* RtmpObjectEncoding.swift */; };
 		0359F8F22BD3DA61005BFDA8 /* RtmpSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F85A2BD3DA5F005BFDA8 /* RtmpSocket.swift */; };
 		0359F8F42BD3DA61005BFDA8 /* RtmpStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F85C2BD3DA5F005BFDA8 /* RtmpStream.swift */; };
 		0359F8F52BD3DA61005BFDA8 /* RtmpStreamInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F85D2BD3DA5F005BFDA8 /* RtmpStreamInfo.swift */; };
@@ -873,7 +872,6 @@
 		0359F8542BD3DA5F005BFDA8 /* RtmpConnection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RtmpConnection.swift; sourceTree = "<group>"; };
 		0359F8552BD3DA5F005BFDA8 /* RtmpHandshake.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RtmpHandshake.swift; sourceTree = "<group>"; };
 		0359F8562BD3DA5F005BFDA8 /* RtmpMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RtmpMessage.swift; sourceTree = "<group>"; };
-		0359F8582BD3DA5F005BFDA8 /* RtmpObjectEncoding.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RtmpObjectEncoding.swift; sourceTree = "<group>"; };
 		0359F85A2BD3DA5F005BFDA8 /* RtmpSocket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RtmpSocket.swift; sourceTree = "<group>"; };
 		0359F85C2BD3DA5F005BFDA8 /* RtmpStream.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RtmpStream.swift; sourceTree = "<group>"; };
 		0359F85D2BD3DA5F005BFDA8 /* RtmpStreamInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RtmpStreamInfo.swift; sourceTree = "<group>"; };
@@ -1980,7 +1978,6 @@
 				0359F8532BD3DA5F005BFDA8 /* RtmpChunk.swift */,
 				0359F8542BD3DA5F005BFDA8 /* RtmpConnection.swift */,
 				0359F8552BD3DA5F005BFDA8 /* RtmpHandshake.swift */,
-				0359F8582BD3DA5F005BFDA8 /* RtmpObjectEncoding.swift */,
 				0359F85A2BD3DA5F005BFDA8 /* RtmpSocket.swift */,
 				0359F85C2BD3DA5F005BFDA8 /* RtmpStream.swift */,
 				0359F85D2BD3DA5F005BFDA8 /* RtmpStreamInfo.swift */,
@@ -3942,7 +3939,6 @@
 				03F655F02D147C0B0054D73E /* VideoSourceRotationView.swift in Sources */,
 				0359F9022BD3DA61005BFDA8 /* ByteWriter.swift in Sources */,
 				0380D5E52C2CB2C80071C12B /* ChatBotSettingsView.swift in Sources */,
-				0359F8F02BD3DA61005BFDA8 /* RtmpObjectEncoding.swift in Sources */,
 				03BA73BD2DDCDC2600075CD6 /* ModelSrtlaServer.swift in Sources */,
 				03BA73A62DDC572100075CD6 /* ModelMoblink.swift in Sources */,
 				0379BBAD2AAD964000B718B6 /* AboutSettingsView.swift in Sources */,

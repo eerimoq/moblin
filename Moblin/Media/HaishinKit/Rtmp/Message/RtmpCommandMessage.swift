@@ -6,14 +6,14 @@ final class RtmpCommandMessage: RtmpMessage {
     var commandObject: AsObject?
     var arguments: [Any?] = []
 
-    init(objectEncoding: RtmpObjectEncoding) {
-        super.init(type: objectEncoding.commandType)
+    init(commandType: RtmpMessageType) {
+        super.init(type: commandType)
     }
 
     init(
         streamId: UInt32,
         transactionId: Int,
-        objectEncoding: RtmpObjectEncoding,
+        commandType: RtmpMessageType,
         commandName: String,
         commandObject: AsObject?,
         arguments: [Any?]
@@ -22,7 +22,7 @@ final class RtmpCommandMessage: RtmpMessage {
         self.commandName = commandName
         self.commandObject = commandObject
         self.arguments = arguments
-        super.init(type: objectEncoding.commandType)
+        super.init(type: commandType)
         self.streamId = streamId
     }
 

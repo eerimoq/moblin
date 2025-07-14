@@ -172,7 +172,7 @@ class RtmpStream {
         let message = RtmpCommandMessage(
             streamId: id,
             transactionId: connection.getNextTransactionId(),
-            objectEncoding: .amf0,
+            commandType: .amf0Command,
             commandName: "publish",
             commandObject: nil,
             arguments: [streamKey, "live"]
@@ -199,7 +199,7 @@ class RtmpStream {
             chunkStreamId: RtmpChunk.ChunkStreamId.data.rawValue,
             message: RtmpDataMessage(
                 streamId: id,
-                objectEncoding: .amf0,
+                dataType: .amf0Data,
                 timestamp: timestmap,
                 handlerName: handlerName,
                 arguments: arguments
@@ -330,7 +330,7 @@ class RtmpStream {
         _ = connection.socket.write(chunk: RtmpChunk(message: RtmpCommandMessage(
             streamId: id,
             transactionId: 0,
-            objectEncoding: .amf0,
+            commandType: .amf0Command,
             commandName: "deleteStream",
             commandObject: nil,
             arguments: [id]
@@ -344,7 +344,7 @@ class RtmpStream {
             message: RtmpCommandMessage(
                 streamId: 0,
                 transactionId: 0,
-                objectEncoding: .amf0,
+                commandType: .amf0Command,
                 commandName: "closeStream",
                 commandObject: nil,
                 arguments: [id]

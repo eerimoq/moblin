@@ -48,13 +48,13 @@ class RtmpMessage {
         case .video:
             return RtmpVideoMessage()
         case .amf3Data:
-            return RtmpDataMessage(objectEncoding: .amf3)
+            return RtmpDataMessage(dataType: .amf3Data)
         case .amf3Command:
-            return RtmpCommandMessage(objectEncoding: .amf3)
+            return RtmpCommandMessage(commandType: .amf3Command)
         case .amf0Data:
-            return RtmpDataMessage(objectEncoding: .amf0)
+            return RtmpDataMessage(dataType: .amf0Data)
         case .amf0Command:
-            return RtmpCommandMessage(objectEncoding: .amf0)
+            return RtmpCommandMessage(commandType: .amf0Command)
         case .aggregate:
             return RtmpAggregateMessage()
         }

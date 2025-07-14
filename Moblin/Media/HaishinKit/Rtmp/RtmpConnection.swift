@@ -119,7 +119,7 @@ class RtmpConnection {
         let message = RtmpCommandMessage(
             streamId: 0,
             transactionId: getNextTransactionId(),
-            objectEncoding: .amf0,
+            commandType: .amf0Command,
             commandName: commandName,
             commandObject: nil,
             arguments: arguments
@@ -228,7 +228,7 @@ class RtmpConnection {
         let message = RtmpCommandMessage(
             streamId: 0,
             transactionId: getNextTransactionId(),
-            objectEncoding: .amf0,
+            commandType: .amf0Command,
             commandName: "connect",
             commandObject: [
                 "app": app,
@@ -241,7 +241,7 @@ class RtmpConnection {
                 "videoCodecs": SupportVideo.h264.rawValue,
                 "videoFunction": VideoFunction.clientSeek.rawValue,
                 "pageUrl": nil,
-                "objectEncoding": RtmpObjectEncoding.amf0.rawValue,
+                "objectEncoding": "amf0",
             ],
             arguments: []
         )
