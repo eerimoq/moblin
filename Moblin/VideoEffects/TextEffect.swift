@@ -22,6 +22,7 @@ private var fullDateFormatter: DateFormatter {
 
 struct TextEffectStats {
     let timestamp: ContinuousClock.Instant
+    let bitrate: String
     let bitrateAndTotal: String
     let date: Date
     let debugOverlayLines: [String]
@@ -110,6 +111,8 @@ private class Formatter {
                 formatDate(stats: stats)
             case .fullDate:
                 formatFullDate(stats: stats)
+            case .bitrate:
+                formatBitrate(stats: stats)
             case .bitrateAndTotal:
                 formatBitrateAndTotal(stats: stats)
             case .debugOverlay:
@@ -221,6 +224,11 @@ private class Formatter {
             id: partId,
             data: .text(fullDateFormatter.string(from: stats.date))
         ))
+    }
+
+    private func formatBitrate(stats: TextEffectStats) {
+        let bitrate = stats.bitrate.isEmpty ? "-" : stats.bitrate
+        parts.append(.init(id: partId, data: .text("\(bitrate) Mbps")))
     }
 
     private func formatBitrateAndTotal(stats: TextEffectStats) {

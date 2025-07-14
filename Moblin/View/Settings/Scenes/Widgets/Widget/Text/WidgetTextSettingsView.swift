@@ -409,6 +409,11 @@ private struct TextSelectionView: View {
             }
             Section {
                 FormatView(
+                    title: "{bitrate}",
+                    description: String(localized: "Show bitrate"),
+                    text: $value
+                )
+                FormatView(
                     title: "{bitrateAndTotal}",
                     description: String(localized: "Show bitrate and total number of bytes sent"),
                     text: $value

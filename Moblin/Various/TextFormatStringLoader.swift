@@ -7,6 +7,7 @@ enum TextFormatPart {
     case shortClock
     case date
     case fullDate
+    case bitrate
     case bitrateAndTotal
     case debugOverlay
     case speed
@@ -65,6 +66,8 @@ class TextFormatLoader {
                     loadItem(part: .date, offsetBy: 6)
                 } else if formatFromIndex.hasPrefix("{fulldate}") {
                     loadItem(part: .fullDate, offsetBy: 10)
+                } else if formatFromIndex.hasPrefix("{bitrate}") {
+                    loadItem(part: .bitrate, offsetBy: 9)
                 } else if formatFromIndex.hasPrefix("{bitrateandtotal}") {
                     loadItem(part: .bitrateAndTotal, offsetBy: 17)
                 } else if formatFromIndex.hasPrefix("{debugoverlay}") {
