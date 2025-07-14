@@ -116,7 +116,7 @@ final class VideoUnit: NSObject {
     private var effects: [VideoEffect] = []
     private var pendingAfterAttachEffects: [VideoEffect]?
     private var pendingAfterAttachRotation: Double?
-    private var videoUnitBuiltinDevice: VideoUnitBuiltinDevice!
+    private var videoUnitBuiltinDevice: VideoUnitBuiltinDevice?
     private var sceneVideoSourceId = UUID()
     private var selectedBufferedVideoCameraId: UUID?
     fileprivate var bufferedVideos: [UUID: BufferedVideo] = [:]

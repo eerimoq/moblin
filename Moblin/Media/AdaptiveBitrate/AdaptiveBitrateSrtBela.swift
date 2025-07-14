@@ -188,7 +188,7 @@ class AdaptiveBitrateSrtBela: AdaptiveBitrate {
         bitrate = max(min(bitrate, targetBitrate), settings.minimumBitrate)
         if bitrate != curBitrate {
             curBitrate = bitrate
-            delegate.adaptiveBitrateSetVideoStreamBitrate(bitrate: UInt32(bitrate))
+            delegate?.adaptiveBitrateSetVideoStreamBitrate(bitrate: UInt32(bitrate))
         }
     }
 

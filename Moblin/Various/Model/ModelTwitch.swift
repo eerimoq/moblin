@@ -32,10 +32,10 @@ extension Model {
     }
 
     func reloadTwitchChat() {
-        twitchChat.stop()
+        twitchChat?.stop()
         setTextToSpeechStreamerMentions()
         if isTwitchChatConfigured(), !isChatRemoteControl() {
-            twitchChat.start(
+            twitchChat?.start(
                 channelName: stream.twitchChannelName,
                 channelId: stream.twitchChannelId,
                 settings: stream.chat,
@@ -457,6 +457,9 @@ extension Model: TwitchEventSubDelegate {
         kind: ChatHighlightKind? = nil,
         bits: String? = nil
     ) {
+        guard let twitchChat else {
+            return
+        }
         appendChatMessage(platform: .twitch,
                           messageId: nil,
                           user: user,

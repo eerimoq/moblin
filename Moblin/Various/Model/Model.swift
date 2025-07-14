@@ -333,7 +333,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     let audio = AudioProvider()
     var settings = Settings()
     var selectedSceneId = UUID()
-    var twitchChat: TwitchChat!
+    var twitchChat: TwitchChat?
     var twitchEventSub: TwitchEventSub?
     var kickPusher: KickPusher?
     var kickViewers: KickViewers?

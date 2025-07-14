@@ -37,7 +37,7 @@ private struct ActionTaken {
 }
 
 class AdaptiveBitrate {
-    weak var delegate: (any AdaptiveBitrateDelegate)!
+    weak var delegate: (any AdaptiveBitrateDelegate)?
     private var actionsTaken: Deque<ActionTaken> = []
     private let dateFormatter = DateFormatter()
 

@@ -13,7 +13,7 @@ final class RtmpSetChunkSizeMessage: RtmpMessage {
     }
 
     override func execute(_ connection: RtmpConnection) {
-        connection.socket.maximumChunkSizeFromServer = Int(size)
+        connection.socket?.maximumChunkSizeFromServer = Int(size)
     }
 
     override var encoded: Data {

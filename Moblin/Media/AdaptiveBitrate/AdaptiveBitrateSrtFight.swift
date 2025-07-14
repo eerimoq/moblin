@@ -90,7 +90,7 @@ class AdaptiveBitrateSrtFight: AdaptiveBitrate {
         )
         calculateCurrentBitrate(stats)
         if previousBitrate != currentBitrate {
-            delegate.adaptiveBitrateSetVideoStreamBitrate(bitrate: UInt32(currentBitrate))
+            delegate?.adaptiveBitrateSetVideoStreamBitrate(bitrate: UInt32(currentBitrate))
             previousBitrate = currentBitrate
         }
         super.update(stats: stats)
