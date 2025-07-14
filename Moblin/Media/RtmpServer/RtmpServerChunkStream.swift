@@ -335,8 +335,6 @@ class RtmpServerChunkStream {
             return
         }
         guard codec == .aac else {
-            // Make lint happy.
-            print(soundRate, soundSize, soundType)
             client.stopInternal(reason: "Unsupported audio codec \(codec). Only AAC is supported.")
             return
         }
