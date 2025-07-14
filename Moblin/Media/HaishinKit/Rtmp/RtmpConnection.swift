@@ -38,16 +38,16 @@ class RtmpStreamWeak {
 class RtmpConnection {
     private var uri: URL?
     private(set) var connected = false
-    var socket: RtmpSocket?
+    private(set) var socket: RtmpSocket
     weak var stream: RtmpStream?
     private var chunkStreamIdToStreamId: [UInt16: UInt32] = [:]
     var callCompletions: [Int: ([Any?]) -> Void] = [:]
     var windowSizeFromServer: Int64 = 250_000 {
         didSet {
-            guard socket?.connected == true else {
+            guard socket.connected == true else {
                 return
             }
-            _ = socket?.write(chunk: RtmpChunk(
+            _ = socket.write(chunk: RtmpChunk(
                 type: .zero,
                 chunkStreamId: RtmpChunk.ChunkStreamId.control.rawValue,
                 message: RtmpWindowAcknowledgementSizeMessage(100_000)
@@ -64,6 +64,7 @@ class RtmpConnection {
 
     init(name: String) {
         self.name = name
+        socket = RtmpSocket(name: name)
     }
 
     func connect(_ url: String) {
@@ -77,19 +78,19 @@ class RtmpConnection {
         }
         self.uri = uri
         socket = RtmpSocket(name: name)
-        socket?.delegate = self
+        socket.delegate = self
         if scheme.hasSuffix("s") {
-            socket?.connect(host: host, port: uri.port ?? 443, tlsOptions: .init())
+            socket.connect(host: host, port: uri.port ?? 443, tlsOptions: .init())
         } else {
-            socket?.connect(host: host, port: uri.port ?? 1935, tlsOptions: nil)
+            socket.connect(host: host, port: uri.port ?? 1935, tlsOptions: nil)
         }
     }
 
     func disconnect() {
         timer.stop()
         stream?.closeInternal()
-        socket?.close()
-        socket = nil
+        socket.close()
+        socket = RtmpSocket(name: name)
     }
 
     private static func makeSanJoseAuthCommand(_ url: URL, description: String) -> String {
@@ -127,7 +128,7 @@ class RtmpConnection {
         if let onCompleted {
             callCompletions[message.transactionId] = onCompleted
         }
-        _ = socket?.write(chunk: RtmpChunk(message: message))
+        _ = socket.write(chunk: RtmpChunk(message: message))
     }
 
     func gotCommand(data: AsObject) {
@@ -173,9 +174,6 @@ class RtmpConnection {
     }
 
     private func handleConnectSuccess() {
-        guard let socket else {
-            return
-        }
         connected = true
         socket.maximumChunkSizeToServer = 1024 * 8
         _ = socket.write(chunk: RtmpChunk(
@@ -194,7 +192,7 @@ class RtmpConnection {
         else {
             return
         }
-        socket?.close()
+        socket.close()
         switch true {
         case description.contains("reason=nosuchuser"):
             break
@@ -252,7 +250,7 @@ class RtmpConnection {
     }
 
     private func handleHandshakeDone() {
-        guard let chunk = makeConnectChunk(), let socket else {
+        guard let chunk = makeConnectChunk() else {
             disconnect()
             return
         }
