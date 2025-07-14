@@ -110,11 +110,11 @@ class RtmpStream {
         }
         switch state {
         case .open:
-            handleOpen()
+            handleStateChangeToOpen()
         case .publish:
-            handlePublish()
+            handleStateChangeToPublish()
         case .publishing:
-            handlePublishing()
+            handleStateChangeToPublishing()
         default:
             break
         }
@@ -268,7 +268,7 @@ class RtmpStream {
         return metadata
     }
 
-    private func handleOpen() {
+    private func handleStateChangeToOpen() {
         info.clear()
         for message in messages {
             message.streamId = id
@@ -284,7 +284,7 @@ class RtmpStream {
         messages.removeAll()
     }
 
-    private func handlePublish() {
+    private func handleStateChangeToPublish() {
         startedAt = .init()
         baseTimeStamp = -1.0
         prevRebasedAudioTimeStamp = -1.0
@@ -294,7 +294,7 @@ class RtmpStream {
         dataTimeStamps.removeAll()
     }
 
-    private func handlePublishing() {
+    private func handleStateChangeToPublishing() {
         send(handlerName: "@setDataFrame", arguments: "onMetaData", createOnMetaData())
         processor.startEncoding(self)
     }
@@ -386,6 +386,7 @@ class RtmpStream {
 
     private func audioCodecOutputBufferInner(_ buffer: AVAudioBuffer, _ presentationTimeStamp: CMTime) {
         guard let rebasedTimestamp = rebaseTimeStamp(timestamp: presentationTimeStamp.seconds) else {
+            logger.info("rtmp: \(name): Dropping audio buffer. Failed to rebase timestamp.)")
             return
         }
         var delta = 0.0
@@ -393,6 +394,7 @@ class RtmpStream {
             delta = (rebasedTimestamp - prevRebasedAudioTimeStamp) * 1000
         }
         guard let audioBuffer = buffer as? AVAudioCompressedBuffer, delta >= 0 else {
+            logger.info("rtmp: \(name): Dropping audio buffer (delta: \(delta))")
             return
         }
         var buffer = Data([aac, FlvAacPacketType.raw.rawValue])
@@ -439,6 +441,7 @@ class RtmpStream {
             decodeTimeStamp = sampleBuffer.presentationTimeStamp.seconds
         }
         guard let rebasedTimestamp = rebaseTimeStamp(timestamp: decodeTimeStamp) else {
+            logger.info("rtmp: \(name): Dropping video buffer. Failed to rebase timestamp.)")
             return
         }
         var delta = 0.0
@@ -446,6 +449,7 @@ class RtmpStream {
             delta = (rebasedTimestamp - prevRebasedVideoTimeStamp) * 1000
         }
         guard let data = sampleBuffer.dataBuffer?.data, delta >= 0 else {
+            logger.info("rtmp: \(name): Dropping video buffer (delta: \(delta))")
             return
         }
         var buffer: Data
