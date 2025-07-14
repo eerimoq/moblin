@@ -253,6 +253,7 @@ struct HevcVps {
     var vpsSubLayerOrderingInfoPresentFlag: Bool
     var vpsMaxLayerId: UInt8
     var vpsNumLayerSetsMinus1: UInt32
+    var vpsTimingInfoPresentFlag: Bool
 
     init?(data: Data) {
         do {
@@ -273,6 +274,28 @@ struct HevcVps {
             }
             vpsMaxLayerId = try reader.readBits(count: 6)
             vpsNumLayerSetsMinus1 = try reader.readExponentialGolomb()
+            try reader.skipBits(count: (Int(vpsMaxLayerId) + 1) * Int(vpsNumLayerSetsMinus1))
+            vpsTimingInfoPresentFlag = try reader.readBit()
+            if vpsTimingInfoPresentFlag {
+                try reader.skipBits(count: 64)
+                if try reader.readBit() {
+                    _ = try reader.readExponentialGolomb()
+                }
+                let vpsNumHrdParameters = try reader.readExponentialGolomb()
+                for i in 0 ..< vpsNumHrdParameters {
+                    _ = try reader.readExponentialGolomb()
+                    let cprmsPresentFlag: Bool
+                    if i > 0 {
+                        cprmsPresentFlag = try reader.readBit()
+                    } else {
+                        cprmsPresentFlag = true
+                    }
+                    throw "Should skip hrd_parameters \(cprmsPresentFlag)"
+                }
+            }
+            if try reader.readBit() {
+                throw "Extension not supported"
+            }
         } catch {
             return nil
         }
