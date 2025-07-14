@@ -136,10 +136,6 @@ class RtmpServerChunkStream {
             if amf0.bytesAvailable > 0 {
                 try arguments.append(amf0.deserialize())
             }
-            /* logger.info("""
-             rtmp-server: client: Command: \(commandName), Object: \(commandObject), \
-             Arguments: \(arguments)
-             """) */
         } catch {
             client.stopInternal(reason: "AMF-0 decode error \(error)")
             return
@@ -420,16 +416,19 @@ class RtmpServerChunkStream {
         }
         if let error {
             logger.info("rtmp-server: client: Audio decode error of packet with length \(length): \(error)")
-        } else if let sampleBuffer = makeAudioSampleBuffer(client: client, audioBuffer: outputBuffer) {
-            client.targetLatenciesSynchronizer
-                .setLatestAudioPresentationTimeStamp(sampleBuffer.presentationTimeStamp.seconds)
-            client.updateTargetLatencies()
-            if firstAudioBufferTimestamp == nil {
-                firstAudioBufferTimestamp = .now
-            }
-            totalNumberOfAudioSamples += UInt64(sampleBuffer.dataBuffer?.dataLength ?? 0) / 2
-            client.handleAudioBuffer(sampleBuffer: sampleBuffer)
+            return
         }
+        guard let sampleBuffer = makeAudioSampleBuffer(client: client, audioBuffer: outputBuffer) else {
+            return
+        }
+        client.targetLatenciesSynchronizer
+            .setLatestAudioPresentationTimeStamp(sampleBuffer.presentationTimeStamp.seconds)
+        client.updateTargetLatencies()
+        if firstAudioBufferTimestamp == nil {
+            firstAudioBufferTimestamp = .now
+        }
+        totalNumberOfAudioSamples += UInt64(sampleBuffer.dataBuffer?.dataLength ?? 0) / 2
+        client.handleAudioBuffer(sampleBuffer: sampleBuffer)
     }
 
     private func processMessageVideo() {
@@ -460,7 +459,7 @@ class RtmpServerChunkStream {
         case .nal:
             processMessageVideoTypeNal(client: client)
         default:
-            client.stopInternal(reason: "Unsupported video H.264/AVC packet type \(messageBody[1])")
+            logger.info("rtmp-server: Unsupported video H.264/AVC packet type \(messageBody[1])")
         }
     }
 
@@ -500,7 +499,7 @@ class RtmpServerChunkStream {
         case .codedFramesX:
             processMessageVideoTypeCodedFramesX(client: client, isKeyFrame: videoType == .key)
         default:
-            client.stopInternal(reason: "Unsupported video packet type \(packetType)")
+            logger.info("rtmp-server: Unsupported video packet type \(packetType)")
         }
     }
 
@@ -546,13 +545,10 @@ class RtmpServerChunkStream {
             logger.info("rtmp-server: client: Dropping short packet with data \(messageBody.hexString())")
             return
         }
-        var compositionTime = Int32(data: [0] + messageBody[2 ..< 5]).bigEndian
-        compositionTime <<= 8
-        compositionTime /= 256
         let isKeyFrame = (messageBody[0] >> 4) & 0b0111 == FlvFrameType.key.rawValue
         processMessageVideoFrame(client: client,
                                  isKeyFrame: isKeyFrame,
-                                 compositionTime: compositionTime,
+                                 compositionTime: calcCompositionTime(offset: 2),
                                  dataOffset: FlvTagType.video.headerSize)
     }
 
@@ -561,13 +557,17 @@ class RtmpServerChunkStream {
             logger.info("rtmp-server: client: Dropping short packet with data \(messageBody.hexString())")
             return
         }
-        var compositionTime = Int32(data: [0] + messageBody[5 ..< 8]).bigEndian
-        compositionTime <<= 8
-        compositionTime /= 256
         processMessageVideoFrame(client: client,
                                  isKeyFrame: isKeyFrame,
-                                 compositionTime: compositionTime,
+                                 compositionTime: calcCompositionTime(offset: 5),
                                  dataOffset: FlvTagType.video.headerSize + 3)
+    }
+
+    private func calcCompositionTime(offset: Int) -> Int32 {
+        var compositionTime = Int32(data: [0] + messageBody[offset ..< offset + 3]).bigEndian
+        compositionTime <<= 8
+        compositionTime /= 256
+        return compositionTime
     }
 
     private func processMessageVideoTypeCodedFramesX(client: RtmpServerClient, isKeyFrame: Bool) {
