@@ -464,7 +464,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject {
     @Published var name: String
     var id: UUID = .init()
     var enabled: Bool = false
-    var url: String = defaultStreamUrl
+    @Published var url: String = defaultStreamUrl
     var twitchChannelName: String = ""
     var twitchChannelId: String = ""
     var twitchShowFollows: Bool = true
