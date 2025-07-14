@@ -242,6 +242,142 @@ struct HevcSei {
     }
 }
 
+// 7.3.2.2 Sequence parameter set RBSP syntax
+struct HevcSps {
+    var sps_video_parameter_set_id: UInt8
+    var sps_max_sub_layers_minus1: UInt8
+    var sps_temporal_id_nesting_flag: Bool
+    var sps_seq_parameter_set_id: UInt32
+    var chroma_format_idc: UInt32
+    var separate_colour_plane_flag: Bool = false
+    var pic_width_in_luma_samples: UInt32
+    var pic_height_in_luma_samples: UInt32
+
+    init?(data: Data) {
+        do {
+            let reader = BitReader(data: data)
+            sps_video_parameter_set_id = try reader.readBits(count: 4)
+            sps_max_sub_layers_minus1 = try reader.readBits(count: 3)
+            sps_temporal_id_nesting_flag = try reader.readBit()
+            sps_seq_parameter_set_id = try reader.readExponentialGolomb()
+            chroma_format_idc = try reader.readExponentialGolomb()
+            if chroma_format_idc > 3 {
+                throw "chroma_format_idc \(chroma_format_idc) is greater than 3"
+            }
+            if chroma_format_idc == 3 {
+                separate_colour_plane_flag = try reader.readBit()
+            }
+            pic_width_in_luma_samples = try reader.readExponentialGolomb()
+            pic_height_in_luma_samples = try reader.readExponentialGolomb()
+        } catch {
+            return nil
+        }
+    }
+}
+
+// 7.3.2.3 Picture parameter set RBSP syntax
+struct HevcPps {
+    var ppsPicParameterSetId: UInt32
+    var ppsSeqParameterSetId: UInt32
+    var dependentSliceSegmentsEnabledFlag: Bool
+    var outputFlagPresentFlag: Bool
+    var numExtraSliceHeaderBits: UInt8
+    var signDataHidingEnabledFlag: Bool
+    var cabacInitPresentFlag: Bool
+    var numRefIdxL0DefaultActiveMinus1: UInt32
+    var numRefIdxL1DefaultActiveMinus1: UInt32
+    var initQpMinus26: UInt32
+    var constrainedIntraPredFlag: Bool
+    var transformSkipEnabledFlag: Bool
+    var cuQpDeltaEnabledFlag: Bool
+    var diffCuQpDeltaDepth: UInt32 = 0
+    var ppsCbQpOffset: UInt32
+    var ppsCrQpOffset: UInt32
+    var ppsSliceChromaQpOffsetsPresentFlag: Bool
+    var weightedPredFlag: Bool
+    var weightedBipredFlag: Bool
+    var transquantBypassEnabledFlag: Bool
+    var tilesEnabledFlag: Bool
+    var entropyCodingSyncEnabledFlag: Bool
+    var numTileColumnsMinus1: UInt32 = 0
+    var numTileRowsMinus1: UInt32 = 0
+    var uniformSpacingFlag: Bool = false
+    var loopFilterAcrossTilesEnabledFlag: Bool = true
+    var ppsLoopFilterAcrossSlicesEnabledFlag: Bool
+    var deblockingFilterControlPresentFlag: Bool
+    var deblockingFilterOverrideEnabledFlag: Bool = false
+    var ppsDeblockingFilterDisabledFlag: Bool = false
+    var ppsBetaOffsetDiv2: UInt32 = 0
+    var ppsTcOffsetDiv2: UInt32 = 0
+    var ppsScalingListDataPresentFlag: Bool
+    var listsModificationPresentFlag: Bool
+    var log2ParallelMergeLevelMinus2: UInt32
+    var sliceSegmentHeaderExtensionPresentFlag: Bool
+    var ppsExtensionPresentFlag: Bool
+
+    init?(data: Data) {
+        do {
+            let reader = BitReader(data: data)
+            ppsPicParameterSetId = try reader.readExponentialGolomb()
+            ppsSeqParameterSetId = try reader.readExponentialGolomb()
+            dependentSliceSegmentsEnabledFlag = try reader.readBit()
+            outputFlagPresentFlag = try reader.readBit()
+            numExtraSliceHeaderBits = try reader.readBits(count: 3)
+            signDataHidingEnabledFlag = try reader.readBit()
+            cabacInitPresentFlag = try reader.readBit()
+            numRefIdxL0DefaultActiveMinus1 = try reader.readExponentialGolomb()
+            numRefIdxL1DefaultActiveMinus1 = try reader.readExponentialGolomb()
+            initQpMinus26 = try reader.readExponentialGolomb()
+            constrainedIntraPredFlag = try reader.readBit()
+            transformSkipEnabledFlag = try reader.readBit()
+            cuQpDeltaEnabledFlag = try reader.readBit()
+            if cuQpDeltaEnabledFlag {
+                diffCuQpDeltaDepth = try reader.readExponentialGolomb()
+            }
+            ppsCbQpOffset = try reader.readExponentialGolomb()
+            ppsCrQpOffset = try reader.readExponentialGolomb()
+            ppsSliceChromaQpOffsetsPresentFlag = try reader.readBit()
+            weightedPredFlag = try reader.readBit()
+            weightedBipredFlag = try reader.readBit()
+            transquantBypassEnabledFlag = try reader.readBit()
+            tilesEnabledFlag = try reader.readBit()
+            entropyCodingSyncEnabledFlag = try reader.readBit()
+            if tilesEnabledFlag {
+                numTileColumnsMinus1 = try reader.readExponentialGolomb()
+                numTileRowsMinus1 = try reader.readExponentialGolomb()
+                uniformSpacingFlag = try reader.readBit()
+                if !uniformSpacingFlag {
+                    throw "not implemented"
+                }
+                loopFilterAcrossTilesEnabledFlag = try reader.readBit()
+            }
+            ppsLoopFilterAcrossSlicesEnabledFlag = try reader.readBit()
+            deblockingFilterControlPresentFlag = try reader.readBit()
+            if deblockingFilterControlPresentFlag {
+                deblockingFilterOverrideEnabledFlag = try reader.readBit()
+                ppsDeblockingFilterDisabledFlag = try reader.readBit()
+                if !ppsDeblockingFilterDisabledFlag {
+                    ppsBetaOffsetDiv2 = try reader.readExponentialGolomb()
+                    ppsTcOffsetDiv2 = try reader.readExponentialGolomb()
+                }
+            }
+            ppsScalingListDataPresentFlag = try reader.readBit()
+            if ppsScalingListDataPresentFlag {
+                throw "scaling"
+            }
+            listsModificationPresentFlag = try reader.readBit()
+            log2ParallelMergeLevelMinus2 = try reader.readExponentialGolomb()
+            sliceSegmentHeaderExtensionPresentFlag = try reader.readBit()
+            ppsExtensionPresentFlag = try reader.readBit()
+            if ppsExtensionPresentFlag {
+                throw "extension"
+            }
+        } catch {
+            return nil
+        }
+    }
+}
+
 private func writeRbspTrailingBits(writer: BitWriter) {
     writer.writeBit(true)
     while writer.bitOffset != 0 {
