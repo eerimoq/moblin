@@ -322,7 +322,7 @@ class RtmpServerChunkStream {
         guard let client else {
             return
         }
-        guard checkMessageBodyBigEnough(client: client, minuminSize: 2) else {
+        guard checkMessageBodyBigEnough(client: client, minimumSize: 2) else {
             return
         }
         let control = messageBody[0]
@@ -436,7 +436,7 @@ class RtmpServerChunkStream {
     }
 
     private func processMessageVideo() {
-        guard let client, checkMessageBodyBigEnough(client: client, minuminSize: 2) else {
+        guard let client, checkMessageBodyBigEnough(client: client, minimumSize: 2) else {
             return
         }
         let control = messageBody[0]
@@ -468,7 +468,7 @@ class RtmpServerChunkStream {
     }
 
     private func processMessageVideoExtendedHeader(client: RtmpServerClient, control: UInt8) {
-        guard checkMessageBodyBigEnough(client: client, minuminSize: 5) else {
+        guard checkMessageBodyBigEnough(client: client, minimumSize: 5) else {
             return
         }
         let frameType = (control >> 4) & 0b111
@@ -508,7 +508,7 @@ class RtmpServerChunkStream {
     }
 
     private func processMessageVideoTypeSeq(client: RtmpServerClient) {
-        guard checkMessageBodyBigEnough(client: client, minuminSize: FlvTagType.video.headerSize) else {
+        guard checkMessageBodyBigEnough(client: client, minimumSize: FlvTagType.video.headerSize) else {
             return
         }
         var config = MpegTsVideoConfigAvc()
@@ -522,7 +522,7 @@ class RtmpServerChunkStream {
     }
 
     private func processMessageVideoTypeSequenceStart(client: RtmpServerClient) {
-        guard checkMessageBodyBigEnough(client: client, minuminSize: FlvTagType.video.headerSize) else {
+        guard checkMessageBodyBigEnough(client: client, minimumSize: FlvTagType.video.headerSize) else {
             return
         }
         var config = MpegTsVideoConfigHevc()
@@ -661,9 +661,9 @@ class RtmpServerChunkStream {
         return client.getBasePresentationTimeStamp()
     }
 
-    private func checkMessageBodyBigEnough(client: RtmpServerClient, minuminSize: Int) -> Bool {
-        if messageBody.count < minuminSize {
-            client.stopInternal(reason: "Got \(messageBody.count) bytes message, expected >= \(minuminSize)")
+    private func checkMessageBodyBigEnough(client: RtmpServerClient, minimumSize: Int) -> Bool {
+        if messageBody.count < minimumSize {
+            client.stopInternal(reason: "Got \(messageBody.count) bytes message, expected >= \(minimumSize)")
             return false
         }
         return true
