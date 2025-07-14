@@ -31,7 +31,10 @@ extension MirlStream: VideoEncoderDelegate {
         client?.writeVideoFormat(formatDescription: formatDescription)
     }
 
-    func videoEncoderOutputSampleBuffer(_: VideoEncoder, _ sampleBuffer: CMSampleBuffer) {
+    func videoEncoderOutputSampleBuffer(_: VideoEncoder,
+                                        _ sampleBuffer: CMSampleBuffer,
+                                        _: CMTime)
+    {
         client?.writeVideo(sampleBuffer: sampleBuffer)
     }
 }

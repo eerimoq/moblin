@@ -31,7 +31,10 @@ extension MultiTrackVideoEncoder: VideoEncoderDelegate {
         logger.info("multi-track-video-encoder: Format for \(encoder) \(formatDescription)")
     }
 
-    func videoEncoderOutputSampleBuffer(_ encoder: VideoEncoder, _ sampleBuffer: CMSampleBuffer) {
+    func videoEncoderOutputSampleBuffer(_ encoder: VideoEncoder,
+                                        _ sampleBuffer: CMSampleBuffer,
+                                        _: CMTime)
+    {
         logger.info("multi-track-video-encoder: Frame for \(encoder) \(sampleBuffer.presentationTimeStamp)")
     }
 }

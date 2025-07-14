@@ -341,7 +341,10 @@ extension MpegTsWriter: VideoEncoderDelegate {
         }
     }
 
-    func videoEncoderOutputSampleBuffer(_: VideoEncoder, _ sampleBuffer: CMSampleBuffer) {
+    func videoEncoderOutputSampleBuffer(_: VideoEncoder,
+                                        _ sampleBuffer: CMSampleBuffer,
+                                        _ decodeTimeStampOffset: CMTime)
+    {
         guard let dataBuffer = sampleBuffer.dataBuffer,
               let (buffer, length) = dataBuffer.getDataPointer(),
               canWriteFor(),
@@ -349,6 +352,7 @@ extension MpegTsWriter: VideoEncoderDelegate {
         else {
             return
         }
+        let decodeTimeStamp = CMTimeSubtract(sampleBuffer.decodeTimeStamp, decodeTimeStampOffset)
         let randomAccessIndicator = sampleBuffer.isSync
         let packetizedElementaryStream: MpegTsPacketizedElementaryStream
         let bytes = UnsafeMutableRawPointer(buffer).bindMemory(to: UInt8.self, capacity: length)
@@ -357,7 +361,7 @@ extension MpegTsWriter: VideoEncoderDelegate {
                 bytes: bytes,
                 count: length,
                 presentationTimeStamp: sampleBuffer.presentationTimeStamp,
-                decodeTimeStamp: sampleBuffer.decodeTimeStamp,
+                decodeTimeStamp: decodeTimeStamp,
                 config: randomAccessIndicator ? videoConfig : nil,
                 streamId: MpegTsWriter.videoStreamId
             )
@@ -372,7 +376,7 @@ extension MpegTsWriter: VideoEncoderDelegate {
                 bytes: bytes,
                 count: length,
                 presentationTimeStamp: sampleBuffer.presentationTimeStamp,
-                decodeTimeStamp: sampleBuffer.decodeTimeStamp,
+                decodeTimeStamp: decodeTimeStamp,
                 config: randomAccessIndicator ? videoConfig : nil,
                 streamId: MpegTsWriter.videoStreamId,
                 timecode: timecode

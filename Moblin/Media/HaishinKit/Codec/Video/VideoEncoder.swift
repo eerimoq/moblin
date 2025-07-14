@@ -5,7 +5,9 @@ var numberOfFailedEncodings = 0
 
 protocol VideoEncoderDelegate: AnyObject {
     func videoEncoderOutputFormat(_ encoder: VideoEncoder, _ formatDescription: CMFormatDescription)
-    func videoEncoderOutputSampleBuffer(_ encoder: VideoEncoder, _ sampleBuffer: CMSampleBuffer)
+    func videoEncoderOutputSampleBuffer(_ encoder: VideoEncoder,
+                                        _ sampleBuffer: CMSampleBuffer,
+                                        _ decodeTimeStampOffset: CMTime)
 }
 
 class VideoEncoder {
@@ -92,13 +94,23 @@ class VideoEncoder {
                     return
                 }
                 self.setFormatDescription(formatDescription: sampleBuffer.formatDescription)
-                self.delegate?.videoEncoderOutputSampleBuffer(self, sampleBuffer)
+                self.delegate?.videoEncoderOutputSampleBuffer(self,
+                                                              sampleBuffer,
+                                                              self.makeDecodeTimeStampOffset(settings))
             }
         }
         if err == kVTInvalidSessionErr {
             logger.info("video-encoder: Encode failed. Resetting session.")
             invalidateSession = true
             currentBitrate = 0
+        }
+    }
+
+    private func makeDecodeTimeStampOffset(_ settings: VideoEncoderSettings) -> CMTime {
+        if settings.allowFrameReordering {
+            return CMTime(seconds: 0.15, preferredTimescale: 1000)
+        } else {
+            return .zero
         }
     }
 

@@ -500,7 +500,10 @@ extension RtmpStream: VideoEncoderDelegate {
         }
     }
 
-    func videoEncoderOutputSampleBuffer(_ codec: VideoEncoder, _ sampleBuffer: CMSampleBuffer) {
+    func videoEncoderOutputSampleBuffer(_ codec: VideoEncoder,
+                                        _ sampleBuffer: CMSampleBuffer,
+                                        _: CMTime)
+    {
         let format = codec.settings.value.format
         processorControlQueue.async {
             self.videoCodecOutputSampleBufferInner(format, sampleBuffer)

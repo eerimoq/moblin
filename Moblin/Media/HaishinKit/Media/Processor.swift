@@ -322,9 +322,12 @@ extension Processor: VideoEncoderDelegate {
         }
     }
 
-    func videoEncoderOutputSampleBuffer(_ encoder: VideoEncoder, _ sampleBuffer: CMSampleBuffer) {
+    func videoEncoderOutputSampleBuffer(_ encoder: VideoEncoder,
+                                        _ sampleBuffer: CMSampleBuffer,
+                                        _ decodeTimeStampOffset: CMTime)
+    {
         for stream in streams {
-            stream.delegate?.videoEncoderOutputSampleBuffer(encoder, sampleBuffer)
+            stream.delegate?.videoEncoderOutputSampleBuffer(encoder, sampleBuffer, decodeTimeStampOffset)
         }
     }
 }
