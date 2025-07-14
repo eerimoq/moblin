@@ -221,7 +221,7 @@ class RtmpConnection {
         guard let uri else {
             return nil
         }
-        var app = String(uri.path).trimmingPrefix(while: { $0 == "/" })
+        var app = String(uri.path.trimmingPrefix(while: { $0 == "/" }))
         if let query = uri.query {
             app += "?" + query
         }
