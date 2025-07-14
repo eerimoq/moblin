@@ -244,35 +244,35 @@ struct HevcSei {
 
 // 7.3.2.1 Video parameter set RBSP syntax
 struct HevcVps {
-    var vps_video_parameter_set_id: UInt8
-    var vps_base_layer_internal_flag: Bool
-    var vps_base_layer_available_flag: Bool
-    var vps_max_layers_minus1: UInt8
-    var vps_max_sub_layers_minus1: UInt8
-    var vps_temporal_id_nesting_flag: Bool
-    var vps_sub_layer_ordering_info_present_flag: Bool
-    var vps_max_layer_id: UInt8
-    var vps_num_layer_sets_minus1: UInt32
+    var vpsVideoParameterSetId: UInt8
+    var vpsBaseLayerInternalFlag: Bool
+    var vpsBaseLayerAvailableFlag: Bool
+    var vpsMaxLayersMinus1: UInt8
+    var vpsMaxSubLayersMinus1: UInt8
+    var vpsTemporalIdNestingFlag: Bool
+    var vpsSubLayerOrderingInfoPresentFlag: Bool
+    var vpsMaxLayerId: UInt8
+    var vpsNumLayerSetsMinus1: UInt32
 
     init?(data: Data) {
         do {
             let reader = BitReader(data: data)
-            vps_video_parameter_set_id = try reader.readBits(count: 4)
-            vps_base_layer_internal_flag = try reader.readBit()
-            vps_base_layer_available_flag = try reader.readBit()
-            vps_max_layers_minus1 = try reader.readBits(count: 6)
-            vps_max_sub_layers_minus1 = try reader.readBits(count: 3)
-            vps_temporal_id_nesting_flag = try reader.readBit()
+            vpsVideoParameterSetId = try reader.readBits(count: 4)
+            vpsBaseLayerInternalFlag = try reader.readBit()
+            vpsBaseLayerAvailableFlag = try reader.readBit()
+            vpsMaxLayersMinus1 = try reader.readBits(count: 6)
+            vpsMaxSubLayersMinus1 = try reader.readBits(count: 3)
+            vpsTemporalIdNestingFlag = try reader.readBit()
             try reader.skipBits(count: 16)
-            vps_sub_layer_ordering_info_present_flag = try reader.readBit()
-            let startLayer = vps_sub_layer_ordering_info_present_flag ? 0 : vps_max_sub_layers_minus1
-            for _ in startLayer ... vps_max_layers_minus1 {
+            vpsSubLayerOrderingInfoPresentFlag = try reader.readBit()
+            let startLayer = vpsSubLayerOrderingInfoPresentFlag ? 0 : vpsMaxSubLayersMinus1
+            for _ in startLayer ... vpsMaxLayersMinus1 {
                 _ = try reader.readExponentialGolomb()
                 _ = try reader.readExponentialGolomb()
                 _ = try reader.readExponentialGolomb()
             }
-            vps_max_layer_id = try reader.readBits(count: 6)
-            vps_num_layer_sets_minus1 = try reader.readExponentialGolomb()
+            vpsMaxLayerId = try reader.readBits(count: 6)
+            vpsNumLayerSetsMinus1 = try reader.readExponentialGolomb()
         } catch {
             return nil
         }
@@ -281,34 +281,34 @@ struct HevcVps {
 
 // 7.3.2.2 Sequence parameter set RBSP syntax
 struct HevcSps {
-    var sps_video_parameter_set_id: UInt8
-    var sps_max_sub_layers_minus1: UInt8
-    var sps_temporal_id_nesting_flag: Bool
-    var sps_seq_parameter_set_id: UInt32
-    var chroma_format_idc: UInt32
-    var separate_colour_plane_flag: Bool = false
-    var pic_width_in_luma_samples: UInt32
-    var pic_height_in_luma_samples: UInt32
+    var spsVideoParameterSetId: UInt8
+    var spsMaxSubLayersMinus1: UInt8
+    var spsTemporalIdNestingFlag: Bool
+    var spsSeqParameterSetId: UInt32
+    var chromaFormatIdc: UInt32
+    var separateColourPlaneFlag: Bool = false
+    var picWidthInLumaSamples: UInt32
+    var picHeightInLumaSamples: UInt32
 
     init?(data: Data) {
         do {
             let reader = BitReader(data: data)
-            sps_video_parameter_set_id = try reader.readBits(count: 4)
-            sps_max_sub_layers_minus1 = try reader.readBits(count: 3)
-            sps_temporal_id_nesting_flag = try reader.readBit()
-            sps_seq_parameter_set_id = try reader.readExponentialGolomb()
-            if sps_seq_parameter_set_id > 15 {
-                throw "sps_seq_parameter_set_id \(sps_seq_parameter_set_id) is greater than 15"
+            spsVideoParameterSetId = try reader.readBits(count: 4)
+            spsMaxSubLayersMinus1 = try reader.readBits(count: 3)
+            spsTemporalIdNestingFlag = try reader.readBit()
+            spsSeqParameterSetId = try reader.readExponentialGolomb()
+            if spsSeqParameterSetId > 15 {
+                throw "spsSeqParameterSetId \(spsSeqParameterSetId) is greater than 15"
             }
-            chroma_format_idc = try reader.readExponentialGolomb()
-            if chroma_format_idc > 3 {
-                throw "chroma_format_idc \(chroma_format_idc) is greater than 3"
+            chromaFormatIdc = try reader.readExponentialGolomb()
+            if chromaFormatIdc > 3 {
+                throw "chromaFormatIdc \(chromaFormatIdc) is greater than 3"
             }
-            if chroma_format_idc == 3 {
-                separate_colour_plane_flag = try reader.readBit()
+            if chromaFormatIdc == 3 {
+                separateColourPlaneFlag = try reader.readBit()
             }
-            pic_width_in_luma_samples = try reader.readExponentialGolomb()
-            pic_height_in_luma_samples = try reader.readExponentialGolomb()
+            picWidthInLumaSamples = try reader.readExponentialGolomb()
+            picHeightInLumaSamples = try reader.readExponentialGolomb()
         } catch {
             return nil
         }
