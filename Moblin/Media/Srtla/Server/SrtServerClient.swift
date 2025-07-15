@@ -370,14 +370,12 @@ class SrtServerClient {
         }
         if timecodesEnabled {
             for unit in units {
-                switch unit.type {
-                case .prefixSeiNut:
-                    switch HevcSei(data: unit.payload)?.payload {
+                switch unit.payload {
+                case let .prefixSeiNut(hevcSei):
+                    switch hevcSei.payload {
                     case let .timeCode(timeCode):
                         let clock = timeCode.makeClock(vuiTimeScale: 1)
                         logger.debug("Got H.265 SEI timecode \(clock) \(clock.timeIntervalSince1970)")
-                    default:
-                        break
                     }
                 default:
                     break

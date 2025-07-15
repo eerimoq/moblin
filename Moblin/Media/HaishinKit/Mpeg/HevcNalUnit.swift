@@ -23,27 +23,84 @@ enum HevcNalUnitType: UInt8 {
 
 struct HevcNalUnit: NalUnit {
     let type: HevcNalUnitType
+    let nuhLayerId: UInt8
     let temporalIdPlusOne: UInt8
-    let payload: Data
+    let payload: HevcNalUnitPayload
 
-    init(_ data: Data) {
-        type = HevcNalUnitType(rawValue: (data[0] & 0x7E) >> 1) ?? .unspec
-        temporalIdPlusOne = data[1] & 0b0001_1111
-        payload = data.subdata(in: 2 ..< data.count)
+    init?(_ data: Data) {
+        let reader = BitReader(data: data)
+        do {
+            try reader.skipBits(count: 1)
+            type = try HevcNalUnitType(rawValue: reader.readBits(count: 6)) ?? .unspec
+            nuhLayerId = try reader.readBits(count: 6)
+            temporalIdPlusOne = try reader.readBits(count: 3)
+            let data = data.subdata(in: 2 ..< data.count)
+            switch type {
+            case .vps:
+                guard let vps = HevcVps(data: data) else {
+                    return nil
+                }
+                payload = .vps(vps)
+            case .sps:
+                guard let sps = HevcSps(data: data) else {
+                    return nil
+                }
+                payload = .sps(sps)
+            case .pps:
+                guard let pps = HevcPps(data: data) else {
+                    return nil
+                }
+                payload = .pps(pps)
+            case .prefixSeiNut:
+                guard let sei = HevcSei(data: data) else {
+                    return nil
+                }
+                payload = .prefixSeiNut(sei)
+            default:
+                payload = .unspec
+            }
+        } catch {
+            return nil
+        }
     }
 
-    init(type: HevcNalUnitType, temporalIdPlusOne: UInt8, payload: Data) {
+    init(type: HevcNalUnitType, temporalIdPlusOne: UInt8, payload: HevcNalUnitPayload) {
         self.type = type
+        nuhLayerId = 0
         self.temporalIdPlusOne = temporalIdPlusOne
         self.payload = payload
     }
 
     func encode() -> Data {
-        var result = Data()
-        result.append(type.rawValue << 1)
-        result.append(temporalIdPlusOne)
-        result.append(payload)
-        return result
+        let writer = BitWriter()
+        writer.writeBit(false)
+        writer.writeBits(type.rawValue, count: 6)
+        writer.writeBits(nuhLayerId, count: 6)
+        writer.writeBits(temporalIdPlusOne, count: 3)
+        return writer.data + payload.encode()
+    }
+}
+
+enum HevcNalUnitPayload {
+    case vps(HevcVps)
+    case sps(HevcSps)
+    case pps(HevcPps)
+    case prefixSeiNut(HevcSei)
+    case unspec
+
+    func encode() -> Data {
+        switch self {
+        case let .vps(vps):
+            return vps.encode()
+        case let .sps(sps):
+            return sps.encode()
+        case let .pps(pps):
+            return pps.encode()
+        case let .prefixSeiNut(prefixSeiNut):
+            return prefixSeiNut.encode()
+        case .unspec:
+            return Data()
+        }
     }
 }
 
@@ -300,6 +357,10 @@ struct HevcVps {
             return nil
         }
     }
+
+    func encode() -> Data {
+        return Data()
+    }
 }
 
 // 7.3.2.2 Sequence parameter set RBSP syntax
@@ -335,6 +396,10 @@ struct HevcSps {
         } catch {
             return nil
         }
+    }
+
+    func encode() -> Data {
+        return Data()
     }
 }
 
@@ -438,6 +503,10 @@ struct HevcPps {
         } catch {
             return nil
         }
+    }
+
+    func encode() -> Data {
+        return Data()
     }
 }
 
