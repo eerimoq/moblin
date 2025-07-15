@@ -393,7 +393,7 @@ class SrtServerClient {
         ) else {
             return nil
         }
-        sampleBuffer.isSync = units.contains { $0.type == .sps }
+        sampleBuffer.isSync = units.contains { $0.header.type == .sps }
         self.firstReceivedPresentationTimeStamp = firstReceivedPresentationTimeStamp
         previousReceivedPresentationTimeStamps[packetId] = previousReceivedPresentationTimeStamp
         return (sampleBuffer, data.streamType)

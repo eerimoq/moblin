@@ -22,23 +22,18 @@ enum HevcNalUnitType: UInt8 {
 }
 
 struct HevcNalUnit: NalUnit {
-    let type: HevcNalUnitType
-    let nuhLayerId: UInt8
-    let temporalIdPlusOne: UInt8
+    let header: HevcNalUnitHeader
     let payload: HevcNalUnitPayload
 
     init?(_ data: Data) {
         let reader = BitReader(data: data)
         do {
-            try reader.skipBits(count: 1)
-            type = try HevcNalUnitType(rawValue: reader.readBits(count: 6)) ?? .unspec
-            nuhLayerId = try reader.readBits(count: 6)
-            temporalIdPlusOne = try reader.readBits(count: 3)
-            switch type {
+            header = try HevcNalUnitHeader(reader: reader)
+            switch header.type {
             case .vps:
                 payload = try .vps(HevcNalUnitVps(reader: reader))
             case .sps:
-                payload = try .sps(HevcNalUnitSps(reader: reader))
+                payload = try .sps(HevcNalUnitSps(reader: reader, header: header))
             case .pps:
                 payload = try .pps(HevcNalUnitPps(reader: reader))
             case .prefixSeiNut:
@@ -52,10 +47,31 @@ struct HevcNalUnit: NalUnit {
     }
 
     init(type: HevcNalUnitType, temporalIdPlusOne: UInt8, payload: HevcNalUnitPayload) {
-        self.type = type
-        nuhLayerId = 0
-        self.temporalIdPlusOne = temporalIdPlusOne
+        header = HevcNalUnitHeader(type: type, nuhLayerId: 0, temporalIdPlusOne: temporalIdPlusOne)
         self.payload = payload
+    }
+
+    func encode() -> Data {
+        return header.encode() + payload.encode()
+    }
+}
+
+struct HevcNalUnitHeader {
+    let type: HevcNalUnitType
+    let nuhLayerId: UInt8
+    let temporalIdPlusOne: UInt8
+
+    init(reader: BitReader) throws {
+        try reader.skipBits(count: 1)
+        type = try HevcNalUnitType(rawValue: reader.readBits(count: 6)) ?? .unspec
+        nuhLayerId = try reader.readBits(count: 6)
+        temporalIdPlusOne = try reader.readBits(count: 3)
+    }
+
+    init(type: HevcNalUnitType, nuhLayerId: UInt8, temporalIdPlusOne: UInt8) {
+        self.type = type
+        self.nuhLayerId = nuhLayerId
+        self.temporalIdPlusOne = temporalIdPlusOne
     }
 
     func encode() -> Data {
@@ -64,7 +80,7 @@ struct HevcNalUnit: NalUnit {
         writer.writeBits(type.rawValue, count: 6)
         writer.writeBits(nuhLayerId, count: 6)
         writer.writeBits(temporalIdPlusOne, count: 3)
-        return writer.data + payload.encode()
+        return writer.data
     }
 }
 
@@ -94,9 +110,9 @@ enum HevcNalUnitPayload {
 extension [HevcNalUnit] {
     func makeFormatDescription() -> CMFormatDescription? {
         guard
-            let vps = first(where: { $0.type == .vps }),
-            let sps = first(where: { $0.type == .sps }),
-            let pps = first(where: { $0.type == .pps })
+            let vps = first(where: { $0.header.type == .vps }),
+            let sps = first(where: { $0.header.type == .sps }),
+            let pps = first(where: { $0.header.type == .pps })
         else {
             return nil
         }
@@ -132,149 +148,6 @@ extension [HevcNalUnit] {
                 }
             }
         }
-    }
-}
-
-private let calendar: Calendar = {
-    var utcCalender = Calendar(identifier: .iso8601)
-    utcCalender.timeZone = TimeZone(abbreviation: "UTC")!
-    return utcCalender
-}()
-
-struct HevcSeiPayloadTimeCode {
-    private var hours: UInt8
-    private var minutes: UInt8
-    private var seconds: UInt8
-    private var offset: UInt32
-
-    init(clock: Date) {
-        hours = UInt8(calendar.component(.hour, from: clock))
-        minutes = UInt8(calendar.component(.minute, from: clock))
-        seconds = UInt8(calendar.component(.second, from: clock))
-        offset = UInt32((clock.timeIntervalSince1970 * 1000).truncatingRemainder(dividingBy: 1000))
-    }
-
-    init?(reader: BitReader) {
-        do {
-            guard try reader.readBits(count: 2) == 1 else {
-                logger.info("Not exactly one entry")
-                return nil
-            }
-            guard try reader.readBit() else {
-                logger.info("clockTimestampFlag not set")
-                return nil
-            }
-            _ = try reader.readBit()
-            _ = try reader.readBits(count: 5)
-            let fullTimestampFlag = try reader.readBit()
-            _ = try reader.readBit()
-            _ = try reader.readBit()
-            _ = try reader.readBits(count: 8)
-            _ = try reader.readBits(count: 1)
-            if fullTimestampFlag {
-                seconds = try reader.readBits(count: 6)
-                minutes = try reader.readBits(count: 6)
-                hours = try reader.readBits(count: 5)
-            } else {
-                logger.info("not full timestamp")
-                return nil
-            }
-            let count = try reader.readBitsU32(count: 5)
-            guard count <= 32 else {
-                logger.info("too long offset")
-                return nil
-            }
-            offset = try reader.readBitsU32(count: Int(count))
-        } catch {
-            return nil
-        }
-    }
-
-    func encode() -> Data {
-        let numClockTs: UInt8 = 1
-        let clockTimestampFlag = true
-        let unitFieldBasedFlag = true
-        let fullTimestampFlag = true
-        let numberOfFrames: UInt32 = 0
-        let writer = BitWriter()
-        writer.writeBits(numClockTs, count: 2)
-        writer.writeBit(clockTimestampFlag)
-        writer.writeBit(unitFieldBasedFlag)
-        writer.writeBits(0, count: 5)
-        writer.writeBit(fullTimestampFlag)
-        writer.writeBit(false)
-        writer.writeBit(false)
-        writer.writeBitsU32(numberOfFrames, count: 9)
-        if fullTimestampFlag {
-            writer.writeBits(seconds, count: 6)
-            writer.writeBits(minutes, count: 6)
-            writer.writeBits(hours, count: 5)
-        }
-        writer.writeBits(10, count: 5)
-        writer.writeBitsU32(offset, count: 10)
-        writeMoreDataInPayload(writer: writer)
-        return writer.data
-    }
-
-    func makeClock(vuiTimeScale: UInt32) -> Date {
-        var clockTimestamp = Double(seconds) + Double(minutes) * 60 + Double(hours) * 3600
-        clockTimestamp *= Double(vuiTimeScale)
-        clockTimestamp += Double(offset) / 1000
-        // Not good if close to new day
-        let startOfDay = calendar.startOfDay(for: .now)
-        return startOfDay.addingTimeInterval(clockTimestamp)
-    }
-}
-
-enum HevcSeiPayloadType: UInt8 {
-    case timeCode = 136
-}
-
-enum HevcSeiPayload {
-    case timeCode(HevcSeiPayloadTimeCode)
-}
-
-struct HevcNalUnitSei {
-    private(set) var payload: HevcSeiPayload
-
-    init(payload: HevcSeiPayload) {
-        self.payload = payload
-    }
-
-    init(reader: BitReader) throws {
-        let type = try reader.readBits(count: 8)
-        guard type != 0xFF else {
-            throw "SEI message type too long"
-        }
-        let length = try reader.readBits(count: 8)
-        guard length != 0xFF else {
-            throw "SEI message length too long"
-        }
-        switch HevcSeiPayloadType(rawValue: type) {
-        case .timeCode:
-            guard let timeCode = HevcSeiPayloadTimeCode(reader: reader) else {
-                throw "Failed to decode time code payload"
-            }
-            payload = .timeCode(timeCode)
-        default:
-            throw "Unsupported SEI payload type \(type)"
-        }
-    }
-
-    func encode() -> Data {
-        let type: HevcSeiPayloadType
-        let data: Data
-        switch payload {
-        case let .timeCode(payload):
-            type = .timeCode
-            data = payload.encode()
-        }
-        let writer = BitWriter()
-        writer.writeBits(type.rawValue, count: 8)
-        writer.writeBits(UInt8(data.count), count: 8)
-        writer.writeBytes(data)
-        writeRbspTrailingBits(writer: writer)
-        return writer.data
     }
 }
 
@@ -348,7 +221,7 @@ struct HevcNalUnitSps {
     var picWidthInLumaSamples: UInt32
     var picHeightInLumaSamples: UInt32
 
-    init(reader: BitReader) throws {
+    init(reader: BitReader, header _: HevcNalUnitHeader) throws {
         spsVideoParameterSetId = try reader.readBits(count: 4)
         spsMaxSubLayersMinus1 = try reader.readBits(count: 3)
         spsTemporalIdNestingFlag = try reader.readBit()
@@ -471,6 +344,145 @@ struct HevcNalUnitPps {
 
     func encode() -> Data {
         return Data()
+    }
+}
+
+private let calendar: Calendar = {
+    var utcCalender = Calendar(identifier: .iso8601)
+    utcCalender.timeZone = TimeZone(abbreviation: "UTC")!
+    return utcCalender
+}()
+
+struct HevcSeiPayloadTimeCode {
+    private var hours: UInt8
+    private var minutes: UInt8
+    private var seconds: UInt8
+    private var offset: UInt32
+
+    init(clock: Date) {
+        hours = UInt8(calendar.component(.hour, from: clock))
+        minutes = UInt8(calendar.component(.minute, from: clock))
+        seconds = UInt8(calendar.component(.second, from: clock))
+        offset = UInt32((clock.timeIntervalSince1970 * 1000).truncatingRemainder(dividingBy: 1000))
+    }
+
+    init?(reader: BitReader) {
+        do {
+            guard try reader.readBits(count: 2) == 1 else {
+                logger.info("Not exactly one entry")
+                return nil
+            }
+            guard try reader.readBit() else {
+                logger.info("clockTimestampFlag not set")
+                return nil
+            }
+            try reader.skipBits(count: 1 + 5)
+            let fullTimestampFlag = try reader.readBit()
+            try reader.skipBits(count: 1 + 1 + 8 + 1)
+            if fullTimestampFlag {
+                seconds = try reader.readBits(count: 6)
+                minutes = try reader.readBits(count: 6)
+                hours = try reader.readBits(count: 5)
+            } else {
+                logger.info("not full timestamp")
+                return nil
+            }
+            let count = try reader.readBitsU32(count: 5)
+            guard count <= 32 else {
+                logger.info("too long offset")
+                return nil
+            }
+            offset = try reader.readBitsU32(count: Int(count))
+        } catch {
+            return nil
+        }
+    }
+
+    func encode() -> Data {
+        let numClockTs: UInt8 = 1
+        let clockTimestampFlag = true
+        let unitFieldBasedFlag = true
+        let fullTimestampFlag = true
+        let numberOfFrames: UInt32 = 0
+        let writer = BitWriter()
+        writer.writeBits(numClockTs, count: 2)
+        writer.writeBit(clockTimestampFlag)
+        writer.writeBit(unitFieldBasedFlag)
+        writer.writeBits(0, count: 5)
+        writer.writeBit(fullTimestampFlag)
+        writer.writeBit(false)
+        writer.writeBit(false)
+        writer.writeBitsU32(numberOfFrames, count: 9)
+        if fullTimestampFlag {
+            writer.writeBits(seconds, count: 6)
+            writer.writeBits(minutes, count: 6)
+            writer.writeBits(hours, count: 5)
+        }
+        writer.writeBits(10, count: 5)
+        writer.writeBitsU32(offset, count: 10)
+        writeMoreDataInPayload(writer: writer)
+        return writer.data
+    }
+
+    func makeClock(vuiTimeScale: UInt32) -> Date {
+        var clockTimestamp = Double(seconds) + Double(minutes) * 60 + Double(hours) * 3600
+        clockTimestamp *= Double(vuiTimeScale)
+        clockTimestamp += Double(offset) / 1000
+        // Not good if close to new day
+        let startOfDay = calendar.startOfDay(for: .now)
+        return startOfDay.addingTimeInterval(clockTimestamp)
+    }
+}
+
+enum HevcSeiPayloadType: UInt8 {
+    case timeCode = 136
+}
+
+enum HevcNalUnitSeiPayload {
+    case timeCode(HevcSeiPayloadTimeCode)
+}
+
+struct HevcNalUnitSei {
+    private(set) var payload: HevcNalUnitSeiPayload
+
+    init(payload: HevcNalUnitSeiPayload) {
+        self.payload = payload
+    }
+
+    init(reader: BitReader) throws {
+        let type = try reader.readBits(count: 8)
+        guard type != 0xFF else {
+            throw "SEI message type too long"
+        }
+        let length = try reader.readBits(count: 8)
+        guard length != 0xFF else {
+            throw "SEI message length too long"
+        }
+        switch HevcSeiPayloadType(rawValue: type) {
+        case .timeCode:
+            guard let timeCode = HevcSeiPayloadTimeCode(reader: reader) else {
+                throw "Failed to decode time code payload"
+            }
+            payload = .timeCode(timeCode)
+        default:
+            throw "Unsupported SEI payload type \(type)"
+        }
+    }
+
+    func encode() -> Data {
+        let type: HevcSeiPayloadType
+        let data: Data
+        switch payload {
+        case let .timeCode(payload):
+            type = .timeCode
+            data = payload.encode()
+        }
+        let writer = BitWriter()
+        writer.writeBits(type.rawValue, count: 8)
+        writer.writeBits(UInt8(data.count), count: 8)
+        writer.writeBytes(data)
+        writeRbspTrailingBits(writer: writer)
+        return writer.data
     }
 }
 
