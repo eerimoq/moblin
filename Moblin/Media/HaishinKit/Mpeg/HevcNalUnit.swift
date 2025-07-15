@@ -176,9 +176,9 @@ struct HevcNalUnitVps {
         vpsSubLayerOrderingInfoPresentFlag = try reader.readBit()
         let startLayer = vpsSubLayerOrderingInfoPresentFlag ? 0 : vpsMaxSubLayersMinus1
         for _ in startLayer ... vpsMaxLayersMinus1 {
-            _ = try reader.readExponentialGolomb()
-            _ = try reader.readExponentialGolomb()
-            _ = try reader.readExponentialGolomb()
+            try reader.skipExponentialGolomb()
+            try reader.skipExponentialGolomb()
+            try reader.skipExponentialGolomb()
         }
         vpsMaxLayerId = try reader.readBits(count: 6)
         vpsNumLayerSetsMinus1 = try reader.readExponentialGolomb()
@@ -187,11 +187,11 @@ struct HevcNalUnitVps {
         if vpsTimingInfoPresentFlag {
             try reader.skipBits(count: 64)
             if try reader.readBit() {
-                _ = try reader.readExponentialGolomb()
+                try reader.skipExponentialGolomb()
             }
             let vpsNumHrdParameters = try reader.readExponentialGolomb()
             for i in 0 ..< vpsNumHrdParameters {
-                _ = try reader.readExponentialGolomb()
+                try reader.skipExponentialGolomb()
                 let cprmsPresentFlag: Bool
                 if i > 0 {
                     cprmsPresentFlag = try reader.readBit()
@@ -213,30 +213,45 @@ struct HevcNalUnitVps {
 struct HevcNalUnitSps {
     var spsVideoParameterSetId: UInt8
     var spsMaxSubLayersMinus1: UInt8
-    var spsTemporalIdNestingFlag: Bool
+    var spsTemporalIdNestingFlag: Bool = false
     var spsSeqParameterSetId: UInt32
-    var chromaFormatIdc: UInt32
+    var chromaFormatIdc: UInt32 = 0
     var separateColourPlaneFlag: Bool = false
-    var picWidthInLumaSamples: UInt32
-    var picHeightInLumaSamples: UInt32
+    var picWidthInLumaSamples: UInt32 = 0
+    var picHeightInLumaSamples: UInt32 = 0
 
-    init(reader: BitReader, header _: HevcNalUnitHeader) throws {
+    init(reader: BitReader, header: HevcNalUnitHeader) throws {
         spsVideoParameterSetId = try reader.readBits(count: 4)
-        spsMaxSubLayersMinus1 = try reader.readBits(count: 3)
-        spsTemporalIdNestingFlag = try reader.readBit()
+        let spsExtOrMaxSubLayersMinus1: UInt8
+        if header.nuhLayerId == 0 {
+            spsExtOrMaxSubLayersMinus1 = 0
+            spsMaxSubLayersMinus1 = try reader.readBits(count: 3)
+        } else {
+            spsExtOrMaxSubLayersMinus1 = try reader.readBits(count: 3)
+            if spsExtOrMaxSubLayersMinus1 == 7 {
+                throw "spsExtOrMaxSubLayersMinus1 \(spsExtOrMaxSubLayersMinus1) not supported"
+            } else {
+                spsMaxSubLayersMinus1 = spsExtOrMaxSubLayersMinus1
+            }
+        }
+        let multiLayerExtSpsFlag = header.nuhLayerId != 0 && spsExtOrMaxSubLayersMinus1 == 7
+        if !multiLayerExtSpsFlag {
+            spsTemporalIdNestingFlag = try reader.readBit()
+            throw "profile_tier_level not supported"
+        }
         spsSeqParameterSetId = try reader.readExponentialGolomb()
-        if spsSeqParameterSetId > 15 {
-            throw "spsSeqParameterSetId \(spsSeqParameterSetId) is greater than 15"
+        if multiLayerExtSpsFlag {
+            if try reader.readBit() {
+                try reader.skipBits(count: 8)
+            }
+        } else {
+            chromaFormatIdc = try reader.readExponentialGolomb()
+            if chromaFormatIdc == 3 {
+                separateColourPlaneFlag = try reader.readBit()
+            }
+            picWidthInLumaSamples = try reader.readExponentialGolomb()
+            picHeightInLumaSamples = try reader.readExponentialGolomb()
         }
-        chromaFormatIdc = try reader.readExponentialGolomb()
-        if chromaFormatIdc > 3 {
-            throw "chromaFormatIdc \(chromaFormatIdc) is greater than 3"
-        }
-        if chromaFormatIdc == 3 {
-            separateColourPlaneFlag = try reader.readBit()
-        }
-        picWidthInLumaSamples = try reader.readExponentialGolomb()
-        picHeightInLumaSamples = try reader.readExponentialGolomb()
     }
 
     func encode(writer _: BitWriter) {}

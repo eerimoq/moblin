@@ -62,6 +62,10 @@ final class BitReader {
         return value - 1
     }
 
+    func skipExponentialGolomb() throws {
+        _ = try readExponentialGolomb()
+    }
+
     private func checkOutOfData() throws {
         if byteOffset >= data.count {
             throw "Out of data"
