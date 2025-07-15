@@ -253,6 +253,11 @@
 		035E9E3B2A9A02D7009D4F5A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 035E9E3A2A9A02D7009D4F5A /* Assets.xcassets */; };
 		035F24402CB5B4BB008288C7 /* SnapshotIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035F243F2CB5B4B5008288C7 /* SnapshotIntent.swift */; };
 		035F24422CB76835008288C7 /* TwitchCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035F24412CB76830008288C7 /* TwitchCommon.swift */; };
+		035F64F42E26DF7100700EE6 /* HevcNalUnitVps.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035F64F32E26DF6C00700EE6 /* HevcNalUnitVps.swift */; };
+		035F64F62E26DF7900700EE6 /* HevcNalUnitSps.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035F64F52E26DF7500700EE6 /* HevcNalUnitSps.swift */; };
+		035F64F82E26DF7F00700EE6 /* HevcNalUnitPps.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035F64F72E26DF7C00700EE6 /* HevcNalUnitPps.swift */; };
+		035F64FA2E26E01200700EE6 /* HevcProfileTierLevel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035F64F92E26E00E00700EE6 /* HevcProfileTierLevel.swift */; };
+		035F64FC2E26E04F00700EE6 /* HevcNalUnitSei.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035F64FB2E26E04B00700EE6 /* HevcNalUnitSei.swift */; };
 		036333282AAE2E5100FF1231 /* ImageStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036333272AAE2E5100FF1231 /* ImageStorage.swift */; };
 		0364304F2B2FF9F400B7C448 /* StreamWizardTwitchSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0364304E2B2FF9F400B7C448 /* StreamWizardTwitchSettingsView.swift */; };
 		0364662C2B456B25005AB9FA /* StreamWizardCustomSrtSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0364662B2B456B25005AB9FA /* StreamWizardCustomSrtSettingsView.swift */; };
@@ -942,6 +947,11 @@
 		035E9E3A2A9A02D7009D4F5A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		035F243F2CB5B4B5008288C7 /* SnapshotIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapshotIntent.swift; sourceTree = "<group>"; };
 		035F24412CB76830008288C7 /* TwitchCommon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitchCommon.swift; sourceTree = "<group>"; };
+		035F64F32E26DF6C00700EE6 /* HevcNalUnitVps.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HevcNalUnitVps.swift; sourceTree = "<group>"; };
+		035F64F52E26DF7500700EE6 /* HevcNalUnitSps.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HevcNalUnitSps.swift; sourceTree = "<group>"; };
+		035F64F72E26DF7C00700EE6 /* HevcNalUnitPps.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HevcNalUnitPps.swift; sourceTree = "<group>"; };
+		035F64F92E26E00E00700EE6 /* HevcProfileTierLevel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HevcProfileTierLevel.swift; sourceTree = "<group>"; };
+		035F64FB2E26E04B00700EE6 /* HevcNalUnitSei.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HevcNalUnitSei.swift; sourceTree = "<group>"; };
 		036333272AAE2E5100FF1231 /* ImageStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageStorage.swift; sourceTree = "<group>"; };
 		0364304E2B2FF9F400B7C448 /* StreamWizardTwitchSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardTwitchSettingsView.swift; sourceTree = "<group>"; };
 		0364662B2B456B25005AB9FA /* StreamWizardCustomSrtSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardCustomSrtSettingsView.swift; sourceTree = "<group>"; };
@@ -1950,12 +1960,12 @@
 		0359F84B2BD3DA5F005BFDA8 /* Mpeg */ = {
 			isa = PBXGroup;
 			children = (
+				035F64F22E26DF6500700EE6 /* Hevc */,
 				0359F83C2BD3DA5F005BFDA8 /* Adts.swift */,
 				03A930102C14460600BB9679 /* AudioSpecificConfig.swift */,
 				03A9300B2C14414800BB9679 /* AvcNalUnit.swift */,
 				0359F8412BD3DA5F005BFDA8 /* Crc32.swift */,
 				0359F8422BD3DA5F005BFDA8 /* ElementaryStreamSpecificData.swift */,
-				03A9300D2C1442E500BB9679 /* HevcNalUnit.swift */,
 				0359F83D2BD3DA5F005BFDA8 /* MpegTsAudioConfig.swift */,
 				0359F8452BD3DA5F005BFDA8 /* MpegTsPacketizedElementaryStream.swift */,
 				0359F8462BD3DA5F005BFDA8 /* MpegTsAdaptationField.swift */,
@@ -2140,6 +2150,19 @@
 				038F42F32B685ACF00E68752 /* LUTs.bundle */,
 			);
 			path = Moblin;
+			sourceTree = "<group>";
+		};
+		035F64F22E26DF6500700EE6 /* Hevc */ = {
+			isa = PBXGroup;
+			children = (
+				035F64F92E26E00E00700EE6 /* HevcProfileTierLevel.swift */,
+				03A9300D2C1442E500BB9679 /* HevcNalUnit.swift */,
+				035F64F72E26DF7C00700EE6 /* HevcNalUnitPps.swift */,
+				035F64FB2E26E04B00700EE6 /* HevcNalUnitSei.swift */,
+				035F64F52E26DF7500700EE6 /* HevcNalUnitSps.swift */,
+				035F64F32E26DF6C00700EE6 /* HevcNalUnitVps.swift */,
+			);
+			path = Hevc;
 			sourceTree = "<group>";
 		};
 		0364304D2B2FF9D700B7C448 /* Wizard */ = {
@@ -3724,6 +3747,7 @@
 				030EFE782BDADBC6004208B6 /* SwipeLeftToRemoveHelpView.swift in Sources */,
 				03BA3B432C9019D500DEFA3E /* AtkinsonDithering.swift in Sources */,
 				0318D3642CF4FB3100E12F3B /* TeslaVehicle.swift in Sources */,
+				035F64F62E26DF7900700EE6 /* HevcNalUnitSps.swift in Sources */,
 				0359F8AD2BD3DA61005BFDA8 /* AudioEncoderRingBuffer.swift in Sources */,
 				03D3C0512B452D61006BAEAC /* StreamRecordingSettingsView.swift in Sources */,
 				0342F1A52C627A8F004DD3EA /* MirlCommon.swift in Sources */,
@@ -3818,6 +3842,7 @@
 				03E3637F2DB026BA007A3CBB /* QuickButtonGoProView.swift in Sources */,
 				038DF9ED2B387AAF0027363A /* StreamWizardYouTubeSettingsView.swift in Sources */,
 				030621EC2D862989001EE50B /* DjiDeviceMessage.swift in Sources */,
+				035F64F82E26DF7F00700EE6 /* HevcNalUnitPps.swift in Sources */,
 				0359F8C02BD3DA61005BFDA8 /* Data+Extension.swift in Sources */,
 				03BC90AC2BD57F6200529987 /* StreamWizardNetworkSetupMyServersSettingsView.swift in Sources */,
 				0316AEB32E218F67005A7FC2 /* StreamMultiStreamingSettingsView.swift in Sources */,
@@ -3965,6 +3990,7 @@
 				035E9E372A9A02D6009D4F5A /* MoblinApp.swift in Sources */,
 				038C76972CAC99E100564200 /* VideoSourceEffect.swift in Sources */,
 				03279CF22B4D2AEC006CEA5A /* RealtimeIrl.swift in Sources */,
+				035F64F42E26DF7100700EE6 /* HevcNalUnitVps.swift in Sources */,
 				031A2E112ADDDD7E005CE350 /* VideoStabilizationSettingsView.swift in Sources */,
 				032B4EDC2C3491F200204547 /* CameraSettingsControlView.swift in Sources */,
 				0379E66A2C88C9340021AB59 /* CatPrinterCommands.swift in Sources */,
@@ -4060,6 +4086,7 @@
 				03279CE72B4CD245006CEA5A /* Location.swift in Sources */,
 				03A9300C2C14414800BB9679 /* AvcNalUnit.swift in Sources */,
 				0351F8FB2DD2965300F37D9C /* AutoSwitchersSettingsView.swift in Sources */,
+				035F64FA2E26E01200700EE6 /* HevcProfileTierLevel.swift in Sources */,
 				03A983662A9A05D7008FF0DB /* AddButtonView.swift in Sources */,
 				032F81BA2DDCEE1500E14CC5 /* ModelScreenCapture.swift in Sources */,
 				882D0C0E2DF72CCD0035BFAF /* ModelPhoneCoolerDevice.swift in Sources */,
@@ -4075,6 +4102,7 @@
 				03D2B0E02C11BD9D0051BFB5 /* SrtlaServerSettingsView.swift in Sources */,
 				030621DC2D8605E3001EE50B /* DjiGimbalDevice.swift in Sources */,
 				030621E22D86060E001EE50B /* DjiGimbalDeviceMessage.swift in Sources */,
+				035F64FC2E26E04F00700EE6 /* HevcNalUnitSei.swift in Sources */,
 				03A08B802AC368860018BA95 /* Media.swift in Sources */,
 				036333282AAE2E5100FF1231 /* ImageStorage.swift in Sources */,
 				031E9FC52C5B3EFC009FF4D8 /* TwitchEventSub.swift in Sources */,
