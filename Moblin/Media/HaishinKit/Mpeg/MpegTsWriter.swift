@@ -338,23 +338,10 @@ extension MpegTsWriter: VideoEncoderDelegate {
             data.streamType = .h265
             addVideoSpecificDatas(data: data)
             // let config = MpegTsVideoConfigHevc(data: hvcC)
-            // for (nalUnitType, nalUnitDatas) in config.array {
+            // for nalUnitDatas in config.array.values {
             //     for data in nalUnitDatas {
-            //         switch nalUnitType {
-            //         case .vps:
-            //             break
-            //         case .sps:
-            //             // 4201
-            //             // 0 100001 000000 001
-            //             if let sps = HevcSps(data: data.advanced(by: 2)) {
-            //                 logger.info("xxx SPS \(sps)")
-            //             }
-            //         case .pps:
-            //             if let pps = HevcPps(data: data.advanced(by: 2)) {
-            //                 logger.info("xxx PPS \(pps)")
-            //             }
-            //         default:
-            //             break
+            //         if let nalUnit = HevcNalUnit(data) {
+            //             logger.info("xxx NAL: \(nalUnit)")
             //         }
             //     }
             // }

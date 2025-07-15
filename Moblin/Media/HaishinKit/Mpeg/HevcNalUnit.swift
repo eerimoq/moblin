@@ -42,6 +42,7 @@ struct HevcNalUnit: NalUnit {
                 payload = .unspec
             }
         } catch {
+            logger.info("Failed to decode NAL unit with error: \(error)")
             return nil
         }
     }
@@ -160,6 +161,7 @@ struct HevcNalUnitVps {
     var vpsMaxLayersMinus1: UInt8
     var vpsMaxSubLayersMinus1: UInt8
     var vpsTemporalIdNestingFlag: Bool
+    var profileTierLevel: HevcProfileTierLevel
     var vpsSubLayerOrderingInfoPresentFlag: Bool
     var vpsMaxLayerId: UInt8
     var vpsNumLayerSetsMinus1: UInt32
@@ -173,6 +175,9 @@ struct HevcNalUnitVps {
         vpsMaxSubLayersMinus1 = try reader.readBits(count: 3)
         vpsTemporalIdNestingFlag = try reader.readBit()
         try reader.skipBits(count: 16)
+        profileTierLevel = try HevcProfileTierLevel(profilePresentFlag: true,
+                                                    maxNumSubLayersMinus1: vpsMaxSubLayersMinus1,
+                                                    reader: reader)
         vpsSubLayerOrderingInfoPresentFlag = try reader.readBit()
         let startLayer = vpsSubLayerOrderingInfoPresentFlag ? 0 : vpsMaxSubLayersMinus1
         for _ in startLayer ... vpsMaxLayersMinus1 {
@@ -212,32 +217,29 @@ struct HevcNalUnitVps {
 // 7.3.2.2 Sequence parameter set RBSP syntax
 struct HevcNalUnitSps {
     var spsVideoParameterSetId: UInt8
-    var spsMaxSubLayersMinus1: UInt8
+    var spsMaxSubLayersMinus1: UInt8 = 0
+    var spsExtOrMaxSubLayersMinus1: UInt8 = 0
     var spsTemporalIdNestingFlag: Bool = false
     var spsSeqParameterSetId: UInt32
     var chromaFormatIdc: UInt32 = 0
     var separateColourPlaneFlag: Bool = false
     var picWidthInLumaSamples: UInt32 = 0
     var picHeightInLumaSamples: UInt32 = 0
+    var profileTierLevel: HevcProfileTierLevel?
 
     init(reader: BitReader, header: HevcNalUnitHeader) throws {
         spsVideoParameterSetId = try reader.readBits(count: 4)
-        let spsExtOrMaxSubLayersMinus1: UInt8
         if header.nuhLayerId == 0 {
-            spsExtOrMaxSubLayersMinus1 = 0
             spsMaxSubLayersMinus1 = try reader.readBits(count: 3)
         } else {
             spsExtOrMaxSubLayersMinus1 = try reader.readBits(count: 3)
-            if spsExtOrMaxSubLayersMinus1 == 7 {
-                throw "spsExtOrMaxSubLayersMinus1 \(spsExtOrMaxSubLayersMinus1) not supported"
-            } else {
-                spsMaxSubLayersMinus1 = spsExtOrMaxSubLayersMinus1
-            }
         }
         let multiLayerExtSpsFlag = header.nuhLayerId != 0 && spsExtOrMaxSubLayersMinus1 == 7
         if !multiLayerExtSpsFlag {
             spsTemporalIdNestingFlag = try reader.readBit()
-            throw "profile_tier_level not supported"
+            profileTierLevel = try HevcProfileTierLevel(profilePresentFlag: true,
+                                                        maxNumSubLayersMinus1: spsMaxSubLayersMinus1,
+                                                        reader: reader)
         }
         spsSeqParameterSetId = try reader.readExponentialGolomb()
         if multiLayerExtSpsFlag {
@@ -355,6 +357,52 @@ struct HevcNalUnitPps {
     }
 
     func encode(writer _: BitWriter) {}
+}
+
+struct HevcProfileTierLevel {
+    var generalProfileSpace: UInt8 = 0
+    var generalTierFlag: Bool = false
+    var generalProfileIdc: UInt8 = 0
+    var generalProfileCompatibilityFlags: UInt32 = 0
+    var generalProgressiveSourceFlag: Bool = false
+    var generalInterlacedSourceFlag: Bool = false
+    var generalNonPackedConstraintFlag: Bool = false
+    var generalFrameOnlyConstraintFlag: Bool = false
+    var generalLevelIdc: UInt8
+
+    init(profilePresentFlag: Bool, maxNumSubLayersMinus1: UInt8, reader: BitReader) throws {
+        if profilePresentFlag {
+            generalProfileSpace = try reader.readBits(count: 2)
+            generalTierFlag = try reader.readBit()
+            generalProfileIdc = try reader.readBits(count: 5)
+            generalProfileCompatibilityFlags = try reader.readBitsU32(count: 32)
+            generalProgressiveSourceFlag = try reader.readBit()
+            generalInterlacedSourceFlag = try reader.readBit()
+            generalNonPackedConstraintFlag = try reader.readBit()
+            generalFrameOnlyConstraintFlag = try reader.readBit()
+            try reader.skipBits(count: 43 + 1)
+        }
+        generalLevelIdc = try reader.readBits(count: 8)
+        var subLayerProfilePresentFlags: [Bool] = []
+        var subLayerLevelPresentFlags: [Bool] = []
+        for _ in 0 ..< maxNumSubLayersMinus1 {
+            try subLayerProfilePresentFlags.append(reader.readBit())
+            try subLayerLevelPresentFlags.append(reader.readBit())
+        }
+        if maxNumSubLayersMinus1 > 0 {
+            for _ in maxNumSubLayersMinus1 ..< 8 {
+                try reader.skipBits(count: 2)
+            }
+        }
+        for i in 0 ..< Int(maxNumSubLayersMinus1) {
+            if subLayerProfilePresentFlags[i] {
+                try reader.skipBits(count: 8 + 4 + 32 + 43 + 1)
+            }
+            if subLayerLevelPresentFlags[i] {
+                try reader.skipBits(count: 8)
+            }
+        }
+    }
 }
 
 private let calendar: Calendar = {
