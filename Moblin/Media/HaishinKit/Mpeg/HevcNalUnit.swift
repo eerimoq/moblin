@@ -34,25 +34,24 @@ struct HevcNalUnit: NalUnit {
             type = try HevcNalUnitType(rawValue: reader.readBits(count: 6)) ?? .unspec
             nuhLayerId = try reader.readBits(count: 6)
             temporalIdPlusOne = try reader.readBits(count: 3)
-            let data = data.subdata(in: 2 ..< data.count)
             switch type {
             case .vps:
-                guard let vps = HevcVps(data: data) else {
+                guard let vps = HevcNalUnitVps(reader: reader) else {
                     return nil
                 }
                 payload = .vps(vps)
             case .sps:
-                guard let sps = HevcSps(data: data) else {
+                guard let sps = HevcNalUnitSps(reader: reader) else {
                     return nil
                 }
                 payload = .sps(sps)
             case .pps:
-                guard let pps = HevcPps(data: data) else {
+                guard let pps = HevcNalUnitPps(reader: reader) else {
                     return nil
                 }
                 payload = .pps(pps)
             case .prefixSeiNut:
-                guard let sei = HevcSei(data: data) else {
+                guard let sei = HevcNalUnitSei(reader: reader) else {
                     return nil
                 }
                 payload = .prefixSeiNut(sei)
@@ -82,10 +81,10 @@ struct HevcNalUnit: NalUnit {
 }
 
 enum HevcNalUnitPayload {
-    case vps(HevcVps)
-    case sps(HevcSps)
-    case pps(HevcPps)
-    case prefixSeiNut(HevcSei)
+    case vps(HevcNalUnitVps)
+    case sps(HevcNalUnitSps)
+    case pps(HevcNalUnitPps)
+    case prefixSeiNut(HevcNalUnitSei)
     case unspec
 
     func encode() -> Data {
@@ -247,15 +246,14 @@ enum HevcSeiPayload {
     case timeCode(HevcSeiPayloadTimeCode)
 }
 
-struct HevcSei {
+struct HevcNalUnitSei {
     private(set) var payload: HevcSeiPayload
 
     init(payload: HevcSeiPayload) {
         self.payload = payload
     }
 
-    init?(data: Data) {
-        let reader = BitReader(data: data)
+    init?(reader: BitReader) {
         do {
             let type = try reader.readBits(count: 8)
             guard type != 0xFF else {
@@ -300,7 +298,7 @@ struct HevcSei {
 }
 
 // 7.3.2.1 Video parameter set RBSP syntax
-struct HevcVps {
+struct HevcNalUnitVps {
     var vpsVideoParameterSetId: UInt8
     var vpsBaseLayerInternalFlag: Bool
     var vpsBaseLayerAvailableFlag: Bool
@@ -312,9 +310,8 @@ struct HevcVps {
     var vpsNumLayerSetsMinus1: UInt32
     var vpsTimingInfoPresentFlag: Bool
 
-    init?(data: Data) {
+    init?(reader: BitReader) {
         do {
-            let reader = BitReader(data: data)
             vpsVideoParameterSetId = try reader.readBits(count: 4)
             vpsBaseLayerInternalFlag = try reader.readBit()
             vpsBaseLayerAvailableFlag = try reader.readBit()
@@ -364,7 +361,7 @@ struct HevcVps {
 }
 
 // 7.3.2.2 Sequence parameter set RBSP syntax
-struct HevcSps {
+struct HevcNalUnitSps {
     var spsVideoParameterSetId: UInt8
     var spsMaxSubLayersMinus1: UInt8
     var spsTemporalIdNestingFlag: Bool
@@ -374,9 +371,8 @@ struct HevcSps {
     var picWidthInLumaSamples: UInt32
     var picHeightInLumaSamples: UInt32
 
-    init?(data: Data) {
+    init?(reader: BitReader) {
         do {
-            let reader = BitReader(data: data)
             spsVideoParameterSetId = try reader.readBits(count: 4)
             spsMaxSubLayersMinus1 = try reader.readBits(count: 3)
             spsTemporalIdNestingFlag = try reader.readBit()
@@ -404,7 +400,7 @@ struct HevcSps {
 }
 
 // 7.3.2.3 Picture parameter set RBSP syntax
-struct HevcPps {
+struct HevcNalUnitPps {
     var ppsPicParameterSetId: UInt32
     var ppsSeqParameterSetId: UInt32
     var dependentSliceSegmentsEnabledFlag: Bool
@@ -443,9 +439,8 @@ struct HevcPps {
     var sliceSegmentHeaderExtensionPresentFlag: Bool
     var ppsExtensionPresentFlag: Bool
 
-    init?(data: Data) {
+    init?(reader: BitReader) {
         do {
-            let reader = BitReader(data: data)
             ppsPicParameterSetId = try reader.readExponentialGolomb()
             ppsSeqParameterSetId = try reader.readExponentialGolomb()
             dependentSliceSegmentsEnabledFlag = try reader.readBit()
