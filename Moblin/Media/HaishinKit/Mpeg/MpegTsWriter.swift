@@ -343,16 +343,14 @@ extension MpegTsWriter: VideoEncoderDelegate {
             }
             data.streamType = .h265
             addVideoSpecificDatas(data: data)
-            let config = MpegTsVideoConfigHevc(data: hvcC)
-            for nalUnitDatas in config.array.values {
-                for data in nalUnitDatas {
-                    if let nalUnit = HevcNalUnit(data) {
-                        logger.info("xxx NAL: \(nalUnit)")
-                    } else {
-                        logger.info("xxx NAL failed")
-                    }
-                }
-            }
+            // let config = MpegTsVideoConfigHevc(data: hvcC)
+            // for nalUnitDatas in config.array.values {
+            //     for data in nalUnitDatas {
+            //         if let nalUnit = HevcNalUnit(data) {
+            //             logger.info("xxx NAL: \(nalUnit)")
+            //         }
+            //     }
+            // }
             setVideoConfig(MpegTsVideoConfigHevc(data: hvcC))
         }
     }
