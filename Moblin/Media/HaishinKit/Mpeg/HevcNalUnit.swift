@@ -52,7 +52,10 @@ struct HevcNalUnit: NalUnit {
     }
 
     func encode() -> Data {
-        return header.encode() + payload.encode()
+        let writer = BitWriter()
+        header.encode(writer: writer)
+        payload.encode(writer: writer)
+        return writer.data
     }
 }
 
@@ -74,13 +77,11 @@ struct HevcNalUnitHeader {
         self.temporalIdPlusOne = temporalIdPlusOne
     }
 
-    func encode() -> Data {
-        let writer = BitWriter()
+    func encode(writer: BitWriter) {
         writer.writeBit(false)
         writer.writeBits(type.rawValue, count: 6)
         writer.writeBits(nuhLayerId, count: 6)
         writer.writeBits(temporalIdPlusOne, count: 3)
-        return writer.data
     }
 }
 
@@ -91,18 +92,18 @@ enum HevcNalUnitPayload {
     case prefixSeiNut(HevcNalUnitSei)
     case unspec
 
-    func encode() -> Data {
+    func encode(writer: BitWriter) {
         switch self {
         case let .vps(vps):
-            return vps.encode()
+            vps.encode(writer: writer)
         case let .sps(sps):
-            return sps.encode()
+            sps.encode(writer: writer)
         case let .pps(pps):
-            return pps.encode()
+            pps.encode(writer: writer)
         case let .prefixSeiNut(prefixSeiNut):
-            return prefixSeiNut.encode()
+            prefixSeiNut.encode(writer: writer)
         case .unspec:
-            return Data()
+            break
         }
     }
 }
@@ -205,9 +206,7 @@ struct HevcNalUnitVps {
         }
     }
 
-    func encode() -> Data {
-        return Data()
-    }
+    func encode(writer _: BitWriter) {}
 }
 
 // 7.3.2.2 Sequence parameter set RBSP syntax
@@ -240,9 +239,7 @@ struct HevcNalUnitSps {
         picHeightInLumaSamples = try reader.readExponentialGolomb()
     }
 
-    func encode() -> Data {
-        return Data()
-    }
+    func encode(writer _: BitWriter) {}
 }
 
 // 7.3.2.3 Picture parameter set RBSP syntax
@@ -342,9 +339,7 @@ struct HevcNalUnitPps {
         }
     }
 
-    func encode() -> Data {
-        return Data()
-    }
+    func encode(writer _: BitWriter) {}
 }
 
 private let calendar: Calendar = {
@@ -469,7 +464,7 @@ struct HevcNalUnitSei {
         }
     }
 
-    func encode() -> Data {
+    func encode(writer: BitWriter) {
         let type: HevcSeiPayloadType
         let data: Data
         switch payload {
@@ -477,12 +472,10 @@ struct HevcNalUnitSei {
             type = .timeCode
             data = payload.encode()
         }
-        let writer = BitWriter()
         writer.writeBits(type.rawValue, count: 8)
         writer.writeBits(UInt8(data.count), count: 8)
         writer.writeBytes(data)
         writeRbspTrailingBits(writer: writer)
-        return writer.data
     }
 }
 
