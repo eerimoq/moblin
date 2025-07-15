@@ -32,7 +32,7 @@ final class NalUnitReader {
                byteOffset >= 2,
                data[byteOffset - 2] == 0,
                data[byteOffset - 1] == 0,
-               data[byteOffset] == 0x03
+               data[byteOffset] == nalUnitEmulationPreventionByte
             {
                 byteOffset += 1
             }

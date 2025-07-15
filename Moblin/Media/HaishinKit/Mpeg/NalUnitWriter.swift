@@ -1,8 +1,9 @@
 import Foundation
 
+let nalUnitEmulationPreventionByte: UInt8 = 0x03
+
 final class NalUnitWriter {
     private(set) var data: Data
-    private var byteOffset = 0
     private(set) var bitOffset = 0
 
     init() {
@@ -11,6 +12,9 @@ final class NalUnitWriter {
 
     func writeBit(_ value: Bool) {
         if bitOffset == 0 {
+            if data.count >= 2, data[data.count - 2] == 0, data[data.count - 1] == 0 {
+                data.append(nalUnitEmulationPreventionByte)
+            }
             data.append(0)
         }
         if value {
