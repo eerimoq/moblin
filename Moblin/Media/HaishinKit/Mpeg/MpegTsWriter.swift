@@ -408,7 +408,7 @@ extension MpegTsWriter: VideoEncoderDelegate {
             return
         }
         guard let now = TrueTimeClient.sharedInstance.referenceTime?.now().timeIntervalSince1970 else {
-            logger.info("timecode: Failed to get NTP time")
+            // logger.info("timecode: Failed to get NTP time")
             return
         }
         let presentationTimeStamp = currentPresentationTimeStamp().seconds
