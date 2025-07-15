@@ -415,6 +415,7 @@ struct HevcSeiPayloadTimeCode {
     private var hours: UInt8
     private var minutes: UInt8
     private var seconds: UInt8
+    private var frame: UInt32
     private var offset: UInt32
 
     init(clock: Date) {
@@ -422,6 +423,8 @@ struct HevcSeiPayloadTimeCode {
         minutes = UInt8(calendar.component(.minute, from: clock))
         seconds = UInt8(calendar.component(.second, from: clock))
         offset = UInt32((clock.timeIntervalSince1970 * 1000).truncatingRemainder(dividingBy: 1000))
+        frame = offset * 30 / 1000
+        // logger.info("xxx \(offset) \(frame)")
     }
 
     init?(reader: BitReader) {
@@ -450,6 +453,7 @@ struct HevcSeiPayloadTimeCode {
                 logger.info("too long offset")
                 return nil
             }
+            frame = 0
             offset = try reader.readBitsU32(count: Int(count))
         } catch {
             return nil
@@ -461,7 +465,6 @@ struct HevcSeiPayloadTimeCode {
         let clockTimestampFlag = true
         let unitFieldBasedFlag = true
         let fullTimestampFlag = true
-        let numberOfFrames: UInt32 = 0
         let writer = BitWriter()
         writer.writeBits(numClockTs, count: 2)
         writer.writeBit(clockTimestampFlag)
@@ -470,7 +473,7 @@ struct HevcSeiPayloadTimeCode {
         writer.writeBit(fullTimestampFlag)
         writer.writeBit(false)
         writer.writeBit(false)
-        writer.writeBitsU32(numberOfFrames, count: 9)
+        writer.writeBitsU32(frame, count: 9)
         if fullTimestampFlag {
             writer.writeBits(seconds, count: 6)
             writer.writeBits(minutes, count: 6)

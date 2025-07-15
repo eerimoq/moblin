@@ -178,7 +178,7 @@ struct MpegTsPacketizedElementaryStream {
         decodeTimeStamp: CMTime,
         config: MpegTsVideoConfigHevc?,
         streamId: UInt8,
-        timecode: Date? = nil
+        timecode: Date?
     ) {
         if let config {
             if let nal = config.array[.vps] {
