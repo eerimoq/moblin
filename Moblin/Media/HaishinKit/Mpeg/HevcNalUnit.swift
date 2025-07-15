@@ -36,25 +36,13 @@ struct HevcNalUnit: NalUnit {
             temporalIdPlusOne = try reader.readBits(count: 3)
             switch type {
             case .vps:
-                guard let vps = HevcNalUnitVps(reader: reader) else {
-                    return nil
-                }
-                payload = .vps(vps)
+                payload = try .vps(HevcNalUnitVps(reader: reader))
             case .sps:
-                guard let sps = HevcNalUnitSps(reader: reader) else {
-                    return nil
-                }
-                payload = .sps(sps)
+                payload = try .sps(HevcNalUnitSps(reader: reader))
             case .pps:
-                guard let pps = HevcNalUnitPps(reader: reader) else {
-                    return nil
-                }
-                payload = .pps(pps)
+                payload = try .pps(HevcNalUnitPps(reader: reader))
             case .prefixSeiNut:
-                guard let sei = HevcNalUnitSei(reader: reader) else {
-                    return nil
-                }
-                payload = .prefixSeiNut(sei)
+                payload = try .prefixSeiNut(HevcNalUnitSei(reader: reader))
             default:
                 payload = .unspec
             }
@@ -253,30 +241,23 @@ struct HevcNalUnitSei {
         self.payload = payload
     }
 
-    init?(reader: BitReader) {
-        do {
-            let type = try reader.readBits(count: 8)
-            guard type != 0xFF else {
-                logger.info("nal: SEI message type too long")
-                return nil
+    init(reader: BitReader) throws {
+        let type = try reader.readBits(count: 8)
+        guard type != 0xFF else {
+            throw "SEI message type too long"
+        }
+        let length = try reader.readBits(count: 8)
+        guard length != 0xFF else {
+            throw "SEI message length too long"
+        }
+        switch HevcSeiPayloadType(rawValue: type) {
+        case .timeCode:
+            guard let timeCode = HevcSeiPayloadTimeCode(reader: reader) else {
+                throw "Failed to decode time code payload"
             }
-            let length = try reader.readBits(count: 8)
-            guard length != 0xFF else {
-                logger.info("nal: SEI message length too long")
-                return nil
-            }
-            switch HevcSeiPayloadType(rawValue: type) {
-            case .timeCode:
-                guard let timeCode = HevcSeiPayloadTimeCode(reader: reader) else {
-                    logger.info("nal: failed to decode time code payload")
-                    return nil
-                }
-                payload = .timeCode(timeCode)
-            default:
-                return nil
-            }
-        } catch {
-            return nil
+            payload = .timeCode(timeCode)
+        default:
+            throw "Unsupported SEI payload type \(type)"
         }
     }
 
@@ -310,48 +291,44 @@ struct HevcNalUnitVps {
     var vpsNumLayerSetsMinus1: UInt32
     var vpsTimingInfoPresentFlag: Bool
 
-    init?(reader: BitReader) {
-        do {
-            vpsVideoParameterSetId = try reader.readBits(count: 4)
-            vpsBaseLayerInternalFlag = try reader.readBit()
-            vpsBaseLayerAvailableFlag = try reader.readBit()
-            vpsMaxLayersMinus1 = try reader.readBits(count: 6)
-            vpsMaxSubLayersMinus1 = try reader.readBits(count: 3)
-            vpsTemporalIdNestingFlag = try reader.readBit()
-            try reader.skipBits(count: 16)
-            vpsSubLayerOrderingInfoPresentFlag = try reader.readBit()
-            let startLayer = vpsSubLayerOrderingInfoPresentFlag ? 0 : vpsMaxSubLayersMinus1
-            for _ in startLayer ... vpsMaxLayersMinus1 {
-                _ = try reader.readExponentialGolomb()
-                _ = try reader.readExponentialGolomb()
-                _ = try reader.readExponentialGolomb()
-            }
-            vpsMaxLayerId = try reader.readBits(count: 6)
-            vpsNumLayerSetsMinus1 = try reader.readExponentialGolomb()
-            try reader.skipBits(count: (Int(vpsMaxLayerId) + 1) * Int(vpsNumLayerSetsMinus1))
-            vpsTimingInfoPresentFlag = try reader.readBit()
-            if vpsTimingInfoPresentFlag {
-                try reader.skipBits(count: 64)
-                if try reader.readBit() {
-                    _ = try reader.readExponentialGolomb()
-                }
-                let vpsNumHrdParameters = try reader.readExponentialGolomb()
-                for i in 0 ..< vpsNumHrdParameters {
-                    _ = try reader.readExponentialGolomb()
-                    let cprmsPresentFlag: Bool
-                    if i > 0 {
-                        cprmsPresentFlag = try reader.readBit()
-                    } else {
-                        cprmsPresentFlag = true
-                    }
-                    throw "Should skip hrd_parameters \(cprmsPresentFlag)"
-                }
-            }
+    init(reader: BitReader) throws {
+        vpsVideoParameterSetId = try reader.readBits(count: 4)
+        vpsBaseLayerInternalFlag = try reader.readBit()
+        vpsBaseLayerAvailableFlag = try reader.readBit()
+        vpsMaxLayersMinus1 = try reader.readBits(count: 6)
+        vpsMaxSubLayersMinus1 = try reader.readBits(count: 3)
+        vpsTemporalIdNestingFlag = try reader.readBit()
+        try reader.skipBits(count: 16)
+        vpsSubLayerOrderingInfoPresentFlag = try reader.readBit()
+        let startLayer = vpsSubLayerOrderingInfoPresentFlag ? 0 : vpsMaxSubLayersMinus1
+        for _ in startLayer ... vpsMaxLayersMinus1 {
+            _ = try reader.readExponentialGolomb()
+            _ = try reader.readExponentialGolomb()
+            _ = try reader.readExponentialGolomb()
+        }
+        vpsMaxLayerId = try reader.readBits(count: 6)
+        vpsNumLayerSetsMinus1 = try reader.readExponentialGolomb()
+        try reader.skipBits(count: (Int(vpsMaxLayerId) + 1) * Int(vpsNumLayerSetsMinus1))
+        vpsTimingInfoPresentFlag = try reader.readBit()
+        if vpsTimingInfoPresentFlag {
+            try reader.skipBits(count: 64)
             if try reader.readBit() {
-                throw "Extension not supported"
+                _ = try reader.readExponentialGolomb()
             }
-        } catch {
-            return nil
+            let vpsNumHrdParameters = try reader.readExponentialGolomb()
+            for i in 0 ..< vpsNumHrdParameters {
+                _ = try reader.readExponentialGolomb()
+                let cprmsPresentFlag: Bool
+                if i > 0 {
+                    cprmsPresentFlag = try reader.readBit()
+                } else {
+                    cprmsPresentFlag = true
+                }
+                throw "Should skip hrd_parameters \(cprmsPresentFlag)"
+            }
+        }
+        if try reader.readBit() {
+            throw "Extension not supported"
         }
     }
 
@@ -371,27 +348,23 @@ struct HevcNalUnitSps {
     var picWidthInLumaSamples: UInt32
     var picHeightInLumaSamples: UInt32
 
-    init?(reader: BitReader) {
-        do {
-            spsVideoParameterSetId = try reader.readBits(count: 4)
-            spsMaxSubLayersMinus1 = try reader.readBits(count: 3)
-            spsTemporalIdNestingFlag = try reader.readBit()
-            spsSeqParameterSetId = try reader.readExponentialGolomb()
-            if spsSeqParameterSetId > 15 {
-                throw "spsSeqParameterSetId \(spsSeqParameterSetId) is greater than 15"
-            }
-            chromaFormatIdc = try reader.readExponentialGolomb()
-            if chromaFormatIdc > 3 {
-                throw "chromaFormatIdc \(chromaFormatIdc) is greater than 3"
-            }
-            if chromaFormatIdc == 3 {
-                separateColourPlaneFlag = try reader.readBit()
-            }
-            picWidthInLumaSamples = try reader.readExponentialGolomb()
-            picHeightInLumaSamples = try reader.readExponentialGolomb()
-        } catch {
-            return nil
+    init(reader: BitReader) throws {
+        spsVideoParameterSetId = try reader.readBits(count: 4)
+        spsMaxSubLayersMinus1 = try reader.readBits(count: 3)
+        spsTemporalIdNestingFlag = try reader.readBit()
+        spsSeqParameterSetId = try reader.readExponentialGolomb()
+        if spsSeqParameterSetId > 15 {
+            throw "spsSeqParameterSetId \(spsSeqParameterSetId) is greater than 15"
         }
+        chromaFormatIdc = try reader.readExponentialGolomb()
+        if chromaFormatIdc > 3 {
+            throw "chromaFormatIdc \(chromaFormatIdc) is greater than 3"
+        }
+        if chromaFormatIdc == 3 {
+            separateColourPlaneFlag = try reader.readBit()
+        }
+        picWidthInLumaSamples = try reader.readExponentialGolomb()
+        picHeightInLumaSamples = try reader.readExponentialGolomb()
     }
 
     func encode() -> Data {
@@ -439,64 +412,60 @@ struct HevcNalUnitPps {
     var sliceSegmentHeaderExtensionPresentFlag: Bool
     var ppsExtensionPresentFlag: Bool
 
-    init?(reader: BitReader) {
-        do {
-            ppsPicParameterSetId = try reader.readExponentialGolomb()
-            ppsSeqParameterSetId = try reader.readExponentialGolomb()
-            dependentSliceSegmentsEnabledFlag = try reader.readBit()
-            outputFlagPresentFlag = try reader.readBit()
-            numExtraSliceHeaderBits = try reader.readBits(count: 3)
-            signDataHidingEnabledFlag = try reader.readBit()
-            cabacInitPresentFlag = try reader.readBit()
-            numRefIdxL0DefaultActiveMinus1 = try reader.readExponentialGolomb()
-            numRefIdxL1DefaultActiveMinus1 = try reader.readExponentialGolomb()
-            initQpMinus26 = try reader.readExponentialGolomb()
-            constrainedIntraPredFlag = try reader.readBit()
-            transformSkipEnabledFlag = try reader.readBit()
-            cuQpDeltaEnabledFlag = try reader.readBit()
-            if cuQpDeltaEnabledFlag {
-                diffCuQpDeltaDepth = try reader.readExponentialGolomb()
+    init(reader: BitReader) throws {
+        ppsPicParameterSetId = try reader.readExponentialGolomb()
+        ppsSeqParameterSetId = try reader.readExponentialGolomb()
+        dependentSliceSegmentsEnabledFlag = try reader.readBit()
+        outputFlagPresentFlag = try reader.readBit()
+        numExtraSliceHeaderBits = try reader.readBits(count: 3)
+        signDataHidingEnabledFlag = try reader.readBit()
+        cabacInitPresentFlag = try reader.readBit()
+        numRefIdxL0DefaultActiveMinus1 = try reader.readExponentialGolomb()
+        numRefIdxL1DefaultActiveMinus1 = try reader.readExponentialGolomb()
+        initQpMinus26 = try reader.readExponentialGolomb()
+        constrainedIntraPredFlag = try reader.readBit()
+        transformSkipEnabledFlag = try reader.readBit()
+        cuQpDeltaEnabledFlag = try reader.readBit()
+        if cuQpDeltaEnabledFlag {
+            diffCuQpDeltaDepth = try reader.readExponentialGolomb()
+        }
+        ppsCbQpOffset = try reader.readExponentialGolomb()
+        ppsCrQpOffset = try reader.readExponentialGolomb()
+        ppsSliceChromaQpOffsetsPresentFlag = try reader.readBit()
+        weightedPredFlag = try reader.readBit()
+        weightedBipredFlag = try reader.readBit()
+        transquantBypassEnabledFlag = try reader.readBit()
+        tilesEnabledFlag = try reader.readBit()
+        entropyCodingSyncEnabledFlag = try reader.readBit()
+        if tilesEnabledFlag {
+            numTileColumnsMinus1 = try reader.readExponentialGolomb()
+            numTileRowsMinus1 = try reader.readExponentialGolomb()
+            uniformSpacingFlag = try reader.readBit()
+            if !uniformSpacingFlag {
+                throw "not implemented"
             }
-            ppsCbQpOffset = try reader.readExponentialGolomb()
-            ppsCrQpOffset = try reader.readExponentialGolomb()
-            ppsSliceChromaQpOffsetsPresentFlag = try reader.readBit()
-            weightedPredFlag = try reader.readBit()
-            weightedBipredFlag = try reader.readBit()
-            transquantBypassEnabledFlag = try reader.readBit()
-            tilesEnabledFlag = try reader.readBit()
-            entropyCodingSyncEnabledFlag = try reader.readBit()
-            if tilesEnabledFlag {
-                numTileColumnsMinus1 = try reader.readExponentialGolomb()
-                numTileRowsMinus1 = try reader.readExponentialGolomb()
-                uniformSpacingFlag = try reader.readBit()
-                if !uniformSpacingFlag {
-                    throw "not implemented"
-                }
-                loopFilterAcrossTilesEnabledFlag = try reader.readBit()
+            loopFilterAcrossTilesEnabledFlag = try reader.readBit()
+        }
+        ppsLoopFilterAcrossSlicesEnabledFlag = try reader.readBit()
+        deblockingFilterControlPresentFlag = try reader.readBit()
+        if deblockingFilterControlPresentFlag {
+            deblockingFilterOverrideEnabledFlag = try reader.readBit()
+            ppsDeblockingFilterDisabledFlag = try reader.readBit()
+            if !ppsDeblockingFilterDisabledFlag {
+                ppsBetaOffsetDiv2 = try reader.readExponentialGolomb()
+                ppsTcOffsetDiv2 = try reader.readExponentialGolomb()
             }
-            ppsLoopFilterAcrossSlicesEnabledFlag = try reader.readBit()
-            deblockingFilterControlPresentFlag = try reader.readBit()
-            if deblockingFilterControlPresentFlag {
-                deblockingFilterOverrideEnabledFlag = try reader.readBit()
-                ppsDeblockingFilterDisabledFlag = try reader.readBit()
-                if !ppsDeblockingFilterDisabledFlag {
-                    ppsBetaOffsetDiv2 = try reader.readExponentialGolomb()
-                    ppsTcOffsetDiv2 = try reader.readExponentialGolomb()
-                }
-            }
-            ppsScalingListDataPresentFlag = try reader.readBit()
-            if ppsScalingListDataPresentFlag {
-                throw "scaling"
-            }
-            listsModificationPresentFlag = try reader.readBit()
-            log2ParallelMergeLevelMinus2 = try reader.readExponentialGolomb()
-            sliceSegmentHeaderExtensionPresentFlag = try reader.readBit()
-            ppsExtensionPresentFlag = try reader.readBit()
-            if ppsExtensionPresentFlag {
-                throw "extension"
-            }
-        } catch {
-            return nil
+        }
+        ppsScalingListDataPresentFlag = try reader.readBit()
+        if ppsScalingListDataPresentFlag {
+            throw "scaling"
+        }
+        listsModificationPresentFlag = try reader.readBit()
+        log2ParallelMergeLevelMinus2 = try reader.readExponentialGolomb()
+        sliceSegmentHeaderExtensionPresentFlag = try reader.readBit()
+        ppsExtensionPresentFlag = try reader.readBit()
+        if ppsExtensionPresentFlag {
+            throw "extension"
         }
     }
 
