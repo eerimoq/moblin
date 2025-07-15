@@ -405,7 +405,7 @@ struct HevcProfileTierLevel {
     }
 }
 
-private let calendar: Calendar = {
+let calendar: Calendar = {
     var utcCalender = Calendar(identifier: .iso8601)
     utcCalender.timeZone = TimeZone(abbreviation: "UTC")!
     return utcCalender
@@ -416,15 +416,13 @@ struct HevcSeiPayloadTimeCode {
     private var minutes: UInt8
     private var seconds: UInt8
     private var frame: UInt32
-    private var offset: UInt32
+    // private var offset: UInt32
 
-    init(clock: Date) {
+    init(clock: Date, frame: UInt32) {
         hours = UInt8(calendar.component(.hour, from: clock))
         minutes = UInt8(calendar.component(.minute, from: clock))
         seconds = UInt8(calendar.component(.second, from: clock))
-        offset = UInt32((clock.timeIntervalSince1970 * 1000).truncatingRemainder(dividingBy: 1000))
-        frame = offset * 30 / 1000
-        // logger.info("xxx \(offset) \(frame)")
+        self.frame = frame
     }
 
     init?(reader: BitReader) {
@@ -454,7 +452,7 @@ struct HevcSeiPayloadTimeCode {
                 return nil
             }
             frame = 0
-            offset = try reader.readBitsU32(count: Int(count))
+            // offset = try reader.readBitsU32(count: Int(count))
         } catch {
             return nil
         }
@@ -479,8 +477,8 @@ struct HevcSeiPayloadTimeCode {
             writer.writeBits(minutes, count: 6)
             writer.writeBits(hours, count: 5)
         }
-        writer.writeBits(10, count: 5)
-        writer.writeBitsU32(offset, count: 10)
+        writer.writeBits(0, count: 5)
+        // writer.writeBitsU32(offset, count: 10)
         writeMoreDataInPayload(writer: writer)
         return writer.data
     }
@@ -488,7 +486,6 @@ struct HevcSeiPayloadTimeCode {
     func makeClock(vuiTimeScale: UInt32) -> Date {
         var clockTimestamp = Double(seconds) + Double(minutes) * 60 + Double(hours) * 3600
         clockTimestamp *= Double(vuiTimeScale)
-        clockTimestamp += Double(offset) / 1000
         // Not good if close to new day
         let startOfDay = calendar.startOfDay(for: .now)
         return startOfDay.addingTimeInterval(clockTimestamp)

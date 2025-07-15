@@ -38,6 +38,9 @@ class MpegTsWriter {
     private var videoConfig: MpegTsVideoConfig?
     private var programClockReferenceTimestamp: CMTime?
     private let timecodesEnabled: Bool
+    private var presentationTimeStampBase: Double?
+    private var previousTimecodeSecond: Int?
+    private var timecodeFrame: UInt32 = 0
 
     init(timecodesEnabled: Bool) {
         self.timecodesEnabled = timecodesEnabled
@@ -73,6 +76,9 @@ class MpegTsWriter {
         videoDataOffset = 0
         videoData = [nil, nil]
         programClockReferenceTimestamp = nil
+        presentationTimeStampBase = nil
+        previousTimecodeSecond = nil
+        timecodeFrame = 0
         isRunning.mutate { $0 = false }
     }
 
@@ -374,12 +380,8 @@ extension MpegTsWriter: VideoEncoderDelegate {
                 streamId: MpegTsWriter.videoStreamId
             )
         } else if let videoConfig = videoConfig as? MpegTsVideoConfigHevc {
-            let timecode: Date?
-            if timecodesEnabled {
-                timecode = TrueTimeClient.sharedInstance.referenceTime?.now()
-            } else {
-                timecode = nil
-            }
+            updateTimecodeReference()
+            let (timecode, frame) = makeTimecode(presentationTimeStamp: sampleBuffer.presentationTimeStamp.seconds)
             packetizedElementaryStream = MpegTsPacketizedElementaryStream(
                 bytes: bytes,
                 count: length,
@@ -387,7 +389,8 @@ extension MpegTsWriter: VideoEncoderDelegate {
                 decodeTimeStamp: decodeTimeStamp,
                 config: randomAccessIndicator ? videoConfig : nil,
                 streamId: MpegTsWriter.videoStreamId,
-                timecode: timecode
+                timecode: timecode,
+                frame: frame
             )
         } else {
             return
@@ -398,5 +401,45 @@ extension MpegTsWriter: VideoEncoderDelegate {
             randomAccessIndicator,
             packetizedElementaryStream
         ))
+    }
+
+    private func updateTimecodeReference() {
+        guard timecodesEnabled, presentationTimeStampBase == nil else {
+            return
+        }
+        guard let now = TrueTimeClient.sharedInstance.referenceTime?.now().timeIntervalSince1970 else {
+            logger.info("timecode: Failed to get NTP time")
+            return
+        }
+        let presentationTimeStamp = currentPresentationTimeStamp().seconds
+        presentationTimeStampBase = now - presentationTimeStamp
+        logger.info("""
+        timecode: Updated base time - NTP: \(now) PTS: \(presentationTimeStamp) \
+        BASE: \(presentationTimeStampBase!)
+        """)
+    }
+
+    private func makeTimecode(presentationTimeStamp: Double) -> (Date?, UInt32) {
+        guard timecodesEnabled, let presentationTimeStampBase else {
+            return (nil, 0)
+        }
+        let now = Date(timeIntervalSince1970: presentationTimeStampBase + presentationTimeStamp)
+        let second = calendar.component(.second, from: now)
+        if let previousTimecodeSecond {
+            if second != previousTimecodeSecond {
+                timecodeFrame = 0
+            } else {
+                timecodeFrame += 1
+            }
+        } else {
+            timecodeFrame = 0
+            logger.info("""
+            timecode: First timecode - second: \(second), frame: \(timecodeFrame), \
+            PTS: \(presentationTimeStamp)
+            """)
+        }
+        // logger.info("timecode: second: \(second), frame: \(timecodeFrame)")
+        previousTimecodeSecond = second
+        return (now, timecodeFrame)
     }
 }
