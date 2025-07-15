@@ -3,30 +3,31 @@ import Foundation
 final class BitReader {
     private var data: Data
     private var byteOffset = 0
-    private var bitOffset = 0
+    private var bitOffset = 7
 
     init(data: Data) {
         self.data = data
     }
 
     func readBit() throws -> Bool {
-        guard byteOffset < data.count else {
-            throw "Out of data"
-        }
-        let mask = UInt8(1 << (7 - bitOffset))
-        let value = (data[byteOffset] & mask) == mask
-        bitOffset += 1
-        if bitOffset == 8 {
-            bitOffset = 0
+        try checkOutOfData()
+        let value = data[byteOffset].isBitSet(index: bitOffset)
+        bitOffset -= 1
+        if bitOffset == -1 {
+            bitOffset = 7
             byteOffset += 1
         }
         return value
     }
 
     func skipBits(count: Int) throws {
-        for _ in 0 ..< count {
-            _ = try readBit()
+        bitOffset -= count % 8
+        if bitOffset < 0 {
+            bitOffset += 8
+            byteOffset += 1
         }
+        byteOffset += count / 8
+        try checkOutOfData()
     }
 
     func readBits(count: Int) throws -> UInt8 {
@@ -59,5 +60,11 @@ final class BitReader {
         var value: UInt32 = 1 << numberOfLeadingZeroBits
         value |= try readBitsU32(count: numberOfLeadingZeroBits)
         return value - 1
+    }
+
+    private func checkOutOfData() throws {
+        if byteOffset >= data.count {
+            throw "Out of data"
+        }
     }
 }
