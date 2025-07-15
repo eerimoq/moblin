@@ -26,7 +26,7 @@ struct HevcNalUnit: NalUnit {
     let payload: HevcNalUnitPayload
 
     init?(_ data: Data) {
-        let reader = BitReader(data: data)
+        let reader = NalUnitReader(data: data)
         do {
             header = try HevcNalUnitHeader(reader: reader)
             switch header.type {
@@ -42,7 +42,7 @@ struct HevcNalUnit: NalUnit {
                 payload = .unspec
             }
         } catch {
-            logger.info("Failed to decode NAL unit with error: \(error)")
+            logger.info("xxx Failed to decode NAL unit with error: \(error)")
             return nil
         }
     }
@@ -53,7 +53,7 @@ struct HevcNalUnit: NalUnit {
     }
 
     func encode() -> Data {
-        let writer = BitWriter()
+        let writer = NalUnitWriter()
         header.encode(writer: writer)
         payload.encode(writer: writer)
         return writer.data
@@ -65,7 +65,7 @@ struct HevcNalUnitHeader {
     let nuhLayerId: UInt8
     let temporalIdPlusOne: UInt8
 
-    init(reader: BitReader) throws {
+    init(reader: NalUnitReader) throws {
         try reader.skipBits(count: 1)
         type = try HevcNalUnitType(rawValue: reader.readBits(count: 6)) ?? .unspec
         nuhLayerId = try reader.readBits(count: 6)
@@ -78,7 +78,7 @@ struct HevcNalUnitHeader {
         self.temporalIdPlusOne = temporalIdPlusOne
     }
 
-    func encode(writer: BitWriter) {
+    func encode(writer: NalUnitWriter) {
         writer.writeBit(false)
         writer.writeBits(type.rawValue, count: 6)
         writer.writeBits(nuhLayerId, count: 6)
@@ -93,7 +93,7 @@ enum HevcNalUnitPayload {
     case prefixSeiNut(HevcNalUnitSei)
     case unspec
 
-    func encode(writer: BitWriter) {
+    func encode(writer: NalUnitWriter) {
         switch self {
         case let .vps(vps):
             vps.encode(writer: writer)
@@ -166,8 +166,10 @@ struct HevcNalUnitVps {
     var vpsMaxLayerId: UInt8
     var vpsNumLayerSetsMinus1: UInt32
     var vpsTimingInfoPresentFlag: Bool
+    var vpsNumUnitsInTick: UInt32 = 0
+    var vpsTimeScale: UInt32 = 0
 
-    init(reader: BitReader) throws {
+    init(reader: NalUnitReader) throws {
         vpsVideoParameterSetId = try reader.readBits(count: 4)
         vpsBaseLayerInternalFlag = try reader.readBit()
         vpsBaseLayerAvailableFlag = try reader.readBit()
@@ -190,7 +192,8 @@ struct HevcNalUnitVps {
         try reader.skipBits(count: (Int(vpsMaxLayerId) + 1) * Int(vpsNumLayerSetsMinus1))
         vpsTimingInfoPresentFlag = try reader.readBit()
         if vpsTimingInfoPresentFlag {
-            try reader.skipBits(count: 64)
+            vpsNumUnitsInTick = try reader.readBitsU32(count: 32)
+            vpsTimeScale = try reader.readBitsU32(count: 32)
             if try reader.readBit() {
                 try reader.skipExponentialGolomb()
             }
@@ -211,7 +214,7 @@ struct HevcNalUnitVps {
         }
     }
 
-    func encode(writer _: BitWriter) {}
+    func encode(writer _: NalUnitWriter) {}
 }
 
 // 7.3.2.2 Sequence parameter set RBSP syntax
@@ -227,7 +230,7 @@ struct HevcNalUnitSps {
     var picHeightInLumaSamples: UInt32 = 0
     var profileTierLevel: HevcProfileTierLevel?
 
-    init(reader: BitReader, header: HevcNalUnitHeader) throws {
+    init(reader: NalUnitReader, header: HevcNalUnitHeader) throws {
         spsVideoParameterSetId = try reader.readBits(count: 4)
         if header.nuhLayerId == 0 {
             spsMaxSubLayersMinus1 = try reader.readBits(count: 3)
@@ -256,7 +259,7 @@ struct HevcNalUnitSps {
         }
     }
 
-    func encode(writer _: BitWriter) {}
+    func encode(writer _: NalUnitWriter) {}
 }
 
 // 7.3.2.3 Picture parameter set RBSP syntax
@@ -299,7 +302,7 @@ struct HevcNalUnitPps {
     var sliceSegmentHeaderExtensionPresentFlag: Bool
     var ppsExtensionPresentFlag: Bool
 
-    init(reader: BitReader) throws {
+    init(reader: NalUnitReader) throws {
         ppsPicParameterSetId = try reader.readExponentialGolomb()
         ppsSeqParameterSetId = try reader.readExponentialGolomb()
         dependentSliceSegmentsEnabledFlag = try reader.readBit()
@@ -356,7 +359,7 @@ struct HevcNalUnitPps {
         }
     }
 
-    func encode(writer _: BitWriter) {}
+    func encode(writer _: NalUnitWriter) {}
 }
 
 struct HevcProfileTierLevel {
@@ -370,7 +373,7 @@ struct HevcProfileTierLevel {
     var generalFrameOnlyConstraintFlag: Bool = false
     var generalLevelIdc: UInt8
 
-    init(profilePresentFlag: Bool, maxNumSubLayersMinus1: UInt8, reader: BitReader) throws {
+    init(profilePresentFlag: Bool, maxNumSubLayersMinus1: UInt8, reader: NalUnitReader) throws {
         if profilePresentFlag {
             generalProfileSpace = try reader.readBits(count: 2)
             generalTierFlag = try reader.readBit()
@@ -425,7 +428,7 @@ struct HevcSeiPayloadTimeCode {
         self.frame = frame
     }
 
-    init?(reader: BitReader) {
+    init?(reader: NalUnitReader) {
         do {
             guard try reader.readBits(count: 2) == 1 else {
                 logger.info("Not exactly one entry")
@@ -463,7 +466,7 @@ struct HevcSeiPayloadTimeCode {
         let clockTimestampFlag = true
         let unitFieldBasedFlag = true
         let fullTimestampFlag = true
-        let writer = BitWriter()
+        let writer = NalUnitWriter()
         writer.writeBits(numClockTs, count: 2)
         writer.writeBit(clockTimestampFlag)
         writer.writeBit(unitFieldBasedFlag)
@@ -507,7 +510,7 @@ struct HevcNalUnitSei {
         self.payload = payload
     }
 
-    init(reader: BitReader) throws {
+    init(reader: NalUnitReader) throws {
         let type = try reader.readBits(count: 8)
         guard type != 0xFF else {
             throw "SEI message type too long"
@@ -527,7 +530,7 @@ struct HevcNalUnitSei {
         }
     }
 
-    func encode(writer: BitWriter) {
+    func encode(writer: NalUnitWriter) {
         let type: HevcSeiPayloadType
         let data: Data
         switch payload {
@@ -542,14 +545,24 @@ struct HevcNalUnitSei {
     }
 }
 
-private func writeRbspTrailingBits(writer: BitWriter) {
+private func readRbspTrailingBits(reader: NalUnitReader) throws {
+    let rbspStopOneBit = try reader.readBit()
+    if !rbspStopOneBit {
+        throw "Trailing stop bit is false"
+    }
+    while !reader.isByteAligned() {
+        try reader.skipBits(count: 1)
+    }
+}
+
+private func writeRbspTrailingBits(writer: NalUnitWriter) {
     writer.writeBit(true)
     while writer.bitOffset != 0 {
         writer.writeBit(false)
     }
 }
 
-private func writeMoreDataInPayload(writer: BitWriter) {
+private func writeMoreDataInPayload(writer: NalUnitWriter) {
     var padding = true
     while writer.bitOffset != 0 {
         writer.writeBit(padding)

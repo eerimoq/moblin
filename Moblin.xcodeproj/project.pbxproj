@@ -152,7 +152,7 @@
 		0339F9162CE1C78A00F8D6FC /* AVAudioPCMBuffer+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0339F9142CE1C78800F8D6FC /* AVAudioPCMBuffer+Extension.swift */; };
 		0339F9172CE1C78A00F8D6FC /* AVAudioPCMBuffer+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0339F9142CE1C78800F8D6FC /* AVAudioPCMBuffer+Extension.swift */; };
 		033A46EF2CD881AE00119CE3 /* CMVideoDimensions+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 033A46EE2CD881A700119CE3 /* CMVideoDimensions+Extension.swift */; };
-		033AB2EF2DC8645100B764A9 /* BitWriter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 033AB2EE2DC8644D00B764A9 /* BitWriter.swift */; };
+		033AB2EF2DC8645100B764A9 /* NalUnitWriter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 033AB2EE2DC8644D00B764A9 /* NalUnitWriter.swift */; };
 		033AB2F12DC8659400B764A9 /* ByteReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 033AB2F02DC8658F00B764A9 /* ByteReader.swift */; };
 		033BB53D2D50A45D0071662A /* CMFormatDescription+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 033BB53C2D50A4540071662A /* CMFormatDescription+Extension.swift */; };
 		033BB53E2D50A5510071662A /* CMFormatDescription+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 033BB53C2D50A4540071662A /* CMFormatDescription+Extension.swift */; };
@@ -566,7 +566,7 @@
 		03F5A8DF2AD5DACB00F354D2 /* Srt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F5A8DE2AD5DACB00F354D2 /* Srt.swift */; };
 		03F5A8E52AD6FF8E00F354D2 /* StreamOverlayDebugView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F5A8E42AD6FF8E00F354D2 /* StreamOverlayDebugView.swift */; };
 		03F655F02D147C0B0054D73E /* VideoSourceRotationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F655EF2D147C040054D73E /* VideoSourceRotationView.swift */; };
-		03F655F22D16DFD60054D73E /* BitReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F655F12D16DFD20054D73E /* BitReader.swift */; };
+		03F655F22D16DFD60054D73E /* NalUnitReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F655F12D16DFD20054D73E /* NalUnitReader.swift */; };
 		03F853B32B151FA700719B89 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 03F853B22B151FA700719B89 /* Localizable.xcstrings */; };
 		03F977602BA5ADD8000F5739 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 03F9775E2BA5A8E8000F5739 /* PrivacyInfo.xcprivacy */; };
 		03F9CA832DFF0F730088A720 /* ModelAppIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F9CA822DFF0F6F0088A720 /* ModelAppIntents.swift */; };
@@ -792,7 +792,7 @@
 		0333322C2C48A31700C87D62 /* DjiDeviceScannerSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DjiDeviceScannerSettingsView.swift; sourceTree = "<group>"; };
 		0339F9142CE1C78800F8D6FC /* AVAudioPCMBuffer+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AVAudioPCMBuffer+Extension.swift"; sourceTree = "<group>"; };
 		033A46EE2CD881A700119CE3 /* CMVideoDimensions+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CMVideoDimensions+Extension.swift"; sourceTree = "<group>"; };
-		033AB2EE2DC8644D00B764A9 /* BitWriter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitWriter.swift; sourceTree = "<group>"; };
+		033AB2EE2DC8644D00B764A9 /* NalUnitWriter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NalUnitWriter.swift; sourceTree = "<group>"; };
 		033AB2F02DC8658F00B764A9 /* ByteReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ByteReader.swift; sourceTree = "<group>"; };
 		033BB53C2D50A4540071662A /* CMFormatDescription+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CMFormatDescription+Extension.swift"; sourceTree = "<group>"; };
 		033BEAC92C101B52005F4E06 /* NetworkInterfaceTypeSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkInterfaceTypeSelector.swift; sourceTree = "<group>"; };
@@ -1235,7 +1235,7 @@
 		03F5A8DE2AD5DACB00F354D2 /* Srt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Srt.swift; sourceTree = "<group>"; };
 		03F5A8E42AD6FF8E00F354D2 /* StreamOverlayDebugView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamOverlayDebugView.swift; sourceTree = "<group>"; };
 		03F655EF2D147C040054D73E /* VideoSourceRotationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoSourceRotationView.swift; sourceTree = "<group>"; };
-		03F655F12D16DFD20054D73E /* BitReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitReader.swift; sourceTree = "<group>"; };
+		03F655F12D16DFD20054D73E /* NalUnitReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NalUnitReader.swift; sourceTree = "<group>"; };
 		03F6E3042D40267A00942826 /* zh-HK */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-HK"; path = "zh-HK.lproj/AppShortcuts.strings"; sourceTree = "<group>"; };
 		03F853B22B151FA700719B89 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		03F9775E2BA5A8E8000F5739 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
@@ -1966,6 +1966,8 @@
 				0359F8432BD3DA5F005BFDA8 /* MpegTsVideoConfigHevc.swift */,
 				0359F84A2BD3DA5F005BFDA8 /* MpegTsWriter.swift */,
 				0359F83F2BD3DA5F005BFDA8 /* NalUnitStream.swift */,
+				03F655F12D16DFD20054D73E /* NalUnitReader.swift */,
+				033AB2EE2DC8644D00B764A9 /* NalUnitWriter.swift */,
 			);
 			path = Mpeg;
 			sourceTree = "<group>";
@@ -2000,8 +2002,6 @@
 			children = (
 				0359F86D2BD3DA5F005BFDA8 /* AnyUtil.swift */,
 				0359F86E2BD3DA5F005BFDA8 /* Atomic.swift */,
-				03F655F12D16DFD20054D73E /* BitReader.swift */,
-				033AB2EE2DC8644D00B764A9 /* BitWriter.swift */,
 				033AB2F02DC8658F00B764A9 /* ByteReader.swift */,
 				0359F86F2BD3DA5F005BFDA8 /* ByteWriter.swift */,
 				0359F8742BD3DA5F005BFDA8 /* MD5.swift */,
@@ -3734,7 +3734,7 @@
 				03980C552C5E74A9000ED476 /* VoicesView.swift in Sources */,
 				0302F07F2B320B0500B06FF0 /* StreamWizardChatSettingsView.swift in Sources */,
 				032D85862DDD7F4E00A6128A /* ModelKeyboard.swift in Sources */,
-				03F655F22D16DFD60054D73E /* BitReader.swift in Sources */,
+				03F655F22D16DFD60054D73E /* NalUnitReader.swift in Sources */,
 				03828C2C2C3AEF6D00F5A8AC /* MapEffect.swift in Sources */,
 				033BB53D2D50A45D0071662A /* CMFormatDescription+Extension.swift in Sources */,
 				030621DE2D8605F2001EE50B /* DjiGimbalDeviceModel.swift in Sources */,
@@ -3756,7 +3756,7 @@
 				033235412BFBAFD800B897A5 /* MetalPetal.metal in Sources */,
 				03B373FD2A9F35EF0028DDD5 /* CommonUtils.swift in Sources */,
 				03A707B82B8ED466003BB7BE /* WatchProtocol.swift in Sources */,
-				033AB2EF2DC8645100B764A9 /* BitWriter.swift in Sources */,
+				033AB2EF2DC8645100B764A9 /* NalUnitWriter.swift in Sources */,
 				031839172AF6A03100320FB2 /* DebugAudioSettingsView.swift in Sources */,
 				03487F262B334B63003D9ED9 /* StreamingHistory.swift in Sources */,
 				03941A222C0CDD940061DA81 /* DeepLinkCreatorStreamsSettingsView.swift in Sources */,

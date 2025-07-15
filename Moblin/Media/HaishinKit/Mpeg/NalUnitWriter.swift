@@ -1,6 +1,6 @@
 import Foundation
 
-final class BitWriter {
+final class NalUnitWriter {
     private(set) var data: Data
     private var byteOffset = 0
     private(set) var bitOffset = 0

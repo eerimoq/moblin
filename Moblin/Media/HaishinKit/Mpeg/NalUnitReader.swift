@@ -1,12 +1,24 @@
 import Foundation
 
-final class BitReader {
+final class NalUnitReader {
     private var data: Data
     private var byteOffset = 0
     private var bitOffset = 7
 
     init(data: Data) {
         self.data = data
+    }
+
+    func isByteAligned() -> Bool {
+        return bitOffset == 7
+    }
+
+    func available() -> Int {
+        return 8 * (data.count - byteOffset) - (7 - bitOffset)
+    }
+
+    func comsumed() -> Int {
+        return data.count * 8 - available()
     }
 
     func readBit() throws -> Bool {
@@ -16,18 +28,22 @@ final class BitReader {
         if bitOffset == -1 {
             bitOffset = 7
             byteOffset += 1
+            if available() > 0,
+               byteOffset >= 2,
+               data[byteOffset - 2] == 0,
+               data[byteOffset - 1] == 0,
+               data[byteOffset] == 0x03
+            {
+                byteOffset += 1
+            }
         }
         return value
     }
 
     func skipBits(count: Int) throws {
-        bitOffset -= count % 8
-        if bitOffset < 0 {
-            bitOffset += 8
-            byteOffset += 1
+        for _ in 0 ..< count {
+            _ = try readBit()
         }
-        byteOffset += count / 8
-        try checkOutOfData()
     }
 
     func readBits(count: Int) throws -> UInt8 {
