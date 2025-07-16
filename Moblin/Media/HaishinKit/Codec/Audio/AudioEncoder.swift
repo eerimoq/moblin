@@ -2,7 +2,7 @@ import AVFoundation
 
 protocol AudioCodecDelegate: AnyObject {
     func audioCodecOutputFormat(_ format: AVAudioFormat)
-    func audioCodecOutputBuffer(_ buffer: AVAudioBuffer, _ presentationTimeStamp: CMTime)
+    func audioCodecOutputBuffer(_ buffer: AVAudioCompressedBuffer, _ presentationTimeStamp: CMTime)
 }
 
 class AudioEncoder {

@@ -383,7 +383,7 @@ class RtmpStream {
         handleEncodedAudioBuffer(buffer, 0)
     }
 
-    private func audioCodecOutputBufferInner(_ buffer: AVAudioBuffer, _ presentationTimeStamp: CMTime) {
+    private func audioCodecOutputBufferInner(_ audioBuffer: AVAudioCompressedBuffer, _ presentationTimeStamp: CMTime) {
         guard let rebasedTimestamp = rebaseTimeStamp(timestamp: presentationTimeStamp.seconds) else {
             logger.info("rtmp: \(name): Dropping audio buffer. Failed to rebase timestamp.")
             return
@@ -392,7 +392,7 @@ class RtmpStream {
         if prevRebasedAudioTimeStamp != -1.0 {
             delta = (rebasedTimestamp - prevRebasedAudioTimeStamp) * 1000
         }
-        guard let audioBuffer = buffer as? AVAudioCompressedBuffer, delta >= 0 else {
+        guard delta >= 0 else {
             logger.info("rtmp: \(name): Dropping audio buffer (delta: \(delta))")
             return
         }
@@ -488,7 +488,7 @@ extension RtmpStream: AudioCodecDelegate {
         }
     }
 
-    func audioCodecOutputBuffer(_ buffer: AVAudioBuffer, _ presentationTimeStamp: CMTime) {
+    func audioCodecOutputBuffer(_ buffer: AVAudioCompressedBuffer, _ presentationTimeStamp: CMTime) {
         processorControlQueue.async {
             self.audioCodecOutputBufferInner(buffer, presentationTimeStamp)
         }

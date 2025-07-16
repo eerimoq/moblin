@@ -44,7 +44,7 @@ extension MirlStream: AudioCodecDelegate {
         client?.writeAudioFormat(audioFormat: audioFormat)
     }
 
-    func audioCodecOutputBuffer(_ buffer: AVAudioBuffer, _ presentationTimeStamp: CMTime) {
+    func audioCodecOutputBuffer(_ buffer: AVAudioCompressedBuffer, _ presentationTimeStamp: CMTime) {
         client?.writeAudio(buffer: buffer, presentationTimeStamp: presentationTimeStamp)
     }
 }

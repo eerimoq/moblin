@@ -8,7 +8,7 @@ struct AudioEncoderSettings {
         case aac
         case opus
 
-        func makeAudioBuffer(_ format: AVAudioFormat) -> AVAudioBuffer {
+        func makeAudioBuffer(_ format: AVAudioFormat) -> AVAudioCompressedBuffer {
             return AVAudioCompressedBuffer(
                 format: format,
                 packetCapacity: 1,

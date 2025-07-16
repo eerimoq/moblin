@@ -308,7 +308,7 @@ extension Processor: AudioCodecDelegate {
         }
     }
 
-    func audioCodecOutputBuffer(_ buffer: AVAudioBuffer, _ presentationTimeStamp: CMTime) {
+    func audioCodecOutputBuffer(_ buffer: AVAudioCompressedBuffer, _ presentationTimeStamp: CMTime) {
         for stream in streams {
             stream.delegate?.audioCodecOutputBuffer(buffer, presentationTimeStamp)
         }

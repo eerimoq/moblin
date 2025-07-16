@@ -302,11 +302,8 @@ extension MpegTsWriter: AudioCodecDelegate {
         setAudioConfig(MpegTsAudioConfig(formatDescription: format.formatDescription))
     }
 
-    func audioCodecOutputBuffer(_ buffer: AVAudioBuffer, _ presentationTimeStamp: CMTime) {
-        guard let audioBuffer = buffer as? AVAudioCompressedBuffer,
-              canWriteFor(),
-              let audioConfig
-        else {
+    func audioCodecOutputBuffer(_ audioBuffer: AVAudioCompressedBuffer, _ presentationTimeStamp: CMTime) {
+        guard canWriteFor(), let audioConfig else {
             return
         }
         guard let packetizedElementaryStream = MpegTsPacketizedElementaryStream(

@@ -32,7 +32,7 @@ class MirlClient {
         }
     }
 
-    func writeAudio(buffer _: AVAudioBuffer, presentationTimeStamp: CMTime) {
+    func writeAudio(buffer _: AVAudioCompressedBuffer, presentationTimeStamp: CMTime) {
         lockQueue.async {
             logger.info("mirl: client: Should write audio \(presentationTimeStamp.seconds)")
         }
