@@ -39,8 +39,8 @@ class MpegTsWriter {
     private var programClockReferenceTimestamp: CMTime?
     private let timecodesEnabled: Bool
     private var presentationTimeStampBase: Double?
-    private var previousTimecodeSecond: Int?
-    private var timecodeFrame: UInt32 = 0
+    private var previousDecodeTimeStamp: Double?
+    private var estimatedFrameDuration: Double = 0.033
 
     init(timecodesEnabled: Bool) {
         self.timecodesEnabled = timecodesEnabled
@@ -77,8 +77,7 @@ class MpegTsWriter {
         videoData = [nil, nil]
         programClockReferenceTimestamp = nil
         presentationTimeStampBase = nil
-        previousTimecodeSecond = nil
-        timecodeFrame = 0
+        previousDecodeTimeStamp = nil
         isRunning.mutate { $0 = false }
     }
 
@@ -381,7 +380,8 @@ extension MpegTsWriter: VideoEncoderDelegate {
             )
         } else if let videoConfig = videoConfig as? MpegTsVideoConfigHevc {
             updateTimecodeReference()
-            let (timecode, frame) = makeTimecode(presentationTimeStamp: sampleBuffer.presentationTimeStamp.seconds)
+            let (timecode, frame) = makeTimecode(presentationTimeStamp: sampleBuffer.presentationTimeStamp.seconds,
+                                                 decodeTimeStamp: decodeTimeStamp.seconds)
             packetizedElementaryStream = MpegTsPacketizedElementaryStream(
                 bytes: bytes,
                 count: length,
@@ -419,27 +419,24 @@ extension MpegTsWriter: VideoEncoderDelegate {
         """)
     }
 
-    private func makeTimecode(presentationTimeStamp: Double) -> (Date?, UInt32) {
+    private func makeTimecode(presentationTimeStamp: Double, decodeTimeStamp: Double) -> (Date?, UInt32) {
         guard timecodesEnabled, let presentationTimeStampBase else {
             return (nil, 0)
         }
-        let now = Date(timeIntervalSince1970: presentationTimeStampBase + presentationTimeStamp)
-        let second = calendar.component(.second, from: now)
-        if let previousTimecodeSecond {
-            if second != previousTimecodeSecond {
-                timecodeFrame = 0
-            } else {
-                timecodeFrame += 1
-            }
-        } else {
-            timecodeFrame = 0
-            logger.info("""
-            timecode: First timecode - second: \(second), frame: \(timecodeFrame), \
-            PTS: \(presentationTimeStamp)
-            """)
+        var decodeTimeStamp = decodeTimeStamp
+        if decodeTimeStamp.isNaN {
+            decodeTimeStamp = presentationTimeStamp
         }
-        // logger.info("timecode: second: \(second), frame: \(timecodeFrame)")
-        previousTimecodeSecond = second
-        return (now, timecodeFrame)
+        if let previousDecodeTimeStamp {
+            estimatedFrameDuration = 0.7 * estimatedFrameDuration + 0.3 * (decodeTimeStamp - previousDecodeTimeStamp)
+        }
+        previousDecodeTimeStamp = decodeTimeStamp
+        let now = Date(timeIntervalSince1970: presentationTimeStampBase + presentationTimeStamp)
+        // To do: MAke frame calculation more robust when the offset is close to a multiple of the
+        // estimated frame rate.
+        let offsetWithinSecond = (now.timeIntervalSince1970 * 1000).truncatingRemainder(dividingBy: 1000) / 1000
+        let frame = offsetWithinSecond / estimatedFrameDuration
+        // logger.info("timecode: now: \(now), frame: \(frame)")
+        return (now, UInt32(frame))
     }
 }

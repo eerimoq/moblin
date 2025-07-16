@@ -374,8 +374,8 @@ class SrtServerClient {
                 case let .prefixSeiNut(hevcSei):
                     switch hevcSei.payload {
                     case let .timeCode(timeCode):
-                        let clock = timeCode.makeClock(vuiTimeScale: 1)
-                        logger.debug("Got H.265 SEI timecode \(clock) \(clock.timeIntervalSince1970)")
+                        let (timecode, frame) = timeCode.makeClock()
+                        logger.info("xxx Got H.265 SEI timecode \(timecode) (frame: \(frame))")
                     }
                 default:
                     break

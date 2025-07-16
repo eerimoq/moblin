@@ -5,7 +5,6 @@ struct HevcSeiPayloadTimeCode {
     private var minutes: UInt8
     private var seconds: UInt8
     private var frame: UInt32
-    // private var offset: UInt32
 
     init(clock: Date, frame: UInt32) {
         hours = UInt8(calendar.component(.hour, from: clock))
@@ -17,31 +16,25 @@ struct HevcSeiPayloadTimeCode {
     init?(reader: NalUnitReader) {
         do {
             guard try reader.readBits(count: 2) == 1 else {
-                logger.info("Not exactly one entry")
+                logger.info("SEI timecode: Not exactly one entry")
                 return nil
             }
             guard try reader.readBit() else {
-                logger.info("clockTimestampFlag not set")
+                logger.info("SEI timecode: clockTimestampFlag not set")
                 return nil
             }
             try reader.skipBits(count: 1 + 5)
             let fullTimestampFlag = try reader.readBit()
-            try reader.skipBits(count: 1 + 1 + 8 + 1)
+            try reader.skipBits(count: 1 + 1)
+            frame = try reader.readBitsU32(count: 9)
             if fullTimestampFlag {
                 seconds = try reader.readBits(count: 6)
                 minutes = try reader.readBits(count: 6)
                 hours = try reader.readBits(count: 5)
             } else {
-                logger.info("not full timestamp")
+                logger.info("SEI timecode: Not full timestamp")
                 return nil
             }
-            let count = try reader.readBitsU32(count: 5)
-            guard count <= 32 else {
-                logger.info("too long offset")
-                return nil
-            }
-            frame = 0
-            // offset = try reader.readBitsU32(count: Int(count))
         } catch {
             return nil
         }
@@ -67,17 +60,15 @@ struct HevcSeiPayloadTimeCode {
             writer.writeBits(hours, count: 5)
         }
         writer.writeBits(0, count: 5)
-        // writer.writeBitsU32(offset, count: 10)
         writeMoreDataInPayload(writer: writer)
         return writer.data
     }
 
-    func makeClock(vuiTimeScale: UInt32) -> Date {
-        var clockTimestamp = Double(seconds) + Double(minutes) * 60 + Double(hours) * 3600
-        clockTimestamp *= Double(vuiTimeScale)
+    func makeClock() -> (Date, UInt32) {
+        let clockTimestamp = Double(seconds) + Double(minutes) * 60 + Double(hours) * 3600
         // Not good if close to new day
         let startOfDay = calendar.startOfDay(for: .now)
-        return startOfDay.addingTimeInterval(clockTimestamp)
+        return (startOfDay.addingTimeInterval(clockTimestamp), frame)
     }
 }
 
