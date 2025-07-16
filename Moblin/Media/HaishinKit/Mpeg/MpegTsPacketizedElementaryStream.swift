@@ -161,10 +161,10 @@ struct MpegTsPacketizedElementaryStream {
             data += nalUnitStartCode
             data.append(contentsOf: [0x09, 0x30])
         }
-        if let timecode {
+        if let timecode, false {
             data += nalUnitStartCode
-            let sei = HevcNalUnitSei(payload: .timeCode(HevcSeiPayloadTimeCode(clock: timecode, frame: frame)))
-            data += HevcNalUnit(type: .prefixSeiNut, temporalIdPlusOne: 1, payload: .prefixSeiNut(sei)).encode()
+            let sei = AvcNalUnitSei(payload: .pictureTiming(AvcSeiPayloadPictureTiming(clock: timecode, frame: frame)))
+            data += AvcNalUnit(type: .sei, payload: .sei(sei)).encode()
         }
         var payload = Data(bytesNoCopy: bytes, count: count, deallocator: .none)
         addNalUnitStartCodes(&payload)

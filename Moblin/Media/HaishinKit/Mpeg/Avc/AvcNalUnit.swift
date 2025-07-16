@@ -41,6 +41,11 @@ struct AvcNalUnit: NalUnit {
         }
     }
 
+    init(type: AvcNalUnitType, payload: AvcNalUnitPayload) {
+        header = AvcNalUnitHeader(refIdc: 0, type: type)
+        self.payload = payload
+    }
+
     func encode() -> Data {
         let writer = NalUnitWriter()
         header.encode(writer: writer)
@@ -54,12 +59,19 @@ struct AvcNalUnitHeader {
     let type: AvcNalUnitType
 
     init(reader: NalUnitReader) throws {
-        refIdc = try reader.readBits(count: 3)
+        try reader.skipBits(count: 1)
+        refIdc = try reader.readBits(count: 2)
         type = try AvcNalUnitType(rawValue: reader.readBits(count: 5)) ?? .unspec
     }
 
+    init(refIdc: UInt8, type: AvcNalUnitType) {
+        self.refIdc = refIdc
+        self.type = type
+    }
+
     func encode(writer: NalUnitWriter) {
-        writer.writeBits(refIdc, count: 3)
+        writer.writeBit(false)
+        writer.writeBits(refIdc, count: 2)
         writer.writeBits(type.rawValue, count: 5)
     }
 }

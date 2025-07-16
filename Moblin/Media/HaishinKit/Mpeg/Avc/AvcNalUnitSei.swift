@@ -1,6 +1,6 @@
 import Foundation
 
-struct AvcSeiPayloadTimeCode {
+struct AvcSeiPayloadPictureTiming {
     private var hours: UInt8
     private var minutes: UInt8
     private var seconds: UInt8
@@ -73,11 +73,11 @@ struct AvcSeiPayloadTimeCode {
 }
 
 enum AvcSeiPayloadType: UInt8 {
-    case timeCode = 136
+    case pictureTiming = 1
 }
 
 enum AvcNalUnitSeiPayload {
-    case timeCode(AvcSeiPayloadTimeCode)
+    case pictureTiming(AvcSeiPayloadPictureTiming)
 }
 
 struct AvcNalUnitSei {
@@ -97,11 +97,11 @@ struct AvcNalUnitSei {
             throw "SEI message length too long"
         }
         switch AvcSeiPayloadType(rawValue: type) {
-        case .timeCode:
-            guard let timeCode = AvcSeiPayloadTimeCode(reader: reader) else {
-                throw "Failed to decode time code payload"
+        case .pictureTiming:
+            guard let pictureTiming = AvcSeiPayloadPictureTiming(reader: reader) else {
+                throw "Failed to decode picture timing payload"
             }
-            payload = .timeCode(timeCode)
+            payload = .pictureTiming(pictureTiming)
         default:
             throw "Unsupported SEI payload type \(type)"
         }
@@ -111,8 +111,8 @@ struct AvcNalUnitSei {
         let type: AvcSeiPayloadType
         let data: Data
         switch payload {
-        case let .timeCode(payload):
-            type = .timeCode
+        case let .pictureTiming(payload):
+            type = .pictureTiming
             data = payload.encode()
         }
         writer.writeBits(type.rawValue, count: 8)
