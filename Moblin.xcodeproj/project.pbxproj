@@ -1984,8 +1984,6 @@
 				0359F8472BD3DA5F005BFDA8 /* MpegTsPacket.swift */,
 				0359F8482BD3DA5F005BFDA8 /* MpegTsProgram.swift */,
 				030EFE712BDA2D9E004208B6 /* MpegTsVideoConfig.swift */,
-				0359F83E2BD3DA5F005BFDA8 /* MpegTsVideoConfigAvc.swift */,
-				0359F8432BD3DA5F005BFDA8 /* MpegTsVideoConfigHevc.swift */,
 				0359F84A2BD3DA5F005BFDA8 /* MpegTsWriter.swift */,
 				0359F83F2BD3DA5F005BFDA8 /* NalUnitStream.swift */,
 				03F655F12D16DFD20054D73E /* NalUnitReader.swift */,
@@ -2175,6 +2173,7 @@
 				035F64F52E26DF7500700EE6 /* HevcNalUnitSps.swift */,
 				035F64F32E26DF6C00700EE6 /* HevcNalUnitVps.swift */,
 				035F64FD2E26ECA200700EE6 /* HevcShortTermRefPicSet.swift */,
+				0359F8432BD3DA5F005BFDA8 /* MpegTsVideoConfigHevc.swift */,
 			);
 			path = Hevc;
 			sourceTree = "<group>";
@@ -2187,6 +2186,7 @@
 				035F65032E27D81600700EE6 /* AvcNalUnitSei.swift */,
 				03C8BCF92E27F1560010CA3C /* AvcNalUnitSps.swift */,
 				03C8BCFB2E27F1600010CA3C /* AvcNalUnitVps.swift */,
+				0359F83E2BD3DA5F005BFDA8 /* MpegTsVideoConfigAvc.swift */,
 			);
 			path = Avc;
 			sourceTree = "<group>";
