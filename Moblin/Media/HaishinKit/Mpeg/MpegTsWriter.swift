@@ -369,6 +369,9 @@ extension MpegTsWriter: VideoEncoderDelegate {
         let randomAccessIndicator = sampleBuffer.isSync
         let packetizedElementaryStream: MpegTsPacketizedElementaryStream
         let bytes = UnsafeMutableRawPointer(buffer).bindMemory(to: UInt8.self, capacity: length)
+        updateTimecodeReference()
+        let (timecode, frame) = makeTimecode(presentationTimeStamp: sampleBuffer.presentationTimeStamp.seconds,
+                                             decodeTimeStamp: decodeTimeStamp.seconds)
         if let videoConfig = videoConfig as? MpegTsVideoConfigAvc {
             packetizedElementaryStream = MpegTsPacketizedElementaryStream(
                 bytes: bytes,
@@ -376,12 +379,11 @@ extension MpegTsWriter: VideoEncoderDelegate {
                 presentationTimeStamp: sampleBuffer.presentationTimeStamp,
                 decodeTimeStamp: decodeTimeStamp,
                 config: randomAccessIndicator ? videoConfig : nil,
-                streamId: MpegTsWriter.videoStreamId
+                streamId: MpegTsWriter.videoStreamId,
+                timecode: timecode,
+                frame: frame
             )
         } else if let videoConfig = videoConfig as? MpegTsVideoConfigHevc {
-            updateTimecodeReference()
-            let (timecode, frame) = makeTimecode(presentationTimeStamp: sampleBuffer.presentationTimeStamp.seconds,
-                                                 decodeTimeStamp: decodeTimeStamp.seconds)
             packetizedElementaryStream = MpegTsPacketizedElementaryStream(
                 bytes: bytes,
                 count: length,

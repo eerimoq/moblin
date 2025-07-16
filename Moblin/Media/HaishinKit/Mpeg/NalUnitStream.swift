@@ -65,9 +65,9 @@ protocol NalUnit {
     init?(_ data: Data)
 }
 
-func readH264NalUnits(data: Data, nalUnits: [NalUnitInfo], filter: [AVCNALUnitType]) -> [AvcNalUnit] {
+func readH264NalUnits(data: Data, nalUnits: [NalUnitInfo], filter: [AvcNalUnitType]) -> [AvcNalUnit] {
     return readNalUnits(data, nalUnits) { byte in
-        filter.contains(AVCNALUnitType(rawValue: byte & 0x1F) ?? .unspec)
+        filter.contains(AvcNalUnitType(rawValue: byte & 0x1F) ?? .unspec)
     }
 }
 

@@ -1,7 +1,7 @@
 import CoreMedia
 import Foundation
 
-enum AVCNALUnitType: UInt8 {
+enum AvcNalUnitType: UInt8 {
     case unspec = 0
     case slice = 1 // P frame
     case dpa = 2
@@ -18,29 +18,77 @@ enum AVCNALUnitType: UInt8 {
 }
 
 struct AvcNalUnit: NalUnit {
-    let refIdc: UInt8
-    let type: AVCNALUnitType
-    let payload: Data
+    let header: AvcNalUnitHeader
+    let payload: AvcNalUnitPayload
 
-    init(_ data: Data) {
-        refIdc = data[0] >> 5
-        type = AVCNALUnitType(rawValue: data[0] & 0x1F) ?? .unspec
-        payload = data.subdata(in: 1 ..< data.count)
+    init?(_ data: Data) {
+        let reader = NalUnitReader(data: data)
+        do {
+            header = try AvcNalUnitHeader(reader: reader)
+            switch header.type {
+            case .pps:
+                payload = try .pps(AvcNalUnitPps(reader: reader))
+            case .sps:
+                payload = try .sps(AvcNalUnitSps(reader: reader))
+            case .sei:
+                payload = try .sei(AvcNalUnitSei(reader: reader))
+            default:
+                payload = .unspec
+            }
+        } catch {
+            logger.info("xxx Failed to decode NAL unit with error: \(error)")
+            return nil
+        }
     }
 
     func encode() -> Data {
-        var result = Data()
-        result.append(refIdc << 5 | type.rawValue)
-        result.append(payload)
-        return result
+        let writer = NalUnitWriter()
+        header.encode(writer: writer)
+        payload.encode(writer: writer)
+        return writer.data
+    }
+}
+
+struct AvcNalUnitHeader {
+    let refIdc: UInt8
+    let type: AvcNalUnitType
+
+    init(reader: NalUnitReader) throws {
+        refIdc = try reader.readBits(count: 3)
+        type = try AvcNalUnitType(rawValue: reader.readBits(count: 5)) ?? .unspec
+    }
+
+    func encode(writer: NalUnitWriter) {
+        writer.writeBits(refIdc, count: 3)
+        writer.writeBits(type.rawValue, count: 5)
+    }
+}
+
+enum AvcNalUnitPayload {
+    case pps(AvcNalUnitPps)
+    case sps(AvcNalUnitSps)
+    case sei(AvcNalUnitSei)
+    case unspec
+
+    func encode(writer: NalUnitWriter) {
+        switch self {
+        case let .pps(pps):
+            pps.encode(writer: writer)
+        case let .sps(sps):
+            sps.encode(writer: writer)
+        case let .sei(sei):
+            sei.encode(writer: writer)
+        case .unspec:
+            break
+        }
     }
 }
 
 extension [AvcNalUnit] {
     func makeFormatDescription() -> CMFormatDescription? {
         guard
-            let pps = first(where: { $0.type == .pps }),
-            let sps = first(where: { $0.type == .sps })
+            let pps = first(where: { $0.header.type == .pps }),
+            let sps = first(where: { $0.header.type == .sps })
         else {
             return nil
         }

@@ -145,7 +145,9 @@ struct MpegTsPacketizedElementaryStream {
         presentationTimeStamp: CMTime,
         decodeTimeStamp: CMTime,
         config: MpegTsVideoConfigAvc?,
-        streamId: UInt8
+        streamId: UInt8,
+        timecode: Date?,
+        frame: UInt32
     ) {
         if let config {
             // 3 NAL units. SEI(9), SPS(7) and PPS(8)
@@ -158,6 +160,11 @@ struct MpegTsPacketizedElementaryStream {
         } else {
             data += nalUnitStartCode
             data.append(contentsOf: [0x09, 0x30])
+        }
+        if let timecode {
+            data += nalUnitStartCode
+            let sei = HevcNalUnitSei(payload: .timeCode(HevcSeiPayloadTimeCode(clock: timecode, frame: frame)))
+            data += HevcNalUnit(type: .prefixSeiNut, temporalIdPlusOne: 1, payload: .prefixSeiNut(sei)).encode()
         }
         var payload = Data(bytesNoCopy: bytes, count: count, deallocator: .none)
         addNalUnitStartCodes(&payload)

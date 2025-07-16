@@ -348,7 +348,7 @@ class SrtServerClient {
         ) else {
             return nil
         }
-        sampleBuffer.isSync = units.contains { $0.type == .idr }
+        sampleBuffer.isSync = units.contains { $0.header.type == .idr }
         self.firstReceivedPresentationTimeStamp = firstReceivedPresentationTimeStamp
         previousReceivedPresentationTimeStamps[packetId] = previousReceivedPresentationTimeStamp
         return (sampleBuffer, data.streamType)

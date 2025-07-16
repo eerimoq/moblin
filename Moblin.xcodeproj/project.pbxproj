@@ -260,6 +260,7 @@
 		035F64FC2E26E04F00700EE6 /* HevcNalUnitSei.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035F64FB2E26E04B00700EE6 /* HevcNalUnitSei.swift */; };
 		035F64FE2E26ECA800700EE6 /* HevcShortTermRefPicSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035F64FD2E26ECA200700EE6 /* HevcShortTermRefPicSet.swift */; };
 		035F65002E26F1DE00700EE6 /* HevcVuiParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035F64FF2E26F1D800700EE6 /* HevcVuiParameters.swift */; };
+		035F65042E27D81A00700EE6 /* AvcNalUnitSei.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035F65032E27D81600700EE6 /* AvcNalUnitSei.swift */; };
 		036333282AAE2E5100FF1231 /* ImageStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036333272AAE2E5100FF1231 /* ImageStorage.swift */; };
 		0364304F2B2FF9F400B7C448 /* StreamWizardTwitchSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0364304E2B2FF9F400B7C448 /* StreamWizardTwitchSettingsView.swift */; };
 		0364662C2B456B25005AB9FA /* StreamWizardCustomSrtSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0364662B2B456B25005AB9FA /* StreamWizardCustomSrtSettingsView.swift */; };
@@ -505,6 +506,9 @@
 		03C5AE482C5515B20056B6C7 /* GeographyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C5AE472C5515B20056B6C7 /* GeographyManager.swift */; };
 		03C656112C02E13000E017B2 /* SampleBufferSender.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C656102C02E13000E017B2 /* SampleBufferSender.swift */; };
 		03C656152C02E23900E017B2 /* SampleBufferReceiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C656132C02E14600E017B2 /* SampleBufferReceiver.swift */; };
+		03C8BCF82E27F14E0010CA3C /* AvcNalUnitPps.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C8BCF72E27F14B0010CA3C /* AvcNalUnitPps.swift */; };
+		03C8BCFA2E27F1580010CA3C /* AvcNalUnitSps.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C8BCF92E27F1560010CA3C /* AvcNalUnitSps.swift */; };
+		03C8BCFC2E27F1630010CA3C /* AvcNalUnitVps.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C8BCFB2E27F1600010CA3C /* AvcNalUnitVps.swift */; };
 		03C9A13F2DFD881300817B57 /* MultiLineTextFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C9A13E2DFD880C00817B57 /* MultiLineTextFieldView.swift */; };
 		03C9A1412DFDCC5000817B57 /* ControlBarUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C9A1402DFDCC4B00817B57 /* ControlBarUtils.swift */; };
 		03C9A1442DFDEAF200817B57 /* GoLiveNotificationSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C9A1432DFDEAE900817B57 /* GoLiveNotificationSettingsView.swift */; };
@@ -956,6 +960,7 @@
 		035F64FB2E26E04B00700EE6 /* HevcNalUnitSei.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HevcNalUnitSei.swift; sourceTree = "<group>"; };
 		035F64FD2E26ECA200700EE6 /* HevcShortTermRefPicSet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HevcShortTermRefPicSet.swift; sourceTree = "<group>"; };
 		035F64FF2E26F1D800700EE6 /* HevcVuiParameters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HevcVuiParameters.swift; sourceTree = "<group>"; };
+		035F65032E27D81600700EE6 /* AvcNalUnitSei.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvcNalUnitSei.swift; sourceTree = "<group>"; };
 		036333272AAE2E5100FF1231 /* ImageStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageStorage.swift; sourceTree = "<group>"; };
 		0364304E2B2FF9F400B7C448 /* StreamWizardTwitchSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardTwitchSettingsView.swift; sourceTree = "<group>"; };
 		0364662B2B456B25005AB9FA /* StreamWizardCustomSrtSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardCustomSrtSettingsView.swift; sourceTree = "<group>"; };
@@ -1186,6 +1191,9 @@
 		03C5AE472C5515B20056B6C7 /* GeographyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeographyManager.swift; sourceTree = "<group>"; };
 		03C656102C02E13000E017B2 /* SampleBufferSender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleBufferSender.swift; sourceTree = "<group>"; };
 		03C656132C02E14600E017B2 /* SampleBufferReceiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleBufferReceiver.swift; sourceTree = "<group>"; };
+		03C8BCF72E27F14B0010CA3C /* AvcNalUnitPps.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvcNalUnitPps.swift; sourceTree = "<group>"; };
+		03C8BCF92E27F1560010CA3C /* AvcNalUnitSps.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvcNalUnitSps.swift; sourceTree = "<group>"; };
+		03C8BCFB2E27F1600010CA3C /* AvcNalUnitVps.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvcNalUnitVps.swift; sourceTree = "<group>"; };
 		03C9A13E2DFD880C00817B57 /* MultiLineTextFieldView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiLineTextFieldView.swift; sourceTree = "<group>"; };
 		03C9A1402DFDCC4B00817B57 /* ControlBarUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlBarUtils.swift; sourceTree = "<group>"; };
 		03C9A1432DFDEAE900817B57 /* GoLiveNotificationSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoLiveNotificationSettingsView.swift; sourceTree = "<group>"; };
@@ -2175,6 +2183,10 @@
 			isa = PBXGroup;
 			children = (
 				03A9300B2C14414800BB9679 /* AvcNalUnit.swift */,
+				03C8BCF72E27F14B0010CA3C /* AvcNalUnitPps.swift */,
+				035F65032E27D81600700EE6 /* AvcNalUnitSei.swift */,
+				03C8BCF92E27F1560010CA3C /* AvcNalUnitSps.swift */,
+				03C8BCFB2E27F1600010CA3C /* AvcNalUnitVps.swift */,
 			);
 			path = Avc;
 			sourceTree = "<group>";
@@ -3757,6 +3769,7 @@
 				03D541752B32095B00B9D595 /* StreamWizardCustomSettingsView.swift in Sources */,
 				03BA73B92DDCD98E00075CD6 /* ModelDjiGimbalDevice.swift in Sources */,
 				0364B6212BD36806002F828D /* StreamButton.swift in Sources */,
+				03C8BCF82E27F14E0010CA3C /* AvcNalUnitPps.swift in Sources */,
 				030499632C4038C9003488F4 /* WidgetQrCodeSettingsView.swift in Sources */,
 				0315A3462AA31E9000295443 /* StreamTwitchSettingsView.swift in Sources */,
 				030EFE782BDADBC6004208B6 /* SwipeLeftToRemoveHelpView.swift in Sources */,
@@ -3946,6 +3959,7 @@
 				03A983722A9A0659008FF0DB /* TwitchChat.swift in Sources */,
 				03B34C2C2E20B5BD00A1FC84 /* AudioLevel.swift in Sources */,
 				03FBD1812B3B0DE500757CA9 /* RtmpServerClient.swift in Sources */,
+				03C8BCFC2E27F1630010CA3C /* AvcNalUnitVps.swift in Sources */,
 				038605432D80099300B9C3CE /* HeartRateDevicesSettingsView.swift in Sources */,
 				03BA73BB2DDCDA4900075CD6 /* ModelTesla.swift in Sources */,
 				030621E72D8608DA001EE50B /* DjiGimbalDevicesSettingsView.swift in Sources */,
@@ -4001,6 +4015,7 @@
 				039A9E282BAEC5A100A23F97 /* WidgetCropSettingsView.swift in Sources */,
 				03A29A2C2BECD0C800DAA1B1 /* StreamRecordingAudioSettingsView.swift in Sources */,
 				03C3572A2D03776D00B8B29F /* MultiTrackVideoEncoder.swift in Sources */,
+				035F65042E27D81A00700EE6 /* AvcNalUnitSei.swift in Sources */,
 				0315A37E2AA43DCC00295443 /* TextEditView.swift in Sources */,
 				035E9E372A9A02D6009D4F5A /* MoblinApp.swift in Sources */,
 				038C76972CAC99E100564200 /* VideoSourceEffect.swift in Sources */,
@@ -4129,6 +4144,7 @@
 				03D2B0E32C11BDEA0051BFB5 /* SrtlaServerStreamSettingsView.swift in Sources */,
 				0315A3702AA3771F00295443 /* SceneWidgetSettingsView.swift in Sources */,
 				037132CE2C29FEFD00393605 /* WidgetTextSettingsView.swift in Sources */,
+				03C8BCFA2E27F1580010CA3C /* AvcNalUnitSps.swift in Sources */,
 				0379BB9E2AAD81AA00B718B6 /* StreamOverlayRightView.swift in Sources */,
 				03BDE2262B24656400DF193A /* StreamObsRemoteControlSettingsView.swift in Sources */,
 				032B4ED72C34918E00204547 /* SceneSelectorView.swift in Sources */,
