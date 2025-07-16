@@ -17,10 +17,6 @@ final class NalUnitReader {
         return 8 * (data.count - byteOffset) - (7 - bitOffset)
     }
 
-    func comsumed() -> Int {
-        return data.count * 8 - available()
-    }
-
     func readRawBytes() throws -> Data {
         try checkOutOfData()
         guard bitOffset == 7 else {
