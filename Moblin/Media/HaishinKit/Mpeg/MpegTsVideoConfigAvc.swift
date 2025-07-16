@@ -3,7 +3,7 @@ import AVFoundation
 /*
  - seealso: ISO/IEC 14496-15 2010
  */
-struct MpegTsVideoConfigAvc: MpegTsVideoConfig {
+struct MpegTsVideoConfigAvc {
     static func getData(_ formatDescription: CMFormatDescription) -> Data? {
         if let atoms = formatDescription.atoms() {
             return atoms["avcC"] as? Data

@@ -332,7 +332,7 @@ extension MpegTsWriter: VideoEncoderDelegate {
             }
             data.streamType = .h264
             addVideoSpecificDatas(data: data)
-            setVideoConfig(MpegTsVideoConfigAvc(data: avcC))
+            setVideoConfig(.avc(MpegTsVideoConfigAvc(data: avcC)))
         case .hevc:
             guard let hvcC = MpegTsVideoConfigHevc.getData(formatDescription) else {
                 logger.info("mpeg-ts: Failed to create hvcC")
@@ -348,7 +348,7 @@ extension MpegTsWriter: VideoEncoderDelegate {
             //         }
             //     }
             // }
-            setVideoConfig(MpegTsVideoConfigHevc(data: hvcC))
+            setVideoConfig(.hevc(MpegTsVideoConfigHevc(data: hvcC)))
         }
     }
 
@@ -370,7 +370,8 @@ extension MpegTsWriter: VideoEncoderDelegate {
         updateTimecodeReference()
         let (timecode, frame) = makeTimecode(presentationTimeStamp: sampleBuffer.presentationTimeStamp.seconds,
                                              decodeTimeStamp: decodeTimeStamp.seconds)
-        if let videoConfig = videoConfig as? MpegTsVideoConfigAvc {
+        switch videoConfig {
+        case let .avc(videoConfig):
             packetizedElementaryStream = MpegTsPacketizedElementaryStream(
                 bytes: bytes,
                 count: length,
@@ -381,7 +382,7 @@ extension MpegTsWriter: VideoEncoderDelegate {
                 timecode: timecode,
                 frame: frame
             )
-        } else if let videoConfig = videoConfig as? MpegTsVideoConfigHevc {
+        case let .hevc(videoConfig):
             packetizedElementaryStream = MpegTsPacketizedElementaryStream(
                 bytes: bytes,
                 count: length,
@@ -392,8 +393,6 @@ extension MpegTsWriter: VideoEncoderDelegate {
                 timecode: timecode,
                 frame: frame
             )
-        } else {
-            return
         }
         writeVideo(data: encode(
             MpegTsWriter.videoPacketId,

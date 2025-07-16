@@ -1,7 +1,7 @@
 import AVFoundation
 
 /// ISO/IEC 14496-15 8.3.3.1.2
-struct MpegTsVideoConfigHevc: MpegTsVideoConfig {
+struct MpegTsVideoConfigHevc {
     static func getData(_ formatDescription: CMFormatDescription) -> Data? {
         if let atoms = formatDescription.atoms() {
             return atoms["hvcC"] as? Data

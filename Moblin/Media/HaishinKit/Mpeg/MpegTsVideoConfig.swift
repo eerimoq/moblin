@@ -1,1 +1,4 @@
-protocol MpegTsVideoConfig {}
+enum MpegTsVideoConfig {
+    case avc(MpegTsVideoConfigAvc)
+    case hevc(MpegTsVideoConfigHevc)
+}
