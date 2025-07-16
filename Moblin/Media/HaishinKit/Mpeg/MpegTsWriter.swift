@@ -322,7 +322,10 @@ extension MpegTsWriter: AudioCodecDelegate {
         ) else {
             return
         }
-        writeAudio(data: encode(MpegTsWriter.audioPacketId, presentationTimeStamp, true, packetizedElementaryStream))
+        writeAudio(data: encode(MpegTsWriter.audioPacketId,
+                                presentationTimeStamp,
+                                true,
+                                packetizedElementaryStream))
     }
 }
 
@@ -331,43 +334,32 @@ extension MpegTsWriter: VideoEncoderDelegate {
         var data = ElementaryStreamSpecificData()
         data.elementaryPacketId = MpegTsWriter.videoPacketId
         videoContinuityCounter = 0
+        let videoConfig: MpegTsVideoConfig
         switch encoder.settings.value.format {
         case .h264:
-            guard let avcC = MpegTsVideoConfigAvc.getData(formatDescription) else {
+            data.streamType = .h264
+            guard let config = MpegTsVideoConfigAvc(formatDescription: formatDescription) else {
                 logger.info("mpeg-ts: Failed to create avcC")
                 return
             }
-            data.streamType = .h264
-            addVideoSpecificDatas(data: data)
-            setVideoConfig(.avc(MpegTsVideoConfigAvc(data: avcC)))
+            videoConfig = .avc(config)
         case .hevc:
-            guard let hvcC = MpegTsVideoConfigHevc.getData(formatDescription) else {
+            data.streamType = .h265
+            guard let config = MpegTsVideoConfigHevc(formatDescription: formatDescription) else {
                 logger.info("mpeg-ts: Failed to create hvcC")
                 return
             }
-            data.streamType = .h265
-            addVideoSpecificDatas(data: data)
-            // let config = MpegTsVideoConfigHevc(data: hvcC)
-            // for nalUnitDatas in config.array.values {
-            //     for data in nalUnitDatas {
-            //         if let nalUnit = HevcNalUnit(data) {
-            //             logger.info("xxx NAL: \(nalUnit)")
-            //         }
-            //     }
-            // }
-            setVideoConfig(.hevc(MpegTsVideoConfigHevc(data: hvcC)))
+            videoConfig = .hevc(config)
         }
+        addVideoSpecificDatas(data: data)
+        setVideoConfig(videoConfig)
     }
 
     func videoEncoderOutputSampleBuffer(_: VideoEncoder,
                                         _ sampleBuffer: CMSampleBuffer,
                                         _ decodeTimeStampOffset: CMTime)
     {
-        guard let dataBuffer = sampleBuffer.dataBuffer,
-              let (buffer, length) = dataBuffer.getDataPointer(),
-              canWriteFor(),
-              let videoConfig
-        else {
+        guard canWriteFor(), let (buffer, length) = sampleBuffer.dataBuffer?.getDataPointer() else {
             return
         }
         let decodeTimeStamp = CMTimeSubtract(sampleBuffer.decodeTimeStamp, decodeTimeStampOffset)
@@ -397,6 +389,8 @@ extension MpegTsWriter: VideoEncoderDelegate {
                 streamId: MpegTsWriter.videoStreamId,
                 timecode: timecode
             )
+        default:
+            return
         }
         writeVideo(data: encode(
             MpegTsWriter.videoPacketId,

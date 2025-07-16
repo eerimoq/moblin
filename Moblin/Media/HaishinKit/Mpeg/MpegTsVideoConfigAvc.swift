@@ -21,10 +21,15 @@ struct MpegTsVideoConfigAvc {
     var sequenceParameterSets: [[UInt8]] = []
     var pictureParameterSets: [[UInt8]] = []
 
-    init() {}
+    init(avcC: Data) {
+        self.avcC = avcC
+    }
 
-    init(data: Data) {
-        self.data = data
+    init?(formatDescription: CMFormatDescription) {
+        guard let data = Self.getData(formatDescription) else {
+            return nil
+        }
+        avcC = data
     }
 
     func makeFormatDescription(_ formatDescriptionOut: UnsafeMutablePointer<CMFormatDescription?>) -> OSStatus {
@@ -55,7 +60,7 @@ struct MpegTsVideoConfigAvc {
         }
     }
 
-    var data: Data {
+    var avcC: Data {
         get {
             let buffer = ByteWriter()
                 .writeUInt8(configurationVersion)

@@ -44,15 +44,18 @@ struct MpegTsVideoConfigHevc {
     var numberOfArrays: UInt8 = 0
     var array: [HevcNalUnitType: [Data]] = [:]
 
-    init() {}
-
-    init(data: Data) {
-        self.data = data
+    init(hvcC: Data) {
+        self.hvcC = hvcC
     }
 
-    func makeFormatDescription(_ formatDescriptionOut: UnsafeMutablePointer<CMFormatDescription?>)
-        -> OSStatus
-    {
+    init?(formatDescription: CMFormatDescription) {
+        guard let data = Self.getData(formatDescription) else {
+            return nil
+        }
+        hvcC = data
+    }
+
+    func makeFormatDescription(_ formatDescriptionOut: UnsafeMutablePointer<CMFormatDescription?>) -> OSStatus {
         guard let vps = array[.vps], let sps = array[.sps], let pps = array[.pps] else {
             return kCMFormatDescriptionBridgeError_InvalidParameter
         }
@@ -89,7 +92,7 @@ struct MpegTsVideoConfigHevc {
         }
     }
 
-    var data: Data {
+    var hvcC: Data {
         get {
             let buffer = ByteWriter()
                 .writeUInt8(configurationVersion)

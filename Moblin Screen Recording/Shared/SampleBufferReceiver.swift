@@ -89,7 +89,7 @@ class SampleBufferReceiver {
 
     private func handleVideoFormat(_ senderFd: Int32, _ header: SampleBufferHeader) throws {
         let hvcC = try read(senderFd, header.size)
-        let config = MpegTsVideoConfigHevc(data: hvcC)
+        let config = MpegTsVideoConfigHevc(hvcC: hvcC)
         let status = config.makeFormatDescription(&formatDescription)
         if status == noErr, let formatDescription {
             videoDecoder = VideoDecoder(lockQueue: lockQueue)

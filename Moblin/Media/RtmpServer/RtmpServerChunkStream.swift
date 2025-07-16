@@ -507,9 +507,9 @@ class RtmpServerChunkStream {
         guard checkMessageBodyBigEnough(client: client, minimumSize: FlvTagType.video.headerSize) else {
             return
         }
-        var config = MpegTsVideoConfigAvc()
-        config.data = messageBody.subdata(in: FlvTagType.video.headerSize ..< messageBody.count)
-        let status = config.makeFormatDescription(&formatDescription)
+        let avcC = messageBody.subdata(in: FlvTagType.video.headerSize ..< messageBody.count)
+        let videoConfig = MpegTsVideoConfigAvc(avcC: avcC)
+        let status = videoConfig.makeFormatDescription(&formatDescription)
         if status == noErr {
             setupVideoEncoderIfNeeded(formatDescription: formatDescription)
         } else {
@@ -521,9 +521,9 @@ class RtmpServerChunkStream {
         guard checkMessageBodyBigEnough(client: client, minimumSize: FlvTagType.video.headerSize) else {
             return
         }
-        var config = MpegTsVideoConfigHevc()
-        config.data = messageBody.subdata(in: FlvTagType.video.headerSize ..< messageBody.count)
-        let status = config.makeFormatDescription(&formatDescription)
+        let hvcC = messageBody.subdata(in: FlvTagType.video.headerSize ..< messageBody.count)
+        let videoConfig = MpegTsVideoConfigHevc(hvcC: hvcC)
+        let status = videoConfig.makeFormatDescription(&formatDescription)
         if status == noErr {
             setupVideoEncoderIfNeeded(formatDescription: formatDescription)
         } else {
