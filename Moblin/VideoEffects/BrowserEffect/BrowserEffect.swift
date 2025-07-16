@@ -245,7 +245,7 @@ final class BrowserEffect: VideoEffect {
         guard let newImage else {
             return nil
         }
-        guard x != .nan, y != .nan else {
+        guard !x.isNaN, !y.isNaN else {
             return nil
         }
         return CIImage(image: newImage)
