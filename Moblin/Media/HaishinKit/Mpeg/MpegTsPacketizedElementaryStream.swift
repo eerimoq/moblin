@@ -146,8 +146,7 @@ struct MpegTsPacketizedElementaryStream {
         decodeTimeStamp: CMTime,
         config: MpegTsVideoConfigAvc?,
         streamId: UInt8,
-        timecode: Date?,
-        frame: UInt32
+        timecode: MpegTsTimecode?
     ) {
         if let config {
             // 3 NAL units. SEI(9), SPS(7) and PPS(8)
@@ -163,7 +162,8 @@ struct MpegTsPacketizedElementaryStream {
         }
         if let timecode, false {
             data += nalUnitStartCode
-            let sei = AvcNalUnitSei(payload: .pictureTiming(AvcSeiPayloadPictureTiming(clock: timecode, frame: frame)))
+            let pictureTiming = AvcSeiPayloadPictureTiming(clock: timecode.clock, frame: timecode.frame)
+            let sei = AvcNalUnitSei(payload: .pictureTiming(pictureTiming))
             data += AvcNalUnit(type: .sei, payload: .sei(sei)).encode()
         }
         var payload = Data(bytesNoCopy: bytes, count: count, deallocator: .none)
@@ -185,8 +185,7 @@ struct MpegTsPacketizedElementaryStream {
         decodeTimeStamp: CMTime,
         config: MpegTsVideoConfigHevc?,
         streamId: UInt8,
-        timecode: Date?,
-        frame: UInt32
+        timecode: MpegTsTimecode?
     ) {
         if let config {
             if let nal = config.array[.vps] {
@@ -204,7 +203,8 @@ struct MpegTsPacketizedElementaryStream {
         }
         if let timecode {
             data += nalUnitStartCode
-            let sei = HevcNalUnitSei(payload: .timeCode(HevcSeiPayloadTimeCode(clock: timecode, frame: frame)))
+            let timecode = HevcSeiPayloadTimeCode(clock: timecode.clock, frame: timecode.frame)
+            let sei = HevcNalUnitSei(payload: .timeCode(timecode))
             data += HevcNalUnit(type: .prefixSeiNut, temporalIdPlusOne: 1, payload: .prefixSeiNut(sei)).encode()
         }
         var payload = Data(bytesNoCopy: bytes, count: count, deallocator: .none)

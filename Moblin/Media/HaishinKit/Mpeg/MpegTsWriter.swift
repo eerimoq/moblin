@@ -8,6 +8,11 @@ protocol MpegTsWriterDelegate: AnyObject {
     func writer(_ writer: MpegTsWriter, doOutputPointer pointer: UnsafeRawBufferPointer, count: Int)
 }
 
+struct MpegTsTimecode {
+    let clock: Date
+    let frame: UInt32
+}
+
 /// The MpegTsWriter class represents writes MPEG-2 transport stream data.
 class MpegTsWriter {
     static let programAssociationTablePacketId: UInt16 = 0
@@ -91,16 +96,12 @@ class MpegTsWriter {
                         _ randomAccessIndicator: Bool,
                         _ packetizedElementaryStream: MpegTsPacketizedElementaryStream) -> Data
     {
-        let packets = split(packetId, packetizedElementaryStream, presentationTimeStamp)
-        packets[0].adaptationField!.randomAccessIndicator = randomAccessIndicator
+        let programClockReference = updateProgramClockReference(packetId, presentationTimeStamp)
+        let packets = packetizedElementaryStream.arrayOfPackets(packetId, programClockReference)
+        packets[0].adaptationField?.randomAccessIndicator = randomAccessIndicator
         rotateFileHandle(presentationTimeStamp)
-        let count = packets.count * MpegTsPacket.size
-        var data = Data(
-            bytesNoCopy: UnsafeMutableRawPointer.allocate(byteCount: count, alignment: 8),
-            count: count,
-            deallocator: .custom { (pointer: UnsafeMutableRawPointer, _: Int) in pointer.deallocate() }
-        )
-        data.withUnsafeMutableBytes { (pointer: UnsafeMutableRawBufferPointer) in
+        var packetsBuffer = createPacketsBuffer(packetsCount: packets.count)
+        packetsBuffer.withUnsafeMutableBytes { (pointer: UnsafeMutableRawBufferPointer) in
             var pointer = pointer
             for var packet in packets {
                 packet.continuityCounter = nextContinuityCounter(packetId: packetId)
@@ -118,7 +119,16 @@ class MpegTsWriter {
                 pointer = UnsafeMutableRawBufferPointer(rebasing: pointer[packet.payload.count...])
             }
         }
-        return data
+        return packetsBuffer
+    }
+
+    private func createPacketsBuffer(packetsCount: Int) -> Data {
+        let packetsBufferSize = packetsCount * MpegTsPacket.size
+        return Data(
+            bytesNoCopy: UnsafeMutableRawPointer.allocate(byteCount: packetsBufferSize, alignment: 8),
+            count: packetsBufferSize,
+            deallocator: .custom { (pointer: UnsafeMutableRawPointer, _: Int) in pointer.deallocate() }
+        )
     }
 
     private func nextContinuityCounter(packetId: UInt16) -> UInt8 {
@@ -250,10 +260,7 @@ class MpegTsWriter {
         writeProgram()
     }
 
-    private func split(_ packetId: UInt16,
-                       _ packetizedElementaryStream: MpegTsPacketizedElementaryStream,
-                       _ timestamp: CMTime) -> [MpegTsPacket]
-    {
+    private func updateProgramClockReference(_ packetId: UInt16, _ timestamp: CMTime) -> UInt64? {
         var programClockReference: UInt64?
         if packetId == MpegTsWriter.audioPacketId {
             if timestamp.seconds - (programClockReferenceTimestamp?.seconds ?? 0) >= 0.02 {
@@ -261,7 +268,7 @@ class MpegTsWriter {
                 programClockReferenceTimestamp = timestamp
             }
         }
-        return packetizedElementaryStream.arrayOfPackets(packetId, programClockReference)
+        return programClockReference
     }
 
     private func addStreamSpecificDatasToProgramMappingTable(packetId: UInt16, data: ElementaryStreamSpecificData) {
@@ -365,11 +372,10 @@ extension MpegTsWriter: VideoEncoderDelegate {
         }
         let decodeTimeStamp = CMTimeSubtract(sampleBuffer.decodeTimeStamp, decodeTimeStampOffset)
         let randomAccessIndicator = sampleBuffer.isSync
-        let packetizedElementaryStream: MpegTsPacketizedElementaryStream
         let bytes = UnsafeMutableRawPointer(buffer).bindMemory(to: UInt8.self, capacity: length)
         updateTimecodeReference()
-        let (timecode, frame) = makeTimecode(presentationTimeStamp: sampleBuffer.presentationTimeStamp.seconds,
-                                             decodeTimeStamp: decodeTimeStamp.seconds)
+        let timecode = makeTimecode(sampleBuffer.presentationTimeStamp, decodeTimeStamp)
+        let packetizedElementaryStream: MpegTsPacketizedElementaryStream
         switch videoConfig {
         case let .avc(videoConfig):
             packetizedElementaryStream = MpegTsPacketizedElementaryStream(
@@ -379,8 +385,7 @@ extension MpegTsWriter: VideoEncoderDelegate {
                 decodeTimeStamp: decodeTimeStamp,
                 config: randomAccessIndicator ? videoConfig : nil,
                 streamId: MpegTsWriter.videoStreamId,
-                timecode: timecode,
-                frame: frame
+                timecode: timecode
             )
         case let .hevc(videoConfig):
             packetizedElementaryStream = MpegTsPacketizedElementaryStream(
@@ -390,8 +395,7 @@ extension MpegTsWriter: VideoEncoderDelegate {
                 decodeTimeStamp: decodeTimeStamp,
                 config: randomAccessIndicator ? videoConfig : nil,
                 streamId: MpegTsWriter.videoStreamId,
-                timecode: timecode,
-                frame: frame
+                timecode: timecode
             )
         }
         writeVideo(data: encode(
@@ -418,11 +422,12 @@ extension MpegTsWriter: VideoEncoderDelegate {
         """)
     }
 
-    private func makeTimecode(presentationTimeStamp: Double, decodeTimeStamp: Double) -> (Date?, UInt32) {
+    private func makeTimecode(_ presentationTimeStamp: CMTime, _ decodeTimeStamp: CMTime) -> MpegTsTimecode? {
         guard timecodesEnabled, let presentationTimeStampBase else {
-            return (nil, 0)
+            return nil
         }
-        var decodeTimeStamp = decodeTimeStamp
+        let presentationTimeStamp = presentationTimeStamp.seconds
+        var decodeTimeStamp = decodeTimeStamp.seconds
         if decodeTimeStamp.isNaN {
             decodeTimeStamp = presentationTimeStamp
         }
@@ -440,6 +445,6 @@ extension MpegTsWriter: VideoEncoderDelegate {
             offsetingFrames.toggle()
         }
         // logger.info("timecode: now: \(now), frame: \(frame)")
-        return (now, UInt32(frame))
+        return MpegTsTimecode(clock: now, frame: UInt32(frame))
     }
 }
