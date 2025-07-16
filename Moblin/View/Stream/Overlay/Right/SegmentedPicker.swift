@@ -39,7 +39,7 @@ struct SegmentedPicker<T: Equatable, Content: View>: View {
         }
     }
 
-    public var body: some View {
+    var body: some View {
         HStack(spacing: 0) {
             ForEach(self.items.indices, id: \.self) { index in
                 ZStack {

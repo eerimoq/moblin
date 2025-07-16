@@ -568,7 +568,7 @@ class Model: NSObject, ObservableObject {
             updatePadelScoreboard()
             return
         }
-        if score.home == 0 && score.away == 0 && padel.scoreboard.score.count > 1 {
+        if score.home == 0, score.away == 0, padel.scoreboard.score.count > 1 {
             padel.scoreboard.score.removeLast()
         }
         let index = padel.scoreboard.score.count - 1

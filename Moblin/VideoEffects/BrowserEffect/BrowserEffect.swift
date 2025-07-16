@@ -245,7 +245,7 @@ final class BrowserEffect: VideoEffect {
         guard let newImage else {
             return nil
         }
-        guard x != .nan && y != .nan else {
+        guard x != .nan, y != .nan else {
             return nil
         }
         return CIImage(image: newImage)
@@ -269,7 +269,7 @@ final class BrowserEffect: VideoEffect {
                 translationX: crop.position.x,
                 y: videoSize.height - crop.crop.height - crop.position.y
             ))
-            if i == 0 && !defaultEnabled {
+            if i == 0, !defaultEnabled {
                 overlay = cropped
             } else {
                 let filter = CIFilter.sourceOverCompositing()

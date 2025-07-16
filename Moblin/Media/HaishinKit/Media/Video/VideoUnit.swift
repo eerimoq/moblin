@@ -820,7 +820,7 @@ final class VideoUnit: NSObject {
                                        _ info: VideoEffectInfo) -> (CVImageBuffer?, CMSampleBuffer?)
     {
         var image = CIImage(cvPixelBuffer: imageBuffer)
-        if videoOrientation != .portrait && imageBuffer.isPortrait() {
+        if videoOrientation != .portrait, imageBuffer.isPortrait() {
             image = image.oriented(.left)
         }
         image = rotateCoreImage(image, rotation)

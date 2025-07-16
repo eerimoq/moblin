@@ -94,7 +94,7 @@ class AdaptiveBitrateSrtBela: AdaptiveBitrate {
 
     private func updateRttMin(rtt: Double) {
         rttMin *= 1.001
-        if rtt != 100 && rtt < rttMin && rttAvgDelta < 1.0 {
+        if rtt != 100, rtt < rttMin, rttAvgDelta < 1.0 {
             rttMin = rtt
         }
     }
@@ -139,7 +139,7 @@ class AdaptiveBitrateSrtBela: AdaptiveBitrate {
         let sendBufferSizeTh1 = max(50, sendBufferSizeAvg + sendBufferSizeJitter * 2.5)
         let rttThMax = rttAvg + max(rttJitter * 4, rttAvg * 15 / 100)
         let rttThMin = rttMin + max(1, rttJitter * 2)
-        if bitrate > settings.minimumBitrate && (rtt >= (srtLatency / 3) || sendBufferSize > sendBufferSizeTh3) {
+        if bitrate > settings.minimumBitrate, rtt >= (srtLatency / 3) || sendBufferSize > sendBufferSizeTh3 {
             bitrate = settings.minimumBitrate
             nextBitrateDecrTime = currentTime.advanced(by: bitrateDecrInterval)
             logAdaptiveAcion(
@@ -148,7 +148,7 @@ class AdaptiveBitrateSrtBela: AdaptiveBitrate {
                 or bs: \(sendBufferSize) > bs_th3: \(formatTwoDecimals(sendBufferSizeTh3))
                 """
             )
-        } else if currentTime > nextBitrateDecrTime && (rtt > (srtLatency / 5) || sendBufferSize > sendBufferSizeTh2) {
+        } else if currentTime > nextBitrateDecrTime, rtt > (srtLatency / 5) || sendBufferSize > sendBufferSizeTh2 {
             bitrate -= (bitrateDecrMin + bitrate / bitrateDecrScale)
             nextBitrateDecrTime = currentTime.advanced(by: bitrateDecrFastInterval)
             logAdaptiveAcion(
@@ -158,7 +158,7 @@ class AdaptiveBitrateSrtBela: AdaptiveBitrate {
                 \(formatTwoDecimals(sendBufferSizeTh2))
                 """
             )
-        } else if currentTime > nextBitrateDecrTime && (rtt > rttThMax || sendBufferSize > sendBufferSizeTh1) {
+        } else if currentTime > nextBitrateDecrTime, rtt > rttThMax || sendBufferSize > sendBufferSizeTh1 {
             bitrate -= bitrateDecrMin
             nextBitrateDecrTime = currentTime.advanced(by: bitrateDecrInterval)
             logAdaptiveAcion(
@@ -168,7 +168,7 @@ class AdaptiveBitrateSrtBela: AdaptiveBitrate {
                 \(formatTwoDecimals(sendBufferSizeTh1))
                 """
             )
-        } else if currentTime > nextBitrateIncrTime && rtt < rttThMin && rttAvgDelta < 0.01 {
+        } else if currentTime > nextBitrateIncrTime, rtt < rttThMin, rttAvgDelta < 0.01 {
             bitrate += bitrateIncrMin + bitrate / bitrateIncrScale
             nextBitrateIncrTime = currentTime.advanced(by: bitrateIncrInterval)
             // logAdaptiveAcion(actionTaken: """

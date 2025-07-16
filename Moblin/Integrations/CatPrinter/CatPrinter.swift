@@ -495,7 +495,7 @@ extension CatPrinter: CBPeripheralDelegate {
                 break
             }
         }
-        if printCharacteristic != nil && notifyCharacteristic != nil && dataCharacteristic != nil {
+        if printCharacteristic != nil, notifyCharacteristic != nil, dataCharacteristic != nil {
             setState(state: .connected)
             tryPrintNext()
         }

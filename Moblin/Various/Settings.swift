@@ -13,7 +13,7 @@ enum SettingsStreamCodec: String, Codable, CaseIterable {
     case h265hevc = "H.265/HEVC"
     case h264avc = "H.264/AVC"
 
-    public init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         self = try SettingsStreamCodec(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
             .h264avc
     }
@@ -40,7 +40,7 @@ enum SettingsStreamResolution: String, Codable, CaseIterable {
     case r640x360 = "640x360"
     case r426x240 = "426x240"
 
-    public init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         self = try SettingsStreamResolution(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
             .r1920x1080
     }
@@ -103,7 +103,7 @@ enum SettingsStreamProtocol: String, Codable {
     case rist = "RIST"
     case irl = "IRL"
 
-    public init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         self = try SettingsStreamProtocol(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
             .rtmp
     }
@@ -153,7 +153,7 @@ enum SettingsStreamSrtAdaptiveBitrateAlgorithm: Codable, CaseIterable {
     case slowIrl
     case customIrl
 
-    public init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         if container.contains(CodingKeys.belabox) {
             self = .belabox
@@ -298,7 +298,7 @@ enum SettingsCaptureSessionPreset: String, Codable, CaseIterable {
     case iFrame1280x720
     case cif352x288
 
-    public init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         self = try SettingsCaptureSessionPreset(rawValue: decoder.singleValueContainer()
             .decode(RawValue.self)) ?? .hd1920x1080
     }
@@ -918,7 +918,7 @@ enum SettingsSceneCameraPosition: String, Codable, CaseIterable {
     case backWideDualLowEnergy = "Back wide dual"
     case none = "None"
 
-    public init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         self = try SettingsSceneCameraPosition(rawValue: decoder.singleValueContainer()
             .decode(RawValue.self)) ?? .back
     }
@@ -1198,7 +1198,7 @@ enum SettingsFontDesign: String, Codable, CaseIterable {
     case rounded = "Rounded"
     case monospaced = "Monospaced"
 
-    public init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         self = try SettingsFontDesign(rawValue: decoder.singleValueContainer()
             .decode(RawValue.self)) ?? .default
     }
@@ -1235,7 +1235,7 @@ enum SettingsFontWeight: String, Codable, CaseIterable {
     case light = "Light"
     case bold = "Bold"
 
-    public init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         self = try SettingsFontWeight(rawValue: decoder.singleValueContainer()
             .decode(RawValue.self)) ?? .regular
     }
@@ -1267,7 +1267,7 @@ enum SettingsHorizontalAlignment: String, Codable, CaseIterable {
     case leading = "Leading"
     case trailing = "Trailing"
 
-    public init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         self = try SettingsHorizontalAlignment(rawValue: decoder.singleValueContainer()
             .decode(RawValue.self)) ?? .leading
     }
@@ -1295,7 +1295,7 @@ enum SettingsVerticalAlignment: String, Codable, CaseIterable {
     case top = "Top"
     case bottom = "Bottom"
 
-    public init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         self = try SettingsVerticalAlignment(rawValue: decoder.singleValueContainer()
             .decode(RawValue.self)) ?? .top
     }
@@ -1579,7 +1579,7 @@ enum SettingsWidgetAlertPositionType: String, Codable, CaseIterable {
     case scene = "Scene"
     case face = "Face"
 
-    public init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         self = try SettingsWidgetAlertPositionType(rawValue: decoder.singleValueContainer()
             .decode(RawValue.self)) ?? .scene
     }
@@ -1645,7 +1645,7 @@ enum SettingsWidgetAlertsCheerBitsAlertOperator: String, Codable, CaseIterable {
     case equal = "="
     case greaterEqual = ">="
 
-    public init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         self = try SettingsWidgetAlertsCheerBitsAlertOperator(rawValue: decoder.singleValueContainer()
             .decode(RawValue.self)) ??
             .equal
@@ -1702,7 +1702,7 @@ enum SettingsWidgetAlertsChatBotCommandImageType: String, Codable, CaseIterable 
     case file = "File"
     case imagePlayground = "Image Playground"
 
-    public init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         self = try SettingsWidgetAlertsChatBotCommandImageType(rawValue: decoder.singleValueContainer()
             .decode(RawValue.self)) ??
             .file
@@ -1995,7 +1995,7 @@ class SettingsWidgetVideoSource: Codable, ObservableObject {
 enum SettingsWidgetScoreboardType: String, Codable, CaseIterable {
     case padel = "Padel"
 
-    public init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         self = try SettingsWidgetScoreboardType(rawValue: decoder.singleValueContainer()
             .decode(RawValue.self)) ??
             .padel
@@ -2023,7 +2023,7 @@ enum SettingsWidgetPadelScoreboardGameType: String, Codable, CaseIterable {
     case doubles = "Double"
     case singles = "Single"
 
-    public init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         self = try SettingsWidgetPadelScoreboardGameType(rawValue: decoder.singleValueContainer()
             .decode(RawValue.self)) ??
             .doubles
@@ -2063,7 +2063,7 @@ enum SettingsWidgetVideoEffectType: String, Codable, CaseIterable {
     case noiseReduction = "Noise reduction"
     case pixellate = "Pixellate"
 
-    public init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         self = try SettingsWidgetVideoEffectType(rawValue: decoder.singleValueContainer()
             .decode(RawValue.self)) ?? .movie
     }
@@ -2084,7 +2084,7 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
     case vTuber = "VTuber"
     case pngTuber = "PNGTuber"
 
-    public init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         self = try SettingsWidgetType(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
             .text
     }
@@ -2131,7 +2131,7 @@ enum SettingsVideoEffectType: String, Codable, CaseIterable {
     case removeBackground
     case shape
 
-    public init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         do {
             self = try SettingsVideoEffectType(rawValue: decoder.singleValueContainer()
                 .decode(RawValue.self)) ?? .grayScale
@@ -2682,7 +2682,7 @@ enum SettingsQuickButtonType: String, Codable, CaseIterable {
     case autoSceneSwitcher = "Auto scene switcher"
     case pauseTts = "Pause TTS"
 
-    public init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         var value = try decoder.singleValueContainer().decode(RawValue.self)
         if value == "Pause chat" {
             value = "Chat"
@@ -2765,7 +2765,7 @@ enum SettingsColorLutType: String, Codable {
     case disk
     case diskCube
 
-    public init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         do {
             self = try SettingsColorLutType(rawValue: decoder.singleValueContainer()
                 .decode(RawValue.self)) ?? .bundled
@@ -2802,7 +2802,7 @@ enum SettingsColorSpace: String, Codable, CaseIterable {
     case hlgBt2020 = "HLG BT2020"
     case appleLog = "Apple Log"
 
-    public init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         self = try SettingsColorSpace(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ?? .srgb
     }
 }
@@ -3039,7 +3039,7 @@ enum SettingsVideoStabilizationMode: String, Codable, CaseIterable {
     case cinematic = "Cinematic"
     case cinematicExtendedEnhanced = "Cinematic extended enhanced"
 
-    public init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         self = try SettingsVideoStabilizationMode(rawValue: decoder.singleValueContainer()
             .decode(RawValue.self)) ?? .off
     }
@@ -3389,7 +3389,7 @@ enum SettingsMic: String, Codable, CaseIterable {
     case back = "Back"
     case top = "Top"
 
-    public init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         self = try SettingsMic(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
             getDefaultMic()
     }
@@ -3511,7 +3511,7 @@ enum SettingsLogLevel: String, Codable, CaseIterable {
     case info = "Info"
     case debug = "Debug"
 
-    public init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         self = try SettingsLogLevel(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ?? .error
     }
 }
@@ -3622,7 +3622,7 @@ enum SettingsDnsLookupStrategy: String, Codable, CaseIterable {
     case ipv6 = "IPv6"
     case ipv4AndIpv6 = "IPv4 and IPv6"
 
-    public init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         self = try SettingsDnsLookupStrategy(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
             .system
     }
@@ -3633,7 +3633,7 @@ let dnsLookupStrategies = SettingsDnsLookupStrategy.allCases.map { $0.rawValue }
 enum SettingsSelfieStickButtonFunction: String, Codable, CaseIterable {
     case switchScene
 
-    public init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         do {
             self = try SettingsSelfieStickButtonFunction(rawValue: decoder.singleValueContainer()
                 .decode(RawValue.self)) ?? .switchScene
@@ -4099,7 +4099,7 @@ enum SettingsDjiDeviceUrlType: String, Codable, CaseIterable {
     case server = "Server"
     case custom = "Custom"
 
-    public init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         self = try SettingsDjiDeviceUrlType(rawValue: decoder.singleValueContainer()
             .decode(RawValue.self)) ?? .server
     }
@@ -4121,7 +4121,7 @@ enum SettingsDjiDeviceImageStabilization: String, CaseIterable, Codable {
     case horizonBalancing
     case horizonSteady
 
-    public init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         self = try SettingsDjiDeviceImageStabilization(rawValue: decoder.singleValueContainer()
             .decode(RawValue.self)) ?? .rockSteady
     }
@@ -4147,7 +4147,7 @@ enum SettingsDjiDeviceResolution: String, CaseIterable, Codable {
     case r720p = "720p"
     case r480p = "480p"
 
-    public init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         self = try SettingsDjiDeviceResolution(rawValue: decoder.singleValueContainer()
             .decode(RawValue.self)) ?? .r1080p
     }
@@ -4160,7 +4160,7 @@ enum SettingsDjiDeviceModel: String, Codable {
     case osmoPocket3
     case unknown
 
-    public init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         self = try SettingsDjiDeviceModel(rawValue: decoder.singleValueContainer()
             .decode(RawValue.self)) ?? .unknown
     }
@@ -4291,7 +4291,7 @@ enum SettingsDjiGimbalDeviceModel: String, Codable {
     case osmoMobile7P
     case unknown
 
-    public init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         self = try SettingsDjiGimbalDeviceModel(rawValue: decoder.singleValueContainer()
             .decode(RawValue.self)) ?? .unknown
     }
@@ -4454,7 +4454,7 @@ enum SettingsReplaySpeed: String, Codable, CaseIterable {
     case oneHalf = "0.5x"
     case one = "1x"
 
-    public init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         self = try SettingsReplaySpeed(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
             .one
     }
@@ -4701,7 +4701,7 @@ enum SettingsGameControllerButtonFunction: String, Codable, CaseIterable {
     case instantReplay = "Instant replay"
     case pauseTts = "Pause TTS"
 
-    public init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         var value = try decoder.singleValueContainer().decode(RawValue.self)
         if value == "Pause chat" {
             value = "Interactive chat"
@@ -4907,7 +4907,7 @@ enum SettingsKeyboardKeyFunction: String, Codable, CaseIterable {
     case widget = "Widget"
     case instantReplay = "Instant replay"
 
-    public init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         self = try SettingsKeyboardKeyFunction(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
             .unused
     }
@@ -5171,7 +5171,7 @@ enum SettingsSceneSwitchTransition: String, Codable, CaseIterable {
     case freeze = "Freeze"
     case blurAndZoom = "Blur & zoom"
 
-    public init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         self = try SettingsSceneSwitchTransition(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
             .blur
     }
@@ -5205,7 +5205,7 @@ enum SettingsExternalDisplayContent: String, Codable, CaseIterable {
     case chat = "Chat"
     case mirror = "Mirror"
 
-    public init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         self = try SettingsExternalDisplayContent(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
             .stream
     }

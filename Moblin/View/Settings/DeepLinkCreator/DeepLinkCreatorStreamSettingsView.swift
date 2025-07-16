@@ -32,7 +32,7 @@ private struct DeepLinkCreatorStreamVideoView: View {
         guard let interval = Int32(value) else {
             return
         }
-        guard interval >= 0 && interval <= 10 else {
+        guard interval >= 0, interval <= 10 else {
             return
         }
         video.maxKeyFrameInterval = interval

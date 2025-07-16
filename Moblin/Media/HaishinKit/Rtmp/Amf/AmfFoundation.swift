@@ -74,13 +74,13 @@ extension AsArray: ExpressibleByArrayLiteral {
 }
 
 extension AsArray: CustomDebugStringConvertible {
-    public var debugDescription: String {
+    var debugDescription: String {
         data.description
     }
 }
 
 extension AsArray: Equatable {
-    public static func == (lhs: AsArray, rhs: AsArray) -> Bool {
+    static func == (lhs: AsArray, rhs: AsArray) -> Bool {
         (lhs.data.description == rhs.data.description) && (lhs.dict.description == rhs.dict.description)
     }
 }
