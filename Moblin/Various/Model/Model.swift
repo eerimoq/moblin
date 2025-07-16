@@ -2439,7 +2439,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func getIgnoreFramesAfterAttachSeconds() -> Double {
-        return Double(database.debug.cameraSwitchRemoveBlackish)
+        return Double(database.debug.cameraSwitchRemoveBlackish) + database.debug.builtinAudioAndVideoDelay
     }
 
     private func getIgnoreFramesAfterAttachSecondsReplaceCamera() -> Double {
