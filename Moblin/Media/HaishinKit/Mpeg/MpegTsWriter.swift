@@ -41,6 +41,7 @@ class MpegTsWriter {
     private var presentationTimeStampBase: Double?
     private var previousDecodeTimeStamp: Double?
     private var estimatedFrameDuration: Double = 0.033
+    private var offsetingFrames: Bool = false
 
     init(timecodesEnabled: Bool) {
         self.timecodesEnabled = timecodesEnabled
@@ -433,11 +434,15 @@ extension MpegTsWriter: VideoEncoderDelegate {
             estimatedFrameDuration = 0.7 * estimatedFrameDuration + 0.3 * (decodeTimeStamp - previousDecodeTimeStamp)
         }
         previousDecodeTimeStamp = decodeTimeStamp
-        let now = Date(timeIntervalSince1970: presentationTimeStampBase + presentationTimeStamp)
-        // To do: MAke frame calculation more robust when the offset is close to a multiple of the
-        // estimated frame rate.
-        let offsetWithinSecond = (now.timeIntervalSince1970 * 1000).truncatingRemainder(dividingBy: 1000) / 1000
+        let now = Date(timeIntervalSince1970: presentationTimeStampBase
+            + presentationTimeStamp
+            + (offsetingFrames ? estimatedFrameDuration / 2 : 0))
+        let offsetWithinSecond = now.timeIntervalSince1970.truncatingRemainder(dividingBy: 1)
         let frame = offsetWithinSecond / estimatedFrameDuration
+        let offsetFromFrame = offsetWithinSecond - frame.rounded(.down) * estimatedFrameDuration
+        if offsetFromFrame < estimatedFrameDuration / 6 || offsetFromFrame > estimatedFrameDuration * 5 / 6 {
+            offsetingFrames.toggle()
+        }
         // logger.info("timecode: now: \(now), frame: \(frame)")
         return (now, UInt32(frame))
     }
