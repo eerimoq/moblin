@@ -414,14 +414,14 @@ class RtmpStream {
         var buffer: Data
         switch format {
         case .h264:
-            guard let avcC = MpegTsVideoConfigAvc.getData(formatDescription) else {
+            guard let avcC = MpegTsVideoConfigAvc.getAvcC(formatDescription) else {
                 return
             }
             buffer = makeAvcVideoTagHeader(.key, .seq)
             buffer += Data([0, 0, 0])
             buffer += avcC
         case .hevc:
-            guard let hvcC = MpegTsVideoConfigHevc.getData(formatDescription) else {
+            guard let hvcC = MpegTsVideoConfigHevc.getHvcC(formatDescription) else {
                 return
             }
             buffer = makeHevcExtendedTagHeader(.key, .sequenceStart)

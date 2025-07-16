@@ -4,7 +4,7 @@ import AVFoundation
  - seealso: ISO/IEC 14496-15 2010
  */
 struct MpegTsVideoConfigAvc {
-    static func getData(_ formatDescription: CMFormatDescription) -> Data? {
+    static func getAvcC(_ formatDescription: CMFormatDescription) -> Data? {
         if let atoms = formatDescription.atoms() {
             return atoms["avcC"] as? Data
         }
@@ -26,7 +26,7 @@ struct MpegTsVideoConfigAvc {
     }
 
     init?(formatDescription: CMFormatDescription) {
-        guard let data = Self.getData(formatDescription) else {
+        guard let data = Self.getAvcC(formatDescription) else {
             return nil
         }
         avcC = data
