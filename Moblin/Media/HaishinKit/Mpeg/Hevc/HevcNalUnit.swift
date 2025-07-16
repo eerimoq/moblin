@@ -33,7 +33,7 @@ struct HevcNalUnit: NalUnit {
             case .vps:
                 payload = try .vps(HevcNalUnitVps(reader: reader))
             case .sps:
-                payload = try .sps(HevcNalUnitSps(reader: reader, header: header))
+                payload = try .sps(HevcNalUnitSps(reader: reader))
             case .pps:
                 payload = try .pps(HevcNalUnitPps(reader: reader))
             case .prefixSeiNut:
@@ -42,7 +42,7 @@ struct HevcNalUnit: NalUnit {
                 payload = .unspec
             }
         } catch {
-            logger.info("xxx Failed to decode NAL unit with error: \(error)")
+            logger.info("Failed to decode NAL unit with error: \(error)")
             return nil
         }
     }

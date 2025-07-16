@@ -43,4 +43,8 @@ final class NalUnitWriter {
             writeBits(value, count: 8)
         }
     }
+
+    func writeRawBytes(_ data: Data) {
+        self.data += data
+    }
 }

@@ -21,6 +21,14 @@ final class NalUnitReader {
         return data.count * 8 - available()
     }
 
+    func readRawBytes() throws -> Data {
+        try checkOutOfData()
+        guard bitOffset == 7 else {
+            throw "Cannot read remaining bytes when not at byte boundary"
+        }
+        return data.advanced(by: byteOffset)
+    }
+
     func readBit() throws -> Bool {
         try checkOutOfData()
         let value = data[byteOffset].isBitSet(index: bitOffset)
