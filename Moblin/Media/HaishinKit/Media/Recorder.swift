@@ -313,7 +313,7 @@ class Recorder: NSObject {
         writer = AVAssetWriter(contentType: UTType(AVFileType.mp4.rawValue)!)
         writer?.shouldOptimizeForNetworkUse = true
         writer?.outputFileTypeProfile = .mpeg4AppleHLS
-        writer?.preferredOutputSegmentInterval = CMTime(seconds: 2, preferredTimescale: 1)
+        writer?.preferredOutputSegmentInterval = CMTime(seconds: 2)
         writer?.delegate = self
         writer?.initialSegmentStartTime = .zero
         setUrl(url: url)

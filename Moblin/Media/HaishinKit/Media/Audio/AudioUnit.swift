@@ -220,7 +220,7 @@ final class AudioUnit: NSObject {
         else {
             return nil
         }
-        let latency = CMTime(seconds: bufferedBuiltinAudio.latency, preferredTimescale: 1000)
+        let latency = CMTime(seconds: bufferedBuiltinAudio.latency)
         guard let sampleBuffer = sampleBuffer
             .replacePresentationTimeStamp(sampleBuffer.presentationTimeStamp + latency)
         else {

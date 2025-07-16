@@ -560,7 +560,7 @@ final class VideoUnit: NSObject {
         guard delta > .seconds(0.05) else {
             return
         }
-        let timeDelta = CMTime(seconds: delta.seconds, preferredTimescale: 1000)
+        let timeDelta = CMTime(seconds: delta.seconds)
         guard let sampleBuffer = CMSampleBuffer.create(latestSampleBuffer.imageBuffer!,
                                                        latestSampleBuffer.formatDescription!,
                                                        latestSampleBuffer.duration,
@@ -1732,7 +1732,7 @@ final class VideoUnit: NSObject {
             return nil
         }
         if bufferedVideo.latency > 0, var sampleBufferCopy = makeCopy(sampleBuffer: sampleBuffer) {
-            let latency = CMTime(seconds: bufferedVideo.latency, preferredTimescale: 1000)
+            let latency = CMTime(seconds: bufferedVideo.latency)
             sampleBufferCopy = sampleBufferCopy
                 .replacePresentationTimeStamp(sampleBufferCopy.presentationTimeStamp + latency) ?? sampleBufferCopy
             bufferedVideo.appendSampleBuffer(sampleBufferCopy)

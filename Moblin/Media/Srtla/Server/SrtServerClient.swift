@@ -401,7 +401,7 @@ class SrtServerClient {
 
     private func getBasePresentationTimeStamp() -> CMTime {
         if basePresentationTimeStamp == .invalid {
-            let latency = CMTime(seconds: srtServerClientLatency, preferredTimescale: 1000)
+            let latency = CMTime(seconds: srtServerClientLatency)
             basePresentationTimeStamp = currentPresentationTimeStamp() + latency
         }
         return basePresentationTimeStamp

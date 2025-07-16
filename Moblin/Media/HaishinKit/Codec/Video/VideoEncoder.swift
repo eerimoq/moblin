@@ -108,7 +108,7 @@ class VideoEncoder {
 
     private func makeDecodeTimeStampOffset(_ settings: VideoEncoderSettings) -> CMTime {
         if settings.allowFrameReordering {
-            return CMTime(seconds: 0.15, preferredTimescale: 1000)
+            return CMTime(seconds: 0.15)
         } else {
             return .zero
         }

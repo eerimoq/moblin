@@ -314,10 +314,7 @@ func createThumbnail(path: URL, offset: Double = 0) -> UIImage? {
         let asset = AVURLAsset(url: path, options: nil)
         let imgGenerator = AVAssetImageGenerator(asset: asset)
         imgGenerator.appliesPreferredTrackTransform = true
-        let cgImage = try imgGenerator.copyCGImage(
-            at: CMTime(seconds: offset, preferredTimescale: 1000),
-            actualTime: nil
-        )
+        let cgImage = try imgGenerator.copyCGImage(at: CMTime(seconds: offset), actualTime: nil)
         let thumbnail = UIImage(cgImage: cgImage)
         thumbnails[path] = thumbnail
         return thumbnail
@@ -712,5 +709,11 @@ func tryGetToastSubTitle(error: Error) -> String? {
         return error._nsError.localizedFailureReason
     } else {
         return nil
+    }
+}
+
+extension CMTime {
+    init(seconds: Double) {
+        self = CMTime(seconds: seconds, preferredTimescale: 1000)
     }
 }
