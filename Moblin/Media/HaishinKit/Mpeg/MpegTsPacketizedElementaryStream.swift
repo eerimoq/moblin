@@ -111,8 +111,8 @@ private struct OptionalHeader {
 }
 
 struct MpegTsPacketizedElementaryStream {
-    static let untilPacketLengthSize: Int = 6
-    static let startCode = Data([0x00, 0x00, 0x01])
+    private static let untilPacketLengthSize: Int = 6
+    private static let startCode = Data([0x00, 0x00, 0x01])
     private var startCode = MpegTsPacketizedElementaryStream.startCode
     private var streamId: UInt8 = 0
     private var packetLength: UInt16 = 0
