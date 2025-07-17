@@ -38,7 +38,7 @@ struct MpegTsVideoConfigHevc {
                 }
             }
         } catch {
-            logger.error("Failed to set hvcC")
+            logger.error("Failed to parse hvcC")
         }
     }
 

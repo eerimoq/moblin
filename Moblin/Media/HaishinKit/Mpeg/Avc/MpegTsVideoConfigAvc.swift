@@ -32,7 +32,7 @@ struct MpegTsVideoConfigAvc {
                 pictureParameterSet = try reader.readBytes(length)
             }
         } catch {
-            logger.error("Failed to set avcC")
+            logger.error("Failed to parse avcC")
         }
     }
 
