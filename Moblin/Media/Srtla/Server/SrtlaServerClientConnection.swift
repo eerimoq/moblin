@@ -11,6 +11,7 @@ protocol SrtlaServerClientConnectionDelegate: AnyObject {
 
 private let removeTimeout = 10.0
 private let ackPacketLength = srtControlTypeSize + 2 + 10 * 4
+private let connectionReceiveBatchSize = 100
 
 struct AckPacket {
     var data: Data
@@ -41,7 +42,7 @@ class SrtlaServerClientConnection {
 
     init(connection: NWConnection) {
         self.connection = connection
-        receivePacket()
+        receivePackets()
     }
 
     func stop() {
@@ -52,16 +53,23 @@ class SrtlaServerClientConnection {
         return latestReceivedTime.duration(to: now) < .seconds(removeTimeout)
     }
 
-    private func receivePacket() {
-        connection.receiveMessage { data, _, _, error in
-            if let data, !data.isEmpty {
-                self.handlePacketFromClient(packet: data)
+    private func receivePackets() {
+        connection.batch {
+            for index in 0 ..< connectionReceiveBatchSize {
+                connection.receiveMessage { data, _, _, error in
+                    if let data, !data.isEmpty {
+                        self.handlePacketFromClient(packet: data)
+                    }
+                    guard index == connectionReceiveBatchSize - 1 else {
+                        return
+                    }
+                    if let error {
+                        logger.info("srtla-server-client: Error \(error)")
+                        return
+                    }
+                    self.receivePackets()
+                }
             }
-            if let error {
-                logger.info("srtla-server-client: Error \(error)")
-                return
-            }
-            self.receivePacket()
         }
     }
 

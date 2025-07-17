@@ -5,6 +5,8 @@
 import Foundation
 import Network
 
+private let connectionReceiveBatchSize = 25
+
 private enum State {
     case idle
     case socketConnecting
@@ -141,7 +143,7 @@ class RemoteConnection {
         connection = NWConnection(host: destinationHost, port: destinationPort, using: params)
         connection!.stateUpdateHandler = handleStateUpdate(to:)
         connection!.start(queue: srtlaClientQueue)
-        receivePacket()
+        receivePackets()
         state = .socketConnecting
     }
 
@@ -244,16 +246,23 @@ class RemoteConnection {
         startInternal()
     }
 
-    private func receivePacket() {
-        connection?.receiveMessage { packet, _, _, error in
-            if let packet, !packet.isEmpty {
-                self.handlePacketFromClient(packet: packet)
+    private func receivePackets() {
+        connection?.batch {
+            for index in 0 ..< connectionReceiveBatchSize {
+                connection?.receiveMessage { packet, _, _, error in
+                    if let packet, !packet.isEmpty {
+                        self.handlePacketFromClient(packet: packet)
+                    }
+                    guard index == connectionReceiveBatchSize - 1 else {
+                        return
+                    }
+                    if let error {
+                        logger.warning("srtla: \(self.typeString): Receive \(error)")
+                        return
+                    }
+                    self.receivePackets()
+                }
             }
-            if let error {
-                logger.warning("srtla: \(self.typeString): Receive \(error)")
-                return
-            }
-            self.receivePacket()
         }
     }
 

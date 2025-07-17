@@ -6,6 +6,7 @@ import Foundation
 import Network
 
 private let clientRemoveTimeout = 10.0
+private let localSrtServerConnectionReceiveBatchSize = 25
 
 private class NakPacket {
     private var sns: [UInt32] = []
@@ -86,7 +87,7 @@ class SrtlaServerClient {
         )
         localSrtServerConnection!.stateUpdateHandler = handleStateUpdate(to:)
         localSrtServerConnection!.start(queue: srtlaServerQueue)
-        receivePacket()
+        receivePackets()
     }
 
     private func startPeriodicNakTimer() {
@@ -110,16 +111,23 @@ class SrtlaServerClient {
         logger.info("srtla-server-client: State change to \(state)")
     }
 
-    private func receivePacket() {
-        localSrtServerConnection?.receiveMessage { packet, _, _, error in
-            if let packet, !packet.isEmpty {
-                self.handlePacketFromLocalSrtServer(packet: packet)
+    private func receivePackets() {
+        localSrtServerConnection?.batch {
+            for index in 0 ..< localSrtServerConnectionReceiveBatchSize {
+                localSrtServerConnection?.receiveMessage { packet, _, _, error in
+                    if let packet, !packet.isEmpty {
+                        self.handlePacketFromLocalSrtServer(packet: packet)
+                    }
+                    guard index == localSrtServerConnectionReceiveBatchSize - 1 else {
+                        return
+                    }
+                    if let error {
+                        logger.warning("srtla-server-client: Receive \(error)")
+                        return
+                    }
+                    self.receivePackets()
+                }
             }
-            if let error {
-                logger.warning("srtla-server-client: Receive \(error)")
-                return
-            }
-            self.receivePacket()
         }
     }
 
