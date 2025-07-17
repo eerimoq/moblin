@@ -121,13 +121,13 @@ struct MpegTsPacketizedElementaryStream {
 
     init?(
         bytes: UnsafePointer<UInt8>,
-        count: UInt32,
+        count: Int,
         presentationTimeStamp: CMTime,
         config: MpegTsAudioConfig,
         streamId: UInt8
     ) {
-        data.append(contentsOf: config.makeHeader(Int(count)))
-        data.append(bytes, count: Int(count))
+        data.append(contentsOf: config.makeHeader(count))
+        data.append(bytes, count: count)
         optionalHeader.dataAlignmentIndicator = true
         optionalHeader.setTimestamp(presentationTimeStamp, .invalid)
         let length = data.count + optionalHeader.encode().count

@@ -304,7 +304,7 @@ extension MpegTsWriter: AudioCodecDelegate {
         }
         guard let packetizedElementaryStream = MpegTsPacketizedElementaryStream(
             bytes: audioBuffer.data.assumingMemoryBound(to: UInt8.self),
-            count: audioBuffer.byteLength,
+            count: Int(audioBuffer.byteLength),
             presentationTimeStamp: presentationTimeStamp,
             config: audioConfig,
             streamId: MpegTsWriter.audioStreamId
