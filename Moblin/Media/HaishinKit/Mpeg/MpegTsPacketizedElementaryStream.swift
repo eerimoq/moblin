@@ -150,10 +150,14 @@ struct MpegTsPacketizedElementaryStream {
     ) {
         if let config {
             data += AvcNalUnit.aud10WithStartCode
-            data += nalUnitStartCode
-            data += config.sequenceParameterSet
-            data += nalUnitStartCode
-            data += config.pictureParameterSet
+            if let sequenceParameterSet = config.sequenceParameterSet {
+                data += nalUnitStartCode
+                data += sequenceParameterSet
+            }
+            if let pictureParameterSet = config.pictureParameterSet {
+                data += nalUnitStartCode
+                data += pictureParameterSet
+            }
         } else {
             data += AvcNalUnit.aud30WithStartCode
         }

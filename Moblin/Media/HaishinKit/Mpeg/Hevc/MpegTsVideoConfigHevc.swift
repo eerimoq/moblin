@@ -59,7 +59,7 @@ struct MpegTsVideoConfigHevc {
         }
     }
 
-    var hvcC: Data {
+    private var hvcC: Data {
         get {
             let writer = ByteWriter()
             writer.writeUInt8(configurationVersion)

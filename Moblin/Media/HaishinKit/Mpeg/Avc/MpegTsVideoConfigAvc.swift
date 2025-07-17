@@ -18,8 +18,8 @@ struct MpegTsVideoConfigAvc {
     var avcLevelIndication: UInt8 = 0
     var lengthSizeMinusOneWithReserved: UInt8 = 0
     var numOfSequenceParameterSetsWithReserved: UInt8 = 0
-    var sequenceParameterSet = Data()
-    var pictureParameterSet = Data()
+    var sequenceParameterSet: Data?
+    var pictureParameterSet: Data?
 
     init(avcC: Data) {
         self.avcC = avcC
@@ -33,6 +33,9 @@ struct MpegTsVideoConfigAvc {
     }
 
     func makeFormatDescription(_ formatDescriptionOut: UnsafeMutablePointer<CMFormatDescription?>) -> OSStatus {
+        guard let pictureParameterSet, let sequenceParameterSet else {
+            return kCMFormatDescriptionBridgeError_InvalidParameter
+        }
         return pictureParameterSet.withUnsafeBytes { (ppsBuffer: UnsafeRawBufferPointer) -> OSStatus in
             guard let ppsBaseAddress = ppsBuffer.baseAddress else {
                 return kCMFormatDescriptionBridgeError_InvalidParameter
@@ -58,43 +61,45 @@ struct MpegTsVideoConfigAvc {
         }
     }
 
-    var avcC: Data {
+    private var avcC: Data {
         get {
-            let buffer = ByteWriter()
+            let writer = ByteWriter()
                 .writeUInt8(configurationVersion)
                 .writeUInt8(avcProfileIndication)
                 .writeUInt8(profileCompatibility)
                 .writeUInt8(avcLevelIndication)
                 .writeUInt8(lengthSizeMinusOneWithReserved)
                 .writeUInt8(numOfSequenceParameterSetsWithReserved)
-            buffer
-                .writeUInt16(UInt16(sequenceParameterSet.count))
-                .writeBytes(sequenceParameterSet)
-            buffer.writeUInt8(UInt8(pictureParameterSet.count))
-            buffer
-                .writeUInt16(UInt16(pictureParameterSet.count))
-                .writeBytes(pictureParameterSet)
-            return buffer.data
+            if let sequenceParameterSet {
+                writer.writeUInt16(UInt16(sequenceParameterSet.count))
+                writer.writeBytes(sequenceParameterSet)
+            }
+            if let pictureParameterSet {
+                writer.writeUInt8(UInt8(pictureParameterSet.count))
+                writer.writeUInt16(UInt16(pictureParameterSet.count))
+                writer.writeBytes(pictureParameterSet)
+            }
+            return writer.data
         }
         set {
-            let buffer = ByteReader(data: newValue)
+            let reader = ByteReader(data: newValue)
             do {
-                configurationVersion = try buffer.readUInt8()
-                avcProfileIndication = try buffer.readUInt8()
-                profileCompatibility = try buffer.readUInt8()
-                avcLevelIndication = try buffer.readUInt8()
-                lengthSizeMinusOneWithReserved = try buffer.readUInt8()
-                numOfSequenceParameterSetsWithReserved = try buffer.readUInt8()
+                configurationVersion = try reader.readUInt8()
+                avcProfileIndication = try reader.readUInt8()
+                profileCompatibility = try reader.readUInt8()
+                avcLevelIndication = try reader.readUInt8()
+                lengthSizeMinusOneWithReserved = try reader.readUInt8()
+                numOfSequenceParameterSetsWithReserved = try reader.readUInt8()
                 let numOfSequenceParameterSets = numOfSequenceParameterSetsWithReserved &
                     ~MpegTsVideoConfigAvc.reserveNumOfSequenceParameterSets
                 for _ in 0 ..< numOfSequenceParameterSets {
-                    let length = try Int(buffer.readUInt16())
-                    try sequenceParameterSet.append(buffer.readBytes(length))
+                    let length = try Int(reader.readUInt16())
+                    try sequenceParameterSet = reader.readBytes(length)
                 }
-                let numPictureParameterSets = try buffer.readUInt8()
+                let numPictureParameterSets = try reader.readUInt8()
                 for _ in 0 ..< numPictureParameterSets {
-                    let length = try Int(buffer.readUInt16())
-                    try pictureParameterSet.append(buffer.readBytes(length))
+                    let length = try Int(reader.readUInt16())
+                    try pictureParameterSet = reader.readBytes(length)
                 }
             } catch {
                 logger.error("Failed to set avcC")
