@@ -162,10 +162,10 @@ struct MpegTsAudioConfig: Equatable {
         channel = ChannelConfiguration(rawValue: UInt8(streamBasicDescription.mChannelsPerFrame))!
     }
 
-    func makeHeader(_ length: Int) -> [UInt8] {
+    func makeHeader(_ length: Int) -> Data {
         let size = 7
         let fullSize = size + length
-        var adts = [UInt8](repeating: 0x00, count: size)
+        var adts = Data(count: size)
         adts[0] = 0xFF
         adts[1] = 0xF9
         adts[2] = (type.rawValue - 1) << 6 | (frequency.rawValue << 2) | (channel.rawValue >> 2)

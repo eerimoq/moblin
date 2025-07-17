@@ -126,7 +126,7 @@ struct MpegTsPacketizedElementaryStream {
         config: MpegTsAudioConfig,
         streamId: UInt8
     ) {
-        data.append(contentsOf: config.makeHeader(count))
+        data += config.makeHeader(count)
         data.append(bytes, count: count)
         optionalHeader.dataAlignmentIndicator = true
         optionalHeader.setTimestamp(presentationTimeStamp, .invalid)
