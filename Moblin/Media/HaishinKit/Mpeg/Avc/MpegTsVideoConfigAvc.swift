@@ -34,12 +34,12 @@ struct MpegTsVideoConfigAvc {
                 ~MpegTsVideoConfigAvc.reserveNumOfSequenceParameterSets
             for _ in 0 ..< numOfSequenceParameterSets {
                 let length = try Int(reader.readUInt16())
-                try sequenceParameterSet = reader.readBytes(length)
+                sequenceParameterSet = try reader.readBytes(length)
             }
             let numPictureParameterSets = try reader.readUInt8()
             for _ in 0 ..< numPictureParameterSets {
                 let length = try Int(reader.readUInt16())
-                try pictureParameterSet = reader.readBytes(length)
+                pictureParameterSet = try reader.readBytes(length)
             }
         } catch {
             logger.error("Failed to set avcC")
