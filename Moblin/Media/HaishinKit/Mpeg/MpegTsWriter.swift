@@ -98,15 +98,16 @@ class MpegTsWriter {
             for var packet in packets {
                 packet.continuityCounter = nextContinuityCounter(packetId: packetId)
                 packet.encodeFixedHeaderInto(pointer: pointer)
-                pointer = UnsafeMutableRawBufferPointer(rebasing: pointer[4...])
+                pointer = UnsafeMutableRawBufferPointer(rebasing: pointer[MpegTsPacket.fixedHeaderSize...])
                 if let adaptationField = packet.adaptationField {
-                    adaptationField.encode().withUnsafeBytes { (adaptationPointer: UnsafeRawBufferPointer) in
-                        pointer.copyMemory(from: adaptationPointer)
+                    let encodedAdaptationField = adaptationField.encode()
+                    encodedAdaptationField.withUnsafeBytes {
+                        pointer.copyMemory(from: $0)
                     }
-                    pointer = UnsafeMutableRawBufferPointer(rebasing: pointer[adaptationField.encode().count...])
+                    pointer = UnsafeMutableRawBufferPointer(rebasing: pointer[encodedAdaptationField.count...])
                 }
-                packet.payload.withUnsafeBytes { (payloadPointer: UnsafeRawBufferPointer) in
-                    pointer.copyMemory(from: payloadPointer)
+                packet.payload.withUnsafeBytes {
+                    pointer.copyMemory(from: $0)
                 }
                 pointer = UnsafeMutableRawBufferPointer(rebasing: pointer[packet.payload.count...])
             }
