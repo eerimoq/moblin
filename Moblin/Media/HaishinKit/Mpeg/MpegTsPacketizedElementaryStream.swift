@@ -189,17 +189,17 @@ struct MpegTsPacketizedElementaryStream {
         timecode: MpegTsTimecode?
     ) {
         if let config {
-            if let nal = config.nalUnits[.vps] {
+            if let videoParameterSet = config.videoParameterSet {
                 data += nalUnitStartCode
-                data += nal
+                data += videoParameterSet
             }
-            if let nal = config.nalUnits[.sps] {
+            if let sequenceParameterSet = config.sequenceParameterSet {
                 data += nalUnitStartCode
-                data += nal
+                data += sequenceParameterSet
             }
-            if let nal = config.nalUnits[.pps] {
+            if let pictureParameterSet = config.pictureParameterSet {
                 data += nalUnitStartCode
-                data += nal
+                data += pictureParameterSet
             }
         }
         if let timecode {

@@ -10,32 +10,60 @@ struct MpegTsVideoConfigHevc {
     }
 
     var configurationVersion: UInt8 = 1
-    private(set) var nalUnits: [HevcNalUnitType: Data] = [:]
+    var videoParameterSet: Data?
+    var sequenceParameterSet: Data?
+    var pictureParameterSet: Data?
 
     init(hvcC: Data) {
-        self.hvcC = hvcC
+        let reader = ByteReader(data: hvcC)
+        do {
+            configurationVersion = try reader.readUInt8()
+            _ = try reader.readBytes(21)
+            let numberOfArrays = try reader.readUInt8()
+            for _ in 0 ..< numberOfArrays {
+                let header = try reader.readUInt8()
+                let nalUnitType = HevcNalUnitType(rawValue: header & 0b0011_1111) ?? .unspec
+                let numNalus = try reader.readUInt16()
+                for _ in 0 ..< numNalus {
+                    let length = try reader.readUInt16()
+                    let data = try reader.readBytes(Int(length))
+                    switch nalUnitType {
+                    case .vps:
+                        videoParameterSet = data
+                    case .sps:
+                        sequenceParameterSet = data
+                    case .pps:
+                        pictureParameterSet = data
+                    default:
+                        break
+                    }
+                }
+            }
+        } catch {
+            logger.error("Failed to set hvcC")
+        }
     }
 
     init?(formatDescription: CMFormatDescription) {
         guard let data = Self.getHvcC(formatDescription) else {
             return nil
         }
-        hvcC = data
+        self.init(hvcC: data)
     }
 
     func makeFormatDescription(_ formatDescriptionOut: UnsafeMutablePointer<CMFormatDescription?>) -> OSStatus {
-        guard let vps = nalUnits[.vps], let sps = nalUnits[.sps], let pps = nalUnits[.pps] else {
+        guard let videoParameterSet, let sequenceParameterSet, let pictureParameterSet else {
             return kCMFormatDescriptionBridgeError_InvalidParameter
         }
-        return vps.withUnsafeBytes { (vpsBuffer: UnsafeRawBufferPointer) -> OSStatus in
+        return videoParameterSet.withUnsafeBytes { (vpsBuffer: UnsafeRawBufferPointer) -> OSStatus in
             guard let vpsBaseAddress = vpsBuffer.baseAddress else {
                 return kCMFormatDescriptionBridgeError_InvalidParameter
             }
-            return sps.withUnsafeBytes { (spsBuffer: UnsafeRawBufferPointer) -> OSStatus in
+            return sequenceParameterSet.withUnsafeBytes { (spsBuffer: UnsafeRawBufferPointer) -> OSStatus in
                 guard let spsBaseAddress = spsBuffer.baseAddress else {
                     return kCMFormatDescriptionBridgeError_InvalidParameter
                 }
-                return pps.withUnsafeBytes { (ppsBuffer: UnsafeRawBufferPointer) -> OSStatus in
+                return pictureParameterSet.withUnsafeBytes { (ppsBuffer: UnsafeRawBufferPointer) -> OSStatus in
                     guard let ppsBaseAddress = ppsBuffer.baseAddress else {
                         return kCMFormatDescriptionBridgeError_InvalidParameter
                     }
@@ -55,33 +83,6 @@ struct MpegTsVideoConfigHevc {
                         formatDescriptionOut: formatDescriptionOut
                     )
                 }
-            }
-        }
-    }
-
-    private var hvcC: Data {
-        get {
-            let writer = ByteWriter()
-            writer.writeUInt8(configurationVersion)
-            return writer.data
-        }
-        set {
-            let reader = ByteReader(data: newValue)
-            do {
-                configurationVersion = try reader.readUInt8()
-                _ = try reader.readBytes(21)
-                let numberOfArrays = try reader.readUInt8()
-                for _ in 0 ..< numberOfArrays {
-                    let header = try reader.readUInt8()
-                    let nalUnitType = HevcNalUnitType(rawValue: header & 0b0011_1111) ?? .unspec
-                    let numNalus = try reader.readUInt16()
-                    for _ in 0 ..< numNalus {
-                        let length = try reader.readUInt16()
-                        try nalUnits[nalUnitType] = reader.readBytes(Int(length))
-                    }
-                }
-            } catch {
-                logger.error("Failed to set hvcC")
             }
         }
     }
