@@ -5,8 +5,6 @@
 import Foundation
 import Network
 
-var srtlaBatchSend = false
-
 private enum State {
     case idle
     case socketConnecting
@@ -287,11 +285,7 @@ class RemoteConnection {
     }
 
     private func sendDataPacketInternal(packet: Data) {
-        if srtlaBatchSend {
-            dataPacketsToSend.append(packet)
-        } else {
-            connection?.send(content: packet, completion: .idempotent)
-        }
+        dataPacketsToSend.append(packet)
     }
 
     func sendSrtPacket(packet: Data) {

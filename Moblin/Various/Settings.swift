@@ -3697,14 +3697,12 @@ class SettingsDebug: Codable, ObservableObject {
     @Published var reliableChat: Bool = false
     @Published var timecodesEnabled: Bool = false
     var dnsLookupStrategy: SettingsDnsLookupStrategy = .system
-    var srtlaBatchSend: Bool = false
     var cameraControlsEnabled: Bool = true
     @Published var dataRateLimitFactor: Float = 2.0
     @Published var bitrateDropFix: Bool = false
     @Published var relaxedBitrate: Bool = false
     var externalDisplayChat: Bool = false
     var videoSourceWidgetTrackFace: Bool = false
-    @Published var srtlaBatchSendEnabled: Bool = true
     var replay: Bool = false
     var recordSegmentLength: Double = 5.0
     @Published var builtinAudioAndVideoDelay: Double = 0.0
@@ -3772,14 +3770,12 @@ class SettingsDebug: Codable, ObservableObject {
         try container.encode(.reliableChat, reliableChat)
         try container.encode(.timecodesEnabled, timecodesEnabled)
         try container.encode(.dnsLookupStrategy, dnsLookupStrategy)
-        try container.encode(.srtlaBatchSend, srtlaBatchSend)
         try container.encode(.cameraControlsEnabled, cameraControlsEnabled)
         try container.encode(.dataRateLimitFactor, dataRateLimitFactor)
         try container.encode(.bitrateDropFix, bitrateDropFix)
         try container.encode(.relaxedBitrate, relaxedBitrate)
         try container.encode(.externalDisplayChat, externalDisplayChat)
         try container.encode(.videoSourceWidgetTrackFace, videoSourceWidgetTrackFace)
-        try container.encode(.srtlaBatchSendEnabled, srtlaBatchSendEnabled)
         try container.encode(.replay, replay)
         try container.encode(.recordSegmentLength, recordSegmentLength)
         try container.encode(.builtinAudioAndVideoDelay, builtinAudioAndVideoDelay)
@@ -3814,14 +3810,12 @@ class SettingsDebug: Codable, ObservableObject {
         reliableChat = container.decode(.reliableChat, Bool.self, false)
         timecodesEnabled = container.decode(.timecodesEnabled, Bool.self, false)
         dnsLookupStrategy = container.decode(.dnsLookupStrategy, SettingsDnsLookupStrategy.self, .system)
-        srtlaBatchSend = container.decode(.srtlaBatchSend, Bool.self, false)
         cameraControlsEnabled = container.decode(.cameraControlsEnabled, Bool.self, true)
         dataRateLimitFactor = container.decode(.dataRateLimitFactor, Float.self, 2.0)
         bitrateDropFix = container.decode(.bitrateDropFix, Bool.self, false)
         relaxedBitrate = container.decode(.relaxedBitrate, Bool.self, false)
         externalDisplayChat = container.decode(.externalDisplayChat, Bool.self, false)
         videoSourceWidgetTrackFace = container.decode(.videoSourceWidgetTrackFace, Bool.self, false)
-        srtlaBatchSendEnabled = container.decode(.srtlaBatchSendEnabled, Bool.self, true)
         replay = container.decode(.replay, Bool.self, false)
         recordSegmentLength = container.decode(.recordSegmentLength, Double.self, 5.0)
         builtinAudioAndVideoDelay = container.decode(.builtinAudioAndVideoDelay, Double.self, 0.0)

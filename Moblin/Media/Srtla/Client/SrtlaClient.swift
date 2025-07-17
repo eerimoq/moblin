@@ -388,14 +388,12 @@ class SrtlaClient: NSObject {
             return
         }
         connection.sendSrtPacket(packet: packet)
-        if srtlaBatchSend {
-            if isSrtDataPacket(packet: packet) {
-                let now = ContinuousClock.now
-                if latestFlushDataPacketsTime.duration(to: now) > .milliseconds(25) {
-                    latestFlushDataPacketsTime = now
-                    for remoteConnection in remoteConnections {
-                        remoteConnection.flushDataPackets()
-                    }
+        if isSrtDataPacket(packet: packet) {
+            let now = ContinuousClock.now
+            if latestFlushDataPacketsTime.duration(to: now) > .milliseconds(25) {
+                latestFlushDataPacketsTime = now
+                for remoteConnection in remoteConnections {
+                    remoteConnection.flushDataPackets()
                 }
             }
         }

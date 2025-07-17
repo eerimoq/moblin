@@ -778,7 +778,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         faxReceiver.delegate = self
         fixAlertMedias()
         setAllowVideoRangePixelFormat()
-        setSrtlaBatchSend()
         setExternalDisplayContent()
         portraitVideoOffsetFromTop = database.portraitVideoOffsetFromTop
         audioUnitRemoveWindNoise = database.debug.removeWindNoise
@@ -1064,10 +1063,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func setMetalPetalFilters() {
         ioVideoUnitMetalPetal = database.debug.metalPetalFilters
-    }
-
-    func setSrtlaBatchSend() {
-        srtlaBatchSend = database.debug.srtlaBatchSendEnabled
     }
 
     func setExternalDisplayContent() {

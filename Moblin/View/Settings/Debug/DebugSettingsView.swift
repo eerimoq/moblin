@@ -100,10 +100,6 @@ struct DebugSettingsView: View {
                         model.reloadNtpClient()
                         model.reloadSrtlaServer()
                     }
-                Toggle("SRT(LA) batch send", isOn: $debug.srtlaBatchSendEnabled)
-                    .onChange(of: debug.srtlaBatchSendEnabled) { _ in
-                        model.setSrtlaBatchSend()
-                    }
                 NavigationLink {
                     DjiGimbalDevicesSettingsView()
                 } label: {
