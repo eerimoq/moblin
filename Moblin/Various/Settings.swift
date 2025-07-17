@@ -3695,7 +3695,6 @@ class SettingsDebug: Codable, ObservableObject {
     var httpProxy: SettingsHttpProxy = .init()
     var tesla: SettingsTesla = .init()
     @Published var reliableChat: Bool = false
-    @Published var timecodesEnabled: Bool = false
     var dnsLookupStrategy: SettingsDnsLookupStrategy = .system
     var cameraControlsEnabled: Bool = true
     @Published var dataRateLimitFactor: Float = 2.0
@@ -3768,7 +3767,6 @@ class SettingsDebug: Codable, ObservableObject {
         try container.encode(.httpProxy, httpProxy)
         try container.encode(.tesla, tesla)
         try container.encode(.reliableChat, reliableChat)
-        try container.encode(.timecodesEnabled, timecodesEnabled)
         try container.encode(.dnsLookupStrategy, dnsLookupStrategy)
         try container.encode(.cameraControlsEnabled, cameraControlsEnabled)
         try container.encode(.dataRateLimitFactor, dataRateLimitFactor)
@@ -3808,7 +3806,6 @@ class SettingsDebug: Codable, ObservableObject {
         httpProxy = container.decode(.httpProxy, SettingsHttpProxy.self, .init())
         tesla = container.decode(.tesla, SettingsTesla.self, .init())
         reliableChat = container.decode(.reliableChat, Bool.self, false)
-        timecodesEnabled = container.decode(.timecodesEnabled, Bool.self, false)
         dnsLookupStrategy = container.decode(.dnsLookupStrategy, SettingsDnsLookupStrategy.self, .system)
         cameraControlsEnabled = container.decode(.cameraControlsEnabled, Bool.self, true)
         dataRateLimitFactor = container.decode(.dataRateLimitFactor, Float.self, 2.0)

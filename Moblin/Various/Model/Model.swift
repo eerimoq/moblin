@@ -1809,7 +1809,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func isTimecodesEnabled() -> Bool {
-        return database.debug.timecodesEnabled && stream.timecodesEnabled && !stream.ntpPoolAddress.isEmpty
+        return stream.timecodesEnabled && !stream.ntpPoolAddress.isEmpty
     }
 
     func setPixellateStrength(strength: Float) {

@@ -185,26 +185,25 @@ struct StreamVideoSettingsView: View {
                         """)
                     }
                 }
-                if database.debug.timecodesEnabled {
-                    Section {
-                        NavigationLink {
-                            StreamTimecodesSettingsView(stream: stream)
-                        } label: {
-                            Toggle("Timecodes", isOn: $stream.timecodesEnabled)
-                                .onChange(of: stream.timecodesEnabled) { _ in
-                                    if stream.enabled {
-                                        model.reloadNtpClient()
-                                        model.reloadSrtlaServer()
-                                    }
+                Section {
+                    NavigationLink {
+                        StreamTimecodesSettingsView(stream: stream)
+                    } label: {
+                        Toggle("Timecodes", isOn: $stream.timecodesEnabled)
+                            .onChange(of: stream.timecodesEnabled) { _ in
+                                if stream.enabled {
+                                    model.reloadNtpClient()
+                                    model.reloadSrtlaServer()
                                 }
-                                .disabled(stream.codec != .h265hevc || (stream.enabled && model.isLive))
-                        }
-                    } footer: {
-                        Text("""
-                        Synchronize multiple streams on your server using timecodes. \
-                        Timecodes are in UTC and requires H.265/HEVC codec.
-                        """)
+                            }
+                            .disabled(stream.getProtocol() != .srt || stream
+                                .codec != .h265hevc || (stream.enabled && model.isLive))
                     }
+                } footer: {
+                    Text("""
+                    Synchronize multiple streams on your server using timecodes. \
+                    Timecodes are in UTC and requires H.265/HEVC codec and SRT(LA).
+                    """)
                 }
             }
         }

@@ -95,11 +95,6 @@ struct DebugSettingsView: View {
                     Text("HTTP proxy")
                 }
                 Toggle("Reliable chat", isOn: $debug.reliableChat)
-                Toggle("Timecodes", isOn: $debug.timecodesEnabled)
-                    .onChange(of: debug.timecodesEnabled) { _ in
-                        model.reloadNtpClient()
-                        model.reloadSrtlaServer()
-                    }
                 NavigationLink {
                     DjiGimbalDevicesSettingsView()
                 } label: {
