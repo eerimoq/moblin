@@ -61,18 +61,10 @@ struct MpegTsPacket {
     }
 
     func encodeFixedHeaderInto(pointer: UnsafeMutableRawBufferPointer) {
-        pointer.storeBytes(of: MpegTsPacket.syncByte, toByteOffset: 0, as: UInt8.self)
-        pointer.storeBytes(
-            of: (payloadUnitStartIndicator ? 0x40 : 0) | UInt8(id >> 8),
-            toByteOffset: 1,
-            as: UInt8.self
-        )
-        pointer.storeBytes(of: UInt8(id & 0x00FF), toByteOffset: 2, as: UInt8.self)
-        pointer.storeBytes(
-            of: (adaptationField != nil ? 0x20 : 0) | 0x10 | continuityCounter,
-            toByteOffset: 3,
-            as: UInt8.self
-        )
+        pointer[0] = MpegTsPacket.syncByte
+        pointer[1] = (payloadUnitStartIndicator ? 0x40 : 0) | UInt8(id >> 8)
+        pointer[2] = UInt8(id & 0xFF)
+        pointer[3] = (adaptationField != nil ? 0x20 : 0) | 0x10 | continuityCounter
     }
 
     func encode() -> Data {
