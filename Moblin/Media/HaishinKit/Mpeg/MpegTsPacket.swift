@@ -68,11 +68,14 @@ struct MpegTsPacket {
     }
 
     func encode() -> Data {
-        var header = Data(count: 4)
-        header.withUnsafeMutableBytes { pointer in
-            encodeFixedHeaderInto(pointer: pointer)
+        var data = Data(count: 4)
+        data.withUnsafeMutableBytes {
+            encodeFixedHeaderInto(pointer: $0)
         }
-        return header + (adaptationField?.encode() ?? Data()) + payload
+        if let adaptationField {
+            data += adaptationField.encode()
+        }
+        return data + payload
     }
 }
 
