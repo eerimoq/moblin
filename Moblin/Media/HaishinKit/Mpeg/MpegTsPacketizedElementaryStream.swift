@@ -149,16 +149,13 @@ struct MpegTsPacketizedElementaryStream {
         timecode: MpegTsTimecode?
     ) {
         if let config {
-            // 3 NAL units. SEI(9), SPS(7) and PPS(8)
+            data += AvcNalUnit.aud10WithStartCode
             data += nalUnitStartCode
-            data.append(contentsOf: [0x09, 0x10])
+            data += config.sequenceParameterSets[0]
             data += nalUnitStartCode
-            data.append(contentsOf: config.sequenceParameterSets[0])
-            data += nalUnitStartCode
-            data.append(contentsOf: config.pictureParameterSets[0])
+            data += config.pictureParameterSets[0]
         } else {
-            data += nalUnitStartCode
-            data.append(contentsOf: [0x09, 0x30])
+            data += AvcNalUnit.aud30WithStartCode
         }
         if let timecode, false {
             data += nalUnitStartCode

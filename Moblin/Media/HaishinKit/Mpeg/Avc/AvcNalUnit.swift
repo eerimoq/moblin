@@ -18,6 +18,9 @@ enum AvcNalUnitType: UInt8 {
 }
 
 struct AvcNalUnit: NalUnit {
+    static let audHeader = AvcNalUnitHeader(refIdc: 0, type: .aud).encode()
+    static let aud10WithStartCode = nalUnitStartCode + audHeader + [0x10]
+    static let aud30WithStartCode = nalUnitStartCode + audHeader + [0x30]
     let header: AvcNalUnitHeader
     let payload: AvcNalUnitPayload
 
@@ -73,6 +76,12 @@ struct AvcNalUnitHeader {
         writer.writeBit(false)
         writer.writeBits(refIdc, count: 2)
         writer.writeBits(type.rawValue, count: 5)
+    }
+
+    func encode() -> Data {
+        let writer = NalUnitWriter()
+        encode(writer: writer)
+        return writer.data
     }
 }
 
