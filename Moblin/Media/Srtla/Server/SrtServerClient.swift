@@ -75,10 +75,7 @@ class SrtServerClient {
     private func handleProgramMappingTable(programNumber: UInt16, packet: MpegTsPacket) throws {
         programMappingTable[programNumber] = try MpegTsProgramMapping(data: packet.payload)
         for programMapping in programMappingTable.values {
-            // logger.info("Program mapping \(programMapping.programClockReferencePacketId)
-            // \(programMapping.programInfoLength)")
             for data in programMapping.elementaryStreamSpecificDatas {
-                // logger.info("Program mapping data \(data)")
                 elementaryStreamSpecificData[data.elementaryPacketId] = data
             }
         }
