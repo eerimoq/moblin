@@ -240,13 +240,6 @@ class MpegTsPacketizedElementaryStream {
         sequentialData = nil
     }
 
-    func isComplete() -> Bool {
-        if packetLength > 0 {
-            return dataLength() == packetLength - 8
-        }
-        return false
-    }
-
     private func encode() -> Data {
         let writer = ByteWriter()
         writer.writeBytes(startCode)

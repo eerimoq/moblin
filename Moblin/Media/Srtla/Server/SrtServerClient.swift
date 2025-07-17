@@ -83,15 +83,12 @@ class SrtServerClient {
 
     private func handleProgramMedia(packet: MpegTsPacket, data: ElementaryStreamSpecificData) throws {
         if packet.payloadUnitStartIndicator {
-            if let (sampleBuffer, streamType) = tryMakeSampleBuffer(packetId: packet.id, forUpdate: true, data: data) {
+            if let (sampleBuffer, streamType) = tryMakeSampleBuffer(packetId: packet.id, data: data) {
                 handleSampleBuffer(streamType, sampleBuffer)
             }
             packetizedElementaryStreams[packet.id] = try MpegTsPacketizedElementaryStream(data: packet.payload)
         } else {
             packetizedElementaryStreams[packet.id]?.append(data: packet.payload)
-            if let (sampleBuffer, streamType) = tryMakeSampleBuffer(packetId: packet.id, forUpdate: false, data: data) {
-                handleSampleBuffer(streamType, sampleBuffer)
-            }
         }
     }
 
@@ -256,13 +253,9 @@ class SrtServerClient {
     }
 
     private func tryMakeSampleBuffer(packetId: UInt16,
-                                     forUpdate: Bool,
                                      data: ElementaryStreamSpecificData) -> (CMSampleBuffer, ElementaryStreamType)?
     {
         guard var packetizedElementaryStream = packetizedElementaryStreams[packetId] else {
-            return nil
-        }
-        guard packetizedElementaryStream.isComplete() || forUpdate else {
             return nil
         }
         defer {
