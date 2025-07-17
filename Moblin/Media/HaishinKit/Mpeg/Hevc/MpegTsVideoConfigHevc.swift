@@ -133,7 +133,7 @@ struct MpegTsVideoConfigHevc {
                     }
                 }
             } catch {
-                logger.error("\(buffer)")
+                logger.error("Failed to set hvcC")
             }
         }
     }

@@ -18,8 +18,8 @@ struct MpegTsVideoConfigAvc {
     var avcLevelIndication: UInt8 = 0
     var lengthSizeMinusOneWithReserved: UInt8 = 0
     var numOfSequenceParameterSetsWithReserved: UInt8 = 0
-    var sequenceParameterSets: [[UInt8]] = []
-    var pictureParameterSets: [[UInt8]] = []
+    var sequenceParameterSets: [Data] = []
+    var pictureParameterSets: [Data] = []
 
     init(avcC: Data) {
         self.avcC = avcC
@@ -95,15 +95,15 @@ struct MpegTsVideoConfigAvc {
                     ~MpegTsVideoConfigAvc.reserveNumOfSequenceParameterSets
                 for _ in 0 ..< numOfSequenceParameterSets {
                     let length = try Int(buffer.readUInt16())
-                    try sequenceParameterSets.append(buffer.readBytes(length).bytes)
+                    try sequenceParameterSets.append(buffer.readBytes(length))
                 }
                 let numPictureParameterSets = try buffer.readUInt8()
                 for _ in 0 ..< numPictureParameterSets {
                     let length = try Int(buffer.readUInt16())
-                    try pictureParameterSets.append(buffer.readBytes(length).bytes)
+                    try pictureParameterSets.append(buffer.readBytes(length))
                 }
             } catch {
-                logger.error("\(buffer)")
+                logger.error("Failed to set avcC")
             }
         }
     }
