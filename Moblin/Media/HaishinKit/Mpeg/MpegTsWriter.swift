@@ -91,15 +91,7 @@ class MpegTsWriter {
         return (audioConfig != nil) && (videoConfig != nil)
     }
 
-    private func encode(_ packetId: UInt16,
-                        _ presentationTimeStamp: CMTime,
-                        _ randomAccessIndicator: Bool,
-                        _ packetizedElementaryStream: MpegTsPacketizedElementaryStream) -> Data
-    {
-        let programClockReference = updateProgramClockReference(packetId, presentationTimeStamp)
-        let packets = packetizedElementaryStream.arrayOfPackets(packetId, programClockReference)
-        periodicallySendProgram(presentationTimeStamp)
-        packets[0].adaptationField?.randomAccessIndicator = randomAccessIndicator
+    private func encode(_ packetId: UInt16, _ packets: [MpegTsPacket]) -> Data {
         var packetsBuffer = createPacketsBuffer(packetsCount: packets.count)
         packetsBuffer.withUnsafeMutableBytes { (pointer: UnsafeMutableRawBufferPointer) in
             var pointer = pointer
@@ -259,13 +251,11 @@ class MpegTsWriter {
         writeProgram()
     }
 
-    private func updateProgramClockReference(_ packetId: UInt16, _ timestamp: CMTime) -> UInt64? {
+    private func updateProgramClockReference(_ timestamp: CMTime) -> UInt64? {
         var programClockReference: UInt64?
-        if packetId == MpegTsWriter.audioPacketId {
-            if timestamp.seconds - (programClockReferenceTimestamp?.seconds ?? 0) >= 0.02 {
-                programClockReference = UInt64(max(timestamp.seconds, 0) * TSTimestamp.resolution)
-                programClockReferenceTimestamp = timestamp
-            }
+        if timestamp.seconds - (programClockReferenceTimestamp?.seconds ?? 0) >= 0.02 {
+            programClockReference = UInt64(max(timestamp.seconds, 0) * TSTimestamp.resolution)
+            programClockReferenceTimestamp = timestamp
         }
         return programClockReference
     }
@@ -321,10 +311,11 @@ extension MpegTsWriter: AudioCodecDelegate {
         ) else {
             return
         }
-        writeAudio(data: encode(MpegTsWriter.audioPacketId,
-                                presentationTimeStamp,
-                                true,
-                                packetizedElementaryStream))
+        let programClockReference = updateProgramClockReference(presentationTimeStamp)
+        let packets = packetizedElementaryStream.arrayOfPackets(MpegTsWriter.audioPacketId, programClockReference)
+        packets[0].adaptationField?.randomAccessIndicator = true
+        periodicallySendProgram(presentationTimeStamp)
+        writeAudio(data: encode(MpegTsWriter.audioPacketId, packets))
     }
 }
 
@@ -391,12 +382,9 @@ extension MpegTsWriter: VideoEncoderDelegate {
         default:
             return
         }
-        writeVideo(data: encode(
-            MpegTsWriter.videoPacketId,
-            sampleBuffer.presentationTimeStamp,
-            randomAccessIndicator,
-            packetizedElementaryStream
-        ))
+        let packets = packetizedElementaryStream.arrayOfPackets(MpegTsWriter.videoPacketId, nil)
+        packets[0].adaptationField?.randomAccessIndicator = randomAccessIndicator
+        writeVideo(data: encode(MpegTsWriter.videoPacketId, packets))
     }
 
     private func updateTimecodeReference() {
