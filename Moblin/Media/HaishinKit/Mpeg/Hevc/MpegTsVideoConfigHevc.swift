@@ -70,19 +70,18 @@ struct MpegTsVideoConfigHevc {
                     guard let ppsBaseAddress = ppsBuffer.baseAddress else {
                         return kCMFormatDescriptionBridgeError_InvalidParameter
                     }
-                    let pointers: [UnsafePointer<UInt8>] = [
+                    let pointers = [
                         vpsBaseAddress.assumingMemoryBound(to: UInt8.self),
                         spsBaseAddress.assumingMemoryBound(to: UInt8.self),
                         ppsBaseAddress.assumingMemoryBound(to: UInt8.self),
                     ]
-                    let sizes: [Int] = [vpsBuffer.count, spsBuffer.count, ppsBuffer.count]
-                    let nalUnitHeaderLength: Int32 = 4
+                    let sizes = [vpsBuffer.count, spsBuffer.count, ppsBuffer.count]
                     return CMVideoFormatDescriptionCreateFromHEVCParameterSets(
                         allocator: kCFAllocatorDefault,
                         parameterSetCount: pointers.count,
                         parameterSetPointers: pointers,
                         parameterSetSizes: sizes,
-                        nalUnitHeaderLength: nalUnitHeaderLength,
+                        nalUnitHeaderLength: 4,
                         extensions: nil,
                         formatDescriptionOut: formatDescriptionOut
                     )

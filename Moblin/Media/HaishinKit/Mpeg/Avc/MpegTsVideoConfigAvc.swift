@@ -41,18 +41,17 @@ struct MpegTsVideoConfigAvc {
                 guard let spsBaseAddress = spsBuffer.baseAddress else {
                     return kCMFormatDescriptionBridgeError_InvalidParameter
                 }
-                let pointers: [UnsafePointer<UInt8>] = [
+                let pointers = [
                     spsBaseAddress.assumingMemoryBound(to: UInt8.self),
                     ppsBaseAddress.assumingMemoryBound(to: UInt8.self),
                 ]
-                let sizes: [Int] = [spsBuffer.count, ppsBuffer.count]
-                let nalUnitHeaderLength: Int32 = 4
+                let sizes = [spsBuffer.count, ppsBuffer.count]
                 return CMVideoFormatDescriptionCreateFromH264ParameterSets(
                     allocator: kCFAllocatorDefault,
                     parameterSetCount: pointers.count,
                     parameterSetPointers: pointers,
                     parameterSetSizes: sizes,
-                    nalUnitHeaderLength: nalUnitHeaderLength,
+                    nalUnitHeaderLength: 4,
                     formatDescriptionOut: formatDescriptionOut
                 )
             }
