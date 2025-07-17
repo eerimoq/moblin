@@ -21,14 +21,14 @@ class MpegTsWriter {
     static let videoPacketId: UInt16 = 256
     private static let audioStreamId: UInt8 = 192
     private static let videoStreamId: UInt8 = 224
-    private static let segmentDuration: Double = 2
+    private static let segmentDuration = CMTime(seconds: 2)
     weak var delegate: (any MpegTsWriterDelegate)?
     private var isRunning: Atomic<Bool> = .init(false)
     private var audioContinuityCounter: UInt8 = 0
     private var videoContinuityCounter: UInt8 = 0
     private var patContinuityCounter: UInt8 = 0
     private var pmtContinuityCounter: UInt8 = 0
-    private var rotatedTimestamp: CMTime = .zero
+    private var latestPeriodicallySendProgramTime: CMTime = .zero
     private var videoData: [Data?] = [nil, nil]
     private var videoDataOffset = 0
 
@@ -98,8 +98,8 @@ class MpegTsWriter {
     {
         let programClockReference = updateProgramClockReference(packetId, presentationTimeStamp)
         let packets = packetizedElementaryStream.arrayOfPackets(packetId, programClockReference)
+        periodicallySendProgram(presentationTimeStamp)
         packets[0].adaptationField?.randomAccessIndicator = randomAccessIndicator
-        rotateFileHandle(presentationTimeStamp)
         var packetsBuffer = createPacketsBuffer(packetsCount: packets.count)
         packetsBuffer.withUnsafeMutableBytes { (pointer: UnsafeMutableRawBufferPointer) in
             var pointer = pointer
@@ -166,13 +166,12 @@ class MpegTsWriter {
         return pmtContinuityCounter
     }
 
-    private func rotateFileHandle(_ timestamp: CMTime) {
-        let duration = timestamp.seconds - rotatedTimestamp.seconds
-        if duration <= MpegTsWriter.segmentDuration {
+    private func periodicallySendProgram(_ now: CMTime) {
+        guard now - latestPeriodicallySendProgramTime > MpegTsWriter.segmentDuration else {
             return
         }
         writeProgram()
-        rotatedTimestamp = timestamp
+        latestPeriodicallySendProgramTime = now
     }
 
     private func write(_ data: Data) {
