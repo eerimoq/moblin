@@ -12,24 +12,14 @@ struct MpegTsVideoConfigAvc {
     }
 
     static let reserveNumOfSequenceParameterSets: UInt8 = 0xE0
-    var configurationVersion: UInt8 = 1
-    var avcProfileIndication: UInt8 = 0
-    var profileCompatibility: UInt8 = 0
-    var avcLevelIndication: UInt8 = 0
-    var lengthSizeMinusOneWithReserved: UInt8 = 0
-    var numOfSequenceParameterSetsWithReserved: UInt8 = 0
     var sequenceParameterSet: Data?
     var pictureParameterSet: Data?
 
     init(avcC: Data) {
         let reader = ByteReader(data: avcC)
         do {
-            configurationVersion = try reader.readUInt8()
-            avcProfileIndication = try reader.readUInt8()
-            profileCompatibility = try reader.readUInt8()
-            avcLevelIndication = try reader.readUInt8()
-            lengthSizeMinusOneWithReserved = try reader.readUInt8()
-            numOfSequenceParameterSetsWithReserved = try reader.readUInt8()
+            _ = try reader.readBytes(5)
+            let numOfSequenceParameterSetsWithReserved = try reader.readUInt8()
             let numOfSequenceParameterSets = numOfSequenceParameterSetsWithReserved &
                 ~MpegTsVideoConfigAvc.reserveNumOfSequenceParameterSets
             for _ in 0 ..< numOfSequenceParameterSets {

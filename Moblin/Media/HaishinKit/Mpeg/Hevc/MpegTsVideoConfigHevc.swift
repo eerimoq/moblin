@@ -9,7 +9,6 @@ struct MpegTsVideoConfigHevc {
         return nil
     }
 
-    var configurationVersion: UInt8 = 1
     var videoParameterSet: Data?
     var sequenceParameterSet: Data?
     var pictureParameterSet: Data?
@@ -17,8 +16,7 @@ struct MpegTsVideoConfigHevc {
     init(hvcC: Data) {
         let reader = ByteReader(data: hvcC)
         do {
-            configurationVersion = try reader.readUInt8()
-            _ = try reader.readBytes(21)
+            _ = try reader.readBytes(22)
             let numberOfArrays = try reader.readUInt8()
             for _ in 0 ..< numberOfArrays {
                 let header = try reader.readUInt8()
