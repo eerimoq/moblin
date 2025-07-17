@@ -151,9 +151,9 @@ struct MpegTsPacketizedElementaryStream {
         if let config {
             data += AvcNalUnit.aud10WithStartCode
             data += nalUnitStartCode
-            data += config.sequenceParameterSets[0]
+            data += config.sequenceParameterSet
             data += nalUnitStartCode
-            data += config.pictureParameterSets[0]
+            data += config.pictureParameterSet
         } else {
             data += AvcNalUnit.aud30WithStartCode
         }
@@ -185,17 +185,17 @@ struct MpegTsPacketizedElementaryStream {
         timecode: MpegTsTimecode?
     ) {
         if let config {
-            if let nal = config.array[.vps] {
+            if let nal = config.nalUnits[.vps] {
                 data += nalUnitStartCode
-                data += nal[0]
+                data += nal
             }
-            if let nal = config.array[.sps] {
+            if let nal = config.nalUnits[.sps] {
                 data += nalUnitStartCode
-                data += nal[0]
+                data += nal
             }
-            if let nal = config.array[.pps] {
+            if let nal = config.nalUnits[.pps] {
                 data += nalUnitStartCode
-                data += nal[0]
+                data += nal
             }
         }
         if let timecode {

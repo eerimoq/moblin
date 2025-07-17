@@ -41,8 +41,7 @@ struct MpegTsVideoConfigHevc {
     var temporalIdNested: UInt8 = 0
     // periphery:ignore
     var lengthSizeMinusOne: UInt8 = 0
-    var numberOfArrays: UInt8 = 0
-    var array: [HevcNalUnitType: [Data]] = [:]
+    private(set) var nalUnits: [HevcNalUnitType: Data] = [:]
 
     init(hvcC: Data) {
         self.hvcC = hvcC
@@ -56,18 +55,18 @@ struct MpegTsVideoConfigHevc {
     }
 
     func makeFormatDescription(_ formatDescriptionOut: UnsafeMutablePointer<CMFormatDescription?>) -> OSStatus {
-        guard let vps = array[.vps], let sps = array[.sps], let pps = array[.pps] else {
+        guard let vps = nalUnits[.vps], let sps = nalUnits[.sps], let pps = nalUnits[.pps] else {
             return kCMFormatDescriptionBridgeError_InvalidParameter
         }
-        return vps[0].withUnsafeBytes { (vpsBuffer: UnsafeRawBufferPointer) -> OSStatus in
+        return vps.withUnsafeBytes { (vpsBuffer: UnsafeRawBufferPointer) -> OSStatus in
             guard let vpsBaseAddress = vpsBuffer.baseAddress else {
                 return kCMFormatDescriptionBridgeError_InvalidParameter
             }
-            return sps[0].withUnsafeBytes { (spsBuffer: UnsafeRawBufferPointer) -> OSStatus in
+            return sps.withUnsafeBytes { (spsBuffer: UnsafeRawBufferPointer) -> OSStatus in
                 guard let spsBaseAddress = spsBuffer.baseAddress else {
                     return kCMFormatDescriptionBridgeError_InvalidParameter
                 }
-                return pps[0].withUnsafeBytes { (ppsBuffer: UnsafeRawBufferPointer) -> OSStatus in
+                return pps.withUnsafeBytes { (ppsBuffer: UnsafeRawBufferPointer) -> OSStatus in
                     guard let ppsBaseAddress = ppsBuffer.baseAddress else {
                         return kCMFormatDescriptionBridgeError_InvalidParameter
                     }
@@ -121,15 +120,14 @@ struct MpegTsVideoConfigHevc {
                 numTemporalLayers = b & 0x38 >> 3
                 temporalIdNested = b & 0x6 >> 1
                 lengthSizeMinusOne = b & 0x3
-                numberOfArrays = try buffer.readUInt8()
+                let numberOfArrays = try buffer.readUInt8()
                 for _ in 0 ..< numberOfArrays {
                     let a = try buffer.readUInt8()
                     let nalUnitType = HevcNalUnitType(rawValue: a & 0b0011_1111) ?? .unspec
-                    array[nalUnitType] = []
                     let numNalus = try buffer.readUInt16()
                     for _ in 0 ..< numNalus {
                         let length = try buffer.readUInt16()
-                        try array[nalUnitType]?.append(buffer.readBytes(Int(length)))
+                        try nalUnits[nalUnitType] = buffer.readBytes(Int(length))
                     }
                 }
             } catch {

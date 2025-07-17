@@ -18,8 +18,8 @@ struct MpegTsVideoConfigAvc {
     var avcLevelIndication: UInt8 = 0
     var lengthSizeMinusOneWithReserved: UInt8 = 0
     var numOfSequenceParameterSetsWithReserved: UInt8 = 0
-    var sequenceParameterSets: [Data] = []
-    var pictureParameterSets: [Data] = []
+    var sequenceParameterSet = Data()
+    var pictureParameterSet = Data()
 
     init(avcC: Data) {
         self.avcC = avcC
@@ -33,30 +33,29 @@ struct MpegTsVideoConfigAvc {
     }
 
     func makeFormatDescription(_ formatDescriptionOut: UnsafeMutablePointer<CMFormatDescription?>) -> OSStatus {
-        return pictureParameterSets[0].withUnsafeBytes { (ppsBuffer: UnsafeRawBufferPointer) -> OSStatus in
+        return pictureParameterSet.withUnsafeBytes { (ppsBuffer: UnsafeRawBufferPointer) -> OSStatus in
             guard let ppsBaseAddress = ppsBuffer.baseAddress else {
                 return kCMFormatDescriptionBridgeError_InvalidParameter
             }
-            return sequenceParameterSets[0]
-                .withUnsafeBytes { (spsBuffer: UnsafeRawBufferPointer) -> OSStatus in
-                    guard let spsBaseAddress = spsBuffer.baseAddress else {
-                        return kCMFormatDescriptionBridgeError_InvalidParameter
-                    }
-                    let pointers: [UnsafePointer<UInt8>] = [
-                        spsBaseAddress.assumingMemoryBound(to: UInt8.self),
-                        ppsBaseAddress.assumingMemoryBound(to: UInt8.self),
-                    ]
-                    let sizes: [Int] = [spsBuffer.count, ppsBuffer.count]
-                    let nalUnitHeaderLength: Int32 = 4
-                    return CMVideoFormatDescriptionCreateFromH264ParameterSets(
-                        allocator: kCFAllocatorDefault,
-                        parameterSetCount: pointers.count,
-                        parameterSetPointers: pointers,
-                        parameterSetSizes: sizes,
-                        nalUnitHeaderLength: nalUnitHeaderLength,
-                        formatDescriptionOut: formatDescriptionOut
-                    )
+            return sequenceParameterSet.withUnsafeBytes { (spsBuffer: UnsafeRawBufferPointer) -> OSStatus in
+                guard let spsBaseAddress = spsBuffer.baseAddress else {
+                    return kCMFormatDescriptionBridgeError_InvalidParameter
                 }
+                let pointers: [UnsafePointer<UInt8>] = [
+                    spsBaseAddress.assumingMemoryBound(to: UInt8.self),
+                    ppsBaseAddress.assumingMemoryBound(to: UInt8.self),
+                ]
+                let sizes: [Int] = [spsBuffer.count, ppsBuffer.count]
+                let nalUnitHeaderLength: Int32 = 4
+                return CMVideoFormatDescriptionCreateFromH264ParameterSets(
+                    allocator: kCFAllocatorDefault,
+                    parameterSetCount: pointers.count,
+                    parameterSetPointers: pointers,
+                    parameterSetSizes: sizes,
+                    nalUnitHeaderLength: nalUnitHeaderLength,
+                    formatDescriptionOut: formatDescriptionOut
+                )
+            }
         }
     }
 
@@ -69,17 +68,13 @@ struct MpegTsVideoConfigAvc {
                 .writeUInt8(avcLevelIndication)
                 .writeUInt8(lengthSizeMinusOneWithReserved)
                 .writeUInt8(numOfSequenceParameterSetsWithReserved)
-            for i in 0 ..< sequenceParameterSets.count {
-                buffer
-                    .writeUInt16(UInt16(sequenceParameterSets[i].count))
-                    .writeBytes(Data(sequenceParameterSets[i]))
-            }
-            buffer.writeUInt8(UInt8(pictureParameterSets.count))
-            for i in 0 ..< pictureParameterSets.count {
-                buffer
-                    .writeUInt16(UInt16(pictureParameterSets[i].count))
-                    .writeBytes(Data(pictureParameterSets[i]))
-            }
+            buffer
+                .writeUInt16(UInt16(sequenceParameterSet.count))
+                .writeBytes(sequenceParameterSet)
+            buffer.writeUInt8(UInt8(pictureParameterSet.count))
+            buffer
+                .writeUInt16(UInt16(pictureParameterSet.count))
+                .writeBytes(pictureParameterSet)
             return buffer.data
         }
         set {
@@ -95,12 +90,12 @@ struct MpegTsVideoConfigAvc {
                     ~MpegTsVideoConfigAvc.reserveNumOfSequenceParameterSets
                 for _ in 0 ..< numOfSequenceParameterSets {
                     let length = try Int(buffer.readUInt16())
-                    try sequenceParameterSets.append(buffer.readBytes(length))
+                    try sequenceParameterSet.append(buffer.readBytes(length))
                 }
                 let numPictureParameterSets = try buffer.readUInt8()
                 for _ in 0 ..< numPictureParameterSets {
                     let length = try Int(buffer.readUInt16())
-                    try pictureParameterSets.append(buffer.readBytes(length))
+                    try pictureParameterSet.append(buffer.readBytes(length))
                 }
             } catch {
                 logger.error("Failed to set avcC")
