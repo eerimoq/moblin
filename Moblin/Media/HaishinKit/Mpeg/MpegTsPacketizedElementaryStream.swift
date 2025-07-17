@@ -110,14 +110,15 @@ private struct OptionalHeader {
     }
 }
 
-struct MpegTsPacketizedElementaryStream {
+class MpegTsPacketizedElementaryStream {
     private static let untilPacketLengthSize: Int = 6
     private static let startCode = Data([0x00, 0x00, 0x01])
     private var startCode = MpegTsPacketizedElementaryStream.startCode
     private var streamId: UInt8 = 0
     private var packetLength: UInt16 = 0
     private var optionalHeader = OptionalHeader()
-    var data = Data()
+    private var datas: [Data] = []
+    private var sequentialData: Data?
 
     init?(
         bytes: UnsafePointer<UInt8>,
@@ -126,11 +127,11 @@ struct MpegTsPacketizedElementaryStream {
         config: MpegTsAudioConfig,
         streamId: UInt8
     ) {
-        data += config.makeHeader(count)
-        data.append(bytes, count: count)
+        datas.append(config.makeHeader(count))
+        datas.append(Data(bytes: bytes, count: count))
         optionalHeader.dataAlignmentIndicator = true
         optionalHeader.setTimestamp(presentationTimeStamp, .invalid)
-        let length = data.count + optionalHeader.encode().count
+        let length = dataLength() + optionalHeader.encode().count
         if length < Int(UInt16.max) {
             packetLength = UInt16(length)
         } else {
@@ -149,30 +150,30 @@ struct MpegTsPacketizedElementaryStream {
         timecode: MpegTsTimecode?
     ) {
         if let config {
-            data += AvcNalUnit.aud10WithStartCode
+            datas.append(AvcNalUnit.aud10WithStartCode)
             if let sequenceParameterSet = config.sequenceParameterSet {
-                data += nalUnitStartCode
-                data += sequenceParameterSet
+                datas.append(nalUnitStartCode)
+                datas.append(sequenceParameterSet)
             }
             if let pictureParameterSet = config.pictureParameterSet {
-                data += nalUnitStartCode
-                data += pictureParameterSet
+                datas.append(nalUnitStartCode)
+                datas.append(pictureParameterSet)
             }
         } else {
-            data += AvcNalUnit.aud30WithStartCode
+            datas.append(AvcNalUnit.aud30WithStartCode)
         }
         if let timecode, false {
-            data += nalUnitStartCode
+            datas.append(nalUnitStartCode)
             let pictureTiming = AvcSeiPayloadPictureTiming(clock: timecode.clock, frame: timecode.frame)
             let sei = AvcNalUnitSei(payload: .pictureTiming(pictureTiming))
-            data += AvcNalUnit(type: .sei, payload: .sei(sei)).encode()
+            datas.append(AvcNalUnit(type: .sei, payload: .sei(sei)).encode())
         }
         var payload = Data(bytesNoCopy: bytes, count: count, deallocator: .none)
         addNalUnitStartCodes(&payload)
-        data.append(payload)
+        datas.append(payload)
         optionalHeader.dataAlignmentIndicator = true
         optionalHeader.setTimestamp(presentationTimeStamp, decodeTimeStamp)
-        let length = data.count + optionalHeader.encode().count
+        let length = dataLength() + optionalHeader.encode().count
         if length < Int(UInt16.max) {
             packetLength = UInt16(length)
         }
@@ -190,30 +191,30 @@ struct MpegTsPacketizedElementaryStream {
     ) {
         if let config {
             if let videoParameterSet = config.videoParameterSet {
-                data += nalUnitStartCode
-                data += videoParameterSet
+                datas.append(nalUnitStartCode)
+                datas.append(videoParameterSet)
             }
             if let sequenceParameterSet = config.sequenceParameterSet {
-                data += nalUnitStartCode
-                data += sequenceParameterSet
+                datas.append(nalUnitStartCode)
+                datas.append(sequenceParameterSet)
             }
             if let pictureParameterSet = config.pictureParameterSet {
-                data += nalUnitStartCode
-                data += pictureParameterSet
+                datas.append(nalUnitStartCode)
+                datas.append(pictureParameterSet)
             }
         }
         if let timecode {
-            data += nalUnitStartCode
+            datas.append(nalUnitStartCode)
             let timecode = HevcSeiPayloadTimeCode(clock: timecode.clock, frame: timecode.frame)
             let sei = HevcNalUnitSei(payload: .timeCode(timecode))
-            data += HevcNalUnit(type: .prefixSeiNut, temporalIdPlusOne: 1, payload: .prefixSeiNut(sei)).encode()
+            datas.append(HevcNalUnit(type: .prefixSeiNut, temporalIdPlusOne: 1, payload: .prefixSeiNut(sei)).encode())
         }
         var payload = Data(bytesNoCopy: bytes, count: count, deallocator: .none)
         addNalUnitStartCodes(&payload)
-        data.append(payload)
+        datas.append(payload)
         optionalHeader.dataAlignmentIndicator = true
         optionalHeader.setTimestamp(presentationTimeStamp, decodeTimeStamp)
-        let length = data.count + optionalHeader.encode().count
+        let length = dataLength() + optionalHeader.encode().count
         if length < Int(UInt16.max) {
             packetLength = UInt16(length)
         }
@@ -231,28 +232,31 @@ struct MpegTsPacketizedElementaryStream {
         optionalHeader = try OptionalHeader(data: reader.readBytes(reader.bytesAvailable))
         reader.position = MpegTsPacketizedElementaryStream
             .untilPacketLengthSize + 3 + Int(optionalHeader.pesHeaderLength)
-        self.data = try reader.readBytes(reader.bytesAvailable)
+        try datas.append(reader.readBytes(reader.bytesAvailable))
     }
 
-    mutating func append(data: Data) {
-        self.data.append(data)
+    func append(data: Data) {
+        datas.append(data)
+        sequentialData = nil
     }
 
     func isComplete() -> Bool {
         if packetLength > 0 {
-            return data.count == packetLength - 8
+            return dataLength() == packetLength - 8
         }
         return false
     }
 
     private func encode() -> Data {
-        ByteWriter()
-            .writeBytes(startCode)
-            .writeUInt8(streamId)
-            .writeUInt16(packetLength)
-            .writeBytes(optionalHeader.encode())
-            .writeBytes(data)
-            .data
+        let writer = ByteWriter()
+        writer.writeBytes(startCode)
+        writer.writeUInt8(streamId)
+        writer.writeUInt16(packetLength)
+        writer.writeBytes(optionalHeader.encode())
+        for data in datas {
+            writer.writeBytes(data)
+        }
+        return writer.data
     }
 
     func arrayOfPackets(_ packetId: UInt16, _ programClockReference: UInt64?) -> [MpegTsPacket] {
@@ -298,15 +302,16 @@ struct MpegTsPacketizedElementaryStream {
         return packets
     }
 
-    mutating func makeVideoSampleBuffer(
+    func makeVideoSampleBuffer(
         _ nalUnits: [NalUnitInfo],
         _ basePresentationTimeStamp: CMTime,
         _ firstReceivedPresentationTimeStamp: CMTime?,
         _ previousReceivedPresentationTimeStamp: CMTime?,
         _ formatDescription: CMFormatDescription?
     ) -> (CMSampleBuffer, CMTime, CMTime)? {
-        removeNalUnitStartCodes(&data, nalUnits)
-        let blockBuffer = data.makeBlockBuffer()
+        var sequential = getData()
+        removeNalUnitStartCodes(&sequential, nalUnits)
+        let blockBuffer = sequential.makeBlockBuffer()
         var sampleSizes = [blockBuffer?.dataLength ?? 0]
         return makeSampleBuffer(
             basePresentationTimeStamp,
@@ -318,15 +323,16 @@ struct MpegTsPacketizedElementaryStream {
         )
     }
 
-    mutating func makeAudioSampleBuffer(
+    func makeAudioSampleBuffer(
         _ basePresentationTimeStamp: CMTime,
         _ firstReceivedPresentationTimeStamp: CMTime?,
         _ previousReceivedPresentationTimeStamp: CMTime?,
         _ formatDescription: CMFormatDescription?
     ) -> (CMSampleBuffer, CMTime, CMTime)? {
         var sampleSizes: [Int] = []
-        let blockBuffer = data.makeBlockBuffer(advancedBy: AdtsHeader.size)
-        let reader = ADTSReader(data: data)
+        let sequential = getData()
+        let blockBuffer = sequential.makeBlockBuffer(advancedBy: AdtsHeader.size)
+        let reader = ADTSReader(data: sequential)
         var iterator = reader.makeIterator()
         while let dataLength = iterator.next() {
             sampleSizes.append(dataLength)
@@ -392,5 +398,27 @@ struct MpegTsPacketizedElementaryStream {
             return nil
         }
         return (sampleBuffer, firstReceivedPresentationTimeStamp!, timing.presentationTimeStamp)
+    }
+
+    func getData() -> Data {
+        if sequentialData == nil {
+            sequentialData = Data()
+            for data in datas {
+                sequentialData! += data
+            }
+        }
+        return sequentialData!
+    }
+
+    private func dataLength() -> Int {
+        if let sequentialData {
+            return sequentialData.count
+        } else {
+            var length = 0
+            for data in datas {
+                length += data.count
+            }
+            return length
+        }
     }
 }

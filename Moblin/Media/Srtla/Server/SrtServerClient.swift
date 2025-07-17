@@ -300,7 +300,9 @@ class SrtServerClient {
                                         packetizedElementaryStream: inout MpegTsPacketizedElementaryStream)
         -> (CMSampleBuffer, ElementaryStreamType)?
     {
-        guard let formatDescription = AdtsHeader(data: packetizedElementaryStream.data)?.makeFormatDescription() else {
+        guard let formatDescription = AdtsHeader(data: packetizedElementaryStream.getData())?
+            .makeFormatDescription()
+        else {
             return nil
         }
         if formatDescriptions[packetId] != formatDescription {
@@ -328,8 +330,8 @@ class SrtServerClient {
                                          packetizedElementaryStream: inout MpegTsPacketizedElementaryStream)
         -> (CMSampleBuffer, ElementaryStreamType)?
     {
-        let nalUnits = getNalUnits(data: packetizedElementaryStream.data)
-        let units = readH264NalUnits(data: packetizedElementaryStream.data,
+        let nalUnits = getNalUnits(data: packetizedElementaryStream.getData())
+        let units = readH264NalUnits(data: packetizedElementaryStream.getData(),
                                      nalUnits: nalUnits,
                                      filter: [.pps, .sps, .idr])
         let formatDescription = units.makeFormatDescription()
@@ -359,8 +361,8 @@ class SrtServerClient {
                                          packetizedElementaryStream: inout MpegTsPacketizedElementaryStream)
         -> (CMSampleBuffer, ElementaryStreamType)?
     {
-        let nalUnits = getNalUnits(data: packetizedElementaryStream.data)
-        let units = readH265NalUnits(data: packetizedElementaryStream.data,
+        let nalUnits = getNalUnits(data: packetizedElementaryStream.getData())
+        let units = readH265NalUnits(data: packetizedElementaryStream.getData(),
                                      nalUnits: nalUnits,
                                      filter: [.sps, .pps, .vps, .prefixSeiNut])
         let formatDescription = units.makeFormatDescription()
