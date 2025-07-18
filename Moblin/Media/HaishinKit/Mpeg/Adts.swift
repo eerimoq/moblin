@@ -34,6 +34,15 @@ struct AdtsHeader: Equatable {
         }
     }
 
+    func isSameFormatDescription(other: AdtsHeader?) -> Bool {
+        guard let other else {
+            return false
+        }
+        return profile == other.profile
+            && sampleFrequencyIndex == other.sampleFrequencyIndex
+            && channelConfiguration == other.channelConfiguration
+    }
+
     func makeFormatDescription() -> CMFormatDescription? {
         guard
             let type = AudioSpecificConfig.AudioObjectType(rawValue: profile + 1),

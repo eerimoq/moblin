@@ -11,6 +11,7 @@ class SrtServerClient {
     private var elementaryStreamSpecificData: [UInt16: ElementaryStreamSpecificData] = [:]
     private var packetizedElementaryStreams: [UInt16: MpegTsPacketizedElementaryStream] = [:]
     private var formatDescriptions: [UInt16: CMFormatDescription] = [:]
+    private var adtsHeaders: [UInt16: AdtsHeader] = [:]
     private var firstReceivedPresentationTimeStamp: CMTime?
     private var previousReceivedPresentationTimeStamps: [UInt16: CMTime] = [:]
     private var basePresentationTimeStamp: CMTime = .invalid
@@ -285,17 +286,32 @@ class SrtServerClient {
         }
     }
 
+    private func getAacFormatDescription(_ packetId: UInt16,
+                                         _ packetizedElementaryStream: MpegTsPacketizedElementaryStream)
+        -> CMFormatDescription?
+    {
+        guard let adtsHeader = AdtsHeader(data: packetizedElementaryStream.data) else {
+            return nil
+        }
+        if adtsHeader.isSameFormatDescription(other: adtsHeaders[packetId]) {
+            return formatDescriptions[packetId]
+        }
+        guard let formatDescription = adtsHeader.makeFormatDescription() else {
+            return nil
+        }
+        adtsHeaders[packetId] = adtsHeader
+        formatDescriptions[packetId] = formatDescription
+        handleAudioFormatDescription(formatDescription)
+        return formatDescription
+    }
+
     private func tryMakeSampleBufferAac(packetId: UInt16,
                                         data: ElementaryStreamSpecificData,
                                         packetizedElementaryStream: inout MpegTsPacketizedElementaryStream)
         -> (CMSampleBuffer, ElementaryStreamType)?
     {
-        guard let formatDescription = AdtsHeader(data: packetizedElementaryStream.data)?.makeFormatDescription() else {
+        guard let formatDescription = getAacFormatDescription(packetId, packetizedElementaryStream) else {
             return nil
-        }
-        if formatDescriptions[packetId] != formatDescription {
-            formatDescriptions[packetId] = formatDescription
-            handleAudioFormatDescription(formatDescription)
         }
         guard let (sampleBuffer,
                    firstReceivedPresentationTimeStamp,
@@ -303,7 +319,7 @@ class SrtServerClient {
             getBasePresentationTimeStamp(),
             firstReceivedPresentationTimeStamp,
             previousReceivedPresentationTimeStamps[packetId],
-            formatDescriptions[packetId]
+            formatDescription
         ) else {
             return nil
         }
