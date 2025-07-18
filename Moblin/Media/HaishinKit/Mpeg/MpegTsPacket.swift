@@ -14,11 +14,6 @@ struct MpegTsPacket {
     var adaptationField: MpegTsAdaptationField?
     var payload = Data()
 
-    private func unusedSize() -> Int {
-        let adaptationFieldSize = Int(adaptationField?.calcLength() ?? 0)
-        return MpegTsPacket.size - MpegTsPacket.fixedHeaderSize - adaptationFieldSize - payload.count
-    }
-
     init(id: UInt16) {
         self.id = id
     }
@@ -45,19 +40,12 @@ struct MpegTsPacket {
         }
     }
 
-    mutating func setPayload(_ data: Data) -> Int {
-        let payloadSize = min(data.count, unusedSize())
-        payload = data[0 ..< payloadSize]
-        let unusedSize = unusedSize()
-        if unusedSize > 0 {
-            adaptationField!.setStuffing(unusedSize)
-        }
-        return payloadSize
+    func maximumPayloadSize() -> Int {
+        return MpegTsPacket.size - MpegTsPacket.fixedHeaderSize - Int(adaptationField?.calcLength() ?? 0)
     }
 
-    mutating func setPayloadNoAdaptation(_ data: Data) {
-        payload = data
-        payload.append(Data(repeating: 0xFF, count: unusedSize()))
+    mutating func setAdaptionFieldStuffing(size: Int) {
+        adaptationField?.setStuffing(size)
     }
 
     func encodeFixedHeaderInto(pointer: UnsafeMutableRawBufferPointer) {

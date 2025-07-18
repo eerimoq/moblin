@@ -1,6 +1,6 @@
 import Foundation
 
-class MpegTsAdaptationField {
+struct MpegTsAdaptationField {
     static let fixedSectionSize: UInt8 = 2
     var randomAccessIndicator = false
     var programClockReference: Data?
@@ -33,7 +33,7 @@ class MpegTsAdaptationField {
         return length
     }
 
-    func setStuffing(_ size: Int) {
+    mutating func setStuffing(_ size: Int) {
         stuffingBytes = Data(repeating: 0xFF, count: size)
     }
 

@@ -313,8 +313,9 @@ extension MpegTsWriter: AudioCodecDelegate {
             return
         }
         let programClockReference = updateProgramClockReference(presentationTimeStamp)
-        let packets = packetizedElementaryStream.arrayOfPackets(MpegTsWriter.audioPacketId, programClockReference)
-        packets[0].adaptationField?.randomAccessIndicator = true
+        let packets = packetizedElementaryStream.arrayOfPackets(MpegTsWriter.audioPacketId,
+                                                                true,
+                                                                programClockReference)
         periodicallySendProgram(presentationTimeStamp)
         writeAudio(data: encode(MpegTsWriter.audioPacketId, packets))
     }
@@ -383,8 +384,9 @@ extension MpegTsWriter: VideoEncoderDelegate {
         default:
             return
         }
-        let packets = packetizedElementaryStream.arrayOfPackets(MpegTsWriter.videoPacketId, nil)
-        packets[0].adaptationField?.randomAccessIndicator = randomAccessIndicator
+        let packets = packetizedElementaryStream.arrayOfPackets(MpegTsWriter.videoPacketId,
+                                                                randomAccessIndicator,
+                                                                nil)
         writeVideo(data: encode(MpegTsWriter.videoPacketId, packets))
     }
 

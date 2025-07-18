@@ -248,47 +248,82 @@ struct MpegTsPacketizedElementaryStream {
             .data
     }
 
-    func arrayOfPackets(_ packetId: UInt16, _ programClockReference: UInt64?) -> [MpegTsPacket] {
+    func arrayOfPackets(_ packetId: UInt16,
+                        _ randomAccessIndicator: Bool,
+                        _ programClockReference: UInt64?) -> [MpegTsPacket]
+    {
         let payload = encode()
         var packets: [MpegTsPacket] = []
-        // start
+        var payloadOffset = 0
+        appendFirstPacket(packetId, randomAccessIndicator, programClockReference, &packets, &payloadOffset, payload)
+        appendMiddlePackets(packetId, &packets, &payloadOffset, payload)
+        appendLastPackets(packetId, &packets, &payloadOffset, payload)
+        return packets
+    }
+
+    private func appendFirstPacket(_ packetId: UInt16,
+                                   _ randomAccessIndicator: Bool,
+                                   _ programClockReference: UInt64?,
+                                   _ packets: inout [MpegTsPacket],
+                                   _ payloadOffset: inout Int,
+                                   _ payload: Data)
+    {
         var packet = MpegTsPacket(id: packetId)
         packet.payloadUnitStartIndicator = true
-        packet.adaptationField = MpegTsAdaptationField()
+        var adaptationField = MpegTsAdaptationField()
+        adaptationField.randomAccessIndicator = randomAccessIndicator
         if let programClockReference {
-            packet.adaptationField!.programClockReference = TSProgramClockReference.encode(programClockReference, 0)
+            adaptationField.programClockReference = TSProgramClockReference.encode(programClockReference, 0)
         }
-        var payloadOffset = packet.setPayload(payload)
+        packet.adaptationField = adaptationField
+        payloadOffset = min(packet.maximumPayloadSize(), payload.count)
+        packet.payload = payload[0 ..< payloadOffset]
+        if payloadOffset > payload.count {
+            packet.setAdaptionFieldStuffing(size: payloadOffset - payload.count)
+        }
         packets.append(packet)
-        // middle
-        packet = MpegTsPacket(id: packetId)
+    }
+
+    private func appendMiddlePackets(_ packetId: UInt16,
+                                     _ packets: inout [MpegTsPacket],
+                                     _ payloadOffset: inout Int,
+                                     _ payload: Data)
+    {
+        var packet = MpegTsPacket(id: packetId)
         while payloadOffset <= payload.count - 184 {
             packet.payload = payload[payloadOffset ..< payloadOffset + 184]
             packets.append(packet)
             payloadOffset += 184
         }
+    }
+
+    private func appendLastPackets(_ packetId: UInt16,
+                                   _ packets: inout [MpegTsPacket],
+                                   _ payloadOffset: inout Int,
+                                   _ payload: Data)
+    {
         let rest = (payload.count - payloadOffset) % 184
         switch rest {
         case 0:
             break
         case 183:
-            let remain = payload.subdata(in: payload.endIndex - rest ..< payload.endIndex - 1)
             var packet = MpegTsPacket(id: packetId)
             packet.adaptationField = MpegTsAdaptationField()
-            _ = packet.setPayload(remain)
+            packet.payload = payload[payloadOffset ..< payloadOffset + 182]
+            payloadOffset += 182
             packets.append(packet)
             packet = MpegTsPacket(id: packetId)
             packet.adaptationField = MpegTsAdaptationField()
-            _ = packet.setPayload(Data([payload[payload.count - 1]]))
+            packet.payload = payload[payloadOffset ..< payload.count]
+            packet.setAdaptionFieldStuffing(size: 182 - packet.payload.count)
             packets.append(packet)
         default:
-            let remain = payload.subdata(in: payload.count - rest ..< payload.count)
             var packet = MpegTsPacket(id: packetId)
             packet.adaptationField = MpegTsAdaptationField()
-            _ = packet.setPayload(remain)
+            packet.payload = payload[payloadOffset ..< payload.count]
+            packet.setAdaptionFieldStuffing(size: 182 - packet.payload.count)
             packets.append(packet)
         }
-        return packets
     }
 
     mutating func makeVideoSampleBuffer(

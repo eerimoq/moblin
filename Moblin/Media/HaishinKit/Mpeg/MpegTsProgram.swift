@@ -45,7 +45,8 @@ class MpegTsProgram {
     func packet(_ packetId: UInt16) -> MpegTsPacket {
         var packet = MpegTsPacket(id: packetId)
         packet.payloadUnitStartIndicator = true
-        packet.setPayloadNoAdaptation(encode())
+        let encoded = encode()
+        packet.payload = encoded + Data(repeating: 0xFF, count: 184 - encoded.count)
         return packet
     }
 
