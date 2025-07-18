@@ -279,6 +279,14 @@ final class VideoUnit: NSObject {
         }
     }
 
+    func setSkipNonCameraPreview(value: Bool) {
+        processorControlQueue.async {
+            processorPipelineQueue.async {
+                self.skipNonCameraPreview = value
+            }
+        }
+    }
+
     func setLowFpsImage(fps: Float) {
         processorPipelineQueue.async {
             self.setLowFpsImageInner(fps: fps)
@@ -1275,7 +1283,7 @@ final class VideoUnit: NSObject {
             processor?.recorder.appendVideo(modSampleBuffer)
         }
         modSampleBuffer.setAttachmentDisplayImmediately()
-        if !showCameraPreview && !skipNonCameraPreview {
+        if !showCameraPreview, !skipNonCameraPreview {
             drawable?.enqueue(modSampleBuffer, isFirstAfterAttach: isFirstAfterAttach)
         }
         if externalDisplayPreview {

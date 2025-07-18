@@ -1178,7 +1178,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         guard !isMac() else {
             return
         }
-        if !shouldStreamInBackground() {
+        if shouldStreamInBackground() {
+            media.setSkipNonCameraPreview(value: true)
+        } else {
             if isRecording {
                 suspendRecording()
             }
@@ -1211,7 +1213,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         guard !isMac() else {
             return
         }
-        if !shouldStreamInBackground() {
+        if shouldStreamInBackground() {
+            media.setSkipNonCameraPreview(value: false)
+        } else {
             clearRemoteSceneSettingsAndData()
             reloadStream()
             sceneUpdated(attachCamera: true, updateRemoteScene: false)

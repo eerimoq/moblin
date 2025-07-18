@@ -183,6 +183,10 @@ final class Processor {
         video.usePendingAfterAttachEffects()
     }
 
+    func setSkipNonCameraPreview(value: Bool) {
+        video.setSkipNonCameraPreview(value: value)
+    }
+
     func setLowFpsImage(fps: Float) {
         video.setLowFpsImage(fps: fps)
     }
