@@ -153,6 +153,7 @@ final class VideoUnit: NSObject {
     private var cameraControlsEnabled = false
     private var isRunning = false
     private var showCameraPreview = false
+    private var skipNonCameraPreview = false
     private var externalDisplayPreview = false
     private var sceneSwitchTransition: SceneSwitchTransition = .blur
     private var pixelTransferSession: VTPixelTransferSession?
@@ -1274,7 +1275,7 @@ final class VideoUnit: NSObject {
             processor?.recorder.appendVideo(modSampleBuffer)
         }
         modSampleBuffer.setAttachmentDisplayImmediately()
-        if !showCameraPreview {
+        if !showCameraPreview && !skipNonCameraPreview {
             drawable?.enqueue(modSampleBuffer, isFirstAfterAttach: isFirstAfterAttach)
         }
         if externalDisplayPreview {
