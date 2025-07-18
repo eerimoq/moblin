@@ -613,8 +613,8 @@ final class Media: NSObject {
         processor?.usePendingAfterAttachEffects()
     }
 
-    func setSkipNonCameraPreview(value: Bool) {
-        processor?.setSkipNonCameraPreview(value: value)
+    func setScreenPreview(enabled: Bool) {
+        processor?.setScreenPreview(enabled: enabled)
     }
 
     func setLowFpsImage(fps: Float) {

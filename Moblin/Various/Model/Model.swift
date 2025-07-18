@@ -1179,7 +1179,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             return
         }
         if shouldStreamInBackground() {
-            media.setSkipNonCameraPreview(value: true)
+            stopScreenPreview()
         } else {
             if isRecording {
                 suspendRecording()
@@ -1214,7 +1214,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             return
         }
         if shouldStreamInBackground() {
-            media.setSkipNonCameraPreview(value: false)
+            maybeStartScreenPreview()
         } else {
             clearRemoteSceneSettingsAndData()
             reloadStream()
@@ -1261,6 +1261,17 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         updateExternalMonitorWindow()
         externalDisplayPreview = true
         reattachCamera()
+    }
+
+    func stopScreenPreview() {
+        media.setScreenPreview(enabled: false)
+    }
+
+    func maybeStartScreenPreview() {
+        guard !showStealthMode else {
+            return
+        }
+        media.setScreenPreview(enabled: true)
     }
 
     func externalMonitorDisconnected() {

@@ -153,7 +153,7 @@ final class VideoUnit: NSObject {
     private var cameraControlsEnabled = false
     private var isRunning = false
     private var showCameraPreview = false
-    private var skipNonCameraPreview = false
+    private var screenPreviewEnabled = true
     private var externalDisplayPreview = false
     private var sceneSwitchTransition: SceneSwitchTransition = .blur
     private var pixelTransferSession: VTPixelTransferSession?
@@ -279,10 +279,10 @@ final class VideoUnit: NSObject {
         }
     }
 
-    func setSkipNonCameraPreview(value: Bool) {
+    func setScreenPreview(enabled: Bool) {
         processorControlQueue.async {
             processorPipelineQueue.async {
-                self.skipNonCameraPreview = value
+                self.screenPreviewEnabled = enabled
             }
         }
     }
@@ -1283,7 +1283,7 @@ final class VideoUnit: NSObject {
             processor?.recorder.appendVideo(modSampleBuffer)
         }
         modSampleBuffer.setAttachmentDisplayImmediately()
-        if !showCameraPreview, !skipNonCameraPreview {
+        if !showCameraPreview, screenPreviewEnabled {
             drawable?.enqueue(modSampleBuffer, isFirstAfterAttach: isFirstAfterAttach)
         }
         if externalDisplayPreview {
