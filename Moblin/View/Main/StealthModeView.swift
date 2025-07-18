@@ -88,10 +88,10 @@ struct StealthModeView: View {
         }
         .onAppear {
             showButtons()
-            model.stopScreenPreview()
+            model.disableScreenPreview()
         }
         .onDisappear {
-            model.maybeStartScreenPreview()
+            model.maybeEnableScreenPreview()
             // Trigger after tryPause() of bottom of chat detector.
             DispatchQueue.main.async {
                 self.tryUnpause()

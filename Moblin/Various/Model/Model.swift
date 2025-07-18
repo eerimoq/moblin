@@ -1179,7 +1179,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             return
         }
         if shouldStreamInBackground() {
-            stopScreenPreview()
+            disableScreenPreview()
         } else {
             if isRecording {
                 suspendRecording()
@@ -1214,7 +1214,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             return
         }
         if shouldStreamInBackground() {
-            maybeStartScreenPreview()
+            maybeEnableScreenPreview()
         } else {
             clearRemoteSceneSettingsAndData()
             reloadStream()
@@ -1263,11 +1263,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         reattachCamera()
     }
 
-    func stopScreenPreview() {
+    func disableScreenPreview() {
         media.setScreenPreview(enabled: false)
     }
 
-    func maybeStartScreenPreview() {
+    func maybeEnableScreenPreview() {
         guard !showStealthMode else {
             return
         }
