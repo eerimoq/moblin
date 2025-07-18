@@ -23,7 +23,7 @@ class MpegTsWriter {
     private static let videoStreamId: UInt8 = 224
     private static let segmentDuration = CMTime(seconds: 2)
     weak var delegate: (any MpegTsWriterDelegate)?
-    private var isRunning: Atomic<Bool> = .init(false)
+    private var isRunning = false
     private var audioContinuityCounter: UInt8 = 0
     private var videoContinuityCounter: UInt8 = 0
     private var patContinuityCounter: UInt8 = 0
@@ -63,11 +63,11 @@ class MpegTsWriter {
     }
 
     func startRunning() {
-        isRunning.mutate { $0 = true }
+        isRunning = true
     }
 
     func stopRunning() {
-        guard isRunning.value else {
+        guard isRunning else {
             return
         }
         audioContinuityCounter = 0
@@ -84,7 +84,7 @@ class MpegTsWriter {
         programClockReferenceTimestamp = nil
         presentationTimeStampBase = nil
         previousDecodeTimeStamp = nil
-        isRunning.mutate { $0 = false }
+        isRunning = false
     }
 
     private func canWriteFor() -> Bool {
