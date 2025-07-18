@@ -65,6 +65,8 @@ class SrtlaServerClient {
     let createdAt: ContinuousClock.Instant = .now
     private var nakPacket = NakPacket()
     private var periodicNakTimer = SimpleTimer(queue: srtlaServerQueue)
+    private var dataPacketsToSend: [Data] = []
+    private var latestFlushDataPacketsTime = ContinuousClock.now
 
     init(srtPort: UInt16) {
         logger.info("srtla-server-client: Creating local SRT server connection.")
@@ -209,8 +211,20 @@ extension SrtlaServerClient: SrtlaServerClientConnectionDelegate {
     func handlePacketFromSrtClient(_ connection: SrtlaServerClientConnection, packet: Data) {
         if isSrtDataPacket(packet: packet) {
             nakPacket.remove(sn: getSrtSequenceNumber(packet: packet))
+            dataPacketsToSend.append(packet)
+            let now = ContinuousClock.now
+            if latestFlushDataPacketsTime.duration(to: now) > .milliseconds(25) {
+                localSrtServerConnection?.batch {
+                    for packet in dataPacketsToSend {
+                        localSrtServerConnection?.send(content: packet, completion: .idempotent)
+                    }
+                }
+                dataPacketsToSend.removeAll()
+                latestFlushDataPacketsTime = now
+            }
+        } else {
+            localSrtServerConnection?.send(content: packet, completion: .idempotent)
         }
         latestConnection = connection
-        localSrtServerConnection?.send(content: packet, completion: .contentProcessed { _ in })
     }
 }
