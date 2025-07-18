@@ -126,6 +126,7 @@ final class VideoUnit: NSObject {
     private var blackPixelBufferPool: CVPixelBufferPool?
     private var latestSampleBuffer: CMSampleBuffer?
     private var latestSampleBufferTime: ContinuousClock.Instant?
+    private var sceneSwitchEndRendered = false
     private var frameTimer = SimpleTimer(queue: processorPipelineQueue)
     private var firstFrameTime: ContinuousClock.Instant?
     private var isFirstAfterAttach = false
@@ -553,27 +554,71 @@ final class VideoUnit: NSObject {
         guard isFirstAfterAttach else {
             return
         }
-        guard let latestSampleBuffer, let latestSampleBufferTime else {
+        guard var latestSampleBuffer, let latestSampleBufferTime else {
             return
         }
         let delta = latestSampleBufferTime.duration(to: .now)
         guard delta > .seconds(0.05) else {
             return
         }
+        let isSceneSwitchTransition = !isAtEndOfSceneSwitchTransition()
+        if !isSceneSwitchTransition, !sceneSwitchEndRendered {
+            latestSampleBuffer = renderSceneSwitchTransitionEnd(sampleBuffer: latestSampleBuffer)
+            self.latestSampleBuffer = latestSampleBuffer
+            sceneSwitchEndRendered = true
+        }
         let timeDelta = CMTime(seconds: delta.seconds)
-        guard let sampleBuffer = CMSampleBuffer.create(latestSampleBuffer.imageBuffer!,
-                                                       latestSampleBuffer.formatDescription!,
-                                                       latestSampleBuffer.duration,
-                                                       latestSampleBuffer.presentationTimeStamp + timeDelta,
-                                                       latestSampleBuffer.decodeTimeStamp + timeDelta)
-        else {
+        let newPresentationTimeStamp = latestSampleBuffer.presentationTimeStamp + timeDelta
+        guard let sampleBuffer = latestSampleBuffer.replacePresentationTimeStamp(newPresentationTimeStamp) else {
             return
         }
         _ = appendSampleBuffer(
             sampleBuffer,
             isFirstAfterAttach: false,
-            isSceneSwitchTransition: true
+            isSceneSwitchTransition: isSceneSwitchTransition
         )
+    }
+
+    private func isAtEndOfSceneSwitchTransition() -> Bool {
+        if let latestSampleBufferTime {
+            let offset = ContinuousClock.now - latestSampleBufferTime
+            if sceneSwitchTransition == .blurAndZoom {
+                return offset.seconds >= 5
+            } else {
+                return offset.seconds >= 2
+            }
+        } else {
+            return false
+        }
+    }
+
+    private func renderSceneSwitchTransitionEnd(sampleBuffer: CMSampleBuffer) -> CMSampleBuffer {
+        guard let imageBuffer = sampleBuffer.imageBuffer else {
+            return sampleBuffer
+        }
+        var image = CIImage(cvPixelBuffer: imageBuffer)
+        image = applySceneSwitchTransition(image)
+        guard let outputImageBuffer = createPixelBuffer(sampleBuffer: sampleBuffer) else {
+            return sampleBuffer
+        }
+        if let poolColorSpace {
+            context.render(image, to: outputImageBuffer, bounds: image.extent, colorSpace: poolColorSpace)
+        } else {
+            context.render(image, to: outputImageBuffer)
+        }
+        guard let formatDescription = CMVideoFormatDescription.create(imageBuffer: outputImageBuffer)
+        else {
+            return sampleBuffer
+        }
+        guard let outputSampleBuffer = CMSampleBuffer.create(outputImageBuffer,
+                                                             formatDescription,
+                                                             sampleBuffer.duration,
+                                                             sampleBuffer.presentationTimeStamp,
+                                                             sampleBuffer.decodeTimeStamp)
+        else {
+            return sampleBuffer
+        }
+        return outputSampleBuffer
     }
 
     private func prepareFirstFrame() {
@@ -1663,6 +1708,7 @@ final class VideoUnit: NSObject {
         }
         latestSampleBuffer = sampleBuffer
         latestSampleBufferTime = now
+        sceneSwitchEndRendered = false
         if appendSampleBuffer(sampleBuffer, isFirstAfterAttach: isFirstAfterAttach, isSceneSwitchTransition: false) {
             isFirstAfterAttach = false
         }
