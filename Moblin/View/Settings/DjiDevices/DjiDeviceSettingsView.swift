@@ -107,6 +107,7 @@ private struct DjiDeviceRtmpSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var device: SettingsDjiDevice
     @ObservedObject var status: StatusOther
+    @ObservedObject var rtmpServer: SettingsRtmpServer
 
     private func serverUrls() -> [String] {
         guard let stream = model.getRtmpStream(id: device.serverRtmpStreamId) else {
@@ -116,19 +117,19 @@ private struct DjiDeviceRtmpSettingsView: View {
         for status in status.ipStatuses.filter({ $0.ipType == .ipv4 }) {
             serverUrls.append(rtmpStreamUrl(
                 address: status.ipType.formatAddress(status.ip),
-                port: model.database.rtmpServer.port,
+                port: rtmpServer.port,
                 streamKey: stream.streamKey
             ))
         }
         serverUrls.append(rtmpStreamUrl(
             address: personalHotspotLocalAddress,
-            port: model.database.rtmpServer.port,
+            port: rtmpServer.port,
             streamKey: stream.streamKey
         ))
         for status in status.ipStatuses.filter({ $0.ipType == .ipv6 }) {
             serverUrls.append(rtmpStreamUrl(
                 address: status.ipType.formatAddress(status.ip),
-                port: model.database.rtmpServer.port,
+                port: rtmpServer.port,
                 streamKey: stream.streamKey
             ))
         }
@@ -144,11 +145,11 @@ private struct DjiDeviceRtmpSettingsView: View {
             }
             .disabled(device.isStarted)
             if device.rtmpUrlType == .server {
-                if model.database.rtmpServer.streams.isEmpty {
+                if rtmpServer.streams.isEmpty {
                     Text("No RTMP server streams exists")
                 } else {
                     Picker("Stream", selection: $device.serverRtmpStreamId) {
-                        ForEach(model.database.rtmpServer.streams) { stream in
+                        ForEach(rtmpServer.streams) { stream in
                             Text(stream.name)
                                 .tag(stream.id)
                         }
@@ -164,7 +165,7 @@ private struct DjiDeviceRtmpSettingsView: View {
                         }
                     }
                     .disabled(device.isStarted)
-                    if !model.database.rtmpServer.enabled {
+                    if !rtmpServer.enabled {
                         Text("⚠️ The RTMP server is not enabled")
                     }
                 }
@@ -188,7 +189,7 @@ private struct DjiDeviceRtmpSettingsView: View {
             """)
         }
         .onAppear {
-            let streams = model.database.rtmpServer.streams
+            let streams = rtmpServer.streams
             if !streams.isEmpty {
                 if !streams.contains(where: { $0.id == device.serverRtmpStreamId }) {
                     device.serverRtmpStreamId = streams.first!.id
@@ -200,7 +201,7 @@ private struct DjiDeviceRtmpSettingsView: View {
         }
         Section {
             NavigationLink {
-                RtmpServerSettingsView(rtmpServer: model.database.rtmpServer)
+                RtmpServerSettingsView(rtmpServer: rtmpServer)
             } label: {
                 Text("RTMP server")
             }
@@ -321,7 +322,7 @@ struct DjiDeviceSettingsView: View {
             }
             DjiDeviceSelectDeviceSettingsView(device: device)
             DjiDeviceWiFiSettingsView(device: device)
-            DjiDeviceRtmpSettingsView(device: device, status: model.statusOther)
+            DjiDeviceRtmpSettingsView(device: device, status: model.statusOther, rtmpServer: model.database.rtmpServer)
             DjiDeviceSettingsSettingsView(device: device)
             DjiDeviceAutoRestartSettingsView(device: device)
             Section {
