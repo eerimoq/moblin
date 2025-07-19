@@ -33,11 +33,17 @@ class ByteWriter {
     }
 
     func writeUInt8(_ value: UInt8) {
-        writeBytes(value.data)
+        if position == data.count {
+            data.append(value)
+            position += 1
+        } else {
+            writeBytes(value.data)
+        }
     }
 
     func writeUInt16(_ value: UInt16) {
-        writeBytes(value.bigEndian.data)
+        writeUInt8(UInt8((value >> 8) & 0xFF))
+        writeUInt8(UInt8(value & 0xFF))
     }
 
     func writeUInt16Le(_ value: UInt16) {
@@ -58,7 +64,10 @@ class ByteWriter {
     }
 
     func writeUInt32(_ value: UInt32) {
-        writeBytes(value.bigEndian.data)
+        writeUInt8(UInt8((value >> 24) & 0xFF))
+        writeUInt8(UInt8((value >> 16) & 0xFF))
+        writeUInt8(UInt8((value >> 8) & 0xFF))
+        writeUInt8(UInt8(value & 0xFF))
     }
 
     func writeUInt32Le(_ value: UInt32) {
@@ -84,14 +93,14 @@ class ByteWriter {
         if position == data.count {
             data.append(value)
             position = data.count
-            return
+        } else {
+            let length = min(data.count, value.count)
+            data[position ..< position + length] = value[0 ..< length]
+            if length == data.count {
+                data.append(value[length ..< value.count])
+            }
+            position += value.count
         }
-        let length = min(data.count, value.count)
-        data[position ..< position + length] = value[0 ..< length]
-        if length == data.count {
-            data.append(value[length ..< value.count])
-        }
-        position += value.count
     }
 
     func sequence(_ length: Int, lambda: (ByteWriter) -> Void) {
