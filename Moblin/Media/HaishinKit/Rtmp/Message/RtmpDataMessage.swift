@@ -35,7 +35,7 @@ final class RtmpDataMessage: RtmpMessage {
             if type == .amf3Data {
                 serializer.writeUInt8(0)
             }
-            _ = serializer.serialize(handlerName)
+            serializer.serialize(handlerName)
             for arg in arguments {
                 serializer.serialize(arg)
             }

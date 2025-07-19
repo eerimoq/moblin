@@ -58,10 +58,9 @@ final class RtmpCommandMessage: RtmpMessage {
             if type == .amf3Command {
                 serializer.writeUInt8(0)
             }
-            serializer
-                .serialize(commandName)
-                .serialize(transactionId)
-                .serialize(commandObject)
+            serializer.serialize(commandName)
+            serializer.serialize(transactionId)
+            serializer.serialize(commandObject)
             for argument in arguments {
                 serializer.serialize(argument)
             }

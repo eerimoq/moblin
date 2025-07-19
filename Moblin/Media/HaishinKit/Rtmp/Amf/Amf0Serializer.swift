@@ -28,96 +28,87 @@ enum Amf0Type: UInt8 {
 }
 
 final class Amf0Serializer: ByteWriter {
-    @discardableResult
-    func serialize(_ value: Any?) -> Self {
+    func serialize(_ value: Any?) {
         if value == nil {
             writeUInt8(Amf0Type.null.rawValue)
-            return self
         }
         switch value {
         case let value as Int:
-            return serialize(Double(value))
+            serialize(Double(value))
         case let value as UInt:
-            return serialize(Double(value))
+            serialize(Double(value))
         case let value as Int8:
-            return serialize(Double(value))
+            serialize(Double(value))
         case let value as UInt8:
-            return serialize(Double(value))
+            serialize(Double(value))
         case let value as Int16:
-            return serialize(Double(value))
+            serialize(Double(value))
         case let value as UInt16:
-            return serialize(Double(value))
+            serialize(Double(value))
         case let value as Int32:
-            return serialize(Double(value))
+            serialize(Double(value))
         case let value as UInt32:
-            return serialize(Double(value))
+            serialize(Double(value))
         case let value as Float:
-            return serialize(Double(value))
+            serialize(Double(value))
         case let value as Double:
-            return serialize(Double(value))
+            serialize(Double(value))
         case let value as Date:
-            return serialize(value)
+            serialize(value)
         case let value as String:
-            return serialize(value)
+            serialize(value)
         case let value as Bool:
-            return serialize(value)
+            serialize(value)
         case let value as AsArray:
-            return serialize(value)
+            serialize(value)
         case let value as AsObject:
-            return serialize(value)
+            serialize(value)
         default:
             writeUInt8(Amf0Type.undefined.rawValue)
-            return self
         }
     }
 
-    func serialize(_ value: Double) -> Self {
+    func serialize(_ value: Double) {
         writeUInt8(Amf0Type.number.rawValue)
         writeDouble(value)
-        return self
     }
 
-    func serialize(_ value: Int) -> Self {
+    func serialize(_ value: Int) {
         serialize(Double(value))
     }
 
-    func serialize(_ value: Bool) -> Self {
+    func serialize(_ value: Bool) {
         writeBytes(Data([Amf0Type.bool.rawValue, value ? 0x01 : 0x00]))
-        return self
     }
 
-    func serialize(_ value: String) -> Self {
+    func serialize(_ value: String) {
         let isLong: Bool = UInt32(UInt16.max) < UInt32(value.count)
         writeUInt8(isLong ? Amf0Type.longString.rawValue : Amf0Type.string.rawValue)
-        return serializeUTF8(value, isLong)
+        serializeUTF8(value, isLong)
     }
 
-    func serialize(_ value: AsObject) -> Self {
+    func serialize(_ value: AsObject) {
         writeUInt8(Amf0Type.object.rawValue)
         for (key, data) in value {
-            serializeUTF8(key, false).serialize(data)
+            serializeUTF8(key, false)
+            serialize(data)
         }
         serializeUTF8("", false)
         writeUInt8(Amf0Type.objectEnd.rawValue)
-        return self
     }
 
-    func serialize(_: AsArray) -> Self {
-        self
-    }
+    func serialize(_: AsArray) {}
 
-    func serialize(_ value: Date) -> Self {
+    func serialize(_ value: Date) {
         writeUInt8(Amf0Type.date.rawValue)
         writeDouble(value.timeIntervalSince1970 * 1000)
         writeBytes(Data([
             0x00,
             0x00,
         ]))
-        return self
     }
 
-    @discardableResult
-    private func serializeUTF8(_ value: String, _ isLong: Bool) -> Self {
+    private func serializeUTF8(_ value: String, _ isLong: Bool) {
         let utf8 = Data(value.utf8)
         if isLong {
             writeUInt32(UInt32(utf8.count))
@@ -125,7 +116,6 @@ final class Amf0Serializer: ByteWriter {
             writeUInt16(UInt16(utf8.count))
         }
         writeBytes(utf8)
-        return self
     }
 }
 
