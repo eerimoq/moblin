@@ -102,10 +102,7 @@ final class Amf0Serializer: ByteWriter {
     func serialize(_ value: Date) {
         writeUInt8(Amf0Type.date.rawValue)
         writeDouble(value.timeIntervalSince1970 * 1000)
-        writeBytes(Data([
-            0x00,
-            0x00,
-        ]))
+        writeUInt16(0)
     }
 
     private func serializeUTF8(_ value: String, _ isLong: Bool) {
