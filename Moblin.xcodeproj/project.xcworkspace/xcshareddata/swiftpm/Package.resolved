@@ -1,5 +1,5 @@
 {
-  "originHash" : "11f4cf2805da2d8655ca0a3d91df7c55a89da938f8a11a19e1e4b3351af21066",
+  "originHash" : "fa2ad0d101396197799b8d983ba3f1aadeaae0e7a0acb4fca3deeed8231c7ce8",
   "pins" : [
     {
       "identity" : "alerttoast",
@@ -31,10 +31,10 @@
     {
       "identity" : "crcswift",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/ivanesik/CrcSwift.git",
+      "location" : "https://github.com/eerimoq/CrcSwift.git",
       "state" : {
-        "revision" : "bb2fff7fb79815fad0528da71c9168d570bfc76c",
-        "version" : "0.0.3"
+        "branch" : "master",
+        "revision" : "d58447691fc9ccf6ddbf5893332174fc60205908"
       }
     },
     {

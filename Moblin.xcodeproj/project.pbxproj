@@ -4901,10 +4901,10 @@
 		};
 		03F465EA2C441D1400630708 /* XCRemoteSwiftPackageReference "CrcSwift" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/ivanesik/CrcSwift.git";
+			repositoryURL = "https://github.com/eerimoq/CrcSwift.git";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.0.3;
+				branch = master;
+				kind = branch;
 			};
 		};
 		882D0C142DF76F5B0035BFAF /* XCRemoteSwiftPackageReference "BlackSharkLib" */ = {
