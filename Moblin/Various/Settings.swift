@@ -2974,36 +2974,104 @@ class SettingsShow: Codable, ObservableObject {
     }
 }
 
-class SettingsZoomPreset: Codable, Identifiable, Equatable {
+class SettingsZoomPreset: Codable, Identifiable, Equatable, ObservableObject {
     var id: UUID
-    var name: String = ""
-    var level: Float = 1.0
-    var x: Float? = 1.0
+    @Published var name: String = ""
+    @Published var x: Float = 1.0
 
-    init(id: UUID, name: String, level: Float, x: Float) {
+    init(id: UUID, name: String, x: Float) {
         self.id = id
         self.name = name
-        self.level = level
         self.x = x
     }
 
     static func == (lhs: SettingsZoomPreset, rhs: SettingsZoomPreset) -> Bool {
         return lhs.id == rhs.id
     }
+
+    enum CodingKeys: CodingKey {
+        case id,
+             name,
+             x
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.name, name)
+        try container.encode(.x, x)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        name = container.decode(.name, String.self, "")
+        x = container.decode(.x, Float.self, 1.0)
+    }
 }
 
-class SettingsZoomSwitchTo: Codable {
-    var level: Float = 1.0
-    var x: Float? = 1.0
-    var enabled: Bool = false
+class SettingsZoomSwitchTo: Codable, ObservableObject {
+    @Published var level: Float = 1.0
+    @Published var x: Float = 1.0
+    @Published var enabled: Bool = false
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case level,
+             x,
+             enabled
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.level, level)
+        try container.encode(.x, x)
+        try container.encode(.enabled, enabled)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        level = container.decode(.level, Float.self, 1.0)
+        x = container.decode(.x, Float.self, 1.0)
+        enabled = container.decode(.enabled, Bool.self, false)
+    }
 }
 
-class SettingsZoom: Codable {
-    var back: [SettingsZoomPreset] = []
-    var front: [SettingsZoomPreset] = []
-    var switchToBack: SettingsZoomSwitchTo = .init()
-    var switchToFront: SettingsZoomSwitchTo = .init()
-    var speed: Float? = 5.0
+class SettingsZoom: Codable, ObservableObject {
+    @Published var back: [SettingsZoomPreset] = []
+    @Published var front: [SettingsZoomPreset] = []
+    @Published var switchToBack: SettingsZoomSwitchTo = .init()
+    @Published var switchToFront: SettingsZoomSwitchTo = .init()
+    @Published var speed: Float = 5.0
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case back,
+             front,
+             switchToBack,
+             switchToFront,
+             speed
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.back, back)
+        try container.encode(.front, front)
+        try container.encode(.switchToBack, switchToBack)
+        try container.encode(.switchToFront, switchToFront)
+        try container.encode(.speed, speed)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        back = container.decode(.back, [SettingsZoomPreset].self, [])
+        front = container.decode(.front, [SettingsZoomPreset].self, [])
+        switchToBack = container.decode(.switchToBack, SettingsZoomSwitchTo.self, .init())
+        switchToFront = container.decode(.switchToFront, SettingsZoomSwitchTo.self, .init())
+        speed = container.decode(.speed, Float.self, 5.0)
+    }
 }
 
 class SettingsBitratePreset: Codable, Identifiable, ObservableObject {
@@ -5986,28 +6054,27 @@ private func addDefaultBackZoomPresets(database: Database) {
             database.zoom.back.append(SettingsZoomPreset(
                 id: UUID(),
                 name: "\(nameX)x",
-                level: 2.0 * x,
                 x: x
             ))
         }
     } else {
         database.zoom.back = [
-            SettingsZoomPreset(id: UUID(), name: "0.5x", level: 1.0, x: 0.5),
-            SettingsZoomPreset(id: UUID(), name: "1x", level: 2.0, x: 1.0),
-            SettingsZoomPreset(id: UUID(), name: "2x", level: 4.0, x: 2.0),
-            SettingsZoomPreset(id: UUID(), name: "4x", level: 8.0, x: 4.0),
-            SettingsZoomPreset(id: UUID(), name: "8x", level: 16.0, x: 8.0),
+            SettingsZoomPreset(id: UUID(), name: "0.5x", x: 0.5),
+            SettingsZoomPreset(id: UUID(), name: "1x", x: 1.0),
+            SettingsZoomPreset(id: UUID(), name: "2x", x: 2.0),
+            SettingsZoomPreset(id: UUID(), name: "4x", x: 4.0),
+            SettingsZoomPreset(id: UUID(), name: "8x", x: 8.0),
         ]
     }
 }
 
 private func addDefaultFrontZoomPresets(database: Database) {
     database.zoom.front = [
-        SettingsZoomPreset(id: UUID(), name: "0.5x", level: 0.5, x: 0.5),
-        SettingsZoomPreset(id: UUID(), name: "1x", level: 1.0, x: 1.0),
-        SettingsZoomPreset(id: UUID(), name: "2x", level: 2.0, x: 2.0),
-        SettingsZoomPreset(id: UUID(), name: "4x", level: 4.0, x: 4.0),
-        SettingsZoomPreset(id: UUID(), name: "8x", level: 8.0, x: 8.0),
+        SettingsZoomPreset(id: UUID(), name: "0.5x", x: 0.5),
+        SettingsZoomPreset(id: UUID(), name: "1x", x: 1.0),
+        SettingsZoomPreset(id: UUID(), name: "2x", x: 2.0),
+        SettingsZoomPreset(id: UUID(), name: "4x", x: 4.0),
+        SettingsZoomPreset(id: UUID(), name: "8x", x: 8.0),
     ]
 }
 
@@ -6626,26 +6693,6 @@ final class Settings {
     }
 
     private func migrateFromOlderVersions() {
-        if realDatabase.zoom.speed == nil {
-            realDatabase.zoom.speed = 5.0
-            store()
-        }
-        for preset in realDatabase.zoom.back where preset.x == nil {
-            preset.x = preset.level / 2
-            store()
-        }
-        for preset in realDatabase.zoom.front where preset.x == nil {
-            preset.x = preset.level
-            store()
-        }
-        if realDatabase.zoom.switchToBack.x == nil {
-            realDatabase.zoom.switchToBack.x = realDatabase.zoom.switchToBack.level / 2
-            store()
-        }
-        if realDatabase.zoom.switchToFront.x == nil {
-            realDatabase.zoom.switchToFront.x = realDatabase.zoom.switchToFront.level / 2
-            store()
-        }
         for button in realDatabase.quickButtons where button.type == .image {
             if button.name != String(localized: "Camera") {
                 button.name = String(localized: "Camera")

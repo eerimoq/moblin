@@ -3,7 +3,7 @@ import SwiftUI
 
 struct ZoomPresetSettingsView: View {
     @EnvironmentObject var model: Model
-    var preset: SettingsZoomPreset
+    @ObservedObject var preset: SettingsZoomPreset
     let minX: Float
     let maxX: Float
 
@@ -24,15 +24,25 @@ struct ZoomPresetSettingsView: View {
     }
 
     var body: some View {
-        TextEditView(
-            title: String(localized: "X"),
-            value: String(preset.x!),
-            footers: [
-                String(localized: "Allowed range is \(formatX(x: minX)) - \(formatX(x: maxX))."),
-            ],
-            keyboardType: .numbersAndPunctuation
-        ) {
-            submitX(x: $0)
+        NavigationLink {
+            TextEditView(
+                title: String(localized: "X"),
+                value: String(preset.x),
+                footers: [
+                    String(localized: "Allowed range is \(formatX(x: minX)) - \(formatX(x: maxX))."),
+                ],
+                keyboardType: .numbersAndPunctuation
+            ) {
+                submitX(x: $0)
+            }
+        } label: {
+            HStack {
+                DraggableItemPrefixView()
+                TextItemView(
+                    name: preset.name,
+                    value: String(preset.x)
+                )
+            }
         }
     }
 }

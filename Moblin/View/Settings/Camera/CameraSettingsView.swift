@@ -201,7 +201,7 @@ struct CameraSettingsView: View {
             Section {
                 if database.showAllSettings {
                     NavigationLink {
-                        ZoomSettingsView(speed: database.zoom.speed!)
+                        ZoomSettingsView(zoom: database.zoom)
                     } label: {
                         Text("Zoom")
                     }

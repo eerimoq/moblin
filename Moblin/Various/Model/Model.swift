@@ -805,7 +805,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 .getUIZoomRange(hasUltraWideCamera: hasUltraWideBackCamera())
             if let preset = backZoomPresets().first {
                 zoom.backPresetId = preset.id
-                zoom.backX = preset.x!
+                zoom.backX = preset.x
             } else {
                 zoom.backX = cameraZoomXMinimum
             }

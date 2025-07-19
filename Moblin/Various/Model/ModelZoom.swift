@@ -29,8 +29,8 @@ extension Model {
             break
         }
         if let preset = findZoomPreset(id: id) {
-            if setCameraZoomX(x: preset.x!, rate: database.zoom.speed!) != nil {
-                setZoomXWhenInRange(x: preset.x!)
+            if setCameraZoomX(x: preset.x, rate: database.zoom.speed) != nil {
+                setZoomXWhenInRange(x: preset.x)
                 switch getSelectedScene()?.cameraPosition {
                 case .backTripleLowEnergy:
                     attachBackTripleLowEnergyCamera(force: false)
@@ -160,7 +160,7 @@ extension Model {
     func updateBackZoomSwitchTo() {
         if database.zoom.switchToBack.enabled {
             clearZoomPresetId()
-            zoom.backX = database.zoom.switchToBack.x!
+            zoom.backX = database.zoom.switchToBack.x
             updateBackZoomPresetId()
         }
     }
@@ -168,7 +168,7 @@ extension Model {
     func updateFrontZoomSwitchTo() {
         if database.zoom.switchToFront.enabled {
             clearZoomPresetId()
-            zoom.frontX = database.zoom.switchToFront.x!
+            zoom.frontX = database.zoom.switchToFront.x
             updateFrontZoomPresetId()
         }
     }
@@ -204,7 +204,7 @@ extension Model {
     }
 
     private func showPreset(preset: SettingsZoomPreset) -> Bool {
-        let x = preset.x!
+        let x = preset.x
         return x >= cameraZoomXMinimum && x <= cameraZoomXMaximum
     }
 

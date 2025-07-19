@@ -507,7 +507,7 @@ extension Model: WCSessionDelegate {
         }
         DispatchQueue.main.async {
             if self.isWatchLocal() {
-                self.setZoomX(x: x, rate: self.database.zoom.speed!)
+                self.setZoomX(x: x, rate: self.database.zoom.speed)
             } else {
                 self.remoteControlAssistantSetZoom(x: x)
             }

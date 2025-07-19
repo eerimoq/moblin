@@ -552,7 +552,7 @@ extension Model: RemoteControlStreamerDelegate {
     }
 
     func remoteControlStreamerSetZoom(x: Float) {
-        setZoomX(x: x, rate: database.zoom.speed!)
+        setZoomX(x: x, rate: database.zoom.speed)
     }
 
     func remoteControlStreamerSetMute(on: Bool) {

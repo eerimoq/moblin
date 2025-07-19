@@ -5,10 +5,10 @@ struct ZoomSwitchToSettingsView: View {
     @EnvironmentObject var model: Model
     let name: String
     let position: AVCaptureDevice.Position
-    let defaultZoom: SettingsZoomSwitchTo
+    @ObservedObject var defaultZoom: SettingsZoomSwitchTo
 
     private func x() -> Float {
-        return defaultZoom.x!
+        return defaultZoom.x
     }
 
     private func formatX(x: Float) -> String {
