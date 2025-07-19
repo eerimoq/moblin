@@ -1601,24 +1601,79 @@ class SettingsWidgetAlertFacePosition: Codable {
     var height: Double = 0.5
 }
 
-class SettingsWidgetAlertsAlert: Codable {
+class SettingsWidgetAlertsAlert: Codable, ObservableObject {
     var enabled: Bool = true
     var imageId: UUID = .init()
-    var imageLoopCount: Int? = 1
+    var imageLoopCount: Int = 1
     var soundId: UUID = .init()
     var textColor: RgbColor = .init(red: 255, green: 255, blue: 255)
     var accentColor: RgbColor = .init(red: 0xFD, green: 0xFB, blue: 0x67)
     var fontSize: Int = 45
     var fontDesign: SettingsFontDesign = .monospaced
     var fontWeight: SettingsFontWeight = .bold
-    var textToSpeechEnabled: Bool? = true
-    var textToSpeechDelay: Double? = 1.5
-    var textToSpeechLanguageVoices: [String: String]? = .init()
-    var positionType: SettingsWidgetAlertPositionType? = .scene
-    var facePosition: SettingsWidgetAlertFacePosition? = .init()
+    var textToSpeechEnabled: Bool = true
+    var textToSpeechDelay: Double = 1.5
+    @Published var textToSpeechLanguageVoices: [String: String] = .init()
+    var positionType: SettingsWidgetAlertPositionType = .scene
+    var facePosition: SettingsWidgetAlertFacePosition = .init()
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case enabled,
+             imageId,
+             imageLoopCount,
+             soundId,
+             textColor,
+             accentColor,
+             fontSize,
+             fontDesign,
+             fontWeight,
+             textToSpeechEnabled,
+             textToSpeechDelay,
+             textToSpeechLanguageVoices,
+             positionType,
+             facePosition
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.enabled, enabled)
+        try container.encode(.imageId, imageId)
+        try container.encode(.imageLoopCount, imageLoopCount)
+        try container.encode(.soundId, soundId)
+        try container.encode(.textColor, textColor)
+        try container.encode(.accentColor, accentColor)
+        try container.encode(.fontSize, fontSize)
+        try container.encode(.fontDesign, fontDesign)
+        try container.encode(.fontWeight, fontWeight)
+        try container.encode(.textToSpeechEnabled, textToSpeechEnabled)
+        try container.encode(.textToSpeechDelay, textToSpeechDelay)
+        try container.encode(.textToSpeechLanguageVoices, textToSpeechLanguageVoices)
+        try container.encode(.positionType, positionType)
+        try container.encode(.facePosition, facePosition)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        enabled = container.decode(.enabled, Bool.self, true)
+        imageId = container.decode(.imageId, UUID.self, .init())
+        imageLoopCount = container.decode(.imageLoopCount, Int.self, 1)
+        soundId = container.decode(.soundId, UUID.self, .init())
+        textColor = container.decode(.textColor, RgbColor.self, .init(red: 255, green: 255, blue: 255))
+        accentColor = container.decode(.accentColor, RgbColor.self, .init(red: 0xFD, green: 0xFB, blue: 0x67))
+        fontSize = container.decode(.fontSize, Int.self, 45)
+        fontDesign = container.decode(.fontDesign, SettingsFontDesign.self, .monospaced)
+        fontWeight = container.decode(.fontWeight, SettingsFontWeight.self, .bold)
+        textToSpeechEnabled = container.decode(.textToSpeechEnabled, Bool.self, true)
+        textToSpeechDelay = container.decode(.textToSpeechDelay, Double.self, 1.5)
+        textToSpeechLanguageVoices = container.decode(.textToSpeechLanguageVoices, [String: String].self, .init())
+        positionType = container.decode(.positionType, SettingsWidgetAlertPositionType.self, .scene)
+        facePosition = container.decode(.facePosition, SettingsWidgetAlertFacePosition.self, .init())
+    }
 
     func isTextToSpeechEnabled() -> Bool {
-        return enabled && textToSpeechEnabled!
+        return enabled && textToSpeechEnabled
     }
 
     func clone() -> SettingsWidgetAlertsAlert {
@@ -3260,14 +3315,14 @@ class SettingsChat: Codable, ObservableObject {
     var enabled: Bool = true
     @Published var filters: [SettingsChatFilter] = []
     var textToSpeechEnabled: Bool = false
-    var textToSpeechDetectLanguagePerMessage: Bool = false
-    var textToSpeechSayUsername: Bool = true
+    @Published var textToSpeechDetectLanguagePerMessage: Bool = false
+    @Published var textToSpeechSayUsername: Bool = true
     @Published var textToSpeechRate: Float = 0.4
     @Published var textToSpeechSayVolume: Float = 0.6
-    var textToSpeechLanguageVoices: [String: String] = .init()
-    var textToSpeechSubscribersOnly: Bool = false
-    var textToSpeechFilter: Bool = true
-    var textToSpeechFilterMentions: Bool = true
+    @Published var textToSpeechLanguageVoices: [String: String] = .init()
+    @Published var textToSpeechSubscribersOnly: Bool = false
+    @Published var textToSpeechFilter: Bool = true
+    @Published var textToSpeechFilterMentions: Bool = true
     @Published var mirrored: Bool = false
     @Published var botEnabled: Bool = false
     var botCommandPermissions: SettingsChatBotPermissions = .init()
@@ -6793,56 +6848,6 @@ final class Settings {
         for widget in realDatabase.widgets where widget.alerts.twitch == nil {
             widget.alerts.twitch = .init()
             store()
-        }
-        for widget in realDatabase.widgets {
-            if widget.alerts.twitch!.follows.textToSpeechEnabled == nil {
-                widget.alerts.twitch!.follows.textToSpeechEnabled = true
-                store()
-            }
-            if widget.alerts.twitch!.follows.textToSpeechDelay == nil {
-                widget.alerts.twitch!.follows.textToSpeechDelay = 1.5
-                store()
-            }
-            if widget.alerts.twitch!.follows.textToSpeechLanguageVoices == nil {
-                widget.alerts.twitch!.follows.textToSpeechLanguageVoices = .init()
-                store()
-            }
-            if widget.alerts.twitch!.follows.imageLoopCount == nil {
-                widget.alerts.twitch!.follows.imageLoopCount = 1
-                store()
-            }
-            if widget.alerts.twitch!.follows.positionType == nil {
-                widget.alerts.twitch!.follows.positionType = .scene
-                store()
-            }
-            if widget.alerts.twitch!.follows.facePosition == nil {
-                widget.alerts.twitch!.follows.facePosition = .init()
-                store()
-            }
-            if widget.alerts.twitch!.subscriptions.textToSpeechEnabled == nil {
-                widget.alerts.twitch!.subscriptions.textToSpeechEnabled = true
-                store()
-            }
-            if widget.alerts.twitch!.subscriptions.textToSpeechDelay == nil {
-                widget.alerts.twitch!.subscriptions.textToSpeechDelay = 1.5
-                store()
-            }
-            if widget.alerts.twitch!.subscriptions.textToSpeechLanguageVoices == nil {
-                widget.alerts.twitch!.subscriptions.textToSpeechLanguageVoices = .init()
-                store()
-            }
-            if widget.alerts.twitch!.subscriptions.imageLoopCount == nil {
-                widget.alerts.twitch!.subscriptions.imageLoopCount = 1
-                store()
-            }
-            if widget.alerts.twitch!.subscriptions.positionType == nil {
-                widget.alerts.twitch!.subscriptions.positionType = .scene
-                store()
-            }
-            if widget.alerts.twitch!.subscriptions.facePosition == nil {
-                widget.alerts.twitch!.subscriptions.facePosition = .init()
-                store()
-            }
         }
         updateBundledAlertsMediaGallery(database: realDatabase)
         for widget in realDatabase.widgets where widget.map.migrated == nil {

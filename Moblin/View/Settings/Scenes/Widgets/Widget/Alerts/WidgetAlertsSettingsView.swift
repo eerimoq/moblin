@@ -25,18 +25,18 @@ struct AlertPickerView: UIViewControllerRepresentable {
 
 private struct AlertTextToSpeechView: View {
     @EnvironmentObject var model: Model
-    var alert: SettingsWidgetAlertsAlert
+    @ObservedObject var alert: SettingsWidgetAlertsAlert
     @State var ttsDelay: Double
 
     private func onVoiceChange(languageCode: String, voice: String) {
-        alert.textToSpeechLanguageVoices![languageCode] = voice
+        alert.textToSpeechLanguageVoices[languageCode] = voice
         model.updateAlertsSettings()
     }
 
     var body: some View {
         Section {
             Toggle(isOn: Binding(get: {
-                alert.textToSpeechEnabled!
+                alert.textToSpeechEnabled
             }, set: { value in
                 alert.textToSpeechEnabled = value
                 model.updateAlertsSettings()
@@ -59,7 +59,7 @@ private struct AlertTextToSpeechView: View {
             }
             NavigationLink {
                 VoicesView(
-                    textToSpeechLanguageVoices: alert.textToSpeechLanguageVoices!,
+                    textToSpeechLanguageVoices: $alert.textToSpeechLanguageVoices,
                     onVoiceChange: onVoiceChange
                 )
             } label: {
@@ -81,7 +81,7 @@ private func getSoundName(model: Model, id: UUID?) -> String {
 
 private struct AlertMediaView: View {
     @EnvironmentObject var model: Model
-    var alert: SettingsWidgetAlertsAlert
+    @ObservedObject var alert: SettingsWidgetAlertsAlert
     @State var imageId: UUID
     @State var soundId: UUID
 
@@ -91,7 +91,7 @@ private struct AlertMediaView: View {
                 AlertImageSelectorView(
                     alert: alert,
                     imageId: $imageId,
-                    loopCount: Float(alert.imageLoopCount!)
+                    loopCount: Float(alert.imageLoopCount)
                 )
             } label: {
                 TextItemView(name: "Image", value: getImageName(model: model, id: imageId))
@@ -109,7 +109,7 @@ private struct AlertMediaView: View {
 
 private struct AlertPositionFaceView: View {
     @EnvironmentObject var model: Model
-    var alert: SettingsWidgetAlertsAlert
+    @ObservedObject var alert: SettingsWidgetAlertsAlert
     @State private var facePosition: CGPoint = .init(x: 100, y: 100)
     @State private var facePositionOffset: CGSize = .init(width: 0, height: 0)
     @State private var facePositionAnchorPoint: AnchorPoint?
@@ -122,10 +122,10 @@ private struct AlertPositionFaceView: View {
             (facePositionAnchorPoint, facePositionOffset) = calculatePositioningAnchorPoint(
                 location,
                 size,
-                alert.facePosition!.x,
-                alert.facePosition!.y,
-                alert.facePosition!.width,
-                alert.facePosition!.height
+                alert.facePosition.x,
+                alert.facePosition.y,
+                alert.facePosition.width,
+                alert.facePosition.height
             )
         }
     }
@@ -133,22 +133,22 @@ private struct AlertPositionFaceView: View {
     private func createFacePositionPathAndUpdateImage(size: CGSize) -> Path {
         let (xTopLeft, yTopLeft, xBottomRight, yBottomRight) = calculatePositioningRectangle(
             facePositionAnchorPoint,
-            alert.facePosition!.x,
-            alert.facePosition!.y,
-            alert.facePosition!.width,
-            alert.facePosition!.height,
+            alert.facePosition.x,
+            alert.facePosition.y,
+            alert.facePosition.width,
+            alert.facePosition.height,
             facePosition,
             size,
             facePositionOffset
         )
-        alert.facePosition!.x = xTopLeft
-        alert.facePosition!.y = yTopLeft
-        alert.facePosition!.width = xBottomRight - xTopLeft
-        alert.facePosition!.height = yBottomRight - yTopLeft
-        let xPoints = CGFloat(alert.facePosition!.x) * size.width
-        let yPoints = CGFloat(alert.facePosition!.y) * size.height
-        let widthPoints = CGFloat(alert.facePosition!.width) * size.width
-        let heightPoints = CGFloat(alert.facePosition!.height) * size.height
+        alert.facePosition.x = xTopLeft
+        alert.facePosition.y = yTopLeft
+        alert.facePosition.width = xBottomRight - xTopLeft
+        alert.facePosition.height = yBottomRight - yTopLeft
+        let xPoints = CGFloat(alert.facePosition.x) * size.width
+        let yPoints = CGFloat(alert.facePosition.y) * size.height
+        let widthPoints = CGFloat(alert.facePosition.width) * size.width
+        let heightPoints = CGFloat(alert.facePosition.height) * size.height
         let path = drawPositioningRectangle(xPoints, yPoints, widthPoints, heightPoints)
         imageWidth = widthPoints
         imageHeight = heightPoints
@@ -230,7 +230,7 @@ private struct AlertPositionView: View {
 
 private struct TwitchFollowsView: View {
     @EnvironmentObject var model: Model
-    var alert: SettingsWidgetAlertsAlert
+    @ObservedObject var alert: SettingsWidgetAlertsAlert
 
     var body: some View {
         Form {
@@ -245,7 +245,7 @@ private struct TwitchFollowsView: View {
                 }
             }
             AlertMediaView(alert: alert, imageId: alert.imageId, soundId: alert.soundId)
-            AlertPositionView(alert: alert, positionType: alert.positionType!)
+            AlertPositionView(alert: alert, positionType: alert.positionType)
             AlertColorsView(
                 alert: alert,
                 textColor: alert.textColor.color(),
@@ -257,7 +257,7 @@ private struct TwitchFollowsView: View {
                 fontDesign: alert.fontDesign,
                 fontWeight: alert.fontWeight
             )
-            AlertTextToSpeechView(alert: alert, ttsDelay: alert.textToSpeechDelay!)
+            AlertTextToSpeechView(alert: alert, ttsDelay: alert.textToSpeechDelay)
             Section {
                 Button {
                     let event = TwitchEventSubNotificationChannelFollowEvent(
@@ -277,7 +277,7 @@ private struct TwitchFollowsView: View {
 
 private struct TwitchSubscriptionsView: View {
     @EnvironmentObject var model: Model
-    var alert: SettingsWidgetAlertsAlert
+    @ObservedObject var alert: SettingsWidgetAlertsAlert
 
     var body: some View {
         Form {
@@ -292,7 +292,7 @@ private struct TwitchSubscriptionsView: View {
                 }
             }
             AlertMediaView(alert: alert, imageId: alert.imageId, soundId: alert.soundId)
-            AlertPositionView(alert: alert, positionType: alert.positionType!)
+            AlertPositionView(alert: alert, positionType: alert.positionType)
             AlertColorsView(
                 alert: alert,
                 textColor: alert.textColor.color(),
@@ -304,7 +304,7 @@ private struct TwitchSubscriptionsView: View {
                 fontDesign: alert.fontDesign,
                 fontWeight: alert.fontWeight
             )
-            AlertTextToSpeechView(alert: alert, ttsDelay: alert.textToSpeechDelay!)
+            AlertTextToSpeechView(alert: alert, ttsDelay: alert.textToSpeechDelay)
             Section {
                 Button {
                     let event = TwitchEventSubNotificationChannelSubscribeEvent(
@@ -326,7 +326,7 @@ private struct TwitchSubscriptionsView: View {
 
 private struct TwitchRaidsView: View {
     @EnvironmentObject var model: Model
-    var alert: SettingsWidgetAlertsAlert
+    @ObservedObject var alert: SettingsWidgetAlertsAlert
 
     var body: some View {
         Form {
@@ -341,7 +341,7 @@ private struct TwitchRaidsView: View {
                 }
             }
             AlertMediaView(alert: alert, imageId: alert.imageId, soundId: alert.soundId)
-            AlertPositionView(alert: alert, positionType: alert.positionType!)
+            AlertPositionView(alert: alert, positionType: alert.positionType)
             AlertColorsView(
                 alert: alert,
                 textColor: alert.textColor.color(),
@@ -353,7 +353,7 @@ private struct TwitchRaidsView: View {
                 fontDesign: alert.fontDesign,
                 fontWeight: alert.fontWeight
             )
-            AlertTextToSpeechView(alert: alert, ttsDelay: alert.textToSpeechDelay!)
+            AlertTextToSpeechView(alert: alert, ttsDelay: alert.textToSpeechDelay)
             Section {
                 Button {
                     let event = TwitchEventSubChannelRaidEvent(
@@ -390,13 +390,10 @@ private func formatTitle(_ bits: Int, _ comparisonOperator: String) -> String {
 
 private struct TwitchCheerView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var alert: SettingsWidgetAlertsAlert
     var cheerBit: SettingsWidgetAlertsCheerBitsAlert
     @Binding var bits: Int
     @Binding var comparisonOperator: String
-
-    private var alert: SettingsWidgetAlertsAlert {
-        return cheerBit.alert
-    }
 
     var body: some View {
         Form {
@@ -436,7 +433,7 @@ private struct TwitchCheerView: View {
                 model.updateAlertsSettings()
             }
             AlertMediaView(alert: alert, imageId: alert.imageId, soundId: alert.soundId)
-            AlertPositionView(alert: alert, positionType: alert.positionType!)
+            AlertPositionView(alert: alert, positionType: alert.positionType)
             AlertColorsView(
                 alert: alert,
                 textColor: alert.textColor.color(),
@@ -448,7 +445,7 @@ private struct TwitchCheerView: View {
                 fontDesign: alert.fontDesign,
                 fontWeight: alert.fontWeight
             )
-            AlertTextToSpeechView(alert: alert, ttsDelay: alert.textToSpeechDelay!)
+            AlertTextToSpeechView(alert: alert, ttsDelay: alert.textToSpeechDelay)
             Section {
                 Button {
                     let event = TwitchEventSubChannelCheerEvent(
@@ -469,11 +466,13 @@ private struct TwitchCheerView: View {
 }
 
 private struct TwitchCheerBitsItemView: View {
+    let alert: SettingsWidgetAlertsAlert
     private var cheerBit: SettingsWidgetAlertsCheerBitsAlert
     @State private var bits: Int
     @State private var comparisonOperator: String
 
-    init(cheerBit: SettingsWidgetAlertsCheerBitsAlert) {
+    init(alert: SettingsWidgetAlertsAlert, cheerBit: SettingsWidgetAlertsCheerBitsAlert) {
+        self.alert = alert
         self.cheerBit = cheerBit
         bits = cheerBit.bits
         comparisonOperator = cheerBit.comparisonOperator.rawValue
@@ -484,6 +483,7 @@ private struct TwitchCheerBitsItemView: View {
             DraggableItemPrefixView()
             NavigationLink {
                 TwitchCheerView(
+                    alert: alert,
                     cheerBit: cheerBit,
                     bits: $bits,
                     comparisonOperator: $comparisonOperator
@@ -504,7 +504,7 @@ private struct TwitchCheerBitsView: View {
             Section {
                 List {
                     ForEach(twitch.cheerBits!) { cheerBit in
-                        TwitchCheerBitsItemView(cheerBit: cheerBit)
+                        TwitchCheerBitsItemView(alert: cheerBit.alert, cheerBit: cheerBit)
                     }
                     .onMove { froms, to in
                         twitch.cheerBits!.move(fromOffsets: froms, toOffset: to)
@@ -621,16 +621,13 @@ private struct WidgetAlertsSettingsTwitchView: View {
 
 private struct ChatBotCommandView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var alert: SettingsWidgetAlertsAlert
     var command: SettingsWidgetAlertsChatBotCommand
     @State var name: String
     // @State var imageType: String
     // @State var imageId: UUID
     // @State var soundId: UUID
     // @State var imagePlaygroundImageType: UUID
-
-    private var alert: SettingsWidgetAlertsAlert {
-        command.alert
-    }
 
     private func onSubmit(value: String) {
         command.name = value.lowercased().trim().replacingOccurrences(
@@ -707,7 +704,7 @@ private struct ChatBotCommandView: View {
                 //     Text("Sound")
                 // }
                 AlertMediaView(alert: alert, imageId: alert.imageId, soundId: alert.soundId)
-                AlertPositionView(alert: alert, positionType: alert.positionType!)
+                AlertPositionView(alert: alert, positionType: alert.positionType)
                 AlertColorsView(
                     alert: alert,
                     textColor: alert.textColor.color(),
@@ -719,7 +716,7 @@ private struct ChatBotCommandView: View {
                     fontDesign: alert.fontDesign,
                     fontWeight: alert.fontWeight
                 )
-                AlertTextToSpeechView(alert: alert, ttsDelay: alert.textToSpeechDelay!)
+                AlertTextToSpeechView(alert: alert, ttsDelay: alert.textToSpeechDelay)
                 Section {
                     Button {
                         model.testAlert(alert: .chatBotCommand(
@@ -751,6 +748,7 @@ private struct WidgetAlertsSettingsChatBotView: View {
                 List {
                     ForEach(chatBot.commands) { command in
                         ChatBotCommandView(
+                            alert: command.alert,
                             command: command,
                             name: command.name /* ,
                              imageType: command.imageType!.toString(),
@@ -785,12 +783,9 @@ private struct WidgetAlertsSettingsChatBotView: View {
 
 private struct SpeechToTextStringView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var alert: SettingsWidgetAlertsAlert
     var string: SettingsWidgetAlertsSpeechToTextString
     @State var text: String
-
-    private var alert: SettingsWidgetAlertsAlert {
-        string.alert
-    }
 
     private func onSubmit(value: String) {
         string.string = value
@@ -817,7 +812,7 @@ private struct SpeechToTextStringView: View {
                     Text("Trigger by saying '\(text)'.")
                 }
                 AlertMediaView(alert: alert, imageId: alert.imageId, soundId: alert.soundId)
-                AlertPositionView(alert: alert, positionType: alert.positionType!)
+                AlertPositionView(alert: alert, positionType: alert.positionType)
                 Section {
                     Button {
                         model.testAlert(alert: .speechToTextString(string.id))
@@ -844,7 +839,7 @@ private struct WidgetAlertsSettingsSpeechToTextView: View {
             Section {
                 List {
                     ForEach(speechToText.strings) { string in
-                        SpeechToTextStringView(string: string, text: string.string)
+                        SpeechToTextStringView(alert: string.alert, string: string, text: string.string)
                     }
                     .onDelete { indexes in
                         speechToText.strings.remove(atOffsets: indexes)

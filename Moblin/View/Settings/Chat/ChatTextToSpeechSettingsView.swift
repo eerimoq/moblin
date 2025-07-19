@@ -6,8 +6,8 @@ struct ChatTextToSpeechSettingsView: View {
     @ObservedObject var chat: SettingsChat
 
     private func onVoiceChange(languageCode: String, voice: String) {
-        model.database.chat.textToSpeechLanguageVoices[languageCode] = voice
-        model.chatTextToSpeech.setVoices(voices: model.database.chat.textToSpeechLanguageVoices)
+        chat.textToSpeechLanguageVoices[languageCode] = voice
+        model.chatTextToSpeech.setVoices(voices: chat.textToSpeechLanguageVoices)
     }
 
     var body: some View {
@@ -15,7 +15,7 @@ struct ChatTextToSpeechSettingsView: View {
             Section {
                 NavigationLink {
                     VoicesView(
-                        textToSpeechLanguageVoices: model.database.chat.textToSpeechLanguageVoices,
+                        textToSpeechLanguageVoices: $chat.textToSpeechLanguageVoices,
                         onVoiceChange: onVoiceChange
                     )
                 } label: {
@@ -74,53 +74,31 @@ struct ChatTextToSpeechSettingsView: View {
                 Text("Pause between messages")
             }
             Section {
-                Toggle(isOn: Binding(get: {
-                    model.database.chat.textToSpeechDetectLanguagePerMessage
-                }, set: { value in
-                    model.database.chat.textToSpeechDetectLanguagePerMessage = value
-                    model.chatTextToSpeech.setDetectLanguagePerMessage(value: value)
-                })) {
-                    Text("Detect language per message")
-                }
-                Toggle(isOn: Binding(get: {
-                    model.database.chat.textToSpeechSayUsername
-                }, set: { value in
-                    model.database.chat.textToSpeechSayUsername = value
-                    model.chatTextToSpeech.setSayUsername(value: value)
-                })) {
-                    Text("Say username")
-                }
-                Toggle(isOn: Binding(get: {
-                    model.database.chat.textToSpeechSubscribersOnly
-                }, set: { value in
-                    model.database.chat.textToSpeechSubscribersOnly = value
-                })) {
-                    Text("Subscribers only")
-                }
+                Toggle("Detect language per message", isOn: $chat.textToSpeechDetectLanguagePerMessage)
+                    .onChange(of: chat.textToSpeechDetectLanguagePerMessage) { value in
+                        model.chatTextToSpeech.setDetectLanguagePerMessage(value: value)
+                    }
+                Toggle("Say username", isOn: $chat.textToSpeechSayUsername)
+                    .onChange(of: chat.textToSpeechSayUsername) { value in
+                        model.chatTextToSpeech.setSayUsername(value: value)
+                    }
+                Toggle("Subscribers only", isOn: $chat.textToSpeechSubscribersOnly)
             } footer: {
                 Text("Subscribers only is not available for all platforms.")
             }
             Section {
-                Toggle(isOn: Binding(get: {
-                    model.database.chat.textToSpeechFilter
-                }, set: { value in
-                    model.database.chat.textToSpeechFilter = value
-                    model.chatTextToSpeech.setFilter(value: value)
-                })) {
-                    Text("Filter")
-                }
+                Toggle("Filter", isOn: $chat.textToSpeechFilter)
+                    .onChange(of: chat.textToSpeechFilter) { value in
+                        model.chatTextToSpeech.setFilter(value: value)
+                    }
             } footer: {
                 Text("Do not say messages that are likely spam or bot commands.")
             }
             Section {
-                Toggle(isOn: Binding(get: {
-                    model.database.chat.textToSpeechFilterMentions
-                }, set: { value in
-                    model.database.chat.textToSpeechFilterMentions = value
-                    model.chatTextToSpeech.setFilterMentions(value: value)
-                })) {
-                    Text("Filter mentions")
-                }
+                Toggle("Filter mentions", isOn: $chat.textToSpeechFilterMentions)
+                    .onChange(of: chat.textToSpeechFilterMentions) { value in
+                        model.chatTextToSpeech.setFilterMentions(value: value)
+                    }
             } footer: {
                 Text("Do not say messages that contains mentions, except when you are mentioned.")
             }

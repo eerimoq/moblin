@@ -42,7 +42,7 @@ private struct Language {
 }
 
 struct VoicesView: View {
-    var textToSpeechLanguageVoices: [String: String]
+    @Binding var textToSpeechLanguageVoices: [String: String]
     var onVoiceChange: (String, String) -> Void
 
     private func languages() -> [Language] {

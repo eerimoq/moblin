@@ -230,7 +230,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         } else {
             sound = .customUrl(mediaStorage.makePath(id: alert.soundId))
         }
-        return (image, alert.imageLoopCount!, sound)
+        return (image, alert.imageLoopCount, sound)
     }
 
     func setSettings(settings: SettingsWidgetAlerts) {
@@ -532,7 +532,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
             audioPlayer = try? AVAudioPlayer(contentsOf: soundUrl)
             audioPlayer?.play()
         }
-        if settings.textToSpeechEnabled! {
+        if settings.textToSpeechEnabled {
             say(username: username, message: message, settings: settings)
         }
     }
@@ -546,7 +546,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         utterance.pitchMultiplier = 0.8
         utterance.volume = volume
         utterance.voice = voice
-        DispatchQueue.main.asyncAfter(deadline: .now() + settings.textToSpeechDelay!) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + settings.textToSpeechDelay) {
             self.synthesizer.speak(utterance)
         }
     }
@@ -555,7 +555,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         guard let language = Locale.current.language.languageCode?.identifier else {
             return nil
         }
-        if let voiceIdentifier = settings.textToSpeechLanguageVoices![language] {
+        if let voiceIdentifier = settings.textToSpeechLanguageVoices[language] {
             return AVSpeechSynthesisVoice(identifier: voiceIdentifier)
         } else if let voice = AVSpeechSynthesisVoice.speechVoices()
             .filter({ $0.language.starts(with: language) }).first
@@ -604,8 +604,8 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
     }
 
     private func calculateLandmark(settings: SettingsWidgetAlertsAlert) -> FaceLandmark {
-        let centerX = settings.facePosition!.x + settings.facePosition!.width / 2
-        let centerY = settings.facePosition!.y + settings.facePosition!.height / 2
+        let centerX = settings.facePosition.x + settings.facePosition.width / 2
+        let centerY = settings.facePosition.y + settings.facePosition.height / 2
         if isInRectangle(centerX, centerY, backgroundLeftEyeRectangle) {
             return .leftEye
         } else if isInRectangle(centerX, centerY, backgroundRightEyeRectangle) {
@@ -620,8 +620,8 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
     private func calculateLandmarkSettings(settings: SettingsWidgetAlertsAlert) -> LandmarkSettings? {
         if settings.positionType == .face {
             let landmark = calculateLandmark(settings: settings)
-            let centerX = settings.facePosition!.x + settings.facePosition!.width / 2
-            let centerY = settings.facePosition!.y + settings.facePosition!.height / 2
+            let centerX = settings.facePosition.x + settings.facePosition.width / 2
+            let centerY = settings.facePosition.y + settings.facePosition.height / 2
             let landmarkRectangle: BackgroundLandmarkRectangle
             switch landmark {
             case .face:
@@ -635,7 +635,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
             }
             let x = (centerX - landmarkRectangle.topLeftX) / landmarkRectangle.width()
             let y = (centerY - landmarkRectangle.topLeftY) / landmarkRectangle.height()
-            let height = settings.facePosition!.height / backgroundFaceRectangle.height()
+            let height = settings.facePosition.height / backgroundFaceRectangle.height()
             return LandmarkSettings(landmark: landmark, height: height, centerX: x, centerY: y)
         } else {
             return nil
