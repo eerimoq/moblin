@@ -21,6 +21,7 @@ class RtmpServerChunkStream {
     private var audioBuffer: AVAudioCompressedBuffer?
     private var audioDecoder: AVAudioConverter?
     private var pcmAudioFormat: AVAudioFormat?
+    private var pcmAudioBuffer: AVAudioPCMBuffer?
 
     init(client: RtmpServerClient, streamId: UInt16) {
         self.client = client
@@ -350,6 +351,11 @@ class RtmpServerChunkStream {
             logger.info("rtmp-server: client: Failed to create PCM audio format")
             return
         }
+        pcmAudioBuffer = AVAudioPCMBuffer(pcmFormat: pcmAudioFormat, frameCapacity: 1024)
+        guard pcmAudioBuffer != nil else {
+            logger.info("rtmp-server: client: Failed to create PCM audio buffer")
+            return
+        }
         audioDecoder = AVAudioConverter(from: audioFormat, to: pcmAudioFormat)
         if audioDecoder == nil {
             logger.info("rtmp-server: client: Failed to create audio decdoer")
@@ -381,14 +387,11 @@ class RtmpServerChunkStream {
             audioBuffer.byteLength = UInt32(length)
             audioBuffer.data.copyMemory(from: baseAddress.advanced(by: codec.headerSize), byteCount: length)
         }
-        guard let audioDecoder, let pcmAudioFormat else {
-            return
-        }
-        guard let outputBuffer = AVAudioPCMBuffer(pcmFormat: pcmAudioFormat, frameCapacity: 1024) else {
+        guard let audioDecoder, let pcmAudioBuffer else {
             return
         }
         var error: NSError?
-        audioDecoder.convert(to: outputBuffer, error: &error) { _, inputStatus in
+        audioDecoder.convert(to: pcmAudioBuffer, error: &error) { _, inputStatus in
             inputStatus.pointee = .haveData
             return self.audioBuffer
         }
@@ -396,7 +399,7 @@ class RtmpServerChunkStream {
             logger.info("rtmp-server: client: Audio decode error of packet with length \(length): \(error)")
             return
         }
-        guard let sampleBuffer = makeAudioSampleBuffer(client: client, audioBuffer: outputBuffer) else {
+        guard let sampleBuffer = makeAudioSampleBuffer(client: client, audioBuffer: pcmAudioBuffer) else {
             return
         }
         client.targetLatenciesSynchronizer
