@@ -742,6 +742,7 @@ struct RightOverlayBottomView: View {
                         if show.zoomPresets && zoom.hasZoom {
                             StreamOverlayRightZoomPresetSelctorView(database: model.database,
                                                                     zoom: model.zoom,
+                                                                    zoomSettings: model.database.zoom,
                                                                     width: width)
                         }
                     }

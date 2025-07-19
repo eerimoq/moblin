@@ -1,9 +1,19 @@
 import SwiftUI
 
+private struct PickerItemView: View {
+    @ObservedObject var preset: SettingsZoomPreset
+
+    var body: some View {
+        Text(preset.name)
+            .font(.subheadline)
+    }
+}
+
 struct StreamOverlayRightZoomPresetSelctorView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var database: Database
     @ObservedObject var zoom: Zoom
+    @ObservedObject var zoomSettings: SettingsZoom
     let width: CGFloat
 
     private func segmentWidth() -> Double {
@@ -33,8 +43,7 @@ struct StreamOverlayRightZoomPresetSelctorView: View {
                         model.setZoomPreset(id: value.id)
                     }
                 })) {
-                    Text($0.name)
-                        .font(.subheadline)
+                    PickerItemView(preset: $0)
                         .frame(
                             width: min(segmentWidth(), (width - 20) / CGFloat(presets.count)),
                             height: height()
@@ -58,8 +67,7 @@ struct StreamOverlayRightZoomPresetSelctorView: View {
                         model.setZoomPreset(id: value.id)
                     }
                 })) {
-                    Text($0.name)
-                        .font(.subheadline)
+                    PickerItemView(preset: $0)
                         .frame(
                             width: min(segmentWidth(), (width - 20) / CGFloat(presets.count)),
                             height: height()
