@@ -29,9 +29,6 @@ enum Amf0Type: UInt8 {
 
 final class Amf0Serializer: ByteWriter {
     func serialize(_ value: Any?) {
-        if value == nil {
-            writeUInt8(Amf0Type.null.rawValue)
-        }
         switch value {
         case let value as Int:
             serialize(Double(value))
@@ -63,6 +60,8 @@ final class Amf0Serializer: ByteWriter {
             serialize(value)
         case let value as AsObject:
             serialize(value)
+        case nil:
+            writeUInt8(Amf0Type.null.rawValue)
         default:
             writeUInt8(Amf0Type.undefined.rawValue)
         }
