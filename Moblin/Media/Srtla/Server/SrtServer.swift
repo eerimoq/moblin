@@ -52,7 +52,7 @@ class SrtServer {
                   !srtlaServer.connectedStreamIds.value.contains(acceptedStreamId.value)
             else {
                 srt_close(clientSocket)
-                logger.info("srt-server: \(port): Client with stream id \(acceptedStreamId) denied.")
+                logger.info("srt-server: \(port): Client with stream id \(acceptedStreamId.value) denied.")
                 continue
             }
             logger.info("srt-server: \(port): Accepted client \(stream.name).")
