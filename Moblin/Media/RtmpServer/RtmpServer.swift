@@ -71,14 +71,6 @@ class RtmpServer {
         }
     }
 
-    func streamInfo(streamKey: String) -> RtmpServerClientInfo? {
-        return rtmpServerDispatchQueue.sync {
-            clients.first(where: { client in
-                client.streamKey == streamKey
-            })?.getInfo()
-        }
-    }
-
     func updateStats() -> RtmpServerStats {
         return rtmpServerDispatchQueue.sync {
             let speed = totalBytesReceived - prevTotalBytesReceived

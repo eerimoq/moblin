@@ -1421,7 +1421,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             }
             self.updateViewers()
             self.updateCurrentSsid()
-            self.rtmpServerInfo()
             self.teslaGetChargeState()
             self.moblink.streamer?.updateStatus()
             self.updateDjiDevicesStatus()

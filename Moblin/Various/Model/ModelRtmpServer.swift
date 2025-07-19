@@ -114,23 +114,6 @@ extension Model {
         media.appendBufferedAudioSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
     }
 
-    func rtmpServerInfo() {
-        guard let rtmpServer = servers.rtmp, logger.debugEnabled else {
-            return
-        }
-        for stream in database.rtmpServer.streams {
-            guard let info = rtmpServer.streamInfo(streamKey: stream.streamKey) else {
-                continue
-            }
-            let audioRate = formatTwoDecimals(info.audioSamplesPerSecond)
-            let fps = formatTwoDecimals(info.videoFps)
-            logger
-                .debug(
-                    "RTMP server stream \(stream.streamKey) has FPS \(fps) and \(audioRate) audio samples/second"
-                )
-        }
-    }
-
     func stopRtmpServer() {
         servers.rtmp?.stop()
         servers.rtmp = nil

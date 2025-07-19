@@ -21,10 +21,6 @@ class RtmpServerChunkStream {
     private var audioBuffer: AVAudioCompressedBuffer?
     private var audioDecoder: AVAudioConverter?
     private var pcmAudioFormat: AVAudioFormat?
-    private var firstAudioBufferTimestamp: ContinuousClock.Instant?
-    private var totalNumberOfAudioSamples: UInt64 = 0
-    private var firstVideoFrameTimestamp: ContinuousClock.Instant?
-    private var totalNumberOfVideoFrames: UInt64 = 0
 
     init(client: RtmpServerClient, streamId: UInt16) {
         self.client = client
@@ -60,24 +56,6 @@ class RtmpServerChunkStream {
             processMessage()
             messageBody.removeAll(keepingCapacity: true)
         }
-    }
-
-    func getInfo() -> RtmpServerClientInfo {
-        var audioSamplesPerSecond = 0.0
-        var videoFps = 0.0
-        let now = ContinuousClock.now
-        if let firstTimestamp = firstAudioBufferTimestamp {
-            audioSamplesPerSecond = Double(totalNumberOfAudioSamples) / firstTimestamp.duration(to: now)
-                .seconds
-            firstAudioBufferTimestamp = now
-            totalNumberOfAudioSamples = 0
-        }
-        if let firstTimestamp = firstVideoFrameTimestamp {
-            videoFps = Double(totalNumberOfVideoFrames) / firstTimestamp.duration(to: now).seconds
-            firstVideoFrameTimestamp = now
-            totalNumberOfVideoFrames = 0
-        }
-        return RtmpServerClientInfo(audioSamplesPerSecond: audioSamplesPerSecond, videoFps: videoFps)
     }
 
     private func messageRemain() -> Int {
@@ -424,10 +402,6 @@ class RtmpServerChunkStream {
         client.targetLatenciesSynchronizer
             .setLatestAudioPresentationTimeStamp(sampleBuffer.presentationTimeStamp.seconds)
         client.updateTargetLatencies()
-        if firstAudioBufferTimestamp == nil {
-            firstAudioBufferTimestamp = .now
-        }
-        totalNumberOfAudioSamples += UInt64(sampleBuffer.dataBuffer?.dataLength ?? 0) / 2
         client.handleAudioBuffer(sampleBuffer: sampleBuffer)
     }
 
@@ -582,10 +556,6 @@ class RtmpServerChunkStream {
                                           compositionTime: Int32,
                                           dataOffset: Int)
     {
-        if firstVideoFrameTimestamp == nil {
-            firstVideoFrameTimestamp = .now
-        }
-        totalNumberOfVideoFrames += 1
         if let sampleBuffer = makeVideoSampleBuffer(client: client,
                                                     isKeyFrame: isKeyFrame,
                                                     compositionTime: compositionTime,
