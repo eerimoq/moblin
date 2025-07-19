@@ -556,17 +556,18 @@ class RtmpServerChunkStream {
                                           compositionTime: Int32,
                                           dataOffset: Int)
     {
-        if let sampleBuffer = makeVideoSampleBuffer(client: client,
-                                                    isKeyFrame: isKeyFrame,
-                                                    compositionTime: compositionTime,
-                                                    dataOffset: dataOffset)
-        {
-            client.targetLatenciesSynchronizer
-                .setLatestVideoPresentationTimeStamp(sampleBuffer.presentationTimeStamp.seconds)
-            client.updateTargetLatencies()
-            videoCodecLockQueue.async {
-                self.videoDecoder?.decodeSampleBuffer(sampleBuffer)
-            }
+        guard let sampleBuffer = makeVideoSampleBuffer(client: client,
+                                                       isKeyFrame: isKeyFrame,
+                                                       compositionTime: compositionTime,
+                                                       dataOffset: dataOffset)
+        else {
+            return
+        }
+        client.targetLatenciesSynchronizer
+            .setLatestVideoPresentationTimeStamp(sampleBuffer.presentationTimeStamp.seconds)
+        client.updateTargetLatencies()
+        videoCodecLockQueue.async {
+            self.videoDecoder?.decodeSampleBuffer(sampleBuffer)
         }
     }
 
