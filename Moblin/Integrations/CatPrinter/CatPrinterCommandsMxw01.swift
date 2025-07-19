@@ -66,11 +66,11 @@ enum CatPrinterCommandMxw01 {
             data = Data([0x00])
         case let .printRequest(printMode: printMode, count: count):
             command = .print
-            data = ByteWriter()
-                .writeUInt16Le(count)
-                .writeUInt8(0x30)
-                .writeUInt8(printMode.rawValue)
-                .data
+            let writer = ByteWriter()
+            writer.writeUInt16Le(count)
+            writer.writeUInt8(0x30)
+            writer.writeUInt8(printMode.rawValue)
+            data = writer.data
         default:
             return Data()
         }
@@ -82,16 +82,16 @@ enum CatPrinterCommandMxw01 {
             logger.info("Command data too big (\(data.count) > 0xFFFF)")
             return Data()
         }
-        return ByteWriter()
-            .writeUInt8(0x22)
-            .writeUInt8(0x21)
-            .writeUInt8(command.rawValue)
-            .writeUInt8(0x00)
-            .writeUInt16Le(UInt16(data.count))
-            .writeBytes(data)
-            .writeUInt8(CrcSwift.computeCrc8(data)) // Not used? Always zero?
-            .writeUInt8(0xFF)
-            .data
+        let writer = ByteWriter()
+        writer.writeUInt8(0x22)
+        writer.writeUInt8(0x21)
+        writer.writeUInt8(command.rawValue)
+        writer.writeUInt8(0x00)
+        writer.writeUInt16Le(UInt16(data.count))
+        writer.writeBytes(data)
+        writer.writeUInt8(CrcSwift.computeCrc8(data)) // Not used? Always zero?
+        writer.writeUInt8(0xFF)
+        return writer.data
     }
 
     private static func unpack(data: Data) throws -> (CatPrinterCommandId, Data) {

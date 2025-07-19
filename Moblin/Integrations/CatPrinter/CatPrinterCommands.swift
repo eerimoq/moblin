@@ -91,10 +91,14 @@ enum CatPrinterCommand {
             data = Data([level])
         case let .setEnergy(energy):
             command = .setEnergy
-            data = ByteWriter().writeUInt16Le(energy).data
+            let writer = ByteWriter()
+            writer.writeUInt16Le(energy)
+            data = writer.data
         case let .feedPaper(pixels):
             command = .feedPaper
-            data = ByteWriter().writeUInt16Le(pixels).data
+            let writer = ByteWriter()
+            writer.writeUInt16Le(pixels)
+            data = writer.data
         case let .setDrawMode(mode):
             command = .setDrawMode
             data = Data([mode.rawValue])
@@ -113,16 +117,16 @@ enum CatPrinterCommand {
             logger.info("Command data too big (\(data.count) > 0xFFFF)")
             return Data()
         }
-        return ByteWriter()
-            .writeUInt8(0x51)
-            .writeUInt8(0x78)
-            .writeUInt8(command.rawValue)
-            .writeUInt8(0x00)
-            .writeUInt16Le(UInt16(data.count))
-            .writeBytes(data)
-            .writeUInt8(CrcSwift.computeCrc8(data))
-            .writeUInt8(0xFF)
-            .data
+        let writer = ByteWriter()
+        writer.writeUInt8(0x51)
+        writer.writeUInt8(0x78)
+        writer.writeUInt8(command.rawValue)
+        writer.writeUInt8(0x00)
+        writer.writeUInt16Le(UInt16(data.count))
+        writer.writeBytes(data)
+        writer.writeUInt8(CrcSwift.computeCrc8(data))
+        writer.writeUInt8(0xFF)
+        return writer.data
     }
 
     private static func unpack(data: Data) throws -> (CatPrinterCommandId, Data) {

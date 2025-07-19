@@ -86,7 +86,8 @@ class DjiMessage {
         writer.writeUInt24Le(type)
         writer.writeBytes(payload)
         let crc = djiCrc16(data: writer.data)
-        return writer.writeUInt16Le(crc).data
+        writer.writeUInt16Le(crc)
+        return writer.data
     }
 
     // periphery:ignore

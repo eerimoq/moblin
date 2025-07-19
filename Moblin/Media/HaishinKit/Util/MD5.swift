@@ -84,7 +84,9 @@ enum MD5 {
     }
 
     static func calculate(_ message: String) -> Data {
-        calculate(ByteWriter().writeUTF8Bytes(message).data)
+        let writer = ByteWriter()
+        writer.writeUTF8Bytes(message)
+        return calculate(writer.data)
     }
 
     static func calculate(_ data: Data) -> Data {

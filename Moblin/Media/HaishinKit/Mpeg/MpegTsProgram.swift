@@ -54,23 +54,23 @@ class MpegTsProgram {
         let tableData = encodeTableData()
         let sectionLength = UInt16(tableData.count) + 9
         let sectionSyntaxIndicator = !tableData.isEmpty
-        let encoded = ByteWriter()
-            .writeUInt8(tableId)
-            .writeUInt16(
-                (sectionSyntaxIndicator ? 0x8000 : 0) |
-                    (privateBit ? 0x4000 : 0) |
-                    UInt16(MpegTsProgram.reservedBits) << 12 |
-                    sectionLength
-            )
-            .writeUInt16(tableIdExtension)
-            .writeUInt8(
-                MpegTsProgram.reservedBits << 6 | versionNumber << 1 | (currentNextIndicator ? 1 : 0)
-            )
-            .writeUInt8(sectionNumber)
-            .writeUInt8(lastSectionNumber)
-            .writeBytes(tableData)
-        let crc32 = Crc32.mpeg2.calculate(encoded.data)
-        return Data([pointerField] + pointerFillerBytes) + encoded.writeUInt32(crc32).data
+        let writer = ByteWriter()
+        writer.writeUInt8(tableId)
+        writer.writeUInt16(
+            (sectionSyntaxIndicator ? 0x8000 : 0) |
+                (privateBit ? 0x4000 : 0) |
+                UInt16(MpegTsProgram.reservedBits) << 12 |
+                sectionLength
+        )
+        writer.writeUInt16(tableIdExtension)
+        writer.writeUInt8(
+            MpegTsProgram.reservedBits << 6 | versionNumber << 1 | (currentNextIndicator ? 1 : 0)
+        )
+        writer.writeUInt8(sectionNumber)
+        writer.writeUInt8(lastSectionNumber)
+        writer.writeBytes(tableData)
+        writer.writeUInt32(Crc32.mpeg2.calculate(writer.data))
+        return Data([pointerField] + pointerFillerBytes) + writer.data
     }
 }
 
@@ -78,11 +78,12 @@ final class MpegTsProgramAssociation: MpegTsProgram {
     var programs: [UInt16: UInt16] = [:]
 
     override func encodeTableData() -> Data {
-        let encoded = ByteWriter()
+        let writer = ByteWriter()
         for (programNumber, programId) in programs {
-            encoded.writeUInt16(programNumber).writeUInt16(programId | 0xE000)
+            writer.writeUInt16(programNumber)
+            writer.writeUInt16(programId | 0xE000)
         }
-        return encoded.data
+        return writer.data
     }
 
     override func setTableData(data: Data) throws {
@@ -120,11 +121,11 @@ final class MpegTsProgramMapping: MpegTsProgram {
         for elementaryStreamSpecificData in elementaryStreamSpecificDatas {
             encoded.append(elementaryStreamSpecificData.encode())
         }
-        return ByteWriter()
-            .writeUInt16(programClockReferencePacketId | 0xE000)
-            .writeUInt16(programInfoLength | 0xF000)
-            .writeBytes(encoded)
-            .data
+        let writer = ByteWriter()
+        writer.writeUInt16(programClockReferencePacketId | 0xE000)
+        writer.writeUInt16(programInfoLength | 0xF000)
+        writer.writeBytes(encoded)
+        return writer.data
     }
 
     override func setTableData(data: Data) throws {

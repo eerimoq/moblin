@@ -79,12 +79,12 @@ private struct OptionalHeader {
         bytes[1] |= additionalCopyInfoFlag.uint8 << 2
         bytes[1] |= crcFlag.uint8 << 1
         bytes[1] |= extentionFlag.uint8
-        return ByteWriter()
-            .writeBytes(bytes)
-            .writeUInt8(pesHeaderLength)
-            .writeBytes(optionalFields)
-            .writeBytes(stuffingBytes)
-            .data
+        let writer = ByteWriter()
+        writer.writeBytes(bytes)
+        writer.writeUInt8(pesHeaderLength)
+        writer.writeBytes(optionalFields)
+        writer.writeBytes(stuffingBytes)
+        return writer.data
     }
 
     func getPresentationTimeStamp() -> CMTime {
@@ -239,13 +239,13 @@ struct MpegTsPacketizedElementaryStream {
     }
 
     private func encode() -> Data {
-        ByteWriter()
-            .writeBytes(startCode)
-            .writeUInt8(streamId)
-            .writeUInt16(packetLength)
-            .writeBytes(optionalHeader.encode())
-            .writeBytes(data)
-            .data
+        let writer = ByteWriter()
+        writer.writeBytes(startCode)
+        writer.writeUInt8(streamId)
+        writer.writeUInt16(packetLength)
+        writer.writeBytes(optionalHeader.encode())
+        writer.writeBytes(data)
+        return writer.data
     }
 
     func arrayOfPackets(_ packetId: UInt16,

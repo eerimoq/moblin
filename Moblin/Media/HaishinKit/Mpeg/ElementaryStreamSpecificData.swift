@@ -33,11 +33,11 @@ struct ElementaryStreamSpecificData {
     }
 
     func encode() -> Data {
-        return ByteWriter()
-            .writeUInt8(streamType.rawValue)
-            .writeUInt16(elementaryPacketId | 0xE000)
-            .writeUInt16(esInfoLength | 0xF000)
-            .writeBytes(esDescriptors)
-            .data
+        let writer = ByteWriter()
+        writer.writeUInt8(streamType.rawValue)
+        writer.writeUInt16(elementaryPacketId | 0xE000)
+        writer.writeUInt16(esInfoLength | 0xF000)
+        writer.writeBytes(esDescriptors)
+        return writer.data
     }
 }

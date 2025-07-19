@@ -45,15 +45,15 @@ struct MpegTsAdaptationField {
         if programClockReference != nil {
             flags |= 0x10
         }
-        let encoded = ByteWriter()
-            .writeUInt8(calcLength() - 1)
-            .writeUInt8(flags)
+        let writer = ByteWriter()
+        writer.writeUInt8(calcLength() - 1)
+        writer.writeUInt8(flags)
         if let programClockReference {
-            encoded.writeBytes(programClockReference)
+            writer.writeBytes(programClockReference)
         }
         if let stuffingBytes {
-            encoded.writeBytes(stuffingBytes)
+            writer.writeBytes(stuffingBytes)
         }
-        return encoded.data
+        return writer.data
     }
 }

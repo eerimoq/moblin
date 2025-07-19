@@ -31,7 +31,8 @@ final class Amf0Serializer: ByteWriter {
     @discardableResult
     func serialize(_ value: Any?) -> Self {
         if value == nil {
-            return writeUInt8(Amf0Type.null.rawValue)
+            writeUInt8(Amf0Type.null.rawValue)
+            return self
         }
         switch value {
         case let value as Int:
@@ -65,12 +66,15 @@ final class Amf0Serializer: ByteWriter {
         case let value as AsObject:
             return serialize(value)
         default:
-            return writeUInt8(Amf0Type.undefined.rawValue)
+            writeUInt8(Amf0Type.undefined.rawValue)
+            return self
         }
     }
 
     func serialize(_ value: Double) -> Self {
-        writeUInt8(Amf0Type.number.rawValue).writeDouble(value)
+        writeUInt8(Amf0Type.number.rawValue)
+        writeDouble(value)
+        return self
     }
 
     func serialize(_ value: Int) -> Self {
@@ -79,6 +83,7 @@ final class Amf0Serializer: ByteWriter {
 
     func serialize(_ value: Bool) -> Self {
         writeBytes(Data([Amf0Type.bool.rawValue, value ? 0x01 : 0x00]))
+        return self
     }
 
     func serialize(_ value: String) -> Self {
@@ -92,7 +97,9 @@ final class Amf0Serializer: ByteWriter {
         for (key, data) in value {
             serializeUTF8(key, false).serialize(data)
         }
-        return serializeUTF8("", false).writeUInt8(Amf0Type.objectEnd.rawValue)
+        serializeUTF8("", false)
+        writeUInt8(Amf0Type.objectEnd.rawValue)
+        return self
     }
 
     func serialize(_: AsArray) -> Self {
@@ -100,10 +107,13 @@ final class Amf0Serializer: ByteWriter {
     }
 
     func serialize(_ value: Date) -> Self {
-        writeUInt8(Amf0Type.date.rawValue).writeDouble(value.timeIntervalSince1970 * 1000).writeBytes(Data([
+        writeUInt8(Amf0Type.date.rawValue)
+        writeDouble(value.timeIntervalSince1970 * 1000)
+        writeBytes(Data([
             0x00,
             0x00,
         ]))
+        return self
     }
 
     @discardableResult
@@ -114,7 +124,8 @@ final class Amf0Serializer: ByteWriter {
         } else {
             writeUInt16(UInt16(utf8.count))
         }
-        return writeBytes(utf8)
+        writeBytes(utf8)
+        return self
     }
 }
 
