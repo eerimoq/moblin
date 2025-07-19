@@ -344,43 +344,40 @@ class RtmpServerClient {
             8192
         )) { data, _, _, error in
             if let data {
-                // logger.info("rtmp-server: client: Got data \(data)")
-                self.totalBytesReceived += UInt64(data.count)
-                self.server?.totalBytesReceived += UInt64(data.count)
-                let now = ContinuousClock.now
-                if logger.debugEnabled {
-                    let elapsed = self.latestReceiveTime.duration(to: now)
-                    if elapsed > .milliseconds(500) {
-                        logger.debug("rtmp-server: client: \(elapsed.milliseconds) ms since last byte")
-                    }
-                }
-                self.latestReceiveTime = now
-                self.inputBuffer.append(data)
-                self.isProcessing = true
-                var offset = 0
-                self.inputBuffer.withUnsafeMutableBytes { inputBuffer in
-                    while inputBuffer.count - offset >= self.receiveSize {
-                        let data = Data(
-                            bytesNoCopy: inputBuffer.baseAddress! + offset,
-                            count: self.receiveSize,
-                            deallocator: .none
-                        )
-                        offset += self.receiveSize
-                        self.handleData(data: data)
-                    }
-                }
-                self.inputBuffer = self.inputBuffer.advanced(by: offset)
-                if self.totalBytesReceived - self.totalBytesReceivedAcked > self.windowAcknowledgementSize {
-                    self.sendAck()
-                    self.totalBytesReceivedAcked = self.totalBytesReceived
-                }
-                self.isProcessing = false
+                self.processReceivedData(data: data)
                 self.receiveDataFromNetwork()
             }
             if let error {
                 self.stopInternal(reason: "Error \(error)")
             }
         }
+    }
+
+    private func processReceivedData(data: Data) {
+        // logger.info("rtmp-server: client: Got data \(data)")
+        totalBytesReceived += UInt64(data.count)
+        server?.totalBytesReceived += UInt64(data.count)
+        latestReceiveTime = .now
+        inputBuffer.append(data)
+        isProcessing = true
+        var offset = 0
+        inputBuffer.withUnsafeMutableBytes { inputBuffer in
+            while inputBuffer.count - offset >= self.receiveSize {
+                let data = Data(
+                    bytesNoCopy: inputBuffer.baseAddress! + offset,
+                    count: self.receiveSize,
+                    deallocator: .none
+                )
+                offset += self.receiveSize
+                self.handleData(data: data)
+            }
+        }
+        inputBuffer = inputBuffer.advanced(by: offset)
+        if totalBytesReceived - totalBytesReceivedAcked > windowAcknowledgementSize {
+            sendAck()
+            totalBytesReceivedAcked = totalBytesReceived
+        }
+        isProcessing = false
     }
 
     private func sendAck() {
