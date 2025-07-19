@@ -5653,7 +5653,7 @@ class Database: Codable, ObservableObject {
     var iconImage: String = plainIcon.image()
     var videoStabilizationMode: SettingsVideoStabilizationMode = .off
     var chat: SettingsChat = .init()
-    var batteryPercentage: Bool = true
+    @Published var batteryPercentage: Bool = true
     var mic: SettingsMic = getDefaultMic()
     var mics: SettingsMics = .init()
     var debug: SettingsDebug = .init()

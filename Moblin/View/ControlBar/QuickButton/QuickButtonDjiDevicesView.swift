@@ -27,19 +27,20 @@ private struct DeviceView: View {
 
 struct QuickButtonDjiDevicesView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var djiDevices: SettingsDjiDevices
 
     var body: some View {
         Form {
             Section {
                 List {
-                    ForEach(model.database.djiDevices.devices) { device in
+                    ForEach(djiDevices.devices) { device in
                         DeviceView(device: device)
                     }
                 }
             }
             Section {
                 NavigationLink {
-                    DjiDevicesSettingsView(djiDevices: model.database.djiDevices)
+                    DjiDevicesSettingsView(djiDevices: djiDevices)
                 } label: {
                     Label("DJI devices", systemImage: "appletvremote.gen1")
                 }

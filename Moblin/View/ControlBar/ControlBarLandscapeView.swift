@@ -97,7 +97,7 @@ private struct StatusView: View {
     var body: some View {
         HStack(spacing: 0) {
             if isPhone() {
-                BatteryView(model: model, battery: model.battery)
+                BatteryView(model: model, database: model.database, battery: model.battery)
             }
             Spacer(minLength: 0)
             ThermalStateView(thermalState: status.thermalState)

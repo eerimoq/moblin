@@ -8,13 +8,10 @@ private struct PickerEntry: Identifiable {
 private struct QuickButtonGoProLaunchLiveStreamView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var goProState: GoProState
+    @ObservedObject var goPro: SettingsGoPro
     var height: Double
     @State var qrCode: UIImage?
     @State var entries: [PickerEntry] = []
-
-    private var goPro: SettingsGoPro {
-        return model.database.goPro
-    }
 
     private func generate() {
         if let launchLiveStream = goPro.launchLiveStream
@@ -174,10 +171,6 @@ struct QuickButtonGoProView: View {
     @EnvironmentObject var model: Model
     @State private var activeIndex: Int? = 0
 
-    private var goPro: SettingsGoPro {
-        return model.database.goPro
-    }
-
     var body: some View {
         GeometryReader { metrics in
             Form {
@@ -188,6 +181,7 @@ struct QuickButtonGoProView: View {
                                 Group {
                                     QuickButtonGoProLaunchLiveStreamView(
                                         goProState: model.goPro,
+                                        goPro: model.database.goPro,
                                         height: metrics.size.height
                                     )
                                     .id(0)

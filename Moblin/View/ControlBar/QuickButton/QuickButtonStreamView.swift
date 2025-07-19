@@ -3,12 +3,13 @@ import SwiftUI
 
 struct QuickButtonStreamView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var database: Database
 
     var body: some View {
         Form {
             Section {
                 Picker("", selection: $model.currentStreamId) {
-                    ForEach(model.database.streams) { stream in
+                    ForEach(database.streams) { stream in
                         Text(stream.name)
                     }
                 }

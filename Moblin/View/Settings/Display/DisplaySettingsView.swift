@@ -40,12 +40,7 @@ struct DisplaySettingsView: View {
                         Text("Stream button")
                     }
                     if !isMac() {
-                        Toggle("Battery percentage", isOn: Binding(get: {
-                            database.batteryPercentage
-                        }, set: { value in
-                            database.batteryPercentage = value
-                            model.objectWillChange.send()
-                        }))
+                        Toggle("Battery percentage", isOn: $database.batteryPercentage)
                     }
                     NavigationLink {
                         LocalOverlaysSettingsView(show: database.show)

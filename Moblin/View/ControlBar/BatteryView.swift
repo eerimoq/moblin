@@ -2,6 +2,7 @@ import SwiftUI
 
 struct BatteryView: View {
     var model: Model
+    @ObservedObject var database: Database
     @ObservedObject var battery: Battery
 
     private func color(level: Double) -> Color {
@@ -40,7 +41,7 @@ struct BatteryView: View {
                 .foregroundColor(boltColor())
                 .font(.system(size: 10))
             HStack(spacing: 0) {
-                if model.database.batteryPercentage {
+                if database.batteryPercentage {
                     ZStack(alignment: .center) {
                         RoundedRectangle(cornerRadius: 2)
                             .foregroundColor(.white)

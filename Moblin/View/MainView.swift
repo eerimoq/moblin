@@ -86,7 +86,7 @@ private struct MenuView: View {
             }
         case .streamSwitcher:
             NavigationStack {
-                QuickButtonStreamView()
+                QuickButtonStreamView(database: model.database)
             }
         case .luts:
             NavigationStack {
@@ -114,7 +114,7 @@ private struct MenuView: View {
             }
         case .djiDevices:
             NavigationStack {
-                QuickButtonDjiDevicesView()
+                QuickButtonDjiDevicesView(djiDevices: model.database.djiDevices)
             }
         case .sceneSettings:
             NavigationStack {
