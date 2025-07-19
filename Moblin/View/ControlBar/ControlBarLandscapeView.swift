@@ -44,7 +44,7 @@ private struct QuickButtonsView: View {
                                 state: second,
                                 size: buttonSize(),
                                 nameSize: nameSize(),
-                                nameWidth: buttonSize(),
+                                nameWidth: buttonSize()
                             )
                         } else {
                             QuickButtonPlaceholderImage(size: buttonSize())
@@ -56,7 +56,7 @@ private struct QuickButtonsView: View {
                             state: pair.first,
                             size: buttonSize(),
                             nameSize: nameSize(),
-                            nameWidth: buttonSize(),
+                            nameWidth: buttonSize()
                         )
                     }
                 } else {
@@ -68,7 +68,7 @@ private struct QuickButtonsView: View {
                             state: second,
                             size: buttonSize(),
                             nameSize: nameSize(),
-                            nameWidth: width - 10,
+                            nameWidth: width - 10
                         )
                         .frame(width: width - 10)
                     } else {
@@ -81,7 +81,7 @@ private struct QuickButtonsView: View {
                         state: pair.first,
                         size: buttonSize(),
                         nameSize: nameSize(),
-                        nameWidth: width - 10,
+                        nameWidth: width - 10
                     )
                     .frame(width: width - 10)
                 }
