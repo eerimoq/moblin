@@ -643,9 +643,7 @@ class RtmpServerChunkStream {
         return sampleBuffer
     }
 
-    private func makeAudioSampleBuffer(client: RtmpServerClient,
-                                       audioBuffer: AVAudioPCMBuffer) -> CMSampleBuffer?
-    {
+    private func makeAudioSampleBuffer(client: RtmpServerClient, audioBuffer: AVAudioPCMBuffer) -> CMSampleBuffer? {
         let audioTimestamp = mediaTimestamp - mediaTimestampZero
         let presentationTimeStamp = CMTimeMake(
             value: Int64(audioTimestamp + getBasePresentationTimeStamp(client)) + Int64(client.latency),
