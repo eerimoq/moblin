@@ -42,7 +42,7 @@ extension CMSampleBuffer {
             data.pointee[i] = 0
         }
         dataBuffer.frameLength = samplesPerBuffer
-        return dataBuffer.makeSampleBuffer(presentationTimeStamp: presentationTimeStamp)
+        return dataBuffer.makeSampleBuffer(presentationTimeStamp)
     }
 
     var isSync: Bool {

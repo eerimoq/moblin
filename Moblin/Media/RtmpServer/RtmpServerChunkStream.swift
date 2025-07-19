@@ -620,7 +620,7 @@ class RtmpServerChunkStream {
             value: Int64(audioTimestamp + getBasePresentationTimeStamp(client)) + Int64(client.latency),
             timescale: 1000
         )
-        return audioBuffer.makeSampleBuffer(presentationTimeStamp: presentationTimeStamp)
+        return audioBuffer.makeSampleBuffer(presentationTimeStamp)
     }
 
     private func getBasePresentationTimeStamp(_ client: RtmpServerClient) -> Double {

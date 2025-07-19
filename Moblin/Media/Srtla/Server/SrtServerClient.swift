@@ -138,9 +138,7 @@ class SrtServerClient {
             return
         }
         outputSilenceIfGap(sampleBuffer.presentationTimeStamp, pcmAudioFormat)
-        guard let sampleBuffer = outputBuffer
-            .makeSampleBuffer(presentationTimeStamp: sampleBuffer.presentationTimeStamp)
-        else {
+        guard let sampleBuffer = outputBuffer.makeSampleBuffer(sampleBuffer.presentationTimeStamp) else {
             return
         }
         server?.srtlaServer?.delegate?.srtlaServerOnAudioBuffer(

@@ -134,7 +134,7 @@ class Recorder: NSObject {
                 logger.info("recorder: audio: Convert failed with \(error.localizedDescription)")
                 return nil
             }
-            return outputBuffer.makeSampleBuffer(presentationTimeStamp: sampleBuffer.presentationTimeStamp)
+            return outputBuffer.makeSampleBuffer(sampleBuffer.presentationTimeStamp)
         }
     }
 
