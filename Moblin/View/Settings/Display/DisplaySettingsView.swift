@@ -28,7 +28,7 @@ struct DisplaySettingsView: View {
         Form {
             Section {
                 NavigationLink {
-                    QuickButtonsSettingsView()
+                    QuickButtonsSettingsView(model: model)
                 } label: {
                     Text("Quick buttons")
                 }

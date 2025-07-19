@@ -1,12 +1,13 @@
 import SwiftUI
 
 private struct AppearenceSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
+    @ObservedObject var database: Database
     @ObservedObject var quickButtons: SettingsQuickButtons
 
     var body: some View {
         Section {
-            if model.database.showAllSettings {
+            if database.showAllSettings {
                 Toggle("Scroll", isOn: $quickButtons.enableScroll)
                     .onChange(of: quickButtons.enableScroll) { _ in
                         model.updateQuickButtonStates()
@@ -69,16 +70,17 @@ private struct ButtonSettingsView: View {
 }
 
 private struct ButtonsSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
+    @ObservedObject var database: Database
 
     var body: some View {
         Section {
             List {
-                ForEach(model.database.quickButtons) { button in
+                ForEach(database.quickButtons) { button in
                     ButtonSettingsView(button: button)
                 }
                 .onMove { froms, to in
-                    model.database.quickButtons.move(fromOffsets: froms, toOffset: to)
+                    database.quickButtons.move(fromOffsets: froms, toOffset: to)
                     model.updateQuickButtonStates()
                     model.sceneUpdated(updateRemoteScene: false)
                 }
@@ -90,12 +92,14 @@ private struct ButtonsSettingsView: View {
 }
 
 struct QuickButtonsSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
 
     var body: some View {
         Form {
-            AppearenceSettingsView(quickButtons: model.database.quickButtonsGeneral)
-            ButtonsSettingsView()
+            AppearenceSettingsView(model: model,
+                                   database: model.database,
+                                   quickButtons: model.database.quickButtonsGeneral)
+            ButtonsSettingsView(model: model, database: model.database)
         }
         .navigationTitle("Quick buttons")
     }

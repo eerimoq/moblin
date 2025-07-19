@@ -110,7 +110,7 @@ struct QuickButtonsButtonSettingsView: View {
             if shortcut {
                 Section {
                     NavigationLink {
-                        QuickButtonsSettingsView()
+                        QuickButtonsSettingsView(model: model)
                     } label: {
                         Label("Quick buttons", systemImage: "rectangle.inset.topright.fill")
                     }
