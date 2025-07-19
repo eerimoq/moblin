@@ -212,7 +212,7 @@ struct CameraSettingsView: View {
                     FixedHorizonView(database: database)
                     CameraControlsView(database: database)
                 }
-                MirrorFrontCameraOnStreamView()
+                MirrorFrontCameraOnStreamView(model: model, database: database)
                 SelfieStickDoesNotWorkView(database: database, selfieStick: database.selfieStick)
             } footer: {
                 Text(

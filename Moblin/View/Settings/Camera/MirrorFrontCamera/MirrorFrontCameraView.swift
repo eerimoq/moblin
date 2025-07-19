@@ -1,14 +1,13 @@
 import SwiftUI
 
 struct MirrorFrontCameraOnStreamView: View {
-    @EnvironmentObject var model: Model
+    var model: Model
+    @ObservedObject var database: Database
 
     var body: some View {
-        Toggle("Mirror front camera on stream", isOn: Binding(get: {
-            model.database.mirrorFrontCameraOnStream
-        }, set: { value in
-            model.database.mirrorFrontCameraOnStream = value
-            model.reattachCamera()
-        }))
+        Toggle("Mirror front camera on stream", isOn: $database.mirrorFrontCameraOnStream)
+            .onChange(of: database.mirrorFrontCameraOnStream) { _ in
+                model.reattachCamera()
+            }
     }
 }

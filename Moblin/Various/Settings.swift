@@ -5667,7 +5667,7 @@ class Database: Codable, ObservableObject {
     var remoteControl: SettingsRemoteControl = .init()
     var startStopRecordingConfirmations: Bool = true
     var color: SettingsColor = .init()
-    var mirrorFrontCameraOnStream: Bool = true
+    @Published var mirrorFrontCameraOnStream: Bool = true
     var streamButtonColor: RgbColor = defaultStreamButtonColor
     var location: SettingsLocation = .init()
     var watch: WatchSettings = .init()
