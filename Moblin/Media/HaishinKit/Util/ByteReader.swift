@@ -77,7 +77,7 @@ class ByteReader {
     }
 
     func readBytes(_ length: Int) throws -> Data {
-        guard bytesAvailable >= length else {
+        guard length >= 0, bytesAvailable >= length else {
             throw ByteReader.Error.eof
         }
         position += length
