@@ -717,3 +717,30 @@ extension CMTime {
         self = CMTime(seconds: seconds, preferredTimescale: 1000)
     }
 }
+
+extension UnsafeMutableRawBufferPointer {
+    func writeUInt32(_ value: UInt32, offset: Int) {
+        self[offset + 0] = UInt8(value >> 24)
+        self[offset + 1] = UInt8((value >> 16) & 0xFF)
+        self[offset + 2] = UInt8((value >> 8) & 0xFF)
+        self[offset + 3] = UInt8(value & 0xFF)
+    }
+}
+
+extension UnsafeRawBufferPointer {
+    func readUInt16(offset: Int) -> UInt16 {
+        var value: UInt16 = 0
+        value |= UInt16(self[offset + 0]) << 8
+        value |= UInt16(self[offset + 1]) << 0
+        return value
+    }
+
+    func readUInt32(offset: Int) -> UInt32 {
+        var value: UInt32 = 0
+        value |= UInt32(self[offset + 0]) << 24
+        value |= UInt32(self[offset + 1]) << 16
+        value |= UInt32(self[offset + 2]) << 8
+        value |= UInt32(self[offset + 3]) << 0
+        return value
+    }
+}
