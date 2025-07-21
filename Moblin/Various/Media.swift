@@ -281,6 +281,9 @@ final class Media: NSObject {
     }
 
     private func updateAdaptiveBitrateSrt(overlay: Bool, relaxed: Bool, is200MsTick: Bool) -> ([String], [String])? {
+        guard srtConnected else {
+            return nil
+        }
         if adaptiveBitrate is AdaptiveBitrateSrtBela {
             return updateAdaptiveBitrateSrtBela(overlay: overlay, relaxed: relaxed, is200MsTick: is200MsTick)
         } else if is200MsTick {
@@ -294,9 +297,6 @@ final class Media: NSObject {
                                               relaxed: Bool,
                                               is200MsTick: Bool) -> ([String], [String])?
     {
-        guard srtConnected else {
-            return nil
-        }
         guard let stats = srtStream?.getPerformanceData() else {
             return nil
         }

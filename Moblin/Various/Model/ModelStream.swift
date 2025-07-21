@@ -802,6 +802,9 @@ extension Model {
     }
 
     func updateAdaptiveBitrate() {
+        guard streaming else {
+            return
+        }
         if let (lines, actions) = media.updateAdaptiveBitrate(
             overlay: database.debug.srtOverlay,
             relaxed: relaxedBitrate
