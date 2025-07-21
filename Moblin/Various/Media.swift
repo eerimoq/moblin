@@ -265,31 +265,32 @@ final class Media: NSObject {
         }
     }
 
-    private func is200MsTick() -> Bool {
-        return updateTickCount % 10 == 0
-    }
-
     func updateAdaptiveBitrate(overlay: Bool, relaxed: Bool) -> ([String], [String])? {
         updateTickCount += 1
+        let is200MsTick = updateTickCount % 10 == 0
         if srtStream != nil {
-            return updateAdaptiveBitrateSrt(overlay: overlay, relaxed: relaxed)
-        } else if let rtmpStream {
-            return updateAdaptiveBitrateRtmp(overlay: overlay, rtmpStream: rtmpStream)
-        } else if let ristStream {
-            return updateAdaptiveBitrateRist(overlay: overlay, ristStream: ristStream)
+            return updateAdaptiveBitrateSrt(overlay: overlay, relaxed: relaxed, is200MsTick: is200MsTick)
+        } else if is200MsTick {
+            if let rtmpStream {
+                return updateAdaptiveBitrateRtmp(overlay: overlay, rtmpStream: rtmpStream)
+            } else if let ristStream {
+                return updateAdaptiveBitrateRist(overlay: overlay, ristStream: ristStream)
+            }
         }
         return nil
     }
 
-    private func updateAdaptiveBitrateSrt(overlay: Bool, relaxed: Bool) -> ([String], [String])? {
+    private func updateAdaptiveBitrateSrt(overlay: Bool, relaxed: Bool, is200MsTick: Bool) -> ([String], [String])? {
         if adaptiveBitrate is AdaptiveBitrateSrtBela {
-            return updateAdaptiveBitrateSrtBela(overlay: overlay, relaxed: relaxed)
-        } else {
+            return updateAdaptiveBitrateSrtBela(overlay: overlay, relaxed: relaxed, is200MsTick: is200MsTick)
+        } else if is200MsTick {
             return updateAdaptiveBitrateSrtFight(overlay: overlay)
+        } else {
+            return nil
         }
     }
 
-    private func updateAdaptiveBitrateSrtBela(overlay: Bool, relaxed: Bool) -> ([String], [String])? {
+    private func updateAdaptiveBitrateSrtBela(overlay: Bool, relaxed: Bool, is200MsTick: Bool) -> ([String], [String])? {
         guard srtConnected else {
             return nil
         }
@@ -313,7 +314,7 @@ final class Media: NSObject {
             relaxed: relaxed
         ))
         if overlay {
-            if is200MsTick() {
+            if is200MsTick {
                 belaLinesAndActions = ([
                     """
                     R: \(stats.pktRetransTotal) N: \(stats.pktRecvNakTotal) \
@@ -331,9 +332,6 @@ final class Media: NSObject {
     }
 
     private func updateAdaptiveBitrateSrtFight(overlay: Bool) -> ([String], [String])? {
-        guard is200MsTick() else {
-            return nil
-        }
         guard let stats = srtStream?.getPerformanceData() else {
             return nil
         }
@@ -379,9 +377,6 @@ final class Media: NSObject {
     }
 
     private func updateAdaptiveBitrateRtmp(overlay: Bool, rtmpStream: RtmpStream) -> ([String], [String])? {
-        guard is200MsTick() else {
-            return nil
-        }
         let stats = rtmpStream.info.stats.value
         adaptiveBitrate?.update(stats: StreamStats(
             rttMs: stats.rttMs,
@@ -416,9 +411,6 @@ final class Media: NSObject {
     }
 
     private func updateAdaptiveBitrateRist(overlay: Bool, ristStream: RistStream) -> ([String], [String])? {
-        guard is200MsTick() else {
-            return nil
-        }
         let stats = ristStream.getStats()
         var rtt = 1000.0
         for stat in stats {
