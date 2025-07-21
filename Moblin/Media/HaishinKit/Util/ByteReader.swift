@@ -9,7 +9,7 @@ class ByteReader {
         case parse
     }
 
-    private(set) var data = Data()
+    private(set) var data: Data
     var position = 0
 
     var bytesAvailable: Int {
@@ -31,7 +31,15 @@ class ByteReader {
     }
 
     func readUInt16() throws -> UInt16 {
-        return try (UInt16(readUInt8()) << 8) | UInt16(readUInt8())
+        guard bytesAvailable >= 2 else {
+            throw ByteReader.Error.eof
+        }
+        defer {
+            position += 2
+        }
+        return data.withUnsafeBytes { pointer in
+            pointer.readUInt16(offset: position)
+        }
     }
 
     func readUInt16Le() throws -> UInt16 {
@@ -47,8 +55,15 @@ class ByteReader {
     }
 
     func readUInt32() throws -> UInt32 {
-        return try (UInt32(readUInt8()) << 24) | (UInt32(readUInt8()) << 16) | (UInt32(readUInt8()) << 8) |
-            UInt32(readUInt8())
+        guard bytesAvailable >= 4 else {
+            throw ByteReader.Error.eof
+        }
+        defer {
+            position += 4
+        }
+        return data.withUnsafeBytes { pointer in
+            pointer.readUInt32(offset: position)
+        }
     }
 
     func readUInt32Le() throws -> UInt32 {
