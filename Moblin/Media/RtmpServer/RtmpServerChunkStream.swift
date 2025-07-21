@@ -17,7 +17,6 @@ class RtmpServerChunkStream {
     private var videoTimestamp: Double
     private var formatDescription: CMVideoFormatDescription?
     private var videoDecoder: VideoDecoder?
-    private var videoCodecLockQueue = DispatchQueue(label: "com.eerimoq.Moblin.VideoCodec")
     private var audioBuffer: AVAudioCompressedBuffer?
     private var audioDecoder: AVAudioConverter?
     private var pcmAudioFormat: AVAudioFormat?
@@ -512,7 +511,7 @@ class RtmpServerChunkStream {
         guard videoDecoder == nil else {
             return
         }
-        videoDecoder = VideoDecoder(lockQueue: videoCodecLockQueue)
+        videoDecoder = VideoDecoder(lockQueue: rtmpServerDispatchQueue)
         videoDecoder?.delegate = self
         videoDecoder?.startRunning(formatDescription: formatDescription)
     }
@@ -569,9 +568,7 @@ class RtmpServerChunkStream {
         client.targetLatenciesSynchronizer
             .setLatestVideoPresentationTimeStamp(sampleBuffer.presentationTimeStamp.seconds)
         client.updateTargetLatencies()
-        videoCodecLockQueue.async {
-            self.videoDecoder?.decodeSampleBuffer(sampleBuffer)
-        }
+        videoDecoder?.decodeSampleBuffer(sampleBuffer)
     }
 
     private func makeVideoSampleBuffer(client: RtmpServerClient,

@@ -290,7 +290,10 @@ final class Media: NSObject {
         }
     }
 
-    private func updateAdaptiveBitrateSrtBela(overlay: Bool, relaxed: Bool, is200MsTick: Bool) -> ([String], [String])? {
+    private func updateAdaptiveBitrateSrtBela(overlay: Bool,
+                                              relaxed: Bool,
+                                              is200MsTick: Bool) -> ([String], [String])?
+    {
         guard srtConnected else {
             return nil
         }
