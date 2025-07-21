@@ -34,7 +34,7 @@ struct DebugSettingsView: View {
                 )
                 Toggle("Debug overlay", isOn: $debug.srtOverlay)
                     .onChange(of: debug.srtOverlay) { _ in
-                        model.updateAdaptiveBitrateDebug()
+                        model.updateDebugOverlay()
                     }
             }
             Section {

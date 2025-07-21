@@ -7,7 +7,6 @@ struct StreamOverlayDebugView: View {
     var body: some View {
         if !debugOverlay.debugLines.isEmpty {
             VStack(alignment: .leading, spacing: 1) {
-                Text("CPU: \(Int(debugOverlay.cpuUsage))")
                 ForEach(debugOverlay.debugLines, id: \.self) { line in
                     Text(line)
                 }

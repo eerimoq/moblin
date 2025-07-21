@@ -97,8 +97,8 @@ struct LogEntry: Identifiable {
 }
 
 class DebugOverlayProvider: ObservableObject {
+    var cpuUsage: Float = 0.0
     @Published var debugLines: [String] = []
-    @Published var cpuUsage: Float = 0.0
 }
 
 class StreamUptimeProvider: ObservableObject {
@@ -1400,7 +1400,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             self.updateBrowserWidgetStatus()
             self.logStatus()
             self.updateFailedVideoEffects()
-            self.updateAdaptiveBitrateDebug()
+            self.updateDebugOverlay()
             self.updateDistance()
             self.updateSlope()
             self.updateAverageSpeed(now: monotonicNow)

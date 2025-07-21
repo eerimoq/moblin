@@ -814,9 +814,11 @@ extension Model {
         }
     }
 
-    func updateAdaptiveBitrateDebug() {
+    func updateDebugOverlay() {
         if database.debug.srtOverlay {
-            debugOverlay.debugLines = latestDebugLines + latestDebugActions
+            debugOverlay.debugLines = [String(localized: "CPU: \(Int(debugOverlay.cpuUsage))")]
+                + latestDebugLines
+                + latestDebugActions
             if logger.debugEnabled, isLive {
                 logger.debug(latestDebugLines.joined(separator: ", "))
             }
