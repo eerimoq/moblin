@@ -27,7 +27,7 @@ func makeChannelMap(
 }
 
 final class AudioUnit: NSObject {
-    private var encoders = [AudioEncoder(lockQueue: processorPipelineQueue)]
+    let encoder = AudioEncoder(lockQueue: processorPipelineQueue)
     private var input: AVCaptureDeviceInput?
     private var output: AVCaptureAudioDataOutput?
     var muted = false
@@ -44,9 +44,7 @@ final class AudioUnit: NSObject {
             guard inputSourceFormat != oldValue else {
                 return
             }
-            for encoder in encoders {
-                encoder.setInSourceFormat(inputSourceFormat)
-            }
+            encoder.setInSourceFormat(inputSourceFormat)
         }
     }
 
@@ -56,10 +54,6 @@ final class AudioUnit: NSObject {
 
     func stopRunning() {
         session.stopRunning()
-    }
-
-    func getEncoders() -> [AudioEncoder] {
-        return encoders
     }
 
     func attach(params: AudioUnitAttachParams) throws {
@@ -79,17 +73,13 @@ final class AudioUnit: NSObject {
     }
 
     func startEncoding(_ delegate: any AudioCodecDelegate) {
-        for encoder in encoders {
-            encoder.delegate = delegate
-            encoder.startRunning()
-        }
+        encoder.delegate = delegate
+        encoder.startRunning()
     }
 
     func stopEncoding() {
-        for encoder in encoders {
-            encoder.stopRunning()
-            encoder.delegate = nil
-        }
+        encoder.stopRunning()
+        encoder.delegate = nil
         processorPipelineQueue.async {
             self.inputSourceFormat = nil
         }
@@ -208,9 +198,7 @@ final class AudioUnit: NSObject {
             processor.delegate?.streamAudio(sampleBuffer: sampleBuffer)
         }
         inputSourceFormat = sampleBuffer.formatDescription?.audioStreamBasicDescription
-        for encoder in encoders {
-            encoder.appendSampleBuffer(sampleBuffer, presentationTimeStamp)
-        }
+        encoder.appendSampleBuffer(sampleBuffer, presentationTimeStamp)
         processor.recorder.appendAudio(sampleBuffer)
     }
 

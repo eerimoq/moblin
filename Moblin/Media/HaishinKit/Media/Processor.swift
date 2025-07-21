@@ -90,14 +90,12 @@ final class Processor {
 
     func setAudioEncoderSettings(settings: AudioEncoderSettings) {
         processorControlQueue.async {
-            self.audio.getEncoders().first!.setSettings(settings: settings)
+            self.audio.encoder.setSettings(settings: settings)
         }
     }
 
     func setVideoEncoderSettings(settings: VideoEncoderSettings) {
-        processorControlQueue.async {
-            self.video.getEncoders().first!.settings.mutate { $0 = settings }
-        }
+        video.encoder.settings.mutate { $0 = settings }
     }
 
     func attachCamera(
@@ -280,12 +278,12 @@ final class Processor {
         video.externalDisplayDrawable = drawable
     }
 
-    func getAudioEncoders() -> [AudioEncoder] {
-        return audio.getEncoders()
+    func getAudioEncoder() -> AudioEncoder {
+        return audio.encoder
     }
 
-    func getVideoEncoders() -> [VideoEncoder] {
-        return video.getEncoders()
+    func getVideoEncoder() -> VideoEncoder {
+        return video.encoder
     }
 
     func setBufferedAudioDrift(cameraId: UUID, drift: Double) {

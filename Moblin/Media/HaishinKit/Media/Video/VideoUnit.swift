@@ -111,7 +111,7 @@ final class VideoUnit: NSObject {
     private var outputSize = CGSize(width: 1920, height: 1080)
     private var fillFrame = true
     let session = makeCaptureSession()
-    private var encoders = [VideoEncoder(lockQueue: processorPipelineQueue)]
+    let encoder = VideoEncoder(lockQueue: processorPipelineQueue)
     weak var processor: Processor?
     private var effects: [VideoEffect] = []
     private var pendingAfterAttachEffects: [VideoEffect]?
@@ -355,17 +355,13 @@ final class VideoUnit: NSObject {
     }
 
     func startEncoding(_ delegate: any VideoEncoderDelegate) {
-        for encoder in encoders {
-            encoder.delegate = delegate
-            encoder.startRunning()
-        }
+        encoder.delegate = delegate
+        encoder.startRunning()
     }
 
     func stopEncoding() {
-        for encoder in encoders {
-            encoder.stopRunning()
-            encoder.delegate = nil
-        }
+        encoder.stopRunning()
+        encoder.delegate = nil
     }
 
     func setSize(capture: CGSize, output: CGSize) {
@@ -377,10 +373,6 @@ final class VideoUnit: NSObject {
             self.pool = nil
             self.bufferedPool = nil
         }
-    }
-
-    func getEncoders() -> [VideoEncoder] {
-        return encoders
     }
 
     func getCIImage(_ videoSourceId: UUID, _ presentationTimeStamp: CMTime) -> CIImage? {
@@ -1293,13 +1285,11 @@ final class VideoUnit: NSObject {
                 externalDisplayDrawable?.enqueue(modSampleBuffer, isFirstAfterAttach: isFirstAfterAttach)
             }
         }
-        for encoder in encoders {
-            encoder.encodeImageBuffer(
-                modImageBuffer,
-                presentationTimeStamp: modSampleBuffer.presentationTimeStamp,
-                duration: modSampleBuffer.duration
-            )
-        }
+        encoder.encodeImageBuffer(
+            modImageBuffer,
+            presentationTimeStamp: modSampleBuffer.presentationTimeStamp,
+            duration: modSampleBuffer.duration
+        )
         let presentationTimeStamp = sampleBuffer.presentationTimeStamp.seconds
         handleLowFpsImage(modImageBuffer, presentationTimeStamp)
         if cleanSnapshots {

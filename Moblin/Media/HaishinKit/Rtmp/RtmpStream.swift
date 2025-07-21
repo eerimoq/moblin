@@ -210,13 +210,9 @@ class RtmpStream {
     }
 
     private func createOnMetaData() -> AsObject {
-        let audioEncoders = processor.getAudioEncoders()
-        let videoEncoders = processor.getVideoEncoders()
-        if audioEncoders.count == 1, videoEncoders.count == 1 {
-            return createOnMetaDataLegacy(audioEncoders.first!, videoEncoders.first!)
-        } else {
-            return createOnMetaDataMultiTrack(audioEncoders, videoEncoders)
-        }
+        let audioEncoder = processor.getAudioEncoder()
+        let videoEncoder = processor.getVideoEncoder()
+        return createOnMetaDataLegacy(audioEncoder, videoEncoder)
     }
 
     private func createOnMetaDataLegacy(_ audioEncoder: AudioEncoder, _ videoEncoder: VideoEncoder) -> AsObject {
@@ -237,33 +233,6 @@ class RtmpStream {
         if let sampleRate = audioEncoder.getSampleRate() {
             metadata["audiosamplerate"] = sampleRate
         }
-        return metadata
-    }
-
-    private func createOnMetaDataMultiTrack(_ audioEncoders: [AudioEncoder],
-                                            _ videoEncoders: [VideoEncoder]) -> AsObject
-    {
-        let metadata = createOnMetaDataLegacy(audioEncoders.first!, videoEncoders.first!)
-        // var audioTrackIdInfoMap: [String: Any] = [:]
-        // for (trackId, encoder) in audioEncoders.enumerated() {
-        //     let settings = encoder.settings
-        //     audioTrackIdInfoMap[String(trackId)] = [
-        //         "audiodatarate": settings.bitRate / 1000,
-        //         "channels": 1,
-        //         "samplerate": 48000,
-        //     ]
-        // }
-        // metadata["audioTrackIdInfoMap"] = audioTrackIdInfoMap
-        // var videoTrackIdInfoMap: [String: Any] = [:]
-        // for (trackId, encoder) in videoEncoders.enumerated() {
-        //     let settings = encoder.settings.value
-        //     videoTrackIdInfoMap[String(trackId)] = [
-        //         "width": settings.videoSize.width,
-        //         "height": settings.videoSize.height,
-        //         "videodatarate": settings.bitRate / 1000,
-        //     ]
-        // }
-        // metadata["videoTrackIdInfoMap"] = videoTrackIdInfoMap
         return metadata
     }
 
