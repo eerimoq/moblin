@@ -138,6 +138,9 @@ extension Model {
             } else {
                 databaseMics.append(mic)
             }
+            if let connectedMic = connectedMics.first(where: { $0 == mic }) {
+                mic.name = connectedMic.name
+            }
         }
         for mic in connectedMics where !databaseMics.contains(mic) {
             databaseMics.insert(mic, at: 0)
