@@ -1869,14 +1869,14 @@ class SettingsWidgetAlerts: Codable {
 
 class SettingsWidgetVideoSource: Codable, ObservableObject {
     @Published var cornerRadius: Float = 0
-    var cameraPosition: SettingsSceneCameraPosition = .screenCapture
-    var backCameraId: String = getBestBackCameraId()
-    var frontCameraId: String = getBestFrontCameraId()
-    var rtmpCameraId: UUID = .init()
-    var srtlaCameraId: UUID = .init()
-    var mediaPlayerCameraId: UUID = .init()
-    var externalCameraId: String = ""
-    var externalCameraName: String = ""
+    @Published var cameraPosition: SettingsSceneCameraPosition = .screenCapture
+    @Published var backCameraId: String = getBestBackCameraId()
+    @Published var frontCameraId: String = getBestFrontCameraId()
+    @Published var rtmpCameraId: UUID = .init()
+    @Published var srtlaCameraId: UUID = .init()
+    @Published var mediaPlayerCameraId: UUID = .init()
+    @Published var externalCameraId: String = ""
+    @Published var externalCameraName: String = ""
     var cropEnabled: Bool = false
     var cropX: Double = 0.25
     var cropY: Double = 0.0
@@ -2348,14 +2348,14 @@ class SettingsVideoEffect: Codable, Identifiable, ObservableObject {
 
 class SettingsWidgetVTuber: Codable, ObservableObject {
     var id: UUID = .init()
-    var cameraPosition: SettingsSceneCameraPosition = .screenCapture
-    var backCameraId: String = getBestBackCameraId()
-    var frontCameraId: String = getBestFrontCameraId()
-    var rtmpCameraId: UUID = .init()
-    var srtlaCameraId: UUID = .init()
-    var mediaPlayerCameraId: UUID = .init()
-    var externalCameraId: String = ""
-    var externalCameraName: String = ""
+    @Published var cameraPosition: SettingsSceneCameraPosition = .screenCapture
+    @Published var backCameraId: String = getBestBackCameraId()
+    @Published var frontCameraId: String = getBestFrontCameraId()
+    @Published var rtmpCameraId: UUID = .init()
+    @Published var srtlaCameraId: UUID = .init()
+    @Published var mediaPlayerCameraId: UUID = .init()
+    @Published var externalCameraId: String = ""
+    @Published var externalCameraName: String = ""
     @Published var cameraPositionY: Double = 1.37
     @Published var cameraFieldOfView: Double = 18
     @Published var modelName: String = ""
@@ -2477,14 +2477,14 @@ class SettingsWidgetVTuber: Codable, ObservableObject {
 
 class SettingsWidgetPngTuber: Codable, ObservableObject {
     var id: UUID = .init()
-    var cameraPosition: SettingsSceneCameraPosition = .screenCapture
-    var backCameraId: String = getBestBackCameraId()
-    var frontCameraId: String = getBestFrontCameraId()
-    var rtmpCameraId: UUID = .init()
-    var srtlaCameraId: UUID = .init()
-    var mediaPlayerCameraId: UUID = .init()
-    var externalCameraId: String = ""
-    var externalCameraName: String = ""
+    @Published var cameraPosition: SettingsSceneCameraPosition = .screenCapture
+    @Published var backCameraId: String = getBestBackCameraId()
+    @Published var frontCameraId: String = getBestFrontCameraId()
+    @Published var rtmpCameraId: UUID = .init()
+    @Published var srtlaCameraId: UUID = .init()
+    @Published var mediaPlayerCameraId: UUID = .init()
+    @Published var externalCameraId: String = ""
+    @Published var externalCameraName: String = ""
     @Published var modelName: String = ""
     @Published var mirror: Bool = false
 
