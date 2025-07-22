@@ -1187,8 +1187,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             return
         }
         switch backgroundRunLevel() {
-        case .full, .service:
+        case .full:
             disableScreenPreview()
+        case .service:
+            disableScreenPreview()
+            stopPeriodicTimers()
         case .off:
             if isRecording {
                 suspendRecording()
@@ -1223,8 +1226,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             return
         }
         switch backgroundRunLevel() {
-        case .full, .service:
+        case .full:
             maybeEnableScreenPreview()
+        case .service:
+            maybeEnableScreenPreview()
+            startPeriodicTimers()
         case .off:
             clearRemoteSceneSettingsAndData()
             reloadStream()
