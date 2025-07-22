@@ -362,21 +362,6 @@ class MoblinkRelay: NSObject {
         relays.removeAll()
     }
 
-    private func makeRelayId(_ interface: NWInterface) -> String {
-        if let value = Int(id.suffix(6), radix: 16) {
-            return id.prefix(30) + String(format: "%06X", (value + interface.index) & 0xFFFFFF)
-        }
-        return id
-    }
-
-    private func makeRelayName(_ interface: NWInterface) -> String {
-        if interface.type == .cellular {
-            return name
-        } else {
-            return "\(name)-\(interface.index)"
-        }
-    }
-
     func relayStateChanged() {
         var state: MoblinkRelayState = .noInterface
         for relay in relays {
@@ -398,6 +383,21 @@ class MoblinkRelay: NSObject {
             }
         }
         delegate?.moblinkRelayNewState(state: state)
+    }
+
+    private func makeRelayId(_ interface: NWInterface) -> String {
+        if let value = Int(id.suffix(6), radix: 16) {
+            return id.prefix(30) + String(format: "%06X", (value + interface.index) & 0xFFFFFF)
+        }
+        return id
+    }
+
+    private func makeRelayName(_ interface: NWInterface) -> String {
+        if interface.type == .cellular {
+            return name
+        } else {
+            return "\(name)-\(interface.index)"
+        }
     }
 
     private func handleNetworkPathUpdate(path: NWPath) {
