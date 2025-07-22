@@ -165,7 +165,10 @@ struct StreamSettingsView: View {
                         Toggle("RealtimeIRL", isOn: Binding(get: {
                             stream.realtimeIrlEnabled
                         }, set: { value in
-                            model.setRealtimeIrlEnabled(enabled: value)
+                            stream.realtimeIrlEnabled = value
+                            if stream.enabled {
+                                model.reloadLocation()
+                            }
                         }))
                     }
                 }

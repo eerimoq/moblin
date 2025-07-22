@@ -73,7 +73,8 @@ struct LocationSettingsView: View {
                     Toggle(isOn: Binding(get: {
                         model.stream.realtimeIrlEnabled
                     }, set: { value in
-                        model.setRealtimeIrlEnabled(enabled: value)
+                        model.stream.realtimeIrlEnabled = value
+                        model.reloadLocation()
                     })) {
                         Label("RealtimeIRL", systemImage: "dot.radiowaves.left.and.right")
                     }

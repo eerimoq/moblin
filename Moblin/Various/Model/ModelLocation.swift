@@ -11,13 +11,6 @@ extension Model {
         }
     }
 
-    func setRealtimeIrlEnabled(enabled: Bool) {
-        stream.realtimeIrlEnabled = enabled
-        if stream.enabled {
-            reloadLocation()
-        }
-    }
-
     func reloadLocation() {
         locationManager.stop()
         if isLocationEnabled() {
