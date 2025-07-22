@@ -582,21 +582,24 @@ extension Model {
     }
 
     private func selectMicRtmp(mic: SettingsMicsMic) {
-        let cameraId = getRtmpStream(idString: mic.inputUid)?.id ?? .init()
-        media.attachBufferedAudio(cameraId: cameraId)
-        remoteControlStreamer?.stateChanged(state: RemoteControlState(mic: mic.id))
+        attachBufferedAudio(cameraId: getRtmpStream(idString: mic.inputUid)?.id, micId: mic.id)
     }
 
     private func selectMicSrtla(mic: SettingsMicsMic) {
-        let cameraId = getSrtlaStream(idString: mic.inputUid)?.id ?? .init()
-        media.attachBufferedAudio(cameraId: cameraId)
-        remoteControlStreamer?.stateChanged(state: RemoteControlState(mic: mic.id))
+        attachBufferedAudio(cameraId: getSrtlaStream(idString: mic.inputUid)?.id, micId: mic.id)
     }
 
     private func selectMicMediaPlayer(mic: SettingsMicsMic) {
-        let cameraId = getMediaPlayer(idString: mic.inputUid)?.id ?? .init()
+        attachBufferedAudio(cameraId: getMediaPlayer(idString: mic.inputUid)?.id, micId: mic.id)
+    }
+
+    private func attachBufferedAudio(cameraId: UUID?, micId: String) {
+        guard let cameraId else {
+            logger.info("Cannot attach unknown mic \(micId)")
+            return
+        }
         media.attachBufferedAudio(cameraId: cameraId)
-        remoteControlStreamer?.stateChanged(state: RemoteControlState(mic: mic.id))
+        remoteControlStreamer?.stateChanged(state: RemoteControlState(mic: micId))
     }
 }
 
