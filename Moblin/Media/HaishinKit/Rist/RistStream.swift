@@ -83,7 +83,7 @@ protocol RistStreamDelegate: AnyObject {
 class RistStream {
     private var context: RistContext?
     private var peers: [RistRemotePeer] = []
-    private let writer = MpegTsWriter(timecodesEnabled: false)
+    private let writer = MpegTsWriter(timecodesEnabled: false, newSrt: false)
     private var networkPathMonitor: NWPathMonitor?
     private var bonding: Bool = false
     private var url: String = ""
@@ -343,6 +343,8 @@ extension RistStream: MpegTsWriterDelegate {
     func writer(_: MpegTsWriter, doOutputPointer dataPointer: UnsafeRawBufferPointer, count: Int) {
         send(dataPointer: dataPointer, count: count)
     }
+
+    func writer(_: MpegTsWriter, doOutputBuffers _: [(UnsafeRawBufferPointer, Int)]) {}
 }
 
 extension RistStream: RistContextDelegate {

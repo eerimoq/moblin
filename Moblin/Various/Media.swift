@@ -46,7 +46,8 @@ final class Media: NSObject {
         rtmpStreams.first
     }
 
-    private var srtStream: SrtStream?
+    private var srtStreamNew: SrtStreamNew?
+    private var srtStreamOld: SrtStreamOld?
     private var ristStream: RistStream?
     private var irlStream: MirlStream?
     private var srtlaClient: SrtlaClient?
@@ -71,6 +72,7 @@ final class Media: NSObject {
     private var updateTickCount: UInt64 = 0
     private var belaLinesAndActions: ([String], [String])?
     private var srtConnected = false
+    private var newSrt: Bool = false
 
     func logStatistics() {
         srtlaClient?.logStatistics()
@@ -98,7 +100,8 @@ final class Media: NSObject {
         ristStopStream()
         irlStopStream()
         rtmpStreams.removeAll()
-        srtStream = nil
+        srtStreamNew = nil
+        srtStreamOld = nil
         ristStream = nil
         irlStream = nil
         processor = nil
@@ -108,8 +111,10 @@ final class Media: NSObject {
                       portrait: Bool,
                       timecodesEnabled: Bool,
                       builtinAudioDelay: Double,
-                      destinations: [SettingsStreamMultiStreamingDestination])
+                      destinations: [SettingsStreamMultiStreamingDestination],
+                      newSrt: Bool)
     {
+        self.newSrt = newSrt
         processor?.stop()
         srtStopStream()
         rtmpStopStream()
@@ -124,22 +129,31 @@ final class Media: NSObject {
                 rtmpStream.setUrl(destination.url)
                 rtmpStreams.append(rtmpStream)
             }
-            srtStream = nil
+            srtStreamNew = nil
+            srtStreamOld = nil
             ristStream = nil
             irlStream = nil
         case .srt:
-            srtStream = SrtStream(processor: processor, timecodesEnabled: timecodesEnabled, delegate: self)
+            if newSrt {
+                srtStreamNew = SrtStreamNew(processor: processor, timecodesEnabled: timecodesEnabled, delegate: self)
+                srtStreamOld = nil
+            } else {
+                srtStreamNew = nil
+                srtStreamOld = SrtStreamOld(processor: processor, timecodesEnabled: timecodesEnabled, delegate: self)
+            }
             rtmpStreams.removeAll()
             ristStream = nil
             irlStream = nil
         case .rist:
             ristStream = RistStream(processor: processor, delegate: self)
-            srtStream = nil
+            srtStreamNew = nil
+            srtStreamOld = nil
             rtmpStreams.removeAll()
             irlStream = nil
         case .irl:
             irlStream = MirlStream(processor: processor)
-            srtStream = nil
+            srtStreamNew = nil
+            srtStreamOld = nil
             rtmpStreams.removeAll()
             ristStream = nil
         }
@@ -214,7 +228,8 @@ final class Media: NSObject {
             passThrough: !isSrtla,
             mpegtsPacketsPerPacket: mpegtsPacketsPerPacket,
             networkInterfaceNames: networkInterfaceNames,
-            connectionPriorities: connectionPriorities
+            connectionPriorities: connectionPriorities,
+            newSrt: newSrt
         )
         srtSetAdaptiveBitrateAlgorithm(
             targetBitrate: targetBitrate,
@@ -223,7 +238,8 @@ final class Media: NSObject {
     }
 
     func srtStopStream() {
-        srtStream?.close()
+        srtStreamNew?.close()
+        srtStreamOld?.close()
         srtlaClient?.stop()
         srtlaClient = nil
         adaptiveBitrate = nil
@@ -268,7 +284,7 @@ final class Media: NSObject {
     func updateAdaptiveBitrate(overlay: Bool, relaxed: Bool) -> ([String], [String])? {
         updateTickCount += 1
         let is200MsTick = updateTickCount % 10 == 0
-        if srtStream != nil {
+        if isSrtStreamActive() {
             return updateAdaptiveBitrateSrt(overlay: overlay, relaxed: relaxed, is200MsTick: is200MsTick)
         } else if is200MsTick {
             if let rtmpStream {
@@ -293,19 +309,33 @@ final class Media: NSObject {
         }
     }
 
+    private func getSrtStats() -> SrtPerformanceData? {
+        return srtStreamNew?.getPerformanceData() ?? srtStreamOld?.getPerformanceData()
+    }
+
+    private func isSrtStreamActive() -> Bool {
+        return srtStreamNew != nil || srtStreamOld != nil
+    }
+
     private func updateAdaptiveBitrateSrtBela(overlay: Bool,
                                               relaxed: Bool,
                                               is200MsTick: Bool) -> ([String], [String])?
     {
-        guard let stats = srtStream?.getPerformanceData() else {
+        guard let stats = getSrtStats() else {
             return nil
         }
         srtDroppedPacketsTotal = stats.pktSndDropTotal
         guard let adaptiveBitrate else {
             return nil
         }
-        // This one blocks if srt_connect() has not returned.
-        guard let sndData = srtStream?.getSndData() else {
+        let sndData: Int32?
+        if let srtStreamOld {
+            // This one blocks if srt_connect() has not returned.
+            sndData = srtStreamOld.getSndData()
+        } else {
+            sndData = stats.pktFlightSize
+        }
+        guard let sndData else {
             return nil
         }
         adaptiveBitrate.update(stats: StreamStats(
@@ -335,7 +365,7 @@ final class Media: NSObject {
     }
 
     private func updateAdaptiveBitrateSrtFight(overlay: Bool) -> ([String], [String])? {
-        guard let stats = srtStream?.getPerformanceData() else {
+        guard let stats = getSrtStats() else {
             return nil
         }
         srtDroppedPacketsTotal = stats.pktSndDropTotal
@@ -460,7 +490,7 @@ final class Media: NSObject {
     func streamSpeed() -> Int64 {
         if rtmpStream != nil {
             return Int64(8 * (rtmpStream?.info.currentBytesPerSecond ?? 0))
-        } else if srtStream != nil {
+        } else if isSrtStreamActive() {
             return 8 * srtSpeed
         } else if ristStream != nil {
             return Int64(ristStream?.getSpeed() ?? 0)
@@ -474,7 +504,7 @@ final class Media: NSObject {
         for stream in rtmpStreams {
             total += stream.info.byteCount.value
         }
-        if srtStream != nil {
+        if isSrtStreamActive() {
             return srtTotalByteCount
         }
         return total
@@ -519,6 +549,10 @@ final class Media: NSObject {
         }
         urlComponents.queryItems = queryItems
         return urlComponents.url
+    }
+
+    private func makeStreamId(url: String) -> String {
+        return URL(string: url)?.dictionaryFromQuery()["streamid"] ?? ""
     }
 
     func rtmpStartStream(url: String,
@@ -1015,34 +1049,39 @@ extension Media: ProcessorDelegate {
 extension Media: SrtlaDelegate {
     func srtlaReady(port: UInt16) {
         processorControlQueue.async {
-            do {
-                try self.srtStream?.open(self.makeLocalhostSrtUrl(
-                    url: self.srtUrl,
-                    port: port,
-                    latency: self.latency,
-                    overheadBandwidth: self.overheadBandwidth,
-                    maximumBandwidthFollowInput: self.maximumBandwidthFollowInput
-                )) { [weak self] data in
-                    guard let self else {
-                        return false
-                    }
-                    if let srtla = self.srtlaClient {
-                        srtlaClientQueue.async {
-                            srtla.handleLocalPacket(packet: data)
+            if self.srtStreamOld != nil {
+                do {
+                    try self.srtStreamOld?.open(self.makeLocalhostSrtUrl(
+                        url: self.srtUrl,
+                        port: port,
+                        latency: self.latency,
+                        overheadBandwidth: self.overheadBandwidth,
+                        maximumBandwidthFollowInput: self.maximumBandwidthFollowInput
+                    )) { [weak self] data in
+                        guard let self else {
+                            return false
                         }
+                        if let srtla = self.srtlaClient {
+                            srtlaClientQueue.async {
+                                srtla.handleLocalPacket(packet: data)
+                            }
+                        }
+                        return true
                     }
-                    return true
+                    DispatchQueue.main.async {
+                        self.srtConnected = true
+                        self.delegate?.mediaOnSrtConnected()
+                    }
+                } catch {
+                    DispatchQueue.main.async {
+                        self.delegate?.mediaOnSrtDisconnected(
+                            String(localized: "SRT connect failed with \(error.localizedDescription)")
+                        )
+                    }
                 }
-                DispatchQueue.main.async {
-                    self.srtConnected = true
-                    self.delegate?.mediaOnSrtConnected()
-                }
-            } catch {
-                DispatchQueue.main.async {
-                    self.delegate?.mediaOnSrtDisconnected(
-                        String(localized: "SRT connect failed with \(error.localizedDescription)")
-                    )
-                }
+            } else {
+                self.srtStreamNew?.open(streamId: self.makeStreamId(url: self.srtUrl),
+                                        latency: UInt16(self.latency))
             }
         }
     }
@@ -1058,6 +1097,10 @@ extension Media: SrtlaDelegate {
         DispatchQueue.main.async {
             self.delegate?.mediaStrlaRelayDestinationAddress(address: address, port: port)
         }
+    }
+
+    func srtlaReceivedPacket(packet: Data) {
+        srtStreamNew?.inputPacket(packet: packet)
     }
 }
 
@@ -1084,7 +1127,27 @@ extension Media: RistStreamDelegate {
     }
 }
 
-extension Media: SrtStreamDelegate {
+extension Media: SrtStreamNewDelegate {
+    func srtStreamConnected() {
+        DispatchQueue.main.async {
+            self.srtConnected = true
+            self.delegate?.mediaOnSrtConnected()
+        }
+    }
+
+    func srtStreamDisconnected() {
+        DispatchQueue.main.async {
+            self.srtConnected = false
+        }
+        srtlaError(message: String(localized: "SRT disconnected"))
+    }
+
+    func srtStreamOutput(packet: Data) {
+        srtlaClient?.handleLocalPacket(packet: packet)
+    }
+}
+
+extension Media: SrtStreamOldDelegate {
     func srtStreamError() {
         DispatchQueue.main.async {
             self.srtConnected = false

@@ -9,6 +9,7 @@ protocol SrtlaDelegate: AnyObject {
     func srtlaReady(port: UInt16)
     func srtlaError(message: String)
     func moblinkStreamerDestinationAddress(address: String, port: UInt16)
+    func srtlaReceivedPacket(packet: Data)
 }
 
 private enum State {
@@ -48,19 +49,22 @@ class SrtlaClient: NSObject {
     private var networkInterfaces: SrtlaNetworkInterfaces
     private var connectionPriorities: [SettingsStreamSrtConnectionPriority]
     private var latestFlushDataPacketsTime = ContinuousClock.now
+    private let newSrt: Bool
 
     init(
         delegate: SrtlaDelegate,
         passThrough: Bool,
         mpegtsPacketsPerPacket: Int,
         networkInterfaceNames: [SettingsNetworkInterfaceName],
-        connectionPriorities: SettingsStreamSrtConnectionPriorities
+        connectionPriorities: SettingsStreamSrtConnectionPriorities,
+        newSrt: Bool
     ) {
         self.delegate = delegate
         self.passThrough = passThrough
         self.mpegtsPacketsPerPacket = mpegtsPacketsPerPacket
         networkInterfaces = .init()
         self.connectionPriorities = .init()
+        self.newSrt = newSrt
         super.init()
         setNetworkInterfaceNames(networkInterfaceNames: networkInterfaceNames)
         updateConnectionPriorities(connectionPriorities: connectionPriorities)
@@ -340,6 +344,20 @@ class SrtlaClient: NSObject {
     }
 
     private func startListener() {
+        if newSrt {
+            startListenerNew()
+        } else {
+            startListenerOld()
+        }
+    }
+
+    private func startListenerNew() {
+        state = .running
+        delegate?.srtlaReady(port: 0)
+        cancelConnectTimer()
+    }
+
+    private func startListenerOld() {
         guard localListener == nil else {
             return
         }
@@ -446,7 +464,11 @@ extension SrtlaClient: RemoteConnectionDelegate {
     }
 
     func remoteConnectionPacketHandler(packet: Data) {
-        localListener?.sendPacket(packet: packet)
+        if newSrt {
+            delegate?.srtlaReceivedPacket(packet: packet)
+        } else {
+            localListener?.sendPacket(packet: packet)
+        }
         totalByteCount += Int64(packet.count)
     }
 

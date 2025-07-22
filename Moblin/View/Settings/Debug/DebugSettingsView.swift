@@ -120,6 +120,11 @@ struct DebugSettingsView: View {
                 //             model.stopLowPowerMode()
                 //         }
                 //     }
+                Toggle("New SRT", isOn: $debug.newSrt)
+                    .onChange(of: debug.newSrt) { _ in
+                        model.reloadStream()
+                        model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
+                    }
             } header: {
                 Text("Experimental")
             }

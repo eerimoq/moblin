@@ -3833,6 +3833,7 @@ class SettingsDebug: Codable, ObservableObject {
     var recordSegmentLength: Double = 5.0
     @Published var builtinAudioAndVideoDelay: Double = 0.0
     @Published var autoLowPowerMode: Bool = false
+    @Published var newSrt: Bool = false
 
     enum CodingKeys: CodingKey {
         case logLevel,
@@ -3869,7 +3870,8 @@ class SettingsDebug: Codable, ObservableObject {
              recordSegmentLength,
              builtinAudioAndVideoDelay,
              overrideSceneMic,
-             autoLowPowerMode
+             autoLowPowerMode,
+             newSrt
     }
 
     func encode(to encoder: Encoder) throws {
@@ -3905,6 +3907,7 @@ class SettingsDebug: Codable, ObservableObject {
         try container.encode(.recordSegmentLength, recordSegmentLength)
         try container.encode(.builtinAudioAndVideoDelay, builtinAudioAndVideoDelay)
         try container.encode(.autoLowPowerMode, autoLowPowerMode)
+        try container.encode(.newSrt, newSrt)
     }
 
     init() {}
@@ -3944,6 +3947,7 @@ class SettingsDebug: Codable, ObservableObject {
         recordSegmentLength = container.decode(.recordSegmentLength, Double.self, 5.0)
         builtinAudioAndVideoDelay = container.decode(.builtinAudioAndVideoDelay, Double.self, 0.0)
         autoLowPowerMode = container.decode(.autoLowPowerMode, Bool.self, false)
+        newSrt = container.decode(.newSrt, Bool.self, false)
     }
 }
 

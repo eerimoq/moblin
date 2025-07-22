@@ -35,7 +35,7 @@ func isSrtSnAcked(sn: UInt32, ackSn: UInt32) -> Bool {
     }
 }
 
-private func isSrtSnRange(sn: UInt32) -> Bool {
+func isSrtSnRange(sn: UInt32) -> Bool {
     return (sn & 0x8000_0000) == 0x8000_0000
 }
 

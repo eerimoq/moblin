@@ -47,9 +47,11 @@ class MpegTsWriter {
     private var previousDecodeTimeStamp: Double?
     private var estimatedFrameDuration: Double = 0.033
     private var offsetingFrames: Bool = false
+    private let newSrt: Bool
 
-    init(timecodesEnabled: Bool) {
+    init(timecodesEnabled: Bool, newSrt: Bool) {
         self.timecodesEnabled = timecodesEnabled
+        self.newSrt = newSrt
     }
 
     private func setAudioConfig(_ config: MpegTsAudioConfig) {
@@ -167,28 +169,32 @@ class MpegTsWriter {
         latestPeriodicallySendProgramTime = now
     }
 
-    private func write(_ data: Data) {
-        writeBytes(data)
-    }
-
-    private func writePacket(_ data: Data) {
+    private func writeNew(_ data: Data) {
         delegate?.writer(self, doOutput: data)
     }
 
-    private func writePacketPointer(pointer: UnsafeRawBufferPointer, count: Int) {
+    private func writeOld(_ data: Data) {
+        writeBytesOld(data)
+    }
+
+    private func writePacketOld(_ data: Data) {
+        delegate?.writer(self, doOutput: data)
+    }
+
+    private func writePacketPointerOld(pointer: UnsafeRawBufferPointer, count: Int) {
         delegate?.writer(self, doOutputPointer: pointer, count: count)
     }
 
-    private func writeBytes(_ data: Data) {
+    private func writeBytesOld(_ data: Data) {
         data.withUnsafeBytes { (pointer: UnsafeRawBufferPointer) in
-            writeBytesPointer(pointer: pointer, count: data.count)
+            writeBytesPointerOld(pointer: pointer, count: data.count)
         }
     }
 
-    private func writeBytesPointer(pointer: UnsafeRawBufferPointer, count: Int) {
+    private func writeBytesPointerOld(pointer: UnsafeRawBufferPointer, count: Int) {
         for offset in stride(from: 0, to: count, by: payloadSize) {
             let length = min(payloadSize, count - offset)
-            writePacketPointer(
+            writePacketPointerOld(
                 pointer: UnsafeRawBufferPointer(rebasing: pointer[offset ..< offset + length]),
                 count: length
             )
@@ -202,20 +208,29 @@ class MpegTsWriter {
     }
 
     private func writeVideo(data: Data) {
+        if newSrt {
+            writeVideoNew(data: data)
+        } else {
+            writeVideoOld(data: data)
+        }
+    }
+
+    private func writeAudio(data: Data) {
+        if newSrt {
+            writeAudioNew(data: data)
+        } else {
+            writeAudioOld(data: data)
+        }
+    }
+
+    private func writeVideoNew(data: Data) {
         if let videoData = videoData[0] {
-            videoData.withUnsafeBytes { (pointer: UnsafeRawBufferPointer) in
-                writeBytesPointer(
-                    pointer: UnsafeRawBufferPointer(
-                        rebasing: pointer[videoDataOffset ..< videoData.count]
-                    ),
-                    count: videoData.count - videoDataOffset
-                )
-            }
+            writeNew(videoData[videoDataOffset ..< videoData.count])
         }
         appendVideoData(data: data)
     }
 
-    private func writeAudio(data: Data) {
+    private func writeAudioNew(data: Data) {
         if let videoData = videoData[0] {
             for var packet in data.chunks(payloadSize) {
                 let videoSize = payloadSize - packet.count
@@ -226,13 +241,48 @@ class MpegTsWriter {
                         videoDataOffset = endOffset
                     }
                 }
-                writePacket(packet)
+                writeNew(packet)
             }
             if videoDataOffset == videoData.count {
                 appendVideoData(data: nil)
             }
         } else {
-            writeBytes(data)
+            writeNew(data)
+        }
+    }
+
+    private func writeVideoOld(data: Data) {
+        if let videoData = videoData[0] {
+            videoData.withUnsafeBytes { (pointer: UnsafeRawBufferPointer) in
+                writeBytesPointerOld(
+                    pointer: UnsafeRawBufferPointer(
+                        rebasing: pointer[videoDataOffset ..< videoData.count]
+                    ),
+                    count: videoData.count - videoDataOffset
+                )
+            }
+        }
+        appendVideoData(data: data)
+    }
+
+    private func writeAudioOld(data: Data) {
+        if let videoData = videoData[0] {
+            for var packet in data.chunks(payloadSize) {
+                let videoSize = payloadSize - packet.count
+                if videoSize > 0 {
+                    let endOffset = min(videoDataOffset + videoSize, videoData.count)
+                    if videoDataOffset != endOffset {
+                        packet = videoData[videoDataOffset ..< endOffset] + packet
+                        videoDataOffset = endOffset
+                    }
+                }
+                writeOld(packet)
+            }
+            if videoDataOffset == videoData.count {
+                appendVideoData(data: nil)
+            }
+        } else {
+            writeOld(data)
         }
     }
 
@@ -242,7 +292,11 @@ class MpegTsWriter {
         var pmtPacket = programMappingTable.packet(MpegTsWriter.programMappingTablePacketId)
         patPacket.continuityCounter = nextProgramAssociationTableContinuityCounter()
         pmtPacket.continuityCounter = nextProgramMappingTableContinuityCounter()
-        write(patPacket.encode() + pmtPacket.encode())
+        if newSrt {
+            writeNew(patPacket.encode() + pmtPacket.encode())
+        } else {
+            writeOld(patPacket.encode() + pmtPacket.encode())
+        }
     }
 
     private func writeProgramIfNeeded() {

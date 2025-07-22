@@ -378,7 +378,8 @@ extension Model {
             portrait: stream.portrait,
             timecodesEnabled: isTimecodesEnabled(),
             builtinAudioDelay: database.debug.builtinAudioAndVideoDelay,
-            destinations: stream.multiStreaming.destinations
+            destinations: stream.multiStreaming.destinations,
+            newSrt: database.debug.newSrt
         )
         updateTorch()
         updateMute()

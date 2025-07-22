@@ -34,8 +34,8 @@ class SrtServerClient {
 
     func run(clientSocket: Int32) {
         let packetSize = 2048
+        var packet = Data(count: packetSize)
         while server?.running == true {
-            var packet = Data(count: packetSize)
             let count = packet.withUnsafeMutableBytes { pointer in
                 srt_recvmsg(clientSocket, pointer.baseAddress, Int32(packetSize))
             }

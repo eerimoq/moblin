@@ -12,13 +12,13 @@ struct SrtPerformanceData {
         mbpsSendRate: 0
     )
 
-    let pktRetransTotal: Int32
-    let pktRecvNakTotal: Int32
-    let pktSndDropTotal: Int32
-    let pktFlightSize: Int32
-    let msRtt: Double
-    let pktSndBuf: Int32
-    let mbpsSendRate: Double
+    var pktRetransTotal: Int32
+    var pktRecvNakTotal: Int32
+    var pktSndDropTotal: Int32
+    var pktFlightSize: Int32
+    var msRtt: Double
+    var pktSndBuf: Int32
+    var mbpsSendRate: Double
 
     init(mon: CBytePerfMon) {
         pktRetransTotal = mon.pktRetransTotal
