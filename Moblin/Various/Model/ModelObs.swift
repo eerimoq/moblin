@@ -271,13 +271,6 @@ extension Model {
         obsWebSocket!.start()
     }
 
-    func setObsRemoteControlEnabled(enabled: Bool) {
-        stream.obsWebSocketEnabled = enabled
-        if stream.enabled {
-            obsWebSocketEnabledUpdated()
-        }
-    }
-
     func obsWebSocketEnabledUpdated() {
         reloadObsWebSocket()
     }

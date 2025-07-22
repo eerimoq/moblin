@@ -286,7 +286,8 @@ struct RemoteControlSettingsView: View {
                     Toggle(isOn: Binding(get: {
                         model.stream.obsWebSocketEnabled
                     }, set: {
-                        model.setObsRemoteControlEnabled(enabled: $0)
+                        model.stream.obsWebSocketEnabled = $0
+                        model.obsWebSocketEnabledUpdated()
                     })) {
                         Label("OBS remote control", systemImage: "dot.radiowaves.left.and.right")
                     }
