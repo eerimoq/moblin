@@ -94,13 +94,15 @@ extension Model {
         }
     }
 
-    func playerCameras() -> [String] {
-        return database.mediaPlayers.players.map { $0.camera() }
+    func playerCameras() -> [(UUID, String)] {
+        return database.mediaPlayers.players.map {
+            ($0.id, $0.camera())
+        }
     }
 
     func getMediaPlayer(camera: String) -> SettingsMediaPlayer? {
         return database.mediaPlayers.players.first {
-            $0.camera() == camera
+            camera == $0.id.uuidString
         }
     }
 

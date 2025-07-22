@@ -496,13 +496,13 @@ extension Model {
             }
         }
         cameras += rtmpCameras().map {
-            ($0, $0)
+            ($0.0.uuidString, $0.1)
         }
         cameras += srtlaCameras().map {
-            ($0, $0)
+            ($0.0.uuidString, $0.1)
         }
         cameras += playerCameras().map {
-            ($0, $0)
+            ($0.0.uuidString, $0.1)
         }
         cameras.append((screenCaptureCamera, screenCaptureCamera))
         cameras.append((noneCamera, noneCamera))
@@ -546,12 +546,12 @@ extension Model {
     }
 
     func cameraIdToSettingsCameraId(cameraId: String) -> SettingsCameraId {
-        if isSrtlaCameraOrMic(camera: cameraId) {
-            return .srtla(id: getSrtlaStream(camera: cameraId)?.id ?? .init())
-        } else if isRtmpCameraOrMic(camera: cameraId) {
-            return .rtmp(id: getRtmpStream(camera: cameraId)?.id ?? .init())
-        } else if isMediaPlayerCameraOrMic(camera: cameraId) {
-            return .mediaPlayer(id: getMediaPlayer(camera: cameraId)?.id ?? .init())
+        if let id = getSrtlaStream(camera: cameraId)?.id {
+            return .srtla(id: id)
+        } else if let id = getRtmpStream(camera: cameraId)?.id {
+            return .rtmp(id: id)
+        } else if let id = getMediaPlayer(camera: cameraId)?.id {
+            return .mediaPlayer(id: id)
         } else if isBackCamera(cameraId: cameraId) {
             return .back(id: cameraId)
         } else if isFrontCamera(cameraId: cameraId) {
@@ -577,11 +577,11 @@ extension Model {
         }
         switch settingsCameraId {
         case let .rtmp(id):
-            return getRtmpStream(id: id)?.camera() ?? ""
+            return id.uuidString
         case let .srtla(id):
-            return getSrtlaStream(id: id)?.camera() ?? ""
+            return id.uuidString
         case let .mediaPlayer(id):
-            return getMediaPlayer(id: id)?.camera() ?? ""
+            return id.uuidString
         case let .external(id, _):
             return id
         case let .back(id):

@@ -2,9 +2,9 @@ import CoreMedia
 import Foundation
 
 extension Model {
-    func rtmpCameras() -> [String] {
+    func rtmpCameras() -> [(UUID, String)] {
         return database.rtmpServer.streams.map { stream in
-            stream.camera()
+            (stream.id, stream.camera())
         }
     }
 
@@ -16,7 +16,7 @@ extension Model {
 
     func getRtmpStream(camera: String) -> SettingsRtmpServerStream? {
         return database.rtmpServer.streams.first { stream in
-            camera == stream.camera()
+            camera == stream.id.uuidString
         }
     }
 
@@ -41,8 +41,8 @@ extension Model {
     }
 
     func reloadRtmpStreams() {
-        for rtmpCamera in rtmpCameras() {
-            guard let stream = getRtmpStream(camera: rtmpCamera) else {
+        for (rtmpCameraId, _) in rtmpCameras() {
+            guard let stream = getRtmpStream(id: rtmpCameraId) else {
                 continue
             }
             if isRtmpStreamConnected(streamKey: stream.streamKey) {
