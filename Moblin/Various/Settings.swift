@@ -5282,6 +5282,28 @@ class SettingsMoblink: Codable {
     var server: SettingsMoblinkStreamer = .init()
     var client: SettingsMoblinkRelay = .init()
     var password = "1234"
+
+    enum CodingKeys: CodingKey {
+        case server,
+             client,
+             password
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.server, server)
+        try container.encode(.client, client)
+        try container.encode(.password, password)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        server = container.decode(.server, SettingsMoblinkStreamer.self, .init())
+        client = container.decode(.client, SettingsMoblinkRelay.self, .init())
+        password = container.decode(.password, String.self, "1234")
+    }
 }
 
 enum SettingsSceneSwitchTransition: String, Codable, CaseIterable {
