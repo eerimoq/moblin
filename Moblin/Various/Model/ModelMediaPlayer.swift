@@ -100,9 +100,9 @@ extension Model {
         }
     }
 
-    func getMediaPlayer(camera: String) -> SettingsMediaPlayer? {
+    func getMediaPlayer(idString: String) -> SettingsMediaPlayer? {
         return database.mediaPlayers.players.first {
-            camera == $0.id.uuidString
+            idString == $0.id.uuidString
         }
     }
 

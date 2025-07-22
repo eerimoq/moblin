@@ -14,9 +14,9 @@ extension Model {
         }
     }
 
-    func getRtmpStream(camera: String) -> SettingsRtmpServerStream? {
+    func getRtmpStream(idString: String) -> SettingsRtmpServerStream? {
         return database.rtmpServer.streams.first { stream in
-            camera == stream.id.uuidString
+            idString == stream.id.uuidString
         }
     }
 

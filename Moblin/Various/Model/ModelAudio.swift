@@ -582,19 +582,19 @@ extension Model {
     }
 
     private func selectMicRtmp(mic: SettingsMicsMic) {
-        let cameraId = getRtmpStream(camera: mic.name)?.id ?? .init()
+        let cameraId = getRtmpStream(idString: mic.inputUid)?.id ?? .init()
         media.attachBufferedAudio(cameraId: cameraId)
         remoteControlStreamer?.stateChanged(state: RemoteControlState(mic: mic.id))
     }
 
     private func selectMicSrtla(mic: SettingsMicsMic) {
-        let cameraId = getSrtlaStream(camera: mic.name)?.id ?? .init()
+        let cameraId = getSrtlaStream(idString: mic.inputUid)?.id ?? .init()
         media.attachBufferedAudio(cameraId: cameraId)
         remoteControlStreamer?.stateChanged(state: RemoteControlState(mic: mic.id))
     }
 
     private func selectMicMediaPlayer(mic: SettingsMicsMic) {
-        let cameraId = getMediaPlayer(camera: mic.name)?.id ?? .init()
+        let cameraId = getMediaPlayer(idString: mic.inputUid)?.id ?? .init()
         media.attachBufferedAudio(cameraId: cameraId)
         remoteControlStreamer?.stateChanged(state: RemoteControlState(mic: mic.id))
     }

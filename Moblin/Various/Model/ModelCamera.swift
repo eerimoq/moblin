@@ -546,11 +546,11 @@ extension Model {
     }
 
     func cameraIdToSettingsCameraId(cameraId: String) -> SettingsCameraId {
-        if let id = getSrtlaStream(camera: cameraId)?.id {
+        if let id = getSrtlaStream(idString: cameraId)?.id {
             return .srtla(id: id)
-        } else if let id = getRtmpStream(camera: cameraId)?.id {
+        } else if let id = getRtmpStream(idString: cameraId)?.id {
             return .rtmp(id: id)
-        } else if let id = getMediaPlayer(camera: cameraId)?.id {
+        } else if let id = getMediaPlayer(idString: cameraId)?.id {
             return .mediaPlayer(id: id)
         } else if isBackCamera(cameraId: cameraId) {
             return .back(id: cameraId)

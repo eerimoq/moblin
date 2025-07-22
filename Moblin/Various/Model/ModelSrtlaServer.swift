@@ -32,9 +32,9 @@ extension Model {
         }
     }
 
-    func getSrtlaStream(camera: String) -> SettingsSrtlaServerStream? {
+    func getSrtlaStream(idString: String) -> SettingsSrtlaServerStream? {
         return database.srtlaServer.streams.first { stream in
-            camera == stream.id.uuidString
+            idString == stream.id.uuidString
         }
     }
 
