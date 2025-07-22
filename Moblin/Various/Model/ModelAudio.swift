@@ -115,34 +115,36 @@ extension Model {
     }
 
     private func updateMicsList() {
-        let connectedMics = listMics()
-        updateMicsListDatabase(connectedMics: connectedMics)
+        updateMicsListDatabase(foundMics: listMics())
     }
 
     func updateMicsListAsync(onCompleted: (() -> Void)? = nil) {
-        listMicsAsync { connectedMics in
-            self.updateMicsListDatabase(connectedMics: connectedMics)
+        listMicsAsync {
+            self.updateMicsListDatabase(foundMics: $0)
             onCompleted?()
         }
     }
 
-    private func updateMicsListDatabase(connectedMics: [SettingsMicsMic]) {
+    private func updateMicsListDatabase(foundMics: [SettingsMicsMic]) {
         var databaseMics: [SettingsMicsMic] = []
         for mic in database.mics.mics {
+            if mic.isRtmp() || mic.isSrtla() || mic.isMediaPlayer(), !foundMics.contains(mic) {
+                continue
+            }
             if mic.isExternal() {
-                mic.connected = connectedMics.contains(where: { $0 == mic })
+                mic.connected = foundMics.contains(where: { $0 == mic })
                 databaseMics.append(mic)
-            } else if let connectedMic = connectedMics.first(where: { $0 == mic }) {
-                mic.connected = connectedMic.connected
+            } else if let foundMic = foundMics.first(where: { $0 == mic }) {
+                mic.connected = foundMic.connected
                 databaseMics.append(mic)
             } else {
                 databaseMics.append(mic)
             }
-            if let connectedMic = connectedMics.first(where: { $0 == mic }) {
+            if let connectedMic = foundMics.first(where: { $0 == mic }) {
                 mic.name = connectedMic.name
             }
         }
-        for mic in connectedMics where !databaseMics.contains(mic) {
+        for mic in foundMics where !databaseMics.contains(mic) {
             databaseMics.insert(mic, at: 0)
         }
         database.mics.mics = databaseMics
@@ -474,12 +476,9 @@ extension Model {
     }
 
     private func listRtmpMics(_ mics: inout [SettingsMicsMic]) {
-        for rtmpCamera in rtmpCameras() {
-            guard let stream = getRtmpStream(camera: rtmpCamera) else {
-                continue
-            }
+        for stream in database.rtmpServer.streams {
             let mic = SettingsMicsMic()
-            mic.name = rtmpCamera
+            mic.name = stream.camera()
             mic.inputUid = stream.id.uuidString
             mic.connected = isRtmpStreamConnected(streamKey: stream.streamKey)
             mics.append(mic)
@@ -487,12 +486,9 @@ extension Model {
     }
 
     private func listSrtlaMics(_ mics: inout [SettingsMicsMic]) {
-        for srtlaCamera in srtlaCameras() {
-            guard let stream = getSrtlaStream(camera: srtlaCamera) else {
-                continue
-            }
+        for stream in database.srtlaServer.streams {
             let mic = SettingsMicsMic()
-            mic.name = srtlaCamera
+            mic.name = stream.camera()
             mic.inputUid = stream.id.uuidString
             mic.connected = isSrtlaStreamConnected(streamId: stream.streamId)
             mics.append(mic)
@@ -500,12 +496,9 @@ extension Model {
     }
 
     private func listMediaPlayerMics(_ mics: inout [SettingsMicsMic]) {
-        for mediaPlayerCamera in mediaPlayerCameras() {
-            guard let mediaPlayer = getMediaPlayer(camera: mediaPlayerCamera) else {
-                continue
-            }
+        for mediaPlayer in database.mediaPlayers.players {
             let mic = SettingsMicsMic()
-            mic.name = mediaPlayerCamera
+            mic.name = mediaPlayer.camera()
             mic.inputUid = mediaPlayer.id.uuidString
             mic.connected = true
             mics.append(mic)

@@ -3575,6 +3575,10 @@ class SettingsMicsMic: Codable, Identifiable, Equatable, ObservableObject {
         return isSrtlaCameraOrMic(camera: name)
     }
 
+    func isMediaPlayer() -> Bool {
+        return isMediaPlayerCameraOrMic(camera: name)
+    }
+
     enum CodingKeys: CodingKey {
         case name,
              inputUid,
