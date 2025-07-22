@@ -35,6 +35,24 @@ struct LocationSettingsView: View {
                     }
             }
             Section {
+                Picker("Desired accuracy", selection: $location.desiredAccuracy) {
+                    ForEach(SettingsLocationDesiredAccuracy.allCases, id: \.self) { accuracy in
+                        Text(accuracy.toString())
+                    }
+                }
+                .onChange(of: location.desiredAccuracy) { _ in
+                    model.reloadLocation()
+                }
+                Picker("Distance filter", selection: $location.distanceFilter) {
+                    ForEach(SettingsLocationDistanceFilter.allCases, id: \.self) { distanceFilter in
+                        Text(distanceFilter.toString())
+                    }
+                }
+                .onChange(of: location.distanceFilter) { _ in
+                    model.reloadLocation()
+                }
+            }
+            Section {
                 Toggle("Reset when going live", isOn: $location.resetWhenGoingLive)
                 Button {
                     model.resetLocationData()

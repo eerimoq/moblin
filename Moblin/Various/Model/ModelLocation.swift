@@ -21,7 +21,9 @@ extension Model {
     func reloadLocation() {
         locationManager.stop()
         if isLocationEnabled() {
-            locationManager.start(onUpdate: handleLocationUpdate)
+            locationManager.start(accuracy: database.location.desiredAccuracy,
+                                  distanceFilter: database.location.distanceFilter,
+                                  onUpdate: handleLocationUpdate)
         }
         reloadRealtimeIrl()
     }

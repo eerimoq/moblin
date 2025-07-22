@@ -25,10 +25,41 @@ class Location: NSObject {
     private var latestLocation: CLLocation?
     private var backgroundActivity = BackgroundActivity()
 
-    func start(onUpdate: @escaping (CLLocation) -> Void) {
-        logger.debug("location: Start")
+    func start(accuracy: SettingsLocationDesiredAccuracy,
+               distanceFilter: SettingsLocationDistanceFilter,
+               onUpdate: @escaping (CLLocation) -> Void)
+    {
+        logger.debug("location: Start with accuracy \(accuracy) and distance filter \(distanceFilter)")
         self.onUpdate = onUpdate
         manager.delegate = self
+        switch accuracy {
+        case .best:
+            manager.desiredAccuracy = kCLLocationAccuracyBest
+        case .nearestTenMeters:
+            manager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
+        case .hundredMeters:
+            manager.desiredAccuracy = kCLLocationAccuracyHundredMeters
+        }
+        switch distanceFilter {
+        case .none:
+            manager.distanceFilter = kCLDistanceFilterNone
+        case .oneMeter:
+            manager.distanceFilter = 1
+        case .threeMeters:
+            manager.distanceFilter = 3
+        case .fiveMeters:
+            manager.distanceFilter = 5
+        case .tenMeters:
+            manager.distanceFilter = 10
+        case .twentyMeters:
+            manager.distanceFilter = 20
+        case .fiftyMeters:
+            manager.distanceFilter = 50
+        case .hundredMeters:
+            manager.distanceFilter = 100
+        case .twoHundredMeters:
+            manager.distanceFilter = 200
+        }
         manager.requestWhenInUseAuthorization()
         manager.startUpdatingLocation()
         backgroundActivity.start()
