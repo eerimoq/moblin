@@ -17,9 +17,9 @@ import WatchConnectivity
 import WebKit
 
 private enum BackgroundRunLevel {
-    // Streaming or recording
+    // Streaming, recording or cat printer (as they need chat)
     case full
-    // Moblink and cat printer
+    // Moblink
     case service
     case off
 }
@@ -1320,7 +1320,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if isLive || isRecording {
             return .off
         }
-        if database.moblink.client.enabled || database.catPrinters.backgroundPrinting {
+        if database.catPrinters.backgroundPrinting {
+            return .full
+        }
+        if database.moblink.client.enabled {
             return .service
         }
         return .off
