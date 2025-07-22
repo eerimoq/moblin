@@ -112,10 +112,10 @@ class Model: NSObject, ObservableObject {
             session.delegate = self
             session.activate()
         }
-        setupPeriodicTimers()
+        startPeriodicTimers()
     }
 
-    private func setupPeriodicTimers() {
+    private func startPeriodicTimers() {
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
             self.updatePreview()
             self.keepAlive()

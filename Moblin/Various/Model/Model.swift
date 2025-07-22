@@ -16,6 +16,14 @@ import TrueTime
 import WatchConnectivity
 import WebKit
 
+private enum BackgroundRunLevel {
+    // Streaming or recording
+    case full
+    // Moblink and cat printer
+    case service
+    case off
+}
+
 enum ShowingPanel {
     case none
     case settings
@@ -819,7 +827,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         reloadStream()
         resetSelectedScene()
         setupAudio()
-        setupPeriodicTimers()
+        startPeriodicTimers()
         setupThermalState()
         updateQuickButtonStates()
         removeUnusedImages()
@@ -1178,9 +1186,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         guard !isMac() else {
             return
         }
-        if shouldStreamInBackground() {
+        switch backgroundRunLevel() {
+        case .full, .service:
             disableScreenPreview()
-        } else {
+        case .off:
             if isRecording {
                 suspendRecording()
             }
@@ -1213,9 +1222,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         guard !isMac() else {
             return
         }
-        if shouldStreamInBackground() {
+        switch backgroundRunLevel() {
+        case .full, .service:
             maybeEnableScreenPreview()
-        } else {
+        case .off:
             clearRemoteSceneSettingsAndData()
             reloadStream()
             sceneUpdated(attachCamera: true, updateRemoteScene: false)
@@ -1297,14 +1307,17 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    private func shouldStreamInBackground() -> Bool {
+    private func backgroundRunLevel() -> BackgroundRunLevel {
         if (isLive || isRecording) && stream.backgroundStreaming {
-            return true
+            return .full
         }
         if isLive || isRecording {
-            return false
+            return .off
         }
-        return database.moblink.client.enabled || database.catPrinters.backgroundPrinting
+        if database.moblink.client.enabled || database.catPrinters.backgroundPrinting {
+            return .service
+        }
+        return .off
     }
 
     @objc func handleBatteryStateDidChangeNotification() {
@@ -1335,7 +1348,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         updateOrientation()
     }
 
-    private func setupPeriodicTimers() {
+    func startPeriodicTimers() {
         periodicTimer20ms.startPeriodic(interval: 0.02) {
             self.updateAdaptiveBitrate()
         }
@@ -1428,6 +1441,15 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             self.updateAvailableDiskSpace()
             self.tryToFetchYouTubeVideoId()
         }
+    }
+
+    func stopPeriodicTimers() {
+        periodicTimer20ms.stop()
+        periodicTimer200ms.stop()
+        periodicTimer1s.stop()
+        periodicTimer3s.stop()
+        periodicTimer5s.stop()
+        periodicTimer10s.stop()
     }
 
     private func updateAvailableDiskSpace() {
