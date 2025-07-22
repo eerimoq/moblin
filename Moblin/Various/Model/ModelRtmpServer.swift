@@ -41,10 +41,7 @@ extension Model {
     }
 
     func reloadRtmpStreams() {
-        for (rtmpCameraId, _) in rtmpCameras() {
-            guard let stream = getRtmpStream(id: rtmpCameraId) else {
-                continue
-            }
+        for stream in database.rtmpServer.streams {
             if isRtmpStreamConnected(streamKey: stream.streamKey) {
                 let micId = "\(stream.id.uuidString) 0"
                 let isLastMic = (mic.current.id == micId)
