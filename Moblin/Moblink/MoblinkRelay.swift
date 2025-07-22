@@ -288,8 +288,7 @@ private class Relay: NSObject {
     }
 
     private func handlePacketFromStreamer(packet: Data) {
-        destinationConnection?.send(content: packet, completion: .contentProcessed { _ in
-        })
+        destinationConnection?.send(content: packet, completion: .idempotent)
     }
 
     private func receiveDestinationPacket() {
@@ -309,8 +308,7 @@ private class Relay: NSObject {
     }
 
     private func handlePacketFromDestination(packet: Data) {
-        streamerConnection?.send(content: packet, completion: .contentProcessed { _ in
-        })
+        streamerConnection?.send(content: packet, completion: .idempotent)
     }
 }
 

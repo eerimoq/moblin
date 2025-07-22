@@ -258,6 +258,6 @@ class SrtlaServer {
     }
 
     private func sendPacket(connection: NWConnection, packet: Data) {
-        connection.send(content: packet, completion: .contentProcessed { _ in })
+        connection.send(content: packet, completion: .idempotent)
     }
 }

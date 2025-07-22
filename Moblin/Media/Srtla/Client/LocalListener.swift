@@ -51,10 +51,6 @@ class LocalListener {
         guard let connection else {
             return
         }
-        connection.send(content: packet, completion: .contentProcessed { error in
-            if let error {
-                logger.warning("srtla: local: Local send error: \(error)")
-            }
-        })
+        connection.send(content: packet, completion: .idempotent)
     }
 }
