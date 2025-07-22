@@ -595,8 +595,8 @@ private struct StatusesView: View {
         MoblinkStatusView(model: model,
                           show: model.database.show,
                           moblink: model.moblink,
-                          streamer: model.database.moblink.server,
-                          relay: model.database.moblink.client,
+                          streamer: model.database.moblink.streamer,
+                          relay: model.database.moblink.relay,
                           textPlacement: textPlacement)
         RemoteControlStatusView(model: model,
                                 show: model.database.show,

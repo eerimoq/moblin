@@ -142,7 +142,7 @@ private struct RelayStreamerUrlView: View {
         guard isValidWebSocketUrl(url: value) == nil else {
             return
         }
-        model.database.moblink.client.url = value
+        model.database.moblink.relay.url = value
         model.reloadMoblinkRelay()
         dismiss()
     }
@@ -179,9 +179,9 @@ private struct RelayView: View {
     var body: some View {
         Section {
             Toggle(isOn: Binding(get: {
-                model.database.moblink.client.enabled
+                model.database.moblink.relay.enabled
             }, set: { value in
-                model.database.moblink.client.enabled = value
+                model.database.moblink.relay.enabled = value
                 model.reloadMoblinkRelay()
                 model.objectWillChange.send()
             })) {
@@ -315,7 +315,7 @@ struct MoblinkSettingsView: View {
             } footer: {
                 Text("Used by both relay and streamer devices. Copy the streamer's password to the relay device.")
             }
-            RelayView(relay: model.database.moblink.client)
+            RelayView(relay: model.database.moblink.relay)
             StreamerView(streamer: streamer)
             if streamer.enabled {
                 Section {

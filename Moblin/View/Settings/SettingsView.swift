@@ -77,7 +77,7 @@ struct SettingsView: View {
                     }
                 }
                 NavigationLink {
-                    MoblinkSettingsView(status: model.statusOther, streamer: database.moblink.server)
+                    MoblinkSettingsView(status: model.statusOther, streamer: database.moblink.streamer)
                 } label: {
                     Label("Moblink", systemImage: "app.connected.to.app.below.fill")
                 }

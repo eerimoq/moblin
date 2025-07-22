@@ -5279,8 +5279,8 @@ class SettingsMoblinkRelay: Codable, ObservableObject {
 }
 
 class SettingsMoblink: Codable {
-    var server: SettingsMoblinkStreamer = .init()
-    var client: SettingsMoblinkRelay = .init()
+    var streamer: SettingsMoblinkStreamer = .init()
+    var relay: SettingsMoblinkRelay = .init()
     var password = "1234"
 
     enum CodingKeys: CodingKey {
@@ -5291,8 +5291,8 @@ class SettingsMoblink: Codable {
 
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(.server, server)
-        try container.encode(.client, client)
+        try container.encode(.server, streamer)
+        try container.encode(.client, relay)
         try container.encode(.password, password)
     }
 
@@ -5300,8 +5300,8 @@ class SettingsMoblink: Codable {
 
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        server = container.decode(.server, SettingsMoblinkStreamer.self, .init())
-        client = container.decode(.client, SettingsMoblinkRelay.self, .init())
+        streamer = container.decode(.server, SettingsMoblinkStreamer.self, .init())
+        relay = container.decode(.client, SettingsMoblinkRelay.self, .init())
         password = container.decode(.password, String.self, "1234")
     }
 }

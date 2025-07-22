@@ -21,7 +21,7 @@ extension Model {
         stopMoblinkStreamer()
         if isMoblinkStreamerConfigured() {
             moblink.streamer = MoblinkStreamer(
-                port: database.moblink.server.port,
+                port: database.moblink.streamer.port,
                 password: database.moblink.password
             )
             moblink.streamer?.start(delegate: self)
@@ -29,7 +29,7 @@ extension Model {
     }
 
     func isMoblinkStreamerConfigured() -> Bool {
-        let server = database.moblink.server
+        let server = database.moblink.streamer
         return server.enabled && server.port > 0 && !database.moblink.password.isEmpty
     }
 
@@ -38,7 +38,7 @@ extension Model {
         stopMoblinkScanner()
         if isMoblinkRelayConfigured() {
             reloadMoblinkScanner()
-            if database.moblink.client.manual {
+            if database.moblink.relay.manual {
                 startMoblinkRelayManual()
             } else {
                 startMoblinkRelayAutomatic()
@@ -47,7 +47,7 @@ extension Model {
     }
 
     private func startMoblinkRelayManual() {
-        guard let streamerUrl = URL(string: database.moblink.client.url) else {
+        guard let streamerUrl = URL(string: database.moblink.relay.url) else {
             return
         }
         addMoblinkRelay(streamerUrl: streamerUrl)
@@ -71,7 +71,7 @@ extension Model {
         }
         // logger.info("xxx relay \(streamerUrl)")
         let relay = MoblinkRelay(
-            name: database.moblink.client.name,
+            name: database.moblink.relay.name,
             streamerUrl: streamerUrl,
             password: database.moblink.password,
             delegate: self
@@ -81,7 +81,7 @@ extension Model {
     }
 
     func isMoblinkRelayConfigured() -> Bool {
-        let client = database.moblink.client
+        let client = database.moblink.relay
         if !client.enabled {
             return false
         }
@@ -201,7 +201,7 @@ extension Model: MoblinkScannerDelegate {
     func moblinkScannerDiscoveredStreamers(streamers: [MoblinkScannerStreamer]) {
         // logger.info("xxx xxx \(streamers)")
         moblink.scannerDiscoveredStreamers = streamers
-        if !database.moblink.client.manual {
+        if !database.moblink.relay.manual {
             startMoblinkRelayAutomatic()
         }
     }

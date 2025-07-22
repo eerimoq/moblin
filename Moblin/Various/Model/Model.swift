@@ -1323,7 +1323,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if database.catPrinters.backgroundPrinting {
             return .full
         }
-        if database.moblink.client.enabled {
+        if database.moblink.relay.enabled {
             return .service
         }
         return .off
