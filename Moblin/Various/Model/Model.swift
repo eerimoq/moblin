@@ -958,8 +958,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         gForceManager = GForceManager(motionManager: motionManager)
         startGForceManager()
         loadStealthModeImage()
-        // ristServer = RistServer(inputUrls: ["rist://@0.0.0.0:1234"])
-        // ristServer?.start()
     }
 
     @objc func applicationDidChangeActive(notification: NSNotification) {
