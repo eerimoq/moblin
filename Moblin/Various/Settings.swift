@@ -4175,6 +4175,7 @@ class SettingsRistServerStream: Codable, Identifiable, ObservableObject {
     var id: UUID = .init()
     @Published var name: String = "My stream"
     @Published var port: UInt16 = 6500
+    @Published var portString: String = "6500"
     var connected: Bool = false
 
     enum CodingKeys: CodingKey {
@@ -4197,6 +4198,7 @@ class SettingsRistServerStream: Codable, Identifiable, ObservableObject {
         id = container.decode(.id, UUID.self, .init())
         name = container.decode(.name, String.self, "My stream")
         port = container.decode(.port, UInt16.self, 6500)
+        portString = String(port)
     }
 
     func camera() -> String {

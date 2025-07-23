@@ -32,6 +32,16 @@ struct RistServerStreamSettingsView: View {
         stream.name = value.trim()
     }
 
+    private func submitPort(value: String) {
+        guard let port = UInt16(value.trim()), port > 0 else {
+            stream.portString = String(stream.port)
+            model.makePortErrorToast(port: value)
+            return
+        }
+        stream.port = port
+        model.reloadRistServer()
+    }
+
     var body: some View {
         NavigationLink {
             Form {
@@ -45,6 +55,17 @@ struct RistServerStreamSettingsView: View {
                     .disabled(model.ristServerEnabled())
                 } footer: {
                     Text("The stream name is shown in the list of cameras in scene settings.")
+                }
+                Section {
+                    TextEditBindingNavigationView(
+                        title: String(localized: "Port"),
+                        value: $stream.portString,
+                        onSubmit: submitPort,
+                        keyboardType: .numbersAndPunctuation
+                    )
+                    .disabled(ristServer.enabled)
+                } footer: {
+                    Text("The UDP port this RIST stream listens for RIST publishers on.")
                 }
                 Section {
                     if model.ristServerEnabled() {
