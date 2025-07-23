@@ -405,6 +405,7 @@ extension Model {
     private func listMics() -> [SettingsMicsMic] {
         var mics: [SettingsMicsMic] = []
         listMediaPlayerMics(&mics)
+        listRistMics(&mics)
         listSrtlaMics(&mics)
         listRtmpMics(&mics)
         listAudioSessionMics(&mics)
@@ -414,6 +415,7 @@ extension Model {
     private func listMicsAsync(onCompleted: @escaping ([SettingsMicsMic]) -> Void) {
         var mics: [SettingsMicsMic] = []
         listMediaPlayerMics(&mics)
+        listRistMics(&mics)
         listSrtlaMics(&mics)
         listRtmpMics(&mics)
         processorControlQueue.async {
@@ -495,6 +497,16 @@ extension Model {
         }
     }
 
+    private func listRistMics(_ mics: inout [SettingsMicsMic]) {
+        for stream in database.ristServer.streams {
+            let mic = SettingsMicsMic()
+            mic.name = stream.camera()
+            mic.inputUid = stream.id.uuidString
+            mic.connected = isRistStreamConnected(port: stream.port)
+            mics.append(mic)
+        }
+    }
+
     private func listMediaPlayerMics(_ mics: inout [SettingsMicsMic]) {
         for mediaPlayer in database.mediaPlayers.players {
             let mic = SettingsMicsMic()
@@ -547,6 +559,8 @@ extension Model {
             selectMicRtmp(mic: mic)
         } else if isSrtlaMic(mic: mic) {
             selectMicSrtla(mic: mic)
+        } else if isRistMic(mic: mic) {
+            selectMicRist(mic: mic)
         } else if isMediaPlayerMic(mic: mic) {
             selectMicMediaPlayer(mic: mic)
         } else {
@@ -574,6 +588,13 @@ extension Model {
         return getSrtlaStream(id: id) != nil
     }
 
+    private func isRistMic(mic: SettingsMicsMic) -> Bool {
+        guard let id = UUID(uuidString: mic.inputUid) else {
+            return false
+        }
+        return getRistStream(id: id) != nil
+    }
+
     private func isMediaPlayerMic(mic: SettingsMicsMic) -> Bool {
         guard let id = UUID(uuidString: mic.inputUid) else {
             return false
@@ -587,6 +608,10 @@ extension Model {
 
     private func selectMicSrtla(mic: SettingsMicsMic) {
         attachBufferedAudio(cameraId: getSrtlaStream(idString: mic.inputUid)?.id, micId: mic.id)
+    }
+
+    private func selectMicRist(mic: SettingsMicsMic) {
+        attachBufferedAudio(cameraId: getRistStream(idString: mic.inputUid)?.id, micId: mic.id)
     }
 
     private func selectMicMediaPlayer(mic: SettingsMicsMic) {
