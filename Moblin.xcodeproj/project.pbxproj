@@ -482,6 +482,11 @@
 		03BE504A2B3EB59A004720AF /* IpMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BE50492B3EB59A004720AF /* IpMonitor.swift */; };
 		03C079312E2BFF910004CA22 /* SrtSender.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C079302E2BFF410004CA22 /* SrtSender.swift */; };
 		03C088372B0AFFA8000990DA /* InlinePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C088362B0AFFA8000990DA /* InlinePickerView.swift */; };
+		03C265D92E30F56C0030E8A4 /* RistServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C265D82E30F56A0030E8A4 /* RistServer.swift */; };
+		03C265DB2E30F5760030E8A4 /* RistServerClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C265DA2E30F5720030E8A4 /* RistServerClient.swift */; };
+		03C265E12E3114BE0030E8A4 /* ModelRistServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C265E02E3114BA0030E8A4 /* ModelRistServer.swift */; };
+		03C265E52E3117E60030E8A4 /* RistServerSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C265E42E3117E00030E8A4 /* RistServerSettingsView.swift */; };
+		03C265E72E3117F30030E8A4 /* RistServerStreamSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C265E62E3117EB0030E8A4 /* RistServerStreamSettingsView.swift */; };
 		03C2C2832B5F906E00E2F30B /* SliderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C2C2822B5F906E00E2F30B /* SliderView.swift */; };
 		03C354662CF5A5A500B8B29F /* TeslaSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C354652CF5A5A400B8B29F /* TeslaSettingsView.swift */; };
 		03C354682CF98DD900B8B29F /* HCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C354672CF98DD600B8B29F /* HCenter.swift */; };
@@ -1170,6 +1175,11 @@
 		03BE50492B3EB59A004720AF /* IpMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IpMonitor.swift; sourceTree = "<group>"; };
 		03C079302E2BFF410004CA22 /* SrtSender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SrtSender.swift; sourceTree = "<group>"; };
 		03C088362B0AFFA8000990DA /* InlinePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InlinePickerView.swift; sourceTree = "<group>"; };
+		03C265D82E30F56A0030E8A4 /* RistServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RistServer.swift; sourceTree = "<group>"; };
+		03C265DA2E30F5720030E8A4 /* RistServerClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RistServerClient.swift; sourceTree = "<group>"; };
+		03C265E02E3114BA0030E8A4 /* ModelRistServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelRistServer.swift; sourceTree = "<group>"; };
+		03C265E42E3117E00030E8A4 /* RistServerSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RistServerSettingsView.swift; sourceTree = "<group>"; };
+		03C265E62E3117EB0030E8A4 /* RistServerStreamSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RistServerStreamSettingsView.swift; sourceTree = "<group>"; };
 		03C2C2822B5F906E00E2F30B /* SliderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SliderView.swift; sourceTree = "<group>"; };
 		03C354652CF5A5A400B8B29F /* TeslaSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeslaSettingsView.swift; sourceTree = "<group>"; };
 		03C354672CF98DD600B8B29F /* HCenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HCenter.swift; sourceTree = "<group>"; };
@@ -2755,6 +2765,7 @@
 				03B16A222B35610100E5AB07 /* Recordings */,
 				034844F32B57AB5B0089B874 /* RemoteControl */,
 				0379BBB02AAD97EA00B718B6 /* Reset */,
+				03C265E22E3117BC0030E8A4 /* RistServer */,
 				0332EF5B2B3CAED000BC3C16 /* RtmpServer */,
 				0379BB972AAD802C00B718B6 /* Scenes */,
 				039ACB652DED6D9600D35E4D /* SelfieStick */,
@@ -2927,6 +2938,7 @@
 				032A6F0C2DDD23DF00453B0A /* ModelRecording.swift */,
 				03BA73C02DDCDF6600075CD6 /* ModelRemoteControl.swift */,
 				03BA73A32DDC562700075CD6 /* ModelReplay.swift */,
+				03C265E02E3114BA0030E8A4 /* ModelRistServer.swift */,
 				03BA73B22DDCD65300075CD6 /* ModelRtmpServer.swift */,
 				032D85832DDD7BD600A6128A /* ModelScene.swift */,
 				032F81B92DDCEE0E00E14CC5 /* ModelScreenCapture.swift */,
@@ -3053,6 +3065,24 @@
 			path = Various;
 			sourceTree = "<group>";
 		};
+		03C265D72E30F55D0030E8A4 /* RistServer */ = {
+			isa = PBXGroup;
+			children = (
+				03C265D82E30F56A0030E8A4 /* RistServer.swift */,
+				03C265DA2E30F5720030E8A4 /* RistServerClient.swift */,
+			);
+			path = RistServer;
+			sourceTree = "<group>";
+		};
+		03C265E22E3117BC0030E8A4 /* RistServer */ = {
+			isa = PBXGroup;
+			children = (
+				03C265E42E3117E00030E8A4 /* RistServerSettingsView.swift */,
+				03C265E62E3117EB0030E8A4 /* RistServerStreamSettingsView.swift */,
+			);
+			path = RistServer;
+			sourceTree = "<group>";
+		};
 		03C3560A2CFC90B400B8B29F /* Keyboard */ = {
 			isa = PBXGroup;
 			children = (
@@ -3098,6 +3128,7 @@
 				03F8EC3C2BF14E3D00412BF6 /* AdaptiveBitrate */,
 				0359F80C2BD3DA4B005BFDA8 /* HaishinKit */,
 				0342F19F2C627A3D004DD3EA /* Mirl */,
+				03C265D72E30F55D0030E8A4 /* RistServer */,
 				034D26FD2B3A034A0097C619 /* RtmpServer */,
 				0315A3392AA2FA0A00295443 /* Srtla */,
 			);
@@ -3736,6 +3767,7 @@
 				032F81C42DDCF58200E14CC5 /* ModelAutoSceneSwitcher.swift in Sources */,
 				03DBD0FB2B30078B004B0BE6 /* StreamWizardKickSettingsView.swift in Sources */,
 				032A6F112DDD285F00453B0A /* ModelStore.swift in Sources */,
+				03C265DB2E30F5760030E8A4 /* RistServerClient.swift in Sources */,
 				0346B5F42B9AF4EE00999109 /* ControlBarRemoteControlAssistantView.swift in Sources */,
 				03510DDC2C7661A400FD3A27 /* SpeechToText.swift in Sources */,
 				03B16A312B35D74800E5AB07 /* DisplaySettingsView.swift in Sources */,
@@ -3792,6 +3824,7 @@
 				88DBCC782DF8D3CA0048C50E /* PhoneCoolerDeviceSettingsView.swift in Sources */,
 				88DBCC792DF8D3CA0048C50E /* PhoneCoolerDevicesSettingsView.swift in Sources */,
 				03980C552C5E74A9000ED476 /* VoicesView.swift in Sources */,
+				03C265E52E3117E60030E8A4 /* RistServerSettingsView.swift in Sources */,
 				0302F07F2B320B0500B06FF0 /* StreamWizardChatSettingsView.swift in Sources */,
 				032D85862DDD7F4E00A6128A /* ModelKeyboard.swift in Sources */,
 				03F655F22D16DFD60054D73E /* NalUnitReader.swift in Sources */,
@@ -3848,6 +3881,7 @@
 				03507F6B2B45DD5A0075648B /* GameControllersControllerButtonSettingsView.swift in Sources */,
 				03FB422A2C68D9A70009FB26 /* MirlStream.swift in Sources */,
 				032469A92AE1B3040097B18B /* StreamSrtSettingsView.swift in Sources */,
+				03C265D92E30F56C0030E8A4 /* RistServer.swift in Sources */,
 				03A9300E2C1442E500BB9679 /* HevcNalUnit.swift in Sources */,
 				03A983652A9A05D7008FF0DB /* StreamSettingsView.swift in Sources */,
 				0359F8AF2BD3DA61005BFDA8 /* VideoEncoderSettings.swift in Sources */,
@@ -3859,6 +3893,7 @@
 				0379E6712C8980460021AB59 /* CatPrinterScannerSettingsView.swift in Sources */,
 				03708D162B83C39B009C88AA /* StreamRtmpSettingsView.swift in Sources */,
 				03B2189F2C3E4E4E001FDE57 /* WidgetSceneSettingsView.swift in Sources */,
+				03C265E72E3117F30030E8A4 /* RistServerStreamSettingsView.swift in Sources */,
 				0315A37C2AA439B500295443 /* NameEditView.swift in Sources */,
 				03DBD1072B300D91004B0BE6 /* StreamWizardNetworkSetupObsSettingsView.swift in Sources */,
 				03D15CEE2DABD73A007DA935 /* GoPro.swift in Sources */,
@@ -3936,6 +3971,7 @@
 				0318D3752CF51DEB00E12F3B /* car_server.pb.swift in Sources */,
 				03C3574E2D081CF500B8B29F /* RtmpDataMessage.swift in Sources */,
 				0318D3762CF51DEB00E12F3B /* common.pb.swift in Sources */,
+				03C265E12E3114BE0030E8A4 /* ModelRistServer.swift in Sources */,
 				0318D3772CF51DEB00E12F3B /* keys.pb.swift in Sources */,
 				03C357422D081CE900B8B29F /* RtmpSetChunkSizeMessage.swift in Sources */,
 				0318D3782CF51DEB00E12F3B /* signatures.pb.swift in Sources */,

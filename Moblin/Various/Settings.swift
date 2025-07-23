@@ -4133,6 +4133,63 @@ class SettingsSrtlaServer: Codable, ObservableObject {
     }
 }
 
+class SettingsRistServerStream: Codable, Identifiable, ObservableObject {
+    var id: UUID = .init()
+    @Published var name: String = "My stream"
+    @Published var port: UInt16 = 6500
+    var connected: Bool = false
+
+    enum CodingKeys: CodingKey {
+        case id,
+             name,
+             port
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.name, name)
+        try container.encode(.port, port)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        name = container.decode(.name, String.self, "My stream")
+        port = container.decode(.port, UInt16.self, 6500)
+    }
+
+    func camera() -> String {
+        return rtmpCamera(name: name)
+    }
+}
+
+class SettingsRistServer: Codable, ObservableObject {
+    @Published var enabled: Bool = false
+    @Published var streams: [SettingsRistServerStream] = []
+
+    enum CodingKeys: CodingKey {
+        case enabled,
+             streams
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.enabled, enabled)
+        try container.encode(.streams, streams)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        enabled = container.decode(.enabled, Bool.self, false)
+        streams = container.decode(.streams, [SettingsRistServerStream].self, [])
+    }
+}
+
 class SettingsMediaPlayerFile: Codable, Identifiable {
     var id: UUID = .init()
     var name: String = "My video"
@@ -5928,6 +5985,7 @@ class Database: Codable, ObservableObject {
     @Published var pinchScale: Float = 0.5
     var selfieStick: SettingsSelfieStick = .init()
     @Published var bigButtons: Bool = false
+    var ristServer: SettingsRistServer = .init()
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -6021,7 +6079,8 @@ class Database: Codable, ObservableObject {
              whirlpoolAngle,
              pinchScale,
              selfieStick,
-             bigButtons
+             bigButtons,
+             ristServer
     }
 
     func encode(to encoder: Encoder) throws {
@@ -6090,6 +6149,7 @@ class Database: Codable, ObservableObject {
         try container.encode(.pinchScale, pinchScale)
         try container.encode(.selfieStick, selfieStick)
         try container.encode(.bigButtons, bigButtons)
+        try container.encode(.ristServer, ristServer)
     }
 
     init() {}
@@ -6160,6 +6220,7 @@ class Database: Codable, ObservableObject {
         pinchScale = container.decode(.pinchScale, Float.self, 0.5)
         selfieStick = container.decode(.selfieStick, SettingsSelfieStick.self, .init())
         bigButtons = container.decode(.bigButtons, Bool.self, false)
+        ristServer = container.decode(.ristServer, SettingsRistServer.self, .init())
     }
 }
 

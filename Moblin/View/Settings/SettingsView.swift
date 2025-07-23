@@ -75,6 +75,13 @@ struct SettingsView: View {
                     } label: {
                         Label("SRT(LA) server", systemImage: "server.rack")
                     }
+                    if false {
+                        NavigationLink {
+                            RistServerSettingsView(ristServer: database.ristServer)
+                        } label: {
+                            Label("RIST server", systemImage: "server.rack")
+                        }
+                    }
                 }
                 NavigationLink {
                     MoblinkSettingsView(status: model.statusOther, streamer: database.moblink.streamer)

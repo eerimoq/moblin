@@ -116,6 +116,7 @@ class HypeTrain: ObservableObject {
 class Servers: ObservableObject {
     var rtmp: RtmpServer?
     var srtla: SrtlaServer?
+    var rist: RistServer?
     @Published var speedAndTotal = noValue
 }
 
@@ -873,6 +874,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         updateOrientation()
         reloadRtmpServer()
         reloadSrtlaServer()
+        reloadRistServer()
         ipMonitor.pathUpdateHandler = handleIpStatusUpdate
         ipMonitor.start()
         NotificationCenter.default.addObserver(self,
@@ -956,6 +958,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         gForceManager = GForceManager(motionManager: motionManager)
         startGForceManager()
         loadStealthModeImage()
+        // ristServer = RistServer(inputUrls: ["rist://@0.0.0.0:1234"])
+        // ristServer?.start()
     }
 
     @objc func applicationDidChangeActive(notification: NSNotification) {
@@ -1235,6 +1239,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             reloadRtmpServer()
             reloadDjiDevices()
             reloadSrtlaServer()
+            reloadRistServer()
             chatTextToSpeech.reset(running: true)
             startWeatherManager()
             startGeographyManager()

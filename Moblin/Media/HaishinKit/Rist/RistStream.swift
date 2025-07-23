@@ -81,7 +81,7 @@ protocol RistStreamDelegate: AnyObject {
 }
 
 class RistStream {
-    private var context: RistContext?
+    private var context: RistSenderContext?
     private var peers: [RistRemotePeer] = []
     private let writer = MpegTsWriter(timecodesEnabled: false, newSrt: false)
     private var networkPathMonitor: NWPathMonitor?
@@ -164,7 +164,7 @@ class RistStream {
         state = .connecting
         self.url = url
         self.bonding = bonding
-        guard let context = RistContext() else {
+        guard let context = RistSenderContext() else {
             logger.info("rist: Failed to create context")
             return
         }
@@ -347,14 +347,14 @@ extension RistStream: MpegTsWriterDelegate {
     func writer(_: MpegTsWriter, doOutputBuffers _: [(UnsafeRawBufferPointer, Int)]) {}
 }
 
-extension RistStream: RistContextDelegate {
-    func ristContextStats(_: RistContext, stats: RistStats) {
+extension RistStream: RistSenderContextDelegate {
+    func ristSenderContextStats(_: RistSenderContext, stats: RistStats) {
         ristQueue.async {
             self.handleStatsInner(stats: stats)
         }
     }
 
-    func ristContextPeerConnected(_: RistContext, peerId: UInt32) {
+    func ristSenderContextPeerConnected(_: RistSenderContext, peerId: UInt32) {
         ristQueue.async {
             self.handlePeerConnectedInner(peerId: peerId)
         }
@@ -366,7 +366,7 @@ extension RistStream: RistContextDelegate {
         checkConnected()
     }
 
-    func ristContextPeerDisconnected(_: RistContext, peerId: UInt32) {
+    func ristSenderContextPeerDisconnected(_: RistSenderContext, peerId: UInt32) {
         ristQueue.async {
             self.handlePeerDisconnectedInner(peerId: peerId)
         }
