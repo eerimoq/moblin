@@ -27,7 +27,7 @@ class RistServerClient {
     init?(port: UInt16, timecodesEnabled: Bool) {
         self.port = port
         self.timecodesEnabled = timecodesEnabled
-        guard let context = RistReceiverContext(inputUrl: "rist://@0.0.0.0:\(port)") else {
+        guard let context = RistReceiverContext(inputUrl: "rist://@0.0.0.0:\(port)?rtt-min=100") else {
             logger.info("rist-server-client: Failed to create context")
             return nil
         }
