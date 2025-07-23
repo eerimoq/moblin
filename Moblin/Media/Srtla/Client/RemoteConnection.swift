@@ -295,6 +295,9 @@ class RemoteConnection {
 
     private func sendDataPacketInternal(packet: Data) {
         dataPacketsToSend.append(packet)
+        if dataPacketsToSend.count > 15 {
+            sendDataPackets()
+        }
     }
 
     func sendSrtPacket(packet: Data) {
@@ -302,9 +305,12 @@ class RemoteConnection {
     }
 
     func flushDataPackets() {
-        guard !dataPacketsToSend.isEmpty else {
-            return
+        if !dataPacketsToSend.isEmpty {
+            sendDataPackets()
         }
+    }
+
+    private func sendDataPackets() {
         connection?.batch {
             for packet in dataPacketsToSend {
                 connection?.send(content: packet, completion: .idempotent)

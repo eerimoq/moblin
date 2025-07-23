@@ -408,7 +408,7 @@ class SrtlaClient: NSObject {
         connection.sendSrtPacket(packet: packet)
         if isSrtDataPacket(packet: packet) {
             let now = ContinuousClock.now
-            if latestFlushDataPacketsTime.duration(to: now) > .milliseconds(25) {
+            if latestFlushDataPacketsTime.duration(to: now) > .milliseconds(15) {
                 latestFlushDataPacketsTime = now
                 for remoteConnection in remoteConnections {
                     remoteConnection.flushDataPackets()
