@@ -55,12 +55,12 @@ struct RistServerSettingsView: View {
                 Text("Streams")
             } footer: {
                 VStack(alignment: .leading) {
-                    Text("Each stream can receive video from one rist publisher, typically a drone.")
+                    Text("Each stream can receive video from one RIST publisher, typically a drone.")
                     Text("")
                     SwipeLeftToDeleteHelpView(kind: String(localized: "a stream"))
                 }
             }
         }
-        .navigationTitle("rist server")
+        .navigationTitle("RIST server")
     }
 }

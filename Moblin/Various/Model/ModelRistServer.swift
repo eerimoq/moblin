@@ -10,7 +10,9 @@ extension Model {
     func reloadRistServer() {
         stopRistServer()
         if database.ristServer.enabled {
-            servers.rist = RistServer(inputUrls: database.ristServer.streams.map { "rist://@0.0.0.0:\($0.port)" })
+            let inputUrls = database.ristServer.streams.map { "rist://@0.0.0.0:\($0.port)" }
+            servers.rist = RistServer(inputUrls: inputUrls)
+            servers.rist?.delegate = self
             servers.rist?.start()
         }
     }
@@ -37,7 +39,84 @@ extension Model {
         }
     }
 
+    func getRistStream(port: UInt16) -> SettingsRistServerStream? {
+        return database.ristServer.streams.first { stream in
+            stream.port == port
+        }
+    }
+
     func isRistStreamConnected(port _: UInt16) -> Bool {
         return true
+    }
+}
+
+extension Model: RistServerDelegate {
+    func ristServerOnConnected(port: UInt16) {
+        DispatchQueue.main.async {
+            self.ristServerOnConnectedInner(port: port)
+        }
+    }
+
+    func ristServerOnDisconnected(port: UInt16, reason: String) {
+        DispatchQueue.main.async {
+            self.ristServerOnDisconnectedInner(port: port, reason: reason)
+        }
+    }
+
+    func ristServerOnAudioBuffer(port: UInt16, _ sampleBuffer: CMSampleBuffer) {
+        guard let cameraId = getRistStream(port: port)?.id else {
+            return
+        }
+        media.appendBufferedAudioSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
+    }
+
+    func ristServerOnVideoBuffer(port: UInt16, _ sampleBuffer: CMSampleBuffer) {
+        guard let cameraId = getRistStream(port: port)?.id else {
+            return
+        }
+        media.appendBufferedVideoSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
+    }
+
+    func ristServerSetTargetLatencies(
+        port: UInt16,
+        _ videoTargetLatency: Double,
+        _ audioTargetLatency: Double
+    ) {
+        guard let cameraId = getRistStream(port: port)?.id else {
+            return
+        }
+        media.setBufferedVideoTargetLatency(cameraId: cameraId, latency: videoTargetLatency)
+        media.setBufferedAudioTargetLatency(cameraId: cameraId, latency: audioTargetLatency)
+    }
+
+    private func ristServerOnConnectedInner(port: UInt16) {
+        guard let stream = getRistStream(port: port) else {
+            return
+        }
+        makeToast(title: String(localized: "\(stream.camera()) connected"))
+        let name = "RIST \(stream.camera())"
+        let latency = 2000.0
+        media.addBufferedVideo(cameraId: stream.id, name: name, latency: latency)
+        media.addBufferedAudio(cameraId: stream.id, name: name, latency: latency)
+        stream.connected = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+            if stream.connected {
+                self.markMicAsConnected(id: "\(stream.id) 0")
+            }
+            self.switchMicIfNeededAfterNetworkCameraChange()
+        }
+    }
+
+    private func ristServerOnDisconnectedInner(port: UInt16, reason _: String) {
+        guard let stream = getRistStream(port: port) else {
+            return
+        }
+        makeToast(title: String(localized: "\(stream.camera()) disconnected"))
+        media.removeBufferedVideo(cameraId: stream.id)
+        media.removeBufferedAudio(cameraId: stream.id)
+        stream.connected = false
+        updateAutoSceneSwitcherVideoSourceDisconnected()
+        markMicAsDisconnected(id: "\(stream.id) 0")
+        switchMicIfNeededAfterNetworkCameraChange()
     }
 }

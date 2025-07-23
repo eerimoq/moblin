@@ -695,6 +695,8 @@ extension Model {
             attachBufferedCamera(cameraId: scene.rtmpCameraId, scene: scene)
         case .srtla:
             attachBufferedCamera(cameraId: scene.srtlaCameraId, scene: scene)
+        case .rist:
+            attachBufferedCamera(cameraId: scene.ristCameraId, scene: scene)
         case .mediaPlayer:
             mediaPlayers[scene.mediaPlayerCameraId]?.activate()
             attachBufferedCamera(cameraId: scene.mediaPlayerCameraId, scene: scene)
