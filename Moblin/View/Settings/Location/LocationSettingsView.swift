@@ -23,6 +23,7 @@ private struct PrivacyRegionView: View {
 
 struct LocationSettingsView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var database: Database
     @ObservedObject var location: SettingsLocation
     @Binding var stream: SettingsStream
 
@@ -35,22 +36,24 @@ struct LocationSettingsView: View {
                         model.objectWillChange.send()
                     }
             }
-            Section {
-                Picker("Desired accuracy", selection: $location.desiredAccuracy) {
-                    ForEach(SettingsLocationDesiredAccuracy.allCases, id: \.self) { accuracy in
-                        Text(accuracy.toString())
+            if database.showAllSettings {
+                Section {
+                    Picker("Desired accuracy", selection: $location.desiredAccuracy) {
+                        ForEach(SettingsLocationDesiredAccuracy.allCases, id: \.self) { accuracy in
+                            Text(accuracy.toString())
+                        }
                     }
-                }
-                .onChange(of: location.desiredAccuracy) { _ in
-                    model.reloadLocation()
-                }
-                Picker("Distance filter", selection: $location.distanceFilter) {
-                    ForEach(SettingsLocationDistanceFilter.allCases, id: \.self) { distanceFilter in
-                        Text(distanceFilter.toString())
+                    .onChange(of: location.desiredAccuracy) { _ in
+                        model.reloadLocation()
                     }
-                }
-                .onChange(of: location.distanceFilter) { _ in
-                    model.reloadLocation()
+                    Picker("Distance filter", selection: $location.distanceFilter) {
+                        ForEach(SettingsLocationDistanceFilter.allCases, id: \.self) { distanceFilter in
+                            Text(distanceFilter.toString())
+                        }
+                    }
+                    .onChange(of: location.distanceFilter) { _ in
+                        model.reloadLocation()
+                    }
                 }
             }
             Section {
@@ -67,19 +70,21 @@ struct LocationSettingsView: View {
             } footer: {
                 Text("Resets distance, average speed and slope.")
             }
-            Section {
-                NavigationLink {
-                    StreamRealtimeIrlSettingsView(stream: model.stream)
-                } label: {
-                    Toggle(isOn: $stream.realtimeIrlEnabled) {
-                        Label("RealtimeIRL", systemImage: "dot.radiowaves.left.and.right")
+            if database.showAllSettings {
+                Section {
+                    NavigationLink {
+                        StreamRealtimeIrlSettingsView(stream: model.stream)
+                    } label: {
+                        Toggle(isOn: $stream.realtimeIrlEnabled) {
+                            Label("RealtimeIRL", systemImage: "dot.radiowaves.left.and.right")
+                        }
+                        .onChange(of: stream.realtimeIrlEnabled) { _ in
+                            model.reloadLocation()
+                        }
                     }
-                    .onChange(of: stream.realtimeIrlEnabled) { _ in
-                        model.reloadLocation()
-                    }
+                } header: {
+                    Text("Shortcut")
                 }
-            } header: {
-                Text("Shortcut")
             }
             Section {
                 List {

@@ -51,7 +51,7 @@ struct SettingsView: View {
                     }
                 }
                 NavigationLink {
-                    LocationSettingsView(location: database.location, stream: $model.stream)
+                    LocationSettingsView(database: model.database, location: database.location, stream: $model.stream)
                 } label: {
                     Label("Location", systemImage: "location")
                 }
