@@ -12,6 +12,7 @@ struct ResetSettingsView: View {
             .confirmationDialog("Are you sure?", isPresented: $isPresentingResetConfirm) {
                 Button("Reset settings", role: .destructive) {
                     model.settings.reset()
+                    model.setCurrentStream()
                     model.reloadStream()
                     model.resetSelectedScene()
                     model.updateQuickButtonStates()

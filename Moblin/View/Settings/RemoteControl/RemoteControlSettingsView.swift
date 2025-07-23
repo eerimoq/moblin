@@ -267,6 +267,7 @@ struct RemoteControlSettingsView: View {
     @ObservedObject var database: Database
     @ObservedObject var status: StatusOther
     @ObservedObject var client: SettingsRemoteControlAssistant
+    @Binding var stream: SettingsStream
 
     private func submitPassword(value: String) {
         database.remoteControl.password = value.trim()
@@ -283,13 +284,11 @@ struct RemoteControlSettingsView: View {
                 NavigationLink {
                     StreamObsRemoteControlSettingsView(stream: model.stream)
                 } label: {
-                    Toggle(isOn: Binding(get: {
-                        model.stream.obsWebSocketEnabled
-                    }, set: {
-                        model.stream.obsWebSocketEnabled = $0
-                        model.obsWebSocketEnabledUpdated()
-                    })) {
+                    Toggle(isOn: $stream.obsWebSocketEnabled) {
                         Label("OBS remote control", systemImage: "dot.radiowaves.left.and.right")
+                    }
+                    .onChange(of: stream.obsWebSocketEnabled) { _ in
+                        model.obsWebSocketEnabledUpdated()
                     }
                 }
             } header: {

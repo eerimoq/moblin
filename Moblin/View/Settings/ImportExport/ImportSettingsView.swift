@@ -5,6 +5,7 @@ struct ImportSettingsView: View {
 
     private func succeeded() {
         model.makeToast(title: String(localized: "Settings imported"))
+        model.setCurrentStream()
         model.updateIconImageFromDatabase()
         model.reloadStream()
         model.resetSelectedScene()

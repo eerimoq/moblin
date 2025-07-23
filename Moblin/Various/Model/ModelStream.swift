@@ -314,6 +314,7 @@ extension Model {
     }
 
     func setCurrentStream(stream: SettingsStream) {
+        self.stream = stream
         stream.enabled = true
         for ostream in database.streams where ostream.id != stream.id {
             ostream.enabled = false
@@ -329,6 +330,10 @@ extension Model {
         }
         setCurrentStream(stream: stream)
         return true
+    }
+
+    func setCurrentStream() {
+        setCurrentStream(stream: database.streams.first(where: { $0.enabled }) ?? fallbackStream)
     }
 
     func findStream(id: UUID) -> SettingsStream? {

@@ -24,6 +24,7 @@ private struct PrivacyRegionView: View {
 struct LocationSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var location: SettingsLocation
+    @Binding var stream: SettingsStream
 
     var body: some View {
         Form {
@@ -70,13 +71,11 @@ struct LocationSettingsView: View {
                 NavigationLink {
                     StreamRealtimeIrlSettingsView(stream: model.stream)
                 } label: {
-                    Toggle(isOn: Binding(get: {
-                        model.stream.realtimeIrlEnabled
-                    }, set: { value in
-                        model.stream.realtimeIrlEnabled = value
-                        model.reloadLocation()
-                    })) {
+                    Toggle(isOn: $stream.realtimeIrlEnabled) {
                         Label("RealtimeIRL", systemImage: "dot.radiowaves.left.and.right")
+                    }
+                    .onChange(of: stream.realtimeIrlEnabled) { _ in
+                        model.reloadLocation()
                     }
                 }
             } header: {

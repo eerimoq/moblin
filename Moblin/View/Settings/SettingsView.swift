@@ -51,7 +51,7 @@ struct SettingsView: View {
                     }
                 }
                 NavigationLink {
-                    LocationSettingsView(location: database.location)
+                    LocationSettingsView(location: database.location, stream: $model.stream)
                 } label: {
                     Label("Location", systemImage: "location")
                 }
@@ -111,7 +111,8 @@ struct SettingsView: View {
                     NavigationLink {
                         RemoteControlSettingsView(database: database,
                                                   status: model.statusOther,
-                                                  client: database.remoteControl.assistant)
+                                                  client: database.remoteControl.assistant,
+                                                  stream: $model.stream)
                     } label: {
                         Label("Remote control", systemImage: "appletvremote.gen1")
                     }

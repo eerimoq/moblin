@@ -480,7 +480,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject {
     var afreecaTvStreamId: String = ""
     var openStreamingPlatformUrl: String = ""
     var openStreamingPlatformChannelId: String = ""
-    var obsWebSocketEnabled: Bool = false
+    @Published var obsWebSocketEnabled: Bool = false
     var obsWebSocketUrl: String = ""
     var obsWebSocketPassword: String = ""
     var obsSourceName: String = ""

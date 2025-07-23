@@ -144,14 +144,12 @@ struct StreamSettingsView: View {
                 NavigationLink {
                     StreamObsRemoteControlSettingsView(stream: stream)
                 } label: {
-                    Toggle("OBS remote control", isOn: Binding(get: {
-                        stream.obsWebSocketEnabled
-                    }, set: {
-                        stream.obsWebSocketEnabled = $0
-                        if stream.enabled {
-                            model.obsWebSocketEnabledUpdated()
+                    Toggle("OBS remote control", isOn: $stream.obsWebSocketEnabled)
+                        .onChange(of: stream.obsWebSocketEnabled) { _ in
+                            if stream.enabled {
+                                model.obsWebSocketEnabledUpdated()
+                            }
                         }
-                    }))
                 }
                 NavigationLink {
                     GoLiveNotificationSettingsView(stream: stream)

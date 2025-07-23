@@ -281,6 +281,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var currentSnapshotJob: SnapshotJob?
     @Published var showLoadSettingsFailed = false
     @Published var cameraControlEnabled = false
+    @Published var stream: SettingsStream = fallbackStream
 
     var streamState = StreamState.disconnected {
         didSet {
@@ -551,13 +552,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    var stream: SettingsStream {
-        for stream in database.streams where stream.enabled {
-            return stream
-        }
-        return fallbackStream
-    }
-
     var enabledScenes: [SettingsScene] {
         database.scenes.filter { scene in scene.enabled }
     }
@@ -777,6 +771,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func setup() {
+        setCurrentStream()
         bluetoothCentralManger = CBCentralManager(delegate: self, queue: .main)
         deleteTrash()
         cameraPreviewLayer = cameraPreviewView.previewLayer
