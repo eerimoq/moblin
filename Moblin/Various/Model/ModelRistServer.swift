@@ -10,8 +10,8 @@ extension Model {
     func reloadRistServer() {
         stopRistServer()
         if database.ristServer.enabled {
-            let inputUrls = database.ristServer.streams.map { "rist://@0.0.0.0:\($0.port)" }
-            servers.rist = RistServer(inputUrls: inputUrls)
+            let ports = database.ristServer.streams.map { $0.port }
+            servers.rist = RistServer(ports: ports)
             servers.rist?.delegate = self
             servers.rist?.start()
         }
@@ -45,8 +45,8 @@ extension Model {
         }
     }
 
-    func isRistStreamConnected(port _: UInt16) -> Bool {
-        return true
+    func isRistStreamConnected(port: UInt16) -> Bool {
+        return database.ristServer.streams.first { $0.port == port }?.connected == true
     }
 }
 

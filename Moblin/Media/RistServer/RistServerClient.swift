@@ -18,16 +18,17 @@ class RistServerClient {
     private var latestAudioBufferPresentationTimeStamp: CMTime?
     private var audioDecoder: AVAudioConverter?
     private var pcmAudioFormat: AVAudioFormat?
-    private let port: UInt16 = 6500
+    private let port: UInt16
     private var videoDecoder: VideoDecoder?
     private var targetLatenciesSynchronizer =
         TargetLatenciesSynchronizer(targetLatency: srtServerClientLatency)
     private let timecodesEnabled: Bool
 
-    init?(inputUrl: String, timecodesEnabled: Bool) {
+    init?(port: UInt16, timecodesEnabled: Bool) {
+        self.port = port
         self.timecodesEnabled = timecodesEnabled
-        guard let context = RistReceiverContext(inputUrl: inputUrl) else {
-            logger.info("xxx failed to create context")
+        guard let context = RistReceiverContext(inputUrl: "rist://@0.0.0.0:\(port)") else {
+            logger.info("rist-server-client: Failed to create context")
             return nil
         }
         self.context = context

@@ -65,7 +65,7 @@ struct RistServerStreamSettingsView: View {
                     )
                     .disabled(ristServer.enabled)
                 } footer: {
-                    Text("The UDP port this RIST stream listens for RIST publishers on.")
+                    Text("The UDP port this RIST stream listens for a RIST publisher on.")
                 }
                 Section {
                     if model.ristServerEnabled() {
@@ -78,7 +78,7 @@ struct RistServerStreamSettingsView: View {
                 } footer: {
                     VStack(alignment: .leading) {
                         Text("""
-                        Enter one of the URLs into the rist publisher device to send video \
+                        Enter one of the URLs into the RIST publisher device to send video \
                         to this stream. Usually enter the WiFi or Personal Hotspot URL.
                         """)
                     }

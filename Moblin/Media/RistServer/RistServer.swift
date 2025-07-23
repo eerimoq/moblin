@@ -19,10 +19,10 @@ let ristServerQueue = DispatchQueue(label: "com.eerimoq.rist-server")
 class RistServer {
     private var clients: [RistServerClient] = []
     weak var delegate: (any RistServerDelegate)?
-    private let inputUrls: [String]
+    private let ports: [UInt16]
 
-    init(inputUrls: [String]) {
-        self.inputUrls = inputUrls
+    init(ports: [UInt16]) {
+        self.ports = ports
     }
 
     func start() {
@@ -37,13 +37,13 @@ class RistServer {
 
     private func startInner() {
         logger.info("rist-server: Starting")
-        for inputUrl in inputUrls {
-            if let client = RistServerClient(inputUrl: inputUrl, timecodesEnabled: false) {
+        for port in ports {
+            if let client = RistServerClient(port: port, timecodesEnabled: false) {
                 client.server = self
                 client.start()
                 clients.append(client)
             } else {
-                logger.info("rist-server: Failed to create client for URL: \(inputUrl)")
+                logger.info("rist-server: Failed to create client for port: \(port)")
             }
         }
     }

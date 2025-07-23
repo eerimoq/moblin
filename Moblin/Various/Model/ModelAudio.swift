@@ -128,7 +128,7 @@ extension Model {
     private func updateMicsListDatabase(foundMics: [SettingsMicsMic]) {
         var databaseMics: [SettingsMicsMic] = []
         for mic in database.mics.mics {
-            if mic.isRtmp() || mic.isSrtla() || mic.isMediaPlayer(), !foundMics.contains(mic) {
+            if mic.isRtmp() || mic.isSrtla() || mic.isRist() || mic.isMediaPlayer(), !foundMics.contains(mic) {
                 continue
             }
             if mic.isExternal() {

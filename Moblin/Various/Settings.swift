@@ -3589,6 +3589,9 @@ class SettingsMicsMic: Codable, Identifiable, Equatable, ObservableObject {
         if isSrtlaCameraOrMic(camera: name) {
             return false
         }
+        if isRistCameraOrMic(camera: name) {
+            return false
+        }
         if isMediaPlayerCameraOrMic(camera: name) {
             return false
         }
@@ -3611,6 +3614,10 @@ class SettingsMicsMic: Codable, Identifiable, Equatable, ObservableObject {
 
     func isSrtla() -> Bool {
         return isSrtlaCameraOrMic(camera: name)
+    }
+
+    func isRist() -> Bool {
+        return isRistCameraOrMic(camera: name)
     }
 
     func isMediaPlayer() -> Bool {
