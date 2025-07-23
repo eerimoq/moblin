@@ -36,7 +36,14 @@
       }
     },
     " %lld kHz" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : " %lld kHz"
+          }
+        }
+      }
     },
     "%lld dB," : {
       "localizations" : {
@@ -490,7 +497,14 @@
       }
     },
     "RTMP stream key missing" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RTMP Streamschlüssel fehlt"
+          }
+        }
+      }
     },
     "RTMP stream name missing" : {
       "extractionState" : "stale",
