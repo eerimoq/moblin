@@ -2498,6 +2498,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             devices: getBuiltinCameraDevices(scene: scene, sceneDevice: nil),
             builtinDelay: database.debug.builtinAudioAndVideoDelay,
             cameraPreviewLayer: cameraPreviewLayer!,
+            showCameraPreview: updateShowCameraPreview(),
             externalDisplayPreview: externalDisplayPreview,
             cameraId: cameraId,
             ignoreFramesAfterAttachSeconds: getIgnoreFramesAfterAttachSecondsReplaceCamera(),
