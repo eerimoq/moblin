@@ -311,11 +311,7 @@ final class VideoSourceEffect: VideoEffect {
         guard let sceneWidget else {
             return backgroundImage
         }
-        guard var widgetImage = info.videoUnit.getCIImage(
-            videoSourceId,
-            info.presentationTimeStamp
-        )
-        else {
+        guard var widgetImage = info.getCiImage(videoSourceId) else {
             return backgroundImage
         }
         if settings.trackFaceEnabled {

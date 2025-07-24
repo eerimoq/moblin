@@ -6,6 +6,7 @@ import Vision
 public struct VideoEffectInfo {
     let isFirstAfterAttach: Bool
     let sceneVideoSourceId: UUID
+    let faceDetectionJobs: [FaceDetectionJob]
     let faceDetections: [UUID: [VNFaceObservation]]
     // periphery:ignore
     let presentationTimeStamp: CMTime
@@ -14,6 +15,14 @@ public struct VideoEffectInfo {
 
     func sceneFaceDetections() -> [VNFaceObservation]? {
         return faceDetections[sceneVideoSourceId]
+    }
+
+    func getCiImage(_ videoSourceId: UUID) -> CIImage? {
+        guard let imageBuffer = faceDetectionJobs.first(where: { $0.videoSourceId == videoSourceId })?.imageBuffer
+        else {
+            return videoUnit.getCIImage(videoSourceId, presentationTimeStamp)
+        }
+        return CIImage(cvPixelBuffer: imageBuffer)
     }
 }
 
