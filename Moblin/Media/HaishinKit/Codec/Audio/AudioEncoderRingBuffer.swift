@@ -28,43 +28,11 @@ final class AudioEncoderRingBuffer {
         self.workingBuffer = workingBuffer
     }
 
-    func setWorkingSampleBuffer(_ sampleBuffer: CMSampleBuffer, _ presentationTimeStamp: CMTime) {
+    func setWorkingSampleBuffer(_ audioBufferList: UnsafeMutableAudioBufferListPointer, _ presentationTimeStamp: CMTime) {
         workingBufferPresentationTimeStamp = presentationTimeStamp
         workingIndex = 0
-        if workingBuffer.frameLength < sampleBuffer.numSamples {
-            if let buffer = AVAudioPCMBuffer(
-                pcmFormat: format,
-                frameCapacity: AVAudioFrameCount(sampleBuffer.numSamples)
-            ) {
-                workingBuffer = buffer
-            }
-        }
-        workingBuffer.frameLength = AVAudioFrameCount(sampleBuffer.numSamples)
-        CMSampleBufferCopyPCMDataIntoAudioBufferList(
-            sampleBuffer,
-            at: 0,
-            frameCount: Int32(sampleBuffer.numSamples),
-            into: workingBuffer.mutableAudioBufferList
-        )
-        if kLinearPCMFormatFlagIsBigEndian ==
-            ((sampleBuffer.formatDescription?.audioStreamBasicDescription?.mFormatFlags ?? 0) &
-                kLinearPCMFormatFlagIsBigEndian)
-        {
-            if format.isInterleaved {
-                switch format.commonFormat {
-                case .pcmFormatInt16:
-                    let length = sampleBuffer.dataBuffer?.dataLength ?? 0
-                    var image = vImage_Buffer(
-                        data: workingBuffer.mutableAudioBufferList[0].mBuffers.mData,
-                        height: 1,
-                        width: vImagePixelCount(length / 2),
-                        rowBytes: length
-                    )
-                    vImageByteSwap_Planar16U(&image, &image, vImage_Flags(kvImageNoFlags))
-                default:
-                    break
-                }
-            }
+        if let buffer = AVAudioPCMBuffer(pcmFormat: format, bufferListNoCopy: audioBufferList.unsafePointer) {
+            workingBuffer = buffer
         }
     }
 

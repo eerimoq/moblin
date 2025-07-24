@@ -36,9 +36,11 @@ class AudioEncoder {
         guard isRunning, let audioConverter, let ringBuffer else {
             return
         }
-        ringBuffer.setWorkingSampleBuffer(sampleBuffer, presentationTimeStamp)
-        while let (outputBuffer, presentationTimeStamp) = ringBuffer.createOutputBuffer() {
-            convertBuffer(audioConverter, outputBuffer, presentationTimeStamp)
+        try? sampleBuffer.withAudioBufferList { audioBufferList, _ in
+            ringBuffer.setWorkingSampleBuffer(audioBufferList, presentationTimeStamp)
+            while let (outputBuffer, presentationTimeStamp) = ringBuffer.createOutputBuffer() {
+                convertBuffer(audioConverter, outputBuffer, presentationTimeStamp)
+            }
         }
     }
 
