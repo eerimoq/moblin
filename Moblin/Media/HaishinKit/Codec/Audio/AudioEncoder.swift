@@ -52,7 +52,7 @@ class AudioEncoder {
         }
     }
 
-    func setInSourceFormat(_ newInSourceFormat: AudioStreamBasicDescription?) {
+    func setInputSourceFormat(_ newInSourceFormat: AudioStreamBasicDescription?) {
         guard var newInSourceFormat, newInSourceFormat != inSourceFormat else {
             return
         }
@@ -101,12 +101,9 @@ class AudioEncoder {
         guard let audioConverter, let ringBuffer else {
             return
         }
-        var offset = 0
-        while offset < sampleBuffer.numSamples {
-            offset += ringBuffer.appendSampleBuffer(sampleBuffer, presentationTimeStamp, offset)
-            if let (outputBuffer, latestPresentationTimeStamp) = ringBuffer.getReadyOutputBuffer() {
-                convertBuffer(audioConverter, outputBuffer, latestPresentationTimeStamp)
-            }
+        ringBuffer.setWorkingSampleBuffer(sampleBuffer, presentationTimeStamp)
+        while let (outputBuffer, presentationTimeStamp) = ringBuffer.createOutputBuffer() {
+            convertBuffer(audioConverter, outputBuffer, presentationTimeStamp)
         }
     }
 
@@ -114,12 +111,9 @@ class AudioEncoder {
         guard let audioConverter, let ringBuffer else {
             return
         }
-        var offset = 0
-        while offset < sampleBuffer.numSamples {
-            offset += ringBuffer.appendSampleBuffer(sampleBuffer, presentationTimeStamp, offset)
-            if let (outputBuffer, latestPresentationTimeStamp) = ringBuffer.getReadyOutputBuffer() {
-                convertBuffer(audioConverter, outputBuffer, latestPresentationTimeStamp)
-            }
+        ringBuffer.setWorkingSampleBuffer(sampleBuffer, presentationTimeStamp)
+        while let (outputBuffer, presentationTimeStamp) = ringBuffer.createOutputBuffer() {
+            convertBuffer(audioConverter, outputBuffer, presentationTimeStamp)
         }
     }
 

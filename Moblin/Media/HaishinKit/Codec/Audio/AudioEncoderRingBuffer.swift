@@ -4,11 +4,13 @@ import Foundation
 
 final class AudioEncoderRingBuffer {
     private(set) var latestPresentationTimeStamp: CMTime = .invalid
-    private var index = 0
+    private var workingIndex = 0
+    private var outputIndex = 0
     private let numSamplesPerBuffer: Int
     private var format: AVAudioFormat
     private(set) var outputBuffer: AVAudioPCMBuffer
     private var workingBuffer: AVAudioPCMBuffer
+    private var workingBufferPresentationTimeStamp: CMTime = .zero
 
     init?(_ inputBasicDescription: inout AudioStreamBasicDescription) {
         numSamplesPerBuffer = 1024
@@ -32,74 +34,74 @@ final class AudioEncoderRingBuffer {
         self.workingBuffer = workingBuffer
     }
 
-    func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer,
-                            _ presentationTimeStamp: CMTime,
-                            _ offset: Int) -> Int
-    {
+    func setWorkingSampleBuffer(_ sampleBuffer: CMSampleBuffer, _ presentationTimeStamp: CMTime) {
+        workingBufferPresentationTimeStamp = presentationTimeStamp
+        workingIndex = 0
+        if workingBuffer.frameLength < sampleBuffer.numSamples {
+            if let buffer = AVAudioPCMBuffer(
+                pcmFormat: format,
+                frameCapacity: AVAudioFrameCount(sampleBuffer.numSamples)
+            ) {
+                workingBuffer = buffer
+            }
+        }
+        workingBuffer.frameLength = AVAudioFrameCount(sampleBuffer.numSamples)
+        CMSampleBufferCopyPCMDataIntoAudioBufferList(
+            sampleBuffer,
+            at: 0,
+            frameCount: Int32(sampleBuffer.numSamples),
+            into: workingBuffer.mutableAudioBufferList
+        )
+        if kLinearPCMFormatFlagIsBigEndian ==
+            ((sampleBuffer.formatDescription?.audioStreamBasicDescription?.mFormatFlags ?? 0) &
+                kLinearPCMFormatFlagIsBigEndian)
+        {
+            if format.isInterleaved {
+                switch format.commonFormat {
+                case .pcmFormatInt16:
+                    let length = sampleBuffer.dataBuffer?.dataLength ?? 0
+                    var image = vImage_Buffer(
+                        data: workingBuffer.mutableAudioBufferList[0].mBuffers.mData,
+                        height: 1,
+                        width: vImagePixelCount(length / 2),
+                        rowBytes: length
+                    )
+                    vImageByteSwap_Planar16U(&image, &image, vImage_Flags(kvImageNoFlags))
+                default:
+                    break
+                }
+            }
+        }
+    }
+
+    func createOutputBuffer() -> (AVAudioPCMBuffer, CMTime)? {
         if latestPresentationTimeStamp == .invalid {
-            let offsetTimeStamp = offset == 0 ? .zero : CMTime(
-                value: CMTimeValue(offset),
-                timescale: presentationTimeStamp.timescale
+            let offsetTimeStamp = CMTime(
+                value: CMTimeValue(workingIndex),
+                timescale: workingBufferPresentationTimeStamp.timescale
             )
-            latestPresentationTimeStamp = presentationTimeStamp + offsetTimeStamp
+            latestPresentationTimeStamp = workingBufferPresentationTimeStamp + offsetTimeStamp
         }
-        if offset == 0 {
-            if workingBuffer.frameLength < sampleBuffer.numSamples {
-                if let buffer = AVAudioPCMBuffer(
-                    pcmFormat: format,
-                    frameCapacity: AVAudioFrameCount(sampleBuffer.numSamples)
-                ) {
-                    workingBuffer = buffer
-                }
-            }
-            workingBuffer.frameLength = AVAudioFrameCount(sampleBuffer.numSamples)
-            CMSampleBufferCopyPCMDataIntoAudioBufferList(
-                sampleBuffer,
-                at: 0,
-                frameCount: Int32(sampleBuffer.numSamples),
-                into: workingBuffer.mutableAudioBufferList
-            )
-            if kLinearPCMFormatFlagIsBigEndian ==
-                ((sampleBuffer.formatDescription?.audioStreamBasicDescription?.mFormatFlags ?? 0) &
-                    kLinearPCMFormatFlagIsBigEndian)
-            {
-                if format.isInterleaved {
-                    switch format.commonFormat {
-                    case .pcmFormatInt16:
-                        let length = sampleBuffer.dataBuffer?.dataLength ?? 0
-                        var image = vImage_Buffer(
-                            data: workingBuffer.mutableAudioBufferList[0].mBuffers.mData,
-                            height: 1,
-                            width: vImagePixelCount(length / 2),
-                            rowBytes: length
-                        )
-                        vImageByteSwap_Planar16U(&image, &image, vImage_Flags(kvImageNoFlags))
-                    default:
-                        break
-                    }
-                }
-            }
-        }
-        let numSamples = min(numSamplesPerBuffer - index, Int(sampleBuffer.numSamples) - offset)
+        let numSamples = min(numSamplesPerBuffer - outputIndex, Int(workingBuffer.frameLength) - workingIndex)
         if format.isInterleaved {
             let channelCount = Int(format.channelCount)
             switch format.commonFormat {
             case .pcmFormatInt16:
                 memcpy(
-                    outputBuffer.int16ChannelData?[0].advanced(by: index * channelCount),
-                    workingBuffer.int16ChannelData?[0].advanced(by: offset * channelCount),
+                    outputBuffer.int16ChannelData?[0].advanced(by: outputIndex * channelCount),
+                    workingBuffer.int16ChannelData?[0].advanced(by: workingIndex * channelCount),
                     numSamples * 2 * channelCount
                 )
             case .pcmFormatInt32:
                 memcpy(
-                    outputBuffer.int32ChannelData?[0].advanced(by: index * channelCount),
-                    workingBuffer.int32ChannelData?[0].advanced(by: offset * channelCount),
+                    outputBuffer.int32ChannelData?[0].advanced(by: outputIndex * channelCount),
+                    workingBuffer.int32ChannelData?[0].advanced(by: workingIndex * channelCount),
                     numSamples * 4 * channelCount
                 )
             case .pcmFormatFloat32:
                 memcpy(
-                    outputBuffer.floatChannelData?[0].advanced(by: index * channelCount),
-                    workingBuffer.floatChannelData?[0].advanced(by: offset * channelCount),
+                    outputBuffer.floatChannelData?[0].advanced(by: outputIndex * channelCount),
+                    workingBuffer.floatChannelData?[0].advanced(by: workingIndex * channelCount),
                     numSamples * 4 * channelCount
                 )
             default:
@@ -110,20 +112,20 @@ final class AudioEncoderRingBuffer {
                 switch format.commonFormat {
                 case .pcmFormatInt16:
                     memcpy(
-                        outputBuffer.int16ChannelData?[i].advanced(by: index),
-                        workingBuffer.int16ChannelData?[i].advanced(by: offset),
+                        outputBuffer.int16ChannelData?[i].advanced(by: outputIndex),
+                        workingBuffer.int16ChannelData?[i].advanced(by: workingIndex),
                         numSamples * 2
                     )
                 case .pcmFormatInt32:
                     memcpy(
-                        outputBuffer.int32ChannelData?[i].advanced(by: index),
-                        workingBuffer.int32ChannelData?[i].advanced(by: offset),
+                        outputBuffer.int32ChannelData?[i].advanced(by: outputIndex),
+                        workingBuffer.int32ChannelData?[i].advanced(by: workingIndex),
                         numSamples * 4
                     )
                 case .pcmFormatFloat32:
                     memcpy(
-                        outputBuffer.floatChannelData?[i].advanced(by: index),
-                        workingBuffer.floatChannelData?[i].advanced(by: offset),
+                        outputBuffer.floatChannelData?[i].advanced(by: outputIndex),
+                        workingBuffer.floatChannelData?[i].advanced(by: workingIndex),
                         numSamples * 4
                     )
                 default:
@@ -131,17 +133,14 @@ final class AudioEncoderRingBuffer {
                 }
             }
         }
-        index += numSamples
-        return numSamples
-    }
-
-    func getReadyOutputBuffer() -> (AVAudioPCMBuffer, CMTime)? {
-        guard numSamplesPerBuffer == index else {
+        workingIndex += numSamples
+        outputIndex += numSamples
+        guard numSamplesPerBuffer == outputIndex else {
             return nil
         }
         defer {
             latestPresentationTimeStamp = .invalid
-            index = 0
+            outputIndex = 0
         }
         return (outputBuffer, latestPresentationTimeStamp)
     }

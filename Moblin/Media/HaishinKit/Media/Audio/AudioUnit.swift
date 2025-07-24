@@ -44,7 +44,7 @@ final class AudioUnit: NSObject {
             guard inputSourceFormat != oldValue else {
                 return
             }
-            encoder.setInSourceFormat(inputSourceFormat)
+            encoder.setInputSourceFormat(inputSourceFormat)
         }
     }
 
