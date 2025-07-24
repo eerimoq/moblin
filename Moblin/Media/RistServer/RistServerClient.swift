@@ -23,6 +23,8 @@ class RistServerClient {
     private var targetLatenciesSynchronizer =
         TargetLatenciesSynchronizer(targetLatency: srtServerClientLatency)
     private let timecodesEnabled: Bool
+    private var receivedPackets: [Data] = []
+    private var latestReceivedPacketsTime = ContinuousClock.now
 
     init?(port: UInt16, timecodesEnabled: Bool) {
         self.port = port
@@ -423,9 +425,19 @@ extension RistServerClient: RistReceiverContextDelegate {
     }
 
     func ristReceiverContextReceivedData(_: Rist.RistReceiverContext, data: Data) {
+        receivedPackets.append(data)
+        let now = ContinuousClock.now
+        guard latestReceivedPacketsTime.duration(to: now) > .milliseconds(50) else {
+            return
+        }
+        latestReceivedPacketsTime = now
+        let packets = receivedPackets
+        receivedPackets = []
         ristServerQueue.async {
-            self.server?.totalBytesReceived += UInt64(data.count)
-            self.handlePacketFromClient(packet: data)
+            for packet in packets {
+                self.server?.totalBytesReceived += UInt64(packet.count)
+                self.handlePacketFromClient(packet: packet)
+            }
         }
     }
 }
