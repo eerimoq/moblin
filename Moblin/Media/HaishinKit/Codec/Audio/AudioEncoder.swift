@@ -33,14 +33,12 @@ class AudioEncoder {
     }
 
     func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer, _ presentationTimeStamp: CMTime) {
-        guard isRunning else {
+        guard isRunning, let audioConverter, let ringBuffer else {
             return
         }
-        switch settings.format {
-        case .aac:
-            appendSampleBufferOutputAac(sampleBuffer, presentationTimeStamp)
-        case .opus:
-            appendSampleBufferOutputOpus(sampleBuffer, presentationTimeStamp)
+        ringBuffer.setWorkingSampleBuffer(sampleBuffer, presentationTimeStamp)
+        while let (outputBuffer, presentationTimeStamp) = ringBuffer.createOutputBuffer() {
+            convertBuffer(audioConverter, outputBuffer, presentationTimeStamp)
         }
     }
 
@@ -95,26 +93,6 @@ class AudioEncoder {
             return nil
         }
         return AVAudioChannelLayout(layoutTag: kAudioChannelLayoutTag_DiscreteInOrder | numberOfChannels)
-    }
-
-    private func appendSampleBufferOutputAac(_ sampleBuffer: CMSampleBuffer, _ presentationTimeStamp: CMTime) {
-        guard let audioConverter, let ringBuffer else {
-            return
-        }
-        ringBuffer.setWorkingSampleBuffer(sampleBuffer, presentationTimeStamp)
-        while let (outputBuffer, presentationTimeStamp) = ringBuffer.createOutputBuffer() {
-            convertBuffer(audioConverter, outputBuffer, presentationTimeStamp)
-        }
-    }
-
-    private func appendSampleBufferOutputOpus(_ sampleBuffer: CMSampleBuffer, _ presentationTimeStamp: CMTime) {
-        guard let audioConverter, let ringBuffer else {
-            return
-        }
-        ringBuffer.setWorkingSampleBuffer(sampleBuffer, presentationTimeStamp)
-        while let (outputBuffer, presentationTimeStamp) = ringBuffer.createOutputBuffer() {
-            convertBuffer(audioConverter, outputBuffer, presentationTimeStamp)
-        }
     }
 
     private func convertBuffer(
