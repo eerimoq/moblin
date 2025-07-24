@@ -1,12 +1,12 @@
 import AVFoundation
 
 final class AudioEncoderRingBuffer {
-    private(set) var latestPresentationTimeStamp: CMTime = .invalid
+    private var latestPresentationTimeStamp: CMTime = .invalid
     private var workingIndex = 0
     private var outputIndex = 0
     private let numSamplesPerBuffer: Int
     private var format: AVAudioFormat
-    private(set) var outputBuffer: AVAudioPCMBuffer
+    private var outputBuffer: AVAudioPCMBuffer
     private var workingBuffer: AVAudioPCMBuffer
     private var workingBufferPresentationTimeStamp: CMTime = .zero
 
