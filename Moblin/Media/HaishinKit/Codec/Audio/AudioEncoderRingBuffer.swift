@@ -1,6 +1,4 @@
-import Accelerate
 import AVFoundation
-import Foundation
 
 final class AudioEncoderRingBuffer {
     private(set) var latestPresentationTimeStamp: CMTime = .invalid
@@ -28,7 +26,10 @@ final class AudioEncoderRingBuffer {
         self.workingBuffer = workingBuffer
     }
 
-    func setWorkingSampleBuffer(_ audioBufferList: UnsafeMutableAudioBufferListPointer, _ presentationTimeStamp: CMTime) {
+    func setWorkingSampleBuffer(
+        _ audioBufferList: UnsafeMutableAudioBufferListPointer,
+        _ presentationTimeStamp: CMTime
+    ) {
         workingBufferPresentationTimeStamp = presentationTimeStamp
         workingIndex = 0
         if let buffer = AVAudioPCMBuffer(pcmFormat: format, bufferListNoCopy: audioBufferList.unsafePointer) {
