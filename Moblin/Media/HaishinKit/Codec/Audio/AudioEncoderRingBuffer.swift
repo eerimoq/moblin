@@ -37,7 +37,7 @@ final class AudioEncoderRingBuffer {
                             _ offset: Int) -> Int
     {
         if latestPresentationTimeStamp == .invalid {
-            let offsetTimeStamp: CMTime = offset == 0 ? .zero : CMTime(
+            let offsetTimeStamp = offset == 0 ? .zero : CMTime(
                 value: CMTimeValue(offset),
                 timescale: presentationTimeStamp.timescale
             )
@@ -132,7 +132,6 @@ final class AudioEncoderRingBuffer {
             }
         }
         index += numSamples
-
         return numSamples
     }
 
