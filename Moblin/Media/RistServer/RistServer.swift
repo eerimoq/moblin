@@ -2,6 +2,11 @@ import AVFoundation
 import Foundation
 import Rist
 
+struct RistServerStats {
+    var total: UInt64
+    var speed: UInt64
+}
+
 protocol RistServerDelegate: AnyObject {
     func ristServerOnConnected(port: UInt16)
     func ristServerOnDisconnected(port: UInt16, reason: String)
@@ -20,6 +25,9 @@ class RistServer {
     private var clients: [RistServerClient] = []
     weak var delegate: (any RistServerDelegate)?
     private let ports: [UInt16]
+    var totalBytesReceived: UInt64 = 0
+    private var prevTotalBytesReceived: UInt64 = 0
+    var numberOfConnectedClients = 0
 
     init(ports: [UInt16]) {
         self.ports = ports
@@ -32,11 +40,28 @@ class RistServer {
     }
 
     func stop() {
-        logger.info("rist-server: Stopping")
+        ristServerQueue.async {
+            self.stopInner()
+        }
+    }
+
+    func updateStats() -> RistServerStats {
+        return ristServerQueue.sync {
+            let speed = totalBytesReceived - prevTotalBytesReceived
+            prevTotalBytesReceived = totalBytesReceived
+            return RistServerStats(total: totalBytesReceived, speed: speed)
+        }
+    }
+
+    func getNumberOfClients() -> Int {
+        return ristServerQueue.sync {
+            numberOfConnectedClients
+        }
     }
 
     private func startInner() {
         logger.info("rist-server: Starting")
+        numberOfConnectedClients = 0
         for port in ports {
             if let client = RistServerClient(port: port, timecodesEnabled: false) {
                 client.server = self
@@ -46,5 +71,11 @@ class RistServer {
                 logger.info("rist-server: Failed to create client for port: \(port)")
             }
         }
+    }
+
+    private func stopInner() {
+        logger.info("rist-server: Stopping")
+        numberOfConnectedClients = 0
+        clients.removeAll()
     }
 }

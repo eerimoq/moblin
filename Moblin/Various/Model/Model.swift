@@ -2185,8 +2185,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         var numberOfClients = 0
         if let rtmpServer = servers.rtmp {
             let stats = rtmpServer.updateStats()
-            numberOfClients += rtmpServer.numberOfClients()
-            if rtmpServer.numberOfClients() > 0 {
+            numberOfClients += rtmpServer.getNumberOfClients()
+            if rtmpServer.getNumberOfClients() > 0 {
                 total += stats.total
                 speed += stats.speed
             }
@@ -2196,6 +2196,15 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             let stats = srtlaServer.updateStats()
             numberOfClients += srtlaServer.getNumberOfClients()
             if srtlaServer.getNumberOfClients() > 0 {
+                total += stats.total
+                speed += stats.speed
+            }
+            anyServerEnabled = true
+        }
+        if let ristServer = servers.rist {
+            let stats = ristServer.updateStats()
+            numberOfClients += ristServer.getNumberOfClients()
+            if ristServer.getNumberOfClients() > 0 {
                 total += stats.total
                 speed += stats.speed
             }
@@ -2703,7 +2712,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func isServersConfigured() -> Bool {
-        return rtmpServerEnabled() || srtlaServerEnabled()
+        return rtmpServerEnabled() || srtlaServerEnabled() || ristServerEnabled()
     }
 
     func isShowingStatusMoblink() -> Bool {

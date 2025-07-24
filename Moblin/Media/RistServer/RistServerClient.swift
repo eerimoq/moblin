@@ -410,18 +410,21 @@ class RistServerClient {
 extension RistServerClient: RistReceiverContextDelegate {
     func ristReceiverContextConnected(_: Rist.RistReceiverContext) {
         ristServerQueue.async {
+            self.server?.numberOfConnectedClients += 1
             self.server?.delegate?.ristServerOnConnected(port: self.port)
         }
     }
 
     func ristReceiverContextDisconnected(_: Rist.RistReceiverContext) {
         ristServerQueue.async {
+            self.server?.numberOfConnectedClients -= 1
             self.server?.delegate?.ristServerOnDisconnected(port: self.port, reason: "")
         }
     }
 
     func ristReceiverContextReceivedData(_: Rist.RistReceiverContext, data: Data) {
         ristServerQueue.async {
+            self.server?.totalBytesReceived += UInt64(data.count)
             self.handlePacketFromClient(packet: data)
         }
     }

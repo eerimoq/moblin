@@ -79,7 +79,7 @@ class RtmpServer {
         }
     }
 
-    func numberOfClients() -> Int {
+    func getNumberOfClients() -> Int {
         return rtmpServerDispatchQueue.sync {
             clients.count
         }
