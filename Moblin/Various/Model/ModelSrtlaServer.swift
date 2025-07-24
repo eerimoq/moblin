@@ -73,10 +73,8 @@ extension Model: SrtlaServerDelegate {
         media.addBufferedVideo(cameraId: stream.id, name: name, latency: latency)
         media.addBufferedAudio(cameraId: stream.id, name: name, latency: latency)
         stream.connected = true
+        markMicAsConnected(id: "\(stream.id) 0")
         DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-            if stream.connected {
-                self.markMicAsConnected(id: "\(stream.id) 0")
-            }
             self.switchMicIfNeededAfterNetworkCameraChange()
         }
     }

@@ -65,10 +65,8 @@ extension Model {
             self.media.addBufferedAudio(cameraId: stream.id, name: name, latency: latency)
             self.markDjiIsStreamingIfNeeded(rtmpServerStreamId: stream.id)
             stream.connected = true
+            self.markMicAsConnected(id: "\(stream.id) 0")
             DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-                if stream.connected {
-                    self.markMicAsConnected(id: "\(stream.id) 0")
-                }
                 self.switchMicIfNeededAfterNetworkCameraChange()
             }
         }
