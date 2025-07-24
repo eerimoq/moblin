@@ -977,6 +977,12 @@ extension Model {
             } else {
                 return false
             }
+        case .rist:
+            if let stream = getRistStream(id: scene.ristCameraId) {
+                return isRistStreamConnected(port: stream.port)
+            } else {
+                return false
+            }
         case .external:
             return isExternalCameraConnected(id: scene.externalCameraId)
         default:
