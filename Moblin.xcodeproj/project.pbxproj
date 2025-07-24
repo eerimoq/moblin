@@ -487,6 +487,7 @@
 		03C265E12E3114BE0030E8A4 /* ModelRistServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C265E02E3114BA0030E8A4 /* ModelRistServer.swift */; };
 		03C265E52E3117E60030E8A4 /* RistServerSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C265E42E3117E00030E8A4 /* RistServerSettingsView.swift */; };
 		03C265E72E3117F30030E8A4 /* RistServerStreamSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C265E62E3117EB0030E8A4 /* RistServerStreamSettingsView.swift */; };
+		03C265EA2E3215430030E8A4 /* MpegTsReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C265E92E32153F0030E8A4 /* MpegTsReader.swift */; };
 		03C2C2832B5F906E00E2F30B /* SliderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C2C2822B5F906E00E2F30B /* SliderView.swift */; };
 		03C354662CF5A5A500B8B29F /* TeslaSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C354652CF5A5A400B8B29F /* TeslaSettingsView.swift */; };
 		03C354682CF98DD900B8B29F /* HCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C354672CF98DD600B8B29F /* HCenter.swift */; };
@@ -1180,6 +1181,7 @@
 		03C265E02E3114BA0030E8A4 /* ModelRistServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelRistServer.swift; sourceTree = "<group>"; };
 		03C265E42E3117E00030E8A4 /* RistServerSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RistServerSettingsView.swift; sourceTree = "<group>"; };
 		03C265E62E3117EB0030E8A4 /* RistServerStreamSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RistServerStreamSettingsView.swift; sourceTree = "<group>"; };
+		03C265E92E32153F0030E8A4 /* MpegTsReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MpegTsReader.swift; sourceTree = "<group>"; };
 		03C2C2822B5F906E00E2F30B /* SliderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SliderView.swift; sourceTree = "<group>"; };
 		03C354652CF5A5A400B8B29F /* TeslaSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeslaSettingsView.swift; sourceTree = "<group>"; };
 		03C354672CF98DD600B8B29F /* HCenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HCenter.swift; sourceTree = "<group>"; };
@@ -1997,6 +1999,7 @@
 				0359F8462BD3DA5F005BFDA8 /* MpegTsAdaptationField.swift */,
 				0359F8472BD3DA5F005BFDA8 /* MpegTsPacket.swift */,
 				0359F8482BD3DA5F005BFDA8 /* MpegTsProgram.swift */,
+				03C265E92E32153F0030E8A4 /* MpegTsReader.swift */,
 				030EFE712BDA2D9E004208B6 /* MpegTsVideoConfig.swift */,
 				0359F84A2BD3DA5F005BFDA8 /* MpegTsWriter.swift */,
 				0359F83F2BD3DA5F005BFDA8 /* NalUnitStream.swift */,
@@ -3968,6 +3971,7 @@
 				030E066C2D42A63900563457 /* StreamWizardObsSettingsView.swift in Sources */,
 				0351F8FD2DD3064400F37D9C /* QuickButtonAutoSceneSwitcherView.swift in Sources */,
 				03B7DAB92BA6EE6200CEFC1B /* StreamOpenStreamingPlatformSettingsView.swift in Sources */,
+				03C265EA2E3215430030E8A4 /* MpegTsReader.swift in Sources */,
 				0318D3752CF51DEB00E12F3B /* car_server.pb.swift in Sources */,
 				03C3574E2D081CF500B8B29F /* RtmpDataMessage.swift in Sources */,
 				0318D3762CF51DEB00E12F3B /* common.pb.swift in Sources */,
