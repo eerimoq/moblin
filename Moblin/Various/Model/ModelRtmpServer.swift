@@ -81,6 +81,7 @@ extension Model {
             }
             self.stopRtmpServerStream(stream: stream, showToast: true, reason: reason)
             self.updateAutoSceneSwitcherVideoSourceDisconnected()
+            self.updateDisconnectProtectionVideoSourceDisconnected()
             self.switchMicIfNeededAfterNetworkCameraChange()
         }
     }

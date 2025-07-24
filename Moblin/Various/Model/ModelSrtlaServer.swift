@@ -91,6 +91,7 @@ extension Model: SrtlaServerDelegate {
         media.removeBufferedAudio(cameraId: stream.id)
         stream.connected = false
         updateAutoSceneSwitcherVideoSourceDisconnected()
+        updateDisconnectProtectionVideoSourceDisconnected()
         markMicAsDisconnected(id: "\(stream.id) 0")
         switchMicIfNeededAfterNetworkCameraChange()
     }

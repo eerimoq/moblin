@@ -5967,6 +5967,30 @@ class SettingsAlertsMediaGallery: Codable {
     var customSounds: [SettingsAlertsMediaGalleryItem] = []
 }
 
+class SettingsDisconnectProtection: Codable, ObservableObject {
+    @Published var liveSceneId: UUID?
+    @Published var fallbackSceneId: UUID?
+
+    enum CodingKeys: CodingKey {
+        case liveSceneId,
+             fallbackSceneId
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.liveSceneId, liveSceneId)
+        try container.encode(.fallbackSceneId, fallbackSceneId)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        liveSceneId = container.decode(.liveSceneId, UUID?.self, .init())
+        fallbackSceneId = container.decode(.fallbackSceneId, UUID?.self, .init())
+    }
+}
+
 class Database: Codable, ObservableObject {
     @Published var streams: [SettingsStream] = []
     @Published var scenes: [SettingsScene] = []
@@ -6033,6 +6057,7 @@ class Database: Codable, ObservableObject {
     var selfieStick: SettingsSelfieStick = .init()
     @Published var bigButtons: Bool = false
     var ristServer: SettingsRistServer = .init()
+    var disconnectProtection: SettingsDisconnectProtection = .init()
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -6127,7 +6152,8 @@ class Database: Codable, ObservableObject {
              pinchScale,
              selfieStick,
              bigButtons,
-             ristServer
+             ristServer,
+             disconnectProtection
     }
 
     func encode(to encoder: Encoder) throws {
@@ -6197,6 +6223,7 @@ class Database: Codable, ObservableObject {
         try container.encode(.selfieStick, selfieStick)
         try container.encode(.bigButtons, bigButtons)
         try container.encode(.ristServer, ristServer)
+        try container.encode(.disconnectProtection, disconnectProtection)
     }
 
     init() {}
@@ -6268,6 +6295,7 @@ class Database: Codable, ObservableObject {
         selfieStick = container.decode(.selfieStick, SettingsSelfieStick.self, .init())
         bigButtons = container.decode(.bigButtons, Bool.self, false)
         ristServer = container.decode(.ristServer, SettingsRistServer.self, .init())
+        disconnectProtection = container.decode(.disconnectProtection, SettingsDisconnectProtection.self, .init())
     }
 }
 

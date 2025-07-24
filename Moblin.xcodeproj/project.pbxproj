@@ -488,6 +488,8 @@
 		03C265E52E3117E60030E8A4 /* RistServerSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C265E42E3117E00030E8A4 /* RistServerSettingsView.swift */; };
 		03C265E72E3117F30030E8A4 /* RistServerStreamSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C265E62E3117EB0030E8A4 /* RistServerStreamSettingsView.swift */; };
 		03C265EA2E3215430030E8A4 /* MpegTsReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C265E92E32153F0030E8A4 /* MpegTsReader.swift */; };
+		03C265EC2E3220560030E8A4 /* ModelDisconnectProtection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C265EB2E3220510030E8A4 /* ModelDisconnectProtection.swift */; };
+		03C265EF2E3223110030E8A4 /* DisconnectProtectionSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C265EE2E3223090030E8A4 /* DisconnectProtectionSettingsView.swift */; };
 		03C2C2832B5F906E00E2F30B /* SliderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C2C2822B5F906E00E2F30B /* SliderView.swift */; };
 		03C354662CF5A5A500B8B29F /* TeslaSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C354652CF5A5A400B8B29F /* TeslaSettingsView.swift */; };
 		03C354682CF98DD900B8B29F /* HCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C354672CF98DD600B8B29F /* HCenter.swift */; };
@@ -1182,6 +1184,8 @@
 		03C265E42E3117E00030E8A4 /* RistServerSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RistServerSettingsView.swift; sourceTree = "<group>"; };
 		03C265E62E3117EB0030E8A4 /* RistServerStreamSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RistServerStreamSettingsView.swift; sourceTree = "<group>"; };
 		03C265E92E32153F0030E8A4 /* MpegTsReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MpegTsReader.swift; sourceTree = "<group>"; };
+		03C265EB2E3220510030E8A4 /* ModelDisconnectProtection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelDisconnectProtection.swift; sourceTree = "<group>"; };
+		03C265EE2E3223090030E8A4 /* DisconnectProtectionSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisconnectProtectionSettingsView.swift; sourceTree = "<group>"; };
 		03C2C2822B5F906E00E2F30B /* SliderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SliderView.swift; sourceTree = "<group>"; };
 		03C354652CF5A5A400B8B29F /* TeslaSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeslaSettingsView.swift; sourceTree = "<group>"; };
 		03C354672CF98DD600B8B29F /* HCenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HCenter.swift; sourceTree = "<group>"; };
@@ -2329,6 +2333,7 @@
 			isa = PBXGroup;
 			children = (
 				0351F8F92DD2960700F37D9C /* AutoSwitchers */,
+				03C265ED2E3222FF0030E8A4 /* DisconnectProtection */,
 				0379BBB32AAD9B4000B718B6 /* Widgets */,
 				0315A34C2AA3217500295443 /* Scene */,
 				03A9835B2A9A05D7008FF0DB /* ScenesSettingsView.swift */,
@@ -2927,6 +2932,7 @@
 				032A6F0E2DDD253000453B0A /* ModelChat.swift */,
 				032F81B72DDCEA6E00E14CC5 /* ModelChatBot.swift */,
 				03BA73AA2DDC593600075CD6 /* ModelCyclingPowerDevice.swift */,
+				03C265EB2E3220510030E8A4 /* ModelDisconnectProtection.swift */,
 				03BA73B02DDCD58100075CD6 /* ModelDjiDevice.swift */,
 				03BA73B82DDCD98600075CD6 /* ModelDjiGimbalDevice.swift */,
 				032F81C12DDCF4C000E14CC5 /* ModelGameController.swift */,
@@ -3084,6 +3090,14 @@
 				03C265E62E3117EB0030E8A4 /* RistServerStreamSettingsView.swift */,
 			);
 			path = RistServer;
+			sourceTree = "<group>";
+		};
+		03C265ED2E3222FF0030E8A4 /* DisconnectProtection */ = {
+			isa = PBXGroup;
+			children = (
+				03C265EE2E3223090030E8A4 /* DisconnectProtectionSettingsView.swift */,
+			);
+			path = DisconnectProtection;
 			sourceTree = "<group>";
 		};
 		03C3560A2CFC90B400B8B29F /* Keyboard */ = {
@@ -3989,6 +4003,7 @@
 				0379BBAA2AAD953200B718B6 /* HelpAndSupportSettingsView.swift in Sources */,
 				03A3504D2C12E15A0015FAC8 /* SrtServer.swift in Sources */,
 				038605412D80098800B9C3CE /* HeartRateDeviceSettingsView.swift in Sources */,
+				03C265EF2E3223110030E8A4 /* DisconnectProtectionSettingsView.swift in Sources */,
 				032A6F0D2DDD23E400453B0A /* ModelRecording.swift in Sources */,
 				0323F37E2D1E8EDE00A57AC2 /* MoblinkSettingsView.swift in Sources */,
 				0364304F2B2FF9F400B7C448 /* StreamWizardTwitchSettingsView.swift in Sources */,
@@ -4160,6 +4175,7 @@
 				038F42ED2B6849D400E68752 /* LutEffect.swift in Sources */,
 				0379BB902AABA7DC00B718B6 /* Log.swift in Sources */,
 				03B77ADA2B9446210053F106 /* WatchSettings.swift in Sources */,
+				03C265EC2E3220560030E8A4 /* ModelDisconnectProtection.swift in Sources */,
 				03C9A1442DFDEAF200817B57 /* GoLiveNotificationSettingsView.swift in Sources */,
 				03941A252C0CE18C0061DA81 /* DeepLinkCreatorQuickButtonsSettingsView.swift in Sources */,
 				0304A50C2B45ADC300310842 /* GameControllersControllerSettingsView.swift in Sources */,
