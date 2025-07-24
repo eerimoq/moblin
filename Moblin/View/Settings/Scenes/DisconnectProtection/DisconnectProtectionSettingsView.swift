@@ -28,6 +28,8 @@ struct DisconnectProtectionSettingsView: View {
             }
         } header: {
             Text("Disconnect protection")
+        } footer: {
+            Text("Can be used when using Moblin as a server at home with stable internet connection.")
         }
     }
 }
