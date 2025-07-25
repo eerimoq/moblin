@@ -11,7 +11,7 @@ extension Model {
         stopRistServer()
         if database.ristServer.enabled {
             let ports = database.ristServer.streams.map { $0.port }
-            servers.rist = RistServer(ports: ports)
+            servers.rist = RistServer(ports: ports, timecodesEnabled: isTimecodesEnabled())
             servers.rist?.delegate = self
             servers.rist?.start()
         }

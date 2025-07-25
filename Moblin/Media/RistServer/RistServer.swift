@@ -25,12 +25,14 @@ class RistServer {
     private var clients: [RistServerClient] = []
     weak var delegate: (any RistServerDelegate)?
     private let ports: [UInt16]
+    private let timecodesEnabled: Bool
     var totalBytesReceived: UInt64 = 0
     private var prevTotalBytesReceived: UInt64 = 0
     var numberOfConnectedClients = 0
 
-    init(ports: [UInt16]) {
+    init(ports: [UInt16], timecodesEnabled: Bool) {
         self.ports = ports
+        self.timecodesEnabled = timecodesEnabled
     }
 
     func start() {
@@ -63,7 +65,7 @@ class RistServer {
         logger.info("rist-server: Starting")
         numberOfConnectedClients = 0
         for port in ports {
-            if let client = RistServerClient(port: port, timecodesEnabled: false) {
+            if let client = RistServerClient(port: port, timecodesEnabled: timecodesEnabled) {
                 client.server = self
                 client.start()
                 clients.append(client)

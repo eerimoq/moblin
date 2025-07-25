@@ -145,7 +145,7 @@ final class Media: NSObject {
             ristStream = nil
             irlStream = nil
         case .rist:
-            ristStream = RistStream(processor: processor, delegate: self)
+            ristStream = RistStream(processor: processor, timecodesEnabled: timecodesEnabled, delegate: self)
             srtStreamNew = nil
             srtStreamOld = nil
             rtmpStreams.removeAll()

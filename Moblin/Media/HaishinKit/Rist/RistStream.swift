@@ -83,7 +83,7 @@ protocol RistStreamDelegate: AnyObject {
 class RistStream {
     private var context: RistSenderContext?
     private var peers: [RistRemotePeer] = []
-    private let writer = MpegTsWriter(timecodesEnabled: false, newSrt: false)
+    private let writer: MpegTsWriter
     private var networkPathMonitor: NWPathMonitor?
     private var bonding: Bool = false
     private var url: String = ""
@@ -91,8 +91,9 @@ class RistStream {
     private weak var ristDelegate: (any RistStreamDelegate)?
     private let processor: Processor
 
-    init(processor: Processor, delegate: RistStreamDelegate) {
+    init(processor: Processor, timecodesEnabled: Bool, delegate: RistStreamDelegate) {
         self.processor = processor
+        writer = MpegTsWriter(timecodesEnabled: timecodesEnabled, newSrt: false)
         ristDelegate = delegate
         writer.delegate = self
     }
