@@ -4,14 +4,15 @@ import Rist
 class RistServerClient {
     private let context: RistReceiverContext
     weak var server: RistServer?
-    private let reader: MpegTsReader
+    private var reader = MpegTsReader(decoderQueue: ristServerQueue, timecodesEnabled: false)
     private let port: UInt16
+    private let timecodesEnabled: Bool
     private var receivedPackets: [Data] = []
     private var latestReceivedPacketsTime = ContinuousClock.now
 
     init?(port: UInt16, timecodesEnabled: Bool) {
         self.port = port
-        reader = MpegTsReader(decoderQueue: ristServerQueue, timecodesEnabled: timecodesEnabled)
+        self.timecodesEnabled = timecodesEnabled
         guard let context = RistReceiverContext(inputUrl: "rist://@0.0.0.0:\(port)?rtt-min=100") else {
             logger.info("rist-server-client: Failed to create context")
             return nil
@@ -36,7 +37,10 @@ class RistServerClient {
 
 extension RistServerClient: RistReceiverContextDelegate {
     func ristReceiverContextConnected(_: Rist.RistReceiverContext) {
+        receivedPackets = []
         ristServerQueue.async {
+            self.reader = MpegTsReader(decoderQueue: ristServerQueue, timecodesEnabled: self.timecodesEnabled)
+            self.reader.delegate = self
             self.server?.numberOfConnectedClients += 1
             self.server?.delegate?.ristServerOnConnected(port: self.port)
         }
