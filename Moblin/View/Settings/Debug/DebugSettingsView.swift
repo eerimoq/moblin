@@ -32,8 +32,8 @@ struct DebugSettingsView: View {
                     value: String(debug.maximumLogLines),
                     onSubmit: submitLogLines
                 )
-                Toggle("Debug overlay", isOn: $debug.srtOverlay)
-                    .onChange(of: debug.srtOverlay) { _ in
+                Toggle("Debug overlay", isOn: $debug.debugOverlay)
+                    .onChange(of: debug.debugOverlay) { _ in
                         model.updateDebugOverlay()
                     }
             }

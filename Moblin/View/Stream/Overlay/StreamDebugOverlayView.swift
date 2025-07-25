@@ -16,12 +16,6 @@ struct StreamDebugOverlayView: View {
             .padding([.leading, .trailing], 2)
             .background(Color(white: 0, opacity: 0.75))
             .cornerRadius(5)
-            .onAppear {
-                model.cpuUsageNeeded = true
-            }
-            .onDisappear {
-                model.cpuUsageNeeded = false
-            }
         }
     }
 }

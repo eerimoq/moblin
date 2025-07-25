@@ -3848,7 +3848,7 @@ class SettingsSelfieStick: Codable, ObservableObject {
 
 class SettingsDebug: Codable, ObservableObject {
     var logLevel: SettingsLogLevel = .error
-    @Published var srtOverlay: Bool = false
+    @Published var debugOverlay: Bool = false
     var srtOverheadBandwidth: Int32 = 25
     @Published var cameraSwitchRemoveBlackish: Float = 0.3
     var maximumBandwidthFollowInput: Bool = true
@@ -3922,7 +3922,7 @@ class SettingsDebug: Codable, ObservableObject {
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.logLevel, logLevel)
-        try container.encode(.srtOverlay, srtOverlay)
+        try container.encode(.srtOverlay, debugOverlay)
         try container.encode(.srtOverheadBandwidth, srtOverheadBandwidth)
         try container.encode(.cameraSwitchRemoveBlackish, cameraSwitchRemoveBlackish)
         try container.encode(.maximumBandwidthFollowInput, maximumBandwidthFollowInput)
@@ -3960,7 +3960,7 @@ class SettingsDebug: Codable, ObservableObject {
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         logLevel = container.decode(.logLevel, SettingsLogLevel.self, .error)
-        srtOverlay = container.decode(.srtOverlay, Bool.self, false)
+        debugOverlay = container.decode(.srtOverlay, Bool.self, false)
         srtOverheadBandwidth = container.decode(.srtOverheadBandwidth, Int32.self, 25)
         cameraSwitchRemoveBlackish = container.decode(.cameraSwitchRemoveBlackish, Float.self, 0.3)
         maximumBandwidthFollowInput = container.decode(.maximumBandwidthFollowInput, Bool.self, true)

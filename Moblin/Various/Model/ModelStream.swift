@@ -812,7 +812,7 @@ extension Model {
             return
         }
         if let (lines, actions) = media.updateAdaptiveBitrate(
-            overlay: database.debug.srtOverlay,
+            overlay: database.debug.debugOverlay,
             relaxed: relaxedBitrate
         ) {
             latestDebugLines = lines
@@ -821,7 +821,7 @@ extension Model {
     }
 
     func updateDebugOverlay() {
-        if database.debug.srtOverlay {
+        if database.debug.debugOverlay {
             debugOverlay.debugLines = [String(localized: "CPU: \(Int(debugOverlay.cpuUsage))")]
                 + latestDebugLines
                 + latestDebugActions

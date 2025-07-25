@@ -466,7 +466,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var cameraZoomLevelToXScale: Float = 1.0
     var cameraZoomXMinimum: Float = 1.0
     var cameraZoomXMaximum: Float = 1.0
-    var cpuUsageNeeded = false
     var latestDebugLines: [String] = []
     var latestDebugActions: [String] = []
     var streamingHistoryStream: StreamingHistoryStream?
@@ -1412,7 +1411,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             self.updateBitrateStatus()
             self.updateAdsRemainingTimer(now: now)
             self.keepSpeakerAlive(now: monotonicNow)
-            if self.cpuUsageNeeded {
+            if self.database.debug.debugOverlay {
                 self.debugOverlay.cpuUsage = getCpuUsage()
             }
             self.updateMoblinkStatus()
