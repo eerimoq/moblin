@@ -585,7 +585,7 @@
 		03F465E72C43DFF500630708 /* DjiDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F465E62C43DFF500630708 /* DjiDevice.swift */; };
 		03F465EC2C441D1400630708 /* CrcSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 03F465EB2C441D1400630708 /* CrcSwift */; };
 		03F5A8DF2AD5DACB00F354D2 /* Srt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F5A8DE2AD5DACB00F354D2 /* Srt.swift */; };
-		03F5A8E52AD6FF8E00F354D2 /* StreamOverlayDebugView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F5A8E42AD6FF8E00F354D2 /* StreamOverlayDebugView.swift */; };
+		03F5A8E52AD6FF8E00F354D2 /* StreamDebugOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F5A8E42AD6FF8E00F354D2 /* StreamDebugOverlayView.swift */; };
 		03F655F02D147C0B0054D73E /* VideoSourceRotationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F655EF2D147C040054D73E /* VideoSourceRotationView.swift */; };
 		03F655F22D16DFD60054D73E /* NalUnitReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F655F12D16DFD20054D73E /* NalUnitReader.swift */; };
 		03F853B32B151FA700719B89 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 03F853B22B151FA700719B89 /* Localizable.xcstrings */; };
@@ -1275,7 +1275,7 @@
 		03F3BF182ADAAA94009A8D3E /* TextEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextEffect.swift; sourceTree = "<group>"; };
 		03F465E62C43DFF500630708 /* DjiDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DjiDevice.swift; sourceTree = "<group>"; };
 		03F5A8DE2AD5DACB00F354D2 /* Srt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Srt.swift; sourceTree = "<group>"; };
-		03F5A8E42AD6FF8E00F354D2 /* StreamOverlayDebugView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamOverlayDebugView.swift; sourceTree = "<group>"; };
+		03F5A8E42AD6FF8E00F354D2 /* StreamDebugOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamDebugOverlayView.swift; sourceTree = "<group>"; };
 		03F655EF2D147C040054D73E /* VideoSourceRotationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoSourceRotationView.swift; sourceTree = "<group>"; };
 		03F655F12D16DFD20054D73E /* NalUnitReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NalUnitReader.swift; sourceTree = "<group>"; };
 		03F6E3042D40267A00942826 /* zh-HK */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-HK"; path = "zh-HK.lproj/AppShortcuts.strings"; sourceTree = "<group>"; };
@@ -2369,7 +2369,7 @@
 				030947C22A9C0496003FC387 /* StreamOverlayChatView.swift */,
 				0379BB9B2AAD819800B718B6 /* StreamOverlayLeftView.swift */,
 				0379BB9D2AAD81AA00B718B6 /* StreamOverlayRightView.swift */,
-				03F5A8E42AD6FF8E00F354D2 /* StreamOverlayDebugView.swift */,
+				03F5A8E42AD6FF8E00F354D2 /* StreamDebugOverlayView.swift */,
 			);
 			path = Overlay;
 			sourceTree = "<group>";
@@ -4235,7 +4235,7 @@
 				0318391B2AF79DDF00320FB2 /* StreamSrtAdaptiveBitrateSettingsView.swift in Sources */,
 				03E8D6A32DDE5A560080BEB4 /* FixedHorizonEffect.swift in Sources */,
 				03C3573B2D08150300B8B29F /* Flv.swift in Sources */,
-				03F5A8E52AD6FF8E00F354D2 /* StreamOverlayDebugView.swift in Sources */,
+				03F5A8E52AD6FF8E00F354D2 /* StreamDebugOverlayView.swift in Sources */,
 				0359F8BE2BD3DA61005BFDA8 /* CVPixelBuffer+Extension.swift in Sources */,
 				0359F8C32BD3DA61005BFDA8 /* VTCompressionSession+Extension.swift in Sources */,
 				0359F8E92BD3DA61005BFDA8 /* AmfFoundation.swift in Sources */,
