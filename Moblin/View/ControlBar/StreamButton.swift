@@ -1,7 +1,7 @@
 import SwiftUI
 
 private struct StreamButtonText: View {
-    @EnvironmentObject var model: Model
+    @ObservedObject var database: Database
     var text: String
 
     var body: some View {
@@ -11,7 +11,7 @@ private struct StreamButtonText: View {
             .foregroundColor(.white)
             .frame(minWidth: 60)
             .padding(5)
-            .background(model.database.streamButtonColor.color())
+            .background(database.streamButtonColorColor)
             .cornerRadius(10)
     }
 }
@@ -28,7 +28,7 @@ struct StreamButton: View {
             Button {
                 isPresentingStopConfirm = true
             } label: {
-                StreamButtonText(text: String(localized: "End"))
+                StreamButtonText(database: model.database, text: String(localized: "End"))
                     .overlay(
                         RoundedRectangle(cornerRadius: 10)
                             .stroke(.white)
@@ -61,7 +61,7 @@ struct StreamButton: View {
             Button {
                 isPresentingGoLiveConfirm = true
             } label: {
-                StreamButtonText(text: String(localized: "Go Live"))
+                StreamButtonText(database: model.database, text: String(localized: "Go Live"))
             }
             .confirmationDialog("", isPresented: $isPresentingGoLiveConfirm) {
                 Button("Go Live") {
@@ -78,7 +78,7 @@ struct StreamButton: View {
                 model.resetWizard()
                 createStreamWizard.isPresentingSetup = true
             } label: {
-                StreamButtonText(text: String(localized: "Setup"))
+                StreamButtonText(database: model.database, text: String(localized: "Setup"))
             }
             .sheet(isPresented: $createStreamWizard.isPresentingSetup) {
                 NavigationStack {

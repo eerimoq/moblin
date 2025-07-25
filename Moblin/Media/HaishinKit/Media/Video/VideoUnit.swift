@@ -380,7 +380,7 @@ final class VideoUnit: NSObject {
         }
     }
 
-    func getCIImage(_ videoSourceId: UUID, _ presentationTimeStamp: CMTime) -> CIImage? {
+    func getCiImage(_ videoSourceId: UUID, _ presentationTimeStamp: CMTime) -> CIImage? {
         guard let sampleBuffer = bufferedVideos[videoSourceId]?.getSampleBuffer(presentationTimeStamp),
               let imageBuffer = sampleBuffer.imageBuffer
         else {

@@ -6018,6 +6018,7 @@ class Database: Codable, ObservableObject {
     var color: SettingsColor = .init()
     @Published var mirrorFrontCameraOnStream: Bool = true
     var streamButtonColor: RgbColor = defaultStreamButtonColor
+    @Published var streamButtonColorColor: Color = defaultStreamButtonColor.color()
     var location: SettingsLocation = .init()
     var watch: WatchSettings = .init()
     var audio: AudioSettings = .init()
@@ -6256,6 +6257,7 @@ class Database: Codable, ObservableObject {
         color = container.decode(.color, SettingsColor.self, .init())
         mirrorFrontCameraOnStream = container.decode(.mirrorFrontCameraOnStream, Bool.self, true)
         streamButtonColor = container.decode(.streamButtonColor, RgbColor.self, defaultStreamButtonColor)
+        streamButtonColorColor = streamButtonColor.color()
         location = container.decode(.location, SettingsLocation.self, .init())
         watch = container.decode(.watch, WatchSettings.self, .init())
         audio = container.decode(.audio, AudioSettings.self, .init())

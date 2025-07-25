@@ -1,27 +1,21 @@
 import SwiftUI
 
 struct StreamButtonsSettingsView: View {
-    @EnvironmentObject var model: Model
-    @State var background: Color
-
-    private func onColorChange(color: Color) {
-        guard let color = color.toRgb() else {
-            return
-        }
-        model.database.streamButtonColor = color
-        model.updateQuickButtonStates()
-    }
+    @ObservedObject var database: Database
 
     var body: some View {
         Form {
             Section {
-                ColorPicker("Background", selection: $background, supportsOpacity: false)
-                    .onChange(of: background) { _ in
-                        onColorChange(color: background)
+                ColorPicker("Background", selection: $database.streamButtonColorColor, supportsOpacity: false)
+                    .onChange(of: database.streamButtonColorColor) { _ in
+                        guard let color = database.streamButtonColorColor.toRgb() else {
+                            return
+                        }
+                        database.streamButtonColor = color
                     }
                 Button {
-                    background = defaultStreamButtonColor.color()
-                    onColorChange(color: background)
+                    database.streamButtonColor = defaultStreamButtonColor
+                    database.streamButtonColorColor = database.streamButtonColor.color()
                 } label: {
                     HCenter {
                         Text("Reset")
