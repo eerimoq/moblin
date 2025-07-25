@@ -1,7 +1,7 @@
 import Foundation
 
 extension Model {
-    func updateDisconnectProtection() {
+    func updateDisconnectProtectionVideoSourceConnected() {
         guard let fallbackSceneId = database.disconnectProtection.fallbackSceneId,
               selectedSceneId == fallbackSceneId,
               let liveSceneId = database.disconnectProtection.liveSceneId

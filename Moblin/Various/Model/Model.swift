@@ -284,6 +284,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var showLoadSettingsFailed = false
     @Published var cameraControlEnabled = false
     @Published var stream: SettingsStream = fallbackStream
+    var activeBufferedVideoIds: Set<UUID> = []
 
     var streamState = StreamState.disconnected {
         didSet {
@@ -1418,7 +1419,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             self.updateStatusEventsText()
             self.updateStatusChatText()
             self.updateAutoSceneSwitcher(now: monotonicNow)
-            self.updateDisconnectProtection()
             self.sendPeriodicRemoteControlStreamerStatus()
         }
         periodicTimer3s.startPeriodic(interval: 3) {

@@ -29,6 +29,8 @@ protocol MediaDelegate: AnyObject {
     func mediaOnFindVideoFormatError(_ findVideoFormatError: String, _ activeFormat: String)
     func mediaOnAttachCameraError()
     func mediaOnCaptureSessionError(_ message: String)
+    func mediaOnBufferedVideoReady(cameraId: UUID)
+    func mediaOnBufferedVideoRemoved(cameraId: UUID)
     func mediaOnRecorderInitSegment(data: Data)
     func mediaOnRecorderDataSegment(segment: RecorderDataSegment)
     func mediaOnRecorderFinished()
@@ -1012,6 +1014,14 @@ extension Media: ProcessorDelegate {
 
     func streamVideoCaptureSessionError(_ message: String) {
         delegate?.mediaOnCaptureSessionError(message)
+    }
+
+    func streamVideoBufferedVideoReady(cameraId: UUID) {
+        delegate?.mediaOnBufferedVideoReady(cameraId: cameraId)
+    }
+
+    func streamVideoBufferedVideoRemoved(cameraId: UUID) {
+        delegate?.mediaOnBufferedVideoRemoved(cameraId: cameraId)
     }
 
     func streamAudio(sampleBuffer: CMSampleBuffer) {

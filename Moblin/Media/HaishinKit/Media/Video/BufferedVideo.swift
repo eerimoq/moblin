@@ -22,6 +22,10 @@ class BufferedVideo {
         driftTracker = DriftTracker(media: "video", name: name, targetFillLevel: latency)
     }
 
+    deinit {
+        processor?.delegate?.streamVideoBufferedVideoRemoved(cameraId: cameraId)
+    }
+
     func setTargetLatency(latency: Double) {
         driftTracker.setTargetFillLevel(targetFillLevel: latency)
     }
@@ -67,7 +71,7 @@ class BufferedVideo {
             sampleBuffer = inputSampleBuffer
             sampleBuffers.removeFirst()
             numberOfBuffersConsumed += 1
-            isInitialBuffering = false
+            markInitialBufferingComplete()
         }
         if logger.debugEnabled, !isInitialBuffering {
             let lastPresentationTimeStamp = sampleBuffers.last?.presentationTimeStamp.seconds ?? 0.0
@@ -104,6 +108,13 @@ class BufferedVideo {
                 processor?.setBufferedAudioDrift(cameraId: cameraId, drift: drift)
             }
         }
+    }
+
+    private func markInitialBufferingComplete() {
+        if isInitialBuffering {
+            processor?.delegate?.streamVideoBufferedVideoReady(cameraId: cameraId)
+        }
+        isInitialBuffering = false
     }
 
     func setLatestSampleBuffer(_ sampleBuffer: CMSampleBuffer?) {

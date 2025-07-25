@@ -710,6 +710,25 @@ extension Model {
         makeErrorToastMain(title: message, subTitle: videoCaptureError())
     }
 
+    private func handleBufferedVideoReady(cameraId: UUID) {
+        DispatchQueue.main.async {
+            self.activeBufferedVideoIds.insert(cameraId)
+            self.updateDisconnectProtectionVideoSourceConnected()
+        }
+    }
+
+    private func handleBufferedVideoRemoved(cameraId: UUID) {
+        DispatchQueue.main.async {
+            self.activeBufferedVideoIds.remove(cameraId)
+            if let scene = self.getSelectedScene(),
+               self.isSceneVideoSourceNetwork(scene: scene, cameraId: cameraId)
+            {
+                self.updateAutoSceneSwitcherVideoSourceDisconnected()
+            }
+            self.updateDisconnectProtectionVideoSourceDisconnected()
+        }
+    }
+
     private func handleRecorderFinished() {}
 
     private func handleNoTorch() {
@@ -940,6 +959,14 @@ extension Model: MediaDelegate {
 
     func mediaOnCaptureSessionError(_ message: String) {
         handleCaptureSessionError(message: message)
+    }
+
+    func mediaOnBufferedVideoReady(cameraId: UUID) {
+        handleBufferedVideoReady(cameraId: cameraId)
+    }
+
+    func mediaOnBufferedVideoRemoved(cameraId: UUID) {
+        handleBufferedVideoRemoved(cameraId: cameraId)
     }
 
     func mediaOnRecorderInitSegment(data: Data) {

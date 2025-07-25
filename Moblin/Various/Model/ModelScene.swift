@@ -966,27 +966,28 @@ extension Model {
     func isSceneVideoSourceActive(scene: SettingsScene) -> Bool {
         switch scene.cameraPosition {
         case .rtmp:
-            if let stream = getRtmpStream(id: scene.rtmpCameraId) {
-                return isRtmpStreamConnected(streamKey: stream.streamKey)
-            } else {
-                return false
-            }
+            return activeBufferedVideoIds.contains(scene.rtmpCameraId)
         case .srtla:
-            if let stream = getSrtlaStream(id: scene.srtlaCameraId) {
-                return isSrtlaStreamConnected(streamId: stream.streamId)
-            } else {
-                return false
-            }
+            return activeBufferedVideoIds.contains(scene.srtlaCameraId)
         case .rist:
-            if let stream = getRistStream(id: scene.ristCameraId) {
-                return isRistStreamConnected(port: stream.port)
-            } else {
-                return false
-            }
+            return activeBufferedVideoIds.contains(scene.ristCameraId)
         case .external:
             return isExternalCameraConnected(id: scene.externalCameraId)
         default:
             return true
+        }
+    }
+
+    func isSceneVideoSourceNetwork(scene: SettingsScene, cameraId: UUID) -> Bool {
+        switch scene.cameraPosition {
+        case .rtmp:
+            return cameraId == scene.rtmpCameraId
+        case .srtla:
+            return cameraId == scene.srtlaCameraId
+        case .rist:
+            return cameraId == scene.ristCameraId
+        default:
+            return false
         }
     }
 
