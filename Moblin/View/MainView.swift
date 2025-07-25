@@ -144,6 +144,10 @@ private struct MenuView: View {
                                                    shortcut: true)
                 }
             }
+        case .streamingButtonSettings:
+            NavigationStack {
+                StreamButtonsSettingsView(database: model.database)
+            }
         case .none:
             EmptyView()
         }

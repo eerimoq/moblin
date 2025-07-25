@@ -22,38 +22,40 @@ private struct EndButtonView: View {
     @State private var isPresentingStopConfirm = false
 
     var body: some View {
-        Button {
-            isPresentingStopConfirm = true
-        } label: {
-            StreamButtonText(database: model.database, text: String(localized: "End"))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 10)
-                        .stroke(.white)
-                )
-        }
-        .confirmationDialog("", isPresented: $isPresentingGoLiveNotificationConfirm) {
-            Button("Send Go live notification") {
-                model.sendGoLiveNotification()
+        StreamButtonText(database: model.database, text: String(localized: "End"))
+            .overlay(
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(.white)
+            )
+            .onTapGesture {
+                isPresentingStopConfirm = true
             }
-        }
-        .confirmationDialog("", isPresented: $isPresentingStopConfirm) {
-            if model.stream.obsAutoStopStream && model.stream.obsAutoStopRecording {
-                Button("End but leave OBS streaming and recording") {
-                    model.stopStream(stopObsStreamIfEnabled: false, stopObsRecordingIfEnabled: false)
-                }
-            } else if model.stream.obsAutoStopStream {
-                Button("End but leave OBS streaming") {
-                    model.stopStream(stopObsStreamIfEnabled: false)
-                }
-            } else if model.stream.obsAutoStopRecording {
-                Button("End but leave OBS recording") {
-                    model.stopStream(stopObsRecordingIfEnabled: false)
+            .onLongPressGesture {
+                model.toggleShowingPanel(type: nil, panel: .streamingButtonSettings)
+            }
+            .confirmationDialog("", isPresented: $isPresentingGoLiveNotificationConfirm) {
+                Button("Send Go live notification") {
+                    model.sendGoLiveNotification()
                 }
             }
-            Button("End") {
-                model.stopStream()
+            .confirmationDialog("", isPresented: $isPresentingStopConfirm) {
+                if model.stream.obsAutoStopStream && model.stream.obsAutoStopRecording {
+                    Button("End but leave OBS streaming and recording") {
+                        model.stopStream(stopObsStreamIfEnabled: false, stopObsRecordingIfEnabled: false)
+                    }
+                } else if model.stream.obsAutoStopStream {
+                    Button("End but leave OBS streaming") {
+                        model.stopStream(stopObsStreamIfEnabled: false)
+                    }
+                } else if model.stream.obsAutoStopRecording {
+                    Button("End but leave OBS recording") {
+                        model.stopStream(stopObsRecordingIfEnabled: false)
+                    }
+                }
+                Button("End") {
+                    model.stopStream()
+                }
             }
-        }
     }
 }
 
@@ -63,21 +65,23 @@ private struct GoLiveButtonView: View {
     @Binding var isPresentingGoLiveNotificationConfirm: Bool
 
     var body: some View {
-        Button {
-            isPresentingGoLiveConfirm = true
-        } label: {
-            StreamButtonText(database: model.database, text: String(localized: "Go Live"))
-        }
-        .confirmationDialog("", isPresented: $isPresentingGoLiveConfirm) {
-            Button("Go Live") {
-                model.startStream()
-                if model.isGoLiveNotificationConfigured() {
-                    isPresentingGoLiveNotificationConfirm = true
-                }
+        StreamButtonText(database: model.database, text: String(localized: "Go Live"))
+            .onTapGesture {
+                isPresentingGoLiveConfirm = true
             }
-        } message: {
-            Text("You are about to go live to '\(model.stream.name)'!")
-        }
+            .onLongPressGesture {
+                model.toggleShowingPanel(type: nil, panel: .streamingButtonSettings)
+            }
+            .confirmationDialog("", isPresented: $isPresentingGoLiveConfirm) {
+                Button("Go Live") {
+                    model.startStream()
+                    if model.isGoLiveNotificationConfigured() {
+                        isPresentingGoLiveNotificationConfirm = true
+                    }
+                }
+            } message: {
+                Text("You are about to go live to '\(model.stream.name)'!")
+            }
     }
 }
 
@@ -86,17 +90,19 @@ private struct SetupButtonView: View {
     @ObservedObject var createStreamWizard: CreateStreamWizard
 
     var body: some View {
-        Button {
-            model.resetWizard()
-            createStreamWizard.isPresentingSetup = true
-        } label: {
-            StreamButtonText(database: model.database, text: String(localized: "Setup"))
-        }
-        .sheet(isPresented: $createStreamWizard.isPresentingSetup) {
-            NavigationStack {
-                StreamWizardSettingsView(createStreamWizard: createStreamWizard)
+        StreamButtonText(database: model.database, text: String(localized: "Setup"))
+            .onTapGesture {
+                model.resetWizard()
+                createStreamWizard.isPresentingSetup = true
             }
-        }
+            .onLongPressGesture {
+                model.toggleShowingPanel(type: nil, panel: .streamingButtonSettings)
+            }
+            .sheet(isPresented: $createStreamWizard.isPresentingSetup) {
+                NavigationStack {
+                    StreamWizardSettingsView(createStreamWizard: createStreamWizard)
+                }
+            }
     }
 }
 

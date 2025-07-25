@@ -42,6 +42,7 @@ enum ShowingPanel {
     case connectionPriorities
     case autoSceneSwitcher
     case quickButtonSettings
+    case streamingButtonSettings
 
     func buttonsBackgroundColor() -> Color {
         if self == .chat {
