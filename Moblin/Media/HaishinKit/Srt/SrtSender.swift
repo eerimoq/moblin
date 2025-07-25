@@ -11,17 +11,17 @@ private let srtSocketId: UInt32 = 716_306_300
 private let srtIpUdpHeaderSize: UInt64 = 28
 
 private class SrtClock {
-    static let startTime = ContinuousClock.now
+    let startTime = ContinuousClock.now
 
-    static func now(now: ContinuousClock.Instant) -> Int64 {
-        return SrtClock.startTime.duration(to: now).microseconds
+    func now(now: ContinuousClock.Instant) -> Int64 {
+        return startTime.duration(to: now).microseconds
     }
 
-    static func timestamp() -> UInt32 {
+    func timestamp() -> UInt32 {
         return makeTimestamp(now: now(now: .now))
     }
 
-    static func makeTimestamp(now: Int64) -> UInt32 {
+    func makeTimestamp(now: Int64) -> UInt32 {
         return UInt32(truncatingIfNeeded: now)
     }
 }
@@ -52,10 +52,10 @@ private class AckAckPacket {
         data += Data(count: 4)
     }
 
-    func update(ackNumber: UInt32) {
+    func update(ackNumber: UInt32, timestamp: UInt32) {
         data.withUnsafeMutableBytes { pointer in
             pointer.writeUInt32(ackNumber, offset: 4)
-            pointer.writeUInt32(SrtClock.timestamp(), offset: 8)
+            pointer.writeUInt32(timestamp, offset: 8)
         }
     }
 
@@ -76,9 +76,9 @@ private class KeepAlivePacket {
                                                destinationSocketId: 0)
     }
 
-    func update() {
+    func update(timestamp: UInt32) {
         data.withUnsafeMutableBytes { pointer in
-            pointer.writeUInt32(SrtClock.timestamp(), offset: 8)
+            pointer.writeUInt32(timestamp, offset: 8)
         }
     }
 
@@ -118,7 +118,7 @@ private struct CommonControlPacketHeader {
 class SrtDataPacket {
     fileprivate var data: Data
     fileprivate var sequenceNumber: UInt32 = 0
-    fileprivate var createdAt: ContinuousClock.Instant = SrtClock.startTime
+    fileprivate var createdAt: ContinuousClock.Instant = .now
     fileprivate var retransmittedAt: ContinuousClock.Instant?
 
     init(payload: UnsafeRawBufferPointer) {
@@ -135,13 +135,17 @@ class SrtDataPacket {
         )
     }
 
-    fileprivate func setHeader(sequenceNumber: UInt32, now: ContinuousClock.Instant, destinationSrtSocketId: UInt32) {
+    fileprivate func setHeader(sequenceNumber: UInt32,
+                               now: ContinuousClock.Instant,
+                               timestamp: UInt32,
+                               destinationSrtSocketId: UInt32)
+    {
         self.sequenceNumber = sequenceNumber
         createdAt = now
         data.withUnsafeMutableBytes { (pointer: UnsafeMutableRawBufferPointer) in
             pointer.writeUInt32(sequenceNumber, offset: 0)
             pointer.writeUInt32(0xE000_0001, offset: 4)
-            pointer.writeUInt32(SrtClock.makeTimestamp(now: SrtClock.now(now: now)), offset: 8)
+            pointer.writeUInt32(timestamp, offset: 8)
             pointer.writeUInt32(destinationSrtSocketId, offset: 12)
         }
     }
@@ -197,6 +201,7 @@ class SrtSender {
     private let packetsInFlightDropThreshold: ContinuousClock.Duration
     private let packetsToSendDropThreshold: ContinuousClock.Duration
     private let leakyBucketSmoothingTime: ContinuousClock.Duration
+    private var clock = SrtClock()
 
     init(streamId: String, latency: UInt16) {
         self.streamId = streamId
@@ -209,6 +214,7 @@ class SrtSender {
 
     func start() {
         srtlaClientQueue.async {
+            self.clock = SrtClock()
             self.latestReceivedPacketTime = .now
             self.setState(state: .connecting)
             self.outputPacket(packet: self.createInductionHandshakePacket())
@@ -231,6 +237,7 @@ class SrtSender {
         }
         packet.setHeader(sequenceNumber: getNextSequenceNumber(),
                          now: now,
+                         timestamp: clock.makeTimestamp(now: clock.now(now: now)),
                          destinationSrtSocketId: peerDestinationSrtSocketId)
         packetsToSend.append(packet)
     }
@@ -359,7 +366,7 @@ class SrtSender {
         let writer = ByteWriter()
         writer.writeBytes(createCommonControlPacketHeader(type: .handshake,
                                                           typeSpecificInformation: 0,
-                                                          timestamp: SrtClock.timestamp(),
+                                                          timestamp: clock.timestamp(),
                                                           destinationSocketId: srtDestinationSocket))
         writer.writeUInt32(srtHandshakeVersion4)
         writer.writeUInt16(0)
@@ -381,7 +388,7 @@ class SrtSender {
         let writer = ByteWriter()
         writer.writeBytes(createCommonControlPacketHeader(type: .handshake,
                                                           typeSpecificInformation: 0,
-                                                          timestamp: SrtClock.timestamp(),
+                                                          timestamp: clock.timestamp(),
                                                           destinationSocketId: srtDestinationSocket))
         writer.writeUInt32(srtHandshakeVersion5)
         writer.writeUInt16(0)
@@ -478,7 +485,7 @@ class SrtSender {
     }
 
     private func handleKeepAlivePacket() {
-        keepAlivePacket.update()
+        keepAlivePacket.update(timestamp: clock.timestamp())
         outputPacket(packet: keepAlivePacket.data)
     }
 
@@ -492,7 +499,7 @@ class SrtSender {
             rttUs = try reader.readUInt32()
             updateSendRate(now: now)
             updatePerformanceData()
-            ackAckPacket.update(ackNumber: commonHeader.typeSpecificInformation)
+            ackAckPacket.update(ackNumber: commonHeader.typeSpecificInformation, timestamp: clock.timestamp())
             outputPacket(packet: ackAckPacket.data)
         }
     }
