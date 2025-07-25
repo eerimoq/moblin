@@ -353,7 +353,7 @@ class MpegTsReader {
                     switch hevcSei.payload {
                     case let .timeCode(timeCode):
                         let (timecode, frame) = timeCode.makeClock()
-                        logger.info("xxx Got H.265 SEI timecode \(timecode) (frame: \(frame))")
+                        logger.debug("xxx Got H.265 SEI timecode \(timecode) (frame: \(frame))")
                     }
                 default:
                     break
