@@ -173,7 +173,6 @@ private struct MainPageView: View {
     let quickButtons: QuickButtons
     let quickButtonsSettings: SettingsQuickButtons
     let cosmetics: Cosmetics
-    let createStreamWizard: CreateStreamWizard
     let width: Double
 
     var body: some View {
@@ -184,7 +183,7 @@ private struct MainPageView: View {
                      quickButtonsSettings: quickButtonsSettings,
                      page: 0,
                      width: width)
-            StreamButton(createStreamWizard: createStreamWizard)
+            StreamButton()
                 .padding([.top], 10)
                 .frame(width: width - 10)
         }
@@ -219,7 +218,6 @@ private struct PagesView: View {
                                      quickButtons: quickButtons,
                                      quickButtonsSettings: quickButtonsSettings,
                                      cosmetics: model.cosmetics,
-                                     createStreamWizard: model.createStreamWizard,
                                      width: width)
                         ForEach(1 ..< controlBarPages, id: \.self) { page in
                             if !quickButtons.pairs[page].isEmpty {
@@ -245,7 +243,6 @@ private struct PagesView: View {
                              quickButtons: quickButtons,
                              quickButtonsSettings: quickButtonsSettings,
                              cosmetics: model.cosmetics,
-                             createStreamWizard: model.createStreamWizard,
                              width: width)
                     .padding([.leading], 5)
             }

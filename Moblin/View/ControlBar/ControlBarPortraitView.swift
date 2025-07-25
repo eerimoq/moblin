@@ -165,7 +165,7 @@ private struct MainPageView: View {
                 .padding([.bottom, .trailing], 5)
                 .padding([.leading], 0)
                 IconAndSettingsView(cosmetics: model.cosmetics)
-                StreamButton(createStreamWizard: model.createStreamWizard)
+                StreamButton()
                     .padding([.top], 10)
                     .padding([.leading, .trailing], 5)
             }
