@@ -98,7 +98,7 @@ class RtmpStream {
         guard self.state != state else {
             return
         }
-        let oldState = state
+        let oldState = self.state
         self.state = state
         logger.info("rtmp: \(name): Stream state \(oldState) -> \(state)")
         if oldState == .publishing {
