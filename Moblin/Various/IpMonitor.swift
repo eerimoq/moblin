@@ -2,9 +2,9 @@ import Foundation
 import Network
 
 class IPMonitor {
-    enum IPType: String {
-        case ipv4 = "IPv4"
-        case ipv6 = "ipV6"
+    enum IPType {
+        case ipv4
+        case ipv6
 
         func formatAddress(_ address: String) -> String {
             switch self {
@@ -57,7 +57,9 @@ class IPMonitor {
         if getifaddrs(&ifaddr) == 0 {
             var ptr = ifaddr
             while ptr != nil {
-                defer { ptr = ptr?.pointee.ifa_next }
+                defer {
+                    ptr = ptr?.pointee.ifa_next
+                }
                 let interface = ptr?.pointee
                 let addrFamily = interface?.ifa_addr.pointee.sa_family
                 if addrFamily == UInt8(AF_INET) || addrFamily == UInt8(AF_INET6) {
