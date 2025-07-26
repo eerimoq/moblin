@@ -10,7 +10,7 @@ private struct DestinationView: View {
             Form {
                 Section {
                     NavigationLink {
-                        NameEditView(name: $destination.name)
+                        NameEditView(name: $destination.name, existingNames: stream.multiStreaming.destinations)
                     } label: {
                         TextItemView(name: String(localized: "Name"), value: destination.name)
                     }

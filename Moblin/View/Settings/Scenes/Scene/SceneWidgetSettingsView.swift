@@ -153,7 +153,7 @@ struct SceneWidgetSettingsView: View {
             }
             Section {
                 NavigationLink {
-                    WidgetSettingsView(widget: widget)
+                    WidgetSettingsView(database: model.database, widget: widget)
                 } label: {
                     Text("Widget")
                 }

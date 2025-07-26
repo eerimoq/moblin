@@ -87,11 +87,12 @@ private struct WizardView: View {
 
 private struct WidgetsSettingsItemView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var database: Database
     @ObservedObject var widget: SettingsWidget
 
     var body: some View {
         NavigationLink {
-            WidgetSettingsView(widget: widget)
+            WidgetSettingsView(database: database, widget: widget)
         } label: {
             Toggle(isOn: $widget.enabled) {
                 HStack {
@@ -118,7 +119,7 @@ struct WidgetsSettingsView: View {
     var body: some View {
         Section {
             ForEach(database.widgets) { widget in
-                WidgetsSettingsItemView(widget: widget)
+                WidgetsSettingsItemView(database: database, widget: widget)
             }
             .onMove { froms, to in
                 database.widgets.move(fromOffsets: froms, toOffset: to)

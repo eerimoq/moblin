@@ -108,13 +108,14 @@ private struct AutoSwitcherScenesSettingsView: View {
 
 private struct AutoSwitcherSettingsView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var autoSceneSwitchers: SettingsAutoSceneSwitchers
     @ObservedObject var autoSwitcher: SettingsAutoSceneSwitcher
 
     var body: some View {
         Form {
             Section {
                 NavigationLink {
-                    NameEditView(name: $autoSwitcher.name)
+                    NameEditView(name: $autoSwitcher.name, existingNames: autoSceneSwitchers.switchers)
                 } label: {
                     TextItemView(name: String(localized: "Name"), value: autoSwitcher.name)
                 }
@@ -136,11 +137,12 @@ private struct AutoSwitcherSettingsView: View {
 
 private struct AutoSwitcherSettingsItemView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var autoSceneSwitchers: SettingsAutoSceneSwitchers
     @ObservedObject var autoSwitcher: SettingsAutoSceneSwitcher
 
     var body: some View {
         NavigationLink {
-            AutoSwitcherSettingsView(autoSwitcher: autoSwitcher)
+            AutoSwitcherSettingsView(autoSceneSwitchers: autoSceneSwitchers, autoSwitcher: autoSwitcher)
         } label: {
             HStack {
                 DraggableItemPrefixView()
@@ -158,7 +160,7 @@ struct AutoSwitchersSettingsView: View {
     var body: some View {
         Section {
             ForEach(autoSceneSwitchers.switchers) { autoSwitcher in
-                AutoSwitcherSettingsItemView(autoSwitcher: autoSwitcher)
+                AutoSwitcherSettingsItemView(autoSceneSwitchers: autoSceneSwitchers, autoSwitcher: autoSwitcher)
             }
             .onMove { froms, to in
                 autoSceneSwitchers.switchers.move(fromOffsets: froms, toOffset: to)

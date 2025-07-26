@@ -460,7 +460,7 @@ class SettingsStreamMultiStreaming: Codable, ObservableObject {
     }
 }
 
-class SettingsStream: Codable, Identifiable, Equatable, ObservableObject {
+class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named {
     @Published var name: String
     var id: UUID = .init()
     var enabled: Bool = false

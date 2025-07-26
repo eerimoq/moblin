@@ -190,13 +190,14 @@ struct WidgetEffectsView: View {
 
 struct WidgetSettingsView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var database: Database
     @ObservedObject var widget: SettingsWidget
 
     var body: some View {
         Form {
             Section {
                 NavigationLink {
-                    NameEditView(name: $widget.name)
+                    NameEditView(name: $widget.name, existingNames: database.widgets)
                 } label: {
                     TextItemView(name: String(localized: "Name"), value: widget.name)
                 }

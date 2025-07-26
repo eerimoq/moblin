@@ -7,6 +7,7 @@ struct TextEditView: View {
     var capitalize: Bool = false
     var keyboardType: UIKeyboardType = .default
     var placeholder: String = ""
+    var onChange: ((String) -> String?)?
     var onSubmit: (String) -> Void
 
     var body: some View {
@@ -16,6 +17,7 @@ struct TextEditView: View {
                             capitalize: capitalize,
                             keyboardType: keyboardType,
                             placeholder: placeholder,
+                            onChange: onChange,
                             onSubmit: onSubmit)
     }
 }
@@ -28,11 +30,16 @@ struct TextEditBindingView: View {
     var capitalize: Bool = false
     var keyboardType: UIKeyboardType = .default
     var placeholder: String = ""
+    var onChange: ((String) -> String?)?
     var onSubmit: (String) -> Void
     @State private var changed = false
     @State private var submitted = false
+    @State private var errorMessage: String?
 
     private func submit() {
+        guard errorMessage == nil else {
+            return
+        }
         submitted = true
         value = value.trim()
         onSubmit(value)
@@ -47,6 +54,7 @@ struct TextEditBindingView: View {
                     .disableAutocorrection(true)
                     .onChange(of: value) { _ in
                         changed = true
+                        errorMessage = onChange?(value.trim())
                     }
                     .onSubmit {
                         submit()
@@ -60,6 +68,12 @@ struct TextEditBindingView: View {
                     }
             } footer: {
                 VStack(alignment: .leading) {
+                    if let errorMessage {
+                        Text(errorMessage)
+                            .bold()
+                            .foregroundColor(.red)
+                        Text("")
+                    }
                     ForEach(footers, id: \.self) { footer in
                         Text(footer)
                     }

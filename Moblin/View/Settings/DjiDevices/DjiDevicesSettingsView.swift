@@ -2,11 +2,12 @@ import SwiftUI
 
 private struct DjiDeviceSettingsWrapperView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var djiDevices: SettingsDjiDevices
     @ObservedObject var device: SettingsDjiDevice
 
     var body: some View {
         NavigationLink {
-            DjiDeviceSettingsView(device: device, status: model.statusTopRight)
+            DjiDeviceSettingsView(djiDevices: djiDevices, device: device, status: model.statusTopRight)
         } label: {
             HStack {
                 DraggableItemPrefixView()
@@ -33,7 +34,7 @@ struct DjiDevicesSettingsView: View {
             Section {
                 List {
                     ForEach(djiDevices.devices) { device in
-                        DjiDeviceSettingsWrapperView(device: device)
+                        DjiDeviceSettingsWrapperView(djiDevices: djiDevices, device: device)
                     }
                     .onMove { froms, to in
                         djiDevices.devices.move(fromOffsets: froms, toOffset: to)

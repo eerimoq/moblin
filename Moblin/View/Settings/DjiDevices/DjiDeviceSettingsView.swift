@@ -306,6 +306,7 @@ private struct DjiDeviceStartStopButtonSettingsView: View {
 
 struct DjiDeviceSettingsView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var djiDevices: SettingsDjiDevices
     @ObservedObject var device: SettingsDjiDevice
     @ObservedObject var status: StatusTopRight
 
@@ -316,9 +317,11 @@ struct DjiDeviceSettingsView: View {
     var body: some View {
         Form {
             Section {
-                TextEditNavigationView(title: "Name", value: device.name, onSubmit: {
-                    device.name = $0
-                })
+                NavigationLink {
+                    NameEditView(name: $device.name, existingNames: djiDevices.devices)
+                } label: {
+                    TextItemView(name: String(localized: "Name"), value: device.name)
+                }
             }
             DjiDeviceSelectDeviceSettingsView(device: device)
             DjiDeviceWiFiSettingsView(device: device)
