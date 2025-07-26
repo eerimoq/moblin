@@ -11,18 +11,14 @@ private let srtSocketId: UInt32 = 716_306_300
 private let srtIpUdpHeaderSize: UInt64 = 28
 
 private class SrtClock {
-    let startTime = ContinuousClock.now
-
-    func now(now: ContinuousClock.Instant) -> Int64 {
-        return startTime.duration(to: now).microseconds
-    }
+    private let startTime = ContinuousClock.now
 
     func timestamp() -> UInt32 {
-        return makeTimestamp(now: now(now: .now))
+        return timestamp(now: .now)
     }
 
-    func makeTimestamp(now: Int64) -> UInt32 {
-        return UInt32(truncatingIfNeeded: now)
+    func timestamp(now: ContinuousClock.Instant) -> UInt32 {
+        return UInt32(truncatingIfNeeded: startTime.duration(to: now).microseconds)
     }
 }
 
@@ -237,7 +233,7 @@ class SrtSender {
         }
         packet.setHeader(sequenceNumber: getNextSequenceNumber(),
                          now: now,
-                         timestamp: clock.makeTimestamp(now: clock.now(now: now)),
+                         timestamp: clock.timestamp(now: now),
                          destinationSrtSocketId: peerDestinationSrtSocketId)
         packetsToSend.append(packet)
     }
