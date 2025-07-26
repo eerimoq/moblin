@@ -124,12 +124,10 @@ struct StealthModeView: View {
             }
         }
         if quickButtons.blackScreenShowChat {
-            GeometryReader { metrics in
-                ChatOverlayView(chatSettings: model.database.chat,
-                                chat: model.chat,
-                                fullSize: true)
-                    .allowsHitTesting(model.chat.interactiveChat)
-            }
+            ChatOverlayView(chatSettings: model.database.chat,
+                            chat: model.chat,
+                            fullSize: true)
+                .allowsHitTesting(model.chat.interactiveChat)
         }
     }
 }
