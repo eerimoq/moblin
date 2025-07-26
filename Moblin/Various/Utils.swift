@@ -744,3 +744,17 @@ extension UnsafeRawBufferPointer {
         return value
     }
 }
+
+func makeUniqueName(name: String, existingNames: [String]) -> String {
+    if !existingNames.contains(name) {
+        return name
+    }
+    var number = 1
+    while true {
+        let nameCandidate = "\(name) \(number)"
+        if !existingNames.contains(nameCandidate) {
+            return nameCandidate
+        }
+        number += 1
+    }
+}
