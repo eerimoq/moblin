@@ -50,7 +50,6 @@ struct ChatOverlayView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var chatSettings: SettingsChat
     @ObservedObject var chat: ChatProvider
-    let height: CGFloat
     let fullSize: Bool
 
     var body: some View {
@@ -179,7 +178,6 @@ struct StreamOverlayView: View {
                     ChatOverlayView(
                         chatSettings: model.database.chat,
                         chat: model.chat,
-                        height: height,
                         fullSize: false
                     )
                     .opacity(model.database.chat.enabled ? 1 : 0)

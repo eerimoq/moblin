@@ -32,7 +32,7 @@ class MpegTsReader {
         self.decoderQueue = decoderQueue
         self.timecodesEnabled = timecodesEnabled
         self.targetLatency = targetLatency
-        self.targetLatenciesSynchronizer = TargetLatenciesSynchronizer(targetLatency: targetLatency)
+        targetLatenciesSynchronizer = TargetLatenciesSynchronizer(targetLatency: targetLatency)
     }
 
     func handlePacketFromClient(packet: Data) throws {

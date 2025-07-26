@@ -556,23 +556,6 @@ private struct PhoneCoolerDeviceStatusView: View {
     }
 }
 
-private struct LowPowerModeStatusView: View {
-    let model: Model
-    @ObservedObject var status: StatusTopRight
-    let textPlacement: StreamOverlayIconAndTextPlacement
-
-    var body: some View {
-        if status.isLowPowerMode {
-            StreamOverlayIconAndTextView(
-                icon: "flame",
-                text: "Low power mode",
-                textPlacement: textPlacement,
-                color: .red
-            )
-        }
-    }
-}
-
 private struct StatusesView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var show: SettingsShow
@@ -674,7 +657,6 @@ private struct StatusesView: View {
 private struct AudioView: View {
     let model: Model
     @ObservedObject var show: SettingsShow
-    let textPlacement: StreamOverlayIconAndTextPlacement
 
     var body: some View {
         if show.audioLevel {
@@ -694,7 +676,7 @@ struct RightOverlayTopView: View {
         VStack(alignment: .trailing, spacing: 1) {
             VStack(alignment: .trailing, spacing: 1) {
                 if database.verboseStatuses {
-                    AudioView(model: model, show: database.show, textPlacement: .beforeIcon)
+                    AudioView(model: model, show: database.show)
                     StatusesView(show: database.show, status: model.statusTopRight, textPlacement: .beforeIcon)
                 } else {
                     HStack(spacing: 1) {

@@ -135,14 +135,6 @@ private struct ReplayControls: View {
     @EnvironmentObject var model: Model
     @ObservedObject var replay: ReplayProvider
 
-    private func playStopImage() -> String {
-        if replay.isPlaying {
-            return "stop"
-        } else {
-            return "play"
-        }
-    }
-
     private func portrait() -> some View {
         VStack(alignment: .trailing) {
             HStack {
