@@ -8,6 +8,25 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "26.2002.0", date: "2025-07-26", changes: [
+        "• Audio encoding refactoring, which removes untested support for interleaved big endian audio.",
+        "• Simple server side disconnect protection. 💡 MediaTech and others",
+        "  • Configure live and fallback scenes in Settings -> Scenes.",
+        "• Korean translation updated. ✍️ 위인터",
+        "• Less frame dropping when doing PIP with face tracking. 🐛 xcopy94",
+        "• Make RTMP, SRT(LA) and RIST mics selectable earlier (when publisher connects).",
+        "• Fix go live button color not changing when changing it in settings.",
+        "• Timecodes in RIST.",
+        "• Long press go live button to open its settings.",
+        "• Make CPU update in debug overlay after pressing Portrait quick button.",
+        "• Fix RTMP streaming to YouTube and possible other servers. 🐛 DMNK and Baumkobold",
+        "• Make new SRT work with gosrt. Always start timestamps at zero. 🐛 iplayinsd",
+        "• Make more than one streaming session to the RIST server work.",
+        "• Fix RIST server latency.",
+        "  • Was using a mix of 0.5 and 2 seconds instead of plain 2.",
+        "• Improved RTMP/SRT(LA)/RIST server timings.",
+        "  • To auto switch to such a camera when video and audio is likely ready to show on stream.",
+    ]),
     Version(version: "26.2001.1", date: "2025-07-25", changes: [
         "• Fix RTMP streaming to YouTube and possible other servers. 🐛 DMNK and Baumkobold",
     ]),
