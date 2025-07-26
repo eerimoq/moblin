@@ -11,7 +11,9 @@ class SrtServerClient {
     init(server: SrtServer, streamId: String, timecodesEnabled: Bool) {
         self.server = server
         self.streamId = streamId
-        reader = MpegTsReader(decoderQueue: srtlaServerQueue, timecodesEnabled: timecodesEnabled)
+        reader = MpegTsReader(decoderQueue: srtlaServerQueue,
+                              timecodesEnabled: timecodesEnabled,
+                              targetLatency: srtServerClientLatency)
         reader.delegate = self
     }
 

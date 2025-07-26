@@ -22,15 +22,17 @@ class MpegTsReader {
     private var audioDecoder: AVAudioConverter?
     private var pcmAudioFormat: AVAudioFormat?
     private var videoDecoder: VideoDecoder?
-    private var targetLatenciesSynchronizer =
-        TargetLatenciesSynchronizer(targetLatency: srtServerClientLatency)
+    private let targetLatenciesSynchronizer: TargetLatenciesSynchronizer
     private let timecodesEnabled: Bool
+    private let targetLatency: Double
     weak var delegate: MpegTsReaderDelegate?
     private let decoderQueue: DispatchQueue
 
-    init(decoderQueue: DispatchQueue, timecodesEnabled: Bool) {
+    init(decoderQueue: DispatchQueue, timecodesEnabled: Bool, targetLatency: Double) {
         self.decoderQueue = decoderQueue
         self.timecodesEnabled = timecodesEnabled
+        self.targetLatency = targetLatency
+        self.targetLatenciesSynchronizer = TargetLatenciesSynchronizer(targetLatency: targetLatency)
     }
 
     func handlePacketFromClient(packet: Data) throws {
@@ -379,7 +381,7 @@ class MpegTsReader {
 
     private func getBasePresentationTimeStamp() -> CMTime {
         if basePresentationTimeStamp == .invalid {
-            let latency = CMTime(seconds: srtServerClientLatency)
+            let latency = CMTime(seconds: targetLatency)
             basePresentationTimeStamp = currentPresentationTimeStamp() + latency
         }
         return basePresentationTimeStamp

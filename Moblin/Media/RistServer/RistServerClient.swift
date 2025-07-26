@@ -1,10 +1,14 @@
 import AVFoundation
 import Rist
 
+let ristServerClientLatency = 2.0
+
 class RistServerClient {
     private let context: RistReceiverContext
     weak var server: RistServer?
-    private var reader = MpegTsReader(decoderQueue: ristServerQueue, timecodesEnabled: false)
+    private var reader = MpegTsReader(decoderQueue: ristServerQueue,
+                                      timecodesEnabled: false,
+                                      targetLatency: ristServerClientLatency)
     private let port: UInt16
     private let timecodesEnabled: Bool
     private var receivedPackets: [Data] = []
@@ -39,7 +43,9 @@ extension RistServerClient: RistReceiverContextDelegate {
     func ristReceiverContextConnected(_: Rist.RistReceiverContext) {
         receivedPackets = []
         ristServerQueue.async {
-            self.reader = MpegTsReader(decoderQueue: ristServerQueue, timecodesEnabled: self.timecodesEnabled)
+            self.reader = MpegTsReader(decoderQueue: ristServerQueue,
+                                       timecodesEnabled: self.timecodesEnabled,
+                                       targetLatency: ristServerClientLatency)
             self.reader.delegate = self
             self.server?.numberOfConnectedClients += 1
             self.server?.delegate?.ristServerOnConnected(port: self.port)

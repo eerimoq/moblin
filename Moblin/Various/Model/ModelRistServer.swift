@@ -95,9 +95,8 @@ extension Model: RistServerDelegate {
         }
         makeToast(title: String(localized: "\(stream.camera()) connected"))
         let name = "RIST \(stream.camera())"
-        let latency = 2000.0
-        media.addBufferedVideo(cameraId: stream.id, name: name, latency: latency)
-        media.addBufferedAudio(cameraId: stream.id, name: name, latency: latency)
+        media.addBufferedVideo(cameraId: stream.id, name: name, latency: ristServerClientLatency)
+        media.addBufferedAudio(cameraId: stream.id, name: name, latency: ristServerClientLatency)
         stream.connected = true
         markMicAsConnected(id: "\(stream.id) 0")
         DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
