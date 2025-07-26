@@ -80,28 +80,50 @@ private struct RefreshHomeView: View {
     }
 }
 
+private struct BookmarksToolbar: ToolbarContent {
+    @Binding var showingBookmarks: Bool
+
+    var body: some ToolbarContent {
+        ToolbarItem(placement: .navigationBarTrailing) {
+            HStack {
+                Button {
+                    showingBookmarks = false
+                } label: {
+                    Text("Close")
+                }
+            }
+        }
+    }
+}
+
 private struct BookmarksView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var webBrowser: WebBrowserSettings
     @Binding var showingBookmarks: Bool
 
     var body: some View {
-        VStack {
+        NavigationStack {
             Form {
                 Section {
                     List {
                         ForEach(webBrowser.bookmarks) { bookmark in
-                            Button(bookmark.url) {
-                                model.loadWebBrowserPage(url: bookmark.url)
-                                showingBookmarks = false
+                            HStack {
+                                DraggableItemPrefixView()
+                                Button {
+                                    model.loadWebBrowserPage(url: bookmark.url)
+                                    showingBookmarks = false
+                                } label: {
+                                    Text(bookmark.url)
+                                }
                             }
                         }
                         .onDelete {
                             webBrowser.bookmarks.remove(atOffsets: $0)
                         }
+                        .onMove { froms, to in
+                            webBrowser.bookmarks.move(fromOffsets: froms, toOffset: to)
+                        }
                     }
-                } header: {
-                    Text("Bookmarks")
                 } footer: {
                     SwipeLeftToDeleteHelpView(kind: "a bookmark")
                 }
@@ -117,8 +139,9 @@ private struct BookmarksView: View {
                     }
                 }
             }
-            HCenter {
-                Text("Swipe down to close")
+            .navigationTitle("Bookmarks")
+            .toolbar {
+                BookmarksToolbar(showingBookmarks: $showingBookmarks)
             }
         }
     }
