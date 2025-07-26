@@ -276,6 +276,7 @@
 		036E1D3C2E30090A002818EA /* LocalListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036E1D3B2E30090A002818EA /* LocalListener.swift */; };
 		03708D162B83C39B009C88AA /* StreamRtmpSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03708D152B83C39B009C88AA /* StreamRtmpSettingsView.swift */; };
 		037132CE2C29FEFD00393605 /* WidgetTextSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 037132CD2C29FEFD00393605 /* WidgetTextSettingsView.swift */; };
+		0371385E2E34E7BD00E3AA97 /* ModelWebBrowser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0371385D2E34E7B700E3AA97 /* ModelWebBrowser.swift */; };
 		03762FE12D780DE5003BD2E2 /* ExternalDisplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03762FE02D780DE0003BD2E2 /* ExternalDisplayView.swift */; };
 		03762FE32D797A95003BD2E2 /* WebBrowserController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03762FE22D797A94003BD2E2 /* WebBrowserController.swift */; };
 		0376F6F92B9511030056B3D2 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0376F6F82B9511030056B3D2 /* WidgetKit.framework */; };
@@ -986,6 +987,7 @@
 		036E1D3B2E30090A002818EA /* LocalListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalListener.swift; sourceTree = "<group>"; };
 		03708D152B83C39B009C88AA /* StreamRtmpSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamRtmpSettingsView.swift; sourceTree = "<group>"; };
 		037132CD2C29FEFD00393605 /* WidgetTextSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetTextSettingsView.swift; sourceTree = "<group>"; };
+		0371385D2E34E7B700E3AA97 /* ModelWebBrowser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelWebBrowser.swift; sourceTree = "<group>"; };
 		03762FE02D780DE0003BD2E2 /* ExternalDisplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExternalDisplayView.swift; sourceTree = "<group>"; };
 		03762FE22D797A94003BD2E2 /* WebBrowserController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebBrowserController.swift; sourceTree = "<group>"; };
 		0376F6F72B9511030056B3D2 /* MoblinWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MoblinWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -2959,6 +2961,7 @@
 				032F81BD2DDCF27400E14CC5 /* ModelTextToSpeech.swift */,
 				03BA73B62DDCD84600075CD6 /* ModelTwitch.swift */,
 				030FF8832E144CDC0004A695 /* ModelYouTube.swift */,
+				0371385D2E34E7B700E3AA97 /* ModelWebBrowser.swift */,
 				03E8D69E2DDE2E2A0080BEB4 /* ModelZoom.swift */,
 			);
 			path = Model;
@@ -3925,6 +3928,7 @@
 				030EFE752BDAD7C7004208B6 /* SwipeLeftToDeleteHelpView.swift in Sources */,
 				03A3F4C72AF4C0AD00F465D1 /* AdaptiveBitrate.swift in Sources */,
 				03E3637F2DB026BA007A3CBB /* QuickButtonGoProView.swift in Sources */,
+				0371385E2E34E7BD00E3AA97 /* ModelWebBrowser.swift in Sources */,
 				038DF9ED2B387AAF0027363A /* StreamWizardYouTubeSettingsView.swift in Sources */,
 				030621EC2D862989001EE50B /* DjiDeviceMessage.swift in Sources */,
 				035F64F82E26DF7F00700EE6 /* HevcNalUnitPps.swift in Sources */,
