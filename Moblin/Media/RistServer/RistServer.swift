@@ -78,6 +78,9 @@ class RistServer {
     private func stopInner() {
         logger.info("rist-server: Stopping")
         numberOfConnectedClients = 0
+        for client in clients {
+            client.stop()
+        }
         clients.removeAll()
     }
 }

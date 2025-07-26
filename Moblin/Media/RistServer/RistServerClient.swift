@@ -13,6 +13,7 @@ class RistServerClient {
     private let timecodesEnabled: Bool
     private var receivedPackets: [Data] = []
     private var latestReceivedPacketsTime = ContinuousClock.now
+    private var connected = false
 
     init?(port: UInt16, timecodesEnabled: Bool) {
         self.port = port
@@ -27,7 +28,16 @@ class RistServerClient {
     }
 
     func start() {
+        connected = false
         _ = context.start()
+    }
+
+    func stop() {
+        guard connected else {
+            return
+        }
+        connected = false
+        server?.delegate?.ristServerOnDisconnected(port: port, reason: "")
     }
 
     private func handlePacketFromClient(packet: Data) {
@@ -43,6 +53,7 @@ extension RistServerClient: RistReceiverContextDelegate {
     func ristReceiverContextConnected(_: Rist.RistReceiverContext) {
         receivedPackets = []
         ristServerQueue.async {
+            self.connected = true
             self.reader = MpegTsReader(decoderQueue: ristServerQueue,
                                        timecodesEnabled: self.timecodesEnabled,
                                        targetLatency: ristServerClientLatency)
@@ -54,6 +65,7 @@ extension RistServerClient: RistReceiverContextDelegate {
 
     func ristReceiverContextDisconnected(_: Rist.RistReceiverContext) {
         ristServerQueue.async {
+            self.connected = false
             self.server?.numberOfConnectedClients -= 1
             self.server?.delegate?.ristServerOnDisconnected(port: self.port, reason: "")
         }
