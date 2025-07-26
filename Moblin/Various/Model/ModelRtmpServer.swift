@@ -32,10 +32,6 @@ extension Model {
         }
     }
 
-    func isRtmpStreamConnected(camera _: String) -> Bool {
-        return false
-    }
-
     func isRtmpStreamConnected(streamKey: String) -> Bool {
         return servers.rtmp?.isStreamConnected(streamKey: streamKey) ?? false
     }
