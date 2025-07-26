@@ -93,15 +93,10 @@ extension Model: RistServerDelegate {
         guard let stream = getRistStream(port: port) else {
             return
         }
-        makeToast(title: String(localized: "\(stream.camera()) connected"))
-        let name = "RIST \(stream.camera())"
-        media.addBufferedVideo(cameraId: stream.id, name: name, latency: ristServerClientLatency)
-        media.addBufferedAudio(cameraId: stream.id, name: name, latency: ristServerClientLatency)
-        stream.connected = true
-        markMicAsConnected(id: "\(stream.id) 0")
-        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-            self.switchMicIfNeededAfterNetworkCameraChange()
-        }
+        let camera = stream.camera()
+        makeToast(title: String(localized: "\(camera) connected"))
+        media.addBufferedVideo(cameraId: stream.id, name: camera, latency: ristServerClientLatency)
+        media.addBufferedAudio(cameraId: stream.id, name: camera, latency: ristServerClientLatency)
     }
 
     private func ristServerOnDisconnectedInner(port: UInt16, reason _: String) {
@@ -111,8 +106,5 @@ extension Model: RistServerDelegate {
         makeToast(title: String(localized: "\(stream.camera()) disconnected"))
         media.removeBufferedVideo(cameraId: stream.id)
         media.removeBufferedAudio(cameraId: stream.id)
-        stream.connected = false
-        markMicAsDisconnected(id: "\(stream.id) 0")
-        switchMicIfNeededAfterNetworkCameraChange()
     }
 }

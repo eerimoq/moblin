@@ -978,7 +978,10 @@ extension Model {
         }
     }
 
-    func isSceneVideoSourceNetwork(scene: SettingsScene, cameraId: UUID) -> Bool {
+    func isCurrentScenesVideoSourceNetwork(cameraId: UUID) -> Bool {
+        guard let scene = getSelectedScene() else {
+            return false
+        }
         switch scene.cameraPosition {
         case .rtmp:
             return cameraId == scene.rtmpCameraId

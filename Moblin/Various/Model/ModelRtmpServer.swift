@@ -50,21 +50,15 @@ extension Model {
 
     func handleRtmpServerPublishStart(streamKey: String) {
         DispatchQueue.main.async {
-            let camera = self.getRtmpStream(streamKey: streamKey)?.camera() ?? rtmpCamera(name: "Unknown")
-            self.makeToast(title: String(localized: "\(camera) connected"))
             guard let stream = self.getRtmpStream(streamKey: streamKey) else {
                 return
             }
-            let name = "RTMP \(camera)"
+            let camera = stream.camera()
+            self.makeToast(title: String(localized: "\(camera) connected"))
             let latency = Double(stream.latency) / 1000.0
-            self.media.addBufferedVideo(cameraId: stream.id, name: name, latency: latency)
-            self.media.addBufferedAudio(cameraId: stream.id, name: name, latency: latency)
+            self.media.addBufferedVideo(cameraId: stream.id, name: camera, latency: latency)
+            self.media.addBufferedAudio(cameraId: stream.id, name: camera, latency: latency)
             self.markDjiIsStreamingIfNeeded(rtmpServerStreamId: stream.id)
-            stream.connected = true
-            self.markMicAsConnected(id: "\(stream.id) 0")
-            DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-                self.switchMicIfNeededAfterNetworkCameraChange()
-            }
         }
     }
 
@@ -84,8 +78,6 @@ extension Model {
         }
         media.removeBufferedVideo(cameraId: stream.id)
         media.removeBufferedAudio(cameraId: stream.id)
-        stream.connected = false
-        markMicAsDisconnected(id: "\(stream.id) 0")
         for device in database.djiDevices.devices {
             guard device.rtmpUrlType == .server, device.serverRtmpStreamId == stream.id else {
                 continue

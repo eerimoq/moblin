@@ -711,22 +711,46 @@ extension Model {
     }
 
     private func handleBufferedVideoReady(cameraId: UUID) {
-        DispatchQueue.main.async {
-            self.activeBufferedVideoIds.insert(cameraId)
-            self.updateDisconnectProtectionVideoSourceConnected()
+        activeBufferedVideoIds.insert(cameraId)
+        var isNetwork = false
+        if let stream = getRtmpStream(id: cameraId) {
+            isNetwork = true
+            stream.connected = true
+        } else if let stream = getSrtlaStream(id: cameraId) {
+            isNetwork = true
+            stream.connected = true
+        } else if let stream = getRistStream(id: cameraId) {
+            isNetwork = true
+            stream.connected = true
         }
+        if isNetwork {
+            markMicAsConnected(id: "\(cameraId) 0")
+            switchMicIfNeededAfterNetworkCameraChange()
+        }
+        updateDisconnectProtectionVideoSourceConnected()
     }
 
     private func handleBufferedVideoRemoved(cameraId: UUID) {
-        DispatchQueue.main.async {
-            self.activeBufferedVideoIds.remove(cameraId)
-            if let scene = self.getSelectedScene(),
-               self.isSceneVideoSourceNetwork(scene: scene, cameraId: cameraId)
-            {
-                self.updateAutoSceneSwitcherVideoSourceDisconnected()
-            }
-            self.updateDisconnectProtectionVideoSourceDisconnected()
+        activeBufferedVideoIds.remove(cameraId)
+        var isNetwork = false
+        if let stream = getRtmpStream(id: cameraId) {
+            isNetwork = true
+            stream.connected = false
+        } else if let stream = getSrtlaStream(id: cameraId) {
+            isNetwork = true
+            stream.connected = false
+        } else if let stream = getRistStream(id: cameraId) {
+            isNetwork = true
+            stream.connected = false
         }
+        if isNetwork {
+            markMicAsDisconnected(id: "\(cameraId) 0")
+            switchMicIfNeededAfterNetworkCameraChange()
+            if isCurrentScenesVideoSourceNetwork(cameraId: cameraId) {
+                updateAutoSceneSwitcherVideoSourceDisconnected()
+            }
+        }
+        updateDisconnectProtectionVideoSourceDisconnected()
     }
 
     private func handleRecorderFinished() {}
@@ -962,11 +986,15 @@ extension Model: MediaDelegate {
     }
 
     func mediaOnBufferedVideoReady(cameraId: UUID) {
-        handleBufferedVideoReady(cameraId: cameraId)
+        DispatchQueue.main.async {
+            self.handleBufferedVideoReady(cameraId: cameraId)
+        }
     }
 
     func mediaOnBufferedVideoRemoved(cameraId: UUID) {
-        handleBufferedVideoRemoved(cameraId: cameraId)
+        DispatchQueue.main.async {
+            self.handleBufferedVideoRemoved(cameraId: cameraId)
+        }
     }
 
     func mediaOnRecorderInitSegment(data: Data) {
