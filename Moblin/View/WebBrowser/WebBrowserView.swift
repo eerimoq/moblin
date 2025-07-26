@@ -125,7 +125,7 @@ private struct BookmarksView: View {
                         }
                     }
                 } footer: {
-                    SwipeLeftToDeleteHelpView(kind: "a bookmark")
+                    SwipeLeftToDeleteHelpView(kind: String(localized: "a bookmark"))
                 }
                 Section {
                     Button {
