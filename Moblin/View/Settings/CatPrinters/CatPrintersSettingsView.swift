@@ -54,7 +54,7 @@ struct CatPrintersSettingsView: View {
                 }
                 CreateButtonView {
                     let device = SettingsCatPrinter()
-                    device.name = "My printer"
+                    device.name = makeUniqueName(name: "My printer", existingNames: catPrinters.devices)
                     catPrinters.devices.append(device)
                 }
             } footer: {

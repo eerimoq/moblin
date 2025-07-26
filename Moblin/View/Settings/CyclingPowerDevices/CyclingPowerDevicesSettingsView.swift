@@ -37,7 +37,8 @@ struct CyclingPowerDevicesSettingsView: View {
                 }
                 CreateButtonView {
                     let device = SettingsCyclingPowerDevice()
-                    device.name = "My device"
+                    device.name = makeUniqueName(name: "My device",
+                                                 existingNames: model.database.cyclingPowerDevices.devices)
                     model.database.cyclingPowerDevices.devices.append(device)
                     model.objectWillChange.send()
                 }

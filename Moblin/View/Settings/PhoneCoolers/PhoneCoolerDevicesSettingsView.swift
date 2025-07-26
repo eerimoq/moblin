@@ -29,7 +29,7 @@ struct PhoneCoolerDevicesSettingsView: View {
                 }
                 CreateButtonView {
                     let device = SettingsPhoneCoolerDevice()
-                    device.name = "My cooler"
+                    device.name = makeUniqueName(name: "My cooler", existingNames: phoneCoolerDevices.devices)
                     phoneCoolerDevices.devices.append(device)
                 }
             } footer: {

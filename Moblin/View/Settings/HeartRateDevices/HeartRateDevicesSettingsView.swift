@@ -42,7 +42,10 @@ struct HeartRateDevicesSettingsView: View {
                 }
                 CreateButtonView {
                     let device = SettingsHeartRateDevice()
-                    device.name = "My device"
+                    device.name = makeUniqueName(
+                        name: "My device",
+                        existingNames: model.database.heartRateDevices.devices
+                    )
                     model.database.heartRateDevices.devices.append(device)
                     model.objectWillChange.send()
                 }

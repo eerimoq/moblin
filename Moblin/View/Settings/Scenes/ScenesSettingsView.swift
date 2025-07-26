@@ -56,7 +56,9 @@ private struct ScenesListView: View {
                 }
             }
             CreateButtonView {
-                database.scenes.append(SettingsScene(name: String(localized: "My scene")))
+                let name = makeUniqueName(name: SettingsScene.nameBase, existingNames: database.scenes)
+                let scene = SettingsScene(name: name)
+                database.scenes.append(scene)
                 model.resetSelectedScene()
             }
         } header: {

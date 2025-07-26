@@ -69,6 +69,7 @@ struct RtmpServerSettingsView: View {
                 }
                 CreateButtonView {
                     let stream = SettingsRtmpServerStream()
+                    stream.name = makeUniqueName(name: "My stream", existingNames: rtmpServer.streams)
                     while true {
                         stream.streamKey = randomHumanString()
                         if model.getRtmpStream(streamKey: stream.streamKey) == nil {

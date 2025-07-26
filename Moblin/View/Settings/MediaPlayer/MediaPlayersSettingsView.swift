@@ -28,9 +28,10 @@ struct MediaPlayersSettingsView: View {
                     }
                 }
                 CreateButtonView {
-                    let settings = SettingsMediaPlayer()
-                    mediaPlayers.players.append(settings)
-                    model.addMediaPlayer(settings: settings)
+                    let mediaPlayer = SettingsMediaPlayer()
+                    mediaPlayer.name = makeUniqueName(name: "My player", existingNames: mediaPlayers.players)
+                    mediaPlayers.players.append(mediaPlayer)
+                    model.addMediaPlayer(settings: mediaPlayer)
                 }
             }
         }

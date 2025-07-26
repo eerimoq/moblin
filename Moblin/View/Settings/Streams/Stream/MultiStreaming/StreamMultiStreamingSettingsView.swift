@@ -77,7 +77,12 @@ struct StreamMultiStreamingSettingsView: View {
                         }
                     }
                     CreateButtonView {
-                        multiStreaming.destinations.append(SettingsStreamMultiStreamingDestination())
+                        let destination = SettingsStreamMultiStreamingDestination()
+                        destination.name = makeUniqueName(
+                            name: "My destination",
+                            existingNames: multiStreaming.destinations
+                        )
+                        multiStreaming.destinations.append(destination)
                     }
                     .disabled(stream.enabled && (model.isLive || model.isRecording))
                 } footer: {

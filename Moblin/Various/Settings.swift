@@ -396,7 +396,7 @@ class SettingsStreamTwitchReward: Codable, Identifiable {
     var alert: SettingsWidgetAlertsAlert = .init()
 }
 
-class SettingsStreamMultiStreamingDestination: Codable, Identifiable, ObservableObject {
+class SettingsStreamMultiStreamingDestination: Codable, Identifiable, ObservableObject, Named {
     var id: UUID = .init()
     @Published var name: String = "My destination"
     @Published var url: String = defaultRtmpStreamUrl
@@ -952,7 +952,8 @@ enum SettingsCameraId {
     case backWideDualLowEnergy
 }
 
-class SettingsScene: Codable, Identifiable, Equatable, ObservableObject {
+class SettingsScene: Codable, Identifiable, Equatable, ObservableObject, Named {
+    static let nameBase = String(localized: "My scene")
     @Published var name: String
     var id: UUID = .init()
     @Published var enabled: Bool = true
@@ -1151,7 +1152,7 @@ class SettingsAutoSceneSwitcherScene: Codable, Identifiable {
     var time: Int = 15
 }
 
-class SettingsAutoSceneSwitcher: Codable, Identifiable, ObservableObject {
+class SettingsAutoSceneSwitcher: Codable, Identifiable, ObservableObject, Named {
     var id: UUID = .init()
     @Published var name: String = "My switcher"
     var shuffle: Bool = false
@@ -2084,7 +2085,7 @@ enum SettingsWidgetScoreboardType: String, Codable, CaseIterable {
     }
 }
 
-class SettingsWidgetScoreboardPlayer: Codable, Identifiable {
+class SettingsWidgetScoreboardPlayer: Codable, Identifiable, Named {
     var id: UUID = .init()
     var name: String = "🇸🇪 Moblin"
 }
@@ -2634,7 +2635,7 @@ class SettingsWidgetPngTuber: Codable, ObservableObject {
     }
 }
 
-class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject {
+class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named {
     @Published var name: String
     var id: UUID = .init()
     var type: SettingsWidgetType = .browser
@@ -3996,7 +3997,7 @@ class SettingsDebug: Codable, ObservableObject {
     }
 }
 
-class SettingsRtmpServerStream: Codable, Identifiable, ObservableObject {
+class SettingsRtmpServerStream: Codable, Identifiable, ObservableObject, Named {
     var id: UUID = .init()
     @Published var name: String = "My stream"
     @Published var streamKey: String = ""
@@ -4085,7 +4086,7 @@ class SettingsRtmpServer: Codable, ObservableObject {
     }
 }
 
-class SettingsSrtlaServerStream: Codable, Identifiable, ObservableObject {
+class SettingsSrtlaServerStream: Codable, Identifiable, ObservableObject, Named {
     var id: UUID = .init()
     @Published var name: String = "My stream"
     @Published var streamId: String = ""
@@ -4178,7 +4179,7 @@ class SettingsSrtlaServer: Codable, ObservableObject {
     }
 }
 
-class SettingsRistServerStream: Codable, Identifiable, ObservableObject {
+class SettingsRistServerStream: Codable, Identifiable, ObservableObject, Named {
     var id: UUID = .init()
     @Published var name: String = "My stream"
     @Published var port: UInt16 = 6500
@@ -4249,7 +4250,7 @@ class SettingsMediaPlayerFile: Codable, Identifiable {
     }
 }
 
-class SettingsMediaPlayer: Codable, Identifiable, ObservableObject {
+class SettingsMediaPlayer: Codable, Identifiable, ObservableObject, Named {
     var id: UUID = .init()
     @Published var name: String = "My player"
     @Published var playerId: String = ""
@@ -4405,7 +4406,7 @@ var djiDeviceBitrates: [UInt32] = [
 
 var djiDeviceFpss: [Int] = [25, 30]
 
-class SettingsDjiDevice: Codable, Identifiable, ObservableObject {
+class SettingsDjiDevice: Codable, Identifiable, ObservableObject, Named {
     var id: UUID = .init()
     @Published var name: String = ""
     var bluetoothPeripheralName: String?
@@ -4523,7 +4524,7 @@ enum SettingsDjiGimbalDeviceModel: String, Codable {
     }
 }
 
-class SettingsDjiGimbalDevice: Codable, Identifiable {
+class SettingsDjiGimbalDevice: Codable, Identifiable, Named {
     var id: UUID = .init()
     var name: String = ""
     var enabled: Bool = false
@@ -4536,7 +4537,7 @@ class SettingsDjiGimbalDevices: Codable {
     var devices: [SettingsDjiGimbalDevice] = []
 }
 
-class SettingsGoProWifiCredentials: Codable, Identifiable, ObservableObject {
+class SettingsGoProWifiCredentials: Codable, Identifiable, ObservableObject, Named {
     var id: UUID = .init()
     @Published var name = "My SSID"
     @Published var ssid = ""
@@ -4568,7 +4569,7 @@ class SettingsGoProWifiCredentials: Codable, Identifiable, ObservableObject {
     }
 }
 
-class SettingsGoProRtmpUrl: Codable, Identifiable, ObservableObject {
+class SettingsGoProRtmpUrl: Codable, Identifiable, ObservableObject, Named {
     var id: UUID = .init()
     @Published var name = "My URL"
     @Published var type: SettingsDjiDeviceUrlType = .server
@@ -4619,7 +4620,7 @@ enum SettingsGoProLaunchLiveStreamResolution: String, CaseIterable, Codable {
     }
 }
 
-class SettingsGoProLaunchLiveStream: Codable, Identifiable, ObservableObject {
+class SettingsGoProLaunchLiveStream: Codable, Identifiable, ObservableObject, Named {
     var id: UUID = .init()
     @Published var name = "My live"
     @Published var isHero12Or13: Bool = true
@@ -4718,7 +4719,7 @@ class SettingsReplay: Codable {
     var speed: SettingsReplaySpeed = .one
 }
 
-class SettingsCatPrinter: Codable, Identifiable, ObservableObject {
+class SettingsCatPrinter: Codable, Identifiable, ObservableObject, Named {
     var id: UUID = .init()
     @Published var name: String = ""
     @Published var enabled: Bool = false
@@ -4790,7 +4791,7 @@ class SettingsCatPrinters: Codable, ObservableObject {
     }
 }
 
-class SettingsCyclingPowerDevice: Codable, Identifiable {
+class SettingsCyclingPowerDevice: Codable, Identifiable, Named {
     var id: UUID = .init()
     var name: String = ""
     var enabled: Bool = false
@@ -4802,7 +4803,7 @@ class SettingsCyclingPowerDevices: Codable {
     var devices: [SettingsCyclingPowerDevice] = []
 }
 
-class SettingsHeartRateDevice: Codable, Identifiable {
+class SettingsHeartRateDevice: Codable, Identifiable, Named {
     var id: UUID = .init()
     var name: String = ""
     var enabled: Bool = false
@@ -4816,7 +4817,7 @@ class SettingsHeartRateDevices: Codable {
 
 private let defaultRgbLightColor = RgbColor(red: 0, green: 255, blue: 0)
 
-class SettingsPhoneCoolerDevice: Codable, Identifiable, ObservableObject {
+class SettingsPhoneCoolerDevice: Codable, Identifiable, ObservableObject, Named {
     var id: UUID = .init()
     @Published var name: String = ""
     @Published var enabled: Bool = false
@@ -5807,7 +5808,7 @@ class DeepLinkCreatorStreamKick: Codable, ObservableObject {
     }
 }
 
-class DeepLinkCreatorStream: Codable, Identifiable, ObservableObject {
+class DeepLinkCreatorStream: Codable, Identifiable, ObservableObject, Named {
     var id: UUID = .init()
     @Published var name: String = "My stream"
     @Published var url: String = defaultStreamUrl

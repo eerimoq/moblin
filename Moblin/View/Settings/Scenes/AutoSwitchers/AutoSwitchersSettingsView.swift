@@ -167,7 +167,9 @@ struct AutoSwitchersSettingsView: View {
                 model.deleteAutoSceneSwitchers(offsets: offsets)
             }
             CreateButtonView {
-                autoSceneSwitchers.switchers.append(SettingsAutoSceneSwitcher())
+                let switcher = SettingsAutoSceneSwitcher()
+                switcher.name = makeUniqueName(name: "My switcher", existingNames: autoSceneSwitchers.switchers)
+                autoSceneSwitchers.switchers.append(switcher)
             }
         } header: {
             Text("Auto scene switchers")

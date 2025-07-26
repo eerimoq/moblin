@@ -88,6 +88,7 @@ struct SrtlaServerSettingsView: View {
                 }
                 CreateButtonView {
                     let stream = SettingsSrtlaServerStream()
+                    stream.name = makeUniqueName(name: "My stream", existingNames: srtlaServer.streams)
                     while true {
                         stream.streamId = randomHumanString()
                         if model.getSrtlaStream(streamId: stream.streamId) == nil {

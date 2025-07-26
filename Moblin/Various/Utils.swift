@@ -745,7 +745,12 @@ extension UnsafeRawBufferPointer {
     }
 }
 
-func makeUniqueName(name: String, existingNames: [String]) -> String {
+protocol Named {
+    var name: String { get }
+}
+
+func makeUniqueName<T: Named>(name: String, existingNames: [T]) -> String {
+    let existingNames = existingNames.map { $0.name }
     if !existingNames.contains(name) {
         return name
     }

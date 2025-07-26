@@ -44,7 +44,7 @@ struct DjiDevicesSettingsView: View {
                 }
                 CreateButtonView {
                     let device = SettingsDjiDevice()
-                    device.name = "My device"
+                    device.name = makeUniqueName(name: "My device", existingNames: djiDevices.devices)
                     djiDevices.devices.append(device)
                 }
             } footer: {

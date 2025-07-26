@@ -336,6 +336,7 @@ private struct GoProLaunchLiveStream: View {
             }
             CreateButtonView {
                 let launchLiveStream = SettingsGoProLaunchLiveStream()
+                launchLiveStream.name = makeUniqueName(name: "My live", existingNames: goPro.launchLiveStream)
                 if goPro.launchLiveStream.isEmpty {
                     goPro.selectedLaunchLiveStream = launchLiveStream.id
                     goProState.launchLiveStreamSelection = goPro.selectedLaunchLiveStream
@@ -374,6 +375,7 @@ private struct GoProWifiCredentials: View {
             }
             CreateButtonView {
                 let wifiCredentials = SettingsGoProWifiCredentials()
+                wifiCredentials.name = makeUniqueName(name: "My SSID", existingNames: goPro.wifiCredentials)
                 if goPro.wifiCredentials.isEmpty {
                     goPro.selectedWifiCredentials = wifiCredentials.id
                     goProState.wifiCredentialsSelection = goPro.selectedWifiCredentials
@@ -413,6 +415,7 @@ private struct GoProRtmpUrls: View {
             }
             CreateButtonView {
                 let rtmpUrl = SettingsGoProRtmpUrl()
+                rtmpUrl.name = makeUniqueName(name: "My URL", existingNames: goPro.rtmpUrls)
                 if goPro.rtmpUrls.isEmpty {
                     goPro.selectedRtmpUrl = rtmpUrl.id
                     goProState.rtmpUrlSelection = goPro.selectedRtmpUrl
