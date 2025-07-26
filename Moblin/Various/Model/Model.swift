@@ -17,10 +17,10 @@ import WatchConnectivity
 import WebKit
 
 private enum BackgroundRunLevel {
-    // Streaming, recording or cat printer (as they need chat)
+    // Streaming and recording
     case full
-    // Moblink
-    case service
+    // Moblink and cat printer
+    case service(keepChatRunning: Bool)
     case off
 }
 
@@ -1187,9 +1187,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         switch backgroundRunLevel() {
         case .full:
             disableScreenPreview()
-        case .service:
+        case let .service(keepChatRunning):
             disableScreenPreview()
-            stopPeriodicTimers()
+            stopPeriodicTimers(keepChatRunning: keepChatRunning)
         case .off:
             if isRecording {
                 suspendRecording()
@@ -1320,10 +1320,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             return .off
         }
         if database.catPrinters.backgroundPrinting {
-            return .full
+            return .service(keepChatRunning: true)
         }
         if database.moblink.relay.enabled {
-            return .service
+            return .service(keepChatRunning: false)
         }
         return .off
     }
@@ -1451,9 +1451,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    func stopPeriodicTimers() {
+    func stopPeriodicTimers(keepChatRunning: Bool) {
         periodicTimer20ms.stop()
-        periodicTimer200ms.stop()
+        if !keepChatRunning {
+            periodicTimer200ms.stop()
+        }
         periodicTimer1s.stop()
         periodicTimer3s.stop()
         periodicTimer5s.stop()
