@@ -683,7 +683,6 @@ func deleteTrash() {
 }
 
 func generateQrCode(from string: String) -> UIImage? {
-    logger.info("xxx code: '\(string)'")
     let data = string.data(using: .utf8)
     let filter = CIFilter.qrCodeGenerator()
     filter.message = data!
