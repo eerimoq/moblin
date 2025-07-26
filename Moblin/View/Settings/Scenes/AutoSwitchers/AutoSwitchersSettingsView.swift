@@ -114,11 +114,7 @@ private struct AutoSwitcherSettingsView: View {
     var body: some View {
         Form {
             Section {
-                NavigationLink {
-                    NameEditView(name: $autoSwitcher.name, existingNames: autoSceneSwitchers.switchers)
-                } label: {
-                    TextItemView(name: String(localized: "Name"), value: autoSwitcher.name)
-                }
+                NameEditView(name: $autoSwitcher.name, existingNames: autoSceneSwitchers.switchers)
             }
             Section {
                 Toggle(isOn: Binding(get: {

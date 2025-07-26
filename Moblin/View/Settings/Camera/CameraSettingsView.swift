@@ -18,14 +18,10 @@ struct CustomLutView: View {
         NavigationLink {
             Form {
                 Section {
-                    NavigationLink {
-                        NameEditView(name: $name)
-                    } label: {
-                        TextItemView(name: String(localized: "Name"), value: name)
-                    }
-                    .onChange(of: name) { name in
-                        model.setLutName(lut: lut, name: name)
-                    }
+                    NameEditView(name: $name)
+                        .onChange(of: name) { name in
+                            model.setLutName(lut: lut, name: name)
+                        }
                 }
                 Section {
                     if let image = loadImage() {

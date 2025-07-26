@@ -155,11 +155,7 @@ struct SceneSettingsView: View {
 
     var body: some View {
         Form {
-            NavigationLink {
-                NameEditView(name: $scene.name, existingNames: database.scenes)
-            } label: {
-                TextItemView(name: String(localized: "Name"), value: scene.name)
-            }
+            NameEditView(name: $scene.name, existingNames: database.scenes)
             Section {
                 NavigationLink {
                     InlinePickerView(

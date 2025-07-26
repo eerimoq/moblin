@@ -187,14 +187,10 @@ private struct RelayView: View {
             })) {
                 Text("Enabled")
             }
-            NavigationLink {
-                NameEditView(name: $relay.name)
-            } label: {
-                TextItemView(name: String(localized: "Name"), value: relay.name)
-            }
-            .onChange(of: relay.name) { _ in
-                model.reloadMoblinkRelay()
-            }
+            NameEditView(name: $relay.name)
+                .onChange(of: relay.name) { _ in
+                    model.reloadMoblinkRelay()
+                }
             Toggle(isOn: $relay.manual) {
                 Text("Manual")
             }

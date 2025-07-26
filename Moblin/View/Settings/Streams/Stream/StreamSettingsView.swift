@@ -45,11 +45,7 @@ struct StreamSettingsView: View {
     var body: some View {
         Form {
             Section {
-                NavigationLink {
-                    NameEditView(name: $stream.name, existingNames: database.streams)
-                } label: {
-                    TextItemView(name: String(localized: "Name"), value: stream.name)
-                }
+                NameEditView(name: $stream.name, existingNames: database.streams)
             }
             Section {
                 NavigationLink {

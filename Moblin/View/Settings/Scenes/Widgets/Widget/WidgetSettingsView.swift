@@ -196,11 +196,7 @@ struct WidgetSettingsView: View {
     var body: some View {
         Form {
             Section {
-                NavigationLink {
-                    NameEditView(name: $widget.name, existingNames: database.widgets)
-                } label: {
-                    TextItemView(name: String(localized: "Name"), value: widget.name)
-                }
+                NameEditView(name: $widget.name, existingNames: database.widgets)
                 NavigationLink {
                     InlinePickerView(title: String(localized: "Type"),
                                      onChange: { id in

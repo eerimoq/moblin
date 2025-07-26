@@ -317,11 +317,7 @@ struct DjiDeviceSettingsView: View {
     var body: some View {
         Form {
             Section {
-                NavigationLink {
-                    NameEditView(name: $device.name, existingNames: djiDevices.devices)
-                } label: {
-                    TextItemView(name: String(localized: "Name"), value: device.name)
-                }
+                NameEditView(name: $device.name, existingNames: djiDevices.devices)
             }
             DjiDeviceSelectDeviceSettingsView(device: device)
             DjiDeviceWiFiSettingsView(device: device)
