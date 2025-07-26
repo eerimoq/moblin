@@ -17,7 +17,8 @@ private struct QuickButtonGoProLaunchLiveStreamView: View {
         if let launchLiveStream = goPro.launchLiveStream
             .first(where: { $0.id == goProState.launchLiveStreamSelection })
         {
-            qrCode = GoPro.generateLaunchLiveStream(isHero12Or13: launchLiveStream.isHero12Or13)
+            qrCode = GoPro.generateLaunchLiveStream(isHero12Or13: launchLiveStream.isHero12Or13,
+                                                    resolution: launchLiveStream.resolution)
         } else {
             qrCode = nil
         }

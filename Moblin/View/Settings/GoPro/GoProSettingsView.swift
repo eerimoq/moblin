@@ -5,7 +5,8 @@ private struct GoProLaunchLiveStreamSettingsView: View {
     @State var qrCode: UIImage?
 
     private func generate() {
-        qrCode = GoPro.generateLaunchLiveStream(isHero12Or13: launchLiveStream.isHero12Or13)
+        qrCode = GoPro.generateLaunchLiveStream(isHero12Or13: launchLiveStream.isHero12Or13,
+                                                resolution: launchLiveStream.resolution)
     }
 
     var body: some View {
@@ -27,6 +28,14 @@ private struct GoProLaunchLiveStreamSettingsView: View {
                         launchLiveStream.isHero12Or13 = value
                         generate()
                     }))
+                    Picker("Resolution", selection: $launchLiveStream.resolution) {
+                        ForEach(SettingsGoProLaunchLiveStreamResolution.allCases, id: \.self) { resolution in
+                            Text(resolution.rawValue)
+                        }
+                    }
+                    .onChange(of: launchLiveStream.resolution) { _ in
+                        generate()
+                    }
                 }
                 if let qrCode {
                     Section {

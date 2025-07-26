@@ -4608,17 +4608,30 @@ class SettingsGoProRtmpUrl: Codable, Identifiable, ObservableObject {
     }
 }
 
+enum SettingsGoProLaunchLiveStreamResolution: String, CaseIterable, Codable {
+    case r1080p = "1080p"
+    case r720p = "720p"
+    case r480p = "480p"
+
+    init(from decoder: Decoder) throws {
+        self = try SettingsGoProLaunchLiveStreamResolution(rawValue: decoder.singleValueContainer()
+            .decode(RawValue.self)) ?? .r1080p
+    }
+}
+
 class SettingsGoProLaunchLiveStream: Codable, Identifiable, ObservableObject {
     var id: UUID = .init()
-    @Published var name = "1080p"
+    @Published var name = "My live"
     @Published var isHero12Or13: Bool = true
+    @Published var resolution: SettingsGoProLaunchLiveStreamResolution = .r1080p
 
     init() {}
 
     enum CodingKeys: CodingKey {
         case id,
              name,
-             isHero12Or13
+             isHero12Or13,
+             resolution
     }
 
     func encode(to encoder: Encoder) throws {
@@ -4626,13 +4639,15 @@ class SettingsGoProLaunchLiveStream: Codable, Identifiable, ObservableObject {
         try container.encode(.id, id)
         try container.encode(.name, name)
         try container.encode(.isHero12Or13, isHero12Or13)
+        try container.encode(.resolution, resolution)
     }
 
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
-        name = container.decode(.name, String.self, "1080p")
+        name = container.decode(.name, String.self, "My live")
         isHero12Or13 = container.decode(.isHero12Or13, Bool.self, true)
+        resolution = container.decode(.resolution, SettingsGoProLaunchLiveStreamResolution.self, .r1080p)
     }
 }
 
