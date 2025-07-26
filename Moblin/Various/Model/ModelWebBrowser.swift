@@ -24,6 +24,11 @@ extension Model {
         loadWebBrowserUrl()
     }
 
+    func loadWebBrowserPage(url: String) {
+        webBrowserUrl = url
+        loadWebBrowserUrl()
+    }
+
     func getWebBrowser() -> WKWebView {
         if webBrowser == nil {
             webBrowser = WKWebView()

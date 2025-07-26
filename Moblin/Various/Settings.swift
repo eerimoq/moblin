@@ -5589,8 +5589,49 @@ class AudioSettings: Codable {
     var audioOutputToInputChannelsMap: SettingsAudioOutputToInputChannelsMap? = .init()
 }
 
-class WebBrowserSettings: Codable {
-    var home: String = "https://google.com"
+class WebBrowserBookmarkSettings: Identifiable, Codable, ObservableObject {
+    var id: UUID = .init()
+    @Published var url: String = "https://google.com"
+
+    enum CodingKeys: CodingKey {
+        case url
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.url, url)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        url = container.decode(.url, String.self, "https://google.com")
+    }
+}
+
+class WebBrowserSettings: Codable, ObservableObject {
+    @Published var home: String = "https://google.com"
+    @Published var bookmarks: [WebBrowserBookmarkSettings] = []
+
+    enum CodingKeys: CodingKey {
+        case home,
+             bookmarks
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.home, home)
+        try container.encode(.bookmarks, bookmarks)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        home = container.decode(.home, String.self, "https://google.com")
+        bookmarks = container.decode(.bookmarks, [WebBrowserBookmarkSettings].self, [])
+    }
 }
 
 class DeepLinkCreatorStreamVideo: Codable, ObservableObject {

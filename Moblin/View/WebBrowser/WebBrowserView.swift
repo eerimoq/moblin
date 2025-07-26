@@ -53,6 +53,8 @@ private struct NextPrevView: View {
 
 private struct RefreshHomeView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var webBrowser: WebBrowserSettings
+    @Binding var showingBookmarks: Bool
 
     var body: some View {
         HStack {
@@ -61,6 +63,12 @@ private struct RefreshHomeView: View {
             } label: {
                 Image(systemName: "arrow.clockwise")
                     .padding(10)
+            }
+            Button {
+                showingBookmarks = true
+            } label: {
+                Image(systemName: "bookmark")
+                    .padding(5)
             }
             Button {
                 model.loadWebBrowserHome()
@@ -72,8 +80,51 @@ private struct RefreshHomeView: View {
     }
 }
 
+private struct BookmarksView: View {
+    @EnvironmentObject var model: Model
+    @ObservedObject var webBrowser: WebBrowserSettings
+    @Binding var showingBookmarks: Bool
+
+    var body: some View {
+        VStack {
+            Form {
+                Section {
+                    List {
+                        ForEach(webBrowser.bookmarks) { bookmark in
+                            Button(bookmark.url) {
+                                model.loadWebBrowserPage(url: bookmark.url)
+                                showingBookmarks = false
+                            }
+                        }
+                        .onDelete {
+                            webBrowser.bookmarks.remove(atOffsets: $0)
+                        }
+                    }
+                } header: {
+                    Text("Bookmarks")
+                }
+                Section {
+                    Button {
+                        let bookmark = WebBrowserBookmarkSettings()
+                        bookmark.url = model.webBrowserUrl
+                        webBrowser.bookmarks.append(bookmark)
+                    } label: {
+                        HCenter {
+                            Text("Create bookmark")
+                        }
+                    }
+                }
+            }
+            HCenter {
+                Text("Swipe down to close")
+            }
+        }
+    }
+}
+
 struct WebBrowserView: View {
     @EnvironmentObject var model: Model
+    @State var showingBookmarks = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -83,7 +134,7 @@ struct WebBrowserView: View {
                     HStack {
                         NextPrevView()
                         Spacer()
-                        RefreshHomeView()
+                        RefreshHomeView(webBrowser: model.database.webBrowser, showingBookmarks: $showingBookmarks)
                     }
                 }
                 .padding(3)
@@ -91,11 +142,14 @@ struct WebBrowserView: View {
                 HStack {
                     NextPrevView()
                     UrlView()
-                    RefreshHomeView()
+                    RefreshHomeView(webBrowser: model.database.webBrowser, showingBookmarks: $showingBookmarks)
                 }
                 .padding(3)
             }
             WebView()
+                .sheet(isPresented: $showingBookmarks) {
+                    BookmarksView(webBrowser: model.database.webBrowser, showingBookmarks: $showingBookmarks)
+                }
         }
         .background(ignoresSafeAreaEdges: .bottom)
     }
