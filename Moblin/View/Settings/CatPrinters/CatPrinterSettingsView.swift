@@ -16,6 +16,7 @@ private func formatCatPrinterState(state: CatPrinterState?) -> String {
 
 struct CatPrinterSettingsView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var catPrinters: SettingsCatPrinters
     @ObservedObject private var scanner = catPrinterScanner
     @ObservedObject var device: SettingsCatPrinter
     @ObservedObject var status: StatusTopRight
@@ -42,9 +43,7 @@ struct CatPrinterSettingsView: View {
     var body: some View {
         Form {
             Section {
-                TextEditNavigationView(title: "Name", value: device.name, onSubmit: {
-                    device.name = $0
-                })
+                NameEditView(name: $device.name, existingNames: catPrinters.devices)
             }
             Section {
                 NavigationLink {
