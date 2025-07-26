@@ -102,6 +102,8 @@ private struct BookmarksView: View {
                     }
                 } header: {
                     Text("Bookmarks")
+                } footer: {
+                    SwipeLeftToDeleteHelpView(kind: "a bookmark")
                 }
                 Section {
                     Button {
