@@ -46,5 +46,6 @@ extension Model {
 extension Model: WKNavigationDelegate {
     func webView(_ webView: WKWebView, didStartProvisionalNavigation _: WKNavigation!) {
         webBrowserUrl = webView.url?.absoluteString ?? ""
+        database.webBrowser.home = webBrowserUrl
     }
 }

@@ -55,13 +55,6 @@ struct SettingsView: View {
                 } label: {
                     Label("Location", systemImage: "location")
                 }
-                if database.showAllSettings {
-                    NavigationLink {
-                        WebBrowserSettingsView()
-                    } label: {
-                        Label("Web browser", systemImage: "globe")
-                    }
-                }
             }
             Section {
                 if database.showAllSettings {

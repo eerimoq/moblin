@@ -51,7 +51,7 @@ private struct NextPrevView: View {
     }
 }
 
-private struct RefreshHomeView: View {
+private struct RefreshBookmarksView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var webBrowser: WebBrowserSettings
     @Binding var showingBookmarks: Bool
@@ -68,12 +68,6 @@ private struct RefreshHomeView: View {
                 showingBookmarks = true
             } label: {
                 Image(systemName: "bookmark")
-                    .padding(5)
-            }
-            Button {
-                model.loadWebBrowserHome()
-            } label: {
-                Image(systemName: "house")
                     .padding(10)
             }
         }
@@ -159,7 +153,7 @@ struct WebBrowserView: View {
                     HStack {
                         NextPrevView()
                         Spacer()
-                        RefreshHomeView(webBrowser: model.database.webBrowser, showingBookmarks: $showingBookmarks)
+                        RefreshBookmarksView(webBrowser: model.database.webBrowser, showingBookmarks: $showingBookmarks)
                     }
                 }
                 .padding(3)
@@ -167,7 +161,7 @@ struct WebBrowserView: View {
                 HStack {
                     NextPrevView()
                     UrlView()
-                    RefreshHomeView(webBrowser: model.database.webBrowser, showingBookmarks: $showingBookmarks)
+                    RefreshBookmarksView(webBrowser: model.database.webBrowser, showingBookmarks: $showingBookmarks)
                 }
                 .padding(3)
             }
