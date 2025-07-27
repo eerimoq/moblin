@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct NameEditView: View {
+private struct NameEditInnerView: View {
     @Binding var name: String
     var existingNames: [Named] = []
     @Environment(\.dismiss) var dismiss
@@ -16,11 +16,20 @@ struct NameEditView: View {
     }
 
     var body: some View {
+        TextEditView(title: String(localized: "Name"), value: name, capitalize: true, onChange: onChange) {
+            name = $0
+            dismiss()
+        }
+    }
+}
+
+struct NameEditView: View {
+    @Binding var name: String
+    var existingNames: [Named] = []
+
+    var body: some View {
         NavigationLink {
-            TextEditView(title: String(localized: "Name"), value: name, capitalize: true, onChange: onChange) {
-                name = $0
-                dismiss()
-            }
+            NameEditInnerView(name: $name, existingNames: existingNames)
         } label: {
             TextItemView(name: String(localized: "Name"), value: name)
         }
