@@ -4418,10 +4418,10 @@ class SettingsDjiDevice: Codable, Identifiable, ObservableObject, Named {
     static let baseName = String(localized: "My device")
     var id: UUID = .init()
     @Published var name: String = baseName
-    var bluetoothPeripheralName: String?
-    var bluetoothPeripheralId: UUID?
-    var wifiSsid: String = ""
-    var wifiPassword: String = ""
+    @Published var bluetoothPeripheralName: String?
+    @Published var bluetoothPeripheralId: UUID?
+    @Published var wifiSsid: String = ""
+    @Published var wifiPassword: String = ""
     @Published var rtmpUrlType: SettingsDjiDeviceUrlType = .server
     @Published var serverRtmpStreamId: UUID = .init()
     @Published var serverRtmpUrl: String = ""

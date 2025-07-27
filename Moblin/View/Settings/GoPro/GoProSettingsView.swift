@@ -1,3 +1,4 @@
+import NetworkExtension
 import SwiftUI
 
 private struct GoProLaunchLiveStreamSettingsView: View {
@@ -127,6 +128,14 @@ private struct GoProWifiCredentialsSettingsView: View {
                 generate()
             }
             .navigationTitle("WiFi credentials")
+            .onAppear {
+                NEHotspotNetwork.fetchCurrent(completionHandler: { network in
+                    if wifiCredentials.ssid.isEmpty, let network {
+                        wifiCredentials.ssid = network.ssid
+                        generate()
+                    }
+                })
+            }
         }
     }
 }

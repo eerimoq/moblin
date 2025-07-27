@@ -1,3 +1,4 @@
+import NetworkExtension
 import SwiftUI
 
 private func rtmpStreamUrl(address: String, port: UInt16, streamKey: String) -> String {
@@ -78,27 +79,45 @@ private struct DjiDeviceWiFiSettingsView: View {
 
     var body: some View {
         Section {
-            TextEditNavigationView(
-                title: String(localized: "SSID"),
-                value: device.wifiSsid,
-                onSubmit: { value in
-                    device.wifiSsid = value
-                }
-            )
+            NavigationLink {
+                TextEditView(
+                    title: String(localized: "SSID"),
+                    value: device.wifiSsid,
+                    onSubmit: {
+                        device.wifiSsid = $0
+                    }
+                )
+            } label: {
+                TextItemView(name: String(localized: "SSID"), value: device.wifiSsid)
+            }
             .disabled(device.isStarted)
-            TextEditNavigationView(
-                title: String(localized: "Password"),
-                value: device.wifiPassword,
-                onSubmit: { value in
-                    device.wifiPassword = value
-                },
-                sensitive: true
-            )
+            NavigationLink {
+                TextEditView(
+                    title: String(localized: "Password"),
+                    value: device.wifiPassword,
+                    onSubmit: {
+                        device.wifiPassword = $0
+                    }
+                )
+            } label: {
+                TextItemView(
+                    name: String(localized: "Password"),
+                    value: device.wifiPassword,
+                    sensitive: true
+                )
+            }
             .disabled(device.isStarted)
         } header: {
             Text("WiFi")
         } footer: {
             Text("The DJI device will connect to and stream RTMP over this WiFi.")
+        }
+        .onAppear {
+            NEHotspotNetwork.fetchCurrent(completionHandler: { network in
+                if device.wifiSsid.isEmpty, let network {
+                    device.wifiSsid = network.ssid
+                }
+            })
         }
     }
 }
