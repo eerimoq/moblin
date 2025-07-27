@@ -2,6 +2,7 @@ import NetworkExtension
 import SwiftUI
 
 private struct GoProLaunchLiveStreamSettingsView: View {
+    @ObservedObject var goPro: SettingsGoPro
     @ObservedObject var launchLiveStream: SettingsGoProLaunchLiveStream
     @State var qrCode: UIImage?
 
@@ -14,13 +15,7 @@ private struct GoProLaunchLiveStreamSettingsView: View {
         GeometryReader { metrics in
             Form {
                 Section {
-                    TextEditNavigationView(
-                        title: String(localized: "Name"),
-                        value: launchLiveStream.name,
-                        onSubmit: {
-                            launchLiveStream.name = $0
-                        }
-                    )
+                    NameEditView(name: $launchLiveStream.name, existingNames: goPro.launchLiveStream)
                 }
                 Section {
                     Toggle("HERO 12/13", isOn: Binding(get: {
@@ -53,11 +48,12 @@ private struct GoProLaunchLiveStreamSettingsView: View {
 }
 
 private struct GoProLaunchLiveStreamSettingsEntryView: View {
+    @ObservedObject var goPro: SettingsGoPro
     @ObservedObject var launchLiveStream: SettingsGoProLaunchLiveStream
 
     var body: some View {
         NavigationLink {
-            GoProLaunchLiveStreamSettingsView(launchLiveStream: launchLiveStream)
+            GoProLaunchLiveStreamSettingsView(goPro: goPro, launchLiveStream: launchLiveStream)
         } label: {
             HStack {
                 DraggableItemPrefixView()
@@ -69,6 +65,7 @@ private struct GoProLaunchLiveStreamSettingsEntryView: View {
 }
 
 private struct GoProWifiCredentialsSettingsView: View {
+    @ObservedObject var goPro: SettingsGoPro
     @ObservedObject var wifiCredentials: SettingsGoProWifiCredentials
     @State var qrCode: UIImage?
 
@@ -80,13 +77,7 @@ private struct GoProWifiCredentialsSettingsView: View {
         GeometryReader { metrics in
             Form {
                 Section {
-                    TextEditNavigationView(
-                        title: String(localized: "Name"),
-                        value: wifiCredentials.name,
-                        onSubmit: {
-                            wifiCredentials.name = $0
-                        }
-                    )
+                    NameEditView(name: $wifiCredentials.name, existingNames: goPro.wifiCredentials)
                 }
                 Section {
                     NavigationLink {
@@ -141,11 +132,12 @@ private struct GoProWifiCredentialsSettingsView: View {
 }
 
 private struct GoProWifiCredentialsSettingsEntryView: View {
+    @ObservedObject var goPro: SettingsGoPro
     @ObservedObject var wifiCredentials: SettingsGoProWifiCredentials
 
     var body: some View {
         NavigationLink {
-            GoProWifiCredentialsSettingsView(wifiCredentials: wifiCredentials)
+            GoProWifiCredentialsSettingsView(goPro: goPro, wifiCredentials: wifiCredentials)
         } label: {
             HStack {
                 DraggableItemPrefixView()
@@ -162,6 +154,7 @@ private func rtmpStreamUrl(address: String, port: UInt16, streamKey: String) -> 
 
 private struct GoProRtmpUrlSettingsView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var goPro: SettingsGoPro
     @ObservedObject var status: StatusOther
     @ObservedObject var rtmpUrl: SettingsGoProRtmpUrl
     @State var qrCode: UIImage?
@@ -206,13 +199,7 @@ private struct GoProRtmpUrlSettingsView: View {
         GeometryReader { metrics in
             Form {
                 Section {
-                    TextEditNavigationView(
-                        title: String(localized: "Name"),
-                        value: rtmpUrl.name,
-                        onSubmit: {
-                            rtmpUrl.name = $0
-                        }
-                    )
+                    NameEditView(name: $rtmpUrl.name, existingNames: goPro.rtmpUrls)
                 }
                 Section {
                     Picker("Type", selection: $rtmpUrl.type) {
@@ -305,12 +292,13 @@ private struct GoProRtmpUrlSettingsView: View {
 }
 
 private struct GoProRtmpUrlSettingsEntryView: View {
+    @ObservedObject var goPro: SettingsGoPro
     var status: StatusOther
     @ObservedObject var rtmpUrl: SettingsGoProRtmpUrl
 
     var body: some View {
         NavigationLink {
-            GoProRtmpUrlSettingsView(status: status, rtmpUrl: rtmpUrl)
+            GoProRtmpUrlSettingsView(goPro: goPro, status: status, rtmpUrl: rtmpUrl)
         } label: {
             HStack {
                 DraggableItemPrefixView()
@@ -330,7 +318,7 @@ private struct GoProLaunchLiveStream: View {
         Section {
             List {
                 ForEach(goPro.launchLiveStream) { launchLiveStream in
-                    GoProLaunchLiveStreamSettingsEntryView(launchLiveStream: launchLiveStream)
+                    GoProLaunchLiveStreamSettingsEntryView(goPro: goPro, launchLiveStream: launchLiveStream)
                 }
                 .onMove { froms, to in
                     goPro.launchLiveStream.move(fromOffsets: froms, toOffset: to)
@@ -370,7 +358,7 @@ private struct GoProWifiCredentials: View {
         Section {
             List {
                 ForEach(goPro.wifiCredentials) { wifiCredentials in
-                    GoProWifiCredentialsSettingsEntryView(wifiCredentials: wifiCredentials)
+                    GoProWifiCredentialsSettingsEntryView(goPro: goPro, wifiCredentials: wifiCredentials)
                 }
                 .onMove { froms, to in
                     goPro.wifiCredentials.move(fromOffsets: froms, toOffset: to)
@@ -411,7 +399,7 @@ private struct GoProRtmpUrls: View {
         Section {
             List {
                 ForEach(goPro.rtmpUrls) { rtmpUrl in
-                    GoProRtmpUrlSettingsEntryView(status: status, rtmpUrl: rtmpUrl)
+                    GoProRtmpUrlSettingsEntryView(goPro: goPro, status: status, rtmpUrl: rtmpUrl)
                 }
                 .onMove { froms, to in
                     goPro.rtmpUrls.move(fromOffsets: froms, toOffset: to)
