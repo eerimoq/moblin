@@ -1157,7 +1157,7 @@ class SettingsAutoSceneSwitcher: Codable, Identifiable, ObservableObject, Named 
     static let baseName = String(localized: "My switcher")
     var id: UUID = .init()
     @Published var name: String = baseName
-    var shuffle: Bool = false
+    @Published var shuffle: Bool = false
     var scenes: [SettingsAutoSceneSwitcherScene] = []
 
     enum CodingKeys: CodingKey {
@@ -2087,10 +2087,29 @@ enum SettingsWidgetScoreboardType: String, Codable, CaseIterable {
     }
 }
 
-class SettingsWidgetScoreboardPlayer: Codable, Identifiable, Named {
+class SettingsWidgetScoreboardPlayer: Codable, Identifiable, ObservableObject, Named {
     static let baseName = String(localized: "🇸🇪 Moblin")
     var id: UUID = .init()
-    var name: String = baseName
+    @Published var name: String = baseName
+
+    enum CodingKeys: CodingKey {
+        case id,
+             name
+    }
+
+    init() {}
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.name, name)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        name = container.decode(.name, String.self, Self.baseName)
+    }
 }
 
 class SettingsWidgetScoreboardScore: Codable, Identifiable {
@@ -6195,7 +6214,7 @@ class Database: Codable, ObservableObject {
     var alertsMediaGallery: SettingsAlertsMediaGallery = .init()
     var catPrinters: SettingsCatPrinters = .init()
     @Published var verboseStatuses: Bool = false
-    var scoreboardPlayers: [SettingsWidgetScoreboardPlayer] = .init()
+    @Published var scoreboardPlayers: [SettingsWidgetScoreboardPlayer] = .init()
     var keyboard: SettingsKeyboard = .init()
     var tesla: SettingsTesla = .init()
     var srtlaRelay: SettingsMoblink = .init()

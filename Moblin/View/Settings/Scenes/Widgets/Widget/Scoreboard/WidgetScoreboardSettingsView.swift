@@ -1,37 +1,36 @@
 import SwiftUI
 
+private struct PlayersPlayerView: View {
+    let model: Model
+    @ObservedObject var database: Database
+    @ObservedObject var player: SettingsWidgetScoreboardPlayer
+
+    var body: some View {
+        NameEditView(name: $player.name, existingNames: database.scoreboardPlayers)
+            .onChange(of: player.name) { _ in
+                model.resetSelectedScene(changeScene: false)
+                model.sendScoreboardPlayersToWatch()
+            }
+    }
+}
+
 private struct PlayersView: View {
     @EnvironmentObject var model: Model
-
-    private func submitName(player: SettingsWidgetScoreboardPlayer, value: String) {
-        player.name = value
-    }
+    @ObservedObject var database: Database
 
     var body: some View {
         Section {
             List {
-                ForEach(model.database.scoreboardPlayers) { player in
-                    NavigationLink {
-                        TextEditView(
-                            title: String(localized: "Name"),
-                            value: player.name,
-                            onSubmit: {
-                                submitName(player: player, value: $0)
-                                model.resetSelectedScene(changeScene: false)
-                                model.sendScoreboardPlayersToWatch()
-                            }
-                        )
-                    } label: {
-                        Text(player.name)
-                    }
+                ForEach(database.scoreboardPlayers) { player in
+                    PlayersPlayerView(model: model, database: database, player: player)
                 }
                 .onMove { froms, to in
-                    model.database.scoreboardPlayers.move(fromOffsets: froms, toOffset: to)
+                    database.scoreboardPlayers.move(fromOffsets: froms, toOffset: to)
                     model.resetSelectedScene(changeScene: false)
                     model.sendScoreboardPlayersToWatch()
                 }
                 .onDelete { offsets in
-                    model.database.scoreboardPlayers.remove(atOffsets: offsets)
+                    database.scoreboardPlayers.remove(atOffsets: offsets)
                     model.resetSelectedScene(changeScene: false)
                     model.sendScoreboardPlayersToWatch()
                 }
@@ -39,10 +38,9 @@ private struct PlayersView: View {
             CreateButtonView {
                 let player = SettingsWidgetScoreboardPlayer()
                 player.name = makeUniqueName(name: SettingsWidgetScoreboardPlayer.baseName,
-                                             existingNames: model.database.scoreboardPlayers)
-                model.database.scoreboardPlayers.append(player)
+                                             existingNames: database.scoreboardPlayers)
+                database.scoreboardPlayers.append(player)
                 model.sendScoreboardPlayersToWatch()
-                model.objectWillChange.send()
             }
         } header: {
             Text("Players")
@@ -158,6 +156,6 @@ struct WidgetScoreboardSettingsView: View {
         } header: {
             Text("Away")
         }
-        PlayersView()
+        PlayersView(database: model.database)
     }
 }
