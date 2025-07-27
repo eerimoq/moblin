@@ -28,10 +28,6 @@ struct RistServerStreamSettingsView: View {
     @ObservedObject var ristServer: SettingsRistServer
     @ObservedObject var stream: SettingsRistServerStream
 
-    private func submitName(value: String) {
-        stream.name = value.trim()
-    }
-
     private func submitPort(value: String) {
         guard let port = UInt16(value.trim()), port > 0 else {
             stream.portString = String(stream.port)
@@ -46,13 +42,8 @@ struct RistServerStreamSettingsView: View {
         NavigationLink {
             Form {
                 Section {
-                    TextEditNavigationView(
-                        title: String(localized: "Name"),
-                        value: stream.name,
-                        onSubmit: submitName,
-                        capitalize: true
-                    )
-                    .disabled(model.ristServerEnabled())
+                    NameEditView(name: $stream.name, existingNames: ristServer.streams)
+                        .disabled(model.ristServerEnabled())
                 } footer: {
                     Text("The stream name is shown in the list of cameras in scene settings.")
                 }
