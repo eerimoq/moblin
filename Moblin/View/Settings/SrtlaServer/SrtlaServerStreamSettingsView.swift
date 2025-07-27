@@ -39,10 +39,6 @@ struct SrtlaServerStreamSettingsView: View {
     @ObservedObject var srtlaServer: SettingsSrtlaServer
     @ObservedObject var stream: SettingsSrtlaServerStream
 
-    private func submitName(value: String) {
-        stream.name = value.trim()
-    }
-
     private func submitStreamId(value: String) {
         let streamId = value.trim()
         guard streamId.wholeMatch(of: /[a-zA-Z0-9]*/) != nil else {
@@ -58,13 +54,8 @@ struct SrtlaServerStreamSettingsView: View {
         NavigationLink {
             Form {
                 Section {
-                    TextEditNavigationView(
-                        title: String(localized: "Name"),
-                        value: stream.name,
-                        onSubmit: submitName,
-                        capitalize: true
-                    )
-                    .disabled(srtlaServer.enabled)
+                    NameEditView(name: $stream.name, existingNames: srtlaServer.streams)
+                        .disabled(srtlaServer.enabled)
                     TextEditNavigationView(
                         title: String(localized: "Stream id"),
                         value: stream.streamId,
