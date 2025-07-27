@@ -4262,6 +4262,14 @@ class SettingsRistServer: Codable, ObservableObject {
         enabled = container.decode(.enabled, Bool.self, false)
         streams = container.decode(.streams, [SettingsRistServerStream].self, [])
     }
+
+    func makeUniquePort() -> UInt16 {
+        var port: UInt16 = 6500
+        while streams.contains(where: { $0.port == port }) {
+            port += 1
+        }
+        return port
+    }
 }
 
 class SettingsMediaPlayerFile: Codable, Identifiable {

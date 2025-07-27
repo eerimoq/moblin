@@ -49,6 +49,8 @@ struct RistServerSettingsView: View {
                     let stream = SettingsRistServerStream()
                     stream.name = makeUniqueName(name: SettingsRistServerStream.baseName,
                                                  existingNames: ristServer.streams)
+                    stream.port = ristServer.makeUniquePort()
+                    stream.portString = String(stream.port)
                     ristServer.streams.append(stream)
                     model.updateMicsListAsync()
                 }
