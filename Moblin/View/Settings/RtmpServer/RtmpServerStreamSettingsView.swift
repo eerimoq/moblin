@@ -30,10 +30,6 @@ struct RtmpServerStreamSettingsView: View {
     @ObservedObject var rtmpServer: SettingsRtmpServer
     @ObservedObject var stream: SettingsRtmpServerStream
 
-    private func submitName(value: String) {
-        stream.name = value.trim()
-    }
-
     private func submitStreamKey(value: String) {
         let streamKey = value.trim()
         if model.getRtmpStream(streamKey: streamKey) != nil {
@@ -55,13 +51,8 @@ struct RtmpServerStreamSettingsView: View {
         NavigationLink {
             Form {
                 Section {
-                    TextEditNavigationView(
-                        title: String(localized: "Name"),
-                        value: stream.name,
-                        onSubmit: submitName,
-                        capitalize: true
-                    )
-                    .disabled(model.rtmpServerEnabled())
+                    NameEditView(name: $stream.name, existingNames: rtmpServer.streams)
+                        .disabled(model.rtmpServerEnabled())
                     TextEditNavigationView(
                         title: String(localized: "Stream key"),
                         value: stream.streamKey,
