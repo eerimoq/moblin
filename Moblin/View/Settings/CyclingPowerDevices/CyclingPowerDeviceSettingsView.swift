@@ -15,11 +15,11 @@ private func formatCyclingPowerDeviceState(state: CyclingPowerDeviceState?) -> S
 }
 
 struct CyclingPowerDeviceSettingsView: View {
-    @EnvironmentObject var model: Model
-    @ObservedObject private var scanner = cyclingPowerScanner
+    let model: Model
+    @ObservedObject var cyclingPowerDevices: SettingsCyclingPowerDevices
+    @ObservedObject var device: SettingsCyclingPowerDevice
     @ObservedObject var status: StatusTopRight
-    var device: SettingsCyclingPowerDevice
-    @Binding var name: String
+    @ObservedObject private var scanner = cyclingPowerScanner
 
     func state() -> String {
         return formatCyclingPowerDeviceState(state: status.cyclingPowerDeviceState)
@@ -41,54 +41,51 @@ struct CyclingPowerDeviceSettingsView: View {
     }
 
     var body: some View {
-        Form {
-            Section {
-                TextEditNavigationView(title: "Name", value: device.name, onSubmit: { value in
-                    self.name = value
-                    device.name = value
-                })
-            }
-            Section {
-                NavigationLink { CyclingPowerDeviceScannerSettingsView(
-                    onChange: onDeviceChange,
-                    selectedId: device.bluetoothPeripheralId?
-                        .uuidString ?? String(localized: "Select device")
-                )
-                } label: {
-                    Text(device.bluetoothPeripheralName ?? String(localized: "Select device"))
-                        .foregroundColor(.gray)
-                        .lineLimit(1)
-                }
-                .disabled(model.isCyclingPowerDeviceEnabled(device: device))
-            } header: {
-                Text("Device")
-            }
-            Section {
-                Toggle(isOn: Binding(get: {
-                    device.enabled
-                }, set: { value in
-                    device.enabled = value
-                    if device.enabled {
-                        model.enableCyclingPowerDevice(device: device)
-                    } else {
-                        model.disableCyclingPowerDevice(device: device)
-                    }
-                }), label: {
-                    Text("Enabled")
-                })
-                .disabled(!canEnable())
-            }
-            if device.enabled {
+        NavigationLink {
+            Form {
                 Section {
-                    HCenter {
-                        Text(state())
+                    NameEditView(name: $device.name, existingNames: cyclingPowerDevices.devices)
+                }
+                Section {
+                    NavigationLink { CyclingPowerDeviceScannerSettingsView(
+                        onChange: onDeviceChange,
+                        selectedId: device.bluetoothPeripheralId?
+                            .uuidString ?? String(localized: "Select device")
+                    )
+                    } label: {
+                        Text(device.bluetoothPeripheralName ?? String(localized: "Select device"))
+                            .foregroundColor(.gray)
+                            .lineLimit(1)
+                    }
+                    .disabled(model.isCyclingPowerDeviceEnabled(device: device))
+                } header: {
+                    Text("Device")
+                }
+                Section {
+                    Toggle("Enabled", isOn: $device.enabled)
+                        .onChange(of: device.enabled) { _ in
+                            if device.enabled {
+                                model.enableCyclingPowerDevice(device: device)
+                            } else {
+                                model.disableCyclingPowerDevice(device: device)
+                            }
+                        }
+                        .disabled(!canEnable())
+                }
+                if device.enabled {
+                    Section {
+                        HCenter {
+                            Text(state())
+                        }
                     }
                 }
             }
+            .onAppear {
+                model.setCurrentCyclingPowerDevice(device: device)
+            }
+            .navigationTitle("Cycling power device")
+        } label: {
+            Text(device.name)
         }
-        .onAppear {
-            model.setCurrentCyclingPowerDevice(device: device)
-        }
-        .navigationTitle("Cycling power device")
     }
 }

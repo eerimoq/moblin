@@ -137,7 +137,7 @@ struct SettingsView: View {
                         Label("Tesla", systemImage: "car.side")
                     }
                     NavigationLink {
-                        CyclingPowerDevicesSettingsView()
+                        CyclingPowerDevicesSettingsView(cyclingPowerDevices: model.database.cyclingPowerDevices)
                     } label: {
                         Label("Cycling power devices", systemImage: "bicycle")
                     }
