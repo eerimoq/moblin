@@ -24,6 +24,7 @@ private func formatPhoneCoolerDeviceState(state: PhoneCoolerDeviceState?) -> Str
 struct PhoneCoolerDeviceSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject private var scanner = phoneCoolerScanner
+    @ObservedObject var phoneCoolerDevices: SettingsPhoneCoolerDevices
     @ObservedObject var device: SettingsPhoneCoolerDevice
     @ObservedObject var status: StatusTopRight
 
@@ -77,15 +78,14 @@ struct PhoneCoolerDeviceSettingsView: View {
         NavigationLink {
             Form {
                 Section {
-                    TextEditNavigationView(title: "Name", value: device.name, onSubmit: {
-                        device.name = $0
-                    })
+                    NameEditView(name: $device.name, existingNames: phoneCoolerDevices.devices)
                 }
                 Section {
-                    NavigationLink { PhoneCoolerDeviceScannerSettingsView(
-                        onChange: onDeviceChange,
-                        selectedId: device.bluetoothPeripheralId?.uuidString ?? String(localized: "Select device")
-                    )
+                    NavigationLink {
+                        PhoneCoolerDeviceScannerSettingsView(
+                            onChange: onDeviceChange,
+                            selectedId: device.bluetoothPeripheralId?.uuidString ?? String(localized: "Select device")
+                        )
                     } label: {
                         Text(device.bluetoothPeripheralName ?? String(localized: "Select device"))
                             .foregroundColor(.gray)
