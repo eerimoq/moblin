@@ -73,6 +73,9 @@ class RistServer {
     private func stopInner() {
         logger.info("rist-server: Stopping")
         context = nil
+        for virtualDestinationPort in clientsByVirtualDestinationPort.keys {
+            delegate?.ristServerOnDisconnected(port: virtualDestinationPort, reason: "")
+        }
         clientsByVirtualDestinationPort.removeAll()
     }
 }
