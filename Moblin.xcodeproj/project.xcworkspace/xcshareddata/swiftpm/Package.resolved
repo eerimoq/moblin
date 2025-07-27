@@ -1,5 +1,4 @@
 {
-  "originHash" : "fa2ad0d101396197799b8d983ba3f1aadeaae0e7a0acb4fca3deeed8231c7ce8",
   "pins" : [
     {
       "identity" : "alerttoast",
@@ -80,15 +79,6 @@
       "state" : {
         "branch" : "main",
         "revision" : "8268fa2ea53080c03af24b22307750002f12c5c9"
-      }
-    },
-    {
-      "identity" : "rist",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/eerimoq/Rist",
-      "state" : {
-        "branch" : "main",
-        "revision" : "36352e9e7e8f4ee53686734eeb034682f062d445"
       }
     },
     {
@@ -191,5 +181,5 @@
       }
     }
   ],
-  "version" : 3
+  "version" : 2
 }
