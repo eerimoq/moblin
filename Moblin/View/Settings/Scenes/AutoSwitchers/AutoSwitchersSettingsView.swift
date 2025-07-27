@@ -117,13 +117,7 @@ private struct AutoSwitcherSettingsView: View {
                 NameEditView(name: $autoSwitcher.name, existingNames: autoSceneSwitchers.switchers)
             }
             Section {
-                Toggle(isOn: Binding(get: {
-                    autoSwitcher.shuffle
-                }, set: {
-                    autoSwitcher.shuffle = $0
-                })) {
-                    Text("Shuffle")
-                }
+                Toggle("Shuffle", isOn: $autoSwitcher.shuffle)
             }
             AutoSwitcherScenesSettingsView(autoSwitcher: autoSwitcher)
         }
