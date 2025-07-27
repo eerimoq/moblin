@@ -80,7 +80,6 @@ class RistServer {
     }
 
     private func peerConnected(_ virtualDestinationPort: UInt16) {
-        logger.info("rist-server: Connected virtual destination port \(virtualDestinationPort)")
         guard virtualDestinationPorts.contains(virtualDestinationPort) else {
             logger.info("rist-server: Ignoring unknown virtual destination port \(virtualDestinationPort)")
             return
@@ -93,7 +92,6 @@ class RistServer {
     }
 
     private func peerDisconnected(_ virtualDestinationPort: UInt16) {
-        logger.info("rist-server: Disconnected virtual destination port \(virtualDestinationPort)")
         if clientsByVirtualDestinationPort.removeValue(forKey: virtualDestinationPort) != nil {
             delegate?.ristServerOnDisconnected(port: virtualDestinationPort, reason: "")
         }

@@ -819,7 +819,6 @@
 		033FD71A2CC622D40073C6EC /* PadelScoreboardEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PadelScoreboardEffect.swift; sourceTree = "<group>"; };
 		033FD71D2CC8A4A50073C6EC /* WidgetScoreboardSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetScoreboardSettingsView.swift; sourceTree = "<group>"; };
 		03403DF52AD05CA60079D8E4 /* WidgetBrowserSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetBrowserSettingsView.swift; sourceTree = "<group>"; };
-		0342D02A2E366A2400086592 /* Rist */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Rist; path = ../repos/Rist; sourceTree = SOURCE_ROOT; };
 		0342F1A02C627A70004DD3EA /* MirlClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MirlClient.swift; sourceTree = "<group>"; };
 		0342F1A22C627A87004DD3EA /* MirlServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MirlServer.swift; sourceTree = "<group>"; };
 		0342F1A42C627A8F004DD3EA /* MirlCommon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MirlCommon.swift; sourceTree = "<group>"; };
@@ -2173,7 +2172,6 @@
 				035E9E362A9A02D6009D4F5A /* MoblinApp.swift */,
 				0358DDD82BE6A7370080133B /* Moblin.entitlements */,
 				035E9E3A2A9A02D7009D4F5A /* Assets.xcassets */,
-				0342D02A2E366A2400086592 /* Rist */,
 				03F9775E2BA5A8E8000F5739 /* PrivacyInfo.xcprivacy */,
 				032BC5B22AD8E18000DEC883 /* Info.plist */,
 				03EC1E772CBEE477009AEAB1 /* AppShortcuts.strings */,

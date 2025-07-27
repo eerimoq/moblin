@@ -290,7 +290,7 @@ class RistStream {
     }
 
     private func addPeer(url: String?, interfaceName: String, relayEndpoint: NWEndpoint? = nil) {
-        logger.info("rist: Adding peer for interface \(interfaceName) \(url)")
+        logger.info("rist: Adding peer for interface \(interfaceName)")
         guard let url, let peer = context?.addPeer(url: url) else {
             logger.info("rist: Failed to add peer")
             return
