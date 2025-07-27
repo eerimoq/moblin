@@ -50,7 +50,7 @@ struct RistServerStreamSettingsView: View {
                 }
                 Section {
                     TextEditBindingNavigationView(
-                        title: String(localized: "Port"),
+                        title: String(localized: "Virtual port"),
                         value: $stream.virtualDestinationPortString,
                         onSubmit: submitPort,
                         keyboardType: .numbersAndPunctuation
