@@ -4,12 +4,20 @@ struct RistServerSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var ristServer: SettingsRistServer
 
+    private func submitPort(value: String) {
+        guard let port = UInt16(value.trim()), port > 0 else {
+            ristServer.portString = String(ristServer.port)
+            model.makePortErrorToast(port: value)
+            return
+        }
+        ristServer.port = port
+        model.reloadRistServer()
+    }
+
     var body: some View {
         Form {
             Section {
-                Text("""
-                The RIST server allows Moblin to receive video streams over the network.
-                """)
+                Text("The RIST server allows Moblin to receive video streams over the network.")
             }
             Section {
                 Toggle("Enabled", isOn: $ristServer.enabled)
@@ -25,6 +33,17 @@ struct RistServerSettingsView: View {
                         Text("Disable the RIST server to change its settings.")
                     }
                 }
+            }
+            Section {
+                TextEditBindingNavigationView(
+                    title: String(localized: "Port"),
+                    value: $ristServer.portString,
+                    onSubmit: submitPort,
+                    keyboardType: .numbersAndPunctuation
+                )
+                .disabled(ristServer.enabled)
+            } footer: {
+                Text("The UDP port the RIST server listens for RIST publishers on.")
             }
             Section {
                 List {
@@ -49,8 +68,8 @@ struct RistServerSettingsView: View {
                     let stream = SettingsRistServerStream()
                     stream.name = makeUniqueName(name: SettingsRistServerStream.baseName,
                                                  existingNames: ristServer.streams)
-                    stream.port = ristServer.makeUniquePort()
-                    stream.portString = String(stream.port)
+                    stream.virtualDestinationPort = ristServer.makeUniquePort()
+                    stream.virtualDestinationPortString = String(stream.virtualDestinationPort)
                     ristServer.streams.append(stream)
                     model.updateMicsListAsync()
                 }

@@ -5,9 +5,10 @@ private struct UrlsView: View {
     let model: Model
     @ObservedObject var status: StatusOther
     let port: UInt16
+    let virtualDestinationPort: UInt16
 
     private func formatUrl(ip: String) -> String {
-        return "rist://\(ip):\(port)"
+        return "rist://\(ip):\(port)?virt-dst-port=\(virtualDestinationPort)"
     }
 
     var body: some View {
@@ -30,11 +31,11 @@ struct RistServerStreamSettingsView: View {
 
     private func submitPort(value: String) {
         guard let port = UInt16(value.trim()), port > 0 else {
-            stream.portString = String(stream.port)
+            stream.virtualDestinationPortString = String(stream.virtualDestinationPort)
             model.makePortErrorToast(port: value)
             return
         }
-        stream.port = port
+        stream.virtualDestinationPort = port
         model.reloadRistServer()
     }
 
@@ -50,17 +51,19 @@ struct RistServerStreamSettingsView: View {
                 Section {
                     TextEditBindingNavigationView(
                         title: String(localized: "Port"),
-                        value: $stream.portString,
+                        value: $stream.virtualDestinationPortString,
                         onSubmit: submitPort,
                         keyboardType: .numbersAndPunctuation
                     )
                     .disabled(ristServer.enabled)
                 } footer: {
-                    Text("The UDP port this RIST stream listens for a RIST publisher on.")
+                    Text("The virtual destination port for this stream.")
                 }
                 Section {
                     if model.ristServerEnabled() {
-                        UrlsView(model: model, status: status, port: stream.port)
+                        UrlsView(model: model, status: status,
+                                 port: ristServer.port,
+                                 virtualDestinationPort: stream.virtualDestinationPort)
                     } else {
                         Text("Enable the RIST server to see URLs.")
                     }
@@ -78,7 +81,7 @@ struct RistServerStreamSettingsView: View {
             .navigationTitle("Stream")
         } label: {
             HStack {
-                if model.isRistStreamConnected(port: stream.port) {
+                if model.isRistStreamConnected(port: stream.virtualDestinationPort) {
                     Image(systemName: "cable.connector")
                 } else {
                     Image(systemName: "cable.connector.slash")
