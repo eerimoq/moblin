@@ -21,13 +21,9 @@ struct Video: Transferable {
 
 struct MediaPlayerSettingsView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var mediaPlayers: SettingsMediaPlayers
     @ObservedObject var player: SettingsMediaPlayer
     @State var selectedVideoItem: PhotosPickerItem?
-
-    private func submitName(value: String) {
-        player.name = value.trim()
-        model.updateMediaPlayerSettings(playerId: player.id, settings: player)
-    }
 
     private func appendMedia(url: URL) {
         let file = SettingsMediaPlayerFile()
@@ -40,12 +36,10 @@ struct MediaPlayerSettingsView: View {
         NavigationLink {
             Form {
                 Section {
-                    TextEditNavigationView(
-                        title: String(localized: "Name"),
-                        value: player.name,
-                        onSubmit: submitName,
-                        capitalize: true
-                    )
+                    NameEditView(name: $player.name, existingNames: mediaPlayers.players)
+                        .onChange(of: player.name) { _ in
+                            model.updateMediaPlayerSettings(playerId: player.id, settings: player)
+                        }
                 }
                 if false {
                     Section {

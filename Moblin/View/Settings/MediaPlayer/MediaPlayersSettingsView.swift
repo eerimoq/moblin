@@ -18,7 +18,7 @@ struct MediaPlayersSettingsView: View {
             Section {
                 List {
                     ForEach(mediaPlayers.players) { player in
-                        MediaPlayerSettingsView(player: player)
+                        MediaPlayerSettingsView(mediaPlayers: mediaPlayers, player: player)
                     }
                     .onDelete { indexes in
                         for index in indexes {
