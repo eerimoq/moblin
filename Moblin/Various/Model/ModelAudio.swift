@@ -502,7 +502,7 @@ extension Model {
             let mic = SettingsMicsMic()
             mic.name = stream.camera()
             mic.inputUid = stream.id.uuidString
-            mic.connected = isRistStreamConnected(port: stream.virtualDestinationPort)
+            mic.connected = isRistStreamConnected(port: stream.port)
             mics.append(mic)
         }
     }

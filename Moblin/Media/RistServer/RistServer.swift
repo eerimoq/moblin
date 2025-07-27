@@ -22,18 +22,16 @@ protocol RistServerDelegate: AnyObject {
 let ristServerQueue = DispatchQueue(label: "com.eerimoq.rist-server")
 
 class RistServer {
-    private var port: UInt16
-    private var context: RistReceiverContext?
-    private var clientsByVirtualDestinationPort: [UInt16: RistServerClient] = [:]
+    private var clients: [RistServerClient] = []
     weak var delegate: (any RistServerDelegate)?
-    private let virtualDestinationPorts: [UInt16]
+    private let ports: [UInt16]
     private let timecodesEnabled: Bool
     var totalBytesReceived: UInt64 = 0
     private var prevTotalBytesReceived: UInt64 = 0
+    var numberOfConnectedClients = 0
 
-    init?(port: UInt16, virtualDestinationPorts: [UInt16], timecodesEnabled: Bool) {
-        self.port = port
-        self.virtualDestinationPorts = virtualDestinationPorts
+    init(ports: [UInt16], timecodesEnabled: Bool) {
+        self.ports = ports
         self.timecodesEnabled = timecodesEnabled
     }
 
@@ -59,59 +57,30 @@ class RistServer {
 
     func getNumberOfClients() -> Int {
         return ristServerQueue.sync {
-            clientsByVirtualDestinationPort.count
+            numberOfConnectedClients
         }
     }
 
     private func startInner() {
         logger.info("rist-server: Starting")
-        context = RistReceiverContext(inputUrl: "rist://@0.0.0.0:\(port)?rtt-min=100")
-        context?.delegate = self
-        _ = context?.start()
+        numberOfConnectedClients = 0
+        for port in ports {
+            if let client = RistServerClient(port: port, timecodesEnabled: timecodesEnabled) {
+                client.server = self
+                client.start()
+                clients.append(client)
+            } else {
+                logger.info("rist-server: Failed to create client for port: \(port)")
+            }
+        }
     }
 
     private func stopInner() {
         logger.info("rist-server: Stopping")
-        context = nil
-        clientsByVirtualDestinationPort.removeAll()
-    }
-}
-
-extension RistServer: RistReceiverContextDelegate {
-    func ristReceiverContextConnected(_: Rist.RistReceiverContext, _ virtualDestinationPort: UInt16) {
-        ristServerQueue.async {
-            guard self.virtualDestinationPorts.contains(virtualDestinationPort) else {
-                logger.info("rist-server: Ignoring unknown virtual destination port \(virtualDestinationPort)")
-                return
-            }
-            let client = RistServerClient(virtualDestinationPort: virtualDestinationPort,
-                                          timecodesEnabled: self.timecodesEnabled)
-            client?.server = self
-            self.clientsByVirtualDestinationPort[virtualDestinationPort] = client
-            self.delegate?.ristServerOnConnected(port: virtualDestinationPort)
+        numberOfConnectedClients = 0
+        for client in clients {
+            client.stop()
         }
-    }
-
-    func ristReceiverContextDisconnected(_: Rist.RistReceiverContext, _ virtualDestinationPort: UInt16) {
-        ristServerQueue.async {
-            if self.clientsByVirtualDestinationPort.removeValue(forKey: virtualDestinationPort) != nil {
-                self.delegate?.ristServerOnDisconnected(port: virtualDestinationPort, reason: "")
-            }
-        }
-    }
-
-    func ristReceiverContextReceivedData(_: Rist.RistReceiverContext,
-                                         _ virtualDestinationPort: UInt16,
-                                         packets: [Data])
-    {
-        ristServerQueue.async {
-            guard let client = self.clientsByVirtualDestinationPort[virtualDestinationPort] else {
-                return
-            }
-            for packet in packets {
-                self.totalBytesReceived += UInt64(packet.count)
-                client.handlePacketFromClient(packet: packet)
-            }
-        }
+        clients.removeAll()
     }
 }

@@ -4208,8 +4208,8 @@ class SettingsRistServerStream: Codable, Identifiable, ObservableObject, Named {
     static let baseName = String(localized: "My stream")
     var id: UUID = .init()
     @Published var name: String = baseName
-    @Published var virtualDestinationPort: UInt16 = 6500
-    @Published var virtualDestinationPortString: String = "6500"
+    @Published var port: UInt16 = 6500
+    @Published var portString: String = "6500"
     var connected: Bool = false
 
     enum CodingKeys: CodingKey {
@@ -4222,7 +4222,7 @@ class SettingsRistServerStream: Codable, Identifiable, ObservableObject, Named {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
         try container.encode(.name, name)
-        try container.encode(.port, virtualDestinationPort)
+        try container.encode(.port, port)
     }
 
     init() {}
@@ -4231,8 +4231,8 @@ class SettingsRistServerStream: Codable, Identifiable, ObservableObject, Named {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
         name = container.decode(.name, String.self, Self.baseName)
-        virtualDestinationPort = container.decode(.port, UInt16.self, 6500)
-        virtualDestinationPortString = String(virtualDestinationPort)
+        port = container.decode(.port, UInt16.self, 6500)
+        portString = String(port)
     }
 
     func camera() -> String {
@@ -4242,20 +4242,16 @@ class SettingsRistServerStream: Codable, Identifiable, ObservableObject, Named {
 
 class SettingsRistServer: Codable, ObservableObject {
     @Published var enabled: Bool = false
-    @Published var port: UInt16 = 6500
-    @Published var portString: String = "6500"
     @Published var streams: [SettingsRistServerStream] = []
 
     enum CodingKeys: CodingKey {
         case enabled,
-             port,
              streams
     }
 
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.enabled, enabled)
-        try container.encode(.port, port)
         try container.encode(.streams, streams)
     }
 
@@ -4264,14 +4260,12 @@ class SettingsRistServer: Codable, ObservableObject {
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         enabled = container.decode(.enabled, Bool.self, false)
-        port = container.decode(.port, UInt16.self, 6500)
-        portString = String(port)
         streams = container.decode(.streams, [SettingsRistServerStream].self, [])
     }
 
     func makeUniquePort() -> UInt16 {
-        var port: UInt16 = 1
-        while streams.contains(where: { $0.virtualDestinationPort == port }) {
+        var port: UInt16 = 6500
+        while streams.contains(where: { $0.port == port }) {
             port += 1
         }
         return port

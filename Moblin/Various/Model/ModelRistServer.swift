@@ -10,10 +10,8 @@ extension Model {
     func reloadRistServer() {
         stopRistServer()
         if database.ristServer.enabled {
-            let ports = database.ristServer.streams.map { $0.virtualDestinationPort }
-            servers.rist = RistServer(port: database.ristServer.port,
-                                      virtualDestinationPorts: ports,
-                                      timecodesEnabled: isTimecodesEnabled())
+            let ports = database.ristServer.streams.map { $0.port }
+            servers.rist = RistServer(ports: ports, timecodesEnabled: isTimecodesEnabled())
             servers.rist?.delegate = self
             servers.rist?.start()
         }
@@ -43,12 +41,12 @@ extension Model {
 
     func getRistStream(port: UInt16) -> SettingsRistServerStream? {
         return database.ristServer.streams.first { stream in
-            stream.virtualDestinationPort == port
+            stream.port == port
         }
     }
 
     func isRistStreamConnected(port: UInt16) -> Bool {
-        return database.ristServer.streams.first { $0.virtualDestinationPort == port }?.connected == true
+        return database.ristServer.streams.first { $0.port == port }?.connected == true
     }
 }
 
