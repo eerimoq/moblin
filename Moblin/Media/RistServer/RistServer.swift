@@ -78,43 +78,56 @@ class RistServer {
         }
         clientsByVirtualDestinationPort.removeAll()
     }
+
+    private func peerConnected(_ virtualDestinationPort: UInt16) {
+        guard virtualDestinationPorts.contains(virtualDestinationPort) else {
+            logger.info("rist-server: Ignoring unknown virtual destination port \(virtualDestinationPort)")
+            return
+        }
+        let client = RistServerClient(virtualDestinationPort: virtualDestinationPort,
+                                      timecodesEnabled: timecodesEnabled)
+        client?.server = self
+        clientsByVirtualDestinationPort[virtualDestinationPort] = client
+        delegate?.ristServerOnConnected(port: virtualDestinationPort)
+    }
+
+    private func peerDisconnected(_ virtualDestinationPort: UInt16) {
+        if clientsByVirtualDestinationPort.removeValue(forKey: virtualDestinationPort) != nil {
+            delegate?.ristServerOnDisconnected(port: virtualDestinationPort, reason: "")
+        }
+    }
+
+    private func peerReceivedData(_ virtualDestinationPort: UInt16, packets: [Data]) {
+        guard let client = clientsByVirtualDestinationPort[virtualDestinationPort] else {
+            return
+        }
+        for packet in packets {
+            totalBytesReceived += UInt64(packet.count)
+            client.handlePacketFromClient(packet: packet)
+        }
+    }
 }
 
 extension RistServer: RistReceiverContextDelegate {
     func ristReceiverContextConnected(_: Rist.RistReceiverContext, _ virtualDestinationPort: UInt16) {
         ristServerQueue.async {
-            guard self.virtualDestinationPorts.contains(virtualDestinationPort) else {
-                logger.info("rist-server: Ignoring unknown virtual destination port \(virtualDestinationPort)")
-                return
-            }
-            let client = RistServerClient(virtualDestinationPort: virtualDestinationPort,
-                                          timecodesEnabled: self.timecodesEnabled)
-            client?.server = self
-            self.clientsByVirtualDestinationPort[virtualDestinationPort] = client
-            self.delegate?.ristServerOnConnected(port: virtualDestinationPort)
+            self.peerConnected(virtualDestinationPort)
         }
     }
 
     func ristReceiverContextDisconnected(_: Rist.RistReceiverContext, _ virtualDestinationPort: UInt16) {
         ristServerQueue.async {
-            if self.clientsByVirtualDestinationPort.removeValue(forKey: virtualDestinationPort) != nil {
-                self.delegate?.ristServerOnDisconnected(port: virtualDestinationPort, reason: "")
-            }
+            self.peerDisconnected(virtualDestinationPort)
         }
     }
 
-    func ristReceiverContextReceivedData(_: Rist.RistReceiverContext,
-                                         _ virtualDestinationPort: UInt16,
-                                         packets: [Data])
-    {
+    func ristReceiverContextReceivedData(
+        _: Rist.RistReceiverContext,
+        _ virtualDestinationPort: UInt16,
+        packets: [Data]
+    ) {
         ristServerQueue.async {
-            guard let client = self.clientsByVirtualDestinationPort[virtualDestinationPort] else {
-                return
-            }
-            for packet in packets {
-                self.totalBytesReceived += UInt64(packet.count)
-                client.handlePacketFromClient(packet: packet)
-            }
+            self.peerReceivedData(virtualDestinationPort, packets: packets)
         }
     }
 }
