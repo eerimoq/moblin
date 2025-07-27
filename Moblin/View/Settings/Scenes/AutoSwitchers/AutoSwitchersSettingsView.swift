@@ -166,7 +166,8 @@ struct AutoSwitchersSettingsView: View {
             }
             CreateButtonView {
                 let switcher = SettingsAutoSceneSwitcher()
-                switcher.name = makeUniqueName(name: "My switcher", existingNames: autoSceneSwitchers.switchers)
+                switcher.name = makeUniqueName(name: SettingsAutoSceneSwitcher.baseName,
+                                               existingNames: autoSceneSwitchers.switchers)
                 autoSceneSwitchers.switchers.append(switcher)
             }
         } header: {

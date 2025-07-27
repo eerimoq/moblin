@@ -20,7 +20,8 @@ struct DeepLinkCreatorStreamsSettingsView: View {
                 }
                 CreateButtonView {
                     let stream = DeepLinkCreatorStream()
-                    stream.name = makeUniqueName(name: "My stream", existingNames: deepLinkCreator.streams)
+                    stream.name = makeUniqueName(name: DeepLinkCreatorStream.baseName,
+                                                 existingNames: deepLinkCreator.streams)
                     deepLinkCreator.streams.append(stream)
                 }
             }

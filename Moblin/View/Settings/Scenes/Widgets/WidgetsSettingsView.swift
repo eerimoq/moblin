@@ -130,7 +130,7 @@ struct WidgetsSettingsView: View {
                 model.resetSelectedScene()
             }
             CreateButtonView {
-                let name = makeUniqueName(name: String(localized: "My widget"), existingNames: database.widgets)
+                let name = makeUniqueName(name: SettingsWidget.baseName, existingNames: database.widgets)
                 let widget = SettingsWidget(name: name)
                 database.widgets.append(widget)
                 model.fixAlertMedias()

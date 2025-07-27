@@ -56,7 +56,7 @@ private struct ScenesListView: View {
                 }
             }
             CreateButtonView {
-                let name = makeUniqueName(name: SettingsScene.nameBase, existingNames: database.scenes)
+                let name = makeUniqueName(name: SettingsScene.baseName, existingNames: database.scenes)
                 let scene = SettingsScene(name: name)
                 database.scenes.append(scene)
                 model.resetSelectedScene()

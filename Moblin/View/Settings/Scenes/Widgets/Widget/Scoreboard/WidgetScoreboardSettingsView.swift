@@ -38,7 +38,8 @@ private struct PlayersView: View {
             }
             CreateButtonView {
                 let player = SettingsWidgetScoreboardPlayer()
-                player.name = makeUniqueName(name: "🇸🇪 Moblin", existingNames: model.database.scoreboardPlayers)
+                player.name = makeUniqueName(name: SettingsWidgetScoreboardPlayer.baseName,
+                                             existingNames: model.database.scoreboardPlayers)
                 model.database.scoreboardPlayers.append(player)
                 model.sendScoreboardPlayersToWatch()
                 model.objectWillChange.send()

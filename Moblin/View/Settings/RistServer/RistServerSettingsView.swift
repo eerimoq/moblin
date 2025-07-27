@@ -47,7 +47,8 @@ struct RistServerSettingsView: View {
                 }
                 CreateButtonView {
                     let stream = SettingsRistServerStream()
-                    stream.name = makeUniqueName(name: "My stream", existingNames: ristServer.streams)
+                    stream.name = makeUniqueName(name: SettingsRistServerStream.baseName,
+                                                 existingNames: ristServer.streams)
                     ristServer.streams.append(stream)
                     model.updateMicsListAsync()
                 }

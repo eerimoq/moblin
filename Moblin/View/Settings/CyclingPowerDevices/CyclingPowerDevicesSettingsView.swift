@@ -25,7 +25,8 @@ struct CyclingPowerDevicesSettingsView: View {
                 }
                 CreateButtonView {
                     let device = SettingsCyclingPowerDevice()
-                    device.name = makeUniqueName(name: "My device", existingNames: cyclingPowerDevices.devices)
+                    device.name = makeUniqueName(name: SettingsCyclingPowerDevice.baseName,
+                                                 existingNames: cyclingPowerDevices.devices)
                     cyclingPowerDevices.devices.append(device)
                 }
             } footer: {

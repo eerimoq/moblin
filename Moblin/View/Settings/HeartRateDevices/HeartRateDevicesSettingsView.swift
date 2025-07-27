@@ -30,7 +30,8 @@ struct HeartRateDevicesSettingsView: View {
                 }
                 CreateButtonView {
                     let device = SettingsHeartRateDevice()
-                    device.name = makeUniqueName(name: "My device", existingNames: heartRateDevices.devices)
+                    device.name = makeUniqueName(name: SettingsHeartRateDevice.baseName,
+                                                 existingNames: heartRateDevices.devices)
                     heartRateDevices.devices.append(device)
                 }
             } footer: {

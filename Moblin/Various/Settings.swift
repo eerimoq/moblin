@@ -397,8 +397,9 @@ class SettingsStreamTwitchReward: Codable, Identifiable {
 }
 
 class SettingsStreamMultiStreamingDestination: Codable, Identifiable, ObservableObject, Named {
+    static let baseName = String(localized: "My destination")
     var id: UUID = .init()
-    @Published var name: String = "My destination"
+    @Published var name: String = baseName
     @Published var url: String = defaultRtmpStreamUrl
     @Published var enabled: Bool = false
 
@@ -419,7 +420,7 @@ class SettingsStreamMultiStreamingDestination: Codable, Identifiable, Observable
 
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        name = container.decode(.name, String.self, "My destination")
+        name = container.decode(.name, String.self, Self.baseName)
         url = container.decode(.url, String.self, defaultRtmpStreamUrl)
         enabled = container.decode(.enabled, Bool.self, false)
     }
@@ -953,7 +954,7 @@ enum SettingsCameraId {
 }
 
 class SettingsScene: Codable, Identifiable, Equatable, ObservableObject, Named {
-    static let nameBase = String(localized: "My scene")
+    static let baseName = String(localized: "My scene")
     @Published var name: String
     var id: UUID = .init()
     @Published var enabled: Bool = true
@@ -1153,8 +1154,9 @@ class SettingsAutoSceneSwitcherScene: Codable, Identifiable {
 }
 
 class SettingsAutoSceneSwitcher: Codable, Identifiable, ObservableObject, Named {
+    static let baseName = String(localized: "My switcher")
     var id: UUID = .init()
-    @Published var name: String = "My switcher"
+    @Published var name: String = baseName
     var shuffle: Bool = false
     var scenes: [SettingsAutoSceneSwitcherScene] = []
 
@@ -2086,8 +2088,9 @@ enum SettingsWidgetScoreboardType: String, Codable, CaseIterable {
 }
 
 class SettingsWidgetScoreboardPlayer: Codable, Identifiable, Named {
+    static let baseName = String(localized: "🇸🇪 Moblin")
     var id: UUID = .init()
-    var name: String = "🇸🇪 Moblin"
+    var name: String = baseName
 }
 
 class SettingsWidgetScoreboardScore: Codable, Identifiable {
@@ -2636,6 +2639,7 @@ class SettingsWidgetPngTuber: Codable, ObservableObject {
 }
 
 class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named {
+    static let baseName = String(localized: "My widget")
     @Published var name: String
     var id: UUID = .init()
     var type: SettingsWidgetType = .browser
@@ -3998,8 +4002,9 @@ class SettingsDebug: Codable, ObservableObject {
 }
 
 class SettingsRtmpServerStream: Codable, Identifiable, ObservableObject, Named {
+    static let baseName = String(localized: "My stream")
     var id: UUID = .init()
-    @Published var name: String = "My stream"
+    @Published var name: String = baseName
     @Published var streamKey: String = ""
     @Published var latency: Int32 = defaultRtmpLatency
     @Published var latencyString: String = .init(defaultRtmpLatency)
@@ -4025,7 +4030,7 @@ class SettingsRtmpServerStream: Codable, Identifiable, ObservableObject, Named {
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
-        name = container.decode(.name, String.self, "My stream")
+        name = container.decode(.name, String.self, Self.baseName)
         streamKey = container.decode(.streamKey, String.self, "")
         latency = container.decode(.latency, Int32.self, defaultRtmpLatency)
         latencyString = String(latency)
@@ -4087,8 +4092,9 @@ class SettingsRtmpServer: Codable, ObservableObject {
 }
 
 class SettingsSrtlaServerStream: Codable, Identifiable, ObservableObject, Named {
+    static let baseName = String(localized: "My stream")
     var id: UUID = .init()
-    @Published var name: String = "My stream"
+    @Published var name: String = baseName
     @Published var streamId: String = ""
     var connected: Bool = false
 
@@ -4110,7 +4116,7 @@ class SettingsSrtlaServerStream: Codable, Identifiable, ObservableObject, Named 
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
-        name = container.decode(.name, String.self, "My stream")
+        name = container.decode(.name, String.self, Self.baseName)
         streamId = container.decode(.streamId, String.self, "")
     }
 
@@ -4180,8 +4186,9 @@ class SettingsSrtlaServer: Codable, ObservableObject {
 }
 
 class SettingsRistServerStream: Codable, Identifiable, ObservableObject, Named {
+    static let baseName = String(localized: "My stream")
     var id: UUID = .init()
-    @Published var name: String = "My stream"
+    @Published var name: String = baseName
     @Published var port: UInt16 = 6500
     @Published var portString: String = "6500"
     var connected: Bool = false
@@ -4204,7 +4211,7 @@ class SettingsRistServerStream: Codable, Identifiable, ObservableObject, Named {
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
-        name = container.decode(.name, String.self, "My stream")
+        name = container.decode(.name, String.self, Self.baseName)
         port = container.decode(.port, UInt16.self, 6500)
         portString = String(port)
     }
@@ -4251,8 +4258,9 @@ class SettingsMediaPlayerFile: Codable, Identifiable {
 }
 
 class SettingsMediaPlayer: Codable, Identifiable, ObservableObject, Named {
+    static let baseName = String(localized: "My player")
     var id: UUID = .init()
-    @Published var name: String = "My player"
+    @Published var name: String = baseName
     @Published var playerId: String = ""
     @Published var autoSelectMic: Bool = true
     @Published var playlist: [SettingsMediaPlayerFile] = []
@@ -4279,7 +4287,7 @@ class SettingsMediaPlayer: Codable, Identifiable, ObservableObject, Named {
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
-        name = container.decode(.name, String.self, "My player")
+        name = container.decode(.name, String.self, Self.baseName)
         playerId = container.decode(.playerId, String.self, "")
         autoSelectMic = container.decode(.autoSelectMic, Bool.self, true)
         playlist = container.decode(.playlist, [SettingsMediaPlayerFile].self, [])
@@ -4407,8 +4415,9 @@ var djiDeviceBitrates: [UInt32] = [
 var djiDeviceFpss: [Int] = [25, 30]
 
 class SettingsDjiDevice: Codable, Identifiable, ObservableObject, Named {
+    static let baseName = String(localized: "My device")
     var id: UUID = .init()
-    @Published var name: String = ""
+    @Published var name: String = baseName
     var bluetoothPeripheralName: String?
     var bluetoothPeripheralId: UUID?
     var wifiSsid: String = ""
@@ -4475,7 +4484,7 @@ class SettingsDjiDevice: Codable, Identifiable, ObservableObject, Named {
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
-        name = container.decode(.name, String.self, "")
+        name = container.decode(.name, String.self, Self.baseName)
         bluetoothPeripheralName = try? container.decode(String.self, forKey: .bluetoothPeripheralName)
         bluetoothPeripheralId = try? container.decode(UUID.self, forKey: .bluetoothPeripheralId)
         wifiSsid = container.decode(.wifiSsid, String.self, "")
@@ -4525,8 +4534,9 @@ enum SettingsDjiGimbalDeviceModel: String, Codable {
 }
 
 class SettingsDjiGimbalDevice: Codable, Identifiable, Named {
+    static let baseName = String(localized: "My gimbal")
     var id: UUID = .init()
-    var name: String = ""
+    var name: String = baseName
     var enabled: Bool = false
     var bluetoothPeripheralName: String?
     var bluetoothPeripheralId: UUID?
@@ -4538,8 +4548,9 @@ class SettingsDjiGimbalDevices: Codable {
 }
 
 class SettingsGoProWifiCredentials: Codable, Identifiable, ObservableObject, Named {
+    static let baseName = String(localized: "My SSID")
     var id: UUID = .init()
-    @Published var name = "My SSID"
+    @Published var name = baseName
     @Published var ssid = ""
     @Published var password = ""
 
@@ -4563,15 +4574,16 @@ class SettingsGoProWifiCredentials: Codable, Identifiable, ObservableObject, Nam
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
-        name = container.decode(.name, String.self, "")
+        name = container.decode(.name, String.self, Self.baseName)
         ssid = container.decode(.ssid, String.self, "")
         password = container.decode(.password, String.self, "")
     }
 }
 
 class SettingsGoProRtmpUrl: Codable, Identifiable, ObservableObject, Named {
+    static let baseName = String(localized: "My URL")
     var id: UUID = .init()
-    @Published var name = "My URL"
+    @Published var name = baseName
     @Published var type: SettingsDjiDeviceUrlType = .server
     @Published var serverStreamId: UUID = .init()
     @Published var serverUrl = ""
@@ -4601,7 +4613,7 @@ class SettingsGoProRtmpUrl: Codable, Identifiable, ObservableObject, Named {
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
-        name = container.decode(.name, String.self, "My URL")
+        name = container.decode(.name, String.self, Self.baseName)
         type = container.decode(.type, SettingsDjiDeviceUrlType.self, .server)
         serverStreamId = container.decode(.serverStreamId, UUID.self, .init())
         serverUrl = container.decode(.serverUrl, String.self, "")
@@ -4621,8 +4633,9 @@ enum SettingsGoProLaunchLiveStreamResolution: String, CaseIterable, Codable {
 }
 
 class SettingsGoProLaunchLiveStream: Codable, Identifiable, ObservableObject, Named {
+    static let baseName = String(localized: "My live")
     var id: UUID = .init()
-    @Published var name = "My live"
+    @Published var name = baseName
     @Published var isHero12Or13: Bool = true
     @Published var resolution: SettingsGoProLaunchLiveStreamResolution = .r1080p
 
@@ -4646,7 +4659,7 @@ class SettingsGoProLaunchLiveStream: Codable, Identifiable, ObservableObject, Na
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
-        name = container.decode(.name, String.self, "My live")
+        name = container.decode(.name, String.self, Self.baseName)
         isHero12Or13 = container.decode(.isHero12Or13, Bool.self, true)
         resolution = container.decode(.resolution, SettingsGoProLaunchLiveStreamResolution.self, .r1080p)
     }
@@ -4720,6 +4733,7 @@ class SettingsReplay: Codable {
 }
 
 class SettingsCatPrinter: Codable, Identifiable, ObservableObject, Named {
+    static let baseName = String(localized: "My printer")
     var id: UUID = .init()
     @Published var name: String = ""
     @Published var enabled: Bool = false
@@ -4792,6 +4806,7 @@ class SettingsCatPrinters: Codable, ObservableObject {
 }
 
 class SettingsCyclingPowerDevice: Codable, Identifiable, ObservableObject, Named {
+    static let baseName = String(localized: "My device")
     var id: UUID = .init()
     @Published var name: String = ""
     @Published var enabled: Bool = false
@@ -4820,7 +4835,7 @@ class SettingsCyclingPowerDevice: Codable, Identifiable, ObservableObject, Named
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
-        name = container.decode(.name, String.self, "")
+        name = container.decode(.name, String.self, Self.baseName)
         enabled = container.decode(.enabled, Bool.self, false)
         bluetoothPeripheralName = try? container.decode(String.self, forKey: .bluetoothPeripheralName)
         bluetoothPeripheralId = try? container.decode(UUID.self, forKey: .bluetoothPeripheralId)
@@ -4848,8 +4863,9 @@ class SettingsCyclingPowerDevices: Codable, ObservableObject {
 }
 
 class SettingsHeartRateDevice: Codable, Identifiable, ObservableObject, Named {
+    static let baseName = String(localized: "My device")
     var id: UUID = .init()
-    @Published var name: String = ""
+    @Published var name: String = baseName
     @Published var enabled: Bool = false
     @Published var bluetoothPeripheralName: String?
     @Published var bluetoothPeripheralId: UUID?
@@ -4876,7 +4892,7 @@ class SettingsHeartRateDevice: Codable, Identifiable, ObservableObject, Named {
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
-        name = container.decode(.name, String.self, "")
+        name = container.decode(.name, String.self, Self.baseName)
         enabled = container.decode(.enabled, Bool.self, false)
         bluetoothPeripheralName = try? container.decode(String.self, forKey: .bluetoothPeripheralName)
         bluetoothPeripheralId = try? container.decode(UUID.self, forKey: .bluetoothPeripheralId)
@@ -4906,8 +4922,9 @@ class SettingsHeartRateDevices: Codable, ObservableObject {
 private let defaultRgbLightColor = RgbColor(red: 0, green: 255, blue: 0)
 
 class SettingsPhoneCoolerDevice: Codable, Identifiable, ObservableObject, Named {
+    static let baseName = String(localized: "My cooler")
     var id: UUID = .init()
-    @Published var name: String = ""
+    @Published var name: String = baseName
     @Published var enabled: Bool = false
     @Published var bluetoothPeripheralName: String?
     @Published var bluetoothPeripheralId: UUID?
@@ -4944,7 +4961,7 @@ class SettingsPhoneCoolerDevice: Codable, Identifiable, ObservableObject, Named 
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
-        name = container.decode(.name, String.self, "")
+        name = container.decode(.name, String.self, Self.baseName)
         enabled = container.decode(.enabled, Bool.self, false)
         bluetoothPeripheralName = try? container.decode(String.self, forKey: .bluetoothPeripheralName)
         bluetoothPeripheralId = try? container.decode(UUID.self, forKey: .bluetoothPeripheralId)
@@ -5897,8 +5914,9 @@ class DeepLinkCreatorStreamKick: Codable, ObservableObject {
 }
 
 class DeepLinkCreatorStream: Codable, Identifiable, ObservableObject, Named {
+    static let baseName = String(localized: "My stream")
     var id: UUID = .init()
-    @Published var name: String = "My stream"
+    @Published var name: String = baseName
     @Published var url: String = defaultStreamUrl
     @Published var selected: Bool = false
     @Published var video: DeepLinkCreatorStreamVideo = .init()
@@ -5940,7 +5958,7 @@ class DeepLinkCreatorStream: Codable, Identifiable, ObservableObject, Named {
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
-        name = container.decode(.name, String.self, "My stream")
+        name = container.decode(.name, String.self, Self.baseName)
         url = container.decode(.url, String.self, defaultStreamUrl)
         selected = container.decode(.selected, Bool.self, false)
         video = container.decode(.video, DeepLinkCreatorStreamVideo.self, .init())

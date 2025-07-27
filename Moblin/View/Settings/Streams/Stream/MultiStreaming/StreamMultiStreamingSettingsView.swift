@@ -75,7 +75,7 @@ struct StreamMultiStreamingSettingsView: View {
                     CreateButtonView {
                         let destination = SettingsStreamMultiStreamingDestination()
                         destination.name = makeUniqueName(
-                            name: "My destination",
+                            name: SettingsStreamMultiStreamingDestination.baseName,
                             existingNames: multiStreaming.destinations
                         )
                         multiStreaming.destinations.append(destination)

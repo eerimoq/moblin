@@ -44,7 +44,7 @@ struct DjiGimbalDevicesSettingsView: View {
                 }
                 CreateButtonView {
                     let device = SettingsDjiGimbalDevice()
-                    device.name = makeUniqueName(name: "My gimbal",
+                    device.name = makeUniqueName(name: SettingsDjiGimbalDevice.baseName,
                                                  existingNames: model.database.djiGimbalDevices.devices)
                     model.database.djiGimbalDevices.devices.append(device)
                     model.objectWillChange.send()
