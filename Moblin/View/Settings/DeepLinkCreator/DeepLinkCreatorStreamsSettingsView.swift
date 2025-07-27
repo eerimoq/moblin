@@ -9,7 +9,7 @@ struct DeepLinkCreatorStreamsSettingsView: View {
             Section {
                 List {
                     ForEach(deepLinkCreator.streams) { stream in
-                        DeepLinkCreatorStreamSettingsView(stream: stream)
+                        DeepLinkCreatorStreamSettingsView(deepLinkCreator: deepLinkCreator, stream: stream)
                     }
                     .onMove { froms, to in
                         deepLinkCreator.streams.move(fromOffsets: froms, toOffset: to)

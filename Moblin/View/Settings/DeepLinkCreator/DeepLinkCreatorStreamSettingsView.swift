@@ -262,26 +262,19 @@ private struct DeepLinkCreatorStreamKickView: View {
 
 struct DeepLinkCreatorStreamSettingsView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var deepLinkCreator: DeepLinkCreator
     @ObservedObject var stream: DeepLinkCreatorStream
 
     var body: some View {
         NavigationLink {
             Form {
                 Section {
-                    TextEditNavigationView(
-                        title: String(localized: "Name"),
-                        value: stream.name,
-                        onSubmit: {
-                            stream.name = $0
-                        }
-                    )
-                    TextEditNavigationView(
-                        title: String(localized: "URL"),
-                        value: stream.url,
-                        onSubmit: {
-                            stream.url = $0
-                        }
-                    )
+                    NameEditView(name: $stream.name, existingNames: deepLinkCreator.streams)
+                    TextEditNavigationView(title: String(localized: "URL"),
+                                           value: stream.url,
+                                           onSubmit: {
+                                               stream.url = $0
+                                           })
                     NavigationLink {
                         DeepLinkCreatorStreamVideoView(video: stream.video)
                     } label: {
