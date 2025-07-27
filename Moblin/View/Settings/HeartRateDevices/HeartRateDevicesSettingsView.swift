@@ -1,21 +1,8 @@
 import SwiftUI
 
-private struct HeartRateDeviceSettingsWrapperView: View {
-    let device: SettingsHeartRateDevice
-    let status: StatusTopRight
-    @State var name: String
-
-    var body: some View {
-        NavigationLink {
-            HeartRateDeviceSettingsView(status: status, device: device, name: $name)
-        } label: {
-            Text(name)
-        }
-    }
-}
-
 struct HeartRateDevicesSettingsView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var heartRateDevices: SettingsHeartRateDevices
 
     var body: some View {
         Form {
@@ -31,23 +18,20 @@ struct HeartRateDevicesSettingsView: View {
             }
             Section {
                 List {
-                    ForEach(model.database.heartRateDevices.devices) { device in
-                        HeartRateDeviceSettingsWrapperView(device: device,
-                                                           status: model.statusTopRight,
-                                                           name: device.name)
+                    ForEach(heartRateDevices.devices) { device in
+                        HeartRateDeviceSettingsView(model: model,
+                                                    heartRateDevices: heartRateDevices,
+                                                    device: device,
+                                                    status: model.statusTopRight)
                     }
                     .onDelete { offsets in
-                        model.database.heartRateDevices.devices.remove(atOffsets: offsets)
+                        heartRateDevices.devices.remove(atOffsets: offsets)
                     }
                 }
                 CreateButtonView {
                     let device = SettingsHeartRateDevice()
-                    device.name = makeUniqueName(
-                        name: "My device",
-                        existingNames: model.database.heartRateDevices.devices
-                    )
-                    model.database.heartRateDevices.devices.append(device)
-                    model.objectWillChange.send()
+                    device.name = makeUniqueName(name: "My device", existingNames: heartRateDevices.devices)
+                    heartRateDevices.devices.append(device)
                 }
             } footer: {
                 SwipeLeftToDeleteHelpView(kind: String(localized: "a device"))

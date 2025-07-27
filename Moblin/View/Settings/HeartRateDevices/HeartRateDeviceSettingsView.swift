@@ -15,11 +15,11 @@ private func formatHeartRateDeviceState(state: HeartRateDeviceState?) -> String 
 }
 
 struct HeartRateDeviceSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject private var scanner = heartRateScanner
+    @ObservedObject var heartRateDevices: SettingsHeartRateDevices
+    @ObservedObject var device: SettingsHeartRateDevice
     @ObservedObject var status: StatusTopRight
-    var device: SettingsHeartRateDevice
-    @Binding var name: String
 
     func state() -> String {
         return formatHeartRateDeviceState(state: status.heartRateDeviceState)
@@ -41,56 +41,54 @@ struct HeartRateDeviceSettingsView: View {
     }
 
     var body: some View {
-        Form {
-            Section {
-                TextEditNavigationView(title: "Name", value: device.name, onSubmit: { value in
-                    name = value
-                    device.name = value
-                })
-            } footer: {
-                Text("Add {heartRate:\(device.name)} to a text widget to show heart rate on stream.")
-            }
-            Section {
-                NavigationLink { HeartRateDeviceScannerSettingsView(
-                    onChange: onDeviceChange,
-                    selectedId: device.bluetoothPeripheralId?
-                        .uuidString ?? String(localized: "Select device")
-                )
-                } label: {
-                    Text(device.bluetoothPeripheralName ?? String(localized: "Select device"))
-                        .foregroundColor(.gray)
-                        .lineLimit(1)
-                }
-                .disabled(model.isHeartRateDeviceEnabled(device: device))
-            } header: {
-                Text("Device")
-            }
-            Section {
-                Toggle(isOn: Binding(get: {
-                    device.enabled
-                }, set: { value in
-                    device.enabled = value
-                    if device.enabled {
-                        model.enableHeartRateDevice(device: device)
-                    } else {
-                        model.disableHeartRateDevice(device: device)
-                    }
-                }), label: {
-                    Text("Enabled")
-                })
-                .disabled(!canEnable())
-            }
-            if device.enabled {
+        NavigationLink {
+            Form {
                 Section {
-                    HCenter {
-                        Text(state())
+                    NameEditView(name: $device.name, existingNames: heartRateDevices.devices)
+                } footer: {
+                    Text("Add {heartRate:\(device.name)} to a text widget to show heart rate on stream.")
+                }
+                Section {
+                    NavigationLink {
+                        HeartRateDeviceScannerSettingsView(
+                            onChange: onDeviceChange,
+                            selectedId: device.bluetoothPeripheralId?
+                                .uuidString ?? String(localized: "Select device")
+                        )
+                    } label: {
+                        Text(device.bluetoothPeripheralName ?? String(localized: "Select device"))
+                            .foregroundColor(.gray)
+                            .lineLimit(1)
+                    }
+                    .disabled(model.isHeartRateDeviceEnabled(device: device))
+                } header: {
+                    Text("Device")
+                }
+                Section {
+                    Toggle("Enabled", isOn: $device.enabled)
+                        .onChange(of: device.enabled) { _ in
+                            if device.enabled {
+                                model.enableHeartRateDevice(device: device)
+                            } else {
+                                model.disableHeartRateDevice(device: device)
+                            }
+                        }
+                        .disabled(!canEnable())
+                }
+                if device.enabled {
+                    Section {
+                        HCenter {
+                            Text(state())
+                        }
                     }
                 }
             }
+            .onAppear {
+                model.setCurrentHeartRateDevice(device: device)
+            }
+            .navigationTitle("Heart rate device")
+        } label: {
+            Text(device.name)
         }
-        .onAppear {
-            model.setCurrentHeartRateDevice(device: device)
-        }
-        .navigationTitle("Heart rate device")
     }
 }

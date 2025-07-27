@@ -4847,16 +4847,60 @@ class SettingsCyclingPowerDevices: Codable, ObservableObject {
     }
 }
 
-class SettingsHeartRateDevice: Codable, Identifiable, Named {
+class SettingsHeartRateDevice: Codable, Identifiable, ObservableObject, Named {
     var id: UUID = .init()
-    var name: String = ""
-    var enabled: Bool = false
-    var bluetoothPeripheralName: String?
-    var bluetoothPeripheralId: UUID?
+    @Published var name: String = ""
+    @Published var enabled: Bool = false
+    @Published var bluetoothPeripheralName: String?
+    @Published var bluetoothPeripheralId: UUID?
+
+    enum CodingKeys: CodingKey {
+        case id,
+             name,
+             enabled,
+             bluetoothPeripheralName,
+             bluetoothPeripheralId
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.name, name)
+        try container.encode(.enabled, enabled)
+        try container.encode(.bluetoothPeripheralName, bluetoothPeripheralName)
+        try container.encode(.bluetoothPeripheralId, bluetoothPeripheralId)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        name = container.decode(.name, String.self, "")
+        enabled = container.decode(.enabled, Bool.self, false)
+        bluetoothPeripheralName = try? container.decode(String.self, forKey: .bluetoothPeripheralName)
+        bluetoothPeripheralId = try? container.decode(UUID.self, forKey: .bluetoothPeripheralId)
+    }
 }
 
-class SettingsHeartRateDevices: Codable {
-    var devices: [SettingsHeartRateDevice] = []
+class SettingsHeartRateDevices: Codable, ObservableObject {
+    @Published var devices: [SettingsHeartRateDevice] = []
+
+    enum CodingKeys: CodingKey {
+        case devices
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.devices, devices)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        devices = container.decode(.devices, [SettingsHeartRateDevice].self, [])
+    }
 }
 
 private let defaultRgbLightColor = RgbColor(red: 0, green: 255, blue: 0)

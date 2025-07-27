@@ -142,7 +142,7 @@ struct SettingsView: View {
                         Label("Cycling power devices", systemImage: "bicycle")
                     }
                     NavigationLink {
-                        HeartRateDevicesSettingsView()
+                        HeartRateDevicesSettingsView(heartRateDevices: model.database.heartRateDevices)
                     } label: {
                         Label("Heart rate devices", systemImage: "heart")
                     }
