@@ -10,8 +10,10 @@ extension Model {
     func reloadRistServer() {
         stopRistServer()
         if database.ristServer.enabled {
-            let ports = database.ristServer.streams.map { $0.port }
-            servers.rist = RistServer(ports: ports, timecodesEnabled: isTimecodesEnabled())
+            let virtualDestinationPorts = database.ristServer.streams.map { $0.virtualDestinationPort }
+            servers.rist = RistServer(port: database.ristServer.port,
+                                      virtualDestinationPorts: virtualDestinationPorts,
+                                      timecodesEnabled: isTimecodesEnabled())
             servers.rist?.delegate = self
             servers.rist?.start()
         }
@@ -39,58 +41,58 @@ extension Model {
         }
     }
 
-    func getRistStream(port: UInt16) -> SettingsRistServerStream? {
+    func getRistStream(virtualDestinationPort: UInt16) -> SettingsRistServerStream? {
         return database.ristServer.streams.first { stream in
-            stream.port == port
+            stream.virtualDestinationPort == virtualDestinationPort
         }
     }
 
     func isRistStreamConnected(port: UInt16) -> Bool {
-        return database.ristServer.streams.first { $0.port == port }?.connected == true
+        return database.ristServer.streams.first { $0.virtualDestinationPort == port }?.connected == true
     }
 }
 
 extension Model: RistServerDelegate {
     func ristServerOnConnected(port: UInt16) {
         DispatchQueue.main.async {
-            self.ristServerOnConnectedInner(port: port)
+            self.ristServerOnConnectedInner(virtualDestinationPort: port)
         }
     }
 
     func ristServerOnDisconnected(port: UInt16, reason: String) {
         DispatchQueue.main.async {
-            self.ristServerOnDisconnectedInner(port: port, reason: reason)
+            self.ristServerOnDisconnectedInner(virtualDestinationPort: port, reason: reason)
         }
     }
 
-    func ristServerOnAudioBuffer(port: UInt16, _ sampleBuffer: CMSampleBuffer) {
-        guard let cameraId = getRistStream(port: port)?.id else {
+    func ristServerOnAudioBuffer(virtualDestinationPort: UInt16, _ sampleBuffer: CMSampleBuffer) {
+        guard let cameraId = getRistStream(virtualDestinationPort: virtualDestinationPort)?.id else {
             return
         }
         media.appendBufferedAudioSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
     }
 
-    func ristServerOnVideoBuffer(port: UInt16, _ sampleBuffer: CMSampleBuffer) {
-        guard let cameraId = getRistStream(port: port)?.id else {
+    func ristServerOnVideoBuffer(virtualDestinationPort: UInt16, _ sampleBuffer: CMSampleBuffer) {
+        guard let cameraId = getRistStream(virtualDestinationPort: virtualDestinationPort)?.id else {
             return
         }
         media.appendBufferedVideoSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
     }
 
     func ristServerSetTargetLatencies(
-        port: UInt16,
+        virtualDestinationPort: UInt16,
         _ videoTargetLatency: Double,
         _ audioTargetLatency: Double
     ) {
-        guard let cameraId = getRistStream(port: port)?.id else {
+        guard let cameraId = getRistStream(virtualDestinationPort: virtualDestinationPort)?.id else {
             return
         }
         media.setBufferedVideoTargetLatency(cameraId: cameraId, latency: videoTargetLatency)
         media.setBufferedAudioTargetLatency(cameraId: cameraId, latency: audioTargetLatency)
     }
 
-    private func ristServerOnConnectedInner(port: UInt16) {
-        guard let stream = getRistStream(port: port) else {
+    private func ristServerOnConnectedInner(virtualDestinationPort: UInt16) {
+        guard let stream = getRistStream(virtualDestinationPort: virtualDestinationPort) else {
             return
         }
         let camera = stream.camera()
@@ -99,8 +101,8 @@ extension Model: RistServerDelegate {
         media.addBufferedAudio(cameraId: stream.id, name: camera, latency: ristServerClientLatency)
     }
 
-    private func ristServerOnDisconnectedInner(port: UInt16, reason _: String) {
-        guard let stream = getRistStream(port: port) else {
+    private func ristServerOnDisconnectedInner(virtualDestinationPort: UInt16, reason _: String) {
+        guard let stream = getRistStream(virtualDestinationPort: virtualDestinationPort) else {
             return
         }
         makeToast(title: String(localized: "\(stream.camera()) disconnected"))
