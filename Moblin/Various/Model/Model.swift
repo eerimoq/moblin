@@ -1243,10 +1243,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             store()
             replaysStorage.store()
         }
-        guard isMac() else {
-            return
+        if isMac() {
+            stopAll()
         }
-        stopAll()
     }
 
     private func stopAll() {
