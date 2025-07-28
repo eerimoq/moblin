@@ -60,10 +60,10 @@ struct RistServerStreamSettingsView: View {
                     Text("The virtual destination port for this stream.")
                 }
                 Section {
-                        UrlsView(model: model,
-                                 status: status,
-                                 port: ristServer.port,
-                                 virtualDestinationPort: stream.virtualDestinationPort)
+                    UrlsView(model: model,
+                             status: status,
+                             port: ristServer.port,
+                             virtualDestinationPort: stream.virtualDestinationPort)
                 } header: {
                     Text("Publish URLs")
                 } footer: {

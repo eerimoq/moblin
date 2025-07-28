@@ -76,7 +76,7 @@ struct RtmpServerStreamSettingsView: View {
                     Text("The higher, the lower risk of stuttering.")
                 }
                 Section {
-                        UrlsView(model: model, status: status, port: rtmpServer.port, streamKey: stream.streamKey)
+                    UrlsView(model: model, status: status, port: rtmpServer.port, streamKey: stream.streamKey)
                 } header: {
                     Text("Publish URLs")
                 } footer: {

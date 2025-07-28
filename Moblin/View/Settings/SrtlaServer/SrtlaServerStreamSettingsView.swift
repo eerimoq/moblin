@@ -67,20 +67,20 @@ struct SrtlaServerStreamSettingsView: View {
                     Text("The stream name is shown in the list of cameras in scene settings.")
                 }
                 Section {
-                        UrlsView(
-                            model: model,
-                            status: status,
-                            proto: "srt",
-                            port: srtlaServer.srtPort,
-                            streamId: stream.streamId
-                        )
-                        UrlsView(
-                            model: model,
-                            status: status,
-                            proto: "srtla",
-                            port: srtlaServer.srtlaPort,
-                            streamId: stream.streamId
-                        )
+                    UrlsView(
+                        model: model,
+                        status: status,
+                        proto: "srt",
+                        port: srtlaServer.srtPort,
+                        streamId: stream.streamId
+                    )
+                    UrlsView(
+                        model: model,
+                        status: status,
+                        proto: "srtla",
+                        port: srtlaServer.srtlaPort,
+                        streamId: stream.streamId
+                    )
                 } header: {
                     Text("Publish URLs")
                 } footer: {
