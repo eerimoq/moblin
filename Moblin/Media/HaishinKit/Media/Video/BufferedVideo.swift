@@ -94,7 +94,7 @@ class BufferedVideo {
         if sampleBuffer != nil {
             currentSampleBuffer = sampleBuffer
         }
-        if !isInitialBuffering, hasBufferBeenAppended {
+        if !isInitialBuffering, hasBufferBeenAppended, update {
             hasBufferBeenAppended = false
             if let drift = driftTracker.update(outputPresentationTimeStamp, sampleBuffers) {
                 processor?.setBufferedAudioDrift(cameraId: cameraId, drift: drift)
@@ -115,6 +115,10 @@ class BufferedVideo {
 
     func getSampleBuffer(_ presentationTimeStamp: CMTime) -> CMSampleBuffer? {
         return currentSampleBuffer?.replacePresentationTimeStamp(presentationTimeStamp)
+    }
+
+    func numberOfBuffers() -> Int {
+        return sampleBuffers.count
     }
 
     func setDrift(drift: Double) {

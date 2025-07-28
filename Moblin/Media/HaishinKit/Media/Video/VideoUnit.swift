@@ -43,10 +43,7 @@ struct CaptureDevices {
 var pixelFormatType = kCVPixelFormatType_420YpCbCr8BiPlanarFullRange
 var ioVideoUnitMetalPetal = false
 var allowVideoRangePixelFormat = false
-private let detectionsQueue = DispatchQueue(
-    label: "com.haishinkit.HaishinKit.Detections",
-    attributes: .concurrent
-)
+private let detectionsQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.Detections", attributes: .concurrent)
 private let lowFpsImageQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.VideoIOComponent.small")
 
 private func setOrientation(
@@ -541,6 +538,9 @@ final class VideoUnit: NSObject {
         }
         guard let selectedBufferedVideoCameraId else {
             return
+        }
+        for bufferedVideoBuiltin in bufferedVideoBuiltins.values where bufferedVideoBuiltin.latency > 0 {
+            bufferedVideoBuiltin.updateSampleBuffer(presentationTimeStamp.seconds, true)
         }
         if let sampleBuffer = bufferedVideos[selectedBufferedVideoCameraId]?.getSampleBuffer(presentationTimeStamp) {
             appendNewSampleBuffer(sampleBuffer: sampleBuffer)
@@ -1788,16 +1788,20 @@ final class VideoUnit: NSObject {
         guard let bufferedVideo = bufferedVideoBuiltins[device] else {
             return nil
         }
-        if bufferedVideo.latency > 0, var sampleBufferCopy = makeCopy(sampleBuffer: sampleBuffer) {
-            let presentationTimeStamp = sampleBufferCopy.presentationTimeStamp + CMTime(seconds: bufferedVideo.latency)
-            sampleBufferCopy = sampleBufferCopy.replacePresentationTimeStamp(presentationTimeStamp) ?? sampleBufferCopy
-            bufferedVideo.appendSampleBuffer(sampleBufferCopy)
-            bufferedVideo.updateSampleBuffer(sampleBuffer.presentationTimeStamp.seconds, true)
-            return bufferedVideo
-        } else {
+        guard bufferedVideo.latency > 0 else {
             bufferedVideo.setLatestSampleBuffer(sampleBuffer)
             return nil
         }
+        var sampleBufferCopy: CMSampleBuffer
+        if bufferedVideo.latency > 0.07 || bufferedVideo.numberOfBuffers() > 4 {
+            sampleBufferCopy = makeCopy(sampleBuffer: sampleBuffer) ?? sampleBuffer
+        } else {
+            sampleBufferCopy = sampleBuffer
+        }
+        let presentationTimeStamp = sampleBufferCopy.presentationTimeStamp + CMTime(seconds: bufferedVideo.latency)
+        sampleBufferCopy = sampleBufferCopy.replacePresentationTimeStamp(presentationTimeStamp) ?? sampleBufferCopy
+        bufferedVideo.appendSampleBuffer(sampleBufferCopy)
+        return bufferedVideo
     }
 }
 
@@ -1812,6 +1816,9 @@ extension VideoUnit: AVCaptureVideoDataOutputSampleBufferDelegate {
         }
         var sampleBuffer = sampleBuffer
         if let bufferedVideo = appendBufferedBuiltinVideo(sampleBuffer, input.device) {
+            for bufferedVideoBuiltin in bufferedVideoBuiltins.values {
+                bufferedVideoBuiltin.updateSampleBuffer(sampleBuffer.presentationTimeStamp.seconds, true)
+            }
             sampleBuffer = bufferedVideo.getSampleBuffer(sampleBuffer.presentationTimeStamp) ?? sampleBuffer
         }
         guard selectedBufferedVideoCameraId == nil else {

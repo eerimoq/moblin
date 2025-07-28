@@ -201,14 +201,16 @@ final class AudioUnit: NSObject {
         processor.recorder.appendAudio(sampleBuffer)
     }
 
-    private func appendBufferedBuiltinAudio(sampleBuffer: CMSampleBuffer) -> BufferedAudio? {
+    private func appendBufferedBuiltinAudio(_ sampleBuffer: CMSampleBuffer,
+                                            _ presentationTimeStamp: CMTime) -> BufferedAudio?
+    {
         guard let bufferedBuiltinAudio,
               bufferedBuiltinAudio.latency > 0,
               let sampleBuffer = sampleBuffer.deepCopyAudioSampleBuffer()
         else {
             return nil
         }
-        let presentationTimeStamp = sampleBuffer.presentationTimeStamp + CMTime(seconds: bufferedBuiltinAudio.latency)
+        let presentationTimeStamp = presentationTimeStamp + CMTime(seconds: bufferedBuiltinAudio.latency)
         guard let sampleBuffer = sampleBuffer.replacePresentationTimeStamp(presentationTimeStamp) else {
             return nil
         }
@@ -239,8 +241,8 @@ extension AudioUnit: AVCaptureAudioDataOutputSampleBufferDelegate {
         // Workaround for audio drift on iPhone 15 Pro Max running iOS 17. Probably issue on more models.
         let presentationTimeStamp = syncTimeToVideo(processor: processor, sampleBuffer: sampleBuffer)
         var sampleBuffer = sampleBuffer
-        if let bufferedAudio = appendBufferedBuiltinAudio(sampleBuffer: sampleBuffer) {
-            sampleBuffer = bufferedAudio.getSampleBuffer(sampleBuffer.presentationTimeStamp.seconds) ?? sampleBuffer
+        if let bufferedAudio = appendBufferedBuiltinAudio(sampleBuffer, presentationTimeStamp) {
+            sampleBuffer = bufferedAudio.getSampleBuffer(presentationTimeStamp.seconds) ?? sampleBuffer
         }
         guard selectedBufferedAudioId == nil else {
             return
