@@ -23,7 +23,7 @@ private let colors: [Color] = [
 ]
 
 class BondingStatisticsFormatter {
-    var networkInterfaceNames: [SettingsNetworkInterfaceName] = []
+    private var networkInterfaceNames: [SettingsNetworkInterfaceName] = []
 
     func setNetworkInterfaceNames(_ networkInterfaceNames: [SettingsNetworkInterfaceName]) {
         self.networkInterfaceNames = networkInterfaceNames

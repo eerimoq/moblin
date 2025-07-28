@@ -13,6 +13,7 @@ private enum RistPeerState {
 
 private class RistRemotePeer: AdaptiveBitrateDelegate {
     let interfaceName: String
+    let interfaceType: NWInterface.InterfaceType?
     let relayEndpoint: NWEndpoint?
     let peer: RistPeer
     var stats: RistSenderStats?
@@ -21,8 +22,14 @@ private class RistRemotePeer: AdaptiveBitrateDelegate {
     private var connectingTimer = SimpleTimer(queue: ristQueue)
     weak var stream: RistStream?
 
-    init(interfaceName: String, relayEndpoint: NWEndpoint?, peer: RistPeer, stream: RistStream) {
+    init(interfaceName: String,
+         interfaceType: NWInterface.InterfaceType?,
+         relayEndpoint: NWEndpoint?,
+         peer: RistPeer,
+         stream: RistStream)
+    {
         self.interfaceName = interfaceName
+        self.interfaceType = interfaceType
         self.relayEndpoint = relayEndpoint
         self.peer = peer
         self.stream = stream
@@ -35,6 +42,17 @@ private class RistRemotePeer: AdaptiveBitrateDelegate {
             logger.info("rist: Failed to connect to server")
             self.state = .disconnected
             self.stream?.checkDisconnected()
+        }
+    }
+
+    func bondingConnectionName() -> String {
+        switch interfaceType {
+        case .cellular:
+            return "Cellular"
+        case .wifi:
+            return "WiFi"
+        default:
+            return interfaceName
         }
     }
 
@@ -138,7 +156,7 @@ class RistStream {
         var connections: [BondingConnection] = []
         ristQueue.sync {
             for peer in peers {
-                var connection = BondingConnection(name: peer.interfaceName, usage: 0, rtt: nil)
+                var connection = BondingConnection(name: peer.bondingConnectionName(), usage: 0, rtt: nil)
                 if let stats = peer.stats {
                     connection.usage = stats.bandwidth + stats.retryBandwidth
                     connection.rtt = Int(stats.rtt)
@@ -176,7 +194,7 @@ class RistStream {
             networkPathMonitor?.pathUpdateHandler = handleNetworkPathUpdate(path:)
             networkPathMonitor?.start(queue: ristQueue)
         } else {
-            addPeer(url: url, interfaceName: "")
+            addPeer(url: url, interfaceName: "", interfaceType: nil)
         }
         if !context.start() {
             logger.info("rist: Failed to start")
@@ -208,7 +226,10 @@ class RistStream {
         guard bonding else {
             return
         }
-        addPeer(url: makeBondingUrl("rist://\(endpoint)"), interfaceName: name, relayEndpoint: endpoint)
+        addPeer(url: makeBondingUrl("rist://\(endpoint)"),
+                interfaceName: name,
+                interfaceType: nil,
+                relayEndpoint: endpoint)
     }
 
     private func removeRelayInner(endpoint: NWEndpoint) {
@@ -241,10 +262,10 @@ class RistStream {
         guard bonding else {
             return
         }
-        let interfaceNames = path.availableInterfaces.map { $0.name }
+        let interfaces = path.availableInterfaces
         var removedInterfaceNames: [String] = []
         for peer in peers where peer.relayEndpoint == nil {
-            if interfaceNames.contains(peer.interfaceName) {
+            if interfaces.map({ $0.name }).contains(peer.interfaceName) {
                 continue
             }
             removedInterfaceNames.append(peer.interfaceName)
@@ -253,11 +274,13 @@ class RistStream {
             logger.info("rist: Removing peer for interface \(interfaceName)")
             peers.removeAll(where: { $0.interfaceName == interfaceName })
         }
-        for interfaceName in interfaceNames {
-            if peers.contains(where: { $0.interfaceName == interfaceName }) {
+        for interface in interfaces {
+            if peers.contains(where: { $0.interfaceName == interface.name }) {
                 continue
             }
-            addPeer(url: makeBondingUrl(url, interfaceName), interfaceName: interfaceName)
+            addPeer(url: makeBondingUrl(url, interface.name),
+                    interfaceName: interface.name,
+                    interfaceType: interface.type)
         }
     }
 
@@ -289,14 +312,18 @@ class RistStream {
         getPeerById(peerId: stats.sender.peerId)?.stats = stats.sender
     }
 
-    private func addPeer(url: String?, interfaceName: String, relayEndpoint: NWEndpoint? = nil) {
-        logger.info("rist: Adding peer for interface \(interfaceName)")
+    private func addPeer(url: String?,
+                         interfaceName: String,
+                         interfaceType: NWInterface.InterfaceType?,
+                         relayEndpoint: NWEndpoint? = nil)
+    {
         guard let url, let peer = context?.addPeer(url: url) else {
             logger.info("rist: Failed to add peer")
             return
         }
         peers.append(RistRemotePeer(
             interfaceName: interfaceName,
+            interfaceType: interfaceType,
             relayEndpoint: relayEndpoint,
             peer: peer,
             stream: self
