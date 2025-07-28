@@ -166,6 +166,7 @@ final class VideoUnit: NSObject {
     private var fps = VideoUnit.defaultFrameRate
     private var preferAutoFps = false
     private var colorSpace: AVCaptureColorSpace = .sRGB
+    private var blackImage: CIImage?
 
     var videoOrientation: AVCaptureVideoOrientation = .portrait {
         didSet {
@@ -819,8 +820,6 @@ final class VideoUnit: NSObject {
             unregisterEffectInner(effect)
         }
     }
-
-    private var blackImage: CIImage?
 
     private func getBlackImage(width: Double, height: Double) -> CIImage {
         if blackImage == nil {
@@ -1843,15 +1842,7 @@ extension VideoUnitBuiltinDevice: AVCaptureVideoDataOutputSampleBufferDelegate {
 }
 
 private func createBlackImage(width: Double, height: Double) -> CIImage {
-    UIGraphicsBeginImageContext(CGSize(width: width, height: height))
-    let context = UIGraphicsGetCurrentContext()!
-    context.setFillColor(UIColor.black.cgColor)
-    context.fill([
-        CGRect(x: 0, y: 0, width: width, height: height),
-    ])
-    let image = CIImage(image: UIGraphicsGetImageFromCurrentImageContext()!)!
-    UIGraphicsEndImageContext()
-    return image
+    return CIImage.black.cropped(to: CGRect(x: 0, y: 0, width: width, height: height))
 }
 
 @available(iOS 18.0, *)
