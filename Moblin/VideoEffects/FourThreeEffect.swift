@@ -4,37 +4,17 @@ import UIKit
 import Vision
 
 final class FourThreeEffect: VideoEffect {
-    private let filter = CIFilter.sourceOverCompositing()
-    private var extent = CGRect.zero {
-        didSet {
-            guard extent != oldValue else {
-                return
-            }
-            let width = extent.size.width / 8
-            let height = extent.size.height
-            UIGraphicsBeginImageContext(extent.size)
-            let context = UIGraphicsGetCurrentContext()!
-            context.setFillColor(UIColor.black.cgColor)
-            context.fill([
-                CGRect(x: 0, y: 0, width: width, height: height),
-                CGRect(x: extent.size.width - width, y: 0, width: width, height: height),
-            ])
-            black = CIImage(image: UIGraphicsGetImageFromCurrentImageContext()!)
-            UIGraphicsEndImageContext()
-        }
-    }
-
-    private var black: CIImage?
-
     override func getName() -> String {
         return "4:3 filter"
     }
 
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
-        extent = image.extent
-        filter.inputImage = black!
-        filter.backgroundImage = image
-        return filter.outputImage ?? image
+        return image
+            .cropped(to: CGRect(x: image.extent.width / 8,
+                                y: 0,
+                                width: 3 * image.extent.width / 4,
+                                height: image.extent.height))
+            .composited(over: CIImage.black.cropped(to: image.extent))
     }
 
     override func executeMetalPetal(_ image: MTIImage?, _: VideoEffectInfo) -> MTIImage? {
