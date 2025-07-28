@@ -67,7 +67,6 @@ struct SrtlaServerStreamSettingsView: View {
                     Text("The stream name is shown in the list of cameras in scene settings.")
                 }
                 Section {
-                    if srtlaServer.enabled {
                         UrlsView(
                             model: model,
                             status: status,
@@ -82,9 +81,6 @@ struct SrtlaServerStreamSettingsView: View {
                             port: srtlaServer.srtlaPort,
                             streamId: stream.streamId
                         )
-                    } else {
-                        Text("Enable the SRT(LA) server to see URLs.")
-                    }
                 } header: {
                     Text("Publish URLs")
                 } footer: {
