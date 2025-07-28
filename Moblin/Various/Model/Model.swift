@@ -1191,31 +1191,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             disableScreenPreview()
             stopPeriodicTimers(keepChatRunning: keepChatRunning)
         case .off:
-            if isRecording {
-                suspendRecording()
-            }
-            stopRtmpServer()
-            stopSrtlaServer()
-            teardownAudioSession()
-            chatTextToSpeech.reset(running: false)
-            locationManager.stop()
-            weatherManager.stop()
-            geographyManager.stop()
-            gForceManager?.stop()
-            obsWebSocket?.stop()
-            media.stopAllNetStreams()
-            speechToText.stop()
-            stopWorkout(showToast: false)
-            stopTeslaVehicle()
-            stopNtpClient()
-            stopMoblinkRelay()
-            stopMoblinkStreamer()
-            stopCatPrinters()
-            stopCyclingPowerDevices()
-            stopHeartRateDevices()
-            stopRemoteControlAssistant()
-            stopDjiGimbalDevices()
-            fixedHorizonEffect.stop()
+            stopAll()
         }
     }
 
@@ -1267,6 +1243,38 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             store()
             replaysStorage.store()
         }
+        guard isMac() else {
+            return
+        }
+        stopAll()
+    }
+
+    private func stopAll() {
+        if isRecording {
+            suspendRecording()
+        }
+        stopRtmpServer()
+        stopSrtlaServer()
+        teardownAudioSession()
+        chatTextToSpeech.reset(running: false)
+        locationManager.stop()
+        weatherManager.stop()
+        geographyManager.stop()
+        gForceManager?.stop()
+        obsWebSocket?.stop()
+        media.stopAllNetStreams()
+        speechToText.stop()
+        stopWorkout(showToast: false)
+        stopTeslaVehicle()
+        stopNtpClient()
+        stopMoblinkRelay()
+        stopMoblinkStreamer()
+        stopCatPrinters()
+        stopCyclingPowerDevices()
+        stopHeartRateDevices()
+        stopRemoteControlAssistant()
+        stopDjiGimbalDevices()
+        fixedHorizonEffect.stop()
     }
 
     func externalMonitorConnected(windowScene: UIWindowScene) {
