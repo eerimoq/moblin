@@ -1,9 +1,9 @@
 import SwiftUI
 
-struct StreamOverlayRightSceneSelectorView: View {
+private struct SceneNameView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var database: Database
-    @ObservedObject var sceneSelector: SceneSelector
+    @ObservedObject var scene: SettingsScene
     let width: CGFloat
 
     private func height() -> Double {
@@ -13,6 +13,22 @@ struct StreamOverlayRightSceneSelectorView: View {
             return segmentHeight
         }
     }
+
+    var body: some View {
+        Text(scene.name)
+            .font(.subheadline)
+            .frame(
+                width: min(sceneSegmentWidth, (width - 20) / CGFloat(model.enabledScenes.count)),
+                height: height()
+            )
+    }
+}
+
+struct StreamOverlayRightSceneSelectorView: View {
+    @EnvironmentObject var model: Model
+    @ObservedObject var database: Database
+    @ObservedObject var sceneSelector: SceneSelector
+    let width: CGFloat
 
     var body: some View {
         SegmentedPicker(model.enabledScenes, selectedItem: Binding(get: {
@@ -27,13 +43,8 @@ struct StreamOverlayRightSceneSelectorView: View {
             } else {
                 sceneSelector.sceneIndex = 0
             }
-        })) {
-            Text($0.name)
-                .font(.subheadline)
-                .frame(
-                    width: min(sceneSegmentWidth, (width - 20) / CGFloat(model.enabledScenes.count)),
-                    height: height()
-                )
+        })) { scene in
+            SceneNameView(database: database, scene: scene, width: width)
         } onLongPress: { index in
             if index < model.enabledScenes.count {
                 model.showSceneSettings(scene: model.enabledScenes[index])
