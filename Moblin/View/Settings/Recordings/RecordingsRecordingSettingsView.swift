@@ -3,6 +3,7 @@ import SwiftUI
 struct RecordingsRecordingSettingsView: View {
     let model: Model
     @ObservedObject var recording: Recording
+    @State var image: UIImage?
 
     var body: some View {
         NavigationLink {
@@ -14,7 +15,7 @@ struct RecordingsRecordingSettingsView: View {
                 Form {
                     Section {
                         HCenter {
-                            if let image = createThumbnail(path: recording.url()) {
+                            if let image {
                                 Image(uiImage: image)
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
@@ -82,7 +83,7 @@ struct RecordingsRecordingSettingsView: View {
             .navigationTitle("Recording")
         } label: {
             HStack {
-                if let image = createThumbnail(path: recording.url()) {
+                if let image {
                     Image(uiImage: image)
                         .resizable()
                         .aspectRatio(contentMode: .fit)
@@ -96,6 +97,11 @@ struct RecordingsRecordingSettingsView: View {
                     Text(recording.subTitle())
                         .font(.footnote)
                 }
+            }
+        }
+        .onAppear {
+            createThumbnail(path: recording.url()) { image in
+                self.image = image
             }
         }
     }

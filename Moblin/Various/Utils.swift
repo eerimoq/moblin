@@ -305,8 +305,9 @@ extension URL {
 }
 
 private var thumbnails: [URL: UIImage] = [:]
+private let thumbnailQueue = DispatchQueue(label: "com.eerimoq.moblin.thumbnail")
 
-func createThumbnail(path: URL, offset: Double = 0) -> UIImage? {
+private func createThumbnailInner(path: URL, offset: Double) -> UIImage? {
     if let thumbnail = thumbnails[path] {
         return thumbnail
     }
@@ -321,6 +322,15 @@ func createThumbnail(path: URL, offset: Double = 0) -> UIImage? {
     } catch {
         logger.info("Failed to create thumbnail with error \(error)")
         return nil
+    }
+}
+
+func createThumbnail(path: URL, offset: Double = 0, onComplete: @escaping (UIImage?) -> Void) {
+    thumbnailQueue.async {
+        let image = createThumbnailInner(path: path, offset: offset)
+        DispatchQueue.main.async {
+            onComplete(image)
+        }
     }
 }
 

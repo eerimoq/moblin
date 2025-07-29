@@ -49,22 +49,7 @@ struct MediaPlayerSettingsView: View {
                 Section {
                     List {
                         ForEach(player.playlist) { file in
-                            NavigationLink {
-                                MediaPlayerFileSettingsView(player: player, file: file)
-                            } label: {
-                                HStack {
-                                    DraggableItemPrefixView()
-                                    if let image = createThumbnail(path: model.mediaStorage.makePath(id: file.id)) {
-                                        Image(uiImage: image)
-                                            .resizable()
-                                            .aspectRatio(contentMode: .fit)
-                                            .frame(width: 90)
-                                    } else {
-                                        Image(systemName: "photo")
-                                    }
-                                    Text(file.name)
-                                }
-                            }
+                            MediaPlayerFileSettingsView(player: player, file: file)
                         }
                         .onMove { froms, to in
                             player.playlist.move(fromOffsets: froms, toOffset: to)

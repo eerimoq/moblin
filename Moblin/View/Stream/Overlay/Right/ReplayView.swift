@@ -190,6 +190,7 @@ private struct ReplayHistoryItem: View {
     @EnvironmentObject var model: Model
     @ObservedObject var replay: ReplayProvider
     let video: ReplaySettings
+    @State var image: UIImage?
 
     private func height() -> Double {
         if model.stream.portrait {
@@ -200,21 +201,30 @@ private struct ReplayHistoryItem: View {
     }
 
     var body: some View {
-        if let image = createThumbnail(path: video.url(), offset: video.thumbnailOffset()) {
-            Image(uiImage: image)
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .cornerRadius(5)
-                .frame(height: height())
-                .onTapGesture {
-                    model.loadReplay(video: video)
-                }
-                .overlay {
-                    if video.id == replay.selectedId {
-                        RoundedRectangle(cornerRadius: 5)
-                            .stroke(.white, lineWidth: 2)
+        VStack {
+            if let image {
+                Image(uiImage: image)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .cornerRadius(5)
+                    .frame(height: height())
+                    .onTapGesture {
+                        model.loadReplay(video: video)
                     }
-                }
+                    .overlay {
+                        if video.id == replay.selectedId {
+                            RoundedRectangle(cornerRadius: 5)
+                                .stroke(.white, lineWidth: 2)
+                        }
+                    }
+            } else {
+                Image(systemName: "camera")
+            }
+        }
+        .onAppear {
+            createThumbnail(path: video.url(), offset: video.thumbnailOffset()) { image in
+                self.image = image
+            }
         }
     }
 }
