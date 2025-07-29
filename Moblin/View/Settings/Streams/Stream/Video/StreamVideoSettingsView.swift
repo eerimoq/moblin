@@ -44,6 +44,16 @@ struct StreamVideoSettingsView: View {
         model.reloadStreamIfEnabled(stream: stream)
     }
 
+    private func areTimecodesDisabled() -> Bool {
+        if ![.srt, .rist].contains(stream.getProtocol()) {
+            return true
+        }
+        if stream.codec != .h265hevc {
+            return true
+        }
+        return stream.enabled && model.isLive
+    }
+
     var body: some View {
         Form {
             Section {
@@ -196,13 +206,13 @@ struct StreamVideoSettingsView: View {
                                     model.reloadSrtlaServer()
                                 }
                             }
-                            .disabled(stream.getProtocol() != .srt || stream
-                                .codec != .h265hevc || (stream.enabled && model.isLive))
+                            .disabled(areTimecodesDisabled())
                     }
                 } footer: {
                     Text("""
                     Synchronize multiple streams on your server using timecodes. \
-                    Timecodes are in UTC and requires H.265/HEVC codec and SRT(LA).
+                    Timecodes are in UTC and requires H.265/HEVC codec and SRT(LA) or \
+                    RIST.
                     """)
                 }
             }
