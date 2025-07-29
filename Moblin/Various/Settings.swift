@@ -6284,12 +6284,12 @@ class Database: Codable, ObservableObject {
     var quickButtonsGeneral: SettingsQuickButtons = .init()
     var quickButtons: [SettingsQuickButton] = []
     var rtmpServer: SettingsRtmpServer = .init()
-    var networkInterfaceNames: [SettingsNetworkInterfaceName] = []
-    var lowBitrateWarning: Bool = true
-    var vibrate: Bool = false
+    @Published var networkInterfaceNames: [SettingsNetworkInterfaceName] = []
+    @Published var lowBitrateWarning: Bool = true
+    @Published var vibrate: Bool = false
     @Published var gameControllers: [SettingsGameController] = [.init()]
     var remoteControl: SettingsRemoteControl = .init()
-    var startStopRecordingConfirmations: Bool = true
+    @Published var startStopRecordingConfirmations: Bool = true
     var color: SettingsColor = .init()
     @Published var mirrorFrontCameraOnStream: Bool = true
     var streamButtonColor: RgbColor = defaultStreamButtonColor

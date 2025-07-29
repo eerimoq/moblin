@@ -2,6 +2,7 @@ import SwiftUI
 
 struct LocalOverlaysNetworkInterfaceNamesSettingsView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var database: Database
 
     private func onSubmit(interface: SettingsNetworkInterfaceName, value: String) {
         interface.name = value
@@ -10,11 +11,11 @@ struct LocalOverlaysNetworkInterfaceNamesSettingsView: View {
     var body: some View {
         Form {
             Section {
-                if model.database.networkInterfaceNames.isEmpty {
+                if database.networkInterfaceNames.isEmpty {
                     Text("No known Ethernet network interfaces.")
                 } else {
                     List {
-                        ForEach(model.database.networkInterfaceNames) { interface in
+                        ForEach(database.networkInterfaceNames) { interface in
                             TextEditNavigationView(
                                 title: interface.interfaceName,
                                 value: interface.name,
@@ -23,7 +24,7 @@ struct LocalOverlaysNetworkInterfaceNamesSettingsView: View {
                             )
                         }
                         .onDelete { indexes in
-                            model.database.networkInterfaceNames.remove(atOffsets: indexes)
+                            database.networkInterfaceNames.remove(atOffsets: indexes)
                             model.networkInterfaceNamesUpdated()
                         }
                     }

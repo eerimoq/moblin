@@ -46,29 +46,19 @@ struct DisplaySettingsView: View {
                     }
                     ExternalDisplayContentView(database: database)
                     NavigationLink {
-                        LocalOverlaysNetworkInterfaceNamesSettingsView()
+                        LocalOverlaysNetworkInterfaceNamesSettingsView(database: database)
                     } label: {
                         Text("Network interface names")
                     }
-                    Toggle("Low bitrate warning", isOn: Binding(get: {
-                        database.lowBitrateWarning
-                    }, set: { value in
-                        database.lowBitrateWarning = value
-                    }))
-                    Toggle("Recording confirmations", isOn: Binding(get: {
-                        database.startStopRecordingConfirmations
-                    }, set: { value in
-                        database.startStopRecordingConfirmations = value
-                    }))
+                    Toggle("Low bitrate warning", isOn: $database.lowBitrateWarning)
+                    Toggle("Recording confirmations", isOn: $database.startStopRecordingConfirmations)
                 }
             }
             Section {
-                Toggle("Vibrate", isOn: Binding(get: {
-                    database.vibrate
-                }, set: { value in
-                    database.vibrate = value
-                    model.setAllowHapticsAndSystemSoundsDuringRecording()
-                }))
+                Toggle("Vibrate", isOn: $database.vibrate)
+                    .onChange(of: database.vibrate) { _ in
+                        model.setAllowHapticsAndSystemSoundsDuringRecording()
+                    }
             } footer: {
                 VStack(alignment: .leading) {
                     Text("Enable to vibrate the device when the following toasts appear:")
@@ -82,7 +72,7 @@ struct DisplaySettingsView: View {
                     Text("Make sure silent mode is off for vibrations to work.")
                 }
             }
-            if model.database.showAllSettings {
+            if database.showAllSettings {
                 if !isMac() {
                     Section {
                         Toggle(isOn: Binding(get: {
