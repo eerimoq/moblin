@@ -4,7 +4,7 @@ struct HeartRateDeviceScannerSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject private var scanner = heartRateScanner
     @Environment(\.dismiss) var dismiss
-    var onChange: (String) -> Void
+    let onChange: (String) -> Void
     @State var selectedId: String
 
     var body: some View {

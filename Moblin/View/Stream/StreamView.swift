@@ -33,8 +33,8 @@ struct CameraPreviewView: UIViewRepresentable {
 
 struct StreamView: View {
     @ObservedObject var show: Show
-    var cameraPreviewView: CameraPreviewView
-    var streamPreviewView: StreamPreviewView
+    let cameraPreviewView: CameraPreviewView
+    let streamPreviewView: StreamPreviewView
 
     var body: some View {
         if show.cameraPreview {

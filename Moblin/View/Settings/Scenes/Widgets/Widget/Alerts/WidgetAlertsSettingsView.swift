@@ -199,7 +199,7 @@ private struct AlertPositionFaceView: View {
 
 private struct AlertPositionView: View {
     @EnvironmentObject var model: Model
-    var alert: SettingsWidgetAlertsAlert
+    let alert: SettingsWidgetAlertsAlert
     @State var positionType: SettingsWidgetAlertPositionType
 
     var body: some View {
@@ -391,7 +391,7 @@ private func formatTitle(_ bits: Int, _ comparisonOperator: String) -> String {
 private struct TwitchCheerView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var alert: SettingsWidgetAlertsAlert
-    var cheerBit: SettingsWidgetAlertsCheerBitsAlert
+    let cheerBit: SettingsWidgetAlertsCheerBitsAlert
     @Binding var bits: Int
     @Binding var comparisonOperator: String
 
@@ -467,7 +467,7 @@ private struct TwitchCheerView: View {
 
 private struct TwitchCheerBitsItemView: View {
     let alert: SettingsWidgetAlertsAlert
-    private var cheerBit: SettingsWidgetAlertsCheerBitsAlert
+    private let cheerBit: SettingsWidgetAlertsCheerBitsAlert
     @State private var bits: Int
     @State private var comparisonOperator: String
 
@@ -497,7 +497,7 @@ private struct TwitchCheerBitsItemView: View {
 
 private struct TwitchCheerBitsView: View {
     @EnvironmentObject var model: Model
-    var twitch: SettingsWidgetAlertsTwitch
+    let twitch: SettingsWidgetAlertsTwitch
 
     var body: some View {
         Form {
@@ -535,7 +535,7 @@ private struct TwitchCheerBitsView: View {
 
 private struct TwitchRewardView: View {
     @EnvironmentObject var model: Model
-    var reward: SettingsStreamTwitchReward
+    let reward: SettingsStreamTwitchReward
 
     var body: some View {
         Form {
@@ -581,7 +581,7 @@ private struct TwitchRewardsView: View {
 
 private struct WidgetAlertsSettingsTwitchView: View {
     @EnvironmentObject var model: Model
-    var twitch: SettingsWidgetAlertsTwitch
+    let twitch: SettingsWidgetAlertsTwitch
 
     var body: some View {
         Form {
@@ -622,7 +622,7 @@ private struct WidgetAlertsSettingsTwitchView: View {
 private struct ChatBotCommandView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var alert: SettingsWidgetAlertsAlert
-    var command: SettingsWidgetAlertsChatBotCommand
+    let command: SettingsWidgetAlertsChatBotCommand
     @State var name: String
     // @State var imageType: String
     // @State var imageId: UUID
@@ -740,7 +740,7 @@ private struct ChatBotCommandView: View {
 
 private struct WidgetAlertsSettingsChatBotView: View {
     @EnvironmentObject var model: Model
-    var chatBot: SettingsWidgetAlertsChatBot
+    let chatBot: SettingsWidgetAlertsChatBot
 
     var body: some View {
         Form {
@@ -784,7 +784,7 @@ private struct WidgetAlertsSettingsChatBotView: View {
 private struct SpeechToTextStringView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var alert: SettingsWidgetAlertsAlert
-    var string: SettingsWidgetAlertsSpeechToTextString
+    let string: SettingsWidgetAlertsSpeechToTextString
     @State var text: String
 
     private func onSubmit(value: String) {
@@ -832,7 +832,7 @@ private struct SpeechToTextStringView: View {
 
 private struct WidgetAlertsSettingsSpeechToTextView: View {
     @EnvironmentObject var model: Model
-    var speechToText: SettingsWidgetAlertsSpeechToText
+    let speechToText: SettingsWidgetAlertsSpeechToText
 
     var body: some View {
         Form {
@@ -866,7 +866,7 @@ private struct WidgetAlertsSettingsSpeechToTextView: View {
 }
 
 struct WidgetAlertsSettingsView: View {
-    var widget: SettingsWidget
+    let widget: SettingsWidget
 
     var body: some View {
         Section {

@@ -2,7 +2,7 @@ import SwiftUI
 
 struct WidgetSceneSettingsView: View {
     @EnvironmentObject var model: Model
-    var widget: SettingsWidget
+    let widget: SettingsWidget
     @State var selectedSceneId: UUID
 
     var body: some View {

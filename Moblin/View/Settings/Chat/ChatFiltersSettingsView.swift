@@ -2,7 +2,7 @@ import SwiftUI
 
 private struct UsernameEditView: View {
     @State var value: String
-    var onSubmit: (String) -> Void
+    let onSubmit: (String) -> Void
     @State private var changed = false
     @State private var submitted = false
 

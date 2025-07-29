@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct FormFieldError: View {
-    var error: String
+    let error: String
 
     var body: some View {
         if error != "" {

@@ -2,7 +2,7 @@ import SwiftUI
 
 struct WidgetBrowserSettingsView: View {
     @EnvironmentObject var model: Model
-    var widget: SettingsWidget
+    let widget: SettingsWidget
     @ObservedObject var browser: SettingsWidgetBrowser
 
     private func submitUrl(value: String) {

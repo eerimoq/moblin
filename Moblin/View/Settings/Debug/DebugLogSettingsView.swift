@@ -3,8 +3,8 @@ import SwiftUI
 
 struct DebugLogSettingsView: View {
     @EnvironmentObject var model: Model
-    var log: Deque<LogEntry>
-    var clearLog: () -> Void
+    let log: Deque<LogEntry>
+    let clearLog: () -> Void
 
     var body: some View {
         VStack {

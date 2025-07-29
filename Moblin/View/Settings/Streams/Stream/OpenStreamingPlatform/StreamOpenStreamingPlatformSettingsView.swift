@@ -2,7 +2,7 @@ import SwiftUI
 
 struct StreamOpenStreamingPlatformSettingsView: View {
     @EnvironmentObject var model: Model
-    var stream: SettingsStream
+    let stream: SettingsStream
 
     func submitUrl(value: String) {
         guard isValidWebSocketUrl(url: value) == nil else {

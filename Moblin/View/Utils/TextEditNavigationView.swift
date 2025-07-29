@@ -1,9 +1,9 @@
 import SwiftUI
 
 struct TextEditNavigationView: View {
-    var title: String
+    let title: String
     @State var value: String
-    var onSubmit: (String) -> Void
+    let onSubmit: (String) -> Void
     var footers: [String] = []
     var capitalize: Bool = false
     var keyboardType: UIKeyboardType = .default

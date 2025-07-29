@@ -2,7 +2,7 @@ import SwiftUI
 
 struct StreamReplaySettingsView: View {
     @EnvironmentObject var model: Model
-    var stream: SettingsStream
+    let stream: SettingsStream
 
     var body: some View {
         Form {

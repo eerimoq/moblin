@@ -2,7 +2,7 @@ import SwiftUI
 
 private struct StreamButtonText: View {
     @ObservedObject var database: Database
-    var text: String
+    let text: String
 
     var body: some View {
         Text(text)

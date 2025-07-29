@@ -189,7 +189,7 @@ private struct ReplayControls: View {
 private struct ReplayHistoryItem: View {
     @EnvironmentObject var model: Model
     @ObservedObject var replay: ReplayProvider
-    var video: ReplaySettings
+    let video: ReplaySettings
 
     private func height() -> Double {
         if model.stream.portrait {

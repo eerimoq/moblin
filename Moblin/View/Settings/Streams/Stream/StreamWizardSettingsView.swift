@@ -36,7 +36,7 @@ struct CreateStreamWizardToolbar: ToolbarContent {
 }
 
 struct StreamWizardSettingsView: View {
-    var createStreamWizard: CreateStreamWizard
+    let createStreamWizard: CreateStreamWizard
 
     var body: some View {
         Form {

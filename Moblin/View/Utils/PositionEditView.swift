@@ -3,10 +3,10 @@ import SwiftUI
 struct PositionEditView: View {
     @Binding var number: Double
     @Binding var value: String
-    var onSubmit: (Double) -> Void
+    let onSubmit: (Double) -> Void
     @Binding var numericInput: Bool
-    var incrementImageName: String
-    var decrementImageName: String
+    let incrementImageName: String
+    let decrementImageName: String
 
     func submit(value: String) -> String {
         if var value = Float(value) {

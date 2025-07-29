@@ -1,8 +1,8 @@
 import SwiftUI
 
 private struct StatusItemView: View {
-    var icon: String
-    var status: RemoteControlStatusItem?
+    let icon: String
+    let status: RemoteControlStatusItem?
 
     var body: some View {
         if let status {

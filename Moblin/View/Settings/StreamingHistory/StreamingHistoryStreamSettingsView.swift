@@ -1,7 +1,7 @@
 import SwiftUI
 
 private struct StreamingHistoryStreamSettingsGeneralView: View {
-    var stream: StreamingHistoryStream
+    let stream: StreamingHistoryStream
 
     var body: some View {
         Section {
@@ -40,7 +40,7 @@ private struct StreamingHistoryStreamSettingsGeneralView: View {
 }
 
 private struct StreamingHistoryStreamSettingsDeviceHealthView: View {
-    var stream: StreamingHistoryStream
+    let stream: StreamingHistoryStream
 
     var body: some View {
         Section {
@@ -69,7 +69,7 @@ private struct StreamingHistoryStreamSettingsDeviceHealthView: View {
 }
 
 private struct StreamingHistoryStreamSettingsSettingsView: View {
-    var stream: StreamingHistoryStream
+    let stream: StreamingHistoryStream
 
     var body: some View {
         Section {
@@ -101,7 +101,7 @@ private struct StreamingHistoryStreamSettingsSettingsView: View {
 
 struct StreamingHistoryStreamSettingsView: View {
     @EnvironmentObject var model: Model
-    var stream: StreamingHistoryStream
+    let stream: StreamingHistoryStream
 
     var body: some View {
         VStack {

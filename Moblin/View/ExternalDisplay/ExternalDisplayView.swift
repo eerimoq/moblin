@@ -7,7 +7,7 @@ import WrappingHStack
 private let fontSizeScaleFactor = 3.0
 
 private struct HighlightMessageView: View {
-    var chat: SettingsChat
+    let chat: SettingsChat
     let highlight: ChatHighlight
 
     var body: some View {
@@ -29,9 +29,9 @@ private struct HighlightMessageView: View {
 
 private struct LineView: View {
     @ObservedObject var postState: ChatPostState
-    var post: ChatPost
+    let post: ChatPost
     @ObservedObject var chat: SettingsChat
-    var platform: Bool
+    let platform: Bool
 
     private func usernameColor() -> Color {
         return post.userColor.color()
@@ -121,7 +121,7 @@ private struct LineView: View {
 }
 
 private struct PostView: View {
-    var model: Model
+    let model: Model
     @ObservedObject var chatSettings: SettingsChat
     @ObservedObject var chat: ChatProvider
     let post: ChatPost

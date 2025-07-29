@@ -9,7 +9,7 @@ func clampConnectionPriority(value: Int) -> Int {
 
 struct PriorityItemView: View {
     @EnvironmentObject var model: Model
-    var priority: SettingsStreamSrtConnectionPriority
+    let priority: SettingsStreamSrtConnectionPriority
     @State var prio: Float
 
     private func makeName() -> String {
@@ -53,7 +53,7 @@ struct PriorityItemView: View {
 
 struct StreamSrtConnectionPriorityView: View {
     @EnvironmentObject var model: Model
-    var stream: SettingsStream
+    let stream: SettingsStream
 
     var body: some View {
         Form {

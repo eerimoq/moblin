@@ -1,8 +1,8 @@
 import SwiftUI
 
 struct InlinePickerItem: Identifiable {
-    var id: String
-    var text: String
+    let id: String
+    let text: String
 
     static func fromStrings(values: [String]) -> [InlinePickerItem] {
         return values.map { InlinePickerItem(id: $0, text: $0) }

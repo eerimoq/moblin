@@ -2,7 +2,7 @@ import SwiftUI
 
 struct WidgetCropSettingsView: View {
     @EnvironmentObject var model: Model
-    var widget: SettingsWidget
+    let widget: SettingsWidget
 
     private func submitX(value: String) {
         guard let x = Int(value) else {

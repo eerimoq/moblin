@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct AddButtonView: View {
-    var action: () -> Void
+    let action: () -> Void
 
     var body: some View {
         Button {

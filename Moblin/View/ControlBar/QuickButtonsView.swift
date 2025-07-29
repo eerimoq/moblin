@@ -4,11 +4,11 @@ import SwiftUI
 let controlBarPages = 5
 
 private struct QuickButtonImage: View {
-    var model: Model
+    let model: Model
     @ObservedObject var quickButtonsSettings: SettingsQuickButtons
-    var state: ButtonState
-    var buttonSize: CGFloat
-    var onTapGesture: () -> Void
+    let state: ButtonState
+    let buttonSize: CGFloat
+    let onTapGesture: () -> Void
 
     private func getImage(state: ButtonState) -> String {
         if state.isOn {
@@ -60,8 +60,8 @@ private struct QuickButtonImage: View {
 private struct InstantReplayView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var replay: ReplayProvider
-    var state: ButtonState
-    var size: CGFloat
+    let state: ButtonState
+    let size: CGFloat
 
     var body: some View {
         if replay.isPlaying {
@@ -98,7 +98,7 @@ private struct InstantReplayView: View {
 }
 
 struct QuickButtonPlaceholderImage: View {
-    var size: CGFloat
+    let size: CGFloat
 
     var body: some View {
         Image(systemName: "pawprint")
@@ -134,10 +134,10 @@ struct QuickButtonsInnerView: View {
     let model: Model
     @ObservedObject var quickButtons: QuickButtons
     @ObservedObject var quickButtonsSettings: SettingsQuickButtons
-    var state: ButtonState
-    var size: CGFloat
-    var nameSize: CGFloat
-    var nameWidth: CGFloat
+    let state: ButtonState
+    let size: CGFloat
+    let nameSize: CGFloat
+    let nameWidth: CGFloat
     @State private var isPresentingRecordConfirm = false
     @State private var isPresentingStartWorkoutTypePicker = false
     @State private var isPresentingAdsTimePicker = false

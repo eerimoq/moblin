@@ -2,7 +2,7 @@ import SwiftUI
 
 struct StreamSrtAdaptiveBitrateSettingsView: View {
     @EnvironmentObject var model: Model
-    var stream: SettingsStream
+    let stream: SettingsStream
 
     private var adaptiveBitrate: SettingsStreamSrtAdaptiveBitrate {
         stream.srt.adaptiveBitrate!

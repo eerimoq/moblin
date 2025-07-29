@@ -3,7 +3,7 @@ import WebKit
 
 private struct CollapsedViewersView: View {
     @ObservedObject var status: StatusTopLeft
-    var color: Color
+    let color: Color
 
     var body: some View {
         HStack(spacing: 1) {
@@ -163,7 +163,7 @@ private struct StatusesView: View {
 }
 
 struct LeftOverlayView: View {
-    var model: Model
+    let model: Model
     @ObservedObject var database: Database
 
     var body: some View {

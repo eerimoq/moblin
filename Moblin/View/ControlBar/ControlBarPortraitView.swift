@@ -2,7 +2,7 @@ import SwiftUI
 
 @available(iOS 17, *)
 private struct ControlBarPageScrollTargetBehavior: ScrollTargetBehavior {
-    var model: Model
+    let model: Model
 
     func updateTarget(_ target: inout ScrollTarget, context: TargetContext) {
         target.rect.origin.y = controlBarScrollTargetBehavior(
@@ -17,8 +17,8 @@ private struct QuickButtonsView: View {
     let model: Model
     @ObservedObject var quickButtons: QuickButtons
     @ObservedObject var quickButtonsSettings: SettingsQuickButtons
-    var page: Int
-    var height: Double
+    let page: Int
+    let height: Double
 
     private func buttonSize() -> Double {
         if quickButtonsSettings.bigButtons {

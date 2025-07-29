@@ -27,7 +27,7 @@ func loadAlertImage(model: Model, imageId: UUID) -> Data? {
 
 private struct CustomImageView: View {
     @EnvironmentObject var model: Model
-    var media: SettingsAlertsMediaGalleryItem
+    let media: SettingsAlertsMediaGalleryItem
     @State var showPicker = false
     @State var image: Data?
 
@@ -78,7 +78,7 @@ private struct CustomImageView: View {
 
 private struct ImageGalleryView: View {
     @EnvironmentObject var model: Model
-    var alert: SettingsWidgetAlertsAlert
+    let alert: SettingsWidgetAlertsAlert
     @Binding var imageId: UUID
 
     var body: some View {
@@ -120,7 +120,7 @@ private struct ImageGalleryView: View {
 
 struct AlertImageSelectorView: View {
     @EnvironmentObject var model: Model
-    var alert: SettingsWidgetAlertsAlert
+    let alert: SettingsWidgetAlertsAlert
     @Binding var imageId: UUID
     @State var loopCount: Float
 
@@ -185,7 +185,7 @@ struct AlertImageSelectorView: View {
 
 struct AlertImagePlaygroundSelectorView: View {
     @EnvironmentObject var model: Model
-    var command: SettingsWidgetAlertsChatBotCommand
+    let command: SettingsWidgetAlertsChatBotCommand
     @State var selectedImageItem: PhotosPickerItem?
     @State var imageId: UUID
 

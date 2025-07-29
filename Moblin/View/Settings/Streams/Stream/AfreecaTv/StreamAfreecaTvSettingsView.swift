@@ -2,7 +2,7 @@ import SwiftUI
 
 struct StreamAfreecaTvSettingsView: View {
     @EnvironmentObject var model: Model
-    var stream: SettingsStream
+    let stream: SettingsStream
 
     func submitChannelName(value: String) {
         stream.afreecaTvChannelName = value

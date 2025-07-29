@@ -9,7 +9,7 @@ private struct QuickButtonGoProLaunchLiveStreamView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var goProState: GoProState
     @ObservedObject var goPro: SettingsGoPro
-    var height: Double
+    let height: Double
     @State var qrCode: UIImage?
     @State var entries: [PickerEntry] = []
 

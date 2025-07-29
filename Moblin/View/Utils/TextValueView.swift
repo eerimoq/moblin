@@ -1,8 +1,8 @@
 import SwiftUI
 
 struct TextValueView: View {
-    var name: String
-    var value: String
+    let name: String
+    let value: String
     var sensitive: Bool = false
 
     var body: some View {

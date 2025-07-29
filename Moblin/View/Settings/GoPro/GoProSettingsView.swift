@@ -293,7 +293,7 @@ private struct GoProRtmpUrlSettingsView: View {
 
 private struct GoProRtmpUrlSettingsEntryView: View {
     @ObservedObject var goPro: SettingsGoPro
-    var status: StatusOther
+    let status: StatusOther
     @ObservedObject var rtmpUrl: SettingsGoProRtmpUrl
 
     var body: some View {

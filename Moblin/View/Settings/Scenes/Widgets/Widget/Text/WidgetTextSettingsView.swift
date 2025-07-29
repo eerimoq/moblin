@@ -2,9 +2,9 @@ import PhotosUI
 import SwiftUI
 
 private struct Suggestion: Identifiable {
-    var id: Int
-    var name: String
-    var text: String
+    let id: Int
+    let name: String
+    let text: String
 }
 
 private let suggestionCountry = "{countryFlag} {country}"
@@ -58,9 +58,9 @@ private func createSuggestions() -> [Suggestion] {
 }
 
 private struct SuggestionView: View {
-    var suggestion: Suggestion
+    let suggestion: Suggestion
     @Binding var text: String
-    var dismiss: () -> Void
+    let dismiss: () -> Void
     @State var isPresentingConfirmation = false
 
     var body: some View {
@@ -126,7 +126,7 @@ private struct FormatView: View {
 private struct TextSelectionView: View {
     @EnvironmentObject var model: Model
     @Environment(\.dismiss) var dismiss
-    var widget: SettingsWidget
+    let widget: SettingsWidget
     @State var value: String
     @State var suggestion: Int = 0
 
@@ -436,7 +436,7 @@ private struct TextSelectionView: View {
 
 struct WidgetTextSettingsView: View {
     @EnvironmentObject var model: Model
-    var widget: SettingsWidget
+    let widget: SettingsWidget
     @ObservedObject var text: SettingsWidgetText
 
     var body: some View {

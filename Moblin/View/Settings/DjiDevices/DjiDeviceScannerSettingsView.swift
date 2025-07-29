@@ -4,7 +4,7 @@ struct DjiDeviceScannerSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject private var djiScanner: DjiDeviceScanner = .shared
     @Environment(\.dismiss) var dismiss
-    var onChange: (String) -> Void
+    let onChange: (String) -> Void
     @State var selectedId: String
 
     var body: some View {

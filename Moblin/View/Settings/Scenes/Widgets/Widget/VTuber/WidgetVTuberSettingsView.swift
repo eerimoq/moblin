@@ -17,7 +17,7 @@ private struct PickerView: UIViewControllerRepresentable {
 
 struct WidgetVTuberSettingsView: View {
     @EnvironmentObject var model: Model
-    var widget: SettingsWidget
+    let widget: SettingsWidget
     @ObservedObject var vTuber: SettingsWidgetVTuber
     @State var showPicker = false
 

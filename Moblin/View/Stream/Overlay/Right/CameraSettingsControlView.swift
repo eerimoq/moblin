@@ -354,7 +354,7 @@ private struct ButtonsView: View {
 }
 
 struct StreamOverlayRightCameraSettingsControlView: View {
-    var model: Model
+    let model: Model
     @ObservedObject var show: Show
 
     var body: some View {

@@ -3,9 +3,9 @@ import SwiftUI
 private let faceSliderWidth = 200.0
 
 private struct FaceButtonView: View {
-    var title: String
-    var on: Bool
-    var height: Double
+    let title: String
+    let on: Bool
+    let height: Double
 
     var body: some View {
         Text(title)
@@ -23,11 +23,11 @@ private struct FaceButtonView: View {
 
 private struct FaceViewSlider: View {
     @EnvironmentObject var model: Model
-    var name: String
+    let name: String
     @State var value: Float
-    var range: ClosedRange<Float>
-    var step: Float
-    var onChange: (Float) -> Void
+    let range: ClosedRange<Float>
+    let step: Float
+    let onChange: (Float) -> Void
 
     var body: some View {
         VStack(alignment: .trailing, spacing: 1) {
@@ -134,7 +134,7 @@ private struct FaceViewBeautyButtons: View {
     @EnvironmentObject var model: Model
     @ObservedObject var show: Show
     @Binding var beauty: Bool
-    var height: Double
+    let height: Double
 
     var body: some View {
         HStack {

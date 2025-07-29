@@ -12,7 +12,7 @@ private struct QuickButtonsView: View {
     let model: Model
     @ObservedObject var quickButtons: QuickButtons
     @ObservedObject var quickButtonsSettings: SettingsQuickButtons
-    var page: Int
+    let page: Int
     let width: Double
 
     private func buttonSize() -> Double {
@@ -151,7 +151,7 @@ private struct PageView: View {
     let model: Model
     let quickButtons: QuickButtons
     @ObservedObject var quickButtonsSettings: SettingsQuickButtons
-    var page: Int
+    let page: Int
     let width: Double
 
     var body: some View {
@@ -192,7 +192,7 @@ private struct MainPageView: View {
 
 @available(iOS 17, *)
 private struct ControlBarPageScrollTargetBehavior: ScrollTargetBehavior {
-    var model: Model
+    let model: Model
 
     func updateTarget(_ target: inout ScrollTarget, context: TargetContext) {
         target.rect.origin.x = controlBarScrollTargetBehavior(
@@ -207,7 +207,7 @@ private struct PagesView: View {
     let model: Model
     @ObservedObject var quickButtons: QuickButtons
     @ObservedObject var quickButtonsSettings: SettingsQuickButtons
-    var width: Double
+    let width: Double
 
     var body: some View {
         if #available(iOS 17, *) {
@@ -253,7 +253,7 @@ private struct PagesView: View {
 }
 
 struct ControlBarLandscapeView: View {
-    var model: Model
+    let model: Model
     @Environment(\.accessibilityShowButtonShapes)
     private var accessibilityShowButtonShapes
 

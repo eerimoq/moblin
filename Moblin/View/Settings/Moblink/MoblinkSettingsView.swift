@@ -2,8 +2,8 @@ import SwiftUI
 
 private struct InterfaceViewUrl: View {
     @EnvironmentObject var model: Model
-    var url: String
-    var image: String
+    let url: String
+    let image: String
 
     var body: some View {
         HStack {
@@ -21,9 +21,9 @@ private struct InterfaceViewUrl: View {
 }
 
 private struct InterfaceView: View {
-    var ip: String
-    var port: UInt16
-    var image: String
+    let ip: String
+    let port: UInt16
+    let image: String
 
     var body: some View {
         InterfaceViewUrl(url: "ws://\(ip):\(port)", image: image)
@@ -33,7 +33,7 @@ private struct InterfaceView: View {
 private struct PasswordView: View {
     @EnvironmentObject var model: Model
     @State var value: String
-    var onSubmit: (String) -> Void
+    let onSubmit: (String) -> Void
     @State private var changed = false
     @State private var submitted = false
     @State private var message: String?
@@ -110,9 +110,9 @@ private struct PasswordView: View {
 }
 
 private struct RelayStreamerServerView: View {
-    var server: MoblinkScannerStreamer
+    let server: MoblinkScannerStreamer
     @Binding var streamerUrl: String
-    var submitUrl: (String) -> Void
+    let submitUrl: (String) -> Void
 
     var body: some View {
         Section {

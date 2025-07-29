@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct StreamPlatformsSettingsView: View {
-    var stream: SettingsStream
+    let stream: SettingsStream
 
     var body: some View {
         NavigationLink {

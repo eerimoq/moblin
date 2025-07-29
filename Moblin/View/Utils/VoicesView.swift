@@ -6,9 +6,9 @@ private func localize(_ languageCode: String) -> String {
 }
 
 private struct LanguageView: View {
-    var languageCode: String
+    let languageCode: String
     @State var voice: String
-    var onVoiceChange: (String, String) -> Void
+    let onVoiceChange: (String, String) -> Void
 
     private func voices(language: String) -> [AVSpeechSynthesisVoice] {
         return AVSpeechSynthesisVoice.speechVoices().filter { $0.language.prefix(2) == language }
@@ -43,7 +43,7 @@ private struct Language {
 
 struct VoicesView: View {
     @Binding var textToSpeechLanguageVoices: [String: String]
-    var onVoiceChange: (String, String) -> Void
+    let onVoiceChange: (String, String) -> Void
 
     private func languages() -> [Language] {
         var languages: [Language] = []

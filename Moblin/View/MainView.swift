@@ -4,7 +4,7 @@ import UIKit
 import WebKit
 
 private struct CloseButtonView: View {
-    var onClose: () -> Void
+    let onClose: () -> Void
 
     var body: some View {
         Button {
@@ -43,7 +43,7 @@ private struct HideShowButtonPanelView: View {
 
 private struct PanelButtonsView: View {
     @EnvironmentObject var model: Model
-    var backgroundColor: Color
+    let backgroundColor: Color
 
     var body: some View {
         HStack {
@@ -173,7 +173,7 @@ private struct CloseButtonRemoteView: View {
 }
 
 struct BrowserWidgetView: UIViewRepresentable {
-    var browser: Browser
+    let browser: Browser
 
     func makeUIView(context _: Context) -> WKWebView {
         return browser.browserEffect.webView
@@ -250,7 +250,7 @@ private struct StreamOverlayTapGridView: View {
 struct MainView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var webBrowserController: WebBrowserController
-    var streamView: StreamView
+    let streamView: StreamView
     @State var showAreYouReallySure = false
     @FocusState private var focused: Bool
     @ObservedObject var replay: ReplayProvider

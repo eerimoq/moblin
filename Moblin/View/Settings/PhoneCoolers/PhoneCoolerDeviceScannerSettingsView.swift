@@ -11,7 +11,7 @@ struct PhoneCoolerDeviceScannerSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject private var scanner = phoneCoolerScanner
     @Environment(\.dismiss) var dismiss
-    var onChange: (String) -> Void
+    let onChange: (String) -> Void
     @State var selectedId: String
 
     var body: some View {

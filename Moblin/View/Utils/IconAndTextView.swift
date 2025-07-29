@@ -1,8 +1,8 @@
 import SwiftUI
 
 struct IconAndTextView: View {
-    var image: String
-    var text: String
+    let image: String
+    let text: String
     var longDivider: Bool = false
 
     var body: some View {

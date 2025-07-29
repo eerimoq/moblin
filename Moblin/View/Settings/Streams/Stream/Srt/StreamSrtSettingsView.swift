@@ -2,7 +2,7 @@ import SwiftUI
 
 struct StreamSrtSettingsView: View {
     @EnvironmentObject var model: Model
-    var stream: SettingsStream
+    let stream: SettingsStream
     @State var dnsLookupStrategy: String
 
     func submitLatency(value: String) {

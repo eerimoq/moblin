@@ -2,10 +2,10 @@ import SwiftUI
 
 private struct InfoView: View {
     @EnvironmentObject var model: Model
-    var icon: String
-    var text: String
-    var get: () -> Bool
-    var set: (Bool) -> Void
+    let icon: String
+    let text: String
+    let get: () -> Bool
+    let set: (Bool) -> Void
 
     var body: some View {
         HStack {

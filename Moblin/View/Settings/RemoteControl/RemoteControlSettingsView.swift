@@ -3,7 +3,7 @@ import SwiftUI
 private struct PasswordView: View {
     @EnvironmentObject var model: Model
     @State var value: String
-    var onSubmit: (String) -> Void
+    let onSubmit: (String) -> Void
     @State private var changed = false
     @State private var submitted = false
     @State private var message: String?

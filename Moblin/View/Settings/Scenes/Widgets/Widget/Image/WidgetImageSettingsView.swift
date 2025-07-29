@@ -3,7 +3,7 @@ import SwiftUI
 
 struct WidgetImageSettingsView: View {
     @EnvironmentObject var model: Model
-    var widget: SettingsWidget
+    let widget: SettingsWidget
     @State var selectedImageItem: PhotosPickerItem?
 
     func loadImage() -> UIImage? {

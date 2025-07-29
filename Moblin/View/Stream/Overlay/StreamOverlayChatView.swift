@@ -48,9 +48,9 @@ private struct HighlightMessageView: View {
 
 private struct LineView: View {
     @ObservedObject var postState: ChatPostState
-    var post: ChatPost
+    let post: ChatPost
     @ObservedObject var chat: SettingsChat
-    var platform: Bool
+    let platform: Bool
 
     private func usernameColor() -> Color {
         return post.userColor.color()
@@ -182,7 +182,7 @@ private struct LineView: View {
 private let startId = UUID()
 
 private struct PostView: View {
-    var model: Model
+    let model: Model
     @ObservedObject var chatSettings: SettingsChat
     @ObservedObject var chat: ChatProvider
     let fullSize: Bool
@@ -224,7 +224,7 @@ private struct PostView: View {
 }
 
 struct StreamOverlayChatView: View {
-    var model: Model
+    let model: Model
     @ObservedObject var chatSettings: SettingsChat
     @ObservedObject var chat: ChatProvider
     let fullSize: Bool

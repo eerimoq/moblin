@@ -3,7 +3,7 @@ import SwiftUI
 private struct PermissionsSettingsView: View {
     // periphery:ignore
     @EnvironmentObject var model: Model
-    var permissions: SettingsChatBotPermissionsCommand
+    let permissions: SettingsChatBotPermissionsCommand
     @State private var minimumSubscriberTier: Int
 
     init(permissions: SettingsChatBotPermissionsCommand) {

@@ -2,7 +2,7 @@ import SwiftUI
 
 private struct AutoSwitcherSceneSettingsView: View {
     @EnvironmentObject var model: Model
-    var scene: SettingsAutoSceneSwitcherScene
+    let scene: SettingsAutoSceneSwitcherScene
     @Binding var sceneId: UUID?
     @Binding var sceneName: String
     @Binding var time: Int
@@ -45,7 +45,7 @@ private struct AutoSwitcherSceneSettingsView: View {
 
 private struct AutoSwitcherSceneSettingsItemView: View {
     @EnvironmentObject var model: Model
-    var scene: SettingsAutoSceneSwitcherScene
+    let scene: SettingsAutoSceneSwitcherScene
     @State var sceneId: UUID?
     @State var sceneName: String
     @State var time: Int
@@ -66,7 +66,7 @@ private struct AutoSwitcherSceneSettingsItemView: View {
 
 private struct AutoSwitcherScenesSettingsView: View {
     @EnvironmentObject var model: Model
-    var autoSwitcher: SettingsAutoSceneSwitcher
+    let autoSwitcher: SettingsAutoSceneSwitcher
 
     var database: Database {
         model.database

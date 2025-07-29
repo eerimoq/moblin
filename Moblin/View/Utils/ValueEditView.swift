@@ -1,12 +1,12 @@
 import SwiftUI
 
 struct ValueEditView: View {
-    var title: String
+    let title: String
     @State var number: Float
     @State var value: String
-    var minimum: Float
-    var maximum: Float
-    var onSubmit: (String) -> String
+    let minimum: Float
+    let maximum: Float
+    let onSubmit: (String) -> String
     var increment: Float = 1
     var unit: String?
 
@@ -77,12 +77,12 @@ struct ValueEditView: View {
 struct ValueEditCompactView: View {
     @Binding var number: Double
     @Binding var value: String
-    var minimum: Double
-    var maximum: Double
-    var onSubmit: (String) -> String
+    let minimum: Double
+    let maximum: Double
+    let onSubmit: (String) -> String
     @Binding var numericInput: Bool
-    var incrementImageName: String
-    var decrementImageName: String
+    let incrementImageName: String
+    let decrementImageName: String
     var increment: Double = 1
 
     func add(offset: Double) {

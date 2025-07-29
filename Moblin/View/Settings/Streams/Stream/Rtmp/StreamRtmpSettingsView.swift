@@ -2,7 +2,7 @@ import SwiftUI
 
 struct StreamRtmpSettingsView: View {
     @EnvironmentObject var model: Model
-    var stream: SettingsStream
+    let stream: SettingsStream
 
     var body: some View {
         Form {

@@ -2,7 +2,7 @@ import SwiftUI
 
 struct StreamAudioSettingsView: View {
     @EnvironmentObject var model: Model
-    var stream: SettingsStream
+    let stream: SettingsStream
     @State var bitrate: Float
 
     private func calcBitrate() -> Int {

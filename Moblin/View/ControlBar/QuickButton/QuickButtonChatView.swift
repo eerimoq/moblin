@@ -24,9 +24,9 @@ private struct HighlightMessageView: View {
 
 private struct LineView: View {
     @ObservedObject var postState: ChatPostState
-    var post: ChatPost
+    let post: ChatPost
     @ObservedObject var chat: SettingsChat
-    var platform: Bool
+    let platform: Bool
     @Binding var selectedPost: ChatPost?
 
     private func imageOpacity() -> Double {

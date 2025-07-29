@@ -1,15 +1,15 @@
 import SwiftUI
 
 private struct SceneSettings: Codable {
-    var x: Double
-    var y: Double
-    var width: Double
-    var height: Double
+    let x: Double
+    let y: Double
+    let width: Double
+    let height: Double
 }
 
 struct SceneWidgetSettingsView: View {
     @EnvironmentObject private var model: Model
-    var sceneWidget: SettingsSceneWidget
+    let sceneWidget: SettingsSceneWidget
     @ObservedObject var widget: SettingsWidget
     @Binding var numericInput: Bool
     @State var x: Double

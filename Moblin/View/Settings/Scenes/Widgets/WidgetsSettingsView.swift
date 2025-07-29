@@ -5,7 +5,7 @@ private class SceneItem: ObservableObject, Identifiable {
         scene.id
     }
 
-    var scene: SettingsScene
+    let scene: SettingsScene
     @Published var enabled: Bool
 
     init(scene: SettingsScene) {

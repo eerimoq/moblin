@@ -3,8 +3,8 @@ import SwiftUI
 struct DrawOnStreamLine: Identifiable {
     let id = UUID()
     var points: [CGPoint]
-    var width: CGFloat
-    var color: Color
+    let width: CGFloat
+    let color: Color
 }
 
 private var drawing = false

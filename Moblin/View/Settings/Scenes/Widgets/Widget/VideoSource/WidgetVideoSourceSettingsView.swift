@@ -141,8 +141,8 @@ func calculatePositioningAnchorPoint(_ location: CGPoint,
 
 private struct CropView: View {
     @EnvironmentObject var model: Model
-    var widgetId: UUID
-    var widget: SettingsWidgetVideoSource
+    let widgetId: UUID
+    let widget: SettingsWidgetVideoSource
     @State private var position: CGPoint = .init(x: 100, y: 100)
     @State private var positionOffset: CGSize = .init(width: 0, height: 0)
     @State private var positionAnchorPoint: AnchorPoint?

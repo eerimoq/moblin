@@ -2,7 +2,7 @@ import SwiftUI
 
 struct StreamTwitchSettingsView: View {
     @EnvironmentObject var model: Model
-    var stream: SettingsStream
+    let stream: SettingsStream
     @State var loggedIn: Bool
     @State var streamTitle: String?
 

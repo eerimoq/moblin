@@ -2,7 +2,7 @@ import SwiftUI
 
 struct StreamObsRemoteControlSettingsView: View {
     @EnvironmentObject var model: Model
-    var stream: SettingsStream
+    let stream: SettingsStream
 
     func submitWebSocketUrl(value: String) {
         let url = cleanUrl(url: value)

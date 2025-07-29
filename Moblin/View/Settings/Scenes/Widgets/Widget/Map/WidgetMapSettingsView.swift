@@ -2,7 +2,7 @@ import SwiftUI
 
 struct WidgetMapSettingsView: View {
     @EnvironmentObject var model: Model
-    var widget: SettingsWidget
+    let widget: SettingsWidget
     @State var delay: Double
 
     var body: some View {

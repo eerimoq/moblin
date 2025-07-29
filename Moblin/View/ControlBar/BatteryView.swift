@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct BatteryView: View {
-    var model: Model
+    let model: Model
     @ObservedObject var database: Database
     @ObservedObject var battery: Battery
 

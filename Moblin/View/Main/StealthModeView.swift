@@ -23,7 +23,7 @@ private struct ReturnButtonView: View {
 
 private struct ChatButtonView: View {
     @ObservedObject var quickButtons: SettingsQuickButtons
-    var showButtons: () -> Void
+    let showButtons: () -> Void
 
     var body: some View {
         VStack {

@@ -72,7 +72,7 @@ private struct PlayerView: View {
 
 struct WidgetScoreboardSettingsView: View {
     @EnvironmentObject var model: Model
-    private var widget: SettingsWidget
+    private let widget: SettingsWidget
     @State private var type: SettingsWidgetScoreboardType
     @State private var gameType: SettingsWidgetPadelScoreboardGameType
     @State private var homePlayer1: UUID

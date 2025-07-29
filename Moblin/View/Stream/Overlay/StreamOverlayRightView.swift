@@ -3,7 +3,7 @@ import SwiftUI
 
 private struct CollapsedBondingView: View {
     @ObservedObject var bonding: Bonding
-    var color: Color
+    let color: Color
 
     var body: some View {
         HStack(spacing: 1) {
@@ -85,8 +85,8 @@ private struct ReplayStatusView: View {
 }
 
 private struct CollapsedHypeTrainView: View {
-    var status: String
-    var color: Color
+    let status: String
+    let color: Color
 
     var body: some View {
         HStack(spacing: 1) {
@@ -669,7 +669,7 @@ private struct AudioView: View {
 }
 
 struct RightOverlayTopView: View {
-    var model: Model
+    let model: Model
     @ObservedObject var database: Database
 
     var body: some View {

@@ -2,8 +2,8 @@ import SwiftUI
 
 struct MediaPlayerFileSettingsView: View {
     @EnvironmentObject var model: Model
-    var player: SettingsMediaPlayer
-    var file: SettingsMediaPlayerFile
+    let player: SettingsMediaPlayer
+    let file: SettingsMediaPlayerFile
 
     private func submitName(value: String) {
         file.name = value.trim()

@@ -1,7 +1,7 @@
 import SwiftUI
 
 private struct VideoStabilizationView: View {
-    var model: Model
+    let model: Model
     @ObservedObject var scene: SettingsScene
 
     var body: some View {
@@ -22,7 +22,7 @@ private struct VideoStabilizationView: View {
 }
 
 private struct MicView: View {
-    var model: Model
+    let model: Model
     @ObservedObject var scene: SettingsScene
     @ObservedObject var mic: Mic
 
@@ -63,7 +63,7 @@ private struct MicView: View {
 private struct SceneWidgetView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var database: Database
-    var sceneWidget: SettingsSceneWidget
+    let sceneWidget: SettingsSceneWidget
 
     var body: some View {
         if let widget = database.widgets.first(where: { item in item.id == sceneWidget.widgetId }) {

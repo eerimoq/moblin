@@ -3,7 +3,7 @@ import SwiftUI
 struct SizeEditView: View {
     @Binding var number: Double
     @Binding var value: String
-    var onSubmit: (Double) -> Void
+    let onSubmit: (Double) -> Void
     @Binding var numericInput: Bool
 
     func submit(value: String) -> String {

@@ -2,7 +2,7 @@ import SwiftUI
 
 private struct DjiGimbalDeviceSettingsWrapperView: View {
     @EnvironmentObject var model: Model
-    var device: SettingsDjiGimbalDevice
+    let device: SettingsDjiGimbalDevice
     @State var name: String
 
     var body: some View {

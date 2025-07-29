@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct TextEditView: View {
-    var title: String
+    let title: String
     @State var value: String
     var footers: [String] = []
     var capitalize: Bool = false
@@ -24,7 +24,7 @@ struct TextEditView: View {
 
 struct TextEditBindingView: View {
     @Environment(\.dismiss) var dismiss
-    var title: String
+    let title: String
     @Binding var value: String
     var footers: [String] = []
     var capitalize: Bool = false

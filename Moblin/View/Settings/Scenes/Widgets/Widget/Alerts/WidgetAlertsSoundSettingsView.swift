@@ -19,7 +19,7 @@ private func loadSound(model: Model, soundId: UUID) -> AVAudioPlayer? {
 
 private struct CustomSoundView: View {
     @EnvironmentObject var model: Model
-    var media: SettingsAlertsMediaGalleryItem
+    let media: SettingsAlertsMediaGalleryItem
     @State var showPicker = false
     @State var audioPlayer: AVAudioPlayer?
 
@@ -75,7 +75,7 @@ private struct CustomSoundView: View {
 
 private struct SoundGalleryView: View {
     @EnvironmentObject var model: Model
-    var alert: SettingsWidgetAlertsAlert
+    let alert: SettingsWidgetAlertsAlert
     @Binding var soundId: UUID
 
     var body: some View {
@@ -119,7 +119,7 @@ private var player: AVAudioPlayer?
 
 struct AlertSoundSelectorView: View {
     @EnvironmentObject var model: Model
-    var alert: SettingsWidgetAlertsAlert
+    let alert: SettingsWidgetAlertsAlert
     @Binding var soundId: UUID
 
     var body: some View {

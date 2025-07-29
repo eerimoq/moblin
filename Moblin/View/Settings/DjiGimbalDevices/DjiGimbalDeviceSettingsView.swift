@@ -18,7 +18,7 @@ func formatDjiGimbalDeviceState(state: DjiGimbalDeviceState?) -> String {
 private struct DjiGimbalDeviceSelectDeviceSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject private var djiScanner: DjiGimbalDeviceScanner = .shared
-    var device: SettingsDjiGimbalDevice
+    let device: SettingsDjiGimbalDevice
 
     private func onDeviceChange(value: String) {
         guard let deviceId = UUID(uuidString: value) else {
@@ -57,7 +57,7 @@ private struct DjiGimbalDeviceSelectDeviceSettingsView: View {
 
 struct DjiGimbalDeviceSettingsView: View {
     @EnvironmentObject var model: Model
-    var device: SettingsDjiGimbalDevice
+    let device: SettingsDjiGimbalDevice
     @ObservedObject var status: StatusTopRight
     @Binding var name: String
 

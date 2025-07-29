@@ -1,9 +1,9 @@
 import SwiftUI
 
 struct Version {
-    var version: String
-    var date: String
-    var changes: [String]
+    let version: String
+    let date: String
+    let changes: [String]
 }
 
 // swiftlint:disable line_length

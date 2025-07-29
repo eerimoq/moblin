@@ -2,7 +2,7 @@ import SwiftUI
 
 struct StreamRealtimeIrlSettingsView: View {
     @EnvironmentObject var model: Model
-    var stream: SettingsStream
+    let stream: SettingsStream
 
     func submitPushKey(value: String) {
         stream.realtimeIrlPushKey = value

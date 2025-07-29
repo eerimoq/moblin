@@ -3,7 +3,7 @@ import SwiftUI
 
 struct CustomLutView: View {
     @EnvironmentObject var model: Model
-    var lut: SettingsColorLut
+    let lut: SettingsColorLut
     @State var name: String
 
     func loadImage() -> UIImage? {

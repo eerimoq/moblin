@@ -4,20 +4,13 @@ private let startRadiusFraction = 0.45
 private let endRadiusFraction = 0.5
 
 struct ChatInfo: View {
-    var message: String
-    var icon: String?
-    var iconColor: Color = .white
+    let message: String
 
     var body: some View {
         VStack {
             Spacer()
             HStack {
                 HStack {
-                    if let icon {
-                        Image(systemName: icon)
-                            .foregroundColor(iconColor)
-                            .bold()
-                    }
                     Text(message)
                         .bold()
                         .foregroundColor(.white)

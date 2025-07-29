@@ -1,8 +1,8 @@
 import SwiftUI
 
 struct QrCodeImageView: View {
-    var image: UIImage
-    var height: Double
+    let image: UIImage
+    let height: Double
     @State var isFullScreen = false
 
     var body: some View {

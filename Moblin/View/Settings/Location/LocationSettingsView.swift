@@ -3,7 +3,7 @@ import SwiftUI
 
 private struct PrivacyRegionView: View {
     @EnvironmentObject var model: Model
-    var region: SettingsPrivacyRegion
+    let region: SettingsPrivacyRegion
     @State var current: MKCoordinateRegion
 
     var body: some View {

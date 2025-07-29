@@ -3,7 +3,7 @@ import SwiftUI
 struct StreamUrlSettingsView: View {
     @EnvironmentObject var model: Model
     @Environment(\.dismiss) var dismiss
-    var stream: SettingsStream
+    let stream: SettingsStream
     @State var value: String
     @State var show: Bool = false
     @State var changed: Bool = false

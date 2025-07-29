@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct StreamWizardNetworkSetupSettingsView: View {
-    var createStreamWizard: CreateStreamWizard
+    let createStreamWizard: CreateStreamWizard
     let platform: String
 
     var body: some View {

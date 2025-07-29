@@ -2,7 +2,7 @@ import SwiftUI
 
 struct RecordingsRecordingSettingsView: View {
     @EnvironmentObject var model: Model
-    var recording: Recording
+    let recording: Recording
     @State var description = ""
 
     var body: some View {

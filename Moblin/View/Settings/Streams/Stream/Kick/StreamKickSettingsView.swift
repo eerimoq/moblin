@@ -2,7 +2,7 @@ import SwiftUI
 
 struct StreamKickSettingsView: View {
     @EnvironmentObject var model: Model
-    var stream: SettingsStream
+    let stream: SettingsStream
 
     func submitChannelName(value: String) {
         stream.kickChannelName = value
