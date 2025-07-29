@@ -84,7 +84,7 @@ struct SceneWidgetSettingsView: View {
                     PositionEditView(
                         number: $sceneWidget.x,
                         value: $sceneWidget.xString,
-                        onSubmit: {_ in
+                        onSubmit: { _ in
                             model.sceneUpdated()
                         },
                         numericInput: $numericInput,
@@ -94,7 +94,7 @@ struct SceneWidgetSettingsView: View {
                     PositionEditView(
                         number: $sceneWidget.y,
                         value: $sceneWidget.yString,
-                        onSubmit: {_ in
+                        onSubmit: { _ in
                             model.sceneUpdated()
                         },
                         numericInput: $numericInput,
@@ -110,7 +110,7 @@ struct SceneWidgetSettingsView: View {
                     SizeEditView(
                         number: $sceneWidget.width,
                         value: $sceneWidget.widthString,
-                        onSubmit: {_ in
+                        onSubmit: { _ in
                             model.sceneUpdated()
                         },
                         numericInput: $numericInput
@@ -118,7 +118,7 @@ struct SceneWidgetSettingsView: View {
                     SizeEditView(
                         number: $sceneWidget.height,
                         value: $sceneWidget.heightString,
-                        onSubmit: {_ in
+                        onSubmit: { _ in
                             model.sceneUpdated()
                         },
                         numericInput: $numericInput
