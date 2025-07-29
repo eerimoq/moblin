@@ -173,7 +173,7 @@ struct SettingsView: View {
                 }
                 if database.showAllSettings {
                     NavigationLink {
-                        StreamingHistorySettingsView()
+                        StreamingHistorySettingsView(model: model)
                     } label: {
                         Label("Streaming history", systemImage: "text.book.closed")
                     }

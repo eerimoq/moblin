@@ -103,14 +103,35 @@ class StreamingHistoryStream: Identifiable, Codable {
     }
 }
 
-class StreamingHistoryDatabase: Codable {
-    var totalTime: Duration? = .seconds(0)
-    var totalBytes: UInt64? = 0
-    var totalStreams: UInt64? = 0
-    var streams: [StreamingHistoryStream]
+class StreamingHistoryDatabase: Codable, ObservableObject {
+    @Published var totalTime: Duration = .seconds(0)
+    @Published var totalBytes: UInt64 = 0
+    @Published var totalStreams: UInt64 = 0
+    @Published var streams: [StreamingHistoryStream] = []
 
-    init() {
-        streams = []
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case totalTime,
+             totalBytes,
+             totalStreams,
+             streams
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.totalTime, totalTime)
+        try container.encode(.totalBytes, totalBytes)
+        try container.encode(.totalStreams, totalStreams)
+        try container.encode(.streams, streams)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        totalTime = container.decode(.totalTime, Duration.self, .seconds(0))
+        totalBytes = container.decode(.totalBytes, UInt64.self, 0)
+        totalStreams = container.decode(.totalStreams, UInt64.self, 0)
+        streams = container.decode(.streams, [StreamingHistoryStream].self, [])
     }
 
     static func fromString(settings: String) throws -> StreamingHistoryDatabase {
@@ -157,22 +178,6 @@ final class StreamingHistory {
     }
 
     private func migrateFromOlderVersions() {
-        if database.totalTime == nil {
-            database.totalTime = database.streams.reduce(.seconds(0)) { total, stream in
-                total + stream.duration()
-            }
-            store()
-        }
-        if database.totalBytes == nil {
-            database.totalBytes = database.streams.reduce(0) { total, stream in
-                total + stream.totalBytes
-            }
-            store()
-        }
-        if database.totalStreams == nil {
-            database.totalStreams = UInt64(database.streams.count)
-            store()
-        }
         for stream in database.streams where stream.numberOfFffffs == nil {
             stream.numberOfFffffs = 0
             store()
@@ -199,9 +204,9 @@ final class StreamingHistory {
         while database.streams.count > 100 {
             database.streams.removeLast()
         }
-        database.totalTime! += stream.duration()
-        database.totalBytes! += stream.totalBytes
-        database.totalStreams! += 1
+        database.totalTime += stream.duration()
+        database.totalBytes += stream.totalBytes
+        database.totalStreams += 1
         database.streams.insert(stream, at: 0)
     }
 }
