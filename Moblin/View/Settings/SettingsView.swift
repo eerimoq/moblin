@@ -179,7 +179,7 @@ struct SettingsView: View {
                     }
                 }
             }
-            if database.showAllSettings {
+            if database.showAllSettings, isPhone() {
                 Section {
                     NavigationLink {
                         WatchSettingsView(watch: database.watch)
