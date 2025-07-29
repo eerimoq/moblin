@@ -34,7 +34,8 @@ struct StreamWizardKickSettingsView: View {
         }
         .onAppear {
             createStreamWizard.platform = .kick
-            createStreamWizard.name = "Kick"
+            createStreamWizard.name = makeUniqueName(name: String(localized: "Kick"),
+                                                     existingNames: model.database.streams)
             createStreamWizard.directIngest = ""
         }
         .navigationTitle("Kick")

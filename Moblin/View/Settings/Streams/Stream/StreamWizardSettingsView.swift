@@ -36,6 +36,7 @@ struct CreateStreamWizardToolbar: ToolbarContent {
 }
 
 struct StreamWizardSettingsView: View {
+    let model: Model
     let createStreamWizard: CreateStreamWizard
 
     var body: some View {
@@ -71,7 +72,7 @@ struct StreamWizardSettingsView: View {
             }
             Section {
                 NavigationLink {
-                    StreamWizardCustomSettingsView(createStreamWizard: createStreamWizard)
+                    StreamWizardCustomSettingsView(model: model, createStreamWizard: createStreamWizard)
                 } label: {
                     Text("Custom")
                 }

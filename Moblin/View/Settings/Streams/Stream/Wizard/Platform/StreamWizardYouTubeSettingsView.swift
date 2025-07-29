@@ -28,7 +28,8 @@ struct StreamWizardYouTubeSettingsView: View {
         }
         .onAppear {
             createStreamWizard.platform = .youTube
-            createStreamWizard.name = "YouTube"
+            createStreamWizard.name = makeUniqueName(name: String(localized: "YouTube"),
+                                                     existingNames: model.database.streams)
             createStreamWizard.directIngest = "rtmp://a.rtmp.youtube.com/live2"
         }
         .navigationTitle("YouTube")

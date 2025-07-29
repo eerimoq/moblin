@@ -43,7 +43,8 @@ struct StreamWizardCustomRistSettingsView: View {
         }
         .onAppear {
             createStreamWizard.customProtocol = .rist
-            createStreamWizard.name = "Custom RIST"
+            createStreamWizard.name = makeUniqueName(name: String(localized: "Custom RIST"),
+                                                     existingNames: model.database.streams)
         }
         .navigationTitle("RIST")
         .toolbar {

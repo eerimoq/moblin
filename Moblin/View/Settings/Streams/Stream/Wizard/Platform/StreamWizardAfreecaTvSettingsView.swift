@@ -32,7 +32,8 @@ struct StreamWizardAfreecaTvSettingsView: View {
         }
         .onAppear {
             createStreamWizard.platform = .afreecaTv
-            createStreamWizard.name = "AfreecaTV"
+            createStreamWizard.name = makeUniqueName(name: String(localized: "AfreecaTV"),
+                                                     existingNames: model.database.streams)
             createStreamWizard.directIngest = ""
         }
         .navigationTitle("AfreecaTV")

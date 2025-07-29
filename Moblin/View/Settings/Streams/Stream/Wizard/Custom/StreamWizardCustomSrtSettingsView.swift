@@ -54,7 +54,8 @@ struct StreamWizardCustomSrtSettingsView: View {
         }
         .onAppear {
             createStreamWizard.customProtocol = .srt
-            createStreamWizard.name = "Custom SRT"
+            createStreamWizard.name = makeUniqueName(name: String(localized: "Custom SRT"),
+                                                     existingNames: model.database.streams)
         }
         .navigationTitle("SRT(LA)")
         .toolbar {

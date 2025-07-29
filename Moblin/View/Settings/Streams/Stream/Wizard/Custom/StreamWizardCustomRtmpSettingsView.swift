@@ -59,7 +59,8 @@ struct StreamWizardCustomRtmpSettingsView: View {
         }
         .onAppear {
             createStreamWizard.customProtocol = .rtmp
-            createStreamWizard.name = "Custom RTMP"
+            createStreamWizard.name = makeUniqueName(name: String(localized: "Custom RTMP"),
+                                                     existingNames: model.database.streams)
         }
         .navigationTitle("RTMP(S)")
         .toolbar {

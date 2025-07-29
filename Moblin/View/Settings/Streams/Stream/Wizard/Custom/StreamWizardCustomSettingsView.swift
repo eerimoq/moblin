@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct StreamWizardCustomSettingsView: View {
+    let model: Model
     @ObservedObject var createStreamWizard: CreateStreamWizard
 
     var body: some View {
@@ -36,7 +37,8 @@ struct StreamWizardCustomSettingsView: View {
             createStreamWizard.platform = .custom
             createStreamWizard.networkSetup = .none
             createStreamWizard.customProtocol = .none
-            createStreamWizard.name = "Custom"
+            createStreamWizard.name = makeUniqueName(name: String(localized: "Custom"),
+                                                     existingNames: model.database.streams)
         }
         .navigationTitle("Custom")
         .toolbar {

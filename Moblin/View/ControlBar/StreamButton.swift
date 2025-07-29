@@ -100,7 +100,7 @@ private struct SetupButtonView: View {
             }
             .sheet(isPresented: $createStreamWizard.isPresentingSetup) {
                 NavigationStack {
-                    StreamWizardSettingsView(createStreamWizard: createStreamWizard)
+                    StreamWizardSettingsView(model: model, createStreamWizard: createStreamWizard)
                 }
             }
     }

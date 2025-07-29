@@ -101,7 +101,8 @@ struct StreamWizardTwitchSettingsView: View {
         }
         .onAppear {
             createStreamWizard.platform = .twitch
-            createStreamWizard.name = "Twitch"
+            createStreamWizard.name = makeUniqueName(name: String(localized: "Twitch"),
+                                                     existingNames: model.database.streams)
             createStreamWizard.directIngest = "rtmp://ingest.global-contribute.live-video.net/app"
             createStreamWizard.twitchStream.twitchAccessToken = ""
         }

@@ -73,7 +73,7 @@ struct StreamsSettingsView: View {
                 .disabled(model.isLive || model.isRecording)
                 .sheet(isPresented: $createStreamWizard.isPresenting) {
                     NavigationStack {
-                        StreamWizardSettingsView(createStreamWizard: createStreamWizard)
+                        StreamWizardSettingsView(model: model, createStreamWizard: createStreamWizard)
                     }
                 }
             } footer: {
