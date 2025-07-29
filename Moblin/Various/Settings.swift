@@ -544,7 +544,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
     var realtimeIrlPushKey: String = ""
     @Published var portrait: Bool = false
     var backgroundStreaming: Bool = false
-    var estimatedViewerDelay: Float = 8.0
+    @Published var estimatedViewerDelay: Float = 8.0
     var twitchMultiTrackEnabled: Bool = false
     @Published var ntpPoolAddress: String = "time.apple.com"
     @Published var timecodesEnabled: Bool = false
