@@ -391,7 +391,7 @@ class SettingsStreamRecording: Codable, ObservableObject {
         if videoBitrate != 0 {
             return formatBytesPerSecond(speed: Int64(videoBitrate))
         } else {
-            return "Auto"
+            return String(localized: "Auto")
         }
     }
 
@@ -399,7 +399,7 @@ class SettingsStreamRecording: Codable, ObservableObject {
         if maxKeyFrameInterval != 0 {
             return "\(maxKeyFrameInterval) s"
         } else {
-            return "Auto"
+            return String(localized: "Auto")
         }
     }
 
@@ -407,7 +407,7 @@ class SettingsStreamRecording: Codable, ObservableObject {
         if audioBitrate != 0 {
             return formatBytesPerSecond(speed: Int64(audioBitrate))
         } else {
-            return "Auto"
+            return String(localized: "Auto")
         }
     }
 }
