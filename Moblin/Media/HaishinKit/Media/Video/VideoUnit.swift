@@ -87,10 +87,10 @@ private class FaceDetectionsCompletion {
 }
 
 private struct CaptureSessionDevice {
-    var device: AVCaptureDevice
-    var input: AVCaptureInput
-    var output: AVCaptureVideoDataOutput
-    var connection: AVCaptureConnection
+    let device: AVCaptureDevice
+    let input: AVCaptureInput
+    let output: AVCaptureVideoDataOutput
+    let connection: AVCaptureConnection
 }
 
 private func makeCaptureSession() -> AVCaptureSession {
