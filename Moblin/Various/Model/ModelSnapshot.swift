@@ -105,6 +105,6 @@ extension Model {
     }
 
     func setCleanSnapshots() {
-        media.setCleanSnapshots(enabled: stream.recording.cleanSnapshots!)
+        media.setCleanSnapshots(enabled: stream.recording.cleanSnapshots)
     }
 }

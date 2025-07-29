@@ -3,6 +3,7 @@ import SwiftUI
 struct StreamSnapshotSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var stream: SettingsStream
+    @ObservedObject var recording: SettingsStreamRecording
 
     func submitSnapshotWebhookUrl(value: String) {
         let url = cleanUrl(url: value)
@@ -17,12 +18,10 @@ struct StreamSnapshotSettingsView: View {
     var body: some View {
         Form {
             Section {
-                Toggle("Clean snapshots", isOn: Binding(get: {
-                    stream.recording.cleanSnapshots!
-                }, set: { value in
-                    stream.recording.cleanSnapshots = value
-                    model.setCleanSnapshots()
-                }))
+                Toggle("Clean snapshots", isOn: $recording.cleanSnapshots)
+                    .onChange(of: recording.cleanSnapshots) {_ in
+                        model.setCleanSnapshots()
+                    }
             } footer: {
                 Text("Do not show widgets in snapshots.")
             }

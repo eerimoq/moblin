@@ -318,15 +318,52 @@ class SettingsStreamChat: Codable {
     }
 }
 
-class SettingsStreamRecording: Codable {
-    var videoCodec: SettingsStreamCodec = .h265hevc
-    var videoBitrate: UInt32 = 0
-    var maxKeyFrameInterval: Int32 = 0
-    var audioBitrate: UInt32? = 128_000
-    var autoStartRecording: Bool? = false
-    var autoStopRecording: Bool? = false
-    var cleanRecordings: Bool? = false
-    var cleanSnapshots: Bool? = false
+class SettingsStreamRecording: Codable, ObservableObject {
+    @Published var videoCodec: SettingsStreamCodec = .h265hevc
+    @Published var videoBitrate: UInt32 = 0
+    @Published var maxKeyFrameInterval: Int32 = 0
+    @Published var audioBitrate: UInt32 = 128_000
+    @Published var autoStartRecording: Bool = false
+    @Published var autoStopRecording: Bool = false
+    @Published var cleanRecordings: Bool = false
+    @Published var cleanSnapshots: Bool = false
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case videoCodec,
+             videoBitrate,
+             maxKeyFrameInterval,
+             audioBitrate,
+             autoStartRecording,
+             autoStopRecording,
+             cleanRecordings,
+             cleanSnapshots
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.videoCodec, videoCodec)
+        try container.encode(.videoBitrate, videoBitrate)
+        try container.encode(.maxKeyFrameInterval, maxKeyFrameInterval)
+        try container.encode(.audioBitrate, audioBitrate)
+        try container.encode(.autoStartRecording, autoStartRecording)
+        try container.encode(.autoStopRecording, autoStopRecording)
+        try container.encode(.cleanRecordings, cleanRecordings)
+        try container.encode(.cleanSnapshots, cleanSnapshots)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        videoCodec = container.decode(.videoCodec, SettingsStreamCodec.self, .h265hevc)
+        videoBitrate = container.decode(.videoBitrate, UInt32.self, 0)
+        maxKeyFrameInterval = container.decode(.maxKeyFrameInterval, Int32.self, 0)
+        audioBitrate = container.decode(.audioBitrate, UInt32.self, 128_000)
+        autoStartRecording = container.decode(.autoStartRecording, Bool.self, false)
+        autoStopRecording = container.decode(.autoStopRecording, Bool.self, false)
+        cleanRecordings = container.decode(.cleanRecordings, Bool.self, false)
+        cleanSnapshots = container.decode(.cleanSnapshots, Bool.self, false)
+    }
 
     func clone() -> SettingsStreamRecording {
         let new = SettingsStreamRecording()
@@ -360,14 +397,14 @@ class SettingsStreamRecording: Codable {
 
     func maxKeyFrameIntervalString() -> String {
         if maxKeyFrameInterval != 0 {
-            return String(maxKeyFrameInterval)
+            return "\(maxKeyFrameInterval) s"
         } else {
             return "Auto"
         }
     }
 
     func audioBitrateString() -> String {
-        if let audioBitrate, audioBitrate != 0 {
+        if audioBitrate != 0 {
             return formatBytesPerSecond(speed: Int64(audioBitrate))
         } else {
             return "Auto"
@@ -7224,18 +7261,6 @@ final class Settings {
             stream.srt.adaptiveBitrateEnabled = stream.adaptiveBitrate
             store()
         }
-        for stream in realDatabase.streams where stream.recording.autoStartRecording == nil {
-            stream.recording.autoStartRecording = false
-            store()
-        }
-        for stream in realDatabase.streams where stream.recording.autoStopRecording == nil {
-            stream.recording.autoStopRecording = false
-            store()
-        }
-        for stream in realDatabase.streams where stream.recording.audioBitrate == nil {
-            stream.recording.audioBitrate = 128_000
-            store()
-        }
         var videoEffectWidgets: [SettingsWidget] = []
         for widget in realDatabase.widgets where widget.type == .videoEffect {
             videoEffectWidgets.append(widget)
@@ -7460,14 +7485,6 @@ final class Settings {
         }
         for key in realDatabase.keyboard.keys where key.widgetId == nil {
             key.widgetId = .init()
-            store()
-        }
-        for stream in realDatabase.streams where stream.recording.cleanRecordings == nil {
-            stream.recording.cleanRecordings = false
-            store()
-        }
-        for stream in realDatabase.streams where stream.recording.cleanSnapshots == nil {
-            stream.recording.cleanSnapshots = false
             store()
         }
         if realDatabase.chat.botCommandPermissions.reaction == nil {

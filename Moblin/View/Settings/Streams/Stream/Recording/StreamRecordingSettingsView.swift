@@ -2,17 +2,8 @@ import SwiftUI
 
 struct StreamRecordingSettingsView: View {
     @EnvironmentObject var model: Model
-    var stream: SettingsStream
-    @State var videoCodec: String
-
-    private var recording: SettingsStreamRecording {
-        return stream.recording
-    }
-
-    private func onVideoCodecChange(codec: String) {
-        videoCodec = codec
-        recording.videoCodec = SettingsStreamCodec(rawValue: codec)!
-    }
+    @ObservedObject var stream: SettingsStream
+    @ObservedObject var recording: SettingsStreamRecording
 
     private func submitVideoBitrateChange(value: String) {
         guard var bitrate = Float(value) else {
@@ -36,15 +27,9 @@ struct StreamRecordingSettingsView: View {
     var body: some View {
         Form {
             Section {
-                HStack {
-                    Text("Video codec")
-                    Spacer()
-                    Picker("", selection: Binding(get: {
-                        videoCodec
-                    }, set: onVideoCodecChange)) {
-                        ForEach(codecs, id: \.self) {
-                            Text($0)
-                        }
+                Picker("Video codec", selection: $recording.videoCodec) {
+                    ForEach(SettingsStreamCodec.allCases, id: \.self) {
+                        Text($0.rawValue)
                     }
                 }
                 .disabled(stream.enabled && model.isRecording)
@@ -60,7 +45,7 @@ struct StreamRecordingSettingsView: View {
                 } label: {
                     TextItemView(
                         name: String(localized: "Video bitrate"),
-                        value: formatBytesPerSecond(speed: Int64(recording.videoBitrate))
+                        value: recording.videoBitrateString()
                     )
                 }
                 .disabled(stream.enabled && model.isRecording)
@@ -69,9 +54,7 @@ struct StreamRecordingSettingsView: View {
                         title: String(localized: "Key frame interval"),
                         value: String(recording.maxKeyFrameInterval),
                         footers: [
-                            String(
-                                localized: "Maximum key frame interval in seconds. Set to 0 for automatic."
-                            ),
+                            String(localized: "Maximum key frame interval in seconds. Set to 0 for automatic."),
                         ],
                         keyboardType: .numbersAndPunctuation
                     ) {
@@ -80,19 +63,19 @@ struct StreamRecordingSettingsView: View {
                 } label: {
                     TextItemView(
                         name: String(localized: "Key frame interval"),
-                        value: "\(recording.maxKeyFrameInterval) s"
+                        value: recording.maxKeyFrameIntervalString()
                     )
                 }
                 .disabled(stream.enabled && model.isRecording)
                 NavigationLink {
                     StreamRecordingAudioSettingsView(
                         stream: stream,
-                        bitrate: Float(recording.audioBitrate! / 1000)
+                        bitrate: Float(recording.audioBitrate / 1000)
                     )
                 } label: {
                     TextItemView(
                         name: String(localized: "Audio bitrate"),
-                        value: formatBytesPerSecond(speed: Int64(recording.audioBitrate!))
+                        value: recording.audioBitrateString()
                     )
                 }
                 .disabled(stream.enabled && model.isRecording)
@@ -100,26 +83,16 @@ struct StreamRecordingSettingsView: View {
                 Text("Resolution and FPS are same as for live stream.")
             }
             Section {
-                Toggle("Clean recordings", isOn: Binding(get: {
-                    recording.cleanRecordings!
-                }, set: { value in
-                    recording.cleanRecordings = value
-                    model.setCleanRecordings()
-                }))
+                Toggle("Clean recordings", isOn: $recording.cleanRecordings)
+                    .onChange(of: recording.cleanRecordings) { _ in
+                        model.setCleanRecordings()
+                    }
             } footer: {
                 Text("Do not show widgets in recordings.")
             }
             Section {
-                Toggle("Auto start recording when going live", isOn: Binding(get: {
-                    recording.autoStartRecording!
-                }, set: { value in
-                    recording.autoStartRecording = value
-                }))
-                Toggle("Auto stop recording when ending stream", isOn: Binding(get: {
-                    recording.autoStopRecording!
-                }, set: { value in
-                    recording.autoStopRecording = value
-                }))
+                Toggle("Auto start recording when going live", isOn: $recording.autoStartRecording)
+                Toggle("Auto stop recording when ending stream", isOn: $recording.autoStopRecording)
             }
         }
         .navigationTitle("Recording")

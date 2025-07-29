@@ -94,7 +94,7 @@ extension Model {
         updateScreenAutoOff()
         startNetStream()
         startFetchingYouTubeChatVideoId()
-        if stream.recording.autoStartRecording! {
+        if stream.recording.autoStartRecording {
             startRecording()
         }
         if stream.obsAutoStartStream {
@@ -119,7 +119,7 @@ extension Model {
         logger.info("stream: Stop")
         streamTotalBytes += UInt64(media.streamTotal())
         streaming = false
-        if stream.recording.autoStopRecording! {
+        if stream.recording.autoStopRecording {
             stopRecording()
         }
         if stopObsStreamIfEnabled, stream.obsAutoStopStream {

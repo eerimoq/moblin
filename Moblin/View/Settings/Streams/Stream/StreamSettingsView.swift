@@ -69,10 +69,7 @@ struct StreamSettingsView: View {
                         Text("Audio")
                     }
                     NavigationLink {
-                        StreamRecordingSettingsView(
-                            stream: stream,
-                            videoCodec: stream.recording.videoCodec.rawValue
-                        )
+                        StreamRecordingSettingsView(stream: stream, recording: stream.recording)
                     } label: {
                         Text("Recording")
                     }
@@ -82,7 +79,7 @@ struct StreamSettingsView: View {
                         Text("Replay")
                     }
                     NavigationLink {
-                        StreamSnapshotSettingsView(stream: stream)
+                        StreamSnapshotSettingsView(stream: stream, recording: stream.recording)
                     } label: {
                         Text("Snapshot")
                     }
