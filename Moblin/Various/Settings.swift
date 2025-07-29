@@ -898,30 +898,74 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
     }
 }
 
-class SettingsSceneWidget: Codable, Identifiable, Equatable {
+class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject {
     static func == (lhs: SettingsSceneWidget, rhs: SettingsSceneWidget) -> Bool {
         return lhs.id == rhs.id
     }
 
-    var widgetId: UUID
-    var enabled: Bool = true
     var id: UUID = .init()
-    var x: Double = 0.0
-    var y: Double = 0.0
-    var width: Double = 100.0
-    var height: Double = 100.0
+    @Published var widgetId: UUID
+    @Published var enabled: Bool = true
+    @Published var x: Double = 0.0
+    @Published var xString: String = "0.0"
+    @Published var y: Double = 0.0
+    @Published var yString: String = "0.0"
+    @Published var width: Double = 100.0
+    @Published var widthString: String = "100.0"
+    @Published var height: Double = 100.0
+    @Published var heightString: String = "100.0"
 
     init(widgetId: UUID) {
         self.widgetId = widgetId
+    }
+
+    enum CodingKeys: CodingKey {
+        case widgetId,
+             enabled,
+             id,
+             x,
+             y,
+             width,
+             height
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.widgetId, widgetId)
+        try container.encode(.enabled, enabled)
+        try container.encode(.id, id)
+        try container.encode(.x, x)
+        try container.encode(.y, y)
+        try container.encode(.width, width)
+        try container.encode(.height, height)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        widgetId = container.decode(.widgetId, UUID.self, .init())
+        enabled = container.decode(.enabled, Bool.self, true)
+        id = container.decode(.id, UUID.self, .init())
+        x = container.decode(.x, Double.self, 0.0)
+        xString = String(x)
+        y = container.decode(.y, Double.self, 0.0)
+        yString = String(y)
+        width = container.decode(.width, Double.self, 100.0)
+        widthString = String(width)
+        height = container.decode(.height, Double.self, 100.0)
+        heightString = String(height)
     }
 
     func clone() -> SettingsSceneWidget {
         let new = SettingsSceneWidget(widgetId: widgetId)
         new.enabled = enabled
         new.x = x
+        new.xString = xString
         new.y = y
+        new.yString = yString
         new.width = width
+        new.widthString = widthString
         new.height = height
+        new.heightString = heightString
         return new
     }
 

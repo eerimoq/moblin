@@ -9,37 +9,9 @@ private struct SceneSettings: Codable {
 
 struct SceneWidgetSettingsView: View {
     @EnvironmentObject private var model: Model
-    let sceneWidget: SettingsSceneWidget
+    @ObservedObject var sceneWidget: SettingsSceneWidget
     @ObservedObject var widget: SettingsWidget
     @Binding var numericInput: Bool
-    @State var x: Double
-    @State var y: Double
-    @State var width: Double
-    @State var height: Double
-    @State var xString: String
-    @State var yString: String
-    @State var widthString: String
-    @State var heightString: String
-
-    func submitX(value: Double) {
-        sceneWidget.x = value
-        model.sceneUpdated()
-    }
-
-    func submitY(value: Double) {
-        sceneWidget.y = value
-        model.sceneUpdated()
-    }
-
-    func submitWidth(value: Double) {
-        sceneWidget.width = value
-        model.sceneUpdated()
-    }
-
-    func submitHeight(value: Double) {
-        sceneWidget.height = value
-        model.sceneUpdated()
-    }
 
     private let widgetsWithPosition: [SettingsWidgetType] = [
         .image, .browser, .text, .crop, .map, .qrCode, .alerts, .videoSource, .vTuber, .pngTuber,
@@ -94,17 +66,13 @@ struct SceneWidgetSettingsView: View {
             return
         }
         sceneWidget.x = settings.x.clamped(to: 0 ... 100)
+        sceneWidget.xString = String(sceneWidget.x)
         sceneWidget.y = settings.y.clamped(to: 0 ... 100)
+        sceneWidget.yString = String(sceneWidget.y)
         sceneWidget.width = settings.width.clamped(to: 1 ... 100)
+        sceneWidget.widthString = String(sceneWidget.width)
         sceneWidget.height = settings.height.clamped(to: 1 ... 100)
-        x = sceneWidget.x
-        y = sceneWidget.y
-        width = sceneWidget.width
-        height = sceneWidget.height
-        xString = String(sceneWidget.x)
-        yString = String(sceneWidget.y)
-        widthString = String(sceneWidget.width)
-        heightString = String(sceneWidget.height)
+        sceneWidget.heightString = String(sceneWidget.height)
         model.sceneUpdated(imageEffectChanged: true)
         model.makeToast(title: String(localized: "Settings imported"))
     }
@@ -114,17 +82,21 @@ struct SceneWidgetSettingsView: View {
             if widgetHasPosition(id: widget.id) {
                 Section {
                     PositionEditView(
-                        number: $x,
-                        value: $xString,
-                        onSubmit: submitX,
+                        number: $sceneWidget.x,
+                        value: $sceneWidget.xString,
+                        onSubmit: {_ in
+                            model.sceneUpdated()
+                        },
                         numericInput: $numericInput,
                         incrementImageName: "arrow.forward.circle",
                         decrementImageName: "arrow.backward.circle"
                     )
                     PositionEditView(
-                        number: $y,
-                        value: $yString,
-                        onSubmit: submitY,
+                        number: $sceneWidget.y,
+                        value: $sceneWidget.yString,
+                        onSubmit: {_ in
+                            model.sceneUpdated()
+                        },
                         numericInput: $numericInput,
                         incrementImageName: "arrow.down.circle",
                         decrementImageName: "arrow.up.circle"
@@ -136,15 +108,19 @@ struct SceneWidgetSettingsView: View {
             if widgetHasSize(id: widget.id) {
                 Section {
                     SizeEditView(
-                        number: $width,
-                        value: $widthString,
-                        onSubmit: submitWidth,
+                        number: $sceneWidget.width,
+                        value: $sceneWidget.widthString,
+                        onSubmit: {_ in
+                            model.sceneUpdated()
+                        },
                         numericInput: $numericInput
                     )
                     SizeEditView(
-                        number: $height,
-                        value: $heightString,
-                        onSubmit: submitHeight,
+                        number: $sceneWidget.height,
+                        value: $sceneWidget.heightString,
+                        onSubmit: {_ in
+                            model.sceneUpdated()
+                        },
                         numericInput: $numericInput
                     )
                 } header: {

@@ -71,15 +71,7 @@ private struct SceneWidgetView: View {
                 SceneWidgetSettingsView(
                     sceneWidget: sceneWidget,
                     widget: widget,
-                    numericInput: $database.sceneNumericInput,
-                    x: sceneWidget.x,
-                    y: sceneWidget.y,
-                    width: sceneWidget.width,
-                    height: sceneWidget.height,
-                    xString: String(sceneWidget.x),
-                    yString: String(sceneWidget.y),
-                    widthString: String(sceneWidget.width),
-                    heightString: String(sceneWidget.height)
+                    numericInput: $database.sceneNumericInput
                 )
             } label: {
                 Toggle(isOn: Binding(get: {
