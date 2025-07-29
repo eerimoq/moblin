@@ -1,24 +1,20 @@
 import SwiftUI
 
 private struct RecordingsSettingsSummaryView: View {
-    @EnvironmentObject var model: Model
-
-    var recordingsStorage: RecordingsStorage {
-        model.recordingsStorage
-    }
+    @ObservedObject var database: RecordingsDatabase
 
     var body: some View {
         HStack {
             Spacer()
             VStack {
-                Text(recordingsStorage.numberOfRecordingsString())
+                Text(database.numberOfRecordingsString())
                     .font(.title2)
                 Text("Total recordings")
                     .font(.subheadline)
             }
             Spacer()
             VStack {
-                Text(recordingsStorage.totalSizeString())
+                Text(database.totalSizeString())
                     .font(.title2)
                 Text("Total size")
                     .font(.subheadline)
@@ -29,53 +25,27 @@ private struct RecordingsSettingsSummaryView: View {
 }
 
 private struct RecordingsSettingsRecordingsView: View {
-    @EnvironmentObject var model: Model
-    @State var isPresentingBrowse = false
-
-    var recordingsStorage: RecordingsStorage {
-        model.recordingsStorage
-    }
+    let model: Model
+    let recordingsStorage: RecordingsStorage
+    @ObservedObject var database: RecordingsDatabase
 
     var body: some View {
         Form {
             Section {
                 List {
-                    ForEach(recordingsStorage.database.recordings) { recording in
-                        NavigationLink {
-                            RecordingsRecordingSettingsView(
-                                recording: recording,
-                                description: recording.description ?? ""
-                            )
-                        } label: {
-                            HStack {
-                                if let image = createThumbnail(path: recording.url()) {
-                                    Image(uiImage: image)
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fit)
-                                        .frame(width: 90)
-                                } else {
-                                    Image(systemName: "photo")
-                                }
-                                VStack(alignment: .leading) {
-                                    Text(recording.startTime.formatted())
-                                    Text(recording.length().formatWithSeconds())
-                                    Text(recording.subTitle())
-                                        .font(.footnote)
-                                }
-                            }
-                        }
+                    ForEach(database.recordings) { recording in
+                        RecordingsRecordingSettingsView(model: model, recording: recording)
                     }
                     .onDelete { indexSet in
                         for index in indexSet {
-                            recordingsStorage.database.recordings[index].url().remove()
+                            database.recordings[index].url().remove()
                         }
-                        recordingsStorage.database.recordings.remove(atOffsets: indexSet)
+                        database.recordings.remove(atOffsets: indexSet)
                         recordingsStorage.store()
-                        model.objectWillChange.send()
                     }
                 }
             } footer: {
-                if !recordingsStorage.database.recordings.isEmpty {
+                if !database.recordings.isEmpty {
                     SwipeLeftToDeleteHelpView(kind: "a recording")
                 }
             }
@@ -84,10 +54,14 @@ private struct RecordingsSettingsRecordingsView: View {
 }
 
 struct RecordingsSettingsView: View {
+    let model: Model
+
     var body: some View {
         VStack {
-            RecordingsSettingsSummaryView()
-            RecordingsSettingsRecordingsView()
+            RecordingsSettingsSummaryView(database: model.recordingsStorage.database)
+            RecordingsSettingsRecordingsView(model: model,
+                                             recordingsStorage: model.recordingsStorage,
+                                             database: model.recordingsStorage.database)
         }
         .navigationTitle("Recordings")
     }

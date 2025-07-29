@@ -102,7 +102,7 @@ private struct MenuView: View {
             }
         case .recordings:
             NavigationStack {
-                RecordingsSettingsView()
+                RecordingsSettingsView(model: model)
             }
         case .cosmetics:
             NavigationStack {

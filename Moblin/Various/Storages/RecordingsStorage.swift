@@ -51,23 +51,52 @@ class RecordingSettings: Codable {
     }
 }
 
-class Recording: Identifiable, Codable {
+class Recording: Identifiable, Codable, ObservableObject {
     var id: UUID = .init()
     var settings: RecordingSettings
     var startTime: Date = .init()
     var stopTime: Date = .init()
-    var size: UInt64? = 0
-    var description: String? = ""
+    var size: UInt64 = 0
+    @Published var description: String = ""
 
     init(settings: SettingsStream) {
         self.settings = RecordingSettings(settings: settings)
     }
 
+    enum CodingKeys: CodingKey {
+        case id,
+             settings,
+             startTime,
+             stopTime,
+             size,
+             description
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.settings, settings)
+        try container.encode(.startTime, startTime)
+        try container.encode(.stopTime, stopTime)
+        try container.encode(.size, size)
+        try container.encode(.description, description)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        settings = container.decode(.settings, RecordingSettings.self, .init(settings: .init(name: "")))
+        startTime = container.decode(.startTime, Date.self, .init())
+        stopTime = container.decode(.stopTime, Date.self, .init())
+        size = container.decode(.size, UInt64.self, 0)
+        description = container.decode(.description, String.self, "")
+    }
+
     func subTitle() -> String {
-        if let description, !description.isEmpty {
+        if !description.isEmpty {
             return description
         } else {
-            return "\(settings.resolutionString()), \(settings.fps) FPS, \(size!.formatBytes())"
+            return "\(settings.resolutionString()), \(settings.fps) FPS, \(size.formatBytes())"
         }
     }
 
@@ -96,12 +125,28 @@ class Recording: Identifiable, Codable {
     }
 
     func sizeString() -> String {
-        return size!.formatBytes()
+        return size.formatBytes()
     }
 }
 
-class RecordingsDatabase: Codable {
-    var recordings: [Recording] = []
+class RecordingsDatabase: Codable, ObservableObject {
+    @Published var recordings: [Recording] = []
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case recordings
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.recordings, recordings)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        recordings = container.decode(.recordings, [Recording].self, [])
+    }
 
     static func fromString(settings: String) throws -> RecordingsDatabase {
         let database = try JSONDecoder().decode(
@@ -113,6 +158,20 @@ class RecordingsDatabase: Codable {
 
     func toString() throws -> String {
         return try String.fromUtf8(data: JSONEncoder().encode(self))
+    }
+
+    func totalSizeString() -> String {
+        return recordings.reduce(0) { total, recording in
+            total + recording.size
+        }.formatBytes()
+    }
+
+    func isFull() -> Bool {
+        return recordings.count > 499
+    }
+
+    func numberOfRecordingsString() -> String {
+        return String(recordings.count)
     }
 }
 
@@ -165,37 +224,18 @@ final class RecordingsStorage {
         }
     }
 
-    private func migrateFromOlderVersions() {
-        for recording in database.recordings where recording.size == nil {
-            recording.size = 0
-            store()
-        }
-    }
+    private func migrateFromOlderVersions() {}
 
     func createRecording(settings: SettingsStream) -> Recording {
         return Recording(settings: settings)
     }
 
     func append(recording: Recording) {
-        while isFull() {
+        while database.isFull() {
             database.recordings.popLast()?.url().remove()
         }
         recording.size = recording.url().fileSize
         recording.stopTime = Date()
         database.recordings.insert(recording, at: 0)
-    }
-
-    func numberOfRecordingsString() -> String {
-        return String(database.recordings.count)
-    }
-
-    func totalSizeString() -> String {
-        return database.recordings.reduce(0) { total, recording in
-            total + recording.size!
-        }.formatBytes()
-    }
-
-    func isFull() -> Bool {
-        return database.recordings.count > 499
     }
 }

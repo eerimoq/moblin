@@ -8,7 +8,7 @@ extension Model {
     func startRecording() {
         setIsRecording(value: true)
         var subTitle: String?
-        if recordingsStorage.isFull() {
+        if recordingsStorage.database.isFull() {
             subTitle = String(localized: "Too many recordings. Deleting oldest recording.")
         }
         makeToast(title: String(localized: "Recording started"), subTitle: subTitle)

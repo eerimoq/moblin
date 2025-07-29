@@ -167,7 +167,7 @@ struct SettingsView: View {
             }
             Section {
                 NavigationLink {
-                    RecordingsSettingsView()
+                    RecordingsSettingsView(model: model)
                 } label: {
                     Label("Recordings", systemImage: "photo.on.rectangle.angled")
                 }
