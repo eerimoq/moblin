@@ -167,7 +167,7 @@ struct StreamVideoSettingsView: View {
                     } label: {
                         TextItemView(
                             name: String(localized: "Key frame interval"),
-                            value: "\(stream.maxKeyFrameInterval) s"
+                            value: stream.maxKeyFrameIntervalString()
                         )
                     }
                     .disabled(stream.enabled && model.isLive)

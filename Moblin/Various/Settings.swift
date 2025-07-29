@@ -896,6 +896,14 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
     func audioCodecString() -> String {
         return makeAudioCodecString()
     }
+
+    func maxKeyFrameIntervalString() -> String {
+        if maxKeyFrameInterval != 0 {
+            return "\(maxKeyFrameInterval) s"
+        } else {
+            return String(localized: "Auto")
+        }
+    }
 }
 
 class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject {
