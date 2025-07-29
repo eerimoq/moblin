@@ -144,12 +144,12 @@ struct StreamSettingsView: View {
                             }
                         }
                 }
-                NavigationLink {
-                    GoLiveNotificationSettingsView(stream: stream)
-                } label: {
-                    Text("Go live notification")
-                }
                 if database.showAllSettings {
+                    NavigationLink {
+                        GoLiveNotificationSettingsView(stream: stream)
+                    } label: {
+                        Text("Go live notification")
+                    }
                     NavigationLink {
                         StreamRealtimeIrlSettingsView(stream: stream)
                     } label: {
