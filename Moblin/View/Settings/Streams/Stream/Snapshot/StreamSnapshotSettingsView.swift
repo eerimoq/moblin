@@ -19,7 +19,7 @@ struct StreamSnapshotSettingsView: View {
         Form {
             Section {
                 Toggle("Clean snapshots", isOn: $recording.cleanSnapshots)
-                    .onChange(of: recording.cleanSnapshots) {_ in
+                    .onChange(of: recording.cleanSnapshots) { _ in
                         model.setCleanSnapshots()
                     }
             } footer: {

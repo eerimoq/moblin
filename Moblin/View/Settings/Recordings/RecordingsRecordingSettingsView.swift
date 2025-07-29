@@ -56,7 +56,7 @@ struct RecordingsRecordingSettingsView: View {
                     } else {
                         TextValueView(
                             name: String(localized: "Video codec"),
-                            value: recording.settings.recording!.videoCodecString()
+                            value: recording.settings.recording!.videoCodec.rawValue
                         )
                         TextValueView(
                             name: String(localized: "Video bitrate"),

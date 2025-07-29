@@ -378,15 +378,6 @@ class SettingsStreamRecording: Codable, ObservableObject {
         return new
     }
 
-    func videoCodecString() -> String {
-        switch videoCodec {
-        case .h265hevc:
-            return "H.265"
-        case .h264avc:
-            return "H.264"
-        }
-    }
-
     func videoBitrateString() -> String {
         if videoBitrate != 0 {
             return formatBytesPerSecond(speed: Int64(videoBitrate))
