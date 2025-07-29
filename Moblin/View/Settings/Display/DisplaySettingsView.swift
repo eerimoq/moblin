@@ -39,9 +39,6 @@ struct DisplaySettingsView: View {
                     } label: {
                         Text("Stream button")
                     }
-                    if !isMac() {
-                        Toggle("Battery percentage", isOn: $database.batteryPercentage)
-                    }
                     NavigationLink {
                         LocalOverlaysSettingsView(show: database.show)
                     } label: {

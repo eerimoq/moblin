@@ -6278,7 +6278,6 @@ class Database: Codable, ObservableObject {
     var iconImage: String = plainIcon.image()
     var videoStabilizationMode: SettingsVideoStabilizationMode = .off
     var chat: SettingsChat = .init()
-    @Published var batteryPercentage: Bool = true
     var mic: SettingsMic = getDefaultMic()
     var mics: SettingsMics = .init()
     var debug: SettingsDebug = .init()
@@ -6445,7 +6444,6 @@ class Database: Codable, ObservableObject {
         try container.encode(.iconImage, iconImage)
         try container.encode(.videoStabilizationMode, videoStabilizationMode)
         try container.encode(.chat, chat)
-        try container.encode(.batteryPercentage, batteryPercentage)
         try container.encode(.mic, mic)
         try container.encode(.mics, mics)
         try container.encode(.debug, debug)
@@ -6517,7 +6515,6 @@ class Database: Codable, ObservableObject {
         iconImage = container.decode(.iconImage, String.self, plainIcon.image())
         videoStabilizationMode = container.decode(.videoStabilizationMode, SettingsVideoStabilizationMode.self, .off)
         chat = container.decode(.chat, SettingsChat.self, .init())
-        batteryPercentage = container.decode(.batteryPercentage, Bool.self, true)
         mic = container.decode(.mic, SettingsMic.self, getDefaultMic())
         mics = container.decode(.mics, SettingsMics.self, .init())
         debug = container.decode(.debug, SettingsDebug.self, .init())
