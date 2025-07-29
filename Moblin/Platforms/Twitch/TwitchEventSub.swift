@@ -263,6 +263,7 @@ final class TwitchEventSub: NSObject {
     private let delegate: any TwitchEventSubDelegate
     private var connected = false
     private var started = false
+    private let connectDelayTimer = SimpleTimer(queue: .main)
 
     init(
         remoteControl: Bool,
@@ -285,17 +286,13 @@ final class TwitchEventSub: NSObject {
     func start() {
         logger.debug("twitch: event-sub: Start")
         stopInternal()
-        connect()
-        started = true
-    }
-
-    private func connect() {
-        connected = false
-        webSocket = .init(url: url, httpProxy: httpProxy)
-        webSocket.delegate = self
-        if !remoteControl {
-            webSocket.start()
+        connectDelayTimer.startSingleShot(timeout: 2.0) { [weak self] in
+            guard let self, self.started else {
+                return
+            }
+            self.connect()
         }
+        started = true
     }
 
     func stop() {
@@ -308,6 +305,7 @@ final class TwitchEventSub: NSObject {
     func stopInternal() {
         connected = false
         webSocket.stop()
+        connectDelayTimer.stop()
     }
 
     func isConnected() -> Bool {
@@ -328,6 +326,15 @@ final class TwitchEventSub: NSObject {
             handleNotification(message: message, messageText: messageText, messageData: messageData)
         default:
             logger.info("twitch: event-sub: Unknown message type \(message.metadata.message_type)")
+        }
+    }
+
+    private func connect() {
+        connected = false
+        webSocket = .init(url: url, httpProxy: httpProxy)
+        webSocket.delegate = self
+        if !remoteControl {
+            webSocket.start()
         }
     }
 
