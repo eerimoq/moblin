@@ -45,6 +45,10 @@ private class RistRemotePeer: AdaptiveBitrateDelegate {
         }
     }
 
+    deinit {
+        stopConnectingTimer()
+    }
+
     func bondingConnectionName() -> String {
         switch interfaceType {
         case .cellular:
@@ -75,10 +79,6 @@ private class RistRemotePeer: AdaptiveBitrateDelegate {
 
     private func stopConnectingTimer() {
         connectingTimer.stop()
-    }
-
-    deinit {
-        stopConnectingTimer()
     }
 }
 
@@ -177,6 +177,26 @@ class RistStream {
         ristQueue.async {
             self.updateConnectionsWeightsInner()
         }
+    }
+
+    func checkConnected() {
+        guard state == .connecting else {
+            return
+        }
+        for peer in peers where peer.isConnected() {
+            state = .connected
+            ristDelegate?.ristStreamOnConnected()
+            break
+        }
+    }
+
+    func checkDisconnected() {
+        for peer in peers where !peer.isDisconnected() {
+            return
+        }
+        logger.info("rist: All peers disconnected")
+        state = .disconnected
+        ristDelegate?.ristStreamOnDisconnected()
     }
 
     private func startInner(url: String, bonding: Bool) {
@@ -334,26 +354,6 @@ class RistStream {
         return peers.first(where: { $0.peer.getId() == peerId })
     }
 
-    func checkConnected() {
-        guard state == .connecting else {
-            return
-        }
-        for peer in peers where peer.isConnected() {
-            state = .connected
-            ristDelegate?.ristStreamOnConnected()
-            break
-        }
-    }
-
-    func checkDisconnected() {
-        for peer in peers where !peer.isDisconnected() {
-            return
-        }
-        logger.info("rist: All peers disconnected")
-        state = .disconnected
-        ristDelegate?.ristStreamOnDisconnected()
-    }
-
     private func send(data: Data) {
         _ = context?.send(data: data)
     }
@@ -388,16 +388,16 @@ extension RistStream: RistSenderContextDelegate {
         }
     }
 
-    private func handlePeerConnectedInner(peerId: UInt32) {
-        logger.info("rist: Peer \(peerId) connected")
-        getPeerById(peerId: peerId)?.setConnected()
-        checkConnected()
-    }
-
     func ristSenderContextPeerDisconnected(_: RistSenderContext, peerId: UInt32) {
         ristQueue.async {
             self.handlePeerDisconnectedInner(peerId: peerId)
         }
+    }
+
+    private func handlePeerConnectedInner(peerId: UInt32) {
+        logger.info("rist: Peer \(peerId) connected")
+        getPeerById(peerId: peerId)?.setConnected()
+        checkConnected()
     }
 
     private func handlePeerDisconnectedInner(peerId: UInt32) {
