@@ -12,16 +12,16 @@ struct FaceDetectionJob {
 }
 
 struct VideoUnitAttachParams {
-    var devices: CaptureDevices
-    var builtinDelay: Double
-    var cameraPreviewLayer: AVCaptureVideoPreviewLayer
-    var showCameraPreview: Bool
-    var externalDisplayPreview: Bool
-    var bufferedVideo: UUID?
-    var preferredVideoStabilizationMode: AVCaptureVideoStabilizationMode
-    var isVideoMirrored: Bool
-    var ignoreFramesAfterAttachSeconds: Double
-    var fillFrame: Bool
+    let devices: CaptureDevices
+    let builtinDelay: Double
+    let cameraPreviewLayer: AVCaptureVideoPreviewLayer
+    let showCameraPreview: Bool
+    let externalDisplayPreview: Bool
+    let bufferedVideo: UUID?
+    let preferredVideoStabilizationMode: AVCaptureVideoStabilizationMode
+    let isVideoMirrored: Bool
+    let ignoreFramesAfterAttachSeconds: Double
+    let fillFrame: Bool
 }
 
 enum SceneSwitchTransition {

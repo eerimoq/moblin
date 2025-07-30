@@ -4,9 +4,9 @@ import Collections
 var audioUnitRemoveWindNoise = false
 
 struct AudioUnitAttachParams {
-    var device: AVCaptureDevice?
-    var builtinDelay: Double
-    var bufferedAudio: UUID?
+    let device: AVCaptureDevice?
+    let builtinDelay: Double
+    let bufferedAudio: UUID?
 }
 
 func makeChannelMap(
