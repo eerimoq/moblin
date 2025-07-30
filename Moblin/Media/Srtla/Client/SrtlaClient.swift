@@ -191,6 +191,68 @@ class SrtlaClient: NSObject {
         }
     }
 
+    func setConnectionPriorities(connectionPriorities: SettingsStreamSrtConnectionPriorities) {
+        srtlaClientQueue.async {
+            self.updateConnectionPriorities(connectionPriorities: connectionPriorities)
+            for connection in self.remoteConnections {
+                if let relayId = connection.relayId {
+                    connection.setPriority(priority: self.getRelayConnectionPriority(relayId: relayId))
+                } else {
+                    let name = interfaceName(type: connection.type, interface: connection.interface)
+                    connection.setPriority(priority: self.getConnectionPriority(name: name))
+                }
+            }
+        }
+    }
+
+    func connectionStatistics() -> [BondingConnection] {
+        var connections: [BondingConnection] = []
+        srtlaClientQueue.sync {
+            for connection in remoteConnections where connection.isEnabled() {
+                guard let byteCount = connection.getDataSentDelta() else {
+                    continue
+                }
+                connections.append(BondingConnection(
+                    name: connection.typeString,
+                    usage: byteCount,
+                    rtt: connection.rtt
+                ))
+            }
+        }
+        return connections
+    }
+
+    func logStatistics() {
+        srtlaClientQueue.async {
+            for connection in self.remoteConnections {
+                connection.logStatistics()
+            }
+        }
+    }
+
+    func getTotalByteCount() -> Int64 {
+        srtlaClientQueue.sync {
+            totalByteCount
+        }
+    }
+
+    func handleLocalPacket(packet: Data) {
+        guard let connection = selectRemoteConnection() else {
+            return
+        }
+        connection.sendSrtPacket(packet: packet)
+        if isSrtDataPacket(packet: packet) {
+            let now = ContinuousClock.now
+            if latestFlushDataPacketsTime.duration(to: now) > .milliseconds(15) {
+                latestFlushDataPacketsTime = now
+                for remoteConnection in remoteConnections {
+                    remoteConnection.flushDataPackets()
+                }
+            }
+        }
+        totalByteCount += Int64(packet.count)
+    }
+
     private func updateConnectionPriorities(connectionPriorities: SettingsStreamSrtConnectionPriorities) {
         self.connectionPriorities = .init()
         guard connectionPriorities.enabled else {
@@ -209,20 +271,6 @@ class SrtlaClient: NSObject {
             priority.priority -= lowestPriority.priority
             priority.priority += 1
             self.connectionPriorities.append(priority)
-        }
-    }
-
-    func setConnectionPriorities(connectionPriorities: SettingsStreamSrtConnectionPriorities) {
-        srtlaClientQueue.async {
-            self.updateConnectionPriorities(connectionPriorities: connectionPriorities)
-            for connection in self.remoteConnections {
-                if let relayId = connection.relayId {
-                    connection.setPriority(priority: self.getRelayConnectionPriority(relayId: relayId))
-                } else {
-                    let name = interfaceName(type: connection.type, interface: connection.interface)
-                    connection.setPriority(priority: self.getConnectionPriority(name: name))
-                }
-            }
         }
     }
 
@@ -302,37 +350,6 @@ class SrtlaClient: NSObject {
         })
     }
 
-    func connectionStatistics() -> [BondingConnection] {
-        var connections: [BondingConnection] = []
-        srtlaClientQueue.sync {
-            for connection in remoteConnections where connection.isEnabled() {
-                guard let byteCount = connection.getDataSentDelta() else {
-                    continue
-                }
-                connections.append(BondingConnection(
-                    name: connection.typeString,
-                    usage: byteCount,
-                    rtt: connection.rtt
-                ))
-            }
-        }
-        return connections
-    }
-
-    func logStatistics() {
-        srtlaClientQueue.async {
-            for connection in self.remoteConnections {
-                connection.logStatistics()
-            }
-        }
-    }
-
-    func getTotalByteCount() -> Int64 {
-        srtlaClientQueue.sync {
-            totalByteCount
-        }
-    }
-
     private func startRemote(connection: RemoteConnection, host: NWEndpoint.Host, port: NWEndpoint.Port) {
         connection.delegate = self
         connection.start(host: host, port: port)
@@ -399,23 +416,6 @@ class SrtlaClient: NSObject {
         stop()
         delegate?.srtlaError(message: message)
         state = .idle
-    }
-
-    func handleLocalPacket(packet: Data) {
-        guard let connection = selectRemoteConnection() else {
-            return
-        }
-        connection.sendSrtPacket(packet: packet)
-        if isSrtDataPacket(packet: packet) {
-            let now = ContinuousClock.now
-            if latestFlushDataPacketsTime.duration(to: now) > .milliseconds(15) {
-                latestFlushDataPacketsTime = now
-                for remoteConnection in remoteConnections {
-                    remoteConnection.flushDataPackets()
-                }
-            }
-        }
-        totalByteCount += Int64(packet.count)
     }
 
     private func selectRemoteConnection() -> RemoteConnection? {
