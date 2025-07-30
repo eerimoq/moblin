@@ -1,7 +1,7 @@
 import SwiftUI
 
 private struct AudioLevelView: View {
-    var level: Float
+    let level: Float
 
     var body: some View {
         if level.isNaN {
@@ -24,7 +24,7 @@ private struct AudioLevelView: View {
 private struct StatusesView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var preview: Preview
-    var textPlacement: StreamOverlayIconAndTextPlacement
+    let textPlacement: StreamOverlayIconAndTextPlacement
 
     var body: some View {
         if model.isShowingStatusThermalState() {
