@@ -31,6 +31,13 @@ class LocalListener {
         connection = nil
     }
 
+    func sendPacket(packet: Data) {
+        guard let connection else {
+            return
+        }
+        connection.send(content: packet, completion: .idempotent)
+    }
+
     private func handleListenerStateChange(to state: NWListener.State) {
         switch state {
         case .setup:
@@ -45,12 +52,5 @@ class LocalListener {
     private func handleNewListenerConnection(connection: NWConnection) {
         self.connection = connection
         connection.start(queue: srtlaClientQueue)
-    }
-
-    func sendPacket(packet: Data) {
-        guard let connection else {
-            return
-        }
-        connection.send(content: packet, completion: .idempotent)
     }
 }

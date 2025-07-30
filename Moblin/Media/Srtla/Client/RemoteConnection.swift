@@ -183,6 +183,87 @@ class RemoteConnection {
         return priority > 0
     }
 
+    func sendSrtPacket(packet: Data) {
+        sendPacket(packet: packet)
+    }
+
+    func flushDataPackets() {
+        if !dataPacketsToSend.isEmpty {
+            sendDataPackets()
+        }
+    }
+
+    func register(groupId: Data) {
+        self.groupId = groupId
+        hasFullGroupId = true
+        if state == .shouldSendRegisterRequest {
+            sendSrtlaReg2()
+        }
+    }
+
+    func sendSrtlaReg1() {
+        logger.debug("srtla: \(typeString): Sending reg 1 (create group)")
+        groupId = Data.random(length: 256)
+        var packet = createSrtlaPacket(type: .reg1, length: srtControlTypeSize + groupId.count)
+        packet[srtControlTypeSize...] = groupId
+        sendPacket(packet: packet)
+    }
+
+    func handleSrtAckSn(sn ackSn: UInt32) {
+        packetsInFlight = packetsInFlight.filter { sn in !isSrtSnAcked(sn: sn, ackSn: ackSn) }
+    }
+
+    func handleSrtNakSn(sn: UInt32) {
+        if packetsInFlight.remove(sn) == nil {
+            return
+        }
+        windowSize = max(windowSize - windowDecrement, windowMinimum * windowMultiply)
+    }
+
+    func handleSrtlaAckSn(sn: UInt32) {
+        if packetsInFlight.remove(sn) != nil {
+            if packetsInFlight.count * windowMultiply > windowSize {
+                windowSize += windowIncrement - 1
+            }
+        }
+        windowSize = min(windowSize + 1, windowMaximum * windowMultiply)
+    }
+
+    func logStatistics() {
+        guard state == .registered else {
+            return
+        }
+        var overhead = 0
+        let total = numberOfNullPacketsSent + numberOfNonNullPacketsSent
+        if total > 0 {
+            overhead = Int(100 * Double(numberOfNullPacketsSent) / Double(total))
+        }
+        numberOfNullPacketsSent = 0
+        numberOfNonNullPacketsSent = 0
+        if type == nil {
+            logger.debug("srtla: \(typeString): Overhead: \(overhead) %")
+        } else {
+            logger
+                .debug(
+                    """
+                    srtla: \(typeString): Score: \(score()), In flight: \
+                    \(packetsInFlight.count), Window size: \(windowSize), \
+                    Priority: \(priority), Overhead: \(overhead) %
+                    """
+                )
+        }
+    }
+
+    func getDataSentDelta() -> UInt64? {
+        defer {
+            totalDataSentByteCount = 0
+        }
+        guard state == .registered else {
+            return nil
+        }
+        return totalDataSentByteCount
+    }
+
     private func cancelAllTimers() {
         keepaliveTimer.stop()
         connectTimer.stop()
@@ -300,16 +381,6 @@ class RemoteConnection {
         }
     }
 
-    func sendSrtPacket(packet: Data) {
-        sendPacket(packet: packet)
-    }
-
-    func flushDataPackets() {
-        if !dataPacketsToSend.isEmpty {
-            sendDataPackets()
-        }
-    }
-
     private func sendDataPackets() {
         connection?.batch {
             for packet in dataPacketsToSend {
@@ -317,22 +388,6 @@ class RemoteConnection {
             }
         }
         dataPacketsToSend.removeAll()
-    }
-
-    func register(groupId: Data) {
-        self.groupId = groupId
-        hasFullGroupId = true
-        if state == .shouldSendRegisterRequest {
-            sendSrtlaReg2()
-        }
-    }
-
-    func sendSrtlaReg1() {
-        logger.debug("srtla: \(typeString): Sending reg 1 (create group)")
-        groupId = Data.random(length: 256)
-        var packet = createSrtlaPacket(type: .reg1, length: srtControlTypeSize + groupId.count)
-        packet[srtControlTypeSize...] = groupId
-        sendPacket(packet: packet)
     }
 
     private func sendSrtlaReg2() {
@@ -360,21 +415,10 @@ class RemoteConnection {
         delegate?.remoteConnectionOnSrtAck(sn: getSrtSequenceNumber(packet: packet[16 ..< 20]))
     }
 
-    func handleSrtAckSn(sn ackSn: UInt32) {
-        packetsInFlight = packetsInFlight.filter { sn in !isSrtSnAcked(sn: sn, ackSn: ackSn) }
-    }
-
     private func handleSrtNak(packet: Data) {
         processSrtNak(packet: packet) { sn in
             self.delegate?.remoteConnectionOnSrtNak(sn: sn)
         }
-    }
-
-    func handleSrtNakSn(sn: UInt32) {
-        if packetsInFlight.remove(sn) == nil {
-            return
-        }
-        windowSize = max(windowSize - windowDecrement, windowMinimum * windowMultiply)
     }
 
     private func handleSrtlaKeepalive(packet: Data) {
@@ -392,15 +436,6 @@ class RemoteConnection {
         for offset in stride(from: 4, to: packet.count, by: 4) {
             delegate?.remoteConnectionOnSrtlaAck(sn: packet.getUInt32Be(offset: offset))
         }
-    }
-
-    func handleSrtlaAckSn(sn: UInt32) {
-        if packetsInFlight.remove(sn) != nil {
-            if packetsInFlight.count * windowMultiply > windowSize {
-                windowSize += windowIncrement - 1
-            }
-        }
-        windowSize = min(windowSize + 1, windowMaximum * windowMultiply)
     }
 
     private func handleSrtlaReg2(packet: Data) {
@@ -511,40 +546,5 @@ class RemoteConnection {
         } else {
             handleControlPacket(packet: packet)
         }
-    }
-
-    func logStatistics() {
-        guard state == .registered else {
-            return
-        }
-        var overhead = 0
-        let total = numberOfNullPacketsSent + numberOfNonNullPacketsSent
-        if total > 0 {
-            overhead = Int(100 * Double(numberOfNullPacketsSent) / Double(total))
-        }
-        numberOfNullPacketsSent = 0
-        numberOfNonNullPacketsSent = 0
-        if type == nil {
-            logger.debug("srtla: \(typeString): Overhead: \(overhead) %")
-        } else {
-            logger
-                .debug(
-                    """
-                    srtla: \(typeString): Score: \(score()), In flight: \
-                    \(packetsInFlight.count), Window size: \(windowSize), \
-                    Priority: \(priority), Overhead: \(overhead) %
-                    """
-                )
-        }
-    }
-
-    func getDataSentDelta() -> UInt64? {
-        defer {
-            totalDataSentByteCount = 0
-        }
-        guard state == .registered else {
-            return nil
-        }
-        return totalDataSentByteCount
     }
 }
