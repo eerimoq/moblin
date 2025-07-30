@@ -8,19 +8,19 @@ import WatchConnectivity
 private let previewTimeout = Duration.seconds(6)
 
 struct TextWidgetNumber: Identifiable {
-    var id: UUID = .init()
-    var value: Int
+    let id: UUID = .init()
+    let value: Int
 }
 
 struct TextWidgetNumberPair: Identifiable {
-    var id: UUID = .init()
-    var title: String
-    var numbers: [TextWidgetNumber]
+    let id: UUID = .init()
+    let title: String
+    let numbers: [TextWidgetNumber]
 }
 
 struct ChatPostSegment: Identifiable {
-    var id = UUID()
-    var text: String?
+    let id = UUID()
+    let text: String?
     var url: URL?
 }
 
@@ -64,13 +64,13 @@ struct ChatPostHighlight {
 }
 
 struct ChatPost: Identifiable {
-    var id: Int
-    var kind: ChatPostKind
-    var user: String
-    var userColor: Color
-    var userBadges: [URL]
-    var segments: [ChatPostSegment]
-    var timestamp: String
+    let id: Int
+    let kind: ChatPostKind
+    let user: String
+    let userColor: Color
+    let userBadges: [URL]
+    let segments: [ChatPostSegment]
+    let timestamp: String
     var highlight: ChatPostHighlight?
 
     func isRedemption() -> Bool {
