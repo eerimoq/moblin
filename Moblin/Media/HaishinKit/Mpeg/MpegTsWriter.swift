@@ -54,16 +54,6 @@ class MpegTsWriter {
         self.newSrt = newSrt
     }
 
-    private func setAudioConfig(_ config: MpegTsAudioConfig) {
-        audioConfig = config
-        writeProgramIfNeeded()
-    }
-
-    private func setVideoConfig(_ config: MpegTsVideoConfig) {
-        videoConfig = config
-        writeProgramIfNeeded()
-    }
-
     func startRunning() {
         isRunning = true
     }
@@ -87,6 +77,16 @@ class MpegTsWriter {
         presentationTimeStampBase = nil
         previousDecodeTimeStamp = nil
         isRunning = false
+    }
+
+    private func setAudioConfig(_ config: MpegTsAudioConfig) {
+        audioConfig = config
+        writeProgramIfNeeded()
+    }
+
+    private func setVideoConfig(_ config: MpegTsVideoConfig) {
+        videoConfig = config
+        writeProgramIfNeeded()
     }
 
     private func canWriteFor() -> Bool {
