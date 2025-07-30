@@ -297,7 +297,7 @@ extension Model {
 
     private func stopNetStream(reconnect: Bool = false) {
         moblink.streamer?.stopTunnels()
-        reconnectTimer?.invalidate()
+        reconnectTimer.stop()
         media.rtmpStopStream()
         media.srtStopStream()
         media.ristStopStream()
@@ -535,11 +535,10 @@ extension Model {
         }
         streamState = .disconnected
         stopNetStream(reconnect: true)
-        reconnectTimer = Timer
-            .scheduledTimer(withTimeInterval: 5, repeats: false) { _ in
-                logger.info("stream: Reconnecting")
-                self.startNetStream()
-            }
+        reconnectTimer.startSingleShot(timeout: 5) {
+            logger.info("stream: Reconnecting")
+            self.startNetStream()
+        }
     }
 
     private func handleSrtConnected() {

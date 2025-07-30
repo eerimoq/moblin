@@ -395,7 +395,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var vTuberStorage = VTuberStorage()
     var pngTuberStorage = PngTuberStorage()
     var controlBarPage = 1
-    var reconnectTimer: Timer?
+    var reconnectTimer = SimpleTimer(queue: .main)
     var logId = 1
     private var serversSpeed: Int64 = 0
     var adsEndDate: Date?
