@@ -106,41 +106,6 @@ final class RtmpChunk {
         return writer.data + message.encoded
     }
 
-    private func decode(data: Data) throws {
-        let reader = ByteReader(data: data)
-        chunkStreamId = try UInt16(reader.readUInt8() & 0b0011_1111)
-        switch chunkStreamId {
-        case 0:
-            chunkStreamId = try UInt16(reader.readUInt8()) + 64
-        case 1:
-            chunkStreamId = try reader.readUInt16() + 64
-        default:
-            break
-        }
-        header.append(data[0 ..< basicAndMessageHeadersSize()])
-        guard type == .zero || type == .one else {
-            return
-        }
-        let timestamp = try reader.readUInt24()
-        let length = try Int(reader.readUInt24())
-        guard let messageType = try RtmpMessageType(rawValue: reader.readUInt8()) else {
-            return
-        }
-        let message = RtmpMessage.create(type: messageType)
-        message.timestamp = timestamp
-        message.length = length
-        if type == .zero {
-            message.streamId = try reader.readUInt32Le()
-        }
-        if message.timestamp == RtmpChunk.maxTimestamp {
-            message.timestamp = try reader.readUInt32()
-        }
-        let end = min(message.length + reader.position, data.count)
-        fragmented = size + reader.position <= end
-        message.encoded = data.subdata(in: reader.position ..< min(size + reader.position, end))
-        self.message = message
-    }
-
     func append(data: Data, maximumSize: Int) -> Int {
         fragmented = false
         guard let message else {
@@ -193,6 +158,41 @@ final class RtmpChunk {
             chunks.append(header + data.subdata(in: index ..< endIndex))
         }
         return chunks
+    }
+
+    private func decode(data: Data) throws {
+        let reader = ByteReader(data: data)
+        chunkStreamId = try UInt16(reader.readUInt8() & 0b0011_1111)
+        switch chunkStreamId {
+        case 0:
+            chunkStreamId = try UInt16(reader.readUInt8()) + 64
+        case 1:
+            chunkStreamId = try reader.readUInt16() + 64
+        default:
+            break
+        }
+        header.append(data[0 ..< basicAndMessageHeadersSize()])
+        guard type == .zero || type == .one else {
+            return
+        }
+        let timestamp = try reader.readUInt24()
+        let length = try Int(reader.readUInt24())
+        guard let messageType = try RtmpMessageType(rawValue: reader.readUInt8()) else {
+            return
+        }
+        let message = RtmpMessage.create(type: messageType)
+        message.timestamp = timestamp
+        message.length = length
+        if type == .zero {
+            message.streamId = try reader.readUInt32Le()
+        }
+        if message.timestamp == RtmpChunk.maxTimestamp {
+            message.timestamp = try reader.readUInt32()
+        }
+        let end = min(message.length + reader.position, data.count)
+        fragmented = size + reader.position <= end
+        message.encoded = data.subdata(in: reader.position ..< min(size + reader.position, end))
+        self.message = message
     }
 
     private func basicAndMessageHeadersSize() -> Int {

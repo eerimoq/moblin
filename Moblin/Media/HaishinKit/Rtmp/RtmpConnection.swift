@@ -93,26 +93,6 @@ class RtmpConnection {
         socket = RtmpSocket(name: name)
     }
 
-    private static func makeSanJoseAuthCommand(_ url: URL, description: String) -> String {
-        var command = url.absoluteString
-        guard let index = description.firstIndex(of: "?") else {
-            return command
-        }
-        let query = String(description[description.index(index, offsetBy: 1)...])
-        let challenge = String(format: "%08x", UInt32.random(in: 0 ... UInt32.max))
-        let dictionary = URL(string: "http://localhost?" + query)!.dictionaryFromQuery()
-        var response = MD5.base64("\(url.user!)\(dictionary["salt"]!)\(url.password!)")
-        if let opaque = dictionary["opaque"] {
-            command += "&opaque=\(opaque)"
-            response += opaque
-        } else if let challenge: String = dictionary["challenge"] {
-            response += challenge
-        }
-        response = MD5.base64("\(response)\(challenge)")
-        command += "&challenge=\(challenge)&response=\(response)"
-        return command
-    }
-
     func call(_ commandName: String, arguments: [Any?], onCompleted: (([Any?]) -> Void)? = nil) {
         guard connected else {
             return
@@ -148,6 +128,26 @@ class RtmpConnection {
     func getNextTransactionId() -> Int {
         nextTransactionId += 1
         return nextTransactionId
+    }
+
+    private static func makeSanJoseAuthCommand(_ url: URL, description: String) -> String {
+        var command = url.absoluteString
+        guard let index = description.firstIndex(of: "?") else {
+            return command
+        }
+        let query = String(description[description.index(index, offsetBy: 1)...])
+        let challenge = String(format: "%08x", UInt32.random(in: 0 ... UInt32.max))
+        let dictionary = URL(string: "http://localhost?" + query)!.dictionaryFromQuery()
+        var response = MD5.base64("\(url.user!)\(dictionary["salt"]!)\(url.password!)")
+        if let opaque = dictionary["opaque"] {
+            command += "&opaque=\(opaque)"
+            response += opaque
+        } else if let challenge: String = dictionary["challenge"] {
+            response += challenge
+        }
+        response = MD5.base64("\(response)\(challenge)")
+        command += "&challenge=\(challenge)&response=\(response)"
+        return command
     }
 
     private func on(data: AsObject) {

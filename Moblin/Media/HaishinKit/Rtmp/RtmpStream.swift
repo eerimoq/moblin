@@ -166,6 +166,25 @@ class RtmpStream {
         processor.stopEncoding(self)
     }
 
+    func onInternal(data: AsObject) {
+        guard let code = data["code"] as? String else {
+            return
+        }
+        delegate?.rtmpStreamStatus(self, code: code)
+        switch code {
+        case RtmpConnectionCode.connectSuccess.rawValue:
+            setState(state: .initialized)
+            sendFCPublish()
+            connection.createStream(self)
+        case RtmpStreamCode.publishStart.rawValue:
+            if state != .initialized {
+                setState(state: .publishing)
+            }
+        default:
+            break
+        }
+    }
+
     private func publishInner() {
         info.resourceName = streamKey
         let message = RtmpCommandMessage(
@@ -265,25 +284,6 @@ class RtmpStream {
     private func handleStateChangeToPublishing() {
         send(handlerName: "@setDataFrame", arguments: "onMetaData", createOnMetaData())
         processor.startEncoding(self)
-    }
-
-    func onInternal(data: AsObject) {
-        guard let code = data["code"] as? String else {
-            return
-        }
-        delegate?.rtmpStreamStatus(self, code: code)
-        switch code {
-        case RtmpConnectionCode.connectSuccess.rawValue:
-            setState(state: .initialized)
-            sendFCPublish()
-            connection.createStream(self)
-        case RtmpStreamCode.publishStart.rawValue:
-            if state != .initialized {
-                setState(state: .publishing)
-            }
-        default:
-            break
-        }
     }
 
     private func sendFCPublish() {
