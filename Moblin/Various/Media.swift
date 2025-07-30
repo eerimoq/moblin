@@ -51,7 +51,6 @@ final class Media: NSObject {
     private var srtStreamNew: SrtStreamNew?
     private var srtStreamOld: SrtStreamOld?
     private var ristStream: RistStream?
-    private var irlStream: MirlStream?
     private var srtlaClient: SrtlaClient?
     private var processor: Processor?
     private var srtTotalByteCount: Int64 = 0
@@ -100,12 +99,10 @@ final class Media: NSObject {
         srtStopStream()
         rtmpStopStream()
         ristStopStream()
-        irlStopStream()
         rtmpStreams.removeAll()
         srtStreamNew = nil
         srtStreamOld = nil
         ristStream = nil
-        irlStream = nil
         processor = nil
     }
 
@@ -121,7 +118,6 @@ final class Media: NSObject {
         srtStopStream()
         rtmpStopStream()
         ristStopStream()
-        irlStopStream()
         let processor = Processor()
         switch proto {
         case .rtmp:
@@ -134,7 +130,6 @@ final class Media: NSObject {
             srtStreamNew = nil
             srtStreamOld = nil
             ristStream = nil
-            irlStream = nil
         case .srt:
             if newSrt {
                 srtStreamNew = SrtStreamNew(processor: processor, timecodesEnabled: timecodesEnabled, delegate: self)
@@ -145,19 +140,11 @@ final class Media: NSObject {
             }
             rtmpStreams.removeAll()
             ristStream = nil
-            irlStream = nil
         case .rist:
             ristStream = RistStream(processor: processor, timecodesEnabled: timecodesEnabled, delegate: self)
             srtStreamNew = nil
             srtStreamOld = nil
             rtmpStreams.removeAll()
-            irlStream = nil
-        case .irl:
-            irlStream = MirlStream(processor: processor)
-            srtStreamNew = nil
-            srtStreamOld = nil
-            rtmpStreams.removeAll()
-            ristStream = nil
         }
         self.processor = processor
         processor.setDelegate(delegate: self)
@@ -606,14 +593,6 @@ final class Media: NSObject {
 
     func ristStopStream() {
         ristStream?.stop()
-    }
-
-    func irlStartStream() {
-        irlStream?.start()
-    }
-
-    func irlStopStream() {
-        irlStream?.stop()
     }
 
     func setTorch(on: Bool) {

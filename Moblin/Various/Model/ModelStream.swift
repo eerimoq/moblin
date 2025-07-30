@@ -291,8 +291,6 @@ extension Model {
                                   targetBitrate: getBitrate(),
                                   adaptiveBitrate: stream.rist.adaptiveBitrateEnabled)
             updateAdaptiveBitrateRistIfEnabled()
-        case .irl:
-            media.irlStartStream()
         }
         updateSpeed(now: .now)
     }

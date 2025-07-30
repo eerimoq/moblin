@@ -101,7 +101,6 @@ enum SettingsStreamProtocol: String, Codable {
     case rtmp = "RTMP"
     case srt = "SRT"
     case rist = "RIST"
-    case irl = "IRL"
 
     init(from decoder: Decoder) throws {
         self = try SettingsStreamProtocol(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
@@ -832,8 +831,6 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
             return .srt
         case "rist":
             return .rist
-        case "irl":
-            return .irl
         default:
             return .rtmp
         }
