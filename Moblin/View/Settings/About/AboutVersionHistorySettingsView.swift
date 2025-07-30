@@ -8,6 +8,33 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "26.2003.0", date: "2025-07-30", changes: [
+        "• Make SRT(LA) and RIST servers stop all active streams cleanly when disabling the server.",
+        "• Bookmarks in web browser. 💡 mikeful",
+        "• Remove web browser home setting and button.",
+        "  • The browser simply remembers latest visited page.",
+        "• Resolutions picker in GoPro QR code generator. 💡 iplayinsd",
+        "  • 1080p, 720p and 480p.",
+        "• Names of streams/scenes/widgets/... and a few others must be unique. 💡👏🧑‍🏭 3l3ktr0l4mpe 🧑‍🏭 xcopy94 👏 iplayinsd",
+        "• Use device's current WiFi SSID as default SSID in GoPro and DJI devices. 💡 pomerial",
+        "• Terminate app faster on Mac.",
+        "• Make 4:3 and movie filters use less CPU.",
+        "• Use a single UDP port in the RIST server. 💡 3l3ktr0l4mpe",
+        "  • Each stream has a virtual port.",
+        "• Show RTMP/SRT(LA)/RIST stream URLs when servers are disabled.",
+        "• Show Cellular and WiFi instead of low level network interface names in RIST bonding stats.",
+        "• Update UI when changing recording settings.",
+        "• Make streaming history and recordings UI snappier.",
+        "• Do not freeze UI when loading many/big recording, replay and media player thumbnails.",
+        "• Only show Apple Watch settings on iPhone.",
+        "• Make Twitch event subscription error toast less likely to appear.",
+        "• Unique names in create stream wizard by default.",
+        "• Make scene name change in scene selector when changing name in settings.",
+        "• Make estimated viewer delay update correctly in UI.",
+        "• Always show battery percentage.",
+        "• Only show Go live notification when Show all settings is enabled.",
+        "• Make interactive chat quick button take effect immediately.",
+    ]),
     Version(version: "26.2002.0", date: "2025-07-26", changes: [
         "• Audio encoding refactoring, which removes untested support for interleaved big endian audio.",
         "• Simple server side disconnect protection. 💡 MediaTech and others",
