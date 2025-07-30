@@ -1,13 +1,13 @@
 import SwiftUI
 
 struct ChatMessageEmote: Identifiable {
-    var id = UUID()
-    var url: URL
-    var range: ClosedRange<Int>
+    let id = UUID()
+    let url: URL
+    let range: ClosedRange<Int>
 }
 
 struct ChatPostSegment: Identifiable, Codable {
-    var id: Int
+    let id: Int
     var text: String?
     var url: URL?
 }
@@ -148,22 +148,22 @@ struct ChatPost: Identifiable, Equatable {
     }
 
     var id: Int
-    var messageId: String?
-    var user: String?
+    let messageId: String?
+    let user: String?
     var userId: String?
-    var userColor: RgbColor
-    var userBadges: [URL]
-    var segments: [ChatPostSegment]
-    var timestamp: String
-    var timestampTime: ContinuousClock.Instant
-    var isAction: Bool
-    var isSubscriber: Bool
-    var bits: String?
-    var highlight: ChatHighlight?
-    var live: Bool
-    var filter: SettingsChatFilter?
-    var platform: Platform?
-    var state: ChatPostState
+    let userColor: RgbColor
+    let userBadges: [URL]
+    let segments: [ChatPostSegment]
+    let timestamp: String
+    let timestampTime: ContinuousClock.Instant
+    let isAction: Bool
+    let isSubscriber: Bool
+    let bits: String?
+    let highlight: ChatHighlight?
+    let live: Bool
+    let filter: SettingsChatFilter?
+    let platform: Platform?
+    let state: ChatPostState
 
     func text() -> String {
         return segments.filter { $0.text != nil }.map { $0.text! }.joined(separator: "").trim()
