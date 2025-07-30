@@ -198,6 +198,7 @@ class SrtSender {
     private let packetsToSendDropThreshold: ContinuousClock.Duration
     private let leakyBucketSmoothingTime: ContinuousClock.Duration
     private var clock = SrtClock()
+    private let connectTimer = SimpleTimer(queue: srtlaClientQueue)
 
     init(streamId: String, latency: UInt16) {
         self.streamId = streamId
@@ -214,6 +215,9 @@ class SrtSender {
             self.latestReceivedPacketTime = .now
             self.setState(state: .connecting)
             self.outputPacket(packet: self.createInductionHandshakePacket())
+            self.connectTimer.startSingleShot(timeout: 5) { [weak self] in
+                self?.handleConnectTimeout()
+            }
         }
     }
 
@@ -260,6 +264,10 @@ class SrtSender {
         return performanceData.value
     }
 
+    private func handleConnectTimeout() {
+        setDisconnected()
+    }
+
     private func dropOldPackets(now: ContinuousClock.Instant) {
         while let packet = packetsInFlight.first, packet.createdAt.duration(to: now) > packetsInFlightDropThreshold {
             packetsInFlight.removeFirst()
@@ -276,6 +284,7 @@ class SrtSender {
         guard state != .disconnected else {
             return
         }
+        connectTimer.stop()
         setState(state: .disconnected)
         delegate?.srtSenderDisconnected()
     }
@@ -476,6 +485,7 @@ class SrtSender {
         peerDestinationSrtSocketId = peerSocketId
         ackAckPacket.update(destinationSocketId: peerSocketId)
         keepAlivePacket.update(destinationSocketId: peerSocketId)
+        connectTimer.stop()
         setState(state: .connected)
         delegate?.srtSenderConnected()
     }
