@@ -124,10 +124,7 @@ struct StealthModeView: View {
             }
         }
         if quickButtons.blackScreenShowChat {
-            ChatOverlayView(chatSettings: model.database.chat,
-                            chat: model.chat,
-                            fullSize: true)
-                .allowsHitTesting(model.chat.interactiveChat)
+            ChatOverlayView(chatSettings: model.database.chat, chat: model.chat, fullSize: true)
         }
     }
 }

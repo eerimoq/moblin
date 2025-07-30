@@ -357,6 +357,7 @@ struct MainView: View {
                 .edgesIgnoringSafeArea(.all)
                 GeometryReader { metrics in
                     StreamOverlayView(streamOverlay: model.streamOverlay,
+                                      chatSettings: model.database.chat,
                                       width: metrics.size.width,
                                       height: metrics.size.height)
                         .opacity(model.showLocalOverlays ? 1 : 0)
@@ -423,6 +424,7 @@ struct MainView: View {
                 .edgesIgnoringSafeArea(.all)
                 GeometryReader { metrics in
                     StreamOverlayView(streamOverlay: model.streamOverlay,
+                                      chatSettings: model.database.chat,
                                       width: metrics.size.width,
                                       height: metrics.size.height)
                         .opacity(model.showLocalOverlays ? 1 : 0)

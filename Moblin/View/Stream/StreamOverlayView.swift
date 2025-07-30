@@ -64,6 +64,7 @@ struct ChatOverlayView: View {
                         .frame(height: controlBarWidthDefault)
                 }
             }
+            .allowsHitTesting(chat.interactiveChat)
         } else {
             HStack(spacing: 0) {
                 VStack {
@@ -95,6 +96,7 @@ struct ChatOverlayView: View {
                         .frame(width: controlBarWidthDefault)
                 }
             }
+            .allowsHitTesting(chat.interactiveChat)
         }
     }
 }
@@ -150,6 +152,7 @@ private struct FrontTorchView: View {
 struct StreamOverlayView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var streamOverlay: StreamOverlay
+    @ObservedObject var chatSettings: SettingsChat
     let width: CGFloat
     let height: CGFloat
 
@@ -168,13 +171,8 @@ struct StreamOverlayView: View {
             }
             ZStack {
                 if model.showingPanel != .chat {
-                    ChatOverlayView(
-                        chatSettings: model.database.chat,
-                        chat: model.chat,
-                        fullSize: false
-                    )
-                    .opacity(model.database.chat.enabled ? 1 : 0)
-                    .allowsHitTesting(model.chat.interactiveChat)
+                    ChatOverlayView(chatSettings: chatSettings, chat: model.chat, fullSize: false)
+                        .opacity(chatSettings.enabled ? 1 : 0)
                 }
                 HStack {
                     Spacer()
