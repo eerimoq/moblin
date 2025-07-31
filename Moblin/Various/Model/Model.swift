@@ -534,6 +534,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     let geographyManager = GeographyManager()
     var onDocumentPickerUrl: ((URL) -> Void)?
     private var healthStore = HKHealthStore()
+    var streamRecordingPath: URL?
 
     weak var processor: Processor? {
         didSet {

@@ -51,16 +51,31 @@ class RecordingSettings: Codable {
     }
 }
 
+private func loadRecordingPath(settings: RecordingSettings) -> URL? {
+    guard let recordingPath = settings.recording?.recordingPath else {
+        return nil
+    }
+    var isStale = false
+    return try? URL(resolvingBookmarkData: recordingPath, bookmarkDataIsStale: &isStale)
+}
+
 class Recording: Identifiable, Codable, ObservableObject {
     var id: UUID = .init()
-    var settings: RecordingSettings
+    let settings: RecordingSettings
     var startTime: Date = .init()
     var stopTime: Date = .init()
     var size: UInt64 = 0
     @Published var description: String = ""
+    private var recordingPath: URL?
 
-    init(settings: SettingsStream) {
+    init?(settings: SettingsStream) {
         self.settings = RecordingSettings(settings: settings)
+        if !isDefaultRecordingPath() {
+            recordingPath = loadRecordingPath(settings: self.settings)
+            if recordingPath == nil {
+                return nil
+            }
+        }
     }
 
     enum CodingKeys: CodingKey {
@@ -90,6 +105,7 @@ class Recording: Identifiable, Codable, ObservableObject {
         stopTime = container.decode(.stopTime, Date.self, .init())
         size = container.decode(.size, UInt64.self, 0)
         description = container.decode(.description, String.self, "")
+        recordingPath = loadRecordingPath(settings: settings)
     }
 
     func subTitle() -> String {
@@ -116,16 +132,32 @@ class Recording: Identifiable, Codable, ObservableObject {
         return Date().timeIntervalSince(startTime)
     }
 
-    func url() -> URL {
-        return getRecordingsDirectory().appending(component: name())
+    func url() -> URL? {
+        if isDefaultRecordingPath() {
+            return getRecordingsDirectory().appending(component: name())
+        } else {
+            return recordingPath?.appending(component: name())
+        }
     }
 
-    func shareUrl() -> URL {
+    func shareUrl() -> URL? {
         return url()
     }
 
     func sizeString() -> String {
         return size.formatBytes()
+    }
+
+    func getRecordingPath() -> String? {
+        if isDefaultRecordingPath() {
+            return nil
+        } else {
+            return recordingPath?.absoluteString ?? String(localized: "No access")
+        }
+    }
+
+    func isDefaultRecordingPath() -> Bool {
+        return settings.recording!.isDefaultRecordingPath()
     }
 }
 
@@ -194,16 +226,34 @@ final class RecordingsStorage {
     }
 
     private func cleanup() {
-        database.recordings = database.recordings.filter { FileManager.default.fileExists(atPath: $0.url().path()) }
-        guard let enumerator = FileManager.default.enumerator(
+        database.recordings = database.recordings.filter { recording in
+            if recording.isDefaultRecordingPath() {
+                if let url = recording.url() {
+                    return FileManager.default.fileExists(atPath: url.path())
+                } else {
+                    return false
+                }
+            } else {
+                return true
+            }
+        }
+        guard let filesAtDefaultLocation = FileManager.default.enumerator(
             at: getRecordingsDirectory(),
             includingPropertiesForKeys: nil
         ) else {
             return
         }
-        for case let fileUrl as URL in enumerator
+        for case let fileUrl as URL in filesAtDefaultLocation
             where !database.recordings.contains(where: { recording in
-                fileUrl.resolvingSymlinksInPath() == recording.url().resolvingSymlinksInPath()
+                if recording.isDefaultRecordingPath() {
+                    if let url = recording.url() {
+                        return fileUrl.resolvingSymlinksInPath() == url.resolvingSymlinksInPath()
+                    } else {
+                        return false
+                    }
+                } else {
+                    return true
+                }
             })
         {
             logger.debug("recordings: Removing unused file \(fileUrl)")
@@ -226,15 +276,18 @@ final class RecordingsStorage {
 
     private func migrateFromOlderVersions() {}
 
-    func createRecording(settings: SettingsStream) -> Recording {
+    func createRecording(settings: SettingsStream) -> Recording? {
         return Recording(settings: settings)
     }
 
     func append(recording: Recording) {
         while database.isFull() {
-            database.recordings.popLast()?.url().remove()
+            database.recordings.popLast()?.url()?.remove()
         }
-        recording.size = recording.url().fileSize
+        guard let url = recording.url() else {
+            return
+        }
+        recording.size = url.fileSize
         recording.stopTime = Date()
         database.recordings.insert(recording, at: 0)
     }

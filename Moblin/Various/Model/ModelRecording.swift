@@ -11,8 +11,17 @@ extension Model {
         if recordingsStorage.database.isFull() {
             subTitle = String(localized: "Too many recordings. Deleting oldest recording.")
         }
-        makeToast(title: String(localized: "Recording started"), subTitle: subTitle)
-        resumeRecording()
+        if resumeRecording() {
+            makeToast(title: String(localized: "Recording started"), subTitle: subTitle)
+        } else {
+            if stream.recording.isDefaultRecordingPath() {
+                makeErrorToast(title: String(localized: "Failed to start recording"))
+            } else {
+                makeErrorToast(title: String(localized: "Failed to start recording"),
+                               subTitle: String(localized: "Is the disk connected?"))
+            }
+            setIsRecording(value: false)
+        }
     }
 
     func stopRecording(showToast: Bool = true, toastTitle: String? = nil, toastSubTitle: String? = nil) {
@@ -27,10 +36,14 @@ extension Model {
         suspendRecording()
     }
 
-    func resumeRecording() {
+    func resumeRecording() -> Bool {
         currentRecording = recordingsStorage.createRecording(settings: stream.clone())
+        if currentRecording == nil {
+            return false
+        }
         media.setRecordUrl(url: currentRecording?.url())
         startRecorderIfNeeded()
+        return true
     }
 
     func suspendRecording() {
@@ -77,7 +90,7 @@ extension Model {
     func updateRecordingLength(now: Date) {
         if let currentRecording {
             let elapsed = uptimeFormatter.string(from: now.timeIntervalSince(currentRecording.startTime))!
-            let size = currentRecording.url().fileSize.formatBytes()
+            let size = currentRecording.url()?.fileSize.formatBytes() ?? "-"
             recording.length = "\(elapsed) (\(size))"
             if isWatchLocal() {
                 sendRecordingLengthToWatch(recordingLength: recording.length)

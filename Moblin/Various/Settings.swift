@@ -326,6 +326,7 @@ class SettingsStreamRecording: Codable, ObservableObject {
     @Published var autoStopRecording: Bool = false
     @Published var cleanRecordings: Bool = false
     @Published var cleanSnapshots: Bool = false
+    @Published var recordingPath: Data?
 
     init() {}
 
@@ -337,7 +338,8 @@ class SettingsStreamRecording: Codable, ObservableObject {
              autoStartRecording,
              autoStopRecording,
              cleanRecordings,
-             cleanSnapshots
+             cleanSnapshots,
+             recordingPath
     }
 
     func encode(to encoder: Encoder) throws {
@@ -350,6 +352,7 @@ class SettingsStreamRecording: Codable, ObservableObject {
         try container.encode(.autoStopRecording, autoStopRecording)
         try container.encode(.cleanRecordings, cleanRecordings)
         try container.encode(.cleanSnapshots, cleanSnapshots)
+        try container.encode(.recordingPath, recordingPath)
     }
 
     required init(from decoder: Decoder) throws {
@@ -362,6 +365,7 @@ class SettingsStreamRecording: Codable, ObservableObject {
         autoStopRecording = container.decode(.autoStopRecording, Bool.self, false)
         cleanRecordings = container.decode(.cleanRecordings, Bool.self, false)
         cleanSnapshots = container.decode(.cleanSnapshots, Bool.self, false)
+        recordingPath = container.decode(.recordingPath, Data?.self, nil)
     }
 
     func clone() -> SettingsStreamRecording {
@@ -374,6 +378,7 @@ class SettingsStreamRecording: Codable, ObservableObject {
         new.autoStopRecording = autoStopRecording
         new.cleanRecordings = cleanRecordings
         new.cleanSnapshots = cleanSnapshots
+        new.recordingPath = recordingPath
         return new
     }
 
@@ -399,6 +404,10 @@ class SettingsStreamRecording: Codable, ObservableObject {
         } else {
             return String(localized: "Auto")
         }
+    }
+
+    func isDefaultRecordingPath() -> Bool {
+        return recordingPath == nil
     }
 }
 

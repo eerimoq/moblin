@@ -1,5 +1,89 @@
 import SwiftUI
 
+private struct PickerView: UIViewControllerRepresentable {
+    @EnvironmentObject var model: Model
+
+    func makeUIViewController(context _: Context) -> UIDocumentPickerViewController {
+        let documentPicker = UIDocumentPickerViewController(forOpeningContentTypes: [.folder])
+        documentPicker.delegate = model
+        return documentPicker
+    }
+
+    func updateUIViewController(_: UIDocumentPickerViewController, context _: Context) {}
+}
+
+private struct RecordingPathView: View {
+    @EnvironmentObject var model: Model
+    @ObservedObject var stream: SettingsStream
+    @ObservedObject var recording: SettingsStreamRecording
+    @State var showPicker = false
+
+    private func onUrl(url: URL) {
+        guard url.startAccessingSecurityScopedResource() else {
+            return
+        }
+        do {
+            recording.recordingPath = try url.bookmarkData()
+        } catch {
+            logger.info("Failed to create bookmark with error: \(error)")
+        }
+        url.stopAccessingSecurityScopedResource()
+        if stream.enabled {
+            model.reloadRecordingPath()
+        }
+    }
+
+    private func getRecordingPath(recordingPath: Data) -> String {
+        var isStale = false
+        if let url = try? URL(resolvingBookmarkData: recordingPath, bookmarkDataIsStale: &isStale) {
+            return url.absoluteString
+        } else {
+            return String(localized: "Disk not connected?")
+        }
+    }
+
+    var body: some View {
+        NavigationLink {
+            Form {
+                Section {
+                    Button {
+                        showPicker = true
+                        model.onDocumentPickerUrl = onUrl
+                    } label: {
+                        HCenter {
+                            if let recordingPath = recording.recordingPath {
+                                Text(getRecordingPath(recordingPath: recordingPath))
+                                    .lineLimit(1)
+                                    .truncationMode(.head)
+                            } else {
+                                Text("Select")
+                            }
+                        }
+                    }
+                    .sheet(isPresented: $showPicker) {
+                        PickerView()
+                    }
+                } header: {
+                    Text("Folder")
+                }
+                Section {
+                    Button {
+                        recording.recordingPath = nil
+                    } label: {
+                        HCenter {
+                            Text("Reset")
+                                .tint(.red)
+                        }
+                    }
+                }
+            }
+            .navigationTitle("Recording path")
+        } label: {
+            Text("Recording path")
+        }
+    }
+}
+
 struct StreamRecordingSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var stream: SettingsStream
@@ -82,6 +166,7 @@ struct StreamRecordingSettingsView: View {
             } footer: {
                 Text("Resolution and FPS are same as for live stream.")
             }
+            RecordingPathView(stream: stream, recording: recording)
             Section {
                 Toggle("Clean recordings", isOn: $recording.cleanRecordings)
                     .onChange(of: recording.cleanRecordings) { _ in

@@ -38,7 +38,7 @@ private struct RecordingsSettingsRecordingsView: View {
                     }
                     .onDelete { indexSet in
                         for index in indexSet {
-                            database.recordings[index].url().remove()
+                            database.recordings[index].url()?.remove()
                         }
                         database.recordings.remove(atOffsets: indexSet)
                         recordingsStorage.store()
@@ -46,7 +46,7 @@ private struct RecordingsSettingsRecordingsView: View {
                 }
             } footer: {
                 if !database.recordings.isEmpty {
-                    SwipeLeftToDeleteHelpView(kind: "a recording")
+                    SwipeLeftToDeleteHelpView(kind: String(localized: "a recording"))
                 }
             }
         }

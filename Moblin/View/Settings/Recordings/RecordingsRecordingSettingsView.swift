@@ -10,7 +10,9 @@ struct RecordingsRecordingSettingsView: View {
             VStack {
                 HStack {
                     Spacer()
-                    ShareLink(item: recording.shareUrl())
+                    if let shareUrl = recording.shareUrl() {
+                        ShareLink(item: shareUrl)
+                    }
                 }
                 Form {
                     Section {
@@ -75,6 +77,15 @@ struct RecordingsRecordingSettingsView: View {
                             name: String(localized: "Audio bitrate"),
                             value: recording.settings.recording!.audioBitrateString()
                         )
+                        if let recordingPath = recording.getRecordingPath() {
+                            HStack {
+                                Text("Recording path")
+                                Spacer()
+                                Text(recordingPath)
+                                    .lineLimit(1)
+                                    .truncationMode(.head)
+                            }
+                        }
                     } header: {
                         Text("Settings")
                     }
@@ -100,8 +111,10 @@ struct RecordingsRecordingSettingsView: View {
             }
         }
         .onAppear {
-            createThumbnail(path: recording.url()) { image in
-                self.image = image
+            if let url = recording.url() {
+                createThumbnail(path: url) { image in
+                    self.image = image
+                }
             }
         }
     }
