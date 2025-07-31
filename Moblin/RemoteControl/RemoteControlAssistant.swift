@@ -252,13 +252,13 @@ class RemoteControlAssistant: NSObject {
             parameters.defaultProtocolStack.applicationProtocols.append(options)
             server = try NWListener(using: parameters, on: NWEndpoint.Port(rawValue: port)!)
             server?.newConnectionHandler = handleNewConnection
+            server?.stateUpdateHandler = handleStateUpdate
             server?.start(queue: .main)
-            stopRetryStartTimer()
         } catch {
-            logger.debug("remote-control-assistant: Failed to start server with error \(error)")
+            logger.info("xxx remote-control-assistant: Failed to start server with error \(error)")
             connectionErrorMessage = error.localizedDescription
-            startRetryStartTimer()
         }
+        startRetryStartTimer()
     }
 
     private func startRetryStartTimer() {
@@ -329,6 +329,15 @@ class RemoteControlAssistant: NSObject {
         streamerIdentified = false
         startKeepAlive()
         startPingTimer()
+    }
+
+    private func handleStateUpdate(_ newState: NWListener.State) {
+        switch newState {
+        case .ready:
+            stopRetryStartTimer()
+        default:
+            break
+        }
     }
 
     private func handleDisconnected(webSocket _: NWConnection) {
