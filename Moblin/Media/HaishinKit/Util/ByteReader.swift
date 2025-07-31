@@ -98,4 +98,11 @@ class ByteReader {
         position += length
         return data.subdata(in: position - length ..< position)
     }
+
+    func skipBytes(_ length: Int) throws {
+        guard length >= 0, bytesAvailable >= length else {
+            throw ByteReader.Error.eof
+        }
+        position += length
+    }
 }
