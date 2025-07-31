@@ -13,8 +13,19 @@ class ChatBotCommand {
     let message: ChatBotMessage
     private var parts: Deque<String> = []
 
-    init?(message: ChatBotMessage) {
+    init?(message: ChatBotMessage, aliases: [SettingsChatBotAlias]) {
         self.message = message
+        guard let firstWord = message.segments.first?.text?.lowercased().trim() else {
+            return nil
+        }
+        if firstWord != "!moblin" {
+            guard let alias = aliases.first(where: { $0.alias == firstWord }) else {
+                return nil
+            }
+            for word in alias.replacement.split(separator: " ").suffix(from: 1) {
+                parts.append(word.trim())
+            }
+        }
         guard message.segments.count > 1 else {
             return nil
         }

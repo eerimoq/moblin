@@ -10,7 +10,7 @@ extension Model {
     }
 
     private func handleChatBotMessage(message: ChatBotMessage) {
-        guard let command = ChatBotCommand(message: message) else {
+        guard let command = ChatBotCommand(message: message, aliases: database.chat.aliases) else {
             return
         }
         switch command.rest() {

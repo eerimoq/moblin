@@ -67,7 +67,7 @@ private struct PermissionsSettingsView: View {
     }
 }
 
-struct ChatBotCommandsSettingsView: View {
+private struct ChatBotCommandsSettingsView: View {
     @EnvironmentObject var model: Model
 
     private var permissions: SettingsChatBotPermissions {
@@ -235,6 +235,101 @@ struct ChatBotCommandsSettingsView: View {
     }
 }
 
+private struct ChatBotAliasSettingsView: View {
+    @ObservedObject var alias: SettingsChatBotAlias
+
+    private func onAliasChange(value: String) -> String? {
+        guard !value.isEmpty else {
+            return String(localized: "The alias must not be empty.")
+        }
+        guard value.starts(with: "!") else {
+            return String(localized: "The alias must start with !.")
+        }
+        guard value.count > 1 else {
+            return String(localized: "The alias is too short.")
+        }
+        guard !value.starts(with: "!moblin") else {
+            return String(localized: "The alias must not start with !moblin.")
+        }
+        guard value.split(separator: " ").count == 1 else {
+            return String(localized: "The alias must be exactly one word.")
+        }
+        return nil
+    }
+
+    private func onReplacementChange(value: String) -> String? {
+        guard !value.isEmpty else {
+            return String(localized: "The replacement must not be empty.")
+        }
+        guard value.starts(with: "!moblin") else {
+            return String(localized: "The replacement must start with !moblin.")
+        }
+        return nil
+    }
+
+    var body: some View {
+        NavigationLink {
+            Form {
+                Section {
+                    NavigationLink {
+                        TextEditView(title: String(localized: "Alias"), value: alias.alias, onChange: onAliasChange) {
+                            alias.alias = $0
+                        }
+                    } label: {
+                        TextItemView(name: String(localized: "Alias"), value: alias.alias)
+                    }
+                    NavigationLink {
+                        TextEditView(
+                            title: String(localized: "Replacement"),
+                            value: alias.replacement,
+                            onChange: onReplacementChange
+                        ) {
+                            alias.replacement = $0
+                        }
+                    } label: {
+                        TextItemView(name: String(localized: "Replacement"), value: alias.replacement)
+                    }
+                }
+            }
+            .navigationTitle("Alias")
+        } label: {
+            HStack {
+                Text(alias.alias)
+                Spacer()
+                Text(alias.replacement)
+                    .lineLimit(1)
+                    .foregroundColor(.gray)
+            }
+        }
+    }
+}
+
+private struct ChatBotAliasesSettingsView: View {
+    @ObservedObject var chat: SettingsChat
+
+    var body: some View {
+        Form {
+            Section {
+                List {
+                    ForEach(chat.aliases) { alias in
+                        ChatBotAliasSettingsView(alias: alias)
+                    }
+                    .onMove { froms, to in
+                        chat.aliases.move(fromOffsets: froms, toOffset: to)
+                    }
+                    .onDelete { offsets in
+                        chat.aliases.remove(atOffsets: offsets)
+                    }
+                }
+                CreateButtonView {
+                    chat.aliases.append(SettingsChatBotAlias())
+                }
+            }
+        }
+        .navigationTitle("Aliases")
+    }
+}
+
 struct ChatBotSettingsView: View {
     @EnvironmentObject var model: Model
 
@@ -245,6 +340,11 @@ struct ChatBotSettingsView: View {
                     ChatBotCommandsSettingsView()
                 } label: {
                     Text("Commands")
+                }
+                NavigationLink {
+                    ChatBotAliasesSettingsView(chat: model.database.chat)
+                } label: {
+                    Text("Aliases")
                 }
             }
             Section {

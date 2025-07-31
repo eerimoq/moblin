@@ -356,7 +356,7 @@ extension Model {
     ) {
         let filter = evaluateFilters(user: user, segments: segments)
         if database.chat.botEnabled, live, filter?.chatBot != false,
-           segments.first?.text?.trim().lowercased() == "!moblin"
+           segments.first?.text?.trim().starts(with: "!") == true
         {
             if chatBotMessages.count < 25 || isModerator {
                 chatBotMessages.append(ChatBotMessage(
