@@ -5487,19 +5487,25 @@ class SettingsKeyboard: Codable, ObservableObject {
     }
 }
 
-class SettingsRemoteControlAssistant: Codable, ObservableObject {
+class SettingsRemoteControlAssistant: Codable, ObservableObject, Identifiable {
+    var id: UUID = .init()
+    @Published var name: String = ""
     @Published var enabled: Bool = false
     @Published var port: UInt16 = 2345
     var relay: SettingsRemoteControlServerRelay = .init()
 
     enum CodingKeys: CodingKey {
-        case enabled,
+        case id,
+             name,
+             enabled,
              port,
              relay
     }
 
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.name, name)
         try container.encode(.enabled, enabled)
         try container.encode(.port, port)
         try container.encode(.relay, relay)
@@ -5509,6 +5515,8 @@ class SettingsRemoteControlAssistant: Codable, ObservableObject {
 
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        name = container.decode(.name, String.self, "")
         enabled = container.decode(.enabled, Bool.self, false)
         port = container.decode(.port, UInt16.self, 2345)
         relay = container.decode(.relay, SettingsRemoteControlServerRelay.self, .init())
@@ -5571,15 +5579,19 @@ class SettingsRemoteControlServerRelay: Codable, ObservableObject {
     }
 }
 
-class SettingsRemoteControl: Codable {
+class SettingsRemoteControl: Codable, ObservableObject {
     var assistant: SettingsRemoteControlAssistant = .init()
     var streamer: SettingsRemoteControlStreamer = .init()
     var password: String = randomGoodPassword()
+    @Published var streamers: [SettingsRemoteControlAssistant] = []
+    @Published var selectedStreamer: UUID?
 
     enum CodingKeys: CodingKey {
         case client,
              server,
-             password
+             password,
+             streamers,
+             selectedStreamer
     }
 
     func encode(to encoder: Encoder) throws {
@@ -5587,6 +5599,8 @@ class SettingsRemoteControl: Codable {
         try container.encode(.client, assistant)
         try container.encode(.server, streamer)
         try container.encode(.password, password)
+        try container.encode(.streamers, streamers)
+        try container.encode(.selectedStreamer, selectedStreamer)
     }
 
     init() {}
@@ -5596,6 +5610,8 @@ class SettingsRemoteControl: Codable {
         assistant = container.decode(.client, SettingsRemoteControlAssistant.self, .init())
         streamer = container.decode(.server, SettingsRemoteControlStreamer.self, .init())
         password = container.decode(.password, String.self, randomGoodPassword())
+        streamers = container.decode(.streamers, [SettingsRemoteControlAssistant].self, [])
+        selectedStreamer = container.decode(.selectedStreamer, UUID?.self, nil)
     }
 }
 

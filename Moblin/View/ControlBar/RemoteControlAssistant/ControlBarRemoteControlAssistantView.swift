@@ -576,7 +576,196 @@ private struct ControlBarRemoteControlAssistantControlView: View {
     }
 }
 
-struct ControlBarRemoteControlAssistantView: View {
+private struct StreamerSelectionView: View {
+    @EnvironmentObject var model: Model
+    @ObservedObject var remoteControl: RemoteControl
+
+    var body: some View {
+        Button {
+            remoteControl.assistantShowStreamers = true
+        } label: {
+            Image(systemName: "person")
+                .frame(width: 30, height: 30)
+                .overlay(
+                    Circle()
+                        .stroke(.gray)
+                )
+                .foregroundColor(.gray)
+                .padding(7)
+        }
+    }
+}
+
+private struct ButtonsView: View {
+    @EnvironmentObject var model: Model
+
+    var body: some View {
+        HStack {
+            Spacer()
+            VStack(alignment: .trailing) {
+                HStack(spacing: 0) {
+                    StreamerSelectionView(remoteControl: model.remoteControl)
+                    CloseButtonView {
+                        model.showingRemoteControl = false
+                        model.setGlobalButtonState(type: .remote, isOn: model.showingRemoteControl)
+                        model.updateQuickButtonStates()
+                    }
+                }
+                Spacer()
+            }
+        }
+    }
+}
+
+private struct StreamersToolbar: ToolbarContent {
+    @ObservedObject var remoteControl: RemoteControl
+
+    var body: some ToolbarContent {
+        ToolbarItem(placement: .navigationBarTrailing) {
+            HStack {
+                Button {
+                    remoteControl.assistantShowStreamers = false
+                } label: {
+                    Text("Close")
+                }
+            }
+        }
+    }
+}
+
+private struct StreamerView: View {
+    @EnvironmentObject var model: Model
+    @ObservedObject var remoteControl: RemoteControl
+    @ObservedObject var streamer: SettingsRemoteControlAssistant
+
+    private func submitAssistantPort(value: String) {
+        guard let port = UInt16(value.trim()), port > 0 else {
+            model.makePortErrorToast(port: value)
+            return
+        }
+        streamer.port = port
+    }
+
+    private func submitAssistantRelayUrl(value: String) {
+        guard isValidWebSocketUrl(url: value) == nil else {
+            return
+        }
+        streamer.relay.baseUrl = value
+    }
+
+    private func submitAssistantRelayBridgeId(value: String) {
+        guard !value.isEmpty else {
+            return
+        }
+        streamer.relay.bridgeId = value
+    }
+
+    var body: some View {
+        NavigationLink {
+            Form {
+                Section {
+                    TextField("Streamer name", text: $streamer.name)
+                        .disableAutocorrection(true)
+                } header: {
+                    Text("Name")
+                }
+                TextEditNavigationView(
+                    title: String(localized: "Server port"),
+                    value: String(streamer.port),
+                    onSubmit: submitAssistantPort,
+                    keyboardType: .numbersAndPunctuation,
+                    placeholder: "2345"
+                )
+                TextEditNavigationView(
+                    title: String(localized: "Base URL"),
+                    value: streamer.relay.baseUrl,
+                    onSubmit: submitAssistantRelayUrl
+                )
+                TextEditNavigationView(
+                    title: String(localized: "Bridge id"),
+                    value: streamer.relay.bridgeId,
+                    onSubmit: submitAssistantRelayBridgeId
+                )
+            }
+        } label: {
+            HStack {
+                DraggableItemPrefixView()
+                Text(streamer.name)
+                Spacer()
+            }
+        }
+    }
+}
+
+private struct StreamersView: View {
+    @EnvironmentObject var model: Model
+    @ObservedObject var remoteControlSettings: SettingsRemoteControl
+    @ObservedObject var remoteControl: RemoteControl
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section {
+                    Picker("Current streamer", selection: $remoteControlSettings.selectedStreamer) {
+                        Text("-- Unknown --")
+                            .tag(nil as UUID?)
+                        ForEach(remoteControlSettings.streamers) { streamer in
+                            Text(streamer.name)
+                                .tag(streamer.id as UUID?)
+                        }
+                    }
+                    .onChange(of: remoteControlSettings.selectedStreamer) { _ in
+                        let assistant = model.database.remoteControl.assistant
+                        if let streamer = remoteControlSettings.streamers
+                            .first(where: { $0.id == remoteControlSettings.selectedStreamer })
+                        {
+                            assistant.enabled = true
+                            assistant.port = streamer.port
+                            assistant.relay.enabled = true
+                            assistant.relay.baseUrl = streamer.relay.baseUrl
+                            assistant.relay.bridgeId = streamer.relay.bridgeId
+                        } else {
+                            assistant.enabled = false
+                            assistant.relay.enabled = false
+                        }
+                        model.reloadRemoteControlRelay()
+                        model.reloadRemoteControlAssistant()
+                    }
+                }
+                Section {
+                    List {
+                        ForEach(remoteControlSettings.streamers) { streamer in
+                            StreamerView(remoteControl: remoteControl, streamer: streamer)
+                        }
+                        .onDelete {
+                            remoteControlSettings.streamers.remove(atOffsets: $0)
+                        }
+                        .onMove { froms, to in
+                            remoteControlSettings.streamers.move(fromOffsets: froms, toOffset: to)
+                        }
+                    }
+                } footer: {
+                    SwipeLeftToDeleteHelpView(kind: String(localized: "a streamer"))
+                }
+                Section {
+                    Button {
+                        remoteControlSettings.streamers.append(SettingsRemoteControlAssistant())
+                    } label: {
+                        HCenter {
+                            Text("Create streamer")
+                        }
+                    }
+                }
+            }
+            .navigationTitle("Streamers")
+            .toolbar {
+                StreamersToolbar(remoteControl: remoteControl)
+            }
+        }
+    }
+}
+
+private struct ControlBarRemoteControlAssistantInnerView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var remoteControl: RemoteControl
     @State var didDetachCamera = false
@@ -641,6 +830,22 @@ struct ControlBarRemoteControlAssistantView: View {
             model.remoteControlAssistantStopPreview(user: .panel)
             model.remoteControlAssistantStopStatus()
         }
+        .sheet(isPresented: $remoteControl.assistantShowStreamers) {
+            StreamersView(remoteControlSettings: model.database.remoteControl, remoteControl: model.remoteControl)
+        }
         .navigationTitle("Remote control assistant")
+    }
+}
+
+struct ControlBarRemoteControlAssistantView: View {
+    @EnvironmentObject var model: Model
+
+    var body: some View {
+        ZStack {
+            NavigationStack {
+                ControlBarRemoteControlAssistantInnerView(remoteControl: model.remoteControl)
+            }
+            ButtonsView()
+        }
     }
 }

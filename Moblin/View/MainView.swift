@@ -3,7 +3,7 @@ import SwiftUI
 import UIKit
 import WebKit
 
-private struct CloseButtonView: View {
+struct CloseButtonView: View {
     let onClose: () -> Void
 
     var body: some View {
@@ -150,24 +150,6 @@ private struct MenuView: View {
             }
         case .none:
             EmptyView()
-        }
-    }
-}
-
-private struct CloseButtonRemoteView: View {
-    @EnvironmentObject var model: Model
-
-    var body: some View {
-        HStack {
-            Spacer()
-            VStack(alignment: .trailing) {
-                CloseButtonView {
-                    model.showingRemoteControl = false
-                    model.setGlobalButtonState(type: .remote, isOn: model.showingRemoteControl)
-                    model.updateQuickButtonStates()
-                }
-                Spacer()
-            }
         }
     }
 }
@@ -369,10 +351,7 @@ struct MainView: View {
                     WebBrowserView()
                 }
                 if model.showingRemoteControl {
-                    NavigationStack {
-                        ControlBarRemoteControlAssistantView(remoteControl: model.remoteControl)
-                    }
-                    CloseButtonRemoteView()
+                    ControlBarRemoteControlAssistantView()
                 }
                 if model.showingPanel != .none {
                     MenuView()
@@ -439,12 +418,7 @@ struct MainView: View {
                     WebBrowserView()
                 }
                 if model.showingRemoteControl {
-                    ZStack {
-                        NavigationStack {
-                            ControlBarRemoteControlAssistantView(remoteControl: model.remoteControl)
-                        }
-                        CloseButtonRemoteView()
-                    }
+                    ControlBarRemoteControlAssistantView()
                 }
                 if model.showingPanel != .none, model.panelHidden {
                     PanelButtonsView(backgroundColor: model.showingPanel.buttonsBackgroundColor())

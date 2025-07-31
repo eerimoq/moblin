@@ -14,6 +14,7 @@ class RemoteControl: ObservableObject {
     @Published var debugLogging = false
     @Published var assistantShowPreview = true
     @Published var assistantShowPreviewFullScreen = false
+    @Published var assistantShowStreamers = false
     @Published var preview: UIImage?
     @Published var recording: Bool = false
     @Published var streaming: Bool = false

@@ -149,6 +149,7 @@ private struct RemoteControlSettingsAssistantView: View {
             return
         }
         database.remoteControl.assistant.port = port
+        database.remoteControl.selectedStreamer = nil
         model.reloadRemoteControlAssistant()
     }
 
@@ -190,6 +191,7 @@ private struct RemoteControlSettingsRelayView: View {
             return
         }
         database.remoteControl.assistant.relay.baseUrl = value
+        database.remoteControl.selectedStreamer = nil
         model.reloadRemoteControlRelay()
     }
 
@@ -198,6 +200,7 @@ private struct RemoteControlSettingsRelayView: View {
             return
         }
         database.remoteControl.assistant.relay.bridgeId = value
+        database.remoteControl.selectedStreamer = nil
         model.reloadRemoteControlRelay()
     }
 
