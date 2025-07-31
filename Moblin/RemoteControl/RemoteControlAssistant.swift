@@ -406,8 +406,8 @@ class RemoteControlAssistant: NSObject {
         ) {
             streamerIdentified = true
             connected = true
-            delegate?.remoteControlAssistantConnected()
             send(message: .identified(result: .ok))
+            delegate?.remoteControlAssistantConnected()
             twitchEventSubNotiticationWaitForResponse = false
             tryNextTwitchEventSubNotification()
         } else {
