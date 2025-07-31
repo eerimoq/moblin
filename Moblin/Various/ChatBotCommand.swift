@@ -26,12 +26,11 @@ class ChatBotCommand {
                 parts.append(word.trim())
             }
         }
-        guard message.segments.count > 1 else {
-            return nil
-        }
-        for segment in message.segments.suffix(from: 1) {
-            if let text = segment.text {
-                parts.append(text.trim())
+        if message.segments.count > 1 {
+            for segment in message.segments.suffix(from: 1) {
+                if let text = segment.text {
+                    parts.append(text.trim())
+                }
             }
         }
     }
