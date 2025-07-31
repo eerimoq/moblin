@@ -320,26 +320,6 @@ extension Model {
         currentStreamId = stream.id
         updateOrientationLock()
         updateStatusStreamText()
-        reloadRecordingPath()
-    }
-
-    func reloadRecordingPath() {
-        streamRecordingPath?.stopAccessingSecurityScopedResource()
-        streamRecordingPath = nil
-        guard let recordingPath = stream.recording.recordingPath else {
-            return
-        }
-        do {
-            var isStale = false
-            let recordingPath = try URL(resolvingBookmarkData: recordingPath, bookmarkDataIsStale: &isStale)
-            guard !isStale else {
-                return
-            }
-            guard recordingPath.startAccessingSecurityScopedResource() else {
-                return
-            }
-            streamRecordingPath = recordingPath
-        } catch {}
     }
 
     func setCurrentStream(streamId: UUID) -> Bool {

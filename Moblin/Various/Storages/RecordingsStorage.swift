@@ -52,11 +52,13 @@ class RecordingSettings: Codable {
 }
 
 private func loadRecordingPath(settings: RecordingSettings) -> URL? {
-    guard let recordingPath = settings.recording?.recordingPath else {
+    guard let recordingPathBookmark = settings.recording?.recordingPath else {
         return nil
     }
     var isStale = false
-    return try? URL(resolvingBookmarkData: recordingPath, bookmarkDataIsStale: &isStale)
+    let recordingPath = try? URL(resolvingBookmarkData: recordingPathBookmark, bookmarkDataIsStale: &isStale)
+    _ = recordingPath?.startAccessingSecurityScopedResource()
+    return recordingPath
 }
 
 class Recording: Identifiable, Codable, ObservableObject {
@@ -136,6 +138,9 @@ class Recording: Identifiable, Codable, ObservableObject {
         if isDefaultRecordingPath() {
             return getRecordingsDirectory().appending(component: name())
         } else {
+            if recordingPath == nil {
+                recordingPath = loadRecordingPath(settings: settings)
+            }
             return recordingPath?.appending(component: name())
         }
     }

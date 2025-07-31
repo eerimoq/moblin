@@ -28,9 +28,6 @@ private struct RecordingPathView: View {
             logger.info("Failed to create bookmark with error: \(error)")
         }
         url.stopAccessingSecurityScopedResource()
-        if stream.enabled {
-            model.reloadRecordingPath()
-        }
     }
 
     private func getRecordingPath(recordingPath: Data) -> String {
@@ -79,7 +76,16 @@ private struct RecordingPathView: View {
             }
             .navigationTitle("Recording path")
         } label: {
-            Text("Recording path")
+            HStack {
+                Text("Recording path")
+                Spacer()
+                if let recordingPath = recording.recordingPath {
+                    Text(getRecordingPath(recordingPath: recordingPath))
+                        .lineLimit(1)
+                        .truncationMode(.head)
+                        .foregroundColor(.gray)
+                }
+            }
         }
     }
 }
