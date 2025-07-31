@@ -321,7 +321,7 @@ extension Model {
     }
 
     func sendChatMessage(message: String) {
-        guard isTwitchAccessTokenConfigured() else {
+        guard stream.twitchLoggedIn else {
             makeNotLoggedInToTwitchToast()
             return
         }

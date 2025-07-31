@@ -4,7 +4,7 @@ import SwiftUI
 
 extension Model {
     func isTwitchEventSubConfigured() -> Bool {
-        return isTwitchAccessTokenConfigured()
+        return stream.twitchLoggedIn
     }
 
     func isTwitchEventsConnected() -> Bool {
@@ -12,15 +12,11 @@ extension Model {
     }
 
     func isTwitchViewersConfigured() -> Bool {
-        return stream.twitchChannelId != "" && isTwitchAccessTokenConfigured()
+        return stream.twitchChannelId != "" && stream.twitchLoggedIn
     }
 
     func isTwitchChatConfigured() -> Bool {
         return database.chat.enabled && stream.twitchChannelName != ""
-    }
-
-    func isTwitchAccessTokenConfigured() -> Bool {
-        return stream.twitchAccessToken != ""
     }
 
     func isTwitchChatConnected() -> Bool {
