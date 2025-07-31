@@ -271,10 +271,12 @@ extension Model {
     }
 
     func remoteControlAssistantStartStatus() {
+        remoteControlAssistantStatusRequested = true
         remoteControlAssistant?.startStatus()
     }
 
     func remoteControlAssistantStopStatus() {
+        remoteControlAssistantStatusRequested = false
         remoteControlAssistant?.stopStatus()
     }
 
@@ -687,6 +689,12 @@ extension Model: RemoteControlAssistantDelegate {
         updateRemoteControlStatus()
         updateRemoteControlAssistantStatus()
         remoteControlAssistantSetRemoteSceneSettings()
+        if !remoteControlAssistantPreviewUsers.isEmpty {
+            remoteControlAssistant?.startPreview()
+        }
+        if remoteControlAssistantStatusRequested {
+            remoteControlAssistant?.startStatus()
+        }
     }
 
     func remoteControlAssistantDisconnected() {
