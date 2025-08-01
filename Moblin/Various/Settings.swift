@@ -5490,7 +5490,7 @@ class SettingsKeyboard: Codable, ObservableObject {
 class SettingsRemoteControlAssistant: Codable, ObservableObject, Identifiable {
     var id: UUID = .init()
     @Published var name: String = "Streamer name"
-    @Published var enabled: Bool = false
+    @Published var enabled: Bool = true
     @Published var port: UInt16 = 2345
     var relay: SettingsRemoteControlServerRelay = .init()
 
@@ -5517,7 +5517,7 @@ class SettingsRemoteControlAssistant: Codable, ObservableObject, Identifiable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
         name = container.decode(.name, String.self, "Streamer name")
-        enabled = container.decode(.enabled, Bool.self, false)
+        enabled = container.decode(.enabled, Bool.self, true)
         port = container.decode(.port, UInt16.self, 2345)
         relay = container.decode(.relay, SettingsRemoteControlServerRelay.self, .init())
     }
@@ -5552,7 +5552,7 @@ class SettingsRemoteControlStreamer: Codable, ObservableObject {
 }
 
 class SettingsRemoteControlServerRelay: Codable, ObservableObject {
-    @Published var enabled: Bool = false
+    @Published var enabled: Bool = true
     @Published var baseUrl: String = "wss://moblin.mys-lang.org/moblin-remote-control-relay"
     @Published var bridgeId: String = UUID().uuidString.lowercased()
 
