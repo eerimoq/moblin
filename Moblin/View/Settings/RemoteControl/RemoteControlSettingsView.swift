@@ -326,13 +326,16 @@ struct RemoteControlSettingsView: View {
                 Text("Used by both streamer and assistant.")
             }
             RemoteControlSettingsStreamerView(database: database)
-            RemoteControlSettingsAssistantView(database: database)
-            RemoteControlSettingsRelayView(database: database)
-            if assistant.enabled {
-                RemoteControlAssistantUrlsView(model: model,
-                                               relay: assistant.relay,
-                                               port: $assistant.port,
-                                               status: status)
+            Section {
+                NavigationLink {
+                    Form {
+                        StreamersView(remoteControlSettings: database.remoteControl,
+                                      remoteControl: model.remoteControl)
+                    }
+                    .navigationTitle("Assistant")
+                } label: {
+                    Text("Assistant")
+                }
             }
         }
         .navigationTitle("Remote control")

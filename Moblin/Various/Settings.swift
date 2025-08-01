@@ -5585,13 +5585,15 @@ class SettingsRemoteControl: Codable, ObservableObject {
     var password: String = randomGoodPassword()
     @Published var streamers: [SettingsRemoteControlAssistant] = []
     @Published var selectedStreamer: UUID?
+    var hasMigratedAssistant: Bool = true
 
     enum CodingKeys: CodingKey {
         case client,
              server,
              password,
              streamers,
-             selectedStreamer
+             selectedStreamer,
+             hasMigratedAssistant
     }
 
     func encode(to encoder: Encoder) throws {
@@ -5601,6 +5603,7 @@ class SettingsRemoteControl: Codable, ObservableObject {
         try container.encode(.password, password)
         try container.encode(.streamers, streamers)
         try container.encode(.selectedStreamer, selectedStreamer)
+        try container.encode(.hasMigratedAssistant, hasMigratedAssistant)
     }
 
     init() {}
@@ -5612,6 +5615,19 @@ class SettingsRemoteControl: Codable, ObservableObject {
         password = container.decode(.password, String.self, randomGoodPassword())
         streamers = container.decode(.streamers, [SettingsRemoteControlAssistant].self, [])
         selectedStreamer = container.decode(.selectedStreamer, UUID?.self, nil)
+        hasMigratedAssistant = container.decode(.hasMigratedAssistant, Bool.self, false)
+        if !hasMigratedAssistant {
+            let streamer = SettingsRemoteControlAssistant()
+            streamer.name = "Streamer"
+            streamer.enabled = assistant.enabled
+            streamer.port = assistant.port
+            streamer.relay.enabled = assistant.relay.enabled
+            streamer.relay.baseUrl = assistant.relay.baseUrl
+            streamer.relay.bridgeId = assistant.relay.bridgeId
+            streamers.append(streamer)
+            selectedStreamer = streamer.id
+            hasMigratedAssistant = true
+        }
     }
 
     func getSelectedStreamerName() -> String? {

@@ -745,7 +745,7 @@ private struct StreamerItemView: View {
     }
 }
 
-private struct StreamersView: View {
+struct StreamersView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var remoteControlSettings: SettingsRemoteControl
     @ObservedObject var remoteControl: RemoteControl
@@ -769,48 +769,40 @@ private struct StreamersView: View {
     }
 
     var body: some View {
-        NavigationStack {
-            Form {
-                Section {
-                    Picker("Current streamer", selection: $remoteControlSettings.selectedStreamer) {
-                        Text("-- Unknown --")
-                            .tag(nil as UUID?)
-                        ForEach(remoteControlSettings.streamers) { streamer in
-                            StreamerItemView(streamer: streamer)
-                        }
-                    }
-                    .onChange(of: remoteControlSettings.selectedStreamer) { _ in
-                        onStreamerChanged()
-                    }
-                }
-                Section {
-                    List {
-                        ForEach(remoteControlSettings.streamers) { streamer in
-                            StreamerView(remoteControlSettings: remoteControlSettings,
-                                         remoteControl: remoteControl, streamer: streamer)
-                        }
-                        .onDelete {
-                            remoteControlSettings.streamers.remove(atOffsets: $0)
-                        }
-                        .onMove { froms, to in
-                            remoteControlSettings.streamers.move(fromOffsets: froms, toOffset: to)
-                        }
-                    }
-                    Button {
-                        remoteControlSettings.streamers.append(SettingsRemoteControlAssistant())
-                    } label: {
-                        HCenter {
-                            Text("Create")
-                        }
-                    }
-                } footer: {
-                    SwipeLeftToDeleteHelpView(kind: String(localized: "a streamer"))
+        Section {
+            Picker("Current streamer", selection: $remoteControlSettings.selectedStreamer) {
+                Text("-- None --")
+                    .tag(nil as UUID?)
+                ForEach(remoteControlSettings.streamers) { streamer in
+                    StreamerItemView(streamer: streamer)
                 }
             }
-            .navigationTitle("Streamers")
-            .toolbar {
-                StreamersToolbar(remoteControl: remoteControl)
+            .onChange(of: remoteControlSettings.selectedStreamer) { _ in
+                onStreamerChanged()
             }
+        }
+        Section {
+            List {
+                ForEach(remoteControlSettings.streamers) { streamer in
+                    StreamerView(remoteControlSettings: remoteControlSettings,
+                                 remoteControl: remoteControl, streamer: streamer)
+                }
+                .onDelete {
+                    remoteControlSettings.streamers.remove(atOffsets: $0)
+                }
+                .onMove { froms, to in
+                    remoteControlSettings.streamers.move(fromOffsets: froms, toOffset: to)
+                }
+            }
+            Button {
+                remoteControlSettings.streamers.append(SettingsRemoteControlAssistant())
+            } label: {
+                HCenter {
+                    Text("Create")
+                }
+            }
+        } footer: {
+            SwipeLeftToDeleteHelpView(kind: String(localized: "a streamer"))
         }
     }
 }
@@ -890,7 +882,16 @@ private struct ControlBarRemoteControlAssistantInnerView: View {
             model.remoteControlAssistantStopStatus()
         }
         .sheet(isPresented: $remoteControl.assistantShowStreamers) {
-            StreamersView(remoteControlSettings: model.database.remoteControl, remoteControl: model.remoteControl)
+            NavigationStack {
+                Form {
+                    StreamersView(remoteControlSettings: model.database.remoteControl,
+                                  remoteControl: model.remoteControl)
+                }
+                .navigationTitle("Streamers")
+                .toolbar {
+                    StreamersToolbar(remoteControl: remoteControl)
+                }
+            }
         }
         .navigationTitle(title())
     }
