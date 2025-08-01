@@ -242,7 +242,7 @@ class RtmpConnection {
                 "videoCodecs": SupportVideo.h264.rawValue,
                 "videoFunction": VideoFunction.clientSeek.rawValue,
                 "pageUrl": nil,
-                "objectEncoding": "amf0",
+                "objectEncoding": 0,
             ],
             arguments: []
         )
