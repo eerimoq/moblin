@@ -8,6 +8,9 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "26.2003.1", date: "2025-08-01", changes: [
+        "• Fix RTMP not working to Castr and probably other servers. 🐛 iPhone14 jr alexis",
+    ]),
     Version(version: "26.2003.0", date: "2025-07-30", changes: [
         "• Make SRT(LA) and RIST servers stop all active streams cleanly when disabling the server.",
         "• Bookmarks in web browser. 💡 mikeful",
