@@ -223,7 +223,8 @@ private struct RemoteControlSettingsRelayView: View {
             TextEditNavigationView(
                 title: String(localized: "Bridge id"),
                 value: database.remoteControl.assistant.relay.bridgeId,
-                onSubmit: submitAssistantRelayBridgeId
+                onSubmit: submitAssistantRelayBridgeId,
+                sensitive: true
             )
         } header: {
             Text("Relay")

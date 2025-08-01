@@ -664,29 +664,28 @@ private struct StreamerView: View {
         NavigationLink {
             Form {
                 Section {
-                    TextField("Streamer name", text: $streamer.name)
-                        .disableAutocorrection(true)
-                } header: {
-                    Text("Name")
+                    NameEditView(name: $streamer.name)
+                    TextEditNavigationView(
+                        title: String(localized: "Server port"),
+                        value: String(streamer.port),
+                        onSubmit: submitAssistantPort,
+                        keyboardType: .numbersAndPunctuation,
+                        placeholder: "2345"
+                    )
+                    TextEditNavigationView(
+                        title: String(localized: "Base URL"),
+                        value: streamer.relay.baseUrl,
+                        onSubmit: submitAssistantRelayUrl
+                    )
+                    TextEditNavigationView(
+                        title: String(localized: "Bridge id"),
+                        value: streamer.relay.bridgeId,
+                        onSubmit: submitAssistantRelayBridgeId,
+                        sensitive: true
+                    )
                 }
-                TextEditNavigationView(
-                    title: String(localized: "Server port"),
-                    value: String(streamer.port),
-                    onSubmit: submitAssistantPort,
-                    keyboardType: .numbersAndPunctuation,
-                    placeholder: "2345"
-                )
-                TextEditNavigationView(
-                    title: String(localized: "Base URL"),
-                    value: streamer.relay.baseUrl,
-                    onSubmit: submitAssistantRelayUrl
-                )
-                TextEditNavigationView(
-                    title: String(localized: "Bridge id"),
-                    value: streamer.relay.bridgeId,
-                    onSubmit: submitAssistantRelayBridgeId
-                )
             }
+            .navigationTitle("Streamer")
         } label: {
             HStack {
                 DraggableItemPrefixView()
@@ -697,10 +696,37 @@ private struct StreamerView: View {
     }
 }
 
+private struct StreamerItemView: View {
+    @ObservedObject var streamer: SettingsRemoteControlAssistant
+
+    var body: some View {
+        Text(streamer.name)
+            .tag(streamer.id as UUID?)
+    }
+}
+
 private struct StreamersView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var remoteControlSettings: SettingsRemoteControl
     @ObservedObject var remoteControl: RemoteControl
+
+    private func onStreamerChanged() {
+        let assistant = model.database.remoteControl.assistant
+        if let streamer = remoteControlSettings.streamers
+            .first(where: { $0.id == remoteControlSettings.selectedStreamer })
+        {
+            assistant.enabled = true
+            assistant.port = streamer.port
+            assistant.relay.enabled = true
+            assistant.relay.baseUrl = streamer.relay.baseUrl
+            assistant.relay.bridgeId = streamer.relay.bridgeId
+        } else {
+            assistant.enabled = false
+            assistant.relay.enabled = false
+        }
+        model.reloadRemoteControlRelay()
+        model.reloadRemoteControlAssistant()
+    }
 
     var body: some View {
         NavigationStack {
@@ -710,26 +736,11 @@ private struct StreamersView: View {
                         Text("-- Unknown --")
                             .tag(nil as UUID?)
                         ForEach(remoteControlSettings.streamers) { streamer in
-                            Text(streamer.name)
-                                .tag(streamer.id as UUID?)
+                            StreamerItemView(streamer: streamer)
                         }
                     }
                     .onChange(of: remoteControlSettings.selectedStreamer) { _ in
-                        let assistant = model.database.remoteControl.assistant
-                        if let streamer = remoteControlSettings.streamers
-                            .first(where: { $0.id == remoteControlSettings.selectedStreamer })
-                        {
-                            assistant.enabled = true
-                            assistant.port = streamer.port
-                            assistant.relay.enabled = true
-                            assistant.relay.baseUrl = streamer.relay.baseUrl
-                            assistant.relay.bridgeId = streamer.relay.bridgeId
-                        } else {
-                            assistant.enabled = false
-                            assistant.relay.enabled = false
-                        }
-                        model.reloadRemoteControlRelay()
-                        model.reloadRemoteControlAssistant()
+                        onStreamerChanged()
                     }
                 }
                 Section {

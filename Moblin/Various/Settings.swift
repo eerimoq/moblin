@@ -5489,7 +5489,7 @@ class SettingsKeyboard: Codable, ObservableObject {
 
 class SettingsRemoteControlAssistant: Codable, ObservableObject, Identifiable {
     var id: UUID = .init()
-    @Published var name: String = ""
+    @Published var name: String = "Streamer name"
     @Published var enabled: Bool = false
     @Published var port: UInt16 = 2345
     var relay: SettingsRemoteControlServerRelay = .init()
@@ -5516,7 +5516,7 @@ class SettingsRemoteControlAssistant: Codable, ObservableObject, Identifiable {
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
-        name = container.decode(.name, String.self, "")
+        name = container.decode(.name, String.self, "Streamer name")
         enabled = container.decode(.enabled, Bool.self, false)
         port = container.decode(.port, UInt16.self, 2345)
         relay = container.decode(.relay, SettingsRemoteControlServerRelay.self, .init())
