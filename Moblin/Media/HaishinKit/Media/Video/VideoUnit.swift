@@ -1785,9 +1785,8 @@ final class VideoUnit: NSObject {
             return nil
         }
         if bufferedVideo.latency > 0, var sampleBufferCopy = makeCopy(sampleBuffer: sampleBuffer) {
-            let latency = CMTime(seconds: bufferedVideo.latency)
-            sampleBufferCopy = sampleBufferCopy
-                .replacePresentationTimeStamp(sampleBufferCopy.presentationTimeStamp + latency) ?? sampleBufferCopy
+            let presentationTimeStamp = sampleBufferCopy.presentationTimeStamp + CMTime(seconds: bufferedVideo.latency)
+            sampleBufferCopy = sampleBufferCopy.replacePresentationTimeStamp(presentationTimeStamp) ?? sampleBufferCopy
             bufferedVideo.appendSampleBuffer(sampleBufferCopy)
             bufferedVideo.updateSampleBuffer(sampleBuffer.presentationTimeStamp.seconds, true)
             return bufferedVideo
