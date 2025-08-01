@@ -234,7 +234,7 @@ private struct RemoteControlSettingsRelayView: View {
     }
 }
 
-private struct UrlsView: View {
+struct RemoteControlAssistantUrlsView: View {
     let model: Model
     @ObservedObject var relay: SettingsRemoteControlServerRelay
     @Binding var port: UInt16
@@ -245,23 +245,32 @@ private struct UrlsView: View {
     }
 
     var body: some View {
-        NavigationLink {
-            Form {
-                if relay.enabled {
-                    Section {
-                        UrlCopyView(model: model,
-                                    url: "\(relay.baseUrl)/streamer/\(relay.bridgeId)",
-                                    image: "globe")
-                    } header: {
-                        Text("Relay")
+        Section {
+            NavigationLink {
+                Form {
+                    if relay.enabled {
+                        Section {
+                            UrlCopyView(model: model,
+                                        url: "\(relay.baseUrl)/streamer/\(relay.bridgeId)",
+                                        image: "globe")
+                        } header: {
+                            Text("Relay")
+                        }
                     }
+                    UrlsIpv4View(model: model, status: status, formatUrl: formatUrl)
+                    UrlsIpv6View(model: model, status: status, formatUrl: formatUrl)
                 }
-                UrlsIpv4View(model: model, status: status, formatUrl: formatUrl)
-                UrlsIpv6View(model: model, status: status, formatUrl: formatUrl)
+                .navigationTitle("URLs")
+            } label: {
+                Text("URLs")
             }
-            .navigationTitle("URLs")
-        } label: {
-            Text("URLs")
+        } footer: {
+            VStack(alignment: .leading) {
+                Text("""
+                Enter one of the URLs as "Assistant URL" in the streamer device to \
+                connect to this device.
+                """)
+            }
         }
     }
 }
@@ -270,7 +279,7 @@ struct RemoteControlSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var database: Database
     @ObservedObject var status: StatusOther
-    @ObservedObject var client: SettingsRemoteControlAssistant
+    @ObservedObject var assistant: SettingsRemoteControlAssistant
     @Binding var stream: SettingsStream
 
     private func submitPassword(value: String) {
@@ -319,20 +328,11 @@ struct RemoteControlSettingsView: View {
             RemoteControlSettingsStreamerView(database: database)
             RemoteControlSettingsAssistantView(database: database)
             RemoteControlSettingsRelayView(database: database)
-            if client.enabled {
-                Section {
-                    UrlsView(model: model,
-                             relay: client.relay,
-                             port: $client.port,
-                             status: status)
-                } footer: {
-                    VStack(alignment: .leading) {
-                        Text("""
-                        Enter one of the URLs as "Assistant URL" in the streamer device to \
-                        connect to this device.
-                        """)
-                    }
-                }
+            if assistant.enabled {
+                RemoteControlAssistantUrlsView(model: model,
+                                               relay: assistant.relay,
+                                               port: $assistant.port,
+                                               status: status)
             }
         }
         .navigationTitle("Remote control")

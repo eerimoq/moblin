@@ -5613,6 +5613,10 @@ class SettingsRemoteControl: Codable, ObservableObject {
         streamers = container.decode(.streamers, [SettingsRemoteControlAssistant].self, [])
         selectedStreamer = container.decode(.selectedStreamer, UUID?.self, nil)
     }
+
+    func getSelectedStreamerName() -> String? {
+        return streamers.first(where: { $0.id == selectedStreamer })?.name
+    }
 }
 
 class SettingsMoblinkStreamer: Codable, ObservableObject {
