@@ -270,10 +270,10 @@ extension AudioUnit: BufferedAudioSampleBufferDelegate {
         }
         if shouldUpdateAudioLevel(sampleBuffer) {
             let numberOfAudioChannels = Int(sampleBuffer.formatDescription?.numberOfAudioChannels() ?? 0)
+            let sampleRate = sampleBuffer.formatDescription?.audioStreamBasicDescription?.mSampleRate ?? 0
             processor.delegate?.stream(audioLevel: .infinity,
                                        numberOfAudioChannels: numberOfAudioChannels,
-                                       sampleRate: sampleBuffer.formatDescription?.audioStreamBasicDescription?
-                                           .mSampleRate ?? 0)
+                                       sampleRate: sampleRate)
         }
         appendNewSampleBuffer(processor, sampleBuffer, sampleBuffer.presentationTimeStamp)
     }
