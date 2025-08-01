@@ -412,7 +412,7 @@ final class VideoUnit: NSObject {
             for device in params.devices.devices {
                 let bufferedVideo = BufferedVideo(
                     cameraId: device.id,
-                    name: "builtin",
+                    name: device.device?.localizedName ?? "builtin",
                     update: false,
                     latency: params.builtinDelay,
                     processor: self.processor
@@ -542,9 +542,7 @@ final class VideoUnit: NSObject {
         guard let selectedBufferedVideoCameraId else {
             return
         }
-        if let sampleBuffer = bufferedVideos[selectedBufferedVideoCameraId]?
-            .getSampleBuffer(presentationTimeStamp)
-        {
+        if let sampleBuffer = bufferedVideos[selectedBufferedVideoCameraId]?.getSampleBuffer(presentationTimeStamp) {
             appendNewSampleBuffer(sampleBuffer: sampleBuffer)
         } else if let sampleBuffer = makeBlackSampleBuffer(
             duration: .invalid,
@@ -1780,8 +1778,8 @@ final class VideoUnit: NSObject {
         session.setControlsDelegate(nil, queue: nil)
     }
 
-    fileprivate func appendBufferedBuiltinVideo(sampleBuffer: CMSampleBuffer,
-                                                device: AVCaptureDevice) -> BufferedVideo?
+    fileprivate func appendBufferedBuiltinVideo(_ sampleBuffer: CMSampleBuffer,
+                                                _ device: AVCaptureDevice) -> BufferedVideo?
     {
         guard let bufferedVideo = bufferedVideoBuiltins[device] else {
             return nil
@@ -1810,7 +1808,7 @@ extension VideoUnit: AVCaptureVideoDataOutputSampleBufferDelegate {
             return
         }
         var sampleBuffer = sampleBuffer
-        if let bufferedVideo = appendBufferedBuiltinVideo(sampleBuffer: sampleBuffer, device: input.device) {
+        if let bufferedVideo = appendBufferedBuiltinVideo(sampleBuffer, input.device) {
             sampleBuffer = bufferedVideo.getSampleBuffer(sampleBuffer.presentationTimeStamp) ?? sampleBuffer
         }
         guard selectedBufferedVideoCameraId == nil else {
@@ -1837,7 +1835,7 @@ extension VideoUnitBuiltinDevice: AVCaptureVideoDataOutputSampleBufferDelegate {
         guard let input = connection.inputPorts.first?.input as? AVCaptureDeviceInput else {
             return
         }
-        _ = videoUnit?.appendBufferedBuiltinVideo(sampleBuffer: sampleBuffer, device: input.device)
+        _ = videoUnit?.appendBufferedBuiltinVideo(sampleBuffer, input.device)
     }
 }
 

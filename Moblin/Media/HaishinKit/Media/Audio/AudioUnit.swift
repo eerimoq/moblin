@@ -203,7 +203,8 @@ final class AudioUnit: NSObject {
     }
 
     private func appendBufferedBuiltinAudio(sampleBuffer: CMSampleBuffer) -> BufferedAudio? {
-        guard let bufferedBuiltinAudio, bufferedBuiltinAudio.latency > 0,
+        guard let bufferedBuiltinAudio,
+              bufferedBuiltinAudio.latency > 0,
               let sampleBuffer = sampleBuffer.deepCopyAudioSampleBuffer()
         else {
             return nil
@@ -251,10 +252,10 @@ extension AudioUnit: AVCaptureAudioDataOutputSampleBufferDelegate {
             } else {
                 audioLevel = 0.0
             }
+            let sampleRate = sampleBuffer.formatDescription?.audioStreamBasicDescription?.mSampleRate ?? 0
             processor?.delegate?.stream(audioLevel: audioLevel,
                                         numberOfAudioChannels: connection.audioChannels.count,
-                                        sampleRate: sampleBuffer.formatDescription?.audioStreamBasicDescription?
-                                            .mSampleRate ?? 0)
+                                        sampleRate: sampleRate)
         }
         appendNewSampleBuffer(sampleBuffer)
     }
