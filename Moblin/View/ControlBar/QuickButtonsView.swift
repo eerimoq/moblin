@@ -256,13 +256,6 @@ struct QuickButtonsInnerView: View {
     }
 
     private func remoteAction() {
-        guard model.isRemoteControlAssistantConfigured() else {
-            model.makeErrorToast(
-                title: String(localized: "Remote control assistant is not configured"),
-                subTitle: String(localized: "Configure it in Settings → Remote control")
-            )
-            return
-        }
         model.showingRemoteControl.toggle()
         model.setGlobalButtonState(type: .remote, isOn: model.showingRemoteControl)
         model.updateQuickButtonStates()
