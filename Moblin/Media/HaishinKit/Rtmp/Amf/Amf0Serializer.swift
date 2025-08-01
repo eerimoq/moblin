@@ -178,7 +178,7 @@ final class Amf0Deserializer: ByteReader {
         guard try readUInt8() == Amf0Type.bool.rawValue else {
             throw AmfSerializerError.deserialize
         }
-        return try readUInt8() == 0x01 ? true : false
+        return try readUInt8() == 0x01
     }
 
     func deserialize() throws -> String {
@@ -195,7 +195,6 @@ final class Amf0Deserializer: ByteReader {
 
     func deserialize() throws -> AsObject {
         var result = AsObject()
-
         switch try readUInt8() {
         case Amf0Type.null.rawValue:
             return result
@@ -212,7 +211,6 @@ final class Amf0Deserializer: ByteReader {
             }
             result[key] = try deserialize()
         }
-
         return result
     }
 
@@ -225,7 +223,6 @@ final class Amf0Deserializer: ByteReader {
         default:
             throw AmfSerializerError.deserialize
         }
-
         var result = try AsArray(count: Int(readUInt32()))
         while true {
             let key: String = try deserializeUTF8(false)
@@ -235,7 +232,6 @@ final class Amf0Deserializer: ByteReader {
             }
             result[key] = try deserialize()
         }
-
         return result
     }
 
@@ -271,7 +267,6 @@ final class Amf0Deserializer: ByteReader {
         guard try readUInt8() == Amf0Type.typedObject.rawValue else {
             throw AmfSerializerError.deserialize
         }
-
         let typeName = try deserializeUTF8(false)
         var result = AsObject()
         while true {
@@ -282,7 +277,6 @@ final class Amf0Deserializer: ByteReader {
             }
             result[key] = try deserialize()
         }
-
         return try ASTypedObject.decode(typeName: typeName, data: result)
     }
 
