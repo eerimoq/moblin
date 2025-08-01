@@ -277,7 +277,7 @@ final class Amf0Deserializer: ByteReader {
             }
             result[key] = try deserialize()
         }
-        return try ASTypedObject.decode(typeName: typeName, data: result)
+        return try AsTypedObject.decode(typeName: typeName, data: result)
     }
 
     private func deserializeUTF8(_ isLong: Bool) throws -> String {

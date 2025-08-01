@@ -10,13 +10,13 @@ struct AsUndefined: CustomStringConvertible {
     }
 }
 
-struct ASTypedObject {
+struct AsTypedObject {
     typealias TypedObjectDecoder = () throws -> Any
 
     static var decoders: [String: TypedObjectDecoder] = [:]
 
     static func decode(typeName: String, data _: AsObject) throws -> Any {
-        let decoder = decoders[typeName] ?? { ASTypedObject() }
+        let decoder = decoders[typeName] ?? { AsTypedObject() }
         return try decoder()
     }
 }
@@ -41,10 +41,10 @@ extension AsArray: ExpressibleByArrayLiteral {
 
     subscript(i: Any) -> Any? {
         get {
-            if let i: Int = i as? Int {
+            if let i = i as? Int {
                 return i < data.count ? data[i] : kASUndefined
             }
-            if let i: String = i as? String {
+            if let i = i as? String {
                 if let i = Int(i) {
                     return i < data.count ? data[i] : kASUndefined
                 }
@@ -53,13 +53,13 @@ extension AsArray: ExpressibleByArrayLiteral {
             return nil
         }
         set {
-            if let i: Int = i as? Int {
+            if let i = i as? Int {
                 if data.count <= i {
                     data += [Any?](repeating: kASUndefined, count: i - data.count + 1)
                 }
                 data[i] = newValue
             }
-            if let i: String = i as? String {
+            if let i = i as? String {
                 if let i = Int(i) {
                     if data.count <= i {
                         data += [Any?](repeating: kASUndefined, count: i - data.count + 1)
