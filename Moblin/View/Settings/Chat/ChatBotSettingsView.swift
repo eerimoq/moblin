@@ -264,6 +264,9 @@ private struct ChatBotAliasSettingsView: View {
         guard value.starts(with: "!moblin") else {
             return String(localized: "The replacement must start with !moblin.")
         }
+        guard value.split(separator: " ").count > 1 else {
+            return String(localized: "The replacement must be more than one word.")
+        }
         return nil
     }
 
