@@ -46,7 +46,7 @@ struct ChatOverlayView: View {
     let fullSize: Bool
 
     var body: some View {
-        if model.isPortrait() {
+        if model.orientation.portrait {
             VStack {
                 ZStack {
                     StreamOverlayChatView(model: model, chatSettings: chatSettings, chat: chat, fullSize: fullSize)
@@ -105,7 +105,7 @@ private struct FrontTorchView: View {
     @EnvironmentObject var model: Model
 
     var body: some View {
-        if model.isPortrait() {
+        if model.orientation.portrait {
             VStack(spacing: 0) {
                 Rectangle()
                     .foregroundColor(.white)
@@ -157,7 +157,7 @@ struct StreamOverlayView: View {
     let height: CGFloat
 
     private func leadingPadding() -> CGFloat {
-        if UIDevice.current.userInterfaceIdiom == .pad || model.isPortrait() {
+        if UIDevice.current.userInterfaceIdiom == .pad || model.orientation.portrait {
             return 15
         } else {
             return 0

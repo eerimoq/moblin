@@ -354,12 +354,6 @@ struct QuickButtonsInnerView: View {
         model.toggleShowingPanel(type: .djiDevices, panel: .djiDevices)
     }
 
-    private func portraitAction() {
-        model.setDisplayPortrait(portrait: !model.database.portrait)
-        // To update main view.
-        model.sceneSettingsPanelSceneId += 1
-    }
-
     private func goProAction() {
         model.toggleShowingPanel(type: .goPro, panel: .goPro)
     }
@@ -746,14 +740,6 @@ struct QuickButtonsInnerView: View {
                     }
                     ButtonTextOverlayView(text: String(localized: "DJI"))
                 }
-            case .portrait:
-                QuickButtonImage(model: model,
-                                 quickButtonsSettings: quickButtonsSettings,
-                                 state: state,
-                                 buttonSize: size)
-                {
-                    portraitAction()
-                }
             case .goPro:
                 ZStack {
                     QuickButtonImage(model: model,
@@ -816,7 +802,7 @@ struct QuickButtonsInnerView: View {
                     pauseTtsAction()
                 }
             }
-            if quickButtonsSettings.showName && !model.isPortrait() {
+            if quickButtonsSettings.showName && !model.orientation.portrait {
                 Text(state.button.name)
                     .padding(0)
                     .multilineTextAlignment(.center)

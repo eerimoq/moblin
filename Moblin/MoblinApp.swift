@@ -22,8 +22,10 @@ struct MoblinApp: App {
                 ),
                 replay: model.replay,
                 createStreamWizard: model.createStreamWizard,
-                toast: model.toast
+                toast: model.toast,
+                orientation: model.orientation
             )
+            .background(.black)
             .environmentObject(model)
         }
     }
