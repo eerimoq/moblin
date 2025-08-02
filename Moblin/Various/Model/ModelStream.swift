@@ -153,7 +153,7 @@ extension Model {
     }
 
     func sendGoLiveNotification() {
-        media.takeSnapshot(age: 0.0) { image, _ in
+        media.takeSnapshot(age: 0.0) { image, _, _ in
             guard let imageJpeg = image.jpegData(compressionQuality: 0.9) else {
                 return
             }

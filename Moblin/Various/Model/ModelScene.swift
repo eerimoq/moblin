@@ -279,6 +279,15 @@ extension Model {
                 costume: 1
             )
         }
+        for snapshotEffect in snapshotEffects.values {
+            media.unregisterEffect(snapshotEffect)
+        }
+        snapshotEffects.removeAll()
+        for widget in widgets where widget.type == .snapshot {
+            let snapshotEffect = SnapshotEffect(delegate: self)
+            snapshotEffect.effects = widget.getEffects()
+            snapshotEffects[widget.id] = snapshotEffect
+        }
         browsers = browserEffects.map { _, browser in
             Browser(browserEffect: browser)
         }
@@ -643,6 +652,11 @@ extension Model {
                     pngTuberEffect.setSceneWidget(sceneWidget: sceneWidget.clone())
                     pngTuberEffect.setSettings(mirror: widget.pngTuber.mirror)
                     effects.append(pngTuberEffect)
+                }
+            case .snapshot:
+                if let snapshotEffect = snapshotEffects[widget.id] {
+                    snapshotEffect.setSceneWidget(sceneWidget: sceneWidget.clone())
+                    effects.append(snapshotEffect)
                 }
             }
         }

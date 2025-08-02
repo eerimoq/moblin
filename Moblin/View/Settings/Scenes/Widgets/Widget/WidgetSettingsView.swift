@@ -239,6 +239,8 @@ struct WidgetSettingsView: View {
                 WidgetVTuberSettingsView(widget: widget, vTuber: widget.vTuber)
             case .pngTuber:
                 WidgetPngTuberSettingsView(widget: widget, pngTuber: widget.pngTuber)
+            case .snapshot:
+                WidgetSnapshotSettingsView(widget: widget)
             }
         }
         .navigationTitle("Widget")

@@ -639,7 +639,7 @@ final class Media: NSObject {
         processor?.setCameraControls(enabled: enabled)
     }
 
-    func takeSnapshot(age: Float, onComplete: @escaping (UIImage, CIImage) -> Void) {
+    func takeSnapshot(age: Float, onComplete: @escaping (UIImage, CIImage, CIImage) -> Void) {
         processor?.takeSnapshot(age: age, onComplete: onComplete)
     }
 

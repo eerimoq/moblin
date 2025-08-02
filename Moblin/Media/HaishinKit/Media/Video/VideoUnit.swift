@@ -144,7 +144,7 @@ final class VideoUnit: NSObject {
     private var lowFpsImageLatest: Double = 0.0
     private var lowFpsImageFrameNumber: UInt64 = 0
     private var takeSnapshotAge: Float = 0.0
-    private var takeSnapshotComplete: ((UIImage, CIImage) -> Void)?
+    private var takeSnapshotComplete: ((UIImage, CIImage, CIImage) -> Void)?
     private var takeSnapshotSampleBuffers: Deque<CMSampleBuffer> = []
     private var cleanRecordings = false
     private var cleanSnapshots = false
@@ -305,7 +305,7 @@ final class VideoUnit: NSObject {
         }
     }
 
-    func takeSnapshot(age: Float, onComplete: @escaping (UIImage, CIImage) -> Void) {
+    func takeSnapshot(age: Float, onComplete: @escaping (UIImage, CIImage, CIImage) -> Void) {
         processorPipelineQueue.async {
             self.takeSnapshotAge = age
             self.takeSnapshotComplete = onComplete
@@ -1405,7 +1405,7 @@ final class VideoUnit: NSObject {
                               _ sampleBuffers: Deque<CMSampleBuffer>,
                               _ presentationTimeStamp: Double,
                               _ age: Float,
-                              _ onComplete: @escaping (UIImage, CIImage) -> Void)
+                              _ onComplete: @escaping (UIImage, CIImage, CIImage) -> Void)
     {
         findBestSnapshot(sampleBuffer, sampleBuffers, presentationTimeStamp, age) { imageBuffer in
             guard let imageBuffer else {
@@ -1418,7 +1418,7 @@ final class VideoUnit: NSObject {
             if !imageBuffer.isPortrait() {
                 portraitImage = portraitImage.oriented(.left)
             }
-            onComplete(image, portraitImage)
+            onComplete(image, ciImage, portraitImage)
         }
     }
 

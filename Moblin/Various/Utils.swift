@@ -68,6 +68,8 @@ func widgetImage(widget: SettingsWidget) -> String {
         return "person.crop.circle"
     case .pngTuber:
         return "person.crop.circle.dashed"
+    case .snapshot:
+        return "camera.aperture"
     }
 }
 

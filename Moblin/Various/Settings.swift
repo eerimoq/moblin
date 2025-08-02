@@ -2267,6 +2267,7 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
     case scoreboard = "Scoreboard"
     case vTuber = "VTuber"
     case pngTuber = "PNGTuber"
+    case snapshot = "Snapshot"
 
     init(from decoder: Decoder) throws {
         self = try SettingsWidgetType(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
@@ -2301,6 +2302,8 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
             return String(localized: "VTuber")
         case .pngTuber:
             return String(localized: "PNGTuber")
+        case .snapshot:
+            return String(localized: "Snapshot")
         }
     }
 }

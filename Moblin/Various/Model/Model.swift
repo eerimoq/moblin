@@ -384,6 +384,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var padelScoreboardEffects: [UUID: PadelScoreboardEffect] = [:]
     var vTuberEffects: [UUID: VTuberEffect] = [:]
     var pngTuberEffects: [UUID: PngTuberEffect] = [:]
+    var snapshotEffects: [UUID: SnapshotEffect] = [:]
     var speechToTextAlertMatchOffset = 0
     var isMuteOn = false
     var log: Deque<LogEntry> = []

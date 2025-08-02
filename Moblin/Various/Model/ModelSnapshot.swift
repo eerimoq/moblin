@@ -9,16 +9,23 @@ struct SnapshotJob {
 extension Model {
     func takeSnapshot(isChatBot: Bool = false, message: String? = nil, noDelay: Bool = false) {
         let age = (isChatBot && !noDelay) ? stream.estimatedViewerDelay : 0.0
-        media.takeSnapshot(age: age) { image, portraitImage in
-            guard let imageJpeg = image.jpegData(compressionQuality: 0.9) else {
+        media.takeSnapshot(age: age) { uiImage, image, portraitImage in
+            guard let imageJpeg = uiImage.jpegData(compressionQuality: 0.9) else {
                 return
             }
             DispatchQueue.main.async {
-                UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
+                UIImageWriteToSavedPhotosAlbum(uiImage, nil, nil, nil)
                 self.makeToast(title: String(localized: "Snapshot saved to Photos"))
                 self.tryUploadSnapshotToDiscord(imageJpeg, message, isChatBot)
                 self.printSnapshotCatPrinters(image: portraitImage)
+                self.appendSnapshotToSnapshotWidgets(image: image)
             }
+        }
+    }
+
+    private func appendSnapshotToSnapshotWidgets(image: CIImage) {
+        for snapshotEffect in snapshotEffects.values {
+            snapshotEffect.appendSnapshot(image: image)
         }
     }
 
@@ -106,5 +113,11 @@ extension Model {
 
     func setCleanSnapshots() {
         media.setCleanSnapshots(enabled: stream.recording.cleanSnapshots)
+    }
+}
+
+extension Model: SnapshotEffectDelegate {
+    func snapshotEffectRegisterVideoEffect(effect: VideoEffect) {
+        media.registerEffectBack(effect)
     }
 }

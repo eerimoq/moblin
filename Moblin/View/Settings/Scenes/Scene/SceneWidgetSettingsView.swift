@@ -14,7 +14,7 @@ struct SceneWidgetSettingsView: View {
     @Binding var numericInput: Bool
 
     private let widgetsWithPosition: [SettingsWidgetType] = [
-        .image, .browser, .text, .crop, .map, .qrCode, .alerts, .videoSource, .vTuber, .pngTuber,
+        .image, .browser, .text, .crop, .map, .qrCode, .alerts, .videoSource, .vTuber, .pngTuber, .snapshot,
     ]
 
     private func widgetHasPosition(id: UUID) -> Bool {
@@ -27,7 +27,7 @@ struct SceneWidgetSettingsView: View {
     }
 
     private let widgetsWithSize: [SettingsWidgetType] = [
-        .image, .qrCode, .map, .videoSource, .vTuber, .pngTuber,
+        .image, .qrCode, .map, .videoSource, .vTuber, .pngTuber, .snapshot,
     ]
 
     private func widgetHasSize(id: UUID) -> Bool {

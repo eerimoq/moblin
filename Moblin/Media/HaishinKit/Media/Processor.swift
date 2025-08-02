@@ -195,7 +195,7 @@ final class Processor {
         video.setSceneSwitchTransition(sceneSwitchTransition: sceneSwitchTransition)
     }
 
-    func takeSnapshot(age: Float, onComplete: @escaping (UIImage, CIImage) -> Void) {
+    func takeSnapshot(age: Float, onComplete: @escaping (UIImage, CIImage, CIImage) -> Void) {
         video.takeSnapshot(age: age, onComplete: onComplete)
     }
 

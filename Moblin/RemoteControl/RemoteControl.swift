@@ -170,6 +170,8 @@ struct RemoteControlRemoteSceneSettingsWidget: Codable {
             return nil
         case .pngTuber:
             return nil
+        case .snapshot:
+            return nil
         }
     }
 
