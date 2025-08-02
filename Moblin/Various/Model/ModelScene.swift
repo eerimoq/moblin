@@ -464,6 +464,7 @@ extension Model {
         var addedScenes: [SettingsScene] = []
         var needsSpeechToText = false
         enabledAlertsEffects = []
+        enabledSnapshotEffects = []
         var scene = scene
         if let remoteSceneWidget = remoteSceneWidgets.first {
             scene = scene.clone()
@@ -477,6 +478,7 @@ extension Model {
             &usedPadelScoreboardEffects,
             &addedScenes,
             &enabledAlertsEffects,
+            &enabledSnapshotEffects,
             &needsSpeechToText
         )
         if !drawOnStream.lines.isEmpty {
@@ -522,6 +524,7 @@ extension Model {
         _ usedPadelScoreboardEffects: inout [PadelScoreboardEffect],
         _ addedScenes: inout [SettingsScene],
         _ enabledAlertsEffects: inout [AlertsEffect],
+        _ enabledSnapshotEffects: inout [SnapshotEffect],
         _ needsSpeechToText: inout Bool
     ) {
         guard !addedScenes.contains(scene) else {
@@ -591,6 +594,7 @@ extension Model {
                         &usedPadelScoreboardEffects,
                         &addedScenes,
                         &enabledAlertsEffects,
+                        &enabledSnapshotEffects,
                         &needsSpeechToText
                     )
                 }
@@ -656,6 +660,7 @@ extension Model {
             case .snapshot:
                 if let snapshotEffect = snapshotEffects[widget.id] {
                     snapshotEffect.setSceneWidget(sceneWidget: sceneWidget.clone())
+                    enabledSnapshotEffects.append(snapshotEffect)
                     effects.append(snapshotEffect)
                 }
             }

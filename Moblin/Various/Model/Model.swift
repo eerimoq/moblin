@@ -385,6 +385,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var vTuberEffects: [UUID: VTuberEffect] = [:]
     var pngTuberEffects: [UUID: PngTuberEffect] = [:]
     var snapshotEffects: [UUID: SnapshotEffect] = [:]
+    var enabledSnapshotEffects: [SnapshotEffect] = []
     var speechToTextAlertMatchOffset = 0
     var isMuteOn = false
     var log: Deque<LogEntry> = []

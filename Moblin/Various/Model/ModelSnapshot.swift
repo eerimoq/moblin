@@ -24,7 +24,7 @@ extension Model {
     }
 
     private func appendSnapshotToSnapshotWidgets(image: CIImage) {
-        for snapshotEffect in snapshotEffects.values {
+        for snapshotEffect in enabledSnapshotEffects {
             snapshotEffect.appendSnapshot(image: image)
         }
     }
