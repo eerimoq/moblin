@@ -147,7 +147,7 @@ struct WebBrowserView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            if model.orientation.portrait {
+            if model.isPortrait() {
                 VStack {
                     UrlView()
                     HStack {

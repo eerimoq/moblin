@@ -75,6 +75,13 @@ struct DisplaySettingsView: View {
             if database.showAllSettings {
                 if !isMac() {
                     Section {
+                        Toggle(isOn: Binding(get: {
+                            database.portrait
+                        }, set: { _ in
+                            model.setDisplayPortrait(portrait: !database.portrait)
+                        })) {
+                            Text("Portrait")
+                        }
                         HStack {
                             Text("Video position")
                             Slider(value: $model.portraitVideoOffsetFromTop, in: 0 ... 1) {

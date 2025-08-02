@@ -146,10 +146,6 @@ class Show: ObservableObject {
     @Published var faceBeautySmooth = false
 }
 
-class Orientation: ObservableObject {
-    @Published var portrait: Bool = false
-}
-
 class Battery: ObservableObject {
     var levelLowCounter = -1
     @Published var level = Double(UIDevice.current.batteryLevel)
@@ -302,7 +298,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    let orientation = Orientation()
     let quickButtons = QuickButtons()
     let mic = Mic()
     let goPro = GoProState()
@@ -553,15 +548,19 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         streamingHistory.load()
         recordingsStorage.load()
         replaysStorage.load()
-        // if stream.portrait {
-        //    AppDelegate.orientationLock = .portrait
-        // } else {
-        AppDelegate.orientationLock = [.landscape, .portrait]
-        // }
+        if isPortrait() {
+            AppDelegate.orientationLock = .portrait
+        } else {
+            AppDelegate.orientationLock = .landscape
+        }
     }
 
     var enabledScenes: [SettingsScene] {
         database.scenes.filter { scene in scene.enabled }
+    }
+
+    func isPortrait() -> Bool {
+        return stream.portrait || database.portrait
     }
 
     func setAdaptiveBitrateSrtAlgorithm(stream: SettingsStream) {
@@ -794,6 +793,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         supportsAppleLog = hasAppleLog()
         chat.interactiveChat = getGlobalButton(type: .interactiveChat)?.isOn ?? false
         _ = updateShowCameraPreview()
+        setDisplayPortrait(portrait: database.portrait)
         setBitrateDropFix()
         let webPCoder = SDImageWebPCoder.shared
         SDImageCodersManager.shared.addCoder(webPCoder)
@@ -1346,27 +1346,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func updateOrientation() {
         if stream.portrait {
-            switch UIDevice.current.orientation {
-            case .landscapeLeft:
-                orientation.portrait = false
-            case .landscapeRight:
-                orientation.portrait = false
-            case .portrait:
-                orientation.portrait = true
-            default:
-                break
-            }
             media.setVideoOrientation(value: .portrait)
         } else {
             switch UIDevice.current.orientation {
             case .landscapeLeft:
-                orientation.portrait = false
                 media.setVideoOrientation(value: .landscapeRight)
             case .landscapeRight:
-                orientation.portrait = false
                 media.setVideoOrientation(value: .landscapeLeft)
-            case .portrait:
-                orientation.portrait = true
             default:
                 break
             }
@@ -1731,15 +1717,15 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func updateOrientationLock() {
         if stream.portrait {
-            AppDelegate.orientationLock = [.landscape, .portrait]
+            AppDelegate.orientationLock = .portrait
             streamPreviewView.isPortrait = true
             externalDisplayStreamPreviewView.isPortrait = true
-        } else if orientation.portrait {
-            AppDelegate.orientationLock = [.landscape, .portrait]
+        } else if database.portrait {
+            AppDelegate.orientationLock = .portrait
             streamPreviewView.isPortrait = false
             externalDisplayStreamPreviewView.isPortrait = false
         } else {
-            AppDelegate.orientationLock = [.landscape, .portrait]
+            AppDelegate.orientationLock = .landscape
             streamPreviewView.isPortrait = false
             externalDisplayStreamPreviewView.isPortrait = false
         }
@@ -1826,6 +1812,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 }
             }
         }
+    }
+
+    func setDisplayPortrait(portrait: Bool) {
+        database.portrait = portrait
+        setGlobalButtonState(type: .portrait, isOn: portrait)
+        updateQuickButtonStates()
+        updateOrientationLock()
     }
 
     func setIsWorkout(type: WatchProtocolWorkoutType?) {

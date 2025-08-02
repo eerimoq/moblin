@@ -238,21 +238,18 @@ struct MainView: View {
     @ObservedObject var replay: ReplayProvider
     @ObservedObject var createStreamWizard: CreateStreamWizard
     @ObservedObject var toast: Toast
-    @ObservedObject var orientation: Orientation
 
     init(webBrowserController: WebBrowserController,
          streamView: StreamView,
          replay: ReplayProvider,
          createStreamWizard: CreateStreamWizard,
-         toast: Toast,
-         orientation: Orientation)
+         toast: Toast)
     {
         self.webBrowserController = webBrowserController
         self.streamView = streamView
         self.replay = replay
         self.createStreamWizard = createStreamWizard
         self.toast = toast
-        self.orientation = orientation
         UITextField.appearance().clearButtonMode = .always
     }
 
@@ -455,7 +452,7 @@ struct MainView: View {
     var body: some View {
         VStack(spacing: 0) {
             let all = ZStack {
-                if orientation.portrait {
+                if model.isPortrait() {
                     portrait()
                 } else {
                     landscape()

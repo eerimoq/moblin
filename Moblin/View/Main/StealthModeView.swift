@@ -98,7 +98,7 @@ struct StealthModeView: View {
             }
         }
         if stealthMode.showButtons {
-            if model.orientation.portrait {
+            if model.isPortrait() {
                 VStack {
                     Spacer()
                     HStack {
