@@ -77,17 +77,7 @@ class BufferedVideo {
             let lastPresentationTimeStamp = sampleBuffers.last?.presentationTimeStamp.seconds ?? 0.0
             let firstPresentationTimeStamp = sampleBuffers.first?.presentationTimeStamp.seconds ?? 0.0
             let fillLevel = lastPresentationTimeStamp - firstPresentationTimeStamp
-            if numberOfBuffersConsumed == 0 {
-                logger.debug("""
-                buffered-video: \(name): Duplicating buffer. \
-                Output \(formatThreeDecimals(outputPresentationTimeStamp)), \
-                Current \(formatThreeDecimals(currentSampleBuffer?.presentationTimeStamp.seconds ?? 0.0)), \
-                \(formatThreeDecimals(firstPresentationTimeStamp + drift))..\
-                \(formatThreeDecimals(lastPresentationTimeStamp + drift)) \
-                (\(formatThreeDecimals(fillLevel))), \
-                Buffers \(sampleBuffers.count)
-                """)
-            } else if numberOfBuffersConsumed > 1 {
+            if numberOfBuffersConsumed > 1 {
                 logger.debug("""
                 buffered-video: \(name): Dropping \(numberOfBuffersConsumed - 1) buffer(s). \
                 Output \(formatThreeDecimals(outputPresentationTimeStamp)), \

@@ -89,16 +89,7 @@ class BufferedAudio {
             let lastPresentationTimeStamp = sampleBuffers.last?.presentationTimeStamp.seconds ?? 0.0
             let firstPresentationTimeStamp = sampleBuffers.first?.presentationTimeStamp.seconds ?? 0.0
             let fillLevel = lastPresentationTimeStamp - firstPresentationTimeStamp
-            if numberOfBuffersConsumed == 0 {
-                logger.debug("""
-                buffered-audio: \(name): Duplicating buffer. \
-                Output \(formatThreeDecimals(outputPresentationTimeStamp)), \
-                \(formatThreeDecimals(firstPresentationTimeStamp + drift))..\
-                \(formatThreeDecimals(lastPresentationTimeStamp + drift)) \
-                (\(formatThreeDecimals(fillLevel))), \
-                Buffers \(sampleBuffers.count)
-                """)
-            } else if numberOfBuffersConsumed > 1 {
+            if numberOfBuffersConsumed > 1 {
                 logger.debug("""
                 buffered-audio: \(name): Dropping \(numberOfBuffersConsumed - 1) buffer(s). \
                 Output \(formatThreeDecimals(outputPresentationTimeStamp)), \
