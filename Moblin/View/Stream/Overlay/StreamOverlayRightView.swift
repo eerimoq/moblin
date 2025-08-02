@@ -556,6 +556,32 @@ private struct PhoneCoolerDeviceStatusView: View {
     }
 }
 
+private struct AutoSceneSwitcherStatusInnerView: View {
+    @ObservedObject var autoSceneSwitcher: SettingsAutoSceneSwitcher
+    let textPlacement: StreamOverlayIconAndTextPlacement
+
+    var body: some View {
+        StreamOverlayIconAndTextView(
+            icon: "autostartstop",
+            text: autoSceneSwitcher.name,
+            textPlacement: textPlacement
+        )
+    }
+}
+
+private struct AutoSceneSwitcherStatusView: View {
+    @ObservedObject var autoSceneSwitchers: SettingsAutoSceneSwitchers
+    let textPlacement: StreamOverlayIconAndTextPlacement
+
+    var body: some View {
+        if let autoSceneSwitcher = autoSceneSwitchers.switchers
+            .first(where: { $0.id == autoSceneSwitchers.switcherId })
+        {
+            AutoSceneSwitcherStatusInnerView(autoSceneSwitcher: autoSceneSwitcher, textPlacement: textPlacement)
+        }
+    }
+}
+
 private struct StatusesView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var show: SettingsShow
@@ -646,6 +672,10 @@ private struct StatusesView: View {
             model: model,
             show: model.database.show,
             status: model.statusTopRight,
+            textPlacement: textPlacement
+        )
+        AutoSceneSwitcherStatusView(
+            autoSceneSwitchers: model.database.autoSceneSwitchers,
             textPlacement: textPlacement
         )
         if show.audioLevel, textPlacement == .hide {
