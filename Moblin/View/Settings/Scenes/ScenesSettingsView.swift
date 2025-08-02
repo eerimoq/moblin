@@ -11,18 +11,21 @@ private struct SceneItemView: View {
         } label: {
             HStack {
                 DraggableItemPrefixView()
-                Toggle(scene.name, isOn: Binding(get: {
-                    scene.enabled
-                }, set: { value in
-                    scene.enabled = value
-                    model.resetSelectedScene()
-                }))
+                Toggle(scene.name, isOn: $scene.enabled)
+                    .onChange(of: scene.enabled) { _ in
+                        if model.getSelectedScene() === scene {
+                            model.resetSelectedScene()
+                        }
+                    }
             }
         }
         .swipeActions(edge: .trailing) {
             Button {
+                let deletedCurrentScene = model.getSelectedScene() === scene
                 database.scenes.removeAll { $0 == scene }
-                model.resetSelectedScene()
+                if deletedCurrentScene {
+                    model.resetSelectedScene()
+                }
             } label: {
                 Text("Delete")
             }
@@ -31,7 +34,6 @@ private struct SceneItemView: View {
         .swipeActions(edge: .trailing) {
             Button {
                 database.scenes.append(scene.clone())
-                model.resetSelectedScene()
             } label: {
                 Text("Duplicate")
             }
@@ -52,14 +54,12 @@ private struct ScenesListView: View {
                 }
                 .onMove { froms, to in
                     database.scenes.move(fromOffsets: froms, toOffset: to)
-                    model.resetSelectedScene()
                 }
             }
             CreateButtonView {
                 let name = makeUniqueName(name: SettingsScene.baseName, existingNames: database.scenes)
                 let scene = SettingsScene(name: name)
                 database.scenes.append(scene)
-                model.resetSelectedScene()
             }
         } header: {
             Text("Scenes")
