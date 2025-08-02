@@ -11,13 +11,8 @@ struct AsUndefined: CustomStringConvertible {
 }
 
 struct AsTypedObject {
-    typealias TypedObjectDecoder = () throws -> Any
-
-    static var decoders: [String: TypedObjectDecoder] = [:]
-
-    static func decode(typeName: String, data _: AsObject) throws -> Any {
-        let decoder = decoders[typeName] ?? { AsTypedObject() }
-        return try decoder()
+    static func decode(typeName _: String, data _: AsObject) throws -> Any {
+        return AsTypedObject()
     }
 }
 
