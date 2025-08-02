@@ -119,7 +119,7 @@ extension Model {
 
 extension Model: MediaPlayerDelegate {
     func mediaPlayerFileLoaded(playerId: UUID, name: String) {
-        let name = "Media player file \(name)"
+        let name = "Media player: \(name)"
         let latency = mediaPlayerLatency
         media.addBufferedVideo(cameraId: playerId, name: name, latency: latency)
         media.addBufferedAudio(cameraId: playerId, name: name, latency: latency)

@@ -11,6 +11,7 @@ class BufferedVideo {
     private weak var processor: Processor?
     private let driftTracker: DriftTracker
     private var hasBufferBeenAppended = false
+    private var stats = BufferedStats()
     let latency: Double
 
     init(cameraId: UUID, name: String, update: Bool, latency: Double, processor: Processor?) {
@@ -53,10 +54,6 @@ class BufferedVideo {
                 currentSampleBuffer = inputSampleBuffer
             }
             if sampleBuffers.count > 200 {
-                logger.info("""
-                buffered-video: \(name): Over 200 frames (\(sampleBuffers.count)) buffered. Dropping \
-                oldest frame.
-                """)
                 sampleBuffer = inputSampleBuffer
                 sampleBuffers.removeFirst()
                 numberOfBuffersConsumed += 1
@@ -73,13 +70,18 @@ class BufferedVideo {
             numberOfBuffersConsumed += 1
             markInitialBufferingComplete()
         }
-        if logger.debugEnabled, !isInitialBuffering {
-            let lastPresentationTimeStamp = sampleBuffers.last?.presentationTimeStamp.seconds ?? 0.0
-            let firstPresentationTimeStamp = sampleBuffers.first?.presentationTimeStamp.seconds ?? 0.0
-            let fillLevel = lastPresentationTimeStamp - firstPresentationTimeStamp
-            if numberOfBuffersConsumed > 1 {
+        if !isInitialBuffering {
+            if numberOfBuffersConsumed == 0 {
+                stats.incrementDuplicated()
+            } else if numberOfBuffersConsumed > 1 {
+                stats.incrementDropped(count: numberOfBuffersConsumed - 1)
+            }
+            if logger.debugEnabled, let (duplicated, dropped) = stats.getStats(outputPresentationTimeStamp) {
+                let lastPresentationTimeStamp = sampleBuffers.last?.presentationTimeStamp.seconds ?? 0.0
+                let firstPresentationTimeStamp = sampleBuffers.first?.presentationTimeStamp.seconds ?? 0.0
+                let fillLevel = lastPresentationTimeStamp - firstPresentationTimeStamp
                 logger.debug("""
-                buffered-video: \(name): Dropping \(numberOfBuffersConsumed - 1) buffer(s). \
+                buffered-video: \(name): \(duplicated) duplicated and \(dropped) dropped buffers. \
                 Output \(formatThreeDecimals(outputPresentationTimeStamp)), \
                 Current \(formatThreeDecimals(currentSampleBuffer?.presentationTimeStamp.seconds ?? 0.0)), \
                 \(formatThreeDecimals(firstPresentationTimeStamp + drift))..\

@@ -25,6 +25,7 @@ class BufferedAudio {
     weak var delegate: BufferedAudioSampleBufferDelegate?
     private var hasBufferBeenAppended = false
     let latency: Double
+    private var stats = BufferedStats()
 
     init(cameraId: UUID, name: String, latency: Double, processor: Processor?, manualOutput: Bool) {
         self.cameraId = cameraId
@@ -85,13 +86,18 @@ class BufferedAudio {
             numberOfBuffersConsumed += 1
             isInitialBuffering = false
         }
-        if logger.debugEnabled, !isInitialBuffering {
-            let lastPresentationTimeStamp = sampleBuffers.last?.presentationTimeStamp.seconds ?? 0.0
-            let firstPresentationTimeStamp = sampleBuffers.first?.presentationTimeStamp.seconds ?? 0.0
-            let fillLevel = lastPresentationTimeStamp - firstPresentationTimeStamp
-            if numberOfBuffersConsumed > 1 {
+        if !isInitialBuffering {
+            if numberOfBuffersConsumed == 0 {
+                stats.incrementDuplicated()
+            } else if numberOfBuffersConsumed > 1 {
+                stats.incrementDropped(count: numberOfBuffersConsumed - 1)
+            }
+            if logger.debugEnabled, let (duplicated, dropped) = stats.getStats(outputPresentationTimeStamp) {
+                let lastPresentationTimeStamp = sampleBuffers.last?.presentationTimeStamp.seconds ?? 0.0
+                let firstPresentationTimeStamp = sampleBuffers.first?.presentationTimeStamp.seconds ?? 0.0
+                let fillLevel = lastPresentationTimeStamp - firstPresentationTimeStamp
                 logger.debug("""
-                buffered-audio: \(name): Dropping \(numberOfBuffersConsumed - 1) buffer(s). \
+                buffered-video: \(name): \(duplicated) duplicated and \(dropped) dropped buffers. \
                 Output \(formatThreeDecimals(outputPresentationTimeStamp)), \
                 Current \(formatThreeDecimals(sampleBuffer?.presentationTimeStamp.seconds ?? 0.0)), \
                 \(formatThreeDecimals(firstPresentationTimeStamp + drift))..\

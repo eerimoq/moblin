@@ -38,6 +38,7 @@ final class AudioUnit: NSObject {
     private var speechToTextEnabled = false
     private var bufferedBuiltinAudio: BufferedAudio?
     private var latestAudioStatusTime = 0.0
+    private var stats = BufferedStats()
 
     private var inputSourceFormat: AudioStreamBasicDescription? {
         didSet {
