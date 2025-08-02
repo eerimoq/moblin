@@ -553,6 +553,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         streamingHistory.load()
         recordingsStorage.load()
         replaysStorage.load()
+        // if stream.portrait {
+        //    AppDelegate.orientationLock = .portrait
+        // } else {
+        AppDelegate.orientationLock = [.landscape, .portrait]
+        // }
     }
 
     var enabledScenes: [SettingsScene] {
@@ -1726,12 +1731,15 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func updateOrientationLock() {
         if stream.portrait {
+            AppDelegate.orientationLock = [.landscape, .portrait]
             streamPreviewView.isPortrait = true
             externalDisplayStreamPreviewView.isPortrait = true
         } else if orientation.portrait {
+            AppDelegate.orientationLock = [.landscape, .portrait]
             streamPreviewView.isPortrait = false
             externalDisplayStreamPreviewView.isPortrait = false
         } else {
+            AppDelegate.orientationLock = [.landscape, .portrait]
             streamPreviewView.isPortrait = false
             externalDisplayStreamPreviewView.isPortrait = false
         }
