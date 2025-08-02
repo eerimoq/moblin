@@ -97,7 +97,7 @@ class BufferedAudio {
                 let firstPresentationTimeStamp = sampleBuffers.first?.presentationTimeStamp.seconds ?? 0.0
                 let fillLevel = lastPresentationTimeStamp - firstPresentationTimeStamp
                 logger.debug("""
-                buffered-video: \(name): \(duplicated) duplicated and \(dropped) dropped buffers. \
+                buffered-audio: \(name): \(duplicated) duplicated and \(dropped) dropped buffers. \
                 Output \(formatThreeDecimals(outputPresentationTimeStamp)), \
                 Current \(formatThreeDecimals(sampleBuffer?.presentationTimeStamp.seconds ?? 0.0)), \
                 \(formatThreeDecimals(firstPresentationTimeStamp + drift))..\
