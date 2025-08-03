@@ -153,11 +153,19 @@ extension Model {
         return nil
     }
 
+    private func getSnapshotEffect(id: UUID) -> SnapshotEffect? {
+        for (snapshotEffectId, snapshotEffect) in snapshotEffects where id == snapshotEffectId {
+            return snapshotEffect
+        }
+        return nil
+    }
+
     func getEffectWithPossibleEffects(id: UUID) -> VideoEffect? {
         return getVideoSourceEffect(id: id)
             ?? getImageEffect(id: id)
             ?? getBrowserEffect(id: id)
             ?? getMapEffect(id: id)
+            ?? getSnapshotEffect(id: id)
     }
 
     func getVideoSourceSettings(id: UUID) -> SettingsWidget? {
