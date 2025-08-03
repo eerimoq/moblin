@@ -51,7 +51,6 @@ final class SnapshotEffect: VideoEffect {
         if let hideSnapshotTime, info.presentationTimeStamp.seconds > hideSnapshotTime {
             self.currentSnapshot = snapshots.popFirst()
             self.hideSnapshotTime = nil
-            return image
         }
         guard let currentSnapshot else {
             return image
