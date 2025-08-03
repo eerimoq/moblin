@@ -1339,8 +1339,6 @@ final class VideoUnit: NSObject {
                 return
             }
             takeSnapshotSampleBuffers.append(sampleBuffer)
-            // Can only save a few sample buffers from captureOutput(). Can save more if effects
-            // are applied (sample buffer is copied).
             if takeSnapshotSampleBuffers.count > 3 {
                 takeSnapshotSampleBuffers.removeFirst()
             }
