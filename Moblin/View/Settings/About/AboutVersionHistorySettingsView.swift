@@ -8,6 +8,26 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "26.2004.0", date: "2025-08-03", changes: [
+        "• \"New SRT\" reconnect handling improvements.",
+        "• Select recording path per stream. 💡 mellow.head and others",
+        "  • For external storage.",
+        "• MPEG-TS refactoring.",
+        "• Do not show Twitch login error toast when not logged in.",
+        "• Chat bot command aliases. 💡 Tobi JUMPGEIL and others",
+        "  • No more free ads, sad.",
+        "• List of streamers in the assistant. Only connected to one at a time. 💡 djandrea.",
+        "• Fix RTMP not working to Castr and probably other servers. 🐛 iPhone14 jr alexis",
+        "• Only run audio video sync code on iOS captured mics.",
+        "  • May break or improve network cameras, not sure. May also mean nothing.",
+        "• Show status icon in top right of UI if an auto scene switcher is active.",
+        "• Only reset selected scene if needed when creating/moving/deleting scenes.",
+        "  • For slightly smoother UI.",
+        "• Show snapshots widget. 💡 cliffcreates 👏 xcopy94 and ParaglidingLive.com | Marco",
+        "• Copy frames before using them for snapshots for less risk of freezing video. 🐛 xcopy94",
+        "• Show Kick subscription, redeem and host events. 💡🧑‍🏭 iChrisIRL",
+        "• Predefined chat messages. 💡 cliffcreates",
+    ]),
     Version(version: "26.2003.1", date: "2025-08-01", changes: [
         "• Fix RTMP not working to Castr and probably other servers. 🐛 iPhone14 jr alexis",
     ]),
