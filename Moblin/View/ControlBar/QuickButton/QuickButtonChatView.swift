@@ -281,10 +281,8 @@ private struct ChatView: View {
                          chat: chat,
                          selectedPost: $selectedPost)
             if chat.paused {
-                ChatInfo(
-                    message: String(localized: "Chat paused: \(chat.pausedPostsCount) new messages")
-                )
-                .padding(2)
+                ChatInfo(message: String(localized: "Chat paused: \(chat.pausedPostsCount) new messages"))
+                    .padding(2)
             }
             HypeTrainView(model: model, hypeTrain: model.hypeTrain)
         }
