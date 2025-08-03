@@ -2254,56 +2254,55 @@ enum SettingsWidgetVideoEffectType: String, Codable, CaseIterable {
 }
 
 enum SettingsWidgetType: String, Codable, CaseIterable {
-    case browser = "Browser"
-    case image = "Image"
     case text = "Text"
-    case videoEffect = "Video effect"
-    case crop = "Crop"
-    case map = "Map"
-    case scene = "Scene"
-    case qrCode = "QR code"
-    case alerts = "Alerts"
+    case browser = "Browser"
     case videoSource = "Video source"
-    case scoreboard = "Scoreboard"
+    case image = "Image"
+    case alerts = "Alerts"
+    case map = "Map"
+    case snapshot = "Snapshot"
+    case scene = "Scene"
     case vTuber = "VTuber"
     case pngTuber = "PNGTuber"
-    case snapshot = "Snapshot"
+    case qrCode = "QR code"
+    case scoreboard = "Scoreboard"
+    case crop = "Crop"
+    case videoEffect = "Video effect"
 
     init(from decoder: Decoder) throws {
-        self = try SettingsWidgetType(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
-            .text
+        self = try SettingsWidgetType(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ?? .text
     }
 
     func toString() -> String {
         switch self {
-        case .browser:
-            return String(localized: "Browser")
-        case .image:
-            return String(localized: "Image")
         case .text:
             return String(localized: "Text")
-        case .videoEffect:
-            return String(localized: "Video effect")
-        case .crop:
-            return String(localized: "Crop")
-        case .map:
-            return String(localized: "Map")
-        case .scene:
-            return String(localized: "Scene")
-        case .qrCode:
-            return String(localized: "QR code")
-        case .alerts:
-            return String(localized: "Alerts")
+        case .browser:
+            return String(localized: "Browser")
         case .videoSource:
             return String(localized: "Video source")
-        case .scoreboard:
-            return String(localized: "Scoreboard")
+        case .image:
+            return String(localized: "Image")
+        case .alerts:
+            return String(localized: "Alerts")
+        case .map:
+            return String(localized: "Map")
+        case .snapshot:
+            return String(localized: "Snapshot")
+        case .scene:
+            return String(localized: "Scene")
         case .vTuber:
             return String(localized: "VTuber")
         case .pngTuber:
             return String(localized: "PNGTuber")
-        case .snapshot:
-            return String(localized: "Snapshot")
+        case .qrCode:
+            return String(localized: "QR code")
+        case .scoreboard:
+            return String(localized: "Scoreboard")
+        case .crop:
+            return String(localized: "Crop")
+        case .videoEffect:
+            return String(localized: "Video effect")
         }
     }
 }
@@ -2311,12 +2310,12 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
 let widgetTypes = SettingsWidgetType.allCases.filter { $0 != .videoEffect }
 
 enum SettingsVideoEffectType: String, Codable, CaseIterable {
+    case shape
     case grayScale
     case sepia
     case whirlpool
     case pinch
     case removeBackground
-    case shape
 
     init(from decoder: Decoder) throws {
         do {
@@ -2329,6 +2328,8 @@ enum SettingsVideoEffectType: String, Codable, CaseIterable {
 
     func toString() -> String {
         switch self {
+        case .shape:
+            return String(localized: "Shape")
         case .grayScale:
             return String(localized: "Gray scale")
         case .sepia:
@@ -2339,8 +2340,6 @@ enum SettingsVideoEffectType: String, Codable, CaseIterable {
             return String(localized: "Pinch")
         case .removeBackground:
             return String(localized: "Remove background")
-        case .shape:
-            return String(localized: "Shape")
         }
     }
 }
