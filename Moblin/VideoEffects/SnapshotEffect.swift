@@ -12,9 +12,11 @@ final class SnapshotEffect: VideoEffect {
     private var sceneWidget: SettingsSceneWidget?
     private var currentSnapshot: CIImage?
     private var hideSnapshotTime: Double?
+    private var showtime: Double
     private weak var delegate: SnapshotEffectDelegate?
 
-    init(delegate: SnapshotEffectDelegate) {
+    init(showtime: Int, delegate: SnapshotEffectDelegate) {
+        self.showtime = Double(showtime)
         self.delegate = delegate
         super.init()
     }
@@ -22,6 +24,12 @@ final class SnapshotEffect: VideoEffect {
     func setSceneWidget(sceneWidget: SettingsSceneWidget) {
         processorPipelineQueue.async {
             self.sceneWidget = sceneWidget
+        }
+    }
+
+    func setSettings(showtime: Int) {
+        processorPipelineQueue.async {
+            self.showtime = Double(showtime)
         }
     }
 
@@ -46,7 +54,7 @@ final class SnapshotEffect: VideoEffect {
             return image
         }
         if hideSnapshotTime == nil {
-            hideSnapshotTime = info.presentationTimeStamp.seconds + 5
+            hideSnapshotTime = info.presentationTimeStamp.seconds + showtime
         }
         if let hideSnapshotTime, info.presentationTimeStamp.seconds > hideSnapshotTime {
             self.currentSnapshot = snapshots.popFirst()

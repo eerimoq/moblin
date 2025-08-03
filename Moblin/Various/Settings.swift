@@ -2746,6 +2746,30 @@ class SettingsWidgetPngTuber: Codable, ObservableObject {
     }
 }
 
+class SettingsWidgetSnapshot: Codable, ObservableObject {
+    var id: UUID = .init()
+    @Published var showtime: Int = 5
+
+    enum CodingKeys: CodingKey {
+        case id,
+             showtime
+    }
+
+    init() {}
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.showtime, showtime)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        showtime = container.decode(.showtime, Int.self, 5)
+    }
+}
+
 class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named {
     static let baseName = String(localized: "My widget")
     @Published var name: String
@@ -2762,6 +2786,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named 
     var scoreboard: SettingsWidgetScoreboard = .init()
     var vTuber: SettingsWidgetVTuber = .init()
     var pngTuber: SettingsWidgetPngTuber = .init()
+    var snapshot: SettingsWidgetSnapshot = .init()
     @Published var enabled: Bool = true
     @Published var effects: [SettingsVideoEffect] = []
 
@@ -2788,6 +2813,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named 
              scoreboard,
              vTuber,
              pngTuber,
+             snapshot,
              enabled,
              effects
     }
@@ -2808,6 +2834,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named 
         try container.encode(.scoreboard, scoreboard)
         try container.encode(.vTuber, vTuber)
         try container.encode(.pngTuber, pngTuber)
+        try container.encode(.snapshot, snapshot)
         try container.encode(.enabled, enabled)
         try container.encode(.effects, effects)
     }
@@ -2828,6 +2855,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named 
         scoreboard = container.decode(.scoreboard, SettingsWidgetScoreboard.self, .init())
         vTuber = container.decode(.vTuber, SettingsWidgetVTuber.self, .init())
         pngTuber = container.decode(.pngTuber, SettingsWidgetPngTuber.self, .init())
+        snapshot = container.decode(.snapshot, SettingsWidgetSnapshot.self, .init())
         enabled = container.decode(.enabled, Bool.self, true)
         effects = container.decode(.effects, [SettingsVideoEffect].self, [])
     }

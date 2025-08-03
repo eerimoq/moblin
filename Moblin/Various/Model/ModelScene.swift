@@ -153,7 +153,7 @@ extension Model {
         return nil
     }
 
-    private func getSnapshotEffect(id: UUID) -> SnapshotEffect? {
+    func getSnapshotEffect(id: UUID) -> SnapshotEffect? {
         for (snapshotEffectId, snapshotEffect) in snapshotEffects where id == snapshotEffectId {
             return snapshotEffect
         }
@@ -292,7 +292,7 @@ extension Model {
         }
         snapshotEffects.removeAll()
         for widget in widgets where widget.type == .snapshot {
-            let snapshotEffect = SnapshotEffect(delegate: self)
+            let snapshotEffect = SnapshotEffect(showtime: widget.snapshot.showtime, delegate: self)
             snapshotEffect.effects = widget.getEffects()
             snapshotEffects[widget.id] = snapshotEffect
         }

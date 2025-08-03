@@ -240,7 +240,7 @@ struct WidgetSettingsView: View {
             case .pngTuber:
                 WidgetPngTuberSettingsView(widget: widget, pngTuber: widget.pngTuber)
             case .snapshot:
-                WidgetSnapshotSettingsView(widget: widget)
+                WidgetSnapshotSettingsView(widget: widget, snapshot: widget.snapshot)
             }
         }
         .navigationTitle("Widget")
