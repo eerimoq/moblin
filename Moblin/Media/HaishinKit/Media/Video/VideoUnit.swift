@@ -1335,6 +1335,9 @@ final class VideoUnit: NSObject {
     private func handleTakeSnapshot(_ sampleBuffer: CMSampleBuffer, _ presentationTimeStamp: Double) {
         let latestPresentationTimeStamp = takeSnapshotSampleBuffers.last?.presentationTimeStamp.seconds ?? 0.0
         if presentationTimeStamp > latestPresentationTimeStamp + 3.0 {
+            guard let sampleBuffer = makeCopy(sampleBuffer: sampleBuffer) else {
+                return
+            }
             takeSnapshotSampleBuffers.append(sampleBuffer)
             // Can only save a few sample buffers from captureOutput(). Can save more if effects
             // are applied (sample buffer is copied).
@@ -1343,6 +1346,9 @@ final class VideoUnit: NSObject {
             }
         }
         guard let takeSnapshotComplete else {
+            return
+        }
+        guard let sampleBuffer = makeCopy(sampleBuffer: sampleBuffer) else {
             return
         }
         DispatchQueue.global().async {
