@@ -31,14 +31,10 @@ final class SnapshotEffect: VideoEffect {
         }
     }
 
-    private func appendSnapshotInner(image: CIImage) {
-        snapshots.append(image)
-        guard currentSnapshot == nil else {
-            return
+    func removeSnapshots() {
+        processorPipelineQueue.async {
+            self.removeSnapshotsInner()
         }
-        currentSnapshot = snapshots.popFirst()
-        hideSnapshotTime = nil
-        delegate?.snapshotEffectRegisterVideoEffect(effect: self)
     }
 
     override func getName() -> String {
@@ -68,5 +64,21 @@ final class SnapshotEffect: VideoEffect {
 
     override func shouldRemove() -> Bool {
         return currentSnapshot == nil
+    }
+
+    private func appendSnapshotInner(image: CIImage) {
+        snapshots.append(image)
+        guard currentSnapshot == nil else {
+            return
+        }
+        currentSnapshot = snapshots.popFirst()
+        hideSnapshotTime = nil
+        delegate?.snapshotEffectRegisterVideoEffect(effect: self)
+    }
+
+    private func removeSnapshotsInner() {
+        snapshots.removeAll()
+        currentSnapshot = nil
+        hideSnapshotTime = nil
     }
 }

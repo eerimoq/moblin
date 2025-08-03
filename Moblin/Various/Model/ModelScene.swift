@@ -500,6 +500,9 @@ extension Model {
         for mapEffect in mapEffects.values where !usedMapEffects.contains(mapEffect) {
             mapEffect.setSceneWidget(sceneWidget: nil)
         }
+        for snapshotEffect in snapshotEffects.values where !enabledSnapshotEffects.contains(snapshotEffect) {
+            snapshotEffect.removeSnapshots()
+        }
         for (id, padelScoreboardEffect) in padelScoreboardEffects
             where !usedPadelScoreboardEffects.contains(padelScoreboardEffect)
         {
