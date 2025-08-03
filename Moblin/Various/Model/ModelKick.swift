@@ -1,3 +1,6 @@
+import Foundation
+import SwiftUI
+
 extension Model {
     func isKickPusherConfigured() -> Bool {
         return database.chat.enabled && (stream.kickChatroomId != "" || stream.kickChannelName != "")
@@ -42,6 +45,41 @@ extension Model {
         reloadKickViewers()
         resetChat()
     }
+
+    private func appendKickChatAlertMessage(
+        user: String,
+        text: String,
+        title: String,
+        color: Color,
+        image: String? = nil,
+        kind: ChatHighlightKind? = nil,
+        bits _: String? = nil
+    ) {
+        guard let kickPusher else {
+            return
+        }
+        var id = 0
+        appendChatMessage(platform: .kick,
+                          messageId: nil,
+                          user: user,
+                          userId: nil,
+                          userColor: nil,
+                          userBadges: [],
+                          segments: makeChatPostTextSegments(text: text, id: &id),
+                          timestamp: statusOther.digitalClock,
+                          timestampTime: .now,
+                          isAction: false,
+                          isSubscriber: false,
+                          isModerator: false,
+                          bits: nil,
+                          highlight: .init(
+                              kind: kind ?? .redemption,
+                              barColor: color,
+                              image: image ?? "medal",
+                              title: title
+                          ),
+                          live: true)
+    }
 }
 
 extension Model: KickOusherDelegate {
@@ -82,5 +120,38 @@ extension Model: KickOusherDelegate {
 
     func kickPusherDeleteUser(userId: String) {
         deleteChatUser(userId: userId)
+    }
+
+    func kickPusherSubscription(event: SubscriptionEvent) {
+        DispatchQueue.main.async {
+            let text = String(localized: "just subscribed! They've been subscribed for \(event.months) months!")
+            self.makeToast(title: "\(event.username) \(text)")
+            self.appendKickChatAlertMessage(
+                user: event.username,
+                text: text,
+                title: String(localized: "New subscriber"),
+                color: .cyan,
+                image: "party.popper"
+            )
+        }
+    }
+
+    func kickPusherGiftedSubscription(event: GiftedSubscriptionsEvent) {
+        DispatchQueue.main.async {
+            let user = event.gifter_username
+            let text =
+                String(localized: """
+                just gifted \(event.gifted_usernames.count) subscription(s)! \
+                They've gifted \(event.gifter_total) in total!
+                """)
+            self.makeToast(title: "\(user) \(text)")
+            self.appendKickChatAlertMessage(
+                user: user,
+                text: text,
+                title: String(localized: "Gift subscriptions"),
+                color: .cyan,
+                image: "gift"
+            )
+        }
     }
 }

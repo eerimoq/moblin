@@ -60,6 +60,41 @@ private struct UserBannedEvent: Decodable {
     var user: User
 }
 
+struct SubscriptionEvent: Decodable {
+    var chatroom_id: Int
+    var username: String
+    var months: Int
+}
+
+struct GiftedSubscriptionsEvent: Decodable {
+    var chatroom_id: Int
+    var gifted_usernames: [String]
+    var gifter_username: String
+    var gifter_total: Int
+}
+
+private struct RewardRedeemedEvent: Decodable {
+    // {"reward_title":"test",
+    // "user_id":2478206,
+    // "channel_id":2423391,
+    // "username":"iChrisIRL",
+    // "user_input":"123",
+    // "reward_background_color":"#FFD899"}
+    var reward_title: String
+    var user_id: Int
+    var channel_id: Int
+    var username: String
+    var user_input: String
+    // var reward_background_color: String
+}
+
+private struct StreamHostEvent: Decodable {
+    // {"host_username": "channel",
+    // "number_viewers": 674}
+    var host_username: String
+    var number_viewers: Int
+}
+
 private func decodeEvent(message: String) throws -> (String, String) {
     if let jsonData = message.data(using: String.Encoding.utf8) {
         let data = try JSONSerialization.jsonObject(
@@ -98,6 +133,34 @@ private func decodeUserBannedEvent(data: String) throws -> UserBannedEvent {
     )
 }
 
+private func decodeSubscriptionEvent(data: String) throws -> SubscriptionEvent {
+    return try JSONDecoder().decode(
+        SubscriptionEvent.self,
+        from: data.data(using: String.Encoding.utf8)!
+    )
+}
+
+private func decodeGiftedSubscriptionsEvent(data: String) throws -> GiftedSubscriptionsEvent {
+    return try JSONDecoder().decode(
+        GiftedSubscriptionsEvent.self,
+        from: data.data(using: String.Encoding.utf8)!
+    )
+}
+
+private func decodeRewardRedeemedEvent(data: String) throws -> RewardRedeemedEvent {
+    return try JSONDecoder().decode(
+        RewardRedeemedEvent.self,
+        from: data.data(using: String.Encoding.utf8)!
+    )
+}
+
+private func decodeStreamHostEvent(data: String) throws -> StreamHostEvent {
+    return try JSONDecoder().decode(
+        StreamHostEvent.self,
+        from: data.data(using: String.Encoding.utf8)!
+    )
+}
+
 private var url =
     URL(
         string: "wss://ws-us2.pusher.com/app/32cbd69e4b950bf97679?protocol=7&client=js&version=7.6.0&flash=false"
@@ -117,6 +180,8 @@ protocol KickOusherDelegate: AnyObject {
     )
     func kickPusherDeleteMessage(messageId: String)
     func kickPusherDeleteUser(userId: String)
+    func kickPusherSubscription(event: SubscriptionEvent)
+    func kickPusherGiftedSubscription(event: GiftedSubscriptionsEvent)
 }
 
 final class KickPusher: NSObject {
@@ -218,6 +283,8 @@ final class KickPusher: NSObject {
     private func handleMessage(message: String) {
         do {
             let (type, data) = try decodeEvent(message: message)
+            // kickSub kickGift kickGifts kickIncomingRaid kickRewardRedeemed kickBan kickTO ???
+            // we can get without auth
             switch type {
             case "App\\Events\\ChatMessageEvent":
                 try handleChatMessageEvent(data: data)
@@ -225,6 +292,14 @@ final class KickPusher: NSObject {
                 try handleMessageDeletedEvent(data: data)
             case "App\\Events\\UserBannedEvent":
                 try handleUserBannedEvent(data: data)
+            case "App\\Events\\SubscriptionEvent":
+                try handleSubscriptionEvent(data: data)
+            case "GiftedSubscriptionsEvent":
+                try handleGiftedSubscriptionsEvent(data: data)
+            case "RewardRedeemedEvent":
+                try handleRewardRedeemedEvent(data: data)
+            case "App\\Events\\StreamHostEvent":
+                try handleStreamHostEvent(data: data)
             default:
                 logger.debug("kick: pusher: \(channelId): Unsupported type: \(type)")
             }
@@ -259,6 +334,26 @@ final class KickPusher: NSObject {
     private func handleUserBannedEvent(data: String) throws {
         let event = try decodeUserBannedEvent(data: data)
         delegate?.kickPusherDeleteUser(userId: String(event.user.id))
+    }
+
+    private func handleSubscriptionEvent(data: String) throws {
+        let event = try decodeSubscriptionEvent(data: data)
+        delegate?.kickPusherSubscription(event: event)
+    }
+
+    private func handleGiftedSubscriptionsEvent(data: String) throws {
+        let event = try decodeGiftedSubscriptionsEvent(data: data)
+        delegate?.kickPusherGiftedSubscription(event: event)
+    }
+
+    private func handleRewardRedeemedEvent(data _: String) throws {
+        // let event = try decodeRewardRedeemedEvent(data: data)
+        // delegate?.kickPusherDeleteUser(userId: String(event.user.id))
+    }
+
+    private func handleStreamHostEvent(data _: String) throws {
+        // let event = try decodeStreamHostEvent(data: data)
+        // delegate?.kickPusherDeleteUser(userId: String(event.user.id))
     }
 
     private func makeChatPostSegments(content: String) -> [ChatPostSegment] {
@@ -309,17 +404,24 @@ final class KickPusher: NSObject {
         }
         return segments
     }
+
+    func sendSubscribe(channel: String) {
+        sendMessage(
+            message: """
+            {\"event\":\"pusher:subscribe\",
+             \"data\":{\"auth\":\"\",\"channel\":\"\(channel)\"}}
+            """
+        )
+    }
 }
 
 extension KickPusher: WebSocketClientDelegate {
     func webSocketClientConnected(_: WebSocketClient) {
         logger.debug("kick: Connected")
-        sendMessage(
-            message: """
-            {\"event\":\"pusher:subscribe\",
-             \"data\":{\"auth\":\"\",\"channel\":\"chatrooms.\(channelId).v2\"}}
-            """
-        )
+        sendSubscribe(channel: "chatrooms.\(channelId).v2")
+        sendSubscribe(channel: "chatroom_\(channelId)")
+        sendSubscribe(channel: "chatrooms.\(channelId)")
+        sendSubscribe(channel: "predictions-channel-\(channelId)")
     }
 
     func webSocketClientDisconnected(_: WebSocketClient) {
