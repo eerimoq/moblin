@@ -420,7 +420,7 @@ private struct PredefinedMessageView: View {
 
     var body: some View {
         NavigationLink {
-            TextEditView(title: "Predefined message", value: predefinedMessage.text) {
+            TextEditView(title: String(localized: "Predefined message"), value: predefinedMessage.text) {
                 predefinedMessage.text = $0
             }
         } label: {
@@ -433,9 +433,8 @@ private struct PredefinedMessageView: View {
                     showingPredefinedMessages = false
                 } label: {
                     Text("Send message")
-                        .foregroundColor(.blue)
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(.borderless)
             }
         }
     }
@@ -603,7 +602,7 @@ private struct ActionButtonsView: View {
     }
 
     private func banButton(selectedPost: ChatPost) -> some View {
-        ActionButtonView(image: "nosign", text: "Ban", foreground: .red) {
+        ActionButtonView(image: "nosign", text: String(localized: "Ban"), foreground: .red) {
             isPresentingBanConfirm = true
         }
         .confirmationDialog("", isPresented: $isPresentingBanConfirm) {
@@ -615,7 +614,7 @@ private struct ActionButtonsView: View {
     }
 
     private func timeoutButton(selectedPost: ChatPost) -> some View {
-        ActionButtonView(image: "timer", text: "Timeout") {
+        ActionButtonView(image: "timer", text: String(localized: "Timeout")) {
             isPresentingTimeoutConfirm = true
         }
         .confirmationDialog("", isPresented: $isPresentingTimeoutConfirm) {
@@ -635,7 +634,7 @@ private struct ActionButtonsView: View {
     }
 
     private func deleteButton(selectedPost: ChatPost) -> some View {
-        ActionButtonView(image: "trash", text: "Delete") {
+        ActionButtonView(image: "trash", text: String(localized: "Delete")) {
             isPresentingDeleteConfirm = true
         }
         .confirmationDialog("", isPresented: $isPresentingDeleteConfirm) {
@@ -647,7 +646,7 @@ private struct ActionButtonsView: View {
     }
 
     private func copyButton(selectedPost: ChatPost) -> some View {
-        ActionButtonView(image: "document.on.document", text: "Copy") {
+        ActionButtonView(image: "document.on.document", text: String(localized: "Copy")) {
             model.copyMessage(post: selectedPost)
             dismiss()
         }
