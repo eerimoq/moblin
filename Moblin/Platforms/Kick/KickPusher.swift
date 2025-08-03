@@ -73,7 +73,7 @@ struct GiftedSubscriptionsEvent: Decodable {
     var gifter_total: Int
 }
 
-private struct RewardRedeemedEvent: Decodable {
+struct RewardRedeemedEvent: Decodable {
     // {"reward_title":"test",
     // "user_id":2478206,
     // "channel_id":2423391,
@@ -88,7 +88,7 @@ private struct RewardRedeemedEvent: Decodable {
     // var reward_background_color: String
 }
 
-private struct StreamHostEvent: Decodable {
+struct StreamHostEvent: Decodable {
     // {"host_username": "channel",
     // "number_viewers": 674}
     var host_username: String
@@ -182,6 +182,8 @@ protocol KickOusherDelegate: AnyObject {
     func kickPusherDeleteUser(userId: String)
     func kickPusherSubscription(event: SubscriptionEvent)
     func kickPusherGiftedSubscription(event: GiftedSubscriptionsEvent)
+    func kickPusherRewardRedeemed(event: RewardRedeemedEvent)
+    func kickPusherStreamHost(event: StreamHostEvent)
 }
 
 final class KickPusher: NSObject {
@@ -346,14 +348,14 @@ final class KickPusher: NSObject {
         delegate?.kickPusherGiftedSubscription(event: event)
     }
 
-    private func handleRewardRedeemedEvent(data _: String) throws {
-        // let event = try decodeRewardRedeemedEvent(data: data)
-        // delegate?.kickPusherDeleteUser(userId: String(event.user.id))
+    private func handleRewardRedeemedEvent(data: String) throws {
+        let event = try decodeRewardRedeemedEvent(data: data)
+        delegate?.kickPusherRewardRedeemed(event: event)
     }
 
-    private func handleStreamHostEvent(data _: String) throws {
-        // let event = try decodeStreamHostEvent(data: data)
-        // delegate?.kickPusherDeleteUser(userId: String(event.user.id))
+    private func handleStreamHostEvent(data: String) throws {
+        let event = try decodeStreamHostEvent(data: data)
+        delegate?.kickPusherStreamHost(event: event)
     }
 
     private func makeChatPostSegments(content: String) -> [ChatPostSegment] {

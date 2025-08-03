@@ -55,9 +55,6 @@ extension Model {
         kind: ChatHighlightKind? = nil,
         bits _: String? = nil
     ) {
-        guard let kickPusher else {
-            return
-        }
         var id = 0
         appendChatMessage(platform: .kick,
                           messageId: nil,
@@ -151,6 +148,37 @@ extension Model: KickOusherDelegate {
                 title: String(localized: "Gift subscriptions"),
                 color: .cyan,
                 image: "gift"
+            )
+        }
+    }
+
+    func kickPusherRewardRedeemed(event: RewardRedeemedEvent) {
+        DispatchQueue.main.async {
+            let user = event.username
+            let baseText = String(localized: "redeemed \(event.reward_title)")
+            let text = event.user_input.isEmpty ? baseText : "\(baseText): \(event.user_input)"
+            self.makeToast(title: "\(user) \(text)")
+            self.appendKickChatAlertMessage(
+                user: user,
+                text: text,
+                title: String(localized: "Reward Redeemed"),
+                color: .green,
+                image: "medal.star"
+            )
+        }
+    }
+
+    func kickPusherStreamHost(event: StreamHostEvent) {
+        DispatchQueue.main.async {
+            let user = event.host_username
+            let text = String(localized: "is now hosting with \(event.number_viewers) viewers!")
+            self.makeToast(title: "\(user) \(text)")
+            self.appendKickChatAlertMessage(
+                user: user,
+                text: text,
+                title: String(localized: "Host"),
+                color: .orange,
+                image: "person.3"
             )
         }
     }
