@@ -52,18 +52,30 @@ private struct MessageDeletedEvent: Decodable {
     var message: Message
 }
 
-private struct User: Decodable {
-    var id: Int
-}
+struct UserBannedEvent: Decodable {
+    var id: String
+    var user: BannedUser
+    var banned_by: Moderator
+    var permanent: Bool
 
-private struct UserBannedEvent: Decodable {
-    var user: User
+    struct BannedUser: Decodable {
+        var id: Int
+        var slug: String
+        var username: String
+    }
+
+    struct Moderator: Decodable {
+        var id: Int
+        var slug: String
+        var username: String
+    }
 }
 
 struct SubscriptionEvent: Decodable {
     var chatroom_id: Int
     var username: String
     var months: Int
+
 }
 
 struct GiftedSubscriptionsEvent: Decodable {
@@ -184,6 +196,7 @@ protocol KickOusherDelegate: AnyObject {
     func kickPusherGiftedSubscription(event: GiftedSubscriptionsEvent)
     func kickPusherRewardRedeemed(event: RewardRedeemedEvent)
     func kickPusherStreamHost(event: StreamHostEvent)
+    func kickPusherUserBanned(event: UserBannedEvent)
 }
 
 final class KickPusher: NSObject {
@@ -336,6 +349,7 @@ final class KickPusher: NSObject {
     private func handleUserBannedEvent(data: String) throws {
         let event = try decodeUserBannedEvent(data: data)
         delegate?.kickPusherDeleteUser(userId: String(event.user.id))
+        delegate?.kickPusherUserBanned(event: event)
     }
 
     private func handleSubscriptionEvent(data: String) throws {

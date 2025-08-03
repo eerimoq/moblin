@@ -127,7 +127,7 @@ extension Model: KickOusherDelegate {
                 user: event.username,
                 text: text,
                 title: String(localized: "New subscriber"),
-                color: .cyan,
+                color: .green,
                 image: "party.popper"
             )
         }
@@ -146,7 +146,7 @@ extension Model: KickOusherDelegate {
                 user: user,
                 text: text,
                 title: String(localized: "Gift subscriptions"),
-                color: .cyan,
+                color: .green,
                 image: "gift"
             )
         }
@@ -177,8 +177,22 @@ extension Model: KickOusherDelegate {
                 user: user,
                 text: text,
                 title: String(localized: "Host"),
-                color: .orange,
+                color: .green,
                 image: "person.3"
+            )
+        }
+    }
+
+    func kickPusherUserBanned(event: UserBannedEvent) {
+        DispatchQueue.main.async {
+            let text = String(localized: "was banned from chat!")
+            self.makeToast(title: "\(event.user.username) \(text)")
+            self.appendKickChatAlertMessage(
+                user: event.user.username,
+                text: text,
+                title: String(localized: "User Banned"),
+                color: .green,
+                image: "nosign"
             )
         }
     }
