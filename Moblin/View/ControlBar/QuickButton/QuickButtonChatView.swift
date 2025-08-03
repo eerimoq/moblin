@@ -397,6 +397,114 @@ private struct ChatAlertsView: View {
     }
 }
 
+private struct PredefinedMessagesToolbar: ToolbarContent {
+    @Binding var showingPredefinedMessages: Bool
+
+    var body: some ToolbarContent {
+        ToolbarItem(placement: .navigationBarTrailing) {
+            HStack {
+                Button {
+                    showingPredefinedMessages = false
+                } label: {
+                    Text("Close")
+                }
+            }
+        }
+    }
+}
+
+private struct PredefinedMessageView: View {
+    let model: Model
+    @ObservedObject var predefinedMessage: SettingsChatPredefinedMessage
+    @Binding var showingPredefinedMessages: Bool
+
+    var body: some View {
+        NavigationLink {
+            TextEditView(title: "Predefined message", value: predefinedMessage.text) {
+                predefinedMessage.text = $0
+            }
+        } label: {
+            HStack {
+                DraggableItemPrefixView()
+                Text(predefinedMessage.text)
+                Spacer()
+                Button {
+                    model.sendChatMessage(message: predefinedMessage.text)
+                    showingPredefinedMessages = false
+                } label: {
+                    Text("Send message")
+                        .foregroundColor(.blue)
+                }
+                .buttonStyle(.plain)
+            }
+        }
+    }
+}
+
+private struct PredefinedMessagesView: View {
+    let model: Model
+    @ObservedObject var chat: SettingsChat
+    @Binding var showingPredefinedMessages: Bool
+    @State var messageToSend: UUID?
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section {
+                    List {
+                        ForEach(chat.predefinedMessages) { predefinedMessage in
+                            PredefinedMessageView(model: model,
+                                                  predefinedMessage: predefinedMessage,
+                                                  showingPredefinedMessages: $showingPredefinedMessages)
+                        }
+                        .onDelete {
+                            chat.predefinedMessages.remove(atOffsets: $0)
+                        }
+                        .onMove { froms, to in
+                            chat.predefinedMessages.move(fromOffsets: froms, toOffset: to)
+                        }
+                    }
+                    Section {
+                        Button {
+                            chat.predefinedMessages.append(SettingsChatPredefinedMessage())
+                        } label: {
+                            HCenter {
+                                Text("Create")
+                            }
+                        }
+                    }
+                } footer: {
+                    SwipeLeftToDeleteHelpView(kind: String(localized: "a predefined message"))
+                }
+            }
+            .navigationTitle("Predefined messages")
+            .toolbar {
+                PredefinedMessagesToolbar(showingPredefinedMessages: $showingPredefinedMessages)
+            }
+        }
+    }
+}
+
+private struct ControlMessagesButtonView: View {
+    let model: Model
+    @State var showingPredefinedMessages = false
+
+    var body: some View {
+        Button {
+            showingPredefinedMessages = true
+        } label: {
+            Image(systemName: "list.bullet")
+                .font(.title)
+                .padding(5)
+        }
+        .sheet(isPresented: $showingPredefinedMessages) {
+            PredefinedMessagesView(model: model,
+                                   chat: model.database.chat,
+                                   showingPredefinedMessages: $showingPredefinedMessages)
+        }
+    }
+}
+
 private struct ControlAlertsButtonView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var quickButtonChat: QuickButtonChat
@@ -430,6 +538,7 @@ private struct ControlView: View {
         }
         .padding(5)
         .foregroundColor(.white)
+        ControlMessagesButtonView(model: model)
         ControlAlertsButtonView(quickButtonChat: model.quickButtonChatState)
     }
 }
