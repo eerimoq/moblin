@@ -47,7 +47,10 @@ private struct ChatMessageEvent: Decodable {
 private struct Message: Decodable {
     var id: String
 }
-
+private struct User: Decodable {
+    var id: String
+    
+}
 private struct MessageDeletedEvent: Decodable {
     var message: Message
 }
