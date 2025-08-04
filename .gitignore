@@ -93,3 +93,15 @@ Config.xcconfig
 
 # Make macOS happy
 .DS_Store
+Common/Localizable.xcstrings
+Moblin Screen Recording/Moblin Screen Recording.entitlements
+Moblin Screen Recording/Moblin Screen Recording.entitlements
+Moblin.xcodeproj/project.pbxproj
+Moblin.xcodeproj/xcshareddata/xcschemes/Moblin Screen Recording.xcscheme
+Moblin.xcodeproj/xcshareddata/xcschemes/Moblin Watch.xcscheme
+Moblin.xcodeproj/xcshareddata/xcschemes/MoblinWidget.xcscheme
+Moblin/Info.plist
+Moblin/Moblin.entitlements
+Moblin/Info.plist
+Moblin.xcodeproj/xcshareddata/xcschemes/Moblin Watch.xcscheme
+Moblin.xcodeproj/project.pbxproj
