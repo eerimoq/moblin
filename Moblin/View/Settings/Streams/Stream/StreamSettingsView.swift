@@ -1,5 +1,38 @@
 import SwiftUI
 
+struct PlatformLogoAndNameView: View {
+    let logo: String
+    let name: String
+
+    var body: some View {
+        HStack {
+            Image(logo)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 30, height: 25)
+            Text(name)
+        }
+    }
+}
+
+struct TwitchLogoAndNameView: View {
+    var body: some View {
+        PlatformLogoAndNameView(logo: "TwitchLogo", name: String(localized: "Twitch"))
+    }
+}
+
+struct KickLogoAndNameView: View {
+    var body: some View {
+        PlatformLogoAndNameView(logo: "KickLogo", name: String(localized: "Kick"))
+    }
+}
+
+struct YouTubeLogoAndNameView: View {
+    var body: some View {
+        PlatformLogoAndNameView(logo: "YouTubeLogo", name: String(localized: "YouTube"))
+    }
+}
+
 struct StreamPlatformsSettingsView: View {
     let stream: SettingsStream
 
@@ -7,17 +40,17 @@ struct StreamPlatformsSettingsView: View {
         NavigationLink {
             StreamTwitchSettingsView(stream: stream, loggedIn: stream.twitchLoggedIn)
         } label: {
-            Text("Twitch")
+            TwitchLogoAndNameView()
         }
         NavigationLink {
             StreamKickSettingsView(stream: stream)
         } label: {
-            Text("Kick")
+            KickLogoAndNameView()
         }
         NavigationLink {
             StreamYouTubeSettingsView(stream: stream)
         } label: {
-            Text("YouTube")
+            YouTubeLogoAndNameView()
         }
         NavigationLink {
             StreamAfreecaTvSettingsView(stream: stream)

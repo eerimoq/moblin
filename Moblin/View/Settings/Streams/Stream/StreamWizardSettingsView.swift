@@ -45,17 +45,17 @@ struct StreamWizardSettingsView: View {
                 NavigationLink {
                     StreamWizardTwitchSettingsView(createStreamWizard: createStreamWizard)
                 } label: {
-                    Text("Twitch")
+                    TwitchLogoAndNameView()
                 }
                 NavigationLink {
                     StreamWizardKickSettingsView(createStreamWizard: createStreamWizard)
                 } label: {
-                    Text("Kick")
+                    KickLogoAndNameView()
                 }
                 NavigationLink {
                     StreamWizardYouTubeSettingsView(createStreamWizard: createStreamWizard)
                 } label: {
-                    Text("YouTube")
+                    YouTubeLogoAndNameView()
                 }
                 NavigationLink {
                     StreamWizardAfreecaTvSettingsView(createStreamWizard: createStreamWizard)
