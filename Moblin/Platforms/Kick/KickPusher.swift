@@ -51,7 +51,9 @@ private struct Message: Decodable {
 private struct MessageDeletedEvent: Decodable {
     var message: Message
 }
-
+private struct User: Decodable {
+    var id: Int
+}
 struct UserBannedEvent: Decodable {
     var id: String
     var user: BannedUser
