@@ -2,6 +2,7 @@ import SwiftUI
 
 struct StreamSrtSettingsView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var debug: SettingsDebug
     let stream: SettingsStream
     @State var dnsLookupStrategy: String
 
@@ -59,21 +60,23 @@ struct StreamSrtSettingsView: View {
                 } label: {
                     Text("Connection priorities")
                 }
-                Toggle("Max bandwidth follows input", isOn: Binding(get: {
-                    stream.srt.maximumBandwidthFollowInput!
-                }, set: { value in
-                    stream.srt.maximumBandwidthFollowInput = value
-                    model.reloadStreamIfEnabled(stream: stream)
-                }))
-                .disabled(stream.enabled && model.isLive)
-                TextEditNavigationView(
-                    title: String(localized: "Overhead bandwidth"),
-                    value: String(stream.srt.overheadBandwidth!),
-                    onSubmit: submitOverheadBandwidth,
-                    keyboardType: .numbersAndPunctuation,
-                    valueFormat: { "\($0)%" }
-                )
-                .disabled(stream.enabled && model.isLive)
+                if !debug.newSrt {
+                    Toggle("Max bandwidth follows input", isOn: Binding(get: {
+                        stream.srt.maximumBandwidthFollowInput!
+                    }, set: { value in
+                        stream.srt.maximumBandwidthFollowInput = value
+                        model.reloadStreamIfEnabled(stream: stream)
+                    }))
+                    .disabled(stream.enabled && model.isLive)
+                    TextEditNavigationView(
+                        title: String(localized: "Overhead bandwidth"),
+                        value: String(stream.srt.overheadBandwidth!),
+                        onSubmit: submitOverheadBandwidth,
+                        keyboardType: .numbersAndPunctuation,
+                        valueFormat: { "\($0)%" }
+                    )
+                    .disabled(stream.enabled && model.isLive)
+                }
                 Toggle("Big packets", isOn: Binding(get: {
                     stream.srt.mpegtsPacketsPerPacket == 7
                 }, set: { value in

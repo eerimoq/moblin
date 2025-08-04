@@ -99,25 +99,25 @@ struct StreamSettingsView: View {
                     }
                 }
                 if database.showAllSettings {
-                    if stream.getProtocol() == .srt {
+                    switch stream.getProtocol() {
+                    case .srt:
                         NavigationLink {
                             StreamSrtSettingsView(
+                                debug: database.debug,
                                 stream: stream,
                                 dnsLookupStrategy: stream.srt.dnsLookupStrategy!.rawValue
                             )
                         } label: {
                             Text("SRT(LA)")
                         }
-                    }
-                    if stream.getProtocol() == .rtmp {
+                    case .rtmp:
                         NavigationLink {
                             StreamRtmpSettingsView(stream: stream)
                         } label: {
                             Text("RTMP")
                         }
                         StreamMultiStreamingSettingsView(stream: stream, multiStreaming: stream.multiStreaming)
-                    }
-                    if stream.getProtocol() == .rist {
+                    case .rist:
                         NavigationLink {
                             StreamRistSettingsView(stream: stream)
                         } label: {
