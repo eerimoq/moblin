@@ -5,7 +5,8 @@ private struct PlatformView: View {
     @ObservedObject var createStreamWizard: CreateStreamWizard
 
     var body: some View {
-        if createStreamWizard.platform == .twitch {
+        switch createStreamWizard.platform {
+        case .twitch:
             Section {
                 TextValueView(
                     name: String(localized: "Channel name"),
@@ -15,19 +16,19 @@ private struct PlatformView: View {
             } header: {
                 Text("Twitch")
             }
-        } else if createStreamWizard.platform == .kick {
+        case .kick:
             Section {
                 TextValueView(name: String(localized: "Channel name"), value: createStreamWizard.kickChannelName)
             } header: {
                 Text("Kick")
             }
-        } else if createStreamWizard.platform == .youTube {
+        case .youTube:
             Section {
                 TextValueView(name: String(localized: "Channel handle"), value: createStreamWizard.youTubeHandle)
             } header: {
                 Text("YouTube")
             }
-        } else if createStreamWizard.platform == .afreecaTv {
+        case .afreecaTv:
             Section {
                 TextValueView(
                     name: String(localized: "Channel name"),
@@ -37,6 +38,10 @@ private struct PlatformView: View {
             } header: {
                 Text("AfreecaTV")
             }
+        case .custom:
+            EmptyView()
+        case .obs:
+            EmptyView()
         }
     }
 }
