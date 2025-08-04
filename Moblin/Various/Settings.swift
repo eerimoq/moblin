@@ -3494,7 +3494,7 @@ class SettingsChatBotAlias: Codable, ObservableObject, Identifiable {
 
 class SettingsChatPredefinedMessage: Codable, Identifiable, ObservableObject {
     var id: UUID = .init()
-    @Published var text: String = .init(localized: "Hello chat!")
+    @Published var text: String = ""
 
     enum CodingKeys: CodingKey {
         case id,
@@ -3512,7 +3512,7 @@ class SettingsChatPredefinedMessage: Codable, Identifiable, ObservableObject {
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
-        text = container.decode(.text, String.self, String(localized: "Hello chat!"))
+        text = container.decode(.text, String.self, "")
     }
 }
 

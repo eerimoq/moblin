@@ -420,13 +420,20 @@ private struct PredefinedMessageView: View {
 
     var body: some View {
         NavigationLink {
-            TextEditView(title: String(localized: "Predefined message"), value: predefinedMessage.text) {
+            TextEditView(title: String(localized: "Predefined message"),
+                         value: predefinedMessage.text,
+                         placeholder: String(localized: "Hello chat!"))
+            {
                 predefinedMessage.text = $0
             }
         } label: {
             HStack {
                 DraggableItemPrefixView()
-                Text(predefinedMessage.text)
+                if predefinedMessage.text.isEmpty {
+                    Text("Hello chat!")
+                } else {
+                    Text(predefinedMessage.text)
+                }
                 Spacer()
                 Button {
                     model.sendChatMessage(message: predefinedMessage.text)
@@ -435,6 +442,7 @@ private struct PredefinedMessageView: View {
                     Text("Send message")
                 }
                 .buttonStyle(.borderless)
+                .disabled(predefinedMessage.text.isEmpty)
             }
         }
     }
