@@ -229,7 +229,7 @@ private struct StreamerView: View {
         NavigationLink {
             Form {
                 Section {
-                    NameEditView(name: $streamer.name)
+                    NameEditView(name: $streamer.name, existingNames: remoteControlSettings.streamers)
                 }
                 Section {
                     Toggle("Enabled", isOn: $streamer.enabled)
@@ -339,7 +339,8 @@ struct RemoteControlStreamersView: View {
             List {
                 ForEach(remoteControlSettings.streamers) { streamer in
                     StreamerView(remoteControlSettings: remoteControlSettings,
-                                 remoteControl: remoteControl, streamer: streamer)
+                                 remoteControl: remoteControl,
+                                 streamer: streamer)
                 }
                 .onDelete {
                     remoteControlSettings.streamers.remove(atOffsets: $0)
@@ -359,7 +360,10 @@ struct RemoteControlStreamersView: View {
                 }
             }
             Button {
-                remoteControlSettings.streamers.append(SettingsRemoteControlAssistant())
+                let streamer = SettingsRemoteControlAssistant()
+                streamer.name = makeUniqueName(name: SettingsRemoteControlAssistant.baseName,
+                                               existingNames: remoteControlSettings.streamers)
+                remoteControlSettings.streamers.append(streamer)
             } label: {
                 HCenter {
                     Text("Create")
