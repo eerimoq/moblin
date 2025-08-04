@@ -51,7 +51,8 @@ private struct NetworkSetupDirectView: View {
     @ObservedObject var createStreamWizard: CreateStreamWizard
 
     var body: some View {
-        if createStreamWizard.platform == .twitch {
+        switch createStreamWizard.platform {
+        case .twitch:
             TextValueView(
                 name: String(localized: "Nearby ingest endpoint"),
                 value: createStreamWizard.directIngest
@@ -60,24 +61,28 @@ private struct NetworkSetupDirectView: View {
                 name: String(localized: "Stream key"),
                 value: createStreamWizard.directStreamKey
             )
-        } else if createStreamWizard.platform == .kick {
+        case .kick:
             TextValueView(name: String(localized: "Stream URL"), value: createStreamWizard.directIngest)
             TextValueView(
                 name: String(localized: "Stream key"),
                 value: createStreamWizard.directStreamKey
             )
-        } else if createStreamWizard.platform == .youTube {
+        case .youTube:
             TextValueView(name: String(localized: "Stream URL"), value: createStreamWizard.directIngest)
             TextValueView(
                 name: String(localized: "Stream key"),
                 value: createStreamWizard.directStreamKey
             )
-        } else if createStreamWizard.platform == .afreecaTv {
+        case .afreecaTv:
             TextValueView(name: String(localized: "Stream URL"), value: createStreamWizard.directIngest)
             TextValueView(
                 name: String(localized: "Stream key"),
                 value: createStreamWizard.directStreamKey
             )
+        case .custom:
+            EmptyView()
+        case .obs:
+            EmptyView()
         }
     }
 }

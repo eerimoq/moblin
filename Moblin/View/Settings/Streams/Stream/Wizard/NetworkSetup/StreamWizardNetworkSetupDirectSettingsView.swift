@@ -25,7 +25,8 @@ struct StreamWizardNetworkSetupDirectSettingsView: View {
 
     var body: some View {
         Form {
-            if createStreamWizard.platform == .twitch {
+            switch createStreamWizard.platform {
+            case .twitch:
                 Section {
                     TextField("rtmp://arn03.contribute.live-video.net/app", text: $createStreamWizard.directIngest)
                         .textInputAutocapitalization(.never)
@@ -61,7 +62,7 @@ struct StreamWizardNetworkSetupDirectSettingsView: View {
                         Text(" (requires login).")
                     }
                 }
-            } else if createStreamWizard.platform == .kick {
+            case .kick:
                 Section {
                     TextField(
                         "rtmps://fa723fc1b171.global-contribute.live-video.net",
@@ -96,7 +97,7 @@ struct StreamWizardNetworkSetupDirectSettingsView: View {
                         "Copy from https://kick.com/dashboard/settings/stream (requires login)."
                     )
                 }
-            } else if createStreamWizard.platform == .youTube {
+            case .youTube:
                 Section {
                     TextField(
                         "rtmp://a.rtmp.youtube.com/live2",
@@ -127,7 +128,7 @@ struct StreamWizardNetworkSetupDirectSettingsView: View {
                 } footer: {
                     Text("Copy from https://youtube.com (requires login).")
                 }
-            } else if createStreamWizard.platform == .afreecaTv {
+            case .afreecaTv:
                 Section {
                     TextField(
                         "???",
@@ -158,6 +159,10 @@ struct StreamWizardNetworkSetupDirectSettingsView: View {
                 } footer: {
                     Text("Copy from ??? (requires login).")
                 }
+            case .custom:
+                EmptyView()
+            case .obs:
+                EmptyView()
             }
             Section {
                 NavigationLink {
