@@ -48,7 +48,7 @@ private struct Message: Decodable {
     var id: String
 }
 private struct User: Decodable {
-    var id: String
+    var id: Int
     
 }
 private struct MessageDeletedEvent: Decodable {
