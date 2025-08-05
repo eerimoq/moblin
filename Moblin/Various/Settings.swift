@@ -1485,7 +1485,7 @@ class SettingsWidgetText: Codable, ObservableObject {
     @Published var fontSizeFloat: Float
     @Published var fontDesign: SettingsFontDesign = .default
     @Published var fontWeight: SettingsFontWeight = .regular
-    var fontMonospacedDigits: Bool = false
+    @Published var fontMonospacedDigits: Bool = false
     @Published var alignment: SettingsHorizontalAlignment = .leading
     @Published var horizontalAlignment: SettingsHorizontalAlignment = .leading
     @Published var verticalAlignment: SettingsVerticalAlignment = .top

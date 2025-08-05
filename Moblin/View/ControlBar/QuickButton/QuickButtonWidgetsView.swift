@@ -307,82 +307,103 @@ struct LapTimesWidgetView: View {
     }
 }
 
+private struct WidgetView: View {
+    let model: Model
+    @ObservedObject var database: Database
+    @ObservedObject var widget: SettingsWidget
+    @ObservedObject var sceneWidget: SettingsSceneWidget
+
+    var body: some View {
+        NavigationLink {
+            SceneWidgetSettingsView(
+                sceneWidget: sceneWidget,
+                widget: widget,
+                numericInput: $database.sceneNumericInput
+            )
+        } label: {
+            Toggle(isOn: $widget.enabled) {
+                IconAndTextView(
+                    image: widgetImage(widget: widget),
+                    text: widget.name,
+                    longDivider: true
+                )
+            }
+            .onChange(of: widget.enabled) { _ in
+                model.reloadSpeechToText()
+                model.sceneUpdated(attachCamera: model.isCaptureDeviceWidget(widget: widget))
+            }
+        }
+        if widget.type == .text {
+            if let textEffect = model.getTextEffect(id: widget.id) {
+                let textFormat = loadTextFormat(format: widget.text.formatString)
+                ForEach(widget.text.timers) { timer in
+                    let index = widget.text.timers.firstIndex(where: { $0 === timer }) ?? 0
+                    TimerWidgetView(
+                        name: String(localized: "Timer \(index + 1)"),
+                        timer: timer,
+                        index: index,
+                        textEffect: textEffect,
+                        indented: true
+                    )
+                }
+                ForEach(widget.text.stopwatches) { stopwatch in
+                    let index = widget.text.stopwatches.firstIndex(where: { $0 === stopwatch }) ?? 0
+                    StopwatchWidgetView(
+                        name: String(localized: "Stopwatch \(index + 1)"),
+                        stopwatch: stopwatch,
+                        index: index,
+                        textEffect: textEffect,
+                        indented: true
+                    )
+                }
+                ForEach(widget.text.checkboxes) { checkbox in
+                    let index = widget.text.checkboxes.firstIndex(where: { $0 === checkbox }) ?? 0
+                    CheckboxWidgetView(
+                        name: textFormat.getCheckboxText(index: index),
+                        checkbox: checkbox,
+                        index: index,
+                        textEffect: textEffect,
+                        indented: true
+                    )
+                }
+                ForEach(widget.text.ratings) { rating in
+                    let index = widget.text.ratings.firstIndex(where: { $0 === rating }) ?? 0
+                    RatingWidgetView(
+                        name: String(localized: "Rating \(index + 1)"),
+                        rating: rating,
+                        index: index,
+                        textEffect: textEffect,
+                        indented: true
+                    )
+                }
+                ForEach(widget.text.lapTimes) { lapTimes in
+                    let index = widget.text.lapTimes.firstIndex(where: { $0 === lapTimes }) ?? 0
+                    LapTimesWidgetView(
+                        name: String(localized: "Lap times \(index + 1)"),
+                        lapTimes: lapTimes,
+                        index: index,
+                        textEffect: textEffect,
+                        indented: true
+                    )
+                }
+            }
+        }
+    }
+}
+
 struct QuickButtonWidgetsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
+    @ObservedObject var sceneSelector: SceneSelector
 
     var body: some View {
         Form {
             Section {
                 List {
-                    ForEach(model.widgetsInCurrentScene(onlyEnabled: false)) { widget in
-                        Toggle(isOn: Binding(get: {
-                            widget.enabled
-                        }, set: {
-                            widget.enabled = $0
-                            model.reloadSpeechToText()
-                            model.sceneUpdated(attachCamera: model.isCaptureDeviceWidget(widget: widget))
-                        })) {
-                            IconAndTextView(
-                                image: widgetImage(widget: widget),
-                                text: widget.name,
-                                longDivider: true
-                            )
-                        }
-                        if widget.type == .text {
-                            if let textEffect = model.getTextEffect(id: widget.id) {
-                                let textFormat = loadTextFormat(format: widget.text.formatString)
-                                ForEach(widget.text.timers) { timer in
-                                    let index = widget.text.timers.firstIndex(where: { $0 === timer }) ?? 0
-                                    TimerWidgetView(
-                                        name: "Timer \(index + 1)",
-                                        timer: timer,
-                                        index: index,
-                                        textEffect: textEffect,
-                                        indented: true
-                                    )
-                                }
-                                ForEach(widget.text.stopwatches) { stopwatch in
-                                    let index = widget.text.stopwatches.firstIndex(where: { $0 === stopwatch }) ?? 0
-                                    StopwatchWidgetView(
-                                        name: "Stopwatch \(index + 1)",
-                                        stopwatch: stopwatch,
-                                        index: index,
-                                        textEffect: textEffect,
-                                        indented: true
-                                    )
-                                }
-                                ForEach(widget.text.checkboxes) { checkbox in
-                                    let index = widget.text.checkboxes.firstIndex(where: { $0 === checkbox }) ?? 0
-                                    CheckboxWidgetView(
-                                        name: textFormat.getCheckboxText(index: index),
-                                        checkbox: checkbox,
-                                        index: index,
-                                        textEffect: textEffect,
-                                        indented: true
-                                    )
-                                }
-                                ForEach(widget.text.ratings) { rating in
-                                    let index = widget.text.ratings.firstIndex(where: { $0 === rating }) ?? 0
-                                    RatingWidgetView(
-                                        name: "Rating \(index + 1)",
-                                        rating: rating,
-                                        index: index,
-                                        textEffect: textEffect,
-                                        indented: true
-                                    )
-                                }
-                                ForEach(widget.text.lapTimes) { lapTimes in
-                                    let index = widget.text.lapTimes.firstIndex(where: { $0 === lapTimes }) ?? 0
-                                    LapTimesWidgetView(
-                                        name: "Lap times \(index + 1)",
-                                        lapTimes: lapTimes,
-                                        index: index,
-                                        textEffect: textEffect,
-                                        indented: true
-                                    )
-                                }
-                            }
-                        }
+                    ForEach(model.widgetsInCurrentScene(onlyEnabled: false), id: \.0.id) { widget, sceneWidget in
+                        WidgetView(model: model,
+                                   database: model.database,
+                                   widget: widget,
+                                   sceneWidget: sceneWidget)
                     }
                 }
             }

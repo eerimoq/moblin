@@ -453,7 +453,7 @@ struct WidgetTextSettingsView: View {
                     ForEach(text.timers) { timer in
                         let index = text.timers.firstIndex(where: { $0 === timer }) ?? 0
                         TimerWidgetView(
-                            name: "Timer \(index + 1)",
+                            name: String(localized: "Timer \(index + 1)"),
                             timer: timer,
                             index: index,
                             textEffect: textEffect,
@@ -471,7 +471,7 @@ struct WidgetTextSettingsView: View {
                     ForEach(text.stopwatches) { stopwatch in
                         let index = widget.text.stopwatches.firstIndex(where: { $0 === stopwatch }) ?? 0
                         StopwatchWidgetView(
-                            name: "Stopwatch \(index + 1)",
+                            name: String(localized: "Stopwatch \(index + 1)"),
                             stopwatch: stopwatch,
                             index: index,
                             textEffect: textEffect,
@@ -508,7 +508,7 @@ struct WidgetTextSettingsView: View {
                     ForEach(text.ratings) { rating in
                         let index = text.ratings.firstIndex(where: { $0 === rating }) ?? 0
                         RatingWidgetView(
-                            name: "Rating \(index + 1)",
+                            name: String(localized: "Rating \(index + 1)"),
                             rating: rating,
                             index: index,
                             textEffect: textEffect,
@@ -526,7 +526,7 @@ struct WidgetTextSettingsView: View {
                     ForEach(text.lapTimes) { lapTimes in
                         let index = text.lapTimes.firstIndex(where: { $0 === lapTimes }) ?? 0
                         LapTimesWidgetView(
-                            name: "Lap times \(index + 1)",
+                            name: String(localized: "Lap times \(index + 1)"),
                             lapTimes: lapTimes,
                             index: index,
                             textEffect: textEffect,
@@ -607,15 +607,11 @@ struct WidgetTextSettingsView: View {
                     model.remoteSceneSettingsUpdated()
                 }
             }
-            Toggle(isOn: Binding(get: {
-                text.fontMonospacedDigits
-            }, set: { value in
-                text.fontMonospacedDigits = value
-                model.getTextEffect(id: widget.id)?.setFontMonospacedDigits(enabled: text.fontMonospacedDigits)
-                model.remoteSceneSettingsUpdated()
-            })) {
-                Text("Monospaced digits")
-            }
+            Toggle("Monospaced digits", isOn: $text.fontMonospacedDigits)
+                .onChange(of: text.fontMonospacedDigits) { _ in
+                    model.getTextEffect(id: widget.id)?.setFontMonospacedDigits(enabled: text.fontMonospacedDigits)
+                    model.remoteSceneSettingsUpdated()
+                }
         } header: {
             Text("Font")
         }

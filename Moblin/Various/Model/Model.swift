@@ -201,6 +201,7 @@ class Toast: ObservableObject {
 
 class SceneSelector: ObservableObject {
     @Published var sceneIndex = 0
+    var selectedSceneId = UUID()
 }
 
 class StreamOverlay: ObservableObject {
@@ -344,7 +345,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var streamUptime = StreamUptimeProvider()
     let audio = AudioProvider()
     var settings = Settings()
-    var selectedSceneId = UUID()
     var twitchChat: TwitchChat?
     var twitchEventSub: TwitchEventSub?
     var kickPusher: KickPusher?
@@ -978,10 +978,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func isGForceManagerNeeded() -> Bool {
         for widget in widgetsInCurrentScene(onlyEnabled: true) {
-            guard widget.type == .text else {
+            guard widget.0.type == .text else {
                 continue
             }
-            guard widget.text.needsGForce else {
+            guard widget.0.text.needsGForce else {
                 continue
             }
             return true
@@ -1028,10 +1028,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func isWeatherNeeded() -> Bool {
         for widget in widgetsInCurrentScene(onlyEnabled: true) {
-            guard widget.type == .text else {
+            guard widget.0.type == .text else {
                 continue
             }
-            guard widget.text.needsWeather else {
+            guard widget.0.text.needsWeather else {
                 continue
             }
             return true
@@ -1046,10 +1046,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func isGeographyNeeded() -> Bool {
         for widget in widgetsInCurrentScene(onlyEnabled: true) {
-            guard widget.type == .text else {
+            guard widget.0.type == .text else {
                 continue
             }
-            guard widget.text.needsGeography else {
+            guard widget.0.text.needsGeography else {
                 continue
             }
             return true
@@ -2627,7 +2627,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func preferredCamera(position: AVCaptureDevice.Position) -> AVCaptureDevice? {
-        if let scene = findEnabledScene(id: selectedSceneId) {
+        if let scene = findEnabledScene(id: sceneSelector.selectedSceneId) {
             if position == .back {
                 return AVCaptureDevice(uniqueID: scene.backCameraId)
             } else if position == .front {

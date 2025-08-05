@@ -344,10 +344,10 @@ extension Model {
     }
 
     private func setSceneId(id: UUID) {
-        selectedSceneId = id
+        sceneSelector.selectedSceneId = id
         remoteControlStreamer?.stateChanged(state: RemoteControlState(scene: id))
         if isWatchLocal() {
-            sendSceneToWatch(id: selectedSceneId)
+            sendSceneToWatch(id: sceneSelector.selectedSceneId)
             sendZoomPresetsToWatch()
             sendZoomPresetToWatch()
         }
@@ -358,7 +358,7 @@ extension Model {
     }
 
     func getSelectedScene() -> SettingsScene? {
-        return findEnabledScene(id: selectedSceneId)
+        return findEnabledScene(id: sceneSelector.selectedSceneId)
     }
 
     func showSceneSettings(scene: SettingsScene) {
@@ -375,7 +375,7 @@ extension Model {
     }
 
     func selectScene(id: UUID) {
-        guard id != selectedSceneId else {
+        guard id != sceneSelector.selectedSceneId else {
             return
         }
         if let index = findEnabledSceneIndex(id: id) {
@@ -789,7 +789,7 @@ extension Model {
         switch widget.type {
         case .scene:
             if let scene = database.scenes.first(where: { $0.id == widget.scene.sceneId }) {
-                for widget in getSceneWidgets(scene: scene, onlyEnabled: false) where
+                for (widget, _) in getSceneWidgets(scene: scene, onlyEnabled: false) where
                     isCaptureDeviceWidget(widget: widget)
                 {
                     return true
@@ -856,23 +856,23 @@ extension Model {
         return scene.fillFrame
     }
 
-    func widgetsInCurrentScene(onlyEnabled: Bool) -> [SettingsWidget] {
+    func widgetsInCurrentScene(onlyEnabled: Bool) -> [(SettingsWidget, SettingsSceneWidget)] {
         guard let scene = getSelectedScene() else {
             return []
         }
         var found: [UUID] = []
         return getSceneWidgets(scene: scene, onlyEnabled: onlyEnabled).filter {
-            if found.contains($0.id) {
+            if found.contains($0.0.id) {
                 return false
             } else {
-                found.append($0.id)
+                found.append($0.0.id)
                 return true
             }
         }
     }
 
-    private func getSceneWidgets(scene: SettingsScene, onlyEnabled: Bool) -> [SettingsWidget] {
-        var widgets: [SettingsWidget] = []
+    private func getSceneWidgets(scene: SettingsScene, onlyEnabled: Bool) -> [(SettingsWidget, SettingsSceneWidget)] {
+        var widgets: [(SettingsWidget, SettingsSceneWidget)] = []
         for sceneWidget in scene.widgets {
             guard let widget = findWidget(id: sceneWidget.widgetId) else {
                 continue
@@ -880,7 +880,7 @@ extension Model {
             guard !onlyEnabled || widget.enabled else {
                 continue
             }
-            widgets.append(widget)
+            widgets.append((widget, sceneWidget))
             guard widget.type == .scene else {
                 continue
             }
@@ -1134,7 +1134,7 @@ extension Model {
     }
 
     func switchToNextSceneRoundRobin() {
-        guard let currentSceneIndex = findEnabledSceneIndex(id: selectedSceneId) else {
+        guard let currentSceneIndex = findEnabledSceneIndex(id: sceneSelector.selectedSceneId) else {
             return
         }
         let nextSceneIndex = (currentSceneIndex + 1) % enabledScenes.count

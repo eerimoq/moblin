@@ -15,6 +15,8 @@ private struct SceneItemView: View {
                     .onChange(of: scene.enabled) { _ in
                         if model.getSelectedScene() === scene {
                             model.resetSelectedScene()
+                        } else {
+                            model.sceneSelector.sceneIndex += 0
                         }
                     }
             }

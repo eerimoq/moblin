@@ -35,7 +35,7 @@ extension Model {
             sendZoomPresetsToWatch()
             sendZoomPresetToWatch()
             sendScenesToWatchLocal()
-            sendSceneToWatch(id: selectedSceneId)
+            sendSceneToWatch(id: sceneSelector.selectedSceneId)
             sendWorkoutToWatch()
             resetWorkoutStats()
             trySendNextChatPostToWatch()

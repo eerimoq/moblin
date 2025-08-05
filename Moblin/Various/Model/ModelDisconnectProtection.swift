@@ -3,7 +3,7 @@ import Foundation
 extension Model {
     func updateDisconnectProtectionVideoSourceConnected() {
         guard let fallbackSceneId = database.disconnectProtection.fallbackSceneId,
-              selectedSceneId == fallbackSceneId,
+              sceneSelector.selectedSceneId == fallbackSceneId,
               let liveSceneId = database.disconnectProtection.liveSceneId
         else {
             return
@@ -15,11 +15,11 @@ extension Model {
     }
 
     func updateDisconnectProtectionVideoSourceDisconnected() {
-        guard !isSceneVideoSourceActive(sceneId: selectedSceneId) else {
+        guard !isSceneVideoSourceActive(sceneId: sceneSelector.selectedSceneId) else {
             return
         }
         guard let liveSceneId = database.disconnectProtection.liveSceneId,
-              selectedSceneId == liveSceneId,
+              sceneSelector.selectedSceneId == liveSceneId,
               let fallbackSceneId = database.disconnectProtection.fallbackSceneId
         else {
             return

@@ -745,7 +745,7 @@ extension Model {
     }
 
     private func statusCameraText() -> String {
-        return getCameraPositionName(scene: findEnabledScene(id: selectedSceneId))
+        return getCameraPositionName(scene: findEnabledScene(id: sceneSelector.selectedSceneId))
     }
 
     func updateStatusCameraText() {
