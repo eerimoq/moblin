@@ -79,6 +79,7 @@ struct SubscriptionEvent: Decodable {
     var chatroom_id: Int
     var username: String
     var months: Int
+
 }
 
 struct GiftedSubscriptionsEvent: Decodable {

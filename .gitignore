@@ -105,13 +105,3 @@ Moblin/Moblin.entitlements
 Moblin/Info.plist
 Moblin.xcodeproj/xcshareddata/xcschemes/Moblin Watch.xcscheme
 Moblin.xcodeproj/project.pbxproj
-Moblin/Moblin.entitlements
-/Moblin/Integrations
-Moblin/Integrations/Tesla/Protobuf/vcsec.pb.swift
-/Moblin/Integrations
-Moblin/Moblin.entitlements
-Moblin/Info.plist
-Moblin.xcodeproj/xcshareddata/xcschemes/Moblin Watch.xcscheme
-Moblin Screen Recording/Moblin Screen Recording.entitlements
-Moblin.xcodeproj/project.pbxproj
-*.plist
