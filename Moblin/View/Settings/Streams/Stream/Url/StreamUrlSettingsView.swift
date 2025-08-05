@@ -108,20 +108,20 @@ private struct SrtHelpView: View {
 struct StreamUrlSettingsView: View {
     @EnvironmentObject var model: Model
     @Environment(\.dismiss) var dismiss
-    let stream: SettingsStream
+    @ObservedObject var stream: SettingsStream
     @State var value: String
     @State var show: Bool = false
     @State var changed: Bool = false
     @State var submitted: Bool = false
-    @State var error = ""
+    @State var error: String?
 
-    func submitUrl() {
+    private func submitUrl() {
         guard !submitted else {
             return
         }
         value = cleanUrl(url: value)
-        if let message = isValidUrl(url: value) {
-            error = message
+        if isValidUrl(url: value) != nil {
+            dismiss()
             return
         }
         submitted = true
@@ -141,6 +141,7 @@ struct StreamUrlSettingsView: View {
                         }
                         .submitLabel(.done)
                         .onChange(of: value) { _ in
+                            error = isValidUrl(url: cleanUrl(url: value))
                             changed = true
                             if value.contains("\n") {
                                 value = value.replacingOccurrences(of: "\n", with: "")
@@ -165,7 +166,9 @@ struct StreamUrlSettingsView: View {
                 }
             } footer: {
                 VStack(alignment: .leading) {
-                    FormFieldError(error: error)
+                    if let error {
+                        FormFieldError(error: error)
+                    }
                     Text("Do not share your URL with anyone or they can hijack your channel!")
                         .bold()
                     RtmpHelpView(stream: stream)
@@ -185,21 +188,21 @@ struct StreamUrlSettingsView: View {
 struct StreamMultiStreamingUrlView: View {
     @EnvironmentObject var model: Model
     @Environment(\.dismiss) var dismiss
-    var stream: SettingsStream
-    var destination: SettingsStreamMultiStreamingDestination
+    @ObservedObject var stream: SettingsStream
+    @ObservedObject var destination: SettingsStreamMultiStreamingDestination
     @State var value: String
     @State var show: Bool = false
     @State var changed: Bool = false
     @State var submitted: Bool = false
-    @State var error = ""
+    @State var error: String?
 
-    func submitUrl() {
+    private func submitUrl() {
         guard !submitted else {
             return
         }
         value = cleanUrl(url: value)
-        if let message = isValidUrl(url: value, allowedSchemes: ["rtmp", "rtmps"]) {
-            error = message
+        if isValidUrl(url: value, allowedSchemes: ["rtmp", "rtmps"]) != nil {
+            dismiss()
             return
         }
         submitted = true
@@ -219,6 +222,7 @@ struct StreamMultiStreamingUrlView: View {
                         }
                         .submitLabel(.done)
                         .onChange(of: value) { _ in
+                            error = isValidUrl(url: value, allowedSchemes: ["rtmp", "rtmps"])
                             changed = true
                             if value.contains("\n") {
                                 value = value.replacingOccurrences(of: "\n", with: "")
@@ -243,7 +247,9 @@ struct StreamMultiStreamingUrlView: View {
                 }
             } footer: {
                 VStack(alignment: .leading) {
-                    FormFieldError(error: error)
+                    if let error {
+                        FormFieldError(error: error)
+                    }
                     Text("Do not share your URL with anyone or they can hijack your channel!")
                         .bold()
                     RtmpHelpView(stream: stream)
