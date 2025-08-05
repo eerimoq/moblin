@@ -482,7 +482,7 @@ private struct PredefinedMessageView: View {
                     model.sendChatMessage(message: predefinedMessage.text)
                     showingPredefinedMessages = false
                 } label: {
-                    Text("Send message")
+                    Text("Send")
                 }
                 .buttonStyle(.borderless)
                 .disabled(predefinedMessage.text.isEmpty)
