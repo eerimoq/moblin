@@ -127,7 +127,7 @@ extension Model: KickOusherDelegate {
                 user: event.username,
                 text: text,
                 title: String(localized: "New subscriber"),
-                color: .green,
+                color: .cyan,
                 image: "party.popper"
             )
         }
@@ -146,7 +146,7 @@ extension Model: KickOusherDelegate {
                 user: user,
                 text: text,
                 title: String(localized: "Gift subscriptions"),
-                color: .green,
+                color: .cyan,
                 image: "gift"
             )
         }
@@ -177,7 +177,7 @@ extension Model: KickOusherDelegate {
                 user: user,
                 text: text,
                 title: String(localized: "Host"),
-                color: .green,
+                color: .orange,
                 image: "person.3"
             )
         }
@@ -191,7 +191,7 @@ extension Model: KickOusherDelegate {
                 user: event.user.username,
                 text: text,
                 title: String(localized: "User Banned"),
-                color: .green,
+                color: .red,
                 image: "nosign"
             )
         }
