@@ -17,13 +17,13 @@ extension Model {
 
     func isSpeechToTextNeeded() -> Bool {
         for widget in widgetsInCurrentScene(onlyEnabled: true) {
-            switch widget.0.type {
+            switch widget.widget.type {
             case .text:
-                if widget.0.text.needsSubtitles {
+                if widget.widget.text.needsSubtitles {
                     return true
                 }
             case .alerts:
-                if widget.0.alerts.needsSubtitles! {
+                if widget.widget.alerts.needsSubtitles! {
                     return true
                 }
             default:

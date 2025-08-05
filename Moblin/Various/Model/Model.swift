@@ -978,10 +978,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func isGForceManagerNeeded() -> Bool {
         for widget in widgetsInCurrentScene(onlyEnabled: true) {
-            guard widget.0.type == .text else {
+            guard widget.widget.type == .text else {
                 continue
             }
-            guard widget.0.text.needsGForce else {
+            guard widget.widget.text.needsGForce else {
                 continue
             }
             return true
@@ -1028,10 +1028,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func isWeatherNeeded() -> Bool {
         for widget in widgetsInCurrentScene(onlyEnabled: true) {
-            guard widget.0.type == .text else {
+            guard widget.widget.type == .text else {
                 continue
             }
-            guard widget.0.text.needsWeather else {
+            guard widget.widget.text.needsWeather else {
                 continue
             }
             return true
@@ -1046,10 +1046,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func isGeographyNeeded() -> Bool {
         for widget in widgetsInCurrentScene(onlyEnabled: true) {
-            guard widget.0.type == .text else {
+            guard widget.widget.type == .text else {
                 continue
             }
-            guard widget.0.text.needsGeography else {
+            guard widget.widget.text.needsGeography else {
                 continue
             }
             return true

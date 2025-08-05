@@ -399,11 +399,11 @@ struct QuickButtonWidgetsView: View {
         Form {
             Section {
                 List {
-                    ForEach(model.widgetsInCurrentScene(onlyEnabled: false), id: \.0.id) { widget, sceneWidget in
+                    ForEach(model.widgetsInCurrentScene(onlyEnabled: false)) { widget in
                         WidgetView(model: model,
                                    database: model.database,
-                                   widget: widget,
-                                   sceneWidget: sceneWidget)
+                                   widget: widget.widget,
+                                   sceneWidget: widget.sceneWidget)
                     }
                 }
             }

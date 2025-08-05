@@ -2,6 +2,15 @@ import AVFoundation
 import CoreLocation
 import SwiftUI
 
+struct WidgetInScene: Identifiable {
+    var id: UUID {
+        widget.id
+    }
+
+    let widget: SettingsWidget
+    let sceneWidget: SettingsSceneWidget
+}
+
 extension Model {
     private func reloadImageEffects() {
         imageEffects.removeAll()
@@ -789,8 +798,8 @@ extension Model {
         switch widget.type {
         case .scene:
             if let scene = database.scenes.first(where: { $0.id == widget.scene.sceneId }) {
-                for (widget, _) in getSceneWidgets(scene: scene, onlyEnabled: false) where
-                    isCaptureDeviceWidget(widget: widget)
+                for widget in getSceneWidgets(scene: scene, onlyEnabled: false) where
+                    isCaptureDeviceWidget(widget: widget.widget)
                 {
                     return true
                 }
@@ -856,23 +865,23 @@ extension Model {
         return scene.fillFrame
     }
 
-    func widgetsInCurrentScene(onlyEnabled: Bool) -> [(SettingsWidget, SettingsSceneWidget)] {
+    func widgetsInCurrentScene(onlyEnabled: Bool) -> [WidgetInScene] {
         guard let scene = getSelectedScene() else {
             return []
         }
         var found: [UUID] = []
         return getSceneWidgets(scene: scene, onlyEnabled: onlyEnabled).filter {
-            if found.contains($0.0.id) {
+            if found.contains($0.widget.id) {
                 return false
             } else {
-                found.append($0.0.id)
+                found.append($0.widget.id)
                 return true
             }
         }
     }
 
-    private func getSceneWidgets(scene: SettingsScene, onlyEnabled: Bool) -> [(SettingsWidget, SettingsSceneWidget)] {
-        var widgets: [(SettingsWidget, SettingsSceneWidget)] = []
+    private func getSceneWidgets(scene: SettingsScene, onlyEnabled: Bool) -> [WidgetInScene] {
+        var widgets: [WidgetInScene] = []
         for sceneWidget in scene.widgets {
             guard let widget = findWidget(id: sceneWidget.widgetId) else {
                 continue
@@ -880,7 +889,7 @@ extension Model {
             guard !onlyEnabled || widget.enabled else {
                 continue
             }
-            widgets.append((widget, sceneWidget))
+            widgets.append(WidgetInScene(widget: widget, sceneWidget: sceneWidget))
             guard widget.type == .scene else {
                 continue
             }

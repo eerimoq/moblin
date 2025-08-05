@@ -52,27 +52,23 @@ private struct MessageDeletedEvent: Decodable {
     var message: Message
 }
 
-private struct User: Decodable {
+struct User: Decodable {
     var id: Int
+    var slug: String
+    var username: String
+}
+
+struct Moderator: Decodable {
+    var id: Int
+    var slug: String
+    var username: String
 }
 
 struct UserBannedEvent: Decodable {
     var id: String
-    var user: BannedUser
+    var user: User
     var banned_by: Moderator
     var permanent: Bool
-
-    struct BannedUser: Decodable {
-        var id: Int
-        var slug: String
-        var username: String
-    }
-
-    struct Moderator: Decodable {
-        var id: Int
-        var slug: String
-        var username: String
-    }
 }
 
 struct SubscriptionEvent: Decodable {

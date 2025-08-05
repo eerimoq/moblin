@@ -190,7 +190,7 @@ extension Model: KickOusherDelegate {
             self.appendKickChatAlertMessage(
                 user: event.user.username,
                 text: text,
-                title: String(localized: "User Banned"),
+                title: String(localized: "User banned"),
                 color: .red,
                 image: "nosign"
             )
