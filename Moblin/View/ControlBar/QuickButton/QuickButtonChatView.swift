@@ -413,6 +413,29 @@ private struct PredefinedMessagesToolbar: ToolbarContent {
     }
 }
 
+private struct TagButtonView: View {
+    let tag: String
+    @Binding var enabled: Bool
+
+    var body: some View {
+        if enabled {
+            Button {
+                enabled.toggle()
+            } label: {
+                Text(tag)
+            }
+            .buttonStyle(.borderedProminent)
+        } else {
+            Button {
+                enabled.toggle()
+            } label: {
+                Text(tag)
+            }
+            .buttonStyle(.bordered)
+        }
+    }
+}
+
 private struct PredefinedMessageView: View {
     let model: Model
     @ObservedObject var predefinedMessage: SettingsChatPredefinedMessage
@@ -420,15 +443,35 @@ private struct PredefinedMessageView: View {
 
     var body: some View {
         NavigationLink {
-            TextEditView(title: String(localized: "Predefined message"),
-                         value: predefinedMessage.text,
-                         placeholder: String(localized: "Hello chat!"))
-            {
-                predefinedMessage.text = $0
+            Form {
+                Section {
+                    TextEditNavigationView(title: String(localized: "Text"),
+                                           value: predefinedMessage.text,
+                                           onSubmit: {
+                                               predefinedMessage.text = $0
+                                           },
+                                           placeholder: String(localized: "Hello chat!"))
+                }
+                Section {
+                    HStack {
+                        Spacer()
+                        TagButtonView(tag: SettingsChatPredefinedMessage.tagRed, enabled: $predefinedMessage.redTag)
+                        TagButtonView(tag: SettingsChatPredefinedMessage.tagGreen, enabled: $predefinedMessage.greenTag)
+                        TagButtonView(tag: SettingsChatPredefinedMessage.tagBlue, enabled: $predefinedMessage.blueTag)
+                        TagButtonView(
+                            tag: SettingsChatPredefinedMessage.tagYellow,
+                            enabled: $predefinedMessage.yellowTag
+                        )
+                    }
+                } header: {
+                    Text("Tags")
+                }
             }
+            .navigationTitle("Predefined message")
         } label: {
             HStack {
                 DraggableItemPrefixView()
+                Text(predefinedMessage.tagsString())
                 if predefinedMessage.text.isEmpty {
                     Text("Hello chat!")
                 } else {
@@ -453,13 +496,53 @@ private struct PredefinedMessagesView: View {
     @ObservedObject var chat: SettingsChat
     @Binding var showingPredefinedMessages: Bool
     @State var messageToSend: UUID?
+    @State var redTag = false
+    @State var greenTag = false
+    @State var blueTag = false
+    @State var yellowTag = false
+
+    private func filteredMessages() -> [SettingsChatPredefinedMessage] {
+        guard redTag || greenTag || blueTag || yellowTag else {
+            return chat.predefinedMessages
+        }
+        var messages: [SettingsChatPredefinedMessage] = []
+        for message in chat.predefinedMessages {
+            var shouldAdd = true
+            if redTag, !message.redTag {
+                shouldAdd = false
+            }
+            if greenTag, !message.greenTag {
+                shouldAdd = false
+            }
+            if blueTag, !message.blueTag {
+                shouldAdd = false
+            }
+            if yellowTag, !message.yellowTag {
+                shouldAdd = false
+            }
+            if shouldAdd {
+                messages.append(message)
+            }
+        }
+        return messages
+    }
 
     var body: some View {
         NavigationStack {
             Form {
                 Section {
+                    HStack {
+                        Text("Filter")
+                        Spacer()
+                        TagButtonView(tag: SettingsChatPredefinedMessage.tagRed, enabled: $redTag)
+                        TagButtonView(tag: SettingsChatPredefinedMessage.tagGreen, enabled: $greenTag)
+                        TagButtonView(tag: SettingsChatPredefinedMessage.tagBlue, enabled: $blueTag)
+                        TagButtonView(tag: SettingsChatPredefinedMessage.tagYellow, enabled: $yellowTag)
+                    }
+                }
+                Section {
                     List {
-                        ForEach(chat.predefinedMessages) { predefinedMessage in
+                        ForEach(filteredMessages()) { predefinedMessage in
                             PredefinedMessageView(model: model,
                                                   predefinedMessage: predefinedMessage,
                                                   showingPredefinedMessages: $showingPredefinedMessages)

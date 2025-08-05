@@ -3493,18 +3493,34 @@ class SettingsChatBotAlias: Codable, ObservableObject, Identifiable {
 }
 
 class SettingsChatPredefinedMessage: Codable, Identifiable, ObservableObject {
+    static let tagRed = "🌹"
+    static let tagGreen = "🐸"
+    static let tagBlue = "🐳"
+    static let tagYellow = "🐥"
     var id: UUID = .init()
     @Published var text: String = ""
+    @Published var redTag: Bool = false
+    @Published var greenTag: Bool = false
+    @Published var blueTag: Bool = false
+    @Published var yellowTag: Bool = false
 
     enum CodingKeys: CodingKey {
         case id,
-             text
+             text,
+             redTag,
+             greenTag,
+             blueTag,
+             yellowTag
     }
 
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
         try container.encode(.text, text)
+        try container.encode(.redTag, redTag)
+        try container.encode(.greenTag, greenTag)
+        try container.encode(.blueTag, blueTag)
+        try container.encode(.yellowTag, yellowTag)
     }
 
     init() {}
@@ -3513,6 +3529,27 @@ class SettingsChatPredefinedMessage: Codable, Identifiable, ObservableObject {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
         text = container.decode(.text, String.self, "")
+        redTag = container.decode(.redTag, Bool.self, false)
+        greenTag = container.decode(.greenTag, Bool.self, false)
+        blueTag = container.decode(.blueTag, Bool.self, false)
+        yellowTag = container.decode(.yellowTag, Bool.self, false)
+    }
+
+    func tagsString() -> String {
+        var tags = ""
+        if redTag {
+            tags += Self.tagRed
+        }
+        if greenTag {
+            tags += Self.tagGreen
+        }
+        if blueTag {
+            tags += Self.tagBlue
+        }
+        if yellowTag {
+            tags += Self.tagYellow
+        }
+        return tags
     }
 }
 
