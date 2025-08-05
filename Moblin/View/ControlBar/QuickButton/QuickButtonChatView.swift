@@ -462,6 +462,10 @@ private struct PredefinedMessageView: View {
                             tag: SettingsChatPredefinedMessage.tagYellow,
                             enabled: $predefinedMessage.yellowTag
                         )
+                        TagButtonView(
+                            tag: SettingsChatPredefinedMessage.tagOrange,
+                            enabled: $predefinedMessage.orangeTag
+                        )
                     }
                 } header: {
                     Text("Tags")
@@ -500,9 +504,10 @@ private struct PredefinedMessagesView: View {
     @State var greenTag = false
     @State var blueTag = false
     @State var yellowTag = false
+    @State var orangeTag = false
 
     private func filteredMessages() -> [SettingsChatPredefinedMessage] {
-        guard redTag || greenTag || blueTag || yellowTag else {
+        guard redTag || greenTag || blueTag || yellowTag || orangeTag else {
             return chat.predefinedMessages
         }
         var messages: [SettingsChatPredefinedMessage] = []
@@ -518,6 +523,9 @@ private struct PredefinedMessagesView: View {
                 shouldAdd = false
             }
             if yellowTag, !message.yellowTag {
+                shouldAdd = false
+            }
+            if orangeTag, !message.orangeTag {
                 shouldAdd = false
             }
             if shouldAdd {
@@ -538,6 +546,7 @@ private struct PredefinedMessagesView: View {
                         TagButtonView(tag: SettingsChatPredefinedMessage.tagGreen, enabled: $greenTag)
                         TagButtonView(tag: SettingsChatPredefinedMessage.tagBlue, enabled: $blueTag)
                         TagButtonView(tag: SettingsChatPredefinedMessage.tagYellow, enabled: $yellowTag)
+                        TagButtonView(tag: SettingsChatPredefinedMessage.tagOrange, enabled: $orangeTag)
                     }
                 }
                 Section {

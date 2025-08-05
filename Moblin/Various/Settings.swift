@@ -3497,12 +3497,14 @@ class SettingsChatPredefinedMessage: Codable, Identifiable, ObservableObject {
     static let tagGreen = "🐸"
     static let tagBlue = "🐳"
     static let tagYellow = "🐥"
+    static let tagOrange = "🦊"
     var id: UUID = .init()
     @Published var text: String = ""
     @Published var redTag: Bool = false
     @Published var greenTag: Bool = false
     @Published var blueTag: Bool = false
     @Published var yellowTag: Bool = false
+    @Published var orangeTag: Bool = false
 
     enum CodingKeys: CodingKey {
         case id,
@@ -3510,7 +3512,8 @@ class SettingsChatPredefinedMessage: Codable, Identifiable, ObservableObject {
              redTag,
              greenTag,
              blueTag,
-             yellowTag
+             yellowTag,
+             orangeTag
     }
 
     func encode(to encoder: Encoder) throws {
@@ -3521,6 +3524,7 @@ class SettingsChatPredefinedMessage: Codable, Identifiable, ObservableObject {
         try container.encode(.greenTag, greenTag)
         try container.encode(.blueTag, blueTag)
         try container.encode(.yellowTag, yellowTag)
+        try container.encode(.orangeTag, orangeTag)
     }
 
     init() {}
@@ -3533,6 +3537,7 @@ class SettingsChatPredefinedMessage: Codable, Identifiable, ObservableObject {
         greenTag = container.decode(.greenTag, Bool.self, false)
         blueTag = container.decode(.blueTag, Bool.self, false)
         yellowTag = container.decode(.yellowTag, Bool.self, false)
+        orangeTag = container.decode(.orangeTag, Bool.self, false)
     }
 
     func tagsString() -> String {
@@ -3548,6 +3553,9 @@ class SettingsChatPredefinedMessage: Codable, Identifiable, ObservableObject {
         }
         if yellowTag {
             tags += Self.tagYellow
+        }
+        if orangeTag {
+            tags += Self.tagOrange
         }
         return tags
     }
