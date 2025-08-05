@@ -82,7 +82,7 @@ struct StreamSettingsView: View {
             }
             Section {
                 NavigationLink {
-                    StreamUrlSettingsView(stream: stream, value: stream.url)
+                    StreamUrlSettingsView(stream: stream)
                 } label: {
                     TextItemView(name: String(localized: "URL"), value: schemeAndAddress(url: stream.url))
                 }

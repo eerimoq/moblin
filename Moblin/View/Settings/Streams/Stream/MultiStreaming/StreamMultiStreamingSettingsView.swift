@@ -13,7 +13,7 @@ private struct DestinationView: View {
                 }
                 Section {
                     NavigationLink {
-                        StreamMultiStreamingUrlView(stream: stream, destination: destination, value: destination.url)
+                        StreamMultiStreamingUrlView(stream: stream, destination: destination)
                             .disabled(stream.enabled && (model.isLive || model.isRecording))
                     } label: {
                         TextItemView(name: String(localized: "URL"), value: schemeAndAddress(url: destination.url))

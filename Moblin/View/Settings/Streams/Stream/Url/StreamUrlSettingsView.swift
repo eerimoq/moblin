@@ -105,10 +105,13 @@ private struct SrtHelpView: View {
     }
 }
 
-struct StreamUrlSettingsView: View {
+private struct UrlSettingsView: View {
     @EnvironmentObject var model: Model
     @Environment(\.dismiss) var dismiss
     @ObservedObject var stream: SettingsStream
+    @Binding var url: String
+    let allowedSchemes: [String]?
+    let showSrtHelp: Bool
     @State var value: String
     @State var show: Bool = false
     @State var changed: Bool = false
@@ -120,12 +123,12 @@ struct StreamUrlSettingsView: View {
             return
         }
         value = cleanUrl(url: value)
-        if isValidUrl(url: value) != nil {
+        if isValidUrl(url: value, allowedSchemes: allowedSchemes) != nil {
             dismiss()
             return
         }
         submitted = true
-        stream.url = value
+        url = value
         model.reloadStreamIfEnabled(stream: stream)
         dismiss()
     }
@@ -141,7 +144,7 @@ struct StreamUrlSettingsView: View {
                         }
                         .submitLabel(.done)
                         .onChange(of: value) { _ in
-                            error = isValidUrl(url: cleanUrl(url: value))
+                            error = isValidUrl(url: value, allowedSchemes: allowedSchemes)
                             changed = true
                             if value.contains("\n") {
                                 value = value.replacingOccurrences(of: "\n", with: "")
@@ -172,7 +175,9 @@ struct StreamUrlSettingsView: View {
                     Text("Do not share your URL with anyone or they can hijack your channel!")
                         .bold()
                     RtmpHelpView(stream: stream)
-                    SrtHelpView()
+                    if showSrtHelp {
+                        SrtHelpView()
+                    }
                 }
             }
         }
@@ -185,82 +190,27 @@ struct StreamUrlSettingsView: View {
     }
 }
 
-struct StreamMultiStreamingUrlView: View {
-    @EnvironmentObject var model: Model
-    @Environment(\.dismiss) var dismiss
+struct StreamUrlSettingsView: View {
     @ObservedObject var stream: SettingsStream
-    @ObservedObject var destination: SettingsStreamMultiStreamingDestination
-    @State var value: String
-    @State var show: Bool = false
-    @State var changed: Bool = false
-    @State var submitted: Bool = false
-    @State var error: String?
-
-    private func submitUrl() {
-        guard !submitted else {
-            return
-        }
-        value = cleanUrl(url: value)
-        if isValidUrl(url: value, allowedSchemes: ["rtmp", "rtmps"]) != nil {
-            dismiss()
-            return
-        }
-        submitted = true
-        destination.url = value
-        model.reloadStreamIfEnabled(stream: stream)
-        dismiss()
-    }
 
     var body: some View {
-        Form {
-            Section {
-                ZStack(alignment: .leading) {
-                    MultiLineTextFieldView(value: $value)
-                        .textInputAutocapitalization(.never)
-                        .onSubmit {
-                            submitUrl()
-                        }
-                        .submitLabel(.done)
-                        .onChange(of: value) { _ in
-                            error = isValidUrl(url: value, allowedSchemes: ["rtmp", "rtmps"])
-                            changed = true
-                            if value.contains("\n") {
-                                value = value.replacingOccurrences(of: "\n", with: "")
-                                submitUrl()
-                            }
-                        }
-                        .disableAutocorrection(true)
-                        .opacity(show ? 1 : 0)
-                    Text(replaceSensitive(value: value, sensitive: true))
-                        .opacity(show ? 0 : 1)
-                }
-                HCenter {
-                    if show {
-                        Button("Hide sensitive URL") {
-                            show = false
-                        }
-                    } else {
-                        Button("Show sensitive URL", role: .destructive) {
-                            show = true
-                        }
-                    }
-                }
-            } footer: {
-                VStack(alignment: .leading) {
-                    if let error {
-                        FormFieldError(error: error)
-                    }
-                    Text("Do not share your URL with anyone or they can hijack your channel!")
-                        .bold()
-                    RtmpHelpView(stream: stream)
-                }
-            }
-        }
-        .onDisappear {
-            if changed && !submitted {
-                submitUrl()
-            }
-        }
-        .navigationTitle("URL")
+        UrlSettingsView(stream: stream,
+                        url: $stream.url,
+                        allowedSchemes: nil,
+                        showSrtHelp: true,
+                        value: stream.url)
+    }
+}
+
+struct StreamMultiStreamingUrlView: View {
+    @ObservedObject var stream: SettingsStream
+    @ObservedObject var destination: SettingsStreamMultiStreamingDestination
+
+    var body: some View {
+        UrlSettingsView(stream: stream,
+                        url: $destination.url,
+                        allowedSchemes: ["rtmp", "rtmps"],
+                        showSrtHelp: false,
+                        value: destination.url)
     }
 }
