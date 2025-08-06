@@ -3594,6 +3594,42 @@ class SettingsChatPredefinedMessage: Codable, Identifiable, ObservableObject {
     }
 }
 
+class SettingsChatPredefinedMessagesFilter: Codable, ObservableObject {
+    @Published var redTag: Bool = false
+    @Published var greenTag: Bool = false
+    @Published var blueTag: Bool = false
+    @Published var yellowTag: Bool = false
+    @Published var orangeTag: Bool = false
+
+    enum CodingKeys: CodingKey {
+        case redTag,
+             greenTag,
+             blueTag,
+             yellowTag,
+             orangeTag
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.redTag, redTag)
+        try container.encode(.greenTag, greenTag)
+        try container.encode(.blueTag, blueTag)
+        try container.encode(.yellowTag, yellowTag)
+        try container.encode(.orangeTag, orangeTag)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        redTag = container.decode(.redTag, Bool.self, false)
+        greenTag = container.decode(.greenTag, Bool.self, false)
+        blueTag = container.decode(.blueTag, Bool.self, false)
+        yellowTag = container.decode(.yellowTag, Bool.self, false)
+        orangeTag = container.decode(.orangeTag, Bool.self, false)
+    }
+}
+
 class SettingsChat: Codable, ObservableObject {
     @Published var fontSize: Float = 19.0
     var usernameColor: RgbColor = .init(red: 255, green: 163, blue: 0)
@@ -3643,6 +3679,7 @@ class SettingsChat: Codable, ObservableObject {
     @Published var showDeletedMessages: Bool = false
     @Published var aliases: [SettingsChatBotAlias] = []
     @Published var predefinedMessages: [SettingsChatPredefinedMessage] = []
+    @Published var predefinedMessagesFilter: SettingsChatPredefinedMessagesFilter = .init()
 
     enum CodingKeys: CodingKey {
         case fontSize,
@@ -3687,7 +3724,8 @@ class SettingsChat: Codable, ObservableObject {
              platform,
              showDeletedMessages,
              aliases,
-             predefinedMessages
+             predefinedMessages,
+             predefinedMessagesFilter
     }
 
     func encode(to encoder: Encoder) throws {
@@ -3735,6 +3773,7 @@ class SettingsChat: Codable, ObservableObject {
         try container.encode(.showDeletedMessages, showDeletedMessages)
         try container.encode(.aliases, aliases)
         try container.encode(.predefinedMessages, predefinedMessages)
+        try container.encode(.predefinedMessagesFilter, predefinedMessagesFilter)
     }
 
     init() {}
@@ -3792,6 +3831,11 @@ class SettingsChat: Codable, ObservableObject {
         showDeletedMessages = container.decode(.showDeletedMessages, Bool.self, false)
         aliases = container.decode(.aliases, [SettingsChatBotAlias].self, [])
         predefinedMessages = container.decode(.predefinedMessages, [SettingsChatPredefinedMessage].self, [])
+        predefinedMessagesFilter = container.decode(
+            .predefinedMessagesFilter,
+            SettingsChatPredefinedMessagesFilter.self,
+            .init()
+        )
     }
 
     func getRotation() -> Double {
