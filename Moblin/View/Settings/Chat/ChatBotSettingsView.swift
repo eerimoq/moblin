@@ -1,61 +1,36 @@
 import SwiftUI
 
 private struct PermissionsSettingsView: View {
-    // periphery:ignore
-    @EnvironmentObject var model: Model
-    let permissions: SettingsChatBotPermissionsCommand
-    @State private var minimumSubscriberTier: Int
-
-    init(permissions: SettingsChatBotPermissionsCommand) {
-        self.permissions = permissions
-        minimumSubscriberTier = permissions.minimumSubscriberTier!
-    }
+    @ObservedObject var permissions: SettingsChatBotPermissionsCommand
 
     var body: some View {
         Form {
             Section {
-                Toggle(isOn: Binding(get: {
-                    permissions.moderatorsEnabled
-                }, set: { value in
-                    permissions.moderatorsEnabled = value
-                }), label: {
-                    Text("Moderators")
-                })
-                Toggle(isOn: Binding(get: {
-                    permissions.subscribersEnabled!
-                }, set: { value in
-                    permissions.subscribersEnabled = value
-                }), label: {
-                    Text("Subscribers")
-                })
-                Picker(selection: $minimumSubscriberTier) {
+                Toggle("Moderators", isOn: $permissions.moderatorsEnabled)
+                Toggle("Subscribers", isOn: $permissions.subscribersEnabled)
+                Picker("Minimum subscriber tier", selection: $permissions.minimumSubscriberTier) {
                     ForEach([3, 2, 1], id: \.self) { tier in
                         Text(String(tier))
                     }
-                } label: {
-                    Text("Minimum subscriber tier")
                 }
-                .onChange(of: minimumSubscriberTier) { value in
-                    permissions.minimumSubscriberTier = value
-                }
-                Toggle(isOn: Binding(get: {
-                    permissions.othersEnabled
-                }, set: { value in
-                    permissions.othersEnabled = value
-                }), label: {
-                    Text("Others")
-                })
+                Toggle("Others", isOn: $permissions.othersEnabled)
             } header: {
                 Text("Permissions")
             }
             Section {
-                Toggle(isOn: Binding(get: {
-                    permissions.sendChatMessages!
-                }, set: { value in
-                    permissions.sendChatMessages! = value
-                }), label: {
-                    Text("Send chat responses")
-                })
+                Picker("Cooldown", selection: $permissions.cooldown) {
+                    Text("-- None --")
+                        .tag(nil as Int?)
+                    ForEach([1, 2, 3, 5, 10, 15, 30, 60], id: \.self) { cooldown in
+                        Text("\(cooldown)s")
+                            .tag(cooldown as Int?)
+                    }
+                }
+            } footer: {
+                Text("Does not apply to you and your moderators.")
+            }
+            Section {
+                Toggle("Send chat responses", isOn: $permissions.sendChatMessages)
             } footer: {
                 Text("""
                 Typically sends a chat message if the user is not allowed to execute the command. Some \

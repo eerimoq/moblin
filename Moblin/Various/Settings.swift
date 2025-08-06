@@ -3444,12 +3444,45 @@ class SettingsChatFilter: Identifiable, Codable, ObservableObject {
     }
 }
 
-class SettingsChatBotPermissionsCommand: Codable {
-    var moderatorsEnabled: Bool = true
-    var subscribersEnabled: Bool? = false
-    var minimumSubscriberTier: Int? = 1
-    var othersEnabled: Bool = false
-    var sendChatMessages: Bool? = false
+class SettingsChatBotPermissionsCommand: Codable, ObservableObject {
+    @Published var moderatorsEnabled: Bool = true
+    @Published var subscribersEnabled: Bool = false
+    @Published var minimumSubscriberTier: Int = 1
+    @Published var othersEnabled: Bool = false
+    @Published var sendChatMessages: Bool = false
+    @Published var cooldown: Int?
+    var latestExecutionTime: ContinuousClock.Instant?
+
+    enum CodingKeys: CodingKey {
+        case moderatorsEnabled,
+             subscribersEnabled,
+             minimumSubscriberTier,
+             othersEnabled,
+             sendChatMessages,
+             cooldown
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.moderatorsEnabled, moderatorsEnabled)
+        try container.encode(.subscribersEnabled, subscribersEnabled)
+        try container.encode(.minimumSubscriberTier, minimumSubscriberTier)
+        try container.encode(.othersEnabled, othersEnabled)
+        try container.encode(.sendChatMessages, sendChatMessages)
+        try container.encode(.cooldown, cooldown)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        moderatorsEnabled = container.decode(.moderatorsEnabled, Bool.self, true)
+        subscribersEnabled = container.decode(.subscribersEnabled, Bool.self, false)
+        minimumSubscriberTier = container.decode(.minimumSubscriberTier, Int.self, 1)
+        othersEnabled = container.decode(.othersEnabled, Bool.self, false)
+        sendChatMessages = container.decode(.sendChatMessages, Bool.self, false)
+        cooldown = container.decode(.cooldown, Int?.self, nil)
+    }
 }
 
 class SettingsChatBotPermissions: Codable {
@@ -7597,60 +7630,12 @@ final class Settings {
             widget.alerts.twitch!.raids = .init()
             store()
         }
-        if realDatabase.chat.botCommandPermissions.tts.subscribersEnabled == nil {
-            realDatabase.chat.botCommandPermissions.tts.subscribersEnabled = false
-            store()
-        }
-        if realDatabase.chat.botCommandPermissions.fix.subscribersEnabled == nil {
-            realDatabase.chat.botCommandPermissions.fix.subscribersEnabled = false
-            store()
-        }
-        if realDatabase.chat.botCommandPermissions.map.subscribersEnabled == nil {
-            realDatabase.chat.botCommandPermissions.map.subscribersEnabled = false
-            store()
-        }
-        if realDatabase.chat.botCommandPermissions.alert!.subscribersEnabled == nil {
-            realDatabase.chat.botCommandPermissions.alert!.subscribersEnabled = false
-            store()
-        }
-        if realDatabase.chat.botCommandPermissions.fax!.subscribersEnabled == nil {
-            realDatabase.chat.botCommandPermissions.fax!.subscribersEnabled = false
-            store()
-        }
         if realDatabase.chat.botCommandPermissions.snapshot == nil {
             realDatabase.chat.botCommandPermissions.snapshot = .init()
             store()
         }
         if realDatabase.chat.botCommandPermissions.filter == nil {
             realDatabase.chat.botCommandPermissions.filter = .init()
-            store()
-        }
-        if realDatabase.chat.botCommandPermissions.tts.minimumSubscriberTier == nil {
-            realDatabase.chat.botCommandPermissions.tts.minimumSubscriberTier = 1
-            store()
-        }
-        if realDatabase.chat.botCommandPermissions.fix.minimumSubscriberTier == nil {
-            realDatabase.chat.botCommandPermissions.fix.minimumSubscriberTier = 1
-            store()
-        }
-        if realDatabase.chat.botCommandPermissions.map.minimumSubscriberTier == nil {
-            realDatabase.chat.botCommandPermissions.map.minimumSubscriberTier = 1
-            store()
-        }
-        if realDatabase.chat.botCommandPermissions.alert!.minimumSubscriberTier == nil {
-            realDatabase.chat.botCommandPermissions.alert!.minimumSubscriberTier = 1
-            store()
-        }
-        if realDatabase.chat.botCommandPermissions.fax!.minimumSubscriberTier == nil {
-            realDatabase.chat.botCommandPermissions.fax!.minimumSubscriberTier = 1
-            store()
-        }
-        if realDatabase.chat.botCommandPermissions.snapshot!.minimumSubscriberTier == nil {
-            realDatabase.chat.botCommandPermissions.snapshot!.minimumSubscriberTier = 1
-            store()
-        }
-        if realDatabase.chat.botCommandPermissions.filter!.minimumSubscriberTier == nil {
-            realDatabase.chat.botCommandPermissions.filter!.minimumSubscriberTier = 1
             store()
         }
         for widget in database.widgets where widget.alerts.twitch!.cheers == nil {
@@ -7708,50 +7693,6 @@ final class Settings {
         }
         if realDatabase.chat.botCommandPermissions.scene == nil {
             realDatabase.chat.botCommandPermissions.scene = .init()
-            store()
-        }
-        if realDatabase.chat.botCommandPermissions.tts.sendChatMessages == nil {
-            realDatabase.chat.botCommandPermissions.tts.sendChatMessages = false
-            store()
-        }
-        if realDatabase.chat.botCommandPermissions.fix.sendChatMessages == nil {
-            realDatabase.chat.botCommandPermissions.fix.sendChatMessages = false
-            store()
-        }
-        if realDatabase.chat.botCommandPermissions.map.sendChatMessages == nil {
-            realDatabase.chat.botCommandPermissions.map.sendChatMessages = false
-            store()
-        }
-        if realDatabase.chat.botCommandPermissions.alert!.sendChatMessages == nil {
-            realDatabase.chat.botCommandPermissions.alert!.sendChatMessages = false
-            store()
-        }
-        if realDatabase.chat.botCommandPermissions.fax!.sendChatMessages == nil {
-            realDatabase.chat.botCommandPermissions.fax!.sendChatMessages = false
-            store()
-        }
-        if realDatabase.chat.botCommandPermissions.snapshot!.sendChatMessages == nil {
-            realDatabase.chat.botCommandPermissions.snapshot!.sendChatMessages = false
-            store()
-        }
-        if realDatabase.chat.botCommandPermissions.filter!.sendChatMessages == nil {
-            realDatabase.chat.botCommandPermissions.filter!.sendChatMessages = false
-            store()
-        }
-        if realDatabase.chat.botCommandPermissions.tesla!.sendChatMessages == nil {
-            realDatabase.chat.botCommandPermissions.tesla!.sendChatMessages = false
-            store()
-        }
-        if realDatabase.chat.botCommandPermissions.audio!.sendChatMessages == nil {
-            realDatabase.chat.botCommandPermissions.audio!.sendChatMessages = false
-            store()
-        }
-        if realDatabase.chat.botCommandPermissions.reaction!.sendChatMessages == nil {
-            realDatabase.chat.botCommandPermissions.reaction!.sendChatMessages = false
-            store()
-        }
-        if realDatabase.chat.botCommandPermissions.scene!.sendChatMessages == nil {
-            realDatabase.chat.botCommandPermissions.scene!.sendChatMessages = false
             store()
         }
         for widget in realDatabase.widgets {
