@@ -5,6 +5,7 @@ struct ChatBotMessage {
     let user: String?
     let isModerator: Bool
     let isSubscriber: Bool
+    let isOwner: Bool
     let userId: String?
     let segments: [ChatPostSegment]
 }

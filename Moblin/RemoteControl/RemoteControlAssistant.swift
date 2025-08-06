@@ -651,6 +651,7 @@ extension RemoteControlAssistant: TwitchChatDelegate {
                                                isAction: isAction,
                                                isModerator: isModerator,
                                                isSubscriber: isSubscriber,
+                                               isOwner: false,
                                                bits: bits)
         chatMessageHistory.append(message)
         if chatMessageHistory.count > 100 {

@@ -68,6 +68,7 @@ extension Model {
                           isAction: false,
                           isSubscriber: false,
                           isModerator: false,
+                          isOwner: false,
                           bits: nil,
                           highlight: .init(
                               kind: kind ?? .redemption,
@@ -106,6 +107,7 @@ extension Model: KickOusherDelegate {
                           isAction: false,
                           isSubscriber: isSubscriber,
                           isModerator: isModerator,
+                          isOwner: false,
                           bits: nil,
                           highlight: highlight,
                           live: true)

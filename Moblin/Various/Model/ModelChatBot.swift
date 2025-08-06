@@ -496,6 +496,8 @@ extension Model {
             return user.lowercased() == stream.twitchChannelName.lowercased()
         case .kick:
             return user.lowercased() == stream.kickChannelName.lowercased()
+        case .youTube:
+            return command.message.isOwner
         default:
             return false
         }

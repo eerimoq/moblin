@@ -350,6 +350,7 @@ extension Model {
         isAction: Bool,
         isSubscriber: Bool,
         isModerator: Bool,
+        isOwner: Bool,
         bits: String?,
         highlight: ChatHighlight?,
         live: Bool
@@ -364,6 +365,7 @@ extension Model {
                     user: user,
                     isModerator: isModerator,
                     isSubscriber: isSubscriber,
+                    isOwner: isOwner,
                     userId: userId,
                     segments: segments
                 ))
