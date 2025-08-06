@@ -438,6 +438,7 @@ private struct TagButtonView: View {
 
 private struct PredefinedMessageView: View {
     let model: Model
+    @ObservedObject var filter: SettingsChatPredefinedMessagesFilter
     @ObservedObject var predefinedMessage: SettingsChatPredefinedMessage
     @Binding var showingPredefinedMessages: Bool
 
@@ -474,7 +475,12 @@ private struct PredefinedMessageView: View {
             .navigationTitle("Predefined message")
         } label: {
             HStack {
-                DraggableItemPrefixView()
+                if filter.isEnabled() {
+                    DraggableItemPrefixView()
+                        .foregroundColor(.gray)
+                } else {
+                    DraggableItemPrefixView()
+                }
                 Text(predefinedMessage.tagsString())
                 if predefinedMessage.text.isEmpty {
                     Text("Hello chat!")
@@ -547,16 +553,22 @@ private struct PredefinedMessagesView: View {
                 }
                 Section {
                     List {
-                        ForEach(filteredMessages()) { predefinedMessage in
+                        let items = ForEach(filteredMessages()) { predefinedMessage in
                             PredefinedMessageView(model: model,
+                                                  filter: filter,
                                                   predefinedMessage: predefinedMessage,
                                                   showingPredefinedMessages: $showingPredefinedMessages)
                         }
-                        .onDelete {
-                            chat.predefinedMessages.remove(atOffsets: $0)
-                        }
-                        .onMove { froms, to in
-                            chat.predefinedMessages.move(fromOffsets: froms, toOffset: to)
+                        if filter.isEnabled() {
+                            items
+                        } else {
+                            items
+                                .onDelete {
+                                    chat.predefinedMessages.remove(atOffsets: $0)
+                                }
+                                .onMove { froms, to in
+                                    chat.predefinedMessages.move(fromOffsets: froms, toOffset: to)
+                                }
                         }
                     }
                     Section {
@@ -569,7 +581,11 @@ private struct PredefinedMessagesView: View {
                         }
                     }
                 } footer: {
-                    SwipeLeftToDeleteHelpView(kind: String(localized: "a predefined message"))
+                    if filter.isEnabled() {
+                        Text("Cannot move or delete predefined messages when filtering.")
+                    } else {
+                        SwipeLeftToDeleteHelpView(kind: String(localized: "a predefined message"))
+                    }
                 }
             }
             .navigationTitle("Predefined messages")

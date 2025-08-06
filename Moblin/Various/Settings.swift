@@ -3628,6 +3628,10 @@ class SettingsChatPredefinedMessagesFilter: Codable, ObservableObject {
         yellowTag = container.decode(.yellowTag, Bool.self, false)
         orangeTag = container.decode(.orangeTag, Bool.self, false)
     }
+
+    func isEnabled() -> Bool {
+        return redTag || greenTag || blueTag || yellowTag || orangeTag
+    }
 }
 
 class SettingsChat: Codable, ObservableObject {
