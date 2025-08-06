@@ -122,7 +122,7 @@ extension Model: KickOusherDelegate {
     func kickPusherSubscription(event: SubscriptionEvent) {
         DispatchQueue.main.async {
             let text = String(localized: "just subscribed! They've been subscribed for \(event.months) months!")
-            self.makeToast(title: "\(event.username) \(text)")
+            self.makeToast(title: "🎉 \(event.username) \(text)")
             self.appendKickChatAlertMessage(
                 user: event.username,
                 text: text,
@@ -141,7 +141,7 @@ extension Model: KickOusherDelegate {
                 just gifted \(event.gifted_usernames.count) subscription(s)! \
                 They've gifted \(event.gifter_total) in total!
                 """)
-            self.makeToast(title: "\(user) \(text)")
+            self.makeToast(title: "🎁 \(user) \(text)")
             self.appendKickChatAlertMessage(
                 user: user,
                 text: text,
@@ -157,7 +157,7 @@ extension Model: KickOusherDelegate {
             let user = event.username
             let baseText = String(localized: "redeemed \(event.reward_title)")
             let text = event.user_input.isEmpty ? baseText : "\(baseText): \(event.user_input)"
-            self.makeToast(title: "\(user) \(text)")
+            self.makeToast(title: "🎁 \(user) \(text)")
             self.appendKickChatAlertMessage(
                 user: user,
                 text: text,
@@ -172,7 +172,7 @@ extension Model: KickOusherDelegate {
         DispatchQueue.main.async {
             let user = event.host_username
             let text = String(localized: "is now hosting with \(event.number_viewers) viewers!")
-            self.makeToast(title: "\(user) \(text)")
+            self.makeToast(title: "📺 \(user) \(text)")
             self.appendKickChatAlertMessage(
                 user: user,
                 text: text,
@@ -186,7 +186,7 @@ extension Model: KickOusherDelegate {
     func kickPusherUserBanned(event: UserBannedEvent) {
         DispatchQueue.main.async {
             let text = String(localized: "was banned from chat!")
-            self.makeToast(title: "\(event.user.username) \(text)")
+            self.makeToast(title: "🚫 \(event.user.username) \(text)")
             self.appendKickChatAlertMessage(
                 user: event.user.username,
                 text: text,
