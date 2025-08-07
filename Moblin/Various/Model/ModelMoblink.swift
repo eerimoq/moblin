@@ -67,9 +67,9 @@ extension Model {
             return
         }
         guard !isMoblinkRelayOnThisDevice(streamerUrl: streamerUrl) else {
+            logger.info("Not adding Moblink relay to ourselves: \(streamerUrl)")
             return
         }
-        // logger.info("xxx relay \(streamerUrl)")
         let relay = MoblinkRelay(
             name: database.moblink.relay.name,
             streamerUrl: streamerUrl,
@@ -97,15 +97,22 @@ extension Model {
     }
 
     func moblinkIpStatusesUpdated() {
-        // logger.info("xxx statuses")
-        // for status in ipStatuses {
-        //     logger.info("xxx   status \(status)")
-        // }
+        var toRemove: IndexSet = []
+        for (index, relay) in moblink.relays.enumerated()
+            where isMoblinkRelayOnThisDevice(streamerUrl: relay.streamerUrl)
+        {
+            logger.info("Removing Moblink relay as it is connected to ourselves.")
+            relay.stop()
+            toRemove.insert(index)
+        }
+        for relay in toRemove {
+            moblink.relays.remove(atOffsets: toRemove)
+        }
     }
 
-    private func isMoblinkRelayOnThisDevice(streamerUrl _: URL) -> Bool {
-        // logger.info("xxx is on this device \(streamerUrl)")
-        return false
+    private func isMoblinkRelayOnThisDevice(streamerUrl: URL) -> Bool {
+        let host = streamerUrl.host()
+        return statusOther.ipStatuses.contains(where: { $0.ipType.formatAddress($0.ip) == host })
     }
 
     func stopMoblinkRelay() {
@@ -199,7 +206,6 @@ extension Model: MoblinkRelayDelegate {
 
 extension Model: MoblinkScannerDelegate {
     func moblinkScannerDiscoveredStreamers(streamers: [MoblinkScannerStreamer]) {
-        // logger.info("xxx xxx \(streamers)")
         moblink.scannerDiscoveredStreamers = streamers
         if !database.moblink.relay.manual {
             startMoblinkRelayAutomatic()
