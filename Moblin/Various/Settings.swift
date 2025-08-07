@@ -5845,7 +5845,7 @@ class SettingsMoblinkStreamer: Codable, ObservableObject {
 }
 
 class SettingsMoblinkRelay: Codable, ObservableObject {
-    var enabled: Bool = false
+    @Published var enabled: Bool = false
     @Published var name: String = randomName()
     @Published var url: String = ""
     @Published var manual: Bool = false

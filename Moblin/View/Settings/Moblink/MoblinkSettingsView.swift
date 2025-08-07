@@ -178,15 +178,10 @@ private struct RelayView: View {
 
     var body: some View {
         Section {
-            Toggle(isOn: Binding(get: {
-                model.database.moblink.relay.enabled
-            }, set: { value in
-                model.database.moblink.relay.enabled = value
-                model.reloadMoblinkRelay()
-                model.objectWillChange.send()
-            })) {
-                Text("Enabled")
-            }
+            Toggle("Enabled", isOn: $relay.enabled)
+                .onChange(of: relay.enabled) { _ in
+                    model.reloadMoblinkRelay()
+                }
             NameEditView(name: $relay.name)
                 .onChange(of: relay.name) { _ in
                     model.reloadMoblinkRelay()
