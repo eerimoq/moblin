@@ -105,9 +105,7 @@ extension Model {
             relay.stop()
             toRemove.insert(index)
         }
-        for relay in toRemove {
-            moblink.relays.remove(atOffsets: toRemove)
-        }
+        moblink.relays.remove(atOffsets: toRemove)
     }
 
     private func isMoblinkRelayOnThisDevice(streamerUrl: URL) -> Bool {
