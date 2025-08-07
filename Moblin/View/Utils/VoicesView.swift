@@ -87,8 +87,7 @@ struct VoicesView: View {
                 continue
             }
             let selectedVoiceIdentifier = textToSpeechLanguageVoices[code] ?? ""
-            let selectedVoiceName = voices.first(where: { $0.identifier == selectedVoiceIdentifier })?
-                .name ?? ""
+            let selectedVoiceName = voices.first(where: { $0.identifier == selectedVoiceIdentifier })?.name ?? ""
             languages.append(.init(name: localize(voice.language),
                                    code: code,
                                    selectedVoiceIdentifier: selectedVoiceIdentifier,
