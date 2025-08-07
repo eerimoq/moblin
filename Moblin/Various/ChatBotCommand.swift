@@ -3,9 +3,9 @@ import Collections
 struct ChatBotMessage {
     let platform: Platform
     let user: String?
+    let isOwner: Bool
     let isModerator: Bool
     let isSubscriber: Bool
-    let isOwner: Bool
     let userId: String?
     let segments: [ChatPostSegment]
 }

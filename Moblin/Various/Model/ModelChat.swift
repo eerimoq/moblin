@@ -363,9 +363,9 @@ extension Model {
                 chatBotMessages.append(ChatBotMessage(
                     platform: platform,
                     user: user,
+                    isOwner: isOwner,
                     isModerator: isModerator,
                     isSubscriber: isSubscriber,
-                    isOwner: isOwner,
                     userId: userId,
                     segments: segments
                 ))
