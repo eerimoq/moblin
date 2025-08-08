@@ -468,6 +468,7 @@ extension Model: TwitchEventSubDelegate {
                           isAction: false,
                           isSubscriber: false,
                           isModerator: false,
+                          isOwner: false,
                           bits: nil,
                           highlight: .init(
                               kind: kind ?? .redemption,
@@ -515,6 +516,7 @@ extension Model: TwitchChatDelegate {
                           isAction: isAction,
                           isSubscriber: isSubscriber,
                           isModerator: isModerator,
+                          isOwner: false,
                           bits: bits,
                           highlight: highlight,
                           live: true)

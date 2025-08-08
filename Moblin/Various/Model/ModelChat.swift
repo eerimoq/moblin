@@ -350,6 +350,7 @@ extension Model {
         isAction: Bool,
         isSubscriber: Bool,
         isModerator: Bool,
+        isOwner: Bool,
         bits: String?,
         highlight: ChatHighlight?,
         live: Bool
@@ -362,6 +363,7 @@ extension Model {
                 chatBotMessages.append(ChatBotMessage(
                     platform: platform,
                     user: user,
+                    isOwner: isOwner,
                     isModerator: isModerator,
                     isSubscriber: isSubscriber,
                     userId: userId,

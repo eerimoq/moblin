@@ -89,11 +89,24 @@ private struct Amount: Codable {
     let simpleText: String
 }
 
+private struct BadgeIcon: Codable {
+    let iconType: String?
+}
+
+private struct AuthorBadgeRenderer: Codable {
+    let icon: BadgeIcon?
+}
+
+private struct AuthorBadge: Codable {
+    let liveChatAuthorBadgeRenderer: AuthorBadgeRenderer?
+}
+
 private struct ChatDescription: Codable {
     let authorName: Author
     let message: Message?
     let purchaseAmountText: Amount?
     let headerSubtext: Message?
+    let authorBadges: [AuthorBadge]?
 }
 
 private struct AddChatItemActionItem: Codable {
@@ -314,6 +327,8 @@ final class YouTubeLiveChat: NSObject {
             return 0
         }
         let nonMutSegments = segments
+        let isOwner = chatDescription.authorBadges?
+            .first(where: { $0.liveChatAuthorBadgeRenderer?.icon?.iconType == "OWNER" }) != nil
         await MainActor.run {
             model.appendChatMessage(platform: .youTube,
                                     messageId: nil,
@@ -327,6 +342,7 @@ final class YouTubeLiveChat: NSObject {
                                     isAction: false,
                                     isSubscriber: false,
                                     isModerator: false,
+                                    isOwner: isOwner,
                                     bits: nil,
                                     highlight: highlight, live: true)
         }

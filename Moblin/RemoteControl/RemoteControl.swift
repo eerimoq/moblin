@@ -66,6 +66,7 @@ struct RemoteControlChatMessage: Codable {
     var isAction: Bool
     var isModerator: Bool
     var isSubscriber: Bool
+    var isOwner: Bool
     var bits: String?
 }
 

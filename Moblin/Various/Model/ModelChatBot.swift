@@ -152,7 +152,7 @@ extension Model {
             command: command
         ) {
             if let user = command.user() {
-                if permissions.sendChatMessages! {
+                if permissions.sendChatMessages {
                     self.sendChatMessage(message: self.formatSnapshotTakenSuccessfully(user: user))
                 }
                 self.takeSnapshot(isChatBot: true, message: self.formatSnapshotTakenBy(user: user))
@@ -160,7 +160,7 @@ extension Model {
                 self.takeSnapshot(isChatBot: true)
             }
         } onNotAllowed: {
-            if permissions.sendChatMessages!, let user = command.user() {
+            if permissions.sendChatMessages, let user = command.user() {
                 self.sendChatMessage(message: self.formatSnapshotTakenNotAllowed(user: user))
             }
         }
@@ -172,7 +172,7 @@ extension Model {
             permissions: permissions,
             command: command
         ) {
-            if permissions.sendChatMessages!, let user = command.user() {
+            if permissions.sendChatMessages, let user = command.user() {
                 self.sendChatMessage(message: self.formatSnapshotTakenSuccessfully(user: user))
             }
             self.takeSnapshotWithCountdown(
@@ -181,7 +181,7 @@ extension Model {
                 user: command.user()
             )
         } onNotAllowed: {
-            if permissions.sendChatMessages!, let user = command.user() {
+            if permissions.sendChatMessages, let user = command.user() {
                 self.sendChatMessage(message: self.formatSnapshotTakenNotAllowed(user: user))
             }
         }
@@ -411,41 +411,59 @@ extension Model {
         onCompleted: @escaping () -> Void,
         onNotAllowed: (() -> Void)? = nil
     ) {
-        var onNotAllowed = onNotAllowed
-        if permissions.sendChatMessages!, onNotAllowed == nil {
-            onNotAllowed = {
-                if permissions.sendChatMessages!, let user = command.user() {
-                    self
-                        .sendChatMessage(
-                            message: String(
-                                localized: "\(user) Sorry, you are not allowed to use this chat bot command 😢"
-                            )
-                        )
-                }
-            }
-        }
-        if command.message.isModerator, permissions.moderatorsEnabled {
+        let now = ContinuousClock.now
+        if isChannelOwner(command: command) {
+            permissions.latestExecutionTime = now
             onCompleted()
             return
         }
-        if command.message.isSubscriber, permissions.subscribersEnabled! {
+        if command.message.isModerator, permissions.moderatorsEnabled {
+            permissions.latestExecutionTime = now
+            onCompleted()
+            return
+        }
+        let onCompleted = {
+            if let cooldown = permissions.cooldown, let latestExecutionTime = permissions.latestExecutionTime {
+                let elapsed = latestExecutionTime.duration(to: now)
+                let timeLeftOfCooldown = .seconds(cooldown) - elapsed
+                guard timeLeftOfCooldown < .seconds(0) else {
+                    if permissions.sendChatMessages, let user = command.user() {
+                        self.sendChatMessage(message: String(localized: """
+                        \(user) Sorry, but this chat bot command is on cooldown for \(Int(timeLeftOfCooldown.seconds)) \
+                        seconds. 😢
+                        """))
+                    }
+                    return
+                }
+            }
+            permissions.latestExecutionTime = now
+            onCompleted()
+        }
+        var onNotAllowed = onNotAllowed
+        if permissions.sendChatMessages, onNotAllowed == nil {
+            onNotAllowed = {
+                if permissions.sendChatMessages, let user = command.user() {
+                    self.sendChatMessage(message: String(localized: """
+                    \(user) Sorry, you are not allowed to use this chat bot command 😢
+                    """))
+                }
+            }
+        }
+        if command.message.isSubscriber, permissions.subscribersEnabled {
             if command.message.platform == .twitch {
-                if permissions.minimumSubscriberTier! > 1 {
+                if permissions.minimumSubscriberTier > 1 {
                     if let userId = command.message.userId {
                         TwitchApi(stream.twitchAccessToken, urlSession).getBroadcasterSubscriptions(
                             broadcasterId: stream.twitchChannelId,
                             userId: userId
                         ) { data in
                             DispatchQueue.main.async {
-                                if let tier = data?.tierAsNumber(),
-                                   tier >= permissions.minimumSubscriberTier!
-                                {
+                                if let tier = data?.tierAsNumber(), tier >= permissions.minimumSubscriberTier {
                                     onCompleted()
                                     return
                                 }
                                 self.executeIfUserAllowedToUseChatBotAfterSubscribeCheck(
                                     permissions: permissions,
-                                    command: command,
                                     onCompleted: onCompleted,
                                     onNotAllowed: onNotAllowed
                                 )
@@ -464,53 +482,36 @@ extension Model {
         }
         executeIfUserAllowedToUseChatBotAfterSubscribeCheck(
             permissions: permissions,
-            command: command,
             onCompleted: onCompleted,
             onNotAllowed: onNotAllowed
         )
     }
 
-    private func executeIfUserAllowedToUseChatBotAfterSubscribeCheck(
-        permissions: SettingsChatBotPermissionsCommand,
-        command: ChatBotCommand,
-        onCompleted: @escaping () -> Void,
-        onNotAllowed: (() -> Void)?
-    ) {
+    private func isChannelOwner(command: ChatBotCommand) -> Bool {
         guard let user = command.user() else {
-            return
+            return false
         }
         switch command.message.platform {
         case .twitch:
-            if isTwitchUserAllowedToUseChatBot(permissions: permissions, user: user) {
-                onCompleted()
-                return
-            }
+            return user.lowercased() == stream.twitchChannelName.lowercased()
         case .kick:
-            if isKickUserAllowedToUseChatBot(permissions: permissions, user: user) {
-                onCompleted()
-                return
-            }
+            return user.lowercased() == stream.kickChannelName.lowercased()
+        case .youTube:
+            return command.message.isOwner
         default:
-            break
+            return false
+        }
+    }
+
+    private func executeIfUserAllowedToUseChatBotAfterSubscribeCheck(
+        permissions: SettingsChatBotPermissionsCommand,
+        onCompleted: @escaping () -> Void,
+        onNotAllowed: (() -> Void)?
+    ) {
+        if permissions.othersEnabled {
+            onCompleted()
+            return
         }
         onNotAllowed?()
-    }
-
-    private func isTwitchUserAllowedToUseChatBot(permissions: SettingsChatBotPermissionsCommand,
-                                                 user: String) -> Bool
-    {
-        if permissions.othersEnabled {
-            return true
-        }
-        return user.lowercased() == stream.twitchChannelName.lowercased()
-    }
-
-    private func isKickUserAllowedToUseChatBot(permissions: SettingsChatBotPermissionsCommand,
-                                               user: String) -> Bool
-    {
-        if permissions.othersEnabled {
-            return true
-        }
-        return user.lowercased() == stream.kickChannelName.lowercased()
     }
 }

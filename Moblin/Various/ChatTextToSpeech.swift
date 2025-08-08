@@ -26,6 +26,8 @@ private let saysByLanguage = [
     "ko": "라고",
     "ru": "говорит",
     "uk": "каже",
+    "it": "dice",
+    "ja": "言う",
 ]
 
 class ChatTextToSpeech: NSObject {

@@ -616,6 +616,7 @@ extension Model: RemoteControlStreamerDelegate {
                               isAction: message.isAction,
                               isSubscriber: message.isSubscriber,
                               isModerator: message.isModerator,
+                              isOwner: message.isOwner,
                               bits: message.bits,
                               highlight: nil,
                               live: live)

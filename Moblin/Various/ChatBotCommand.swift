@@ -3,6 +3,7 @@ import Collections
 struct ChatBotMessage {
     let platform: Platform
     let user: String?
+    let isOwner: Bool
     let isModerator: Bool
     let isSubscriber: Bool
     let userId: String?

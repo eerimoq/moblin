@@ -438,6 +438,7 @@ private struct TagButtonView: View {
 
 private struct PredefinedMessageView: View {
     let model: Model
+    @ObservedObject var filter: SettingsChatPredefinedMessagesFilter
     @ObservedObject var predefinedMessage: SettingsChatPredefinedMessage
     @Binding var showingPredefinedMessages: Bool
 
@@ -474,7 +475,12 @@ private struct PredefinedMessageView: View {
             .navigationTitle("Predefined message")
         } label: {
             HStack {
-                DraggableItemPrefixView()
+                if filter.isEnabled() {
+                    DraggableItemPrefixView()
+                        .foregroundColor(.gray)
+                } else {
+                    DraggableItemPrefixView()
+                }
                 Text(predefinedMessage.tagsString())
                 if predefinedMessage.text.isEmpty {
                     Text("Hello chat!")
@@ -498,34 +504,30 @@ private struct PredefinedMessageView: View {
 private struct PredefinedMessagesView: View {
     let model: Model
     @ObservedObject var chat: SettingsChat
+    @ObservedObject var filter: SettingsChatPredefinedMessagesFilter
     @Binding var showingPredefinedMessages: Bool
     @State var messageToSend: UUID?
-    @State var redTag = false
-    @State var greenTag = false
-    @State var blueTag = false
-    @State var yellowTag = false
-    @State var orangeTag = false
 
     private func filteredMessages() -> [SettingsChatPredefinedMessage] {
-        guard redTag || greenTag || blueTag || yellowTag || orangeTag else {
+        guard filter.redTag || filter.greenTag || filter.blueTag || filter.yellowTag || filter.orangeTag else {
             return chat.predefinedMessages
         }
         var messages: [SettingsChatPredefinedMessage] = []
         for message in chat.predefinedMessages {
             var shouldAdd = true
-            if redTag, !message.redTag {
+            if filter.redTag, !message.redTag {
                 shouldAdd = false
             }
-            if greenTag, !message.greenTag {
+            if filter.greenTag, !message.greenTag {
                 shouldAdd = false
             }
-            if blueTag, !message.blueTag {
+            if filter.blueTag, !message.blueTag {
                 shouldAdd = false
             }
-            if yellowTag, !message.yellowTag {
+            if filter.yellowTag, !message.yellowTag {
                 shouldAdd = false
             }
-            if orangeTag, !message.orangeTag {
+            if filter.orangeTag, !message.orangeTag {
                 shouldAdd = false
             }
             if shouldAdd {
@@ -542,25 +544,31 @@ private struct PredefinedMessagesView: View {
                     HStack {
                         Text("Filter")
                         Spacer()
-                        TagButtonView(tag: SettingsChatPredefinedMessage.tagRed, enabled: $redTag)
-                        TagButtonView(tag: SettingsChatPredefinedMessage.tagGreen, enabled: $greenTag)
-                        TagButtonView(tag: SettingsChatPredefinedMessage.tagBlue, enabled: $blueTag)
-                        TagButtonView(tag: SettingsChatPredefinedMessage.tagYellow, enabled: $yellowTag)
-                        TagButtonView(tag: SettingsChatPredefinedMessage.tagOrange, enabled: $orangeTag)
+                        TagButtonView(tag: SettingsChatPredefinedMessage.tagRed, enabled: $filter.redTag)
+                        TagButtonView(tag: SettingsChatPredefinedMessage.tagGreen, enabled: $filter.greenTag)
+                        TagButtonView(tag: SettingsChatPredefinedMessage.tagBlue, enabled: $filter.blueTag)
+                        TagButtonView(tag: SettingsChatPredefinedMessage.tagYellow, enabled: $filter.yellowTag)
+                        TagButtonView(tag: SettingsChatPredefinedMessage.tagOrange, enabled: $filter.orangeTag)
                     }
                 }
                 Section {
                     List {
-                        ForEach(filteredMessages()) { predefinedMessage in
+                        let items = ForEach(filteredMessages()) { predefinedMessage in
                             PredefinedMessageView(model: model,
+                                                  filter: filter,
                                                   predefinedMessage: predefinedMessage,
                                                   showingPredefinedMessages: $showingPredefinedMessages)
                         }
-                        .onDelete {
-                            chat.predefinedMessages.remove(atOffsets: $0)
-                        }
-                        .onMove { froms, to in
-                            chat.predefinedMessages.move(fromOffsets: froms, toOffset: to)
+                        if filter.isEnabled() {
+                            items
+                        } else {
+                            items
+                                .onDelete {
+                                    chat.predefinedMessages.remove(atOffsets: $0)
+                                }
+                                .onMove { froms, to in
+                                    chat.predefinedMessages.move(fromOffsets: froms, toOffset: to)
+                                }
                         }
                     }
                     Section {
@@ -573,7 +581,11 @@ private struct PredefinedMessagesView: View {
                         }
                     }
                 } footer: {
-                    SwipeLeftToDeleteHelpView(kind: String(localized: "a predefined message"))
+                    if filter.isEnabled() {
+                        Text("Cannot move or delete predefined messages when filtering.")
+                    } else {
+                        SwipeLeftToDeleteHelpView(kind: String(localized: "a predefined message"))
+                    }
                 }
             }
             .navigationTitle("Predefined messages")
@@ -599,6 +611,7 @@ private struct ControlMessagesButtonView: View {
         .sheet(isPresented: $showingPredefinedMessages) {
             PredefinedMessagesView(model: model,
                                    chat: model.database.chat,
+                                   filter: model.database.chat.predefinedMessagesFilter,
                                    showingPredefinedMessages: $showingPredefinedMessages)
         }
     }

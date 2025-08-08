@@ -255,7 +255,6 @@ class RemoteControlAssistant: NSObject {
             server?.stateUpdateHandler = handleStateUpdate
             server?.start(queue: .main)
         } catch {
-            logger.info("xxx remote-control-assistant: Failed to start server with error \(error)")
             connectionErrorMessage = error.localizedDescription
         }
         startRetryStartTimer()
@@ -651,6 +650,7 @@ extension RemoteControlAssistant: TwitchChatDelegate {
                                                isAction: isAction,
                                                isModerator: isModerator,
                                                isSubscriber: isSubscriber,
+                                               isOwner: false,
                                                bits: bits)
         chatMessageHistory.append(message)
         if chatMessageHistory.count > 100 {
