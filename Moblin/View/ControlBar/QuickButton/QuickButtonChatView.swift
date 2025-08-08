@@ -6,6 +6,10 @@ import WrappingHStack
 private struct HighlightMessageView: View {
     let highlight: ChatHighlight
 
+    private func frameHeightEmotes() -> CGFloat {
+        return CGFloat(20 * 1.7) // Using default font size
+    }
+
     var body: some View {
         WrappingHStack(
             alignment: .leading,
@@ -15,7 +19,24 @@ private struct HighlightMessageView: View {
         ) {
             Image(systemName: highlight.image)
             Text(" ")
-            Text(highlight.title)
+
+            ForEach(highlight.titleSegments, id: \.id) { segment in
+                if let text = segment.text {
+                    Text(text)
+                        .foregroundColor(highlight.messageColor())
+                }
+                if let url = segment.url {
+                    CacheAsyncImage(url: url) { image in
+                        image
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                    } placeholder: {
+                        EmptyView()
+                    }
+                    .frame(height: frameHeightEmotes())
+                    Text(" ")
+                }
+            }
         }
         .foregroundColor(highlight.messageColor())
         .padding([.leading], 5)

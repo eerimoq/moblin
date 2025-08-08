@@ -25,6 +25,10 @@ private struct HighlightMessageView: View {
         }
     }
 
+    private func frameHeightEmotes() -> CGFloat {
+        return CGFloat(chat.fontSize * 1.7)
+    }
+
     var body: some View {
         WrappingHStack(
             alignment: .leading,
@@ -34,9 +38,34 @@ private struct HighlightMessageView: View {
         ) {
             Image(systemName: highlight.image)
             Text(" ")
-            Text(highlight.title)
+
+            ForEach(highlight.titleSegments, id: \.id) { segment in
+                if let text = segment.text {
+                    Text(text)
+                        .foregroundColor(highlight.messageColor(defaultColor: chat.messageColor.color()))
+                }
+                if let url = segment.url {
+                    if chat.animatedEmotes {
+                        WebImage(url: url)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .padding([.top, .bottom], chat.shadowColorEnabled ? 1.5 : 0)
+                            .frame(height: frameHeightEmotes())
+                    } else {
+                        CacheAsyncImage(url: url) { image in
+                            image
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                        } placeholder: {
+                            EmptyView()
+                        }
+                        .padding([.top, .bottom], chat.shadowColorEnabled ? 1.5 : 0)
+                        .frame(height: frameHeightEmotes())
+                    }
+                    Text(" ")
+                }
+            }
         }
-        .foregroundColor(highlight.messageColor(defaultColor: chat.messageColor.color()))
         .stroke(color: shadowColor(), width: chat.shadowColorEnabled ? borderWidth : 0)
         .padding([.leading], 5)
         .font(.system(size: CGFloat(chat.fontSize)))

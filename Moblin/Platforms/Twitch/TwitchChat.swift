@@ -596,7 +596,7 @@ final class TwitchChat {
         webSocket.send(string: "PONG \(message.parameters.joined(separator: " "))")
     }
 
-    private func createHighlight(message: ChatMessage, emotes: [ChatMessageEmote]) -> ChatHighlight? {
+    private func createHighlight(message: ChatMessage, emotes _: [ChatMessageEmote]) -> ChatHighlight? {
         if message.announcement {
             return ChatHighlight.makeAnnouncement()
         } else if message.firstMessage {
@@ -604,7 +604,7 @@ final class TwitchChat {
         } else if let sender = message.replySender, let text = message.replyText {
             return ChatHighlight.makeReply(
                 user: sender,
-                segments: createSegments(text: text, emotes: emotes, emotesManager: self.emotes, bits: nil)
+                segments: createSegments(text: text, emotes: [], emotesManager: emotes, bits: nil)
             )
         } else {
             return nil
