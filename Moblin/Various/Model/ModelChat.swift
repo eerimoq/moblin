@@ -79,6 +79,37 @@ class ChatProvider: ObservableObject {
 }
 
 extension Model {
+    func getAvailableChatPlatforms() -> [ChatPlatformSelection] {
+        var platforms: [ChatPlatformSelection] = []
+        
+        let hasTwitch = stream.twitchLoggedIn
+        let hasKick = isKickPusherConfigured() && isKickLoggedIn()
+        
+        // Only show "All" if more than one platform is available
+        if hasTwitch && hasKick {
+            platforms.append(.all)
+        }
+        
+        if hasTwitch {
+            platforms.append(.twitch)
+        }
+        
+        if hasKick {
+            platforms.append(.kick)
+        }
+        
+        // Auto-adjust selection if current selection is no longer available
+        if !platforms.contains(selectedChatPlatform) {
+            if platforms.contains(.all) {
+                selectedChatPlatform = .all
+            } else if let firstPlatform = platforms.first {
+                selectedChatPlatform = firstPlatform
+            }
+        }
+        
+        return platforms
+    }
+    
     func pauseChat() {
         chat.paused = true
         chat.pausedPostsCount = 0
@@ -321,16 +352,48 @@ extension Model {
     }
 
     func sendChatMessage(message: String) {
-        guard stream.twitchLoggedIn else {
-            makeNotLoggedInToTwitchToast()
-            return
+        var sentToAtLeastOne = false
+        var errors: [String] = []
+        
+        // Determine which platforms to send to based on selection
+        let shouldSendToKick = (selectedChatPlatform == .all || selectedChatPlatform == .kick) && 
+                              isKickPusherConfigured() && isKickLoggedIn()
+        let shouldSendToTwitch = (selectedChatPlatform == .all || selectedChatPlatform == .twitch) && 
+                                stream.twitchLoggedIn
+        
+        // Send to Kick if selected and available
+        if shouldSendToKick {
+            sendKickChatMessage(message: message)
+            sentToAtLeastOne = true
+        } else if (selectedChatPlatform == .all || selectedChatPlatform == .kick) && 
+                  isKickPusherConfigured() && !isKickLoggedIn() {
+            errors.append("Kick (not logged in)")
         }
-        TwitchApi(stream.twitchAccessToken, urlSession)
-            .sendChatMessage(broadcasterId: stream.twitchChannelId, message: message) { ok in
-                if !ok {
-                    self.makeErrorToast(title: "Failed to send chat message")
+        
+        // Send to Twitch if selected and available
+        if shouldSendToTwitch {
+            TwitchApi(stream.twitchAccessToken, urlSession)
+                .sendChatMessage(broadcasterId: stream.twitchChannelId, message: message) { ok in
+                    if !ok {
+                        DispatchQueue.main.async {
+                            self.makeErrorToast(title: "Failed to send to Twitch")
+                        }
+                    }
                 }
+            sentToAtLeastOne = true
+        } else if (selectedChatPlatform == .all || selectedChatPlatform == .twitch) && 
+                  !stream.twitchLoggedIn {
+            errors.append("Twitch (not logged in)")
+        }
+        
+        // Show appropriate feedback
+        if !sentToAtLeastOne {
+            if errors.isEmpty {
+                makeErrorToast(title: "No chat platforms configured", subTitle: "Configure Twitch or Kick in Settings")
+            } else {
+                makeErrorToast(title: "Cannot send message", subTitle: "Not logged in to: \(errors.joined(separator: ", "))")
             }
+        }
     }
 
     private func evaluateFilters(user: String?, segments: [ChatPostSegment]) -> SettingsChatFilter? {
@@ -532,24 +595,59 @@ extension Model {
     }
 
     func banUser(post: ChatPost) {
-        guard let user = post.user, let userId = post.userId else {
+        guard let user = post.user else {
             return
         }
-        banUser(user: user, userId: userId, duration: nil)
+        
+        switch post.platform {
+        case .twitch:
+            guard let userId = post.userId else { return }
+            banUser(user: user, userId: userId, duration: nil)
+        case .kick:
+            banKickUser(user: user, duration: nil)
+        default:
+            makeErrorToast(title: "Ban not supported for this platform")
+        }
     }
 
     func timeoutUser(post: ChatPost, duration: Int) {
-        guard let user = post.user, let userId = post.userId else {
+        guard let user = post.user else {
             return
         }
-        banUser(user: user, userId: userId, duration: duration)
+        
+        switch post.platform {
+        case .twitch:
+            guard let userId = post.userId else { return }
+            banUser(user: user, userId: userId, duration: duration)
+        case .kick:
+            banKickUser(user: user, duration: duration)
+        default:
+            makeErrorToast(title: "Timeout not supported for this platform")
+        }
     }
 
     func deleteMessage(post: ChatPost) {
         guard let messageId = post.messageId else {
             return
         }
-        deleteMessage(messageId: messageId)
+        
+        switch post.platform {
+        case .twitch:
+            deleteMessage(messageId: messageId)
+        case .kick:
+            // For Kick we need the chatroom ID, get it from channel info
+            getKickChannelInfo(channelName: stream.kickChannelName) { [weak self] channelInfo in
+                guard let self = self, let channelInfo = channelInfo else {
+                    DispatchQueue.main.async {
+                        self?.makeErrorToast(title: "Failed to get channel info")
+                    }
+                    return
+                }
+                self.deleteKickMessage(messageId: messageId, chatroomId: channelInfo.chatroom.id)
+            }
+        default:
+            makeErrorToast(title: "Delete message not supported for this platform")
+        }
     }
 
     func copyMessage(post: ChatPost) {

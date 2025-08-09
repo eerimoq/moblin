@@ -510,6 +510,8 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
     var twitchRewards: [SettingsStreamTwitchReward] = []
     var kickChatroomId: String = ""
     var kickChannelName: String = ""
+    var kickAccessToken: String = ""
+    var kickLoggedIn: Bool = false
     var youTubeApiKey: String = ""
     @Published var youTubeVideoId: String = ""
     @Published var youTubeHandle: String = ""
@@ -582,6 +584,8 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
              twitchRewards,
              kickChatroomId,
              kickChannelName,
+             kickAccessToken,
+             kickLoggedIn,
              youTubeApiKey,
              youTubeVideoId,
              youTubeHandle,
@@ -648,6 +652,8 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         try container.encode(.twitchRewards, twitchRewards)
         try container.encode(.kickChatroomId, kickChatroomId)
         try container.encode(.kickChannelName, kickChannelName)
+        try container.encode(.kickAccessToken, kickAccessToken)
+        try container.encode(.kickLoggedIn, kickLoggedIn)
         try container.encode(.youTubeApiKey, youTubeApiKey)
         try container.encode(.youTubeVideoId, youTubeVideoId)
         try container.encode(.youTubeHandle, youTubeHandle)
@@ -714,6 +720,8 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         twitchRewards = container.decode(.twitchRewards, [SettingsStreamTwitchReward].self, [])
         kickChatroomId = container.decode(.kickChatroomId, String.self, "")
         kickChannelName = container.decode(.kickChannelName, String.self, "")
+        kickAccessToken = container.decode(.kickAccessToken, String.self, "")
+        kickLoggedIn = container.decode(.kickLoggedIn, Bool.self, false)
         youTubeApiKey = container.decode(.youTubeApiKey, String.self, "")
         youTubeVideoId = container.decode(.youTubeVideoId, String.self, "")
         youTubeHandle = container.decode(.youTubeHandle, String.self, "")
@@ -773,6 +781,8 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         new.twitchChannelId = twitchChannelId
         new.kickChatroomId = kickChatroomId
         new.kickChannelName = kickChannelName
+        new.kickAccessToken = kickAccessToken
+        new.kickLoggedIn = kickLoggedIn
         new.youTubeApiKey = youTubeApiKey
         new.youTubeVideoId = youTubeVideoId
         new.youTubeHandle = youTubeHandle

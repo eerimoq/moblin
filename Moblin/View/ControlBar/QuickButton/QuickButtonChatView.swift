@@ -635,6 +635,86 @@ private struct PredefinedMessagesView: View {
     }
 }
 
+private struct PlatformSelectorButtonView: View {
+    @EnvironmentObject var model: Model
+    @State var showingPlatformSelector = false
+
+    var body: some View {
+        let availablePlatforms = model.getAvailableChatPlatforms()
+        
+        if availablePlatforms.count > 1 {
+            Button {
+                showingPlatformSelector = true
+            } label: {
+                // Show current platform icon
+                if model.selectedChatPlatform.icon == "TwitchLogo" || model.selectedChatPlatform.icon == "KickLogo" {
+                    Image(model.selectedChatPlatform.icon)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 20, height: 20)
+                        .padding(10)
+                } else {
+                    Image(systemName: model.selectedChatPlatform.icon)
+                        .font(.title)
+                        .padding(5)
+                }
+            }
+            .sheet(isPresented: $showingPlatformSelector) {
+                NavigationView {
+                    List {
+                        Section("Send messages to:") {
+                            ForEach(availablePlatforms, id: \.displayName) { platform in
+                                Button {
+                                    model.selectedChatPlatform = platform
+                                    showingPlatformSelector = false
+                                } label: {
+                                    HStack {
+                                        // Platform icon
+                                        if platform.icon == "TwitchLogo" || platform.icon == "KickLogo" {
+                                            Image(platform.icon)
+                                                .resizable()
+                                                .aspectRatio(contentMode: .fit)
+                                                .frame(width: 24, height: 24)
+                                        } else {
+                                            Image(systemName: platform.icon)
+                                                .font(.title2)
+                                                .frame(width: 24, height: 24)
+                                        }
+                                        
+                                        Text(platform.displayName)
+                                            .foregroundColor(.primary)
+                                        
+                                        Spacer()
+                                        
+                                        // Checkmark for selected platform
+                                        if model.selectedChatPlatform.displayName == platform.displayName {
+                                            Image(systemName: "checkmark.circle.fill")
+                                                .foregroundColor(.blue)
+                                                .font(.title2)
+                                        }
+                                    }
+                                    .padding(.vertical, 4)
+                                }
+                                .buttonStyle(.plain)
+                            }
+                        }
+                    }
+                    .navigationTitle("Chat Platform")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            Button("Done") {
+                                showingPlatformSelector = false
+                            }
+                        }
+                    }
+                }
+                .presentationDetents([.medium])
+            }
+        }
+    }
+}
+
 private struct ControlMessagesButtonView: View {
     let model: Model
     @State var showingPredefinedMessages = false
@@ -689,6 +769,7 @@ private struct ControlView: View {
         }
         .padding(5)
         .foregroundColor(.white)
+        PlatformSelectorButtonView()
         ControlMessagesButtonView(model: model)
         ControlAlertsButtonView(quickButtonChat: model.quickButtonChatState)
     }

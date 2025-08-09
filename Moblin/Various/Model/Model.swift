@@ -16,6 +16,28 @@ import TrueTime
 import WatchConnectivity
 import WebKit
 
+enum ChatPlatformSelection: CaseIterable {
+    case all
+    case twitch
+    case kick
+    
+    var displayName: String {
+        switch self {
+        case .all: return "All Platforms"
+        case .twitch: return "Twitch"
+        case .kick: return "Kick"
+        }
+    }
+    
+    var icon: String {
+        switch self {
+        case .all: return "globe"
+        case .twitch: return "TwitchLogo"
+        case .kick: return "KickLogo"
+        }
+    }
+}
+
 private enum BackgroundRunLevel {
     // Streaming and recording
     case full
@@ -279,6 +301,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var showBrowser = false
     @Published var webBrowserUrl: String = ""
     @Published var quickButtonSettingsButton: SettingsQuickButton?
+    @Published var selectedChatPlatform: ChatPlatformSelection = .all
     @Published var bluetoothAllowed = false
     @Published var sceneSettingsPanelSceneId = 1
     @Published var snapshotCountdown = 0
