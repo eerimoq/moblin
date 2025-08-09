@@ -999,6 +999,7 @@ enum SettingsSceneCameraPosition: String, Codable, CaseIterable {
     case external = "External"
     case srtla = "SRT(LA)"
     case rist = "RIST"
+    case rtsp = "RTSP"
     case mediaPlayer = "Media player"
     case screenCapture = "Screen capture"
     case backTripleLowEnergy = "Back triple"
@@ -1030,6 +1031,7 @@ enum SettingsCameraId {
     case rtmp(id: UUID)
     case srtla(id: UUID)
     case rist(id: UUID)
+    case rtsp(id: UUID)
     case mediaPlayer(id: UUID)
     case external(id: String, name: String)
     case screenCapture
@@ -1051,6 +1053,7 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject, Named {
     @Published var rtmpCameraId: UUID = .init()
     @Published var srtlaCameraId: UUID = .init()
     @Published var ristCameraId: UUID = .init()
+    @Published var rtspCameraId: UUID = .init()
     @Published var mediaPlayerCameraId: UUID = .init()
     @Published var externalCameraId: String = ""
     var externalCameraName: String = ""
@@ -1081,6 +1084,7 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject, Named {
              rtmpCameraId,
              srtlaCameraId,
              ristCameraId,
+             rtspCameraId,
              mediaPlayerCameraId,
              externalCameraId,
              externalCameraName,
@@ -1105,6 +1109,7 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject, Named {
         try container.encode(.rtmpCameraId, rtmpCameraId)
         try container.encode(.srtlaCameraId, srtlaCameraId)
         try container.encode(.ristCameraId, ristCameraId)
+        try container.encode(.rtspCameraId, rtspCameraId)
         try container.encode(.mediaPlayerCameraId, mediaPlayerCameraId)
         try container.encode(.externalCameraId, externalCameraId)
         try container.encode(.externalCameraName, externalCameraName)
@@ -1133,6 +1138,7 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject, Named {
         rtmpCameraId = container.decode(.rtmpCameraId, UUID.self, .init())
         srtlaCameraId = container.decode(.srtlaCameraId, UUID.self, .init())
         ristCameraId = container.decode(.ristCameraId, UUID.self, .init())
+        rtspCameraId = container.decode(.rtspCameraId, UUID.self, .init())
         mediaPlayerCameraId = container.decode(.mediaPlayerCameraId, UUID.self, .init())
         externalCameraId = container.decode(.externalCameraId, String.self, "")
         externalCameraName = container.decode(.externalCameraName, String.self, "")
@@ -1180,6 +1186,8 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject, Named {
             return .srtla(id: srtlaCameraId)
         case .rist:
             return .rist(id: ristCameraId)
+        case .rtsp:
+            return .rtsp(id: rtspCameraId)
         case .mediaPlayer:
             return .mediaPlayer(id: mediaPlayerCameraId)
         case .screenCapture:
@@ -1212,6 +1220,9 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject, Named {
         case let .rist(id: id):
             cameraPosition = .rist
             ristCameraId = id
+        case let .rtsp(id: id):
+            cameraPosition = .rtsp
+            rtspCameraId = id
         case let .mediaPlayer(id: id):
             cameraPosition = .mediaPlayer
             mediaPlayerCameraId = id
@@ -1975,6 +1986,7 @@ class SettingsWidgetVideoSource: Codable, ObservableObject {
     @Published var rtmpCameraId: UUID = .init()
     @Published var srtlaCameraId: UUID = .init()
     @Published var ristCameraId: UUID = .init()
+    @Published var rtspCameraId: UUID = .init()
     @Published var mediaPlayerCameraId: UUID = .init()
     @Published var externalCameraId: String = ""
     @Published var externalCameraName: String = ""
@@ -1999,6 +2011,7 @@ class SettingsWidgetVideoSource: Codable, ObservableObject {
              rtmpCameraId,
              srtlaCameraId,
              ristCameraId,
+             rtspCameraId,
              mediaPlayerCameraId,
              externalCameraId,
              externalCameraName,
@@ -2028,6 +2041,7 @@ class SettingsWidgetVideoSource: Codable, ObservableObject {
         try container.encode(.rtmpCameraId, rtmpCameraId)
         try container.encode(.srtlaCameraId, srtlaCameraId)
         try container.encode(.ristCameraId, ristCameraId)
+        try container.encode(.rtspCameraId, rtspCameraId)
         try container.encode(.mediaPlayerCameraId, mediaPlayerCameraId)
         try container.encode(.externalCameraId, externalCameraId)
         try container.encode(.externalCameraName, externalCameraName)
@@ -2053,6 +2067,7 @@ class SettingsWidgetVideoSource: Codable, ObservableObject {
         rtmpCameraId = container.decode(.rtmpCameraId, UUID.self, .init())
         srtlaCameraId = container.decode(.srtlaCameraId, UUID.self, .init())
         ristCameraId = container.decode(.ristCameraId, UUID.self, .init())
+        rtspCameraId = container.decode(.rtspCameraId, UUID.self, .init())
         mediaPlayerCameraId = container.decode(.mediaPlayerCameraId, UUID.self, .init())
         externalCameraId = container.decode(.externalCameraId, String.self, "")
         externalCameraName = container.decode(.externalCameraName, String.self, "")
@@ -2103,6 +2118,8 @@ class SettingsWidgetVideoSource: Codable, ObservableObject {
             return .srtla(id: srtlaCameraId)
         case .rist:
             return .rist(id: ristCameraId)
+        case .rtsp:
+            return .rtsp(id: rtspCameraId)
         case .mediaPlayer:
             return .mediaPlayer(id: mediaPlayerCameraId)
         case .screenCapture:
@@ -2135,6 +2152,9 @@ class SettingsWidgetVideoSource: Codable, ObservableObject {
         case let .rist(id: id):
             cameraPosition = .rist
             ristCameraId = id
+        case let .rtsp(id: id):
+            cameraPosition = .rtsp
+            rtspCameraId = id
         case let .mediaPlayer(id: id):
             cameraPosition = .mediaPlayer
             mediaPlayerCameraId = id
@@ -2485,6 +2505,7 @@ class SettingsWidgetVTuber: Codable, ObservableObject {
     @Published var rtmpCameraId: UUID = .init()
     @Published var srtlaCameraId: UUID = .init()
     @Published var ristCameraId: UUID = .init()
+    @Published var rtspCameraId: UUID = .init()
     @Published var mediaPlayerCameraId: UUID = .init()
     @Published var externalCameraId: String = ""
     @Published var externalCameraName: String = ""
@@ -2501,6 +2522,7 @@ class SettingsWidgetVTuber: Codable, ObservableObject {
              rtmpCameraId,
              srtlaCameraId,
              ristCameraId,
+             rtspCameraId,
              mediaPlayerCameraId,
              externalCameraId,
              externalCameraName,
@@ -2521,6 +2543,7 @@ class SettingsWidgetVTuber: Codable, ObservableObject {
         try container.encode(.rtmpCameraId, rtmpCameraId)
         try container.encode(.srtlaCameraId, srtlaCameraId)
         try container.encode(.ristCameraId, ristCameraId)
+        try container.encode(.rtspCameraId, rtspCameraId)
         try container.encode(.mediaPlayerCameraId, mediaPlayerCameraId)
         try container.encode(.externalCameraId, externalCameraId)
         try container.encode(.externalCameraName, externalCameraName)
@@ -2539,6 +2562,7 @@ class SettingsWidgetVTuber: Codable, ObservableObject {
         rtmpCameraId = container.decode(.rtmpCameraId, UUID.self, .init())
         srtlaCameraId = container.decode(.srtlaCameraId, UUID.self, .init())
         ristCameraId = container.decode(.ristCameraId, UUID.self, .init())
+        rtspCameraId = container.decode(.rtspCameraId, UUID.self, .init())
         mediaPlayerCameraId = container.decode(.mediaPlayerCameraId, UUID.self, .init())
         externalCameraId = container.decode(.externalCameraId, String.self, "")
         externalCameraName = container.decode(.externalCameraName, String.self, "")
@@ -2562,6 +2586,8 @@ class SettingsWidgetVTuber: Codable, ObservableObject {
             return .srtla(id: srtlaCameraId)
         case .rist:
             return .rist(id: ristCameraId)
+        case .rtsp:
+            return .rtsp(id: rtspCameraId)
         case .mediaPlayer:
             return .mediaPlayer(id: mediaPlayerCameraId)
         case .screenCapture:
@@ -2594,6 +2620,9 @@ class SettingsWidgetVTuber: Codable, ObservableObject {
         case let .rist(id: id):
             cameraPosition = .rist
             ristCameraId = id
+        case let .rtsp(id: id):
+            cameraPosition = .rtsp
+            rtspCameraId = id
         case let .mediaPlayer(id: id):
             cameraPosition = .mediaPlayer
             mediaPlayerCameraId = id
@@ -2623,6 +2652,7 @@ class SettingsWidgetPngTuber: Codable, ObservableObject {
     @Published var rtmpCameraId: UUID = .init()
     @Published var srtlaCameraId: UUID = .init()
     @Published var ristCameraId: UUID = .init()
+    @Published var rtspCameraId: UUID = .init()
     @Published var mediaPlayerCameraId: UUID = .init()
     @Published var externalCameraId: String = ""
     @Published var externalCameraName: String = ""
@@ -2637,6 +2667,7 @@ class SettingsWidgetPngTuber: Codable, ObservableObject {
              rtmpCameraId,
              srtlaCameraId,
              ristCameraId,
+             rtspCameraId,
              mediaPlayerCameraId,
              externalCameraId,
              externalCameraName,
@@ -2655,6 +2686,7 @@ class SettingsWidgetPngTuber: Codable, ObservableObject {
         try container.encode(.rtmpCameraId, rtmpCameraId)
         try container.encode(.srtlaCameraId, srtlaCameraId)
         try container.encode(.ristCameraId, ristCameraId)
+        try container.encode(.rtspCameraId, rtspCameraId)
         try container.encode(.mediaPlayerCameraId, mediaPlayerCameraId)
         try container.encode(.externalCameraId, externalCameraId)
         try container.encode(.externalCameraName, externalCameraName)
@@ -2671,6 +2703,7 @@ class SettingsWidgetPngTuber: Codable, ObservableObject {
         rtmpCameraId = container.decode(.rtmpCameraId, UUID.self, .init())
         srtlaCameraId = container.decode(.srtlaCameraId, UUID.self, .init())
         ristCameraId = container.decode(.ristCameraId, UUID.self, .init())
+        rtspCameraId = container.decode(.rtspCameraId, UUID.self, .init())
         mediaPlayerCameraId = container.decode(.mediaPlayerCameraId, UUID.self, .init())
         externalCameraId = container.decode(.externalCameraId, String.self, "")
         externalCameraName = container.decode(.externalCameraName, String.self, "")
@@ -2692,6 +2725,8 @@ class SettingsWidgetPngTuber: Codable, ObservableObject {
             return .srtla(id: srtlaCameraId)
         case .rist:
             return .rist(id: ristCameraId)
+        case .rtsp:
+            return .rtsp(id: rtspCameraId)
         case .mediaPlayer:
             return .mediaPlayer(id: mediaPlayerCameraId)
         case .screenCapture:
@@ -2724,6 +2759,9 @@ class SettingsWidgetPngTuber: Codable, ObservableObject {
         case let .rist(id: id):
             cameraPosition = .rist
             ristCameraId = id
+        case let .rtsp(id: id):
+            cameraPosition = .rtsp
+            rtspCameraId = id
         case let .mediaPlayer(id: id):
             cameraPosition = .mediaPlayer
             mediaPlayerCameraId = id
@@ -4202,6 +4240,7 @@ class SettingsDebug: Codable, ObservableObject {
     @Published var builtinAudioAndVideoDelay: Double = 0.0
     @Published var autoLowPowerMode: Bool = false
     @Published var newSrt: Bool = false
+    @Published var rtspClient: Bool = false
 
     enum CodingKeys: CodingKey {
         case logLevel,
@@ -4239,7 +4278,8 @@ class SettingsDebug: Codable, ObservableObject {
              builtinAudioAndVideoDelay,
              overrideSceneMic,
              autoLowPowerMode,
-             newSrt
+             newSrt,
+             rtspClient
     }
 
     func encode(to encoder: Encoder) throws {
@@ -4276,6 +4316,7 @@ class SettingsDebug: Codable, ObservableObject {
         try container.encode(.builtinAudioAndVideoDelay, builtinAudioAndVideoDelay)
         try container.encode(.autoLowPowerMode, autoLowPowerMode)
         try container.encode(.newSrt, newSrt)
+        try container.encode(.rtspClient, rtspClient)
     }
 
     init() {}
@@ -4316,6 +4357,7 @@ class SettingsDebug: Codable, ObservableObject {
         builtinAudioAndVideoDelay = container.decode(.builtinAudioAndVideoDelay, Double.self, 0.0)
         autoLowPowerMode = container.decode(.autoLowPowerMode, Bool.self, false)
         newSrt = container.decode(.newSrt, Bool.self, false)
+        rtspClient = container.decode(.rtspClient, Bool.self, false)
     }
 }
 
@@ -4574,6 +4616,59 @@ class SettingsRistServer: Codable, ObservableObject {
             port += 1
         }
         return port
+    }
+}
+
+class SettingsRtspClientStream: Codable, Identifiable, ObservableObject, Named {
+    static let baseName = String(localized: "My stream")
+    var id: UUID = .init()
+    @Published var name: String = baseName
+    @Published var url: String = ""
+
+    enum CodingKeys: CodingKey {
+        case id,
+             name,
+             url
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.name, name)
+        try container.encode(.url, url)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        name = container.decode(.name, String.self, Self.baseName)
+        url = container.decode(.url, String.self, "")
+    }
+
+    func camera() -> String {
+        return rtspCamera(name: name)
+    }
+}
+
+class SettingsRtspClient: Codable, ObservableObject {
+    @Published var streams: [SettingsRtspClientStream] = []
+
+    enum CodingKeys: CodingKey {
+        case streams
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.streams, streams)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        streams = container.decode(.streams, [SettingsRtspClientStream].self, [])
     }
 }
 
@@ -6590,6 +6685,7 @@ class Database: Codable, ObservableObject {
     @Published var bigButtons: Bool = false
     var ristServer: SettingsRistServer = .init()
     var disconnectProtection: SettingsDisconnectProtection = .init()
+    var rtspClient: SettingsRtspClient = .init()
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -6685,7 +6781,8 @@ class Database: Codable, ObservableObject {
              selfieStick,
              bigButtons,
              ristServer,
-             disconnectProtection
+             disconnectProtection,
+             rtspClient
     }
 
     func encode(to encoder: Encoder) throws {
@@ -6755,6 +6852,7 @@ class Database: Codable, ObservableObject {
         try container.encode(.bigButtons, bigButtons)
         try container.encode(.ristServer, ristServer)
         try container.encode(.disconnectProtection, disconnectProtection)
+        try container.encode(.rtspClient, rtspClient)
     }
 
     init() {}
@@ -6827,6 +6925,7 @@ class Database: Codable, ObservableObject {
         bigButtons = container.decode(.bigButtons, Bool.self, false)
         ristServer = container.decode(.ristServer, SettingsRistServer.self, .init())
         disconnectProtection = container.decode(.disconnectProtection, SettingsDisconnectProtection.self, .init())
+        rtspClient = container.decode(.rtspClient, SettingsRtspClient.self, .init())
     }
 }
 

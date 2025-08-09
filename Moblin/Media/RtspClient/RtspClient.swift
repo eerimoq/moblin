@@ -5,6 +5,8 @@ import Network
 private let rtspClientQueue = DispatchQueue(label: "com.eerimoq.moblin.rtsp")
 
 protocol RtspClientDelegate: AnyObject {
+    func rtspClientConnected(cameraId: UUID)
+    func rtspClientDisconnected(cameraId: UUID)
     func rtspClientOnVideoBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer)
 }
 
@@ -295,6 +297,7 @@ private class RtpVideo {
 class RtspClient {
     private var state: State
     private var connection: NWConnection?
+    private let cameraId: UUID
     private let url: URL
     fileprivate let latency: Double
     private var username: String?
@@ -310,7 +313,9 @@ class RtspClient {
     private var rtcpVideoConnection: NWConnection?
     weak var delegate: RtspClientDelegate?
 
-    init(url: URL, latency: Double) {
+    init(cameraId: UUID, url: URL, latency: Double) {
+        logger.info("xxx rtsp client \(cameraId)")
+        self.cameraId = cameraId
         self.latency = latency
         username = url.user()
         password = url.password()
@@ -339,6 +344,14 @@ class RtspClient {
         }
         logger.info("rtsp-client: State change \(state) -> \(newState)")
         state = newState
+        switch state {
+        case .disconnected:
+            delegate?.rtspClientDisconnected(cameraId: cameraId)
+        case .streaming:
+            delegate?.rtspClientConnected(cameraId: cameraId)
+        default:
+            break
+        }
     }
 
     private func startInner() {
@@ -677,6 +690,6 @@ class RtspClient {
 
 extension RtspClient: VideoDecoderDelegate {
     func videoDecoderOutputSampleBuffer(_: VideoDecoder, _ sampleBuffer: CMSampleBuffer) {
-        delegate?.rtspClientOnVideoBuffer(cameraId: .init(), sampleBuffer)
+        delegate?.rtspClientOnVideoBuffer(cameraId: cameraId, sampleBuffer)
     }
 }

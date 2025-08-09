@@ -125,6 +125,10 @@ struct DebugSettingsView: View {
                         model.reloadStream()
                         model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
                     }
+                Toggle("RTSP client", isOn: $debug.rtspClient)
+                    .onChange(of: debug.rtspClient) { _ in
+                        model.reloadRtspClient()
+                    }
             } header: {
                 Text("Experimental")
             }

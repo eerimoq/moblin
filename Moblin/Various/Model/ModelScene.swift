@@ -736,6 +736,8 @@ extension Model {
             attachBufferedCamera(cameraId: scene.srtlaCameraId, scene: scene)
         case .rist:
             attachBufferedCamera(cameraId: scene.ristCameraId, scene: scene)
+        case .rtsp:
+            attachBufferedCamera(cameraId: scene.rtspCameraId, scene: scene)
         case .mediaPlayer:
             mediaPlayers[scene.mediaPlayerCameraId]?.activate()
             attachBufferedCamera(cameraId: scene.mediaPlayerCameraId, scene: scene)
@@ -1010,6 +1012,8 @@ extension Model {
             return activeBufferedVideoIds.contains(scene.srtlaCameraId)
         case .rist:
             return activeBufferedVideoIds.contains(scene.ristCameraId)
+        case .rtsp:
+            return activeBufferedVideoIds.contains(scene.rtspCameraId)
         case .external:
             return isExternalCameraConnected(id: scene.externalCameraId)
         default:
@@ -1028,6 +1032,8 @@ extension Model {
             return cameraId == scene.srtlaCameraId
         case .rist:
             return cameraId == scene.ristCameraId
+        case .rtsp:
+            return cameraId == scene.rtspCameraId
         default:
             return false
         }

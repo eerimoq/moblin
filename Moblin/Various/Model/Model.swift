@@ -118,6 +118,7 @@ class Servers: ObservableObject {
     var rtmp: RtmpServer?
     var srtla: SrtlaServer?
     var rist: RistServer?
+    var rtsp: [RtspClient] = []
     @Published var speedAndTotal = noValue
 }
 
@@ -879,6 +880,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         reloadRtmpServer()
         reloadSrtlaServer()
         reloadRistServer()
+        reloadRtspClient()
         ipMonitor.pathUpdateHandler = handleIpStatusUpdate
         ipMonitor.start()
         NotificationCenter.default.addObserver(self,
@@ -1218,6 +1220,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             reloadDjiDevices()
             reloadSrtlaServer()
             reloadRistServer()
+            reloadRtspClient()
             chatTextToSpeech.reset(running: true)
             startWeatherManager()
             startGeographyManager()
@@ -2871,11 +2874,5 @@ extension Model: FaxReceiverDelegate {
         DispatchQueue.main.async {
             self.printAllCatPrinters(image: image)
         }
-    }
-}
-
-extension Model: RtspClientDelegate {
-    func rtspClientOnVideoBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
-        media.appendBufferedVideoSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
     }
 }
