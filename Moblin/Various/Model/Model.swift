@@ -1260,6 +1260,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         stopRtmpServer()
         stopSrtlaServer()
+        stopRtspClient()
         teardownAudioSession()
         chatTextToSpeech.reset(running: false)
         locationManager.stop()

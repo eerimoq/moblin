@@ -36,7 +36,7 @@ extension Model {
         }
     }
 
-    private func stopRtspClient() {
+    func stopRtspClient() {
         for client in servers.rtsp {
             client.stop()
         }

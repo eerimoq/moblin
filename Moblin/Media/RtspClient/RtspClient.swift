@@ -318,7 +318,6 @@ private class RtpVideo {
                 try self.handlePacket(packet: packet)
             } catch {
                 logger.info("rtsp-client: Failed to handle RTP packet with error: \(error)")
-                self.client?.stopInner()
             }
         }
     }
@@ -496,6 +495,10 @@ class RtspClient {
     private var rtcpVideoListener: NWListener?
     private var rtcpVideoConnection: NWConnection?
     weak var delegate: RtspClientDelegate?
+    private var connectTimer = SimpleTimer(queue: rtspClientQueue)
+    private var keepAliveTimer = SimpleTimer(queue: rtspClientQueue)
+    private var started = false
+    private var isAlive = true
 
     init(cameraId: UUID, url: URL, latency: Double) {
         self.cameraId = cameraId
@@ -510,6 +513,7 @@ class RtspClient {
     func start() {
         logger.info("rtsp-client: Start")
         rtspClientQueue.async {
+            self.started = true
             self.startInner()
         }
     }
@@ -517,6 +521,7 @@ class RtspClient {
     func stop() {
         logger.info("rtsp-client: Stop")
         rtspClientQueue.async {
+            self.started = false
             self.stopInner()
         }
     }
@@ -538,6 +543,9 @@ class RtspClient {
     }
 
     private func startInner() {
+        guard started else {
+            return
+        }
         stopInner()
         guard let host = url.host() else {
             return
@@ -557,9 +565,15 @@ class RtspClient {
         rtcpVideoListener?.newConnectionHandler = rtcpVideoNewConnection
         rtcpVideoListener?.start(queue: rtspClientQueue)
         setState(newState: .connecting)
+        connectTimer.startSingleShot(timeout: 5) { [weak self] in
+            self?.startInner()
+        }
+        isAlive = true
     }
 
-    fileprivate func stopInner() {
+    private func stopInner() {
+        connectTimer.stop()
+        keepAliveTimer.stop()
         connection?.cancel()
         connection = nil
         video.stop()
@@ -627,7 +641,23 @@ class RtspClient {
             guard let data else {
                 return
             }
-            logger.info("rtsp-client: Got RTCP \(data)")
+            guard data.count >= 8 else {
+                return
+            }
+            let value = data[0]
+            let version = value >> 6
+            let pt = data[1]
+            guard version == 2 else {
+                logger.info("rtsp-client: Unsupported version \(version)")
+                return
+            }
+            if pt == 200 {
+                var receiverReport = Data(count: 8)
+                receiverReport[0] = 2 << 6
+                receiverReport[1] = 201
+                receiverReport[3] = 1
+                self.rtcpVideoConnection?.send(content: receiverReport, completion: .idempotent)
+            }
             self.receiveRtcpVideoPacket()
         }
     }
@@ -648,7 +678,6 @@ class RtspClient {
                     try self.handleRtspHeader()
                 } catch {
                     logger.info("rtsp-client: Header handling failed with error: \(error)")
-                    self.stopInner()
                 }
             } else {
                 self.receiveRtspHeader()
@@ -663,7 +692,6 @@ class RtspClient {
                 try self.handleResponse(response: response)
             } catch {
                 logger.info("rtsp-client: Response handling failed with error: \(error)")
-                self.stopInner()
                 return
             }
             self.receiveNewRtspHeader()
@@ -746,9 +774,25 @@ class RtspClient {
         }
     }
 
+    private func keepAlive() {
+        guard isAlive else {
+            startInner()
+            return
+        }
+        isAlive = false
+        performGetParameter()
+    }
+
     private func performOptions() {
         let request = Request(url: url, method: "OPTIONS", headers: [:], content: nil) { _ in
             self.performDescribe()
+        }
+        perform(request: request)
+    }
+
+    private func performGetParameter() {
+        let request = Request(url: url, method: "GET_PARAMETER", headers: [:], content: nil) { _ in
+            self.isAlive = true
         }
         perform(request: request)
     }
@@ -823,6 +867,10 @@ class RtspClient {
 
     private func handlePlayResponse(response _: Response) {
         setState(newState: .streaming)
+        connectTimer.stop()
+        keepAliveTimer.startPeriodic(interval: 15) { [weak self] in
+            self?.keepAlive()
+        }
     }
 
     fileprivate func getBasePresentationTimeStamp() -> Double {
