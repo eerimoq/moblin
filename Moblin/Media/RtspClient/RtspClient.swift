@@ -387,7 +387,7 @@ private class RtpVideo {
         }
         if sequenceNumber == nextExpectedSequenceNumber {
             try processBuffer(packet: packet, timestamp: timestamp)
-            nextExpectedSequenceNumber = sequenceNumber + 1
+            nextExpectedSequenceNumber = sequenceNumber &+ 1
             try processOutOfOrderPackets()
         } else if packets.count < 20 {
             packets[sequenceNumber] = packet
@@ -395,13 +395,13 @@ private class RtpVideo {
             logger.info("rtsp-client: Dropping \(packets.count) packets.")
             packets.removeAll()
             data = Data()
-            nextExpectedSequenceNumber = sequenceNumber + 1
+            nextExpectedSequenceNumber = sequenceNumber &+ 1
         }
         receivePacket()
     }
 
     private func processOutOfOrderPackets() throws {
-        guard var nextExpectedSequenceNumber = nextExpectedSequenceNumber else {
+        guard var nextExpectedSequenceNumber else {
             return
         }
         while true {
@@ -413,7 +413,7 @@ private class RtpVideo {
                 pointer.readUInt32(offset: 4)
             }
             try processBuffer(packet: packet, timestamp: timestamp)
-            nextExpectedSequenceNumber += 1
+            nextExpectedSequenceNumber &+= 1
         }
     }
 
