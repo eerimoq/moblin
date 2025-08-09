@@ -20,7 +20,14 @@ struct RtspClientStreamSettingsView: View {
             }
             .navigationTitle("Stream")
         } label: {
-            Text(stream.name)
+            Toggle(isOn: $stream.enabled) {
+                HStack {
+                    Text(stream.name)
+                }
+            }
+            .onChange(of: stream.enabled) { _ in
+                model.reloadRtspClient()
+            }
         }
     }
 }

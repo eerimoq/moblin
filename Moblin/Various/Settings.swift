@@ -4624,11 +4624,13 @@ class SettingsRtspClientStream: Codable, Identifiable, ObservableObject, Named {
     var id: UUID = .init()
     @Published var name: String = baseName
     @Published var url: String = ""
+    @Published var enabled: Bool = false
 
     enum CodingKeys: CodingKey {
         case id,
              name,
-             url
+             url,
+             enabled
     }
 
     func encode(to encoder: Encoder) throws {
@@ -4636,6 +4638,7 @@ class SettingsRtspClientStream: Codable, Identifiable, ObservableObject, Named {
         try container.encode(.id, id)
         try container.encode(.name, name)
         try container.encode(.url, url)
+        try container.encode(.enabled, enabled)
     }
 
     init() {}
@@ -4645,6 +4648,7 @@ class SettingsRtspClientStream: Codable, Identifiable, ObservableObject, Named {
         id = container.decode(.id, UUID.self, .init())
         name = container.decode(.name, String.self, Self.baseName)
         url = container.decode(.url, String.self, "")
+        enabled = container.decode(.enabled, Bool.self, false)
     }
 
     func camera() -> String {
