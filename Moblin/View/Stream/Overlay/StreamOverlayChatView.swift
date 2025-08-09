@@ -28,6 +28,7 @@ private struct HighlightMessageView: View {
     private func frameHeightEmotes() -> CGFloat {
         return CGFloat(chat.fontSize * 1.7)
     }
+
     var body: some View {
         WrappingHStack(
             alignment: .leading,

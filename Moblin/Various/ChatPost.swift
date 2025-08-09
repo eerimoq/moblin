@@ -42,6 +42,7 @@ struct ChatHighlight {
             segment.text ?? (segment.url != nil ? "[emote]" : nil)
         }.joined()
     }
+
     var titleForWatchDisplay: String {
         titleSegments.compactMap { segment in
             segment.text
