@@ -18,6 +18,8 @@ private func partition(text: String, separator: String) throws -> (String, Strin
     return (String(parts[0]), parts[1].trim())
 }
 
+private let rtspEndOfHeaders = Data([0xD, 0xA, 0xD, 0xA])
+
 private class Request {
     let url: URL
     let method: String
@@ -315,7 +317,6 @@ class RtspClient {
     weak var delegate: RtspClientDelegate?
 
     init(cameraId: UUID, url: URL, latency: Double) {
-        logger.info("xxx rtsp client \(cameraId)")
         self.cameraId = cameraId
         self.latency = latency
         username = url.user()
@@ -461,7 +462,7 @@ class RtspClient {
                 return
             }
             self.header += data
-            if self.header.suffix(4) == Data([0xD, 0xA, 0xD, 0xA]) {
+            if self.header.suffix(4) == rtspEndOfHeaders {
                 do {
                     try self.handleRtspHeader()
                 } catch {
@@ -525,28 +526,32 @@ class RtspClient {
             throw "No request found for response."
         }
         guard response.statusCode != 401 else {
-            guard let www_authenticate = response.headers["WWW-Authenticate"] else {
-                throw "Missing authenticate field when authentication failed."
-            }
-            guard www_authenticate.starts(with: "Digest ") else {
-                throw "Only Digest authentication is supported."
-            }
-            let index = www_authenticate.index(www_authenticate.startIndex, offsetBy: 7)
-            for parameter in www_authenticate.suffix(from: index).split(separator: ", ") {
-                let (name, value) = try partition(text: String(parameter), separator: "=")
-                switch name {
-                case "realm":
-                    realm = value.trimmingCharacters(in: ["\""])
-                case "nonce":
-                    nonce = value.trimmingCharacters(in: ["\""])
-                default:
-                    break
-                }
-            }
+            try handleUnauthorizedResponse(response: response)
             perform(request: request)
             return
         }
         try request.completion(response)
+    }
+
+    private func handleUnauthorizedResponse(response: Response) throws {
+        guard let wwwAuthenticate = response.headers["WWW-Authenticate"] else {
+            throw "Missing authenticate field when authentication failed."
+        }
+        guard wwwAuthenticate.starts(with: "Digest ") else {
+            throw "Only Digest authentication is supported."
+        }
+        let index = wwwAuthenticate.index(wwwAuthenticate.startIndex, offsetBy: 7)
+        for parameter in wwwAuthenticate.suffix(from: index).split(separator: ", ") {
+            let (name, value) = try partition(text: String(parameter), separator: "=")
+            switch name {
+            case "realm":
+                realm = value.trimmingCharacters(in: ["\""])
+            case "nonce":
+                nonce = value.trimmingCharacters(in: ["\""])
+            default:
+                break
+            }
+        }
     }
 
     private func isReadyToSendOptions() -> Bool {

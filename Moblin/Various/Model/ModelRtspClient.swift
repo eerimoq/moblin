@@ -9,7 +9,6 @@ extension Model {
     }
 
     func getRtspStream(id: UUID) -> SettingsRtspClientStream? {
-        logger.info("xxx get stream \(id)")
         return database.rtspClient.streams.first { stream in
             stream.id == id
         }
