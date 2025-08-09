@@ -44,6 +44,12 @@ struct ChatHighlight {
         }.joined()
     }
 
+    var titleForWatchDisplay: String {
+        titleSegments.compactMap { segment in
+            segment.text
+        }.joined()
+    }
+
     static func makeReply(user: String, segments: [ChatPostSegment]) -> ChatHighlight {
         let prefixText = String(localized: "Replying to \(user): ")
         var replySegments: [ChatPostSegment] = []
@@ -56,27 +62,26 @@ struct ChatHighlight {
         // Add original message segments (limited for preview)
         var totalLength = prefixText.count
         for segment in segments {
-            if let text = segment.text {
-                if totalLength + text.count > 65 {
-                    let remainingLength = 65 - totalLength
-                    if remainingLength > 3 {
+            let textLength = segment.text?.count ?? 0
+            let emoteLength = segment.url != nil ? 3 : 0
+            let segmentLength = textLength + emoteLength
+
+            if totalLength + segmentLength > 65 {
+                let remainingLength = 65 - totalLength
+                if remainingLength > 3 {
+                    if let text = segment.text {
                         let truncatedText = String(text.prefix(remainingLength - 3)) + "..."
                         replySegments.append(ChatPostSegment(id: id, text: truncatedText))
                     } else {
                         replySegments.append(ChatPostSegment(id: id, text: "..."))
                     }
-                    break
-                }
-                totalLength += text.count
-                replySegments.append(ChatPostSegment(id: id, text: segment.text, url: segment.url))
-            } else if segment.url != nil {
-                if totalLength + 7 > 65 { // "[emote]" length
+                } else {
                     replySegments.append(ChatPostSegment(id: id, text: "..."))
-                    break
                 }
-                totalLength += 1 // Emote takes minimal space in counting
-                replySegments.append(ChatPostSegment(id: id, text: segment.text, url: segment.url))
+                break
             }
+            totalLength += segmentLength
+            replySegments.append(ChatPostSegment(id: id, text: segment.text, url: segment.url))
             id += 1
         }
 
@@ -153,7 +158,7 @@ struct ChatHighlight {
             kind: watchProtocolKind,
             barColor: .init(red: barColor.red, green: barColor.green, blue: barColor.blue),
             image: image,
-            title: title
+            title: titleForWatchDisplay
         )
     }
 

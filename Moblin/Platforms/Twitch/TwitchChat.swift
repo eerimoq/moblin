@@ -574,7 +574,7 @@ final class TwitchChat {
             isSubscriber: message.subscriber,
             isModerator: message.moderator,
             bits: message.bits,
-            highlight: createHighlight(message: message, emotes: emotes)
+            highlight: createHighlight(message: message)
         )
     }
 
@@ -596,7 +596,7 @@ final class TwitchChat {
         webSocket.send(string: "PONG \(message.parameters.joined(separator: " "))")
     }
 
-    private func createHighlight(message: ChatMessage, emotes _: [ChatMessageEmote]) -> ChatHighlight? {
+    private func createHighlight(message: ChatMessage) -> ChatHighlight? {
         if message.announcement {
             return ChatHighlight.makeAnnouncement()
         } else if message.firstMessage {

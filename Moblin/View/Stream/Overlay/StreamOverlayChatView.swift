@@ -45,23 +45,11 @@ private struct HighlightMessageView: View {
                         .foregroundColor(highlight.messageColor(defaultColor: chat.messageColor.color()))
                 }
                 if let url = segment.url {
-                    if chat.animatedEmotes {
-                        WebImage(url: url)
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .padding([.top, .bottom], chat.shadowColorEnabled ? 1.5 : 0)
-                            .frame(height: frameHeightEmotes())
-                    } else {
-                        CacheAsyncImage(url: url) { image in
-                            image
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                        } placeholder: {
-                            EmptyView()
-                        }
+                    WebImage(url: url)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
                         .padding([.top, .bottom], chat.shadowColorEnabled ? 1.5 : 0)
                         .frame(height: frameHeightEmotes())
-                    }
                     Text(" ")
                 }
             }
