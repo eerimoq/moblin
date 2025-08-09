@@ -594,13 +594,17 @@ class RtspClient {
             let (kind, value) = try partition(text: String(line), separator: "=")
             switch kind {
             case "m":
-                break
+                try parseSdpMedia(value: value)
             case "a":
                 try parseSdpAttribute(value: value)
             default:
                 break
             }
         }
+    }
+
+    private func parseSdpMedia(value _: String) throws {
+        // 12:00:23,691 rtsp-client: SDP line m=video 0 RTP/AVP 96
     }
 
     private func parseSdpAttribute(value: String) throws {
