@@ -37,13 +37,11 @@ struct ChatHighlight {
     let barColor: Color
     let image: String
     let titleSegments: [ChatPostSegment]
-
     var title: String {
         titleSegments.compactMap { segment in
             segment.text ?? (segment.url != nil ? "[emote]" : nil)
         }.joined()
     }
-
     var titleForWatchDisplay: String {
         titleSegments.compactMap { segment in
             segment.text
@@ -54,11 +52,9 @@ struct ChatHighlight {
         let prefixText = String(localized: "Replying to \(user): ")
         var replySegments: [ChatPostSegment] = []
         var id = 0
-
         // Add prefix text segment
         replySegments.append(ChatPostSegment(id: id, text: prefixText))
         id += 1
-
         // Add original message segments (limited for preview)
         var totalLength = prefixText.count
         for segment in segments {
@@ -78,6 +74,7 @@ struct ChatHighlight {
                 } else {
                     replySegments.append(ChatPostSegment(id: id, text: "..."))
                 }
+                id += 1
                 break
             }
             totalLength += segmentLength

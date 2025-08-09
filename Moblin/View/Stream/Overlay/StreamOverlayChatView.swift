@@ -28,7 +28,6 @@ private struct HighlightMessageView: View {
     private func frameHeightEmotes() -> CGFloat {
         return CGFloat(chat.fontSize * 1.7)
     }
-
     var body: some View {
         WrappingHStack(
             alignment: .leading,
@@ -38,7 +37,6 @@ private struct HighlightMessageView: View {
         ) {
             Image(systemName: highlight.image)
             Text(" ")
-
             ForEach(highlight.titleSegments, id: \.id) { segment in
                 if let text = segment.text {
                     Text(text)
