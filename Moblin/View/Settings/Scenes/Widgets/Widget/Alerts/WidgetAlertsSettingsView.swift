@@ -27,6 +27,8 @@ private struct AlertTextToSpeechView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var alert: SettingsWidgetAlertsAlert
     @State var ttsDelay: Double
+    @State var rate: Float = 0.4
+    @State var volume: Float = 0.6
 
     private func onVoiceChange(languageCode: String, voice: String) {
         alert.textToSpeechLanguageVoices[languageCode] = voice
@@ -60,7 +62,9 @@ private struct AlertTextToSpeechView: View {
             NavigationLink {
                 VoicesView(
                     textToSpeechLanguageVoices: $alert.textToSpeechLanguageVoices,
-                    onVoiceChange: onVoiceChange
+                    onVoiceChange: onVoiceChange,
+                    rate: $rate,
+                    volume: $volume
                 )
             } label: {
                 Text("Voices")

@@ -16,7 +16,9 @@ struct ChatTextToSpeechSettingsView: View {
                 NavigationLink {
                     VoicesView(
                         textToSpeechLanguageVoices: $chat.textToSpeechLanguageVoices,
-                        onVoiceChange: onVoiceChange
+                        onVoiceChange: onVoiceChange,
+                        rate: $chat.textToSpeechRate,
+                        volume: $chat.textToSpeechSayVolume
                     )
                 } label: {
                     Text("Voices")
