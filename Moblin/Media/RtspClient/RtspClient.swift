@@ -118,27 +118,35 @@ private class Sdp {
         if value.contains(":") {
             let (name, value) = try partition(text: value, separator: ":")
             switch name {
+            case "rtpmap":
+                try parseVideoAttributeRtpmap(value: value)
             case "fmtp":
-                try parseAttributeFmtp(value: value, video: &video)
+                try parseVideoAttributeFmtp(value: value, video: &video)
             default:
                 break
             }
         }
     }
 
-    private func parseAttributeFmtp(value: String, video: inout SdpVideo?) throws {
+    private func parseVideoAttributeRtpmap(value: String) throws {
+        guard value.contains("H264") else {
+            throw "Only H.264 is supported."
+        }
+    }
+
+    private func parseVideoAttributeFmtp(value: String, video: inout SdpVideo?) throws {
         for part in value.split(separator: ";") {
             let (name, value) = try partition(text: String(part), separator: "=")
             switch name {
             case "sprop-parameter-sets":
-                try parseAttributeFmtpSpropParameterSets(value: value, video: &video)
+                try parseVideoAttributeFmtpSpropParameterSets(value: value, video: &video)
             default:
                 break
             }
         }
     }
 
-    private func parseAttributeFmtpSpropParameterSets(value: String, video: inout SdpVideo?) throws {
+    private func parseVideoAttributeFmtpSpropParameterSets(value: String, video: inout SdpVideo?) throws {
         let (spsBase64, ppsBase64) = try partition(text: value, separator: ",")
         guard let sps = Data(base64Encoded: spsBase64) else {
             throw "Failed to decode SPS."
