@@ -2873,3 +2873,9 @@ extension Model: FaxReceiverDelegate {
         }
     }
 }
+
+extension Model: RtspClientDelegate {
+    func rtspClientOnVideoBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
+        media.appendBufferedVideoSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
+    }
+}
