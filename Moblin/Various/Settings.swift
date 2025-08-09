@@ -3571,31 +3571,31 @@ class SettingsChatPredefinedMessage: Codable, Identifiable, ObservableObject {
     static let tagOrange = "🦊"
     var id: UUID = .init()
     @Published var text: String = ""
-    @Published var redTag: Bool = false
-    @Published var greenTag: Bool = false
     @Published var blueTag: Bool = false
+    @Published var greenTag: Bool = false
     @Published var yellowTag: Bool = false
     @Published var orangeTag: Bool = false
+    @Published var redTag: Bool = false
 
     enum CodingKeys: CodingKey {
         case id,
              text,
-             redTag,
-             greenTag,
              blueTag,
+             greenTag,
              yellowTag,
-             orangeTag
+             orangeTag,
+             redTag
     }
 
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
         try container.encode(.text, text)
-        try container.encode(.redTag, redTag)
-        try container.encode(.greenTag, greenTag)
         try container.encode(.blueTag, blueTag)
+        try container.encode(.greenTag, greenTag)
         try container.encode(.yellowTag, yellowTag)
         try container.encode(.orangeTag, orangeTag)
+        try container.encode(.redTag, redTag)
     }
 
     init() {}
@@ -3604,29 +3604,29 @@ class SettingsChatPredefinedMessage: Codable, Identifiable, ObservableObject {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
         text = container.decode(.text, String.self, "")
-        redTag = container.decode(.redTag, Bool.self, false)
-        greenTag = container.decode(.greenTag, Bool.self, false)
         blueTag = container.decode(.blueTag, Bool.self, false)
+        greenTag = container.decode(.greenTag, Bool.self, false)
         yellowTag = container.decode(.yellowTag, Bool.self, false)
         orangeTag = container.decode(.orangeTag, Bool.self, false)
+        redTag = container.decode(.redTag, Bool.self, false)
     }
 
     func tagsString() -> String {
         var tags = ""
-        if redTag {
-            tags += Self.tagRed
+        if blueTag {
+            tags += Self.tagBlue
         }
         if greenTag {
             tags += Self.tagGreen
-        }
-        if blueTag {
-            tags += Self.tagBlue
         }
         if yellowTag {
             tags += Self.tagYellow
         }
         if orangeTag {
             tags += Self.tagOrange
+        }
+        if redTag {
+            tags += Self.tagRed
         }
         return tags
     }

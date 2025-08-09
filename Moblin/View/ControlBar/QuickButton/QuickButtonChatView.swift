@@ -456,9 +456,8 @@ private struct PredefinedMessageView: View {
                 Section {
                     HStack {
                         Spacer()
-                        TagButtonView(tag: SettingsChatPredefinedMessage.tagRed, enabled: $predefinedMessage.redTag)
-                        TagButtonView(tag: SettingsChatPredefinedMessage.tagGreen, enabled: $predefinedMessage.greenTag)
                         TagButtonView(tag: SettingsChatPredefinedMessage.tagBlue, enabled: $predefinedMessage.blueTag)
+                        TagButtonView(tag: SettingsChatPredefinedMessage.tagGreen, enabled: $predefinedMessage.greenTag)
                         TagButtonView(
                             tag: SettingsChatPredefinedMessage.tagYellow,
                             enabled: $predefinedMessage.yellowTag
@@ -467,6 +466,7 @@ private struct PredefinedMessageView: View {
                             tag: SettingsChatPredefinedMessage.tagOrange,
                             enabled: $predefinedMessage.orangeTag
                         )
+                        TagButtonView(tag: SettingsChatPredefinedMessage.tagRed, enabled: $predefinedMessage.redTag)
                     }
                 } header: {
                     Text("Tags")
@@ -509,25 +509,25 @@ private struct PredefinedMessagesView: View {
     @State var messageToSend: UUID?
 
     private func filteredMessages() -> [SettingsChatPredefinedMessage] {
-        guard filter.redTag || filter.greenTag || filter.blueTag || filter.yellowTag || filter.orangeTag else {
+        guard filter.blueTag || filter.greenTag || filter.yellowTag || filter.orangeTag || filter.redTag else {
             return chat.predefinedMessages
         }
         var messages: [SettingsChatPredefinedMessage] = []
         for message in chat.predefinedMessages {
             var shouldAdd = true
-            if filter.redTag, !message.redTag {
+            if filter.blueTag, !message.blueTag {
                 shouldAdd = false
             }
             if filter.greenTag, !message.greenTag {
-                shouldAdd = false
-            }
-            if filter.blueTag, !message.blueTag {
                 shouldAdd = false
             }
             if filter.yellowTag, !message.yellowTag {
                 shouldAdd = false
             }
             if filter.orangeTag, !message.orangeTag {
+                shouldAdd = false
+            }
+            if filter.redTag, !message.redTag {
                 shouldAdd = false
             }
             if shouldAdd {
@@ -544,11 +544,11 @@ private struct PredefinedMessagesView: View {
                     HStack {
                         Text("Filter")
                         Spacer()
-                        TagButtonView(tag: SettingsChatPredefinedMessage.tagRed, enabled: $filter.redTag)
-                        TagButtonView(tag: SettingsChatPredefinedMessage.tagGreen, enabled: $filter.greenTag)
                         TagButtonView(tag: SettingsChatPredefinedMessage.tagBlue, enabled: $filter.blueTag)
+                        TagButtonView(tag: SettingsChatPredefinedMessage.tagGreen, enabled: $filter.greenTag)
                         TagButtonView(tag: SettingsChatPredefinedMessage.tagYellow, enabled: $filter.yellowTag)
                         TagButtonView(tag: SettingsChatPredefinedMessage.tagOrange, enabled: $filter.orangeTag)
+                        TagButtonView(tag: SettingsChatPredefinedMessage.tagRed, enabled: $filter.redTag)
                     }
                 }
                 Section {
