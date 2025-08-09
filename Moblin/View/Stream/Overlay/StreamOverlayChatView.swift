@@ -6,6 +6,7 @@ import WrappingHStack
 private let borderWidth = 1.5
 
 private struct HighlightMessageView: View {
+    @ObservedObject var postState: ChatPostState
     let chat: SettingsChat
     let highlight: ChatHighlight
 
@@ -29,6 +30,10 @@ private struct HighlightMessageView: View {
         return CGFloat(chat.fontSize * 1.7)
     }
 
+    private func imageOpacity() -> Double {
+        return postState.deleted ? 0.25 : 1
+    }
+
     var body: some View {
         WrappingHStack(
             alignment: .leading,
@@ -44,12 +49,25 @@ private struct HighlightMessageView: View {
                         .foregroundColor(highlight.messageColor(defaultColor: chat.messageColor.color()))
                 }
                 if let url = segment.url {
-                    WebImage(url: url)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
+                    if chat.animatedEmotes {
+                        WebImage(url: url)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .padding([.top, .bottom], chat.shadowColorEnabled ? 1.5 : 0)
+                            .frame(height: frameHeightEmotes())
+                            .opacity(imageOpacity())
+                    } else {
+                        CacheAsyncImage(url: url) { image in
+                            image
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                        } placeholder: {
+                            EmptyView()
+                        }
                         .padding([.top, .bottom], chat.shadowColorEnabled ? 1.5 : 0)
                         .frame(height: frameHeightEmotes())
-                    Text(" ")
+                        .opacity(imageOpacity())
+                    }
                 }
             }
         }
@@ -215,7 +233,9 @@ private struct PostView: View {
                             .frame(width: 3)
                             .foregroundColor(highlight.barColor)
                         VStack(alignment: .leading, spacing: 1) {
-                            HighlightMessageView(chat: chatSettings, highlight: highlight)
+                            HighlightMessageView(postState: post.state,
+                                                 chat: chatSettings,
+                                                 highlight: highlight)
                             LineView(postState: post.state,
                                      post: post,
                                      chat: chatSettings,

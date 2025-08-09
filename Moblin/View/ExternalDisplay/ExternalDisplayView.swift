@@ -19,7 +19,7 @@ private struct HighlightMessageView: View {
         ) {
             Image(systemName: highlight.image)
             Text(" ")
-            Text(highlight.title)
+            Text(highlight.titleNoEmotes())
         }
         .foregroundColor(highlight.messageColor())
         .padding([.leading], 5)

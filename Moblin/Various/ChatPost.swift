@@ -12,13 +12,15 @@ struct ChatPostSegment: Identifiable, Codable {
     var url: URL?
 }
 
+func makeChatPostTextSegments(text: String) -> [ChatPostSegment] {
+    var id = 0
+    return makeChatPostTextSegments(text: text, id: &id)
+}
+
 func makeChatPostTextSegments(text: String, id: inout Int) -> [ChatPostSegment] {
     var segments: [ChatPostSegment] = []
     for word in text.split(separator: " ") {
-        segments.append(ChatPostSegment(
-            id: id,
-            text: "\(word) "
-        ))
+        segments.append(ChatPostSegment(id: id, text: "\(word) "))
         id += 1
     }
     return segments
@@ -37,52 +39,31 @@ struct ChatHighlight {
     let barColor: Color
     let image: String
     let titleSegments: [ChatPostSegment]
-    var title: String {
-        titleSegments.compactMap { segment in
-            segment.text ?? (segment.url != nil ? "[emote]" : nil)
-        }.joined()
-    }
-
-    var titleForWatchDisplay: String {
-        titleSegments.compactMap { segment in
-            segment.text
-        }.joined()
-    }
 
     static func makeReply(user: String, segments: [ChatPostSegment]) -> ChatHighlight {
-        let prefixText = String(localized: "Replying to \(user): ")
-        var replySegments: [ChatPostSegment] = []
+        let prefixText = String(localized: "Replying to \(user):")
         var id = 0
-        // Add prefix text segment
-        replySegments.append(ChatPostSegment(id: id, text: prefixText))
-        id += 1
-        // Add original message segments (limited for preview)
+        var replySegments = makeChatPostTextSegments(text: prefixText, id: &id)
         var totalLength = prefixText.count
         for segment in segments {
             let textLength = segment.text?.count ?? 0
             let emoteLength = segment.url != nil ? 3 : 0
             let segmentLength = textLength + emoteLength
-
             if totalLength + segmentLength > 65 {
                 let remainingLength = 65 - totalLength
-                if remainingLength > 3 {
-                    if let text = segment.text {
-                        let truncatedText = String(text.prefix(remainingLength - 3)) + "..."
-                        replySegments.append(ChatPostSegment(id: id, text: truncatedText))
-                    } else {
-                        replySegments.append(ChatPostSegment(id: id, text: "..."))
-                    }
+                let truncatedText: String
+                if remainingLength > 3, let text = segment.text {
+                    truncatedText = String(text.prefix(remainingLength - 3)) + "..."
                 } else {
-                    replySegments.append(ChatPostSegment(id: id, text: "..."))
+                    truncatedText = "..."
                 }
-                id += 1
+                replySegments.append(ChatPostSegment(id: id, text: truncatedText))
                 break
             }
             totalLength += segmentLength
             replySegments.append(ChatPostSegment(id: id, text: segment.text, url: segment.url))
             id += 1
         }
-
         return ChatHighlight(kind: .reply,
                              barColor: .purple,
                              image: "arrowshape.turn.up.left",
@@ -90,51 +71,46 @@ struct ChatHighlight {
     }
 
     static func makeAnnouncement() -> ChatHighlight {
-        let announcementText = String(localized: "Announcement")
         return ChatHighlight(
             kind: .other,
             barColor: .green,
             image: "horn.blast",
-            titleSegments: [ChatPostSegment(id: 0, text: announcementText)]
+            titleSegments: makeChatPostTextSegments(text: String(localized: "Announcement"))
         )
     }
 
     static func makeFirstMessage() -> ChatHighlight {
-        let firstMessageText = String(localized: "First time chatter")
         return ChatHighlight(
             kind: .firstMessage,
             barColor: .yellow,
             image: "bubble.left",
-            titleSegments: [ChatPostSegment(id: 0, text: firstMessageText)]
+            titleSegments: makeChatPostTextSegments(text: String(localized: "First time chatter"))
         )
     }
 
     static func makePaidMessage(amount: String) -> ChatHighlight {
-        let paidMessageText = String(localized: "Super Chat\(amount)")
         return ChatHighlight(
             kind: .other,
             barColor: .orange,
             image: "message",
-            titleSegments: [ChatPostSegment(id: 0, text: paidMessageText)]
+            titleSegments: makeChatPostTextSegments(text: String(localized: "Super Chat\(amount)"))
         )
     }
 
     static func makePaidSticker(amount: String) -> ChatHighlight {
-        let paidStickerText = String(localized: "Super Sticker\(amount)")
         return ChatHighlight(
             kind: .other,
             barColor: .green,
             image: "doc.plaintext",
-            titleSegments: [ChatPostSegment(id: 0, text: paidStickerText)]
+            titleSegments: makeChatPostTextSegments(text: String(localized: "Super Sticker\(amount)"))
         )
     }
 
     static func makeMember() -> ChatHighlight {
-        let memberText = String(localized: "Member")
         return ChatHighlight(kind: .other,
                              barColor: .blue,
                              image: "medal",
-                             titleSegments: [ChatPostSegment(id: 0, text: memberText)])
+                             titleSegments: makeChatPostTextSegments(text: String(localized: "Member")))
     }
 
     func toWatchProtocol() -> WatchProtocolChatHighlight {
@@ -156,8 +132,12 @@ struct ChatHighlight {
             kind: watchProtocolKind,
             barColor: .init(red: barColor.red, green: barColor.green, blue: barColor.blue),
             image: image,
-            title: titleForWatchDisplay
+            title: titleNoEmotes()
         )
+    }
+
+    func titleNoEmotes() -> String {
+        return titleSegments.compactMap { $0.text }.joined()
     }
 
     func messageColor(defaultColor: Color = .white) -> Color {
