@@ -28,6 +28,34 @@ private enum SdpVideo {
     case h265(SdpVideoH265)
 }
 
+private class SdpReader {
+    private var nextIndex = 0
+    private var lines: [Substring]
+
+    init(lines: [Substring]) {
+        self.lines = lines
+    }
+
+    func next() throws -> (String, String)? {
+        guard nextIndex < lines.count else {
+            return nil
+        }
+        defer {
+            nextIndex += 1
+        }
+        let line = lines[nextIndex]
+        logger.info("rtsp-client: SDP line \(line.trim())")
+        return try partition(text: String(line), separator: "=")
+    }
+
+    func back() {
+        guard nextIndex > 0 else {
+            return
+        }
+        nextIndex -= 1
+    }
+}
+
 private class Sdp {
     var audio: SdpAudio?
     var video: SdpVideo?
@@ -37,49 +65,80 @@ private class Sdp {
     }
 
     private func parse(value: String) throws {
-        for line in value.split(separator: "\r\n") {
-            logger.info("rtsp-client: SDP line \(line.trim())")
-            let (kind, value) = try partition(text: String(line), separator: "=")
+        let reader = SdpReader(lines: value.split(separator: "\r\n"))
+        while let (kind, value) = try reader.next() {
             switch kind {
             case "m":
-                try parseMedia(value: value)
-            case "a":
-                try parseAttribute(value: value)
+                try parseMedia(value: value, reader: reader)
             default:
                 break
             }
         }
     }
 
-    private func parseMedia(value _: String) throws {
-        // 12:00:23,691 rtsp-client: SDP line m=video 0 RTP/AVP 96
+    private func parseMedia(value: String, reader: SdpReader) throws {
+        let (media, _) = try partition(text: value, separator: " ")
+        switch media {
+        case "video":
+            try parseMediaVideo(reader: reader)
+        default:
+            try parseMediaSkip(reader: reader)
+        }
     }
 
-    private func parseAttribute(value: String) throws {
+    private func parseMediaVideo(reader: SdpReader) throws {
+        var video: SdpVideo?
+        mediaLoop: while let (kind, value) = try reader.next() {
+            switch kind {
+            case "m":
+                reader.back()
+                break mediaLoop
+            case "a":
+                try parseVideoAttribute(value: value, video: &video)
+            default:
+                break
+            }
+        }
+        self.video = video
+    }
+
+    private func parseMediaSkip(reader: SdpReader) throws {
+        while let (kind, _) = try reader.next() {
+            switch kind {
+            case "m":
+                reader.back()
+                return
+            default:
+                break
+            }
+        }
+    }
+
+    private func parseVideoAttribute(value: String, video: inout SdpVideo?) throws {
         if value.contains(":") {
             let (name, value) = try partition(text: value, separator: ":")
             switch name {
             case "fmtp":
-                try parseAttributeFmtp(value: value)
+                try parseAttributeFmtp(value: value, video: &video)
             default:
                 break
             }
         }
     }
 
-    private func parseAttributeFmtp(value: String) throws {
+    private func parseAttributeFmtp(value: String, video: inout SdpVideo?) throws {
         for part in value.split(separator: ";") {
             let (name, value) = try partition(text: String(part), separator: "=")
             switch name {
             case "sprop-parameter-sets":
-                try parseAttributeFmtpSpropParameterSets(value: value)
+                try parseAttributeFmtpSpropParameterSets(value: value, video: &video)
             default:
                 break
             }
         }
     }
 
-    private func parseAttributeFmtpSpropParameterSets(value: String) throws {
+    private func parseAttributeFmtpSpropParameterSets(value: String, video: inout SdpVideo?) throws {
         let (spsBase64, ppsBase64) = try partition(text: value, separator: ",")
         guard let sps = Data(base64Encoded: spsBase64) else {
             throw "Failed to decode SPS."
