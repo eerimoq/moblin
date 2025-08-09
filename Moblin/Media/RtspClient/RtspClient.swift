@@ -10,8 +10,6 @@ protocol RtspClientDelegate: AnyObject {
     func rtspClientOnVideoBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer)
 }
 
-private class SdpAudio {}
-
 private struct SdpVideoH264 {
     let sps: AvcNalUnit
     let pps: AvcNalUnit
@@ -28,7 +26,7 @@ private enum SdpVideo {
     case h265(SdpVideoH265)
 }
 
-private class SdpReader {
+private class SdpLinesReader {
     private var nextIndex = 0
     private var lines: [Substring]
 
@@ -56,72 +54,101 @@ private class SdpReader {
     }
 }
 
-private class Sdp {
-    var audio: SdpAudio?
-    var video: SdpVideo?
+private struct SdpMediaDescription {
+    var media: String
+    var port: String
+    var proto: String
+    var attributes: [SdpAttribute] = []
+
+    func getValue(for attributeName: String) throws -> String {
+        guard let attribute = attributes.first(where: { $0.attribute == attributeName }) else {
+            throw "Attribute \(attributeName) is missing."
+        }
+        guard let value = attribute.value else {
+            throw "Attribute \(attributeName) has no value."
+        }
+        return value
+    }
+}
+
+private struct SdpAttribute {
+    var attribute: String
+    var value: String?
+}
+
+private class SdpLinesParser {
+    private var mediaDescriptions: [SdpMediaDescription] = []
 
     init(value: String) throws {
         try parse(value: value)
     }
 
+    func getMediaDescriptions() -> [SdpMediaDescription] {
+        return mediaDescriptions
+    }
+
     private func parse(value: String) throws {
-        let reader = SdpReader(lines: value.split(separator: "\r\n"))
-        while let (kind, value) = try reader.next() {
+        let linesReader = SdpLinesReader(lines: value.split(separator: "\r\n"))
+        while let (kind, value) = try linesReader.next() {
             switch kind {
             case "m":
-                try parseMedia(value: value, reader: reader)
+                try parseMedia(value: value, linesReader: linesReader)
             default:
                 break
             }
         }
     }
 
-    private func parseMedia(value: String, reader: SdpReader) throws {
-        let (media, _) = try partition(text: value, separator: " ")
-        switch media {
-        case "video":
-            try parseMediaVideo(reader: reader)
-        default:
-            try parseMediaSkip(reader: reader)
+    private func parseMedia(value: String, linesReader: SdpLinesReader) throws {
+        let parts = value.split(separator: " ")
+        guard parts.count >= 3 else {
+            throw "Bad media description \(value)"
         }
-    }
-
-    private func parseMediaVideo(reader: SdpReader) throws {
-        var video: SdpVideo?
-        mediaLoop: while let (kind, value) = try reader.next() {
+        var mediaDescription = SdpMediaDescription(media: String(parts[0]),
+                                                   port: String(parts[1]),
+                                                   proto: String(parts[2]))
+        mediaLoop: while let (kind, value) = try linesReader.next() {
             switch kind {
             case "m":
-                reader.back()
+                linesReader.back()
                 break mediaLoop
             case "a":
-                try parseVideoAttribute(value: value, video: &video)
+                try parseAttribute(value: value, mediaDescription: &mediaDescription)
             default:
                 break
             }
         }
-        self.video = video
+        mediaDescriptions.append(mediaDescription)
     }
 
-    private func parseMediaSkip(reader: SdpReader) throws {
-        while let (kind, _) = try reader.next() {
-            switch kind {
-            case "m":
-                reader.back()
-                return
-            default:
-                break
-            }
-        }
-    }
-
-    private func parseVideoAttribute(value: String, video: inout SdpVideo?) throws {
+    private func parseAttribute(value: String, mediaDescription: inout SdpMediaDescription) throws {
         if value.contains(":") {
-            let (name, value) = try partition(text: value, separator: ":")
-            switch name {
-            case "rtpmap":
-                try parseVideoAttributeRtpmap(value: value)
-            case "fmtp":
-                try parseVideoAttributeFmtp(value: value, video: &video)
+            let (attribute, value) = try partition(text: value, separator: ":")
+            mediaDescription.attributes.append(SdpAttribute(attribute: attribute, value: value))
+        } else {
+            mediaDescription.attributes.append(SdpAttribute(attribute: value))
+        }
+    }
+}
+
+private class Sdp {
+    var video: SdpVideo?
+
+    init(value: String) throws {
+        let linesParser = try SdpLinesParser(value: value)
+        try parse(linesParser: linesParser)
+    }
+
+    private func parse(linesParser: SdpLinesParser) throws {
+        for mediaDescription in linesParser.getMediaDescriptions() {
+            switch mediaDescription.media {
+            case "video":
+                var video: SdpVideo?
+                let rtpmap = try mediaDescription.getValue(for: "rtpmap")
+                try parseVideoAttributeRtpmap(value: rtpmap)
+                let fmtp = try mediaDescription.getValue(for: "fmtp")
+                try parseVideoAttributeFmtp(value: fmtp, video: &video)
+                self.video = video
             default:
                 break
             }
