@@ -81,23 +81,23 @@ class ChatProvider: ObservableObject {
 extension Model {
     func getAvailableChatPlatforms() -> [ChatPlatformSelection] {
         var platforms: [ChatPlatformSelection] = []
-        
+
         let hasTwitch = stream.twitchLoggedIn
         let hasKick = isKickPusherConfigured() && isKickLoggedIn()
-        
+
         // Only show "All" if more than one platform is available
-        if hasTwitch && hasKick {
+        if hasTwitch, hasKick {
             platforms.append(.all)
         }
-        
+
         if hasTwitch {
             platforms.append(.twitch)
         }
-        
+
         if hasKick {
             platforms.append(.kick)
         }
-        
+
         // Auto-adjust selection if current selection is no longer available
         if !platforms.contains(selectedChatPlatform) {
             if platforms.contains(.all) {
@@ -106,10 +106,10 @@ extension Model {
                 selectedChatPlatform = firstPlatform
             }
         }
-        
+
         return platforms
     }
-    
+
     func pauseChat() {
         chat.paused = true
         chat.pausedPostsCount = 0
@@ -354,22 +354,23 @@ extension Model {
     func sendChatMessage(message: String) {
         var sentToAtLeastOne = false
         var errors: [String] = []
-        
+
         // Determine which platforms to send to based on selection
-        let shouldSendToKick = (selectedChatPlatform == .all || selectedChatPlatform == .kick) && 
-                              isKickPusherConfigured() && isKickLoggedIn()
-        let shouldSendToTwitch = (selectedChatPlatform == .all || selectedChatPlatform == .twitch) && 
-                                stream.twitchLoggedIn
-        
+        let shouldSendToKick = (selectedChatPlatform == .all || selectedChatPlatform == .kick) &&
+            isKickPusherConfigured() && isKickLoggedIn()
+        let shouldSendToTwitch = (selectedChatPlatform == .all || selectedChatPlatform == .twitch) &&
+            stream.twitchLoggedIn
+
         // Send to Kick if selected and available
         if shouldSendToKick {
             sendKickChatMessage(message: message)
             sentToAtLeastOne = true
-        } else if (selectedChatPlatform == .all || selectedChatPlatform == .kick) && 
-                  isKickPusherConfigured() && !isKickLoggedIn() {
+        } else if selectedChatPlatform == .all || selectedChatPlatform == .kick,
+                  isKickPusherConfigured(), !isKickLoggedIn()
+        {
             errors.append("Kick (not logged in)")
         }
-        
+
         // Send to Twitch if selected and available
         if shouldSendToTwitch {
             TwitchApi(stream.twitchAccessToken, urlSession)
@@ -381,17 +382,21 @@ extension Model {
                     }
                 }
             sentToAtLeastOne = true
-        } else if (selectedChatPlatform == .all || selectedChatPlatform == .twitch) && 
-                  !stream.twitchLoggedIn {
+        } else if selectedChatPlatform == .all || selectedChatPlatform == .twitch,
+                  !stream.twitchLoggedIn
+        {
             errors.append("Twitch (not logged in)")
         }
-        
+
         // Show appropriate feedback
         if !sentToAtLeastOne {
             if errors.isEmpty {
                 makeErrorToast(title: "No chat platforms configured", subTitle: "Configure Twitch or Kick in Settings")
             } else {
-                makeErrorToast(title: "Cannot send message", subTitle: "Not logged in to: \(errors.joined(separator: ", "))")
+                makeErrorToast(
+                    title: "Cannot send message",
+                    subTitle: "Not logged in to: \(errors.joined(separator: ", "))"
+                )
             }
         }
     }
@@ -598,7 +603,7 @@ extension Model {
         guard let user = post.user else {
             return
         }
-        
+
         switch post.platform {
         case .twitch:
             guard let userId = post.userId else { return }
@@ -614,7 +619,7 @@ extension Model {
         guard let user = post.user else {
             return
         }
-        
+
         switch post.platform {
         case .twitch:
             guard let userId = post.userId else { return }
@@ -630,7 +635,7 @@ extension Model {
         guard let messageId = post.messageId else {
             return
         }
-        
+
         switch post.platform {
         case .twitch:
             deleteMessage(messageId: messageId)

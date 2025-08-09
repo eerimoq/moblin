@@ -20,11 +20,12 @@ struct StreamKickSettingsView: View {
                     onSubmit: submitChannelName
                 )
             }
-            
+
             Section {
                 NavigationLink(destination: KickAuthView(stream: stream)) {
                     HStack {
-                        Image(systemName: stream.kickLoggedIn ? "checkmark.circle.fill" : "person.crop.circle.badge.plus")
+                        Image(systemName: stream
+                            .kickLoggedIn ? "checkmark.circle.fill" : "person.crop.circle.badge.plus")
                             .foregroundColor(stream.kickLoggedIn ? .green : .blue)
                         Text("Authentication")
                         Spacer()

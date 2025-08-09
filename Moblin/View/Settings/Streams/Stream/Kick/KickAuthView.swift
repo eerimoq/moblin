@@ -64,7 +64,7 @@ struct KickAuthView: View {
                     }
                     .padding()
                     .background(Color(.systemGray6))
-                    
+
                     KickWebView(
                         onTokenExtracted: { token, sessionCookies in
                             handleTokenExtracted(token: token, cookies: sessionCookies)
@@ -77,21 +77,21 @@ struct KickAuthView: View {
         }
     }
 
-    private func handleTokenExtracted(token: String?, cookies: [HTTPCookie]) {
+    private func handleTokenExtracted(token _: String?, cookies: [HTTPCookie]) {
         isLoading = true
-        
+
         // Find session_token cookie
         if let sessionTokenCookie = cookies.first(where: { $0.name == "session_token" }) {
             let decodedToken = sessionTokenCookie.value.removingPercentEncoding ?? sessionTokenCookie.value
-            
+
             DispatchQueue.main.async {
                 stream.kickAccessToken = decodedToken
                 stream.kickLoggedIn = true
                 showingWebView = false
                 isLoading = false
-                
+
                 model.makeToast(title: "Successfully logged in to Kick")
-                
+
                 if stream.enabled {
                     model.kickChannelNameUpdated()
                 }
@@ -107,14 +107,14 @@ struct KickAuthView: View {
     private func logOut() {
         stream.kickAccessToken = ""
         stream.kickLoggedIn = false
-        
+
         model.makeToast(title: "Logged out from Kick")
-        
+
         if stream.enabled {
             model.kickChannelNameUpdated()
         }
     }
-    
+
     private func clearWebViewSession() {
         // Clear website data first
         WKWebsiteDataStore.default().removeData(
@@ -129,7 +129,7 @@ struct KickAuthView: View {
                     webView.load(request)
                 }
                 persistentWebView = nil
-                
+
                 self.model.makeToast(title: "WebView session cleared")
             }
         }
@@ -138,41 +138,41 @@ struct KickAuthView: View {
 
 struct KickWebView: UIViewRepresentable {
     let onTokenExtracted: (String?, [HTTPCookie]) -> Void
-    
+
     func makeUIView(context: Context) -> WKWebView {
         // Use persistent WebView if it exists, otherwise create new one
         if let existingWebView = persistentWebView {
             existingWebView.navigationDelegate = context.coordinator
             return existingWebView
         }
-        
+
         let configuration = WKWebViewConfiguration()
         configuration.websiteDataStore = .default()
-        
+
         // Enable better scrolling and keyboard handling
         configuration.preferences.javaScriptEnabled = true
-        
+
         // Configure for persistence
         configuration.suppressesIncrementalRendering = false
         configuration.allowsInlineMediaPlayback = true
         configuration.processPool = WKProcessPool() // Shared process pool
-        
+
         let webView = WKWebView(frame: .zero, configuration: configuration)
         webView.navigationDelegate = context.coordinator
         webView.scrollView.keyboardDismissMode = .onDrag
         webView.scrollView.contentInsetAdjustmentBehavior = .automatic
-        
+
         // Allow zoom for better mobile experience
         webView.scrollView.minimumZoomScale = 0.5
         webView.scrollView.maximumZoomScale = 3.0
         webView.scrollView.bouncesZoom = true
-        
+
         // Store globally for persistence
         persistentWebView = webView
-        
+
         return webView
     }
-    
+
     func updateUIView(_ webView: WKWebView, context: Context) {
         // Only load URL if webView doesn't have content or is on a different domain
         if webView.url == nil || !(webView.url?.absoluteString.contains("kick.com") ?? false) {
@@ -183,34 +183,34 @@ struct KickWebView: UIViewRepresentable {
         // Update the delegate in case it changed
         webView.navigationDelegate = context.coordinator
     }
-    
+
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
     }
-    
+
     class Coordinator: NSObject, WKNavigationDelegate {
         let parent: KickWebView
-        
+
         init(_ parent: KickWebView) {
             self.parent = parent
         }
-        
-        func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+
+        func webView(_ webView: WKWebView, didFinish _: WKNavigation!) {
             guard let url = webView.url?.absoluteString else { return }
-            
+
             // Only extract token if we're on a logged-in page (not login/register page)
-            if !url.contains("/login") && !url.contains("/register") && url.contains("kick.com") {
+            if !url.contains("/login"), !url.contains("/register"), url.contains("kick.com") {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
                     self.extractAuthToken(from: webView)
                 }
             }
         }
-        
-        private func extractAuthToken(from webView: WKWebView) {
+
+        private func extractAuthToken(from _: WKWebView) {
             // Get session cookies
             WKWebsiteDataStore.default().httpCookieStore.getAllCookies { cookies in
                 let kickCookies = cookies.filter { $0.domain.contains("kick.com") }
-                
+
                 DispatchQueue.main.async {
                     if kickCookies.contains(where: { $0.name == "session_token" }) {
                         self.parent.onTokenExtracted(nil, kickCookies)

@@ -641,7 +641,7 @@ private struct PlatformSelectorButtonView: View {
 
     var body: some View {
         let availablePlatforms = model.getAvailableChatPlatforms()
-        
+
         if availablePlatforms.count > 1 {
             Button {
                 showingPlatformSelector = true
@@ -680,12 +680,12 @@ private struct PlatformSelectorButtonView: View {
                                                 .font(.title2)
                                                 .frame(width: 24, height: 24)
                                         }
-                                        
+
                                         Text(platform.displayName)
                                             .foregroundColor(.primary)
-                                        
+
                                         Spacer()
-                                        
+
                                         // Checkmark for selected platform
                                         if model.selectedChatPlatform.displayName == platform.displayName {
                                             Image(systemName: "checkmark.circle.fill")

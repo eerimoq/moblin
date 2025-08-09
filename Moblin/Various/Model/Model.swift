@@ -20,7 +20,7 @@ enum ChatPlatformSelection: CaseIterable {
     case all
     case twitch
     case kick
-    
+
     var displayName: String {
         switch self {
         case .all: return "All Platforms"
@@ -28,7 +28,7 @@ enum ChatPlatformSelection: CaseIterable {
         case .kick: return "Kick"
         }
     }
-    
+
     var icon: String {
         switch self {
         case .all: return "globe"

@@ -5,7 +5,7 @@ extension Model {
     func isKickPusherConfigured() -> Bool {
         return database.chat.enabled && (stream.kickChatroomId != "" || stream.kickChannelName != "")
     }
-    
+
     func isKickLoggedIn() -> Bool {
         return stream.kickLoggedIn && !stream.kickAccessToken.isEmpty
     }
@@ -49,19 +49,19 @@ extension Model {
         reloadKickViewers()
         resetChat()
     }
-    
+
     func sendKickChatMessage(message: String) {
         guard isKickLoggedIn() else {
             makeErrorToast(title: "Not logged in to Kick")
             return
         }
-        
+
         // Get the chatroom ID the same way KickPusher does
         guard !stream.kickChannelName.isEmpty else {
             makeErrorToast(title: "Channel name not set")
             return
         }
-        
+
         // First get the channel info to get the correct chatroom ID
         getKickChannelInfo(channelName: stream.kickChannelName) { [weak self] channelInfo in
             guard let self = self, let channelInfo = channelInfo else {
@@ -70,53 +70,56 @@ extension Model {
                 }
                 return
             }
-            
+
             let chatroomId = channelInfo.chatroom.id
             self.sendKickMessage(chatroomId: chatroomId, message: message)
         }
     }
-    
+
     private func sendKickMessage(chatroomId: Int, message: String) {
         let url = URL(string: "https://kick.com/api/v2/messages/send/\(chatroomId)")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.setValue("Bearer \(stream.kickAccessToken)", forHTTPHeaderField: "Authorization")
-        
+
         let body = ["content": message, "type": "message"]
         request.httpBody = try? JSONSerialization.data(withJSONObject: body)
-        
-        URLSession.shared.dataTask(with: request) { data, response, error in
+
+        URLSession.shared.dataTask(with: request) { _, response, error in
             DispatchQueue.main.async {
                 if let error = error {
                     self.makeErrorToast(title: "Failed to send message", subTitle: error.localizedDescription)
                     return
                 }
-                
+
                 if let httpResponse = response as? HTTPURLResponse {
                     if httpResponse.statusCode != 200 {
                         let statusMessage = HTTPURLResponse.localizedString(forStatusCode: httpResponse.statusCode)
-                        self.makeErrorToast(title: "Failed to send message", subTitle: "HTTP \(httpResponse.statusCode): \(statusMessage)")
+                        self.makeErrorToast(
+                            title: "Failed to send message",
+                            subTitle: "HTTP \(httpResponse.statusCode): \(statusMessage)"
+                        )
                         return
                     }
                 }
-                
+
                 // Success - no need to show anything as the message will appear in chat via Pusher
             }
         }.resume()
     }
-    
+
     func banKickUser(user: String, duration: Int? = nil, reason: String = "") {
         guard isKickLoggedIn() else {
             makeErrorToast(title: "Not logged in to Kick")
             return
         }
-        
+
         guard !stream.kickChannelName.isEmpty else {
             makeErrorToast(title: "Channel name not set")
             return
         }
-        
+
         // Get channel info to get the slug
         getKickChannelInfo(channelName: stream.kickChannelName) { [weak self] channelInfo in
             guard let self = self, let channelInfo = channelInfo else {
@@ -125,86 +128,98 @@ extension Model {
                 }
                 return
             }
-            
+
             let slug = channelInfo.slug
             let url = URL(string: "https://kick.com/api/v2/channels/\(slug)/bans")!
             var request = URLRequest(url: url)
             request.httpMethod = "POST"
             request.setValue("application/json", forHTTPHeaderField: "Content-Type")
             request.setValue("Bearer \(self.stream.kickAccessToken)", forHTTPHeaderField: "Authorization")
-            
+
             var body: [String: Any] = [
                 "banned_username": user,
-                "permanent": duration == nil
+                "permanent": duration == nil,
             ]
-            
+
             if !reason.isEmpty {
                 body["reason"] = reason
             }
-            
+
             if let duration = duration {
                 // Kick API expects duration in minutes, not seconds
                 body["duration"] = duration / 60
             }
-            
+
             request.httpBody = try? JSONSerialization.data(withJSONObject: body)
-            
-            URLSession.shared.dataTask(with: request) { data, response, error in
+
+            URLSession.shared.dataTask(with: request) { _, response, error in
                 DispatchQueue.main.async {
                     if let error = error {
                         self.makeErrorToast(title: "Failed to ban user", subTitle: error.localizedDescription)
                         return
                     }
-                    
+
                     if let httpResponse = response as? HTTPURLResponse {
                         if httpResponse.statusCode == 200 || httpResponse.statusCode == 201 {
                             if let duration = duration {
                                 let minutes = duration / 60
                                 if minutes < 60 {
                                     let timeText = minutes == 1 ? "1 minute" : "\(minutes) minutes"
-                                    self.makeToast(title: String(localized: "Successfully timed out \(user) for \(timeText)"))
+                                    self
+                                        .makeToast(
+                                            title: String(localized: "Successfully timed out \(user) for \(timeText)")
+                                        )
                                 } else {
                                     let hours = minutes / 60
                                     let timeText = hours == 1 ? "1 hour" : "\(hours) hours"
-                                    self.makeToast(title: String(localized: "Successfully timed out \(user) for \(timeText)"))
+                                    self
+                                        .makeToast(
+                                            title: String(localized: "Successfully timed out \(user) for \(timeText)")
+                                        )
                                 }
                             } else {
                                 self.makeToast(title: String(localized: "Successfully banned \(user)"))
                             }
                         } else {
                             let statusMessage = HTTPURLResponse.localizedString(forStatusCode: httpResponse.statusCode)
-                            self.makeErrorToast(title: "Failed to ban user", subTitle: "HTTP \(httpResponse.statusCode): \(statusMessage)")
+                            self.makeErrorToast(
+                                title: "Failed to ban user",
+                                subTitle: "HTTP \(httpResponse.statusCode): \(statusMessage)"
+                            )
                         }
                     }
                 }
             }.resume()
         }
     }
-    
+
     func deleteKickMessage(messageId: String, chatroomId: Int) {
         guard isKickLoggedIn() else {
             makeErrorToast(title: "Not logged in to Kick")
             return
         }
-        
+
         let url = URL(string: "https://kick.com/api/v2/chatrooms/\(chatroomId)/messages/\(messageId)")!
         var request = URLRequest(url: url)
         request.httpMethod = "DELETE"
         request.setValue("Bearer \(stream.kickAccessToken)", forHTTPHeaderField: "Authorization")
-        
-        URLSession.shared.dataTask(with: request) { data, response, error in
+
+        URLSession.shared.dataTask(with: request) { _, response, error in
             DispatchQueue.main.async {
                 if let error = error {
                     self.makeErrorToast(title: "Failed to delete message", subTitle: error.localizedDescription)
                     return
                 }
-                
+
                 if let httpResponse = response as? HTTPURLResponse {
                     if httpResponse.statusCode == 200 || httpResponse.statusCode == 204 {
                         self.makeToast(title: "Message deleted")
                     } else {
                         let statusMessage = HTTPURLResponse.localizedString(forStatusCode: httpResponse.statusCode)
-                        self.makeErrorToast(title: "Failed to delete message", subTitle: "HTTP \(httpResponse.statusCode): \(statusMessage)")
+                        self.makeErrorToast(
+                            title: "Failed to delete message",
+                            subTitle: "HTTP \(httpResponse.statusCode): \(statusMessage)"
+                        )
                     }
                 }
             }
