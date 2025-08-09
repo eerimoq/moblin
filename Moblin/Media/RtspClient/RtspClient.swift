@@ -45,6 +45,7 @@ private class Request {
             request += "\(name): \(value)\r\n"
         }
         request += "\r\n"
+        logger.info("rtsp-client: Sending header \(request)")
         return request.utf8Data
     }
 }
@@ -491,6 +492,7 @@ class RtspClient {
         guard let header = String(bytes: header, encoding: .utf8) else {
             throw "Header is not text."
         }
+        logger.info("rtsp-client: Got header \(header)")
         let lines = header.split(separator: "\r\n")
         guard lines.count >= 1 else {
             throw "Status line missing."
@@ -583,6 +585,7 @@ class RtspClient {
 
     private func parseSdp(value: String) throws {
         for line in value.split(separator: "\r\n") {
+            logger.info("rtsp-client: SDP line \(line.trim())")
             let (kind, value) = try partition(text: String(line), separator: "=")
             switch kind {
             case "m":
