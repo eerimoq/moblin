@@ -474,7 +474,7 @@ extension Model: TwitchEventSubDelegate {
                               kind: kind ?? .redemption,
                               barColor: color,
                               image: image ?? "medal",
-                              title: title
+                              titleSegments: [ChatPostSegment(id: 0, text: title)]
                           ),
                           live: true)
     }
