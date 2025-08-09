@@ -21,9 +21,14 @@ private struct SdpVideoH265 {
     let pps: HevcNalUnit
 }
 
-private enum SdpVideo {
+private enum SdpVideoCodec {
     case h264(SdpVideoH264)
     case h265(SdpVideoH265)
+}
+
+private class SdpVideo {
+    var control: URL?
+    var codec: SdpVideoCodec?
 }
 
 private class SdpLinesReader {
@@ -143,11 +148,12 @@ private class Sdp {
         for mediaDescription in linesParser.getMediaDescriptions() {
             switch mediaDescription.media {
             case "video":
-                var video: SdpVideo?
+                let video = SdpVideo()
                 let rtpmap = try mediaDescription.getValue(for: "rtpmap")
                 try parseVideoAttributeRtpmap(value: rtpmap)
                 let fmtp = try mediaDescription.getValue(for: "fmtp")
-                try parseVideoAttributeFmtp(value: fmtp, video: &video)
+                try parseVideoAttributeFmtp(value: fmtp, video: video)
+                video.control = try URL(string: mediaDescription.getValue(for: "control"))
                 self.video = video
             default:
                 break
@@ -161,19 +167,19 @@ private class Sdp {
         }
     }
 
-    private func parseVideoAttributeFmtp(value: String, video: inout SdpVideo?) throws {
-        for part in value.split(separator: ";") {
+    private func parseVideoAttributeFmtp(value: String, video: SdpVideo) throws {
+        for part in value.split(separator: /;\s*/) {
             let (name, value) = try partition(text: String(part), separator: "=")
             switch name {
             case "sprop-parameter-sets":
-                try parseVideoAttributeFmtpSpropParameterSets(value: value, video: &video)
+                try parseVideoAttributeFmtpSpropParameterSets(value: value, video: video)
             default:
                 break
             }
         }
     }
 
-    private func parseVideoAttributeFmtpSpropParameterSets(value: String, video: inout SdpVideo?) throws {
+    private func parseVideoAttributeFmtpSpropParameterSets(value: String, video: SdpVideo) throws {
         let (spsBase64, ppsBase64) = try partition(text: value, separator: ",")
         guard let sps = Data(base64Encoded: spsBase64) else {
             throw "Failed to decode SPS."
@@ -187,7 +193,7 @@ private class Sdp {
         guard let ppsNalUnit = AvcNalUnit(pps) else {
             throw "Failed to parse PPS NAL unit."
         }
-        video = .h264(SdpVideoH264(sps: spsNalUnit, pps: ppsNalUnit))
+        video.codec = .h264(SdpVideoH264(sps: spsNalUnit, pps: ppsNalUnit))
     }
 }
 
@@ -254,11 +260,6 @@ private enum State {
 
 private func md5String(data: String) -> String {
     return MD5.calculate(data).hexString()
-}
-
-private struct Packet {
-    let m: UInt8
-    let data: Data
 }
 
 extension URL {
@@ -601,7 +602,7 @@ class RtspClient {
             return nil
         }
         let ha1 = md5String(data: "\(username):\(realm):\(password)")
-        let ha2 = md5String(data: "\(request.method):\(request.url)")
+        let ha2 = md5String(data: "\(request.method):\(url)")
         let response = md5String(data: "\(ha1):\(nonce):\(ha2)")
         return """
         Digest username="\(username)", \
@@ -809,8 +810,9 @@ class RtspClient {
         guard let content = response.content, let content = String(data: content, encoding: .utf8) else {
             throw "Bad DESCRIBE content."
         }
+        let baseUrl = response.headers["Content-Base"] ?? url.absoluteString
         let sdp = try Sdp(value: content)
-        switch sdp.video {
+        switch sdp.video?.codec {
         case let .h264(sdpVideo):
             try setupH264(sdpVideo: sdpVideo)
         case .h265:
@@ -818,7 +820,18 @@ class RtspClient {
         default:
             throw "No video media found."
         }
-        performSetup()
+        // This is wrong.
+        if let controlUrl = sdp.video?.control {
+            if controlUrl.host() != nil {
+                performSetup(url: controlUrl)
+            } else if let url = URL(string: baseUrl + controlUrl.path) {
+                performSetup(url: url)
+            } else {
+                performSetup(url: url)
+            }
+        } else {
+            performSetup(url: url)
+        }
     }
 
     private func setupH264(sdpVideo: SdpVideoH264) throws {
@@ -832,7 +845,7 @@ class RtspClient {
         video.decoder?.startRunning(formatDescription: video.formatDescription)
     }
 
-    private func performSetup() {
+    private func performSetup(url: URL) {
         guard let rtpVideoPort = video.listener?.port, let rtcpVideoPort = rtcpVideoListener?.port else {
             return
         }
