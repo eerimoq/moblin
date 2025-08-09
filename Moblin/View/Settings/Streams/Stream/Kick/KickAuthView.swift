@@ -4,6 +4,13 @@ import WebKit
 // Global WebView instance to persist across app lifecycle
 private var persistentWebView: WKWebView?
 
+private enum KickAuthConstants {
+    static let loginURL = "https://kick.com/login"
+    static let sessionTokenCookieName = "session_token"
+    static let kickDomain = "kick.com"
+    static let tokenExtractionDelay: TimeInterval = 2.0
+}
+
 struct KickAuthView: View {
     @EnvironmentObject var model: Model
     @State private var showingWebView = false
@@ -81,7 +88,7 @@ struct KickAuthView: View {
         isLoading = true
 
         // Find session_token cookie
-        if let sessionTokenCookie = cookies.first(where: { $0.name == "session_token" }) {
+        if let sessionTokenCookie = cookies.first(where: { $0.name == KickAuthConstants.sessionTokenCookieName }) {
             let decodedToken = sessionTokenCookie.value.removingPercentEncoding ?? sessionTokenCookie.value
 
             DispatchQueue.main.async {
@@ -124,8 +131,8 @@ struct KickAuthView: View {
             DispatchQueue.main.async {
                 // Clear and reload the persistent WebView
                 if let webView = persistentWebView {
-                    let url = URL(string: "https://kick.com/login")!
-                    let request = URLRequest(url: url)
+                    let loginURL = URL(string: KickAuthConstants.loginURL)!
+                    let request = URLRequest(url: loginURL)
                     webView.load(request)
                 }
                 persistentWebView = nil
@@ -159,13 +166,14 @@ struct KickWebView: UIViewRepresentable {
 
         let webView = WKWebView(frame: .zero, configuration: configuration)
         webView.navigationDelegate = context.coordinator
+
+        // Configure essential scroll view settings for login
         webView.scrollView.keyboardDismissMode = .onDrag
         webView.scrollView.contentInsetAdjustmentBehavior = .automatic
 
-        // Allow zoom for better mobile experience
-        webView.scrollView.minimumZoomScale = 0.5
-        webView.scrollView.maximumZoomScale = 3.0
-        webView.scrollView.bouncesZoom = true
+        // Configure WebView settings
+        webView.allowsBackForwardNavigationGestures = true
+        webView.allowsLinkPreview = false
 
         // Store globally for persistence
         persistentWebView = webView
@@ -174,14 +182,32 @@ struct KickWebView: UIViewRepresentable {
     }
 
     func updateUIView(_ webView: WKWebView, context: Context) {
-        // Only load URL if webView doesn't have content or is on a different domain
-        if webView.url == nil || !(webView.url?.absoluteString.contains("kick.com") ?? false) {
-            let url = URL(string: "https://kick.com/login")!
-            let request = URLRequest(url: url)
-            webView.load(request)
-        }
         // Update the delegate in case it changed
         webView.navigationDelegate = context.coordinator
+
+        // Load login page if needed
+        if shouldLoadLoginPage(webView: webView) {
+            loadLoginPage(webView: webView)
+        }
+    }
+
+    private func shouldLoadLoginPage(webView: WKWebView) -> Bool {
+        guard let url = webView.url?.absoluteString else { return true }
+        return !url.contains(KickAuthConstants.kickDomain)
+    }
+
+    private func loadLoginPage(webView: WKWebView) {
+        guard let loginURL = URL(string: KickAuthConstants.loginURL) else {
+            print("Failed to create login URL")
+            return
+        }
+
+        var request = URLRequest(url: loginURL)
+        request.cachePolicy = .reloadIgnoringLocalCacheData
+        request.setValue("Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15",
+                        forHTTPHeaderField: "User-Agent")
+
+        webView.load(request)
     }
 
     func makeCoordinator() -> Coordinator {
@@ -199,7 +225,7 @@ struct KickWebView: UIViewRepresentable {
             guard let url = webView.url?.absoluteString else { return }
 
             // Only extract token if we're on a logged-in page (not login/register page)
-            if !url.contains("/login"), !url.contains("/register"), url.contains("kick.com") {
+            if !url.contains("/login"), !url.contains("/register"), url.contains(KickAuthConstants.kickDomain) {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
                     self.extractAuthToken(from: webView)
                 }
@@ -209,10 +235,10 @@ struct KickWebView: UIViewRepresentable {
         private func extractAuthToken(from _: WKWebView) {
             // Get session cookies
             WKWebsiteDataStore.default().httpCookieStore.getAllCookies { cookies in
-                let kickCookies = cookies.filter { $0.domain.contains("kick.com") }
+                let kickCookies = cookies.filter { $0.domain.contains(KickAuthConstants.kickDomain) }
 
                 DispatchQueue.main.async {
-                    if kickCookies.contains(where: { $0.name == "session_token" }) {
+                    if kickCookies.contains(where: { $0.name == KickAuthConstants.sessionTokenCookieName }) {
                         self.parent.onTokenExtracted(nil, kickCookies)
                     }
                 }

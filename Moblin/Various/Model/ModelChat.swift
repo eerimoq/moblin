@@ -78,6 +78,62 @@ class ChatProvider: ObservableObject {
     }
 }
 
+private enum ChatPlatformTarget {
+    case kick
+    case twitch
+    
+    var displayName: String {
+        switch self {
+        case .kick: return "Kick"
+        case .twitch: return "Twitch"
+        }
+    }
+}
+
+private enum PlatformSendResult {
+    case sent(ChatPlatformTarget)
+    case notLoggedIn(ChatPlatformTarget)
+    case notConfigured(ChatPlatformTarget)
+}
+
+private struct SendResults {
+    private var results: [PlatformSendResult] = []
+    
+    mutating func add(_ result: PlatformSendResult) {
+        results.append(result)
+    }
+    
+    var sentCount: Int {
+        results.count { if case .sent = $0 { return true } else { return false } }
+    }
+    
+    func getErrorMessage() -> String {
+        let notLoggedIn = results.compactMap { result in
+            if case .notLoggedIn(let platform) = result {
+                return platform.displayName
+            }
+            return nil
+        }
+        
+        let notConfigured = results.compactMap { result in
+            if case .notConfigured(let platform) = result {
+                return platform.displayName
+            }
+            return nil
+        }
+        
+        var errors: [String] = []
+        if !notLoggedIn.isEmpty {
+            errors.append("Not logged in to: \(notLoggedIn.joined(separator: ", "))")
+        }
+        if !notConfigured.isEmpty {
+            errors.append("Not configured: \(notConfigured.joined(separator: ", "))")
+        }
+        
+        return errors.isEmpty ? "No platforms available" : errors.joined(separator: ". ")
+    }
+}
+
 extension Model {
     func getAvailableChatPlatforms() -> [ChatPlatformSelection] {
         var platforms: [ChatPlatformSelection] = []
@@ -352,52 +408,78 @@ extension Model {
     }
 
     func sendChatMessage(message: String) {
-        var sentToAtLeastOne = false
-        var errors: [String] = []
+        let platforms = getTargetPlatforms()
+        let results = sendToSelectedPlatforms(message: message, platforms: platforms)
+        handleSendResults(results)
+    }
 
-        // Determine which platforms to send to based on selection
-        let shouldSendToKick = (selectedChatPlatform == .all || selectedChatPlatform == .kick) &&
-            isKickPusherConfigured() && isKickLoggedIn()
-        let shouldSendToTwitch = (selectedChatPlatform == .all || selectedChatPlatform == .twitch) &&
-            stream.twitchLoggedIn
+    private func getTargetPlatforms() -> [ChatPlatformTarget] {
+        var targets: [ChatPlatformTarget] = []
 
-        // Send to Kick if selected and available
-        if shouldSendToKick {
-            sendKickChatMessage(message: message)
-            sentToAtLeastOne = true
-        } else if selectedChatPlatform == .all || selectedChatPlatform == .kick,
-                  isKickPusherConfigured(), !isKickLoggedIn()
-        {
-            errors.append("Kick (not logged in)")
+        switch selectedChatPlatform {
+        case .all:
+            targets.append(contentsOf: [.kick, .twitch])
+        case .kick:
+            targets.append(.kick)
+        case .twitch:
+            targets.append(.twitch)
         }
 
-        // Send to Twitch if selected and available
-        if shouldSendToTwitch {
-            TwitchApi(stream.twitchAccessToken, urlSession)
-                .sendChatMessage(broadcasterId: stream.twitchChannelId, message: message) { ok in
-                    if !ok {
-                        DispatchQueue.main.async {
-                            self.makeErrorToast(title: "Failed to send to Twitch")
-                        }
+        return targets
+    }
+
+    private func sendToSelectedPlatforms(message: String, platforms: [ChatPlatformTarget]) -> SendResults {
+        var results = SendResults()
+
+        for platform in platforms {
+            let result = sendToPlatform(message: message, platform: platform)
+            results.add(result)
+        }
+
+        return results
+    }
+
+    private func sendToPlatform(message: String, platform: ChatPlatformTarget) -> PlatformSendResult {
+        switch platform {
+        case .kick:
+            return sendToKick(message: message)
+        case .twitch:
+            return sendToTwitch(message: message)
+        }
+    }
+
+    private func sendToKick(message: String) -> PlatformSendResult {
+        guard isKickPusherConfigured() else {
+            return .notConfigured(.kick)
+        }
+        guard isKickLoggedIn() else {
+            return .notLoggedIn(.kick)
+        }
+        
+        sendKickChatMessage(message: message)
+        return .sent(.kick)
+    }
+
+    private func sendToTwitch(message: String) -> PlatformSendResult {
+        guard stream.twitchLoggedIn else {
+            return .notLoggedIn(.twitch)
+        }
+        
+        TwitchApi(stream.twitchAccessToken, urlSession)
+            .sendChatMessage(broadcasterId: stream.twitchChannelId, message: message) { ok in
+                if !ok {
+                    DispatchQueue.main.async {
+                        self.makeErrorToast(title: "Failed to send to Twitch")
                     }
                 }
-            sentToAtLeastOne = true
-        } else if selectedChatPlatform == .all || selectedChatPlatform == .twitch,
-                  !stream.twitchLoggedIn
-        {
-            errors.append("Twitch (not logged in)")
-        }
-
-        // Show appropriate feedback
-        if !sentToAtLeastOne {
-            if errors.isEmpty {
-                makeErrorToast(title: "No chat platforms configured", subTitle: "Configure Twitch or Kick in Settings")
-            } else {
-                makeErrorToast(
-                    title: "Cannot send message",
-                    subTitle: "Not logged in to: \(errors.joined(separator: ", "))"
-                )
             }
+        return .sent(.twitch)
+    }
+
+    private func handleSendResults(_ results: SendResults) {
+        if results.sentCount == 0 {
+            let errorMessage = results.getErrorMessage()
+            makeErrorToast(title: "Cannot send message", subTitle: errorMessage)
         }
     }
 
@@ -641,14 +723,17 @@ extension Model {
             deleteMessage(messageId: messageId)
         case .kick:
             // For Kick we need the chatroom ID, get it from channel info
-            getKickChannelInfo(channelName: stream.kickChannelName) { [weak self] channelInfo in
-                guard let self = self, let channelInfo = channelInfo else {
-                    DispatchQueue.main.async {
-                        self?.makeErrorToast(title: "Failed to get channel info")
+            Task {
+                do {
+                    let channelInfo = try await getKickChannelInfoAsync(channelName: stream.kickChannelName)
+                    await MainActor.run {
+                        deleteKickMessage(messageId: messageId, chatroomId: channelInfo.chatroom.id)
                     }
-                    return
+                } catch {
+                    await MainActor.run {
+                        makeErrorToast(title: "Failed to get channel info")
+                    }
                 }
-                self.deleteKickMessage(messageId: messageId, chatroomId: channelInfo.chatroom.id)
             }
         default:
             makeErrorToast(title: "Delete message not supported for this platform")
