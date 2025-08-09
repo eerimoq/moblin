@@ -1262,10 +1262,10 @@ class SettingsAutoSceneSwitcher: Codable, Identifiable, ObservableObject, Named 
 
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        id = try container.decode(UUID.self, forKey: .id)
-        name = try container.decode(String.self, forKey: .name)
-        shuffle = try container.decode(Bool.self, forKey: .shuffle)
-        scenes = try container.decode([SettingsAutoSceneSwitcherScene].self, forKey: .scenes)
+        id = container.decode(.id, UUID.self, .init())
+        name = container.decode(.name, String.self, Self.baseName)
+        shuffle = container.decode(.shuffle, Bool.self, false)
+        scenes = container.decode(.scenes, [SettingsAutoSceneSwitcherScene].self, [])
     }
 }
 
@@ -2773,7 +2773,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named 
     static let baseName = String(localized: "My widget")
     @Published var name: String
     var id: UUID = .init()
-    var type: SettingsWidgetType = .browser
+    var type: SettingsWidgetType = .text
     var text: SettingsWidgetText = .init()
     var browser: SettingsWidgetBrowser = .init()
     var crop: SettingsWidgetCrop = .init()
@@ -2840,11 +2840,11 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named 
 
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        name = try container.decode(String.self, forKey: .name)
-        id = try container.decode(UUID.self, forKey: .id)
-        type = try container.decode(SettingsWidgetType.self, forKey: .type)
-        text = try container.decode(SettingsWidgetText.self, forKey: .text)
-        browser = try container.decode(SettingsWidgetBrowser.self, forKey: .browser)
+        name = container.decode(.name, String.self, "")
+        id = container.decode(.id, UUID.self, .init())
+        type = container.decode(.type, SettingsWidgetType.self, .text)
+        text = container.decode(.text, SettingsWidgetText.self, .init())
+        browser = container.decode(.browser, SettingsWidgetBrowser.self, .init())
         crop = container.decode(.crop, SettingsWidgetCrop.self, .init())
         map = container.decode(.map, SettingsWidgetMap.self, .init())
         scene = container.decode(.scene, SettingsWidgetScene.self, .init())
@@ -3784,23 +3784,23 @@ class SettingsChat: Codable, ObservableObject {
 
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        fontSize = try container.decode(Float.self, forKey: .fontSize)
-        usernameColor = try container.decode(RgbColor.self, forKey: .usernameColor)
+        fontSize = container.decode(.fontSize, Float.self, 19.0)
+        usernameColor = container.decode(.usernameColor, RgbColor.self, .init(red: 255, green: 163, blue: 0))
         usernameColorColor = usernameColor.color()
-        messageColor = try container.decode(RgbColor.self, forKey: .messageColor)
+        messageColor = container.decode(.messageColor, RgbColor.self, .init(red: 255, green: 255, blue: 255))
         messageColorColor = messageColor.color()
-        backgroundColor = try container.decode(RgbColor.self, forKey: .backgroundColor)
+        backgroundColor = container.decode(.backgroundColor, RgbColor.self, .init(red: 0, green: 0, blue: 0))
         backgroundColorColor = backgroundColor.color()
-        backgroundColorEnabled = try container.decode(Bool.self, forKey: .backgroundColorEnabled)
-        shadowColor = try container.decode(RgbColor.self, forKey: .shadowColor)
+        backgroundColorEnabled = container.decode(.backgroundColorEnabled, Bool.self, false)
+        shadowColor = container.decode(.shadowColor, RgbColor.self, .init(red: 0, green: 0, blue: 0))
         shadowColorColor = shadowColor.color()
-        shadowColorEnabled = try container.decode(Bool.self, forKey: .shadowColorEnabled)
-        boldUsername = try container.decode(Bool.self, forKey: .boldUsername)
-        boldMessage = try container.decode(Bool.self, forKey: .boldMessage)
-        animatedEmotes = try container.decode(Bool.self, forKey: .animatedEmotes)
-        timestampColor = try container.decode(RgbColor.self, forKey: .timestampColor)
+        shadowColorEnabled = container.decode(.shadowColorEnabled, Bool.self, true)
+        boldUsername = container.decode(.boldUsername, Bool.self, true)
+        boldMessage = container.decode(.boldMessage, Bool.self, true)
+        animatedEmotes = container.decode(.animatedEmotes, Bool.self, false)
+        timestampColor = container.decode(.timestampColor, RgbColor.self, .init(red: 180, green: 180, blue: 180))
         timestampColorColor = timestampColor.color()
-        timestampColorEnabled = try container.decode(Bool.self, forKey: .timestampColorEnabled)
+        timestampColorEnabled = container.decode(.timestampColorEnabled, Bool.self, false)
         height = container.decode(.height, Double.self, 0.7)
         width = container.decode(.width, Double.self, 1.0)
         maximumAge = container.decode(.maximumAge, Int.self, 30)
