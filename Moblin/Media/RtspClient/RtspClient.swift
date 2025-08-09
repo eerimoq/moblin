@@ -733,20 +733,24 @@ class RtspClient {
         let sdp = try Sdp(value: content)
         switch sdp.video {
         case let .h264(sdpVideo):
-            let nalUnits = [sdpVideo.sps, sdpVideo.pps]
-            video.formatDescription = nalUnits.makeFormatDescription()
-            guard video.formatDescription != nil else {
-                throw "Failed to create format description."
-            }
-            video.decoder = VideoDecoder(lockQueue: rtspClientQueue)
-            video.decoder?.delegate = self
-            video.decoder?.startRunning(formatDescription: video.formatDescription)
+            try setupH264(sdpVideo: sdpVideo)
         case .h265:
-            throw "H265 is not supported."
+            throw "H.265 is not supported."
         default:
-            throw "No video in SDP."
+            throw "No video media found."
         }
         performSetup()
+    }
+
+    private func setupH264(sdpVideo: SdpVideoH264) throws {
+        let nalUnits = [sdpVideo.sps, sdpVideo.pps]
+        video.formatDescription = nalUnits.makeFormatDescription()
+        guard video.formatDescription != nil else {
+            throw "Failed to create H.264 format description."
+        }
+        video.decoder = VideoDecoder(lockQueue: rtspClientQueue)
+        video.decoder?.delegate = self
+        video.decoder?.startRunning(formatDescription: video.formatDescription)
     }
 
     private func performSetup() {
