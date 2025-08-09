@@ -150,9 +150,14 @@ private class Sdp {
             case "video":
                 let video = SdpVideo()
                 let rtpmap = try mediaDescription.getValue(for: "rtpmap")
-                try parseVideoAttributeRtpmap(value: rtpmap)
                 let fmtp = try mediaDescription.getValue(for: "fmtp")
-                try parseVideoAttributeFmtp(value: fmtp, video: video)
+                if rtpmap.contains("H264") {
+                    try parseVideoAttributeFmtpH264(value: fmtp, video: video)
+                } else if rtpmap.contains("H265") {
+                    try parseVideoAttributeFmtpH265(value: fmtp, video: video)
+                } else {
+                    throw "Unsupported codec in rtpmap: \(rtpmap)"
+                }
                 video.control = try URL(string: mediaDescription.getValue(for: "control"))
                 self.video = video
             default:
@@ -161,13 +166,8 @@ private class Sdp {
         }
     }
 
-    private func parseVideoAttributeRtpmap(value: String) throws {
-        guard value.contains("H264") else {
-            throw "Only H.264 is supported."
-        }
-    }
-
-    private func parseVideoAttributeFmtp(value: String, video: SdpVideo) throws {
+    private func parseVideoAttributeFmtpH264(value: String, video: SdpVideo) throws {
+        let (_, value) = try partition(text: value, separator: " ")
         for part in value.split(separator: /;\s*/) {
             let (name, value) = try partition(text: String(part), separator: "=")
             switch name {
@@ -194,6 +194,40 @@ private class Sdp {
             throw "Failed to parse PPS NAL unit."
         }
         video.codec = .h264(SdpVideoH264(sps: spsNalUnit, pps: ppsNalUnit))
+    }
+
+    private func parseVideoAttributeFmtpH265(value: String, video: SdpVideo) throws {
+        var vps: HevcNalUnit?
+        var sps: HevcNalUnit?
+        var pps: HevcNalUnit?
+        let (_, value) = try partition(text: value, separator: " ")
+        for part in value.split(separator: /;\s*/) {
+            let (name, value) = try partition(text: String(part), separator: "=")
+            switch name {
+            case "sprop-vps":
+                vps = try parseVideoAttributeFmtpSpropVpsSpsPps(value: value)
+            case "sprop-sps":
+                sps = try parseVideoAttributeFmtpSpropVpsSpsPps(value: value)
+            case "sprop-pps":
+                pps = try parseVideoAttributeFmtpSpropVpsSpsPps(value: value)
+            default:
+                break
+            }
+        }
+        guard let vps, let sps, let pps else {
+            throw "VPS, SPS or PPS missing."
+        }
+        video.codec = .h265(SdpVideoH265(vps: vps, sps: sps, pps: pps))
+    }
+
+    private func parseVideoAttributeFmtpSpropVpsSpsPps(value: String) throws -> HevcNalUnit {
+        guard let value = Data(base64Encoded: value) else {
+            throw "Failed to decode VPS, SPS or PPS."
+        }
+        guard let nalUnit = HevcNalUnit(value) else {
+            throw "Failed to parse VPS, SPS or PPS unit."
+        }
+        return nalUnit
     }
 }
 
@@ -389,8 +423,8 @@ private class RtpVideo {
         }
         let type = packet[12] & 0x1F
         switch type {
-        case 1:
-            try processBufferType1(packet: packet, timestamp: timestamp)
+        case 1 ... 23:
+            try processBufferType1to23(packet: packet, timestamp: timestamp)
         case 28:
             try processBufferType28(packet: packet, timestamp: timestamp)
         default:
@@ -398,13 +432,13 @@ private class RtpVideo {
         }
     }
 
-    private func processBufferType1(packet: Data, timestamp: UInt32) throws {
+    private func processBufferType1to23(packet: Data, timestamp: UInt32) throws {
         if !data.isEmpty {
-            decodeFrame()
+            decodeFrameH264()
         }
         self.timestamp = timestamp
         data = nalUnitStartCode + packet[12...]
-        decodeFrame()
+        decodeFrameH264()
         data = Data()
     }
 
@@ -419,7 +453,7 @@ private class RtpVideo {
                 self.timestamp = timestamp
                 data = nalUnitStartCode + Data([nal]) + packet[14...]
             } else {
-                decodeFrame()
+                decodeFrameH264()
                 self.timestamp = timestamp
                 data = nalUnitStartCode + Data([nal]) + packet[14...]
             }
@@ -428,12 +462,13 @@ private class RtpVideo {
         }
     }
 
-    private func decodeFrame() {
+    private func decodeFrameH264() {
         guard let client else {
             return
         }
         let nalUnits = getNalUnits(data: data)
         let units = readH264NalUnits(data: data, nalUnits: nalUnits, filter: [.idr])
+        let isSync = units.contains { $0.header.type == .idr }
         let count = UInt32(data.count - 4)
         data.withUnsafeMutableBytes { pointer in
             pointer.writeUInt32(count, offset: 0)
@@ -469,7 +504,7 @@ private class RtpVideo {
         ) == noErr else {
             return
         }
-        sampleBuffer?.isSync = units.contains { $0.header.type == .idr }
+        sampleBuffer?.isSync = isSync
         guard let sampleBuffer else {
             return
         }
@@ -816,22 +851,26 @@ class RtspClient {
         switch sdp.video?.codec {
         case let .h264(sdpVideo):
             try setupH264(sdpVideo: sdpVideo)
-        case .h265:
+        case let .h265(sdpVideo):
+            try setupH265(sdpVideo: sdpVideo)
             throw "H.265 is not supported."
         default:
             throw "No video media found."
         }
-        // This is wrong.
-        if let controlUrl = sdp.video?.control {
+        performSetup(url: makeSetupUrl(baseUrl: baseUrl, controlUrl: sdp.video?.control))
+    }
+
+    private func makeSetupUrl(baseUrl: String, controlUrl: URL?) -> URL {
+        if let controlUrl {
             if controlUrl.host() != nil {
-                performSetup(url: controlUrl)
+                return controlUrl
             } else if let url = URL(string: baseUrl + controlUrl.path) {
-                performSetup(url: url)
+                return url
             } else {
-                performSetup(url: url)
+                return url
             }
         } else {
-            performSetup(url: url)
+            return url
         }
     }
 
@@ -841,6 +880,19 @@ class RtspClient {
         guard video.formatDescription != nil else {
             throw "Failed to create H.264 format description."
         }
+        createVideoDecoder()
+    }
+
+    private func setupH265(sdpVideo: SdpVideoH265) throws {
+        let nalUnits = [sdpVideo.vps, sdpVideo.sps, sdpVideo.pps]
+        video.formatDescription = nalUnits.makeFormatDescription()
+        guard video.formatDescription != nil else {
+            throw "Failed to create H.265 format description."
+        }
+        createVideoDecoder()
+    }
+
+    private func createVideoDecoder() {
         video.decoder = VideoDecoder(lockQueue: rtspClientQueue)
         video.decoder?.delegate = self
         video.decoder?.startRunning(formatDescription: video.formatDescription)
