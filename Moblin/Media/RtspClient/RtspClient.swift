@@ -10,6 +10,93 @@ protocol RtspClientDelegate: AnyObject {
     func rtspClientOnVideoBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer)
 }
 
+private class SdpAudio {}
+
+private struct SdpVideoH264 {
+    let sps: AvcNalUnit
+    let pps: AvcNalUnit
+}
+
+private struct SdpVideoH265 {
+    let vps: HevcNalUnit
+    let sps: HevcNalUnit
+    let pps: HevcNalUnit
+}
+
+private enum SdpVideo {
+    case h264(SdpVideoH264)
+    case h265(SdpVideoH265)
+}
+
+private class Sdp {
+    var audio: SdpAudio?
+    var video: SdpVideo?
+
+    init(value: String) throws {
+        try parse(value: value)
+    }
+
+    private func parse(value: String) throws {
+        for line in value.split(separator: "\r\n") {
+            logger.info("rtsp-client: SDP line \(line.trim())")
+            let (kind, value) = try partition(text: String(line), separator: "=")
+            switch kind {
+            case "m":
+                try parseMedia(value: value)
+            case "a":
+                try parseAttribute(value: value)
+            default:
+                break
+            }
+        }
+    }
+
+    private func parseMedia(value _: String) throws {
+        // 12:00:23,691 rtsp-client: SDP line m=video 0 RTP/AVP 96
+    }
+
+    private func parseAttribute(value: String) throws {
+        if value.contains(":") {
+            let (name, value) = try partition(text: value, separator: ":")
+            switch name {
+            case "fmtp":
+                try parseAttributeFmtp(value: value)
+            default:
+                break
+            }
+        }
+    }
+
+    private func parseAttributeFmtp(value: String) throws {
+        for part in value.split(separator: ";") {
+            let (name, value) = try partition(text: String(part), separator: "=")
+            switch name {
+            case "sprop-parameter-sets":
+                try parseAttributeFmtpSpropParameterSets(value: value)
+            default:
+                break
+            }
+        }
+    }
+
+    private func parseAttributeFmtpSpropParameterSets(value: String) throws {
+        let (spsBase64, ppsBase64) = try partition(text: value, separator: ",")
+        guard let sps = Data(base64Encoded: spsBase64) else {
+            throw "Failed to decode SPS."
+        }
+        guard let pps = Data(base64Encoded: ppsBase64) else {
+            throw "Failed to decode PPS."
+        }
+        guard let spsNalUnit = AvcNalUnit(sps) else {
+            throw "Failed to parse SPS NAL unit."
+        }
+        guard let ppsNalUnit = AvcNalUnit(pps) else {
+            throw "Failed to parse PPS NAL unit."
+        }
+        video = .h264(SdpVideoH264(sps: spsNalUnit, pps: ppsNalUnit))
+    }
+}
+
 private func partition(text: String, separator: String) throws -> (String, String) {
     let parts = text.split(separator: separator, maxSplits: 1)
     guard parts.count == 2 else {
@@ -584,75 +671,23 @@ class RtspClient {
         guard let content = response.content, let content = String(data: content, encoding: .utf8) else {
             throw "Bad DESCRIBE content."
         }
-        try parseSdp(value: content)
+        let sdp = try Sdp(value: content)
+        switch sdp.video {
+        case let .h264(sdpVideo):
+            let nalUnits = [sdpVideo.sps, sdpVideo.pps]
+            video.formatDescription = nalUnits.makeFormatDescription()
+            guard video.formatDescription != nil else {
+                throw "Failed to create format description."
+            }
+            video.decoder = VideoDecoder(lockQueue: rtspClientQueue)
+            video.decoder?.delegate = self
+            video.decoder?.startRunning(formatDescription: video.formatDescription)
+        case .h265:
+            throw "H265 is not supported."
+        default:
+            throw "No video in SDP."
+        }
         performSetup()
-    }
-
-    private func parseSdp(value: String) throws {
-        for line in value.split(separator: "\r\n") {
-            logger.info("rtsp-client: SDP line \(line.trim())")
-            let (kind, value) = try partition(text: String(line), separator: "=")
-            switch kind {
-            case "m":
-                try parseSdpMedia(value: value)
-            case "a":
-                try parseSdpAttribute(value: value)
-            default:
-                break
-            }
-        }
-    }
-
-    private func parseSdpMedia(value _: String) throws {
-        // 12:00:23,691 rtsp-client: SDP line m=video 0 RTP/AVP 96
-    }
-
-    private func parseSdpAttribute(value: String) throws {
-        if value.contains(":") {
-            let (name, value) = try partition(text: value, separator: ":")
-            switch name {
-            case "fmtp":
-                try parseSdpAttributeFmtp(value: value)
-            default:
-                break
-            }
-        }
-    }
-
-    private func parseSdpAttributeFmtp(value: String) throws {
-        for part in value.split(separator: ";") {
-            let (name, value) = try partition(text: String(part), separator: "=")
-            switch name {
-            case "sprop-parameter-sets":
-                try parseSdpAttributeFmtpSpropParameterSets(value: value)
-            default:
-                break
-            }
-        }
-    }
-
-    private func parseSdpAttributeFmtpSpropParameterSets(value: String) throws {
-        let (spsBase64, ppsBase64) = try partition(text: value, separator: ",")
-        guard let sps = Data(base64Encoded: spsBase64) else {
-            throw "Failed to decode SPS."
-        }
-        guard let pps = Data(base64Encoded: ppsBase64) else {
-            throw "Failed to decode PPS."
-        }
-        guard let spsNalUnit = AvcNalUnit(sps) else {
-            throw "Failed to parse SPS NAL unit."
-        }
-        guard let ppsNalUnit = AvcNalUnit(pps) else {
-            throw "Failed to parse PPS NAL unit."
-        }
-        let nalUnits = [spsNalUnit, ppsNalUnit]
-        video.formatDescription = nalUnits.makeFormatDescription()
-        guard video.formatDescription != nil else {
-            throw "Failed to create format description."
-        }
-        video.decoder = VideoDecoder(lockQueue: rtspClientQueue)
-        video.decoder?.delegate = self
-        video.decoder?.startRunning(formatDescription: video.formatDescription)
     }
 
     private func performSetup() {
