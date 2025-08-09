@@ -414,7 +414,6 @@ private class RtpVideo {
         let startBit = fuHeader >> 7
         let nalType = fuHeader & 0x1F
         let nal = fuIndicator & 0xE0 | nalType
-        // logger.info("rtsp-client: type \(type) startBit \(startBit) nalType \(nalType)")
         if startBit == 1 {
             if data.isEmpty {
                 self.timestamp = timestamp
@@ -799,7 +798,9 @@ class RtspClient {
     }
 
     private func performDescribe() {
-        let headers = ["Accept": "application/sdp"]
+        let headers = [
+            "Accept": "application/sdp",
+        ]
         let request = Request(url: url, method: "DESCRIBE", headers: headers, content: nil) { response in
             try self.handleDescribeResponse(response: response)
         }
@@ -849,7 +850,9 @@ class RtspClient {
         guard let rtpVideoPort = video.listener?.port, let rtcpVideoPort = rtcpVideoListener?.port else {
             return
         }
-        let headers = ["Transport": "RTP/AVP;unicast;client_port=\(rtpVideoPort)-\(rtcpVideoPort)"]
+        let headers = [
+            "Transport": "RTP/AVP;unicast;client_port=\(rtpVideoPort)-\(rtcpVideoPort)",
+        ]
         let request = Request(url: url, method: "SETUP", headers: headers, content: nil) { response in
             try self.handleSetupResponse(response: response)
         }
