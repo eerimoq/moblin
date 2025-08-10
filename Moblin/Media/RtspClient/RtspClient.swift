@@ -338,9 +338,9 @@ private class RtpProcessorVideoH264: RtpProcessor {
         let type = packet[12] & 0x1F
         switch type {
         case 1 ... 23:
-            try processBufferType1to23(packet: packet, timestamp: timestamp)
+            try processBufferTypeSingle(packet: packet, timestamp: timestamp)
         case 28:
-            try processBufferType28(packet: packet, timestamp: timestamp)
+            try processBufferTypeFuA(packet: packet, timestamp: timestamp)
         default:
             throw "Unsupported RTP packet type \(type)."
         }
@@ -350,17 +350,17 @@ private class RtpProcessorVideoH264: RtpProcessor {
         data = Data()
     }
 
-    private func processBufferType1to23(packet: Data, timestamp: UInt64) throws {
+    private func processBufferTypeSingle(packet: Data, timestamp: UInt64) throws {
         if !data.isEmpty {
-            decodeFrameH264()
+            decodeFrame()
         }
         self.timestamp = timestamp
         data = nalUnitStartCode + packet[12...]
-        decodeFrameH264()
+        decodeFrame()
         data = Data()
     }
 
-    private func processBufferType28(packet: Data, timestamp: UInt64) throws {
+    private func processBufferTypeFuA(packet: Data, timestamp: UInt64) throws {
         let fuIndicator = packet[12]
         let fuHeader = packet[13]
         let startBit = fuHeader >> 7
@@ -371,7 +371,7 @@ private class RtpProcessorVideoH264: RtpProcessor {
                 self.timestamp = timestamp
                 data = nalUnitStartCode + Data([nal]) + packet[14...]
             } else {
-                decodeFrameH264()
+                decodeFrame()
                 self.timestamp = timestamp
                 data = nalUnitStartCode + Data([nal]) + packet[14...]
             }
@@ -380,7 +380,7 @@ private class RtpProcessorVideoH264: RtpProcessor {
         }
     }
 
-    private func decodeFrameH264() {
+    private func decodeFrame() {
         guard let client else {
             return
         }
