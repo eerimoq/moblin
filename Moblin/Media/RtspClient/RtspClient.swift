@@ -568,8 +568,6 @@ extension RtpProcessorVideoH265: VideoDecoderDelegate {
 }
 
 private class Rtp {
-    private(set) var listener: NWListener?
-    private var connection: NWConnection?
     private var nextExpectedSequenceNumber: UInt16?
     private var packets: [UInt16: Data] = [:]
     private var previousTimestamp: UInt32 = 0
@@ -577,50 +575,7 @@ private class Rtp {
     var processor: RtpProcessor?
     weak var client: RtspClient?
 
-    func start() {
-        listener = try? NWListener(using: .udp)
-        listener?.stateUpdateHandler = connectionStateDidChange
-        listener?.newConnectionHandler = newConnection
-        listener?.start(queue: rtspClientQueue)
-        nextExpectedSequenceNumber = nil
-        packets = [:]
-        previousTimestamp = 0
-        timestamp = 0
-    }
-
-    func stop() {
-        listener?.cancel()
-        listener = nil
-        connection?.cancel()
-        connection = nil
-    }
-
-    private func connectionStateDidChange(to state: NWListener.State) {
-        switch state {
-        case .ready:
-            client?.performOptionsIfReady()
-        default:
-            break
-        }
-    }
-
-    private func newConnection(_ connection: NWConnection) {
-        connection.start(queue: rtspClientQueue)
-        self.connection = connection
-        receivePacket()
-    }
-
-    private func receivePacket() {
-        connection?.receiveMessage { packet, _, _, error in
-            do {
-                try self.handlePacket(packet: packet)
-            } catch {
-                logger.info("rtsp-client: Failed to handle RTP packet with error: \(error)")
-            }
-        }
-    }
-
-    private func handlePacket(packet: Data?) throws {
+    func handlePacket(packet: Data?) throws {
         guard let packet else {
             throw "Connection closed."
         }
@@ -661,7 +616,6 @@ private class Rtp {
             processor?.drop()
             nextExpectedSequenceNumber = sequenceNumber &+ 1
         }
-        receivePacket()
     }
 
     private func processOutOfOrderPackets() throws {
@@ -708,7 +662,7 @@ class RtspClient {
     private var nextCSeq = 0
     private var requests: [Int: Request] = [:]
     private var videoSession: String?
-    private let rtpVideo = Rtp()
+    private var rtpVideo = Rtp()
     private var rtcpVideoListener: NWListener?
     private var rtcpVideoConnection: NWConnection?
     weak var delegate: RtspClientDelegate?
@@ -716,6 +670,8 @@ class RtspClient {
     private var keepAliveTimer = SimpleTimer(queue: rtspClientQueue)
     private var started = false
     private var isAlive = true
+    private var rtpVideoListener: NWListener?
+    private var rtpVideoConnection: NWConnection?
 
     init(cameraId: UUID, url: URL, latency: Double) {
         self.cameraId = cameraId
@@ -724,7 +680,6 @@ class RtspClient {
         password = url.password()
         self.url = url.removeCredentials()
         state = .disconnected
-        rtpVideo.client = self
     }
 
     func start() {
@@ -776,7 +731,12 @@ class RtspClient {
         connection?.stateUpdateHandler = rtspConnectionStateDidChange
         connection?.start(queue: rtspClientQueue)
         receiveNewRtspHeader()
-        rtpVideo.start()
+        rtpVideo = Rtp()
+        rtpVideo.client = self
+        rtpVideoListener = try? NWListener(using: .udp)
+        rtpVideoListener?.stateUpdateHandler = rtpVideoConnectionStateDidChange
+        rtpVideoListener?.newConnectionHandler = rtpVideoNewConnection
+        rtpVideoListener?.start(queue: rtspClientQueue)
         rtcpVideoListener = try? NWListener(using: .udp)
         rtcpVideoListener?.stateUpdateHandler = rtcpVideoConnectionStateDidChange
         rtcpVideoListener?.newConnectionHandler = rtcpVideoNewConnection
@@ -799,7 +759,10 @@ class RtspClient {
         keepAliveTimer.stop()
         connection?.cancel()
         connection = nil
-        rtpVideo.stop()
+        rtpVideoListener?.cancel()
+        rtpVideoListener = nil
+        rtpVideoConnection?.cancel()
+        rtpVideoConnection = nil
         rtcpVideoListener?.cancel()
         rtcpVideoListener = nil
         rtcpVideoConnection?.cancel()
@@ -844,6 +807,32 @@ class RtspClient {
             request.headers["Authorization"] = authorization
         }
         connection?.send(content: request.pack(cSeq: cSeq), completion: .idempotent)
+    }
+
+    private func rtpVideoConnectionStateDidChange(to state: NWListener.State) {
+        switch state {
+        case .ready:
+            performOptionsIfReady()
+        default:
+            break
+        }
+    }
+
+    private func rtpVideoNewConnection(_ connection: NWConnection) {
+        connection.start(queue: rtspClientQueue)
+        rtpVideoConnection = connection
+        rtpVideoReceivePacket()
+    }
+
+    private func rtpVideoReceivePacket() {
+        rtpVideoConnection?.receiveMessage { packet, _, _, error in
+            do {
+                try self.rtpVideo.handlePacket(packet: packet)
+                self.rtpVideoReceivePacket()
+            } catch {
+                logger.info("rtsp-client: Failed to handle RTP packet with error: \(error)")
+            }
+        }
     }
 
     private func rtcpVideoConnectionStateDidChange(to state: NWListener.State) {
@@ -989,10 +978,10 @@ class RtspClient {
     }
 
     private func isReadyToSendOptions() -> Bool {
-        return connection?.state == .ready && rtpVideo.listener?.port != nil && rtcpVideoListener?.port != nil
+        return connection?.state == .ready && rtpVideoListener?.port != nil && rtcpVideoListener?.port != nil
     }
 
-    fileprivate func performOptionsIfReady() {
+    private func performOptionsIfReady() {
         if isReadyToSendOptions() {
             setState(newState: .setup)
             performOptions()
@@ -1082,7 +1071,7 @@ class RtspClient {
     }
 
     private func performSetup(url: URL) {
-        guard let rtpVideoPort = rtpVideo.listener?.port, let rtcpVideoPort = rtcpVideoListener?.port else {
+        guard let rtpVideoPort = rtpVideoListener?.port, let rtcpVideoPort = rtcpVideoListener?.port else {
             return
         }
         let headers = [
