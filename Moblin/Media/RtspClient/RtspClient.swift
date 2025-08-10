@@ -305,17 +305,163 @@ extension URL {
     }
 }
 
-private class RtpVideo {
-    var listener: NWListener?
-    var connection: NWConnection?
-    var timestamp: UInt32 = 0
-    var data = Data()
-    var nextExpectedSequenceNumber: UInt16?
-    var packets: [UInt16: Data] = [:]
-    var decoder: VideoDecoder?
-    var formatDescription: CMFormatDescription?
-    var basePresentationTimeStamp: Double = -1
-    var firstPresentationTimeStamp: Double = -1
+private class RtpProcessor {
+    func process(packet: Data, timestamp: UInt32) throws {
+        throw "Not implemented"
+    }
+    
+    func drop() {
+    }
+}
+
+private class RtpProcessorVideoH264: RtpProcessor {
+    private var timestamp: UInt32 = 0
+    private var data = Data()
+    private var basePresentationTimeStamp: Double = -1
+    private var firstPresentationTimeStamp: Double = -1
+    private var decoder: VideoDecoder
+    private var formatDescription: CMFormatDescription?
+    private weak var client: RtspClient?
+    
+    init(formatDescription: CMFormatDescription, client: RtspClient) {
+        self.formatDescription = formatDescription
+        self.client = client
+        decoder = VideoDecoder(lockQueue: rtspClientQueue)
+        super.init()
+        decoder.delegate = self
+        decoder.startRunning(formatDescription: formatDescription)
+    }
+    
+    override func process(packet: Data, timestamp: UInt32) throws {
+        guard packet.count >= 14 else {
+            throw "Packet shorter than 14 bytes: \(packet)"
+        }
+        let type = packet[12] & 0x1F
+        switch type {
+        case 1 ... 23:
+            try processBufferType1to23(packet: packet, timestamp: timestamp)
+        case 28:
+            try processBufferType28(packet: packet, timestamp: timestamp)
+        default:
+            throw "Unsupported RTP packet type \(type)."
+        }
+    }
+    
+    override func drop() {
+        data = Data()
+    }
+
+    private func processBufferType1to23(packet: Data, timestamp: UInt32) throws {
+        if !data.isEmpty {
+            decodeFrameH264()
+        }
+        self.timestamp = timestamp
+        data = nalUnitStartCode + packet[12...]
+        decodeFrameH264()
+        data = Data()
+    }
+
+    private func processBufferType28(packet: Data, timestamp: UInt32) throws {
+        let fuIndicator = packet[12]
+        let fuHeader = packet[13]
+        let startBit = fuHeader >> 7
+        let nalType = fuHeader & 0x1F
+        let nal = fuIndicator & 0xE0 | nalType
+        if startBit == 1 {
+            if data.isEmpty {
+                self.timestamp = timestamp
+                data = nalUnitStartCode + Data([nal]) + packet[14...]
+            } else {
+                decodeFrameH264()
+                self.timestamp = timestamp
+                data = nalUnitStartCode + Data([nal]) + packet[14...]
+            }
+        } else {
+            data += packet[14...]
+        }
+    }
+
+    private func decodeFrameH264() {
+        guard let client else {
+            return
+        }
+        let nalUnits = getNalUnits(data: data)
+        let units = readH264NalUnits(data: data, nalUnits: nalUnits, filter: [.idr])
+        let isSync = units.contains { $0.header.type == .idr }
+        let count = UInt32(data.count - 4)
+        data.withUnsafeMutableBytes { pointer in
+            pointer.writeUInt32(count, offset: 0)
+        }
+        var presenationTimeStamp = Double(timestamp) / 90000
+        if firstPresentationTimeStamp == -1 {
+            firstPresentationTimeStamp = presenationTimeStamp
+        }
+        presenationTimeStamp = getBasePresentationTimeStamp()
+            + (presenationTimeStamp - firstPresentationTimeStamp)
+            + client.latency
+        var timing = CMSampleTimingInfo(
+            duration: .zero,
+            presentationTimeStamp: CMTime(seconds: presenationTimeStamp),
+            decodeTimeStamp: CMTime(seconds: presenationTimeStamp)
+        )
+        let blockBuffer = data.makeBlockBuffer()
+        var sampleBuffer: CMSampleBuffer?
+        var sampleSize = blockBuffer?.dataLength ?? 0
+        guard CMSampleBufferCreate(
+            allocator: kCFAllocatorDefault,
+            dataBuffer: blockBuffer,
+            dataReady: true,
+            makeDataReadyCallback: nil,
+            refcon: nil,
+            formatDescription: formatDescription,
+            sampleCount: 1,
+            sampleTimingEntryCount: 1,
+            sampleTimingArray: &timing,
+            sampleSizeEntryCount: 1,
+            sampleSizeArray: &sampleSize,
+            sampleBufferOut: &sampleBuffer
+        ) == noErr else {
+            return
+        }
+        sampleBuffer?.isSync = isSync
+        guard let sampleBuffer else {
+            return
+        }
+        decoder.decodeSampleBuffer(sampleBuffer)
+    }
+    
+    private func getBasePresentationTimeStamp() -> Double {
+        if basePresentationTimeStamp == -1 {
+            basePresentationTimeStamp = currentPresentationTimeStamp().seconds
+        }
+        return basePresentationTimeStamp
+    }
+}
+
+private class RtpProcessorVideoH265: RtpProcessor {
+    init(formatDescription: CMFormatDescription, client: RtspClient) {
+    }
+    
+    override func process(packet: Data, timestamp: UInt32) throws {
+        throw "H265 not supported"
+    }
+    
+    override func drop() {
+    }
+}
+
+extension RtpProcessorVideoH264: VideoDecoderDelegate {
+    func videoDecoderOutputSampleBuffer(_: VideoDecoder, _ sampleBuffer: CMSampleBuffer) {
+        client?.videoOutputSampleBuffer(sampleBuffer)
+    }
+}
+
+private class Rtp {
+    private(set) var listener: NWListener?
+    private var connection: NWConnection?
+    private var nextExpectedSequenceNumber: UInt16?
+    private var packets: [UInt16: Data] = [:]
+    var processor: RtpProcessor?
     weak var client: RtspClient?
 
     func start() {
@@ -323,6 +469,8 @@ private class RtpVideo {
         listener?.stateUpdateHandler = connectionStateDidChange
         listener?.newConnectionHandler = newConnection
         listener?.start(queue: rtspClientQueue)
+        nextExpectedSequenceNumber = nil
+        packets = [:]
     }
 
     func stop() {
@@ -386,7 +534,7 @@ private class RtpVideo {
             nextExpectedSequenceNumber = sequenceNumber
         }
         if sequenceNumber == nextExpectedSequenceNumber {
-            try processBuffer(packet: packet, timestamp: timestamp)
+            try processor?.process(packet: packet, timestamp: timestamp)
             nextExpectedSequenceNumber = sequenceNumber &+ 1
             try processOutOfOrderPackets()
         } else if packets.count < 20 {
@@ -394,7 +542,7 @@ private class RtpVideo {
         } else {
             logger.info("rtsp-client: Dropping \(packets.count) packets.")
             packets.removeAll()
-            data = Data()
+            processor?.drop()
             nextExpectedSequenceNumber = sequenceNumber &+ 1
         }
         receivePacket()
@@ -412,110 +560,16 @@ private class RtpVideo {
             let timestamp = packet.withUnsafeBytes { pointer in
                 pointer.readUInt32(offset: 4)
             }
-            try processBuffer(packet: packet, timestamp: timestamp)
+            try processor?.process(packet: packet, timestamp: timestamp)
             nextExpectedSequenceNumber &+= 1
         }
-    }
-
-    private func processBuffer(packet: Data, timestamp: UInt32) throws {
-        guard packet.count >= 14 else {
-            throw "Packet shorter than 14 bytes: \(packet)"
-        }
-        let type = packet[12] & 0x1F
-        switch type {
-        case 1 ... 23:
-            try processBufferType1to23(packet: packet, timestamp: timestamp)
-        case 28:
-            try processBufferType28(packet: packet, timestamp: timestamp)
-        default:
-            throw "Unsupported RTP packet type \(type)."
-        }
-    }
-
-    private func processBufferType1to23(packet: Data, timestamp: UInt32) throws {
-        if !data.isEmpty {
-            decodeFrameH264()
-        }
-        self.timestamp = timestamp
-        data = nalUnitStartCode + packet[12...]
-        decodeFrameH264()
-        data = Data()
-    }
-
-    private func processBufferType28(packet: Data, timestamp: UInt32) throws {
-        let fuIndicator = packet[12]
-        let fuHeader = packet[13]
-        let startBit = fuHeader >> 7
-        let nalType = fuHeader & 0x1F
-        let nal = fuIndicator & 0xE0 | nalType
-        if startBit == 1 {
-            if data.isEmpty {
-                self.timestamp = timestamp
-                data = nalUnitStartCode + Data([nal]) + packet[14...]
-            } else {
-                decodeFrameH264()
-                self.timestamp = timestamp
-                data = nalUnitStartCode + Data([nal]) + packet[14...]
-            }
-        } else {
-            data += packet[14...]
-        }
-    }
-
-    private func decodeFrameH264() {
-        guard let client else {
-            return
-        }
-        let nalUnits = getNalUnits(data: data)
-        let units = readH264NalUnits(data: data, nalUnits: nalUnits, filter: [.idr])
-        let isSync = units.contains { $0.header.type == .idr }
-        let count = UInt32(data.count - 4)
-        data.withUnsafeMutableBytes { pointer in
-            pointer.writeUInt32(count, offset: 0)
-        }
-        var presenationTimeStamp = Double(timestamp) / 90000
-        if firstPresentationTimeStamp == -1 {
-            firstPresentationTimeStamp = presenationTimeStamp
-        }
-        presenationTimeStamp = client.getBasePresentationTimeStamp()
-            + (presenationTimeStamp - firstPresentationTimeStamp)
-            + client.latency
-        var timing = CMSampleTimingInfo(
-            duration: .zero,
-            presentationTimeStamp: CMTime(seconds: presenationTimeStamp),
-            decodeTimeStamp: CMTime(seconds: presenationTimeStamp)
-        )
-        let blockBuffer = data.makeBlockBuffer()
-        var sampleBuffer: CMSampleBuffer?
-        var sampleSize = blockBuffer?.dataLength ?? 0
-        guard CMSampleBufferCreate(
-            allocator: kCFAllocatorDefault,
-            dataBuffer: blockBuffer,
-            dataReady: true,
-            makeDataReadyCallback: nil,
-            refcon: nil,
-            formatDescription: formatDescription,
-            sampleCount: 1,
-            sampleTimingEntryCount: 1,
-            sampleTimingArray: &timing,
-            sampleSizeEntryCount: 1,
-            sampleSizeArray: &sampleSize,
-            sampleBufferOut: &sampleBuffer
-        ) == noErr else {
-            return
-        }
-        sampleBuffer?.isSync = isSync
-        guard let sampleBuffer else {
-            return
-        }
-        decoder?.decodeSampleBuffer(sampleBuffer)
     }
 }
 
 class RtspClient {
     private var state: State
     private var connection: NWConnection?
-    private let cameraId: UUID
+    fileprivate let cameraId: UUID
     private let url: URL
     fileprivate let latency: Double
     private var username: String?
@@ -526,7 +580,7 @@ class RtspClient {
     private var nextCSeq = 0
     private var requests: [Int: Request] = [:]
     private var videoSession: String?
-    private let video = RtpVideo()
+    private let rtpVideo = Rtp()
     private var rtcpVideoListener: NWListener?
     private var rtcpVideoConnection: NWConnection?
     weak var delegate: RtspClientDelegate?
@@ -542,7 +596,7 @@ class RtspClient {
         password = url.password()
         self.url = url.removeCredentials()
         state = .disconnected
-        video.client = self
+        rtpVideo.client = self
     }
 
     func start() {
@@ -594,7 +648,7 @@ class RtspClient {
         connection?.stateUpdateHandler = rtspConnectionStateDidChange
         connection?.start(queue: rtspClientQueue)
         receiveNewRtspHeader()
-        video.start()
+        rtpVideo.start()
         rtcpVideoListener = try? NWListener(using: .udp)
         rtcpVideoListener?.stateUpdateHandler = rtcpVideoConnectionStateDidChange
         rtcpVideoListener?.newConnectionHandler = rtcpVideoNewConnection
@@ -604,6 +658,12 @@ class RtspClient {
             self?.startInner()
         }
         isAlive = true
+        realm = nil
+        nonce = nil
+        header = Data()
+        nextCSeq = 0
+        requests = [:]
+        videoSession = nil
     }
 
     private func stopInner() {
@@ -611,9 +671,11 @@ class RtspClient {
         keepAliveTimer.stop()
         connection?.cancel()
         connection = nil
-        video.stop()
+        rtpVideo.stop()
         rtcpVideoListener?.cancel()
         rtcpVideoListener = nil
+        rtcpVideoConnection?.cancel()
+        rtcpVideoConnection = nil
         setState(newState: .disconnected)
     }
 
@@ -799,7 +861,7 @@ class RtspClient {
     }
 
     private func isReadyToSendOptions() -> Bool {
-        return connection?.state == .ready && video.listener?.port != nil && rtcpVideoListener?.port != nil
+        return connection?.state == .ready && rtpVideo.listener?.port != nil && rtcpVideoListener?.port != nil
     }
 
     fileprivate func performOptionsIfReady() {
@@ -853,7 +915,6 @@ class RtspClient {
             try setupH264(sdpVideo: sdpVideo)
         case let .h265(sdpVideo):
             try setupH265(sdpVideo: sdpVideo)
-            throw "H.265 is not supported."
         default:
             throw "No video media found."
         }
@@ -876,30 +937,24 @@ class RtspClient {
 
     private func setupH264(sdpVideo: SdpVideoH264) throws {
         let nalUnits = [sdpVideo.sps, sdpVideo.pps]
-        video.formatDescription = nalUnits.makeFormatDescription()
-        guard video.formatDescription != nil else {
+        let formatDescription = nalUnits.makeFormatDescription()
+        guard let formatDescription else {
             throw "Failed to create H.264 format description."
         }
-        createVideoDecoder()
+        rtpVideo.processor = RtpProcessorVideoH264(formatDescription: formatDescription, client: self)
     }
 
     private func setupH265(sdpVideo: SdpVideoH265) throws {
         let nalUnits = [sdpVideo.vps, sdpVideo.sps, sdpVideo.pps]
-        video.formatDescription = nalUnits.makeFormatDescription()
-        guard video.formatDescription != nil else {
+        let formatDescription = nalUnits.makeFormatDescription()
+        guard let formatDescription else {
             throw "Failed to create H.265 format description."
         }
-        createVideoDecoder()
-    }
-
-    private func createVideoDecoder() {
-        video.decoder = VideoDecoder(lockQueue: rtspClientQueue)
-        video.decoder?.delegate = self
-        video.decoder?.startRunning(formatDescription: video.formatDescription)
+        rtpVideo.processor = RtpProcessorVideoH265(formatDescription: formatDescription, client: self)
     }
 
     private func performSetup(url: URL) {
-        guard let rtpVideoPort = video.listener?.port, let rtcpVideoPort = rtcpVideoListener?.port else {
+        guard let rtpVideoPort = rtpVideo.listener?.port, let rtcpVideoPort = rtcpVideoListener?.port else {
             return
         }
         let headers = [
@@ -940,17 +995,8 @@ class RtspClient {
             self?.keepAlive()
         }
     }
-
-    fileprivate func getBasePresentationTimeStamp() -> Double {
-        if video.basePresentationTimeStamp == -1 {
-            video.basePresentationTimeStamp = currentPresentationTimeStamp().seconds
-        }
-        return video.basePresentationTimeStamp
-    }
-}
-
-extension RtspClient: VideoDecoderDelegate {
-    func videoDecoderOutputSampleBuffer(_: VideoDecoder, _ sampleBuffer: CMSampleBuffer) {
+    
+    func videoOutputSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
         delegate?.rtspClientOnVideoBuffer(cameraId: cameraId, sampleBuffer)
     }
 }
