@@ -42,15 +42,36 @@ extension Model {
         }
         servers.rtsp = []
     }
+
+    func rtspClientConnectedInner(cameraId: UUID) {
+        guard let stream = getRtspStream(id: cameraId) else {
+            return
+        }
+        let camera = stream.camera()
+        makeToast(title: String(localized: "\(camera) connected"))
+        media.addBufferedVideo(cameraId: cameraId, name: camera, latency: 1)
+    }
+
+    func rtspClientDisconnectedInner(cameraId: UUID) {
+        guard let stream = getRtspStream(id: cameraId) else {
+            return
+        }
+        makeToast(title: String(localized: "\(stream.camera()) disconnected"))
+        media.removeBufferedVideo(cameraId: cameraId)
+    }
 }
 
 extension Model: RtspClientDelegate {
     func rtspClientConnected(cameraId: UUID) {
-        media.addBufferedVideo(cameraId: cameraId, name: "RTSP", latency: 1)
+        DispatchQueue.main.async {
+            self.rtspClientConnectedInner(cameraId: cameraId)
+        }
     }
 
     func rtspClientDisconnected(cameraId: UUID) {
-        media.removeBufferedVideo(cameraId: cameraId)
+        DispatchQueue.main.async {
+            self.rtspClientDisconnectedInner(cameraId: cameraId)
+        }
     }
 
     func rtspClientOnVideoBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {

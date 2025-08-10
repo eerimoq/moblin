@@ -470,6 +470,8 @@ private class Rtp {
         listener?.start(queue: rtspClientQueue)
         nextExpectedSequenceNumber = nil
         packets = [:]
+        previousTimestamp = 0
+        timestamp = 0
     }
 
     func stop() {
