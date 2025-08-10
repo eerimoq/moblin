@@ -102,11 +102,9 @@ private struct SendResults {
     mutating func add(_ result: PlatformSendResult) {
         results.append(result)
     }
-    
     var sentCount: Int {
         results.count { if case .sent = $0 { return true } else { return false } }
     }
-    
     func getErrorMessage() -> String {
         let notLoggedIn = results.compactMap { result in
             if case .notLoggedIn(let platform) = result {
@@ -121,7 +119,6 @@ private struct SendResults {
             }
             return nil
         }
-        
         var errors: [String] = []
         if !notLoggedIn.isEmpty {
             errors.append("Not logged in to: \(notLoggedIn.joined(separator: ", "))")
@@ -129,7 +126,6 @@ private struct SendResults {
         if !notConfigured.isEmpty {
             errors.append("Not configured: \(notConfigured.joined(separator: ", "))")
         }
-        
         return errors.isEmpty ? "No platforms available" : errors.joined(separator: ". ")
     }
 }

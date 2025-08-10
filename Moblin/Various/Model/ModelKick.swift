@@ -342,7 +342,6 @@ extension Model: KickOusherDelegate {
             )
         }
     }
-
     func kickPusherGiftedSubscription(event: GiftedSubscriptionsEvent) {
         DispatchQueue.main.async {
             let user = event.gifter_username
@@ -361,7 +360,6 @@ extension Model: KickOusherDelegate {
             )
         }
     }
-
     func kickPusherRewardRedeemed(event: RewardRedeemedEvent) {
         DispatchQueue.main.async {
             let user = event.username
@@ -377,7 +375,6 @@ extension Model: KickOusherDelegate {
             )
         }
     }
-
     func kickPusherStreamHost(event: StreamHostEvent) {
         DispatchQueue.main.async {
             let user = event.host_username
@@ -392,7 +389,6 @@ extension Model: KickOusherDelegate {
             )
         }
     }
-
     func kickPusherUserBanned(event: UserBannedEvent) {
         DispatchQueue.main.async {
             let text: String
