@@ -2,7 +2,6 @@ import Collections
 import Foundation
 import SwiftUI
 import WrappingHStack
-
 let maximumNumberOfChatMessages = 50
 let maximumNumberOfInteractiveChatMessages = 100
 class ChatProvider: ObservableObject {
@@ -18,13 +17,11 @@ class ChatProvider: ObservableObject {
     init(maximumNumberOfMessages: Int) {
         self.maximumNumberOfMessages = maximumNumberOfMessages
     }
-
     func reset() {
         posts = []
         pausedPosts = []
         newPosts = []
     }
-
     func appendMessage(post: ChatPost) {
         if paused {
             if pausedPosts.count < 2 * maximumNumberOfMessages {
@@ -34,7 +31,6 @@ class ChatProvider: ObservableObject {
             newPosts.append(post)
         }
     }
-
     func deleteMessage(messageId: String) {
         for post in newPosts where post.messageId == messageId {
             post.state.deleted = true
@@ -46,7 +42,6 @@ class ChatProvider: ObservableObject {
             post.state.deleted = true
         }
     }
-
     func deleteUser(userId: String) {
         for post in newPosts where post.userId == userId {
             post.state.deleted = true
@@ -58,7 +53,6 @@ class ChatProvider: ObservableObject {
             post.state.deleted = true
         }
     }
-
     func update() {
         if paused {
             let count = max(pausedPosts.count - 1, 0)
@@ -75,11 +69,9 @@ class ChatProvider: ObservableObject {
         }
     }
 }
-
 private enum ChatPlatformTarget {
     case kick
     case twitch
-
     var displayName: String {
         switch self {
         case .kick: return "Kick"
@@ -87,24 +79,19 @@ private enum ChatPlatformTarget {
         }
     }
 }
-
 private enum PlatformSendResult {
     case sent(ChatPlatformTarget)
     case notLoggedIn(ChatPlatformTarget)
     case notConfigured(ChatPlatformTarget)
 }
-
 private struct SendResults {
     private var results: [PlatformSendResult] = []
-
     mutating func add(_ result: PlatformSendResult) {
         results.append(result)
     }
-
     var sentCount: Int {
         results.count { if case .sent = $0 { return true } else { return false } }
     }
-
     func getErrorMessage() -> String {
         let notLoggedIn = results.compactMap { result in
             if case let .notLoggedIn(platform) = result {
@@ -112,7 +99,6 @@ private struct SendResults {
             }
             return nil
         }
-
         let notConfigured = results.compactMap { result in
             if case let .notConfigured(platform) = result {
                 return platform.displayName
@@ -129,7 +115,6 @@ private struct SendResults {
         return errors.isEmpty ? "No platforms available" : errors.joined(separator: ". ")
     }
 }
-
 extension Model {
     func getAvailableChatPlatforms() -> [ChatPlatformSelection] {
         var platforms: [ChatPlatformSelection] = []
@@ -153,18 +138,15 @@ extension Model {
         }
         return platforms
     }
-
     func pauseChat() {
         chat.paused = true
         chat.pausedPostsCount = 0
         chat.pausedPosts = [createRedLineChatPost()]
     }
-
     func disableInteractiveChat() {
         _ = appendPausedChatPosts(maximumNumberOfPostsToAppend: Int.max)
         chat.paused = false
     }
-
     private func createRedLineChatPost() -> ChatPost {
         defer {
             chatPostId += 1
@@ -188,13 +170,11 @@ extension Model {
             state: ChatPostState()
         )
     }
-
     func pauseQuickButtonChat() {
         quickButtonChat.paused = true
         quickButtonChat.pausedPostsCount = 0
         quickButtonChat.pausedPosts = [createRedLineChatPost()]
     }
-
     func endOfQuickButtonChatReachedWhenPaused() {
         while let post = quickButtonChat.pausedPosts.popFirst() {
             if post.isRedLine() {
@@ -212,12 +192,10 @@ extension Model {
         }
         quickButtonChat.paused = false
     }
-
     func endOfChatReachedWhenPaused() {
         _ = appendPausedChatPosts(maximumNumberOfPostsToAppend: Int.max)
         chat.paused = false
     }
-
     private func appendPausedChatPosts(maximumNumberOfPostsToAppend: Int) -> Int {
         var numberOfPostsAppended = 0
         while numberOfPostsAppended < maximumNumberOfPostsToAppend, let post = chat.pausedPosts.popFirst() {
@@ -237,12 +215,10 @@ extension Model {
         }
         return numberOfPostsAppended
     }
-
     func pauseQuickButtonChatAlerts() {
         quickButtonChatState.chatAlertsPaused = true
         quickButtonChatState.pausedChatAlertsPostsCount = 0
     }
-
     func endOfQuickButtonChatAlertsReachedWhenPaused() {
         while let post = pausedQuickButtonChatAlertsPosts.popFirst() {
             if post.isRedLine() {
@@ -260,7 +236,6 @@ extension Model {
         }
         quickButtonChatState.chatAlertsPaused = false
     }
-
     func removeOldChatMessages(now: ContinuousClock.Instant) {
         if chat.paused {
             return
@@ -276,7 +251,6 @@ extension Model {
             }
         }
     }
-
     func updateChat() {
         while let post = chat.newPosts.popFirst() {
             if chat.posts.count > maximumNumberOfChatMessages - 1 {
@@ -309,7 +283,6 @@ extension Model {
             }
         }
     }
-
     func isAlertMessage(post: ChatPost) -> Bool {
         switch post.highlight?.kind {
         case .redemption:
@@ -320,7 +293,6 @@ extension Model {
             return false
         }
     }
-
     func reloadChats() {
         reloadTwitchChat()
         reloadKickPusher()
@@ -328,14 +300,12 @@ extension Model {
         reloadAfreecaTvChat()
         reloadOpenStreamingPlatformChat()
     }
-
     func updateChatMoreThanOneChatConfigured() {
         let moreThanOneStreamingPlatform = isMoreThanOneChatConfigured()
         chat.moreThanOneStreamingPlatform = moreThanOneStreamingPlatform
         quickButtonChat.moreThanOneStreamingPlatform = moreThanOneStreamingPlatform
         externalDisplayChat.moreThanOneStreamingPlatform = moreThanOneStreamingPlatform
     }
-
     private func isMoreThanOneChatConfigured() -> Bool {
         var numberOfChats = 0
         if isTwitchChatConfigured() {
@@ -355,17 +325,14 @@ extension Model {
         }
         return numberOfChats > 1
     }
-
     func isChatConfigured() -> Bool {
         return isTwitchChatConfigured() || isKickPusherConfigured() ||
             isYouTubeLiveChatConfigured() || isAfreecaTvChatConfigured() ||
             isOpenStreamingPlatformChatConfigured()
     }
-
     func isChatRemoteControl() -> Bool {
         return useRemoteControlForChatAndEvents && database.debug.reliableChat
     }
-
     func isChatConnected() -> Bool {
         if isTwitchChatConfigured() && !isTwitchChatConnected() {
             return false
@@ -384,22 +351,18 @@ extension Model {
         }
         return true
     }
-
     func hasChatEmotes() -> Bool {
         return hasTwitchChatEmotes() || hasKickPusherEmotes() ||
             hasYouTubeLiveChatEmotes() || hasAfreecaTvChatEmotes() || hasOpenStreamingPlatformChatEmotes()
     }
-
     func resetChat() {
         chatTextToSpeech.reset(running: true)
     }
-
     func sendChatMessage(message: String) {
         let platforms = getTargetPlatforms()
         let results = sendToSelectedPlatforms(message: message, platforms: platforms)
         handleSendResults(results)
     }
-
     private func getTargetPlatforms() -> [ChatPlatformTarget] {
         var targets: [ChatPlatformTarget] = []
         switch selectedChatPlatform {
@@ -412,7 +375,6 @@ extension Model {
         }
         return targets
     }
-
     private func sendToSelectedPlatforms(message: String, platforms: [ChatPlatformTarget]) -> SendResults {
         var results = SendResults()
         for platform in platforms {
@@ -421,7 +383,6 @@ extension Model {
         }
         return results
     }
-
     private func sendToPlatform(message: String, platform: ChatPlatformTarget) -> PlatformSendResult {
         switch platform {
         case .kick:
@@ -430,7 +391,6 @@ extension Model {
             return sendToTwitch(message: message)
         }
     }
-
     private func sendToKick(message: String) -> PlatformSendResult {
         guard isKickPusherConfigured() else {
             return .notConfigured(.kick)
@@ -438,16 +398,13 @@ extension Model {
         guard isKickLoggedIn() else {
             return .notLoggedIn(.kick)
         }
-
         sendKickChatMessage(message: message)
         return .sent(.kick)
     }
-
     private func sendToTwitch(message: String) -> PlatformSendResult {
         guard stream.twitchLoggedIn else {
             return .notLoggedIn(.twitch)
         }
-
         TwitchApi(stream.twitchAccessToken, urlSession)
             .sendChatMessage(broadcasterId: stream.twitchChannelId, message: message) { ok in
                 if !ok {
@@ -458,18 +415,15 @@ extension Model {
             }
         return .sent(.twitch)
     }
-
     private func handleSendResults(_ results: SendResults) {
         if results.sentCount == 0 {
             let errorMessage = results.getErrorMessage()
             makeErrorToast(title: "Cannot send message", subTitle: errorMessage)
         }
     }
-
     private func evaluateFilters(user: String?, segments: [ChatPostSegment]) -> SettingsChatFilter? {
         return database.chat.filters.first(where: { $0.isMatching(user: user, segments: segments) })
     }
-
     func appendChatMessage(
         platform: Platform,
         messageId: String?,
@@ -564,14 +518,12 @@ extension Model {
             }
         }
     }
-
     func reloadChatMessages() {
         chat.posts = newPostIds(posts: chat.posts)
         quickButtonChat.posts = newPostIds(posts: quickButtonChat.posts)
         externalDisplayChat.posts = newPostIds(posts: externalDisplayChat.posts)
         quickButtonChatState.chatAlertsPosts = newPostIds(posts: quickButtonChatState.chatAlertsPosts)
     }
-
     private func newPostIds(posts: Deque<ChatPost>) -> Deque<ChatPost> {
         var newPosts: Deque<ChatPost> = []
         for post in posts {
@@ -582,11 +534,9 @@ extension Model {
         }
         return newPosts
     }
-
     func isShowingStatusChat() -> Bool {
         return database.show.chat && isChatConfigured()
     }
-
     func updateStatusChatText() {
         let status: String
         if !isChatConfigured() {
@@ -606,7 +556,6 @@ extension Model {
             statusTopLeft.statusChatText = status
         }
     }
-
     func printChatMessage(post: ChatPost) {
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
             let message = HStack {
@@ -662,7 +611,6 @@ extension Model {
             }
         }
     }
-
     func banUser(post: ChatPost) {
         guard let user = post.user else {
             return
@@ -677,7 +625,6 @@ extension Model {
             makeErrorToast(title: "Ban not supported for this platform")
         }
     }
-
     func timeoutUser(post: ChatPost, duration: Int) {
         guard let user = post.user else {
             return
@@ -692,7 +639,6 @@ extension Model {
             makeErrorToast(title: "Timeout not supported for this platform")
         }
     }
-
     func deleteMessage(post: ChatPost) {
         guard let messageId = post.messageId else {
             return
@@ -717,19 +663,16 @@ extension Model {
             makeErrorToast(title: "Delete message not supported for this platform")
         }
     }
-
     func copyMessage(post: ChatPost) {
         UIPasteboard.general.string = post.text()
         makeToast(title: String(localized: "Message copied to clipboard"))
     }
-
     func deleteChatMessage(messageId: String) {
         chat.deleteMessage(messageId: messageId)
         quickButtonChat.deleteMessage(messageId: messageId)
         externalDisplayChat.deleteMessage(messageId: messageId)
         chatTextToSpeech.delete(messageId: messageId)
     }
-
     func deleteChatUser(userId: String) {
         chat.deleteUser(userId: userId)
         quickButtonChat.deleteUser(userId: userId)
