@@ -5,7 +5,6 @@ import WrappingHStack
 
 let maximumNumberOfChatMessages = 50
 let maximumNumberOfInteractiveChatMessages = 100
-
 class ChatProvider: ObservableObject {
     var newPosts: Deque<ChatPost> = []
     var pausedPosts: Deque<ChatPost> = []
@@ -16,7 +15,6 @@ class ChatProvider: ObservableObject {
     @Published var moreThanOneStreamingPlatform = false
     @Published var interactiveChat = false
     @Published var triggerScrollToBottom = false
-
     init(maximumNumberOfMessages: Int) {
         self.maximumNumberOfMessages = maximumNumberOfMessages
     }
@@ -81,7 +79,7 @@ class ChatProvider: ObservableObject {
 private enum ChatPlatformTarget {
     case kick
     case twitch
-    
+
     var displayName: String {
         switch self {
         case .kick: return "Kick"
@@ -98,23 +96,25 @@ private enum PlatformSendResult {
 
 private struct SendResults {
     private var results: [PlatformSendResult] = []
-    
+
     mutating func add(_ result: PlatformSendResult) {
         results.append(result)
     }
+
     var sentCount: Int {
         results.count { if case .sent = $0 { return true } else { return false } }
     }
+
     func getErrorMessage() -> String {
         let notLoggedIn = results.compactMap { result in
-            if case .notLoggedIn(let platform) = result {
+            if case let .notLoggedIn(platform) = result {
                 return platform.displayName
             }
             return nil
         }
-        
+
         let notConfigured = results.compactMap { result in
-            if case .notConfigured(let platform) = result {
+            if case let .notConfigured(platform) = result {
                 return platform.displayName
             }
             return nil
@@ -133,24 +133,17 @@ private struct SendResults {
 extension Model {
     func getAvailableChatPlatforms() -> [ChatPlatformSelection] {
         var platforms: [ChatPlatformSelection] = []
-
         let hasTwitch = stream.twitchLoggedIn
         let hasKick = isKickPusherConfigured() && isKickLoggedIn()
-
-        // Only show "All" if more than one platform is available
         if hasTwitch, hasKick {
             platforms.append(.all)
         }
-
         if hasTwitch {
             platforms.append(.twitch)
         }
-
         if hasKick {
             platforms.append(.kick)
         }
-
-        // Auto-adjust selection if current selection is no longer available
         if !platforms.contains(selectedChatPlatform) {
             if platforms.contains(.all) {
                 selectedChatPlatform = .all
@@ -158,7 +151,6 @@ extension Model {
                 selectedChatPlatform = firstPlatform
             }
         }
-
         return platforms
     }
 
@@ -304,7 +296,6 @@ extension Model {
             externalDisplayChat.update()
         }
         if quickButtonChatState.chatAlertsPaused {
-            // The red line is one post.
             quickButtonChatState.pausedChatAlertsPostsCount = max(
                 pausedQuickButtonChatAlertsPosts.count - 1,
                 0
@@ -411,7 +402,6 @@ extension Model {
 
     private func getTargetPlatforms() -> [ChatPlatformTarget] {
         var targets: [ChatPlatformTarget] = []
-
         switch selectedChatPlatform {
         case .all:
             targets.append(contentsOf: [.kick, .twitch])
@@ -420,18 +410,15 @@ extension Model {
         case .twitch:
             targets.append(.twitch)
         }
-
         return targets
     }
 
     private func sendToSelectedPlatforms(message: String, platforms: [ChatPlatformTarget]) -> SendResults {
         var results = SendResults()
-
         for platform in platforms {
             let result = sendToPlatform(message: message, platform: platform)
             results.add(result)
         }
-
         return results
     }
 
@@ -451,7 +438,7 @@ extension Model {
         guard isKickLoggedIn() else {
             return .notLoggedIn(.kick)
         }
-        
+
         sendKickChatMessage(message: message)
         return .sent(.kick)
     }
@@ -460,7 +447,7 @@ extension Model {
         guard stream.twitchLoggedIn else {
             return .notLoggedIn(.twitch)
         }
-        
+
         TwitchApi(stream.twitchAccessToken, urlSession)
             .sendChatMessage(broadcasterId: stream.twitchChannelId, message: message) { ok in
                 if !ok {
@@ -621,7 +608,6 @@ extension Model {
     }
 
     func printChatMessage(post: ChatPost) {
-        // Delay 2 seconds to likely have emotes fetched.
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
             let message = HStack {
                 WrappingHStack(
@@ -681,7 +667,6 @@ extension Model {
         guard let user = post.user else {
             return
         }
-
         switch post.platform {
         case .twitch:
             guard let userId = post.userId else { return }
@@ -697,7 +682,6 @@ extension Model {
         guard let user = post.user else {
             return
         }
-
         switch post.platform {
         case .twitch:
             guard let userId = post.userId else { return }
@@ -713,12 +697,10 @@ extension Model {
         guard let messageId = post.messageId else {
             return
         }
-
         switch post.platform {
         case .twitch:
             deleteMessage(messageId: messageId)
         case .kick:
-            // For Kick we need the chatroom ID, get it from channel info
             Task {
                 do {
                     let channelInfo = try await getKickChannelInfoAsync(channelName: stream.kickChannelName)
