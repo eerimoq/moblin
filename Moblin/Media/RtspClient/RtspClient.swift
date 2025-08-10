@@ -384,9 +384,6 @@ private class RtpProcessorVideoH264: RtpProcessor {
         guard let client else {
             return
         }
-        let nalUnits = getNalUnits(data: data)
-        let units = readH264NalUnits(data: data, nalUnits: nalUnits, filter: [.idr])
-        let isSync = units.contains { $0.header.type == .idr }
         let count = UInt32(data.count - 4)
         data.withUnsafeMutableBytes { pointer in
             pointer.writeUInt32(count, offset: 0)
@@ -422,7 +419,6 @@ private class RtpProcessorVideoH264: RtpProcessor {
         ) == noErr else {
             return
         }
-        sampleBuffer?.isSync = isSync
         guard let sampleBuffer else {
             return
         }
