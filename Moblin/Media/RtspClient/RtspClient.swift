@@ -433,17 +433,135 @@ private class RtpProcessorVideoH264: RtpProcessor {
     }
 }
 
-private class RtpProcessorVideoH265: RtpProcessor {
-    init(formatDescription _: CMFormatDescription, client _: RtspClient) {}
-
-    override func process(packet _: Data, timestamp _: UInt64) throws {
-        throw "H265 not supported"
+extension RtpProcessorVideoH264: VideoDecoderDelegate {
+    func videoDecoderOutputSampleBuffer(_: VideoDecoder, _ sampleBuffer: CMSampleBuffer) {
+        client?.videoOutputSampleBuffer(sampleBuffer)
     }
-
-    override func drop() {}
 }
 
-extension RtpProcessorVideoH264: VideoDecoderDelegate {
+private class RtpProcessorVideoH265: RtpProcessor {
+    private var timestamp: UInt64 = 0
+    private var data = Data()
+    private var basePresentationTimeStamp: Double = -1
+    private var firstPresentationTimeStamp: Double = -1
+    private var decoder: VideoDecoder
+    private var formatDescription: CMFormatDescription?
+    private weak var client: RtspClient?
+
+    init(formatDescription: CMFormatDescription, client: RtspClient) {
+        self.formatDescription = formatDescription
+        self.client = client
+        decoder = VideoDecoder(lockQueue: rtspClientQueue)
+        super.init()
+        decoder.delegate = self
+        decoder.startRunning(formatDescription: formatDescription)
+    }
+
+    override func process(packet: Data, timestamp _: UInt64) throws {
+        guard packet.count >= 14 else {
+            throw "Packet shorter than 14 bytes: \(packet)"
+        }
+        let type = (packet[12] >> 1) & 0x3F
+        switch type {
+        case 1 ... 47:
+            try processBufferTypeSingle(packet: packet, timestamp: timestamp)
+        case 49:
+            try processBufferTypeFu(packet: packet, timestamp: timestamp)
+        default:
+            throw "Unsupported RTP packet type \(type)."
+        }
+    }
+
+    override func drop() {
+        data = Data()
+    }
+
+    private func processBufferTypeSingle(packet: Data, timestamp: UInt64) throws {
+        if !data.isEmpty {
+            decodeFrame()
+        }
+        self.timestamp = timestamp
+        data = nalUnitStartCode + packet[12...]
+        decodeFrame()
+        data = Data()
+    }
+
+    private func processBufferTypeFu(packet: Data, timestamp: UInt64) throws {
+        guard packet.count >= 15 else {
+            throw "Packet shorter than 15 bytes: \(packet)"
+        }
+        let fuHeader = packet[14]
+        let startBit = fuHeader >> 7
+        let nalType = fuHeader & 0x3F
+        let nal = (packet[12] & 0x81) | (nalType << 1)
+        if startBit == 1 {
+            if data.isEmpty {
+                self.timestamp = timestamp
+                data = nalUnitStartCode + Data([nal, packet[13]]) + packet[15...]
+            } else {
+                decodeFrame()
+                self.timestamp = timestamp
+                data = nalUnitStartCode + Data([nal, packet[13]]) + packet[15...]
+            }
+        } else {
+            data += packet[15...]
+        }
+    }
+
+    private func decodeFrame() {
+        guard let client else {
+            return
+        }
+        let count = UInt32(data.count - 4)
+        data.withUnsafeMutableBytes { pointer in
+            pointer.writeUInt32(count, offset: 0)
+        }
+        var presenationTimeStamp = Double(timestamp) / 90000
+        if firstPresentationTimeStamp == -1 {
+            firstPresentationTimeStamp = presenationTimeStamp
+        }
+        presenationTimeStamp = getBasePresentationTimeStamp()
+            + (presenationTimeStamp - firstPresentationTimeStamp)
+            + client.latency
+        var timing = CMSampleTimingInfo(
+            duration: .zero,
+            presentationTimeStamp: CMTime(seconds: presenationTimeStamp),
+            decodeTimeStamp: CMTime(seconds: presenationTimeStamp)
+        )
+        let blockBuffer = data.makeBlockBuffer()
+        var sampleBuffer: CMSampleBuffer?
+        var sampleSize = blockBuffer?.dataLength ?? 0
+        guard CMSampleBufferCreate(
+            allocator: kCFAllocatorDefault,
+            dataBuffer: blockBuffer,
+            dataReady: true,
+            makeDataReadyCallback: nil,
+            refcon: nil,
+            formatDescription: formatDescription,
+            sampleCount: 1,
+            sampleTimingEntryCount: 1,
+            sampleTimingArray: &timing,
+            sampleSizeEntryCount: 1,
+            sampleSizeArray: &sampleSize,
+            sampleBufferOut: &sampleBuffer
+        ) == noErr else {
+            return
+        }
+        guard let sampleBuffer else {
+            return
+        }
+        decoder.decodeSampleBuffer(sampleBuffer)
+    }
+
+    private func getBasePresentationTimeStamp() -> Double {
+        if basePresentationTimeStamp == -1 {
+            basePresentationTimeStamp = currentPresentationTimeStamp().seconds
+        }
+        return basePresentationTimeStamp
+    }
+}
+
+extension RtpProcessorVideoH265: VideoDecoderDelegate {
     func videoDecoderOutputSampleBuffer(_: VideoDecoder, _ sampleBuffer: CMSampleBuffer) {
         client?.videoOutputSampleBuffer(sampleBuffer)
     }
