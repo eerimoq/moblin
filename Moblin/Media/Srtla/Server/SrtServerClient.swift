@@ -21,6 +21,8 @@ class SrtServerClient {
         let packetSize = 2048
         var packet = Data(count: packetSize)
         while server?.running == true {
+            // No idea why, but OBS does not work without this.
+            packet.count = packetSize
             let count = packet.withUnsafeMutableBytes { pointer in
                 srt_recvmsg(clientSocket, pointer.baseAddress, Int32(packetSize))
             }
