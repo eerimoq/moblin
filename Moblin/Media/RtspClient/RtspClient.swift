@@ -306,23 +306,22 @@ extension URL {
 }
 
 private class RtpProcessor {
-    func process(packet: Data, timestamp: UInt32) throws {
+    func process(packet _: Data, timestamp _: UInt64) throws {
         throw "Not implemented"
     }
-    
-    func drop() {
-    }
+
+    func drop() {}
 }
 
 private class RtpProcessorVideoH264: RtpProcessor {
-    private var timestamp: UInt32 = 0
+    private var timestamp: UInt64 = 0
     private var data = Data()
     private var basePresentationTimeStamp: Double = -1
     private var firstPresentationTimeStamp: Double = -1
     private var decoder: VideoDecoder
     private var formatDescription: CMFormatDescription?
     private weak var client: RtspClient?
-    
+
     init(formatDescription: CMFormatDescription, client: RtspClient) {
         self.formatDescription = formatDescription
         self.client = client
@@ -331,8 +330,8 @@ private class RtpProcessorVideoH264: RtpProcessor {
         decoder.delegate = self
         decoder.startRunning(formatDescription: formatDescription)
     }
-    
-    override func process(packet: Data, timestamp: UInt32) throws {
+
+    override func process(packet: Data, timestamp: UInt64) throws {
         guard packet.count >= 14 else {
             throw "Packet shorter than 14 bytes: \(packet)"
         }
@@ -346,12 +345,12 @@ private class RtpProcessorVideoH264: RtpProcessor {
             throw "Unsupported RTP packet type \(type)."
         }
     }
-    
+
     override func drop() {
         data = Data()
     }
 
-    private func processBufferType1to23(packet: Data, timestamp: UInt32) throws {
+    private func processBufferType1to23(packet: Data, timestamp: UInt64) throws {
         if !data.isEmpty {
             decodeFrameH264()
         }
@@ -361,7 +360,7 @@ private class RtpProcessorVideoH264: RtpProcessor {
         data = Data()
     }
 
-    private func processBufferType28(packet: Data, timestamp: UInt32) throws {
+    private func processBufferType28(packet: Data, timestamp: UInt64) throws {
         let fuIndicator = packet[12]
         let fuHeader = packet[13]
         let startBit = fuHeader >> 7
@@ -429,7 +428,7 @@ private class RtpProcessorVideoH264: RtpProcessor {
         }
         decoder.decodeSampleBuffer(sampleBuffer)
     }
-    
+
     private func getBasePresentationTimeStamp() -> Double {
         if basePresentationTimeStamp == -1 {
             basePresentationTimeStamp = currentPresentationTimeStamp().seconds
@@ -439,15 +438,13 @@ private class RtpProcessorVideoH264: RtpProcessor {
 }
 
 private class RtpProcessorVideoH265: RtpProcessor {
-    init(formatDescription: CMFormatDescription, client: RtspClient) {
-    }
-    
-    override func process(packet: Data, timestamp: UInt32) throws {
+    init(formatDescription _: CMFormatDescription, client _: RtspClient) {}
+
+    override func process(packet _: Data, timestamp _: UInt64) throws {
         throw "H265 not supported"
     }
-    
-    override func drop() {
-    }
+
+    override func drop() {}
 }
 
 extension RtpProcessorVideoH264: VideoDecoderDelegate {
@@ -461,6 +458,8 @@ private class Rtp {
     private var connection: NWConnection?
     private var nextExpectedSequenceNumber: UInt16?
     private var packets: [UInt16: Data] = [:]
+    private var previousTimestamp: UInt32 = 0
+    private var timestamp: UInt64 = 0
     var processor: RtpProcessor?
     weak var client: RtspClient?
 
@@ -534,7 +533,8 @@ private class Rtp {
             nextExpectedSequenceNumber = sequenceNumber
         }
         if sequenceNumber == nextExpectedSequenceNumber {
-            try processor?.process(packet: packet, timestamp: timestamp)
+            updateTimestamp(timestamp: timestamp)
+            try processor?.process(packet: packet, timestamp: self.timestamp)
             nextExpectedSequenceNumber = sequenceNumber &+ 1
             try processOutOfOrderPackets()
         } else if packets.count < 20 {
@@ -560,16 +560,28 @@ private class Rtp {
             let timestamp = packet.withUnsafeBytes { pointer in
                 pointer.readUInt32(offset: 4)
             }
-            try processor?.process(packet: packet, timestamp: timestamp)
+            updateTimestamp(timestamp: timestamp)
+            try processor?.process(packet: packet, timestamp: self.timestamp)
             nextExpectedSequenceNumber &+= 1
         }
+    }
+
+    var f = true
+
+    private func updateTimestamp(timestamp: UInt32) {
+        if timestamp >= previousTimestamp {
+            self.timestamp += UInt64(timestamp - previousTimestamp)
+        } else {
+            self.timestamp += UInt64(UInt32.max - previousTimestamp + timestamp) + 1
+        }
+        previousTimestamp = timestamp
     }
 }
 
 class RtspClient {
     private var state: State
     private var connection: NWConnection?
-    fileprivate let cameraId: UUID
+    private let cameraId: UUID
     private let url: URL
     fileprivate let latency: Double
     private var username: String?
@@ -995,7 +1007,7 @@ class RtspClient {
             self?.keepAlive()
         }
     }
-    
+
     func videoOutputSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
         delegate?.rtspClientOnVideoBuffer(cameraId: cameraId, sampleBuffer)
     }
