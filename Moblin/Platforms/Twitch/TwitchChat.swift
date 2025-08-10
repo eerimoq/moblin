@@ -604,7 +604,7 @@ final class TwitchChat {
         } else if let sender = message.replySender, let text = message.replyText {
             return ChatHighlight.makeReply(
                 user: sender,
-                segments: createSegments(text: text, emotes: [], emotesManager: emotes, bits: nil)
+                segments: createSegmentsNoTwitchEmotes(text: text, bits: nil)
             )
         } else {
             return nil
