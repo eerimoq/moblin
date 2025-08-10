@@ -1,5 +1,6 @@
 import SwiftUI
 import WebKit
+
 private var persistentWebView: WKWebView?
 private enum KickAuthConstants {
     static let loginURL = "https://kick.com/login"
@@ -7,6 +8,7 @@ private enum KickAuthConstants {
     static let kickDomain = "kick.com"
     static let tokenExtractionDelay: TimeInterval = 2.0
 }
+
 struct KickAuthView: View {
     @EnvironmentObject var model: Model
     @State private var showingWebView = false
@@ -76,6 +78,7 @@ struct KickAuthView: View {
             .presentationDetents([.large])
         }
     }
+
     private func handleTokenExtracted(token _: String?, cookies: [HTTPCookie]) {
         isLoading = true
         if let sessionTokenCookie = cookies.first(where: { $0.name == KickAuthConstants.sessionTokenCookieName }) {
@@ -97,6 +100,7 @@ struct KickAuthView: View {
             }
         }
     }
+
     private func logOut() {
         stream.kickAccessToken = ""
         stream.kickLoggedIn = false
@@ -105,6 +109,7 @@ struct KickAuthView: View {
             model.kickChannelNameUpdated()
         }
     }
+
     private func clearWebViewSession() {
         WKWebsiteDataStore.default().removeData(
             ofTypes: WKWebsiteDataStore.allWebsiteDataTypes(),
@@ -122,6 +127,7 @@ struct KickAuthView: View {
         }
     }
 }
+
 struct KickWebView: UIViewRepresentable {
     let onTokenExtracted: (String?, [HTTPCookie]) -> Void
     func makeUIView(context: Context) -> WKWebView {
@@ -144,16 +150,19 @@ struct KickWebView: UIViewRepresentable {
         persistentWebView = webView
         return webView
     }
+
     func updateUIView(_ webView: WKWebView, context: Context) {
         webView.navigationDelegate = context.coordinator
         if shouldLoadLoginPage(webView: webView) {
             loadLoginPage(webView: webView)
         }
     }
+
     private func shouldLoadLoginPage(webView: WKWebView) -> Bool {
         guard let url = webView.url?.absoluteString else { return true }
         return !url.contains(KickAuthConstants.kickDomain)
     }
+
     private func loadLoginPage(webView: WKWebView) {
         guard let loginURL = URL(string: KickAuthConstants.loginURL) else {
             print("Failed to create login URL")
@@ -165,14 +174,17 @@ struct KickWebView: UIViewRepresentable {
                          forHTTPHeaderField: "User-Agent")
         webView.load(request)
     }
+
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
     }
+
     class Coordinator: NSObject, WKNavigationDelegate {
         let parent: KickWebView
         init(_ parent: KickWebView) {
             self.parent = parent
         }
+
         func webView(_ webView: WKWebView, didFinish _: WKNavigation!) {
             guard let url = webView.url?.absoluteString else { return }
             if !url.contains("/login"), !url.contains("/register"), url.contains(KickAuthConstants.kickDomain) {
@@ -181,6 +193,7 @@ struct KickWebView: UIViewRepresentable {
                 }
             }
         }
+
         private func extractAuthToken(from _: WKWebView) {
             WKWebsiteDataStore.default().httpCookieStore.getAllCookies { cookies in
                 let kickCookies = cookies.filter { $0.domain.contains(KickAuthConstants.kickDomain) }
