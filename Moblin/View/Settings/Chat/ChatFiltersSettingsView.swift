@@ -111,10 +111,13 @@ private struct ChatFilterSettingsView: View {
             }
             .navigationTitle("Filter")
         } label: {
-            TextItemView(
-                name: String(localized: "Username"),
-                value: filter.user
-            )
+            HStack {
+                DraggableItemPrefixView()
+                TextItemView(
+                    name: String(localized: "Username"),
+                    value: filter.user
+                )
+            }
         }
     }
 }
