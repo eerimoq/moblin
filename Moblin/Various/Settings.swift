@@ -3418,7 +3418,7 @@ class SettingsChatFilter: Identifiable, Codable, ObservableObject {
     @Published var print: Bool = false
 
     func isMatching(user: String?, segments: [ChatPostSegment]) -> Bool {
-        if user != self.user {
+        if self.user.count > 0, user != self.user {
             return false
         }
         var segmentsIterator = segments.makeIterator()
