@@ -3,6 +3,8 @@ import Foundation
 import Network
 
 private let rtspClientQueue = DispatchQueue(label: "com.eerimoq.moblin.rtsp")
+private let channelStart = "$".first!.asciiValue!
+private let rtspEndOfHeaders = Data([0xD, 0xA, 0xD, 0xA])
 
 protocol RtspClientDelegate: AnyObject {
     func rtspClientConnected(cameraId: UUID)
@@ -127,12 +129,8 @@ private class SdpLinesParser {
     }
 
     private func parseAttribute(value: String, mediaDescription: inout SdpMediaDescription) throws {
-        if value.contains(":") {
-            let (attribute, value) = try partition(text: value, separator: ":")
-            mediaDescription.attributes.append(SdpAttribute(attribute: attribute, value: value))
-        } else {
-            mediaDescription.attributes.append(SdpAttribute(attribute: value))
-        }
+        let (attribute, value) = try partition(text: value, optionalSeparator: ":")
+        mediaDescription.attributes.append(SdpAttribute(attribute: attribute, value: value))
     }
 }
 
@@ -232,30 +230,40 @@ private class Sdp {
 }
 
 private func partition(text: String, separator: String) throws -> (String, String) {
-    let parts = text.split(separator: separator, maxSplits: 1)
-    guard parts.count == 2 else {
+    let (first, second) = try partition(text: text, optionalSeparator: separator)
+    guard let second else {
         throw "Cannot partition '\(text)'"
     }
-    return (String(parts[0]), parts[1].trim())
+    return (first, second)
 }
 
-private let rtspEndOfHeaders = Data([0xD, 0xA, 0xD, 0xA])
+private func partition(text: String, optionalSeparator: String) throws -> (String, String?) {
+    let parts = text.split(separator: optionalSeparator, maxSplits: 1)
+    switch parts.count {
+    case 1:
+        return (String(parts[0]), nil)
+    case 2:
+        return (String(parts[0]), parts[1].trim())
+    default:
+        throw "Cannot partition '\(text)'"
+    }
+}
 
 private class Request {
-    let url: URL
     let method: String
+    let url: URL
     var headers: [String: String]
     let content: Data?
     let completion: (Response) throws -> Void
 
-    init(url: URL,
-         method: String,
-         headers: [String: String],
-         content: Data?,
+    init(method: String,
+         url: URL,
+         headers: [String: String] = [:],
+         content: Data? = nil,
          completion: @escaping (Response) throws -> Void)
     {
-        self.url = url
         self.method = method
+        self.url = url
         self.headers = headers
         self.content = content
         self.completion = completion
@@ -311,9 +319,9 @@ private class RtpProcessor {
     }
 }
 
-private class RtpProcessorVideoH264: RtpProcessor {
+private class RtpVideoProcessor: RtpProcessor {
     private var timestamp: UInt64 = 0
-    private var data = Data()
+    var data = Data()
     private var basePresentationTimeStamp: Double = -1
     private var firstPresentationTimeStamp: Double = -1
     private var decoder: VideoDecoder
@@ -329,6 +337,82 @@ private class RtpProcessorVideoH264: RtpProcessor {
         decoder.startRunning(formatDescription: formatDescription)
     }
 
+    func startNewFrame(timestamp: UInt64, first: Data, second: Data? = nil) {
+        self.timestamp = timestamp
+        data.removeAll(keepingCapacity: true)
+        data += nalUnitStartCode
+        data += first
+        if let second {
+            data += second
+        }
+    }
+
+    func tryDecodeFrame() {
+        guard !data.isEmpty else {
+            return
+        }
+        defer {
+            data.removeAll(keepingCapacity: true)
+        }
+        guard let client else {
+            return
+        }
+        let count = UInt32(data.count - 4)
+        data.withUnsafeMutableBytes { pointer in
+            pointer.writeUInt32(count, offset: 0)
+        }
+        var presenationTimeStamp = Double(timestamp) / 90000
+        if firstPresentationTimeStamp == -1 {
+            firstPresentationTimeStamp = presenationTimeStamp
+        }
+        presenationTimeStamp = getBasePresentationTimeStamp()
+            + (presenationTimeStamp - firstPresentationTimeStamp)
+            + client.latency
+        var timing = CMSampleTimingInfo(
+            duration: .invalid,
+            presentationTimeStamp: CMTime(seconds: presenationTimeStamp),
+            decodeTimeStamp: .invalid
+        )
+        let blockBuffer = data.makeBlockBuffer()
+        var sampleBuffer: CMSampleBuffer?
+        var sampleSize = blockBuffer?.dataLength ?? 0
+        guard CMSampleBufferCreate(
+            allocator: kCFAllocatorDefault,
+            dataBuffer: blockBuffer,
+            dataReady: true,
+            makeDataReadyCallback: nil,
+            refcon: nil,
+            formatDescription: formatDescription,
+            sampleCount: 1,
+            sampleTimingEntryCount: 1,
+            sampleTimingArray: &timing,
+            sampleSizeEntryCount: 1,
+            sampleSizeArray: &sampleSize,
+            sampleBufferOut: &sampleBuffer
+        ) == noErr else {
+            return
+        }
+        guard let sampleBuffer else {
+            return
+        }
+        decoder.decodeSampleBuffer(sampleBuffer)
+    }
+
+    private func getBasePresentationTimeStamp() -> Double {
+        if basePresentationTimeStamp == -1 {
+            basePresentationTimeStamp = currentPresentationTimeStamp().seconds
+        }
+        return basePresentationTimeStamp
+    }
+}
+
+extension RtpVideoProcessor: VideoDecoderDelegate {
+    func videoDecoderOutputSampleBuffer(_: VideoDecoder, _ sampleBuffer: CMSampleBuffer) {
+        client?.videoOutputSampleBuffer(sampleBuffer)
+    }
+}
+
+private class RtpProcessorVideoH264: RtpVideoProcessor {
     override func process(packet: Data, timestamp: UInt64) throws {
         guard packet.count >= 14 else {
             throw "Packet shorter than 14 bytes: \(packet)"
@@ -345,13 +429,8 @@ private class RtpProcessorVideoH264: RtpProcessor {
     }
 
     private func processBufferTypeSingle(packet: Data, timestamp: UInt64) throws {
-        if !data.isEmpty {
-            decodeFrame()
-        }
-        self.timestamp = timestamp
-        data = nalUnitStartCode + packet[12...]
-        decodeFrame()
-        data = Data()
+        tryDecodeFrame()
+        startNewFrame(timestamp: timestamp, first: packet[12...])
     }
 
     private func processBufferTypeFuA(packet: Data, timestamp: UInt64) throws {
@@ -361,97 +440,16 @@ private class RtpProcessorVideoH264: RtpProcessor {
         let nalType = fuHeader & 0x1F
         let nal = fuIndicator & 0xE0 | nalType
         if startBit == 1 {
-            if data.isEmpty {
-                self.timestamp = timestamp
-                data = nalUnitStartCode + Data([nal]) + packet[14...]
-            } else {
-                decodeFrame()
-                self.timestamp = timestamp
-                data = nalUnitStartCode + Data([nal]) + packet[14...]
-            }
+            tryDecodeFrame()
+            startNewFrame(timestamp: timestamp, first: Data([nal]), second: packet[14...])
         } else {
             data += packet[14...]
         }
     }
-
-    private func decodeFrame() {
-        guard let client else {
-            return
-        }
-        let count = UInt32(data.count - 4)
-        data.withUnsafeMutableBytes { pointer in
-            pointer.writeUInt32(count, offset: 0)
-        }
-        var presenationTimeStamp = Double(timestamp) / 90000
-        if firstPresentationTimeStamp == -1 {
-            firstPresentationTimeStamp = presenationTimeStamp
-        }
-        presenationTimeStamp = getBasePresentationTimeStamp()
-            + (presenationTimeStamp - firstPresentationTimeStamp)
-            + client.latency
-        var timing = CMSampleTimingInfo(
-            duration: .zero,
-            presentationTimeStamp: CMTime(seconds: presenationTimeStamp),
-            decodeTimeStamp: CMTime(seconds: presenationTimeStamp)
-        )
-        let blockBuffer = data.makeBlockBuffer()
-        var sampleBuffer: CMSampleBuffer?
-        var sampleSize = blockBuffer?.dataLength ?? 0
-        guard CMSampleBufferCreate(
-            allocator: kCFAllocatorDefault,
-            dataBuffer: blockBuffer,
-            dataReady: true,
-            makeDataReadyCallback: nil,
-            refcon: nil,
-            formatDescription: formatDescription,
-            sampleCount: 1,
-            sampleTimingEntryCount: 1,
-            sampleTimingArray: &timing,
-            sampleSizeEntryCount: 1,
-            sampleSizeArray: &sampleSize,
-            sampleBufferOut: &sampleBuffer
-        ) == noErr else {
-            return
-        }
-        guard let sampleBuffer else {
-            return
-        }
-        decoder.decodeSampleBuffer(sampleBuffer)
-    }
-
-    private func getBasePresentationTimeStamp() -> Double {
-        if basePresentationTimeStamp == -1 {
-            basePresentationTimeStamp = currentPresentationTimeStamp().seconds
-        }
-        return basePresentationTimeStamp
-    }
 }
 
-extension RtpProcessorVideoH264: VideoDecoderDelegate {
-    func videoDecoderOutputSampleBuffer(_: VideoDecoder, _ sampleBuffer: CMSampleBuffer) {
-        client?.videoOutputSampleBuffer(sampleBuffer)
-    }
-}
-
-private class RtpProcessorVideoH265: RtpProcessor {
-    private var timestamp: UInt64 = 0
-    private var data = Data()
-    private var basePresentationTimeStamp: Double = -1
-    private var firstPresentationTimeStamp: Double = -1
-    private var decoder: VideoDecoder
-    private var formatDescription: CMFormatDescription?
-    private weak var client: RtspClient?
-
-    init(formatDescription: CMFormatDescription, client: RtspClient) {
-        self.formatDescription = formatDescription
-        self.client = client
-        decoder = VideoDecoder(lockQueue: rtspClientQueue)
-        super.init()
-        decoder.delegate = self
-        decoder.startRunning(formatDescription: formatDescription)
-    }
-
-    override func process(packet: Data, timestamp _: UInt64) throws {
+private class RtpProcessorVideoH265: RtpVideoProcessor {
+    override func process(packet: Data, timestamp: UInt64) throws {
         guard packet.count >= 14 else {
             throw "Packet shorter than 14 bytes: \(packet)"
         }
@@ -467,13 +465,8 @@ private class RtpProcessorVideoH265: RtpProcessor {
     }
 
     private func processBufferTypeSingle(packet: Data, timestamp: UInt64) throws {
-        if !data.isEmpty {
-            decodeFrame()
-        }
-        self.timestamp = timestamp
-        data = nalUnitStartCode + packet[12...]
-        decodeFrame()
-        data = Data()
+        tryDecodeFrame()
+        startNewFrame(timestamp: timestamp, first: packet[12...])
     }
 
     private func processBufferTypeFu(packet: Data, timestamp: UInt64) throws {
@@ -485,89 +478,22 @@ private class RtpProcessorVideoH265: RtpProcessor {
         let nalType = fuHeader & 0x3F
         let nal = (packet[12] & 0x81) | (nalType << 1)
         if startBit == 1 {
-            if data.isEmpty {
-                self.timestamp = timestamp
-                data = nalUnitStartCode + Data([nal, packet[13]]) + packet[15...]
-            } else {
-                decodeFrame()
-                self.timestamp = timestamp
-                data = nalUnitStartCode + Data([nal, packet[13]]) + packet[15...]
-            }
+            tryDecodeFrame()
+            startNewFrame(timestamp: timestamp, first: Data([nal, packet[13]]), second: packet[15...])
         } else {
             data += packet[15...]
         }
-    }
-
-    private func decodeFrame() {
-        guard let client else {
-            return
-        }
-        let count = UInt32(data.count - 4)
-        data.withUnsafeMutableBytes { pointer in
-            pointer.writeUInt32(count, offset: 0)
-        }
-        var presenationTimeStamp = Double(timestamp) / 90000
-        if firstPresentationTimeStamp == -1 {
-            firstPresentationTimeStamp = presenationTimeStamp
-        }
-        presenationTimeStamp = getBasePresentationTimeStamp()
-            + (presenationTimeStamp - firstPresentationTimeStamp)
-            + client.latency
-        var timing = CMSampleTimingInfo(
-            duration: .zero,
-            presentationTimeStamp: CMTime(seconds: presenationTimeStamp),
-            decodeTimeStamp: CMTime(seconds: presenationTimeStamp)
-        )
-        let blockBuffer = data.makeBlockBuffer()
-        var sampleBuffer: CMSampleBuffer?
-        var sampleSize = blockBuffer?.dataLength ?? 0
-        guard CMSampleBufferCreate(
-            allocator: kCFAllocatorDefault,
-            dataBuffer: blockBuffer,
-            dataReady: true,
-            makeDataReadyCallback: nil,
-            refcon: nil,
-            formatDescription: formatDescription,
-            sampleCount: 1,
-            sampleTimingEntryCount: 1,
-            sampleTimingArray: &timing,
-            sampleSizeEntryCount: 1,
-            sampleSizeArray: &sampleSize,
-            sampleBufferOut: &sampleBuffer
-        ) == noErr else {
-            return
-        }
-        guard let sampleBuffer else {
-            return
-        }
-        decoder.decodeSampleBuffer(sampleBuffer)
-    }
-
-    private func getBasePresentationTimeStamp() -> Double {
-        if basePresentationTimeStamp == -1 {
-            basePresentationTimeStamp = currentPresentationTimeStamp().seconds
-        }
-        return basePresentationTimeStamp
-    }
-}
-
-extension RtpProcessorVideoH265: VideoDecoderDelegate {
-    func videoDecoderOutputSampleBuffer(_: VideoDecoder, _ sampleBuffer: CMSampleBuffer) {
-        client?.videoOutputSampleBuffer(sampleBuffer)
     }
 }
 
 private class Rtp {
     private var nextExpectedSequenceNumber: UInt16?
     private var previousTimestamp: UInt32 = 0
-    private var timestamp: UInt64 = 0
+    private var timestampUpper: UInt64 = 1 << 32
     var processor: RtpProcessor?
     weak var client: RtspClient?
 
-    func handlePacket(packet: Data?) throws {
-        guard let packet else {
-            throw "Connection closed."
-        }
+    func handlePacket(packet: Data) throws {
         guard packet.count >= 12 else {
             throw "Packet shorter than 12 bytes: \(packet)"
         }
@@ -595,18 +521,30 @@ private class Rtp {
         guard sequenceNumber == nextExpectedSequenceNumber else {
             throw "Wrong sequence number"
         }
-        updateTimestamp(timestamp: timestamp)
-        try processor?.process(packet: packet, timestamp: self.timestamp)
-        nextExpectedSequenceNumber = sequenceNumber &+ 1
+
+        try processor?.process(packet: packet, timestamp: updateTimestamp(timestamp: timestamp))
+        nextExpectedSequenceNumber! &+= 1
     }
 
-    private func updateTimestamp(timestamp: UInt32) {
+    private func updateTimestamp(timestamp: UInt32) -> UInt64 {
         if timestamp >= previousTimestamp {
-            self.timestamp += UInt64(timestamp - previousTimestamp)
+            if timestamp - previousTimestamp < UInt32.max / 2 {
+                defer {
+                    previousTimestamp = timestamp
+                }
+                return timestampUpper + UInt64(timestamp)
+            } else {
+                return timestampUpper - (1 << 32) + UInt64(timestamp)
+            }
         } else {
-            self.timestamp += UInt64(UInt32.max - previousTimestamp + timestamp) + 1
+            defer {
+                previousTimestamp = timestamp
+            }
+            if previousTimestamp - timestamp > UInt32.max / 2 {
+                timestampUpper += 1 << 32
+            }
+            return timestampUpper + UInt64(timestamp)
         }
-        previousTimestamp = timestamp
     }
 }
 
@@ -663,15 +601,17 @@ class RtspClient {
             return
         }
         logger.info("rtsp-client: State change \(state) -> \(newState)")
-        state = newState
-        switch state {
+        switch newState {
         case .disconnected:
-            delegate?.rtspClientDisconnected(cameraId: cameraId)
+            if state == .streaming {
+                delegate?.rtspClientDisconnected(cameraId: cameraId)
+            }
         case .streaming:
             delegate?.rtspClientConnected(cameraId: cameraId)
         default:
             break
         }
+        state = newState
     }
 
     private func startInner() {
@@ -690,7 +630,7 @@ class RtspClient {
         )
         connection?.stateUpdateHandler = rtspConnectionStateDidChange
         connection?.start(queue: rtspClientQueue)
-        receiveData()
+        receiveMessage()
         rtpVideo = Rtp()
         rtpVideo.client = self
         setState(newState: .connecting)
@@ -749,21 +689,18 @@ class RtspClient {
         let cSeq = getNextCSeq()
         requests[cSeq] = request
         if let authorization = createDigestHeader(request: request) {
-            request.headers["Authorization"] = authorization
+            request.headers["authorization"] = authorization
         }
-        connection?.send(content: request.pack(cSeq: cSeq), completion: .idempotent)
+        send(data: request.pack(cSeq: cSeq))
     }
 
-    private func handleRtcpVideoPacket(data: Data?) {
-        guard let data else {
+    private func handleRtcpVideoPacket(packet: Data) {
+        guard packet.count >= 8 else {
             return
         }
-        guard data.count >= 8 else {
-            return
-        }
-        let value = data[0]
+        let value = packet[0]
         let version = value >> 6
-        let pt = data[1]
+        let pt = packet[1]
         guard version == 2 else {
             logger.info("rtsp-client: Unsupported version \(version)")
             return
@@ -781,20 +718,28 @@ class RtspClient {
         guard let rtcpVideoChannel else {
             return
         }
-        let writer = ByteWriter()
-        writer.writeUInt8(0x24)
-        writer.writeUInt8(rtcpVideoChannel)
-        writer.writeUInt16(UInt16(data.count))
-        writer.writeBytes(data)
-        connection?.send(content: writer.data, completion: .idempotent)
+        sendChannel(channel: rtcpVideoChannel, data: data)
     }
 
-    private func receiveData() {
-        connection?.receive(minimumIncompleteLength: 1, maximumLength: 1) { data, _, _, _ in
-            guard let data else {
-                return
-            }
-            if data[0] == 0x24 {
+    private func sendChannel(channel: UInt8, data: Data) {
+        guard let size = UInt16(exactly: data.count) else {
+            return
+        }
+        let writer = ByteWriter()
+        writer.writeUInt8(channelStart)
+        writer.writeUInt8(channel)
+        writer.writeUInt16(size)
+        writer.writeBytes(data)
+        send(data: writer.data)
+    }
+
+    private func send(data: Data) {
+        connection?.send(content: data, completion: .idempotent)
+    }
+
+    private func receiveMessage() {
+        receive(size: 1) { data in
+            if data[0] == channelStart {
                 self.receiveChannelHeader()
             } else {
                 self.receiveNewRtspHeader(data: data)
@@ -803,10 +748,7 @@ class RtspClient {
     }
 
     private func receiveChannelHeader() {
-        connection?.receive(minimumIncompleteLength: 3, maximumLength: 3) { data, _, _, _ in
-            guard let data else {
-                return
-            }
+        receive(size: 3) { data in
             let channel = data[0]
             let size = data.withUnsafeBytes { pointer in
                 pointer.readUInt16(offset: 1)
@@ -816,40 +758,40 @@ class RtspClient {
     }
 
     private func receiveChannelData(channel: UInt8, size: Int) {
+        receive(size: size) { data in
+            if channel == self.rtpVideoChannel {
+                try self.rtpVideo.handlePacket(packet: data)
+            } else if channel == self.rtcpVideoChannel {
+                self.handleRtcpVideoPacket(packet: data)
+            }
+            self.receiveMessage()
+        }
+    }
+
+    private func receive(size: Int, onComplete: @escaping (Data) throws -> Void) {
         connection?.receive(minimumIncompleteLength: size, maximumLength: size) { data, _, _, _ in
             guard let data else {
                 return
             }
             do {
-                if channel == self.rtpVideoChannel {
-                    try self.rtpVideo.handlePacket(packet: data)
-                } else if channel == self.rtcpVideoChannel {
-                    self.handleRtcpVideoPacket(data: data)
-                }
-                self.receiveData()
+                try onComplete(data)
             } catch {
-                logger.info("rtsp-client: \(error)")
+                logger.info("rtsp-client: Error: \(error)")
             }
         }
     }
 
     private func receiveNewRtspHeader(data: Data) {
-        header = data
+        header.removeAll(keepingCapacity: true)
+        header += data
         receiveRtspHeader()
     }
 
     private func receiveRtspHeader() {
-        connection?.receive(minimumIncompleteLength: 1, maximumLength: 1) { data, _, _, _ in
-            guard let data else {
-                return
-            }
+        receive(size: 1) { data in
             self.header += data
             if self.header.suffix(4) == rtspEndOfHeaders {
-                do {
-                    try self.handleRtspHeader()
-                } catch {
-                    logger.info("rtsp-client: Header handling failed with error: \(error)")
-                }
+                try self.handleRtspHeader()
             } else {
                 self.receiveRtspHeader()
             }
@@ -857,14 +799,10 @@ class RtspClient {
     }
 
     private func receiveRtspContent(response: Response, size: Int) {
-        connection?.receive(minimumIncompleteLength: size, maximumLength: size) { data, _, _, _ in
+        receive(size: size) { data in
             response.content = data
-            do {
-                try self.handleResponse(response: response)
-                self.receiveData()
-            } catch {
-                logger.info("rtsp-client: Response handling failed with error: \(error)")
-            }
+            try self.handleResponse(response: response)
+            self.receiveMessage()
         }
     }
 
@@ -886,19 +824,22 @@ class RtspClient {
         var headers: [String: String] = [:]
         for line in lines.suffix(from: 1) {
             let (name, value) = try partition(text: String(line), separator: ":")
-            headers[name] = value
+            headers[name.lowercased()] = value
         }
         let response = Response(statusCode: statusCode, headers: headers)
-        if let contentLength = headers["Content-Length"], let contentLength = Int(contentLength) {
+        if let contentLength = headers["content-length"],
+           let contentLength = Int(contentLength),
+           contentLength > 0
+        {
             receiveRtspContent(response: response, size: contentLength)
         } else {
             try handleResponse(response: response)
-            receiveData()
+            receiveMessage()
         }
     }
 
     private func handleResponse(response: Response) throws {
-        guard let cSeq = response.headers["CSeq"],
+        guard let cSeq = response.headers["cseq"],
               let cSeq = Int(cSeq),
               let request = requests.removeValue(forKey: cSeq)
         else {
@@ -913,7 +854,7 @@ class RtspClient {
     }
 
     private func handleUnauthorizedResponse(response: Response) throws {
-        guard let wwwAuthenticate = response.headers["WWW-Authenticate"] else {
+        guard let wwwAuthenticate = response.headers["www-authenticate"] else {
             throw "Missing authenticate field when authentication failed."
         }
         guard wwwAuthenticate.starts(with: "Digest ") else {
@@ -943,34 +884,31 @@ class RtspClient {
     }
 
     private func performOptions() {
-        let request = Request(url: url, method: "OPTIONS", headers: [:], content: nil) { _ in
+        perform(request: Request(method: "OPTIONS", url: url) { _ in
             self.performDescribe()
-        }
-        perform(request: request)
+        })
     }
 
     private func performGetParameter() {
-        let request = Request(url: url, method: "GET_PARAMETER", headers: [:], content: nil) { _ in
+        perform(request: Request(method: "GET_PARAMETER", url: url) { _ in
             self.isAlive = true
-        }
-        perform(request: request)
+        })
     }
 
     private func performDescribe() {
         let headers = [
             "Accept": "application/sdp",
         ]
-        let request = Request(url: url, method: "DESCRIBE", headers: headers, content: nil) { response in
+        perform(request: Request(method: "DESCRIBE", url: url, headers: headers) { response in
             try self.handleDescribeResponse(response: response)
-        }
-        perform(request: request)
+        })
     }
 
     private func handleDescribeResponse(response: Response) throws {
         guard let content = response.content, let content = String(data: content, encoding: .utf8) else {
-            throw "Bad DESCRIBE content."
+            throw "Bad or missing DESCRIBE content."
         }
-        let baseUrl = response.headers["Content-Base"] ?? url.absoluteString
+        let baseUrl = response.headers["content-base"] ?? url.absoluteString
         let sdp = try Sdp(value: content)
         switch sdp.video?.codec {
         case let .h264(sdpVideo):
@@ -980,21 +918,20 @@ class RtspClient {
         default:
             throw "No video media found."
         }
-        performSetup(url: makeSetupUrl(baseUrl: baseUrl, controlUrl: sdp.video?.control))
+        try performSetup(url: makeSetupUrl(baseUrl: baseUrl, controlUrl: sdp.video?.control))
     }
 
-    private func makeSetupUrl(baseUrl: String, controlUrl: URL?) -> URL {
+    private func makeSetupUrl(baseUrl: String, controlUrl: URL?) throws -> URL {
         if let controlUrl {
             if controlUrl.host() != nil {
                 return controlUrl
             } else if let url = URL(string: baseUrl + controlUrl.path) {
                 return url
             } else {
-                return url
+                throw "Bad control URL: \(controlUrl)"
             }
-        } else {
-            return url
         }
+        return url
     }
 
     private func setupH264(sdpVideo: SdpVideoH264) throws {
@@ -1018,22 +955,20 @@ class RtspClient {
     private func performSetup(url: URL) {
         let headers = [
             "Transport": "RTP/AVP/TCP;unicast",
-            "Blocksize": "65000",
         ]
-        let request = Request(url: url, method: "SETUP", headers: headers, content: nil) { response in
+        perform(request: Request(method: "SETUP", url: url, headers: headers) { response in
             try self.handleSetupResponse(response: response)
-        }
-        perform(request: request)
+        })
     }
 
     private func handleSetupResponse(response: Response) throws {
-        guard let session = response.headers["Session"] else {
+        guard let session = response.headers["session"] else {
             throw "Session header missing."
         }
-        guard let transport = response.headers["Transport"] else {
+        guard let transport = response.headers["transport"] else {
             throw "Transport header missing."
         }
-        (videoSession, _) = try partition(text: session, separator: ";")
+        (videoSession, _) = try partition(text: session, optionalSeparator: ";")
         guard let match = transport.firstMatch(of: /interleaved=(\d+)-(\d+)/) else {
             throw "Invalid interleaving in \(transport)."
         }
@@ -1050,10 +985,9 @@ class RtspClient {
             "Session": videoSession,
             "Range": "npt=now-",
         ]
-        let request = Request(url: url, method: "PLAY", headers: headers, content: nil) { response in
+        perform(request: Request(method: "PLAY", url: url, headers: headers) { response in
             self.handlePlayResponse(response: response)
-        }
-        perform(request: request)
+        })
     }
 
     private func handlePlayResponse(response _: Response) {
