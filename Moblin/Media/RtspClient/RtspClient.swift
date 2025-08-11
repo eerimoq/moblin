@@ -954,7 +954,7 @@ class RtspClient {
 
     private func performSetup(url: URL) {
         let headers = [
-            "Transport": "RTP/AVP/TCP;unicast",
+            "Transport": "RTP/AVP/TCP;unicast;interleaved=0-1",
         ]
         perform(request: Request(method: "SETUP", url: url, headers: headers) { response in
             try self.handleSetupResponse(response: response)
@@ -993,7 +993,7 @@ class RtspClient {
     private func handlePlayResponse(response _: Response) {
         setState(newState: .streaming)
         connectTimer.stop()
-        keepAliveTimer.startPeriodic(interval: 15) { [weak self] in
+        keepAliveTimer.startPeriodic(interval: 5) { [weak self] in
             self?.keepAlive()
         }
     }
