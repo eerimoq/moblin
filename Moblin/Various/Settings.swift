@@ -7587,6 +7587,7 @@ final class Settings {
     }
 
     func exportToClipboard() {
+        store()
         UIPasteboard.general.string = storage
     }
 
