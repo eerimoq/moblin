@@ -59,24 +59,9 @@ struct SettingsView: View {
             Section {
                 if database.showAllSettings {
                     NavigationLink {
-                        RtmpServerSettingsView(rtmpServer: database.rtmpServer)
+                        IngestsSettingsView(database: database)
                     } label: {
-                        Label("RTMP server", systemImage: "server.rack")
-                    }
-                    NavigationLink {
-                        SrtlaServerSettingsView(srtlaServer: database.srtlaServer)
-                    } label: {
-                        Label("SRT(LA) server", systemImage: "server.rack")
-                    }
-                    NavigationLink {
-                        RistServerSettingsView(ristServer: database.ristServer)
-                    } label: {
-                        Label("RIST server", systemImage: "server.rack")
-                    }
-                    NavigationLink {
-                        RtspClientSettingsView(rtspClient: database.rtspClient)
-                    } label: {
-                        Label("RTSP client", systemImage: "server.rack")
+                        Label("Ingests", systemImage: "server.rack")
                     }
                 }
                 NavigationLink {
