@@ -22,9 +22,6 @@ extension Model {
 
     func reloadRtspClient() {
         stopRtspClient()
-        guard database.debug.rtspClient else {
-            return
-        }
         for stream in database.rtspClient.streams where stream.enabled {
             guard let url = URL(string: stream.url) else {
                 continue

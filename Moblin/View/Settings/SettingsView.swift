@@ -73,12 +73,10 @@ struct SettingsView: View {
                     } label: {
                         Label("RIST server", systemImage: "server.rack")
                     }
-                    if database.debug.rtspClient {
-                        NavigationLink {
-                            RtspClientSettingsView(rtspClient: database.rtspClient)
-                        } label: {
-                            Label("RTSP client", systemImage: "server.rack")
-                        }
+                    NavigationLink {
+                        RtspClientSettingsView(rtspClient: database.rtspClient)
+                    } label: {
+                        Label("RTSP client", systemImage: "server.rack")
                     }
                 }
                 NavigationLink {
