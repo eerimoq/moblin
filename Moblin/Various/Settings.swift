@@ -3434,6 +3434,22 @@ class SettingsChatFilter: Identifiable, Codable, ObservableObject {
         return true
     }
 
+    func username() -> String {
+        if user.isEmpty {
+            return String(localized: "-- Any --")
+        } else {
+            return user
+        }
+    }
+
+    func message() -> String {
+        if messageStart.isEmpty {
+            return String(localized: "-- Any --")
+        } else {
+            return messageStart
+        }
+    }
+
     private func firstText(segmentsIterator: inout IndexingIterator<[ChatPostSegment]>) -> String? {
         while let segment = segmentsIterator.next() {
             if let text = segment.text, !text.isEmpty {
