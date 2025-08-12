@@ -7,6 +7,7 @@ private let channelStart = "$".first!.asciiValue!
 private let rtspEndOfHeaders = Data([0xD, 0xA, 0xD, 0xA])
 
 protocol RtspClientDelegate: AnyObject {
+    func rtspClientErrorToast(title: String)
     func rtspClientConnected(cameraId: UUID)
     func rtspClientDisconnected(cameraId: UUID)
     func rtspClientOnVideoBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer)
@@ -255,6 +256,7 @@ private class Request {
     var headers: [String: String]
     let content: Data?
     let completion: (Response) throws -> Void
+    var dueToAuthenticationFailure = false
 
     init(method: String,
          url: URL,
@@ -846,22 +848,32 @@ class RtspClient {
             throw "No request found for response."
         }
         guard response.statusCode != 401 else {
-            try handleUnauthorizedResponse(response: response)
+            try handleUnauthorizedResponse(request: request, response: response)
+            request.dueToAuthenticationFailure = true
             perform(request: request)
             return
         }
         try request.completion(response)
     }
 
-    private func handleUnauthorizedResponse(response: Response) throws {
+    private func handleUnauthorizedResponse(request: Request, response: Response) throws {
+        guard !request.dueToAuthenticationFailure else {
+            delegate?.rtspClientErrorToast(title: String(localized: "Wrong RTSP username or password"))
+            throw "Wrong username or password"
+        }
+        guard username != nil, password != nil else {
+            delegate?.rtspClientErrorToast(title: String(localized: "RTSP username or password missing"))
+            throw "Username or password missing."
+        }
         guard let wwwAuthenticate = response.headers["www-authenticate"] else {
             throw "Missing authenticate field when authentication failed."
         }
         guard wwwAuthenticate.starts(with: "Digest ") else {
+            delegate?.rtspClientErrorToast(title: String(localized: "RTSP only supports Digest authentication"))
             throw "Only Digest authentication is supported."
         }
         let index = wwwAuthenticate.index(wwwAuthenticate.startIndex, offsetBy: 7)
-        for parameter in wwwAuthenticate.suffix(from: index).split(separator: ", ") {
+        for parameter in wwwAuthenticate.suffix(from: index).split(separator: /,\s*/) {
             let (name, value) = try partition(text: String(parameter), separator: "=")
             switch name {
             case "realm":

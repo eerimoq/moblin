@@ -59,6 +59,10 @@ extension Model {
 }
 
 extension Model: RtspClientDelegate {
+    func rtspClientErrorToast(title: String) {
+        makeErrorToastMain(title: title)
+    }
+
     func rtspClientConnected(cameraId: UUID) {
         DispatchQueue.main.async {
             self.rtspClientConnectedInner(cameraId: cameraId)
