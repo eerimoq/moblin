@@ -13,9 +13,17 @@ struct RtspClientStreamSettingsView: View {
                     NameEditView(name: $stream.name, existingNames: rtspClient.streams)
                 }
                 Section {
-                    TextEditNavigationView(title: String(localized: "URL"), value: stream.url) { value in
-                        stream.url = value
-                    }
+                    TextEditNavigationView(title: String(localized: "URL"),
+                                           value: stream.url,
+                                           onSubmit: {
+                                               stream.url = $0
+                                               model.reloadRtspClient()
+                                           },
+                                           footers: [
+                                               "rtsp://1.2.3.4:554/stream",
+                                               "rtsp://username:password@1.2.3.4/stream",
+                                           ],
+                                           placeholder: "rtsp://foo:bar@1.2.3.4/stream")
                 }
             }
             .navigationTitle("Stream")
