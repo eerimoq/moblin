@@ -2200,36 +2200,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         var speed: UInt64 = 0
         var total: UInt64 = 0
         var numberOfClients = 0
-        if let rtmpServer = servers.rtmp {
-            let stats = rtmpServer.updateStats()
-            let numberOfRtmpClients = rtmpServer.getNumberOfClients()
-            numberOfClients += numberOfRtmpClients
-            if numberOfRtmpClients > 0 {
-                total += stats.total
-                speed += stats.speed
-            }
-            anyServerEnabled = true
-        }
-        if let srtlaServer = servers.srtla {
-            let stats = srtlaServer.updateStats()
-            let numberOfSrtlaClients = srtlaServer.getNumberOfClients()
-            numberOfClients += numberOfSrtlaClients
-            if numberOfSrtlaClients > 0 {
-                total += stats.total
-                speed += stats.speed
-            }
-            anyServerEnabled = true
-        }
-        if let ristServer = servers.rist {
-            let stats = ristServer.updateStats()
-            let numberOfRistClients = ristServer.getNumberOfClients()
-            numberOfClients += numberOfRistClients
-            if numberOfRistClients > 0 {
-                total += stats.total
-                speed += stats.speed
-            }
-            anyServerEnabled = true
-        }
+        updateRtmpIngestsSpeed(&anyServerEnabled, &speed, &total, &numberOfClients)
+        updateSrtlaIngestsSpeed(&anyServerEnabled, &speed, &total, &numberOfClients)
+        updateRistIngestsSpeed(&anyServerEnabled, &speed, &total, &numberOfClients)
         let message: String
         if anyServerEnabled {
             if numberOfClients > 0 {
@@ -2246,6 +2219,60 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if message != servers.speedAndTotal {
             servers.speedAndTotal = message
         }
+    }
+
+    private func updateRtmpIngestsSpeed(_ anyServerEnabled: inout Bool,
+                                        _ speed: inout UInt64,
+                                        _ total: inout UInt64,
+                                        _ numberOfClients: inout Int)
+    {
+        guard let rtmpServer = servers.rtmp else {
+            return
+        }
+        let stats = rtmpServer.updateStats()
+        let numberOfRtmpClients = rtmpServer.getNumberOfClients()
+        numberOfClients += numberOfRtmpClients
+        if numberOfRtmpClients > 0 {
+            total += stats.total
+            speed += stats.speed
+        }
+        anyServerEnabled = true
+    }
+
+    private func updateSrtlaIngestsSpeed(_ anyServerEnabled: inout Bool,
+                                         _ speed: inout UInt64,
+                                         _ total: inout UInt64,
+                                         _ numberOfClients: inout Int)
+    {
+        guard let srtlaServer = servers.srtla else {
+            return
+        }
+        let stats = srtlaServer.updateStats()
+        let numberOfSrtlaClients = srtlaServer.getNumberOfClients()
+        numberOfClients += numberOfSrtlaClients
+        if numberOfSrtlaClients > 0 {
+            total += stats.total
+            speed += stats.speed
+        }
+        anyServerEnabled = true
+    }
+
+    private func updateRistIngestsSpeed(_ anyServerEnabled: inout Bool,
+                                        _ speed: inout UInt64,
+                                        _ total: inout UInt64,
+                                        _ numberOfClients: inout Int)
+    {
+        guard let ristServer = servers.rist else {
+            return
+        }
+        let stats = ristServer.updateStats()
+        let numberOfRistClients = ristServer.getNumberOfClients()
+        numberOfClients += numberOfRistClients
+        if numberOfRistClients > 0 {
+            total += stats.total
+            speed += stats.speed
+        }
+        anyServerEnabled = true
     }
 
     func checkPhotoLibraryAuthorization() {
