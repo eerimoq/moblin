@@ -363,11 +363,11 @@ private struct GameControllersStatusView: View {
     }
 }
 
-private struct ServersStatusView: View {
+private struct IngestsStatusView: View {
     let model: Model
     // To trigger updates.
     @ObservedObject var show: SettingsShow
-    @ObservedObject var servers: Servers
+    @ObservedObject var ingests: Ingests
     // To trigger updates.
     @ObservedObject var rtmpServer: SettingsRtmpServer
     // To trigger updates.
@@ -378,7 +378,7 @@ private struct ServersStatusView: View {
         if model.isShowingStatusServers() {
             StreamOverlayIconAndTextView(
                 icon: "server.rack",
-                text: servers.speedAndTotal,
+                text: ingests.speedAndTotal,
                 textPlacement: textPlacement
             )
         }
@@ -595,9 +595,9 @@ private struct StatusesView: View {
         AdsRemainingTimerView(model: model,
                               status: model.statusTopRight,
                               textPlacement: textPlacement)
-        ServersStatusView(model: model,
+        IngestsStatusView(model: model,
                           show: model.database.show,
-                          servers: model.servers,
+                          ingests: model.ingests,
                           rtmpServer: model.database.rtmpServer,
                           srtlaServer: model.database.srtlaServer,
                           textPlacement: textPlacement)

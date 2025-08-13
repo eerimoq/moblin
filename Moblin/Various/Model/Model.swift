@@ -114,7 +114,7 @@ class HypeTrain: ObservableObject {
     var timer = SimpleTimer(queue: .main)
 }
 
-class Servers: ObservableObject {
+class Ingests: ObservableObject {
     var rtmp: RtmpServer?
     var srtla: SrtlaServer?
     var rist: RistServer?
@@ -328,7 +328,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     let media = Media()
     let hypeTrain = HypeTrain()
     let moblink = Moblink()
-    let servers = Servers()
+    let ingests = Ingests()
     let bitrate = Bitrate()
     let bonding = Bonding()
     var selectedFps: Int?
@@ -2217,8 +2217,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         } else {
             message = noValue
         }
-        if message != servers.speedAndTotal {
-            servers.speedAndTotal = message
+        if message != ingests.speedAndTotal {
+            ingests.speedAndTotal = message
         }
     }
 
@@ -2227,7 +2227,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                                         _ total: inout UInt64,
                                         _ numberOfClients: inout Int)
     {
-        guard let rtmpServer = servers.rtmp else {
+        guard let rtmpServer = ingests.rtmp else {
             return
         }
         let stats = rtmpServer.updateStats()
@@ -2245,7 +2245,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                                          _ total: inout UInt64,
                                          _ numberOfClients: inout Int)
     {
-        guard let srtlaServer = servers.srtla else {
+        guard let srtlaServer = ingests.srtla else {
             return
         }
         let stats = srtlaServer.updateStats()
@@ -2263,7 +2263,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                                         _ total: inout UInt64,
                                         _ numberOfClients: inout Int)
     {
-        guard let ristServer = servers.rist else {
+        guard let ristServer = ingests.rist else {
             return
         }
         let stats = ristServer.updateStats()
@@ -2281,7 +2281,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                                         _ total: inout UInt64,
                                         _ numberOfClients: inout Int)
     {
-        for client in servers.rtsp {
+        for client in ingests.rtsp {
             let stats = client.updateStats()
             total += stats.total
             speed += stats.speed

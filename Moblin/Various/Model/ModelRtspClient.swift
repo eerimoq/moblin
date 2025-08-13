@@ -29,15 +29,15 @@ extension Model {
             let client = RtspClient(cameraId: stream.id, url: url, latency: stream.latencySeconds())
             client.delegate = self
             client.start()
-            servers.rtsp.append(client)
+            ingests.rtsp.append(client)
         }
     }
 
     func stopRtspClient() {
-        for client in servers.rtsp {
+        for client in ingests.rtsp {
             client.stop()
         }
-        servers.rtsp = []
+        ingests.rtsp = []
     }
 
     func rtspClientConnectedInner(cameraId: UUID) {

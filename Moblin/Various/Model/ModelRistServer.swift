@@ -3,19 +3,19 @@ import Foundation
 
 extension Model {
     func stopRistServer() {
-        servers.rist?.stop()
-        servers.rist = nil
+        ingests.rist?.stop()
+        ingests.rist = nil
     }
 
     func reloadRistServer() {
         stopRistServer()
         if database.ristServer.enabled {
             let virtualDestinationPorts = database.ristServer.streams.map { $0.virtualDestinationPort }
-            servers.rist = RistServer(port: database.ristServer.port,
+            ingests.rist = RistServer(port: database.ristServer.port,
                                       virtualDestinationPorts: virtualDestinationPorts,
                                       timecodesEnabled: isTimecodesEnabled())
-            servers.rist?.delegate = self
-            servers.rist?.start()
+            ingests.rist?.delegate = self
+            ingests.rist?.start()
         }
     }
 
