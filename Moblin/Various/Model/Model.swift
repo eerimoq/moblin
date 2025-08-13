@@ -2203,6 +2203,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         updateRtmpIngestsSpeed(&anyServerEnabled, &speed, &total, &numberOfClients)
         updateSrtlaIngestsSpeed(&anyServerEnabled, &speed, &total, &numberOfClients)
         updateRistIngestsSpeed(&anyServerEnabled, &speed, &total, &numberOfClients)
+        updateRtspIngestsSpeed(&anyServerEnabled, &speed, &total, &numberOfClients)
         let message: String
         if anyServerEnabled {
             if numberOfClients > 0 {
@@ -2273,6 +2274,20 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             speed += stats.speed
         }
         anyServerEnabled = true
+    }
+
+    private func updateRtspIngestsSpeed(_ anyServerEnabled: inout Bool,
+                                        _ speed: inout UInt64,
+                                        _ total: inout UInt64,
+                                        _ numberOfClients: inout Int)
+    {
+        for client in servers.rtsp {
+            let stats = client.updateStats()
+            total += stats.total
+            speed += stats.speed
+            numberOfClients += 1
+            anyServerEnabled = true
+        }
     }
 
     func checkPhotoLibraryAuthorization() {
