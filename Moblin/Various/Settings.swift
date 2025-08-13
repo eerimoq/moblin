@@ -4637,12 +4637,19 @@ class SettingsRtspClientStream: Codable, Identifiable, ObservableObject, Named {
     @Published var name: String = baseName
     @Published var url: String = ""
     @Published var enabled: Bool = false
+    @Published var latency: Int32 = 2000
+    @Published var latencyString: String = "2000"
 
     enum CodingKeys: CodingKey {
         case id,
              name,
              url,
-             enabled
+             enabled,
+             latency
+    }
+
+    func latencySeconds() -> Double {
+        return Double(latency) / 1000
     }
 
     func encode(to encoder: Encoder) throws {
@@ -4651,6 +4658,7 @@ class SettingsRtspClientStream: Codable, Identifiable, ObservableObject, Named {
         try container.encode(.name, name)
         try container.encode(.url, url)
         try container.encode(.enabled, enabled)
+        try container.encode(.latency, latency)
     }
 
     init() {}
@@ -4661,6 +4669,8 @@ class SettingsRtspClientStream: Codable, Identifiable, ObservableObject, Named {
         name = container.decode(.name, String.self, Self.baseName)
         url = container.decode(.url, String.self, "")
         enabled = container.decode(.enabled, Bool.self, false)
+        latency = container.decode(.latency, Int32.self, 2000)
+        latencyString = String(latency)
     }
 
     func camera() -> String {

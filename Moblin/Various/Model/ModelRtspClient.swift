@@ -26,7 +26,7 @@ extension Model {
             guard let url = URL(string: stream.url) else {
                 continue
             }
-            let client = RtspClient(cameraId: stream.id, url: url, latency: 1)
+            let client = RtspClient(cameraId: stream.id, url: url, latency: stream.latencySeconds())
             client.delegate = self
             client.start()
             servers.rtsp.append(client)
@@ -46,7 +46,7 @@ extension Model {
         }
         let camera = stream.camera()
         makeToast(title: String(localized: "\(camera) connected"))
-        media.addBufferedVideo(cameraId: cameraId, name: camera, latency: 1)
+        media.addBufferedVideo(cameraId: cameraId, name: camera, latency: stream.latencySeconds())
     }
 
     func rtspClientDisconnectedInner(cameraId: UUID) {
