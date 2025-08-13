@@ -50,7 +50,7 @@ private class SdpLinesReader {
             nextIndex += 1
         }
         let line = lines[nextIndex]
-        logger.info("rtsp-client: SDP line \(line.trim())")
+        logger.debug("rtsp-client: SDP line \(line.trim())")
         return try partition(text: String(line), separator: "=")
     }
 
@@ -278,7 +278,7 @@ private class Request {
             request += "\(name): \(value)\r\n"
         }
         request += "\r\n"
-        logger.info("rtsp-client: Sending header \(request)")
+        logger.debug("rtsp-client: Sending header \(request)")
         return request.utf8Data
     }
 }
@@ -583,7 +583,7 @@ class RtspClient {
     }
 
     func start() {
-        logger.info("rtsp-client: Start")
+        logger.debug("rtsp-client: Start")
         rtspClientQueue.async {
             self.started = true
             self.startInner()
@@ -591,7 +591,7 @@ class RtspClient {
     }
 
     func stop() {
-        logger.info("rtsp-client: Stop")
+        logger.debug("rtsp-client: Stop")
         rtspClientQueue.async {
             self.started = false
             self.stopInner()
@@ -602,7 +602,7 @@ class RtspClient {
         guard newState != state else {
             return
         }
-        logger.info("rtsp-client: State change \(state) -> \(newState)")
+        logger.debug("rtsp-client: State change \(state) -> \(newState)")
         switch newState {
         case .disconnected:
             if state == .streaming {
@@ -625,7 +625,7 @@ class RtspClient {
             return
         }
         let port = url.port ?? 554
-        logger.info("rtsp-client: Connecting to \(host):\(port)")
+        logger.debug("rtsp-client: Connecting to \(host):\(port)")
         connection = NWConnection(
             to: .hostPort(host: .init(host), port: .init(integerLiteral: NWEndpoint.Port.IntegerLiteralType(port))),
             using: .init(tls: nil)
@@ -704,7 +704,7 @@ class RtspClient {
         let version = value >> 6
         let pt = packet[1]
         guard version == 2 else {
-            logger.info("rtsp-client: Unsupported version \(version)")
+            logger.debug("rtsp-client: Unsupported version \(version)")
             return
         }
         if pt == 200 {
@@ -778,7 +778,7 @@ class RtspClient {
             do {
                 try onComplete(data)
             } catch {
-                logger.info("rtsp-client: Error: \(error)")
+                logger.debug("rtsp-client: Error: \(error)")
             }
         }
     }
@@ -812,7 +812,7 @@ class RtspClient {
         guard let header = String(bytes: header, encoding: .utf8) else {
             throw "Header is not text."
         }
-        logger.info("rtsp-client: Got header \(header)")
+        logger.debug("rtsp-client: Got header \(header)")
         let lines = header.split(separator: "\r\n")
         guard lines.count >= 1 else {
             throw "Status line missing."
