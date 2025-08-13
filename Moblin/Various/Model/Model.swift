@@ -1404,7 +1404,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             self.updateDigitalClock(now: now)
             self.media.updateSrtSpeed()
             self.updateSpeed(now: monotonicNow)
-            self.updateServersSpeed()
+            self.updateIngestsSpeed()
             self.updateBondingStatistics()
             self.removeOldChatMessages(now: monotonicNow)
             self.updateLocation()
@@ -2195,15 +2195,16 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return battery.state == .charging || battery.state == .full
     }
 
-    private func updateServersSpeed() {
+    private func updateIngestsSpeed() {
         var anyServerEnabled = false
         var speed: UInt64 = 0
         var total: UInt64 = 0
         var numberOfClients = 0
         if let rtmpServer = servers.rtmp {
             let stats = rtmpServer.updateStats()
-            numberOfClients += rtmpServer.getNumberOfClients()
-            if rtmpServer.getNumberOfClients() > 0 {
+            let numberOfRtmpClients = rtmpServer.getNumberOfClients()
+            numberOfClients += numberOfRtmpClients
+            if numberOfRtmpClients > 0 {
                 total += stats.total
                 speed += stats.speed
             }
@@ -2211,8 +2212,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         if let srtlaServer = servers.srtla {
             let stats = srtlaServer.updateStats()
-            numberOfClients += srtlaServer.getNumberOfClients()
-            if srtlaServer.getNumberOfClients() > 0 {
+            let numberOfSrtlaClients = srtlaServer.getNumberOfClients()
+            numberOfClients += numberOfSrtlaClients
+            if numberOfSrtlaClients > 0 {
                 total += stats.total
                 speed += stats.speed
             }
@@ -2220,8 +2222,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         if let ristServer = servers.rist {
             let stats = ristServer.updateStats()
-            numberOfClients += ristServer.getNumberOfClients()
-            if ristServer.getNumberOfClients() > 0 {
+            let numberOfRistClients = ristServer.getNumberOfClients()
+            numberOfClients += numberOfRistClients
+            if numberOfRistClients > 0 {
                 total += stats.total
                 speed += stats.speed
             }
