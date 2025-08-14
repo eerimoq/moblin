@@ -2243,13 +2243,50 @@ enum SettingsWidgetPadelScoreboardGameType: String, Codable, CaseIterable {
     }
 }
 
-class SettingsWidgetPadelScoreboard: Codable {
+enum SettingsWidgetPadelScoreboardScoreIncrement {
+    case home
+    case away
+}
+
+class SettingsWidgetPadelScoreboard: Codable, ObservableObject {
     var type: SettingsWidgetPadelScoreboardGameType = .doubles
     var homePlayer1: UUID = .init()
     var homePlayer2: UUID = .init()
     var awayPlayer1: UUID = .init()
     var awayPlayer2: UUID = .init()
     var score: [SettingsWidgetScoreboardScore] = [.init()]
+    var scoreChanges: [SettingsWidgetPadelScoreboardScoreIncrement] = []
+
+    enum CodingKeys: CodingKey {
+        case type,
+             homePlayer1,
+             homePlayer2,
+             awayPlayer1,
+             awayPlayer2,
+             score
+    }
+
+    init() {}
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.type, type)
+        try container.encode(.homePlayer1, homePlayer1)
+        try container.encode(.homePlayer2, homePlayer2)
+        try container.encode(.awayPlayer1, awayPlayer1)
+        try container.encode(.awayPlayer2, awayPlayer2)
+        try container.encode(.score, score)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        type = container.decode(.type, SettingsWidgetPadelScoreboardGameType.self, .doubles)
+        homePlayer1 = container.decode(.homePlayer1, UUID.self, .init())
+        homePlayer2 = container.decode(.homePlayer2, UUID.self, .init())
+        awayPlayer1 = container.decode(.awayPlayer1, UUID.self, .init())
+        awayPlayer2 = container.decode(.awayPlayer2, UUID.self, .init())
+        score = container.decode(.score, [SettingsWidgetScoreboardScore].self, [.init()])
+    }
 }
 
 class SettingsWidgetScoreboard: Codable {

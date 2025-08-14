@@ -11,7 +11,6 @@ class Padel: ObservableObject {
     )
     @Published var players: [PadelScoreboardPlayersPlayer] = []
     @Published var incrementTintColor: Color?
-    var scoreChanges: [PadelScoreboardScoreIncrement] = []
 }
 
 struct PadelScoreboardScore: Identifiable {
@@ -133,7 +132,7 @@ private struct PlayerPickerView: View {
             }
             .onChange(of: player.id) { _, _ in
                 isPresentingPlayerPicker = false
-                model.updatePadelScoreboard()
+                model.padelScoreboardUpdatePlayers()
             }
         }
     }
@@ -209,7 +208,7 @@ private struct PadelScoreboardResetScoreButtonView: View {
         }
         .confirmationDialog("", isPresented: $isPresentingResetConfirimation) {
             Button("Reset score") {
-                model.resetPadelScoreBoard()
+                model.padelScoreBoardResetScore()
             }
             Button("Cancel") {}
         }

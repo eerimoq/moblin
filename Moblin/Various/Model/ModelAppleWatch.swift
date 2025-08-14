@@ -576,35 +576,146 @@ extension Model: WCSessionDelegate {
         guard let data = data as? Data else {
             return
         }
-        guard let scoreboard = try? JSONDecoder().decode(WatchProtocolPadelScoreboard.self, from: data) else {
+        guard let action = try? JSONDecoder().decode(WatchProtocolPadelScoreboardAction.self, from: data) else {
             return
         }
         DispatchQueue.main.async {
-            if self.isWatchLocal() {
-                guard let widget = self.findWidget(id: scoreboard.id) else {
-                    return
-                }
-                widget.scoreboard.padel.score = scoreboard.score.map {
-                    let score = SettingsWidgetScoreboardScore()
-                    score.home = $0.home
-                    score.away = $0.away
-                    return score
-                }
-                widget.scoreboard.padel.homePlayer1 = scoreboard.home[0]
-                if scoreboard.home.count > 1 {
-                    widget.scoreboard.padel.homePlayer2 = scoreboard.home[1]
-                }
-                widget.scoreboard.padel.awayPlayer1 = scoreboard.away[0]
-                if scoreboard.away.count > 1 {
-                    widget.scoreboard.padel.awayPlayer2 = scoreboard.away[1]
-                }
-                guard let padelScoreboardEffect = self.padelScoreboardEffects[scoreboard.id] else {
-                    return
-                }
-                padelScoreboardEffect
-                    .update(scoreboard: self.padelScoreboardSettingsToEffect(widget.scoreboard.padel))
+            guard self.isWatchLocal() else {
+                return
+            }
+            guard let widget = self.findWidget(id: action.id) else {
+                return
+            }
+            switch action.action {
+            case .reset:
+                self.handleUpdatePadelScoreboardReset(scoreboard: widget.scoreboard.padel)
+            case .undo:
+                self.handleUpdatePadelScoreboardUndo(scoreboard: widget.scoreboard.padel)
+            case .incrementHome:
+                self.handleUpdatePadelScoreboardIncrementHome(scoreboard: widget.scoreboard.padel)
+            case .incrementAway:
+                self.handleUpdatePadelScoreboardIncrementAway(scoreboard: widget.scoreboard.padel)
+            case let .players(players):
+                self.handleUpdatePadelScoreboardChangePlayers(scoreboard: widget.scoreboard.padel,
+                                                              players: players)
+            }
+            guard let padelScoreboardEffect = self.padelScoreboardEffects[action.id] else {
+                return
+            }
+            padelScoreboardEffect.update(scoreboard: self.padelScoreboardSettingsToEffect(widget.scoreboard.padel))
+            self.sendUpdatePadelScoreboardToWatch(id: action.id, scoreboard: widget.scoreboard)
+        }
+    }
+
+    private func handleUpdatePadelScoreboardReset(scoreboard: SettingsWidgetPadelScoreboard) {
+        scoreboard.score = [.init()]
+        scoreboard.scoreChanges = []
+    }
+
+    private func handleUpdatePadelScoreboardUndo(scoreboard: SettingsWidgetPadelScoreboard) {
+        guard let team = scoreboard.scoreChanges.popLast() else {
+            return
+        }
+        guard let score = scoreboard.score.last else {
+            return
+        }
+        if score.home == 0, score.away == 0, scoreboard.score.count > 1 {
+            scoreboard.score.removeLast()
+        }
+        let index = scoreboard.score.count - 1
+        switch team {
+        case .home:
+            if scoreboard.score[index].home > 0 {
+                scoreboard.score[index].home -= 1
+            }
+        case .away:
+            if scoreboard.score[index].away > 0 {
+                scoreboard.score[index].away -= 1
             }
         }
+    }
+
+    private func handleUpdatePadelScoreboardIncrementHome(scoreboard: SettingsWidgetPadelScoreboard) {
+        if !isCurrentSetCompleted(scoreboard: scoreboard) {
+            guard !isMatchCompleted(scoreboard: scoreboard) else {
+                return
+            }
+            scoreboard.score[scoreboard.score.count - 1].home += 1
+            scoreboard.scoreChanges.append(.home)
+        } else {
+            padelScoreboardUpdateSetCompleted(scoreboard: scoreboard)
+        }
+    }
+
+    private func handleUpdatePadelScoreboardIncrementAway(scoreboard: SettingsWidgetPadelScoreboard) {
+        if !isCurrentSetCompleted(scoreboard: scoreboard) {
+            guard !isMatchCompleted(scoreboard: scoreboard) else {
+                return
+            }
+            scoreboard.score[scoreboard.score.count - 1].away += 1
+            scoreboard.scoreChanges.append(.away)
+        } else {
+            padelScoreboardUpdateSetCompleted(scoreboard: scoreboard)
+        }
+    }
+
+    private func handleUpdatePadelScoreboardChangePlayers(scoreboard: SettingsWidgetPadelScoreboard,
+                                                          players: WatchProtocolPadelScoreboardActionPlayers)
+    {
+        if players.home.count > 0 {
+            scoreboard.homePlayer1 = players.home[0]
+            if players.home.count > 1 {
+                scoreboard.homePlayer2 = players.home[1]
+            }
+        }
+        if players.away.count > 0 {
+            scoreboard.awayPlayer1 = players.away[0]
+            if players.away.count > 1 {
+                scoreboard.awayPlayer2 = players.away[1]
+            }
+        }
+    }
+
+    private func padelScoreboardUpdateSetCompleted(scoreboard: SettingsWidgetPadelScoreboard) {
+        guard let score = scoreboard.score.last else {
+            return
+        }
+        guard isSetCompleted(score: score) else {
+            return
+        }
+        guard !isMatchCompleted(scoreboard: scoreboard) else {
+            return
+        }
+        scoreboard.score.append(.init())
+    }
+
+    private func isCurrentSetCompleted(scoreboard: SettingsWidgetPadelScoreboard) -> Bool {
+        guard let score = scoreboard.score.last else {
+            return false
+        }
+        return isSetCompleted(score: score)
+    }
+
+    private func isSetCompleted(score: SettingsWidgetScoreboardScore) -> Bool {
+        let maxScore = max(score.home, score.away)
+        let minScore = min(score.home, score.away)
+        if maxScore == 6 && minScore <= 4 {
+            return true
+        }
+        if maxScore == 7 {
+            return true
+        }
+        return false
+    }
+
+    private func isMatchCompleted(scoreboard: SettingsWidgetPadelScoreboard) -> Bool {
+        if scoreboard.score.count < 5 {
+            return false
+        }
+        guard let score = scoreboard.score.last else {
+            return false
+        }
+        return isSetCompleted(score: score)
     }
 
     private func handleCreateStreamMarker() {
