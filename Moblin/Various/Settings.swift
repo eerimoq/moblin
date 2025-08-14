@@ -5214,10 +5214,11 @@ enum SettingsReplaySpeed: String, Codable, CaseIterable {
     }
 }
 
-class SettingsReplay: Codable {
-    var start: Double = 20.0
-    var stop: Double = 30.0
-    var speed: SettingsReplaySpeed = .one
+class SettingsReplay: Codable, ObservableObject {
+    static let stop: Double = 30.0
+    @Published var start: Double = 20.0
+    @Published var stop: Double = SettingsReplay.stop
+    @Published var speed: SettingsReplaySpeed = .one
 
     init() {}
 
@@ -5237,7 +5238,7 @@ class SettingsReplay: Codable {
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         start = container.decode(.start, Double.self, 20.0)
-        stop = container.decode(.stop, Double.self, 30.0)
+        stop = container.decode(.stop, Double.self, SettingsReplay.stop)
         speed = container.decode(.speed, SettingsReplaySpeed.self, .one)
     }
 }

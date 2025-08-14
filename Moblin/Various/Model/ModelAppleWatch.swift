@@ -493,7 +493,7 @@ extension Model: WCSessionDelegate {
         }
     }
 
-    private func handleSkipCurrentChatTextToSpeechMessage(_: Any) {
+    private func handleSkipCurrentChatTextToSpeechMessage() {
         DispatchQueue.main.async {
             if self.isWatchLocal() {
                 self.chatTextToSpeech.skipCurrentMessage()
@@ -726,10 +726,16 @@ extension Model: WCSessionDelegate {
         }
     }
 
-    private func handleInstantReplay() {
+    private func handleInstantReplay(_ data: Any) {
+        guard let data = data as? Data else {
+            return
+        }
+        guard let instantReplay = try? JSONDecoder().decode(WatchProtocolInstantReplay.self, from: data) else {
+            return
+        }
         DispatchQueue.main.async {
             if self.isWatchLocal() {
-                self.instantReplay()
+                self.instantReplay(start: SettingsReplay.stop - Double(instantReplay.duration), delay: 1)
             } else {
                 logger.info("Instant replay via remote control not yet supported.")
             }
@@ -779,7 +785,7 @@ extension Model: WCSessionDelegate {
         case .keepAlive:
             break
         case .skipCurrentChatTextToSpeechMessage:
-            handleSkipCurrentChatTextToSpeechMessage(data)
+            handleSkipCurrentChatTextToSpeechMessage()
         case .setZoom:
             handleSetZoomMessage(data)
         case .setZoomPreset:
@@ -793,7 +799,7 @@ extension Model: WCSessionDelegate {
         case .createStreamMarker:
             handleCreateStreamMarker()
         case .instantReplay:
-            handleInstantReplay()
+            handleInstantReplay(data)
         case .saveReplay:
             handleSaveReplay()
         case .getImage:

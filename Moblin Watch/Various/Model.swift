@@ -481,8 +481,12 @@ class Model: NSObject, ObservableObject {
         WCSession.default.sendMessage(message, replyHandler: nil)
     }
 
-    func instantReplay() {
-        let message = WatchMessageFromWatch.pack(type: .instantReplay, data: true)
+    func instantReplay(duration: Int) {
+        let data = WatchProtocolInstantReplay(duration: duration)
+        guard let data = try? JSONEncoder().encode(data) else {
+            return
+        }
+        let message = WatchMessageFromWatch.pack(type: .instantReplay, data: data)
         WCSession.default.sendMessage(message, replyHandler: nil)
     }
 

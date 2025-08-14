@@ -9,7 +9,7 @@ class ReplaySettings: Identifiable, Codable {
     var id: UUID = .init()
     var duration: Double = 0.0
     var start: Double = 20.0
-    var stop: Double = 30.0
+    var stop: Double = SettingsReplay.stop
 
     func name() -> String {
         return "\(id).mp4"

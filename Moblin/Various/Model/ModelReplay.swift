@@ -12,12 +12,15 @@ class ReplayProvider: ObservableObject {
 }
 
 extension Model {
-    func saveReplay(completion: ((ReplaySettings) -> Void)? = nil) -> Bool {
+    func saveReplay(start: Double? = nil,
+                    delay: Int? = nil,
+                    completion: ((ReplaySettings) -> Void)? = nil) -> Bool
+    {
         guard !replay.isSaving else {
             return false
         }
         replay.isSaving = true
-        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(5)) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(delay ?? 5)) {
             self.replayBuffer.createFile { file in
                 DispatchQueue.main.async {
                     self.replay.isSaving = false
@@ -25,7 +28,7 @@ extension Model {
                         return
                     }
                     let replaySettings = self.replaysStorage.createReplay()
-                    replaySettings.start = self.database.replay.start
+                    replaySettings.start = start ?? self.database.replay.start
                     replaySettings.stop = self.database.replay.stop
                     replaySettings.duration = file.duration
                     try? FileManager.default.copyItem(at: file.url, to: replaySettings.url())
@@ -53,11 +56,11 @@ extension Model {
         database.replay.speed = replay.speed ?? .one
     }
 
-    func instantReplay() {
+    func instantReplay(start: Double? = nil, delay: Int? = nil) {
         guard replay.instantReplayCountdown == 0 else {
             return
         }
-        let savingStarted = saveReplay { video in
+        let savingStarted = saveReplay(start: start, delay: delay) { video in
             self.loadReplay(video: video) {
                 self.replay.isPlaying = true
                 if !self.replayPlay() {
@@ -66,7 +69,7 @@ extension Model {
             }
         }
         if savingStarted {
-            replay.instantReplayCountdown = 6
+            replay.instantReplayCountdown = delay ?? 6
             instantReplayCountdownTick()
         }
     }
@@ -93,7 +96,7 @@ extension Model {
             return
         }
         replaySettings.start = start
-        replaySettings.stop = 30
+        replaySettings.stop = SettingsReplay.stop
         database.replay.start = start
         replayFrameExtractor?.seek(offset: replaySettings.thumbnailOffset())
     }

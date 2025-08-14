@@ -194,6 +194,10 @@ struct WatchProtocolScoreboardPlayer: Codable {
     var name: String
 }
 
+struct WatchProtocolInstantReplay: Codable {
+    let duration: Int
+}
+
 extension WatchProtocolColor {
     // periphery:ignore
     private func colorScale(_ color: Int) -> Double {
