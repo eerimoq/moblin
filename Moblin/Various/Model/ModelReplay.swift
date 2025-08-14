@@ -25,8 +25,8 @@ extension Model {
                         return
                     }
                     let replaySettings = self.replaysStorage.createReplay()
-                    replaySettings.start = self.database.replay.start!
-                    replaySettings.stop = self.database.replay.stop!
+                    replaySettings.start = self.database.replay.start
+                    replaySettings.stop = self.database.replay.stop
                     replaySettings.duration = file.duration
                     try? FileManager.default.copyItem(at: file.url, to: replaySettings.url())
                     self.replaysStorage.append(replay: replaySettings)
