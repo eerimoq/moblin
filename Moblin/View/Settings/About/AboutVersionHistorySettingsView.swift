@@ -8,6 +8,13 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "26.2006.0", date: "2025-08-15", changes: [
+        "• Make padel scoreboard behave better in watch companion app.",
+        "  • Only change score in watch UI when iPhone says so.",
+        "• German translation updated. ✍️ MaurisonX",
+        "• 10, 15 or 20 seconds replay when triggered from Watch app.",
+        "• Fix app start crash due to old recording in the database? 🐛 Oskicz25",
+    ]),
     Version(version: "26.2005.0", date: "2025-08-12", changes: [
         "• Make more strings in UI localized.",
         "• Hide unused SRT settings when using New SRT.",
