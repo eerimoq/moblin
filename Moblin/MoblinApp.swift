@@ -20,7 +20,6 @@ struct MoblinApp: App {
                     cameraPreviewView: CameraPreviewView(),
                     streamPreviewView: StreamPreviewView()
                 ),
-                replay: model.replay,
                 createStreamWizard: model.createStreamWizard,
                 toast: model.toast
             )

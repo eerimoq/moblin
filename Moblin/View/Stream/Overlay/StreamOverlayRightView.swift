@@ -71,6 +71,7 @@ private struct ReplayStatusView: View {
     @EnvironmentObject var model: Model
     // To trigger updates.
     @ObservedObject var show: SettingsShow
+    @ObservedObject var replay: SettingsStreamReplay
     let textPlacement: StreamOverlayIconAndTextPlacement
 
     var body: some View {
@@ -628,7 +629,9 @@ private struct StatusesView: View {
         BondingStatusView(show: model.database.show,
                           bonding: model.bonding,
                           textPlacement: textPlacement)
-        ReplayStatusView(show: model.database.show, textPlacement: textPlacement)
+        ReplayStatusView(show: model.database.show,
+                         replay: model.stream.replay,
+                         textPlacement: textPlacement)
         StreamUptimeStatusView(show: model.database.show,
                                streamUptime: model.streamUptime,
                                textPlacement: textPlacement)

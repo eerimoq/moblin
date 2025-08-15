@@ -198,6 +198,8 @@ class Toast: ObservableObject {
             showingToast.toggle()
         }
     }
+
+    var onTapped: (() -> Void)?
 }
 
 class SceneSelector: ObservableObject {
@@ -258,6 +260,11 @@ class QuickButtons: ObservableObject {
     @Published var pairs: [[QuickButtonPair]] = Array(repeating: [], count: controlBarPages)
 }
 
+class Snapshot: ObservableObject {
+    @Published var countdown = 0
+    @Published var currentJob: SnapshotJob?
+}
+
 final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var isPresentingWidgetWizard = false
     @Published var showingPanel: ShowingPanel = .none
@@ -281,8 +288,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var quickButtonSettingsButton: SettingsQuickButton?
     @Published var bluetoothAllowed = false
     @Published var sceneSettingsPanelSceneId = 1
-    @Published var snapshotCountdown = 0
-    @Published var currentSnapshotJob: SnapshotJob?
     @Published var showLoadSettingsFailed = false
     @Published var cameraControlEnabled = false
     @Published var stream: SettingsStream = fallbackStream
@@ -300,6 +305,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
+    let snapshot = Snapshot()
     let quickButtons = QuickButtons()
     let mic = Mic()
     let goPro = GoProState()
@@ -333,6 +339,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     let bonding = Bonding()
     var selectedFps: Int?
     var autoFps = false
+    var showBackgroudStreamingDisabledToast = false
     private var manualFocusMotionAttitude: CMAttitude?
     private var findFaceTimer: Timer?
     var streaming = false
@@ -662,14 +669,21 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         allowVideoRangePixelFormat = database.debug.allowVideoRangePixelFormat
     }
 
-    func makeToast(title: String, subTitle: String? = nil) {
-        toast.toast = AlertToast(type: .regular, title: title, subTitle: subTitle)
+    func makeToast(title: String, subTitle: String? = nil, onTapped: (() -> Void)? = nil) {
+        toast.toast = AlertToast(type: .regular,
+                                 title: title,
+                                 subTitle: subTitle,
+                                 style: .style(subTitleFont: .body))
+        toast.onTapped = onTapped
         showToast()
         logger.debug("toast: Info: \(title): \(subTitle ?? "-")")
     }
 
     func makeWarningToast(title: String, subTitle: String? = nil, vibrate: Bool = false) {
-        toast.toast = AlertToast(type: .regular, title: formatWarning(title), subTitle: subTitle)
+        toast.toast = AlertToast(type: .regular,
+                                 title: formatWarning(title),
+                                 subTitle: subTitle,
+                                 style: .style(subTitleFont: .body))
         showToast()
         logger.debug("toast: Warning: \(title): \(subTitle ?? "-")")
         if vibrate {
@@ -682,7 +696,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             type: .regular,
             title: title,
             subTitle: subTitle,
-            style: .style(titleColor: .red, titleFont: font)
+            style: .style(titleColor: .red, titleFont: font, subTitleFont: .body)
         )
         showToast()
         logger.debug("toast: Error: \(title): \(subTitle ?? "-")")
@@ -1238,6 +1252,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             autoStartHeartRateDevices()
             autoStartDjiGimbalDevices()
             autoStartPhoneCoolerDevices()
+            if showBackgroudStreamingDisabledToast {
+                makeStreamEndedToast(subTitle: String(localized: "Tap this toast to enable background streaming.")) {
+                    self.stream.backgroundStreaming = true
+                    self.makeToast(title: String(localized: "Background streaming enabled"))
+                }
+                showBackgroudStreamingDisabledToast = false
+            }
         }
     }
 
@@ -1258,6 +1279,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if isRecording {
             suspendRecording()
         }
+        showBackgroudStreamingDisabledToast = stopStream()
         stopRtmpServer()
         stopSrtlaServer()
         stopRtspClient()

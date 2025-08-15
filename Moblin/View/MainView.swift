@@ -170,17 +170,19 @@ private struct InstantReplayCountdownView: View {
     @ObservedObject var replay: ReplayProvider
 
     var body: some View {
-        VStack {
-            Text("Playing instant replay in")
-            Text(String(replay.instantReplayCountdown))
-                .font(.title)
+        if replay.instantReplayCountdown != 0 {
+            VStack {
+                Text("Playing instant replay in")
+                Text(String(replay.instantReplayCountdown))
+                    .font(.title)
+            }
+            .foregroundColor(.white)
+            .fixedSize(horizontal: false, vertical: true)
+            .frame(maxWidth: 200, alignment: .center)
+            .padding(10)
+            .background(.black.opacity(0.75))
+            .cornerRadius(10)
         }
-        .foregroundColor(.white)
-        .fixedSize(horizontal: false, vertical: true)
-        .frame(maxWidth: 200, alignment: .center)
-        .padding(10)
-        .background(.black.opacity(0.75))
-        .cornerRadius(10)
     }
 }
 
@@ -235,19 +237,16 @@ struct MainView: View {
     let streamView: StreamView
     @State var showAreYouReallySure = false
     @FocusState private var focused: Bool
-    @ObservedObject var replay: ReplayProvider
     @ObservedObject var createStreamWizard: CreateStreamWizard
     @ObservedObject var toast: Toast
 
     init(webBrowserController: WebBrowserController,
          streamView: StreamView,
-         replay: ReplayProvider,
          createStreamWizard: CreateStreamWizard,
          toast: Toast)
     {
         self.webBrowserController = webBrowserController
         self.streamView = streamView
-        self.replay = replay
         self.createStreamWizard = createStreamWizard
         self.toast = toast
         UITextField.appearance().clearButtonMode = .always
@@ -472,12 +471,8 @@ struct MainView: View {
                 if model.findFace {
                     FindFaceView()
                 }
-                if let snapshotJob = model.currentSnapshotJob, model.snapshotCountdown > 0 {
-                    SnapshotCountdownView(message: snapshotJob.message)
-                }
-                if replay.instantReplayCountdown != 0 {
-                    InstantReplayCountdownView(replay: replay)
-                }
+                SnapshotCountdownView(snapshot: model.snapshot)
+                InstantReplayCountdownView(replay: model.replay)
             }
             .overlay(alignment: .topLeading) {
                 browserWidgets()
@@ -503,6 +498,8 @@ struct MainView: View {
             }
             .toast(isPresenting: $toast.showingToast, duration: 5) {
                 toast.toast
+            } onTap: {
+                model.toast.onTapped?()
             }
             .alert("⚠️ Failed to load settings ⚠️", isPresented: $model.showLoadSettingsFailed) {
                 Button("Delete old settings and continue", role: .cancel) {

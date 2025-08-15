@@ -107,7 +107,7 @@ struct StreamSettingsView: View {
                         Text("Recording")
                     }
                     NavigationLink {
-                        StreamReplaySettingsView(stream: stream)
+                        StreamReplaySettingsView(stream: stream, replay: stream.replay)
                     } label: {
                         Text("Replay")
                     }
@@ -200,11 +200,7 @@ struct StreamSettingsView: View {
             if database.showAllSettings {
                 if !isMac() {
                     Section {
-                        Toggle("Background streaming", isOn: Binding(get: {
-                            stream.backgroundStreaming
-                        }, set: { value in
-                            stream.backgroundStreaming = value
-                        }))
+                        Toggle("Background streaming", isOn: $stream.backgroundStreaming)
                     } footer: {
                         Text("Live stream and record when the app is in background mode.")
                     }

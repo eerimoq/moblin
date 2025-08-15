@@ -20,15 +20,15 @@ class ReplaySettings: Identifiable, Codable {
     }
 
     func thumbnailOffset() -> Double {
-        return max(duration - startFromEnd(), 0)
+        return max(startFromVideoStart(), 0)
     }
 
     func startFromEnd() -> Double {
-        return 30 - start
+        return SettingsReplay.stop - start
     }
 
-    func stopFromEnd() -> Double {
-        return 30 - stop
+    private func stopFromEnd() -> Double {
+        return SettingsReplay.stop - stop
     }
 
     func startFromVideoStart() -> Double {

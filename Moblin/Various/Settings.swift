@@ -411,9 +411,28 @@ class SettingsStreamRecording: Codable, ObservableObject {
     }
 }
 
-class SettingsStreamReplay: Codable {
-    var enabled: Bool = false
-    var fade: Bool? = true
+class SettingsStreamReplay: Codable, ObservableObject {
+    @Published var enabled: Bool = false
+    @Published var fade: Bool = true
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case enabled,
+             fade
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.enabled, enabled)
+        try container.encode(.fade, fade)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        enabled = container.decode(.enabled, Bool.self, false)
+        fade = container.decode(.fade, Bool.self, false)
+    }
 
     func clone() -> SettingsStreamReplay {
         let new = SettingsStreamReplay()
@@ -551,7 +570,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
     @Published var realtimeIrlEnabled: Bool = false
     var realtimeIrlPushKey: String = ""
     @Published var portrait: Bool = false
-    var backgroundStreaming: Bool = false
+    @Published var backgroundStreaming: Bool = false
     @Published var estimatedViewerDelay: Float = 8.0
     var twitchMultiTrackEnabled: Bool = false
     @Published var ntpPoolAddress: String = "time.apple.com"
@@ -7939,10 +7958,6 @@ final class Settings {
         }
         if realDatabase.tesla.enabled == nil {
             realDatabase.tesla.enabled = true
-            store()
-        }
-        for stream in realDatabase.streams where stream.replay.fade == nil {
-            stream.replay.fade = true
             store()
         }
         for button in realDatabase.quickButtons where button.page == nil {

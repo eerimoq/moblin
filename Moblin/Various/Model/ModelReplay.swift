@@ -87,8 +87,12 @@ extension Model {
     func makeReplayIsNotEnabledToast() {
         makeToast(
             title: String(localized: "Replay is not enabled"),
-            subTitle: String(localized: "Enable in Settings → Streams → \(stream.name) → Replay")
-        )
+            subTitle: String(localized: "Tap this toast to enable it.")
+        ) {
+            self.stream.replay.enabled = true
+            self.streamReplayEnabledUpdated()
+            self.makeToast(title: String(localized: "Replay enabled"))
+        }
     }
 
     func setReplayPosition(start: Double) {
@@ -112,7 +116,7 @@ extension Model {
             stop: replaySettings.stopFromVideoStart(),
             speed: database.replay.speed.toNumber(),
             size: stream.dimensions(),
-            fade: stream.replay.fade!,
+            fade: stream.replay.fade,
             delegate: self
         )
         media.registerEffectBack(replayEffect!)

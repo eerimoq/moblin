@@ -14,7 +14,7 @@ struct QuickButtonStreamView: View {
                     }
                 }
                 .onChange(of: model.currentStreamId) { _ in
-                    model.stopStream()
+                    _ = model.stopStream()
                     model.stopRecording()
                     if model.setCurrentStream(streamId: model.currentStreamId) {
                         model.reloadStream()

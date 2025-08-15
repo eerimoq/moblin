@@ -108,13 +108,13 @@ extension Model {
         streamingHistoryStream!.updateLowestBatteryLevel(level: battery.level)
     }
 
-    func stopStream(stopObsStreamIfEnabled: Bool = true, stopObsRecordingIfEnabled: Bool = true) {
+    func stopStream(stopObsStreamIfEnabled: Bool = true, stopObsRecordingIfEnabled: Bool = true) -> Bool {
         setIsLive(value: false)
         updateScreenAutoOff()
         realtimeIrl?.stop()
         stopFetchingYouTubeChatVideoId()
         if !streaming {
-            return
+            return false
         }
         logger.info("stream: Stop")
         streamTotalBytes += UInt64(media.streamTotal())
@@ -129,6 +129,7 @@ extension Model {
             obsStopRecording()
         }
         stopNetStream()
+        makeStreamEndedToast()
         streamState = .disconnected
         if let streamingHistoryStream {
             if let logId = streamingHistoryStream.logId {
@@ -140,6 +141,7 @@ extension Model {
             streamingHistory.append(stream: streamingHistoryStream)
             streamingHistory.store()
         }
+        return true
     }
 
     func isGoLiveNotificationConfigured() -> Bool {
@@ -295,7 +297,7 @@ extension Model {
         updateSpeed(now: .now)
     }
 
-    private func stopNetStream(reconnect: Bool = false) {
+    private func stopNetStream() {
         moblink.streamer?.stopTunnels()
         reconnectTimer.stop()
         media.rtmpStopStream()
@@ -306,9 +308,6 @@ extension Model {
         updateSpeed(now: .now)
         updateAudioLevel()
         bonding.statistics = noValue
-        if !reconnect {
-            makeStreamEndedToast()
-        }
     }
 
     func setCurrentStream(stream: SettingsStream) {
@@ -343,7 +342,7 @@ extension Model {
     func reloadStream() {
         cameraPosition = nil
         stopRecorderIfNeeded(forceStop: true)
-        stopStream()
+        _ = stopStream()
         setNetStream()
         setStreamResolution()
         setStreamFps()
@@ -494,8 +493,8 @@ extension Model {
         makeToast(title: String(localized: "🎉 You are LIVE at \(stream.name) 🎉"))
     }
 
-    private func makeStreamEndedToast() {
-        makeToast(title: String(localized: "🤟 Stream ended 🤟"))
+    func makeStreamEndedToast(subTitle: String? = nil, onTapped: (() -> Void)? = nil) {
+        makeToast(title: String(localized: "🤟 Stream ended 🤟"), subTitle: subTitle, onTapped: onTapped)
     }
 
     private func makeConnectFailureToast(subTitle: String) {
@@ -534,7 +533,7 @@ extension Model {
             makeConnectFailureToast(subTitle: subTitle)
         }
         streamState = .disconnected
-        stopNetStream(reconnect: true)
+        stopNetStream()
         reconnectTimer.startSingleShot(timeout: 5) {
             logger.info("stream: Reconnecting")
             self.startNetStream()
@@ -765,7 +764,7 @@ extension Model {
 
     func toggleStream() {
         if isLive {
-            stopStream()
+            _ = stopStream()
         } else {
             startStream()
         }

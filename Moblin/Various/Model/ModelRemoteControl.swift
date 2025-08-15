@@ -545,7 +545,7 @@ extension Model: RemoteControlStreamerDelegate {
         if on {
             startStream()
         } else {
-            stopStream()
+            _ = stopStream()
         }
         updateQuickButtonStates()
     }

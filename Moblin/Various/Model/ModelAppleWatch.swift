@@ -457,7 +457,7 @@ extension Model: WCSessionDelegate {
                 if value {
                     self.startStream()
                 } else {
-                    self.stopStream()
+                    _ = self.stopStream()
                 }
             }
         }
