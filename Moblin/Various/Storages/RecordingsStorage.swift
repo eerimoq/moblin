@@ -162,7 +162,7 @@ class Recording: Identifiable, Codable, ObservableObject {
     }
 
     func isDefaultRecordingPath() -> Bool {
-        return settings.recording!.isDefaultRecordingPath()
+        return settings.recording?.isDefaultRecordingPath() ?? true
     }
 }
 

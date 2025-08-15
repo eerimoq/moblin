@@ -56,27 +56,31 @@ struct RecordingsRecordingSettingsView: View {
                                 value: recording.settings.codecString()
                             )
                         } else {
-                            TextValueView(
-                                name: String(localized: "Video codec"),
-                                value: recording.settings.recording!.videoCodec.rawValue
-                            )
-                            TextValueView(
-                                name: String(localized: "Video bitrate"),
-                                value: recording.settings.recording!.videoBitrateString()
-                            )
-                            TextValueView(
-                                name: String(localized: "Key frame interval"),
-                                value: recording.settings.recording!.maxKeyFrameIntervalString()
-                            )
+                            if let recording = recording.settings.recording {
+                                TextValueView(
+                                    name: String(localized: "Video codec"),
+                                    value: recording.videoCodec.rawValue
+                                )
+                                TextValueView(
+                                    name: String(localized: "Video bitrate"),
+                                    value: recording.videoBitrateString()
+                                )
+                                TextValueView(
+                                    name: String(localized: "Key frame interval"),
+                                    value: recording.maxKeyFrameIntervalString()
+                                )
+                            }
                         }
                         TextValueView(
                             name: String(localized: "Audio codec"),
                             value: recording.settings.audioCodecString()
                         )
-                        TextValueView(
-                            name: String(localized: "Audio bitrate"),
-                            value: recording.settings.recording!.audioBitrateString()
-                        )
+                        if let recording = recording.settings.recording {
+                            TextValueView(
+                                name: String(localized: "Audio bitrate"),
+                                value: recording.audioBitrateString()
+                            )
+                        }
                         if let recordingPath = recording.getRecordingPath() {
                             HStack {
                                 Text("Recording path")
