@@ -30,6 +30,8 @@ class CreateStreamWizard: ObservableObject {
     @Published var twitchChannelName = ""
     @Published var twitchChannelId = ""
     @Published var kickChannelName = ""
+    var kickAccessToken = ""
+    var kickLoggedIn: Bool = false
     @Published var youTubeHandle = ""
     @Published var afreecaTvChannelName = ""
     @Published var afreecaTvStreamId = ""
