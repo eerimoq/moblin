@@ -100,6 +100,7 @@ extension Model {
 
     private func updateIcons(myProductIds: [String]) {
         var myIcons = globalMyIcons
+        cosmetics.hasBoughtSomthing = false
         var iconsInStore: [Icon] = []
         for productId in iconsProductIds {
             guard let product = products[productId] else {
@@ -112,6 +113,7 @@ extension Model {
                     id: product.id,
                     price: product.displayPrice
                 ))
+                cosmetics.hasBoughtSomthing = true
             } else {
                 iconsInStore.append(Icon(
                     name: product.displayName,

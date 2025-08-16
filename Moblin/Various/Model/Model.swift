@@ -221,6 +221,7 @@ class Cosmetics: ObservableObject {
     @Published var myIcons: [Icon] = []
     @Published var iconsInStore: [Icon] = []
     @Published var iconImage: String = plainIcon.id
+    var hasBoughtSomthing: Bool = true
 }
 
 class DrawOnStream: ObservableObject {
@@ -712,6 +713,18 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         toast.showingToast = false
         DispatchQueue.main.async {
             self.toast.showingToast = true
+        }
+    }
+
+    private func makeBuyIconsToastIfNeeded() {
+        guard !cosmetics.hasBoughtSomthing else {
+            return
+        }
+        makeToast(title: String(localized: "💰 Buy Moblin icons to show some love ❤️"),
+                  subTitle: String(localized: "Tap this toast to open the shop."))
+        {
+            self.toggleShowingPanel(type: nil, panel: .none)
+            self.toggleShowingPanel(type: nil, panel: .cosmetics)
         }
     }
 
@@ -1214,6 +1227,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         guard !isMac() else {
             return
         }
+        makeBuyIconsToastIfNeeded()
         switch backgroundRunLevel() {
         case .full:
             maybeEnableScreenPreview()
