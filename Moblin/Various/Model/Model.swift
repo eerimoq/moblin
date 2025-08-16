@@ -221,7 +221,7 @@ class Cosmetics: ObservableObject {
     @Published var myIcons: [Icon] = []
     @Published var iconsInStore: [Icon] = []
     @Published var iconImage: String = plainIcon.id
-    var hasBoughtSomthing: Bool = true
+    var hasBoughtSomething: Bool = true
 }
 
 class DrawOnStream: ObservableObject {
@@ -717,7 +717,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func makeBuyIconsToastIfNeeded() {
-        guard !cosmetics.hasBoughtSomthing else {
+        guard !cosmetics.hasBoughtSomething else {
             return
         }
         makeToast(title: String(localized: "💰 Buy Moblin icons to show some love ❤️"),
