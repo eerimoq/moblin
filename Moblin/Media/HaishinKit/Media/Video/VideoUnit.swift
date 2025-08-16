@@ -439,7 +439,7 @@ final class VideoUnit: NSObject {
         defer {
             session.commitConfiguration()
         }
-        try removeDevices(session)
+        removeDevices(session)
         for device in params.devices.devices {
             try attachDevice(device.device, session)
         }
@@ -1666,28 +1666,28 @@ final class VideoUnit: NSObject {
         }
     }
 
-    private func removeDevices(_ session: AVCaptureSession) throws {
+    private func removeDevices(_ session: AVCaptureSession) {
         for device in captureSessionDevices {
-            try removeConnection(session, device.connection)
-            try removeInput(session, device.input)
-            try removeOutput(session, device.output)
+            removeConnection(session, device.connection)
+            removeInput(session, device.input)
+            removeOutput(session, device.output)
         }
         captureSessionDevices.removeAll()
     }
 
-    private func removeConnection(_ session: AVCaptureSession, _ connection: AVCaptureConnection?) throws {
+    private func removeConnection(_ session: AVCaptureSession, _ connection: AVCaptureConnection?) {
         if let connection, session.connections.contains(connection) {
             session.removeConnection(connection)
         }
     }
 
-    private func removeInput(_ session: AVCaptureSession, _ input: AVCaptureInput?) throws {
+    private func removeInput(_ session: AVCaptureSession, _ input: AVCaptureInput?) {
         if let input, session.inputs.contains(input) {
             session.removeInput(input)
         }
     }
 
-    private func removeOutput(_ session: AVCaptureSession, _ output: AVCaptureOutput?) throws {
+    private func removeOutput(_ session: AVCaptureSession, _ output: AVCaptureOutput?) {
         if let output, session.outputs.contains(output) {
             session.removeOutput(output)
         }
