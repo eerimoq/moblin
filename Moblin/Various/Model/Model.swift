@@ -562,7 +562,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         recordingsStorage.load()
         replaysStorage.load()
         updateIsPortrait()
-        if isPortrait() {
+        if orientation.isPortrait {
             AppDelegate.orientationLock = .portrait
         } else {
             AppDelegate.orientationLock = .landscape
@@ -575,10 +575,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     var enabledScenes: [SettingsScene] {
         database.scenes.filter { scene in scene.enabled }
-    }
-
-    func isPortrait() -> Bool {
-        return orientation.isPortrait
     }
 
     func setAdaptiveBitrateSrtAlgorithm(stream: SettingsStream) {

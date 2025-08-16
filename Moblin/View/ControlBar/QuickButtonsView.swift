@@ -817,7 +817,7 @@ struct QuickButtonsInnerView: View {
                     pauseTtsAction()
                 }
             }
-            if quickButtonsSettings.showName && !model.isPortrait() {
+            if quickButtonsSettings.showName && !orientation.isPortrait {
                 Text(state.button.name)
                     .padding(0)
                     .multilineTextAlignment(.center)

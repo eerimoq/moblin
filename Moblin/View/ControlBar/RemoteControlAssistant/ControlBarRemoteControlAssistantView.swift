@@ -672,7 +672,7 @@ private struct ControlBarRemoteControlAssistantInnerView: View {
                         Form {
                             Text("Waiting for the remote control streamer to connect...")
                         }
-                    } else if model.isPortrait() {
+                    } else if orientation.isPortrait {
                         Form {
                             ControlBarRemoteControlAssistantStatusView(remoteControl: remoteControl)
                             ControlBarRemoteControlAssistantControlView(remoteControl: remoteControl)

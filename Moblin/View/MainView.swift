@@ -342,7 +342,7 @@ struct MainView: View {
                 GeometryReader { metrics in
                     StreamOverlayView(streamOverlay: model.streamOverlay,
                                       chatSettings: model.database.chat,
-                                      orienation: orientation,
+                                      orientation: orientation,
                                       width: metrics.size.width,
                                       height: metrics.size.height)
                         .opacity(model.showLocalOverlays ? 1 : 0)
@@ -351,7 +351,7 @@ struct MainView: View {
                     face()
                 }
                 if model.showBrowser {
-                    WebBrowserView(orienation: orientation)
+                    WebBrowserView(orientation: orientation)
                 }
                 if model.showingRemoteControl {
                     ControlBarRemoteControlAssistantView()
@@ -407,7 +407,7 @@ struct MainView: View {
                 GeometryReader { metrics in
                     StreamOverlayView(streamOverlay: model.streamOverlay,
                                       chatSettings: model.database.chat,
-                                      orienation: orientation,
+                                      orientation: orientation,
                                       width: metrics.size.width,
                                       height: metrics.size.height)
                         .opacity(model.showLocalOverlays ? 1 : 0)
@@ -419,7 +419,7 @@ struct MainView: View {
                     face()
                 }
                 if model.showBrowser {
-                    WebBrowserView(orienation: orientation)
+                    WebBrowserView(orientation: orientation)
                 }
                 if model.showingRemoteControl {
                     ControlBarRemoteControlAssistantView()
@@ -456,7 +456,7 @@ struct MainView: View {
     var body: some View {
         VStack(spacing: 0) {
             let all = ZStack {
-                if model.isPortrait() {
+                if orientation.isPortrait {
                     portrait()
                 } else {
                     landscape()

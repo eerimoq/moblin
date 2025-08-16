@@ -143,12 +143,12 @@ private struct BookmarksView: View {
 
 struct WebBrowserView: View {
     @EnvironmentObject var model: Model
-    @ObservedObject var orienation: Orientation
+    @ObservedObject var orientation: Orientation
     @State var showingBookmarks = false
 
     var body: some View {
         VStack(spacing: 0) {
-            if model.isPortrait() {
+            if orientation.isPortrait {
                 VStack {
                     UrlView()
                     HStack {
