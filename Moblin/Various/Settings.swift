@@ -1263,10 +1263,32 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject, Named {
     }
 }
 
-class SettingsAutoSceneSwitcherScene: Codable, Identifiable {
+class SettingsAutoSceneSwitcherScene: Codable, Identifiable, ObservableObject {
     var id: UUID = .init()
-    var sceneId: UUID?
-    var time: Int = 15
+    @Published var sceneId: UUID?
+    @Published var time: Int = 15
+
+    enum CodingKeys: CodingKey {
+        case id,
+             sceneId,
+             time
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.sceneId, sceneId)
+        try container.encode(.time, time)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        sceneId = container.decode(.sceneId, UUID?.self, nil)
+        time = container.decode(.time, Int.self, 15)
+    }
 }
 
 class SettingsAutoSceneSwitcher: Codable, Identifiable, ObservableObject, Named {
@@ -1274,10 +1296,13 @@ class SettingsAutoSceneSwitcher: Codable, Identifiable, ObservableObject, Named 
     var id: UUID = .init()
     @Published var name: String = baseName
     @Published var shuffle: Bool = false
-    var scenes: [SettingsAutoSceneSwitcherScene] = []
+    @Published var scenes: [SettingsAutoSceneSwitcherScene] = []
 
     enum CodingKeys: CodingKey {
-        case id, name, shuffle, scenes
+        case id,
+             name,
+             shuffle,
+             scenes
     }
 
     func encode(to encoder: Encoder) throws {
