@@ -390,6 +390,7 @@ private struct LocationStatusView: View {
     @EnvironmentObject var model: Model
     // To trigger updates.
     @ObservedObject var show: SettingsShow
+    @ObservedObject var location: SettingsLocation
     @ObservedObject var status: StatusTopRight
     let textPlacement: StreamOverlayIconAndTextPlacement
 
@@ -637,6 +638,7 @@ private struct StatusesView: View {
                                textPlacement: textPlacement)
         LocationStatusView(
             show: model.database.show,
+            location: model.database.location,
             status: model.statusTopRight,
             textPlacement: textPlacement
         )
