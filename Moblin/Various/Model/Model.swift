@@ -1221,7 +1221,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         guard !isMac() else {
             return
         }
-        makeBuyIconsToastIfNeeded()
         switch backgroundRunLevel() {
         case .full:
             maybeEnableScreenPreview()
@@ -1229,6 +1228,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             maybeEnableScreenPreview()
             startPeriodicTimers()
         case .off:
+            makeBuyIconsToastIfNeeded()
             clearRemoteSceneSettingsAndData()
             reloadStream()
             sceneUpdated(attachCamera: true, updateRemoteScene: false)
