@@ -1,26 +1,5 @@
 import SwiftUI
 
-private struct InfoView: View {
-    @EnvironmentObject var model: Model
-    let icon: String
-    let text: String
-    let get: () -> Bool
-    let set: (Bool) -> Void
-
-    var body: some View {
-        HStack {
-            Image(systemName: icon)
-                .frame(width: iconWidth)
-            Toggle(text, isOn: Binding(get: {
-                get()
-            }, set: { value in
-                set(value)
-                model.objectWillChange.send()
-            }))
-        }
-    }
-}
-
 struct LocalOverlaysSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var show: SettingsShow
