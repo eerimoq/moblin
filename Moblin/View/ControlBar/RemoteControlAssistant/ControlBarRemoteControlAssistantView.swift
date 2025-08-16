@@ -637,6 +637,7 @@ private struct ControlBarRemoteControlAssistantInnerView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var remoteControlSettings: SettingsRemoteControl
     @ObservedObject var remoteControl: RemoteControl
+    @ObservedObject var orientation: Orientation
     @State var didDetachCamera = false
 
     private func title() -> String {
@@ -730,7 +731,8 @@ struct ControlBarRemoteControlAssistantView: View {
         ZStack {
             NavigationStack {
                 ControlBarRemoteControlAssistantInnerView(remoteControlSettings: model.database.remoteControl,
-                                                          remoteControl: model.remoteControl)
+                                                          remoteControl: model.remoteControl,
+                                                          orientation: model.orientation)
             }
             ButtonsView()
         }

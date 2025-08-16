@@ -49,6 +49,7 @@ struct StealthModeView: View {
     @ObservedObject var quickButtons: SettingsQuickButtons
     @ObservedObject var chat: ChatProvider
     @ObservedObject var stealthMode: StealthMode
+    @ObservedObject var orientation: Orientation
 
     private func showButtons() {
         stealthMode.showButtons = true
@@ -124,7 +125,10 @@ struct StealthModeView: View {
             }
         }
         if quickButtons.blackScreenShowChat {
-            ChatOverlayView(chatSettings: model.database.chat, chat: model.chat, fullSize: true)
+            ChatOverlayView(chatSettings: model.database.chat,
+                            chat: model.chat,
+                            orientation: orientation,
+                            fullSize: true)
         }
     }
 }

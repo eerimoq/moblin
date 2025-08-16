@@ -6757,7 +6757,7 @@ class Database: Codable, ObservableObject {
     var srtlaServer: SettingsSrtlaServer = .init()
     var mediaPlayers: SettingsMediaPlayers = .init()
     @Published var showAllSettings: Bool = false
-    var portrait: Bool = false
+    @Published var portrait: Bool = false
     var djiDevices: SettingsDjiDevices = .init()
     var alertsMediaGallery: SettingsAlertsMediaGallery = .init()
     var catPrinters: SettingsCatPrinters = .init()

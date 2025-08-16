@@ -239,16 +239,19 @@ struct MainView: View {
     @FocusState private var focused: Bool
     @ObservedObject var createStreamWizard: CreateStreamWizard
     @ObservedObject var toast: Toast
+    @ObservedObject var orientation: Orientation
 
     init(webBrowserController: WebBrowserController,
          streamView: StreamView,
          createStreamWizard: CreateStreamWizard,
-         toast: Toast)
+         toast: Toast,
+         orientation: Orientation)
     {
         self.webBrowserController = webBrowserController
         self.streamView = streamView
         self.createStreamWizard = createStreamWizard
         self.toast = toast
+        self.orientation = orientation
         UITextField.appearance().clearButtonMode = .always
     }
 
@@ -339,6 +342,7 @@ struct MainView: View {
                 GeometryReader { metrics in
                     StreamOverlayView(streamOverlay: model.streamOverlay,
                                       chatSettings: model.database.chat,
+                                      orienation: orientation,
                                       width: metrics.size.width,
                                       height: metrics.size.height)
                         .opacity(model.showLocalOverlays ? 1 : 0)
@@ -347,7 +351,7 @@ struct MainView: View {
                     face()
                 }
                 if model.showBrowser {
-                    WebBrowserView()
+                    WebBrowserView(orienation: orientation)
                 }
                 if model.showingRemoteControl {
                     ControlBarRemoteControlAssistantView()
@@ -403,6 +407,7 @@ struct MainView: View {
                 GeometryReader { metrics in
                     StreamOverlayView(streamOverlay: model.streamOverlay,
                                       chatSettings: model.database.chat,
+                                      orienation: orientation,
                                       width: metrics.size.width,
                                       height: metrics.size.height)
                         .opacity(model.showLocalOverlays ? 1 : 0)
@@ -414,7 +419,7 @@ struct MainView: View {
                     face()
                 }
                 if model.showBrowser {
-                    WebBrowserView()
+                    WebBrowserView(orienation: orientation)
                 }
                 if model.showingRemoteControl {
                     ControlBarRemoteControlAssistantView()
@@ -462,7 +467,8 @@ struct MainView: View {
                     StealthModeView(
                         quickButtons: model.database.quickButtonsGeneral,
                         chat: model.chat,
-                        stealthMode: model.stealthMode
+                        stealthMode: model.stealthMode,
+                        orientation: orientation
                     )
                 }
                 if model.lockScreen {

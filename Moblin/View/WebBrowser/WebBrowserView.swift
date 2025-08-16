@@ -143,6 +143,7 @@ private struct BookmarksView: View {
 
 struct WebBrowserView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var orienation: Orientation
     @State var showingBookmarks = false
 
     var body: some View {

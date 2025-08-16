@@ -21,7 +21,8 @@ struct MoblinApp: App {
                     streamPreviewView: StreamPreviewView()
                 ),
                 createStreamWizard: model.createStreamWizard,
-                toast: model.toast
+                toast: model.toast,
+                orientation: model.orientation
             )
             .environmentObject(model)
         }

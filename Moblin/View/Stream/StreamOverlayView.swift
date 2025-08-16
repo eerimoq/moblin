@@ -43,6 +43,7 @@ struct ChatOverlayView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var chatSettings: SettingsChat
     @ObservedObject var chat: ChatProvider
+    @ObservedObject var orientation: Orientation
     let fullSize: Bool
 
     var body: some View {
@@ -103,6 +104,7 @@ struct ChatOverlayView: View {
 
 private struct FrontTorchView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var orienation: Orientation
 
     var body: some View {
         if model.isPortrait() {
@@ -153,6 +155,7 @@ struct StreamOverlayView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var streamOverlay: StreamOverlay
     @ObservedObject var chatSettings: SettingsChat
+    @ObservedObject var orienation: Orientation
     let width: CGFloat
     let height: CGFloat
 
@@ -167,11 +170,14 @@ struct StreamOverlayView: View {
     var body: some View {
         ZStack {
             if streamOverlay.isTorchOn && streamOverlay.isFrontCameraSelected {
-                FrontTorchView()
+                FrontTorchView(orienation: orienation)
             }
             ZStack {
                 if model.showingPanel != .chat {
-                    ChatOverlayView(chatSettings: chatSettings, chat: model.chat, fullSize: false)
+                    ChatOverlayView(chatSettings: chatSettings,
+                                    chat: model.chat,
+                                    orientation: orienation,
+                                    fullSize: false)
                         .opacity(chatSettings.enabled ? 1 : 0)
                 }
                 HStack {

@@ -134,6 +134,7 @@ struct QuickButtonsInnerView: View {
     let model: Model
     @ObservedObject var quickButtons: QuickButtons
     @ObservedObject var quickButtonsSettings: SettingsQuickButtons
+    @ObservedObject var orientation: Orientation
     let state: ButtonState
     let size: CGFloat
     let nameSize: CGFloat

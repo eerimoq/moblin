@@ -265,6 +265,10 @@ class Snapshot: ObservableObject {
     @Published var currentJob: SnapshotJob?
 }
 
+class Orientation: ObservableObject {
+    @Published var isPortrait: Bool = false
+}
+
 final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var isPresentingWidgetWizard = false
     @Published var showingPanel: ShowingPanel = .none
@@ -305,6 +309,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
+    let orientation = Orientation()
     let snapshot = Snapshot()
     let quickButtons = QuickButtons()
     let mic = Mic()
@@ -556,6 +561,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         streamingHistory.load()
         recordingsStorage.load()
         replaysStorage.load()
+        updateIsPortrait()
         if isPortrait() {
             AppDelegate.orientationLock = .portrait
         } else {
@@ -563,12 +569,16 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
+    func updateIsPortrait() {
+        orientation.isPortrait = stream.portrait || database.portrait
+    }
+
     var enabledScenes: [SettingsScene] {
         database.scenes.filter { scene in scene.enabled }
     }
 
     func isPortrait() -> Bool {
-        return stream.portrait || database.portrait
+        return orientation.isPortrait
     }
 
     func setAdaptiveBitrateSrtAlgorithm(stream: SettingsStream) {
@@ -1375,6 +1385,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func updateOrientation() {
+        updateIsPortrait()
         if stream.portrait {
             media.setVideoOrientation(value: .portrait)
         } else {
@@ -1846,6 +1857,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func setDisplayPortrait(portrait: Bool) {
         database.portrait = portrait
+        updateIsPortrait()
         setGlobalButtonState(type: .portrait, isOn: portrait)
         updateQuickButtonStates()
         updateOrientationLock()
