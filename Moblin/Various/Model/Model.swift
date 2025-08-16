@@ -932,12 +932,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                                                selector: #selector(handleCaptureDeviceWasDisconnected),
                                                name: AVCaptureDevice.wasDisconnectedNotification,
                                                object: nil)
-        // if #available(iOS 26, *) {
-        //     NotificationCenter.default.addObserver(self,
-        //                                            selector: #selector(handleAvailableInputsChangeNotification),
-        //                                            name: AVAudioSession.availableInputsChangeNotification,
-        //                                            object: nil)
-        // }
         if WCSession.isSupported() {
             let session = WCSession.default
             session.delegate = self
