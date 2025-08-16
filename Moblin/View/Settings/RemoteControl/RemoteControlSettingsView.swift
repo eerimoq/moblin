@@ -96,15 +96,10 @@ private struct RemoteControlSettingsStreamerView: View {
 
     var body: some View {
         Section {
-            Toggle(isOn: Binding(get: {
-                streamer.enabled
-            }, set: { value in
-                streamer.enabled = value
-                model.reloadRemoteControlStreamer()
-                model.objectWillChange.send()
-            })) {
-                Text("Enabled")
-            }
+            Toggle("Enabled", isOn: $streamer.enabled)
+                .onChange(of: streamer.enabled) { _ in
+                    model.reloadRemoteControlStreamer()
+                }
             TextEditNavigationView(
                 title: String(localized: "Assistant URL"),
                 value: streamer.url,
