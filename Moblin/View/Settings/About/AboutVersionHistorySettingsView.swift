@@ -8,6 +8,19 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "26.2007.0", date: "2025-08-16", changes: [
+        "• Enable background streaming by tapping the \"Stream ended\" toast that shows up when entering foreground. 💡 xcopy94",
+        "• Enable replay by tapping its toast, similar to background streaming.",
+        "• Slightly bigger toast sub title font.",
+        "  • To make it easier to read in the 5 seconds you got before it disappears.",
+        "• Remove DJI gimbal experiment.",
+        "• Make FPS setting work on iOS 26.",
+        "• Show buy icons toast when entering foreground. 💡 Lots of people",
+        "• Fix Black shark cooler crash. 🧑‍🏭 Spillmaker 🐛 3l3ktr0l4mpe",
+        "• Bump a few third party dependencies.",
+        "  • Should not make any difference.",
+        "• Make UI rotate properly when changing portrait setting.",
+    ]),
     Version(version: "26.2006.0", date: "2025-08-15", changes: [
         "• Make padel scoreboard behave better in watch companion app.",
         "  • Only change score in watch UI when iPhone says so.",
