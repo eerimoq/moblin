@@ -435,6 +435,12 @@ final class VideoUnit: NSObject {
                 colorSpace: colorSpace
             )
         }
+        try configureCaptureSession(params: params)
+        // FPS must be set after starting the capture session.
+        updateDevicesFormat()
+    }
+
+    private func configureCaptureSession(params: VideoUnitAttachParams) throws {
         session.beginConfiguration()
         defer {
             session.commitConfiguration()
