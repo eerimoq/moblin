@@ -6768,8 +6768,8 @@ class Database: Codable, ObservableObject {
     var srtlaRelay: SettingsMoblink = .init()
     @Published var pixellateStrength: Float = 0.3
     var moblink: SettingsMoblink = .init()
-    var sceneSwitchTransition: SettingsSceneSwitchTransition = .blur
-    var forceSceneSwitchTransition: Bool = false
+    @Published var sceneSwitchTransition: SettingsSceneSwitchTransition = .blur
+    @Published var forceSceneSwitchTransition: Bool = false
     @Published var cameraControlsEnabled: Bool = true
     @Published var externalDisplayContent: SettingsExternalDisplayContent = .stream
     var cyclingPowerDevices: SettingsCyclingPowerDevices = .init()
