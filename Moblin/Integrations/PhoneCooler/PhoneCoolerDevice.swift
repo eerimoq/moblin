@@ -252,9 +252,11 @@ extension PhoneCoolerDevice: CBPeripheralDelegate {
             if let coolingState = message as? BlackSharkLib.CoolingState {
                 delegate?.phoneCoolerStatus(self, status: coolingState)
                 logger.debug("""
-                phone-cooler-device: CoolerTemp:\(coolingState.phoneTemperature), \
+                phone-cooler-device: CoolerTemp: \(coolingState.phoneTemperature), \
                 Heatsink: \(coolingState.heatsinkTemperature)
                 """)
+            } else if let unknown = message as? BlackSharkLib.UnknownMessage {
+                logger.debug("phone-cooler-device: Got unknown message \(unknown.rawData.hexString())")
             }
         default:
             break
