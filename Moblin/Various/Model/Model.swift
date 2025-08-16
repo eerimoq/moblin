@@ -183,7 +183,6 @@ class StatusTopRight: ObservableObject {
     @Published var phoneCoolerDeviceState: PhoneCoolerDeviceState?
     @Published var gameControllersTotal = noValue
     @Published var djiDeviceStreamingState: DjiDeviceState?
-    @Published var djiGimbalDeviceStreamingState: DjiGimbalDeviceState?
     @Published var catPrinterState: CatPrinterState?
     @Published var cyclingPowerDeviceState: CyclingPowerDeviceState?
     @Published var heartRateDeviceState: HeartRateDeviceState?
@@ -455,8 +454,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var currentWiFiSsid: String?
     var currentDjiDeviceSettings: SettingsDjiDevice?
     var djiDeviceWrappers: [UUID: DjiDeviceWrapper] = [:]
-    var currentDjiGimbalDeviceSettings: SettingsDjiGimbalDevice?
-    var djiGimbalDevices: [UUID: DjiGimbalDevice] = [:]
     let autoSceneSwitcher = AutoSceneSwitcherProvider()
     var currentCatPrinterSettings: SettingsCatPrinter?
     var catPrinters: [UUID: CatPrinter] = [:]
@@ -951,7 +948,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         initMediaPlayers()
         removeUnusedLogs()
         autoStartDjiDevices()
-        autoStartDjiGimbalDevices()
         autoStartCatPrinters()
         autoStartCyclingPowerDevices()
         autoStartHeartRateDevices()
@@ -1250,7 +1246,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             autoStartCatPrinters()
             autoStartCyclingPowerDevices()
             autoStartHeartRateDevices()
-            autoStartDjiGimbalDevices()
             autoStartPhoneCoolerDevices()
             if showBackgroudStreamingDisabledToast {
                 makeStreamEndedToast(subTitle: String(localized: "Tap this toast to enable background streaming.")) {
@@ -1301,7 +1296,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         stopCyclingPowerDevices()
         stopHeartRateDevices()
         stopRemoteControlAssistant()
-        stopDjiGimbalDevices()
         fixedHorizonEffect.stop()
     }
 

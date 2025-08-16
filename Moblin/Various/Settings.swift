@@ -5032,30 +5032,6 @@ class SettingsDjiDevices: Codable, ObservableObject {
     }
 }
 
-enum SettingsDjiGimbalDeviceModel: String, Codable {
-    case osmoMobile7P
-    case unknown
-
-    init(from decoder: Decoder) throws {
-        self = try SettingsDjiGimbalDeviceModel(rawValue: decoder.singleValueContainer()
-            .decode(RawValue.self)) ?? .unknown
-    }
-}
-
-class SettingsDjiGimbalDevice: Codable, Identifiable, Named {
-    static let baseName = String(localized: "My gimbal")
-    var id: UUID = .init()
-    var name: String = baseName
-    var enabled: Bool = false
-    var bluetoothPeripheralName: String?
-    var bluetoothPeripheralId: UUID?
-    var model: SettingsDjiGimbalDeviceModel = .unknown
-}
-
-class SettingsDjiGimbalDevices: Codable {
-    var devices: [SettingsDjiGimbalDevice] = []
-}
-
 class SettingsGoProWifiCredentials: Codable, Identifiable, ObservableObject, Named {
     static let baseName = String(localized: "My SSID")
     var id: UUID = .init()
@@ -6774,7 +6750,6 @@ class Database: Codable, ObservableObject {
     var cyclingPowerDevices: SettingsCyclingPowerDevices = .init()
     var heartRateDevices: SettingsHeartRateDevices = .init()
     var phoneCoolerDevices: SettingsPhoneCoolerDevices = .init()
-    var djiGimbalDevices: SettingsDjiGimbalDevices = .init()
     var remoteSceneId: UUID?
     @Published var sceneNumericInput: Bool = false
     var goPro: SettingsGoPro = .init()
@@ -6870,7 +6845,6 @@ class Database: Codable, ObservableObject {
              externalDisplayContent,
              cyclingPowerDevices,
              heartRateDevices,
-             djiGimbalDevices,
              phoneCoolerDevices,
              remoteSceneId,
              sceneNumericInput,
@@ -6940,7 +6914,6 @@ class Database: Codable, ObservableObject {
         try container.encode(.externalDisplayContent, externalDisplayContent)
         try container.encode(.cyclingPowerDevices, cyclingPowerDevices)
         try container.encode(.heartRateDevices, heartRateDevices)
-        try container.encode(.djiGimbalDevices, djiGimbalDevices)
         try container.encode(.phoneCoolerDevices, phoneCoolerDevices)
         try container.encode(.remoteSceneId, remoteSceneId)
         try container.encode(.sceneNumericInput, sceneNumericInput)
@@ -7013,7 +6986,6 @@ class Database: Codable, ObservableObject {
         externalDisplayContent = container.decode(.externalDisplayContent, SettingsExternalDisplayContent.self, .stream)
         cyclingPowerDevices = container.decode(.cyclingPowerDevices, SettingsCyclingPowerDevices.self, .init())
         heartRateDevices = container.decode(.heartRateDevices, SettingsHeartRateDevices.self, .init())
-        djiGimbalDevices = container.decode(.djiGimbalDevices, SettingsDjiGimbalDevices.self, .init())
         phoneCoolerDevices = container.decode(.phoneCoolerDevices, SettingsPhoneCoolerDevices.self, .init())
         remoteSceneId = try? container.decode(UUID?.self, forKey: .remoteSceneId)
         sceneNumericInput = container.decode(.sceneNumericInput, Bool.self, false)

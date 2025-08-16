@@ -95,11 +95,6 @@ struct DebugSettingsView: View {
                     Text("HTTP proxy")
                 }
                 Toggle("Reliable chat", isOn: $debug.reliableChat)
-                NavigationLink {
-                    DjiGimbalDevicesSettingsView()
-                } label: {
-                    Label("DJI gimbals", systemImage: "appletvremote.gen1")
-                }
                 VStack(alignment: .leading) {
                     Text("Builtin audio and video delay")
                     HStack {
