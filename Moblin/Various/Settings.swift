@@ -3665,16 +3665,68 @@ class SettingsChatBotPermissions: Codable {
     var tts: SettingsChatBotPermissionsCommand = .init()
     var fix: SettingsChatBotPermissionsCommand = .init()
     var map: SettingsChatBotPermissionsCommand = .init()
-    var alert: SettingsChatBotPermissionsCommand? = .init()
-    var fax: SettingsChatBotPermissionsCommand? = .init()
-    var snapshot: SettingsChatBotPermissionsCommand? = .init()
-    var filter: SettingsChatBotPermissionsCommand? = .init()
-    var tesla: SettingsChatBotPermissionsCommand? = .init()
-    var audio: SettingsChatBotPermissionsCommand? = .init()
-    var reaction: SettingsChatBotPermissionsCommand? = .init()
-    var scene: SettingsChatBotPermissionsCommand? = .init()
-    var stream: SettingsChatBotPermissionsCommand? = .init()
-    var widget: SettingsChatBotPermissionsCommand? = .init()
+    var alert: SettingsChatBotPermissionsCommand = .init()
+    var fax: SettingsChatBotPermissionsCommand = .init()
+    var snapshot: SettingsChatBotPermissionsCommand = .init()
+    var filter: SettingsChatBotPermissionsCommand = .init()
+    var tesla: SettingsChatBotPermissionsCommand = .init()
+    var audio: SettingsChatBotPermissionsCommand = .init()
+    var reaction: SettingsChatBotPermissionsCommand = .init()
+    var scene: SettingsChatBotPermissionsCommand = .init()
+    var stream: SettingsChatBotPermissionsCommand = .init()
+    var widget: SettingsChatBotPermissionsCommand = .init()
+
+    enum CodingKeys: CodingKey {
+        case tts,
+             fix,
+             map,
+             alert,
+             fax,
+             snapshot,
+             filter,
+             tesla,
+             audio,
+             reaction,
+             scene,
+             stream,
+             widget
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.tts, tts)
+        try container.encode(.fix, fix)
+        try container.encode(.map, map)
+        try container.encode(.alert, alert)
+        try container.encode(.fax, fax)
+        try container.encode(.snapshot, snapshot)
+        try container.encode(.filter, filter)
+        try container.encode(.tesla, tesla)
+        try container.encode(.audio, audio)
+        try container.encode(.reaction, reaction)
+        try container.encode(.scene, scene)
+        try container.encode(.stream, stream)
+        try container.encode(.widget, widget)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        tts = container.decode(.tts, SettingsChatBotPermissionsCommand.self, .init())
+        fix = container.decode(.fix, SettingsChatBotPermissionsCommand.self, .init())
+        map = container.decode(.map, SettingsChatBotPermissionsCommand.self, .init())
+        alert = container.decode(.alert, SettingsChatBotPermissionsCommand.self, .init())
+        fax = container.decode(.fax, SettingsChatBotPermissionsCommand.self, .init())
+        snapshot = container.decode(.snapshot, SettingsChatBotPermissionsCommand.self, .init())
+        filter = container.decode(.filter, SettingsChatBotPermissionsCommand.self, .init())
+        tesla = container.decode(.tesla, SettingsChatBotPermissionsCommand.self, .init())
+        audio = container.decode(.audio, SettingsChatBotPermissionsCommand.self, .init())
+        reaction = container.decode(.reaction, SettingsChatBotPermissionsCommand.self, .init())
+        scene = container.decode(.scene, SettingsChatBotPermissionsCommand.self, .init())
+        stream = container.decode(.stream, SettingsChatBotPermissionsCommand.self, .init())
+        widget = container.decode(.widget, SettingsChatBotPermissionsCommand.self, .init())
+    }
 }
 
 class SettingsChatBotAlias: Codable, ObservableObject, Identifiable {
@@ -7894,14 +7946,6 @@ final class Settings {
             widget.alerts.chatBot = .init()
             store()
         }
-        if realDatabase.chat.botCommandPermissions.alert == nil {
-            realDatabase.chat.botCommandPermissions.alert = .init()
-            store()
-        }
-        if realDatabase.chat.botCommandPermissions.fax == nil {
-            realDatabase.chat.botCommandPermissions.fax = .init()
-            store()
-        }
         let allLuts = realDatabase.color.bundledLuts + realDatabase.color.diskLuts
         for lut in allLuts where lut.enabled == nil {
             if let button = realDatabase.quickButtons.first(where: { $0.id == lut.buttonId }) {
@@ -7918,14 +7962,6 @@ final class Settings {
         }
         for widget in database.widgets where widget.alerts.twitch!.raids == nil {
             widget.alerts.twitch!.raids = .init()
-            store()
-        }
-        if realDatabase.chat.botCommandPermissions.snapshot == nil {
-            realDatabase.chat.botCommandPermissions.snapshot = .init()
-            store()
-        }
-        if realDatabase.chat.botCommandPermissions.filter == nil {
-            realDatabase.chat.botCommandPermissions.filter = .init()
             store()
         }
         for widget in database.widgets where widget.alerts.twitch!.cheers == nil {
@@ -7953,14 +7989,6 @@ final class Settings {
             widget.alerts.twitch!.cheerBits![0].alert = widget.alerts.twitch!.cheers!.clone()
             store()
         }
-        if realDatabase.chat.botCommandPermissions.tesla == nil {
-            realDatabase.chat.botCommandPermissions.tesla = .init()
-            store()
-        }
-        if realDatabase.chat.botCommandPermissions.audio == nil {
-            realDatabase.chat.botCommandPermissions.audio = .init()
-            store()
-        }
         for widget in realDatabase.widgets where widget.alerts.speechToText == nil {
             widget.alerts.speechToText = .init()
             store()
@@ -7975,14 +8003,6 @@ final class Settings {
         }
         for key in realDatabase.keyboard.keys where key.widgetId == nil {
             key.widgetId = .init()
-            store()
-        }
-        if realDatabase.chat.botCommandPermissions.reaction == nil {
-            realDatabase.chat.botCommandPermissions.reaction = .init()
-            store()
-        }
-        if realDatabase.chat.botCommandPermissions.scene == nil {
-            realDatabase.chat.botCommandPermissions.scene = .init()
             store()
         }
         for widget in realDatabase.widgets {
@@ -8001,14 +8021,6 @@ final class Settings {
         }
         for button in realDatabase.quickButtons where button.page == nil {
             button.page = 1
-            store()
-        }
-        if realDatabase.chat.botCommandPermissions.stream == nil {
-            realDatabase.chat.botCommandPermissions.stream = .init()
-            store()
-        }
-        if realDatabase.chat.botCommandPermissions.widget == nil {
-            realDatabase.chat.botCommandPermissions.widget = .init()
             store()
         }
     }

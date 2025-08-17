@@ -148,7 +148,7 @@ extension Model {
     }
 
     private func handleChatBotMessageSnapshot(command: ChatBotCommand) {
-        let permissions = database.chat.botCommandPermissions.snapshot!
+        let permissions = database.chat.botCommandPermissions.snapshot
         executeIfUserAllowedToUseChatBot(
             permissions: permissions,
             command: command
@@ -169,7 +169,7 @@ extension Model {
     }
 
     private func handleChatBotMessageSnapshotWithMessage(command: ChatBotCommand) {
-        let permissions = database.chat.botCommandPermissions.snapshot!
+        let permissions = database.chat.botCommandPermissions.snapshot
         executeIfUserAllowedToUseChatBot(
             permissions: permissions,
             command: command
@@ -191,7 +191,7 @@ extension Model {
 
     private func handleChatBotMessageMute(command: ChatBotCommand) {
         executeIfUserAllowedToUseChatBot(
-            permissions: database.chat.botCommandPermissions.audio!,
+            permissions: database.chat.botCommandPermissions.audio,
             command: command
         ) {
             guard !self.isMuteOn else {
@@ -209,7 +209,7 @@ extension Model {
 
     private func handleChatBotMessageUnmute(command: ChatBotCommand) {
         executeIfUserAllowedToUseChatBot(
-            permissions: database.chat.botCommandPermissions.audio!,
+            permissions: database.chat.botCommandPermissions.audio,
             command: command
         ) {
             guard self.isMuteOn else {
@@ -230,7 +230,7 @@ extension Model {
             return
         }
         executeIfUserAllowedToUseChatBot(
-            permissions: database.chat.botCommandPermissions.reaction!,
+            permissions: database.chat.botCommandPermissions.reaction,
             command: command
         ) {
             let reaction: AVCaptureReactionType
@@ -265,7 +265,7 @@ extension Model {
             return
         }
         executeIfUserAllowedToUseChatBot(
-            permissions: database.chat.botCommandPermissions.scene!,
+            permissions: database.chat.botCommandPermissions.scene,
             command: command
         ) {
             self.selectSceneByName(name: sceneName)
@@ -274,7 +274,7 @@ extension Model {
 
     private func handleChatBotMessageStream(command: ChatBotCommand) {
         executeIfUserAllowedToUseChatBot(
-            permissions: database.chat.botCommandPermissions.stream!,
+            permissions: database.chat.botCommandPermissions.stream,
             command: command
         ) {
             switch command.popFirst() {
@@ -303,7 +303,7 @@ extension Model {
 
     private func handleChatBotMessageWidget(command: ChatBotCommand) {
         executeIfUserAllowedToUseChatBot(
-            permissions: database.chat.botCommandPermissions.widget!,
+            permissions: database.chat.botCommandPermissions.widget,
             command: command
         ) {
             guard let name = command.popFirst() else {
@@ -347,7 +347,7 @@ extension Model {
 
     private func handleChatBotMessageAlert(command: ChatBotCommand) {
         executeIfUserAllowedToUseChatBot(
-            permissions: database.chat.botCommandPermissions.alert!,
+            permissions: database.chat.botCommandPermissions.alert,
             command: command
         ) {
             guard let alert = command.popFirst() else {
@@ -362,7 +362,7 @@ extension Model {
 
     private func handleChatBotMessageFax(command: ChatBotCommand) {
         executeIfUserAllowedToUseChatBot(
-            permissions: database.chat.botCommandPermissions.fax!,
+            permissions: database.chat.botCommandPermissions.fax,
             command: command
         ) {
             if let url = command.peekFirst(), let url = URL(string: url) {
@@ -373,7 +373,7 @@ extension Model {
 
     private func handleChatBotMessageFilter(command: ChatBotCommand) {
         executeIfUserAllowedToUseChatBot(
-            permissions: database.chat.botCommandPermissions.filter!,
+            permissions: database.chat.botCommandPermissions.filter,
             command: command
         ) {
             guard let filter = command.popFirst(), let state = command.popFirst() else {
@@ -413,7 +413,7 @@ extension Model {
 
     private func handleChatBotMessageTesla(command: ChatBotCommand) {
         executeIfUserAllowedToUseChatBot(
-            permissions: database.chat.botCommandPermissions.tesla!,
+            permissions: database.chat.botCommandPermissions.tesla,
             command: command
         ) {
             switch command.popFirst() {
