@@ -6728,7 +6728,7 @@ class Database: Codable, ObservableObject {
     @Published var widgets: [SettingsWidget] = []
     var show: SettingsShow = .init()
     var zoom: SettingsZoom = .init()
-    var tapToFocus: Bool = false
+    @Published var tapToFocus: Bool = false
     @Published var bitratePresets: [SettingsBitratePreset] = []
     var iconImage: String = plainIcon.image()
     var videoStabilizationMode: SettingsVideoStabilizationMode = .off

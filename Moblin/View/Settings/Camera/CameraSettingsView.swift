@@ -204,7 +204,7 @@ struct CameraSettingsView: View {
                 }
                 VideoStabilizationSettingsView(mode: database.videoStabilizationMode)
                 if database.showAllSettings {
-                    TapScreenToFocusSettingsView()
+                    TapScreenToFocusSettingsView(model: model, database: database)
                     FixedHorizonView(database: database)
                     CameraControlsView(database: database)
                 }
