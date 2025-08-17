@@ -379,6 +379,6 @@ struct QuickButtonWidgetsView: View {
                 }
             }
         }
-        .navigationTitle("Widgets")
+        .navigationTitle("Scene widgets")
     }
 }

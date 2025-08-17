@@ -7356,7 +7356,7 @@ private func addMissingQuickButtons(database: Database) {
     button.systemImageNameOff = "appletvremote.gen1"
     updateQuickButton(database: database, button: button)
 
-    button = SettingsQuickButton(name: String(localized: "Widgets"))
+    button = SettingsQuickButton(name: String(localized: "Scene widgets"))
     button.id = UUID()
     button.type = .widgets
     button.imageType = "System name"
