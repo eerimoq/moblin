@@ -115,7 +115,7 @@ private struct RemoteControlSettingsStreamerView: View {
                 Text("Preview FPS")
                 SliderView(
                     value: streamer.previewFps,
-                    minimum: 1,
+                    minimum: 0,
                     maximum: 5,
                     step: 1,
                     onSubmit: submitStreamerPreviewFps,

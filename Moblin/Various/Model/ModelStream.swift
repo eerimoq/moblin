@@ -687,7 +687,9 @@ extension Model {
                     sendPreviewToWatch(image: image)
                 }
             }
-            sendPreviewToRemoteControlAssistant(preview: image)
+            if isRemoteControlAssistantRequestingPreview, database.remoteControl.streamer.previewFps > 0 {
+                sendPreviewToRemoteControlAssistant(preview: image)
+            }
         }
     }
 

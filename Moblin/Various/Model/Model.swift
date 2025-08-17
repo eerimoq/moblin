@@ -2111,7 +2111,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if isWatchReachable(), isWatchLocal() {
             fps = 1.0
         }
-        if isRemoteControlStreamerConnected(), isRemoteControlAssistantRequestingPreview {
+        if isRemoteControlStreamerConnected(),
+           isRemoteControlAssistantRequestingPreview,
+           database.remoteControl.streamer.previewFps > 0
+        {
             fps = database.remoteControl.streamer.previewFps
         }
         media.setLowFpsImage(fps: fps)
