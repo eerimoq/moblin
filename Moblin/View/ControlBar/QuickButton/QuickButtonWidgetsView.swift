@@ -2,35 +2,14 @@ import AVFoundation
 import SwiftUI
 
 struct TimerWidgetView: View {
-    private let name: String
-    private let timer: SettingsWidgetTextTimer
-    private let index: Int
-    private let textEffect: TextEffect
-    private var indented: Bool
-    @State private var delta: Int
-    @State private var endTime: Double
-
-    init(name: String, timer: SettingsWidgetTextTimer, index: Int, textEffect: TextEffect, indented: Bool) {
-        self.name = name
-        self.timer = timer
-        self.index = index
-        self.textEffect = textEffect
-        self.indented = indented
-        delta = timer.delta
-        endTime = timer.endTime
-    }
-
-    private func formatTimer() -> String {
-        return Duration(secondsComponent: Int64(max(timeLeft(), 0)), attosecondsComponent: 0)
-            .formatWithSeconds()
-    }
+    let name: String
+    @ObservedObject var timer: SettingsWidgetTextTimer
+    let index: Int
+    let textEffect: TextEffect
+    let indented: Bool
 
     private func updateTextEffect() {
-        textEffect.setEndTime(index: index, endTime: .now.advanced(by: .seconds(max(timeLeft(), 0))))
-    }
-
-    private func timeLeft() -> Double {
-        return utcTimeDeltaFromNow(to: endTime)
+        textEffect.setEndTime(index: index, endTime: timer.textEffectEndTime())
     }
 
     var body: some View {
@@ -43,39 +22,31 @@ struct TimerWidgetView: View {
                 HStack {
                     Text(name)
                     Spacer()
-                    Text(formatTimer())
+                    Text(timer.format())
                 }
                 HStack {
-                    Picker("", selection: $delta) {
+                    Picker("", selection: $timer.delta) {
                         ForEach([1, 2, 5, 15, 60], id: \.self) { delta in
                             Text("\(delta) min")
                                 .tag(delta)
                         }
                     }
-                    .onChange(of: delta) {
-                        timer.delta = $0
-                    }
                     Button {
-                        endTime -= 60 * Double(delta)
-                        timer.endTime = endTime
+                        timer.add(delta: -60 * Double(timer.delta))
                         updateTextEffect()
                     } label: {
                         Image(systemName: "minus.circle")
                             .font(.title)
                     }
                     Button {
-                        if timeLeft() < 0 {
-                            endTime = Date().timeIntervalSince1970
-                        }
-                        endTime += 60 * Double(delta)
-                        timer.endTime = endTime
+                        timer.add(delta: 60 * Double(timer.delta))
                         updateTextEffect()
                     } label: {
                         Image(systemName: "plus.circle")
                             .font(.title)
                     }
                 }
-                .buttonStyle(BorderlessButtonStyle())
+                .buttonStyle(.borderless)
             }
         }
     }

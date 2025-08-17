@@ -37,7 +37,24 @@ class ChatBotCommand {
     }
 
     func popFirst() -> String? {
-        return parts.popFirst()
+        guard var first = parts.popFirst() else {
+            return nil
+        }
+        guard first.starts(with: "\"") else {
+            return first
+        }
+        first.removeFirst()
+        var words = [first]
+        while var word = parts.popFirst() {
+            if word.hasSuffix("\"") {
+                word.removeLast()
+                words.append(word)
+                return words.joined(separator: " ")
+            } else {
+                words.append(word)
+            }
+        }
+        return nil
     }
 
     func peekFirst() -> String? {

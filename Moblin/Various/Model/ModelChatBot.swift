@@ -50,6 +50,8 @@ extension Model {
                 handleChatBotMessageScene(command: command)
             case "stream":
                 handleChatBotMessageStream(command: command)
+            case "widget":
+                handleChatBotMessageWidget(command: command)
             default:
                 break
             }
@@ -296,6 +298,50 @@ extension Model {
                 return
             }
             self.setTwitchStreamCategory(stream: self.stream, categoryId: gameId)
+        }
+    }
+
+    private func handleChatBotMessageWidget(command: ChatBotCommand) {
+        executeIfUserAllowedToUseChatBot(
+            permissions: database.chat.botCommandPermissions.widget!,
+            command: command
+        ) {
+            guard let name = command.popFirst() else {
+                return
+            }
+            guard let widget = self.findWidget(name: name) else {
+                return
+            }
+            switch command.popFirst() {
+            case "timer":
+                self.handleChatBotMessageWidgetTimer(command: command, widget: widget)
+            default:
+                break
+            }
+        }
+    }
+
+    private func handleChatBotMessageWidgetTimer(command: ChatBotCommand, widget: SettingsWidget) {
+        guard let textEffect = getTextEffect(id: widget.id) else {
+            return
+        }
+        guard let number = command.popFirst(), var index = Int(number) else {
+            return
+        }
+        index -= 1
+        guard index < widget.text.timers.count else {
+            return
+        }
+        let timer = widget.text.timers[index]
+        switch command.popFirst() {
+        case "add":
+            guard let delta = command.popFirst(), let delta = Double(delta) else {
+                return
+            }
+            timer.add(delta: delta.clamped(to: -3600 ... 3600))
+            textEffect.setEndTime(index: index, endTime: timer.textEffectEndTime())
+        default:
+            break
         }
     }
 

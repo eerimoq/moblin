@@ -141,6 +141,18 @@ private struct ChatBotCommandsSettingsView: View {
             }
             Section {
                 NavigationLink {
+                    PermissionsSettingsView(permissions: permissions.widget!)
+                } label: {
+                    Text("!moblin widget <name> ...")
+                }
+            } footer: {
+                VStack(alignment: .leading) {
+                    Text("!moblin widget <name> timer <number> add <seconds>")
+                    Text("Change timer value.")
+                }
+            }
+            Section {
+                NavigationLink {
                     PermissionsSettingsView(permissions: permissions.map)
                 } label: {
                     Text("!moblin map zoom out")

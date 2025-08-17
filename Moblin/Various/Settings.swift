@@ -1474,10 +1474,51 @@ enum SettingsVerticalAlignment: String, Codable, CaseIterable {
     }
 }
 
-class SettingsWidgetTextTimer: Codable, Identifiable {
+class SettingsWidgetTextTimer: Codable, Identifiable, ObservableObject {
     var id: UUID = .init()
-    var delta: Int = 5
-    var endTime: Double = 0
+    @Published var delta: Int = 5
+    @Published var endTime: Double = 0
+
+    enum CodingKeys: CodingKey {
+        case id,
+             delta,
+             endTime
+    }
+
+    init() {}
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.delta, delta)
+        try container.encode(.endTime, endTime)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        delta = container.decode(.delta, Int.self, 5)
+        endTime = container.decode(.endTime, Double.self, 0)
+    }
+
+    func add(delta: Double) {
+        if timeLeft() < 0 {
+            endTime = Date().timeIntervalSince1970
+        }
+        endTime += delta
+    }
+
+    func format() -> String {
+        return Duration(secondsComponent: Int64(max(timeLeft(), 0)), attosecondsComponent: 0).formatWithSeconds()
+    }
+
+    func textEffectEndTime() -> ContinuousClock.Instant {
+        return .now.advanced(by: .seconds(max(timeLeft(), 0)))
+    }
+
+    private func timeLeft() -> Double {
+        return utcTimeDeltaFromNow(to: endTime)
+    }
 }
 
 class SettingsWidgetTextStopwatch: Codable, Identifiable, ObservableObject {
@@ -3633,6 +3674,7 @@ class SettingsChatBotPermissions: Codable {
     var reaction: SettingsChatBotPermissionsCommand? = .init()
     var scene: SettingsChatBotPermissionsCommand? = .init()
     var stream: SettingsChatBotPermissionsCommand? = .init()
+    var widget: SettingsChatBotPermissionsCommand? = .init()
 }
 
 class SettingsChatBotAlias: Codable, ObservableObject, Identifiable {
@@ -7963,6 +8005,10 @@ final class Settings {
         }
         if realDatabase.chat.botCommandPermissions.stream == nil {
             realDatabase.chat.botCommandPermissions.stream = .init()
+            store()
+        }
+        if realDatabase.chat.botCommandPermissions.widget == nil {
+            realDatabase.chat.botCommandPermissions.widget = .init()
             store()
         }
     }

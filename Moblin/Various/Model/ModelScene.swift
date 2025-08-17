@@ -788,6 +788,13 @@ extension Model {
         return nil
     }
 
+    func findWidget(name: String) -> SettingsWidget? {
+        for widget in getLocalAndRemoteWidgets() where widget.name == name {
+            return widget
+        }
+        return nil
+    }
+
     func findEnabledScene(id: UUID) -> SettingsScene? {
         return enabledScenes.first(where: { $0.id == id })
     }
