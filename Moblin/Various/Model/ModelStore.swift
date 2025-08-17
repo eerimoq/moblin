@@ -27,6 +27,7 @@ private let iconsProductIds = [
     "AppIconBillionaire",
     "AppIconTrillionaire",
     "AppIconIreland",
+    "AppIconPeru",
 ]
 
 struct Icon: Identifiable {
