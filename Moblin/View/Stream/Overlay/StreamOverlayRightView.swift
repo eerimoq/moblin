@@ -537,7 +537,7 @@ private struct FixedHorizonStatusView: View {
     }
 }
 
-private struct PhoneCoolerDeviceStatusView: View {
+private struct BlackSharkCoolerDeviceStatusView: View {
     let model: Model
     // To trigger updates.
     @ObservedObject var show: SettingsShow
@@ -545,12 +545,12 @@ private struct PhoneCoolerDeviceStatusView: View {
     let textPlacement: StreamOverlayIconAndTextPlacement
 
     var body: some View {
-        if status.phoneCoolerDeviceState == .connected {
+        if status.blackSharkCoolerDeviceState == .connected {
             StreamOverlayIconAndTextView(
                 icon: "fan",
                 text: """
-                \(String(status.phoneCoolerPhoneTemp ?? 0)) °C / \
-                \(String(status.phoneCoolerExhaustTemp ?? 0)) °C
+                \(String(status.blackSharkCoolerPhoneTemp ?? 0)) °C / \
+                \(String(status.blackSharkCoolerExhaustTemp ?? 0)) °C
                 """,
                 textPlacement: textPlacement
             )
@@ -673,7 +673,7 @@ private struct StatusesView: View {
             status: model.statusTopRight,
             textPlacement: textPlacement
         )
-        PhoneCoolerDeviceStatusView(
+        BlackSharkCoolerDeviceStatusView(
             model: model,
             show: model.database.show,
             status: model.statusTopRight,

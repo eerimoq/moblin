@@ -1,5 +1,5 @@
 //
-//  PhoneCoolerDeviceSettingsView.swift
+//  BlackSharkCoolerDeviceSettingsView.swift
 //  Moblin
 //
 //  Created by Krister Berntsen on 09/06/2025.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-private func formatPhoneCoolerDeviceState(state: PhoneCoolerDeviceState?) -> String {
+private func formatBlackSharkCoolerDeviceState(state: BlackSharkCoolerDeviceState?) -> String {
     if state == nil || state == .disconnected {
         return String(localized: "Disconnected")
     } else if state == .discovering {
@@ -21,15 +21,15 @@ private func formatPhoneCoolerDeviceState(state: PhoneCoolerDeviceState?) -> Str
     }
 }
 
-struct PhoneCoolerDeviceSettingsView: View {
+struct BlackSharkCoolerDeviceSettingsView: View {
     @EnvironmentObject var model: Model
-    @ObservedObject private var scanner = phoneCoolerScanner
-    @ObservedObject var phoneCoolerDevices: SettingsPhoneCoolerDevices
-    @ObservedObject var device: SettingsPhoneCoolerDevice
+    @ObservedObject private var scanner = blackSharkCoolerScanner
+    @ObservedObject var blackSharkCoolerDevices: SettingsBlackSharkCoolerDevices
+    @ObservedObject var device: SettingsBlackSharkCoolerDevice
     @ObservedObject var status: StatusTopRight
 
     func state() -> String {
-        return formatPhoneCoolerDeviceState(state: status.phoneCoolerDeviceState)
+        return formatBlackSharkCoolerDeviceState(state: status.blackSharkCoolerDeviceState)
     }
 
     private func canEnable() -> Bool {
@@ -48,29 +48,30 @@ struct PhoneCoolerDeviceSettingsView: View {
     }
 
     private func changeColor() {
-        let phoneCoolerDevice = model.phoneCoolerDevices.first(where: { $0.key == device.bluetoothPeripheralId })?.value
-        guard let phoneCoolerDevice else {
+        let blackSharkCoolerDevice = model.blackSharkCoolerDevices
+            .first(where: { $0.key == device.bluetoothPeripheralId })?.value
+        guard let blackSharkCoolerDevice else {
             logger.error("Could not find phone cooler")
             return
         }
-        phoneCoolerDevice.setLedColor(
+        blackSharkCoolerDevice.setLedColor(
             color: device.rgbLightColor,
             brightness: Int(device.rgbLightBrightness)
         )
     }
 
     private func toggleLight() {
-        guard let phoneCoolerDevice = model.phoneCoolerDevices
+        guard let blackSharkCoolerDevice = model.blackSharkCoolerDevices
             .first(where: { $0.key == device.bluetoothPeripheralId })?
             .value
         else {
-            logger.error("PhoneCoolerDeviceSettingsView: Could not find phone cooler")
+            logger.error("Could not find phone cooler")
             return
         }
         if device.rgbLightEnabled {
-            phoneCoolerDevice.setLedColor(color: device.rgbLightColor, brightness: Int(device.rgbLightBrightness))
+            blackSharkCoolerDevice.setLedColor(color: device.rgbLightColor, brightness: Int(device.rgbLightBrightness))
         } else {
-            phoneCoolerDevice.turnLedOff()
+            blackSharkCoolerDevice.turnLedOff()
         }
     }
 
@@ -78,11 +79,11 @@ struct PhoneCoolerDeviceSettingsView: View {
         NavigationLink {
             Form {
                 Section {
-                    NameEditView(name: $device.name, existingNames: phoneCoolerDevices.devices)
+                    NameEditView(name: $device.name, existingNames: blackSharkCoolerDevices.devices)
                 }
                 Section {
                     NavigationLink {
-                        PhoneCoolerDeviceScannerSettingsView(
+                        BlackSharkCoolerDeviceScannerSettingsView(
                             onChange: onDeviceChange,
                             selectedId: device.bluetoothPeripheralId?.uuidString ?? String(localized: "Select device")
                         )
@@ -95,7 +96,9 @@ struct PhoneCoolerDeviceSettingsView: View {
                 } header: {
                     Text("Device")
                 } footer: {
-                    if let phoneTemp = status.phoneCoolerPhoneTemp, let exhaustTemp = status.phoneCoolerExhaustTemp {
+                    if let phoneTemp = status.blackSharkCoolerPhoneTemp,
+                       let exhaustTemp = status.blackSharkCoolerExhaustTemp
+                    {
                         HStack {
                             Text("Phone: \(phoneTemp) °C")
                             Spacer()
@@ -107,9 +110,9 @@ struct PhoneCoolerDeviceSettingsView: View {
                     Toggle("Enabled", isOn: $device.enabled)
                         .onChange(of: device.enabled) { _ in
                             if device.enabled {
-                                model.enablePhoneCoolerDevice(device: device)
+                                model.enableBlackSharkDevice(device: device)
                             } else {
-                                model.disablePhoneCoolerDevice(device: device)
+                                model.disableBlackSharkCoolerDevice(device: device)
                             }
                         }
                         .disabled(!canEnable())

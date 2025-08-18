@@ -1,5 +1,5 @@
 //
-//  PhoneCoolerDevice.swift
+//  BlackSharkCoolerDevice.swift
 //  Moblin
 //
 //  Created by Krister Berntsen on 09/06/2025.
@@ -8,45 +8,45 @@ import BlackSharkLib
 import CoreBluetooth
 import Foundation
 
-private let phoneCoolerDeviceDispatchQueue = DispatchQueue(label: "com.eerimoq.phone-cooler-device")
+private let blackSharkCoolerDeviceDispatchQueue = DispatchQueue(label: "com.eerimoq.black-shark-cooler-device")
 
-protocol PhoneCoolerDeviceDelegate: AnyObject {
-    func phoneCoolerDeviceState(_ device: PhoneCoolerDevice, state: PhoneCoolerDeviceState)
-    func phoneCoolerStatus(_ device: PhoneCoolerDevice, status: BlackSharkLib.CoolingState)
+protocol BlackSharkCoolerDeviceDelegate: AnyObject {
+    func blackSharkCoolerDeviceState(_ device: BlackSharkCoolerDevice, state: BlackSharkCoolerDeviceState)
+    func blackSharkCoolerDeviceStatus(_ device: BlackSharkCoolerDevice, status: BlackSharkLib.CoolingState)
 }
 
-enum PhoneCoolerDeviceState {
+enum BlackSharkCoolerDeviceState {
     case disconnected
     case discovering
     case connecting
     case connected
 }
 
-private let phoneCoolerServiceId = CBUUID(string: BlackSharkLib.getServiceUUID().uuidString)
+private let blackSharkCoolerServiceId = CBUUID(string: BlackSharkLib.getServiceUUID().uuidString)
 
-let phoneCoolerScanner = BluetoothScanner(serviceIds: [])
+let blackSharkCoolerScanner = BluetoothScanner(serviceIds: [])
 
-class PhoneCoolerDevice: NSObject {
-    private var state: PhoneCoolerDeviceState = .disconnected
+class BlackSharkCoolerDevice: NSObject {
+    private var state: BlackSharkCoolerDeviceState = .disconnected
     private var centralManager: CBCentralManager?
     private var peripheral: CBPeripheral?
     private var deviceId: UUID?
     private var readCharacteristic: CBCharacteristic?
     private var writeCharacteristic: CBCharacteristic?
     private var latestTransmissionTime = ContinuousClock.now
-    private var coolingStatsTimer = SimpleTimer(queue: phoneCoolerDeviceDispatchQueue)
+    private var coolingStatsTimer = SimpleTimer(queue: blackSharkCoolerDeviceDispatchQueue)
     private var coolingPower: Int? // 0-100% How much the cooler should cool.
     private var fanSpeed: Int? // 0-100% How much the fan should spin.
-    weak var delegate: (any PhoneCoolerDeviceDelegate)?
+    weak var delegate: (any BlackSharkCoolerDeviceDelegate)?
 
     func start(deviceId: UUID?) {
-        phoneCoolerDeviceDispatchQueue.async {
+        blackSharkCoolerDeviceDispatchQueue.async {
             self.startInternal(deviceId: deviceId)
         }
     }
 
     func stop() {
-        phoneCoolerDeviceDispatchQueue.async {
+        blackSharkCoolerDeviceDispatchQueue.async {
             self.stopInternal()
         }
     }
@@ -73,20 +73,20 @@ class PhoneCoolerDevice: NSObject {
     private func reconnect() {
         peripheral = nil
         setState(state: .discovering)
-        centralManager = CBCentralManager(delegate: self, queue: phoneCoolerDeviceDispatchQueue)
+        centralManager = CBCentralManager(delegate: self, queue: blackSharkCoolerDeviceDispatchQueue)
     }
 
-    private func setState(state: PhoneCoolerDeviceState) {
+    private func setState(state: BlackSharkCoolerDeviceState) {
         guard state != self.state else {
             return
         }
-        logger.debug("phone-cooler-device: State change \(self.state) -> \(state)")
+        logger.debug("black-shark-cooler-device: State change \(self.state) -> \(state)")
         self.state = state
-        delegate?.phoneCoolerDeviceState(self, state: state)
+        delegate?.blackSharkCoolerDeviceState(self, state: state)
     }
 }
 
-extension PhoneCoolerDevice: CBCentralManagerDelegate {
+extension BlackSharkCoolerDevice: CBCentralManagerDelegate {
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         switch central.state {
         case .poweredOn:
@@ -122,9 +122,9 @@ extension PhoneCoolerDevice: CBCentralManagerDelegate {
     }
 }
 
-extension PhoneCoolerDevice: CBPeripheralDelegate {
+extension BlackSharkCoolerDevice: CBPeripheralDelegate {
     func peripheral(_ peripheral: CBPeripheral, didDiscoverServices _: Error?) {
-        if let service = peripheral.services?.first(where: { $0.uuid == phoneCoolerServiceId }) {
+        if let service = peripheral.services?.first(where: { $0.uuid == blackSharkCoolerServiceId }) {
             peripheral.discoverCharacteristics(nil, for: service)
         }
     }
@@ -135,7 +135,7 @@ extension PhoneCoolerDevice: CBPeripheralDelegate {
         error _: Error?
     ) {
         for characteristic in service.characteristics ?? [] {
-            logger.debug("phone-cooler-device: Characteristic found: \(characteristic.uuid)")
+            logger.debug("black-shark-cooler-device: Characteristic found: \(characteristic.uuid)")
             switch characteristic.uuid {
             case CBUUID(data: BlackSharkLib.getReadCharacteristicsUUID()):
                 readCharacteristic = characteristic
@@ -195,19 +195,19 @@ extension PhoneCoolerDevice: CBPeripheralDelegate {
         @unknown default:
             coolingPowerTarget = 100
             fanSpeedTarget = 100
-            logger.warning("phone-cooler-device: Thermal state is unknown value")
+            logger.warning("black-shark-cooler-device: Thermal state is unknown value")
         }
         // Since we do not know the fan and cooler-state we have to assume that it can be out of sync. sending the
         // commands to update the cooling power and fan speed on every interval will make sure that its in sync.
         let coolingPower = updatedPercentageScale(coolingPower, target: coolingPowerTarget)
-        logger.debug("phone-cooler-device: Adjusting cooling power to \(coolingPower) %")
+        logger.debug("black-shark-cooler-device: Adjusting cooling power to \(coolingPower) %")
         peripheral.writeValue(
             BlackSharkLib.getSetCoolingPowerCommand(coolingPower)!,
             for: writeCharacteristic,
             type: .withoutResponse
         )
         let fanSpeed = updatedPercentageScale(fanSpeed, target: fanSpeedTarget)
-        logger.debug("phone-cooler-device: Adjusting fan speed to \(fanSpeed) %")
+        logger.debug("black-shark-cooler-device: Adjusting fan speed to \(fanSpeed) %")
         peripheral.writeValue(
             BlackSharkLib.getSetFanSpeedCommand(fanSpeed)!,
             for: writeCharacteristic,
@@ -250,13 +250,13 @@ extension PhoneCoolerDevice: CBPeripheralDelegate {
         case CBUUID(data: BlackSharkLib.getReadCharacteristicsUUID()):
             let message = BlackSharkLib.parseMessages(value)
             if let coolingState = message as? BlackSharkLib.CoolingState {
-                delegate?.phoneCoolerStatus(self, status: coolingState)
+                delegate?.blackSharkCoolerDeviceStatus(self, status: coolingState)
                 logger.debug("""
-                phone-cooler-device: CoolerTemp: \(coolingState.phoneTemperature), \
+                black-shark-cooler-device: CoolerTemp: \(coolingState.phoneTemperature), \
                 Heatsink: \(coolingState.heatsinkTemperature)
                 """)
             } else if let unknown = message as? BlackSharkLib.UnknownMessage {
-                logger.debug("phone-cooler-device: Got unknown message \(unknown.rawData.hexString())")
+                logger.debug("black-shark-cooler-device: Got unknown message \(unknown.rawData.hexString())")
             }
         default:
             break

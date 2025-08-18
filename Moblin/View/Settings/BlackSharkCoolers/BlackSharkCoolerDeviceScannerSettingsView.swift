@@ -1,5 +1,5 @@
 //
-//  PhoneCoolerDeviceScannerSettingsView.swift
+//  BlackSharkCoolerDeviceScannerSettingsView.swift
 //  Moblin
 //
 //  Created by Krister Berntsen on 09/06/2025.
@@ -7,9 +7,9 @@
 
 import SwiftUI
 
-struct PhoneCoolerDeviceScannerSettingsView: View {
+struct BlackSharkCoolerDeviceScannerSettingsView: View {
     @EnvironmentObject var model: Model
-    @ObservedObject private var scanner = phoneCoolerScanner
+    @ObservedObject private var scanner = blackSharkCoolerScanner
     @Environment(\.dismiss) var dismiss
     let onChange: (String) -> Void
     @State var selectedId: String

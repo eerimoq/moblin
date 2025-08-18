@@ -137,7 +137,7 @@ struct SettingsView: View {
                         Label("Heart rate devices", systemImage: "heart")
                     }
                     NavigationLink {
-                        PhoneCoolerDevicesSettingsView(phoneCoolerDevices: database.phoneCoolerDevices)
+                        BlackSharkCoolerDevicesSettingsView(blackSharkCoolerDevices: database.blackSharkCoolerDevices)
                     } label: {
                         Label("Black Shark coolers", systemImage: "fan")
                     }

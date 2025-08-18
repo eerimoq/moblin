@@ -178,9 +178,9 @@ class StatusTopRight: ObservableObject {
     @Published var heartRateDeviceStatus = noValue
     @Published var fixedHorizonStatus = noValue
     @Published var adsRemainingTimerStatus = noValue
-    @Published var phoneCoolerPhoneTemp: Int?
-    @Published var phoneCoolerExhaustTemp: Int?
-    @Published var phoneCoolerDeviceState: PhoneCoolerDeviceState?
+    @Published var blackSharkCoolerPhoneTemp: Int?
+    @Published var blackSharkCoolerExhaustTemp: Int?
+    @Published var blackSharkCoolerDeviceState: BlackSharkCoolerDeviceState?
     @Published var gameControllersTotal = noValue
     @Published var djiDeviceStreamingState: DjiDeviceState?
     @Published var catPrinterState: CatPrinterState?
@@ -475,8 +475,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private let periodicTimer10s = SimpleTimer(queue: .main)
     var currentHeartRateDeviceSettings: SettingsHeartRateDevice?
     var heartRateDevices: [UUID: HeartRateDevice] = [:]
-    var currentPhoneCoolerDeviceSettings: SettingsPhoneCoolerDevice?
-    var phoneCoolerDevices: [UUID: PhoneCoolerDevice] = [:]
+    var currentBlackSharkCoolerDeviceSettings: SettingsBlackSharkCoolerDevice?
+    var blackSharkCoolerDevices: [UUID: BlackSharkCoolerDevice] = [:]
     var cameraDevice: AVCaptureDevice?
     var cameraZoomLevelToXScale: Float = 1.0
     var cameraZoomXMinimum: Float = 1.0
@@ -964,7 +964,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         autoStartCatPrinters()
         autoStartCyclingPowerDevices()
         autoStartHeartRateDevices()
-        autoStartPhoneCoolerDevices()
+        autoStartBlackSharkCoolerDevices()
         startWeatherManager()
         startGeographyManager()
         twitchAuth.setOnAccessToken(onAccessToken: handleTwitchAccessToken)
@@ -1260,7 +1260,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             autoStartCatPrinters()
             autoStartCyclingPowerDevices()
             autoStartHeartRateDevices()
-            autoStartPhoneCoolerDevices()
+            autoStartBlackSharkCoolerDevices()
             if showBackgroudStreamingDisabledToast {
                 makeStreamEndedToast(subTitle: String(localized: "Tap this toast to enable background streaming.")) {
                     self.stream.backgroundStreaming = true

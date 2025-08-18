@@ -5546,7 +5546,7 @@ class SettingsHeartRateDevices: Codable, ObservableObject {
 
 private let defaultRgbLightColor = RgbColor(red: 0, green: 255, blue: 0)
 
-class SettingsPhoneCoolerDevice: Codable, Identifiable, ObservableObject, Named {
+class SettingsBlackSharkCoolerDevice: Codable, Identifiable, ObservableObject, Named {
     static let baseName = String(localized: "My cooler")
     var id: UUID = .init()
     @Published var name: String = baseName
@@ -5597,8 +5597,8 @@ class SettingsPhoneCoolerDevice: Codable, Identifiable, ObservableObject, Named 
     }
 }
 
-class SettingsPhoneCoolerDevices: Codable, ObservableObject {
-    @Published var devices: [SettingsPhoneCoolerDevice] = []
+class SettingsBlackSharkCoolerDevices: Codable, ObservableObject {
+    @Published var devices: [SettingsBlackSharkCoolerDevice] = []
 
     enum CodingKeys: CodingKey {
         case devices
@@ -5613,7 +5613,7 @@ class SettingsPhoneCoolerDevices: Codable, ObservableObject {
 
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        devices = container.decode(.devices, [SettingsPhoneCoolerDevice].self, [])
+        devices = container.decode(.devices, [SettingsBlackSharkCoolerDevice].self, [])
     }
 }
 
@@ -6868,7 +6868,7 @@ class Database: Codable, ObservableObject {
     @Published var externalDisplayContent: SettingsExternalDisplayContent = .stream
     var cyclingPowerDevices: SettingsCyclingPowerDevices = .init()
     var heartRateDevices: SettingsHeartRateDevices = .init()
-    var phoneCoolerDevices: SettingsPhoneCoolerDevices = .init()
+    var blackSharkCoolerDevices: SettingsBlackSharkCoolerDevices = .init()
     var remoteSceneId: UUID?
     @Published var sceneNumericInput: Bool = false
     var goPro: SettingsGoPro = .init()
@@ -7033,7 +7033,7 @@ class Database: Codable, ObservableObject {
         try container.encode(.externalDisplayContent, externalDisplayContent)
         try container.encode(.cyclingPowerDevices, cyclingPowerDevices)
         try container.encode(.heartRateDevices, heartRateDevices)
-        try container.encode(.phoneCoolerDevices, phoneCoolerDevices)
+        try container.encode(.phoneCoolerDevices, blackSharkCoolerDevices)
         try container.encode(.remoteSceneId, remoteSceneId)
         try container.encode(.sceneNumericInput, sceneNumericInput)
         try container.encode(.goPro, goPro)
@@ -7105,7 +7105,7 @@ class Database: Codable, ObservableObject {
         externalDisplayContent = container.decode(.externalDisplayContent, SettingsExternalDisplayContent.self, .stream)
         cyclingPowerDevices = container.decode(.cyclingPowerDevices, SettingsCyclingPowerDevices.self, .init())
         heartRateDevices = container.decode(.heartRateDevices, SettingsHeartRateDevices.self, .init())
-        phoneCoolerDevices = container.decode(.phoneCoolerDevices, SettingsPhoneCoolerDevices.self, .init())
+        blackSharkCoolerDevices = container.decode(.phoneCoolerDevices, SettingsBlackSharkCoolerDevices.self, .init())
         remoteSceneId = try? container.decode(UUID?.self, forKey: .remoteSceneId)
         sceneNumericInput = container.decode(.sceneNumericInput, Bool.self, false)
         goPro = container.decode(.goPro, SettingsGoPro.self, .init())
