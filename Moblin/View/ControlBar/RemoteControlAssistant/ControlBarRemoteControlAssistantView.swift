@@ -422,8 +422,7 @@ private struct ScenePickerView: View {
             Text("Scene")
         }
         .onChange(of: remoteControl.scene) { _ in
-            guard remoteControl.scene != model.remoteControlState.scene
-            else {
+            guard remoteControl.scene != model.remoteControlState.scene else {
                 return
             }
             model.remoteControlAssistantSetScene(id: remoteControl.scene)
