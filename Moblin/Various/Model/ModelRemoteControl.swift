@@ -445,6 +445,12 @@ extension Model {
              topRight) = remoteControlStreamerCreateStatus(filter: remoteControlAssistantRequestingStatusFilter)
         remoteControlStreamer?.sendStatus(general: general, topLeft: topLeft, topRight: topRight)
     }
+
+    func isRemoteControlStreamerPreviewActive() -> Bool {
+        return isRemoteControlStreamerConnected()
+            && isRemoteControlAssistantRequestingPreview
+            && database.remoteControl.streamer.previewFps > 0
+    }
 }
 
 extension Model: RemoteControlStreamerDelegate {
@@ -610,7 +616,7 @@ extension Model: RemoteControlStreamerDelegate {
     }
 
     func sendPreviewToRemoteControlAssistant(preview: Data) {
-        guard isRemoteControlStreamerConnected() else {
+        guard isRemoteControlStreamerPreviewActive() else {
             return
         }
         remoteControlStreamer?.sendPreview(preview: preview)
