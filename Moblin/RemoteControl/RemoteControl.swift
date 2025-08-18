@@ -18,6 +18,7 @@ enum RemoteControlRequest: Codable {
     case setTorch(on: Bool)
     case setDebugLogging(on: Bool)
     case setScene(id: UUID)
+    case setAutoSceneSwitcher(id: UUID?)
     case setBitratePreset(id: UUID)
     case setMic(id: String)
     case setSrtConnectionPriority(id: UUID, priority: Int, enabled: Bool)
@@ -555,6 +556,11 @@ struct RemoteControlSettingsScene: Codable, Identifiable {
     var name: String
 }
 
+struct RemoteControlSettingsAutoSceneSwitcher: Codable, Identifiable {
+    var id: UUID
+    var name: String
+}
+
 struct RemoteControlSettingsBitratePreset: Codable, Identifiable {
     var id: UUID
     var bitrate: UInt32
@@ -579,13 +585,19 @@ struct RemoteControlSettingsSrt: Codable {
 
 struct RemoteControlSettings: Codable {
     var scenes: [RemoteControlSettingsScene]
+    var autoSceneSwitchers: [RemoteControlSettingsAutoSceneSwitcher]?
     var bitratePresets: [RemoteControlSettingsBitratePreset]
     var mics: [RemoteControlSettingsMic]
     var srt: RemoteControlSettingsSrt
 }
 
+struct RemoteControlStateAutoSceneSwitcher: Codable {
+    var id: UUID?
+}
+
 struct RemoteControlState: Codable {
     var scene: UUID?
+    var autoSceneSwitcher: RemoteControlStateAutoSceneSwitcher?
     var mic: String?
     var bitrate: UUID?
     var zoom: Float?

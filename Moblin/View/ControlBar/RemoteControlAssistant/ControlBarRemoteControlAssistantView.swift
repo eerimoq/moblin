@@ -431,6 +431,30 @@ private struct ScenePickerView: View {
     }
 }
 
+private struct AutoSceneSwitcherPickerView: View {
+    @EnvironmentObject var model: Model
+    @ObservedObject var remoteControl: RemoteControl
+
+    var body: some View {
+        Picker(selection: $remoteControl.autoSceneSwitcher) {
+            Text("-- None --")
+                .tag(nil as UUID?)
+            ForEach(remoteControl.settings?.autoSceneSwitchers ?? []) { autoSceneSwitcher in
+                Text(autoSceneSwitcher.name)
+                    .tag(autoSceneSwitcher.id as UUID?)
+            }
+        } label: {
+            Text("Auto scene switcher")
+        }
+        .onChange(of: remoteControl.autoSceneSwitcher) { _ in
+            guard remoteControl.autoSceneSwitcher != model.remoteControlState.autoSceneSwitcher?.id else {
+                return
+            }
+            model.remoteControlAssistantSetAutoSceneSwitcher(id: remoteControl.autoSceneSwitcher)
+        }
+    }
+}
+
 private struct MicView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var remoteControl: RemoteControl
@@ -525,6 +549,7 @@ private struct ControlBarRemoteControlAssistantControlView: View {
                 RecordingView(remoteControl: remoteControl)
                 ZoomView(remoteControl: remoteControl)
                 ScenePickerView(remoteControl: remoteControl)
+                AutoSceneSwitcherPickerView(remoteControl: remoteControl)
                 MicView(remoteControl: remoteControl)
                 BitrateView(remoteControl: remoteControl)
                 SrtConnectionPrioritiesView(remoteControl: remoteControl)

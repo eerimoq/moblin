@@ -152,6 +152,10 @@ class RemoteControlAssistant: NSObject {
         performRequestNoResponseData(data: .setScene(id: id), onSuccess: onSuccess)
     }
 
+    func setAutoSceneSwitcher(id: UUID?, onSuccess: @escaping () -> Void) {
+        performRequestNoResponseData(data: .setAutoSceneSwitcher(id: id), onSuccess: onSuccess)
+    }
+
     func setMic(id: String, onSuccess: @escaping () -> Void) {
         performRequestNoResponseData(data: .setMic(id: id), onSuccess: onSuccess)
     }
