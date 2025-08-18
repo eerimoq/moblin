@@ -230,7 +230,7 @@ final class RecordingsStorage {
         cleanup()
     }
 
-    private func cleanup() {
+    func cleanup() {
         database.recordings = database.recordings.filter { recording in
             if recording.isDefaultRecordingPath() {
                 if let url = recording.url() {

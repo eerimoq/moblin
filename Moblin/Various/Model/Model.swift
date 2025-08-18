@@ -1234,6 +1234,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             maybeEnableScreenPreview()
             startPeriodicTimers()
         case .off:
+            recordingsStorage.cleanup()
             makeBuyIconsToastIfNeeded()
             clearRemoteSceneSettingsAndData()
             reloadStream()
