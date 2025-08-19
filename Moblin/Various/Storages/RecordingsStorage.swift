@@ -49,7 +49,7 @@ class RecordingSettings: Codable {
     }
 
     func audioCodecString() -> String {
-        return audioCodec?.rawValue ?? "AAC"
+        return "AAC"
     }
 }
 
