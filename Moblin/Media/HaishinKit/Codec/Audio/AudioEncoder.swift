@@ -56,7 +56,7 @@ class AudioEncoder {
         guard var newInSourceFormat, newInSourceFormat != inSourceFormat else {
             return
         }
-        ringBuffer = .init(&newInSourceFormat)
+        ringBuffer = .init(&newInSourceFormat, numSamplesPerBuffer: samplesPerBuffer())
         audioConverter = makeAudioConverter(&newInSourceFormat)
         sampleRate.mutate { $0 = newInSourceFormat.mSampleRate }
     }
@@ -74,6 +74,15 @@ class AudioEncoder {
             streamDescription: &basicDescription,
             channelLayout: makeChannelLayout(basicDescription.mChannelsPerFrame)
         )
+    }
+
+    private func samplesPerBuffer() -> Int {
+        switch settings.format {
+        case .aac:
+            return 1024
+        case .opus:
+            return 960
+        }
     }
 
     private func startRunningInternal() {

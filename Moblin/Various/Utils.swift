@@ -453,10 +453,6 @@ extension AVCaptureDevice.WhiteBalanceGains {
     }
 }
 
-func makeAudioCodecString() -> String {
-    return "AAC"
-}
-
 extension MTILayer {
     convenience init(content: MTIImage, position: CGPoint) {
         self.init(

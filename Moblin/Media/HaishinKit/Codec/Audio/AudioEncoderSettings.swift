@@ -40,7 +40,7 @@ struct AudioEncoderSettings {
                     mFormatID: kAudioFormatOpus,
                     mFormatFlags: 0,
                     mBytesPerPacket: 0,
-                    mFramesPerPacket: 2880,
+                    mFramesPerPacket: 960,
                     mBytesPerFrame: 0,
                     mChannelsPerFrame: min(
                         inSourceFormat.mChannelsPerFrame,

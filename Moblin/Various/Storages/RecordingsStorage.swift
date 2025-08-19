@@ -9,6 +9,7 @@ class RecordingSettings: Codable {
     var resolution: SettingsStreamResolution
     var fps: Int
     var codec: SettingsStreamCodec
+    var audioCodec: SettingsStreamAudioCodec?
     var recording: SettingsStreamRecording?
 
     // Fields to be removed at some point. Backwards compatibility.
@@ -35,6 +36,7 @@ class RecordingSettings: Codable {
         fps = settings.fps
         resolution = settings.resolution
         codec = settings.codec
+        audioCodec = settings.audioCodec
         recording = settings.recording.clone()
     }
 
@@ -47,7 +49,7 @@ class RecordingSettings: Codable {
     }
 
     func audioCodecString() -> String {
-        return makeAudioCodecString()
+        return audioCodec?.rawValue ?? "AAC"
     }
 }
 

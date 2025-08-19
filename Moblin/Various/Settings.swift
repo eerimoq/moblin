@@ -97,6 +97,25 @@ let resolutions = SettingsStreamResolution.allCases
 
 let fpss = [120, 100, 60, 50, 30, 25, 15]
 
+enum SettingsStreamAudioCodec: String, Codable, CaseIterable {
+    case aac = "AAC"
+    case opus = "OPUS"
+
+    init(from decoder: Decoder) throws {
+        self = try SettingsStreamAudioCodec(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
+            .aac
+    }
+
+    func toEncoder() -> AudioEncoderSettings.Format {
+        switch self {
+        case .aac:
+            return .aac
+        case .opus:
+            return .opus
+        }
+    }
+}
+
 enum SettingsStreamProtocol: String, Codable {
     case rtmp = "RTMP"
     case srt = "SRT"
@@ -561,9 +580,8 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
     var srt: SettingsStreamSrt = .init()
     var rtmp: SettingsStreamRtmp = .init()
     var rist: SettingsStreamRist = .init()
-    var captureSessionPresetEnabled: Bool = false
-    var captureSessionPreset: SettingsCaptureSessionPreset = .medium
     @Published var maxKeyFrameInterval: Int32 = 2
+    @Published var audioCodec: SettingsStreamAudioCodec = .aac
     var audioBitrate: Int = 128_000
     var chat: SettingsStreamChat = .init()
     var recording: SettingsStreamRecording = .init()
@@ -636,6 +654,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
              captureSessionPresetEnabled,
              captureSessionPreset,
              maxKeyFrameInterval,
+             audioCodec,
              audioBitrate,
              chat,
              recording,
@@ -699,9 +718,8 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         try container.encode(.srt, srt)
         try container.encode(.rtmp, rtmp)
         try container.encode(.rist, rist)
-        try container.encode(.captureSessionPresetEnabled, captureSessionPresetEnabled)
-        try container.encode(.captureSessionPreset, captureSessionPreset)
         try container.encode(.maxKeyFrameInterval, maxKeyFrameInterval)
+        try container.encode(.audioCodec, audioCodec)
         try container.encode(.audioBitrate, audioBitrate)
         try container.encode(.chat, chat)
         try container.encode(.recording, recording)
@@ -765,9 +783,8 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         srt = container.decode(.srt, SettingsStreamSrt.self, .init())
         rtmp = container.decode(.rtmp, SettingsStreamRtmp.self, .init())
         rist = container.decode(.rist, SettingsStreamRist.self, .init())
-        captureSessionPresetEnabled = container.decode(.captureSessionPresetEnabled, Bool.self, false)
-        captureSessionPreset = container.decode(.captureSessionPreset, SettingsCaptureSessionPreset.self, .medium)
         maxKeyFrameInterval = container.decode(.maxKeyFrameInterval, Int32.self, 2)
+        audioCodec = container.decode(.audioCodec, SettingsStreamAudioCodec.self, .aac)
         audioBitrate = container.decode(.audioBitrate, Int.self, 128_000)
         chat = container.decode(.chat, SettingsStreamChat.self, .init())
         recording = container.decode(.recording, SettingsStreamRecording.self, .init())
@@ -822,9 +839,8 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         new.srt = srt.clone()
         new.rtmp = rtmp.clone()
         new.rist = rist.clone()
-        new.captureSessionPresetEnabled = captureSessionPresetEnabled
-        new.captureSessionPreset = captureSessionPreset
         new.maxKeyFrameInterval = maxKeyFrameInterval
+        new.audioCodec = audioCodec
         new.audioBitrate = audioBitrate
         new.chat = chat.clone()
         new.recording = recording.clone()
@@ -919,7 +935,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
     }
 
     func audioCodecString() -> String {
-        return makeAudioCodecString()
+        return audioCodec.rawValue
     }
 
     func maxKeyFrameIntervalString() -> String {

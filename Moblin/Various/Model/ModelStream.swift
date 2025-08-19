@@ -352,7 +352,7 @@ extension Model {
         setStreamKeyFrameInterval()
         setStreamBitrate(stream: stream)
         setAudioStreamBitrate(stream: stream)
-        setAudioStreamFormat(format: .aac)
+        setAudioStreamFormat(format: stream.audioCodec.toEncoder())
         setAudioChannelsMap(channelsMap: [
             0: database.audio.audioOutputToInputChannelsMap!.channel1,
             1: database.audio.audioOutputToInputChannelsMap!.channel2,
