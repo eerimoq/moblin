@@ -300,16 +300,20 @@ class RtmpServerChunkStream {
             return
         }
         let control = messageBody[0]
-        guard let codec = FlvAudioCodec(rawValue: control >> 4),
-              FlvSoundRate(rawValue: (control & 0x0C) >> 2) != nil,
-              FlvSoundSize(rawValue: (control & 0x02) >> 1) != nil,
-              FlvSoundType(rawValue: control & 0x01) != nil
+        guard let codec = FlvAudioCodec(rawValue: control >> 4)
         else {
             client.stopInternal(reason: "Failed to parse audio settings \(control)")
             return
         }
         guard codec == .aac else {
             client.stopInternal(reason: "Unsupported audio codec \(codec). Only AAC is supported.")
+            return
+        }
+        guard FlvSoundRate(rawValue: (control & 0x0C) >> 2) != nil,
+              FlvSoundSize(rawValue: (control & 0x02) >> 1) != nil,
+              FlvSoundType(rawValue: control & 0x01) != nil
+        else {
+            client.stopInternal(reason: "Failed to parse audio settings \(control)")
             return
         }
         switch FlvAacPacketType(rawValue: messageBody[1]) {
