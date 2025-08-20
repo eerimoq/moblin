@@ -4251,6 +4251,7 @@ class SettingsDebug: Codable, ObservableObject {
     @Published var autoLowPowerMode: Bool = false
     @Published var newSrt: Bool = false
     @Published var rtspClient: Bool = false
+    @Published var kickLogin: Bool = false
 
     enum CodingKeys: CodingKey {
         case logLevel,
@@ -4289,7 +4290,8 @@ class SettingsDebug: Codable, ObservableObject {
              overrideSceneMic,
              autoLowPowerMode,
              newSrt,
-             rtspClient
+             rtspClient,
+             kickLogin
     }
 
     func encode(to encoder: Encoder) throws {
@@ -4327,6 +4329,7 @@ class SettingsDebug: Codable, ObservableObject {
         try container.encode(.autoLowPowerMode, autoLowPowerMode)
         try container.encode(.newSrt, newSrt)
         try container.encode(.rtspClient, rtspClient)
+        try container.encode(.kickLogin, kickLogin)
     }
 
     init() {}
@@ -4368,6 +4371,7 @@ class SettingsDebug: Codable, ObservableObject {
         autoLowPowerMode = container.decode(.autoLowPowerMode, Bool.self, false)
         newSrt = container.decode(.newSrt, Bool.self, false)
         rtspClient = container.decode(.rtspClient, Bool.self, false)
+        kickLogin = container.decode(.kickLogin, Bool.self, false)
     }
 }
 

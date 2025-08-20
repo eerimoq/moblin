@@ -129,6 +129,7 @@ struct DebugSettingsView: View {
                     .onChange(of: debug.rtspClient) { _ in
                         model.reloadRtspClient()
                     }
+                Toggle("Kick login", isOn: $debug.kickLogin)
             } header: {
                 Text("Experimental")
             }
