@@ -17,27 +17,22 @@ struct ChatSettingsView: View {
     var body: some View {
         Form {
             Section {
-                Toggle("Enabled", isOn: Binding(get: {
-                    chat.enabled
-                }, set: { value in
-                    chat.enabled = value
-                    model.reloadChats()
-                    model.objectWillChange.send()
-                }))
-            }
-            if let stream = model.findStream(id: model.currentStreamId) {
-                Section {
-                    NavigationLink {
-                        Form {
-                            StreamPlatformsSettingsView(stream: stream)
-                        }
-                        .navigationTitle("Streaming platforms")
-                    } label: {
-                        Label("Streaming platforms", systemImage: "dot.radiowaves.left.and.right")
+                Toggle("Enabled", isOn: $chat.enabled)
+                    .onChange(of: chat.enabled) { _ in
+                        model.reloadChats()
                     }
-                } header: {
-                    Text("Shortcut")
+            }
+            Section {
+                NavigationLink {
+                    Form {
+                        StreamPlatformsSettingsView(stream: model.stream)
+                    }
+                    .navigationTitle("Streaming platforms")
+                } label: {
+                    Label("Streaming platforms", systemImage: "dot.radiowaves.left.and.right")
                 }
+            } header: {
+                Text("Shortcut")
             }
             Section {
                 HStack {
@@ -99,11 +94,7 @@ struct ChatSettingsView: View {
                             submitMaximumAge(value: $0)
                         }
                     } label: {
-                        Toggle(isOn: Binding(get: {
-                            chat.maximumAgeEnabled
-                        }, set: { value in
-                            chat.maximumAgeEnabled = value
-                        })) {
+                        Toggle(isOn: $chat.maximumAgeEnabled) {
                             TextItemView(
                                 name: String(localized: "Maximum age"),
                                 value: String(chat.maximumAge)

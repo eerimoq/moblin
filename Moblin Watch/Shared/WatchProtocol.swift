@@ -169,11 +169,33 @@ struct WatchProtocolPadelScoreboard: Codable {
     var score: [WatchProtocolPadelScoreboardScore]
 }
 
+struct WatchProtocolPadelScoreboardAction: Codable {
+    let id: UUID
+    let action: WatchProtocolPadelScoreboardActionType
+}
+
+struct WatchProtocolPadelScoreboardActionPlayers: Codable {
+    var home: [UUID]
+    var away: [UUID]
+}
+
+enum WatchProtocolPadelScoreboardActionType: Codable {
+    case reset
+    case undo
+    case incrementHome
+    case incrementAway
+    case players(WatchProtocolPadelScoreboardActionPlayers)
+}
+
 struct WatchProtocolScoreboardPlayer: Codable {
     // periphery:ignore
     var id: UUID
     // periphery:ignore
     var name: String
+}
+
+struct WatchProtocolInstantReplay: Codable {
+    let duration: Int
 }
 
 extension WatchProtocolColor {

@@ -3,36 +3,269 @@ import Foundation
 import Network
 
 private let rtspClientQueue = DispatchQueue(label: "com.eerimoq.moblin.rtsp")
+private let channelStart = "$".first!.asciiValue!
+private let rtspEndOfHeaders = Data([0xD, 0xA, 0xD, 0xA])
 
 protocol RtspClientDelegate: AnyObject {
+    func rtspClientErrorToast(title: String)
     func rtspClientConnected(cameraId: UUID)
     func rtspClientDisconnected(cameraId: UUID)
     func rtspClientOnVideoBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer)
 }
 
+private struct SdpVideoH264 {
+    let sps: AvcNalUnit
+    let pps: AvcNalUnit
+}
+
+private struct SdpVideoH265 {
+    let vps: HevcNalUnit
+    let sps: HevcNalUnit
+    let pps: HevcNalUnit
+}
+
+private enum SdpVideoCodec {
+    case h264(SdpVideoH264)
+    case h265(SdpVideoH265)
+}
+
+private class SdpVideo {
+    var control: URL?
+    var codec: SdpVideoCodec?
+}
+
+private class SdpLinesReader {
+    private var nextIndex = 0
+    private var lines: [Substring]
+
+    init(lines: [Substring]) {
+        self.lines = lines
+    }
+
+    func next() throws -> (String, String)? {
+        guard nextIndex < lines.count else {
+            return nil
+        }
+        defer {
+            nextIndex += 1
+        }
+        let line = lines[nextIndex]
+        logger.debug("rtsp-client: SDP line \(line.trim())")
+        return try partition(text: String(line), separator: "=")
+    }
+
+    func back() {
+        guard nextIndex > 0 else {
+            return
+        }
+        nextIndex -= 1
+    }
+}
+
+private struct SdpMediaDescription {
+    var media: String
+    var port: String
+    var proto: String
+    var attributes: [SdpAttribute] = []
+
+    func getValue(for attributeName: String) throws -> String {
+        guard let attribute = attributes.first(where: { $0.attribute == attributeName }) else {
+            throw "Attribute \(attributeName) is missing."
+        }
+        guard let value = attribute.value else {
+            throw "Attribute \(attributeName) has no value."
+        }
+        return value
+    }
+}
+
+private struct SdpAttribute {
+    var attribute: String
+    var value: String?
+}
+
+private class SdpLinesParser {
+    private var mediaDescriptions: [SdpMediaDescription] = []
+
+    init(value: String) throws {
+        try parse(value: value)
+    }
+
+    func getMediaDescriptions() -> [SdpMediaDescription] {
+        return mediaDescriptions
+    }
+
+    private func parse(value: String) throws {
+        let linesReader = SdpLinesReader(lines: value.split(separator: "\r\n"))
+        while let (kind, value) = try linesReader.next() {
+            switch kind {
+            case "m":
+                try parseMedia(value: value, linesReader: linesReader)
+            default:
+                break
+            }
+        }
+    }
+
+    private func parseMedia(value: String, linesReader: SdpLinesReader) throws {
+        let parts = value.split(separator: " ")
+        guard parts.count >= 3 else {
+            throw "Bad media description \(value)"
+        }
+        var mediaDescription = SdpMediaDescription(media: String(parts[0]),
+                                                   port: String(parts[1]),
+                                                   proto: String(parts[2]))
+        mediaLoop: while let (kind, value) = try linesReader.next() {
+            switch kind {
+            case "m":
+                linesReader.back()
+                break mediaLoop
+            case "a":
+                try parseAttribute(value: value, mediaDescription: &mediaDescription)
+            default:
+                break
+            }
+        }
+        mediaDescriptions.append(mediaDescription)
+    }
+
+    private func parseAttribute(value: String, mediaDescription: inout SdpMediaDescription) throws {
+        let (attribute, value) = try partition(text: value, optionalSeparator: ":")
+        mediaDescription.attributes.append(SdpAttribute(attribute: attribute, value: value))
+    }
+}
+
+private class Sdp {
+    var video: SdpVideo?
+
+    init(value: String) throws {
+        let linesParser = try SdpLinesParser(value: value)
+        try parse(linesParser: linesParser)
+    }
+
+    private func parse(linesParser: SdpLinesParser) throws {
+        for mediaDescription in linesParser.getMediaDescriptions() {
+            switch mediaDescription.media {
+            case "video":
+                let video = SdpVideo()
+                let rtpmap = try mediaDescription.getValue(for: "rtpmap")
+                let fmtp = try mediaDescription.getValue(for: "fmtp")
+                if rtpmap.contains("H264") {
+                    try parseVideoAttributeFmtpH264(value: fmtp, video: video)
+                } else if rtpmap.contains("H265") {
+                    try parseVideoAttributeFmtpH265(value: fmtp, video: video)
+                } else {
+                    throw "Unsupported codec in rtpmap: \(rtpmap)"
+                }
+                video.control = try URL(string: mediaDescription.getValue(for: "control"))
+                self.video = video
+            default:
+                break
+            }
+        }
+    }
+
+    private func parseVideoAttributeFmtpH264(value: String, video: SdpVideo) throws {
+        let (_, value) = try partition(text: value, separator: " ")
+        for part in value.split(separator: /;\s*/) {
+            let (name, value) = try partition(text: String(part), separator: "=")
+            switch name {
+            case "sprop-parameter-sets":
+                try parseVideoAttributeFmtpSpropParameterSets(value: value, video: video)
+            default:
+                break
+            }
+        }
+    }
+
+    private func parseVideoAttributeFmtpSpropParameterSets(value: String, video: SdpVideo) throws {
+        let (spsBase64, ppsBase64) = try partition(text: value, separator: ",")
+        guard let sps = Data(base64Encoded: spsBase64) else {
+            throw "Failed to decode SPS."
+        }
+        guard let pps = Data(base64Encoded: ppsBase64) else {
+            throw "Failed to decode PPS."
+        }
+        guard let spsNalUnit = AvcNalUnit(sps) else {
+            throw "Failed to parse SPS NAL unit."
+        }
+        guard let ppsNalUnit = AvcNalUnit(pps) else {
+            throw "Failed to parse PPS NAL unit."
+        }
+        video.codec = .h264(SdpVideoH264(sps: spsNalUnit, pps: ppsNalUnit))
+    }
+
+    private func parseVideoAttributeFmtpH265(value: String, video: SdpVideo) throws {
+        var vps: HevcNalUnit?
+        var sps: HevcNalUnit?
+        var pps: HevcNalUnit?
+        let (_, value) = try partition(text: value, separator: " ")
+        for part in value.split(separator: /;\s*/) {
+            let (name, value) = try partition(text: String(part), separator: "=")
+            switch name {
+            case "sprop-vps":
+                vps = try parseVideoAttributeFmtpSpropVpsSpsPps(value: value)
+            case "sprop-sps":
+                sps = try parseVideoAttributeFmtpSpropVpsSpsPps(value: value)
+            case "sprop-pps":
+                pps = try parseVideoAttributeFmtpSpropVpsSpsPps(value: value)
+            default:
+                break
+            }
+        }
+        guard let vps, let sps, let pps else {
+            throw "VPS, SPS or PPS missing."
+        }
+        video.codec = .h265(SdpVideoH265(vps: vps, sps: sps, pps: pps))
+    }
+
+    private func parseVideoAttributeFmtpSpropVpsSpsPps(value: String) throws -> HevcNalUnit {
+        guard let value = Data(base64Encoded: value) else {
+            throw "Failed to decode VPS, SPS or PPS."
+        }
+        guard let nalUnit = HevcNalUnit(value) else {
+            throw "Failed to parse VPS, SPS or PPS unit."
+        }
+        return nalUnit
+    }
+}
+
 private func partition(text: String, separator: String) throws -> (String, String) {
-    let parts = text.split(separator: separator, maxSplits: 1)
-    guard parts.count == 2 else {
+    let (first, second) = try partition(text: text, optionalSeparator: separator)
+    guard let second else {
         throw "Cannot partition '\(text)'"
     }
-    return (String(parts[0]), parts[1].trim())
+    return (first, second)
+}
+
+private func partition(text: String, optionalSeparator: String) throws -> (String, String?) {
+    let parts = text.split(separator: optionalSeparator, maxSplits: 1)
+    switch parts.count {
+    case 1:
+        return (String(parts[0]), nil)
+    case 2:
+        return (String(parts[0]), parts[1].trim())
+    default:
+        throw "Cannot partition '\(text)'"
+    }
 }
 
 private class Request {
-    let url: URL
     let method: String
+    let url: URL
     var headers: [String: String]
     let content: Data?
     let completion: (Response) throws -> Void
+    var dueToAuthenticationFailure = false
 
-    init(url: URL,
-         method: String,
-         headers: [String: String],
-         content: Data?,
+    init(method: String,
+         url: URL,
+         headers: [String: String] = [:],
+         content: Data? = nil,
          completion: @escaping (Response) throws -> Void)
     {
-        self.url = url
         self.method = method
+        self.url = url
         self.headers = headers
         self.content = content
         self.completion = completion
@@ -45,7 +278,7 @@ private class Request {
             request += "\(name): \(value)\r\n"
         }
         request += "\r\n"
-        logger.info("rtsp-client: Sending header \(request)")
+        logger.debug("rtsp-client: Sending header \(request)")
         return request.utf8Data
     }
 }
@@ -73,11 +306,6 @@ private func md5String(data: String) -> String {
     return MD5.calculate(data).hexString()
 }
 
-private struct Packet {
-    let m: UInt8
-    let data: Data
-}
-
 extension URL {
     func removeCredentials() -> URL {
         var components = URLComponents(string: absoluteString)!
@@ -87,63 +315,187 @@ extension URL {
     }
 }
 
-private class RtpVideo {
-    var listener: NWListener?
-    var connection: NWConnection?
-    var timestamp: UInt32 = 0
+private class RtpProcessor {
+    func process(packet _: Data, timestamp _: UInt64) throws {
+        throw "Not implemented"
+    }
+}
+
+private class RtpVideoProcessor: RtpProcessor {
+    private var timestamp: UInt64 = 0
     var data = Data()
-    var nextExpectedSequenceNumber: UInt16?
-    var packets: [UInt16: Data] = [:]
-    var decoder: VideoDecoder?
-    var formatDescription: CMFormatDescription?
-    var basePresentationTimeStamp: Double = -1
-    var firstPresentationTimeStamp: Double = -1
+    private var basePresentationTimeStamp: Double = -1
+    private var firstPresentationTimeStamp: Double = -1
+    private var decoder: VideoDecoder
+    private var formatDescription: CMFormatDescription?
+    private weak var client: RtspClient?
+
+    init(formatDescription: CMFormatDescription, client: RtspClient) {
+        self.formatDescription = formatDescription
+        self.client = client
+        decoder = VideoDecoder(lockQueue: rtspClientQueue)
+        super.init()
+        decoder.delegate = self
+        decoder.startRunning(formatDescription: formatDescription)
+    }
+
+    func startNewFrame(timestamp: UInt64, first: Data, second: Data? = nil) {
+        self.timestamp = timestamp
+        data.removeAll(keepingCapacity: true)
+        data += nalUnitStartCode
+        data += first
+        if let second {
+            data += second
+        }
+    }
+
+    func tryDecodeFrame() {
+        guard !data.isEmpty else {
+            return
+        }
+        defer {
+            data.removeAll(keepingCapacity: true)
+        }
+        guard let client else {
+            return
+        }
+        let count = UInt32(data.count - 4)
+        data.withUnsafeMutableBytes { pointer in
+            pointer.writeUInt32(count, offset: 0)
+        }
+        var presenationTimeStamp = Double(timestamp) / 90000
+        if firstPresentationTimeStamp == -1 {
+            firstPresentationTimeStamp = presenationTimeStamp
+        }
+        presenationTimeStamp = getBasePresentationTimeStamp()
+            + (presenationTimeStamp - firstPresentationTimeStamp)
+            + client.latency
+        var timing = CMSampleTimingInfo(
+            duration: .invalid,
+            presentationTimeStamp: CMTime(seconds: presenationTimeStamp),
+            decodeTimeStamp: .invalid
+        )
+        let blockBuffer = data.makeBlockBuffer()
+        var sampleBuffer: CMSampleBuffer?
+        var sampleSize = blockBuffer?.dataLength ?? 0
+        guard CMSampleBufferCreate(
+            allocator: kCFAllocatorDefault,
+            dataBuffer: blockBuffer,
+            dataReady: true,
+            makeDataReadyCallback: nil,
+            refcon: nil,
+            formatDescription: formatDescription,
+            sampleCount: 1,
+            sampleTimingEntryCount: 1,
+            sampleTimingArray: &timing,
+            sampleSizeEntryCount: 1,
+            sampleSizeArray: &sampleSize,
+            sampleBufferOut: &sampleBuffer
+        ) == noErr else {
+            return
+        }
+        guard let sampleBuffer else {
+            return
+        }
+        decoder.decodeSampleBuffer(sampleBuffer)
+    }
+
+    private func getBasePresentationTimeStamp() -> Double {
+        if basePresentationTimeStamp == -1 {
+            basePresentationTimeStamp = currentPresentationTimeStamp().seconds
+        }
+        return basePresentationTimeStamp
+    }
+}
+
+extension RtpVideoProcessor: VideoDecoderDelegate {
+    func videoDecoderOutputSampleBuffer(_: VideoDecoder, _ sampleBuffer: CMSampleBuffer) {
+        client?.videoOutputSampleBuffer(sampleBuffer)
+    }
+}
+
+private class RtpProcessorVideoH264: RtpVideoProcessor {
+    override func process(packet: Data, timestamp: UInt64) throws {
+        guard packet.count >= 14 else {
+            throw "Packet shorter than 14 bytes: \(packet)"
+        }
+        let type = packet[12] & 0x1F
+        switch type {
+        case 1 ... 23:
+            try processBufferTypeSingle(packet: packet, timestamp: timestamp)
+        case 28:
+            try processBufferTypeFuA(packet: packet, timestamp: timestamp)
+        default:
+            throw "Unsupported RTP packet type \(type)."
+        }
+    }
+
+    private func processBufferTypeSingle(packet: Data, timestamp: UInt64) throws {
+        tryDecodeFrame()
+        startNewFrame(timestamp: timestamp, first: packet[12...])
+    }
+
+    private func processBufferTypeFuA(packet: Data, timestamp: UInt64) throws {
+        let fuIndicator = packet[12]
+        let fuHeader = packet[13]
+        let startBit = fuHeader >> 7
+        let nalType = fuHeader & 0x1F
+        let nal = fuIndicator & 0xE0 | nalType
+        if startBit == 1 {
+            tryDecodeFrame()
+            startNewFrame(timestamp: timestamp, first: Data([nal]), second: packet[14...])
+        } else {
+            data += packet[14...]
+        }
+    }
+}
+
+private class RtpProcessorVideoH265: RtpVideoProcessor {
+    override func process(packet: Data, timestamp: UInt64) throws {
+        guard packet.count >= 14 else {
+            throw "Packet shorter than 14 bytes: \(packet)"
+        }
+        let type = (packet[12] >> 1) & 0x3F
+        switch type {
+        case 1 ... 47:
+            try processBufferTypeSingle(packet: packet, timestamp: timestamp)
+        case 49:
+            try processBufferTypeFu(packet: packet, timestamp: timestamp)
+        default:
+            throw "Unsupported RTP packet type \(type)."
+        }
+    }
+
+    private func processBufferTypeSingle(packet: Data, timestamp: UInt64) throws {
+        tryDecodeFrame()
+        startNewFrame(timestamp: timestamp, first: packet[12...])
+    }
+
+    private func processBufferTypeFu(packet: Data, timestamp: UInt64) throws {
+        guard packet.count >= 15 else {
+            throw "Packet shorter than 15 bytes: \(packet)"
+        }
+        let fuHeader = packet[14]
+        let startBit = fuHeader >> 7
+        let nalType = fuHeader & 0x3F
+        let nal = (packet[12] & 0x81) | (nalType << 1)
+        if startBit == 1 {
+            tryDecodeFrame()
+            startNewFrame(timestamp: timestamp, first: Data([nal, packet[13]]), second: packet[15...])
+        } else {
+            data += packet[15...]
+        }
+    }
+}
+
+private class Rtp {
+    private var nextExpectedSequenceNumber: UInt16?
+    private var previousTimestamp: UInt32 = 0
+    private var timestampUpper: UInt64 = 1 << 32
+    var processor: RtpProcessor?
     weak var client: RtspClient?
 
-    func start() {
-        listener = try? NWListener(using: .udp)
-        listener?.stateUpdateHandler = connectionStateDidChange
-        listener?.newConnectionHandler = newConnection
-        listener?.start(queue: rtspClientQueue)
-    }
-
-    func stop() {
-        listener?.cancel()
-        listener = nil
-        connection?.cancel()
-        connection = nil
-    }
-
-    private func connectionStateDidChange(to state: NWListener.State) {
-        switch state {
-        case .ready:
-            client?.performOptionsIfReady()
-        default:
-            break
-        }
-    }
-
-    private func newConnection(_ connection: NWConnection) {
-        connection.start(queue: rtspClientQueue)
-        self.connection = connection
-        receivePacket()
-    }
-
-    private func receivePacket() {
-        connection?.receiveMessage { packet, _, _, error in
-            do {
-                try self.handlePacket(packet: packet)
-            } catch {
-                logger.info("rtsp-client: Failed to handle RTP packet with error: \(error)")
-                self.client?.stopInner()
-            }
-        }
-    }
-
-    private func handlePacket(packet: Data?) throws {
-        guard let packet else {
-            throw "Connection closed."
-        }
+    func handlePacket(packet: Data) throws {
         guard packet.count >= 12 else {
             throw "Packet shorter than 12 bytes: \(packet)"
         }
@@ -168,131 +520,39 @@ private class RtpVideo {
         if nextExpectedSequenceNumber == nil {
             nextExpectedSequenceNumber = sequenceNumber
         }
-        if sequenceNumber == nextExpectedSequenceNumber {
-            try processBuffer(packet: packet, timestamp: timestamp)
-            nextExpectedSequenceNumber = sequenceNumber + 1
-            try processOutOfOrderPackets()
-        } else if packets.count < 20 {
-            packets[sequenceNumber] = packet
-        } else {
-            logger.info("rtsp-client: Dropping \(packets.count) packets.")
-            packets.removeAll()
-            data = Data()
-            nextExpectedSequenceNumber = sequenceNumber + 1
+        guard sequenceNumber == nextExpectedSequenceNumber else {
+            throw "Wrong sequence number"
         }
-        receivePacket()
+
+        try processor?.process(packet: packet, timestamp: updateTimestamp(timestamp: timestamp))
+        nextExpectedSequenceNumber! &+= 1
     }
 
-    private func processOutOfOrderPackets() throws {
-        guard var nextExpectedSequenceNumber = nextExpectedSequenceNumber else {
-            return
-        }
-        while true {
-            guard let packet = packets.removeValue(forKey: nextExpectedSequenceNumber) else {
-                self.nextExpectedSequenceNumber = nextExpectedSequenceNumber
-                return
-            }
-            let timestamp = packet.withUnsafeBytes { pointer in
-                pointer.readUInt32(offset: 4)
-            }
-            try processBuffer(packet: packet, timestamp: timestamp)
-            nextExpectedSequenceNumber += 1
-        }
-    }
-
-    private func processBuffer(packet: Data, timestamp: UInt32) throws {
-        guard packet.count >= 14 else {
-            throw "Packet shorter than 14 bytes: \(packet)"
-        }
-        let type = packet[12] & 0x1F
-        switch type {
-        case 1:
-            try processBufferType1(packet: packet, timestamp: timestamp)
-        case 28:
-            try processBufferType28(packet: packet, timestamp: timestamp)
-        default:
-            throw "Unsupported RTP packet type \(type)."
-        }
-    }
-
-    private func processBufferType1(packet: Data, timestamp: UInt32) throws {
-        if !data.isEmpty {
-            decodeFrame()
-        }
-        self.timestamp = timestamp
-        data = nalUnitStartCode + packet[12...]
-        decodeFrame()
-        data = Data()
-    }
-
-    private func processBufferType28(packet: Data, timestamp: UInt32) throws {
-        let fuIndicator = packet[12]
-        let fuHeader = packet[13]
-        let startBit = fuHeader >> 7
-        let nalType = fuHeader & 0x1F
-        let nal = fuIndicator & 0xE0 | nalType
-        // logger.info("rtsp-client: type \(type) startBit \(startBit) nalType \(nalType)")
-        if startBit == 1 {
-            if data.isEmpty {
-                self.timestamp = timestamp
-                data = nalUnitStartCode + Data([nal]) + packet[14...]
+    private func updateTimestamp(timestamp: UInt32) -> UInt64 {
+        if timestamp >= previousTimestamp {
+            if timestamp - previousTimestamp < UInt32.max / 2 {
+                defer {
+                    previousTimestamp = timestamp
+                }
+                return timestampUpper + UInt64(timestamp)
             } else {
-                decodeFrame()
-                self.timestamp = timestamp
-                data = nalUnitStartCode + Data([nal]) + packet[14...]
+                return timestampUpper - (1 << 32) + UInt64(timestamp)
             }
         } else {
-            data += packet[14...]
+            defer {
+                previousTimestamp = timestamp
+            }
+            if previousTimestamp - timestamp > UInt32.max / 2 {
+                timestampUpper += 1 << 32
+            }
+            return timestampUpper + UInt64(timestamp)
         }
     }
+}
 
-    private func decodeFrame() {
-        guard let client else {
-            return
-        }
-        let nalUnits = getNalUnits(data: data)
-        let units = readH264NalUnits(data: data, nalUnits: nalUnits, filter: [.idr])
-        let count = UInt32(data.count - 4)
-        data.withUnsafeMutableBytes { pointer in
-            pointer.writeUInt32(count, offset: 0)
-        }
-        var presenationTimeStamp = Double(timestamp) / 90000
-        if firstPresentationTimeStamp == -1 {
-            firstPresentationTimeStamp = presenationTimeStamp
-        }
-        presenationTimeStamp = client.getBasePresentationTimeStamp()
-            + (presenationTimeStamp - firstPresentationTimeStamp)
-            + client.latency
-        var timing = CMSampleTimingInfo(
-            duration: .zero,
-            presentationTimeStamp: CMTime(seconds: presenationTimeStamp),
-            decodeTimeStamp: CMTime(seconds: presenationTimeStamp)
-        )
-        let blockBuffer = data.makeBlockBuffer()
-        var sampleBuffer: CMSampleBuffer?
-        var sampleSize = blockBuffer?.dataLength ?? 0
-        guard CMSampleBufferCreate(
-            allocator: kCFAllocatorDefault,
-            dataBuffer: blockBuffer,
-            dataReady: true,
-            makeDataReadyCallback: nil,
-            refcon: nil,
-            formatDescription: formatDescription,
-            sampleCount: 1,
-            sampleTimingEntryCount: 1,
-            sampleTimingArray: &timing,
-            sampleSizeEntryCount: 1,
-            sampleSizeArray: &sampleSize,
-            sampleBufferOut: &sampleBuffer
-        ) == noErr else {
-            return
-        }
-        sampleBuffer?.isSync = units.contains { $0.header.type == .idr }
-        guard let sampleBuffer else {
-            return
-        }
-        decoder?.decodeSampleBuffer(sampleBuffer)
-    }
+struct RtspClientStats {
+    var total: UInt64
+    var speed: UInt64
 }
 
 class RtspClient {
@@ -309,33 +569,47 @@ class RtspClient {
     private var nextCSeq = 0
     private var requests: [Int: Request] = [:]
     private var videoSession: String?
-    private let video = RtpVideo()
-    private var rtcpVideoListener: NWListener?
-    private var rtcpVideoConnection: NWConnection?
+    private var rtpVideo = Rtp()
+    private var rtpVideoChannel: UInt8?
+    private var rtcpVideoChannel: UInt8?
     weak var delegate: RtspClientDelegate?
+    private var connectTimer = SimpleTimer(queue: rtspClientQueue)
+    private var keepAliveTimer = SimpleTimer(queue: rtspClientQueue)
+    private var started = false
+    private var isAlive = true
+    private var totalBytesReceived: UInt64 = 0
+    private var prevTotalBytesReceived: UInt64 = 0
 
     init(cameraId: UUID, url: URL, latency: Double) {
-        logger.info("xxx rtsp client \(cameraId)")
         self.cameraId = cameraId
         self.latency = latency
         username = url.user()
         password = url.password()
         self.url = url.removeCredentials()
         state = .disconnected
-        video.client = self
     }
 
     func start() {
-        logger.info("rtsp-client: Start")
+        logger.debug("rtsp-client: Start")
         rtspClientQueue.async {
+            self.started = true
             self.startInner()
         }
     }
 
     func stop() {
-        logger.info("rtsp-client: Stop")
+        logger.debug("rtsp-client: Stop")
         rtspClientQueue.async {
+            self.started = false
             self.stopInner()
+        }
+    }
+
+    func updateStats() -> RtspClientStats {
+        return rtspClientQueue.sync {
+            let speed = totalBytesReceived - prevTotalBytesReceived
+            prevTotalBytesReceived = totalBytesReceived
+            return RtspClientStats(total: totalBytesReceived, speed: speed)
         }
     }
 
@@ -343,53 +617,65 @@ class RtspClient {
         guard newState != state else {
             return
         }
-        logger.info("rtsp-client: State change \(state) -> \(newState)")
-        state = newState
-        switch state {
+        logger.debug("rtsp-client: State change \(state) -> \(newState)")
+        switch newState {
         case .disconnected:
-            delegate?.rtspClientDisconnected(cameraId: cameraId)
+            if state == .streaming {
+                delegate?.rtspClientDisconnected(cameraId: cameraId)
+            }
         case .streaming:
             delegate?.rtspClientConnected(cameraId: cameraId)
         default:
             break
         }
+        state = newState
     }
 
     private func startInner() {
+        guard started else {
+            return
+        }
         stopInner()
         guard let host = url.host() else {
             return
         }
         let port = url.port ?? 554
-        logger.info("rtsp-client: Connecting to \(host):\(port)")
+        logger.debug("rtsp-client: Connecting to \(host):\(port)")
         connection = NWConnection(
             to: .hostPort(host: .init(host), port: .init(integerLiteral: NWEndpoint.Port.IntegerLiteralType(port))),
             using: .init(tls: nil)
         )
         connection?.stateUpdateHandler = rtspConnectionStateDidChange
         connection?.start(queue: rtspClientQueue)
-        receiveNewRtspHeader()
-        video.start()
-        rtcpVideoListener = try? NWListener(using: .udp)
-        rtcpVideoListener?.stateUpdateHandler = rtcpVideoConnectionStateDidChange
-        rtcpVideoListener?.newConnectionHandler = rtcpVideoNewConnection
-        rtcpVideoListener?.start(queue: rtspClientQueue)
+        receiveMessage()
+        rtpVideo = Rtp()
+        rtpVideo.client = self
         setState(newState: .connecting)
+        connectTimer.startSingleShot(timeout: 5) { [weak self] in
+            self?.startInner()
+        }
+        isAlive = true
+        realm = nil
+        nonce = nil
+        header = Data()
+        nextCSeq = 0
+        requests = [:]
+        videoSession = nil
     }
 
-    fileprivate func stopInner() {
+    private func stopInner() {
+        connectTimer.stop()
+        keepAliveTimer.stop()
         connection?.cancel()
         connection = nil
-        video.stop()
-        rtcpVideoListener?.cancel()
-        rtcpVideoListener = nil
         setState(newState: .disconnected)
     }
 
     private func rtspConnectionStateDidChange(to state: NWConnection.State) {
         switch state {
         case .ready:
-            performOptionsIfReady()
+            setState(newState: .setup)
+            performOptions()
         default:
             break
         }
@@ -405,7 +691,7 @@ class RtspClient {
             return nil
         }
         let ha1 = md5String(data: "\(username):\(realm):\(password)")
-        let ha2 = md5String(data: "\(request.method):\(request.url)")
+        let ha2 = md5String(data: "\(request.method):\(url)")
         let response = md5String(data: "\(ha1):\(nonce):\(ha2)")
         return """
         Digest username="\(username)", \
@@ -420,54 +706,110 @@ class RtspClient {
         let cSeq = getNextCSeq()
         requests[cSeq] = request
         if let authorization = createDigestHeader(request: request) {
-            request.headers["Authorization"] = authorization
+            request.headers["authorization"] = authorization
         }
-        connection?.send(content: request.pack(cSeq: cSeq), completion: .idempotent)
+        send(data: request.pack(cSeq: cSeq))
     }
 
-    private func rtcpVideoConnectionStateDidChange(to state: NWListener.State) {
-        switch state {
-        case .ready:
-            performOptionsIfReady()
-        default:
-            break
+    private func handleRtcpVideoPacket(packet: Data) {
+        guard packet.count >= 8 else {
+            return
+        }
+        let value = packet[0]
+        let version = value >> 6
+        let pt = packet[1]
+        guard version == 2 else {
+            logger.debug("rtsp-client: Unsupported version \(version)")
+            return
+        }
+        if pt == 200 {
+            var receiverReport = Data(count: 8)
+            receiverReport[0] = 2 << 6
+            receiverReport[1] = 201
+            receiverReport[3] = 1
+            sendRtcp(data: receiverReport)
         }
     }
 
-    private func rtcpVideoNewConnection(_ connection: NWConnection) {
-        connection.start(queue: rtspClientQueue)
-        rtcpVideoConnection = connection
-        receiveRtcpVideoPacket()
+    private func sendRtcp(data: Data) {
+        guard let rtcpVideoChannel else {
+            return
+        }
+        sendChannel(channel: rtcpVideoChannel, data: data)
     }
 
-    private func receiveRtcpVideoPacket() {
-        rtcpVideoConnection?.receiveMessage { data, _, _, _ in
+    private func sendChannel(channel: UInt8, data: Data) {
+        guard let size = UInt16(exactly: data.count) else {
+            return
+        }
+        let writer = ByteWriter()
+        writer.writeUInt8(channelStart)
+        writer.writeUInt8(channel)
+        writer.writeUInt16(size)
+        writer.writeBytes(data)
+        send(data: writer.data)
+    }
+
+    private func send(data: Data) {
+        connection?.send(content: data, completion: .idempotent)
+    }
+
+    private func receiveMessage() {
+        receive(size: 1) { data in
+            if data[0] == channelStart {
+                self.receiveChannelHeader()
+            } else {
+                self.receiveNewRtspHeader(data: data)
+            }
+        }
+    }
+
+    private func receiveChannelHeader() {
+        receive(size: 3) { data in
+            let channel = data[0]
+            let size = data.withUnsafeBytes { pointer in
+                pointer.readUInt16(offset: 1)
+            }
+            self.receiveChannelData(channel: channel, size: Int(size))
+        }
+    }
+
+    private func receiveChannelData(channel: UInt8, size: Int) {
+        receive(size: size) { data in
+            if channel == self.rtpVideoChannel {
+                try self.rtpVideo.handlePacket(packet: data)
+            } else if channel == self.rtcpVideoChannel {
+                self.handleRtcpVideoPacket(packet: data)
+            }
+            self.receiveMessage()
+        }
+    }
+
+    private func receive(size: Int, onComplete: @escaping (Data) throws -> Void) {
+        connection?.receive(minimumIncompleteLength: size, maximumLength: size) { data, _, _, _ in
             guard let data else {
                 return
             }
-            logger.info("rtsp-client: Got RTCP \(data)")
-            self.receiveRtcpVideoPacket()
+            self.totalBytesReceived += UInt64(data.count)
+            do {
+                try onComplete(data)
+            } catch {
+                logger.debug("rtsp-client: Error: \(error)")
+            }
         }
     }
 
-    private func receiveNewRtspHeader() {
-        header.removeAll()
+    private func receiveNewRtspHeader(data: Data) {
+        header.removeAll(keepingCapacity: true)
+        header += data
         receiveRtspHeader()
     }
 
     private func receiveRtspHeader() {
-        connection?.receive(minimumIncompleteLength: 1, maximumLength: 1) { data, _, _, _ in
-            guard let data else {
-                return
-            }
+        receive(size: 1) { data in
             self.header += data
-            if self.header.suffix(4) == Data([0xD, 0xA, 0xD, 0xA]) {
-                do {
-                    try self.handleRtspHeader()
-                } catch {
-                    logger.info("rtsp-client: Header handling failed with error: \(error)")
-                    self.stopInner()
-                }
+            if self.header.suffix(4) == rtspEndOfHeaders {
+                try self.handleRtspHeader()
             } else {
                 self.receiveRtspHeader()
             }
@@ -475,16 +817,10 @@ class RtspClient {
     }
 
     private func receiveRtspContent(response: Response, size: Int) {
-        connection?.receive(minimumIncompleteLength: size, maximumLength: size) { data, _, _, _ in
+        receive(size: size) { data in
             response.content = data
-            do {
-                try self.handleResponse(response: response)
-            } catch {
-                logger.info("rtsp-client: Response handling failed with error: \(error)")
-                self.stopInner()
-                return
-            }
-            self.receiveNewRtspHeader()
+            try self.handleResponse(response: response)
+            self.receiveMessage()
         }
     }
 
@@ -492,7 +828,7 @@ class RtspClient {
         guard let header = String(bytes: header, encoding: .utf8) else {
             throw "Header is not text."
         }
-        logger.info("rtsp-client: Got header \(header)")
+        logger.debug("rtsp-client: Got header \(header)")
         let lines = header.split(separator: "\r\n")
         guard lines.count >= 1 else {
             throw "Status line missing."
@@ -506,162 +842,166 @@ class RtspClient {
         var headers: [String: String] = [:]
         for line in lines.suffix(from: 1) {
             let (name, value) = try partition(text: String(line), separator: ":")
-            headers[name] = value
+            headers[name.lowercased()] = value
         }
         let response = Response(statusCode: statusCode, headers: headers)
-        if let contentLength = headers["Content-Length"], let contentLength = Int(contentLength) {
+        if let contentLength = headers["content-length"],
+           let contentLength = Int(contentLength),
+           contentLength > 0
+        {
             receiveRtspContent(response: response, size: contentLength)
         } else {
             try handleResponse(response: response)
-            receiveNewRtspHeader()
+            receiveMessage()
         }
     }
 
     private func handleResponse(response: Response) throws {
-        guard let cSeq = response.headers["CSeq"],
+        guard let cSeq = response.headers["cseq"],
               let cSeq = Int(cSeq),
               let request = requests.removeValue(forKey: cSeq)
         else {
             throw "No request found for response."
         }
         guard response.statusCode != 401 else {
-            guard let www_authenticate = response.headers["WWW-Authenticate"] else {
-                throw "Missing authenticate field when authentication failed."
-            }
-            guard www_authenticate.starts(with: "Digest ") else {
-                throw "Only Digest authentication is supported."
-            }
-            let index = www_authenticate.index(www_authenticate.startIndex, offsetBy: 7)
-            for parameter in www_authenticate.suffix(from: index).split(separator: ", ") {
-                let (name, value) = try partition(text: String(parameter), separator: "=")
-                switch name {
-                case "realm":
-                    realm = value.trimmingCharacters(in: ["\""])
-                case "nonce":
-                    nonce = value.trimmingCharacters(in: ["\""])
-                default:
-                    break
-                }
-            }
+            try handleUnauthorizedResponse(request: request, response: response)
+            request.dueToAuthenticationFailure = true
             perform(request: request)
             return
         }
         try request.completion(response)
     }
 
-    private func isReadyToSendOptions() -> Bool {
-        return connection?.state == .ready && video.listener?.port != nil && rtcpVideoListener?.port != nil
+    private func handleUnauthorizedResponse(request: Request, response: Response) throws {
+        guard !request.dueToAuthenticationFailure else {
+            delegate?.rtspClientErrorToast(title: String(localized: "Wrong RTSP username or password"))
+            throw "Wrong username or password"
+        }
+        guard username != nil, password != nil else {
+            delegate?.rtspClientErrorToast(title: String(localized: "RTSP username or password missing"))
+            throw "Username or password missing."
+        }
+        guard let wwwAuthenticate = response.headers["www-authenticate"] else {
+            throw "Missing authenticate field when authentication failed."
+        }
+        guard wwwAuthenticate.starts(with: "Digest ") else {
+            delegate?.rtspClientErrorToast(title: String(localized: "RTSP only supports Digest authentication"))
+            throw "Only Digest authentication is supported."
+        }
+        let index = wwwAuthenticate.index(wwwAuthenticate.startIndex, offsetBy: 7)
+        for parameter in wwwAuthenticate.suffix(from: index).split(separator: /,\s*/) {
+            let (name, value) = try partition(text: String(parameter), separator: "=")
+            switch name {
+            case "realm":
+                realm = value.trimmingCharacters(in: ["\""])
+            case "nonce":
+                nonce = value.trimmingCharacters(in: ["\""])
+            default:
+                break
+            }
+        }
     }
 
-    fileprivate func performOptionsIfReady() {
-        if isReadyToSendOptions() {
-            setState(newState: .setup)
-            performOptions()
+    private func keepAlive() {
+        guard isAlive else {
+            startInner()
+            return
         }
+        isAlive = false
+        performGetParameter()
     }
 
     private func performOptions() {
-        let request = Request(url: url, method: "OPTIONS", headers: [:], content: nil) { _ in
+        perform(request: Request(method: "OPTIONS", url: url) { _ in
             self.performDescribe()
-        }
-        perform(request: request)
+        })
+    }
+
+    private func performGetParameter() {
+        perform(request: Request(method: "GET_PARAMETER", url: url) { _ in
+            self.isAlive = true
+        })
     }
 
     private func performDescribe() {
-        let headers = ["Accept": "application/sdp"]
-        let request = Request(url: url, method: "DESCRIBE", headers: headers, content: nil) { response in
+        let headers = [
+            "Accept": "application/sdp",
+        ]
+        perform(request: Request(method: "DESCRIBE", url: url, headers: headers) { response in
             try self.handleDescribeResponse(response: response)
-        }
-        perform(request: request)
+        })
     }
 
     private func handleDescribeResponse(response: Response) throws {
         guard let content = response.content, let content = String(data: content, encoding: .utf8) else {
-            throw "Bad DESCRIBE content."
+            throw "Bad or missing DESCRIBE content."
         }
-        try parseSdp(value: content)
-        performSetup()
+        let baseUrl = response.headers["content-base"] ?? url.absoluteString
+        let sdp = try Sdp(value: content)
+        switch sdp.video?.codec {
+        case let .h264(sdpVideo):
+            try setupH264(sdpVideo: sdpVideo)
+        case let .h265(sdpVideo):
+            try setupH265(sdpVideo: sdpVideo)
+        default:
+            throw "No video media found."
+        }
+        try performSetup(url: makeSetupUrl(baseUrl: baseUrl, controlUrl: sdp.video?.control))
     }
 
-    private func parseSdp(value: String) throws {
-        for line in value.split(separator: "\r\n") {
-            logger.info("rtsp-client: SDP line \(line.trim())")
-            let (kind, value) = try partition(text: String(line), separator: "=")
-            switch kind {
-            case "m":
-                break
-            case "a":
-                try parseSdpAttribute(value: value)
-            default:
-                break
+    private func makeSetupUrl(baseUrl: String, controlUrl: URL?) throws -> URL {
+        if let controlUrl {
+            if controlUrl.host() != nil {
+                return controlUrl
+            } else if let url = URL(string: baseUrl + controlUrl.path) {
+                return url
+            } else {
+                throw "Bad control URL: \(controlUrl)"
             }
         }
+        return url
     }
 
-    private func parseSdpAttribute(value: String) throws {
-        if value.contains(":") {
-            let (name, value) = try partition(text: value, separator: ":")
-            switch name {
-            case "fmtp":
-                try parseSdpAttributeFmtp(value: value)
-            default:
-                break
-            }
+    private func setupH264(sdpVideo: SdpVideoH264) throws {
+        let nalUnits = [sdpVideo.sps, sdpVideo.pps]
+        let formatDescription = nalUnits.makeFormatDescription()
+        guard let formatDescription else {
+            throw "Failed to create H.264 format description."
         }
+        rtpVideo.processor = RtpProcessorVideoH264(formatDescription: formatDescription, client: self)
     }
 
-    private func parseSdpAttributeFmtp(value: String) throws {
-        for part in value.split(separator: ";") {
-            let (name, value) = try partition(text: String(part), separator: "=")
-            switch name {
-            case "sprop-parameter-sets":
-                try parseSdpAttributeFmtpSpropParameterSets(value: value)
-            default:
-                break
-            }
+    private func setupH265(sdpVideo: SdpVideoH265) throws {
+        let nalUnits = [sdpVideo.vps, sdpVideo.sps, sdpVideo.pps]
+        let formatDescription = nalUnits.makeFormatDescription()
+        guard let formatDescription else {
+            throw "Failed to create H.265 format description."
         }
+        rtpVideo.processor = RtpProcessorVideoH265(formatDescription: formatDescription, client: self)
     }
 
-    private func parseSdpAttributeFmtpSpropParameterSets(value: String) throws {
-        let (spsBase64, ppsBase64) = try partition(text: value, separator: ",")
-        guard let sps = Data(base64Encoded: spsBase64) else {
-            throw "Failed to decode SPS."
-        }
-        guard let pps = Data(base64Encoded: ppsBase64) else {
-            throw "Failed to decode PPS."
-        }
-        guard let spsNalUnit = AvcNalUnit(sps) else {
-            throw "Failed to parse SPS NAL unit."
-        }
-        guard let ppsNalUnit = AvcNalUnit(pps) else {
-            throw "Failed to parse PPS NAL unit."
-        }
-        let nalUnits = [spsNalUnit, ppsNalUnit]
-        video.formatDescription = nalUnits.makeFormatDescription()
-        guard video.formatDescription != nil else {
-            throw "Failed to create format description."
-        }
-        video.decoder = VideoDecoder(lockQueue: rtspClientQueue)
-        video.decoder?.delegate = self
-        video.decoder?.startRunning(formatDescription: video.formatDescription)
-    }
-
-    private func performSetup() {
-        guard let rtpVideoPort = video.listener?.port, let rtcpVideoPort = rtcpVideoListener?.port else {
-            return
-        }
-        let headers = ["Transport": "RTP/AVP;unicast;client_port=\(rtpVideoPort)-\(rtcpVideoPort)"]
-        let request = Request(url: url, method: "SETUP", headers: headers, content: nil) { response in
+    private func performSetup(url: URL) {
+        let headers = [
+            "Transport": "RTP/AVP/TCP;unicast;interleaved=0-1",
+        ]
+        perform(request: Request(method: "SETUP", url: url, headers: headers) { response in
             try self.handleSetupResponse(response: response)
-        }
-        perform(request: request)
+        })
     }
 
     private func handleSetupResponse(response: Response) throws {
-        guard let session = response.headers["Session"] else {
+        guard let session = response.headers["session"] else {
             throw "Session header missing."
         }
-        (videoSession, _) = try partition(text: session, separator: ";")
+        guard let transport = response.headers["transport"] else {
+            throw "Transport header missing."
+        }
+        (videoSession, _) = try partition(text: session, optionalSeparator: ";")
+        guard let match = transport.firstMatch(of: /interleaved=(\d+)-(\d+)/) else {
+            throw "Invalid interleaving in \(transport)."
+        }
+        rtpVideoChannel = UInt8(match.output.1)
+        rtcpVideoChannel = UInt8(match.output.2)
         try performPlay()
     }
 
@@ -673,26 +1013,20 @@ class RtspClient {
             "Session": videoSession,
             "Range": "npt=now-",
         ]
-        let request = Request(url: url, method: "PLAY", headers: headers, content: nil) { response in
+        perform(request: Request(method: "PLAY", url: url, headers: headers) { response in
             self.handlePlayResponse(response: response)
-        }
-        perform(request: request)
+        })
     }
 
     private func handlePlayResponse(response _: Response) {
         setState(newState: .streaming)
-    }
-
-    fileprivate func getBasePresentationTimeStamp() -> Double {
-        if video.basePresentationTimeStamp == -1 {
-            video.basePresentationTimeStamp = currentPresentationTimeStamp().seconds
+        connectTimer.stop()
+        keepAliveTimer.startPeriodic(interval: 5) { [weak self] in
+            self?.keepAlive()
         }
-        return video.basePresentationTimeStamp
     }
-}
 
-extension RtspClient: VideoDecoderDelegate {
-    func videoDecoderOutputSampleBuffer(_: VideoDecoder, _ sampleBuffer: CMSampleBuffer) {
+    func videoOutputSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
         delegate?.rtspClientOnVideoBuffer(cameraId: cameraId, sampleBuffer)
     }
 }

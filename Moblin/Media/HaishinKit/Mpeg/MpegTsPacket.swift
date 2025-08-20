@@ -32,7 +32,9 @@ struct MpegTsPacket {
         let hasAdaptationField = (byte & 0x20) == 0x20
         if hasAdaptationField {
             let length = try reader.readUInt8()
-            adaptationField = try MpegTsAdaptationField(reader: reader, length: length)
+            if length > 0 {
+                adaptationField = try MpegTsAdaptationField(reader: reader, length: length)
+            }
         }
         let hasPayload = (byte & 0x10) == 0x10
         if hasPayload {

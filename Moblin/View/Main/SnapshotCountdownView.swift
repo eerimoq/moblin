@@ -1,22 +1,23 @@
 import SwiftUI
 
 struct SnapshotCountdownView: View {
-    @EnvironmentObject var model: Model
-    let message: String
+    @ObservedObject var snapshot: Snapshot
 
     var body: some View {
-        VStack {
-            Text("Taking snapshot in")
-            Text(String(model.snapshotCountdown))
-                .font(.title)
-            Text(message)
-                .multilineTextAlignment(.center)
+        if let snapshotJob = snapshot.currentJob, snapshot.countdown > 0 {
+            VStack {
+                Text("Taking snapshot in")
+                Text(String(snapshot.countdown))
+                    .font(.title)
+                Text(snapshotJob.message)
+                    .multilineTextAlignment(.center)
+            }
+            .foregroundColor(.white)
+            .fixedSize(horizontal: false, vertical: true)
+            .frame(maxWidth: 300, alignment: .center)
+            .padding(10)
+            .background(.black.opacity(0.75))
+            .cornerRadius(10)
         }
-        .foregroundColor(.white)
-        .fixedSize(horizontal: false, vertical: true)
-        .frame(maxWidth: 300, alignment: .center)
-        .padding(10)
-        .background(.black.opacity(0.75))
-        .cornerRadius(10)
     }
 }

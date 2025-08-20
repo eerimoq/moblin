@@ -33,7 +33,6 @@ struct LocationSettingsView: View {
                 Toggle("Enabled", isOn: $location.enabled)
                     .onChange(of: location.enabled) { _ in
                         model.reloadLocation()
-                        model.objectWillChange.send()
                     }
             }
             if database.showAllSettings {

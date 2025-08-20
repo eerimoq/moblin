@@ -134,6 +134,7 @@ struct QuickButtonsInnerView: View {
     let model: Model
     @ObservedObject var quickButtons: QuickButtons
     @ObservedObject var quickButtonsSettings: SettingsQuickButtons
+    @ObservedObject var orientation: Orientation
     let state: ButtonState
     let size: CGFloat
     let nameSize: CGFloat
@@ -816,7 +817,7 @@ struct QuickButtonsInnerView: View {
                     pauseTtsAction()
                 }
             }
-            if quickButtonsSettings.showName && !model.isPortrait() {
+            if quickButtonsSettings.showName && !orientation.isPortrait {
                 Text(state.button.name)
                     .padding(0)
                     .multilineTextAlignment(.center)

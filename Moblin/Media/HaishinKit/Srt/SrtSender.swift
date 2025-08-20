@@ -362,7 +362,7 @@ class SrtSender {
 
     private func getNextSequenceNumber() -> UInt32 {
         defer {
-            nextSequenceNumber += 1
+            nextSequenceNumber &+= 1
         }
         return nextSequenceNumber
     }

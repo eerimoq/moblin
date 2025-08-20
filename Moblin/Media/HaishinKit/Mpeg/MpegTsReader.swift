@@ -152,7 +152,7 @@ class MpegTsReader {
             )
             let newPresentationTimeStamp = latestAudioBufferPresentationTimeStamp + timeOffset
             logger.info("""
-            rist-server-client: Filling audio gap \
+            mpeg-ts-reader: Filling audio gap \
             \(latestAudioBufferPresentationTimeStamp.seconds)..\(presentationTimeStamp.seconds) \
             with \(newPresentationTimeStamp.seconds)
             """)

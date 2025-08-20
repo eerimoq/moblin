@@ -43,10 +43,11 @@ struct ChatOverlayView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var chatSettings: SettingsChat
     @ObservedObject var chat: ChatProvider
+    @ObservedObject var orientation: Orientation
     let fullSize: Bool
 
     var body: some View {
-        if model.isPortrait() {
+        if orientation.isPortrait {
             VStack {
                 ZStack {
                     StreamOverlayChatView(model: model, chatSettings: chatSettings, chat: chat, fullSize: fullSize)
@@ -103,9 +104,10 @@ struct ChatOverlayView: View {
 
 private struct FrontTorchView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var orientation: Orientation
 
     var body: some View {
-        if model.isPortrait() {
+        if orientation.isPortrait {
             VStack(spacing: 0) {
                 Rectangle()
                     .foregroundColor(.white)
@@ -153,11 +155,12 @@ struct StreamOverlayView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var streamOverlay: StreamOverlay
     @ObservedObject var chatSettings: SettingsChat
+    @ObservedObject var orientation: Orientation
     let width: CGFloat
     let height: CGFloat
 
     private func leadingPadding() -> CGFloat {
-        if UIDevice.current.userInterfaceIdiom == .pad || model.isPortrait() {
+        if UIDevice.current.userInterfaceIdiom == .pad || orientation.isPortrait {
             return 15
         } else {
             return 0
@@ -167,11 +170,14 @@ struct StreamOverlayView: View {
     var body: some View {
         ZStack {
             if streamOverlay.isTorchOn && streamOverlay.isFrontCameraSelected {
-                FrontTorchView()
+                FrontTorchView(orientation: orientation)
             }
             ZStack {
                 if model.showingPanel != .chat {
-                    ChatOverlayView(chatSettings: chatSettings, chat: model.chat, fullSize: false)
+                    ChatOverlayView(chatSettings: chatSettings,
+                                    chat: model.chat,
+                                    orientation: orientation,
+                                    fullSize: false)
                         .opacity(chatSettings.enabled ? 1 : 0)
                 }
                 HStack {

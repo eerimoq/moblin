@@ -8,6 +8,7 @@ class RemoteControl: ObservableObject {
     @Published var topRight: RemoteControlStatusTopRight?
     @Published var settings: RemoteControlSettings?
     @Published var scene = UUID()
+    @Published var autoSceneSwitcher: UUID?
     @Published var mic = ""
     @Published var bitrate = UUID()
     @Published var zoom = ""
@@ -209,6 +210,14 @@ extension Model {
         }
     }
 
+    func remoteControlAssistantSetAutoSceneSwitcher(id: UUID?) {
+        remoteControlAssistant?.setAutoSceneSwitcher(id: id) {
+            DispatchQueue.main.async {
+                self.updateRemoteControlAssistantStatus()
+            }
+        }
+    }
+
     func remoteControlAssistantSetMic(id: String) {
         remoteControlAssistant?.setMic(id: id) {
             DispatchQueue.main.async {
@@ -386,7 +395,7 @@ extension Model {
             topRight.audioInfo!.audioLevel = .value(audio.level.level)
         }
         if isServersConfigured() {
-            topRight.rtmpServer = RemoteControlStatusItem(message: servers.speedAndTotal)
+            topRight.rtmpServer = RemoteControlStatusItem(message: ingests.speedAndTotal)
         }
         if isAnyRemoteControlConfigured() {
             topRight.remoteControl = RemoteControlStatusItem(message: statusTopRight.remoteControlStatus)
@@ -436,6 +445,12 @@ extension Model {
              topRight) = remoteControlStreamerCreateStatus(filter: remoteControlAssistantRequestingStatusFilter)
         remoteControlStreamer?.sendStatus(general: general, topLeft: topLeft, topRight: topRight)
     }
+
+    func isRemoteControlStreamerPreviewActive() -> Bool {
+        return isRemoteControlStreamerConnected()
+            && isRemoteControlAssistantRequestingPreview
+            && database.remoteControl.streamer.previewFps > 0
+    }
 }
 
 extension Model: RemoteControlStreamerDelegate {
@@ -456,6 +471,7 @@ extension Model: RemoteControlStreamerDelegate {
         if sceneSelector.sceneIndex < enabledScenes.count {
             state.scene = enabledScenes[sceneSelector.sceneIndex].id
         }
+        state.autoSceneSwitcher = .init(id: autoSceneSwitcher.currentSwitcherId)
         state.mic = mic.current.id
         if let preset = getBitratePresetByBitrate(bitrate: stream.bitrate) {
             state.bitrate = preset.id
@@ -485,27 +501,31 @@ extension Model: RemoteControlStreamerDelegate {
     }
 
     func remoteControlStreamerGetSettings() -> RemoteControlSettings {
-        let scenes = enabledScenes.map { scene in
-            RemoteControlSettingsScene(id: scene.id, name: scene.name)
+        let scenes = enabledScenes.map {
+            RemoteControlSettingsScene(id: $0.id, name: $0.name)
         }
-        let mics = database.mics.mics.map { mic in
-            RemoteControlSettingsMic(id: mic.id, name: mic.name)
+        let autoSceneSwitchers = database.autoSceneSwitchers.switchers.map {
+            RemoteControlSettingsAutoSceneSwitcher(id: $0.id, name: $0.name)
         }
-        let bitratePresets = database.bitratePresets.map { preset in
-            RemoteControlSettingsBitratePreset(id: preset.id, bitrate: preset.bitrate)
+        let mics = database.mics.mics.map {
+            RemoteControlSettingsMic(id: $0.id, name: $0.name)
+        }
+        let bitratePresets = database.bitratePresets.map {
+            RemoteControlSettingsBitratePreset(id: $0.id, bitrate: $0.bitrate)
         }
         let connectionPriorities = stream.srt.connectionPriorities!.priorities
-            .map { priority in
+            .map {
                 RemoteControlSettingsSrtConnectionPriority(
-                    id: priority.id,
-                    name: priority.name,
-                    priority: priority.priority,
-                    enabled: priority.enabled!
+                    id: $0.id,
+                    name: $0.name,
+                    priority: $0.priority,
+                    enabled: $0.enabled!
                 )
             }
         let connectionPrioritiesEnabled = stream.srt.connectionPriorities!.enabled
         return RemoteControlSettings(
             scenes: scenes,
+            autoSceneSwitchers: autoSceneSwitchers,
             bitratePresets: bitratePresets,
             mics: mics,
             srt: RemoteControlSettingsSrt(
@@ -517,6 +537,11 @@ extension Model: RemoteControlStreamerDelegate {
 
     func remoteControlStreamerSetScene(id: UUID) {
         selectScene(id: id)
+    }
+
+    func remoteControlStreamerSetAutoSceneSwitcher(id: UUID?) {
+        autoSceneSwitcher.currentSwitcherId = id
+        setAutoSceneSwitcher(id: id)
     }
 
     func remoteControlStreamerSetMic(id: String) {
@@ -545,7 +570,7 @@ extension Model: RemoteControlStreamerDelegate {
         if on {
             startStream()
         } else {
-            stopStream()
+            _ = stopStream()
         }
         updateQuickButtonStates()
     }
@@ -591,7 +616,7 @@ extension Model: RemoteControlStreamerDelegate {
     }
 
     func sendPreviewToRemoteControlAssistant(preview: Data) {
-        guard isRemoteControlStreamerConnected() else {
+        guard isRemoteControlStreamerPreviewActive() else {
             return
         }
         remoteControlStreamer?.sendPreview(preview: preview)
@@ -710,6 +735,10 @@ extension Model: RemoteControlAssistantDelegate {
         if let scene = state.scene {
             remoteControlState.scene = scene
             remoteControl.scene = scene
+        }
+        if let autoSceneSwitcher = state.autoSceneSwitcher {
+            remoteControlState.autoSceneSwitcher = autoSceneSwitcher
+            remoteControl.autoSceneSwitcher = autoSceneSwitcher.id
         }
         if let mic = state.mic {
             remoteControlState.mic = mic

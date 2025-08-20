@@ -1,5 +1,9 @@
 import Foundation
 
+private func serialize(_ value: Any) -> Data {
+    return (try? JSONSerialization.data(withJSONObject: value))!
+}
+
 struct TwitchApiUser: Decodable {
     let id: String
     let login: String
@@ -178,14 +182,12 @@ class TwitchApi {
     }
 
     func sendChatMessage(broadcasterId: String, message: String, onComplete: @escaping (Bool) -> Void) {
-        let body = """
-        {
-           "broadcaster_id": "\(broadcasterId)",
-           "sender_id": "\(broadcasterId)",
-           "message": "\(message)"
-        }
-        """
-        doPost(subPath: "chat/messages", body: body.utf8Data, onComplete: { data in
+        let body = [
+            "broadcaster_id": broadcasterId,
+            "sender_id": broadcasterId,
+            "message": message,
+        ]
+        doPost(subPath: "chat/messages", body: serialize(body), onComplete: { data in
             onComplete(data != nil)
         })
     }
@@ -247,13 +249,11 @@ class TwitchApi {
         length: Int,
         onComplete: @escaping (TwitchApiStartCommercialData?) -> Void
     ) {
-        let body = """
-        {
-           "broadcaster_id": "\(broadcasterId)",
-           "length": \(length)
-        }
-        """
-        doPost(subPath: "channels/commercial", body: body.utf8Data, onComplete: { data in
+        let body: [String: Any] = [
+            "broadcaster_id": broadcasterId,
+            "length": length,
+        ]
+        doPost(subPath: "channels/commercial", body: serialize(body), onComplete: { data in
             let message = try? JSONDecoder().decode(
                 TwitchApiStartCommercial.self,
                 from: data ?? Data()
@@ -263,27 +263,23 @@ class TwitchApi {
     }
 
     func banUser(broadcasterId: String, userId: String, duration: Int?, onComplete: @escaping (Bool) -> Void) {
-        let body: String
+        let body: [String: Any]
         if let duration {
-            body = """
-            {
-                "data": {
-                    "user_id": "\(userId)",
-                    "duration": \(duration)
-                }
-            }
-            """
+            body = [
+                "data": [
+                    "user_id": userId,
+                    "duration": duration,
+                ],
+            ]
         } else {
-            body = """
-            {
-                "data": {
-                    "user_id": "\(userId)"
-                }
-            }
-            """
+            body = [
+                "data": [
+                    "user_id": userId,
+                ],
+            ]
         }
         doPost(subPath: "moderation/bans?broadcaster_id=\(broadcasterId)&moderator_id=\(broadcasterId)",
-               body: body.utf8Data,
+               body: serialize(body),
                onComplete: { data in
                    onComplete(data != nil)
                })
@@ -307,12 +303,10 @@ class TwitchApi {
         userId: String,
         onComplete: @escaping (TwitchApiCreateStreamMarkerData?) -> Void
     ) {
-        let body = """
-        {
-           "user_id": "\(userId)"
-        }
-        """
-        doPost(subPath: "streams/markers", body: body.utf8Data, onComplete: { data in
+        let body = [
+            "user_id": userId,
+        ]
+        doPost(subPath: "streams/markers", body: serialize(body), onComplete: { data in
             let message = try? JSONDecoder().decode(
                 TwitchApiCreateStreamMarker.self,
                 from: data ?? Data()
@@ -353,21 +347,16 @@ class TwitchApi {
                                   title: String?,
                                   onComplete: @escaping (Bool) -> Void)
     {
-        var items: [String] = []
+        var body: [String: String] = [:]
         if let categoryId {
-            items.append("\"game_id\": \"\(categoryId)\"")
+            body["game_id"] = categoryId
         }
         if let title {
-            items.append("\"title\": \"\(title)\"")
+            body["title"] = title
         }
-        let body = """
-        {
-            \(items.joined(separator: ","))
-        }
-        """
         doPatch(
             subPath: "channels?broadcaster_id=\(broadcasterId)",
-            body: body.utf8Data,
+            body: serialize(body),
             onComplete: { data in
                 onComplete(data != nil)
             }

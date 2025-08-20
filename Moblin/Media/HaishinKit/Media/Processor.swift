@@ -91,9 +91,7 @@ final class Processor {
     }
 
     func setAudioEncoderSettings(settings: AudioEncoderSettings) {
-        processorControlQueue.async {
-            self.audio.encoder.setSettings(settings: settings)
-        }
+        audio.encoder.setSettings(settings: settings)
     }
 
     func setVideoEncoderSettings(settings: VideoEncoderSettings) {

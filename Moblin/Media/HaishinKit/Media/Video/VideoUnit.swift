@@ -43,10 +43,7 @@ struct CaptureDevices {
 var pixelFormatType = kCVPixelFormatType_420YpCbCr8BiPlanarFullRange
 var ioVideoUnitMetalPetal = false
 var allowVideoRangePixelFormat = false
-private let detectionsQueue = DispatchQueue(
-    label: "com.haishinkit.HaishinKit.Detections",
-    attributes: .concurrent
-)
+private let detectionsQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.Detections", attributes: .concurrent)
 private let lowFpsImageQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.VideoIOComponent.small")
 
 private func setOrientation(
@@ -435,11 +432,17 @@ final class VideoUnit: NSObject {
                 colorSpace: colorSpace
             )
         }
+        try configureCaptureSession(params: params)
+        // FPS must be set after starting the capture session.
+        updateDevicesFormat()
+    }
+
+    private func configureCaptureSession(params: VideoUnitAttachParams) throws {
         session.beginConfiguration()
         defer {
             session.commitConfiguration()
         }
-        try removeDevices(session)
+        removeDevices(session)
         for device in params.devices.devices {
             try attachDevice(device.device, session)
         }
@@ -541,6 +544,9 @@ final class VideoUnit: NSObject {
         }
         guard let selectedBufferedVideoCameraId else {
             return
+        }
+        for bufferedVideoBuiltin in bufferedVideoBuiltins.values where bufferedVideoBuiltin.latency > 0 {
+            bufferedVideoBuiltin.updateSampleBuffer(presentationTimeStamp.seconds, true)
         }
         if let sampleBuffer = bufferedVideos[selectedBufferedVideoCameraId]?.getSampleBuffer(presentationTimeStamp) {
             appendNewSampleBuffer(sampleBuffer: sampleBuffer)
@@ -1666,28 +1672,28 @@ final class VideoUnit: NSObject {
         }
     }
 
-    private func removeDevices(_ session: AVCaptureSession) throws {
+    private func removeDevices(_ session: AVCaptureSession) {
         for device in captureSessionDevices {
-            try removeConnection(session, device.connection)
-            try removeInput(session, device.input)
-            try removeOutput(session, device.output)
+            removeConnection(session, device.connection)
+            removeInput(session, device.input)
+            removeOutput(session, device.output)
         }
         captureSessionDevices.removeAll()
     }
 
-    private func removeConnection(_ session: AVCaptureSession, _ connection: AVCaptureConnection?) throws {
+    private func removeConnection(_ session: AVCaptureSession, _ connection: AVCaptureConnection?) {
         if let connection, session.connections.contains(connection) {
             session.removeConnection(connection)
         }
     }
 
-    private func removeInput(_ session: AVCaptureSession, _ input: AVCaptureInput?) throws {
+    private func removeInput(_ session: AVCaptureSession, _ input: AVCaptureInput?) {
         if let input, session.inputs.contains(input) {
             session.removeInput(input)
         }
     }
 
-    private func removeOutput(_ session: AVCaptureSession, _ output: AVCaptureOutput?) throws {
+    private func removeOutput(_ session: AVCaptureSession, _ output: AVCaptureOutput?) {
         if let output, session.outputs.contains(output) {
             session.removeOutput(output)
         }
@@ -1788,16 +1794,20 @@ final class VideoUnit: NSObject {
         guard let bufferedVideo = bufferedVideoBuiltins[device] else {
             return nil
         }
-        if bufferedVideo.latency > 0, var sampleBufferCopy = makeCopy(sampleBuffer: sampleBuffer) {
-            let presentationTimeStamp = sampleBufferCopy.presentationTimeStamp + CMTime(seconds: bufferedVideo.latency)
-            sampleBufferCopy = sampleBufferCopy.replacePresentationTimeStamp(presentationTimeStamp) ?? sampleBufferCopy
-            bufferedVideo.appendSampleBuffer(sampleBufferCopy)
-            bufferedVideo.updateSampleBuffer(sampleBuffer.presentationTimeStamp.seconds, true)
-            return bufferedVideo
-        } else {
+        guard bufferedVideo.latency > 0 else {
             bufferedVideo.setLatestSampleBuffer(sampleBuffer)
             return nil
         }
+        var sampleBufferCopy: CMSampleBuffer
+        if bufferedVideo.latency > 0.07 || bufferedVideo.numberOfBuffers() > 4 {
+            sampleBufferCopy = makeCopy(sampleBuffer: sampleBuffer) ?? sampleBuffer
+        } else {
+            sampleBufferCopy = sampleBuffer
+        }
+        let presentationTimeStamp = sampleBufferCopy.presentationTimeStamp + CMTime(seconds: bufferedVideo.latency)
+        sampleBufferCopy = sampleBufferCopy.replacePresentationTimeStamp(presentationTimeStamp) ?? sampleBufferCopy
+        bufferedVideo.appendSampleBuffer(sampleBufferCopy)
+        return bufferedVideo
     }
 }
 
@@ -1812,6 +1822,9 @@ extension VideoUnit: AVCaptureVideoDataOutputSampleBufferDelegate {
         }
         var sampleBuffer = sampleBuffer
         if let bufferedVideo = appendBufferedBuiltinVideo(sampleBuffer, input.device) {
+            for bufferedVideoBuiltin in bufferedVideoBuiltins.values {
+                bufferedVideoBuiltin.updateSampleBuffer(sampleBuffer.presentationTimeStamp.seconds, true)
+            }
             sampleBuffer = bufferedVideo.getSampleBuffer(sampleBuffer.presentationTimeStamp) ?? sampleBuffer
         }
         guard selectedBufferedVideoCameraId == nil else {

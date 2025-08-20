@@ -2,7 +2,7 @@ import SwiftUI
 
 struct StreamAudioSettingsView: View {
     @EnvironmentObject var model: Model
-    let stream: SettingsStream
+    @ObservedObject var stream: SettingsStream
     @State var bitrate: Float
 
     private func calcBitrate() -> Int {
@@ -11,6 +11,21 @@ struct StreamAudioSettingsView: View {
 
     var body: some View {
         Form {
+            Section {
+                HStack {
+                    Text("Codec")
+                    Spacer()
+                    Picker("", selection: $stream.audioCodec) {
+                        ForEach(SettingsStreamAudioCodec.allCases, id: \.self) {
+                            Text($0.rawValue)
+                        }
+                    }
+                }
+                .onChange(of: stream.audioCodec) { _ in
+                    model.reloadStreamIfEnabled(stream: stream)
+                }
+                .disabled(stream.enabled && model.isLive)
+            }
             Section {
                 HStack {
                     Slider(

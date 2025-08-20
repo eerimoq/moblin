@@ -62,7 +62,7 @@ private struct ChatBotCommandsSettingsView: View {
             }
             Section {
                 NavigationLink {
-                    PermissionsSettingsView(permissions: permissions.alert!)
+                    PermissionsSettingsView(permissions: permissions.alert)
                 } label: {
                     Text("!moblin alert <name>")
                 }
@@ -71,7 +71,7 @@ private struct ChatBotCommandsSettingsView: View {
             }
             Section {
                 NavigationLink {
-                    PermissionsSettingsView(permissions: permissions.fax!)
+                    PermissionsSettingsView(permissions: permissions.fax)
                 } label: {
                     Text("!moblin fax <url>")
                 }
@@ -80,7 +80,7 @@ private struct ChatBotCommandsSettingsView: View {
             }
             Section {
                 NavigationLink {
-                    PermissionsSettingsView(permissions: permissions.snapshot!)
+                    PermissionsSettingsView(permissions: permissions.snapshot)
                 } label: {
                     Text("!moblin snapshot <optional message>")
                 }
@@ -89,7 +89,7 @@ private struct ChatBotCommandsSettingsView: View {
             }
             Section {
                 NavigationLink {
-                    PermissionsSettingsView(permissions: permissions.reaction!)
+                    PermissionsSettingsView(permissions: permissions.reaction)
                 } label: {
                     Text("!moblin reaction <reaction>")
                 }
@@ -102,7 +102,7 @@ private struct ChatBotCommandsSettingsView: View {
             }
             Section {
                 NavigationLink {
-                    PermissionsSettingsView(permissions: permissions.filter!)
+                    PermissionsSettingsView(permissions: permissions.filter)
                 } label: {
                     Text("!moblin filter <filter> <on/off>")
                 }
@@ -117,7 +117,7 @@ private struct ChatBotCommandsSettingsView: View {
             }
             Section {
                 NavigationLink {
-                    PermissionsSettingsView(permissions: permissions.scene!)
+                    PermissionsSettingsView(permissions: permissions.scene)
                 } label: {
                     Text("!moblin scene <name>")
                 }
@@ -126,7 +126,7 @@ private struct ChatBotCommandsSettingsView: View {
             }
             Section {
                 NavigationLink {
-                    PermissionsSettingsView(permissions: permissions.stream!)
+                    PermissionsSettingsView(permissions: permissions.stream)
                 } label: {
                     Text("!moblin stream ...")
                 }
@@ -137,6 +137,18 @@ private struct ChatBotCommandsSettingsView: View {
                     Text("")
                     Text("!moblin stream category <category name>")
                     Text("Set stream category.")
+                }
+            }
+            Section {
+                NavigationLink {
+                    PermissionsSettingsView(permissions: permissions.widget)
+                } label: {
+                    Text("!moblin widget <name> ...")
+                }
+            } footer: {
+                VStack(alignment: .leading) {
+                    Text("!moblin widget <name> timer <number> add <seconds>")
+                    Text("Change timer value.")
                 }
             }
             Section {
@@ -168,7 +180,7 @@ private struct ChatBotCommandsSettingsView: View {
             }
             Section {
                 NavigationLink {
-                    PermissionsSettingsView(permissions: permissions.audio!)
+                    PermissionsSettingsView(permissions: permissions.audio)
                 } label: {
                     Text("!moblin mute/unmute")
                 }
@@ -183,7 +195,7 @@ private struct ChatBotCommandsSettingsView: View {
             }
             Section {
                 NavigationLink {
-                    PermissionsSettingsView(permissions: permissions.tesla!)
+                    PermissionsSettingsView(permissions: permissions.tesla)
                 } label: {
                     Text("!moblin tesla ...")
                 }

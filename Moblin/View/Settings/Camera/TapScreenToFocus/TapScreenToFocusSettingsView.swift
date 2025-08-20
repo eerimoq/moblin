@@ -1,16 +1,15 @@
 import SwiftUI
 
 struct TapScreenToFocusSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
+    @ObservedObject var database: Database
 
     var body: some View {
-        Toggle("Tap screen to focus", isOn: Binding(get: {
-            model.database.tapToFocus
-        }, set: { value in
-            model.database.tapToFocus = value
-            if !value {
-                model.setAutoFocus()
+        Toggle("Tap screen to focus", isOn: $database.tapToFocus)
+            .onChange(of: database.tapToFocus) { value in
+                if !value {
+                    model.setAutoFocus()
+                }
             }
-        }))
     }
 }

@@ -71,6 +71,7 @@ private struct ReplayStatusView: View {
     @EnvironmentObject var model: Model
     // To trigger updates.
     @ObservedObject var show: SettingsShow
+    @ObservedObject var replay: SettingsStreamReplay
     let textPlacement: StreamOverlayIconAndTextPlacement
 
     var body: some View {
@@ -363,11 +364,11 @@ private struct GameControllersStatusView: View {
     }
 }
 
-private struct ServersStatusView: View {
+private struct IngestsStatusView: View {
     let model: Model
     // To trigger updates.
     @ObservedObject var show: SettingsShow
-    @ObservedObject var servers: Servers
+    @ObservedObject var ingests: Ingests
     // To trigger updates.
     @ObservedObject var rtmpServer: SettingsRtmpServer
     // To trigger updates.
@@ -378,7 +379,7 @@ private struct ServersStatusView: View {
         if model.isShowingStatusServers() {
             StreamOverlayIconAndTextView(
                 icon: "server.rack",
-                text: servers.speedAndTotal,
+                text: ingests.speedAndTotal,
                 textPlacement: textPlacement
             )
         }
@@ -389,6 +390,7 @@ private struct LocationStatusView: View {
     @EnvironmentObject var model: Model
     // To trigger updates.
     @ObservedObject var show: SettingsShow
+    @ObservedObject var location: SettingsLocation
     @ObservedObject var status: StatusTopRight
     let textPlacement: StreamOverlayIconAndTextPlacement
 
@@ -535,7 +537,7 @@ private struct FixedHorizonStatusView: View {
     }
 }
 
-private struct PhoneCoolerDeviceStatusView: View {
+private struct BlackSharkCoolerDeviceStatusView: View {
     let model: Model
     // To trigger updates.
     @ObservedObject var show: SettingsShow
@@ -543,12 +545,12 @@ private struct PhoneCoolerDeviceStatusView: View {
     let textPlacement: StreamOverlayIconAndTextPlacement
 
     var body: some View {
-        if status.phoneCoolerDeviceState == .connected {
+        if status.blackSharkCoolerDeviceState == .connected {
             StreamOverlayIconAndTextView(
                 icon: "fan",
                 text: """
-                \(String(status.phoneCoolerPhoneTemp ?? 0)) °C / \
-                \(String(status.phoneCoolerExhaustTemp ?? 0)) °C
+                \(String(status.blackSharkCoolerPhoneTemp ?? 0)) °C / \
+                \(String(status.blackSharkCoolerExhaustTemp ?? 0)) °C
                 """,
                 textPlacement: textPlacement
             )
@@ -595,9 +597,9 @@ private struct StatusesView: View {
         AdsRemainingTimerView(model: model,
                               status: model.statusTopRight,
                               textPlacement: textPlacement)
-        ServersStatusView(model: model,
+        IngestsStatusView(model: model,
                           show: model.database.show,
-                          servers: model.servers,
+                          ingests: model.ingests,
                           rtmpServer: model.database.rtmpServer,
                           srtlaServer: model.database.srtlaServer,
                           textPlacement: textPlacement)
@@ -628,12 +630,15 @@ private struct StatusesView: View {
         BondingStatusView(show: model.database.show,
                           bonding: model.bonding,
                           textPlacement: textPlacement)
-        ReplayStatusView(show: model.database.show, textPlacement: textPlacement)
+        ReplayStatusView(show: model.database.show,
+                         replay: model.stream.replay,
+                         textPlacement: textPlacement)
         StreamUptimeStatusView(show: model.database.show,
                                streamUptime: model.streamUptime,
                                textPlacement: textPlacement)
         LocationStatusView(
             show: model.database.show,
+            location: model.database.location,
             status: model.statusTopRight,
             textPlacement: textPlacement
         )
@@ -668,7 +673,7 @@ private struct StatusesView: View {
             status: model.statusTopRight,
             textPlacement: textPlacement
         )
-        PhoneCoolerDeviceStatusView(
+        BlackSharkCoolerDeviceStatusView(
             model: model,
             show: model.database.show,
             status: model.statusTopRight,

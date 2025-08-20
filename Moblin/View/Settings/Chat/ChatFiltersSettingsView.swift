@@ -46,26 +46,30 @@ private struct ChatFilterFilterSettingsView: View {
                     }
                 )
             } label: {
-                TextItemView(name: String(localized: "Username"), value: filter.user)
+                TextItemView(name: String(localized: "Username"), value: filter.username())
             }
             NavigationLink {
                 TextEditView(
                     title: String(localized: "Message starts with"),
                     value: filter.messageStart,
                     onSubmit: {
-                        filter.messageStartWords = $0.components(separatedBy: " ")
+                        if $0.isEmpty {
+                            filter.messageStartWords = []
+                        } else {
+                            filter.messageStartWords = $0.components(separatedBy: " ")
+                        }
                         filter.messageStart = filter.messageStartWords.joined(separator: " ")
                     }
                 )
             } label: {
-                TextItemView(name: String(localized: "Message starts with"), value: filter.messageStart)
+                TextItemView(name: String(localized: "Message starts with"), value: filter.message())
             }
         } header: {
             Text("Condition")
         } footer: {
             Text("""
-            The condition is true when both Username and Message start with matches the received \
-            chat message. Leave Message start with empty to only match Username.
+            The condition is true when both "Username" and "Message starts with" matches the received \
+            chat message.
             """)
         }
     }
@@ -110,10 +114,13 @@ private struct ChatFilterSettingsView: View {
             }
             .navigationTitle("Filter")
         } label: {
-            TextItemView(
-                name: String(localized: "Username"),
-                value: filter.user
-            )
+            HStack {
+                DraggableItemPrefixView()
+                TextItemView(
+                    name: String(localized: "Username"),
+                    value: filter.username()
+                )
+            }
         }
     }
 }

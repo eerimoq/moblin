@@ -95,11 +95,6 @@ struct DebugSettingsView: View {
                     Text("HTTP proxy")
                 }
                 Toggle("Reliable chat", isOn: $debug.reliableChat)
-                NavigationLink {
-                    DjiGimbalDevicesSettingsView()
-                } label: {
-                    Label("DJI gimbals", systemImage: "appletvremote.gen1")
-                }
                 VStack(alignment: .leading) {
                     Text("Builtin audio and video delay")
                     HStack {
@@ -125,11 +120,8 @@ struct DebugSettingsView: View {
                         model.reloadStream()
                         model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
                     }
-                Toggle("RTSP client", isOn: $debug.rtspClient)
-                    .onChange(of: debug.rtspClient) { _ in
-                        model.reloadRtspClient()
-                    }
                 Toggle("Kick login", isOn: $debug.kickLogin)
+
             } header: {
                 Text("Experimental")
             }

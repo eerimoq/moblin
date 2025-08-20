@@ -422,11 +422,34 @@ private struct ScenePickerView: View {
             Text("Scene")
         }
         .onChange(of: remoteControl.scene) { _ in
-            guard remoteControl.scene != model.remoteControlState.scene
-            else {
+            guard remoteControl.scene != model.remoteControlState.scene else {
                 return
             }
             model.remoteControlAssistantSetScene(id: remoteControl.scene)
+        }
+    }
+}
+
+private struct AutoSceneSwitcherPickerView: View {
+    @EnvironmentObject var model: Model
+    @ObservedObject var remoteControl: RemoteControl
+
+    var body: some View {
+        Picker(selection: $remoteControl.autoSceneSwitcher) {
+            Text("-- None --")
+                .tag(nil as UUID?)
+            ForEach(remoteControl.settings?.autoSceneSwitchers ?? []) { autoSceneSwitcher in
+                Text(autoSceneSwitcher.name)
+                    .tag(autoSceneSwitcher.id as UUID?)
+            }
+        } label: {
+            Text("Auto scene switcher")
+        }
+        .onChange(of: remoteControl.autoSceneSwitcher) { _ in
+            guard remoteControl.autoSceneSwitcher != model.remoteControlState.autoSceneSwitcher?.id else {
+                return
+            }
+            model.remoteControlAssistantSetAutoSceneSwitcher(id: remoteControl.autoSceneSwitcher)
         }
     }
 }
@@ -525,6 +548,7 @@ private struct ControlBarRemoteControlAssistantControlView: View {
                 RecordingView(remoteControl: remoteControl)
                 ZoomView(remoteControl: remoteControl)
                 ScenePickerView(remoteControl: remoteControl)
+                AutoSceneSwitcherPickerView(remoteControl: remoteControl)
                 MicView(remoteControl: remoteControl)
                 BitrateView(remoteControl: remoteControl)
                 SrtConnectionPrioritiesView(remoteControl: remoteControl)
@@ -637,6 +661,7 @@ private struct ControlBarRemoteControlAssistantInnerView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var remoteControlSettings: SettingsRemoteControl
     @ObservedObject var remoteControl: RemoteControl
+    @ObservedObject var orientation: Orientation
     @State var didDetachCamera = false
 
     private func title() -> String {
@@ -671,7 +696,7 @@ private struct ControlBarRemoteControlAssistantInnerView: View {
                         Form {
                             Text("Waiting for the remote control streamer to connect...")
                         }
-                    } else if model.isPortrait() {
+                    } else if orientation.isPortrait {
                         Form {
                             ControlBarRemoteControlAssistantStatusView(remoteControl: remoteControl)
                             ControlBarRemoteControlAssistantControlView(remoteControl: remoteControl)
@@ -730,7 +755,8 @@ struct ControlBarRemoteControlAssistantView: View {
         ZStack {
             NavigationStack {
                 ControlBarRemoteControlAssistantInnerView(remoteControlSettings: model.database.remoteControl,
-                                                          remoteControl: model.remoteControl)
+                                                          remoteControl: model.remoteControl,
+                                                          orientation: model.orientation)
             }
             ButtonsView()
         }

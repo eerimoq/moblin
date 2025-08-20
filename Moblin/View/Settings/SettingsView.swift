@@ -59,26 +59,9 @@ struct SettingsView: View {
             Section {
                 if database.showAllSettings {
                     NavigationLink {
-                        RtmpServerSettingsView(rtmpServer: database.rtmpServer)
+                        IngestsSettingsView(database: database)
                     } label: {
-                        Label("RTMP server", systemImage: "server.rack")
-                    }
-                    NavigationLink {
-                        SrtlaServerSettingsView(srtlaServer: database.srtlaServer)
-                    } label: {
-                        Label("SRT(LA) server", systemImage: "server.rack")
-                    }
-                    NavigationLink {
-                        RistServerSettingsView(ristServer: database.ristServer)
-                    } label: {
-                        Label("RIST server", systemImage: "server.rack")
-                    }
-                    if database.debug.rtspClient {
-                        NavigationLink {
-                            RtspClientSettingsView(rtspClient: database.rtspClient)
-                        } label: {
-                            Label("RTSP client", systemImage: "server.rack")
-                        }
+                        Label("Ingests", systemImage: "server.rack")
                     }
                 }
                 NavigationLink {
@@ -154,7 +137,7 @@ struct SettingsView: View {
                         Label("Heart rate devices", systemImage: "heart")
                     }
                     NavigationLink {
-                        PhoneCoolerDevicesSettingsView(phoneCoolerDevices: database.phoneCoolerDevices)
+                        BlackSharkCoolerDevicesSettingsView(blackSharkCoolerDevices: database.blackSharkCoolerDevices)
                     } label: {
                         Label("Black Shark coolers", systemImage: "fan")
                     }

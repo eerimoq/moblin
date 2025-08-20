@@ -74,19 +74,19 @@ private struct PasswordView: View {
 }
 
 private struct RemoteControlSettingsStreamerView: View {
-    @EnvironmentObject var model: Model
-    @ObservedObject var database: Database
+    let model: Model
+    @ObservedObject var streamer: SettingsRemoteControlStreamer
 
     private func submitStreamerUrl(value: String) {
         guard isValidWebSocketUrl(url: value) == nil else {
             return
         }
-        database.remoteControl.streamer.url = value
+        streamer.url = value
         model.reloadRemoteControlStreamer()
     }
 
     private func submitStreamerPreviewFps(value: Float) {
-        database.remoteControl.streamer.previewFps = value
+        streamer.previewFps = value
         model.setLowFpsImage()
     }
 
@@ -96,18 +96,13 @@ private struct RemoteControlSettingsStreamerView: View {
 
     var body: some View {
         Section {
-            Toggle(isOn: Binding(get: {
-                database.remoteControl.streamer.enabled
-            }, set: { value in
-                database.remoteControl.streamer.enabled = value
-                model.reloadRemoteControlStreamer()
-                model.objectWillChange.send()
-            })) {
-                Text("Enabled")
-            }
+            Toggle("Enabled", isOn: $streamer.enabled)
+                .onChange(of: streamer.enabled) { _ in
+                    model.reloadRemoteControlStreamer()
+                }
             TextEditNavigationView(
                 title: String(localized: "Assistant URL"),
-                value: database.remoteControl.streamer.url,
+                value: streamer.url,
                 onSubmit: submitStreamerUrl,
                 footers: [
                     String(
@@ -119,8 +114,8 @@ private struct RemoteControlSettingsStreamerView: View {
             HStack {
                 Text("Preview FPS")
                 SliderView(
-                    value: database.remoteControl.streamer.previewFps,
-                    minimum: 1,
+                    value: streamer.previewFps,
+                    minimum: 0,
                     maximum: 5,
                     step: 1,
                     onSubmit: submitStreamerPreviewFps,
@@ -425,7 +420,7 @@ struct RemoteControlSettingsView: View {
             } footer: {
                 Text("Used by both streamer and assistant.")
             }
-            RemoteControlSettingsStreamerView(database: database)
+            RemoteControlSettingsStreamerView(model: model, streamer: database.remoteControl.streamer)
             Section {
                 NavigationLink {
                     Form {

@@ -282,11 +282,7 @@ struct SceneSettingsView: View {
                                             if scene.id == model.getSelectedScene()?.id {
                                                 attachCamera = model.isCaptureDeviceWidget(widget: widget)
                                             }
-                                            model.sceneUpdated(
-                                                imageEffectChanged: true,
-                                                attachCamera: attachCamera
-                                            )
-                                            model.objectWillChange.send()
+                                            model.sceneUpdated(imageEffectChanged: true, attachCamera: attachCamera)
                                             showingAddWidget = false
                                         } label: {
                                             IconAndTextView(

@@ -27,6 +27,7 @@ private let iconsProductIds = [
     "AppIconBillionaire",
     "AppIconTrillionaire",
     "AppIconIreland",
+    "AppIconPeru",
 ]
 
 struct Icon: Identifiable {
@@ -100,6 +101,7 @@ extension Model {
 
     private func updateIcons(myProductIds: [String]) {
         var myIcons = globalMyIcons
+        cosmetics.hasBoughtSomething = false
         var iconsInStore: [Icon] = []
         for productId in iconsProductIds {
             guard let product = products[productId] else {
@@ -112,6 +114,7 @@ extension Model {
                     id: product.id,
                     price: product.displayPrice
                 ))
+                cosmetics.hasBoughtSomething = true
             } else {
                 iconsInStore.append(Icon(
                     name: product.displayName,

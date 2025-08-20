@@ -3,24 +3,18 @@ import SwiftUI
 struct StreamReplaySettingsView: View {
     @EnvironmentObject var model: Model
     let stream: SettingsStream
+    @ObservedObject var replay: SettingsStreamReplay
 
     var body: some View {
         Form {
             Section {
-                Toggle("Enabled", isOn: Binding(get: {
-                    stream.replay.enabled
-                }, set: { value in
-                    stream.replay.enabled = value
-                    if stream.enabled {
-                        model.streamReplayEnabledUpdated()
-                        model.objectWillChange.send()
+                Toggle("Enabled", isOn: $replay.enabled)
+                    .onChange(of: replay.enabled) { _ in
+                        if stream.enabled {
+                            model.streamReplayEnabledUpdated()
+                        }
                     }
-                }))
-                Toggle("Fade transition", isOn: Binding(get: {
-                    stream.replay.fade!
-                }, set: { value in
-                    stream.replay.fade = value
-                }))
+                Toggle("Fade transition", isOn: $replay.fade)
             }
         }
         .navigationTitle("Replay")

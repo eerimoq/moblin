@@ -97,6 +97,25 @@ let resolutions = SettingsStreamResolution.allCases
 
 let fpss = [120, 100, 60, 50, 30, 25, 15]
 
+enum SettingsStreamAudioCodec: String, Codable, CaseIterable {
+    case aac = "AAC"
+    case opus = "OPUS"
+
+    init(from decoder: Decoder) throws {
+        self = try SettingsStreamAudioCodec(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
+            .aac
+    }
+
+    func toEncoder() -> AudioEncoderSettings.Format {
+        switch self {
+        case .aac:
+            return .aac
+        case .opus:
+            return .opus
+        }
+    }
+}
+
 enum SettingsStreamProtocol: String, Codable {
     case rtmp = "RTMP"
     case srt = "SRT"
@@ -411,9 +430,28 @@ class SettingsStreamRecording: Codable, ObservableObject {
     }
 }
 
-class SettingsStreamReplay: Codable {
-    var enabled: Bool = false
-    var fade: Bool? = true
+class SettingsStreamReplay: Codable, ObservableObject {
+    @Published var enabled: Bool = false
+    @Published var fade: Bool = true
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case enabled,
+             fade
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.enabled, enabled)
+        try container.encode(.fade, fade)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        enabled = container.decode(.enabled, Bool.self, false)
+        fade = container.decode(.fade, Bool.self, false)
+    }
 
     func clone() -> SettingsStreamReplay {
         let new = SettingsStreamReplay()
@@ -544,16 +582,15 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
     var srt: SettingsStreamSrt = .init()
     var rtmp: SettingsStreamRtmp = .init()
     var rist: SettingsStreamRist = .init()
-    var captureSessionPresetEnabled: Bool = false
-    var captureSessionPreset: SettingsCaptureSessionPreset = .medium
     @Published var maxKeyFrameInterval: Int32 = 2
+    @Published var audioCodec: SettingsStreamAudioCodec = .aac
     var audioBitrate: Int = 128_000
     var chat: SettingsStreamChat = .init()
     var recording: SettingsStreamRecording = .init()
     @Published var realtimeIrlEnabled: Bool = false
     var realtimeIrlPushKey: String = ""
     @Published var portrait: Bool = false
-    var backgroundStreaming: Bool = false
+    @Published var backgroundStreaming: Bool = false
     @Published var estimatedViewerDelay: Float = 8.0
     var twitchMultiTrackEnabled: Bool = false
     @Published var ntpPoolAddress: String = "time.apple.com"
@@ -621,6 +658,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
              captureSessionPresetEnabled,
              captureSessionPreset,
              maxKeyFrameInterval,
+             audioCodec,
              audioBitrate,
              chat,
              recording,
@@ -686,9 +724,8 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         try container.encode(.srt, srt)
         try container.encode(.rtmp, rtmp)
         try container.encode(.rist, rist)
-        try container.encode(.captureSessionPresetEnabled, captureSessionPresetEnabled)
-        try container.encode(.captureSessionPreset, captureSessionPreset)
         try container.encode(.maxKeyFrameInterval, maxKeyFrameInterval)
+        try container.encode(.audioCodec, audioCodec)
         try container.encode(.audioBitrate, audioBitrate)
         try container.encode(.chat, chat)
         try container.encode(.recording, recording)
@@ -754,9 +791,8 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         srt = container.decode(.srt, SettingsStreamSrt.self, .init())
         rtmp = container.decode(.rtmp, SettingsStreamRtmp.self, .init())
         rist = container.decode(.rist, SettingsStreamRist.self, .init())
-        captureSessionPresetEnabled = container.decode(.captureSessionPresetEnabled, Bool.self, false)
-        captureSessionPreset = container.decode(.captureSessionPreset, SettingsCaptureSessionPreset.self, .medium)
         maxKeyFrameInterval = container.decode(.maxKeyFrameInterval, Int32.self, 2)
+        audioCodec = container.decode(.audioCodec, SettingsStreamAudioCodec.self, .aac)
         audioBitrate = container.decode(.audioBitrate, Int.self, 128_000)
         chat = container.decode(.chat, SettingsStreamChat.self, .init())
         recording = container.decode(.recording, SettingsStreamRecording.self, .init())
@@ -813,9 +849,8 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         new.srt = srt.clone()
         new.rtmp = rtmp.clone()
         new.rist = rist.clone()
-        new.captureSessionPresetEnabled = captureSessionPresetEnabled
-        new.captureSessionPreset = captureSessionPreset
         new.maxKeyFrameInterval = maxKeyFrameInterval
+        new.audioCodec = audioCodec
         new.audioBitrate = audioBitrate
         new.chat = chat.clone()
         new.recording = recording.clone()
@@ -910,7 +945,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
     }
 
     func audioCodecString() -> String {
-        return makeAudioCodecString()
+        return audioCodec.rawValue
     }
 
     func maxKeyFrameIntervalString() -> String {
@@ -1254,10 +1289,32 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject, Named {
     }
 }
 
-class SettingsAutoSceneSwitcherScene: Codable, Identifiable {
+class SettingsAutoSceneSwitcherScene: Codable, Identifiable, ObservableObject {
     var id: UUID = .init()
-    var sceneId: UUID?
-    var time: Int = 15
+    @Published var sceneId: UUID?
+    @Published var time: Int = 15
+
+    enum CodingKeys: CodingKey {
+        case id,
+             sceneId,
+             time
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.sceneId, sceneId)
+        try container.encode(.time, time)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        sceneId = container.decode(.sceneId, UUID?.self, nil)
+        time = container.decode(.time, Int.self, 15)
+    }
 }
 
 class SettingsAutoSceneSwitcher: Codable, Identifiable, ObservableObject, Named {
@@ -1265,10 +1322,13 @@ class SettingsAutoSceneSwitcher: Codable, Identifiable, ObservableObject, Named 
     var id: UUID = .init()
     @Published var name: String = baseName
     @Published var shuffle: Bool = false
-    var scenes: [SettingsAutoSceneSwitcherScene] = []
+    @Published var scenes: [SettingsAutoSceneSwitcherScene] = []
 
     enum CodingKeys: CodingKey {
-        case id, name, shuffle, scenes
+        case id,
+             name,
+             shuffle,
+             scenes
     }
 
     func encode(to encoder: Encoder) throws {
@@ -1440,10 +1500,51 @@ enum SettingsVerticalAlignment: String, Codable, CaseIterable {
     }
 }
 
-class SettingsWidgetTextTimer: Codable, Identifiable {
+class SettingsWidgetTextTimer: Codable, Identifiable, ObservableObject {
     var id: UUID = .init()
-    var delta: Int = 5
-    var endTime: Double = 0
+    @Published var delta: Int = 5
+    @Published var endTime: Double = 0
+
+    enum CodingKeys: CodingKey {
+        case id,
+             delta,
+             endTime
+    }
+
+    init() {}
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.delta, delta)
+        try container.encode(.endTime, endTime)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        delta = container.decode(.delta, Int.self, 5)
+        endTime = container.decode(.endTime, Double.self, 0)
+    }
+
+    func add(delta: Double) {
+        if timeLeft() < 0 {
+            endTime = Date().timeIntervalSince1970
+        }
+        endTime += delta
+    }
+
+    func format() -> String {
+        return Duration(secondsComponent: Int64(max(timeLeft(), 0)), attosecondsComponent: 0).formatWithSeconds()
+    }
+
+    func textEffectEndTime() -> ContinuousClock.Instant {
+        return .now.advanced(by: .seconds(max(timeLeft(), 0)))
+    }
+
+    private func timeLeft() -> Double {
+        return utcTimeDeltaFromNow(to: endTime)
+    }
 }
 
 class SettingsWidgetTextStopwatch: Codable, Identifiable, ObservableObject {
@@ -2253,13 +2354,50 @@ enum SettingsWidgetPadelScoreboardGameType: String, Codable, CaseIterable {
     }
 }
 
-class SettingsWidgetPadelScoreboard: Codable {
+enum SettingsWidgetPadelScoreboardScoreIncrement {
+    case home
+    case away
+}
+
+class SettingsWidgetPadelScoreboard: Codable, ObservableObject {
     var type: SettingsWidgetPadelScoreboardGameType = .doubles
     var homePlayer1: UUID = .init()
     var homePlayer2: UUID = .init()
     var awayPlayer1: UUID = .init()
     var awayPlayer2: UUID = .init()
     var score: [SettingsWidgetScoreboardScore] = [.init()]
+    var scoreChanges: [SettingsWidgetPadelScoreboardScoreIncrement] = []
+
+    enum CodingKeys: CodingKey {
+        case type,
+             homePlayer1,
+             homePlayer2,
+             awayPlayer1,
+             awayPlayer2,
+             score
+    }
+
+    init() {}
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.type, type)
+        try container.encode(.homePlayer1, homePlayer1)
+        try container.encode(.homePlayer2, homePlayer2)
+        try container.encode(.awayPlayer1, awayPlayer1)
+        try container.encode(.awayPlayer2, awayPlayer2)
+        try container.encode(.score, score)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        type = container.decode(.type, SettingsWidgetPadelScoreboardGameType.self, .doubles)
+        homePlayer1 = container.decode(.homePlayer1, UUID.self, .init())
+        homePlayer2 = container.decode(.homePlayer2, UUID.self, .init())
+        awayPlayer1 = container.decode(.awayPlayer1, UUID.self, .init())
+        awayPlayer2 = container.decode(.awayPlayer2, UUID.self, .init())
+        score = container.decode(.score, [SettingsWidgetScoreboardScore].self, [.init()])
+    }
 }
 
 class SettingsWidgetScoreboard: Codable {
@@ -3428,7 +3566,7 @@ class SettingsChatFilter: Identifiable, Codable, ObservableObject {
     @Published var print: Bool = false
 
     func isMatching(user: String?, segments: [ChatPostSegment]) -> Bool {
-        if user != self.user {
+        if self.user.count > 0, user != self.user {
             return false
         }
         var segmentsIterator = segments.makeIterator()
@@ -3442,6 +3580,22 @@ class SettingsChatFilter: Identifiable, Codable, ObservableObject {
             }
         }
         return true
+    }
+
+    func username() -> String {
+        if user.isEmpty {
+            return String(localized: "-- Any --")
+        } else {
+            return user
+        }
+    }
+
+    func message() -> String {
+        if messageStart.isEmpty {
+            return String(localized: "-- Any --")
+        } else {
+            return messageStart
+        }
     }
 
     private func firstText(segmentsIterator: inout IndexingIterator<[ChatPostSegment]>) -> String? {
@@ -3537,15 +3691,68 @@ class SettingsChatBotPermissions: Codable {
     var tts: SettingsChatBotPermissionsCommand = .init()
     var fix: SettingsChatBotPermissionsCommand = .init()
     var map: SettingsChatBotPermissionsCommand = .init()
-    var alert: SettingsChatBotPermissionsCommand? = .init()
-    var fax: SettingsChatBotPermissionsCommand? = .init()
-    var snapshot: SettingsChatBotPermissionsCommand? = .init()
-    var filter: SettingsChatBotPermissionsCommand? = .init()
-    var tesla: SettingsChatBotPermissionsCommand? = .init()
-    var audio: SettingsChatBotPermissionsCommand? = .init()
-    var reaction: SettingsChatBotPermissionsCommand? = .init()
-    var scene: SettingsChatBotPermissionsCommand? = .init()
-    var stream: SettingsChatBotPermissionsCommand? = .init()
+    var alert: SettingsChatBotPermissionsCommand = .init()
+    var fax: SettingsChatBotPermissionsCommand = .init()
+    var snapshot: SettingsChatBotPermissionsCommand = .init()
+    var filter: SettingsChatBotPermissionsCommand = .init()
+    var tesla: SettingsChatBotPermissionsCommand = .init()
+    var audio: SettingsChatBotPermissionsCommand = .init()
+    var reaction: SettingsChatBotPermissionsCommand = .init()
+    var scene: SettingsChatBotPermissionsCommand = .init()
+    var stream: SettingsChatBotPermissionsCommand = .init()
+    var widget: SettingsChatBotPermissionsCommand = .init()
+
+    enum CodingKeys: CodingKey {
+        case tts,
+             fix,
+             map,
+             alert,
+             fax,
+             snapshot,
+             filter,
+             tesla,
+             audio,
+             reaction,
+             scene,
+             stream,
+             widget
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.tts, tts)
+        try container.encode(.fix, fix)
+        try container.encode(.map, map)
+        try container.encode(.alert, alert)
+        try container.encode(.fax, fax)
+        try container.encode(.snapshot, snapshot)
+        try container.encode(.filter, filter)
+        try container.encode(.tesla, tesla)
+        try container.encode(.audio, audio)
+        try container.encode(.reaction, reaction)
+        try container.encode(.scene, scene)
+        try container.encode(.stream, stream)
+        try container.encode(.widget, widget)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        tts = container.decode(.tts, SettingsChatBotPermissionsCommand.self, .init())
+        fix = container.decode(.fix, SettingsChatBotPermissionsCommand.self, .init())
+        map = container.decode(.map, SettingsChatBotPermissionsCommand.self, .init())
+        alert = container.decode(.alert, SettingsChatBotPermissionsCommand.self, .init())
+        fax = container.decode(.fax, SettingsChatBotPermissionsCommand.self, .init())
+        snapshot = container.decode(.snapshot, SettingsChatBotPermissionsCommand.self, .init())
+        filter = container.decode(.filter, SettingsChatBotPermissionsCommand.self, .init())
+        tesla = container.decode(.tesla, SettingsChatBotPermissionsCommand.self, .init())
+        audio = container.decode(.audio, SettingsChatBotPermissionsCommand.self, .init())
+        reaction = container.decode(.reaction, SettingsChatBotPermissionsCommand.self, .init())
+        scene = container.decode(.scene, SettingsChatBotPermissionsCommand.self, .init())
+        stream = container.decode(.stream, SettingsChatBotPermissionsCommand.self, .init())
+        widget = container.decode(.widget, SettingsChatBotPermissionsCommand.self, .init())
+    }
 }
 
 class SettingsChatBotAlias: Codable, ObservableObject, Identifiable {
@@ -3703,9 +3910,9 @@ class SettingsChat: Codable, ObservableObject {
     @Published var height: Double = 0.7
     @Published var width: Double = 1.0
     @Published var maximumAge: Int = 30
-    var maximumAgeEnabled: Bool = false
+    @Published var maximumAgeEnabled: Bool = false
     var meInUsernameColor: Bool = true
-    var enabled: Bool = true
+    @Published var enabled: Bool = true
     @Published var filters: [SettingsChatFilter] = []
     var textToSpeechEnabled: Bool = false
     @Published var textToSpeechDetectLanguagePerMessage: Bool = false
@@ -4250,7 +4457,6 @@ class SettingsDebug: Codable, ObservableObject {
     @Published var builtinAudioAndVideoDelay: Double = 0.0
     @Published var autoLowPowerMode: Bool = false
     @Published var newSrt: Bool = false
-    @Published var rtspClient: Bool = false
     @Published var kickLogin: Bool = false
 
     enum CodingKeys: CodingKey {
@@ -4290,7 +4496,6 @@ class SettingsDebug: Codable, ObservableObject {
              overrideSceneMic,
              autoLowPowerMode,
              newSrt,
-             rtspClient,
              kickLogin
     }
 
@@ -4328,7 +4533,6 @@ class SettingsDebug: Codable, ObservableObject {
         try container.encode(.builtinAudioAndVideoDelay, builtinAudioAndVideoDelay)
         try container.encode(.autoLowPowerMode, autoLowPowerMode)
         try container.encode(.newSrt, newSrt)
-        try container.encode(.rtspClient, rtspClient)
         try container.encode(.kickLogin, kickLogin)
     }
 
@@ -4370,7 +4574,6 @@ class SettingsDebug: Codable, ObservableObject {
         builtinAudioAndVideoDelay = container.decode(.builtinAudioAndVideoDelay, Double.self, 0.0)
         autoLowPowerMode = container.decode(.autoLowPowerMode, Bool.self, false)
         newSrt = container.decode(.newSrt, Bool.self, false)
-        rtspClient = container.decode(.rtspClient, Bool.self, false)
         kickLogin = container.decode(.kickLogin, Bool.self, false)
     }
 }
@@ -4638,11 +4841,20 @@ class SettingsRtspClientStream: Codable, Identifiable, ObservableObject, Named {
     var id: UUID = .init()
     @Published var name: String = baseName
     @Published var url: String = ""
+    @Published var enabled: Bool = false
+    @Published var latency: Int32 = 2000
+    @Published var latencyString: String = "2000"
 
     enum CodingKeys: CodingKey {
         case id,
              name,
-             url
+             url,
+             enabled,
+             latency
+    }
+
+    func latencySeconds() -> Double {
+        return Double(latency) / 1000
     }
 
     func encode(to encoder: Encoder) throws {
@@ -4650,6 +4862,8 @@ class SettingsRtspClientStream: Codable, Identifiable, ObservableObject, Named {
         try container.encode(.id, id)
         try container.encode(.name, name)
         try container.encode(.url, url)
+        try container.encode(.enabled, enabled)
+        try container.encode(.latency, latency)
     }
 
     init() {}
@@ -4659,6 +4873,9 @@ class SettingsRtspClientStream: Codable, Identifiable, ObservableObject, Named {
         id = container.decode(.id, UUID.self, .init())
         name = container.decode(.name, String.self, Self.baseName)
         url = container.decode(.url, String.self, "")
+        enabled = container.decode(.enabled, Bool.self, false)
+        latency = container.decode(.latency, Int32.self, 2000)
+        latencyString = String(latency)
     }
 
     func camera() -> String {
@@ -4964,30 +5181,6 @@ class SettingsDjiDevices: Codable, ObservableObject {
     }
 }
 
-enum SettingsDjiGimbalDeviceModel: String, Codable {
-    case osmoMobile7P
-    case unknown
-
-    init(from decoder: Decoder) throws {
-        self = try SettingsDjiGimbalDeviceModel(rawValue: decoder.singleValueContainer()
-            .decode(RawValue.self)) ?? .unknown
-    }
-}
-
-class SettingsDjiGimbalDevice: Codable, Identifiable, Named {
-    static let baseName = String(localized: "My gimbal")
-    var id: UUID = .init()
-    var name: String = baseName
-    var enabled: Bool = false
-    var bluetoothPeripheralName: String?
-    var bluetoothPeripheralId: UUID?
-    var model: SettingsDjiGimbalDeviceModel = .unknown
-}
-
-class SettingsDjiGimbalDevices: Codable {
-    var devices: [SettingsDjiGimbalDevice] = []
-}
-
 class SettingsGoProWifiCredentials: Codable, Identifiable, ObservableObject, Named {
     static let baseName = String(localized: "My SSID")
     var id: UUID = .init()
@@ -5165,12 +5358,33 @@ enum SettingsReplaySpeed: String, Codable, CaseIterable {
     }
 }
 
-class SettingsReplay: Codable {
-    // periphery:ignore
-    var position: Double? = 10.0
-    var start: Double? = 20.0
-    var stop: Double? = 30.0
-    var speed: SettingsReplaySpeed = .one
+class SettingsReplay: Codable, ObservableObject {
+    static let stop: Double = 30.0
+    @Published var start: Double = 20.0
+    @Published var stop: Double = SettingsReplay.stop
+    @Published var speed: SettingsReplaySpeed = .one
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case start,
+             stop,
+             speed
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.start, start)
+        try container.encode(.stop, stop)
+        try container.encode(.speed, speed)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        start = container.decode(.start, Double.self, 20.0)
+        stop = container.decode(.stop, Double.self, SettingsReplay.stop)
+        speed = container.decode(.speed, SettingsReplaySpeed.self, .one)
+    }
 }
 
 class SettingsCatPrinter: Codable, Identifiable, ObservableObject, Named {
@@ -5362,7 +5576,7 @@ class SettingsHeartRateDevices: Codable, ObservableObject {
 
 private let defaultRgbLightColor = RgbColor(red: 0, green: 255, blue: 0)
 
-class SettingsPhoneCoolerDevice: Codable, Identifiable, ObservableObject, Named {
+class SettingsBlackSharkCoolerDevice: Codable, Identifiable, ObservableObject, Named {
     static let baseName = String(localized: "My cooler")
     var id: UUID = .init()
     @Published var name: String = baseName
@@ -5413,8 +5627,8 @@ class SettingsPhoneCoolerDevice: Codable, Identifiable, ObservableObject, Named 
     }
 }
 
-class SettingsPhoneCoolerDevices: Codable, ObservableObject {
-    @Published var devices: [SettingsPhoneCoolerDevice] = []
+class SettingsBlackSharkCoolerDevices: Codable, ObservableObject {
+    @Published var devices: [SettingsBlackSharkCoolerDevice] = []
 
     enum CodingKeys: CodingKey {
         case devices
@@ -5429,7 +5643,7 @@ class SettingsPhoneCoolerDevices: Codable, ObservableObject {
 
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        devices = container.decode(.devices, [SettingsPhoneCoolerDevice].self, [])
+        devices = container.decode(.devices, [SettingsBlackSharkCoolerDevice].self, [])
     }
 }
 
@@ -6638,7 +6852,7 @@ class Database: Codable, ObservableObject {
     @Published var widgets: [SettingsWidget] = []
     var show: SettingsShow = .init()
     var zoom: SettingsZoom = .init()
-    var tapToFocus: Bool = false
+    @Published var tapToFocus: Bool = false
     @Published var bitratePresets: [SettingsBitratePreset] = []
     var iconImage: String = plainIcon.image()
     var videoStabilizationMode: SettingsVideoStabilizationMode = .off
@@ -6667,7 +6881,7 @@ class Database: Codable, ObservableObject {
     var srtlaServer: SettingsSrtlaServer = .init()
     var mediaPlayers: SettingsMediaPlayers = .init()
     @Published var showAllSettings: Bool = false
-    var portrait: Bool = false
+    @Published var portrait: Bool = false
     var djiDevices: SettingsDjiDevices = .init()
     var alertsMediaGallery: SettingsAlertsMediaGallery = .init()
     var catPrinters: SettingsCatPrinters = .init()
@@ -6678,14 +6892,13 @@ class Database: Codable, ObservableObject {
     var srtlaRelay: SettingsMoblink = .init()
     @Published var pixellateStrength: Float = 0.3
     var moblink: SettingsMoblink = .init()
-    var sceneSwitchTransition: SettingsSceneSwitchTransition = .blur
-    var forceSceneSwitchTransition: Bool = false
+    @Published var sceneSwitchTransition: SettingsSceneSwitchTransition = .blur
+    @Published var forceSceneSwitchTransition: Bool = false
     @Published var cameraControlsEnabled: Bool = true
     @Published var externalDisplayContent: SettingsExternalDisplayContent = .stream
     var cyclingPowerDevices: SettingsCyclingPowerDevices = .init()
     var heartRateDevices: SettingsHeartRateDevices = .init()
-    var phoneCoolerDevices: SettingsPhoneCoolerDevices = .init()
-    var djiGimbalDevices: SettingsDjiGimbalDevices = .init()
+    var blackSharkCoolerDevices: SettingsBlackSharkCoolerDevices = .init()
     var remoteSceneId: UUID?
     @Published var sceneNumericInput: Bool = false
     var goPro: SettingsGoPro = .init()
@@ -6781,7 +6994,6 @@ class Database: Codable, ObservableObject {
              externalDisplayContent,
              cyclingPowerDevices,
              heartRateDevices,
-             djiGimbalDevices,
              phoneCoolerDevices,
              remoteSceneId,
              sceneNumericInput,
@@ -6851,8 +7063,7 @@ class Database: Codable, ObservableObject {
         try container.encode(.externalDisplayContent, externalDisplayContent)
         try container.encode(.cyclingPowerDevices, cyclingPowerDevices)
         try container.encode(.heartRateDevices, heartRateDevices)
-        try container.encode(.djiGimbalDevices, djiGimbalDevices)
-        try container.encode(.phoneCoolerDevices, phoneCoolerDevices)
+        try container.encode(.phoneCoolerDevices, blackSharkCoolerDevices)
         try container.encode(.remoteSceneId, remoteSceneId)
         try container.encode(.sceneNumericInput, sceneNumericInput)
         try container.encode(.goPro, goPro)
@@ -6924,8 +7135,7 @@ class Database: Codable, ObservableObject {
         externalDisplayContent = container.decode(.externalDisplayContent, SettingsExternalDisplayContent.self, .stream)
         cyclingPowerDevices = container.decode(.cyclingPowerDevices, SettingsCyclingPowerDevices.self, .init())
         heartRateDevices = container.decode(.heartRateDevices, SettingsHeartRateDevices.self, .init())
-        djiGimbalDevices = container.decode(.djiGimbalDevices, SettingsDjiGimbalDevices.self, .init())
-        phoneCoolerDevices = container.decode(.phoneCoolerDevices, SettingsPhoneCoolerDevices.self, .init())
+        blackSharkCoolerDevices = container.decode(.phoneCoolerDevices, SettingsBlackSharkCoolerDevices.self, .init())
         remoteSceneId = try? container.decode(UUID?.self, forKey: .remoteSceneId)
         sceneNumericInput = container.decode(.sceneNumericInput, Bool.self, false)
         goPro = container.decode(.goPro, SettingsGoPro.self, .init())
@@ -7176,7 +7386,7 @@ private func addMissingQuickButtons(database: Database) {
     button.systemImageNameOff = "appletvremote.gen1"
     updateQuickButton(database: database, button: button)
 
-    button = SettingsQuickButton(name: String(localized: "Widgets"))
+    button = SettingsQuickButton(name: String(localized: "Scene widgets"))
     button.id = UUID()
     button.type = .widgets
     button.imageType = "System name"
@@ -7597,6 +7807,7 @@ final class Settings {
     }
 
     func exportToClipboard() {
+        store()
         UIPasteboard.general.string = storage
     }
 
@@ -7765,14 +7976,6 @@ final class Settings {
             widget.alerts.chatBot = .init()
             store()
         }
-        if realDatabase.chat.botCommandPermissions.alert == nil {
-            realDatabase.chat.botCommandPermissions.alert = .init()
-            store()
-        }
-        if realDatabase.chat.botCommandPermissions.fax == nil {
-            realDatabase.chat.botCommandPermissions.fax = .init()
-            store()
-        }
         let allLuts = realDatabase.color.bundledLuts + realDatabase.color.diskLuts
         for lut in allLuts where lut.enabled == nil {
             if let button = realDatabase.quickButtons.first(where: { $0.id == lut.buttonId }) {
@@ -7789,14 +7992,6 @@ final class Settings {
         }
         for widget in database.widgets where widget.alerts.twitch!.raids == nil {
             widget.alerts.twitch!.raids = .init()
-            store()
-        }
-        if realDatabase.chat.botCommandPermissions.snapshot == nil {
-            realDatabase.chat.botCommandPermissions.snapshot = .init()
-            store()
-        }
-        if realDatabase.chat.botCommandPermissions.filter == nil {
-            realDatabase.chat.botCommandPermissions.filter = .init()
             store()
         }
         for widget in database.widgets where widget.alerts.twitch!.cheers == nil {
@@ -7824,14 +8019,6 @@ final class Settings {
             widget.alerts.twitch!.cheerBits![0].alert = widget.alerts.twitch!.cheers!.clone()
             store()
         }
-        if realDatabase.chat.botCommandPermissions.tesla == nil {
-            realDatabase.chat.botCommandPermissions.tesla = .init()
-            store()
-        }
-        if realDatabase.chat.botCommandPermissions.audio == nil {
-            realDatabase.chat.botCommandPermissions.audio = .init()
-            store()
-        }
         for widget in realDatabase.widgets where widget.alerts.speechToText == nil {
             widget.alerts.speechToText = .init()
             store()
@@ -7848,14 +8035,6 @@ final class Settings {
             key.widgetId = .init()
             store()
         }
-        if realDatabase.chat.botCommandPermissions.reaction == nil {
-            realDatabase.chat.botCommandPermissions.reaction = .init()
-            store()
-        }
-        if realDatabase.chat.botCommandPermissions.scene == nil {
-            realDatabase.chat.botCommandPermissions.scene = .init()
-            store()
-        }
         for widget in realDatabase.widgets {
             for command in widget.alerts.chatBot!.commands where command.imageType == nil {
                 command.imageType = .file
@@ -7870,28 +8049,8 @@ final class Settings {
             realDatabase.tesla.enabled = true
             store()
         }
-        if realDatabase.replay.position == nil {
-            realDatabase.replay.position = 10.0
-            store()
-        }
-        if realDatabase.replay.start == nil {
-            realDatabase.replay.start = 20.0
-            store()
-        }
-        if realDatabase.replay.stop == nil {
-            realDatabase.replay.stop = 30.0
-            store()
-        }
-        for stream in realDatabase.streams where stream.replay.fade == nil {
-            stream.replay.fade = true
-            store()
-        }
         for button in realDatabase.quickButtons where button.page == nil {
             button.page = 1
-            store()
-        }
-        if realDatabase.chat.botCommandPermissions.stream == nil {
-            realDatabase.chat.botCommandPermissions.stream = .init()
             store()
         }
     }

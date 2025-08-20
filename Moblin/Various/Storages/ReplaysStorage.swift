@@ -9,7 +9,7 @@ class ReplaySettings: Identifiable, Codable {
     var id: UUID = .init()
     var duration: Double = 0.0
     var start: Double = 20.0
-    var stop: Double = 30.0
+    var stop: Double = SettingsReplay.stop
 
     func name() -> String {
         return "\(id).mp4"
@@ -20,15 +20,15 @@ class ReplaySettings: Identifiable, Codable {
     }
 
     func thumbnailOffset() -> Double {
-        return max(duration - startFromEnd(), 0)
+        return max(startFromVideoStart(), 0)
     }
 
     func startFromEnd() -> Double {
-        return 30 - start
+        return SettingsReplay.stop - start
     }
 
-    func stopFromEnd() -> Double {
-        return 30 - stop
+    private func stopFromEnd() -> Double {
+        return SettingsReplay.stop - stop
     }
 
     func startFromVideoStart() -> Double {

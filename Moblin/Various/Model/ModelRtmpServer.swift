@@ -33,7 +33,7 @@ extension Model {
     }
 
     func isRtmpStreamConnected(streamKey: String) -> Bool {
-        return servers.rtmp?.isStreamConnected(streamKey: streamKey) ?? false
+        return ingests.rtmp?.isStreamConnected(streamKey: streamKey) ?? false
     }
 
     func reloadRtmpStreams() {
@@ -95,17 +95,17 @@ extension Model {
     }
 
     func stopRtmpServer() {
-        servers.rtmp?.stop()
-        servers.rtmp = nil
+        ingests.rtmp?.stop()
+        ingests.rtmp = nil
         stopAllRtmpStreams()
     }
 
     func reloadRtmpServer() {
         stopRtmpServer()
         if database.rtmpServer.enabled {
-            servers.rtmp = RtmpServer(settings: database.rtmpServer.clone())
-            servers.rtmp?.delegate = self
-            servers.rtmp?.start()
+            ingests.rtmp = RtmpServer(settings: database.rtmpServer.clone())
+            ingests.rtmp?.delegate = self
+            ingests.rtmp?.start()
         }
     }
 

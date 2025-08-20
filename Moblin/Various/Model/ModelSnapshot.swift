@@ -30,14 +30,14 @@ extension Model {
     }
 
     private func tryTakeNextSnapshot() {
-        guard currentSnapshotJob == nil else {
+        guard snapshot.currentJob == nil else {
             return
         }
-        currentSnapshotJob = snapshotJobs.popFirst()
-        guard currentSnapshotJob != nil else {
+        snapshot.currentJob = snapshotJobs.popFirst()
+        guard snapshot.currentJob != nil else {
             return
         }
-        snapshotCountdown = 5
+        snapshot.countdown = 5
         snapshotCountdownTick()
     }
 
@@ -55,12 +55,12 @@ extension Model {
 
     private func snapshotCountdownTick() {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            self.snapshotCountdown -= 1
-            guard self.snapshotCountdown == 0 else {
+            self.snapshot.countdown -= 1
+            guard self.snapshot.countdown == 0 else {
                 self.snapshotCountdownTick()
                 return
             }
-            guard let snapshotJob = self.currentSnapshotJob else {
+            guard let snapshotJob = self.snapshot.currentJob else {
                 return
             }
             var message = snapshotJob.message
@@ -70,7 +70,7 @@ extension Model {
             }
             self.takeSnapshot(isChatBot: snapshotJob.isChatBot, message: message, noDelay: true)
             DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
-                self.currentSnapshotJob = nil
+                self.snapshot.currentJob = nil
                 self.tryTakeNextSnapshot()
             }
         }

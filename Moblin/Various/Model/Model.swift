@@ -136,7 +136,7 @@ class HypeTrain: ObservableObject {
     var timer = SimpleTimer(queue: .main)
 }
 
-class Servers: ObservableObject {
+class Ingests: ObservableObject {
     var rtmp: RtmpServer?
     var srtla: SrtlaServer?
     var rist: RistServer?
@@ -200,12 +200,11 @@ class StatusTopRight: ObservableObject {
     @Published var heartRateDeviceStatus = noValue
     @Published var fixedHorizonStatus = noValue
     @Published var adsRemainingTimerStatus = noValue
-    @Published var phoneCoolerPhoneTemp: Int?
-    @Published var phoneCoolerExhaustTemp: Int?
-    @Published var phoneCoolerDeviceState: PhoneCoolerDeviceState?
+    @Published var blackSharkCoolerPhoneTemp: Int?
+    @Published var blackSharkCoolerExhaustTemp: Int?
+    @Published var blackSharkCoolerDeviceState: BlackSharkCoolerDeviceState?
     @Published var gameControllersTotal = noValue
     @Published var djiDeviceStreamingState: DjiDeviceState?
-    @Published var djiGimbalDeviceStreamingState: DjiGimbalDeviceState?
     @Published var catPrinterState: CatPrinterState?
     @Published var cyclingPowerDeviceState: CyclingPowerDeviceState?
     @Published var heartRateDeviceState: HeartRateDeviceState?
@@ -220,6 +219,8 @@ class Toast: ObservableObject {
             showingToast.toggle()
         }
     }
+
+    var onTapped: (() -> Void)?
 }
 
 class SceneSelector: ObservableObject {
@@ -242,6 +243,7 @@ class Cosmetics: ObservableObject {
     @Published var myIcons: [Icon] = []
     @Published var iconsInStore: [Icon] = []
     @Published var iconImage: String = plainIcon.id
+    var hasBoughtSomething: Bool = true
 }
 
 class DrawOnStream: ObservableObject {
@@ -280,6 +282,15 @@ class QuickButtons: ObservableObject {
     @Published var pairs: [[QuickButtonPair]] = Array(repeating: [], count: controlBarPages)
 }
 
+class Snapshot: ObservableObject {
+    @Published var countdown = 0
+    @Published var currentJob: SnapshotJob?
+}
+
+class Orientation: ObservableObject {
+    @Published var isPortrait: Bool = false
+}
+
 final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var isPresentingWidgetWizard = false
     @Published var showingPanel: ShowingPanel = .none
@@ -304,8 +315,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var selectedChatPlatform: ChatPlatformSelection = .all
     @Published var bluetoothAllowed = false
     @Published var sceneSettingsPanelSceneId = 1
-    @Published var snapshotCountdown = 0
-    @Published var currentSnapshotJob: SnapshotJob?
     @Published var showLoadSettingsFailed = false
     @Published var cameraControlEnabled = false
     @Published var stream: SettingsStream = fallbackStream
@@ -323,6 +332,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
+    let orientation = Orientation()
+    let snapshot = Snapshot()
     let quickButtons = QuickButtons()
     let mic = Mic()
     let goPro = GoProState()
@@ -351,11 +362,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     let media = Media()
     let hypeTrain = HypeTrain()
     let moblink = Moblink()
-    let servers = Servers()
+    let ingests = Ingests()
     let bitrate = Bitrate()
     let bonding = Bonding()
     var selectedFps: Int?
     var autoFps = false
+    var showBackgroudStreamingDisabledToast = false
     private var manualFocusMotionAttitude: CMAttitude?
     private var findFaceTimer: Timer?
     var streaming = false
@@ -471,8 +483,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var currentWiFiSsid: String?
     var currentDjiDeviceSettings: SettingsDjiDevice?
     var djiDeviceWrappers: [UUID: DjiDeviceWrapper] = [:]
-    var currentDjiGimbalDeviceSettings: SettingsDjiGimbalDevice?
-    var djiGimbalDevices: [UUID: DjiGimbalDevice] = [:]
     let autoSceneSwitcher = AutoSceneSwitcherProvider()
     var currentCatPrinterSettings: SettingsCatPrinter?
     var catPrinters: [UUID: CatPrinter] = [:]
@@ -488,8 +498,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private let periodicTimer10s = SimpleTimer(queue: .main)
     var currentHeartRateDeviceSettings: SettingsHeartRateDevice?
     var heartRateDevices: [UUID: HeartRateDevice] = [:]
-    var currentPhoneCoolerDeviceSettings: SettingsPhoneCoolerDevice?
-    var phoneCoolerDevices: [UUID: PhoneCoolerDevice] = [:]
+    var currentBlackSharkCoolerDeviceSettings: SettingsBlackSharkCoolerDevice?
+    var blackSharkCoolerDevices: [UUID: BlackSharkCoolerDevice] = [:]
     var cameraDevice: AVCaptureDevice?
     var cameraZoomLevelToXScale: Float = 1.0
     var cameraZoomXMinimum: Float = 1.0
@@ -574,19 +584,20 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         streamingHistory.load()
         recordingsStorage.load()
         replaysStorage.load()
-        if isPortrait() {
+        updateIsPortrait()
+        if orientation.isPortrait {
             AppDelegate.orientationLock = .portrait
         } else {
             AppDelegate.orientationLock = .landscape
         }
     }
 
-    var enabledScenes: [SettingsScene] {
-        database.scenes.filter { scene in scene.enabled }
+    func updateIsPortrait() {
+        orientation.isPortrait = stream.portrait || database.portrait
     }
 
-    func isPortrait() -> Bool {
-        return stream.portrait || database.portrait
+    var enabledScenes: [SettingsScene] {
+        database.scenes.filter { scene in scene.enabled }
     }
 
     func setAdaptiveBitrateSrtAlgorithm(stream: SettingsStream) {
@@ -685,14 +696,21 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         allowVideoRangePixelFormat = database.debug.allowVideoRangePixelFormat
     }
 
-    func makeToast(title: String, subTitle: String? = nil) {
-        toast.toast = AlertToast(type: .regular, title: title, subTitle: subTitle)
+    func makeToast(title: String, subTitle: String? = nil, onTapped: (() -> Void)? = nil) {
+        toast.toast = AlertToast(type: .regular,
+                                 title: title,
+                                 subTitle: subTitle,
+                                 style: .style(subTitleFont: .body))
+        toast.onTapped = onTapped
         showToast()
         logger.debug("toast: Info: \(title): \(subTitle ?? "-")")
     }
 
     func makeWarningToast(title: String, subTitle: String? = nil, vibrate: Bool = false) {
-        toast.toast = AlertToast(type: .regular, title: formatWarning(title), subTitle: subTitle)
+        toast.toast = AlertToast(type: .regular,
+                                 title: formatWarning(title),
+                                 subTitle: subTitle,
+                                 style: .style(subTitleFont: .body))
         showToast()
         logger.debug("toast: Warning: \(title): \(subTitle ?? "-")")
         if vibrate {
@@ -705,7 +723,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             type: .regular,
             title: title,
             subTitle: subTitle,
-            style: .style(titleColor: .red, titleFont: font)
+            style: .style(titleColor: .red, titleFont: font, subTitleFont: .body)
         )
         showToast()
         logger.debug("toast: Error: \(title): \(subTitle ?? "-")")
@@ -724,6 +742,18 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         toast.showingToast = false
         DispatchQueue.main.async {
             self.toast.showingToast = true
+        }
+    }
+
+    private func makeBuyIconsToastIfNeeded() {
+        guard !cosmetics.hasBoughtSomething else {
+            return
+        }
+        makeToast(title: String(localized: "💰 Buy Moblin icons to show some love ❤️"),
+                  subTitle: String(localized: "Tap this toast to open the shop."))
+        {
+            self.toggleShowingPanel(type: nil, panel: .none)
+            self.toggleShowingPanel(type: nil, panel: .cosmetics)
         }
     }
 
@@ -931,12 +961,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                                                selector: #selector(handleCaptureDeviceWasDisconnected),
                                                name: AVCaptureDevice.wasDisconnectedNotification,
                                                object: nil)
-        // if #available(iOS 26, *) {
-        //     NotificationCenter.default.addObserver(self,
-        //                                            selector: #selector(handleAvailableInputsChangeNotification),
-        //                                            name: AVAudioSession.availableInputsChangeNotification,
-        //                                            object: nil)
-        // }
         if WCSession.isSupported() {
             let session = WCSession.default
             session.delegate = self
@@ -960,11 +984,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         initMediaPlayers()
         removeUnusedLogs()
         autoStartDjiDevices()
-        autoStartDjiGimbalDevices()
         autoStartCatPrinters()
         autoStartCyclingPowerDevices()
         autoStartHeartRateDevices()
-        autoStartPhoneCoolerDevices()
+        autoStartBlackSharkCoolerDevices()
         startWeatherManager()
         startGeographyManager()
         twitchAuth.setOnAccessToken(onAccessToken: handleTwitchAccessToken)
@@ -1234,6 +1257,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             maybeEnableScreenPreview()
             startPeriodicTimers()
         case .off:
+            recordingsStorage.cleanup()
+            makeBuyIconsToastIfNeeded()
             clearRemoteSceneSettingsAndData()
             reloadStream()
             sceneUpdated(attachCamera: true, updateRemoteScene: false)
@@ -1259,8 +1284,14 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             autoStartCatPrinters()
             autoStartCyclingPowerDevices()
             autoStartHeartRateDevices()
-            autoStartDjiGimbalDevices()
-            autoStartPhoneCoolerDevices()
+            autoStartBlackSharkCoolerDevices()
+            if showBackgroudStreamingDisabledToast {
+                makeStreamEndedToast(subTitle: String(localized: "Tap this toast to enable background streaming.")) {
+                    self.stream.backgroundStreaming = true
+                    self.makeToast(title: String(localized: "Background streaming enabled"))
+                }
+                showBackgroudStreamingDisabledToast = false
+            }
         }
     }
 
@@ -1281,8 +1312,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if isRecording {
             suspendRecording()
         }
+        showBackgroudStreamingDisabledToast = stopStream()
         stopRtmpServer()
         stopSrtlaServer()
+        stopRtspClient()
         teardownAudioSession()
         chatTextToSpeech.reset(running: false)
         locationManager.stop()
@@ -1301,7 +1334,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         stopCyclingPowerDevices()
         stopHeartRateDevices()
         stopRemoteControlAssistant()
-        stopDjiGimbalDevices()
         fixedHorizonEffect.stop()
     }
 
@@ -1373,6 +1405,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func updateOrientation() {
+        updateIsPortrait()
         if stream.portrait {
             media.setVideoOrientation(value: .portrait)
         } else {
@@ -1426,7 +1459,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             self.updateDigitalClock(now: now)
             self.media.updateSrtSpeed()
             self.updateSpeed(now: monotonicNow)
-            self.updateServersSpeed()
+            self.updateIngestsSpeed()
             self.updateBondingStatistics()
             self.removeOldChatMessages(now: monotonicNow)
             self.updateLocation()
@@ -1844,6 +1877,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func setDisplayPortrait(portrait: Bool) {
         database.portrait = portrait
+        updateIsPortrait()
         setGlobalButtonState(type: .portrait, isOn: portrait)
         updateQuickButtonStates()
         updateOrientationLock()
@@ -2101,7 +2135,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if isWatchReachable(), isWatchLocal() {
             fps = 1.0
         }
-        if isRemoteControlStreamerConnected(), isRemoteControlAssistantRequestingPreview {
+        if isRemoteControlStreamerPreviewActive() {
             fps = database.remoteControl.streamer.previewFps
         }
         media.setLowFpsImage(fps: fps)
@@ -2217,38 +2251,15 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return battery.state == .charging || battery.state == .full
     }
 
-    private func updateServersSpeed() {
+    private func updateIngestsSpeed() {
         var anyServerEnabled = false
         var speed: UInt64 = 0
         var total: UInt64 = 0
         var numberOfClients = 0
-        if let rtmpServer = servers.rtmp {
-            let stats = rtmpServer.updateStats()
-            numberOfClients += rtmpServer.getNumberOfClients()
-            if rtmpServer.getNumberOfClients() > 0 {
-                total += stats.total
-                speed += stats.speed
-            }
-            anyServerEnabled = true
-        }
-        if let srtlaServer = servers.srtla {
-            let stats = srtlaServer.updateStats()
-            numberOfClients += srtlaServer.getNumberOfClients()
-            if srtlaServer.getNumberOfClients() > 0 {
-                total += stats.total
-                speed += stats.speed
-            }
-            anyServerEnabled = true
-        }
-        if let ristServer = servers.rist {
-            let stats = ristServer.updateStats()
-            numberOfClients += ristServer.getNumberOfClients()
-            if ristServer.getNumberOfClients() > 0 {
-                total += stats.total
-                speed += stats.speed
-            }
-            anyServerEnabled = true
-        }
+        updateRtmpIngestsSpeed(&anyServerEnabled, &speed, &total, &numberOfClients)
+        updateSrtlaIngestsSpeed(&anyServerEnabled, &speed, &total, &numberOfClients)
+        updateRistIngestsSpeed(&anyServerEnabled, &speed, &total, &numberOfClients)
+        updateRtspIngestsSpeed(&anyServerEnabled, &speed, &total, &numberOfClients)
         let message: String
         if anyServerEnabled {
             if numberOfClients > 0 {
@@ -2262,8 +2273,76 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         } else {
             message = noValue
         }
-        if message != servers.speedAndTotal {
-            servers.speedAndTotal = message
+        if message != ingests.speedAndTotal {
+            ingests.speedAndTotal = message
+        }
+    }
+
+    private func updateRtmpIngestsSpeed(_ anyServerEnabled: inout Bool,
+                                        _ speed: inout UInt64,
+                                        _ total: inout UInt64,
+                                        _ numberOfClients: inout Int)
+    {
+        guard let rtmpServer = ingests.rtmp else {
+            return
+        }
+        let stats = rtmpServer.updateStats()
+        let numberOfRtmpClients = rtmpServer.getNumberOfClients()
+        numberOfClients += numberOfRtmpClients
+        if numberOfRtmpClients > 0 {
+            total += stats.total
+            speed += stats.speed
+        }
+        anyServerEnabled = true
+    }
+
+    private func updateSrtlaIngestsSpeed(_ anyServerEnabled: inout Bool,
+                                         _ speed: inout UInt64,
+                                         _ total: inout UInt64,
+                                         _ numberOfClients: inout Int)
+    {
+        guard let srtlaServer = ingests.srtla else {
+            return
+        }
+        let stats = srtlaServer.updateStats()
+        let numberOfSrtlaClients = srtlaServer.getNumberOfClients()
+        numberOfClients += numberOfSrtlaClients
+        if numberOfSrtlaClients > 0 {
+            total += stats.total
+            speed += stats.speed
+        }
+        anyServerEnabled = true
+    }
+
+    private func updateRistIngestsSpeed(_ anyServerEnabled: inout Bool,
+                                        _ speed: inout UInt64,
+                                        _ total: inout UInt64,
+                                        _ numberOfClients: inout Int)
+    {
+        guard let ristServer = ingests.rist else {
+            return
+        }
+        let stats = ristServer.updateStats()
+        let numberOfRistClients = ristServer.getNumberOfClients()
+        numberOfClients += numberOfRistClients
+        if numberOfRistClients > 0 {
+            total += stats.total
+            speed += stats.speed
+        }
+        anyServerEnabled = true
+    }
+
+    private func updateRtspIngestsSpeed(_ anyServerEnabled: inout Bool,
+                                        _ speed: inout UInt64,
+                                        _ total: inout UInt64,
+                                        _ numberOfClients: inout Int)
+    {
+        for client in ingests.rtsp {
+            let stats = client.updateStats()
+            total += stats.total
+            speed += stats.speed
+            numberOfClients += 1
+            anyServerEnabled = true
         }
     }
 

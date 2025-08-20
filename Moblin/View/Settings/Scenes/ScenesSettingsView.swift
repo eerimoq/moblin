@@ -73,24 +73,19 @@ private struct ScenesListView: View {
 
 private struct ScenesSwitchTransition: View {
     @EnvironmentObject var model: Model
-    @State var sceneSwitchTransition: SettingsSceneSwitchTransition
+    @ObservedObject var database: Database
 
     var body: some View {
         Section {
-            Picker("Scene switch transition", selection: $sceneSwitchTransition) {
+            Picker("Scene switch transition", selection: $database.sceneSwitchTransition) {
                 ForEach(SettingsSceneSwitchTransition.allCases, id: \.self) {
                     Text($0.toString())
                 }
             }
-            .onChange(of: sceneSwitchTransition) { _ in
-                model.database.sceneSwitchTransition = sceneSwitchTransition
+            .onChange(of: database.sceneSwitchTransition) { _ in
                 model.setSceneSwitchTransition()
             }
-            Toggle("Force scene switch transition", isOn: Binding(get: {
-                model.database.forceSceneSwitchTransition
-            }, set: { value in
-                model.database.forceSceneSwitchTransition = value
-            }))
+            Toggle("Force scene switch transition", isOn: $database.forceSceneSwitchTransition)
         } footer: {
             Text("""
             RTMP, SRT(LA), screen capture and media player video sources can instantly be switched \
@@ -155,7 +150,7 @@ struct ScenesSettingsView: View {
             AutoSwitchersSettingsView(autoSceneSwitchers: model.database.autoSceneSwitchers, showSelector: true)
             DisconnectProtectionSettingsView(database: model.database,
                                              disconnectProtection: model.database.disconnectProtection)
-            ScenesSwitchTransition(sceneSwitchTransition: model.database.sceneSwitchTransition)
+            ScenesSwitchTransition(database: model.database)
             RemoteSceneView(selectedSceneId: model.database.remoteSceneId)
             ReloadBrowserSources()
         }

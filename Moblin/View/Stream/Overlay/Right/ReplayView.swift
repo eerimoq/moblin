@@ -32,13 +32,13 @@ private struct ReplayControlsInterval: View {
 
     var body: some View {
         Slider(value: $replay.startFromEnd,
-               in: 0 ... 30,
+               in: 0 ... SettingsReplay.stop,
                step: 0.1,
                onEditingChanged: { _ in
                })
                .frame(width: 250)
                .onChange(of: replay.startFromEnd) {
-                   model.setReplayPosition(start: 30 - $0)
+                   model.setReplayPosition(start: SettingsReplay.stop - $0)
                }
                .rotationEffect(.degrees(180))
         Text("\(Int(replay.startFromEnd))s")

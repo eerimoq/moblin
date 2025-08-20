@@ -12,6 +12,7 @@ struct MpegTsAudioConfig: Equatable {
         case twinqVQ = 7
         case celp = 8
         case hvxc = 9
+        case opus = 10
 
         init(objectID: MPEG4ObjectID) {
             switch objectID {
@@ -157,12 +158,26 @@ struct MpegTsAudioConfig: Equatable {
 
     init(formatDescription: CMFormatDescription) {
         let streamBasicDescription = formatDescription.audioStreamBasicDescription!
-        type = AudioObjectType(objectID: MPEG4ObjectID(rawValue: Int(streamBasicDescription.mFormatFlags))!)
+        switch streamBasicDescription.mFormatID {
+        case kAudioFormatOpus:
+            type = .opus
+        default:
+            type = AudioObjectType(objectID: MPEG4ObjectID(rawValue: Int(streamBasicDescription.mFormatFlags))!)
+        }
         frequency = SamplingFrequency(sampleRate: streamBasicDescription.mSampleRate)
         channel = ChannelConfiguration(rawValue: UInt8(streamBasicDescription.mChannelsPerFrame))!
     }
 
     func makeHeader(_ length: Int) -> Data {
+        switch type {
+        case .opus:
+            return makeOpusHeader(length)
+        default:
+            return makeAacHeader(length)
+        }
+    }
+
+    private func makeAacHeader(_ length: Int) -> Data {
         let size = 7
         let fullSize = size + length
         var adts = Data(count: size)
@@ -174,6 +189,17 @@ struct MpegTsAudioConfig: Equatable {
         adts[5] = (UInt8(fullSize & 7) << 5) + 0x1F
         adts[6] = 0xFC
         return adts
+    }
+
+    private func makeOpusHeader(_ length: Int) -> Data {
+        let writer = ByteWriter()
+        writer.writeUInt16(0x3FF << 5)
+        var length = length
+        while length >= 0 {
+            writer.writeUInt8(length < 255 ? UInt8(length) : 255)
+            length -= 255
+        }
+        return writer.data
     }
 
     func audioStreamBasicDescription() -> AudioStreamBasicDescription {

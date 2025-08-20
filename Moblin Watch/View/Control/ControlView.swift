@@ -77,12 +77,20 @@ private struct ControlSkipCurrentTtsView: View {
 
 private struct ControlInstantReplayView: View {
     @EnvironmentObject var model: Model
+    @State private var isPresentingSelect: Bool = false
 
     var body: some View {
         Button {
-            model.instantReplay()
+            isPresentingSelect = true
         } label: {
             Text("Instant replay")
+        }
+        .confirmationDialog("", isPresented: $isPresentingSelect) {
+            ForEach([10, 15, 20], id: \.self) { duration in
+                Button(String(localized: "\(duration) seconds")) {
+                    model.instantReplay(duration: duration)
+                }
+            }
         }
     }
 }
