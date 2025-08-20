@@ -17,7 +17,7 @@ struct StreamAudioSettingsView: View {
                     Spacer()
                     Picker("", selection: $stream.audioCodec) {
                         ForEach(SettingsStreamAudioCodec.allCases, id: \.self) {
-                            Text($0.rawValue)
+                            Text($0.toString())
                         }
                     }
                 }

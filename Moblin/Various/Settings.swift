@@ -114,6 +114,15 @@ enum SettingsStreamAudioCodec: String, Codable, CaseIterable {
             return .opus
         }
     }
+
+    func toString() -> String {
+        switch self {
+        case .aac:
+            return "AAC"
+        case .opus:
+            return "Opus"
+        }
+    }
 }
 
 enum SettingsStreamProtocol: String, Codable {
@@ -935,7 +944,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
     }
 
     func audioCodecString() -> String {
-        return audioCodec.rawValue
+        return audioCodec.toString()
     }
 
     func maxKeyFrameIntervalString() -> String {
