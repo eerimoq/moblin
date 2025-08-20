@@ -727,6 +727,15 @@ extension CMTime {
 }
 
 extension UnsafeMutableRawBufferPointer {
+    func writeUInt8(_ value: UInt8, offset: Int) {
+        self[offset + 0] = value
+    }
+
+    func writeUInt16(_ value: UInt16, offset: Int) {
+        self[offset + 0] = UInt8((value >> 8) & 0xFF)
+        self[offset + 1] = UInt8(value & 0xFF)
+    }
+
     func writeUInt32(_ value: UInt32, offset: Int) {
         self[offset + 0] = UInt8(value >> 24)
         self[offset + 1] = UInt8((value >> 16) & 0xFF)

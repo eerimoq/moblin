@@ -56,6 +56,9 @@ private let aac = FlvAudioCodec.aac.rawValue << 4
     | FlvSoundSize.snd16bit.rawValue << 1
     | FlvSoundType.stereo.rawValue
 
+private let opus = FlvAudioCodec.exHeader.rawValue << 4
+    | FlvOpusPacketType.sequenceStart.rawValue
+
 class RtmpStream {
     enum State: UInt8 {
         case initialized
@@ -347,9 +350,27 @@ class RtmpStream {
     }
 
     private func audioCodecOutputFormatInner(_ format: AVAudioFormat) {
-        var buffer = Data([aac, FlvAacPacketType.seq.rawValue])
-        buffer.append(contentsOf: MpegTsAudioConfig(formatDescription: format.formatDescription).bytes)
-        handleEncodedAudioBuffer(buffer, 0)
+        guard let audioStreamBasicDescription = format.formatDescription.audioStreamBasicDescription else {
+            return
+        }
+        let writer = ByteWriter()
+        switch audioStreamBasicDescription.mFormatID {
+        case kAudioFormatOpus:
+            writer.writeUInt8(opus)
+            writer.writeUTF8Bytes("Opus")
+            writer.writeUTF8Bytes("OpusHead")
+            writer.writeUInt8(1)
+            writer.writeUInt8(UInt8(audioStreamBasicDescription.mChannelsPerFrame))
+            writer.writeUInt16(0)
+            writer.writeUInt32(UInt32(audioStreamBasicDescription.mSampleRate))
+            writer.writeUInt16(0)
+            writer.writeUInt8(0)
+        default:
+            writer.writeUInt8(aac)
+            writer.writeUInt8(FlvAacPacketType.seq.rawValue)
+            writer.writeBytes(MpegTsAudioConfig(formatDescription: format.formatDescription).encode())
+        }
+        handleEncodedAudioBuffer(writer.data, 0)
     }
 
     private func audioCodecOutputBufferInner(_ audioBuffer: AVAudioCompressedBuffer, _ presentationTimeStamp: CMTime) {
@@ -365,11 +386,15 @@ class RtmpStream {
             logger.info("rtmp: \(name): Dropping audio buffer (delta: \(delta))")
             return
         }
-        var buffer = Data([aac, FlvAacPacketType.raw.rawValue])
-        buffer.append(
-            audioBuffer.data.assumingMemoryBound(to: UInt8.self),
-            count: Int(audioBuffer.byteLength)
-        )
+        var buffer: Data
+        switch audioBuffer.format.formatDescription.audioStreamBasicDescription?.mFormatID {
+        case kAudioFormatOpus:
+            buffer = Data([FlvAudioCodec.exHeader.rawValue << 4 | FlvOpusPacketType.codedFrames.rawValue])
+            buffer += "Opus".utf8Data
+        default:
+            buffer = Data([aac, FlvAacPacketType.raw.rawValue])
+        }
+        buffer.append(audioBuffer.data.assumingMemoryBound(to: UInt8.self), count: Int(audioBuffer.byteLength))
         prevRebasedAudioTimeStamp = rebasedTimestamp
         handleEncodedAudioBuffer(buffer, UInt32(audioTimeStampDelta))
         audioTimeStampDelta -= floor(audioTimeStampDelta)

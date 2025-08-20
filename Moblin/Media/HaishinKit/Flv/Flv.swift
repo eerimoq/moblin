@@ -5,6 +5,11 @@ enum FlvAacPacketType: UInt8 {
     case raw = 1
 }
 
+enum FlvOpusPacketType: UInt8 {
+    case sequenceStart = 0
+    case codedFrames = 1
+}
+
 enum FlvAvcPacketType: UInt8 {
     case seq = 0
     case nal = 1
@@ -90,6 +95,7 @@ enum FlvAudioCodec: UInt8 {
     case adpcm = 1
     case mp3 = 2
     case pcmle = 3
+    case exHeader = 9
     case aac = 10
     case speex = 11
     case mp3_8k = 14

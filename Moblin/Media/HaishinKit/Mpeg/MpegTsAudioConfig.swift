@@ -136,13 +136,6 @@ struct MpegTsAudioConfig: Equatable {
     let channel: ChannelConfiguration
     let frameLengthFlag = false
 
-    var bytes: [UInt8] {
-        var bytes = [UInt8](repeating: 0, count: 2)
-        bytes[0] = type.rawValue << 3 | (frequency.rawValue >> 1)
-        bytes[1] = (frequency.rawValue & 0x1) << 7 | (channel.rawValue & 0xF) << 3
-        return bytes
-    }
-
     init?(bytes: [UInt8]) {
         guard
             let type = AudioObjectType(rawValue: bytes[0] >> 3),
@@ -192,14 +185,23 @@ struct MpegTsAudioConfig: Equatable {
     }
 
     private func makeOpusHeader(_ length: Int) -> Data {
-        let writer = ByteWriter()
-        writer.writeUInt16(0x3FF << 5)
+        var header = Data(count: 2)
+        header.withUnsafeMutableBytes { pointer in
+            pointer.writeUInt16(0x3FF << 5, offset: 0)
+        }
         var length = length
         while length >= 0 {
-            writer.writeUInt8(length < 255 ? UInt8(length) : 255)
+            header.append(length < 255 ? UInt8(length) : 255)
             length -= 255
         }
-        return writer.data
+        return header
+    }
+
+    func encode() -> Data {
+        var data = Data(count: 2)
+        data[0] = type.rawValue << 3 | (frequency.rawValue >> 1)
+        data[1] = (frequency.rawValue & 0x1) << 7 | (channel.rawValue & 0xF) << 3
+        return data
     }
 
     func audioStreamBasicDescription() -> AudioStreamBasicDescription {
