@@ -245,30 +245,14 @@ extension Model {
     func banTwitchUser(user: String, userId: String, duration: Int?) {
         TwitchApi(stream.twitchAccessToken, urlSession)
             .banUser(broadcasterId: stream.twitchChannelId, userId: userId, duration: duration) { ok in
-                if ok {
-                    if duration == nil {
-                        self.makeToast(title: String(localized: "Successfully banned \(user)"))
-                    } else {
-                        self.makeToast(title: String(localized: "Successfully timed out \(user)"))
-                    }
-                } else {
-                    if duration == nil {
-                        self.makeErrorToast(title: String(localized: "Failed to ban \(user)"))
-                    } else {
-                        self.makeErrorToast(title: String(localized: "Failed to timeout \(user)"))
-                    }
-                }
+                self.showUserBannedToast(ok: ok, user: user, duration: duration)
             }
     }
 
-    func deleteMessage(messageId: String) {
+    func deleteTwitchChatMessage(messageId: String) {
         TwitchApi(stream.twitchAccessToken, urlSession)
             .deleteChatMessage(broadcasterId: stream.twitchChannelId, messageId: messageId) { ok in
-                if ok {
-                    self.makeToast(title: String(localized: "Successfully deleted chat message"))
-                } else {
-                    self.makeErrorToast(title: String(localized: "Failed to delete chat message"))
-                }
+                self.showChatMessageDeletedToast(ok: ok)
             }
     }
 }

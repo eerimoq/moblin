@@ -590,20 +590,9 @@ extension Model {
         }
         switch post.platform {
         case .twitch:
-            deleteMessage(messageId: messageId)
+            deleteTwitchChatMessage(messageId: messageId)
         case .kick:
-            Task {
-                do {
-                    let channelInfo = try await getKickChannelInfoAsync(channelName: stream.kickChannelName)
-                    await MainActor.run {
-                        deleteKickMessage(messageId: messageId, chatroomId: channelInfo.chatroom.id)
-                    }
-                } catch {
-                    await MainActor.run {
-                        makeErrorToast(title: "Failed to get channel info")
-                    }
-                }
-            }
+            deleteKickMessage(messageId: messageId)
         default:
             makeErrorToast(title: "Delete message not supported for this platform")
         }
@@ -626,5 +615,29 @@ extension Model {
         quickButtonChat.deleteUser(userId: userId)
         externalDisplayChat.deleteUser(userId: userId)
         chatTextToSpeech.delete(userId: userId)
+    }
+
+    func showUserBannedToast(ok: Bool, user: String, duration: Int?) {
+        if ok {
+            if duration == nil {
+                makeToast(title: String(localized: "Successfully banned \(user)"))
+            } else {
+                makeToast(title: String(localized: "Successfully timed out \(user)"))
+            }
+        } else {
+            if duration == nil {
+                makeErrorToast(title: String(localized: "Failed to ban \(user)"))
+            } else {
+                makeErrorToast(title: String(localized: "Failed to timeout \(user)"))
+            }
+        }
+    }
+
+    func showChatMessageDeletedToast(ok: Bool) {
+        if ok {
+            makeToast(title: String(localized: "Successfully deleted chat message"))
+        } else {
+            makeErrorToast(title: String(localized: "Failed to delete chat message"))
+        }
     }
 }
