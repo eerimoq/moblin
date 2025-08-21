@@ -136,11 +136,11 @@ struct MpegTsAudioConfig: Equatable {
     let channel: ChannelConfiguration
     let frameLengthFlag = false
 
-    init?(bytes: [UInt8]) {
+    init?(data: Data) {
         guard
-            let type = AudioObjectType(rawValue: bytes[0] >> 3),
-            let frequency = SamplingFrequency(rawValue: (bytes[0] & 0b0000_0111) << 1 | (bytes[1] >> 7)),
-            let channel = ChannelConfiguration(rawValue: (bytes[1] & 0b0111_1000) >> 3)
+            let type = AudioObjectType(rawValue: data[0] >> 3),
+            let frequency = SamplingFrequency(rawValue: (data[0] & 0b0000_0111) << 1 | (data[1] >> 7)),
+            let channel = ChannelConfiguration(rawValue: (data[1] & 0b0111_1000) >> 3)
         else {
             return nil
         }
