@@ -544,30 +544,6 @@ class SettingsStreamMultiStreaming: Codable, ObservableObject {
     }
 }
 
-class SettingsStreamSendMessagesTo: Codable, ObservableObject {
-    @Published var twitch: Bool = true
-    @Published var kick: Bool = true
-
-    enum CodingKeys: CodingKey {
-        case twitch,
-             kick
-    }
-
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(.twitch, twitch)
-        try container.encode(.kick, kick)
-    }
-
-    init() {}
-
-    required init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        twitch = container.decode(.twitch, Bool.self, true)
-        kick = container.decode(.kick, Bool.self, true)
-    }
-}
-
 class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named {
     @Published var name: String
     var id: UUID = .init()
