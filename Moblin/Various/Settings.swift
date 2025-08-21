@@ -3898,6 +3898,30 @@ class SettingsChatPredefinedMessagesFilter: Codable, ObservableObject {
     }
 }
 
+class SettingsChatSendMessagesTo: Codable, ObservableObject {
+    @Published var twitch: Bool = true
+    @Published var kick: Bool = true
+
+    enum CodingKeys: CodingKey {
+        case twitch,
+             kick
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.twitch, twitch)
+        try container.encode(.kick, kick)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        twitch = container.decode(.twitch, Bool.self, true)
+        kick = container.decode(.kick, Bool.self, true)
+    }
+}
+
 class SettingsChat: Codable, ObservableObject {
     @Published var fontSize: Float = 19.0
     var usernameColor: RgbColor = .init(red: 255, green: 163, blue: 0)
@@ -3948,6 +3972,7 @@ class SettingsChat: Codable, ObservableObject {
     @Published var aliases: [SettingsChatBotAlias] = []
     @Published var predefinedMessages: [SettingsChatPredefinedMessage] = []
     @Published var predefinedMessagesFilter: SettingsChatPredefinedMessagesFilter = .init()
+    var sendMessagesTo: SettingsChatSendMessagesTo = .init()
 
     enum CodingKeys: CodingKey {
         case fontSize,
@@ -3993,7 +4018,8 @@ class SettingsChat: Codable, ObservableObject {
              showDeletedMessages,
              aliases,
              predefinedMessages,
-             predefinedMessagesFilter
+             predefinedMessagesFilter,
+             sendMessagesTo
     }
 
     func encode(to encoder: Encoder) throws {
@@ -4042,6 +4068,7 @@ class SettingsChat: Codable, ObservableObject {
         try container.encode(.aliases, aliases)
         try container.encode(.predefinedMessages, predefinedMessages)
         try container.encode(.predefinedMessagesFilter, predefinedMessagesFilter)
+        try container.encode(.sendMessagesTo, sendMessagesTo)
     }
 
     init() {}
@@ -4104,6 +4131,7 @@ class SettingsChat: Codable, ObservableObject {
             SettingsChatPredefinedMessagesFilter.self,
             .init()
         )
+        sendMessagesTo = container.decode(.sendMessagesTo, SettingsChatSendMessagesTo.self, .init())
     }
 
     func getRotation() -> Double {
