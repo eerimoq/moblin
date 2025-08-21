@@ -2,14 +2,14 @@ import SwiftUI
 import WebKit
 
 private var persistentWebView: WKWebView?
+private let kickDomain = "kick.com"
 private let loginUrl = URL(string: "https://kick.com/login")!
 private let sessionTokenCookieName = "session_token"
-private let kickDomain = "kick.com"
 
-struct KickAuthView: View {
+private struct AuthenticationView: View {
     @EnvironmentObject var model: Model
-    @State private var showingWebView = false
     @ObservedObject var stream: SettingsStream
+    @State private var showingWebView = false
 
     var body: some View {
         Section {
@@ -92,16 +92,14 @@ private struct KickWebView: UIViewRepresentable {
     }
 
     private func shouldLoadLoginPage(webView: WKWebView) -> Bool {
-        guard let url = webView.url?.absoluteString else { return true }
+        guard let url = webView.url?.absoluteString else {
+            return true
+        }
         return !url.contains(kickDomain)
     }
 
     private func loadLoginPage(webView: WKWebView) {
-        var request = URLRequest(url: loginUrl)
-        request.cachePolicy = .reloadIgnoringLocalCacheData
-        request.setValue("Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15",
-                         forHTTPHeaderField: "User-Agent")
-        webView.load(request)
+        webView.load(URLRequest(url: loginUrl))
     }
 
     func makeCoordinator() -> Coordinator {
@@ -110,12 +108,15 @@ private struct KickWebView: UIViewRepresentable {
 
     class Coordinator: NSObject, WKNavigationDelegate {
         let parent: KickWebView
+
         init(_ parent: KickWebView) {
             self.parent = parent
         }
 
         func webView(_ webView: WKWebView, didFinish _: WKNavigation!) {
-            guard let url = webView.url?.absoluteString else { return }
+            guard let url = webView.url?.absoluteString else {
+                return
+            }
             if !url.contains("/login"), !url.contains("/register"), url.contains(kickDomain) {
                 extractAuthToken(from: webView)
             }
@@ -141,7 +142,7 @@ private struct KickWebView: UIViewRepresentable {
 
 struct StreamKickSettingsView: View {
     @EnvironmentObject var model: Model
-    let stream: SettingsStream
+    @ObservedObject var stream: SettingsStream
 
     func submitChannelName(value: String) {
         stream.kickChannelName = value
@@ -153,7 +154,7 @@ struct StreamKickSettingsView: View {
     var body: some View {
         Form {
             if model.database.debug.kickLogin {
-                KickAuthView(stream: stream)
+                AuthenticationView(stream: stream)
             }
             Section {
                 TextEditNavigationView(
