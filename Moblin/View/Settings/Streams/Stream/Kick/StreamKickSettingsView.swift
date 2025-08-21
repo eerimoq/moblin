@@ -23,7 +23,7 @@ private struct AuthenticationView: View {
                 }
             } else {
                 Button {
-                    logOut()
+                    logout()
                 } label: {
                     HCenter {
                         Text("Logout")
@@ -43,6 +43,7 @@ private struct AuthenticationView: View {
                     .padding()
                     KickWebView {
                         handleAccessToken(accessToken: $0)
+                        showingWebView = false
                     }
                 }
                 .ignoresSafeArea(.keyboard)
@@ -50,7 +51,7 @@ private struct AuthenticationView: View {
         }
     }
 
-    private func logOut() {
+    private func logout() {
         stream.kickAccessToken = ""
         stream.kickLoggedIn = false
         if stream.enabled {
@@ -61,7 +62,6 @@ private struct AuthenticationView: View {
     private func handleAccessToken(accessToken: String) {
         stream.kickAccessToken = accessToken
         stream.kickLoggedIn = true
-        showingWebView = false
         if stream.enabled {
             model.kickChannelNameUpdated()
         }
@@ -69,7 +69,7 @@ private struct AuthenticationView: View {
 }
 
 private struct KickWebView: UIViewRepresentable {
-    let onTokenExtracted: (String) -> Void
+    let onAccessToken: (String) -> Void
 
     func makeUIView(context: Context) -> WKWebView {
         if let existingWebView = persistentWebView {
@@ -86,40 +86,32 @@ private struct KickWebView: UIViewRepresentable {
 
     func updateUIView(_ webView: WKWebView, context: Context) {
         webView.navigationDelegate = context.coordinator
-        if shouldLoadLoginPage(webView: webView) {
-            loadLoginPage(webView: webView)
+        if !(webView.url?.host()?.contains(kickDomain) ?? false) {
+            webView.load(URLRequest(url: loginUrl))
         }
-    }
-
-    private func shouldLoadLoginPage(webView: WKWebView) -> Bool {
-        guard let url = webView.url?.absoluteString else {
-            return true
-        }
-        return !url.contains(kickDomain)
-    }
-
-    private func loadLoginPage(webView: WKWebView) {
-        webView.load(URLRequest(url: loginUrl))
     }
 
     func makeCoordinator() -> Coordinator {
-        Coordinator(self)
+        Coordinator(onAccessToken)
     }
 
     class Coordinator: NSObject, WKNavigationDelegate {
-        let parent: KickWebView
+        let onAccessToken: (String) -> Void
 
-        init(_ parent: KickWebView) {
-            self.parent = parent
+        init(_ onAccessToken: @escaping (String) -> Void) {
+            self.onAccessToken = onAccessToken
         }
 
         func webView(_ webView: WKWebView, didFinish _: WKNavigation!) {
-            guard let url = webView.url?.absoluteString else {
+            guard let url = webView.url,
+                  let host = url.host(),
+                  !url.path().contains("/login"),
+                  !url.path().contains("/register"),
+                  host.contains(kickDomain)
+            else {
                 return
             }
-            if !url.contains("/login"), !url.contains("/register"), url.contains(kickDomain) {
-                extractAuthToken(from: webView)
-            }
+            extractAuthToken(from: webView)
         }
 
         private func extractAuthToken(from webView: WKWebView) {
@@ -133,7 +125,7 @@ private struct KickWebView: UIViewRepresentable {
                         return
                     }
                     let accessToken = sessionTokenCookie.value.removingPercentEncoding ?? sessionTokenCookie.value
-                    self.parent.onTokenExtracted(accessToken)
+                    self.onAccessToken(accessToken)
                 }
             }
         }
