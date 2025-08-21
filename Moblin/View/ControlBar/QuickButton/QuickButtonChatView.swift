@@ -662,16 +662,36 @@ private struct SendMessagesToView: View {
 }
 
 private struct SendMessagesToSelectorView: View {
-    @ObservedObject var sendMessagesTo: SettingsChatSendMessagesTo
+    @ObservedObject var stream: SettingsStream
     @State var showingSelector = false
+
+    private func isTwitchOnly() -> Bool {
+        return stream.twitchSendMessagesTo && !stream.kickSendMessagesTo
+    }
+
+    private func isKickOnly() -> Bool {
+        return stream.kickSendMessagesTo && !stream.twitchSendMessagesTo
+    }
 
     var body: some View {
         Button {
             showingSelector = true
         } label: {
-            Image(systemName: "globe")
-                .font(.title)
-                .padding(5)
+            if isTwitchOnly() {
+                Image("TwitchLogo")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 25, height: 25)
+            } else if isKickOnly() {
+                Image("KickLogo")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 25, height: 25)
+            } else {
+                Image(systemName: "globe")
+                    .font(.title)
+                    .padding(5)
+            }
         }
         .sheet(isPresented: $showingSelector) {
             NavigationView {
@@ -679,10 +699,10 @@ private struct SendMessagesToSelectorView: View {
                     Section {
                         SendMessagesToView(image: "TwitchLogo",
                                            name: String(localized: "Twitch"),
-                                           enabled: $sendMessagesTo.twitch)
+                                           enabled: $stream.twitchSendMessagesTo)
                         SendMessagesToView(image: "KickLogo",
                                            name: String(localized: "Kick"),
-                                           enabled: $sendMessagesTo.kick)
+                                           enabled: $stream.kickSendMessagesTo)
                     }
                 }
                 .navigationTitle("Send messages to")
@@ -752,7 +772,7 @@ private struct ControlView: View {
         }
         .padding(5)
         .foregroundColor(.white)
-        SendMessagesToSelectorView(sendMessagesTo: model.database.chat.sendMessagesTo)
+        SendMessagesToSelectorView(stream: model.stream)
         ControlMessagesButtonView(model: model)
         ControlAlertsButtonView(quickButtonChat: model.quickButtonChatState)
     }

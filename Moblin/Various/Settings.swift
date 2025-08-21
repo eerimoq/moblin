@@ -544,6 +544,30 @@ class SettingsStreamMultiStreaming: Codable, ObservableObject {
     }
 }
 
+class SettingsStreamSendMessagesTo: Codable, ObservableObject {
+    @Published var twitch: Bool = true
+    @Published var kick: Bool = true
+
+    enum CodingKeys: CodingKey {
+        case twitch,
+             kick
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.twitch, twitch)
+        try container.encode(.kick, kick)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        twitch = container.decode(.twitch, Bool.self, true)
+        kick = container.decode(.kick, Bool.self, true)
+    }
+}
+
 class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named {
     @Published var name: String
     var id: UUID = .init()
@@ -555,10 +579,12 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
     var twitchAccessToken: String = ""
     var twitchLoggedIn: Bool = false
     var twitchRewards: [SettingsStreamTwitchReward] = []
+    @Published var twitchSendMessagesTo: Bool = true
     var kickChatroomId: String = ""
     var kickChannelName: String = ""
     var kickAccessToken: String = ""
     @Published var kickLoggedIn: Bool = false
+    @Published var kickSendMessagesTo: Bool = true
     var youTubeApiKey: String = ""
     @Published var youTubeVideoId: String = ""
     @Published var youTubeHandle: String = ""
@@ -628,10 +654,12 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
              twitchAccessToken,
              twitchLoggedIn,
              twitchRewards,
+             twitchSendMessagesTo,
              kickChatroomId,
              kickChannelName,
              kickAccessToken,
              kickLoggedIn,
+             kickSendMessagesTo,
              youTubeApiKey,
              youTubeVideoId,
              youTubeHandle,
@@ -697,10 +725,12 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         try container.encode(.twitchAccessToken, twitchAccessToken)
         try container.encode(.twitchLoggedIn, twitchLoggedIn)
         try container.encode(.twitchRewards, twitchRewards)
+        try container.encode(.twitchSendMessagesTo, twitchSendMessagesTo)
         try container.encode(.kickChatroomId, kickChatroomId)
         try container.encode(.kickChannelName, kickChannelName)
         try container.encode(.kickAccessToken, kickAccessToken)
         try container.encode(.kickLoggedIn, kickLoggedIn)
+        try container.encode(.kickSendMessagesTo, kickSendMessagesTo)
         try container.encode(.youTubeApiKey, youTubeApiKey)
         try container.encode(.youTubeVideoId, youTubeVideoId)
         try container.encode(.youTubeHandle, youTubeHandle)
@@ -764,10 +794,12 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         twitchAccessToken = container.decode(.twitchAccessToken, String.self, "")
         twitchLoggedIn = container.decode(.twitchLoggedIn, Bool.self, false)
         twitchRewards = container.decode(.twitchRewards, [SettingsStreamTwitchReward].self, [])
+        twitchSendMessagesTo = container.decode(.twitchSendMessagesTo, Bool.self, true)
         kickChatroomId = container.decode(.kickChatroomId, String.self, "")
         kickChannelName = container.decode(.kickChannelName, String.self, "")
         kickAccessToken = container.decode(.kickAccessToken, String.self, "")
         kickLoggedIn = container.decode(.kickLoggedIn, Bool.self, false)
+        kickSendMessagesTo = container.decode(.kickSendMessagesTo, Bool.self, true)
         youTubeApiKey = container.decode(.youTubeApiKey, String.self, "")
         youTubeVideoId = container.decode(.youTubeVideoId, String.self, "")
         youTubeHandle = container.decode(.youTubeHandle, String.self, "")
@@ -3898,30 +3930,6 @@ class SettingsChatPredefinedMessagesFilter: Codable, ObservableObject {
     }
 }
 
-class SettingsChatSendMessagesTo: Codable, ObservableObject {
-    @Published var twitch: Bool = true
-    @Published var kick: Bool = true
-
-    enum CodingKeys: CodingKey {
-        case twitch,
-             kick
-    }
-
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(.twitch, twitch)
-        try container.encode(.kick, kick)
-    }
-
-    init() {}
-
-    required init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        twitch = container.decode(.twitch, Bool.self, true)
-        kick = container.decode(.kick, Bool.self, true)
-    }
-}
-
 class SettingsChat: Codable, ObservableObject {
     @Published var fontSize: Float = 19.0
     var usernameColor: RgbColor = .init(red: 255, green: 163, blue: 0)
@@ -3972,7 +3980,6 @@ class SettingsChat: Codable, ObservableObject {
     @Published var aliases: [SettingsChatBotAlias] = []
     @Published var predefinedMessages: [SettingsChatPredefinedMessage] = []
     @Published var predefinedMessagesFilter: SettingsChatPredefinedMessagesFilter = .init()
-    var sendMessagesTo: SettingsChatSendMessagesTo = .init()
 
     enum CodingKeys: CodingKey {
         case fontSize,
@@ -4068,7 +4075,6 @@ class SettingsChat: Codable, ObservableObject {
         try container.encode(.aliases, aliases)
         try container.encode(.predefinedMessages, predefinedMessages)
         try container.encode(.predefinedMessagesFilter, predefinedMessagesFilter)
-        try container.encode(.sendMessagesTo, sendMessagesTo)
     }
 
     init() {}
@@ -4131,7 +4137,6 @@ class SettingsChat: Codable, ObservableObject {
             SettingsChatPredefinedMessagesFilter.self,
             .init()
         )
-        sendMessagesTo = container.decode(.sendMessagesTo, SettingsChatSendMessagesTo.self, .init())
     }
 
     func getRotation() -> Double {

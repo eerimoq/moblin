@@ -345,10 +345,10 @@ extension Model {
     }
 
     func sendChatMessage(message: String) {
-        if database.chat.sendMessagesTo.twitch {
+        if stream.twitchSendMessagesTo {
             sendToTwitch(message: message)
         }
-        if database.chat.sendMessagesTo.kick {
+        if stream.kickSendMessagesTo {
             sendToKick(message: message)
         }
     }
