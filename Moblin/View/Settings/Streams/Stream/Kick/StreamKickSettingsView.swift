@@ -20,6 +20,26 @@ struct StreamKickSettingsView: View {
                     onSubmit: submitChannelName
                 )
             }
+
+            if model.database.debug.kickLogin {
+                Section {
+                    NavigationLink(destination: KickAuthView(stream: stream)) {
+                        HStack {
+                            Image(systemName: stream
+                                .kickLoggedIn ? "checkmark.circle.fill" : "person.crop.circle.badge.plus")
+                                .foregroundColor(stream.kickLoggedIn ? .green : .blue)
+                            Text("Authentication")
+                            Spacer()
+                            if stream.kickLoggedIn {
+                                Text("Logged In")
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                    }
+                } footer: {
+                    Text("Authentication is required to send chat messages")
+                }
+            }
         }
         .navigationTitle("Kick")
     }

@@ -120,6 +120,8 @@ struct DebugSettingsView: View {
                         model.reloadStream()
                         model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
                     }
+                Toggle("Kick login", isOn: $debug.kickLogin)
+
             } header: {
                 Text("Experimental")
             }

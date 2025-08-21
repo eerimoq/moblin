@@ -557,6 +557,8 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
     var twitchRewards: [SettingsStreamTwitchReward] = []
     var kickChatroomId: String = ""
     var kickChannelName: String = ""
+    var kickAccessToken: String = ""
+    var kickLoggedIn: Bool = false
     var youTubeApiKey: String = ""
     @Published var youTubeVideoId: String = ""
     @Published var youTubeHandle: String = ""
@@ -628,6 +630,8 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
              twitchRewards,
              kickChatroomId,
              kickChannelName,
+             kickAccessToken,
+             kickLoggedIn,
              youTubeApiKey,
              youTubeVideoId,
              youTubeHandle,
@@ -695,6 +699,8 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         try container.encode(.twitchRewards, twitchRewards)
         try container.encode(.kickChatroomId, kickChatroomId)
         try container.encode(.kickChannelName, kickChannelName)
+        try container.encode(.kickAccessToken, kickAccessToken)
+        try container.encode(.kickLoggedIn, kickLoggedIn)
         try container.encode(.youTubeApiKey, youTubeApiKey)
         try container.encode(.youTubeVideoId, youTubeVideoId)
         try container.encode(.youTubeHandle, youTubeHandle)
@@ -760,6 +766,8 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         twitchRewards = container.decode(.twitchRewards, [SettingsStreamTwitchReward].self, [])
         kickChatroomId = container.decode(.kickChatroomId, String.self, "")
         kickChannelName = container.decode(.kickChannelName, String.self, "")
+        kickAccessToken = container.decode(.kickAccessToken, String.self, "")
+        kickLoggedIn = container.decode(.kickLoggedIn, Bool.self, false)
         youTubeApiKey = container.decode(.youTubeApiKey, String.self, "")
         youTubeVideoId = container.decode(.youTubeVideoId, String.self, "")
         youTubeHandle = container.decode(.youTubeHandle, String.self, "")
@@ -818,6 +826,8 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         new.twitchChannelId = twitchChannelId
         new.kickChatroomId = kickChatroomId
         new.kickChannelName = kickChannelName
+        new.kickAccessToken = kickAccessToken
+        new.kickLoggedIn = kickLoggedIn
         new.youTubeApiKey = youTubeApiKey
         new.youTubeVideoId = youTubeVideoId
         new.youTubeHandle = youTubeHandle
@@ -4456,6 +4466,7 @@ class SettingsDebug: Codable, ObservableObject {
     @Published var builtinAudioAndVideoDelay: Double = 0.0
     @Published var autoLowPowerMode: Bool = false
     @Published var newSrt: Bool = false
+    @Published var kickLogin: Bool = false
 
     enum CodingKeys: CodingKey {
         case logLevel,
@@ -4493,7 +4504,8 @@ class SettingsDebug: Codable, ObservableObject {
              builtinAudioAndVideoDelay,
              overrideSceneMic,
              autoLowPowerMode,
-             newSrt
+             newSrt,
+             kickLogin
     }
 
     func encode(to encoder: Encoder) throws {
@@ -4530,6 +4542,7 @@ class SettingsDebug: Codable, ObservableObject {
         try container.encode(.builtinAudioAndVideoDelay, builtinAudioAndVideoDelay)
         try container.encode(.autoLowPowerMode, autoLowPowerMode)
         try container.encode(.newSrt, newSrt)
+        try container.encode(.kickLogin, kickLogin)
     }
 
     init() {}
@@ -4570,6 +4583,7 @@ class SettingsDebug: Codable, ObservableObject {
         builtinAudioAndVideoDelay = container.decode(.builtinAudioAndVideoDelay, Double.self, 0.0)
         autoLowPowerMode = container.decode(.autoLowPowerMode, Bool.self, false)
         newSrt = container.decode(.newSrt, Bool.self, false)
+        kickLogin = container.decode(.kickLogin, Bool.self, false)
     }
 }
 
