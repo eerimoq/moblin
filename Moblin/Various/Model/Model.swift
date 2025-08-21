@@ -16,24 +16,35 @@ import TrueTime
 import WatchConnectivity
 import WebKit
 
+enum ChatPlatformSelectionIcon {
+    case asset(String)
+    case system(String)
+}
+
 enum ChatPlatformSelection: CaseIterable {
     case all
     case twitch
     case kick
 
-    var displayName: String {
+    func displayName() -> String {
         switch self {
-        case .all: return "All Platforms"
-        case .twitch: return "Twitch"
-        case .kick: return "Kick"
+        case .all:
+            return String(localized: "All platforms")
+        case .twitch:
+            return String(localized: "Twitch")
+        case .kick:
+            return String(localized: "Kick")
         }
     }
 
-    var icon: String {
+    func icon() -> ChatPlatformSelectionIcon {
         switch self {
-        case .all: return "globe"
-        case .twitch: return "TwitchLogo"
-        case .kick: return "KickLogo"
+        case .all:
+            return .system("globe")
+        case .twitch:
+            return .asset("TwitchLogo")
+        case .kick:
+            return .asset("KickLogo")
         }
     }
 }

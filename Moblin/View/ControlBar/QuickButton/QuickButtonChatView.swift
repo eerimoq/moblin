@@ -641,75 +641,64 @@ private struct PlatformSelectorButtonView: View {
 
     var body: some View {
         let availablePlatforms = model.getAvailableChatPlatforms()
-
         if availablePlatforms.count > 1 {
             Button {
                 showingPlatformSelector = true
             } label: {
-                // Show current platform icon
-                if model.selectedChatPlatform.icon == "TwitchLogo" || model.selectedChatPlatform.icon == "KickLogo" {
-                    Image(model.selectedChatPlatform.icon)
+                switch model.selectedChatPlatform.icon() {
+                case let .asset(name):
+                    Image(name)
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(width: 20, height: 20)
                         .padding(10)
-                } else {
-                    Image(systemName: model.selectedChatPlatform.icon)
+                case let .system(name):
+                    Image(systemName: name)
                         .font(.title)
                         .padding(5)
                 }
             }
             .sheet(isPresented: $showingPlatformSelector) {
                 NavigationView {
-                    List {
-                        Section("Send messages to:") {
-                            ForEach(availablePlatforms, id: \.displayName) { platform in
+                    Section {
+                        List {
+                            ForEach(availablePlatforms, id: \.self) { platform in
                                 Button {
                                     model.selectedChatPlatform = platform
-                                    showingPlatformSelector = false
                                 } label: {
                                     HStack {
-                                        // Platform icon
-                                        if platform.icon == "TwitchLogo" || platform.icon == "KickLogo" {
-                                            Image(platform.icon)
+                                        switch platform.icon() {
+                                        case let .asset(name):
+                                            Image(name)
                                                 .resizable()
                                                 .aspectRatio(contentMode: .fit)
                                                 .frame(width: 24, height: 24)
-                                        } else {
-                                            Image(systemName: platform.icon)
+                                        case let .system(name):
+                                            Image(systemName: name)
                                                 .font(.title2)
                                                 .frame(width: 24, height: 24)
                                         }
-
-                                        Text(platform.displayName)
-                                            .foregroundColor(.primary)
-
+                                        Text(platform.displayName())
                                         Spacer()
-
-                                        // Checkmark for selected platform
-                                        if model.selectedChatPlatform.displayName == platform.displayName {
-                                            Image(systemName: "checkmark.circle.fill")
+                                        if model.selectedChatPlatform == platform {
+                                            Image(systemName: "checkmark")
                                                 .foregroundColor(.blue)
                                                 .font(.title2)
                                         }
                                     }
-                                    .padding(.vertical, 4)
                                 }
-                                .buttonStyle(.plain)
                             }
                         }
                     }
-                    .navigationTitle("Chat Platform")
-                    .navigationBarTitleDisplayMode(.inline)
+                    .navigationTitle("Send messages to")
                     .toolbar {
                         ToolbarItem(placement: .navigationBarTrailing) {
-                            Button("Done") {
+                            Button("Close") {
                                 showingPlatformSelector = false
                             }
                         }
                     }
                 }
-                .presentationDetents([.medium])
             }
         }
     }

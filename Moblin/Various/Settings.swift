@@ -558,7 +558,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
     var kickChatroomId: String = ""
     var kickChannelName: String = ""
     var kickAccessToken: String = ""
-    var kickLoggedIn: Bool = false
+    @Published var kickLoggedIn: Bool = false
     var youTubeApiKey: String = ""
     @Published var youTubeVideoId: String = ""
     @Published var youTubeHandle: String = ""

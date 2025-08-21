@@ -5,6 +5,7 @@ import WrappingHStack
 
 let maximumNumberOfChatMessages = 50
 let maximumNumberOfInteractiveChatMessages = 100
+
 class ChatProvider: ObservableObject {
     var newPosts: Deque<ChatPost> = []
     var pausedPosts: Deque<ChatPost> = []
