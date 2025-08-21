@@ -346,26 +346,11 @@ extension Model {
 
     func sendChatMessage(message: String) {
         if stream.twitchSendMessagesTo {
-            sendToTwitch(message: message)
+            sendTwitchChatMessage(message: message)
         }
         if stream.kickSendMessagesTo {
-            sendToKick(message: message)
+            sendKickChatMessage(message: message)
         }
-    }
-
-    private func sendToTwitch(message: String) {
-        TwitchApi(stream.twitchAccessToken, urlSession)
-            .sendChatMessage(broadcasterId: stream.twitchChannelId, message: message) { ok in
-                if !ok {
-                    DispatchQueue.main.async {
-                        self.makeErrorToast(title: "Failed to send to Twitch")
-                    }
-                }
-            }
-    }
-
-    private func sendToKick(message: String) {
-        sendKickChatMessage(message: message)
     }
 
     private func evaluateFilters(user: String?, segments: [ChatPostSegment]) -> SettingsChatFilter? {

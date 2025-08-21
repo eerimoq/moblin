@@ -832,6 +832,8 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         new.url = url
         new.twitchChannelName = twitchChannelName
         new.twitchChannelId = twitchChannelId
+        new.twitchShowFollows = twitchShowFollows
+        new.twitchSendMessagesTo = twitchSendMessagesTo
         new.kickChatroomId = kickChatroomId
         new.kickChannelName = kickChannelName
         new.kickAccessToken = kickAccessToken

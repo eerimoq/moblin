@@ -220,6 +220,17 @@ extension Model {
         getStream()
     }
 
+    func sendTwitchChatMessage(message: String) {
+        TwitchApi(stream.twitchAccessToken, urlSession)
+            .sendChatMessage(broadcasterId: stream.twitchChannelId, message: message) { ok in
+                if !ok {
+                    DispatchQueue.main.async {
+                        self.makeErrorToast(title: "Failed to send to Twitch")
+                    }
+                }
+            }
+    }
+
     func startAds(seconds: Int) {
         TwitchApi(stream.twitchAccessToken, urlSession)
             .startCommercial(broadcasterId: stream.twitchChannelId, length: seconds) { data in
