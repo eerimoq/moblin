@@ -38,7 +38,7 @@ class TwitchAuth: NSObject {
 
     func getWebBrowser() -> WKWebView {
         let configuration = WKWebViewConfiguration()
-        configuration.websiteDataStore = WKWebsiteDataStore.nonPersistent()
+        configuration.websiteDataStore = .nonPersistent()
         webBrowser = WKWebView(frame: .zero, configuration: configuration)
         webBrowser!.navigationDelegate = self
         webBrowser!.load(URLRequest(url: buildAuthUrl()!))
