@@ -77,57 +77,6 @@ class ChatProvider: ObservableObject {
     }
 }
 
-private enum ChatPlatformTarget {
-    case kick
-    case twitch
-    var displayName: String {
-        switch self {
-        case .kick: return "Kick"
-        case .twitch: return "Twitch"
-        }
-    }
-}
-
-private enum PlatformSendResult {
-    case sent(ChatPlatformTarget)
-    case notLoggedIn(ChatPlatformTarget)
-    case notConfigured(ChatPlatformTarget)
-}
-
-private struct SendResults {
-    private var results: [PlatformSendResult] = []
-    mutating func add(_ result: PlatformSendResult) {
-        results.append(result)
-    }
-
-    var sentCount: Int {
-        results.count { if case .sent = $0 { return true } else { return false } }
-    }
-
-    func getErrorMessage() -> String {
-        let notLoggedIn = results.compactMap { result in
-            if case let .notLoggedIn(platform) = result {
-                return platform.displayName
-            }
-            return nil
-        }
-        let notConfigured = results.compactMap { result in
-            if case let .notConfigured(platform) = result {
-                return platform.displayName
-            }
-            return nil
-        }
-        var errors: [String] = []
-        if !notLoggedIn.isEmpty {
-            errors.append("Not logged in to: \(notLoggedIn.joined(separator: ", "))")
-        }
-        if !notConfigured.isEmpty {
-            errors.append("Not configured: \(notConfigured.joined(separator: ", "))")
-        }
-        return errors.isEmpty ? "No platforms available" : errors.joined(separator: ". ")
-    }
-}
-
 extension Model {
     func getAvailableChatPlatforms() -> [ChatPlatformSelection] {
         var platforms: [ChatPlatformSelection] = []
@@ -384,8 +333,11 @@ extension Model {
     }
 
     func hasChatEmotes() -> Bool {
-        return hasTwitchChatEmotes() || hasKickPusherEmotes() ||
-            hasYouTubeLiveChatEmotes() || hasAfreecaTvChatEmotes() || hasOpenStreamingPlatformChatEmotes()
+        return hasTwitchChatEmotes()
+            || hasKickPusherEmotes()
+            || hasYouTubeLiveChatEmotes()
+            || hasAfreecaTvChatEmotes()
+            || hasOpenStreamingPlatformChatEmotes()
     }
 
     func resetChat() {
@@ -393,57 +345,15 @@ extension Model {
     }
 
     func sendChatMessage(message: String) {
-        let platforms = getTargetPlatforms()
-        let results = sendToSelectedPlatforms(message: message, platforms: platforms)
-        handleSendResults(results)
-    }
-
-    private func getTargetPlatforms() -> [ChatPlatformTarget] {
-        var targets: [ChatPlatformTarget] = []
-        switch selectedChatPlatform {
-        case .all:
-            targets.append(contentsOf: [.kick, .twitch])
-        case .kick:
-            targets.append(.kick)
-        case .twitch:
-            targets.append(.twitch)
+        if database.chat.sendMessagesTo.twitch {
+            sendToTwitch(message: message)
         }
-        return targets
-    }
-
-    private func sendToSelectedPlatforms(message: String, platforms: [ChatPlatformTarget]) -> SendResults {
-        var results = SendResults()
-        for platform in platforms {
-            let result = sendToPlatform(message: message, platform: platform)
-            results.add(result)
-        }
-        return results
-    }
-
-    private func sendToPlatform(message: String, platform: ChatPlatformTarget) -> PlatformSendResult {
-        switch platform {
-        case .kick:
-            return sendToKick(message: message)
-        case .twitch:
-            return sendToTwitch(message: message)
+        if database.chat.sendMessagesTo.kick {
+            sendToKick(message: message)
         }
     }
 
-    private func sendToKick(message: String) -> PlatformSendResult {
-        guard isKickPusherConfigured() else {
-            return .notConfigured(.kick)
-        }
-        guard stream.kickLoggedIn else {
-            return .notLoggedIn(.kick)
-        }
-        sendKickChatMessage(message: message)
-        return .sent(.kick)
-    }
-
-    private func sendToTwitch(message: String) -> PlatformSendResult {
-        guard stream.twitchLoggedIn else {
-            return .notLoggedIn(.twitch)
-        }
+    private func sendToTwitch(message: String) {
         TwitchApi(stream.twitchAccessToken, urlSession)
             .sendChatMessage(broadcasterId: stream.twitchChannelId, message: message) { ok in
                 if !ok {
@@ -452,14 +362,10 @@ extension Model {
                     }
                 }
             }
-        return .sent(.twitch)
     }
 
-    private func handleSendResults(_ results: SendResults) {
-        if results.sentCount == 0 {
-            let errorMessage = results.getErrorMessage()
-            makeErrorToast(title: "Cannot send message", subTitle: errorMessage)
-        }
+    private func sendToKick(message: String) {
+        sendKickChatMessage(message: message)
     }
 
     private func evaluateFilters(user: String?, segments: [ChatPostSegment]) -> SettingsChatFilter? {

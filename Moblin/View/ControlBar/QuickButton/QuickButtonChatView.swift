@@ -635,67 +635,61 @@ private struct PredefinedMessagesView: View {
     }
 }
 
-private struct PlatformSelectorButtonView: View {
-    @EnvironmentObject var model: Model
-    @State var showingPlatformSelector = false
+private struct SendMessagesToView: View {
+    let image: String
+    let name: String
+    @Binding var enabled: Bool
 
     var body: some View {
-        let availablePlatforms = model.getAvailableChatPlatforms()
-        if availablePlatforms.count > 1 {
-            Button {
-                showingPlatformSelector = true
-            } label: {
-                switch model.selectedChatPlatform.icon() {
-                case let .asset(name):
-                    Image(name)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 20, height: 20)
-                        .padding(10)
-                case let .system(name):
-                    Image(systemName: name)
-                        .font(.title)
-                        .padding(5)
+        Button {
+            enabled.toggle()
+        } label: {
+            HStack {
+                Image(image)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 24, height: 24)
+                Text(name)
+                Spacer()
+                if enabled {
+                    Image(systemName: "checkmark")
+                        .foregroundColor(.blue)
+                        .font(.title2)
                 }
             }
-            .sheet(isPresented: $showingPlatformSelector) {
-                NavigationView {
+        }
+    }
+}
+
+private struct SendMessagesToSelectorView: View {
+    @ObservedObject var sendMessagesTo: SettingsChatSendMessagesTo
+    @State var showingSelector = false
+
+    var body: some View {
+        Button {
+            showingSelector = true
+        } label: {
+            Image(systemName: "globe")
+                .font(.title)
+                .padding(5)
+        }
+        .sheet(isPresented: $showingSelector) {
+            NavigationView {
+                Form {
                     Section {
-                        List {
-                            ForEach(availablePlatforms, id: \.self) { platform in
-                                Button {
-                                    model.selectedChatPlatform = platform
-                                } label: {
-                                    HStack {
-                                        switch platform.icon() {
-                                        case let .asset(name):
-                                            Image(name)
-                                                .resizable()
-                                                .aspectRatio(contentMode: .fit)
-                                                .frame(width: 24, height: 24)
-                                        case let .system(name):
-                                            Image(systemName: name)
-                                                .font(.title2)
-                                                .frame(width: 24, height: 24)
-                                        }
-                                        Text(platform.displayName())
-                                        Spacer()
-                                        if model.selectedChatPlatform == platform {
-                                            Image(systemName: "checkmark")
-                                                .foregroundColor(.blue)
-                                                .font(.title2)
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                        SendMessagesToView(image: "TwitchLogo",
+                                           name: String(localized: "Twitch"),
+                                           enabled: $sendMessagesTo.twitch)
+                        SendMessagesToView(image: "KickLogo",
+                                           name: String(localized: "Kick"),
+                                           enabled: $sendMessagesTo.kick)
                     }
-                    .navigationTitle("Send messages to")
-                    .toolbar {
-                        ToolbarItem(placement: .navigationBarTrailing) {
-                            Button("Close") {
-                                showingPlatformSelector = false
-                            }
+                }
+                .navigationTitle("Send messages to")
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Button("Close") {
+                            showingSelector = false
                         }
                     }
                 }
@@ -758,7 +752,7 @@ private struct ControlView: View {
         }
         .padding(5)
         .foregroundColor(.white)
-        PlatformSelectorButtonView()
+        SendMessagesToSelectorView(sendMessagesTo: model.database.chat.sendMessagesTo)
         ControlMessagesButtonView(model: model)
         ControlAlertsButtonView(quickButtonChat: model.quickButtonChatState)
     }
