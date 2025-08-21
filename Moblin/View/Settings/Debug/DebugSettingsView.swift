@@ -107,20 +107,11 @@ struct DebugSettingsView: View {
                             .frame(width: 40)
                     }
                 }
-                // Toggle("Auto low power mode", isOn: $debug.autoLowPowerMode)
-                //     .onChange(of: debug.autoLowPowerMode) { _ in
-                //         if model.statusOther.thermalState == .critical {
-                //             model.startLowPowerMode()
-                //         } else {
-                //             model.stopLowPowerMode()
-                //         }
-                //     }
                 Toggle("New SRT", isOn: $debug.newSrt)
                     .onChange(of: debug.newSrt) { _ in
                         model.reloadStream()
                         model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
                     }
-                Toggle("Kick login", isOn: $debug.kickLogin)
 
             } header: {
                 Text("Experimental")

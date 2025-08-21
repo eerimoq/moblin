@@ -231,7 +231,7 @@ extension Model {
             }
     }
 
-    func banUser(user: String, userId: String, duration: Int?) {
+    func banTwitchUser(user: String, userId: String, duration: Int?) {
         TwitchApi(stream.twitchAccessToken, urlSession)
             .banUser(broadcasterId: stream.twitchChannelId, userId: userId, duration: duration) { ok in
                 if ok {

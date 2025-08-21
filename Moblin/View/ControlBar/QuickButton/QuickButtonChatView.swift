@@ -661,6 +661,17 @@ private struct SendMessagesToView: View {
     }
 }
 
+private struct PlatformIconView: View {
+    let image: String
+
+    var body: some View {
+        Image(image)
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .frame(width: 25, height: 25)
+    }
+}
+
 private struct SendMessagesToSelectorView: View {
     @ObservedObject var stream: SettingsStream
     @State var showingSelector = false
@@ -678,15 +689,9 @@ private struct SendMessagesToSelectorView: View {
             showingSelector = true
         } label: {
             if isTwitchOnly() {
-                Image("TwitchLogo")
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 25, height: 25)
+                PlatformIconView(image: "TwitchLogo")
             } else if isKickOnly() {
-                Image("KickLogo")
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 25, height: 25)
+                PlatformIconView(image: "KickLogo")
             } else {
                 Image(systemName: "globe")
                     .font(.title)

@@ -141,9 +141,7 @@ struct StreamKickSettingsView: View {
 
     var body: some View {
         Form {
-            if model.database.debug.kickLogin {
-                AuthenticationView(stream: stream)
-            }
+            AuthenticationView(stream: stream)
             Section {
                 TextEditNavigationView(
                     title: String(localized: "Channel name"),

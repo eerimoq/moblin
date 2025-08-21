@@ -571,8 +571,10 @@ extension Model {
         }
         switch post.platform {
         case .twitch:
-            guard let userId = post.userId else { return }
-            banUser(user: user, userId: userId, duration: nil)
+            guard let userId = post.userId else {
+                return
+            }
+            banTwitchUser(user: user, userId: userId, duration: nil)
         case .kick:
             banKickUser(user: user, duration: nil)
         default:
@@ -586,8 +588,10 @@ extension Model {
         }
         switch post.platform {
         case .twitch:
-            guard let userId = post.userId else { return }
-            banUser(user: user, userId: userId, duration: duration)
+            guard let userId = post.userId else {
+                return
+            }
+            banTwitchUser(user: user, userId: userId, duration: duration)
         case .kick:
             banKickUser(user: user, duration: duration)
         default:
