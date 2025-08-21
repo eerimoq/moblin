@@ -27,10 +27,6 @@ extension Model {
         return database.chat.enabled && (stream.kickChatroomId != "" || stream.kickChannelName != "")
     }
 
-    func isKickLoggedIn() -> Bool {
-        return stream.kickLoggedIn && !stream.kickAccessToken.isEmpty
-    }
-
     func isKickPusherConnected() -> Bool {
         return kickPusher?.isConnected() ?? false
     }
@@ -84,7 +80,7 @@ extension Model {
     }
 
     private func performKickMessageSend(message: String) async throws {
-        guard isKickLoggedIn() else {
+        guard stream.kickLoggedIn else {
             throw KickSendError.notLoggedIn
         }
         guard !stream.kickChannelName.isEmpty else {
@@ -176,7 +172,7 @@ extension Model {
     }
 
     func banKickUser(user: String, duration: Int? = nil, reason: String = "") {
-        guard isKickLoggedIn() else {
+        guard stream.kickLoggedIn else {
             makeErrorToast(title: "Not logged in to Kick")
             return
         }
@@ -248,7 +244,7 @@ extension Model {
     }
 
     func deleteKickMessage(messageId: String, chatroomId: Int) {
-        guard isKickLoggedIn() else {
+        guard stream.kickLoggedIn else {
             makeErrorToast(title: "Not logged in to Kick")
             return
         }

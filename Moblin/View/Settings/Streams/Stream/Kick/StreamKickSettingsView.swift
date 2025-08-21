@@ -86,7 +86,7 @@ private struct KickWebView: UIViewRepresentable {
 
     func updateUIView(_ webView: WKWebView, context: Context) {
         webView.navigationDelegate = context.coordinator
-        if !(webView.url?.host()?.contains(kickDomain) ?? false) {
+        if webView.url?.host()?.contains(kickDomain) != true {
             webView.load(URLRequest(url: loginUrl))
         }
     }
@@ -111,10 +111,6 @@ private struct KickWebView: UIViewRepresentable {
             else {
                 return
             }
-            extractAuthToken(from: webView)
-        }
-
-        private func extractAuthToken(from webView: WKWebView) {
             webView.configuration.websiteDataStore.httpCookieStore.getAllCookies { cookies in
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
                     guard let sessionTokenCookie = cookies
@@ -124,8 +120,8 @@ private struct KickWebView: UIViewRepresentable {
                     else {
                         return
                     }
-                    let accessToken = sessionTokenCookie.value.removingPercentEncoding ?? sessionTokenCookie.value
-                    self.onAccessToken(accessToken)
+                    let accessToken = sessionTokenCookie.value
+                    self.onAccessToken(accessToken.removingPercentEncoding ?? accessToken)
                 }
             }
         }

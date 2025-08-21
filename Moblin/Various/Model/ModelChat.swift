@@ -132,7 +132,7 @@ extension Model {
     func getAvailableChatPlatforms() -> [ChatPlatformSelection] {
         var platforms: [ChatPlatformSelection] = []
         let hasTwitch = stream.twitchLoggedIn
-        let hasKick = isKickPusherConfigured() && isKickLoggedIn()
+        let hasKick = stream.kickLoggedIn
         if hasTwitch, hasKick {
             platforms.append(.all)
         }
@@ -433,7 +433,7 @@ extension Model {
         guard isKickPusherConfigured() else {
             return .notConfigured(.kick)
         }
-        guard isKickLoggedIn() else {
+        guard stream.kickLoggedIn else {
             return .notLoggedIn(.kick)
         }
         sendKickChatMessage(message: message)
