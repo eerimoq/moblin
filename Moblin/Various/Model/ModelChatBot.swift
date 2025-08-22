@@ -15,7 +15,7 @@ extension Model {
         }
         switch command.rest() {
         case "help":
-            handleChatBotMessageHelp()
+            handleChatBotMessageHelp(platform: message.platform)
         case "tts on":
             handleChatBotMessageTtsOn(command: command)
         case "tts off":
@@ -58,13 +58,12 @@ extension Model {
         }
     }
 
-    private func handleChatBotMessageHelp() {
-        sendChatMessage(
-            message: """
-            Moblin chat bot help: \
-            https://github.com/eerimoq/moblin/blob/main/docs/chat-bot-help.md#moblin-chat-bot-help
-            """
-        )
+    private func handleChatBotMessageHelp(platform: Platform) {
+        sendChatBotReply(message: """
+                         Moblin chat bot help: \
+                         https://github.com/eerimoq/moblin/blob/main/docs/chat-bot-help.md#moblin-chat-bot-help
+                         """,
+                         platform: platform)
     }
 
     private func handleChatBotMessageTtsOn(command: ChatBotCommand) {
@@ -155,7 +154,8 @@ extension Model {
         ) {
             if let user = command.user() {
                 if permissions.sendChatMessages {
-                    self.sendChatMessage(message: self.formatSnapshotTakenSuccessfully(user: user))
+                    self.sendChatBotReply(message: self.formatSnapshotTakenSuccessfully(user: user),
+                                          platform: command.message.platform)
                 }
                 self.takeSnapshot(isChatBot: true, message: self.formatSnapshotTakenBy(user: user))
             } else {
@@ -163,7 +163,8 @@ extension Model {
             }
         } onNotAllowed: {
             if permissions.sendChatMessages, let user = command.user() {
-                self.sendChatMessage(message: self.formatSnapshotTakenNotAllowed(user: user))
+                self.sendChatBotReply(message: self.formatSnapshotTakenNotAllowed(user: user),
+                                      platform: command.message.platform)
             }
         }
     }
@@ -175,7 +176,8 @@ extension Model {
             command: command
         ) {
             if permissions.sendChatMessages, let user = command.user() {
-                self.sendChatMessage(message: self.formatSnapshotTakenSuccessfully(user: user))
+                self.sendChatBotReply(message: self.formatSnapshotTakenSuccessfully(user: user),
+                                      platform: command.message.platform)
             }
             self.takeSnapshotWithCountdown(
                 isChatBot: true,
@@ -184,7 +186,8 @@ extension Model {
             )
         } onNotAllowed: {
             if permissions.sendChatMessages, let user = command.user() {
-                self.sendChatMessage(message: self.formatSnapshotTakenNotAllowed(user: user))
+                self.sendChatBotReply(message: self.formatSnapshotTakenNotAllowed(user: user),
+                                      platform: command.message.platform)
             }
         }
     }
@@ -451,6 +454,17 @@ extension Model {
         }
     }
 
+    private func sendChatBotReply(message: String, platform: Platform) {
+        switch platform {
+        case .twitch:
+            sendTwitchChatMessage(message: message)
+        case .kick:
+            sendKickChatMessage(message: message)
+        default:
+            break
+        }
+    }
+
     private func executeIfUserAllowedToUseChatBot(
         permissions: SettingsChatBotPermissionsCommand,
         command: ChatBotCommand,
@@ -474,10 +488,10 @@ extension Model {
                 let timeLeftOfCooldown = .seconds(cooldown) - elapsed
                 guard timeLeftOfCooldown < .seconds(0) else {
                     if permissions.sendChatMessages, let user = command.user() {
-                        self.sendChatMessage(message: String(localized: """
+                        self.sendChatBotReply(message: String(localized: """
                         \(user) Sorry, but this chat bot command is on cooldown for \(Int(timeLeftOfCooldown.seconds)) \
                         seconds. 😢
-                        """))
+                        """), platform: command.message.platform)
                     }
                     return
                 }
@@ -489,9 +503,9 @@ extension Model {
         if permissions.sendChatMessages, onNotAllowed == nil {
             onNotAllowed = {
                 if permissions.sendChatMessages, let user = command.user() {
-                    self.sendChatMessage(message: String(localized: """
+                    self.sendChatBotReply(message: String(localized: """
                     \(user) Sorry, you are not allowed to use this chat bot command 😢
-                    """))
+                    """), platform: command.message.platform)
                 }
             }
         }

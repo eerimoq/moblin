@@ -112,15 +112,15 @@ private struct KickWebView: UIViewRepresentable {
                 return
             }
             webView.configuration.websiteDataStore.httpCookieStore.getAllCookies { cookies in
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                    guard let sessionTokenCookie = cookies
-                        .filter({ $0.domain.contains(kickDomain) })
-                        .filter({ $0.name == sessionTokenCookieName })
-                        .first
-                    else {
-                        return
-                    }
-                    let accessToken = sessionTokenCookie.value
+                guard let sessionTokenCookie = cookies
+                    .filter({ $0.domain.contains(kickDomain) })
+                    .filter({ $0.name == sessionTokenCookieName })
+                    .first
+                else {
+                    return
+                }
+                let accessToken = sessionTokenCookie.value
+                DispatchQueue.main.async {
                     self.onAccessToken(accessToken.removingPercentEncoding ?? accessToken)
                 }
             }
