@@ -327,7 +327,7 @@ class RtmpServerChunkStream {
     }
 
     private func processMessageAudioTypeSeq(client _: RtmpServerClient, codec: FlvAudioCodec) {
-        guard let config = MpegTsAudioConfig(data: messageBody[codec.headerSize ..< messageBody.count]) else {
+        guard let config = MpegTsAudioConfig(data: [UInt8](messageBody[codec.headerSize ..< messageBody.count])) else {
             return
         }
         var streamDescription = config.audioStreamBasicDescription()
