@@ -98,7 +98,7 @@ private struct Language {
 struct VoicesView: View {
     @Binding var textToSpeechLanguageVoices: [String: String]
     let onVoiceChange: (String, String) -> Void
-    private let synthesizer = AVSpeechSynthesizer()
+    private let synthesizer = createSpeechSynthesizer()
     @Binding var rate: Float
     @Binding var volume: Float
 

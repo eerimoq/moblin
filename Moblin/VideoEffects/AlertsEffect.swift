@@ -180,7 +180,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
     private var audioPlayer: AVAudioPlayer?
     private var rate: Float = 0.4
     private var volume: Float = 1.0
-    private var synthesizer = AVSpeechSynthesizer()
+    private var synthesizer = createSpeechSynthesizer()
     private var alertsQueue: Deque<AlertsEffectAlert> = .init()
     private weak var delegate: (any AlertsEffectDelegate)?
     private var toBeRemoved: Bool = true

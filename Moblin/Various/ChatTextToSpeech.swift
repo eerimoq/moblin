@@ -59,7 +59,7 @@ class ChatTextToSpeech: NSObject {
     private var pauseBetweenMessages: Double = 0.0
     private var voices: [String: String] = [:]
     private var messageQueue: Deque<TextToSpeechMessage> = .init()
-    private var synthesizer = AVSpeechSynthesizer()
+    private var synthesizer = createSpeechSynthesizer()
     private var recognizer = NLLanguageRecognizer()
     private var latestUserThatSaidSomething: String?
     private var sayLatestUserThatSaidSomethingAgain = ContinuousClock.now
@@ -164,7 +164,7 @@ class ChatTextToSpeech: NSObject {
             self.synthesizer.stopSpeaking(at: .word)
             self.latestUserThatSaidSomething = nil
             self.messageQueue.removeAll()
-            self.synthesizer = AVSpeechSynthesizer()
+            self.synthesizer = createSpeechSynthesizer()
             self.synthesizer.delegate = self
             self.recognizer = NLLanguageRecognizer()
         }
@@ -191,7 +191,7 @@ class ChatTextToSpeech: NSObject {
 
     private func skipCurrentMessageInternal() {
         synthesizer.stopSpeaking(at: .word)
-        synthesizer = AVSpeechSynthesizer()
+        synthesizer = createSpeechSynthesizer()
         synthesizer.delegate = self
         currentlyPlayingMessage = nil
         trySayNextMessage()

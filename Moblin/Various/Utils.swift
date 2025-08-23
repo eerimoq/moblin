@@ -776,3 +776,9 @@ func makeUniqueName<T: Named>(name: String, existingNames: [T]) -> String {
         number += 1
     }
 }
+
+func createSpeechSynthesizer() -> AVSpeechSynthesizer {
+    let synthesizer = AVSpeechSynthesizer()
+    synthesizer.usesApplicationAudioSession = false
+    return synthesizer
+}
