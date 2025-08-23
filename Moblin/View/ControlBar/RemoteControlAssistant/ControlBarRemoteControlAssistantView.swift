@@ -374,6 +374,21 @@ private struct RecordingView: View {
     }
 }
 
+private struct MutedView: View {
+    @EnvironmentObject var model: Model
+    @ObservedObject var remoteControl: RemoteControl
+
+    var body: some View {
+        Toggle(isOn: Binding(get: {
+            remoteControl.muted
+        }, set: {
+            model.remoteControlAssistantSetMute(on: $0)
+        })) {
+            Text("Muted")
+        }
+    }
+}
+
 private struct ZoomView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var remoteControl: RemoteControl
@@ -546,6 +561,7 @@ private struct ControlBarRemoteControlAssistantControlView: View {
             if remoteControl.settings != nil {
                 LiveView(remoteControl: remoteControl)
                 RecordingView(remoteControl: remoteControl)
+                MutedView(remoteControl: remoteControl)
                 ZoomView(remoteControl: remoteControl)
                 ScenePickerView(remoteControl: remoteControl)
                 AutoSceneSwitcherPickerView(remoteControl: remoteControl)

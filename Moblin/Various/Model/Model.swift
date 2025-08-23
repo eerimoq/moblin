@@ -2710,6 +2710,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         updateTextEffects(now: .now, timestamp: .now)
         forceUpdateTextEffects()
+        remoteControlStreamer?.stateChanged(state: .init(muted: isMuteOn))
     }
 
     private func makeFlameRedToast() {

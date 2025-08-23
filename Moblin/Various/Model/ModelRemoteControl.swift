@@ -19,6 +19,7 @@ class RemoteControl: ObservableObject {
     @Published var preview: UIImage?
     @Published var recording: Bool = false
     @Published var streaming: Bool = false
+    @Published var muted: Bool = false
 }
 
 enum RemoteControlAssistantPreviewUser {
@@ -480,6 +481,7 @@ extension Model: RemoteControlStreamerDelegate {
         state.debugLogging = database.debug.logLevel == .debug
         state.streaming = isLive
         state.recording = isRecording
+        state.muted = isMuteOn
         state.torchOn = streamOverlay.isTorchOn
         state.batteryCharging = isBatteryCharging()
         remoteControlStreamer?.stateChanged(state: state)
@@ -763,6 +765,10 @@ extension Model: RemoteControlAssistantDelegate {
         if let recording = state.recording {
             remoteControlState.recording = recording
             remoteControl.recording = recording
+        }
+        if let muted = state.muted {
+            remoteControlState.muted = muted
+            remoteControl.muted = muted
         }
         if isWatchRemoteControl() {
             sendRemoteControlAssistantStatusToWatch()
