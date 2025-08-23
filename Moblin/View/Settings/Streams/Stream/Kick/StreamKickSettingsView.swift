@@ -1,7 +1,6 @@
 import SwiftUI
 import WebKit
 
-private var persistentWebView: WKWebView?
 private let kickDomain = "kick.com"
 private let loginUrl = URL(string: "https://kick.com/login")!
 private let sessionTokenCookieName = "session_token"
@@ -72,15 +71,10 @@ private struct KickWebView: UIViewRepresentable {
     let onAccessToken: (String) -> Void
 
     func makeUIView(context: Context) -> WKWebView {
-        if let existingWebView = persistentWebView {
-            existingWebView.navigationDelegate = context.coordinator
-            return existingWebView
-        }
         let configuration = WKWebViewConfiguration()
         configuration.websiteDataStore = .nonPersistent()
         let webView = WKWebView(frame: .zero, configuration: configuration)
         webView.navigationDelegate = context.coordinator
-        persistentWebView = webView
         return webView
     }
 
