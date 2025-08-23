@@ -4,6 +4,7 @@ struct RecordingsRecordingSettingsView: View {
     let model: Model
     @ObservedObject var recording: Recording
     @State var image: UIImage?
+    @State var convertToMp4Text: String? = "Convert to MP4"
 
     var body: some View {
         NavigationLink {
@@ -92,6 +93,24 @@ struct RecordingsRecordingSettingsView: View {
                         }
                     } header: {
                         Text("Settings")
+                    }
+                    Section {
+                        Button {
+                            if let url = recording.url() {
+                                convertToMp4Text = nil
+                                model.convertRecordingToMp4(fmp4Url: url) { message in
+                                    convertToMp4Text = message
+                                }
+                            }
+                        } label: {
+                            if let convertToMp4Text {
+                                HCenter {
+                                    Text(convertToMp4Text)
+                                }
+                            } else {
+                                ProgressView()
+                            }
+                        }
                     }
                 }
             }
