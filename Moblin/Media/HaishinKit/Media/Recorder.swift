@@ -12,7 +12,7 @@ protocol RecorderDelegate: AnyObject {
     func recorderFinished()
 }
 
-private let recorderQueue = DispatchQueue(label: "com.eerimoq.recorder")
+private let fileWriterQueue = DispatchQueue(label: "com.eerimoq.recorder")
 
 class Recorder: NSObject {
     private var replay = false
@@ -53,7 +53,7 @@ class Recorder: NSObject {
     }
 
     func setUrl(url: URL?) {
-        recorderQueue.async {
+        fileWriterQueue.async {
             if let url {
                 try? Data().write(to: url)
                 self.fileHandle = FileHandle(forWritingAtPath: url.path)
@@ -67,7 +67,7 @@ class Recorder: NSObject {
     }
 
     func setReplayBuffering(enabled: Bool) {
-        recorderQueue.async {
+        fileWriterQueue.async {
             self.replay = enabled
             if let initSegment = self.initSegment {
                 self.delegate?.recorderInitSegment(data: initSegment)
@@ -137,7 +137,7 @@ class Recorder: NSObject {
             return outputBuffer.makeSampleBuffer(sampleBuffer.presentationTimeStamp)
         }
     }
-
+    
     private func appendVideoInner(_ sampleBuffer: CMSampleBuffer) {
         guard let writer,
               let input = makeVideoWriterInput(sampleBuffer: sampleBuffer),
@@ -329,13 +329,9 @@ class Recorder: NSObject {
             reset()
             return
         }
-        let dispatchGroup = DispatchGroup()
-        dispatchGroup.enter()
         writer.finishWriting {
             self.delegate?.recorderFinished()
-            dispatchGroup.leave()
         }
-        dispatchGroup.wait()
         reset()
     }
 
@@ -346,7 +342,7 @@ class Recorder: NSObject {
         audioConverter = nil
         audioOutputFormat = nil
         basePresentationTimeStamp = .zero
-        recorderQueue.async {
+        fileWriterQueue.async {
             self.fileHandle = nil
             self.initSegment = nil
         }
@@ -363,7 +359,7 @@ extension Recorder: AVAssetWriterDelegate {
                      segmentType: AVAssetSegmentType,
                      segmentReport: AVAssetSegmentReport?)
     {
-        recorderQueue.async {
+        fileWriterQueue.async {
             self.fileHandle?.write(segmentData)
             if segmentType == .initialization {
                 self.initSegment = segmentData
