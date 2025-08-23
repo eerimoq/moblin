@@ -1,3 +1,4 @@
+import AVFoundation
 import Foundation
 
 class RecordingProvider: ObservableObject {
@@ -127,5 +128,38 @@ extension Model {
 
     func isShowingStatusRecording() -> Bool {
         return isRecording
+    }
+
+    private func convertRecordingToMp4(fmp4Url: URL) {
+        let start = ContinuousClock.now
+        guard let exportSession = AVAssetExportSession(asset: AVURLAsset(url: fmp4Url, options: nil),
+                                                       presetName: AVAssetExportPresetPassthrough)
+        else {
+            return
+        }
+        let mp4Url = fmp4Url.appendingPathExtension("new")
+        mp4Url.remove()
+        exportSession.outputURL = mp4Url
+        exportSession.outputFileType = .mp4
+        exportSession.exportAsynchronously {
+            switch exportSession.status {
+            case .failed:
+                break
+            case .cancelled:
+                break
+            case .completed:
+                let tempUrl = fmp4Url.appendingPathExtension("old")
+                do {
+                    try FileManager.default.moveItem(at: fmp4Url, to: tempUrl)
+                    try FileManager.default.moveItem(at: mp4Url, to: fmp4Url)
+                    tempUrl.remove()
+                    logger.info("recorder: Fragmented MP4 converted to MP4 in \(start.duration(to: .now))")
+                } catch {
+                    logger.info("recorder: Failed to convert fragmented MP4 converted to MP4 with error: \(error)")
+                }
+            default:
+                break
+            }
+        }
     }
 }
