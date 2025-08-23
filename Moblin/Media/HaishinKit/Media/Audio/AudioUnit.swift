@@ -198,7 +198,7 @@ final class AudioUnit: NSObject {
         }
         inputSourceFormat = sampleBuffer.formatDescription?.audioStreamBasicDescription
         encoder.appendSampleBuffer(sampleBuffer, presentationTimeStamp)
-        processor.recorder.appendAudio(sampleBuffer)
+        processor.recorder.appendAudio(sampleBuffer, presentationTimeStamp)
     }
 
     private func appendBufferedBuiltinAudio(_ sampleBuffer: CMSampleBuffer,
