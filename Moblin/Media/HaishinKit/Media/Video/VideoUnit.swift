@@ -6,6 +6,8 @@ import UIKit
 import VideoToolbox
 import Vision
 
+private let deltaLimit = 0.03
+
 struct FaceDetectionJob {
     let videoSourceId: UUID
     let imageBuffer: CVPixelBuffer
@@ -164,6 +166,8 @@ final class VideoUnit: NSObject {
     private var preferAutoFps = false
     private var colorSpace: AVCaptureColorSpace = .sRGB
     private var blackImage: CIImage?
+    private var outputCounter: Int64 = -1
+    private var startPresentationTimeStamp: CMTime = .zero
 
     var videoOrientation: AVCaptureVideoOrientation = .portrait {
         didSet {
@@ -523,6 +527,8 @@ final class VideoUnit: NSObject {
 
     private func startFrameTimer() {
         let frameInterval = 1 / fps
+        outputCounter = -1
+        startPresentationTimeStamp = .zero
         frameTimer.startPeriodic(interval: frameInterval) { [weak self] in
             self?.handleFrameTimer()
         }
@@ -532,8 +538,36 @@ final class VideoUnit: NSObject {
         frameTimer.stop()
     }
 
+    private func makePresentationTimeStamp() -> CMTime {
+        return CMTime(value: outputCounter, timescale: Int32(fps)) + startPresentationTimeStamp
+    }
+
     private func handleFrameTimer() {
-        let presentationTimeStamp = currentPresentationTimeStamp()
+        outputCounter += 1
+        let currentPresentationTimeStamp = currentPresentationTimeStamp()
+        if startPresentationTimeStamp == .zero {
+            startPresentationTimeStamp = currentPresentationTimeStamp
+        }
+        var presentationTimeStamp = makePresentationTimeStamp()
+        let deltaFromCalculatedToClock = presentationTimeStamp - currentPresentationTimeStamp
+        if abs(deltaFromCalculatedToClock.seconds) > deltaLimit {
+            if deltaFromCalculatedToClock > .zero {
+                logger.info("""
+                video-unit: Adjust PTS back in time. Calculated is \
+                \(presentationTimeStamp.seconds) \
+                and clock is \(currentPresentationTimeStamp.seconds)
+                """)
+                outputCounter -= 1
+            } else {
+                logger.info("""
+                video-unit: Adjust PTS forward in time. Calculated is \
+                \(presentationTimeStamp.seconds) \
+                and clock is \(currentPresentationTimeStamp.seconds)
+                """)
+                outputCounter += 1
+            }
+            presentationTimeStamp = makePresentationTimeStamp()
+        }
         handleBufferedVideo(presentationTimeStamp)
         handleGapFillerTimer()
     }

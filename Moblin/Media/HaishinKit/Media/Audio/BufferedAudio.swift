@@ -18,7 +18,7 @@ class BufferedAudio {
     private var isInitialized: Bool = false
     private var isOutputting: Bool = false
     private var latestSampleBuffer: CMSampleBuffer?
-    private var outputCounter: Int64 = 0
+    private var outputCounter: Int64 = -1
     private var startPresentationTimeStamp: CMTime = .zero
     private let driftTracker: DriftTracker
     private var isInitialBuffering = true
