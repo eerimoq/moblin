@@ -1,10 +1,53 @@
+import AVFoundation
 import SwiftUI
+
+private class Mp4Converter {
+    private var session: AVAssetExportSession?
+
+    func start(fmp4Url: URL, onCompleted: @escaping (String) -> Void) {
+        session = AVAssetExportSession(asset: AVURLAsset(url: fmp4Url, options: nil),
+                                       presetName: AVAssetExportPresetPassthrough)
+        guard let session else {
+            return
+        }
+        let mp4Url = fmp4Url.appendingPathExtension("new")
+        mp4Url.remove()
+        session.outputURL = mp4Url
+        session.outputFileType = .mp4
+        session.exportAsynchronously {
+            switch session.status {
+            case .failed:
+                onCompleted("Convertion failed: \(session.error ?? "???")")
+            case .cancelled:
+                onCompleted("Convertion cancelled")
+            case .completed:
+                let tempUrl = fmp4Url.appendingPathExtension("old")
+                do {
+                    try FileManager.default.moveItem(at: fmp4Url, to: tempUrl)
+                    try FileManager.default.moveItem(at: mp4Url, to: fmp4Url)
+                    tempUrl.remove()
+                    onCompleted("Successfully converted")
+                } catch {
+                    onCompleted("Convertion failed: \(error)")
+                }
+            default:
+                onCompleted("Convertion failed")
+            }
+        }
+    }
+
+    func stop() {
+        session?.cancelExport()
+        session = nil
+    }
+}
 
 struct RecordingsRecordingSettingsView: View {
     let model: Model
     @ObservedObject var recording: Recording
     @State var image: UIImage?
     @State var convertToMp4Text: String? = "Convert to MP4"
+    @State private var mp4Converter = Mp4Converter()
 
     var body: some View {
         NavigationLink {
@@ -98,8 +141,8 @@ struct RecordingsRecordingSettingsView: View {
                         Button {
                             if let url = recording.url() {
                                 convertToMp4Text = nil
-                                model.convertRecordingToMp4(fmp4Url: url) { message in
-                                    convertToMp4Text = message
+                                mp4Converter.start(fmp4Url: url) {
+                                    convertToMp4Text = $0
                                 }
                             }
                         } label: {
@@ -108,13 +151,18 @@ struct RecordingsRecordingSettingsView: View {
                                     Text(convertToMp4Text)
                                 } else {
                                     ProgressView()
+                                    Text("Converting...")
                                 }
                             }
                         }
+                        .disabled(convertToMp4Text == nil)
                     }
                 }
             }
             .navigationTitle("Recording")
+            .onDisappear {
+                mp4Converter.stop()
+            }
         } label: {
             HStack {
                 if let image {
