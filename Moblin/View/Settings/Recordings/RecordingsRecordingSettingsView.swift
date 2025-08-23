@@ -103,12 +103,12 @@ struct RecordingsRecordingSettingsView: View {
                                 }
                             }
                         } label: {
-                            if let convertToMp4Text {
-                                HCenter {
+                            HCenter {
+                                if let convertToMp4Text {
                                     Text(convertToMp4Text)
+                                } else {
+                                    ProgressView()
                                 }
-                            } else {
-                                ProgressView()
                             }
                         }
                     }
