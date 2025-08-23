@@ -137,7 +137,7 @@ class Recorder: NSObject {
             return outputBuffer.makeSampleBuffer(sampleBuffer.presentationTimeStamp)
         }
     }
-    
+
     private func appendVideoInner(_ sampleBuffer: CMSampleBuffer) {
         guard let writer,
               let input = makeVideoWriterInput(sampleBuffer: sampleBuffer),
