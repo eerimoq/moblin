@@ -897,8 +897,8 @@ private struct ActionButtonsView: View {
 
     private func nicknameButton(selectedPost: ChatPost) -> some View {
         ActionButtonView(image: "person.badge.plus", text: String(localized: "Nickname")) {
-            if let userId = selectedPost.userId {
-                nicknameText = model.database.chat.nicknames[userId] ?? ""
+            if let user = selectedPost.user {
+                nicknameText = model.database.chat.nicknames[user] ?? ""
             } else {
                 nicknameText = ""
             }
@@ -919,13 +919,13 @@ private struct ActionButtonsView: View {
     }
 
     private func setNickname(selectedPost: ChatPost) {
-        guard let userId = selectedPost.userId else { return }
+        guard let user = selectedPost.user else { return }
 
         let trimmedNickname = nicknameText.trimmingCharacters(in: .whitespaces)
         if trimmedNickname.isEmpty {
-            model.database.chat.nicknames.removeValue(forKey: userId)
+            model.database.chat.nicknames.removeValue(forKey: user)
         } else {
-            model.database.chat.nicknames[userId] = trimmedNickname
+            model.database.chat.nicknames[user] = trimmedNickname
         }
         model.reloadChatMessages()
     }

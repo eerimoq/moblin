@@ -4,7 +4,7 @@ struct ChatNicknamesSettingsView: View {
     @ObservedObject var chat: SettingsChat
     @ObservedObject var model: Model
     @State private var showingAddNickname = false
-    @State private var editingUserId: String?
+    @State private var editingUsername: String?
     @State private var editingNickname = ""
 
     var sortedNicknames: [(String, String)] {
@@ -34,25 +34,25 @@ struct ChatNicknamesSettingsView: View {
                 }
             } else {
                 Section {
-                    ForEach(sortedNicknames, id: \.0) { userId, nickname in
+                    ForEach(sortedNicknames, id: \.0) { username, nickname in
                         HStack {
                             VStack(alignment: .leading, spacing: 4) {
                                 Text(nickname)
                                     .font(.headline)
-                                Text("User ID: \(userId)")
+                                Text("Username: \(username)")
                                     .font(.caption)
                                     .foregroundColor(.secondary)
                             }
                             Spacer()
                             Button("Edit") {
-                                editNickname(userId: userId, currentNickname: nickname)
+                                editNickname(username: username, currentNickname: nickname)
                             }
                             .buttonStyle(.bordered)
                             .controlSize(.small)
                         }
                         .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                             Button("Delete", role: .destructive) {
-                                deleteNickname(userId: userId)
+                                deleteNickname(username: username)
                             }
                         }
                     }
@@ -64,47 +64,47 @@ struct ChatNicknamesSettingsView: View {
             }
         }
         .navigationTitle("Chat Nicknames")
-        .alert("Edit Nickname", isPresented: .constant(editingUserId != nil)) {
+        .alert("Edit Nickname", isPresented: .constant(editingUsername != nil)) {
             TextField("Nickname", text: $editingNickname)
             Button("Save") {
                 saveEditedNickname()
             }
             .disabled(editingNickname.trimmingCharacters(in: .whitespaces).isEmpty)
             Button("Delete", role: .destructive) {
-                if let userId = editingUserId {
-                    deleteNickname(userId: userId)
+                if let username = editingUsername {
+                    deleteNickname(username: username)
                 }
-                editingUserId = nil
+                editingUsername = nil
             }
             Button("Cancel", role: .cancel) {
-                editingUserId = nil
+                editingUsername = nil
             }
         } message: {
-            if let userId = editingUserId {
-                Text("Edit nickname for user: \(userId)")
+            if let username = editingUsername {
+                Text("Edit nickname for user: \(username)")
             }
         }
     }
 
-    private func editNickname(userId: String, currentNickname: String) {
-        editingUserId = userId
+    private func editNickname(username: String, currentNickname: String) {
+        editingUsername = username
         editingNickname = currentNickname
     }
 
     private func saveEditedNickname() {
-        guard let userId = editingUserId else { return }
+        guard let username = editingUsername else { return }
 
         let trimmed = editingNickname.trimmingCharacters(in: .whitespaces)
         if !trimmed.isEmpty {
-            chat.nicknames[userId] = trimmed
+            chat.nicknames[username] = trimmed
             model.reloadChatMessages()
         }
-        editingUserId = nil
+        editingUsername = nil
     }
 
-    private func deleteNickname(userId: String) {
-        chat.nicknames.removeValue(forKey: userId)
+    private func deleteNickname(username: String) {
+        chat.nicknames.removeValue(forKey: username)
         model.reloadChatMessages()
-        editingUserId = nil
+        editingUsername = nil
     }
 }

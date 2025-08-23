@@ -194,7 +194,7 @@ struct ChatPost: Identifiable, Equatable {
 
     func displayName(nicknames: [String: String]) -> String? {
         guard let user = user else { return nil }
-        if let userId = userId, let nickname = nicknames[userId] {
+        if let nickname = nicknames[user] {
             return "\(nickname) @\(user)"
         }
         return user
@@ -202,7 +202,7 @@ struct ChatPost: Identifiable, Equatable {
 
     func ttsDisplayName(nicknames: [String: String]) -> String? {
         guard let user = user else { return nil }
-        if let userId = userId, let nickname = nicknames[userId] {
+        if let nickname = nicknames[user] {
             return nickname
         }
         return user
