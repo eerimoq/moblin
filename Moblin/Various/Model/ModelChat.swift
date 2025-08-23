@@ -414,9 +414,8 @@ extension Model {
             state: ChatPostState()
         )
         chatPostId += 1
-        if isTextToSpeechEnabledForMessage(post: post),
-           let user = post.ttsDisplayName(nicknames: database.chat.nicknames)
-        {
+        if isTextToSpeechEnabledForMessage(post: post) {
+            let user = post.ttsDisplayName(nicknames: database.chat.nicknames)
             let message = post.text()
             if !message.trimmingCharacters(in: .whitespaces).isEmpty {
                 chatTextToSpeech.say(
@@ -505,7 +504,7 @@ extension Model {
                     verticalSpacing: 0,
                     fitContentWidth: true
                 ) {
-                    Text(post.displayName(nicknames: self.database.chat.nicknames) ?? "")
+                    Text(post.displayName(nicknames: self.database.chat.nicknames))
                         .lineLimit(1)
                         .padding([.trailing], 0)
                     if post.isRedemption() {
