@@ -298,11 +298,7 @@ extension URL {
     }
 
     func remove() {
-        do {
-            try FileManager.default.removeItem(at: self)
-        } catch {
-            logger.info("file-system: Failed to remove file \(self)")
-        }
+        try? FileManager.default.removeItem(at: self)
     }
 }
 
