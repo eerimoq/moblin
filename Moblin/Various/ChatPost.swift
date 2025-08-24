@@ -202,7 +202,7 @@ struct ChatPost: Identifiable, Equatable {
         return user
     }
 
-    func ttsDisplayName(nicknames: SettingsChatNicknames) -> String {
+    func shortDisplayName(nicknames: SettingsChatNicknames) -> String {
         guard let user else {
             return String(localized: "Unknown")
         }

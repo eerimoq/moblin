@@ -419,7 +419,7 @@ extension Model {
             if !message.trimmingCharacters(in: .whitespaces).isEmpty {
                 chatTextToSpeech.say(
                     messageId: post.messageId,
-                    user: post.ttsDisplayName(nicknames: database.chat.nicknames),
+                    user: post.shortDisplayName(nicknames: database.chat.nicknames),
                     userId: post.userId,
                     message: message,
                     isRedemption: post.isRedemption()
