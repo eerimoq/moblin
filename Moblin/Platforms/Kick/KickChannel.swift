@@ -4,6 +4,7 @@ struct KickLivestream: Codable {
     // periphery:ignore
     let id: Int
     let viewers: Int
+    let session_title: String?
 }
 
 struct KickChatroom: Codable {

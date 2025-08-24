@@ -136,6 +136,50 @@ extension Model {
         }
     }
 
+    private func getKickStreamInfoURL(slug: String) -> URL? {
+        return URL(string: "https://kick.com/api/v2/channels/\(slug)/stream-info")
+    }
+
+    func getKickStreamTitle() {
+        guard !stream.kickChannelName.isEmpty else { return }
+        getKickChannelInfo(channelName: stream.kickChannelName) { channelInfo in
+            guard let channelInfo,
+                  let url = self.getKickStreamInfoURL(slug: channelInfo.slug) else { return }
+            let request = self.createRequest(url: url, method: "GET")
+            URLSession.shared.dataTask(with: request) { data, response, error in
+                guard let data = data,
+                      error == nil,
+                      response?.http?.isSuccessful == true,
+                      let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                      let streamTitle = json["stream_title"] as? String else { return }
+                DispatchQueue.main.async {
+                    self.stream.kickStreamTitle = streamTitle
+                }
+            }
+            .resume()
+        }
+    }
+
+    func setKickStreamTitle(title: String) {
+        guard !stream.kickChannelName.isEmpty else { return }
+        getKickChannelInfo(channelName: stream.kickChannelName) { channelInfo in
+            guard let channelInfo,
+                  let url = self.getKickStreamInfoURL(slug: channelInfo.slug) else { return }
+            var request = self.createRequest(url: url, method: "PATCH")
+            request.httpBody = try? JSONSerialization.data(withJSONObject: ["stream_title": title])
+            URLSession.shared.dataTask(with: request) { _, response, error in
+                DispatchQueue.main.async {
+                    let success = error == nil && response?.http?.isSuccessful == true
+                    if success {
+                        self.stream.kickStreamTitle = title
+                    }
+                    self.makeToast(title: success ? "Stream title updated" : "Failed to update stream title")
+                }
+            }
+            .resume()
+        }
+    }
+
     private func appendKickChatAlertMessage(
         user: String,
         text: String,
