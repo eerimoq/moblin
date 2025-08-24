@@ -102,7 +102,7 @@ private struct LineView: View {
                     .opacity(imageOpacity())
                 }
             }
-            Text(post.user!)
+            Text(post.displayName(nicknames: chat.nicknames))
                 .foregroundColor(postState.deleted ? .gray : usernameColor)
                 .strikethrough(postState.deleted)
                 .lineLimit(1)
@@ -837,6 +837,8 @@ private struct ActionButtonsView: View {
     @State var isPresentingBanConfirm = false
     @State var isPresentingTimeoutConfirm = false
     @State var isPresentingDeleteConfirm = false
+    @State var isPresentingNicknameDialog = false
+    @State var nicknameText = ""
 
     private func dismiss() {
         selectedPost = nil
@@ -893,6 +895,41 @@ private struct ActionButtonsView: View {
         }
     }
 
+    private func nicknameButton(selectedPost: ChatPost) -> some View {
+        ActionButtonView(image: "person.badge.plus", text: String(localized: "Nickname")) {
+            if let user = selectedPost.user {
+                nicknameText = model.database.chat.nicknames[user] ?? ""
+            } else {
+                nicknameText = ""
+            }
+            isPresentingNicknameDialog = true
+        }
+        .alert("Set Nickname", isPresented: $isPresentingNicknameDialog) {
+            TextField("Nickname", text: $nicknameText)
+            Button("Save") {
+                setNickname(selectedPost: selectedPost)
+                dismiss()
+            }
+            Button("Cancel", role: .cancel) {
+                dismiss()
+            }
+        } message: {
+            Text("Enter a nickname for \(selectedPost.user ?? "this user"):")
+        }
+    }
+
+    private func setNickname(selectedPost: ChatPost) {
+        guard let user = selectedPost.user else { return }
+
+        let trimmedNickname = nicknameText.trimmingCharacters(in: .whitespaces)
+        if trimmedNickname.isEmpty {
+            model.database.chat.nicknames.removeValue(forKey: user)
+        } else {
+            model.database.chat.nicknames[user] = trimmedNickname
+        }
+        model.reloadChatMessages()
+    }
+
     var body: some View {
         if let selectedPost {
             VStack {
@@ -922,6 +959,8 @@ private struct ActionButtonsView: View {
                         deleteButton(selectedPost: selectedPost)
                         Spacer()
                         copyButton(selectedPost: selectedPost)
+                        Spacer()
+                        nicknameButton(selectedPost: selectedPost)
                         Spacer()
                     }
                     .padding([.bottom], 5)

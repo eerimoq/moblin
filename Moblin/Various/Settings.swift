@@ -3958,6 +3958,7 @@ class SettingsChat: Codable, ObservableObject {
     @Published var aliases: [SettingsChatBotAlias] = []
     @Published var predefinedMessages: [SettingsChatPredefinedMessage] = []
     @Published var predefinedMessagesFilter: SettingsChatPredefinedMessagesFilter = .init()
+    @Published var nicknames: [String: String] = [:]
 
     enum CodingKeys: CodingKey {
         case fontSize,
@@ -4004,7 +4005,8 @@ class SettingsChat: Codable, ObservableObject {
              aliases,
              predefinedMessages,
              predefinedMessagesFilter,
-             sendMessagesTo
+             sendMessagesTo,
+             nicknames
     }
 
     func encode(to encoder: Encoder) throws {
@@ -4053,6 +4055,7 @@ class SettingsChat: Codable, ObservableObject {
         try container.encode(.aliases, aliases)
         try container.encode(.predefinedMessages, predefinedMessages)
         try container.encode(.predefinedMessagesFilter, predefinedMessagesFilter)
+        try container.encode(.nicknames, nicknames)
     }
 
     init() {}
@@ -4115,6 +4118,7 @@ class SettingsChat: Codable, ObservableObject {
             SettingsChatPredefinedMessagesFilter.self,
             .init()
         )
+        nicknames = container.decode(.nicknames, [String: String].self, [:])
     }
 
     func getRotation() -> Double {

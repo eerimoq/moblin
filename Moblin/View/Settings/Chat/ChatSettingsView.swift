@@ -128,6 +128,18 @@ struct ChatSettingsView: View {
                         Text("Bot")
                     }
                 }
+                NavigationLink {
+                    ChatNicknamesSettingsView(chat: chat, model: model)
+                } label: {
+                    HStack {
+                        Text("Manage nicknames")
+                        Spacer()
+                        if !chat.nicknames.isEmpty {
+                            Text("\(chat.nicknames.count)")
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                }
             } header: {
                 Text("General")
             } footer: {

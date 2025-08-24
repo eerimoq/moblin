@@ -191,4 +191,20 @@ struct ChatPost: Identifiable, Equatable {
     func isRedLine() -> Bool {
         return user == nil
     }
+
+    func displayName(nicknames: [String: String]) -> String {
+        guard let user else { return "Unknown" }
+        if let nickname = nicknames[user] {
+            return "\(nickname) @\(user)"
+        }
+        return user
+    }
+
+    func ttsDisplayName(nicknames: [String: String]) -> String {
+        guard let user else { return "Unknown" }
+        if let nickname = nicknames[user] {
+            return nickname
+        }
+        return user
+    }
 }
