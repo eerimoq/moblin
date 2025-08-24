@@ -561,6 +561,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
     var kickAccessToken: String = ""
     @Published var kickLoggedIn: Bool = false
     @Published var kickSendMessagesTo: Bool = true
+    var kickStreamTitle: String = ""
     var youTubeApiKey: String = ""
     @Published var youTubeVideoId: String = ""
     @Published var youTubeHandle: String = ""
@@ -636,6 +637,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
              kickAccessToken,
              kickLoggedIn,
              kickSendMessagesTo,
+             kickStreamTitle,
              youTubeApiKey,
              youTubeVideoId,
              youTubeHandle,
@@ -707,6 +709,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         try container.encode(.kickAccessToken, kickAccessToken)
         try container.encode(.kickLoggedIn, kickLoggedIn)
         try container.encode(.kickSendMessagesTo, kickSendMessagesTo)
+        try container.encode(.kickStreamTitle, kickStreamTitle)
         try container.encode(.youTubeApiKey, youTubeApiKey)
         try container.encode(.youTubeVideoId, youTubeVideoId)
         try container.encode(.youTubeHandle, youTubeHandle)
@@ -776,6 +779,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         kickAccessToken = container.decode(.kickAccessToken, String.self, "")
         kickLoggedIn = container.decode(.kickLoggedIn, Bool.self, false)
         kickSendMessagesTo = container.decode(.kickSendMessagesTo, Bool.self, true)
+        kickStreamTitle = container.decode(.kickStreamTitle, String.self, "")
         youTubeApiKey = container.decode(.youTubeApiKey, String.self, "")
         youTubeVideoId = container.decode(.youTubeVideoId, String.self, "")
         youTubeHandle = container.decode(.youTubeHandle, String.self, "")
@@ -838,6 +842,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         new.kickChannelName = kickChannelName
         new.kickAccessToken = kickAccessToken
         new.kickLoggedIn = kickLoggedIn
+        new.kickStreamTitle = kickStreamTitle
         new.youTubeApiKey = youTubeApiKey
         new.youTubeVideoId = youTubeVideoId
         new.youTubeHandle = youTubeHandle

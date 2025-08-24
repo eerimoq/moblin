@@ -133,6 +133,10 @@ struct StreamKickSettingsView: View {
         }
     }
 
+    func submitStreamTitle(value: String) {
+        model.setKickStreamTitle(title: value)
+    }
+
     var body: some View {
         Form {
             AuthenticationView(stream: stream)
@@ -142,6 +146,18 @@ struct StreamKickSettingsView: View {
                     value: stream.kickChannelName,
                     onSubmit: submitChannelName
                 )
+            }
+            Section {
+                TextEditNavigationView(
+                    title: String(localized: "Stream title"),
+                    value: stream.kickStreamTitle,
+                    onSubmit: submitStreamTitle
+                )
+            }
+        }
+        .onAppear {
+            if stream.kickLoggedIn && !stream.kickChannelName.isEmpty {
+                model.getKickStreamTitle()
             }
         }
         .navigationTitle("Kick")
