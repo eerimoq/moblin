@@ -303,6 +303,7 @@ class Orientation: ObservableObject {
 }
 
 final class Model: NSObject, ObservableObject, @unchecked Sendable {
+    @AppStorage("enterForegroundCount") var enterForegroundCount = 0
     @Published var isPresentingWidgetWizard = false
     @Published var showingPanel: ShowingPanel = .none
     @Published var panelHidden = false
@@ -757,7 +758,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func makeBuyIconsToastIfNeeded() {
-        guard !cosmetics.hasBoughtSomething else {
+        if cosmetics.hasBoughtSomething {
+            return
+        }
+        if enterForegroundCount < 100 {
+            return
+        }
+        if enterForegroundCount < 500, (enterForegroundCount % 10) != 0 {
             return
         }
         makeToast(title: String(localized: "💰 Buy Moblin icons to show some love ❤️"),
@@ -1288,6 +1295,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             maybeEnableScreenPreview()
             startPeriodicTimers()
         case .off:
+            enterForegroundCount += 1
             recordingsStorage.cleanup()
             makeBuyIconsToastIfNeeded()
             clearRemoteSceneSettingsAndData()
