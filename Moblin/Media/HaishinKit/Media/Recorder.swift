@@ -90,7 +90,7 @@ class Recorder: NSObject {
               isReadyForStartWriting(writer: writer),
               input.isReadyForMoreMediaData,
               let sampleBuffer = sampleBuffer
-                .replacePresentationTimeStamp(presentationTimeStamp - basePresentationTimeStamp)
+              .replacePresentationTimeStamp(presentationTimeStamp - basePresentationTimeStamp)
         else {
             return
         }
