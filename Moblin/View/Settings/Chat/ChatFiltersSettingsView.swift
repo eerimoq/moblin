@@ -130,30 +130,39 @@ struct ChatFiltersSettingsView: View {
     @ObservedObject var chat: SettingsChat
 
     var body: some View {
-        Form {
-            Section {
-                List {
-                    ForEach(chat.filters) { filter in
-                        ChatFilterSettingsView(filter: filter)
+        NavigationLink {
+            Form {
+                Section {
+                    List {
+                        ForEach(chat.filters) { filter in
+                            ChatFilterSettingsView(filter: filter)
+                        }
+                        .onMove { froms, to in
+                            chat.filters.move(fromOffsets: froms, toOffset: to)
+                        }
+                        .onDelete { offsets in
+                            chat.filters.remove(atOffsets: offsets)
+                        }
                     }
-                    .onMove { froms, to in
-                        chat.filters.move(fromOffsets: froms, toOffset: to)
+                    AddButtonView(action: {
+                        chat.filters.append(SettingsChatFilter())
+                    })
+                } footer: {
+                    VStack(alignment: .leading) {
+                        Text("The first filter that matches is used.")
+                        Text("")
+                        SwipeLeftToRemoveHelpView(kind: String(localized: "a filter"))
                     }
-                    .onDelete { offsets in
-                        chat.filters.remove(atOffsets: offsets)
-                    }
-                }
-                AddButtonView(action: {
-                    chat.filters.append(SettingsChatFilter())
-                })
-            } footer: {
-                VStack(alignment: .leading) {
-                    Text("The first filter that matches is used.")
-                    Text("")
-                    SwipeLeftToRemoveHelpView(kind: String(localized: "a filter"))
                 }
             }
+            .navigationTitle("Filters")
+        } label: {
+            HStack {
+                Text("Filters")
+                Spacer()
+                Text(String(chat.filters.count))
+                    .foregroundColor(.gray)
+            }
         }
-        .navigationTitle("Filters")
     }
 }

@@ -102,11 +102,7 @@ struct ChatSettingsView: View {
                         }
                     }
                 }
-                NavigationLink {
-                    ChatFiltersSettingsView(chat: chat)
-                } label: {
-                    Text("Filters")
-                }
+                ChatFiltersSettingsView(chat: chat)
                 NavigationLink {
                     ChatTextToSpeechSettingsView(chat: chat)
                 } label: {
