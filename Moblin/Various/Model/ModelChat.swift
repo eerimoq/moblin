@@ -415,12 +415,11 @@ extension Model {
         )
         chatPostId += 1
         if isTextToSpeechEnabledForMessage(post: post) {
-            let user = post.ttsDisplayName(nicknames: database.chat.nicknames)
             let message = post.text()
             if !message.trimmingCharacters(in: .whitespaces).isEmpty {
                 chatTextToSpeech.say(
                     messageId: post.messageId,
-                    user: user,
+                    user: post.ttsDisplayName(nicknames: database.chat.nicknames),
                     userId: post.userId,
                     message: message,
                     isRedemption: post.isRedemption()

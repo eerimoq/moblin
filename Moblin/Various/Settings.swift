@@ -3908,6 +3908,58 @@ class SettingsChatPredefinedMessagesFilter: Codable, ObservableObject {
     }
 }
 
+class SettingsChatNickname: Codable, Identifiable, ObservableObject {
+    var id: UUID = .init()
+    @Published var user: String = ""
+    @Published var nickname: String = ""
+
+    enum CodingKeys: CodingKey {
+        case id,
+             user,
+             nickname
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.user, user)
+        try container.encode(.nickname, nickname)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        user = container.decode(.user, String.self, "")
+        nickname = container.decode(.nickname, String.self, "")
+    }
+}
+
+class SettingsChatNicknames: Codable, ObservableObject {
+    @Published var nicknames: [SettingsChatNickname] = []
+
+    enum CodingKeys: CodingKey {
+        case nicknames
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.nicknames, nicknames)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        nicknames = container.decode(.nicknames, [SettingsChatNickname].self, [])
+    }
+
+    func getNickname(user: String) -> String? {
+        return nicknames.first(where: { $0.user == user })?.nickname
+    }
+}
+
 class SettingsChat: Codable, ObservableObject {
     @Published var fontSize: Float = 19.0
     var usernameColor: RgbColor = .init(red: 255, green: 163, blue: 0)
@@ -3958,7 +4010,7 @@ class SettingsChat: Codable, ObservableObject {
     @Published var aliases: [SettingsChatBotAlias] = []
     @Published var predefinedMessages: [SettingsChatPredefinedMessage] = []
     @Published var predefinedMessagesFilter: SettingsChatPredefinedMessagesFilter = .init()
-    @Published var nicknames: [String: String] = [:]
+    @Published var nicknames: SettingsChatNicknames = .init()
 
     enum CodingKeys: CodingKey {
         case fontSize,
@@ -4118,7 +4170,7 @@ class SettingsChat: Codable, ObservableObject {
             SettingsChatPredefinedMessagesFilter.self,
             .init()
         )
-        nicknames = container.decode(.nicknames, [String: String].self, [:])
+        nicknames = container.decode(.nicknames, SettingsChatNicknames.self, .init())
     }
 
     func getRotation() -> Double {

@@ -24,7 +24,7 @@ extension Model {
         if isAlertMessage(post: post) && isTextToSpeechEnabledForAnyAlertWidget() {
             return false
         }
-        return true
+        return post.user != nil
     }
 
     private func isTextToSpeechEnabledForAnyAlertWidget() -> Bool {

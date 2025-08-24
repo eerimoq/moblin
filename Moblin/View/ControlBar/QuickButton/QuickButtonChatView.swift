@@ -844,6 +844,10 @@ private struct ActionButtonsView: View {
         selectedPost = nil
     }
 
+    private var chat: SettingsChat {
+        return model.database.chat
+    }
+
     private func banButton(selectedPost: ChatPost) -> some View {
         ActionButtonView(image: "nosign", text: String(localized: "Ban"), foreground: .red) {
             isPresentingBanConfirm = true
@@ -898,34 +902,38 @@ private struct ActionButtonsView: View {
     private func nicknameButton(selectedPost: ChatPost) -> some View {
         ActionButtonView(image: "person.badge.plus", text: String(localized: "Nickname")) {
             if let user = selectedPost.user {
-                nicknameText = model.database.chat.nicknames[user] ?? ""
+                nicknameText = chat.nicknames.getNickname(user: user) ?? ""
             } else {
                 nicknameText = ""
             }
             isPresentingNicknameDialog = true
         }
-        .alert("Set Nickname", isPresented: $isPresentingNicknameDialog) {
+        .alert("Nickname for \(selectedPost.user ?? "")", isPresented: $isPresentingNicknameDialog) {
             TextField("Nickname", text: $nicknameText)
             Button("Save") {
-                setNickname(selectedPost: selectedPost)
+                saveNickname(selectedPost: selectedPost)
                 dismiss()
             }
             Button("Cancel", role: .cancel) {
                 dismiss()
             }
-        } message: {
-            Text("Enter a nickname for \(selectedPost.user ?? "this user"):")
         }
     }
 
-    private func setNickname(selectedPost: ChatPost) {
-        guard let user = selectedPost.user else { return }
-
-        let trimmedNickname = nicknameText.trimmingCharacters(in: .whitespaces)
-        if trimmedNickname.isEmpty {
-            model.database.chat.nicknames.removeValue(forKey: user)
+    private func saveNickname(selectedPost: ChatPost) {
+        guard let user = selectedPost.user else {
+            return
+        }
+        let nickname = nicknameText.trimmingCharacters(in: .whitespaces)
+        if nickname.isEmpty {
+            chat.nicknames.nicknames.removeAll(where: { $0.user == user })
+        } else if let existingNickname = chat.nicknames.nicknames.first(where: { $0.user == user }) {
+            existingNickname.nickname = nickname
         } else {
-            model.database.chat.nicknames[user] = trimmedNickname
+            let item = SettingsChatNickname()
+            item.user = user
+            item.nickname = nickname
+            chat.nicknames.nicknames.append(item)
         }
         model.reloadChatMessages()
     }

@@ -192,17 +192,21 @@ struct ChatPost: Identifiable, Equatable {
         return user == nil
     }
 
-    func displayName(nicknames: [String: String]) -> String {
-        guard let user else { return "Unknown" }
-        if let nickname = nicknames[user] {
+    func displayName(nicknames: SettingsChatNicknames) -> String {
+        guard let user else {
+            return String(localized: "Unknown")
+        }
+        if let nickname = nicknames.getNickname(user: user) {
             return "\(nickname) @\(user)"
         }
         return user
     }
 
-    func ttsDisplayName(nicknames: [String: String]) -> String {
-        guard let user else { return "Unknown" }
-        if let nickname = nicknames[user] {
+    func ttsDisplayName(nicknames: SettingsChatNicknames) -> String {
+        guard let user else {
+            return String(localized: "Unknown")
+        }
+        if let nickname = nicknames.getNickname(user: user) {
             return nickname
         }
         return user
