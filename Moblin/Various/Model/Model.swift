@@ -105,8 +105,8 @@ func formatWarning(_ message: String) -> String {
 
 let noMic = SettingsMicsMic()
 
-class ButtonState {
-    var isOn: Bool
+class ButtonState: ObservableObject {
+    @Published var isOn: Bool
     var button: SettingsQuickButton
 
     init(isOn: Bool, button: SettingsQuickButton) {
@@ -777,7 +777,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             let states = database.quickButtons.filter { button in
                 button.enabled && button.page == page + 1
             }.map { button in
-                ButtonState(isOn: button.isOn, button: button)
+                if let state = getQuickButtonState(type: button.type) {
+                    state.isOn = button.isOn
+                    return state
+                } else {
+                    return ButtonState(isOn: button.isOn, button: button)
+                }
             }
             var pairs: [QuickButtonPair] = []
             for index in stride(from: 0, to: states.count, by: 2) {
@@ -797,6 +802,21 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func getQuickButtonPairs(page: Int) -> [QuickButtonPair] {
         return quickButtons.pairs[page]
+    }
+
+    func getQuickButtonState(type: SettingsQuickButtonType) -> ButtonState? {
+        for pagePairs in quickButtons.pairs {
+            for pair in pagePairs {
+                if pair.first.button.type == type {
+                    return pair.first
+                } else if let state = pair.second {
+                    if state.button.type == type {
+                        return state
+                    }
+                }
+            }
+        }
+        return nil
     }
 
     private func debugLog(message: String) {
@@ -1844,18 +1864,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         for button in database.quickButtons where button.type == type {
             button.isOn = isOn
         }
-        for pageButtonPairs in quickButtons.pairs {
-            for pair in pageButtonPairs {
-                if pair.first.button.type == type {
-                    pair.first.isOn = isOn
-                }
-                if let state = pair.second {
-                    if state.button.type == type {
-                        state.isOn = isOn
-                    }
-                }
-            }
-        }
+        getQuickButtonState(type: type)?.isOn = isOn
     }
 
     func getGlobalButton(type: SettingsQuickButtonType) -> SettingsQuickButton? {
@@ -1872,18 +1881,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         for button in database.quickButtons where button.type == type {
             button.isOn.toggle()
         }
-        for pageButtonPairs in quickButtons.pairs {
-            for pair in pageButtonPairs {
-                if pair.first.button.type == type {
-                    pair.first.isOn.toggle()
-                }
-                if let state = pair.second {
-                    if state.button.type == type {
-                        state.isOn.toggle()
-                    }
-                }
-            }
-        }
+        getQuickButtonState(type: type)?.isOn.toggle()
     }
 
     func setDisplayPortrait(portrait: Bool) {

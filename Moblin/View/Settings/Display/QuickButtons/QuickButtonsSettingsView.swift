@@ -36,6 +36,7 @@ private struct AppearenceSettingsView: View {
 private struct ButtonSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var button: SettingsQuickButton
+    @ObservedObject var state: ButtonState
 
     private func label() -> some View {
         Toggle(isOn: $button.enabled) {
@@ -49,6 +50,7 @@ private struct ButtonSettingsView: View {
                 Spacer()
             }
         }
+        .disabled(state.isOn && button.enabled)
         .onChange(of: button.enabled) { _ in
             model.updateQuickButtonStates()
         }
@@ -77,7 +79,9 @@ private struct ButtonsSettingsView: View {
         Section {
             List {
                 ForEach(database.quickButtons) { button in
-                    ButtonSettingsView(button: button)
+                    ButtonSettingsView(button: button,
+                                       state: model.getQuickButtonState(type: button.type)
+                                           ?? ButtonState(isOn: false, button: button))
                 }
                 .onMove { froms, to in
                     database.quickButtons.move(fromOffsets: froms, toOffset: to)
