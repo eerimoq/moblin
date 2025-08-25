@@ -59,4 +59,8 @@ extension Model {
         }
         chatTextToSpeech.setStreamerMentions(streamerMentions: streamerMentions)
     }
+
+    func previewTextToSpeech(username: String, message: String) {
+        chatTextToSpeech.sayPreview(user: username, message: message)
+    }
 }

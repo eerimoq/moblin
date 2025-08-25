@@ -86,6 +86,28 @@ class ChatTextToSpeech: NSObject {
         }
     }
 
+    func sayPreview(user: String, message: String) {
+        textToSpeechDispatchQueue.async {
+            guard self.running else {
+                return
+            }
+            guard let (voice, says) = self.getVoice(message: message) else {
+                return
+            }
+            guard let voice else {
+                return
+            }
+            let text = String(localized: "\(user) \(says): \(message)")
+            let utterance = AVSpeechUtterance(string: text)
+            utterance.rate = self.rate
+            utterance.pitchMultiplier = 0.8
+            utterance.preUtteranceDelay = 0.0
+            utterance.volume = self.volume
+            utterance.voice = voice
+            self.synthesizer.speak(utterance)
+        }
+    }
+
     func delete(messageId: String) {
         textToSpeechDispatchQueue.async {
             self.messageQueue = self.messageQueue.filter { $0.messageId != messageId }
