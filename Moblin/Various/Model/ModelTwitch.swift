@@ -242,17 +242,15 @@ extension Model {
             }
     }
 
-    func banTwitchUser(user: String, userId: String, duration: Int?) {
+    func banTwitchUser(user _: String, userId: String, duration: Int?) {
         TwitchApi(stream.twitchAccessToken, urlSession)
-            .banUser(broadcasterId: stream.twitchChannelId, userId: userId, duration: duration) { ok in
-                self.showUserBannedToast(ok: ok, user: user, duration: duration)
+            .banUser(broadcasterId: stream.twitchChannelId, userId: userId, duration: duration) { _ in
             }
     }
 
     func deleteTwitchChatMessage(messageId: String) {
         TwitchApi(stream.twitchAccessToken, urlSession)
-            .deleteChatMessage(broadcasterId: stream.twitchChannelId, messageId: messageId) { ok in
-                self.showChatMessageDeletedToast(ok: ok)
+            .deleteChatMessage(broadcasterId: stream.twitchChannelId, messageId: messageId) { _ in
             }
     }
 }

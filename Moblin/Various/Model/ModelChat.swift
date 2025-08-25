@@ -616,28 +616,4 @@ extension Model {
         externalDisplayChat.deleteUser(userId: userId)
         chatTextToSpeech.delete(userId: userId)
     }
-
-    func showUserBannedToast(ok: Bool, user: String, duration: Int?) {
-        if ok {
-            if duration == nil {
-                makeToast(title: String(localized: "Successfully banned \(user)"))
-            } else {
-                makeToast(title: String(localized: "Successfully timed out \(user)"))
-            }
-        } else {
-            if duration == nil {
-                makeErrorToast(title: String(localized: "Failed to ban \(user)"))
-            } else {
-                makeErrorToast(title: String(localized: "Failed to timeout \(user)"))
-            }
-        }
-    }
-
-    func showChatMessageDeletedToast(ok: Bool) {
-        if ok {
-            makeToast(title: String(localized: "Successfully deleted chat message"))
-        } else {
-            makeErrorToast(title: String(localized: "Failed to delete chat message"))
-        }
-    }
 }
