@@ -105,7 +105,6 @@ class ChatTextToSpeech: NSObject {
         }
     }
 
-
     func delete(messageId: String) {
         textToSpeechDispatchQueue.async {
             self.messageQueue = self.messageQueue.filter { $0.messageId != messageId }
