@@ -56,108 +56,28 @@ extension Model {
     }
 
     func sendKickChatMessage(message: String) {
-        getKickChannelInfo(channelName: stream.kickChannelName) { channelInfo in
-            guard let channelInfo else {
-                return
-            }
-            self.doRequest(method: "POST",
-                           subPath: "messages/send/\(channelInfo.chatroom.id)",
-                           body: ["type": "message", "content": message])
-            { _, _ in
-            }
-        }
+        KickApi(channelName: stream.kickChannelName, accessToken: stream.kickAccessToken)
+            .sendMessage(message: message)
     }
 
     func banKickUser(user: String, duration: Int? = nil) {
-        getKickChannelInfo(channelName: stream.kickChannelName) { channelInfo in
-            guard let channelInfo else {
-                return
-            }
-            var body: [String: Any] = [
-                "banned_username": user,
-                "permanent": duration == nil,
-            ]
-            if let duration {
-                body["duration"] = duration / 60
-            }
-            self.doRequest(method: "POST",
-                           subPath: "channels/\(channelInfo.slug)/bans",
-                           body: body)
-            { _, _ in
-            }
-        }
+        KickApi(channelName: stream.kickChannelName, accessToken: stream.kickAccessToken)
+            .banUser(user: user, duration: duration)
     }
 
     func deleteKickMessage(messageId: String) {
-        getKickChannelInfo(channelName: stream.kickChannelName) { channelInfo in
-            guard let channelInfo else {
-                return
-            }
-            self.doRequest(method: "DELETE",
-                           subPath: "chatrooms/\(channelInfo.chatroom.id)/messages/\(messageId)")
-            { _, _ in
-            }
-        }
+        KickApi(channelName: stream.kickChannelName, accessToken: stream.kickAccessToken)
+            .deleteMessage(messageId: messageId)
     }
 
     func getKickStreamTitle(onComplete: @escaping (String) -> Void) {
-        getKickChannelInfo(channelName: stream.kickChannelName) { channelInfo in
-            guard let channelInfo else {
-                return
-            }
-            self.doRequest(method: "GET",
-                           subPath: "channels/\(channelInfo.slug)/stream-info")
-            { ok, data in
-                guard ok,
-                      let data,
-                      let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-                      let title = json["stream_title"] as? String
-                else {
-                    return
-                }
-                onComplete(title)
-            }
-        }
+        KickApi(channelName: stream.kickChannelName, accessToken: stream.kickAccessToken)
+            .getStreamTitle(onComplete: onComplete)
     }
 
     func setKickStreamTitle(title: String, onComplete: @escaping (String) -> Void) {
-        getKickChannelInfo(channelName: stream.kickChannelName) { channelInfo in
-            guard let channelInfo else {
-                return
-            }
-            self.doRequest(method: "PATCH",
-                           subPath: "channels/\(channelInfo.slug)/stream-info",
-                           body: ["stream_title": title])
-            { ok, _ in
-                if ok {
-                    onComplete(title)
-                }
-            }
-        }
-    }
-
-    private func doRequest(method: String,
-                           subPath: String,
-                           body: [String: Any]? = nil,
-                           onComplete: @escaping (Bool, Data?) -> Void)
-    {
-        guard let url = URL(string: "https://kick.com/api/v2/\(subPath)") else {
-            return
-        }
-        var request = URLRequest(url: url)
-        request.httpMethod = method
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("Bearer \(stream.kickAccessToken)", forHTTPHeaderField: "Authorization")
-        if let body {
-            request.httpBody = try? JSONSerialization.data(withJSONObject: body)
-        }
-        URLSession.shared.dataTask(with: request) { data, response, error in
-            DispatchQueue.main.async {
-                let ok = error == nil && response?.http?.isSuccessful == true
-                onComplete(ok, data)
-            }
-        }
-        .resume()
+        KickApi(channelName: stream.kickChannelName, accessToken: stream.kickAccessToken)
+            .setStreamTitle(title: title, onComplete: onComplete)
     }
 
     private func appendKickChatAlertMessage(
