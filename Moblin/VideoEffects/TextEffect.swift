@@ -35,6 +35,7 @@ struct TextEffectStats {
     let temperature: Measurement<UnitTemperature>?
     let country: String?
     let countryFlag: String?
+    let state: String?
     let city: String?
     let muted: Bool
     let heartRates: [String: Int?]
@@ -139,6 +140,8 @@ private class Formatter {
                 formatCountry(stats: stats)
             case .countryFlag:
                 formatCountryFlag(stats: stats)
+            case .state:
+                formatState(stats: stats)
             case .city:
                 formatCity(stats: stats)
             case .checkbox:
@@ -313,6 +316,10 @@ private class Formatter {
 
     private func formatCountryFlag(stats: TextEffectStats) {
         parts.append(.init(id: partId, data: .text(stats.countryFlag ?? "-")))
+    }
+
+    private func formatState(stats: TextEffectStats) {
+        parts.append(.init(id: partId, data: .text(stats.state ?? "-")))
     }
 
     private func formatCity(stats: TextEffectStats) {

@@ -953,6 +953,7 @@ extension Model {
                 temperature: weather?.currentWeather.temperature,
                 country: placemark?.country ?? "",
                 countryFlag: emojiFlag(country: placemark?.isoCountryCode ?? ""),
+                state: placemark?.administrativeArea,
                 city: placemark?.locality,
                 muted: isMuteOn,
                 heartRates: heartRates,

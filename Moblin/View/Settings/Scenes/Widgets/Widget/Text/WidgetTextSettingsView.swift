@@ -245,6 +245,8 @@ private struct TextSelectionView: View {
                 return true
             case .countryFlag:
                 return true
+            case .state:
+                return true
             case .city:
                 return true
             default:
@@ -336,6 +338,7 @@ private struct TextSelectionView: View {
             Section {
                 FormatView(title: "{country}", description: String(localized: "Show country"), text: $value)
                 FormatView(title: "{countryFlag}", description: String(localized: "Show country flag"), text: $value)
+                FormatView(title: "{state}", description: String(localized: "Show state"), text: $value)
                 FormatView(title: "{city}", description: String(localized: "Show city"), text: $value)
                 FormatView(title: "{speed}", description: String(localized: "Show speed"), text: $value)
                 FormatView(title: "{averageSpeed}", description: String(localized: "Show average speed"), text: $value)

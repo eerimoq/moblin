@@ -378,6 +378,7 @@ struct RemoteControlRemoteSceneDataTextStats: Codable {
     var temperature: Measurement<UnitTemperature>?
     var country: String?
     var countryFlag: String?
+    var state: String?
     var city: String?
     var muted: Bool
     var heartRates: [String: Int?]
@@ -407,6 +408,7 @@ struct RemoteControlRemoteSceneDataTextStats: Codable {
         temperature = stats.temperature
         country = stats.country
         countryFlag = stats.countryFlag
+        state = stats.state
         city = stats.city
         muted = stats.muted
         heartRates = stats.heartRates
@@ -437,6 +439,7 @@ struct RemoteControlRemoteSceneDataTextStats: Codable {
                                temperature: temperature,
                                country: country,
                                countryFlag: countryFlag,
+                               state: state,
                                city: city,
                                muted: muted,
                                heartRates: heartRates,

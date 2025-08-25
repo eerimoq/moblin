@@ -21,6 +21,7 @@ enum TextFormatPart {
     case temperature
     case country
     case countryFlag
+    case state
     case city
     case checkbox
     case rating
@@ -94,6 +95,8 @@ class TextFormatLoader {
                     loadItem(part: .country, offsetBy: 9)
                 } else if formatFromIndex.hasPrefix("{countryflag}") {
                     loadItem(part: .countryFlag, offsetBy: 13)
+                } else if formatFromIndex.hasPrefix("{state}") {
+                    loadItem(part: .state, offsetBy: 7)
                 } else if formatFromIndex.hasPrefix("{city}") {
                     loadItem(part: .city, offsetBy: 6)
                 } else if formatFromIndex.hasPrefix("{checkbox}") {
