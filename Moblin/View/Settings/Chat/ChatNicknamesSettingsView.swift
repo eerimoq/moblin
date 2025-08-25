@@ -17,6 +17,21 @@ private struct NicknameView: View {
                         model.reloadChatMessages()
                     }
                 }
+                Section {
+                    Button {
+                        let username = nickname.nickname.isEmpty ? nickname.user : nickname.nickname
+                        model.previewTextToSpeech(username: username, message: "This is a test message")
+                    } label: {
+                        HStack {
+                            Image(systemName: "speaker.wave.2")
+                            Text("TTS Nickname")
+                        }
+                        .foregroundColor(.primary)
+                    }
+                    .disabled(nickname.user.isEmpty)
+                } header: {
+                    Text("Preview")
+                }
             }
             .navigationTitle("Nickname")
         } label: {
