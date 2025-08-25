@@ -10,6 +10,7 @@ private struct TextToSpeechMessage {
     let user: String
     let message: String
     let isRedemption: Bool
+    let isPreview: Bool
 }
 
 private let saysByLanguage = [
@@ -80,7 +81,8 @@ class ChatTextToSpeech: NSObject {
                 userId: userId,
                 user: user,
                 message: message,
-                isRedemption: isRedemption
+                isRedemption: isRedemption,
+                isPreview: false
             ))
             self.trySayNextMessage()
         }
@@ -91,22 +93,18 @@ class ChatTextToSpeech: NSObject {
             guard self.running else {
                 return
             }
-            guard let (voice, says) = self.getVoice(message: message) else {
-                return
-            }
-            guard let voice else {
-                return
-            }
-            let text = String(localized: "\(user) \(says): \(message)")
-            let utterance = AVSpeechUtterance(string: text)
-            utterance.rate = self.rate
-            utterance.pitchMultiplier = 0.8
-            utterance.preUtteranceDelay = 0.0
-            utterance.volume = self.volume
-            utterance.voice = voice
-            self.synthesizer.speak(utterance)
+            self.messageQueue.append(.init(
+                messageId: nil,
+                userId: nil,
+                user: user,
+                message: message,
+                isRedemption: false,
+                isPreview: true
+            ))
+            self.trySayNextMessage()
         }
     }
+
 
     func delete(messageId: String) {
         textToSpeechDispatchQueue.async {
@@ -335,6 +333,8 @@ class ChatTextToSpeech: NSObject {
         let now = ContinuousClock.now
         if message.isRedemption {
             text = "\(message.user) \(message.message)"
+        } else if message.isPreview {
+            text = String(localized: "\(message.user) \(says): \(message.message)")
         } else if !shouldSayUser(user: message.user, now: now) || !sayUsername {
             text = message.message
         } else {
