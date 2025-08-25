@@ -125,6 +125,7 @@ private struct KickWebView: UIViewRepresentable {
 struct StreamKickSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var stream: SettingsStream
+    @State var streamTitle: String = ""
 
     func submitChannelName(value: String) {
         stream.kickChannelName = value
@@ -134,7 +135,9 @@ struct StreamKickSettingsView: View {
     }
 
     func submitStreamTitle(value: String) {
-        model.setKickStreamTitle(title: value)
+        model.setKickStreamTitle(title: value) {
+            streamTitle = $0
+        }
     }
 
     var body: some View {
@@ -147,17 +150,21 @@ struct StreamKickSettingsView: View {
                     onSubmit: submitChannelName
                 )
             }
-            Section {
-                TextEditNavigationView(
-                    title: String(localized: "Stream title"),
-                    value: stream.kickStreamTitle,
-                    onSubmit: submitStreamTitle
-                )
+            if stream.kickLoggedIn {
+                Section {
+                    TextEditBindingNavigationView(
+                        title: String(localized: "Stream title"),
+                        value: $streamTitle,
+                        onSubmit: submitStreamTitle
+                    )
+                }
             }
         }
         .onAppear {
-            if stream.kickLoggedIn && !stream.kickChannelName.isEmpty {
-                model.getKickStreamTitle()
+            if stream.kickLoggedIn && !stream.kickChannelName.isEmpty && streamTitle.isEmpty {
+                model.getKickStreamTitle {
+                    streamTitle = $0
+                }
             }
         }
         .navigationTitle("Kick")
