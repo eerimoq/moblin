@@ -58,30 +58,38 @@ private struct LanguageView: View {
 
     var body: some View {
         Form {
-            Picker("", selection: $voice) {
-                ForEach(voices(language: languageCode), id: \.identifier) { voice in
-                    let emote = emojiFlag(country: Locale(identifier: voice.language).region?.identifier ?? "")
-                    HStack {
-                        Text("\(emote) \(voice.name)")
-                            .tag(voice.identifier)
-                        Spacer()
-                        Button {
-                            let utterance = AVSpeechUtterance(string: testMessageByLanguage[languageCode] ?? "")
-                            utterance.rate = rate
-                            utterance.pitchMultiplier = 0.8
-                            utterance.volume = volume
-                            utterance.voice = voice
-                            synthesizer.speak(utterance)
-                        } label: {
-                            Image(systemName: "play.fill")
+            Section {
+                Picker("", selection: $voice) {
+                    ForEach(voices(language: languageCode), id: \.identifier) { voice in
+                        let emote = emojiFlag(country: Locale(identifier: voice.language).region?.identifier ?? "")
+                        HStack {
+                            Text("\(emote) \(voice.name)")
+                                .tag(voice.identifier)
+                            Spacer()
+                            Button {
+                                let utterance = AVSpeechUtterance(string: testMessageByLanguage[languageCode] ?? "")
+                                utterance.rate = rate
+                                utterance.pitchMultiplier = 0.8
+                                utterance.volume = volume
+                                utterance.voice = voice
+                                synthesizer.speak(utterance)
+                            } label: {
+                                Image(systemName: "play.fill")
+                            }
                         }
                     }
                 }
+                .pickerStyle(.inline)
+                .labelsHidden()
+                .onChange(of: voice) { _ in
+                    onVoiceChange(languageCode, voice)
+                }
             }
-            .pickerStyle(.inline)
-            .labelsHidden()
-            .onChange(of: voice) { _ in
-                onVoiceChange(languageCode, voice)
+            Section {
+                Text("""
+                Download enhanced and premium voices in iOS Settings → Accessibility → \
+                Live Speech → Preferred Voices.
+                """)
             }
         }
         .navigationTitle(localize(languageCode))
