@@ -19,18 +19,13 @@ private struct NicknameView: View {
                 }
                 Section {
                     Button {
-                        let username = nickname.nickname.isEmpty ? nickname.user : nickname.nickname
-                        model.previewTextToSpeech(username: username, message: "This is a test message")
+                        model.previewTextToSpeech(username: nickname.nickname, message: "This is a test message")
                     } label: {
-                        HStack {
-                            Image(systemName: "speaker.wave.2")
-                            Text("TTS Nickname")
+                        HCenter {
+                            Text("Test")
                         }
-                        .foregroundColor(.primary)
                     }
-                    .disabled(nickname.user.isEmpty)
-                } header: {
-                    Text("Preview")
+                    .disabled(nickname.nickname.isEmpty)
                 }
             }
             .navigationTitle("Nickname")

@@ -332,12 +332,10 @@ class ChatTextToSpeech: NSObject {
         let now = ContinuousClock.now
         if message.isRedemption {
             text = "\(message.user) \(message.message)"
-        } else if message.isPreview {
-            text = String(localized: "\(message.user) \(says): \(message.message)")
-        } else if !shouldSayUser(user: message.user, now: now) || !sayUsername {
-            text = message.message
+        } else if (sayUsername && shouldSayUser(user: message.user, now: now)) || message.isPreview {
+            text = "\(message.user) \(says): \(message.message)"
         } else {
-            text = String(localized: "\(message.user) \(says): \(message.message)")
+            text = message.message
         }
         let utterance = AVSpeechUtterance(string: text)
         utterance.rate = rate
