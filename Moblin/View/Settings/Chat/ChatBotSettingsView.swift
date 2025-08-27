@@ -153,6 +153,15 @@ private struct ChatBotCommandsSettingsView: View {
             }
             Section {
                 NavigationLink {
+                    PermissionsSettingsView(permissions: permissions.location)
+                } label: {
+                    Text(String("!moblin location data reset"))
+                }
+            } footer: {
+                Text("Resets distance, average speed and slope.")
+            }
+            Section {
+                NavigationLink {
                     PermissionsSettingsView(permissions: permissions.map)
                 } label: {
                     Text("!moblin map zoom out")

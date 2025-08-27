@@ -24,6 +24,8 @@ extension Model {
             handleChatBotMessageObsFix(command: command)
         case "map zoom out":
             handleChatBotMessageMapZoomOut(command: command)
+        case "location data reset":
+            handleChatBotMessageLocationDataReset(command: command)
         case "snapshot":
             handleChatBotMessageSnapshot(command: command)
         case "mute":
@@ -143,6 +145,15 @@ extension Model {
             for mapEffect in self.mapEffects.values {
                 mapEffect.zoomOutTemporarily()
             }
+        }
+    }
+
+    private func handleChatBotMessageLocationDataReset(command: ChatBotCommand) {
+        executeIfUserAllowedToUseChatBot(
+            permissions: database.chat.botCommandPermissions.location,
+            command: command
+        ) {
+            self.resetLocationData()
         }
     }
 
