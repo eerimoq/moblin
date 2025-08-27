@@ -307,10 +307,11 @@ private func md5String(data: String) -> String {
 }
 
 extension URL {
-    func removeCredentials() -> URL {
+    func removeCredentialsAndPort() -> URL {
         var components = URLComponents(string: absoluteString)!
         components.user = nil
         components.password = nil
+        components.port = nil
         return components.url!
     }
 }
@@ -561,8 +562,9 @@ class RtspClient {
     private let cameraId: UUID
     private let url: URL
     fileprivate let latency: Double
-    private var username: String?
-    private var password: String?
+    private let username: String?
+    private let password: String?
+    private let port: Int
     private var realm: String?
     private var nonce: String?
     private var header = Data()
@@ -585,7 +587,8 @@ class RtspClient {
         self.latency = latency
         username = url.user()
         password = url.password()
-        self.url = url.removeCredentials()
+        port = url.port ?? 554
+        self.url = url.removeCredentialsAndPort()
         state = .disconnected
     }
 
@@ -639,7 +642,6 @@ class RtspClient {
         guard let host = url.host() else {
             return
         }
-        let port = url.port ?? 554
         logger.debug("rtsp-client: Connecting to \(host):\(port)")
         connection = NWConnection(
             to: .hostPort(host: .init(host), port: .init(integerLiteral: NWEndpoint.Port.IntegerLiteralType(port))),
