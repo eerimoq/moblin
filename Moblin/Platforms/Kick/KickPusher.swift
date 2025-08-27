@@ -85,23 +85,14 @@ struct GiftedSubscriptionsEvent: Decodable {
 }
 
 struct RewardRedeemedEvent: Decodable {
-    // {"reward_title":"test",
-    // "user_id":2478206,
-    // "channel_id":2423391,
-    // "username":"iChrisIRL",
-    // "user_input":"123",
-    // "reward_background_color":"#FFD899"}
     var reward_title: String
     var user_id: Int
     var channel_id: Int
     var username: String
     var user_input: String
-    // var reward_background_color: String
 }
 
 struct StreamHostEvent: Decodable {
-    // {"host_username": "channel",
-    // "number_viewers": 674}
     var host_username: String
     var number_viewers: Int
 }
