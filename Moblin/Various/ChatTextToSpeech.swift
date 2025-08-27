@@ -10,6 +10,7 @@ private struct TextToSpeechMessage {
     let user: String
     let message: String
     let isRedemption: Bool
+    let isPreview: Bool
 }
 
 private let saysByLanguage = [
@@ -80,7 +81,25 @@ class ChatTextToSpeech: NSObject {
                 userId: userId,
                 user: user,
                 message: message,
-                isRedemption: isRedemption
+                isRedemption: isRedemption,
+                isPreview: false
+            ))
+            self.trySayNextMessage()
+        }
+    }
+
+    func sayPreview(user: String, message: String) {
+        textToSpeechDispatchQueue.async {
+            guard self.running else {
+                return
+            }
+            self.messageQueue.append(.init(
+                messageId: nil,
+                userId: nil,
+                user: user,
+                message: message,
+                isRedemption: false,
+                isPreview: true
             ))
             self.trySayNextMessage()
         }
@@ -313,6 +332,8 @@ class ChatTextToSpeech: NSObject {
         let now = ContinuousClock.now
         if message.isRedemption {
             text = "\(message.user) \(message.message)"
+        } else if message.isPreview {
+            text = String(localized: "\(message.user) \(says): \(message.message)")
         } else if !shouldSayUser(user: message.user, now: now) || !sayUsername {
             text = message.message
         } else {
