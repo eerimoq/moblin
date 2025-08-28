@@ -540,8 +540,8 @@ final class Media: NSObject {
         return urlComponents.url
     }
 
-    private func makeStreamId(url: String) -> String {
-        return URL(string: url)?.dictionaryFromQuery()["streamid"] ?? ""
+    private func makeStreamId(url: String) -> String? {
+        return URL(string: url)?.dictionaryFromQuery()["streamid"]
     }
 
     func rtmpStartStream(url: String,

@@ -175,7 +175,7 @@ class SrtSender {
     weak var delegate: SrtSenderDelegate?
     private var nextSequenceNumber: UInt32 = .random(in: 0 ..< 10000)
     private var peerDestinationSrtSocketId: UInt32 = 0
-    private let streamId: String
+    private let streamId: String?
     private var packetsToSend: Deque<SrtDataPacket> = []
     private var packetsInFlight: Deque<SrtDataPacket> = []
     private var packetsInFlightBySequenceNumber: [UInt32: SrtDataPacket] = [:]
@@ -200,7 +200,7 @@ class SrtSender {
     private var clock = SrtClock()
     private let connectTimer = SimpleTimer(queue: srtlaClientQueue)
 
-    init(streamId: String, latency: UInt16) {
+    init(streamId: String?, latency: UInt16) {
         self.streamId = streamId
         self.latency = latency
         let latencyUs = 1000 * Int64(latency)
@@ -414,10 +414,12 @@ class SrtSender {
         writer.writeUInt32(0xBF)
         writer.writeUInt16(latency)
         writer.writeUInt16(latency)
-        writer.writeUInt16(5)
-        let streamId = encodeStreamId(streamId: streamId)
-        writer.writeUInt16(UInt16(streamId.count / 4))
-        writer.writeBytes(streamId)
+        if let streamId {
+            writer.writeUInt16(5)
+            let streamId = encodeStreamId(streamId: streamId)
+            writer.writeUInt16(UInt16(streamId.count / 4))
+            writer.writeBytes(streamId)
+        }
         return writer.data
     }
 

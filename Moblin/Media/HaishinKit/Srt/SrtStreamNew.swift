@@ -25,7 +25,7 @@ class SrtStreamNew {
         writer.delegate = self
     }
 
-    func open(streamId: String, latency: UInt16) {
+    func open(streamId: String?, latency: UInt16) {
         srtSender = SrtSender(streamId: streamId, latency: latency)
         srtSender?.delegate = self
         srtSender?.start()
