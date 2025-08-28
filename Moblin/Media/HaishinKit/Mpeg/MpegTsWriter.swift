@@ -415,76 +415,90 @@ extension MpegTsWriter: VideoEncoderDelegate {
         let bytes = UnsafeMutableRawPointer(buffer).bindMemory(to: UInt8.self, capacity: length)
         updateTimecodeReference()
         let timecode = makeTimecode(sampleBuffer.presentationTimeStamp, decodeTimeStamp)
-        let packetizedElementaryStream: MpegTsPacketizedElementaryStream
+        let data: Data
         switch videoConfig {
         case let .avc(videoConfig):
-            var data = Data()
-            if randomAccessIndicator {
-                data += AvcNalUnit.aud10WithStartCode
-                if let sequenceParameterSet = videoConfig.sequenceParameterSet {
-                    data += nalUnitStartCode
-                    data += sequenceParameterSet
-                }
-                if let pictureParameterSet = videoConfig.pictureParameterSet {
-                    data += nalUnitStartCode
-                    data += pictureParameterSet
-                }
-            } else {
-                data += AvcNalUnit.aud30WithStartCode
-            }
-            if let timecode, false {
-                data += nalUnitStartCode
-                let pictureTiming = AvcSeiPayloadPictureTiming(clock: timecode.clock, frame: timecode.frame)
-                let sei = AvcNalUnitSei(payload: .pictureTiming(pictureTiming))
-                data += AvcNalUnit(type: .sei, payload: .sei(sei)).encode()
-            }
-            var payload = Data(bytesNoCopy: bytes, count: length, deallocator: .none)
-            addNalUnitStartCodes(&payload)
-            data.append(payload)
-            packetizedElementaryStream = MpegTsPacketizedElementaryStream(
-                streamId: MpegTsWriter.videoStreamId,
-                presentationTimeStamp: sampleBuffer.presentationTimeStamp,
-                decodeTimeStamp: decodeTimeStamp,
-                data: data
-            )
+            data = packH264(randomAccessIndicator, videoConfig, timecode, bytes, length)
         case let .hevc(videoConfig):
-            var data = Data()
-            if randomAccessIndicator {
-                if let videoParameterSet = videoConfig.videoParameterSet {
-                    data += nalUnitStartCode
-                    data += videoParameterSet
-                }
-                if let sequenceParameterSet = videoConfig.sequenceParameterSet {
-                    data += nalUnitStartCode
-                    data += sequenceParameterSet
-                }
-                if let pictureParameterSet = videoConfig.pictureParameterSet {
-                    data += nalUnitStartCode
-                    data += pictureParameterSet
-                }
-            }
-            if let timecode {
-                data += nalUnitStartCode
-                let timecode = HevcSeiPayloadTimeCode(clock: timecode.clock, frame: timecode.frame)
-                let sei = HevcNalUnitSei(payload: .timeCode(timecode))
-                data += HevcNalUnit(type: .prefixSeiNut, temporalIdPlusOne: 1, payload: .prefixSeiNut(sei)).encode()
-            }
-            var payload = Data(bytesNoCopy: bytes, count: length, deallocator: .none)
-            addNalUnitStartCodes(&payload)
-            data.append(payload)
-            packetizedElementaryStream = MpegTsPacketizedElementaryStream(
-                streamId: MpegTsWriter.videoStreamId,
-                presentationTimeStamp: sampleBuffer.presentationTimeStamp,
-                decodeTimeStamp: decodeTimeStamp,
-                data: data
-            )
+            data = packH265(randomAccessIndicator, videoConfig, timecode, bytes, length)
         default:
             return
         }
+        let packetizedElementaryStream = MpegTsPacketizedElementaryStream(
+            streamId: MpegTsWriter.videoStreamId,
+            presentationTimeStamp: sampleBuffer.presentationTimeStamp,
+            decodeTimeStamp: decodeTimeStamp,
+            data: data
+        )
         let packets = packetizedElementaryStream.arrayOfPackets(MpegTsWriter.videoPacketId,
                                                                 randomAccessIndicator,
                                                                 nil)
         writeVideo(data: encode(MpegTsWriter.videoPacketId, packets))
+    }
+
+    private func packH264(_ randomAccessIndicator: Bool,
+                          _ config: MpegTsVideoConfigAvc,
+                          _ timecode: MpegTsTimecode?,
+                          _ bytes: UnsafeMutablePointer<UInt8>,
+                          _ length: Int) -> Data
+    {
+        var data = Data()
+        if randomAccessIndicator {
+            data += AvcNalUnit.aud10WithStartCode
+            if let sequenceParameterSet = config.sequenceParameterSet {
+                data += nalUnitStartCode
+                data += sequenceParameterSet
+            }
+            if let pictureParameterSet = config.pictureParameterSet {
+                data += nalUnitStartCode
+                data += pictureParameterSet
+            }
+        } else {
+            data += AvcNalUnit.aud30WithStartCode
+        }
+        if let timecode, false {
+            data += nalUnitStartCode
+            let pictureTiming = AvcSeiPayloadPictureTiming(clock: timecode.clock, frame: timecode.frame)
+            let sei = AvcNalUnitSei(payload: .pictureTiming(pictureTiming))
+            data += AvcNalUnit(type: .sei, payload: .sei(sei)).encode()
+        }
+        var payload = Data(bytesNoCopy: bytes, count: length, deallocator: .none)
+        addNalUnitStartCodes(&payload)
+        data.append(payload)
+        return data
+    }
+
+    private func packH265(_ randomAccessIndicator: Bool,
+                          _ config: MpegTsVideoConfigHevc,
+                          _ timecode: MpegTsTimecode?,
+                          _ bytes: UnsafeMutablePointer<UInt8>,
+                          _ length: Int) -> Data
+    {
+        var data = Data()
+        if randomAccessIndicator {
+            if let videoParameterSet = config.videoParameterSet {
+                data += nalUnitStartCode
+                data += videoParameterSet
+            }
+            if let sequenceParameterSet = config.sequenceParameterSet {
+                data += nalUnitStartCode
+                data += sequenceParameterSet
+            }
+            if let pictureParameterSet = config.pictureParameterSet {
+                data += nalUnitStartCode
+                data += pictureParameterSet
+            }
+        }
+        if let timecode {
+            data += nalUnitStartCode
+            let timecode = HevcSeiPayloadTimeCode(clock: timecode.clock, frame: timecode.frame)
+            let sei = HevcNalUnitSei(payload: .timeCode(timecode))
+            data += HevcNalUnit(type: .prefixSeiNut, temporalIdPlusOne: 1, payload: .prefixSeiNut(sei)).encode()
+        }
+        var payload = Data(bytesNoCopy: bytes, count: length, deallocator: .none)
+        addNalUnitStartCodes(&payload)
+        data.append(payload)
+        return data
     }
 
     private func updateTimecodeReference() {
