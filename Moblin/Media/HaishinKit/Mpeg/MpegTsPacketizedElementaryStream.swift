@@ -118,96 +118,11 @@ struct MpegTsPacketizedElementaryStream {
     private var optionalHeader = OptionalHeader()
     var data = Data()
 
-    init?(streamId: UInt8, presentationTimeStamp: CMTime, data: Data) {
+    init(streamId: UInt8, presentationTimeStamp: CMTime, decodeTimeStamp: CMTime, data: Data) {
         self.data = data
         optionalHeader.dataAlignmentIndicator = true
-        optionalHeader.setTimestamp(presentationTimeStamp, .invalid)
+        optionalHeader.setTimestamp(presentationTimeStamp, decodeTimeStamp)
         let length = self.data.count + optionalHeader.encode().count
-        if length < Int(UInt16.max) {
-            packetLength = UInt16(length)
-        } else {
-            return nil
-        }
-        self.streamId = streamId
-    }
-
-    init(
-        bytes: UnsafeMutablePointer<UInt8>,
-        count: Int,
-        presentationTimeStamp: CMTime,
-        decodeTimeStamp: CMTime,
-        config: MpegTsVideoConfigAvc?,
-        streamId: UInt8,
-        timecode: MpegTsTimecode?
-    ) {
-        if let config {
-            data += AvcNalUnit.aud10WithStartCode
-            if let sequenceParameterSet = config.sequenceParameterSet {
-                data += nalUnitStartCode
-                data += sequenceParameterSet
-            }
-            if let pictureParameterSet = config.pictureParameterSet {
-                data += nalUnitStartCode
-                data += pictureParameterSet
-            }
-        } else {
-            data += AvcNalUnit.aud30WithStartCode
-        }
-        if let timecode, false {
-            data += nalUnitStartCode
-            let pictureTiming = AvcSeiPayloadPictureTiming(clock: timecode.clock, frame: timecode.frame)
-            let sei = AvcNalUnitSei(payload: .pictureTiming(pictureTiming))
-            data += AvcNalUnit(type: .sei, payload: .sei(sei)).encode()
-        }
-        var payload = Data(bytesNoCopy: bytes, count: count, deallocator: .none)
-        addNalUnitStartCodes(&payload)
-        data.append(payload)
-        optionalHeader.dataAlignmentIndicator = true
-        optionalHeader.setTimestamp(presentationTimeStamp, decodeTimeStamp)
-        let length = data.count + optionalHeader.encode().count
-        if length < Int(UInt16.max) {
-            packetLength = UInt16(length)
-        } else {
-            packetLength = 0
-        }
-        self.streamId = streamId
-    }
-
-    init(
-        bytes: UnsafeMutablePointer<UInt8>,
-        count: Int,
-        presentationTimeStamp: CMTime,
-        decodeTimeStamp: CMTime,
-        config: MpegTsVideoConfigHevc?,
-        streamId: UInt8,
-        timecode: MpegTsTimecode?
-    ) {
-        if let config {
-            if let videoParameterSet = config.videoParameterSet {
-                data += nalUnitStartCode
-                data += videoParameterSet
-            }
-            if let sequenceParameterSet = config.sequenceParameterSet {
-                data += nalUnitStartCode
-                data += sequenceParameterSet
-            }
-            if let pictureParameterSet = config.pictureParameterSet {
-                data += nalUnitStartCode
-                data += pictureParameterSet
-            }
-        }
-        if let timecode {
-            data += nalUnitStartCode
-            let timecode = HevcSeiPayloadTimeCode(clock: timecode.clock, frame: timecode.frame)
-            let sei = HevcNalUnitSei(payload: .timeCode(timecode))
-            data += HevcNalUnit(type: .prefixSeiNut, temporalIdPlusOne: 1, payload: .prefixSeiNut(sei)).encode()
-        }
-        var payload = Data(bytesNoCopy: bytes, count: count, deallocator: .none)
-        addNalUnitStartCodes(&payload)
-        data.append(payload)
-        optionalHeader.dataAlignmentIndicator = true
-        optionalHeader.setTimestamp(presentationTimeStamp, decodeTimeStamp)
-        let length = data.count + optionalHeader.encode().count
         if length < Int(UInt16.max) {
             packetLength = UInt16(length)
         } else {

@@ -362,13 +362,12 @@ extension MpegTsWriter: AudioCodecDelegate {
         let length = Int(audioBuffer.byteLength)
         var data = audioConfig.makeHeader(length)
         data.append(audioBuffer.data.assumingMemoryBound(to: UInt8.self), count: length)
-        guard let packetizedElementaryStream = MpegTsPacketizedElementaryStream(
+        let packetizedElementaryStream = MpegTsPacketizedElementaryStream(
             streamId: MpegTsWriter.audioStreamId,
             presentationTimeStamp: presentationTimeStamp,
+            decodeTimeStamp: .invalid,
             data: data
-        ) else {
-            return
-        }
+        )
         let programClockReference = updateProgramClockReference(presentationTimeStamp)
         let packets = packetizedElementaryStream.arrayOfPackets(MpegTsWriter.audioPacketId,
                                                                 true,
@@ -419,24 +418,65 @@ extension MpegTsWriter: VideoEncoderDelegate {
         let packetizedElementaryStream: MpegTsPacketizedElementaryStream
         switch videoConfig {
         case let .avc(videoConfig):
+            var data = Data()
+            if randomAccessIndicator {
+                data += AvcNalUnit.aud10WithStartCode
+                if let sequenceParameterSet = videoConfig.sequenceParameterSet {
+                    data += nalUnitStartCode
+                    data += sequenceParameterSet
+                }
+                if let pictureParameterSet = videoConfig.pictureParameterSet {
+                    data += nalUnitStartCode
+                    data += pictureParameterSet
+                }
+            } else {
+                data += AvcNalUnit.aud30WithStartCode
+            }
+            if let timecode, false {
+                data += nalUnitStartCode
+                let pictureTiming = AvcSeiPayloadPictureTiming(clock: timecode.clock, frame: timecode.frame)
+                let sei = AvcNalUnitSei(payload: .pictureTiming(pictureTiming))
+                data += AvcNalUnit(type: .sei, payload: .sei(sei)).encode()
+            }
+            var payload = Data(bytesNoCopy: bytes, count: length, deallocator: .none)
+            addNalUnitStartCodes(&payload)
+            data.append(payload)
             packetizedElementaryStream = MpegTsPacketizedElementaryStream(
-                bytes: bytes,
-                count: length,
+                streamId: MpegTsWriter.videoStreamId,
                 presentationTimeStamp: sampleBuffer.presentationTimeStamp,
                 decodeTimeStamp: decodeTimeStamp,
-                config: randomAccessIndicator ? videoConfig : nil,
-                streamId: MpegTsWriter.videoStreamId,
-                timecode: timecode
+                data: data
             )
         case let .hevc(videoConfig):
+            var data = Data()
+            if randomAccessIndicator {
+                if let videoParameterSet = videoConfig.videoParameterSet {
+                    data += nalUnitStartCode
+                    data += videoParameterSet
+                }
+                if let sequenceParameterSet = videoConfig.sequenceParameterSet {
+                    data += nalUnitStartCode
+                    data += sequenceParameterSet
+                }
+                if let pictureParameterSet = videoConfig.pictureParameterSet {
+                    data += nalUnitStartCode
+                    data += pictureParameterSet
+                }
+            }
+            if let timecode {
+                data += nalUnitStartCode
+                let timecode = HevcSeiPayloadTimeCode(clock: timecode.clock, frame: timecode.frame)
+                let sei = HevcNalUnitSei(payload: .timeCode(timecode))
+                data += HevcNalUnit(type: .prefixSeiNut, temporalIdPlusOne: 1, payload: .prefixSeiNut(sei)).encode()
+            }
+            var payload = Data(bytesNoCopy: bytes, count: length, deallocator: .none)
+            addNalUnitStartCodes(&payload)
+            data.append(payload)
             packetizedElementaryStream = MpegTsPacketizedElementaryStream(
-                bytes: bytes,
-                count: length,
+                streamId: MpegTsWriter.videoStreamId,
                 presentationTimeStamp: sampleBuffer.presentationTimeStamp,
                 decodeTimeStamp: decodeTimeStamp,
-                config: randomAccessIndicator ? videoConfig : nil,
-                streamId: MpegTsWriter.videoStreamId,
-                timecode: timecode
+                data: data
             )
         default:
             return
