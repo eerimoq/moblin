@@ -306,9 +306,9 @@ class MpegTsReader {
         }
         let blockBuffer = packetizedElementaryStream.data.makeBlockBuffer(advancedBy: reader.position)
         var sampleSizes = [length]
-        guard let (sampleBuffer, previousReceivedPresentationTimeStamp) = makeSampleBuffer(
+        guard let sampleBuffer = makeSampleBuffer(
+            packetId,
             packetizedElementaryStream.optionalHeader,
-            previousReceivedPresentationTimeStamps[packetId],
             formatDescriptions[packetId],
             blockBuffer,
             &sampleSizes
@@ -316,7 +316,6 @@ class MpegTsReader {
             return nil
         }
         sampleBuffer.isSync = true
-        previousReceivedPresentationTimeStamps[packetId] = previousReceivedPresentationTimeStamp
         return (data.streamType, sampleBuffer)
     }
 
@@ -357,9 +356,9 @@ class MpegTsReader {
         guard !sampleSizes.isEmpty else {
             return nil
         }
-        guard let (sampleBuffer, previousReceivedPresentationTimeStamp) = makeSampleBuffer(
+        guard let sampleBuffer = makeSampleBuffer(
+            packetId,
             packetizedElementaryStream.optionalHeader,
-            previousReceivedPresentationTimeStamps[packetId],
             formatDescription,
             blockBuffer,
             &sampleSizes
@@ -367,7 +366,6 @@ class MpegTsReader {
             return nil
         }
         sampleBuffer.isSync = true
-        previousReceivedPresentationTimeStamps[packetId] = previousReceivedPresentationTimeStamp
         return (data.streamType, sampleBuffer)
     }
 
@@ -388,9 +386,9 @@ class MpegTsReader {
         removeNalUnitStartCodes(&packetizedElementaryStream.data, nalUnits)
         let blockBuffer = packetizedElementaryStream.data.makeBlockBuffer()
         var sampleSizes = [blockBuffer?.dataLength ?? 0]
-        guard let (sampleBuffer, previousReceivedPresentationTimeStamp) = makeSampleBuffer(
+        guard let sampleBuffer = makeSampleBuffer(
+            packetId,
             packetizedElementaryStream.optionalHeader,
-            previousReceivedPresentationTimeStamps[packetId],
             formatDescriptions[packetId],
             blockBuffer,
             &sampleSizes
@@ -398,7 +396,6 @@ class MpegTsReader {
             return nil
         }
         sampleBuffer.isSync = units.contains { $0.header.type == .idr }
-        previousReceivedPresentationTimeStamps[packetId] = previousReceivedPresentationTimeStamp
         return (data.streamType, sampleBuffer)
     }
 
@@ -433,9 +430,9 @@ class MpegTsReader {
         removeNalUnitStartCodes(&packetizedElementaryStream.data, nalUnits)
         let blockBuffer = packetizedElementaryStream.data.makeBlockBuffer()
         var sampleSizes = [blockBuffer?.dataLength ?? 0]
-        guard let (sampleBuffer, previousReceivedPresentationTimeStamp) = makeSampleBuffer(
+        guard let sampleBuffer = makeSampleBuffer(
+            packetId,
             packetizedElementaryStream.optionalHeader,
-            previousReceivedPresentationTimeStamps[packetId],
             formatDescriptions[packetId],
             blockBuffer,
             &sampleSizes
@@ -443,17 +440,16 @@ class MpegTsReader {
             return nil
         }
         sampleBuffer.isSync = units.contains { $0.header.type == .sps }
-        previousReceivedPresentationTimeStamps[packetId] = previousReceivedPresentationTimeStamp
         return (data.streamType, sampleBuffer)
     }
 
     private func makeSampleBuffer(
+        _ packetId: UInt16,
         _ optionalHeader: OptionalHeader,
-        _ previousReceivedPresentationTimeStamp: CMTime?,
         _ formatDescription: CMFormatDescription?,
         _ blockBuffer: CMBlockBuffer?,
         _ sampleSizes: inout [Int]
-    ) -> (CMSampleBuffer, CMTime)? {
+    ) -> CMSampleBuffer? {
         var sampleBuffer: CMSampleBuffer?
         let basePresentationTimeStamp = getBasePresentationTimeStamp()
         let receivedPresentationTimeStamp = optionalHeader.getPresentationTimeStamp()
@@ -464,7 +460,7 @@ class MpegTsReader {
             let basePresentationTimeStamp = basePresentationTimeStamp - firstReceivedPresentationTimeStamp
             timing.presentationTimeStamp = basePresentationTimeStamp + receivedPresentationTimeStamp
             timing.decodeTimeStamp = basePresentationTimeStamp + receivedDecodeTimeStamp
-            if let previousReceivedPresentationTimeStamp {
+            if let previousReceivedPresentationTimeStamp = previousReceivedPresentationTimeStamps[packetId] {
                 timing.duration = timing.presentationTimeStamp - previousReceivedPresentationTimeStamp
             } else {
                 timing.duration = .invalid
@@ -495,7 +491,8 @@ class MpegTsReader {
             return nil
         }
         self.firstReceivedPresentationTimeStamp = firstReceivedPresentationTimeStamp
-        return (sampleBuffer, timing.presentationTimeStamp)
+        previousReceivedPresentationTimeStamps[packetId] = timing.presentationTimeStamp
+        return sampleBuffer
     }
 
     private func getBasePresentationTimeStamp() -> CMTime {
