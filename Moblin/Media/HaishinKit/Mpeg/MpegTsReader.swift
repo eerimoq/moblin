@@ -394,15 +394,15 @@ class MpegTsReader {
     {
         switch data.getDescriptor(tag: .registration) {
         case elementaryStreamDescriptiorRegistrationOpus:
-            return tryMakeSampleBufferMpeg2PacketizedDataOpus(packetId: packetId,
-                                                              data: data,
-                                                              packetizedElementaryStream: &packetizedElementaryStream)
+            return makeSampleBufferMpeg2PacketizedDataOpus(packetId: packetId,
+                                                           data: data,
+                                                           packetizedElementaryStream: &packetizedElementaryStream)
         default:
             return nil
         }
     }
 
-    private func tryMakeSampleBufferMpeg2PacketizedDataOpus(
+    private func makeSampleBufferMpeg2PacketizedDataOpus(
         packetId: UInt16,
         data: ElementaryStreamSpecificData,
         packetizedElementaryStream: inout MpegTsPacketizedElementaryStream
