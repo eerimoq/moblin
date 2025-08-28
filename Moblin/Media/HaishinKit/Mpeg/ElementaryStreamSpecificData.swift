@@ -43,6 +43,22 @@ struct ElementaryStreamSpecificData {
         esDescriptors += data
     }
 
+    func getDescriptor(tag: ElementaryStreamDescriptiorTag) -> Data? {
+        let reader = ByteReader(data: esDescriptors)
+        do {
+            while true {
+                let rawTag = try reader.readUInt8()
+                let length = try Int(reader.readUInt8())
+                if ElementaryStreamDescriptiorTag(rawValue: rawTag) == tag {
+                    return try reader.readBytes(length)
+                } else {
+                    try reader.skipBytes(length)
+                }
+            }
+        } catch {}
+        return nil
+    }
+
     func encode() -> Data {
         let writer = ByteWriter()
         writer.writeUInt8(streamType.rawValue)

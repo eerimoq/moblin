@@ -346,7 +346,7 @@ struct MpegTsPacketizedElementaryStream {
         )
     }
 
-    mutating func makeAudioSampleBuffer(
+    mutating func makeAacAudioSampleBuffer(
         _ basePresentationTimeStamp: CMTime,
         _ firstReceivedPresentationTimeStamp: CMTime?,
         _ previousReceivedPresentationTimeStamp: CMTime?,
@@ -372,7 +372,7 @@ struct MpegTsPacketizedElementaryStream {
         )
     }
 
-    private func makeSampleBuffer(
+    func makeSampleBuffer(
         _ basePresentationTimeStamp: CMTime,
         _ firstReceivedPresentationTimeStamp: CMTime?,
         _ previousReceivedPresentationTimeStamp: CMTime?,
