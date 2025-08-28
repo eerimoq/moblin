@@ -237,6 +237,12 @@ class MpegTsReader {
             packetizedElementaryStreams[packetId] = nil
         }
         switch data.streamType {
+        case .mpeg2PacketizedData:
+            return makeSampleBufferMpeg2PacketizedData(
+                packetId: packetId,
+                data: data,
+                packetizedElementaryStream: &packetizedElementaryStream
+            )
         case .adtsAac:
             return makeSampleBufferAac(
                 packetId: packetId,
@@ -255,15 +261,67 @@ class MpegTsReader {
                 data: data,
                 packetizedElementaryStream: &packetizedElementaryStream
             )
-        case .mpeg2PacketizedData:
-            return makeSampleBufferMpeg2PacketizedData(
-                packetId: packetId,
-                data: data,
-                packetizedElementaryStream: &packetizedElementaryStream
-            )
         default:
             return nil
         }
+    }
+
+    private func makeSampleBufferMpeg2PacketizedData(
+        packetId: UInt16,
+        data: ElementaryStreamSpecificData,
+        packetizedElementaryStream: inout MpegTsPacketizedElementaryStream
+    )
+        -> (ElementaryStreamType, CMSampleBuffer)?
+    {
+        switch data.getDescriptor(tag: .registration) {
+        case elementaryStreamDescriptiorRegistrationOpus:
+            return makeSampleBufferMpeg2PacketizedDataOpus(packetId: packetId,
+                                                           data: data,
+                                                           packetizedElementaryStream: &packetizedElementaryStream)
+        default:
+            return nil
+        }
+    }
+
+    private func makeSampleBufferMpeg2PacketizedDataOpus(
+        packetId: UInt16,
+        data: ElementaryStreamSpecificData,
+        packetizedElementaryStream: inout MpegTsPacketizedElementaryStream
+    )
+        -> (ElementaryStreamType, CMSampleBuffer)?
+    {
+        let reader = ByteReader(data: packetizedElementaryStream.data)
+        var length = 0
+        do {
+            _ = try reader.readUInt16()
+            while true {
+                let value = try reader.readUInt8()
+                length += Int(value)
+                if value < 255 {
+                    break
+                }
+            }
+        } catch {
+            return nil
+        }
+        let blockBuffer = packetizedElementaryStream.data.makeBlockBuffer(advancedBy: reader.position)
+        var sampleSizes = [length]
+        guard let (sampleBuffer,
+                   firstReceivedPresentationTimeStamp,
+                   previousReceivedPresentationTimeStamp) = packetizedElementaryStream.makeSampleBuffer(
+            getBasePresentationTimeStamp(),
+            firstReceivedPresentationTimeStamp,
+            previousReceivedPresentationTimeStamps[packetId],
+            formatDescriptions[packetId],
+            blockBuffer,
+            &sampleSizes
+        ) else {
+            return nil
+        }
+        sampleBuffer.isSync = true
+        self.firstReceivedPresentationTimeStamp = firstReceivedPresentationTimeStamp
+        previousReceivedPresentationTimeStamps[packetId] = previousReceivedPresentationTimeStamp
+        return (data.streamType, sampleBuffer)
     }
 
     private func getAacFormatDescription(_ packetId: UInt16,
@@ -380,64 +438,6 @@ class MpegTsReader {
             return nil
         }
         sampleBuffer.isSync = units.contains { $0.header.type == .sps }
-        self.firstReceivedPresentationTimeStamp = firstReceivedPresentationTimeStamp
-        previousReceivedPresentationTimeStamps[packetId] = previousReceivedPresentationTimeStamp
-        return (data.streamType, sampleBuffer)
-    }
-
-    private func makeSampleBufferMpeg2PacketizedData(
-        packetId: UInt16,
-        data: ElementaryStreamSpecificData,
-        packetizedElementaryStream: inout MpegTsPacketizedElementaryStream
-    )
-        -> (ElementaryStreamType, CMSampleBuffer)?
-    {
-        switch data.getDescriptor(tag: .registration) {
-        case elementaryStreamDescriptiorRegistrationOpus:
-            return makeSampleBufferMpeg2PacketizedDataOpus(packetId: packetId,
-                                                           data: data,
-                                                           packetizedElementaryStream: &packetizedElementaryStream)
-        default:
-            return nil
-        }
-    }
-
-    private func makeSampleBufferMpeg2PacketizedDataOpus(
-        packetId: UInt16,
-        data: ElementaryStreamSpecificData,
-        packetizedElementaryStream: inout MpegTsPacketizedElementaryStream
-    )
-        -> (ElementaryStreamType, CMSampleBuffer)?
-    {
-        let reader = ByteReader(data: packetizedElementaryStream.data)
-        var length = 0
-        do {
-            _ = try reader.readUInt16()
-            while true {
-                let value = try reader.readUInt8()
-                length += Int(value)
-                if value < 255 {
-                    break
-                }
-            }
-        } catch {
-            return nil
-        }
-        let blockBuffer = packetizedElementaryStream.data.makeBlockBuffer(advancedBy: reader.position)
-        var sampleSizes = [length]
-        guard let (sampleBuffer,
-                   firstReceivedPresentationTimeStamp,
-                   previousReceivedPresentationTimeStamp) = packetizedElementaryStream.makeSampleBuffer(
-            getBasePresentationTimeStamp(),
-            firstReceivedPresentationTimeStamp,
-            previousReceivedPresentationTimeStamps[packetId],
-            formatDescriptions[packetId],
-            blockBuffer,
-            &sampleSizes
-        ) else {
-            return nil
-        }
-        sampleBuffer.isSync = true
         self.firstReceivedPresentationTimeStamp = firstReceivedPresentationTimeStamp
         previousReceivedPresentationTimeStamps[packetId] = previousReceivedPresentationTimeStamp
         return (data.streamType, sampleBuffer)
