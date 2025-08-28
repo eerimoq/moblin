@@ -381,10 +381,10 @@ class MpegTsReader {
             formatDescriptions[packetId] = formatDescription
             handleVideoFormatDescription(formatDescription)
         }
+        removeNalUnitStartCodes(&packetizedElementaryStream.data, nalUnits)
         guard let (sampleBuffer,
                    firstReceivedPresentationTimeStamp,
                    previousReceivedPresentationTimeStamp) = packetizedElementaryStream.makeVideoSampleBuffer(
-            nalUnits,
             getBasePresentationTimeStamp(),
             firstReceivedPresentationTimeStamp,
             previousReceivedPresentationTimeStamps[packetId],
@@ -426,10 +426,10 @@ class MpegTsReader {
                 }
             }
         }
+        removeNalUnitStartCodes(&packetizedElementaryStream.data, nalUnits)
         guard let (sampleBuffer,
                    firstReceivedPresentationTimeStamp,
                    previousReceivedPresentationTimeStamp) = packetizedElementaryStream.makeVideoSampleBuffer(
-            nalUnits,
             getBasePresentationTimeStamp(),
             firstReceivedPresentationTimeStamp,
             previousReceivedPresentationTimeStamps[packetId],
