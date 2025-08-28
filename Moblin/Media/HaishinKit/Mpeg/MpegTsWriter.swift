@@ -359,12 +359,13 @@ extension MpegTsWriter: AudioCodecDelegate {
         guard canWriteFor(), let audioConfig else {
             return
         }
+        let length = Int(audioBuffer.byteLength)
+        var data = audioConfig.makeHeader(length)
+        data.append(audioBuffer.data.assumingMemoryBound(to: UInt8.self), count: length)
         guard let packetizedElementaryStream = MpegTsPacketizedElementaryStream(
-            bytes: audioBuffer.data.assumingMemoryBound(to: UInt8.self),
-            count: Int(audioBuffer.byteLength),
+            streamId: MpegTsWriter.audioStreamId,
             presentationTimeStamp: presentationTimeStamp,
-            config: audioConfig,
-            streamId: MpegTsWriter.audioStreamId
+            data: data
         ) else {
             return
         }

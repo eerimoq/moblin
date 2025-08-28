@@ -118,18 +118,11 @@ struct MpegTsPacketizedElementaryStream {
     private var optionalHeader = OptionalHeader()
     var data = Data()
 
-    init?(
-        bytes: UnsafePointer<UInt8>,
-        count: Int,
-        presentationTimeStamp: CMTime,
-        config: MpegTsAudioConfig,
-        streamId: UInt8
-    ) {
-        data += config.makeHeader(count)
-        data.append(bytes, count: count)
+    init?(streamId: UInt8, presentationTimeStamp: CMTime, data: Data) {
+        self.data = data
         optionalHeader.dataAlignmentIndicator = true
         optionalHeader.setTimestamp(presentationTimeStamp, .invalid)
-        let length = data.count + optionalHeader.encode().count
+        let length = self.data.count + optionalHeader.encode().count
         if length < Int(UInt16.max) {
             packetLength = UInt16(length)
         } else {
