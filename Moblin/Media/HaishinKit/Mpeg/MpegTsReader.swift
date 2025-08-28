@@ -68,7 +68,7 @@ class MpegTsReader {
 
     private func handleProgramMedia(packet: MpegTsPacket, data: ElementaryStreamSpecificData) throws {
         if packet.payloadUnitStartIndicator {
-            if let (sampleBuffer, streamType) = tryMakeSampleBuffer(packetId: packet.id, data: data) {
+            if let (streamType, sampleBuffer) = tryMakeSampleBuffer(packetId: packet.id, data: data) {
                 handleSampleBuffer(streamType, sampleBuffer)
             }
             packetizedElementaryStreams[packet.id] = try MpegTsPacketizedElementaryStream(data: packet.payload)
@@ -228,7 +228,7 @@ class MpegTsReader {
     }
 
     private func tryMakeSampleBuffer(packetId: UInt16,
-                                     data: ElementaryStreamSpecificData) -> (CMSampleBuffer, ElementaryStreamType)?
+                                     data: ElementaryStreamSpecificData) -> (ElementaryStreamType, CMSampleBuffer)?
     {
         guard var packetizedElementaryStream = packetizedElementaryStreams[packetId] else {
             return nil
@@ -288,7 +288,7 @@ class MpegTsReader {
     private func makeSampleBufferAac(packetId: UInt16,
                                      data: ElementaryStreamSpecificData,
                                      packetizedElementaryStream: inout MpegTsPacketizedElementaryStream)
-        -> (CMSampleBuffer, ElementaryStreamType)?
+        -> (ElementaryStreamType, CMSampleBuffer)?
     {
         guard let formatDescription = getAacFormatDescription(packetId, packetizedElementaryStream) else {
             return nil
@@ -306,13 +306,13 @@ class MpegTsReader {
         sampleBuffer.isSync = true
         self.firstReceivedPresentationTimeStamp = firstReceivedPresentationTimeStamp
         previousReceivedPresentationTimeStamps[packetId] = previousReceivedPresentationTimeStamp
-        return (sampleBuffer, data.streamType)
+        return (data.streamType, sampleBuffer)
     }
 
     private func makeSampleBufferH264(packetId: UInt16,
                                       data: ElementaryStreamSpecificData,
                                       packetizedElementaryStream: inout MpegTsPacketizedElementaryStream)
-        -> (CMSampleBuffer, ElementaryStreamType)?
+        -> (ElementaryStreamType, CMSampleBuffer)?
     {
         let nalUnits = getNalUnits(data: packetizedElementaryStream.data)
         let units = readH264NalUnits(data: packetizedElementaryStream.data,
@@ -337,13 +337,13 @@ class MpegTsReader {
         sampleBuffer.isSync = units.contains { $0.header.type == .idr }
         self.firstReceivedPresentationTimeStamp = firstReceivedPresentationTimeStamp
         previousReceivedPresentationTimeStamps[packetId] = previousReceivedPresentationTimeStamp
-        return (sampleBuffer, data.streamType)
+        return (data.streamType, sampleBuffer)
     }
 
     private func makeSampleBufferH265(packetId: UInt16,
                                       data: ElementaryStreamSpecificData,
                                       packetizedElementaryStream: inout MpegTsPacketizedElementaryStream)
-        -> (CMSampleBuffer, ElementaryStreamType)?
+        -> (ElementaryStreamType, CMSampleBuffer)?
     {
         let nalUnits = getNalUnits(data: packetizedElementaryStream.data)
         let units = readH265NalUnits(data: packetizedElementaryStream.data,
@@ -382,7 +382,7 @@ class MpegTsReader {
         sampleBuffer.isSync = units.contains { $0.header.type == .sps }
         self.firstReceivedPresentationTimeStamp = firstReceivedPresentationTimeStamp
         previousReceivedPresentationTimeStamps[packetId] = previousReceivedPresentationTimeStamp
-        return (sampleBuffer, data.streamType)
+        return (data.streamType, sampleBuffer)
     }
 
     private func makeSampleBufferMpeg2PacketizedData(
@@ -390,7 +390,7 @@ class MpegTsReader {
         data: ElementaryStreamSpecificData,
         packetizedElementaryStream: inout MpegTsPacketizedElementaryStream
     )
-        -> (CMSampleBuffer, ElementaryStreamType)?
+        -> (ElementaryStreamType, CMSampleBuffer)?
     {
         switch data.getDescriptor(tag: .registration) {
         case elementaryStreamDescriptiorRegistrationOpus:
@@ -407,7 +407,7 @@ class MpegTsReader {
         data: ElementaryStreamSpecificData,
         packetizedElementaryStream: inout MpegTsPacketizedElementaryStream
     )
-        -> (CMSampleBuffer, ElementaryStreamType)?
+        -> (ElementaryStreamType, CMSampleBuffer)?
     {
         let reader = ByteReader(data: packetizedElementaryStream.data)
         var length = 0
@@ -440,7 +440,7 @@ class MpegTsReader {
         sampleBuffer.isSync = true
         self.firstReceivedPresentationTimeStamp = firstReceivedPresentationTimeStamp
         previousReceivedPresentationTimeStamps[packetId] = previousReceivedPresentationTimeStamp
-        return (sampleBuffer, data.streamType)
+        return (data.streamType, sampleBuffer)
     }
 
     private func getBasePresentationTimeStamp() -> CMTime {
