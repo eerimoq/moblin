@@ -5,7 +5,7 @@ import CoreMedia
  - seealso: https://en.wikipedia.org/wiki/Packetized_elementary_stream
  */
 
-private struct OptionalHeader {
+struct OptionalHeader {
     static let fixedSectionSize = 3
     var markerBits: UInt8 = 2
     var scramblingControl: UInt8 = 0
@@ -115,7 +115,7 @@ struct MpegTsPacketizedElementaryStream {
     private static let startCode = Data([0x00, 0x00, 0x01])
     private let streamId: UInt8
     private let packetLength: UInt16
-    private var optionalHeader = OptionalHeader()
+    var optionalHeader = OptionalHeader()
     var data = Data()
 
     init(streamId: UInt8, presentationTimeStamp: CMTime, decodeTimeStamp: CMTime, data: Data) {
@@ -234,55 +234,5 @@ struct MpegTsPacketizedElementaryStream {
             packet.setAdaptionFieldStuffing(size: 182 - packet.payload.count)
             packets.append(packet)
         }
-    }
-
-    func makeSampleBuffer(
-        _ basePresentationTimeStamp: CMTime,
-        _ firstReceivedPresentationTimeStamp: CMTime?,
-        _ previousReceivedPresentationTimeStamp: CMTime?,
-        _ formatDescription: CMFormatDescription?,
-        _ blockBuffer: CMBlockBuffer?,
-        _ sampleSizes: inout [Int]
-    ) -> (CMSampleBuffer, CMTime, CMTime)? {
-        var sampleBuffer: CMSampleBuffer?
-        let receivedPresentationTimeStamp = optionalHeader.getPresentationTimeStamp()
-        let receivedDecodeTimeStamp = optionalHeader.getDecodeTimeStamp()
-        var timing = CMSampleTimingInfo()
-        var firstReceivedPresentationTimeStamp = firstReceivedPresentationTimeStamp
-        if let firstReceivedPresentationTimeStamp {
-            let basePresentationTimeStamp = basePresentationTimeStamp - firstReceivedPresentationTimeStamp
-            timing.presentationTimeStamp = basePresentationTimeStamp + receivedPresentationTimeStamp
-            timing.decodeTimeStamp = basePresentationTimeStamp + receivedDecodeTimeStamp
-            if let previousReceivedPresentationTimeStamp {
-                timing.duration = timing.presentationTimeStamp - previousReceivedPresentationTimeStamp
-            } else {
-                timing.duration = .invalid
-            }
-        } else {
-            timing.presentationTimeStamp = basePresentationTimeStamp
-            timing.decodeTimeStamp = basePresentationTimeStamp
-            timing.duration = .invalid
-            firstReceivedPresentationTimeStamp = receivedPresentationTimeStamp
-        }
-        guard let blockBuffer, CMSampleBufferCreate(
-            allocator: kCFAllocatorDefault,
-            dataBuffer: blockBuffer,
-            dataReady: true,
-            makeDataReadyCallback: nil,
-            refcon: nil,
-            formatDescription: formatDescription,
-            sampleCount: sampleSizes.count,
-            sampleTimingEntryCount: 1,
-            sampleTimingArray: &timing,
-            sampleSizeEntryCount: sampleSizes.count,
-            sampleSizeArray: &sampleSizes,
-            sampleBufferOut: &sampleBuffer
-        ) == noErr else {
-            return nil
-        }
-        guard let sampleBuffer else {
-            return nil
-        }
-        return (sampleBuffer, firstReceivedPresentationTimeStamp!, timing.presentationTimeStamp)
     }
 }
