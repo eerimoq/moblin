@@ -113,9 +113,8 @@ private struct OptionalHeader {
 struct MpegTsPacketizedElementaryStream {
     private static let untilPacketLengthSize: Int = 6
     private static let startCode = Data([0x00, 0x00, 0x01])
-    private var startCode = MpegTsPacketizedElementaryStream.startCode
-    private var streamId: UInt8 = 0
-    private var packetLength: UInt16 = 0
+    private let streamId: UInt8
+    private let packetLength: UInt16
     private var optionalHeader = OptionalHeader()
     var data = Data()
 
@@ -175,6 +174,8 @@ struct MpegTsPacketizedElementaryStream {
         let length = data.count + optionalHeader.encode().count
         if length < Int(UInt16.max) {
             packetLength = UInt16(length)
+        } else {
+            packetLength = 0
         }
         self.streamId = streamId
     }
@@ -216,14 +217,15 @@ struct MpegTsPacketizedElementaryStream {
         let length = data.count + optionalHeader.encode().count
         if length < Int(UInt16.max) {
             packetLength = UInt16(length)
+        } else {
+            packetLength = 0
         }
         self.streamId = streamId
     }
 
     init(data: Data) throws {
         let reader = ByteReader(data: data)
-        startCode = try reader.readBytes(3)
-        if startCode != MpegTsPacketizedElementaryStream.startCode {
+        if try reader.readBytes(3) != MpegTsPacketizedElementaryStream.startCode {
             throw "Bad PES start code"
         }
         streamId = try reader.readUInt8()
@@ -240,7 +242,7 @@ struct MpegTsPacketizedElementaryStream {
 
     private func encode() -> Data {
         let writer = ByteWriter()
-        writer.writeBytes(startCode)
+        writer.writeBytes(MpegTsPacketizedElementaryStream.startCode)
         writer.writeUInt8(streamId)
         writer.writeUInt16(packetLength)
         writer.writeBytes(optionalHeader.encode())
