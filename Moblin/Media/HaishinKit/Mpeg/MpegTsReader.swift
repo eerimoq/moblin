@@ -351,13 +351,25 @@ class MpegTsReader {
         guard let formatDescription = getAacFormatDescription(packetId, packetizedElementaryStream) else {
             return nil
         }
+        var sampleSizes: [Int] = []
+        let blockBuffer = packetizedElementaryStream.data.makeBlockBuffer(advancedBy: AdtsHeader.size)
+        let reader = ADTSReader(data: packetizedElementaryStream.data)
+        var iterator = reader.makeIterator()
+        while let dataLength = iterator.next() {
+            sampleSizes.append(dataLength)
+        }
+        guard !sampleSizes.isEmpty else {
+            return nil
+        }
         guard let (sampleBuffer,
                    firstReceivedPresentationTimeStamp,
-                   previousReceivedPresentationTimeStamp) = packetizedElementaryStream.makeAacAudioSampleBuffer(
+                   previousReceivedPresentationTimeStamp) = packetizedElementaryStream.makeSampleBuffer(
             getBasePresentationTimeStamp(),
             firstReceivedPresentationTimeStamp,
             previousReceivedPresentationTimeStamps[packetId],
-            formatDescription
+            formatDescription,
+            blockBuffer,
+            &sampleSizes
         ) else {
             return nil
         }
@@ -382,13 +394,17 @@ class MpegTsReader {
             handleVideoFormatDescription(formatDescription)
         }
         removeNalUnitStartCodes(&packetizedElementaryStream.data, nalUnits)
+        let blockBuffer = packetizedElementaryStream.data.makeBlockBuffer()
+        var sampleSizes = [blockBuffer?.dataLength ?? 0]
         guard let (sampleBuffer,
                    firstReceivedPresentationTimeStamp,
-                   previousReceivedPresentationTimeStamp) = packetizedElementaryStream.makeVideoSampleBuffer(
+                   previousReceivedPresentationTimeStamp) = packetizedElementaryStream.makeSampleBuffer(
             getBasePresentationTimeStamp(),
             firstReceivedPresentationTimeStamp,
             previousReceivedPresentationTimeStamps[packetId],
-            formatDescriptions[packetId]
+            formatDescriptions[packetId],
+            blockBuffer,
+            &sampleSizes
         ) else {
             return nil
         }
@@ -427,13 +443,17 @@ class MpegTsReader {
             }
         }
         removeNalUnitStartCodes(&packetizedElementaryStream.data, nalUnits)
+        let blockBuffer = packetizedElementaryStream.data.makeBlockBuffer()
+        var sampleSizes = [blockBuffer?.dataLength ?? 0]
         guard let (sampleBuffer,
                    firstReceivedPresentationTimeStamp,
-                   previousReceivedPresentationTimeStamp) = packetizedElementaryStream.makeVideoSampleBuffer(
+                   previousReceivedPresentationTimeStamp) = packetizedElementaryStream.makeSampleBuffer(
             getBasePresentationTimeStamp(),
             firstReceivedPresentationTimeStamp,
             previousReceivedPresentationTimeStamps[packetId],
-            formatDescriptions[packetId]
+            formatDescriptions[packetId],
+            blockBuffer,
+            &sampleSizes
         ) else {
             return nil
         }
