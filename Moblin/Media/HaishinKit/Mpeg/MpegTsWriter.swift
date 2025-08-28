@@ -343,7 +343,7 @@ extension MpegTsWriter: AudioCodecDelegate {
             data.streamType = .adtsAac
         case kAudioFormatOpus:
             data.streamType = .mpeg2PacketizedData
-            data.appendDescriptor(tag: .registration, data: "Opus".utf8Data)
+            data.appendDescriptor(tag: .registration, data: elementaryStreamDescriptiorRegistrationOpus)
             data.appendDescriptor(tag: .extension, data: Data([0x80, UInt8(format.channelCount)]))
         default:
             logger.info("ts-writer: Unsupported audio format.")

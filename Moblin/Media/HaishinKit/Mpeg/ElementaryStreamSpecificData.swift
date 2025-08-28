@@ -20,6 +20,8 @@ enum ElementaryStreamDescriptiorTag: UInt8 {
     case `extension` = 0x7F
 }
 
+let elementaryStreamDescriptiorRegistrationOpus = "Opus".utf8Data
+
 struct ElementaryStreamSpecificData {
     static let fixedHeaderSize = 5
     var streamType: ElementaryStreamType = .unspecific
