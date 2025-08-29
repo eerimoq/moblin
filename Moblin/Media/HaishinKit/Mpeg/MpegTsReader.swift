@@ -68,8 +68,8 @@ class MpegTsReader {
 
     private func handleProgramMedia(packet: MpegTsPacket, data: ElementaryStreamSpecificData) throws {
         if packet.payloadUnitStartIndicator {
-            if let (streamType, sampleBuffer) = tryMakeSampleBuffer(packetId: packet.id, data: data) {
-                handleSampleBuffer(streamType, sampleBuffer)
+            if let (isAudio, sampleBuffer) = tryMakeSampleBuffer(packetId: packet.id, data: data) {
+                handleSampleBuffer(isAudio, sampleBuffer)
             }
             packetizedElementaryStreams[packet.id] = try MpegTsPacketizedElementaryStream(data: packet.payload)
         } else {
@@ -77,11 +77,10 @@ class MpegTsReader {
         }
     }
 
-    private func handleSampleBuffer(_ streamType: ElementaryStreamType, _ sampleBuffer: CMSampleBuffer) {
-        switch streamType {
-        case .adtsAac:
+    private func handleSampleBuffer(_ isAudio: Bool, _ sampleBuffer: CMSampleBuffer) {
+        if isAudio {
             handleAudioSampleBuffer(sampleBuffer)
-        default:
+        } else {
             handleVideoSampleBuffer(sampleBuffer)
         }
     }
@@ -227,9 +226,7 @@ class MpegTsReader {
         videoDecoder?.startRunning(formatDescription: formatDescription)
     }
 
-    private func tryMakeSampleBuffer(packetId: UInt16,
-                                     data: ElementaryStreamSpecificData) -> (ElementaryStreamType, CMSampleBuffer)?
-    {
+    private func tryMakeSampleBuffer(packetId: UInt16, data: ElementaryStreamSpecificData) -> (Bool, CMSampleBuffer)? {
         guard var packetizedElementaryStream = packetizedElementaryStreams[packetId] else {
             return nil
         }
@@ -238,58 +235,35 @@ class MpegTsReader {
         }
         switch data.streamType {
         case .mpeg2PacketizedData:
-            return makeSampleBufferMpeg2PacketizedData(
-                packetId: packetId,
-                data: data,
-                packetizedElementaryStream: &packetizedElementaryStream
-            )
+            return makeSampleBufferMpeg2PacketizedData(packetId, data, &packetizedElementaryStream)
         case .adtsAac:
-            return makeSampleBufferAac(
-                packetId: packetId,
-                data: data,
-                packetizedElementaryStream: &packetizedElementaryStream
-            )
+            return makeSampleBufferAac(packetId, &packetizedElementaryStream)
         case .h264:
-            return makeSampleBufferH264(
-                packetId: packetId,
-                data: data,
-                packetizedElementaryStream: &packetizedElementaryStream
-            )
+            return makeSampleBufferH264(packetId, &packetizedElementaryStream)
         case .h265:
-            return makeSampleBufferH265(
-                packetId: packetId,
-                data: data,
-                packetizedElementaryStream: &packetizedElementaryStream
-            )
+            return makeSampleBufferH265(packetId, &packetizedElementaryStream)
         default:
             return nil
         }
     }
 
     private func makeSampleBufferMpeg2PacketizedData(
-        packetId: UInt16,
-        data: ElementaryStreamSpecificData,
-        packetizedElementaryStream: inout MpegTsPacketizedElementaryStream
-    )
-        -> (ElementaryStreamType, CMSampleBuffer)?
-    {
+        _ packetId: UInt16,
+        _ data: ElementaryStreamSpecificData,
+        _ packetizedElementaryStream: inout MpegTsPacketizedElementaryStream
+    ) -> (Bool, CMSampleBuffer)? {
         switch data.getDescriptor(tag: .registration) {
         case elementaryStreamDescriptiorRegistrationOpus:
-            return makeSampleBufferMpeg2PacketizedDataOpus(packetId: packetId,
-                                                           data: data,
-                                                           packetizedElementaryStream: &packetizedElementaryStream)
+            return makeSampleBufferMpeg2PacketizedDataOpus(packetId, &packetizedElementaryStream)
         default:
             return nil
         }
     }
 
     private func makeSampleBufferMpeg2PacketizedDataOpus(
-        packetId: UInt16,
-        data: ElementaryStreamSpecificData,
-        packetizedElementaryStream: inout MpegTsPacketizedElementaryStream
-    )
-        -> (ElementaryStreamType, CMSampleBuffer)?
-    {
+        _ packetId: UInt16,
+        _ packetizedElementaryStream: inout MpegTsPacketizedElementaryStream
+    ) -> (Bool, CMSampleBuffer)? {
         let reader = ByteReader(data: packetizedElementaryStream.data)
         var length = 0
         do {
@@ -316,13 +290,13 @@ class MpegTsReader {
             return nil
         }
         sampleBuffer.isSync = true
-        return (data.streamType, sampleBuffer)
+        return (true, sampleBuffer)
     }
 
-    private func getAacFormatDescription(_ packetId: UInt16,
-                                         _ packetizedElementaryStream: MpegTsPacketizedElementaryStream)
-        -> CMFormatDescription?
-    {
+    private func getAacFormatDescription(
+        _ packetId: UInt16,
+        _ packetizedElementaryStream: MpegTsPacketizedElementaryStream
+    ) -> CMFormatDescription? {
         guard let adtsHeader = AdtsHeader(data: packetizedElementaryStream.data) else {
             return nil
         }
@@ -338,11 +312,10 @@ class MpegTsReader {
         return formatDescription
     }
 
-    private func makeSampleBufferAac(packetId: UInt16,
-                                     data: ElementaryStreamSpecificData,
-                                     packetizedElementaryStream: inout MpegTsPacketizedElementaryStream)
-        -> (ElementaryStreamType, CMSampleBuffer)?
-    {
+    private func makeSampleBufferAac(
+        _ packetId: UInt16,
+        _ packetizedElementaryStream: inout MpegTsPacketizedElementaryStream
+    ) -> (Bool, CMSampleBuffer)? {
         guard let formatDescription = getAacFormatDescription(packetId, packetizedElementaryStream) else {
             return nil
         }
@@ -366,14 +339,13 @@ class MpegTsReader {
             return nil
         }
         sampleBuffer.isSync = true
-        return (data.streamType, sampleBuffer)
+        return (true, sampleBuffer)
     }
 
-    private func makeSampleBufferH264(packetId: UInt16,
-                                      data: ElementaryStreamSpecificData,
-                                      packetizedElementaryStream: inout MpegTsPacketizedElementaryStream)
-        -> (ElementaryStreamType, CMSampleBuffer)?
-    {
+    private func makeSampleBufferH264(
+        _ packetId: UInt16,
+        _ packetizedElementaryStream: inout MpegTsPacketizedElementaryStream
+    ) -> (Bool, CMSampleBuffer)? {
         let nalUnits = getNalUnits(data: packetizedElementaryStream.data)
         let units = readH264NalUnits(data: packetizedElementaryStream.data,
                                      nalUnits: nalUnits,
@@ -396,14 +368,13 @@ class MpegTsReader {
             return nil
         }
         sampleBuffer.isSync = units.contains { $0.header.type == .idr }
-        return (data.streamType, sampleBuffer)
+        return (false, sampleBuffer)
     }
 
-    private func makeSampleBufferH265(packetId: UInt16,
-                                      data: ElementaryStreamSpecificData,
-                                      packetizedElementaryStream: inout MpegTsPacketizedElementaryStream)
-        -> (ElementaryStreamType, CMSampleBuffer)?
-    {
+    private func makeSampleBufferH265(
+        _ packetId: UInt16,
+        _ packetizedElementaryStream: inout MpegTsPacketizedElementaryStream
+    ) -> (Bool, CMSampleBuffer)? {
         let nalUnits = getNalUnits(data: packetizedElementaryStream.data)
         let units = readH265NalUnits(data: packetizedElementaryStream.data,
                                      nalUnits: nalUnits,
@@ -440,7 +411,7 @@ class MpegTsReader {
             return nil
         }
         sampleBuffer.isSync = units.contains { $0.header.type == .sps }
-        return (data.streamType, sampleBuffer)
+        return (false, sampleBuffer)
     }
 
     private func makeSampleBuffer(
