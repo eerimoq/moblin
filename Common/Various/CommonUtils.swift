@@ -286,10 +286,8 @@ private var speedFormatter: MeasurementFormatter {
 }
 
 func format(speed: Double) -> String {
-    return speedFormatter.string(from: NSMeasurement(
-        doubleValue: max(speed, 0),
-        unit: UnitSpeed.metersPerSecond
-    ) as Measurement<Unit>)
+    let measurement = Measurement(value: max(speed, 0), unit: UnitSpeed.metersPerSecond)
+    return speedFormatter.string(from: measurement)
 }
 
 private var distanceFormatter: LengthFormatter {

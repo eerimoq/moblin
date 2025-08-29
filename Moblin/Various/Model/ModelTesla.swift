@@ -116,7 +116,10 @@ extension Model {
             }
             if teslaDrive != "P" {
                 if case let .speed(speed) = tesla.driveState.optionalSpeed {
-                    teslaDrive += " \(speed) mph"
+                    let metersPerSecond = Measurement(value: Double(speed), unit: UnitSpeed.milesPerHour)
+                        .converted(to: UnitSpeed.metersPerSecond)
+                        .value
+                    teslaDrive += " \(format(speed: metersPerSecond))"
                 }
                 if case let .power(power) = tesla.driveState.optionalPower {
                     teslaDrive += " \(power) kW"
