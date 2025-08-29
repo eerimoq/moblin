@@ -107,12 +107,11 @@ struct DebugSettingsView: View {
                             .frame(width: 40)
                     }
                 }
-                Toggle("New SRT", isOn: $debug.newSrt)
-                    .onChange(of: debug.newSrt) { _ in
+                Toggle("Old SRT", isOn: $debug.oldSrt)
+                    .onChange(of: debug.oldSrt) { _ in
                         model.reloadStream()
                         model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
                     }
-
             } header: {
                 Text("Experimental")
             }

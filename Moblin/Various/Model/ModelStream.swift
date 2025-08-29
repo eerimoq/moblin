@@ -383,7 +383,7 @@ extension Model {
             timecodesEnabled: isTimecodesEnabled(),
             builtinAudioDelay: database.debug.builtinAudioAndVideoDelay,
             destinations: stream.multiStreaming.destinations,
-            newSrt: database.debug.newSrt
+            newSrt: !database.debug.oldSrt
         )
         updateTorch()
         updateMute()
