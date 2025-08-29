@@ -161,42 +161,6 @@ struct MpegTsAudioConfig: Equatable {
         channel = ChannelConfiguration(rawValue: UInt8(streamBasicDescription.mChannelsPerFrame))!
     }
 
-    func makeHeader(_ length: Int) -> Data {
-        switch type {
-        case .opus:
-            return makeOpusHeader(length)
-        default:
-            return makeAacHeader(length)
-        }
-    }
-
-    private func makeAacHeader(_ length: Int) -> Data {
-        let size = 7
-        let fullSize = size + length
-        var adts = Data(count: size)
-        adts[0] = 0xFF
-        adts[1] = 0xF9
-        adts[2] = (type.rawValue - 1) << 6 | (frequency.rawValue << 2) | (channel.rawValue >> 2)
-        adts[3] = (channel.rawValue & 3) << 6 | UInt8(fullSize >> 11)
-        adts[4] = UInt8((fullSize & 0x7FF) >> 3)
-        adts[5] = (UInt8(fullSize & 7) << 5) + 0x1F
-        adts[6] = 0xFC
-        return adts
-    }
-
-    private func makeOpusHeader(_ length: Int) -> Data {
-        var header = Data(count: 2)
-        header.withUnsafeMutableBytes { pointer in
-            pointer.writeUInt16(0x3FF << 5, offset: 0)
-        }
-        var length = length
-        while length >= 0 {
-            header.append(length < 255 ? UInt8(length) : 255)
-            length -= 255
-        }
-        return header
-    }
-
     func encode() -> Data {
         var data = Data(count: 2)
         data[0] = type.rawValue << 3 | (frequency.rawValue >> 1)

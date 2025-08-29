@@ -253,37 +253,72 @@ class MpegTsReader {
         _ packetizedElementaryStream: inout MpegTsPacketizedElementaryStream
     ) -> (Bool, CMSampleBuffer)? {
         switch data.getDescriptor(tag: .registration) {
-        case elementaryStreamDescriptiorRegistrationOpus:
-            return makeSampleBufferMpeg2PacketizedDataOpus(packetId, &packetizedElementaryStream)
+        case ElementaryStreamDescriptiorRegistration.opus:
+            return makeSampleBufferMpeg2PacketizedDataOpus(packetId, data, &packetizedElementaryStream)
         default:
             return nil
         }
     }
 
-    private func makeSampleBufferMpeg2PacketizedDataOpus(
-        _ packetId: UInt16,
-        _ packetizedElementaryStream: inout MpegTsPacketizedElementaryStream
-    ) -> (Bool, CMSampleBuffer)? {
-        let reader = ByteReader(data: packetizedElementaryStream.data)
-        var length = 0
-        do {
-            _ = try reader.readUInt16()
-            while true {
-                let value = try reader.readUInt8()
-                length += Int(value)
-                if value < 255 {
-                    break
-                }
-            }
-        } catch {
+    private func getOpusFormatDescription(_ packetId: UInt16,
+                                          _ data: ElementaryStreamSpecificData) -> CMFormatDescription?
+    {
+        guard let extensionData = data.getDescriptor(tag: .extension) else {
             return nil
         }
-        let blockBuffer = packetizedElementaryStream.data.makeBlockBuffer(advancedBy: reader.position)
+        guard extensionData.count == 2, extensionData[0] == 0x80 else {
+            return nil
+        }
+        let channels = extensionData[1]
+        var formatDescription: CMAudioFormatDescription?
+        var audioStreamBasicDescription = AudioStreamBasicDescription(
+            mSampleRate: 48000,
+            mFormatID: kAudioFormatOpus,
+            mFormatFlags: 0,
+            mBytesPerPacket: 0,
+            mFramesPerPacket: 960,
+            mBytesPerFrame: 0,
+            mChannelsPerFrame: UInt32(channels),
+            mBitsPerChannel: 0,
+            mReserved: 0
+        )
+        guard CMAudioFormatDescriptionCreate(
+            allocator: kCFAllocatorDefault,
+            asbd: &audioStreamBasicDescription,
+            layoutSize: 0,
+            layout: nil,
+            magicCookieSize: 0,
+            magicCookie: nil,
+            extensions: nil,
+            formatDescriptionOut: &formatDescription
+        ) == noErr else {
+            return nil
+        }
+        guard let formatDescription else {
+            return nil
+        }
+        formatDescriptions[packetId] = formatDescription
+        handleAudioFormatDescription(formatDescription)
+        return formatDescription
+    }
+
+    private func makeSampleBufferMpeg2PacketizedDataOpus(
+        _ packetId: UInt16,
+        _ data: ElementaryStreamSpecificData,
+        _ packetizedElementaryStream: inout MpegTsPacketizedElementaryStream
+    ) -> (Bool, CMSampleBuffer)? {
+        guard let formatDescription = getOpusFormatDescription(packetId, data) else {
+            return nil
+        }
+        guard let (length, payloadOffset) = OpusHeader.decode(data: packetizedElementaryStream.data) else {
+            return nil
+        }
+        let blockBuffer = packetizedElementaryStream.data.makeBlockBuffer(advancedBy: payloadOffset)
         var sampleSizes = [length]
         guard let sampleBuffer = makeSampleBuffer(
             packetId,
             packetizedElementaryStream.optionalHeader,
-            formatDescriptions[packetId],
+            formatDescription,
             blockBuffer,
             &sampleSizes
         ) else {

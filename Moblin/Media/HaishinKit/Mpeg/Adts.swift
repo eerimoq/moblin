@@ -34,6 +34,20 @@ struct AdtsHeader: Equatable {
         }
     }
 
+    static func encode(type: UInt8, frequency: UInt8, channels: UInt8, length: Int) -> Data {
+        let size = AdtsHeader.size
+        let fullSize = size + length
+        var adts = Data(count: size)
+        adts[0] = AdtsHeader.sync
+        adts[1] = 0xF9
+        adts[2] = (type - 1) << 6 | (frequency << 2) | (channels >> 2)
+        adts[3] = (channels & 3) << 6 | UInt8(fullSize >> 11)
+        adts[4] = UInt8((fullSize & 0x7FF) >> 3)
+        adts[5] = (UInt8(fullSize & 7) << 5) + 0x1F
+        adts[6] = 0xFC
+        return adts
+    }
+
     func isSameFormatDescription(other: AdtsHeader?) -> Bool {
         guard let other else {
             return false

@@ -332,6 +332,26 @@ class MpegTsWriter {
     private func addVideoSpecificDatas(data: ElementaryStreamSpecificData) {
         addStreamSpecificDatasToProgramMappingTable(packetId: MpegTsWriter.videoPacketId, data: data)
     }
+
+    private func makeAudioHeader(_ config: MpegTsAudioConfig, _ length: Int) -> Data {
+        switch config.type {
+        case .opus:
+            return makeAudioOpusHeader(length)
+        default:
+            return makeAudioAacHeader(config, length)
+        }
+    }
+
+    private func makeAudioAacHeader(_ config: MpegTsAudioConfig, _ length: Int) -> Data {
+        return AdtsHeader.encode(type: config.type.rawValue,
+                                 frequency: config.frequency.rawValue,
+                                 channels: config.channel.rawValue,
+                                 length: length)
+    }
+
+    private func makeAudioOpusHeader(_ length: Int) -> Data {
+        return OpusHeader.encode(length: length)
+    }
 }
 
 extension MpegTsWriter: AudioCodecDelegate {
@@ -343,7 +363,7 @@ extension MpegTsWriter: AudioCodecDelegate {
             data.streamType = .adtsAac
         case kAudioFormatOpus:
             data.streamType = .mpeg2PacketizedData
-            data.appendDescriptor(tag: .registration, data: elementaryStreamDescriptiorRegistrationOpus)
+            data.appendDescriptor(tag: .registration, data: ElementaryStreamDescriptiorRegistration.opus)
             data.appendDescriptor(tag: .extension, data: Data([0x80, UInt8(format.channelCount)]))
         default:
             logger.info("ts-writer: Unsupported audio format.")
@@ -360,7 +380,7 @@ extension MpegTsWriter: AudioCodecDelegate {
             return
         }
         let length = Int(audioBuffer.byteLength)
-        var data = audioConfig.makeHeader(length)
+        var data = makeAudioHeader(audioConfig, length)
         data.append(audioBuffer.data.assumingMemoryBound(to: UInt8.self), count: length)
         let packetizedElementaryStream = MpegTsPacketizedElementaryStream(
             streamId: MpegTsWriter.audioStreamId,
