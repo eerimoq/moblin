@@ -6937,7 +6937,7 @@ class Database: Codable, ObservableObject {
     var mics: SettingsMics = .init()
     var debug: SettingsDebug = .init()
     var quickButtonsGeneral: SettingsQuickButtons = .init()
-    var quickButtons: [SettingsQuickButton] = []
+    @Published var quickButtons: [SettingsQuickButton] = []
     var rtmpServer: SettingsRtmpServer = .init()
     @Published var networkInterfaceNames: [SettingsNetworkInterfaceName] = []
     @Published var lowBitrateWarning: Bool = true
