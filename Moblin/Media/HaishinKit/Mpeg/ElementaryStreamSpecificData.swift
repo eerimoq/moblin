@@ -28,7 +28,7 @@ struct ElementaryStreamSpecificData {
     static let fixedHeaderSize = 5
     var streamType: ElementaryStreamType = .unspecific
     var elementaryPacketId: UInt16 = 0
-    var esDescriptors = Data()
+    private var esDescriptors = Data()
 
     init() {}
 
