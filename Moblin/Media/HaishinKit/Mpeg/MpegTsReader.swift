@@ -129,12 +129,11 @@ class MpegTsReader {
         defer {
             latestAudioBufferPresentationTimeStamp = presentationTimeStamp
         }
-        guard let latestAudioBufferPresentationTimeStamp else {
+        guard let latestAudioBufferPresentationTimeStamp, let pcmAudioBuffer else {
             return
         }
-        // Assume 1024 samples/buffer at 48 kHz for now
-        let samplesPerBuffer: UInt32 = 1024
-        let sampleFrequency = 48000.0
+        let samplesPerBuffer = pcmAudioBuffer.frameLength
+        let sampleFrequency = pcmAudioBuffer.format.sampleRate
         let numberOfGapBuffers = calcNumberOfGapBuffers(
             presentationTimeStamp,
             latestAudioBufferPresentationTimeStamp,
