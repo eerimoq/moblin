@@ -60,7 +60,7 @@ struct StreamSrtSettingsView: View {
                 } label: {
                     Text("Connection priorities")
                 }
-                if debug.oldSrt {
+                if !debug.newSrt {
                     Toggle("Max bandwidth follows input", isOn: Binding(get: {
                         stream.srt.maximumBandwidthFollowInput!
                     }, set: { value in
