@@ -25,8 +25,8 @@ struct HevcNalUnit: NalUnit {
     let header: HevcNalUnitHeader
     let payload: HevcNalUnitPayload
 
-    init?(_ data: Data) {
-        let reader = NalUnitReader(data: data)
+    init?(data: Data, offset: Int) {
+        let reader = NalUnitReader(data: data, offset: offset)
         do {
             header = try HevcNalUnitHeader(reader: reader)
             switch header.type {

@@ -5,8 +5,9 @@ final class NalUnitReader {
     private var byteOffset = 0
     private var bitOffset = 7
 
-    init(data: Data) {
+    init(data: Data, offset: Int = 0) {
         self.data = data
+        byteOffset = offset
     }
 
     func isByteAligned() -> Bool {

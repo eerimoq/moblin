@@ -62,7 +62,7 @@ func removeNalUnitStartCodes(_ data: inout Data, _ nalUnits: [NalUnitInfo]) {
 }
 
 protocol NalUnit {
-    init?(_ data: Data)
+    init?(data: Data, offset: Int)
 }
 
 func readH264NalUnits(data: Data, nalUnits: [NalUnitInfo], filter: [AvcNalUnitType]) -> [AvcNalUnit] {
@@ -85,7 +85,9 @@ private func readNalUnits<TNalUnit: NalUnit>(_ data: Data,
     for nalUnit in nalUnits {
         let dataOffset = nalUnit.dataOffset()
         if filter(data[dataOffset]) {
-            if let nalUnit = TNalUnit(data.subdata(in: dataOffset ..< dataOffset + nalUnit.dataLength)) {
+            if let nalUnit = TNalUnit(data: data.subdata(in: dataOffset ..< dataOffset + nalUnit.dataLength),
+                                      offset: 0)
+            {
                 units.append(nalUnit)
             }
         }

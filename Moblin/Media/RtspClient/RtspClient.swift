@@ -186,10 +186,10 @@ private class Sdp {
         guard let pps = Data(base64Encoded: ppsBase64) else {
             throw "Failed to decode PPS."
         }
-        guard let spsNalUnit = AvcNalUnit(sps) else {
+        guard let spsNalUnit = AvcNalUnit(data: sps, offset: 0) else {
             throw "Failed to parse SPS NAL unit."
         }
-        guard let ppsNalUnit = AvcNalUnit(pps) else {
+        guard let ppsNalUnit = AvcNalUnit(data: pps, offset: 0) else {
             throw "Failed to parse PPS NAL unit."
         }
         video.codec = .h264(SdpVideoH264(sps: spsNalUnit, pps: ppsNalUnit))
@@ -223,7 +223,7 @@ private class Sdp {
         guard let value = Data(base64Encoded: value) else {
             throw "Failed to decode VPS, SPS or PPS."
         }
-        guard let nalUnit = HevcNalUnit(value) else {
+        guard let nalUnit = HevcNalUnit(data: value, offset: 0) else {
             throw "Failed to parse VPS, SPS or PPS unit."
         }
         return nalUnit
@@ -351,13 +351,7 @@ private class RtpVideoProcessor: RtpProcessor {
     }
 
     func tryDecodeFrame() {
-        guard !data.isEmpty else {
-            return
-        }
-        defer {
-            data.removeAll(keepingCapacity: true)
-        }
-        guard let client else {
+        guard let client, data.count > 4 else {
             return
         }
         let count = UInt32(data.count - 4)
@@ -432,7 +426,7 @@ private class RtpProcessorVideoH264: RtpVideoProcessor {
     }
 
     private func processBufferTypeSingle(packet: Data, timestamp: Int64) throws {
-        tryDecodeFrame()
+        tryDecode()
         startNewFrame(timestamp: timestamp, first: packet[12...])
     }
 
@@ -443,11 +437,26 @@ private class RtpProcessorVideoH264: RtpVideoProcessor {
         let nalType = fuHeader & 0x1F
         let nal = fuIndicator & 0xE0 | nalType
         if startBit == 1 {
-            tryDecodeFrame()
+            tryDecode()
             startNewFrame(timestamp: timestamp, first: Data([nal]), second: packet[14...])
         } else {
             data += packet[14...]
         }
+    }
+
+    private func tryDecode() {
+        guard data.count > 4 else {
+            return
+        }
+        switch AvcNalUnit(data: data, offset: 4)?.header.type {
+        case .idr:
+            break
+        case .slice:
+            break
+        default:
+            return
+        }
+        tryDecodeFrame()
     }
 }
 
@@ -525,7 +534,6 @@ private class Rtp {
         guard sequenceNumber == nextExpectedSequenceNumber else {
             throw "Wrong sequence number"
         }
-
         try processor?.process(packet: packet, timestamp: updateTimestamp(timestamp: timestamp))
         nextExpectedSequenceNumber! &+= 1
     }
