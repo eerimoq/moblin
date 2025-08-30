@@ -426,7 +426,7 @@ private class RtpProcessorVideoH264: RtpVideoProcessor {
     }
 
     private func processBufferTypeSingle(packet: Data, timestamp: Int64) throws {
-        tryDecode()
+        decodeFrame()
         startNewFrame(timestamp: timestamp, first: packet[12...])
     }
 
@@ -437,14 +437,14 @@ private class RtpProcessorVideoH264: RtpVideoProcessor {
         let nalType = fuHeader & 0x1F
         let nal = fuIndicator & 0xE0 | nalType
         if startBit == 1 {
-            tryDecode()
+            decodeFrame()
             startNewFrame(timestamp: timestamp, first: Data([nal]), second: packet[14...])
         } else {
             data += packet[14...]
         }
     }
 
-    private func tryDecode() {
+    private func decodeFrame() {
         guard data.count > 4 else {
             return
         }
@@ -477,7 +477,7 @@ private class RtpProcessorVideoH265: RtpVideoProcessor {
     }
 
     private func processBufferTypeSingle(packet: Data, timestamp: Int64) throws {
-        tryDecodeFrame()
+        decodeFrame()
         startNewFrame(timestamp: timestamp, first: packet[12...])
     }
 
@@ -490,18 +490,20 @@ private class RtpProcessorVideoH265: RtpVideoProcessor {
         let nalType = fuHeader & 0x3F
         let nal = (packet[12] & 0x81) | (nalType << 1)
         if startBit == 1 {
-            tryDecodeFrame()
+            decodeFrame()
             startNewFrame(timestamp: timestamp, first: Data([nal, packet[13]]), second: packet[15...])
         } else {
             data += packet[15...]
         }
     }
+
+    private func decodeFrame() {
+        tryDecodeFrame()
+    }
 }
 
 private class Rtp {
     private var nextExpectedSequenceNumber: UInt16?
-    private var previousTimestamp: UInt32 = 0
-    private var timestampUpper: UInt64 = 1 << 32
     var processor: RtpProcessor?
     weak var client: RtspClient?
     private let wrappingTimestamp = WrappingTimestamp(name: "RTP", maximumTimestamp: CMTime(seconds: 0x1_0000_0000))
