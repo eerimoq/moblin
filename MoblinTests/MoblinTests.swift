@@ -16,6 +16,7 @@ struct MoblinTests {
         #expect(timestamp.update(CMTime(seconds: 1000)).seconds == 2024)
         #expect(timestamp.update(CMTime(seconds: 0)).seconds == 2048)
         #expect(timestamp.update(CMTime(seconds: 1022)).seconds == 2046)
+        #expect(timestamp.update(CMTime(seconds: 1022)).seconds == 2046)
     }
 
 }

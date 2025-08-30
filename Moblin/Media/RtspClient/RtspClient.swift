@@ -317,13 +317,13 @@ extension URL {
 }
 
 private class RtpProcessor {
-    func process(packet _: Data, timestamp _: UInt64) throws {
+    func process(packet _: Data, timestamp _: Int64) throws {
         throw "Not implemented"
     }
 }
 
 private class RtpVideoProcessor: RtpProcessor {
-    private var timestamp: UInt64 = 0
+    private var timestamp: Int64 = 0
     var data = Data()
     private var basePresentationTimeStamp: Double = -1
     private var firstPresentationTimeStamp: Double = -1
@@ -340,7 +340,7 @@ private class RtpVideoProcessor: RtpProcessor {
         decoder.startRunning(formatDescription: formatDescription)
     }
 
-    func startNewFrame(timestamp: UInt64, first: Data, second: Data? = nil) {
+    func startNewFrame(timestamp: Int64, first: Data, second: Data? = nil) {
         self.timestamp = timestamp
         data.removeAll(keepingCapacity: true)
         data += nalUnitStartCode
@@ -416,7 +416,7 @@ extension RtpVideoProcessor: VideoDecoderDelegate {
 }
 
 private class RtpProcessorVideoH264: RtpVideoProcessor {
-    override func process(packet: Data, timestamp: UInt64) throws {
+    override func process(packet: Data, timestamp: Int64) throws {
         guard packet.count >= 14 else {
             throw "Packet shorter than 14 bytes: \(packet)"
         }
@@ -431,12 +431,12 @@ private class RtpProcessorVideoH264: RtpVideoProcessor {
         }
     }
 
-    private func processBufferTypeSingle(packet: Data, timestamp: UInt64) throws {
+    private func processBufferTypeSingle(packet: Data, timestamp: Int64) throws {
         tryDecodeFrame()
         startNewFrame(timestamp: timestamp, first: packet[12...])
     }
 
-    private func processBufferTypeFuA(packet: Data, timestamp: UInt64) throws {
+    private func processBufferTypeFuA(packet: Data, timestamp: Int64) throws {
         let fuIndicator = packet[12]
         let fuHeader = packet[13]
         let startBit = fuHeader >> 7
@@ -452,7 +452,7 @@ private class RtpProcessorVideoH264: RtpVideoProcessor {
 }
 
 private class RtpProcessorVideoH265: RtpVideoProcessor {
-    override func process(packet: Data, timestamp: UInt64) throws {
+    override func process(packet: Data, timestamp: Int64) throws {
         guard packet.count >= 14 else {
             throw "Packet shorter than 14 bytes: \(packet)"
         }
@@ -467,12 +467,12 @@ private class RtpProcessorVideoH265: RtpVideoProcessor {
         }
     }
 
-    private func processBufferTypeSingle(packet: Data, timestamp: UInt64) throws {
+    private func processBufferTypeSingle(packet: Data, timestamp: Int64) throws {
         tryDecodeFrame()
         startNewFrame(timestamp: timestamp, first: packet[12...])
     }
 
-    private func processBufferTypeFu(packet: Data, timestamp: UInt64) throws {
+    private func processBufferTypeFu(packet: Data, timestamp: Int64) throws {
         guard packet.count >= 15 else {
             throw "Packet shorter than 15 bytes: \(packet)"
         }
@@ -495,6 +495,7 @@ private class Rtp {
     private var timestampUpper: UInt64 = 1 << 32
     var processor: RtpProcessor?
     weak var client: RtspClient?
+    private let wrappingTimestamp = WrappingTimestamp(name: "RTP", maximumTimestamp: CMTime(seconds: 0x1_0000_0000))
 
     func handlePacket(packet: Data) throws {
         guard packet.count >= 12 else {
@@ -529,25 +530,8 @@ private class Rtp {
         nextExpectedSequenceNumber! &+= 1
     }
 
-    private func updateTimestamp(timestamp: UInt32) -> UInt64 {
-        if timestamp >= previousTimestamp {
-            if timestamp - previousTimestamp < UInt32.max / 2 {
-                defer {
-                    previousTimestamp = timestamp
-                }
-                return timestampUpper + UInt64(timestamp)
-            } else {
-                return timestampUpper - (1 << 32) + UInt64(timestamp)
-            }
-        } else {
-            defer {
-                previousTimestamp = timestamp
-            }
-            if previousTimestamp - timestamp > UInt32.max / 2 {
-                timestampUpper += 1 << 32
-            }
-            return timestampUpper + UInt64(timestamp)
-        }
+    private func updateTimestamp(timestamp: UInt32) -> Int64 {
+        return wrappingTimestamp.update(CMTime(value: Int64(timestamp), timescale: 1)).value
     }
 }
 
