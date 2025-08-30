@@ -2452,22 +2452,14 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func getVideoMirroredOnStream() -> Bool {
         if cameraPosition == .front {
-            if stream.portrait {
-                return true
-            } else {
-                return database.mirrorFrontCameraOnStream
-            }
+            return database.mirrorFrontCameraOnStream
         }
         return false
     }
 
     private func getVideoMirroredOnScreen() -> Bool {
         if cameraPosition == .front {
-            if stream.portrait {
-                return false
-            } else {
-                return !database.mirrorFrontCameraOnStream
-            }
+            return !database.mirrorFrontCameraOnStream
         }
         return false
     }
