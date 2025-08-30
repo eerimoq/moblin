@@ -42,7 +42,7 @@ struct HevcNalUnit: NalUnit {
                 payload = .unspec
             }
         } catch {
-            logger.debug("Failed to decode NAL unit with error: \(error)")
+            logger.debug("hevc: Failed to decode NAL unit with error: \(error)")
             return nil
         }
     }

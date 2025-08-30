@@ -39,7 +39,7 @@ struct AvcNalUnit: NalUnit {
                 payload = .unspec
             }
         } catch {
-            logger.debug("Failed to decode NAL unit with error: \(error)")
+            logger.debug("avc: Failed to decode NAL unit with error: \(error)")
             return nil
         }
     }
