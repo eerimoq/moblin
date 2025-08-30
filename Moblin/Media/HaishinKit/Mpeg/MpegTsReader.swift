@@ -28,6 +28,8 @@ class MpegTsReader {
     private let targetLatency: Double
     weak var delegate: MpegTsReaderDelegate?
     private let decoderQueue: DispatchQueue
+    private let wrappingTimestamp = WrappingTimestamp(name: "MpegTsReader",
+                                                      maximumTimestamp: CMTime(seconds: 0x2_0000_0000))
 
     init(decoderQueue: DispatchQueue, timecodesEnabled: Bool, targetLatency: Double) {
         self.decoderQueue = decoderQueue
@@ -458,8 +460,8 @@ class MpegTsReader {
     ) -> CMSampleBuffer? {
         var sampleBuffer: CMSampleBuffer?
         let basePresentationTimeStamp = getBasePresentationTimeStamp()
-        let receivedPresentationTimeStamp = optionalHeader.getPresentationTimeStamp()
-        let receivedDecodeTimeStamp = optionalHeader.getDecodeTimeStamp()
+        let receivedPresentationTimeStamp = wrappingTimestamp.update(optionalHeader.getPresentationTimeStamp())
+        let receivedDecodeTimeStamp = wrappingTimestamp.update(optionalHeader.getDecodeTimeStamp())
         var timing = CMSampleTimingInfo()
         var firstReceivedPresentationTimeStamp = firstReceivedPresentationTimeStamp
         if let firstReceivedPresentationTimeStamp {
