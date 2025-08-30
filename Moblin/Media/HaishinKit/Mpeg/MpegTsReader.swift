@@ -18,6 +18,7 @@ class MpegTsReader {
     private var previousReceivedPresentationTimeStamps: [UInt16: CMTime] = [:]
     private var basePresentationTimeStamp: CMTime = .invalid
     private var audioBuffer: AVAudioCompressedBuffer?
+    private var pcmAudioBuffer: AVAudioPCMBuffer?
     private var latestAudioBufferPresentationTimeStamp: CMTime?
     private var audioDecoder: AVAudioConverter?
     private var pcmAudioFormat: AVAudioFormat?
@@ -52,7 +53,6 @@ class MpegTsReader {
     private func handleProgramAssociationTable(packet: MpegTsPacket) throws {
         programAssociationTable = try MpegTsProgramAssociation(data: packet.payload)
         for (programNumber, programId) in programAssociationTable.programs {
-            // logger.info("Program id \(programId) and number \(programNumber)")
             programs[programId] = programNumber
         }
     }
@@ -88,7 +88,7 @@ class MpegTsReader {
     private func handleAudioSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
         targetLatenciesSynchronizer.setLatestAudioPresentationTimeStamp(sampleBuffer.presentationTimeStamp.seconds)
         updateTargetLatencies()
-        guard let audioDecoder, let pcmAudioFormat, let audioBuffer else {
+        guard let audioDecoder, let pcmAudioFormat, let audioBuffer, let pcmAudioBuffer else {
             return
         }
         guard let dataBuffer = sampleBuffer.dataBuffer else {
@@ -100,9 +100,6 @@ class MpegTsReader {
         guard length <= audioBuffer.maximumPacketSize else {
             return
         }
-        guard let outputBuffer = AVAudioPCMBuffer(pcmFormat: pcmAudioFormat, frameCapacity: 1024) else {
-            return
-        }
         audioBuffer.packetDescriptions?.pointee = AudioStreamPacketDescription(
             mStartOffset: 0,
             mVariableFramesInPacket: 0,
@@ -112,7 +109,7 @@ class MpegTsReader {
         audioBuffer.byteLength = UInt32(length)
         audioBuffer.data.copyMemory(from: dataPointer, byteCount: length)
         var error: NSError?
-        audioDecoder.convert(to: outputBuffer, error: &error) { _, inputStatus in
+        audioDecoder.convert(to: pcmAudioBuffer, error: &error) { _, inputStatus in
             inputStatus.pointee = .haveData
             return self.audioBuffer
         }
@@ -121,7 +118,7 @@ class MpegTsReader {
             return
         }
         outputSilenceIfGap(sampleBuffer.presentationTimeStamp, pcmAudioFormat)
-        guard let sampleBuffer = outputBuffer.makeSampleBuffer(sampleBuffer.presentationTimeStamp) else {
+        guard let sampleBuffer = pcmAudioBuffer.makeSampleBuffer(sampleBuffer.presentationTimeStamp) else {
             return
         }
         delegate?.mpegTsReaderAudioBuffer(sampleBuffer)
@@ -211,6 +208,8 @@ class MpegTsReader {
             return
         }
         logger.info("mpeg-ts-reader: in: \(audioFormat), out: \(pcmAudioFormat)")
+        pcmAudioBuffer = AVAudioPCMBuffer(pcmFormat: pcmAudioFormat,
+                                          frameCapacity: streamBasicDescription.pointee.mFramesPerPacket)
         audioDecoder = AVAudioConverter(from: audioFormat, to: pcmAudioFormat)
         if audioDecoder == nil {
             logger.info("mpeg-ts-reader: Failed to create audio decdoer")
@@ -297,8 +296,10 @@ class MpegTsReader {
         guard let formatDescription else {
             return nil
         }
-        formatDescriptions[packetId] = formatDescription
-        handleAudioFormatDescription(formatDescription)
+        if formatDescriptions[packetId] != formatDescription {
+            formatDescriptions[packetId] = formatDescription
+            handleAudioFormatDescription(formatDescription)
+        }
         return formatDescription
     }
 
