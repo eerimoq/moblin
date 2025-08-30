@@ -308,7 +308,7 @@ class MpegTsWriter {
 
     private func updateProgramClockReference(_ timestamp: CMTime) -> UInt64? {
         var programClockReference: UInt64?
-        if timestamp.seconds - (programClockReferenceTimestamp?.seconds ?? 0) >= 0.02 {
+        if timestamp.seconds - (programClockReferenceTimestamp?.seconds ?? 0) >= 0.1 {
             programClockReference = UInt64(max(timestamp.seconds, 0) * TSTimestamp.resolution)
             programClockReferenceTimestamp = timestamp
         }
