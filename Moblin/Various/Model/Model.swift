@@ -322,7 +322,7 @@ class CameraLevel: ObservableObject {
                 newAngle = atan2(gravity.x, gravity.y) + .pi / 2
             }
             if angle == nil {
-                self.angle = newAngle
+                angle = newAngle
             } else if let angle, abs(newAngle - angle) > 0.002 {
                 self.angle = newAngle
             }
