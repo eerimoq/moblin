@@ -16,7 +16,7 @@ struct StreamGridView: View {
             path.addLine(to: CGPoint(x: width, y: size.height))
             path.move(to: CGPoint(x: 2 * width, y: 0))
             path.addLine(to: CGPoint(x: 2 * width, y: size.height))
-            context.stroke(path, with: .color(.gray), lineWidth: 1.5)
+            context.stroke(path, with: .color(.gray), lineWidth: 1)
         }
         .allowsHitTesting(false)
     }
