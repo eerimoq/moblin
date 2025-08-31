@@ -14,20 +14,19 @@ struct CameraLevelView: View {
             let xRight = size.width * 2 / 3
             let halfGap = 2.5
             let shortLine = 25.0
+            let leftShortLineBegin = xLeft - shortLine - halfGap
+            let rightShortLineEnd = xRight + shortLine + halfGap
             var path = Path()
             let color: Color
             if abs(angle) < 0.01 {
-                path.move(to: CGPoint(x: xLeft - shortLine - halfGap, y: y))
-                path.addLine(to: CGPoint(x: xRight + shortLine + halfGap, y: y))
+                path.move(to: CGPoint(x: leftShortLineBegin, y: y))
+                path.addLine(to: CGPoint(x: rightShortLineEnd, y: y))
                 color = .yellow
             } else {
-                // Left
-                path.move(to: CGPoint(x: xLeft - shortLine - halfGap, y: y))
+                path.move(to: CGPoint(x: leftShortLineBegin, y: y))
                 path.addLine(to: CGPoint(x: xLeft - halfGap, y: y))
-                // Right
                 path.move(to: CGPoint(x: xRight + halfGap, y: y))
-                path.addLine(to: CGPoint(x: xRight + halfGap + shortLine, y: y))
-                // Middle
+                path.addLine(to: CGPoint(x: rightShortLineEnd, y: y))
                 if abs(angle) < 0.5 {
                     let longLine = xRight - xLeft - 2 * halfGap
                     let xLine = cos(angle) * longLine / 2
