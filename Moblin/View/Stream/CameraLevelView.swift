@@ -27,13 +27,11 @@ struct CameraLevelView: View {
                 path.addLine(to: CGPoint(x: xLeft - halfGap, y: y))
                 path.move(to: CGPoint(x: xRight + halfGap, y: y))
                 path.addLine(to: CGPoint(x: rightShortLineEnd, y: y))
-                if abs(angle) < 0.5 {
-                    let longLine = xRight - xLeft - 2 * halfGap
-                    let xLine = cos(angle) * longLine / 2
-                    let yLine = sin(angle) * longLine / 2
-                    path.move(to: CGPoint(x: size.width / 2 - xLine, y: y - yLine))
-                    path.addLine(to: CGPoint(x: size.width / 2 + xLine, y: y + yLine))
-                }
+                let longLine = xRight - xLeft - 2 * halfGap
+                let xLine = cos(angle) * longLine / 2
+                let yLine = sin(angle) * longLine / 2
+                path.move(to: CGPoint(x: size.width / 2 - xLine, y: y - yLine))
+                path.addLine(to: CGPoint(x: size.width / 2 + xLine, y: y + yLine))
                 color = .white
             }
             context.stroke(path, with: .color(color), lineWidth: 1)
