@@ -302,6 +302,38 @@ class Orientation: ObservableObject {
     @Published var isPortrait: Bool = false
 }
 
+class CameraLevel: ObservableObject {
+    private var motion = CMMotionManager()
+    @Published var angle: Double?
+
+    func start() {
+        motion.deviceMotionUpdateInterval = 0.05
+        motion.startDeviceMotionUpdates(to: .main) { [weak self] data, _ in
+            guard let self, let data else {
+                return
+            }
+            let newAngle: Double
+            let gravity = data.gravity
+            if abs(gravity.y) > abs(gravity.x) {
+                newAngle = -1 * (atan2(gravity.y, gravity.x) + .pi / 2)
+            } else if gravity.x > 0 {
+                newAngle = atan2(-gravity.x, -gravity.y) + .pi / 2
+            } else {
+                newAngle = atan2(gravity.x, gravity.y) + .pi / 2
+            }
+            if angle == nil {
+                self.angle = newAngle
+            } else if let angle, abs(newAngle - angle) > 0.002 {
+                self.angle = newAngle
+            }
+        }
+    }
+
+    func stop() {
+        motion.stopDeviceMotionUpdates()
+    }
+}
+
 final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @AppStorage("enterForegroundCount") var enterForegroundCount = 0
     @Published var isPresentingWidgetWizard = false
@@ -314,6 +346,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var isRecording = false
     @Published var browsers: [Browser] = []
     @Published var showingGrid = false
+    @Published var showingCameraLevel = false
     @Published var showingRemoteControl = false
     @Published var portraitVideoOffsetFromTop = 0.0
     @Published var currentStreamId = UUID()
@@ -344,6 +377,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
+    let cameraLevel = CameraLevel()
     let orientation = Orientation()
     let snapshot = Snapshot()
     let quickButtons = QuickButtons()
@@ -1331,6 +1365,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 }
                 showBackgroudStreamingDisabledToast = false
             }
+            reloadCameraLevel()
         }
     }
 
@@ -1374,6 +1409,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         stopHeartRateDevices()
         stopRemoteControlAssistant()
         fixedHorizonEffect.stop()
+        cameraLevel.stop()
     }
 
     func externalMonitorConnected(windowScene: UIWindowScene) {
@@ -2739,6 +2775,14 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func stopMotionDetection() {
         motionManager.stopDeviceMotionUpdates()
+    }
+
+    func reloadCameraLevel() {
+        if showingCameraLevel {
+            cameraLevel.start()
+        } else {
+            cameraLevel.stop()
+        }
     }
 
     func preferredCamera(position: AVCaptureDevice.Position) -> AVCaptureDevice? {

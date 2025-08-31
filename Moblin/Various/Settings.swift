@@ -3089,6 +3089,7 @@ enum SettingsQuickButtonType: String, Codable, CaseIterable {
     case pixellate = "Pixellate"
     case stream = "Stream"
     case grid = "Grid"
+    case cameraLevel = "Camera level"
     case obs = "OBS"
     case remote = "Remote"
     case draw = "Draw"
@@ -7508,6 +7509,14 @@ private func addMissingQuickButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "grid"
     button.systemImageNameOff = "grid"
+    updateQuickButton(database: database, button: button)
+
+    button = SettingsQuickButton(name: String(localized: "Camera level"))
+    button.id = UUID()
+    button.type = .cameraLevel
+    button.imageType = "System name"
+    button.systemImageNameOn = "level.fill"
+    button.systemImageNameOff = "level"
     updateQuickButton(database: database, button: button)
 
     button = SettingsQuickButton(name: String(localized: "Face"))

@@ -228,6 +228,9 @@ private struct StreamOverlayTapGridView: View {
         if model.showingGrid {
             StreamGridView()
         }
+        if model.showingCameraLevel {
+            CameraLevelView(cameraLevel: model.cameraLevel)
+        }
     }
 }
 

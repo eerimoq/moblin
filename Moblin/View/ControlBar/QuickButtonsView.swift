@@ -240,6 +240,14 @@ struct QuickButtonsInnerView: View {
         model.updateQuickButtonStates()
     }
 
+    private func levelAction(state: ButtonState) {
+        state.button.isOn.toggle()
+        model.showingCameraLevel.toggle()
+        model.reloadCameraLevel()
+        model.sceneUpdated(updateRemoteScene: false)
+        model.updateQuickButtonStates()
+    }
+
     private func obsAction() {
         guard model.isObsRemoteControlConfigured() else {
             model.makeErrorToast(
@@ -562,6 +570,14 @@ struct QuickButtonsInnerView: View {
                                  buttonSize: size)
                 {
                     gridAction(state: state)
+                }
+            case .cameraLevel:
+                QuickButtonImage(model: model,
+                                 quickButtonsSettings: quickButtonsSettings,
+                                 state: state,
+                                 buttonSize: size)
+                {
+                    levelAction(state: state)
                 }
             case .obs:
                 QuickButtonImage(model: model,
