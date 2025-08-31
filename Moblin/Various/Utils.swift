@@ -1,4 +1,5 @@
 import AVKit
+import CoreMotion
 import MapKit
 import MetalPetal
 import Network
@@ -781,4 +782,14 @@ func createSpeechSynthesizer() -> AVSpeechSynthesizer {
     let synthesizer = AVSpeechSynthesizer()
     synthesizer.usesApplicationAudioSession = false
     return synthesizer
+}
+
+func calcCameraAngle(gravity: CMAcceleration, portrait: Bool) -> Double {
+    if portrait {
+        return -1 * (atan2(gravity.y, gravity.x) + .pi / 2)
+    } else if gravity.x > 0 {
+        return atan2(-gravity.x, -gravity.y) + .pi / 2
+    } else {
+        return atan2(gravity.x, gravity.y) + .pi / 2
+    }
 }

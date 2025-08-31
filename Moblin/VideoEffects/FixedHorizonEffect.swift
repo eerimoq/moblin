@@ -27,8 +27,7 @@ private func minimalBoundingRectWithAspect(width: CGFloat, height: CGFloat, angl
 }
 
 final class FixedHorizonEffect: VideoEffect {
-    private var targetPitch: Double?
-    private var targetX: Double?
+    private var targetAngle: Double?
     private var currentAngle = 0.0
     // Sometimes crashes on Mac in deinit() if instantiated here.
     private var motionManager: CMMotionManager?
@@ -44,16 +43,18 @@ final class FixedHorizonEffect: VideoEffect {
         stop()
     }
 
-    func start() {
+    func start(portrait: Bool) {
         guard !started, !isMac() else {
             return
         }
         started = true
         motionManager = CMMotionManager()
         motionManager?.deviceMotionUpdateInterval = 0.1
-        motionManager?.startDeviceMotionUpdates(to: operationQueue) { [weak self] motion, _ in
-            self?.targetPitch = motion?.attitude.pitch
-            self?.targetX = motion?.gravity.x
+        motionManager?.startDeviceMotionUpdates(to: operationQueue) { [weak self] data, _ in
+            guard let self, let data else {
+                return
+            }
+            targetAngle = calcCameraAngle(gravity: data.gravity, portrait: portrait)
         }
     }
 
@@ -71,18 +72,12 @@ final class FixedHorizonEffect: VideoEffect {
     }
 
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
-        guard let targetPitch, let targetX else {
+        guard let targetAngle else {
             return image
         }
-        let targetAngle: Double
         let targetWeight: Double
-        if image.extent.width > image.extent.height {
-            targetAngle = targetX > 0 ? targetPitch : -targetPitch
-        } else {
-            targetAngle = targetX > 0 ? targetPitch - .pi / 2 : -targetPitch + .pi / 2
-        }
-        if abs(targetX) < 0.1 {
-            targetWeight = 2 * abs(targetX)
+        if abs(targetAngle) < 0.1 {
+            targetWeight = 2 * abs(targetAngle)
         } else {
             targetWeight = 0.2
         }

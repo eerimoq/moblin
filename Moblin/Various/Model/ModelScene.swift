@@ -61,7 +61,7 @@ extension Model {
         var effects: [VideoEffect] = []
         let fixedHorizonStatus: String
         if isFixedHorizonEnabled(scene: scene) {
-            fixedHorizonEffect.start()
+            fixedHorizonEffect.start(portrait: stream.portrait)
             fixedHorizonStatus = "Enabled"
             effects.append(fixedHorizonEffect)
         } else {

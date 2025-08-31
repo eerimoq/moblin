@@ -312,15 +312,8 @@ class CameraLevel: ObservableObject {
             guard let self, let data else {
                 return
             }
-            let newAngle: Double
             let gravity = data.gravity
-            if abs(gravity.y) > abs(gravity.x) {
-                newAngle = -1 * (atan2(gravity.y, gravity.x) + .pi / 2)
-            } else if gravity.x > 0 {
-                newAngle = atan2(-gravity.x, -gravity.y) + .pi / 2
-            } else {
-                newAngle = atan2(gravity.x, gravity.y) + .pi / 2
-            }
+            let newAngle = calcCameraAngle(gravity: gravity, portrait: abs(gravity.y) > abs(gravity.x))
             if angle == nil {
                 angle = newAngle
             } else if let angle, abs(newAngle - angle) > 0.002 {
