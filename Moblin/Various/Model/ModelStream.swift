@@ -321,6 +321,7 @@ extension Model {
         currentStreamId = stream.id
         updateOrientationLock()
         updateStatusStreamText()
+        reloadCameraLevel()
     }
 
     func setCurrentStream(streamId: UUID) -> Bool {

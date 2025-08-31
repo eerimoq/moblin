@@ -306,14 +306,14 @@ class CameraLevel: ObservableObject {
     private var motion = CMMotionManager()
     @Published var angle: Double?
 
-    func start() {
+    func start(portrait: Bool) {
         motion.deviceMotionUpdateInterval = 0.05
         motion.startDeviceMotionUpdates(to: .main) { [weak self] data, _ in
             guard let self, let data else {
                 return
             }
             let gravity = data.gravity
-            let newAngle = calcCameraAngle(gravity: gravity, portrait: abs(gravity.y) > abs(gravity.x))
+            let newAngle = calcCameraAngle(gravity: gravity, portrait: portrait)
             if angle == nil {
                 angle = newAngle
             } else if let angle, abs(newAngle - angle) > 0.002 {
@@ -2772,7 +2772,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func reloadCameraLevel() {
         if showingCameraLevel {
-            cameraLevel.start()
+            cameraLevel.start(portrait: stream.portrait)
         } else {
             cameraLevel.stop()
         }
