@@ -623,6 +623,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         streamingHistory.load()
         recordingsStorage.load()
         replaysStorage.load()
+        setCurrentStream()
         updateIsPortrait()
         if orientation.isPortrait {
             AppDelegate.orientationLock = .portrait
@@ -895,7 +896,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func setup() {
-        setCurrentStream()
         bluetoothCentralManger = CBCentralManager(delegate: self, queue: .main)
         deleteTrash()
         cameraPreviewLayer = cameraPreviewView.previewLayer
