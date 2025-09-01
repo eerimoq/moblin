@@ -2014,7 +2014,7 @@ enum SettingsWidgetAlertsChatBotCommandImageType: String, Codable, CaseIterable 
     }
 }
 
-class SettingsWidgetAlertsChatBotCommand: Codable, Identifiable {
+class SettingsWidgetAlertsChatBotCommand: Codable, Identifiable, @unchecked Sendable {
     var id: UUID = .init()
     var name: String = "myname"
     var alert: SettingsWidgetAlertsAlert = .init()
