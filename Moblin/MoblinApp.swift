@@ -75,10 +75,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         didSet {
             for scene in UIApplication.shared.connectedScenes {
                 if let windowScene = scene as? UIWindowScene {
-                    windowScene
-                        .requestGeometryUpdate(
-                            .iOS(interfaceOrientations: orientationLock)
-                        )
+                    windowScene.requestGeometryUpdate(.iOS(interfaceOrientations: orientationLock))
                 }
             }
             // For some reason new way of doing this does not work in all
@@ -102,16 +99,14 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 
     func application(
         _: UIApplication,
-        willFinishLaunchingWithOptions _: [UIApplication
-            .LaunchOptionsKey: Any]? = nil
+        willFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]? = nil
     ) -> Bool {
         return true
     }
 
     func application(
         _: UIApplication,
-        didFinishLaunchingWithOptions _: [UIApplication
-            .LaunchOptionsKey: Any]? = nil
+        didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]? = nil
     ) -> Bool {
         return true
     }
