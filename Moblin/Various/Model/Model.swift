@@ -610,6 +610,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     let geographyManager = GeographyManager()
     var onDocumentPickerUrl: ((URL) -> Void)?
     private var healthStore = HKHealthStore()
+    private let resourceUsage = ResourceUsage()
 
     weak var processor: Processor? {
         didSet {
@@ -1550,7 +1551,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             self.updateAdsRemainingTimer(now: now)
             self.keepSpeakerAlive(now: monotonicNow)
             if self.database.debug.debugOverlay {
-                self.debugOverlay.cpuUsage = getCpuUsage()
+                self.resourceUsage.update(now: monotonicNow)
+                self.debugOverlay.cpuUsage = self.resourceUsage.getCpuUsage()
             }
             self.updateMoblinkStatus()
             self.updateStatusEventsText()

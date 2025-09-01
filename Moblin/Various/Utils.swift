@@ -558,52 +558,29 @@ extension CGSize {
     }
 }
 
-func getCpuUsage() -> Float {
-    var result: Int32
-    var threadList = UnsafeMutablePointer<UInt32>.allocate(capacity: 1)
-    var threadCount = UInt32(MemoryLayout<mach_task_basic_info_data_t>.size / MemoryLayout<natural_t>.size)
-    var threadInfo = thread_basic_info()
-    result = withUnsafeMutablePointer(to: &threadList) {
-        $0.withMemoryRebound(to: thread_act_array_t?.self, capacity: 1) {
-            task_threads(mach_task_self_, $0, &threadCount)
-        }
-    }
-    if result != KERN_SUCCESS {
-        return 0
-    }
-    return (0 ..< Int(threadCount)).compactMap { index -> Float? in
-        var threadInfoCount = UInt32(THREAD_INFO_MAX)
-        result = withUnsafeMutablePointer(to: &threadInfo) {
-            $0.withMemoryRebound(to: integer_t.self, capacity: 1) {
-                thread_info(threadList[index], UInt32(THREAD_BASIC_INFO), $0, &threadInfoCount)
-            }
-        }
-        if result != KERN_SUCCESS { return nil }
-        let isIdle = threadInfo.flags == TH_FLAGS_IDLE
-        return !isIdle ? (Float(threadInfo.cpu_usage) / Float(TH_USAGE_SCALE)) * 100 : nil
-    }.reduce(0, +)
-}
+class ResourceUsage {
+    private var previousTime: ContinuousClock.Instant?
+    private var previousUsage: rusage?
+    private var cpuUsage: Float = 0
 
-private var previousTaskEnergy: UInt64?
-
-func getTaskPower() -> Float? {
-    var info = task_power_info_v2_data_t()
-    var count = mach_msg_type_number_t(MemoryLayout<task_power_info_v2_data_t>.stride / MemoryLayout<natural_t>.stride)
-    let status = withUnsafeMutablePointer(to: &info) { infoPtr in
-        infoPtr.withMemoryRebound(to: integer_t.self, capacity: Int(count)) { intPtr in
-            task_info(mach_task_self_, task_flavor_t(TASK_POWER_INFO_V2), intPtr, &count)
+    func update(now: ContinuousClock.Instant) {
+        var usage = rusage()
+        guard getrusage(RUSAGE_SELF, &usage) == 0 else {
+            return
         }
+        if let previousTime, let previousUsage {
+            let systemTime = usage.ru_stime.milliseconds - previousUsage.ru_stime.milliseconds
+            let userTime = usage.ru_utime.milliseconds - previousUsage.ru_utime.milliseconds
+            let time = Float(systemTime + userTime)
+            cpuUsage = 100 * time / Float(previousTime.duration(to: now).milliseconds)
+        }
+        previousTime = now
+        previousUsage = usage
     }
-    guard status == KERN_SUCCESS else {
-        return nil
+
+    func getCpuUsage() -> Float {
+        return cpuUsage
     }
-    defer {
-        previousTaskEnergy = info.task_energy
-    }
-    guard let previousTaskEnergy else {
-        return nil
-    }
-    return Float(info.task_energy - previousTaskEnergy) / 1_000_000_000.0
 }
 
 extension FileManager {
