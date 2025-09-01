@@ -560,130 +560,256 @@ extension Model {
             }
             switch widget.type {
             case .image:
-                if let imageEffect = imageEffects[widget.id] {
-                    imageEffect.setSceneWidget(sceneWidget: sceneWidget.clone())
-                    effects.append(imageEffect)
-                }
+                addSceneImageEffects(sceneWidget, widget, &effects)
             case .text:
-                if let textEffect = textEffects[widget.id] {
-                    textEffect.setPosition(x: sceneWidget.x, y: sceneWidget.y)
-                    effects.append(textEffect)
-                    if widget.text.needsSubtitles {
-                        needsSpeechToText = true
-                    }
-                }
+                addSceneTextEffects(sceneWidget, widget, &effects, &needsSpeechToText)
             case .videoEffect:
                 break
             case .browser:
-                if let browserEffect = browserEffects[widget.id], !usedBrowserEffects.contains(browserEffect) {
-                    browserEffect.setSceneWidget(
-                        sceneWidget: sceneWidget,
-                        crops: findWidgetCrops(scene: scene, sourceWidgetId: widget.id)
-                    )
-                    if !browserEffect.audioOnly {
-                        effects.append(browserEffect)
-                    }
-                    usedBrowserEffects.append(browserEffect)
-                }
+                addSceneBrowserEffects(sceneWidget, widget, scene, &effects, &usedBrowserEffects)
             case .crop:
-                if let browserEffect = browserEffects[widget.crop.sourceWidgetId],
-                   !usedBrowserEffects.contains(browserEffect)
-                {
-                    browserEffect.setSceneWidget(
-                        sceneWidget: findSceneWidget(scene: scene, widgetId: widget.crop.sourceWidgetId),
-                        crops: findWidgetCrops(scene: scene, sourceWidgetId: widget.crop.sourceWidgetId)
-                    )
-                    if !browserEffect.audioOnly {
-                        effects.append(browserEffect)
-                    }
-                    usedBrowserEffects.append(browserEffect)
-                }
+                addSceneCropEffects(widget, scene, &effects, &usedBrowserEffects)
             case .map:
-                if let mapEffect = mapEffects[widget.id], !usedMapEffects.contains(mapEffect) {
-                    mapEffect.setSceneWidget(sceneWidget: sceneWidget.clone())
-                    effects.append(mapEffect)
-                    usedMapEffects.append(mapEffect)
-                }
+                addSceneMapEffects(sceneWidget, widget, &effects, &usedMapEffects)
             case .scene:
-                if let sceneWidgetScene = getLocalAndRemoteScenes().first(where: { $0.id == widget.scene.sceneId }) {
-                    addSceneEffects(
-                        sceneWidgetScene,
-                        &effects,
-                        &usedBrowserEffects,
-                        &usedMapEffects,
-                        &usedPadelScoreboardEffects,
-                        &addedScenes,
-                        &enabledAlertsEffects,
-                        &enabledSnapshotEffects,
-                        &needsSpeechToText
-                    )
-                }
+                addSceneSceneEffects(widget,
+                                     &effects,
+                                     &usedBrowserEffects,
+                                     &usedMapEffects,
+                                     &usedPadelScoreboardEffects,
+                                     &addedScenes,
+                                     &enabledAlertsEffects,
+                                     &enabledSnapshotEffects,
+                                     &needsSpeechToText)
             case .qrCode:
-                if let qrCodeEffect = qrCodeEffects[widget.id] {
-                    qrCodeEffect.setSceneWidget(sceneWidget: sceneWidget.clone())
-                    effects.append(qrCodeEffect)
-                }
+                addSceneQrCodeEffects(sceneWidget, widget, &effects)
             case .alerts:
-                if let alertsEffect = alertsEffects[widget.id] {
-                    if alertsEffect.shouldRegisterEffect() {
-                        effects.append(alertsEffect)
-                    }
-                    alertsEffect.setPosition(x: sceneWidget.x, y: sceneWidget.y)
-                    enabledAlertsEffects.append(alertsEffect)
-                    if widget.alerts.needsSubtitles! {
-                        needsSpeechToText = true
-                    }
-                }
+                addSceneAlertsEffects(sceneWidget, widget, &effects, &enabledAlertsEffects, &needsSpeechToText)
             case .videoSource:
-                if let videoSourceEffect = videoSourceEffects[widget.id] {
-                    if let videoSourceId = getVideoSourceId(cameraId: widget.videoSource.toCameraId()) {
-                        videoSourceEffect.setVideoSourceId(videoSourceId: videoSourceId)
-                    }
-                    videoSourceEffect.setSceneWidget(sceneWidget: sceneWidget.clone())
-                    videoSourceEffect.setSettings(settings: widget.videoSource.toEffectSettings())
-                    effects.append(videoSourceEffect)
-                }
+                addSceneVideoSourceEffects(sceneWidget, widget, &effects)
             case .scoreboard:
-                if let padelScoreboardEffect = padelScoreboardEffects[widget.id] {
-                    padelScoreboardEffect.setSceneWidget(sceneWidget: sceneWidget.clone())
-                    let scoreboard = widget.scoreboard
-                    padelScoreboardEffect
-                        .update(scoreboard: padelScoreboardSettingsToEffect(scoreboard.padel))
-                    if isWatchLocal() {
-                        sendUpdatePadelScoreboardToWatch(id: widget.id, scoreboard: scoreboard)
-                    }
-                    effects.append(padelScoreboardEffect)
-                    usedPadelScoreboardEffects.append(padelScoreboardEffect)
-                }
+                addSceneScoreboardEffects(sceneWidget, widget, &effects, &usedPadelScoreboardEffects)
             case .vTuber:
-                if let vTuberEffect = vTuberEffects[widget.id] {
-                    if let videoSourceId = getVideoSourceId(cameraId: widget.vTuber.toCameraId()) {
-                        vTuberEffect.setVideoSourceId(videoSourceId: videoSourceId)
-                    }
-                    vTuberEffect.setSceneWidget(sceneWidget: sceneWidget.clone())
-                    vTuberEffect.setSettings(
-                        cameraFieldOfView: widget.vTuber.cameraFieldOfView,
-                        cameraPositionY: widget.vTuber.cameraPositionY,
-                        mirror: widget.vTuber.mirror
-                    )
-                    effects.append(vTuberEffect)
-                }
+                addSceneVTuberEffects(sceneWidget, widget, &effects)
             case .pngTuber:
-                if let pngTuberEffect = pngTuberEffects[widget.id] {
-                    if let videoSourceId = getVideoSourceId(cameraId: widget.pngTuber.toCameraId()) {
-                        pngTuberEffect.setVideoSourceId(videoSourceId: videoSourceId)
-                    }
-                    pngTuberEffect.setSceneWidget(sceneWidget: sceneWidget.clone())
-                    pngTuberEffect.setSettings(mirror: widget.pngTuber.mirror)
-                    effects.append(pngTuberEffect)
-                }
+                addScenePngTuberEffects(sceneWidget, widget, &effects)
             case .snapshot:
-                if let snapshotEffect = snapshotEffects[widget.id] {
-                    snapshotEffect.setSceneWidget(sceneWidget: sceneWidget.clone())
-                    enabledSnapshotEffects.append(snapshotEffect)
-                    effects.append(snapshotEffect)
-                }
+                addSceneSnapshotEffects(sceneWidget, widget, &effects, &enabledSnapshotEffects)
             }
+        }
+    }
+
+    private func addSceneImageEffects(_ sceneWidget: SettingsSceneWidget,
+                                      _ widget: SettingsWidget,
+                                      _ effects: inout [VideoEffect])
+    {
+        if let imageEffect = imageEffects[widget.id] {
+            imageEffect.setSceneWidget(sceneWidget: sceneWidget.clone())
+            effects.append(imageEffect)
+        }
+    }
+
+    private func addSceneTextEffects(
+        _ sceneWidget: SettingsSceneWidget,
+        _ widget: SettingsWidget,
+        _ effects: inout [VideoEffect],
+        _ needsSpeechToText: inout Bool
+    ) {
+        if let textEffect = textEffects[widget.id] {
+            textEffect.setPosition(x: sceneWidget.x, y: sceneWidget.y)
+            effects.append(textEffect)
+            if widget.text.needsSubtitles {
+                needsSpeechToText = true
+            }
+        }
+    }
+
+    private func addSceneBrowserEffects(
+        _ sceneWidget: SettingsSceneWidget,
+        _ widget: SettingsWidget,
+        _ scene: SettingsScene,
+        _ effects: inout [VideoEffect],
+        _ usedBrowserEffects: inout [BrowserEffect]
+    ) {
+        if let browserEffect = browserEffects[widget.id], !usedBrowserEffects.contains(browserEffect) {
+            browserEffect.setSceneWidget(
+                sceneWidget: sceneWidget,
+                crops: findWidgetCrops(scene: scene, sourceWidgetId: widget.id)
+            )
+            if !browserEffect.audioOnly {
+                effects.append(browserEffect)
+            }
+            usedBrowserEffects.append(browserEffect)
+        }
+    }
+
+    private func addSceneCropEffects(
+        _ widget: SettingsWidget,
+        _ scene: SettingsScene,
+        _ effects: inout [VideoEffect],
+        _ usedBrowserEffects: inout [BrowserEffect]
+    ) {
+        if let browserEffect = browserEffects[widget.crop.sourceWidgetId],
+           !usedBrowserEffects.contains(browserEffect)
+        {
+            browserEffect.setSceneWidget(
+                sceneWidget: findSceneWidget(scene: scene, widgetId: widget.crop.sourceWidgetId),
+                crops: findWidgetCrops(scene: scene, sourceWidgetId: widget.crop.sourceWidgetId)
+            )
+            if !browserEffect.audioOnly {
+                effects.append(browserEffect)
+            }
+            usedBrowserEffects.append(browserEffect)
+        }
+    }
+
+    private func addSceneMapEffects(
+        _ sceneWidget: SettingsSceneWidget,
+        _ widget: SettingsWidget,
+        _ effects: inout [VideoEffect],
+        _ usedMapEffects: inout [MapEffect]
+    ) {
+        if let mapEffect = mapEffects[widget.id], !usedMapEffects.contains(mapEffect) {
+            mapEffect.setSceneWidget(sceneWidget: sceneWidget.clone())
+            effects.append(mapEffect)
+            usedMapEffects.append(mapEffect)
+        }
+    }
+
+    private func addSceneSceneEffects(
+        _ widget: SettingsWidget,
+        _ effects: inout [VideoEffect],
+        _ usedBrowserEffects: inout [BrowserEffect],
+        _ usedMapEffects: inout [MapEffect],
+        _ usedPadelScoreboardEffects: inout [PadelScoreboardEffect],
+        _ addedScenes: inout [SettingsScene],
+        _ enabledAlertsEffects: inout [AlertsEffect],
+        _ enabledSnapshotEffects: inout [SnapshotEffect],
+        _ needsSpeechToText: inout Bool
+    ) {
+        if let sceneWidgetScene = getLocalAndRemoteScenes().first(where: { $0.id == widget.scene.sceneId }) {
+            addSceneEffects(
+                sceneWidgetScene,
+                &effects,
+                &usedBrowserEffects,
+                &usedMapEffects,
+                &usedPadelScoreboardEffects,
+                &addedScenes,
+                &enabledAlertsEffects,
+                &enabledSnapshotEffects,
+                &needsSpeechToText
+            )
+        }
+    }
+
+    private func addSceneQrCodeEffects(
+        _ sceneWidget: SettingsSceneWidget,
+        _ widget: SettingsWidget,
+        _ effects: inout [VideoEffect]
+    ) {
+        if let qrCodeEffect = qrCodeEffects[widget.id] {
+            qrCodeEffect.setSceneWidget(sceneWidget: sceneWidget.clone())
+            effects.append(qrCodeEffect)
+        }
+    }
+
+    private func addSceneAlertsEffects(
+        _ sceneWidget: SettingsSceneWidget,
+        _ widget: SettingsWidget,
+        _ effects: inout [VideoEffect],
+        _ enabledAlertsEffects: inout [AlertsEffect],
+        _ needsSpeechToText: inout Bool
+    ) {
+        if let alertsEffect = alertsEffects[widget.id] {
+            if alertsEffect.shouldRegisterEffect() {
+                effects.append(alertsEffect)
+            }
+            alertsEffect.setPosition(x: sceneWidget.x, y: sceneWidget.y)
+            enabledAlertsEffects.append(alertsEffect)
+            if widget.alerts.needsSubtitles! {
+                needsSpeechToText = true
+            }
+        }
+    }
+
+    private func addSceneVideoSourceEffects(
+        _ sceneWidget: SettingsSceneWidget,
+        _ widget: SettingsWidget,
+        _ effects: inout [VideoEffect]
+    ) {
+        if let videoSourceEffect = videoSourceEffects[widget.id] {
+            if let videoSourceId = getVideoSourceId(cameraId: widget.videoSource.toCameraId()) {
+                videoSourceEffect.setVideoSourceId(videoSourceId: videoSourceId)
+            }
+            videoSourceEffect.setSceneWidget(sceneWidget: sceneWidget.clone())
+            videoSourceEffect.setSettings(settings: widget.videoSource.toEffectSettings())
+            effects.append(videoSourceEffect)
+        }
+    }
+
+    private func addSceneScoreboardEffects(
+        _ sceneWidget: SettingsSceneWidget,
+        _ widget: SettingsWidget,
+        _ effects: inout [VideoEffect],
+        _ usedPadelScoreboardEffects: inout [PadelScoreboardEffect]
+    ) {
+        if let padelScoreboardEffect = padelScoreboardEffects[widget.id] {
+            padelScoreboardEffect.setSceneWidget(sceneWidget: sceneWidget.clone())
+            let scoreboard = widget.scoreboard
+            padelScoreboardEffect
+                .update(scoreboard: padelScoreboardSettingsToEffect(scoreboard.padel))
+            if isWatchLocal() {
+                sendUpdatePadelScoreboardToWatch(id: widget.id, scoreboard: scoreboard)
+            }
+            effects.append(padelScoreboardEffect)
+            usedPadelScoreboardEffects.append(padelScoreboardEffect)
+        }
+    }
+
+    private func addSceneVTuberEffects(
+        _ sceneWidget: SettingsSceneWidget,
+        _ widget: SettingsWidget,
+        _ effects: inout [VideoEffect]
+    ) {
+        if let vTuberEffect = vTuberEffects[widget.id] {
+            if let videoSourceId = getVideoSourceId(cameraId: widget.vTuber.toCameraId()) {
+                vTuberEffect.setVideoSourceId(videoSourceId: videoSourceId)
+            }
+            vTuberEffect.setSceneWidget(sceneWidget: sceneWidget.clone())
+            vTuberEffect.setSettings(
+                cameraFieldOfView: widget.vTuber.cameraFieldOfView,
+                cameraPositionY: widget.vTuber.cameraPositionY,
+                mirror: widget.vTuber.mirror
+            )
+            effects.append(vTuberEffect)
+        }
+    }
+
+    private func addScenePngTuberEffects(
+        _ sceneWidget: SettingsSceneWidget,
+        _ widget: SettingsWidget,
+        _ effects: inout [VideoEffect]
+    ) {
+        if let pngTuberEffect = pngTuberEffects[widget.id] {
+            if let videoSourceId = getVideoSourceId(cameraId: widget.pngTuber.toCameraId()) {
+                pngTuberEffect.setVideoSourceId(videoSourceId: videoSourceId)
+            }
+            pngTuberEffect.setSceneWidget(sceneWidget: sceneWidget.clone())
+            pngTuberEffect.setSettings(mirror: widget.pngTuber.mirror)
+            effects.append(pngTuberEffect)
+        }
+    }
+
+    private func addSceneSnapshotEffects(
+        _ sceneWidget: SettingsSceneWidget,
+        _ widget: SettingsWidget,
+        _ effects: inout [VideoEffect],
+        _ enabledSnapshotEffects: inout [SnapshotEffect]
+    ) {
+        if let snapshotEffect = snapshotEffects[widget.id] {
+            snapshotEffect.setSceneWidget(sceneWidget: sceneWidget.clone())
+            enabledSnapshotEffects.append(snapshotEffect)
+            effects.append(snapshotEffect)
         }
     }
 
