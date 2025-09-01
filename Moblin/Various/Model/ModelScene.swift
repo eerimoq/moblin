@@ -804,11 +804,20 @@ extension Model {
     }
 
     func isCaptureDeviceWidget(widget: SettingsWidget) -> Bool {
+        var addedSceneIds: Set<UUID> = []
+        return isCaptureDeviceWidgetInner(widget: widget, addedSceneIds: &addedSceneIds)
+    }
+
+    private func isCaptureDeviceWidgetInner(widget: SettingsWidget, addedSceneIds: inout Set<UUID>) -> Bool {
         switch widget.type {
         case .scene:
+            if addedSceneIds.contains(widget.scene.sceneId) {
+                return false
+            }
+            addedSceneIds.insert(widget.scene.sceneId)
             if let scene = database.scenes.first(where: { $0.id == widget.scene.sceneId }) {
                 for widget in getSceneWidgets(scene: scene, onlyEnabled: false) where
-                    isCaptureDeviceWidget(widget: widget.widget)
+                    isCaptureDeviceWidgetInner(widget: widget.widget, addedSceneIds: &addedSceneIds)
                 {
                     return true
                 }
@@ -890,6 +899,14 @@ extension Model {
     }
 
     private func getSceneWidgets(scene: SettingsScene, onlyEnabled: Bool) -> [WidgetInScene] {
+        var addedSceneIds: Set<UUID> = []
+        return getSceneWidgetsInner(scene, onlyEnabled, &addedSceneIds)
+    }
+
+    private func getSceneWidgetsInner(_ scene: SettingsScene,
+                                      _ onlyEnabled: Bool,
+                                      _ addedSceneIds: inout Set<UUID>) -> [WidgetInScene]
+    {
         var widgets: [WidgetInScene] = []
         for sceneWidget in scene.widgets {
             guard let widget = findWidget(id: sceneWidget.widgetId) else {
@@ -898,12 +915,17 @@ extension Model {
             guard !onlyEnabled || widget.enabled else {
                 continue
             }
-            widgets.append(WidgetInScene(widget: widget, sceneWidget: sceneWidget))
-            guard widget.type == .scene else {
-                continue
-            }
-            if let scene = database.scenes.first(where: { $0.id == widget.scene.sceneId }) {
-                widgets += getSceneWidgets(scene: scene, onlyEnabled: onlyEnabled)
+            if widget.type == .scene {
+                if addedSceneIds.contains(widget.scene.sceneId) {
+                    continue
+                }
+                widgets.append(WidgetInScene(widget: widget, sceneWidget: sceneWidget))
+                addedSceneIds.insert(widget.scene.sceneId)
+                if let scene = database.scenes.first(where: { $0.id == widget.scene.sceneId }) {
+                    widgets += getSceneWidgetsInner(scene, onlyEnabled, &addedSceneIds)
+                }
+            } else {
+                widgets.append(WidgetInScene(widget: widget, sceneWidget: sceneWidget))
             }
         }
         return widgets
@@ -1060,11 +1082,19 @@ extension Model {
             devices.hasSceneDevice = true
             devices.devices.append(makeCaptureDevice(device: sceneDevice))
         }
-        getBuiltinCameraDevicesInScene(scene: scene, devices: &devices.devices)
+        var addedSceneIds: Set<UUID> = []
+        getBuiltinCameraDevicesInScene(scene: scene, devices: &devices.devices, addedSceneIds: &addedSceneIds)
         return devices
     }
 
-    private func getBuiltinCameraDevicesInScene(scene: SettingsScene, devices: inout [CaptureDevice]) {
+    private func getBuiltinCameraDevicesInScene(scene: SettingsScene,
+                                                devices: inout [CaptureDevice],
+                                                addedSceneIds: inout Set<UUID>)
+    {
+        guard !addedSceneIds.contains(scene.id) else {
+            return
+        }
+        addedSceneIds.insert(scene.id)
         for sceneWidget in scene.widgets {
             guard let widget = findWidget(id: sceneWidget.widgetId) else {
                 continue
@@ -1080,7 +1110,9 @@ extension Model {
             case .pngTuber:
                 getBuiltinCameraDevicesForPngTuberWidget(pngTuber: widget.pngTuber, devices: &devices)
             case .scene:
-                getBuiltinCameraDevicesForSceneWidget(scene: widget.scene, devices: &devices)
+                getBuiltinCameraDevicesForSceneWidget(scene: widget.scene,
+                                                      devices: &devices,
+                                                      addedSceneIds: &addedSceneIds)
             default:
                 break
             }
@@ -1150,9 +1182,14 @@ extension Model {
         }
     }
 
-    private func getBuiltinCameraDevicesForSceneWidget(scene: SettingsWidgetScene, devices: inout [CaptureDevice]) {
+    private func getBuiltinCameraDevicesForSceneWidget(scene: SettingsWidgetScene,
+                                                       devices: inout [CaptureDevice],
+                                                       addedSceneIds: inout Set<UUID>)
+    {
         if let scene = database.scenes.first(where: { $0.id == scene.sceneId }) {
-            getBuiltinCameraDevicesInScene(scene: scene, devices: &devices)
+            getBuiltinCameraDevicesInScene(scene: scene,
+                                           devices: &devices,
+                                           addedSceneIds: &addedSceneIds)
         }
     }
 
