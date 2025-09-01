@@ -98,7 +98,7 @@ private struct MenuView: View {
             }
         case .widgets:
             NavigationStack {
-                QuickButtonWidgetsView(model: model, sceneSelector: model.sceneSelector)
+                QuickButtonSceneWidgetsView(model: model, sceneSelector: model.sceneSelector)
             }
         case .recordings:
             NavigationStack {

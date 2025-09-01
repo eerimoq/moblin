@@ -362,7 +362,7 @@ private struct WidgetView: View {
     }
 }
 
-struct QuickButtonWidgetsView: View {
+struct QuickButtonSceneWidgetsView: View {
     let model: Model
     @ObservedObject var sceneSelector: SceneSelector
 
