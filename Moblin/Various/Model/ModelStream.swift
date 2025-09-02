@@ -864,9 +864,7 @@ extension Model {
 
     func updateDebugOverlay() {
         if database.debug.debugOverlay {
-            debugOverlay.debugLines = [String(localized: "CPU: \(Int(debugOverlay.cpuUsage))")]
-                + latestDebugLines
-                + latestDebugActions
+            debugOverlay.debugLines = latestDebugLines + latestDebugActions
             if logger.debugEnabled, isLive {
                 logger.debug(latestDebugLines.joined(separator: ", "))
             }

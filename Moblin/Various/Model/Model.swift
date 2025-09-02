@@ -131,7 +131,6 @@ struct LogEntry: Identifiable {
 }
 
 class DebugOverlayProvider: ObservableObject {
-    var cpuUsage: Float = 0.0
     @Published var debugLines: [String] = []
 }
 
@@ -199,6 +198,10 @@ class StatusTopLeft: ObservableObject {
     @Published var streamText = noValue
     @Published var statusCameraText = noValue
     @Published var statusObsText = noValue
+}
+
+class Cpu: ObservableObject {
+    @Published var usage = 0
 }
 
 class StatusTopRight: ObservableObject {
@@ -391,6 +394,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     let toast = Toast()
     let statusOther = StatusOther()
     let statusTopLeft = StatusTopLeft()
+    let cpu = Cpu()
     let statusTopRight = StatusTopRight()
     let battery = Battery()
     let remoteControl = RemoteControl()
@@ -1550,9 +1554,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             self.updateBitrateStatus()
             self.updateAdsRemainingTimer(now: now)
             self.keepSpeakerAlive(now: monotonicNow)
-            if self.database.debug.debugOverlay {
+            if self.database.show.cpu {
                 self.resourceUsage.update(now: monotonicNow)
-                self.debugOverlay.cpuUsage = self.resourceUsage.getCpuUsage()
+                self.cpu.usage = Int(self.resourceUsage.getCpuUsage())
             }
             self.updateMoblinkStatus()
             self.updateStatusEventsText()
@@ -2948,6 +2952,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func isStatusBrowserWidgetsActive() -> Bool {
         return !statusTopRight.browserWidgetsStatus.isEmpty && statusTopRight.browserWidgetsStatusChanged
+    }
+
+    func isShowingStatusCpu() -> Bool {
+        return database.show.cpu
     }
 }
 

@@ -3323,6 +3323,7 @@ class SettingsShow: Codable, ObservableObject {
     @Published var catPrinter: Bool = true
     @Published var cyclingPowerDevice: Bool = true
     @Published var heartRateDevice: Bool = true
+    @Published var cpu: Bool = false
 
     init() {}
 
@@ -3351,7 +3352,8 @@ class SettingsShow: Codable, ObservableObject {
              moblink,
              catPrinter,
              cyclingPowerDevice,
-             heartRateDevice
+             heartRateDevice,
+             cpu
     }
 
     func encode(to encoder: Encoder) throws {
@@ -3381,6 +3383,7 @@ class SettingsShow: Codable, ObservableObject {
         try container.encode(.catPrinter, catPrinter)
         try container.encode(.cyclingPowerDevice, cyclingPowerDevice)
         try container.encode(.heartRateDevice, heartRateDevice)
+        try container.encode(.cpu, cpu)
     }
 
     required init(from decoder: Decoder) throws {
@@ -3410,6 +3413,7 @@ class SettingsShow: Codable, ObservableObject {
         catPrinter = container.decode(.catPrinter, Bool.self, true)
         cyclingPowerDevice = container.decode(.cyclingPowerDevice, Bool.self, true)
         heartRateDevice = container.decode(.heartRateDevice, Bool.self, true)
+        cpu = container.decode(.cpu, Bool.self, false)
     }
 }
 

@@ -242,6 +242,41 @@ private struct StreamUptimeStatusView: View {
     }
 }
 
+private struct CpuStatusView: View {
+    let model: Model
+    @ObservedObject var show: SettingsShow
+    @ObservedObject var cpu: Cpu
+    let textPlacement: StreamOverlayIconAndTextPlacement
+
+    var body: some View {
+        if model.isShowingStatusCpu() {
+            if textPlacement == .hide {
+                HStack(spacing: 1) {
+                    Image(systemName: "cpu")
+                        .frame(width: 17, height: 17)
+                        .padding([.leading], 2)
+                        .foregroundColor(.white)
+                    Text(String(cpu.usage))
+                        .foregroundColor(.white)
+                        .padding([.trailing], 2)
+                }
+                .font(smallFont)
+                .background(backgroundColor)
+                .cornerRadius(5)
+                .padding(20)
+                .contentShape(Rectangle())
+                .padding(-20)
+            } else {
+                StreamOverlayIconAndTextView(
+                    icon: "cpu",
+                    text: "\(cpu.usage) %",
+                    textPlacement: textPlacement
+                )
+            }
+        }
+    }
+}
+
 private struct HypeTrainStatusView: View {
     let model: Model
     @ObservedObject var hypeTrain: HypeTrain
@@ -683,6 +718,10 @@ private struct StatusesView: View {
             autoSceneSwitchers: model.database.autoSceneSwitchers,
             textPlacement: textPlacement
         )
+        CpuStatusView(model: model,
+                      show: model.database.show,
+                      cpu: model.cpu,
+                      textPlacement: textPlacement)
         if show.audioLevel, textPlacement == .hide {
             CompactAudioBarView(level: model.audio.level)
         }

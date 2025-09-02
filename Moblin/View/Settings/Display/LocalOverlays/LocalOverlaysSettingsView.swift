@@ -55,6 +55,11 @@ struct LocalOverlaysSettingsView: View {
                     Image(systemName: "waveform")
                 }
                 Label {
+                    Toggle("CPU usage", isOn: $show.cpu)
+                } icon: {
+                    Image(systemName: "cpu")
+                }
+                Label {
                     Toggle("Location", isOn: $show.location)
                 } icon: {
                     Image(systemName: "location")
