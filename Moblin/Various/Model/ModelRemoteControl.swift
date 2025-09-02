@@ -434,6 +434,9 @@ extension Model {
         if !statusTopRight.djiDevicesStatus.isEmpty {
             topRight.djiDevices = RemoteControlStatusItem(message: statusTopRight.djiDevicesStatus)
         }
+        if database.show.cpu {
+            topRight.cpuUsage = RemoteControlStatusItem(message: "\(cpu.usage) %")
+        }
         return topRight
     }
 
