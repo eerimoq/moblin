@@ -146,7 +146,7 @@ struct ChatSettingsView: View {
                             model.reloadChatMessages()
                         }
                     )
-                    Text("\(Int(100 * chat.height)) %")
+                    Text("\(Int(100 * chat.height))%")
                         .frame(width: sliderValuePercentageWidth)
                 }
                 HStack {
@@ -162,7 +162,7 @@ struct ChatSettingsView: View {
                             model.reloadChatMessages()
                         }
                     )
-                    Text("\(Int(100 * chat.width)) %")
+                    Text("\(Int(100 * chat.width))%")
                         .frame(width: sliderValuePercentageWidth)
                 }
                 HStack {

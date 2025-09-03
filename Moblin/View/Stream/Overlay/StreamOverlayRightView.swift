@@ -269,7 +269,7 @@ private struct CpuStatusView: View {
             } else {
                 StreamOverlayIconAndTextView(
                     icon: "cpu",
-                    text: "\(cpu.usage) %",
+                    text: "\(cpu.usage)%",
                     textPlacement: textPlacement
                 )
             }

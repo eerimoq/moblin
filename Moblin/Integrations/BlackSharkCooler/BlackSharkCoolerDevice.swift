@@ -200,14 +200,14 @@ extension BlackSharkCoolerDevice: CBPeripheralDelegate {
         // Since we do not know the fan and cooler-state we have to assume that it can be out of sync. sending the
         // commands to update the cooling power and fan speed on every interval will make sure that its in sync.
         let coolingPower = updatedPercentageScale(coolingPower, target: coolingPowerTarget)
-        logger.debug("black-shark-cooler-device: Adjusting cooling power to \(coolingPower) %")
+        logger.debug("black-shark-cooler-device: Adjusting cooling power to \(coolingPower)%")
         peripheral.writeValue(
             BlackSharkLib.getSetCoolingPowerCommand(coolingPower)!,
             for: writeCharacteristic,
             type: .withoutResponse
         )
         let fanSpeed = updatedPercentageScale(fanSpeed, target: fanSpeedTarget)
-        logger.debug("black-shark-cooler-device: Adjusting fan speed to \(fanSpeed) %")
+        logger.debug("black-shark-cooler-device: Adjusting fan speed to \(fanSpeed)%")
         peripheral.writeValue(
             BlackSharkLib.getSetFanSpeedCommand(fanSpeed)!,
             for: writeCharacteristic,

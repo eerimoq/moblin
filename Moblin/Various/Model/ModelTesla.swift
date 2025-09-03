@@ -86,7 +86,7 @@ extension Model {
     func textEffectTeslaBatteryLevel() -> String {
         var teslaBatteryLevel = "-"
         if tesla.chargeState.optionalBatteryLevel != nil {
-            teslaBatteryLevel = "\(tesla.chargeState.batteryLevel) %"
+            teslaBatteryLevel = "\(tesla.chargeState.batteryLevel)%"
             if tesla.chargeState.chargerPower != 0 {
                 teslaBatteryLevel += " \(tesla.chargeState.chargerPower) kW"
             }
