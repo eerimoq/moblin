@@ -2878,12 +2878,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return statusTopRight.adsRemainingTimerStatus != noValue
     }
 
-    func isShowingStatusServers() -> Bool {
-        return database.show.rtmpSpeed && isServersConfigured()
+    func isShowingStatusIngests() -> Bool {
+        return database.show.rtmpSpeed && isIngestsConfigured()
     }
 
-    func isServersConfigured() -> Bool {
-        return rtmpServerEnabled() || srtlaServerEnabled() || ristServerEnabled()
+    func isIngestsConfigured() -> Bool {
+        return rtmpServerEnabled() || srtlaServerEnabled() || ristServerEnabled() || !ingests.rtsp.isEmpty
     }
 
     func isShowingStatusMoblink() -> Bool {

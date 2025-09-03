@@ -411,7 +411,7 @@ private struct IngestsStatusView: View {
     let textPlacement: StreamOverlayIconAndTextPlacement
 
     var body: some View {
-        if model.isShowingStatusServers() {
+        if model.isShowingStatusIngests() {
             StreamOverlayIconAndTextView(
                 icon: "server.rack",
                 text: ingests.speedAndTotal,

@@ -395,7 +395,7 @@ extension Model {
         } else {
             topRight.audioInfo!.audioLevel = .value(audio.level.level)
         }
-        if isServersConfigured() {
+        if isIngestsConfigured() {
             topRight.rtmpServer = RemoteControlStatusItem(message: ingests.speedAndTotal)
         }
         if isAnyRemoteControlConfigured() {
