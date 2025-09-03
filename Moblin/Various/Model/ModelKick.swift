@@ -1,6 +1,10 @@
 import Foundation
 import SwiftUI
 
+extension NSNotification.Name {
+    static let kickChannelInfoUpdated = NSNotification.Name("KickChannelInfoUpdated")
+}
+
 private enum KickSendError: Error {
     case notLoggedIn
     case channelNotSet
@@ -50,6 +54,7 @@ extension Model {
     }
 
     func kickChannelNameUpdated() {
+        stream.kickChatroomId = ""
         reloadKickPusher()
         reloadKickViewers()
         resetChat()
@@ -238,6 +243,21 @@ extension Model: KickOusherDelegate {
                 color: .red,
                 image: "nosign"
             )
+        }
+    }
+
+    func kickPusherChannelInfoFetched(channelId: String) {
+        updateKickChannelInfo(channelId: channelId)
+    }
+
+    func kickPusherChannelInfoFailed() {
+        updateKickChannelInfo(channelId: "")
+    }
+
+    private func updateKickChannelInfo(channelId: String) {
+        DispatchQueue.main.async {
+            self.stream.kickChatroomId = channelId
+            NotificationCenter.default.post(name: .kickChannelInfoUpdated, object: nil)
         }
     }
 }

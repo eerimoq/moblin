@@ -122,15 +122,55 @@ private struct KickWebView: UIViewRepresentable {
     }
 }
 
+private struct ChannelInfoView: View {
+    let isLoading: Bool
+    let channelId: String
+    let channelName: String
+
+    var body: some View {
+        if isLoading {
+            HStack {
+                ProgressView()
+                    .scaleEffect(0.8)
+                Text("Fetching channel info...")
+                    .foregroundColor(.secondary)
+                    .font(.caption)
+            }
+        } else if !channelId.isEmpty {
+            Text("Channel ID: \(channelId)")
+                .foregroundColor(.secondary)
+                .font(.caption)
+        } else if !channelName.isEmpty {
+            Text("Channel not found")
+                .foregroundColor(.red)
+                .font(.caption)
+        }
+    }
+}
+
 struct StreamKickSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var stream: SettingsStream
     @State var streamTitle: String = ""
+    @State var isLoadingChannelInfo: Bool = false
+    @State private var channelUpdateTimer: Timer?
+
+    private let channelUpdateCooldown: TimeInterval = 2.5
 
     func submitChannelName(value: String) {
         stream.kickChannelName = value
-        if stream.enabled {
-            model.kickChannelNameUpdated()
+        channelUpdateTimer?.invalidate()
+        isLoadingChannelInfo = !value.isEmpty
+        guard !value.isEmpty else {
+            if stream.enabled {
+                model.kickChannelNameUpdated()
+            }
+            return
+        }
+        channelUpdateTimer = Timer.scheduledTimer(withTimeInterval: channelUpdateCooldown, repeats: false) { _ in
+            if stream.enabled {
+                model.kickChannelNameUpdated()
+            }
         }
     }
 
@@ -149,6 +189,11 @@ struct StreamKickSettingsView: View {
                     value: stream.kickChannelName,
                     onSubmit: submitChannelName
                 )
+                ChannelInfoView(
+                    isLoading: isLoadingChannelInfo,
+                    channelId: stream.kickChatroomId,
+                    channelName: stream.kickChannelName
+                )
             }
             if stream.kickLoggedIn {
                 Section {
@@ -166,6 +211,12 @@ struct StreamKickSettingsView: View {
                     streamTitle = $0
                 }
             }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .kickChannelInfoUpdated)) { _ in
+            isLoadingChannelInfo = false
+        }
+        .onDisappear {
+            channelUpdateTimer?.invalidate()
         }
         .navigationTitle("Kick")
     }

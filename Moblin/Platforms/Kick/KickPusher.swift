@@ -187,6 +187,8 @@ protocol KickOusherDelegate: AnyObject {
     func kickPusherRewardRedeemed(event: RewardRedeemedEvent)
     func kickPusherStreamHost(event: StreamHostEvent)
     func kickPusherUserBanned(event: UserBannedEvent)
+    func kickPusherChannelInfoFetched(channelId: String)
+    func kickPusherChannelInfoFailed()
 }
 
 final class KickPusher: NSObject {
@@ -228,6 +230,7 @@ final class KickPusher: NSObject {
                     return
                 }
                 guard let channelInfo else {
+                    self.delegate?.kickPusherChannelInfoFailed()
                     DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
                         self.getInfoAndConnect()
                     }
@@ -235,6 +238,7 @@ final class KickPusher: NSObject {
                 }
                 self.gotInfo = true
                 self.channelId = String(channelInfo.chatroom.id)
+                self.delegate?.kickPusherChannelInfoFetched(channelId: self.channelId)
                 self.connect()
             }
         }
