@@ -12,7 +12,7 @@ private enum KickSendError: Error {
 
 extension Model {
     func isKickPusherConfigured() -> Bool {
-        return database.chat.enabled && (stream.kickChatroomId != "" || stream.kickChannelName != "")
+        return database.chat.enabled && stream.kickChannelName != ""
     }
 
     func isKickPusherConnected() -> Bool {
@@ -39,11 +39,8 @@ extension Model {
         kickPusher?.stop()
         kickPusher = nil
         setTextToSpeechStreamerMentions()
-        if isKickPusherConfigured(), !isChatRemoteControl() {
-            kickPusher = KickPusher(delegate: self,
-                                    channelId: stream.kickChatroomId,
-                                    channelName: stream.kickChannelName,
-                                    settings: stream.chat)
+        if isKickPusherConfigured(), !isChatRemoteControl(), let channelId = stream.kickChannelId {
+            kickPusher = KickPusher(delegate: self, channelId: channelId, settings: stream.chat)
             kickPusher!.start()
         }
         updateChatMoreThanOneChatConfigured()
@@ -55,29 +52,37 @@ extension Model {
         resetChat()
     }
 
+    func kickAccessTokenUpdated() {
+        reloadKickPusher()
+        reloadKickViewers()
+        resetChat()
+    }
+
+    private func createKickApi() -> KickApi? {
+        guard let channelId = stream.kickChannelId, let slug = stream.kickSlug else {
+            return nil
+        }
+        return KickApi(channelId: channelId, slug: slug, accessToken: stream.kickAccessToken)
+    }
+
     func sendKickChatMessage(message: String) {
-        KickApi(channelName: stream.kickChannelName, accessToken: stream.kickAccessToken)
-            .sendMessage(message: message)
+        createKickApi()?.sendMessage(message: message)
     }
 
     func banKickUser(user: String, duration: Int? = nil) {
-        KickApi(channelName: stream.kickChannelName, accessToken: stream.kickAccessToken)
-            .banUser(user: user, duration: duration)
+        createKickApi()?.banUser(user: user, duration: duration)
     }
 
     func deleteKickMessage(messageId: String) {
-        KickApi(channelName: stream.kickChannelName, accessToken: stream.kickAccessToken)
-            .deleteMessage(messageId: messageId)
+        createKickApi()?.deleteMessage(messageId: messageId)
     }
 
     func getKickStreamTitle(onComplete: @escaping (String) -> Void) {
-        KickApi(channelName: stream.kickChannelName, accessToken: stream.kickAccessToken)
-            .getStreamTitle(onComplete: onComplete)
+        createKickApi()?.getStreamTitle(onComplete: onComplete)
     }
 
     func setKickStreamTitle(title: String, onComplete: @escaping (String) -> Void) {
-        KickApi(channelName: stream.kickChannelName, accessToken: stream.kickAccessToken)
-            .setStreamTitle(title: title, onComplete: onComplete)
+        createKickApi()?.setStreamTitle(title: title, onComplete: onComplete)
     }
 
     private func appendKickChatAlertMessage(

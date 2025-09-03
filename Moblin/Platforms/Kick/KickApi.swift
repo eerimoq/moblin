@@ -46,91 +46,68 @@ func getKickChannelInfo(channelName: String, onComplete: @escaping (KickChannel?
 }
 
 class KickApi {
-    private let channelName: String
+    private let channelId: String
+    private let slug: String
     private let accessToken: String
 
-    init(channelName: String, accessToken: String) {
-        self.channelName = channelName
+    init(channelId: String, slug: String, accessToken: String) {
+        self.channelId = channelId
+        self.slug = slug
         self.accessToken = accessToken
     }
 
     func sendMessage(message: String) {
-        getKickChannelInfo(channelName: channelName) { channelInfo in
-            guard let channelInfo else {
-                return
-            }
-            self.doRequest(method: "POST",
-                           subPath: "messages/send/\(channelInfo.chatroom.id)",
-                           body: ["type": "message", "content": message])
-            { _, _ in
-            }
+        doRequest(method: "POST",
+                  subPath: "messages/send/\(channelId)",
+                  body: ["type": "message", "content": message])
+        { _, _ in
         }
     }
 
     func deleteMessage(messageId: String) {
-        getKickChannelInfo(channelName: channelName) { channelInfo in
-            guard let channelInfo else {
-                return
-            }
-            self.doRequest(method: "DELETE",
-                           subPath: "chatrooms/\(channelInfo.chatroom.id)/messages/\(messageId)")
-            { _, _ in
-            }
+        doRequest(method: "DELETE",
+                  subPath: "chatrooms/\(channelId)/messages/\(messageId)")
+        { _, _ in
         }
     }
 
     func banUser(user: String, duration: Int? = nil) {
-        getKickChannelInfo(channelName: channelName) { channelInfo in
-            guard let channelInfo else {
-                return
-            }
-            var body: [String: Any] = [
-                "banned_username": user,
-                "permanent": duration == nil,
-            ]
-            if let duration {
-                body["duration"] = duration / 60
-            }
-            self.doRequest(method: "POST",
-                           subPath: "channels/\(channelInfo.slug)/bans",
-                           body: body)
-            { _, _ in
-            }
+        var body: [String: Any] = [
+            "banned_username": user,
+            "permanent": duration == nil,
+        ]
+        if let duration {
+            body["duration"] = duration / 60
+        }
+        doRequest(method: "POST",
+                  subPath: "channels/\(slug)/bans",
+                  body: body)
+        { _, _ in
         }
     }
 
     func getStreamTitle(onComplete: @escaping (String) -> Void) {
-        getKickChannelInfo(channelName: channelName) { channelInfo in
-            guard let channelInfo else {
+        doRequest(method: "GET",
+                  subPath: "channels/\(slug)/stream-info")
+        { ok, data in
+            guard ok,
+                  let data,
+                  let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                  let title = json["stream_title"] as? String
+            else {
                 return
             }
-            self.doRequest(method: "GET",
-                           subPath: "channels/\(channelInfo.slug)/stream-info")
-            { ok, data in
-                guard ok,
-                      let data,
-                      let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-                      let title = json["stream_title"] as? String
-                else {
-                    return
-                }
-                onComplete(title)
-            }
+            onComplete(title)
         }
     }
 
     func setStreamTitle(title: String, onComplete: @escaping (String) -> Void) {
-        getKickChannelInfo(channelName: channelName) { channelInfo in
-            guard let channelInfo else {
-                return
-            }
-            self.doRequest(method: "PATCH",
-                           subPath: "channels/\(channelInfo.slug)/stream-info",
-                           body: ["stream_title": title])
-            { ok, _ in
-                if ok {
-                    onComplete(title)
-                }
+        doRequest(method: "PATCH",
+                  subPath: "channels/\(slug)/stream-info",
+                  body: ["stream_title": title])
+        { ok, _ in
+            if ok {
+                onComplete(title)
             }
         }
     }

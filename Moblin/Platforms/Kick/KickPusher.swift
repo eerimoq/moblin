@@ -190,7 +190,6 @@ protocol KickOusherDelegate: AnyObject {
 }
 
 final class KickPusher: NSObject {
-    private var channelName: String
     private var channelId: String
     private var webSocket: WebSocketClient
     private var emotes: Emotes
@@ -198,10 +197,9 @@ final class KickPusher: NSObject {
     private var gotInfo = false
     private weak var delegate: (any KickOusherDelegate)?
 
-    init(delegate: KickOusherDelegate, channelId: String, channelName: String, settings: SettingsStreamChat) {
+    init(delegate: KickOusherDelegate, channelId: String, settings: SettingsStreamChat) {
         self.delegate = delegate
         self.channelId = channelId
-        self.channelName = channelName
         self.settings = settings.clone()
         emotes = Emotes()
         webSocket = .init(url: url)
@@ -210,34 +208,7 @@ final class KickPusher: NSObject {
     func start() {
         logger.debug("kick: Start")
         stopInternal()
-        if channelName.isEmpty {
-            connect()
-        } else {
-            getInfoAndConnect()
-        }
-    }
-
-    private func getInfoAndConnect() {
-        logger.debug("kick: Get info and connect")
-        getKickChannelInfo(channelName: channelName) { [weak self] channelInfo in
-            guard let self else {
-                return
-            }
-            DispatchQueue.main.async {
-                guard !self.gotInfo else {
-                    return
-                }
-                guard let channelInfo else {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-                        self.getInfoAndConnect()
-                    }
-                    return
-                }
-                self.gotInfo = true
-                self.channelId = String(channelInfo.chatroom.id)
-                self.connect()
-            }
-        }
+        connect()
     }
 
     private func connect() {

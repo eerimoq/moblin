@@ -54,7 +54,7 @@ private struct AuthenticationView: View {
         stream.kickAccessToken = ""
         stream.kickLoggedIn = false
         if stream.enabled {
-            model.kickChannelNameUpdated()
+            model.kickAccessTokenUpdated()
         }
     }
 
@@ -62,7 +62,7 @@ private struct AuthenticationView: View {
         stream.kickAccessToken = accessToken
         stream.kickLoggedIn = true
         if stream.enabled {
-            model.kickChannelNameUpdated()
+            model.kickAccessTokenUpdated()
         }
     }
 }
@@ -126,15 +126,39 @@ struct StreamKickSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var stream: SettingsStream
     @State var streamTitle: String = ""
+    @State var fetchChannelInfoFailed: Bool = false
 
-    func submitChannelName(value: String) {
+    private func shouldFetchChannelInfo() -> Bool {
+        return !stream.kickChannelName.isEmpty && (stream.kickChannelId == nil || stream.kickSlug == nil)
+    }
+
+    private func fetchChannelInfo() {
+        fetchChannelInfoFailed = false
+        getKickChannelInfo(channelName: stream.kickChannelName) { channelInfo in
+            DispatchQueue.main.async {
+                if let channelInfo {
+                    self.stream.kickChannelId = String(channelInfo.chatroom.id)
+                    self.stream.kickSlug = channelInfo.slug
+                } else {
+                    fetchChannelInfoFailed = true
+                }
+                if self.stream.enabled {
+                    model.kickChannelNameUpdated()
+                }
+            }
+        }
+    }
+
+    private func submitChannelName(value: String) {
         stream.kickChannelName = value
-        if stream.enabled {
+        stream.kickChannelId = nil
+        stream.kickSlug = nil
+        if stream.enabled, stream.kickChannelName.isEmpty {
             model.kickChannelNameUpdated()
         }
     }
 
-    func submitStreamTitle(value: String) {
+    private func submitStreamTitle(value: String) {
         model.setKickStreamTitle(title: value) {
             streamTitle = $0
         }
@@ -149,6 +173,13 @@ struct StreamKickSettingsView: View {
                     value: stream.kickChannelName,
                     onSubmit: submitChannelName
                 )
+            } footer: {
+                if fetchChannelInfoFailed {
+                    Text("Channel not found on kick.com.")
+                        .foregroundColor(.red)
+                } else if shouldFetchChannelInfo() {
+                    Text("Fetching channel info...")
+                }
             }
             if stream.kickLoggedIn {
                 Section {
@@ -165,6 +196,9 @@ struct StreamKickSettingsView: View {
                 model.getKickStreamTitle {
                     streamTitle = $0
                 }
+            }
+            if shouldFetchChannelInfo() {
+                fetchChannelInfo()
             }
         }
         .navigationTitle("Kick")

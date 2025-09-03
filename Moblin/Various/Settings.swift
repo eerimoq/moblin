@@ -556,8 +556,9 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
     var twitchLoggedIn: Bool = false
     var twitchRewards: [SettingsStreamTwitchReward] = []
     @Published var twitchSendMessagesTo: Bool = true
-    var kickChatroomId: String = ""
     var kickChannelName: String = ""
+    @Published var kickChannelId: String?
+    @Published var kickSlug: String?
     var kickAccessToken: String = ""
     @Published var kickLoggedIn: Bool = false
     @Published var kickSendMessagesTo: Bool = true
@@ -631,8 +632,9 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
              twitchLoggedIn,
              twitchRewards,
              twitchSendMessagesTo,
-             kickChatroomId,
              kickChannelName,
+             kickChannelId,
+             kickSlug,
              kickAccessToken,
              kickLoggedIn,
              kickSendMessagesTo,
@@ -702,8 +704,9 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         try container.encode(.twitchLoggedIn, twitchLoggedIn)
         try container.encode(.twitchRewards, twitchRewards)
         try container.encode(.twitchSendMessagesTo, twitchSendMessagesTo)
-        try container.encode(.kickChatroomId, kickChatroomId)
         try container.encode(.kickChannelName, kickChannelName)
+        try container.encode(.kickChannelId, kickChannelId)
+        try container.encode(.kickSlug, kickSlug)
         try container.encode(.kickAccessToken, kickAccessToken)
         try container.encode(.kickLoggedIn, kickLoggedIn)
         try container.encode(.kickSendMessagesTo, kickSendMessagesTo)
@@ -771,8 +774,9 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         twitchLoggedIn = container.decode(.twitchLoggedIn, Bool.self, false)
         twitchRewards = container.decode(.twitchRewards, [SettingsStreamTwitchReward].self, [])
         twitchSendMessagesTo = container.decode(.twitchSendMessagesTo, Bool.self, true)
-        kickChatroomId = container.decode(.kickChatroomId, String.self, "")
         kickChannelName = container.decode(.kickChannelName, String.self, "")
+        kickChannelId = container.decode(.kickChannelId, String?.self, nil)
+        kickSlug = container.decode(.kickSlug, String?.self, nil)
         kickAccessToken = container.decode(.kickAccessToken, String.self, "")
         kickLoggedIn = container.decode(.kickLoggedIn, Bool.self, false)
         kickSendMessagesTo = container.decode(.kickSendMessagesTo, Bool.self, true)
@@ -834,8 +838,9 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         new.twitchChannelId = twitchChannelId
         new.twitchShowFollows = twitchShowFollows
         new.twitchSendMessagesTo = twitchSendMessagesTo
-        new.kickChatroomId = kickChatroomId
         new.kickChannelName = kickChannelName
+        new.kickChannelId = kickChannelId
+        new.kickSlug = kickSlug
         new.kickAccessToken = kickAccessToken
         new.kickLoggedIn = kickLoggedIn
         new.youTubeApiKey = youTubeApiKey
