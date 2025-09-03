@@ -65,7 +65,7 @@ struct LocalOverlaysSettingsView: View {
                     Image(systemName: "location")
                 }
                 Label {
-                    Toggle("RTMP server", isOn: $show.rtmpSpeed)
+                    Toggle("Ingests", isOn: $show.rtmpSpeed)
                 } icon: {
                     Image(systemName: "server.rack")
                 }
