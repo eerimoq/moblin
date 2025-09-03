@@ -350,6 +350,9 @@ struct MainView: View {
                                       height: metrics.size.height)
                         .opacity(model.showLocalOverlays ? 1 : 0)
                 }
+                if model.showDrawOnStream, model.stream.portrait {
+                    DrawOnStreamView(model: model)
+                }
                 if model.showFace && !model.showDrawOnStream {
                     face()
                 }
