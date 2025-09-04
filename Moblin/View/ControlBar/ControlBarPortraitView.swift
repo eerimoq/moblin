@@ -166,7 +166,8 @@ private struct MainPageView: View {
                     ThermalStateView(thermalState: status.thermalState)
                     Spacer(minLength: 0)
                 }
-                .padding([.bottom, .trailing], 5)
+                .padding([.top], 3)
+                .padding([.trailing], 5)
                 .padding([.leading], 0)
                 IconAndSettingsView(cosmetics: model.cosmetics)
                 StreamButton()
