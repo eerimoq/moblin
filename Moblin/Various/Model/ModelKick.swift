@@ -58,6 +58,24 @@ extension Model {
         resetChat()
     }
 
+    func updateKickChannelInfoIfNeeded() {
+        guard !stream.kickChannelName.isEmpty else {
+            return
+        }
+        guard stream.kickChannelId == nil || stream.kickSlug == nil else {
+            return
+        }
+        getKickChannelInfo(channelName: stream.kickChannelName) { channelInfo in
+            DispatchQueue.main.async {
+                if let channelInfo {
+                    self.stream.kickChannelId = String(channelInfo.chatroom.id)
+                    self.stream.kickSlug = channelInfo.slug
+                }
+                self.kickChannelNameUpdated()
+            }
+        }
+    }
+
     private func createKickApi() -> KickApi? {
         guard let channelId = stream.kickChannelId, let slug = stream.kickSlug else {
             return nil

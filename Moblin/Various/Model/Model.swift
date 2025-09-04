@@ -1080,6 +1080,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         gForceManager = GForceManager(motionManager: motionManager)
         startGForceManager()
         loadStealthModeImage()
+        updateKickChannelInfoIfNeeded()
     }
 
     @objc func applicationDidChangeActive(notification: NSNotification) {
@@ -1364,6 +1365,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 showBackgroudStreamingDisabledToast = false
             }
             reloadCameraLevel()
+            updateKickChannelInfoIfNeeded()
         }
     }
 
