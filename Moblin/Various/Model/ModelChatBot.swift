@@ -343,14 +343,12 @@ extension Model {
 
     private func handleChatBotMessageAiAsk(command: ChatBotCommand) {
         let question = command.rest()
-        guard let baseUrl = URL(string: database.chat.botCommandAi.baseUrl) else {
+        let ai = database.chat.botCommandAi
+        guard let baseUrl = URL(string: ai.baseUrl) else {
             return
         }
-        OpenAi(baseUrl: baseUrl, apiKey: database.chat.botCommandAi.apiKey)
-            .ask(question,
-                 model: database.chat.botCommandAi.model,
-                 role: database.chat.botCommandAi.role)
-            { answer, language in
+        OpenAi(baseUrl: baseUrl, apiKey: ai.apiKey)
+            .ask(question, model: ai.model, role: ai.role) { answer, language in
                 guard let answer else {
                     return
                 }

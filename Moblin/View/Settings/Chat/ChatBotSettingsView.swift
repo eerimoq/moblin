@@ -222,11 +222,7 @@ private struct ChatBotCommandsSettingsView: View {
                     Text("!moblin ai ask <question>")
                 }
             } footer: {
-                VStack(alignment: .leading) {
-                    Text("!moblin ai ask <question>")
-                    Text("Turn on chat text to speech.")
-                    Text("")
-                }
+                Text("Ask an AI a question.")
             }
             Section {
                 NavigationLink {
