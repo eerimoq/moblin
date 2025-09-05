@@ -139,6 +139,11 @@ struct StreamKickSettingsView: View {
                 if let channelInfo {
                     self.stream.kickChannelId = String(channelInfo.chatroom.id)
                     self.stream.kickSlug = channelInfo.slug
+
+                    // Set subscriber badges from channel info if available
+                    if let subscriberBadges = channelInfo.subscriber_badges {
+                        model.setKickSubscriberBadges(subscriberBadges)
+                    }
                 } else {
                     fetchChannelInfoFailed = true
                 }

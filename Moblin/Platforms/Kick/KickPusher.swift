@@ -2,6 +2,68 @@ import Foundation
 
 private struct Badge: Decodable {
     var type: String
+    var text: String?
+    var count: Int?
+}
+
+private class KickBadges {
+    // Badge type constants to avoid magic strings
+    enum BadgeType {
+        static let verified = "verified"
+        static let staff = "staff"
+        static let moderator = "moderator"
+        static let og = "og"
+        static let vip = "vip"
+        static let bot = "bot"
+        static let broadcaster = "broadcaster"
+        static let founder = "founder"
+        static let subscriber = "subscriber"
+        static let subGifter = "sub_gifter"
+    }
+
+    // Constants
+    private static let badgeBaseUrl = "https://raw.githubusercontent.com/id3adeye/kickicons/refs/heads/main"
+
+    private var subscriberBadges: [SubscriberBadge] = []
+    // Cache for O(1) badge URL lookups
+    private var badgeUrlCache: [String: String] = [:]
+
+    init() {
+        // Pre-compute static badge URLs for performance
+        setupStaticBadgeUrls()
+    }
+
+    private func setupStaticBadgeUrls() {
+        badgeUrlCache[BadgeType.verified] = "\(Self.badgeBaseUrl)/kick-verified.png"
+        badgeUrlCache[BadgeType.staff] = "\(Self.badgeBaseUrl)/kick-staff.png"
+        badgeUrlCache[BadgeType.moderator] = "\(Self.badgeBaseUrl)/kick-moderator.png"
+        badgeUrlCache[BadgeType.og] = "\(Self.badgeBaseUrl)/kick-og.png"
+        badgeUrlCache[BadgeType.vip] = "\(Self.badgeBaseUrl)/kick-vip.png"
+        badgeUrlCache[BadgeType.bot] = "\(Self.badgeBaseUrl)/kick-bot.png"
+        badgeUrlCache[BadgeType.broadcaster] = "\(Self.badgeBaseUrl)/kick-broadcaster.png"
+        badgeUrlCache[BadgeType.founder] = "\(Self.badgeBaseUrl)/kick-founder.png"
+        badgeUrlCache[BadgeType.subGifter] = "\(Self.badgeBaseUrl)/kick-sub_gifter.png"
+    }
+
+    func setBadges(_ badges: [SubscriberBadge]) {
+        subscriberBadges = badges.sorted { $0.months < $1.months }
+    }
+
+    func getSubscriberBadgeUrl(months: Int) -> String? {
+        return subscriberBadges
+            .filter { $0.months <= months }
+            .max(by: { $0.months < $1.months })?
+            .badge_image.src
+    }
+
+    func getBadgeUrl(for badgeType: String) -> String? {
+        // O(1) lookup from pre-computed cache
+        return badgeUrlCache[badgeType]
+    }
+
+    func hasBadges() -> Bool {
+        return !subscriberBadges.isEmpty
+    }
 }
 
 private struct Identity: Decodable {
@@ -36,11 +98,11 @@ private struct ChatMessageEvent: Decodable {
     var metadata: Metadata?
 
     func isModerator() -> Bool {
-        return sender.identity.badges.contains(where: { $0.type == "moderator" })
+        return sender.identity.badges.contains(where: { $0.type == KickBadges.BadgeType.moderator })
     }
 
     func isSubscriber() -> Bool {
-        return sender.identity.badges.contains(where: { $0.type == "subscriber" })
+        return sender.identity.badges.contains(where: { $0.type == KickBadges.BadgeType.subscriber })
     }
 }
 
@@ -175,6 +237,7 @@ protocol KickOusherDelegate: AnyObject {
         user: String,
         userId: String?,
         userColor: RgbColor?,
+        userBadges: [URL],
         segments: [ChatPostSegment],
         isSubscriber: Bool,
         isModerator: Bool,
@@ -193,6 +256,7 @@ final class KickPusher: NSObject {
     private var channelId: String
     private var webSocket: WebSocketClient
     private var emotes: Emotes
+    private var badges: KickBadges
     private let settings: SettingsStreamChat
     private var gotInfo = false
     private weak var delegate: (any KickOusherDelegate)?
@@ -202,6 +266,7 @@ final class KickPusher: NSObject {
         self.channelId = channelId
         self.settings = settings.clone()
         emotes = Emotes()
+        badges = KickBadges()
         webSocket = .init(url: url)
     }
 
@@ -244,6 +309,14 @@ final class KickPusher: NSObject {
         return emotes.isReady()
     }
 
+    func setSubscriberBadges(_ badgeList: [SubscriberBadge]) {
+        badges.setBadges(badgeList)
+    }
+
+    func hasBadges() -> Bool {
+        return badges.hasBadges()
+    }
+
     private func handleError(title: String, subTitle: String) {
         DispatchQueue.main.async {
             self.delegate?.kickPusherMakeErrorToast(title: title, subTitle: subTitle)
@@ -259,8 +332,7 @@ final class KickPusher: NSObject {
     private func handleMessage(message: String) {
         do {
             let (type, data) = try decodeEvent(message: message)
-            // kickSub kickGift kickGifts kickIncomingRaid kickRewardRedeemed kickBan kickTO ???
-            // we can get without auth
+            // Handle supported Kick events (no auth required for these)
             switch type {
             case "App\\Events\\ChatMessageEvent":
                 try handleChatMessageEvent(data: data)
@@ -290,11 +362,28 @@ final class KickPusher: NSObject {
 
     private func handleChatMessageEvent(data: String) throws {
         let event = try decodeChatMessageEvent(data: data)
+
+        var badgeUrls: [URL] = []
+        for badge in event.sender.identity.badges {
+            if badge.type == KickBadges.BadgeType.subscriber, let months = badge.count {
+                if let badgeUrlString = badges.getSubscriberBadgeUrl(months: months) {
+                    if let badgeUrl = URL(string: badgeUrlString) {
+                        badgeUrls.append(badgeUrl)
+                    }
+                }
+            } else if let badgeUrlString = badges.getBadgeUrl(for: badge.type) {
+                if let badgeUrl = URL(string: badgeUrlString) {
+                    badgeUrls.append(badgeUrl)
+                }
+            } else {}
+        }
+
         delegate?.kickPusherAppendMessage(
             messageId: event.id,
             user: event.sender.username,
             userId: event.sender.id != nil ? String(event.sender.id!) : nil,
             userColor: RgbColor.fromHex(string: event.sender.identity.color),
+            userBadges: badgeUrls,
             segments: makeChatPostSegments(content: event.content),
             isSubscriber: event.isSubscriber(),
             isModerator: event.isModerator(),

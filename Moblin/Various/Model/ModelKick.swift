@@ -42,8 +42,17 @@ extension Model {
         if isKickPusherConfigured(), !isChatRemoteControl(), let channelId = stream.kickChannelId {
             kickPusher = KickPusher(delegate: self, channelId: channelId, settings: stream.chat)
             kickPusher!.start()
+            // Apply stored badges to new KickPusher
+            if !storedKickBadges.isEmpty {
+                kickPusher!.setSubscriberBadges(storedKickBadges)
+            }
         }
         updateChatMoreThanOneChatConfigured()
+    }
+
+    func setKickSubscriberBadges(_ badges: [SubscriberBadge]) {
+        storedKickBadges = badges
+        kickPusher?.setSubscriberBadges(badges)
     }
 
     func kickChannelNameUpdated() {
@@ -129,6 +138,7 @@ extension Model: KickOusherDelegate {
         user: String,
         userId: String?,
         userColor: RgbColor?,
+        userBadges: [URL],
         segments: [ChatPostSegment],
         isSubscriber: Bool,
         isModerator: Bool,
@@ -139,7 +149,7 @@ extension Model: KickOusherDelegate {
                           user: user,
                           userId: userId,
                           userColor: userColor,
-                          userBadges: [],
+                          userBadges: userBadges,
                           segments: segments,
                           timestamp: statusOther.digitalClock,
                           timestampTime: .now,

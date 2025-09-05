@@ -428,6 +428,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var twitchEventSub: TwitchEventSub?
     var kickPusher: KickPusher?
     var kickViewers: KickViewers?
+    var storedKickBadges: [SubscriberBadge] = []
     private var youTubeLiveChat: YouTubeLiveChat?
     private var afreecaTvChat: AfreecaTvChat?
     private var openStreamingPlatformChat: OpenStreamingPlatformChat!

@@ -1,5 +1,17 @@
 import Foundation
 
+struct BadgeImage: Codable {
+    let src: String
+    let srcset: String
+}
+
+struct SubscriberBadge: Codable {
+    let id: Int
+    let channel_id: Int
+    let months: Int
+    let badge_image: BadgeImage
+}
+
 struct KickLivestream: Codable {
     // periphery:ignore
     let id: Int
@@ -16,6 +28,7 @@ struct KickChannel: Codable {
     let slug: String
     let chatroom: KickChatroom
     let livestream: KickLivestream?
+    let subscriber_badges: [SubscriberBadge]?
 }
 
 func getKickChannelInfo(channelName: String) async throws -> KickChannel {
