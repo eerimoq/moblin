@@ -3731,6 +3731,7 @@ class SettingsChatBotPermissions: Codable {
     var stream: SettingsChatBotPermissionsCommand = .init()
     var widget: SettingsChatBotPermissionsCommand = .init()
     var location: SettingsChatBotPermissionsCommand = .init()
+    var ai: SettingsChatBotPermissionsCommand = .init()
 
     enum CodingKeys: CodingKey {
         case tts,
@@ -3746,7 +3747,8 @@ class SettingsChatBotPermissions: Codable {
              scene,
              stream,
              widget,
-             location
+             location,
+             ai
     }
 
     func encode(to encoder: Encoder) throws {
@@ -3765,6 +3767,7 @@ class SettingsChatBotPermissions: Codable {
         try container.encode(.stream, stream)
         try container.encode(.widget, widget)
         try container.encode(.location, location)
+        try container.encode(.ai, ai)
     }
 
     init() {}
@@ -3785,6 +3788,7 @@ class SettingsChatBotPermissions: Codable {
         stream = container.decode(.stream, SettingsChatBotPermissionsCommand.self, .init())
         widget = container.decode(.widget, SettingsChatBotPermissionsCommand.self, .init())
         location = container.decode(.location, SettingsChatBotPermissionsCommand.self, .init())
+        ai = container.decode(.ai, SettingsChatBotPermissionsCommand.self, .init())
     }
 }
 
@@ -3974,6 +3978,38 @@ class SettingsChatNicknames: Codable, ObservableObject {
     }
 }
 
+class SettingsChatBotAi: Codable, ObservableObject {
+    @Published var baseUrl: String = "https://generativelanguage.googleapis.com/v1beta/openai"
+    @Published var apiKey: String = ""
+    @Published var model: String = "gemini-2.0-flash"
+    @Published var role: String = "You give fast and short answers."
+
+    enum CodingKeys: CodingKey {
+        case baseUrl,
+             apiKey,
+             model,
+             role
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.baseUrl, baseUrl)
+        try container.encode(.apiKey, apiKey)
+        try container.encode(.model, model)
+        try container.encode(.role, role)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        baseUrl = container.decode(.baseUrl, String.self, "https://generativelanguage.googleapis.com/v1beta/openai")
+        apiKey = container.decode(.apiKey, String.self, "")
+        model = container.decode(.model, String.self, "gemini-2.0-flash")
+        role = container.decode(.role, String.self, "You give fast and short answers.")
+    }
+}
+
 class SettingsChat: Codable, ObservableObject {
     @Published var fontSize: Float = 19.0
     var usernameColor: RgbColor = .init(red: 255, green: 163, blue: 0)
@@ -4012,6 +4048,7 @@ class SettingsChat: Codable, ObservableObject {
     @Published var botEnabled: Bool = false
     var botCommandPermissions: SettingsChatBotPermissions = .init()
     var botSendLowBatteryWarning: Bool = false
+    var botCommandAi: SettingsChatBotAi = .init()
     @Published var badges: Bool = true
     var showFirstTimeChatterMessage: Bool = true
     var showNewFollowerMessage: Bool = true
@@ -4059,6 +4096,7 @@ class SettingsChat: Codable, ObservableObject {
              botEnabled,
              botCommandPermissions,
              botSendLowBatteryWarning,
+             botCommandAi,
              badges,
              showFirstTimeChatterMessage,
              showNewFollowerMessage,
@@ -4109,6 +4147,7 @@ class SettingsChat: Codable, ObservableObject {
         try container.encode(.botEnabled, botEnabled)
         try container.encode(.botCommandPermissions, botCommandPermissions)
         try container.encode(.botSendLowBatteryWarning, botSendLowBatteryWarning)
+        try container.encode(.botCommandAi, botCommandAi)
         try container.encode(.badges, badges)
         try container.encode(.showFirstTimeChatterMessage, showFirstTimeChatterMessage)
         try container.encode(.showNewFollowerMessage, showNewFollowerMessage)
@@ -4165,6 +4204,7 @@ class SettingsChat: Codable, ObservableObject {
         botEnabled = container.decode(.botEnabled, Bool.self, false)
         botCommandPermissions = container.decode(.botCommandPermissions, SettingsChatBotPermissions.self, .init())
         botSendLowBatteryWarning = container.decode(.botSendLowBatteryWarning, Bool.self, false)
+        botCommandAi = container.decode(.botCommandAi, SettingsChatBotAi.self, .init())
         badges = container.decode(.badges, Bool.self, true)
         showFirstTimeChatterMessage = container.decode(.showFirstTimeChatterMessage, Bool.self, true)
         showNewFollowerMessage = container.decode(.showNewFollowerMessage, Bool.self, true)

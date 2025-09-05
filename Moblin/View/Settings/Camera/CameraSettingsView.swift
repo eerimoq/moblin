@@ -206,10 +206,16 @@ struct CameraSettingsView: View {
                 if database.showAllSettings {
                     TapScreenToFocusSettingsView(model: model, database: database)
                     FixedHorizonView(database: database)
-                    CameraControlsView(database: database)
                 }
                 MirrorFrontCameraOnStreamView(model: model, database: database)
                 SelfieStickDoesNotWorkView(database: database, selfieStick: database.selfieStick)
+            }
+            if database.showAllSettings {
+                Section {
+                    CameraControlsView(database: database)
+                } footer: {
+                    Text("⚠️ Hijacks volume buttons. You can only change volume in Control Center when enabled.")
+                }
             }
             if database.showAllSettings {
                 if model.supportsAppleLog {

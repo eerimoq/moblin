@@ -1,42 +1,70 @@
 import SwiftUI
 
+private struct PermissionsSettingsInnerView: View {
+    @ObservedObject var permissions: SettingsChatBotPermissionsCommand
+
+    var body: some View {
+        Section {
+            Toggle("Moderators", isOn: $permissions.moderatorsEnabled)
+            Toggle("Subscribers", isOn: $permissions.subscribersEnabled)
+            Picker("Minimum subscriber tier", selection: $permissions.minimumSubscriberTier) {
+                ForEach([3, 2, 1], id: \.self) { tier in
+                    Text(String(tier))
+                }
+            }
+            Toggle("Others", isOn: $permissions.othersEnabled)
+        } header: {
+            Text("Permissions")
+        }
+        Section {
+            Picker("Cooldown", selection: $permissions.cooldown) {
+                Text("-- None --")
+                    .tag(nil as Int?)
+                ForEach([1, 2, 3, 5, 10, 15, 30, 60], id: \.self) { cooldown in
+                    Text("\(cooldown)s")
+                        .tag(cooldown as Int?)
+                }
+            }
+        } footer: {
+            Text("Does not apply to you and your moderators.")
+        }
+        Section {
+            Toggle("Send chat responses", isOn: $permissions.sendChatMessages)
+        } footer: {
+            Text("""
+            Typically sends a chat message if the user is not allowed to execute the command. Some \
+            commands responds on success as well.
+            """)
+        }
+    }
+}
+
 private struct PermissionsSettingsView: View {
+    var permissions: SettingsChatBotPermissionsCommand
+
+    var body: some View {
+        Form {
+            PermissionsSettingsInnerView(permissions: permissions)
+        }
+        .navigationTitle("Command")
+    }
+}
+
+private struct AiSettingsView: View {
+    @ObservedObject var ai: SettingsChatBotAi
     @ObservedObject var permissions: SettingsChatBotPermissionsCommand
 
     var body: some View {
         Form {
             Section {
-                Toggle("Moderators", isOn: $permissions.moderatorsEnabled)
-                Toggle("Subscribers", isOn: $permissions.subscribersEnabled)
-                Picker("Minimum subscriber tier", selection: $permissions.minimumSubscriberTier) {
-                    ForEach([3, 2, 1], id: \.self) { tier in
-                        Text(String(tier))
-                    }
-                }
-                Toggle("Others", isOn: $permissions.othersEnabled)
+                TextEditBindingNavigationView(title: String(localized: "Base URL"), value: $ai.baseUrl) { _ in }
+                TextEditBindingNavigationView(title: String(localized: "API key"), value: $ai.apiKey) { _ in }
+                TextEditBindingNavigationView(title: String(localized: "Model"), value: $ai.model) { _ in }
+                TextEditBindingNavigationView(title: String(localized: "Role"), value: $ai.role) { _ in }
             } header: {
-                Text("Permissions")
+                Text("OpenAI compatible service")
             }
-            Section {
-                Picker("Cooldown", selection: $permissions.cooldown) {
-                    Text("-- None --")
-                        .tag(nil as Int?)
-                    ForEach([1, 2, 3, 5, 10, 15, 30, 60], id: \.self) { cooldown in
-                        Text("\(cooldown)s")
-                            .tag(cooldown as Int?)
-                    }
-                }
-            } footer: {
-                Text("Does not apply to you and your moderators.")
-            }
-            Section {
-                Toggle("Send chat responses", isOn: $permissions.sendChatMessages)
-            } footer: {
-                Text("""
-                Typically sends a chat message if the user is not allowed to execute the command. Some \
-                commands responds on success as well.
-                """)
-            }
+            PermissionsSettingsInnerView(permissions: permissions)
         }
         .navigationTitle("Command")
     }
@@ -185,6 +213,19 @@ private struct ChatBotCommandsSettingsView: View {
                     Text("")
                     Text("!moblin say <message>")
                     Text("Say given message.")
+                }
+            }
+            Section {
+                NavigationLink {
+                    AiSettingsView(ai: model.database.chat.botCommandAi, permissions: permissions.ai)
+                } label: {
+                    Text("!moblin ai ask <question>")
+                }
+            } footer: {
+                VStack(alignment: .leading) {
+                    Text("!moblin ai ask <question>")
+                    Text("Turn on chat text to speech.")
+                    Text("")
                 }
             }
             Section {

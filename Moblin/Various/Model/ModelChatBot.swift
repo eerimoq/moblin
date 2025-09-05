@@ -1,6 +1,92 @@
 import AVFoundation
 import Foundation
 
+private let askedByLanguage = [
+    "ar": "",
+    "bg": "",
+    "ca": "",
+    "cs": "",
+    "da": "",
+    "de": "",
+    "en": "asked",
+    "el": "",
+    "es": "",
+    "fi": "",
+    "fr": "",
+    "he": "",
+    "hi": "",
+    "hr": "",
+    "hu": "",
+    "id": "",
+    "it": "",
+    "ja": "",
+    "ko": "",
+    "ms": "",
+    "nb": "",
+    "nl": "",
+    "no": "",
+    "pl": "",
+    "pt": "",
+    "ro": "",
+    "ru": "",
+    "sk": "",
+    "sl": "",
+    "sv": "frågade",
+    "ta": "",
+    "th": "",
+    "tr": "",
+    "uk": "",
+    "vi": "",
+    "zh": "",
+]
+
+private let answerByLanguage = [
+    "ar": "",
+    "bg": "",
+    "ca": "",
+    "cs": "",
+    "da": "",
+    "de": "",
+    "en": "Answer",
+    "el": "",
+    "es": "",
+    "fi": "",
+    "fr": "",
+    "he": "",
+    "hi": "",
+    "hr": "",
+    "hu": "",
+    "id": "",
+    "it": "",
+    "ja": "",
+    "ko": "",
+    "ms": "",
+    "nb": "",
+    "nl": "",
+    "no": "",
+    "pl": "",
+    "pt": "",
+    "ro": "",
+    "ru": "",
+    "sk": "",
+    "sl": "",
+    "sv": "Svar",
+    "ta": "",
+    "th": "",
+    "tr": "",
+    "uk": "",
+    "vi": "",
+    "zh": "",
+]
+
+private func getAsked(_ language: String) -> String {
+    return askedByLanguage[language] ?? ""
+}
+
+private func getAnswer(_ language: String) -> String {
+    return answerByLanguage[language] ?? ""
+}
+
 extension Model {
     func executeChatBotMessage() {
         guard let message = chatBotMessages.popFirst() else {
@@ -54,6 +140,8 @@ extension Model {
                 handleChatBotMessageStream(command: command)
             case "widget":
                 handleChatBotMessageWidget(command: command)
+            case "ai":
+                handleChatBotMessageAi(command: command)
             default:
                 break
             }
@@ -237,6 +325,41 @@ extension Model {
             self.setGlobalButtonState(type: .mute, isOn: false)
             self.updateQuickButtonStates()
         }
+    }
+
+    private func handleChatBotMessageAi(command: ChatBotCommand) {
+        executeIfUserAllowedToUseChatBot(
+            permissions: database.chat.botCommandPermissions.ai,
+            command: command
+        ) {
+            switch command.popFirst() {
+            case "ask":
+                self.handleChatBotMessageAiAsk(command: command)
+            default:
+                break
+            }
+        }
+    }
+
+    private func handleChatBotMessageAiAsk(command: ChatBotCommand) {
+        let question = command.rest()
+        guard let baseUrl = URL(string: database.chat.botCommandAi.baseUrl) else {
+            return
+        }
+        OpenAi(baseUrl: baseUrl, apiKey: database.chat.botCommandAi.apiKey)
+            .ask(question,
+                 model: database.chat.botCommandAi.model,
+                 role: database.chat.botCommandAi.role)
+            { answer, language in
+                guard let answer else {
+                    return
+                }
+                guard let user = command.message.user else {
+                    return
+                }
+                let message = "\(user) \(getAsked(language)): \(question) \(getAnswer(language)): \(answer)"
+                self.sendChatBotReply(message: "\(message)", platform: command.message.platform)
+            }
     }
 
     private func handleChatBotMessageReaction(command: ChatBotCommand) {
