@@ -27,7 +27,7 @@ class OpenAi {
         self.apiKey = apiKey
     }
 
-    func ask(_ content: String, model: String, role: String, onComplete: @escaping (String?, String) -> Void) {
+    func ask(_ content: String, model: String, role: String, onComplete: @escaping (String?) -> Void) {
         let messages = [
             Message(role: "system", content: role),
             Message(role: "user", content: content),
@@ -43,12 +43,11 @@ class OpenAi {
         request.httpBody = body.utf8Data
         URLSession.shared.dataTask(with: request) { data, response, error in
             guard error == nil, let data, response?.http?.isSuccessful == true else {
-                onComplete(nil, "")
+                onComplete(nil)
                 return
             }
             let answers = try? JSONDecoder().decode(Response.self, from: data)
-            let language = "en"
-            onComplete(answers?.choices.first?.message.content, language)
+            onComplete(answers?.choices.first?.message.content)
         }
         .resume()
     }
