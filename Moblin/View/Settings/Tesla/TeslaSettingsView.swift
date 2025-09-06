@@ -86,7 +86,7 @@ struct TeslaSettingsView: View {
             }
             Section {
                 Toggle(isOn: Binding(get: {
-                    model.database.tesla.enabled!
+                    model.database.tesla.enabled
                 }, set: {
                     model.database.tesla.enabled = $0
                     model.reloadTeslaVehicle()

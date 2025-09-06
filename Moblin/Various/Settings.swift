@@ -4493,7 +4493,29 @@ class SettingsHttpProxy: Codable {
 class SettingsTesla: Codable {
     var vin: String = ""
     var privateKey: String = ""
-    var enabled: Bool? = true
+    var enabled: Bool = true
+
+    enum CodingKeys: CodingKey {
+        case vin,
+             privateKey,
+             enabled
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.vin, vin)
+        try container.encode(.privateKey, privateKey)
+        try container.encode(.enabled, enabled)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        vin = container.decode(.vin, String.self, "")
+        privateKey = container.decode(.privateKey, String.self, "")
+        enabled = container.decode(.enabled, Bool.self, true)
+    }
 }
 
 enum SettingsDnsLookupStrategy: String, Codable, CaseIterable {
@@ -8178,10 +8200,6 @@ final class Settings {
                 command.imagePlaygroundImageId = .init()
                 store()
             }
-        }
-        if realDatabase.tesla.enabled == nil {
-            realDatabase.tesla.enabled = true
-            store()
         }
         for button in realDatabase.quickButtons where button.page == nil {
             button.page = 1
