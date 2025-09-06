@@ -40,7 +40,12 @@ extension Model {
         kickPusher = nil
         setTextToSpeechStreamerMentions()
         if isKickPusherConfigured(), !isChatRemoteControl(), let channelId = stream.kickChannelId {
-            kickPusher = KickPusher(delegate: self, channelId: channelId, channelName: stream.kickChannelName, settings: stream.chat)
+            kickPusher = KickPusher(
+                delegate: self,
+                channelId: channelId,
+                channelName: stream.kickChannelName,
+                settings: stream.chat
+            )
             kickPusher!.start()
         }
         updateChatMoreThanOneChatConfigured()
