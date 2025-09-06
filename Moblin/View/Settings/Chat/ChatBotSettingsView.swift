@@ -273,7 +273,10 @@ private struct AiPermissionsSettingsView: View {
                 Form {
                     Section {
                         TextEditBindingNavigationView(title: String(localized: "Base URL"), value: $ai.baseUrl) { _ in }
-                        TextEditBindingNavigationView(title: String(localized: "API key"), value: $ai.apiKey) { _ in }
+                        TextEditBindingNavigationView(title: String(localized: "API key"),
+                                                      value: $ai.apiKey,
+                                                      onSubmit: {_ in},
+                                                      sensitive: true)
                         TextEditBindingNavigationView(title: String(localized: "Model"), value: $ai.model) { _ in }
                         TextEditBindingNavigationView(title: String(localized: "Role"), value: $ai.role) { _ in }
                     } header: {
