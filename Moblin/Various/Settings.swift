@@ -227,7 +227,38 @@ class SettingsStreamSrtAdaptiveBitrateCustomSettings: Codable {
     var rttDiffHighDecreaseFactor: Float = 0.9
     var rttDiffHighAllowedSpike: Float = 50
     var rttDiffHighMinimumDecrease: Float = 250
-    var minimumBitrate: Float? = 250
+    var minimumBitrate: Float = 250
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case packetsInFlight,
+             pifDiffIncreaseFactor,
+             rttDiffHighDecreaseFactor,
+             rttDiffHighAllowedSpike,
+             rttDiffHighMinimumDecrease,
+             minimumBitrate
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.packetsInFlight, packetsInFlight)
+        try container.encode(.pifDiffIncreaseFactor, pifDiffIncreaseFactor)
+        try container.encode(.rttDiffHighDecreaseFactor, rttDiffHighDecreaseFactor)
+        try container.encode(.rttDiffHighAllowedSpike, rttDiffHighAllowedSpike)
+        try container.encode(.rttDiffHighMinimumDecrease, rttDiffHighMinimumDecrease)
+        try container.encode(.minimumBitrate, minimumBitrate)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        packetsInFlight = container.decode(.packetsInFlight, Int32.self, 200)
+        pifDiffIncreaseFactor = container.decode(.pifDiffIncreaseFactor, Float.self, 100)
+        rttDiffHighDecreaseFactor = container.decode(.rttDiffHighDecreaseFactor, Float.self, 0.9)
+        rttDiffHighAllowedSpike = container.decode(.rttDiffHighAllowedSpike, Float.self, 50)
+        rttDiffHighMinimumDecrease = container.decode(.rttDiffHighMinimumDecrease, Float.self, 250)
+        minimumBitrate = container.decode(.minimumBitrate, Float.self, 250)
+    }
 
     func clone() -> SettingsStreamSrtAdaptiveBitrateCustomSettings {
         let new = SettingsStreamSrtAdaptiveBitrateCustomSettings()
@@ -8100,12 +8131,6 @@ final class Settings {
                     }
                 }
             }
-            store()
-        }
-        for stream in realDatabase.streams
-            where stream.srt.adaptiveBitrate.customSettings.minimumBitrate == nil
-        {
-            stream.srt.adaptiveBitrate.customSettings.minimumBitrate = 250
             store()
         }
         for stream in realDatabase.streams

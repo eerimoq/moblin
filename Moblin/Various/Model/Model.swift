@@ -670,7 +670,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 rttDiffHighAllowedSpike: Double(customSettings.rttDiffHighAllowedSpike),
                 rttDiffHighMinDecrease: Int64(customSettings.rttDiffHighMinimumDecrease * 1000),
                 pifDiffIncreaseFactor: Int64(customSettings.pifDiffIncreaseFactor * 1000),
-                minimumBitrate: Int64(customSettings.minimumBitrate! * 1000)
+                minimumBitrate: Int64(customSettings.minimumBitrate * 1000)
             ))
         case .belabox:
             var settings = adaptiveBitrateBelaboxSettings
