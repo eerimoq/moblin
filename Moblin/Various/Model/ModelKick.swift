@@ -42,8 +42,8 @@ extension Model {
         if isKickPusherConfigured(), !isChatRemoteControl(), let channelId = stream.kickChannelId {
             kickPusher = KickPusher(
                 delegate: self,
-                channelId: channelId,
                 channelName: stream.kickChannelName,
+                channelId: channelId,
                 settings: stream.chat
             )
             kickPusher!.start()

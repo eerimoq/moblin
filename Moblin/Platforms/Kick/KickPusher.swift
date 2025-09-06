@@ -6,48 +6,55 @@ private struct Badge: Decodable {
     var count: Int?
 }
 
+private enum BadgeType {
+    static let verified = "verified"
+    static let staff = "staff"
+    static let moderator = "moderator"
+    static let og = "og"
+    static let vip = "vip"
+    static let bot = "bot"
+    static let broadcaster = "broadcaster"
+    static let founder = "founder"
+    static let subscriber = "subscriber"
+    static let subGifter = "sub_gifter"
+}
+
+private let badgesBaseUrl = "https://raw.githubusercontent.com/id3adeye/kickicons/refs/heads/main"
+
+private struct KickBadge {
+    let months: Int
+    let url: URL
+}
+
 private class KickBadges {
-    enum BadgeType {
-        static let verified = "verified"
-        static let staff = "staff"
-        static let moderator = "moderator"
-        static let og = "og"
-        static let vip = "vip"
-        static let bot = "bot"
-        static let broadcaster = "broadcaster"
-        static let founder = "founder"
-        static let subscriber = "subscriber"
-        static let subGifter = "sub_gifter"
-    }
-
-    private static let badgeBaseUrl = "https://raw.githubusercontent.com/id3adeye/kickicons/refs/heads/main"
-
-    private var subscriberBadges: [SubscriberBadge] = []
-    private var badgeUrlCache: [String: URL] = [
-        BadgeType.verified: URL(string: "\(KickBadges.badgeBaseUrl)/kick-verified.png")!,
-        BadgeType.staff: URL(string: "\(KickBadges.badgeBaseUrl)/kick-staff.png")!,
-        BadgeType.moderator: URL(string: "\(KickBadges.badgeBaseUrl)/kick-moderator.png")!,
-        BadgeType.og: URL(string: "\(KickBadges.badgeBaseUrl)/kick-og.png")!,
-        BadgeType.vip: URL(string: "\(KickBadges.badgeBaseUrl)/kick-vip.png")!,
-        BadgeType.bot: URL(string: "\(KickBadges.badgeBaseUrl)/kick-bot.png")!,
-        BadgeType.broadcaster: URL(string: "\(KickBadges.badgeBaseUrl)/kick-broadcaster.png")!,
-        BadgeType.founder: URL(string: "\(KickBadges.badgeBaseUrl)/kick-founder.png")!,
-        BadgeType.subGifter: URL(string: "\(KickBadges.badgeBaseUrl)/kick-sub_gifter.png")!,
+    private var subscriberBadges: [KickBadge] = []
+    private let staticBadges: [String: URL] = [
+        BadgeType.verified: URL(string: "\(badgesBaseUrl)/kick-verified.png")!,
+        BadgeType.staff: URL(string: "\(badgesBaseUrl)/kick-staff.png")!,
+        BadgeType.moderator: URL(string: "\(badgesBaseUrl)/kick-moderator.png")!,
+        BadgeType.og: URL(string: "\(badgesBaseUrl)/kick-og.png")!,
+        BadgeType.vip: URL(string: "\(badgesBaseUrl)/kick-vip.png")!,
+        BadgeType.bot: URL(string: "\(badgesBaseUrl)/kick-bot.png")!,
+        BadgeType.broadcaster: URL(string: "\(badgesBaseUrl)/kick-broadcaster.png")!,
+        BadgeType.founder: URL(string: "\(badgesBaseUrl)/kick-founder.png")!,
+        BadgeType.subGifter: URL(string: "\(badgesBaseUrl)/kick-sub_gifter.png")!,
     ]
 
     func setBadges(_ badges: [SubscriberBadge]) {
-        subscriberBadges = badges.sorted { $0.months < $1.months }
+        subscriberBadges.removeAll()
+        for badge in badges.sorted(by: { $0.months < $1.months }) {
+            if let url = URL(string: badge.badge_image.src) {
+                subscriberBadges.append(KickBadge(months: badge.months, url: url))
+            }
+        }
     }
 
-    func getSubscriberBadgeUrl(months: Int) -> String? {
-        return subscriberBadges
-            .filter { $0.months <= months }
-            .max(by: { $0.months < $1.months })?
-            .badge_image.src
+    func getSubscriberBadgeUrl(months: Int) -> URL? {
+        return subscriberBadges.last(where: { months >= $0.months })?.url
     }
 
-    func getBadgeUrl(for badgeType: String) -> URL? {
-        return badgeUrlCache[badgeType]
+    func getStaticBadgeUrl(for badgeType: String) -> URL? {
+        return staticBadges[badgeType]
     }
 }
 
@@ -83,11 +90,11 @@ private struct ChatMessageEvent: Decodable {
     var metadata: Metadata?
 
     func isModerator() -> Bool {
-        return sender.identity.badges.contains(where: { $0.type == KickBadges.BadgeType.moderator })
+        return sender.identity.badges.contains(where: { $0.type == BadgeType.moderator })
     }
 
     func isSubscriber() -> Bool {
-        return sender.identity.badges.contains(where: { $0.type == KickBadges.BadgeType.subscriber })
+        return sender.identity.badges.contains(where: { $0.type == BadgeType.subscriber })
     }
 }
 
@@ -238,8 +245,8 @@ protocol KickOusherDelegate: AnyObject {
 }
 
 final class KickPusher: NSObject {
-    private var channelId: String
     private var channelName: String
+    private var channelId: String
     private var webSocket: WebSocketClient
     private var emotes: Emotes
     private var badges: KickBadges
@@ -247,10 +254,10 @@ final class KickPusher: NSObject {
     private var gotInfo = false
     private weak var delegate: (any KickOusherDelegate)?
 
-    init(delegate: KickOusherDelegate, channelId: String, channelName: String, settings: SettingsStreamChat) {
+    init(delegate: KickOusherDelegate, channelName: String, channelId: String, settings: SettingsStreamChat) {
         self.delegate = delegate
-        self.channelId = channelId
         self.channelName = channelName
+        self.channelId = channelId
         self.settings = settings.clone()
         emotes = Emotes()
         badges = KickBadges()
@@ -297,16 +304,11 @@ final class KickPusher: NSObject {
         return emotes.isReady()
     }
 
-    func setSubscriberBadges(_ badgeList: [SubscriberBadge]) {
-        badges.setBadges(badgeList)
-    }
-
     private func fetchSubscriberBadges() {
-        guard !channelName.isEmpty else { return }
         getKickChannelInfo(channelName: channelName) { [weak self] channelInfo in
             DispatchQueue.main.async {
-                if let channelInfo, let subscriberBadges = channelInfo.subscriber_badges {
-                    self?.setSubscriberBadges(subscriberBadges)
+                if let subscriberBadges = channelInfo?.subscriber_badges {
+                    self?.badges.setBadges(subscriberBadges)
                 }
             }
         }
@@ -359,17 +361,14 @@ final class KickPusher: NSObject {
         let event = try decodeChatMessageEvent(data: data)
         var badgeUrls: [URL] = []
         for badge in event.sender.identity.badges {
-            if badge.type == KickBadges.BadgeType.subscriber, let months = badge.count {
-                if let badgeUrlString = badges.getSubscriberBadgeUrl(months: months) {
-                    if let badgeUrl = URL(string: badgeUrlString) {
-                        badgeUrls.append(badgeUrl)
-                    }
+            if badge.type == BadgeType.subscriber, let months = badge.count {
+                if let badgeUrl = badges.getSubscriberBadgeUrl(months: months) {
+                    badgeUrls.append(badgeUrl)
                 }
-            } else if let badgeUrl = badges.getBadgeUrl(for: badge.type) {
+            } else if let badgeUrl = badges.getStaticBadgeUrl(for: badge.type) {
                 badgeUrls.append(badgeUrl)
-            } else {}
+            }
         }
-
         delegate?.kickPusherAppendMessage(
             messageId: event.id,
             user: event.sender.username,
