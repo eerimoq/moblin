@@ -875,17 +875,17 @@ struct WidgetAlertsSettingsView: View {
     var body: some View {
         Section {
             NavigationLink {
-                WidgetAlertsSettingsTwitchView(twitch: widget.alerts.twitch!)
+                WidgetAlertsSettingsTwitchView(twitch: widget.alerts.twitch)
             } label: {
                 Text("Twitch")
             }
             NavigationLink {
-                WidgetAlertsSettingsChatBotView(chatBot: widget.alerts.chatBot!)
+                WidgetAlertsSettingsChatBotView(chatBot: widget.alerts.chatBot)
             } label: {
                 Text("Chat bot")
             }
             NavigationLink {
-                WidgetAlertsSettingsSpeechToTextView(speechToText: widget.alerts.speechToText!)
+                WidgetAlertsSettingsSpeechToTextView(speechToText: widget.alerts.speechToText)
             } label: {
                 Text("Speech to text")
             }

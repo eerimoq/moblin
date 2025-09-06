@@ -23,7 +23,7 @@ extension Model {
                     return true
                 }
             case .alerts:
-                if widget.widget.alerts.needsSubtitles! {
+                if widget.widget.alerts.needsSubtitles {
                     return true
                 }
             default:
@@ -52,7 +52,7 @@ extension Model: SpeechToTextDelegate {
         }
         let startMatchIndex = text.index(text.startIndex, offsetBy: speechToTextAlertMatchOffset)
         for alertEffect in enabledAlertsEffects {
-            let settings = alertEffect.getSettings().speechToText!
+            let settings = alertEffect.getSettings().speechToText
             for string in settings.strings where string.alert.enabled {
                 guard let matchRange = text.range(
                     of: string.string,

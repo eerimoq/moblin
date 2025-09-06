@@ -234,7 +234,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
     }
 
     func setSettings(settings: SettingsWidgetAlerts) {
-        let twitch = settings.twitch!
+        let twitch = settings.twitch
         var (image, imageLoopCount, sound) = getMediaItems(alert: twitch.follows)
         twitchFollow.updateImages(image: image, loopCount: imageLoopCount)
         twitchFollow.updateSoundUrl(sound: sound)
@@ -253,7 +253,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
             twitchCheers.append(medias)
         }
         chatBotCommands = []
-        for command in settings.chatBot!.commands {
+        for command in settings.chatBot.commands {
             (image, imageLoopCount, sound) = getMediaItems(alert: command.alert)
             let medias = Medias()
             medias.updateImages(image: image, loopCount: imageLoopCount)
@@ -261,7 +261,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
             chatBotCommands.append(medias)
         }
         speechToTextStrings = []
-        for string in settings.speechToText!.strings {
+        for string in settings.speechToText.strings {
             (image, imageLoopCount, sound) = getMediaItems(alert: string.alert)
             let medias = Medias()
             medias.updateImages(image: image, loopCount: imageLoopCount)
@@ -322,33 +322,33 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
 
     @MainActor
     private func playTwitchFollow(event: TwitchEventSubNotificationChannelFollowEvent) {
-        guard settings.twitch!.follows.enabled else {
+        guard settings.twitch.follows.enabled else {
             return
         }
         play(
             medias: twitchFollow,
             username: event.user_name,
             message: String(localized: "just followed!"),
-            settings: settings.twitch!.follows
+            settings: settings.twitch.follows
         )
     }
 
     @MainActor
     private func playTwitchSubscribe(event: TwitchEventSubNotificationChannelSubscribeEvent) {
-        guard settings.twitch!.subscriptions.enabled else {
+        guard settings.twitch.subscriptions.enabled else {
             return
         }
         play(
             medias: twitchSubscribe,
             username: event.user_name,
             message: String(localized: "just subscribed tier \(event.tierAsNumber())!"),
-            settings: settings.twitch!.subscriptions
+            settings: settings.twitch.subscriptions
         )
     }
 
     @MainActor
     private func playTwitchSubscriptionGift(event: TwitchEventSubNotificationChannelSubscriptionGiftEvent) {
-        guard settings.twitch!.subscriptions.enabled else {
+        guard settings.twitch.subscriptions.enabled else {
             return
         }
         play(
@@ -357,13 +357,13 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
             message: String(
                 localized: "just gifted \(event.total) tier \(event.tierAsNumber()) subscriptions!"
             ),
-            settings: settings.twitch!.subscriptions
+            settings: settings.twitch.subscriptions
         )
     }
 
     @MainActor
     private func playTwitchResubscribe(event: TwitchEventSubNotificationChannelSubscriptionMessageEvent) {
-        guard settings.twitch!.subscriptions.enabled else {
+        guard settings.twitch.subscriptions.enabled else {
             return
         }
         play(
@@ -373,26 +373,26 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
             just resubscribed tier \(event.tierAsNumber()) for \(event.cumulative_months) \
             months! \(event.message.text)
             """),
-            settings: settings.twitch!.subscriptions
+            settings: settings.twitch.subscriptions
         )
     }
 
     @MainActor
     private func playTwitchRaid(event: TwitchEventSubChannelRaidEvent) {
-        guard settings.twitch!.raids!.enabled else {
+        guard settings.twitch.raids!.enabled else {
             return
         }
         play(
             medias: twitchRaid,
             username: event.from_broadcaster_user_name,
             message: String(localized: "raided with a party of \(event.viewers)!"),
-            settings: settings.twitch!.raids!
+            settings: settings.twitch.raids!
         )
     }
 
     @MainActor
     private func playTwitchCheer(event: TwitchEventSubChannelCheerEvent) {
-        for (index, cheerBit) in settings.twitch!.cheerBits!.enumerated() where cheerBit.alert.enabled {
+        for (index, cheerBit) in settings.twitch.cheerBits!.enumerated() where cheerBit.alert.enabled {
             switch cheerBit.comparisonOperator {
             case .equal:
                 guard event.bits == cheerBit.bits else {
@@ -419,7 +419,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
 
     @MainActor
     private func playChatBotCommand(command: String, name: String, prompt: String) {
-        guard let commandIndex = settings.chatBot!.commands
+        guard let commandIndex = settings.chatBot.commands
             .firstIndex(where: { command == $0.name && $0.alert.enabled })
         else {
             return
@@ -428,7 +428,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
             return
         }
         let medias = chatBotCommands[commandIndex]
-        let settings = settings.chatBot!.commands[commandIndex]
+        let settings = settings.chatBot.commands[commandIndex]
         switch settings.imageType! {
         case .file:
             play(
@@ -492,7 +492,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
 
     @MainActor
     private func playSpeechToTextString(id: UUID) {
-        guard let stringIndex = settings.speechToText!.strings.firstIndex(where: { $0.id == id && $0.alert.enabled })
+        guard let stringIndex = settings.speechToText.strings.firstIndex(where: { $0.id == id && $0.alert.enabled })
         else {
             return
         }
@@ -503,7 +503,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
             medias: speechToTextStrings[stringIndex],
             username: "",
             message: "",
-            settings: settings.speechToText!.strings[stringIndex].alert,
+            settings: settings.speechToText.strings[stringIndex].alert,
             delayAfterPlaying: 0.0
         )
     }

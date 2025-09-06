@@ -125,7 +125,7 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
                     }
                 }
                 Section {
-                    SliderView(value: 1000 * adaptiveBitrate.fastIrlSettings.minimumBitrate!,
+                    SliderView(value: 1000 * adaptiveBitrate.fastIrlSettings.minimumBitrate,
                                minimum: 50000,
                                maximum: 2_000_000,
                                step: 50000,

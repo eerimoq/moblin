@@ -211,7 +211,26 @@ enum SettingsStreamSrtAdaptiveBitrateAlgorithm: Codable, CaseIterable {
 
 class SettingsStreamSrtAdaptiveBitrateFastIrlSettings: Codable {
     var packetsInFlight: Int32 = 200
-    var minimumBitrate: Float? = 250
+    var minimumBitrate: Float = 250
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case packetsInFlight,
+             minimumBitrate
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.packetsInFlight, packetsInFlight)
+        try container.encode(.minimumBitrate, minimumBitrate)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        packetsInFlight = container.decode(.packetsInFlight, Int32.self, 200)
+        minimumBitrate = container.decode(.minimumBitrate, Float.self, 250)
+    }
 
     func clone() -> SettingsStreamSrtAdaptiveBitrateFastIrlSettings {
         let new = SettingsStreamSrtAdaptiveBitrateFastIrlSettings()
@@ -274,6 +293,22 @@ class SettingsStreamSrtAdaptiveBitrateCustomSettings: Codable {
 
 class SettingsStreamSrtAdaptiveBitrateBelaboxSettings: Codable {
     var minimumBitrate: Float = 250
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case minimumBitrate
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.minimumBitrate, minimumBitrate)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        minimumBitrate = container.decode(.minimumBitrate, Float.self, 250)
+    }
 
     func clone() -> SettingsStreamSrtAdaptiveBitrateBelaboxSettings {
         let new = SettingsStreamSrtAdaptiveBitrateBelaboxSettings()
@@ -2178,39 +2213,41 @@ class SettingsWidgetAlertsSpeechToText: Codable {
 }
 
 class SettingsWidgetAlerts: Codable {
-    // To be removed
-    // periphery:ignore
-    var followVideoId: UUID?
-    // periphery:ignore
-    var followAudioId: UUID?
-    // periphery:ignore
-    var followFormatString: String?
-    // periphery:ignore
-    var subscribeVideoId: UUID?
-    // periphery:ignore
-    var subscribeAudioId: UUID?
-    // periphery:ignore
-    var subscribeFormatString: String?
-    // periphery:ignore
-    var backgroundColor: RgbColor? = .init(red: 0, green: 0, blue: 0, opacity: 0.75)
-    // periphery:ignore
-    var foregroundColor: RgbColor? = .init(red: 255, green: 255, blue: 255)
-    // periphery:ignore
-    var fontSize: Int? = 50
-    // periphery:ignore
-    var fontDesign: SettingsFontDesign? = .default
-    // periphery:ignore
-    var fontWeight: SettingsFontWeight? = .regular
-    var twitch: SettingsWidgetAlertsTwitch? = .init()
-    var chatBot: SettingsWidgetAlertsChatBot? = .init()
-    var speechToText: SettingsWidgetAlertsSpeechToText? = .init()
-    var needsSubtitles: Bool? = false
+    var twitch: SettingsWidgetAlertsTwitch = .init()
+    var chatBot: SettingsWidgetAlertsChatBot = .init()
+    var speechToText: SettingsWidgetAlertsSpeechToText = .init()
+    var needsSubtitles: Bool = false
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case twitch,
+             chatBot,
+             speechToText,
+             needsSubtitles
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.twitch, twitch)
+        try container.encode(.chatBot, chatBot)
+        try container.encode(.speechToText, speechToText)
+        try container.encode(.needsSubtitles, needsSubtitles)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        twitch = container.decode(.twitch, SettingsWidgetAlertsTwitch.self, .init())
+        chatBot = container.decode(.chatBot, SettingsWidgetAlertsChatBot.self, .init())
+        speechToText = container.decode(.speechToText, SettingsWidgetAlertsSpeechToText.self, .init())
+        needsSubtitles = container.decode(.needsSubtitles, Bool.self, false)
+    }
 
     func clone() -> SettingsWidgetAlerts {
         let new = SettingsWidgetAlerts()
-        new.twitch = twitch!.clone()
-        new.chatBot = chatBot!.clone()
-        new.speechToText = speechToText!.clone()
+        new.twitch = twitch.clone()
+        new.chatBot = chatBot.clone()
+        new.speechToText = speechToText.clone()
         new.needsSubtitles = needsSubtitles
         return new
     }
@@ -8133,22 +8170,12 @@ final class Settings {
             }
             store()
         }
-        for stream in realDatabase.streams
-            where stream.srt.adaptiveBitrate.fastIrlSettings.minimumBitrate == nil
-        {
-            stream.srt.adaptiveBitrate.fastIrlSettings.minimumBitrate = 250
-            store()
-        }
         for widget in realDatabase.widgets where widget.map.northUp == nil {
             widget.map.northUp = false
             store()
         }
         for widget in database.widgets where widget.map.delay == nil {
             widget.map.delay = 0.0
-            store()
-        }
-        for widget in realDatabase.widgets where widget.alerts.twitch == nil {
-            widget.alerts.twitch = .init()
             store()
         }
         updateBundledAlertsMediaGallery(database: realDatabase)
@@ -8197,10 +8224,6 @@ final class Settings {
             }
             store()
         }
-        for widget in realDatabase.widgets where widget.alerts.chatBot == nil {
-            widget.alerts.chatBot = .init()
-            store()
-        }
         let allLuts = realDatabase.color.bundledLuts + realDatabase.color.diskLuts
         for lut in allLuts where lut.enabled == nil {
             if let button = realDatabase.quickButtons.first(where: { $0.id == lut.buttonId }) {
@@ -8215,12 +8238,12 @@ final class Settings {
             realDatabase.quickButtons = newButtons
             store()
         }
-        for widget in database.widgets where widget.alerts.twitch!.raids == nil {
-            widget.alerts.twitch!.raids = .init()
+        for widget in database.widgets where widget.alerts.twitch.raids == nil {
+            widget.alerts.twitch.raids = .init()
             store()
         }
-        for widget in database.widgets where widget.alerts.twitch!.cheers == nil {
-            widget.alerts.twitch!.cheers = .init()
+        for widget in database.widgets where widget.alerts.twitch.cheers == nil {
+            widget.alerts.twitch.cheers = .init()
             store()
         }
         for widget in realDatabase.widgets where widget.videoSource.cropX > 1.0 {
@@ -8239,25 +8262,17 @@ final class Settings {
             widget.videoSource.cropHeight = 1.0
             store()
         }
-        for widget in database.widgets where widget.alerts.twitch!.cheerBits == nil {
-            widget.alerts.twitch!.cheerBits = createDefaultCheerBits()
-            widget.alerts.twitch!.cheerBits![0].alert = widget.alerts.twitch!.cheers!.clone()
-            store()
-        }
-        for widget in realDatabase.widgets where widget.alerts.speechToText == nil {
-            widget.alerts.speechToText = .init()
-            store()
-        }
-        for widget in realDatabase.widgets where widget.alerts.needsSubtitles == nil {
-            widget.alerts.needsSubtitles = false
+        for widget in database.widgets where widget.alerts.twitch.cheerBits == nil {
+            widget.alerts.twitch.cheerBits = createDefaultCheerBits()
+            widget.alerts.twitch.cheerBits![0].alert = widget.alerts.twitch.cheers!.clone()
             store()
         }
         for widget in realDatabase.widgets {
-            for command in widget.alerts.chatBot!.commands where command.imageType == nil {
+            for command in widget.alerts.chatBot.commands where command.imageType == nil {
                 command.imageType = .file
                 store()
             }
-            for command in widget.alerts.chatBot!.commands where command.imagePlaygroundImageId == nil {
+            for command in widget.alerts.chatBot.commands where command.imagePlaygroundImageId == nil {
                 command.imagePlaygroundImageId = .init()
                 store()
             }

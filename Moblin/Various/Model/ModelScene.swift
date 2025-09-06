@@ -726,7 +726,7 @@ extension Model {
             }
             alertsEffect.setPosition(x: sceneWidget.x, y: sceneWidget.y)
             enabledAlertsEffects.append(alertsEffect)
-            if widget.alerts.needsSubtitles! {
+            if widget.alerts.needsSubtitles {
                 needsSpeechToText = true
             }
         }

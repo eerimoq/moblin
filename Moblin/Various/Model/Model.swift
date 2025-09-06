@@ -658,7 +658,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             var settings = adaptiveBitrateFastSettings
             settings.packetsInFlight = Int64(stream.srt.adaptiveBitrate.fastIrlSettings.packetsInFlight)
             settings
-                .minimumBitrate = Int64(stream.srt.adaptiveBitrate.fastIrlSettings.minimumBitrate! * 1000)
+                .minimumBitrate = Int64(stream.srt.adaptiveBitrate.fastIrlSettings.minimumBitrate * 1000)
             media.setAdaptiveBitrateSettings(settings: settings)
         case .slowIrl:
             media.setAdaptiveBitrateSettings(settings: adaptiveBitrateSlowSettings)
@@ -1714,9 +1714,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func fixAlertMedias() {
         for widget in database.widgets {
-            fixAlert(alert: widget.alerts.twitch!.follows)
-            fixAlert(alert: widget.alerts.twitch!.subscriptions)
-            for command in widget.alerts.chatBot!.commands {
+            fixAlert(alert: widget.alerts.twitch.follows)
+            fixAlert(alert: widget.alerts.twitch.subscriptions)
+            for command in widget.alerts.chatBot.commands {
                 fixAlert(alert: command.alert)
             }
         }
@@ -1733,7 +1733,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 found = true
             }
             for widget in database.widgets where widget.type == .alerts {
-                for command in widget.alerts.chatBot!.commands where command.imagePlaygroundImageId! == mediaId {
+                for command in widget.alerts.chatBot.commands where command.imagePlaygroundImageId! == mediaId {
                     found = true
                     break
                 }
@@ -1843,7 +1843,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func updateAlertsSettings() {
         for widget in database.widgets where widget.type == .alerts {
-            widget.alerts.needsSubtitles = !widget.alerts.speechToText!.strings.filter { $0.alert.enabled }.isEmpty
+            widget.alerts.needsSubtitles = !widget.alerts.speechToText.strings.filter { $0.alert.enabled }.isEmpty
             getAlertsEffect(id: widget.id)?.setSettings(settings: widget.alerts.clone())
         }
         if isSpeechToTextNeeded() {
