@@ -26,24 +26,17 @@ private class KickBadges {
 
     private var subscriberBadges: [SubscriberBadge] = []
     // Cache for O(1) badge URL lookups
-    private var badgeUrlCache: [String: String] = [:]
-
-    init() {
-        // Pre-compute static badge URLs for performance
-        setupStaticBadgeUrls()
-    }
-
-    private func setupStaticBadgeUrls() {
-        badgeUrlCache[BadgeType.verified] = "\(Self.badgeBaseUrl)/kick-verified.png"
-        badgeUrlCache[BadgeType.staff] = "\(Self.badgeBaseUrl)/kick-staff.png"
-        badgeUrlCache[BadgeType.moderator] = "\(Self.badgeBaseUrl)/kick-moderator.png"
-        badgeUrlCache[BadgeType.og] = "\(Self.badgeBaseUrl)/kick-og.png"
-        badgeUrlCache[BadgeType.vip] = "\(Self.badgeBaseUrl)/kick-vip.png"
-        badgeUrlCache[BadgeType.bot] = "\(Self.badgeBaseUrl)/kick-bot.png"
-        badgeUrlCache[BadgeType.broadcaster] = "\(Self.badgeBaseUrl)/kick-broadcaster.png"
-        badgeUrlCache[BadgeType.founder] = "\(Self.badgeBaseUrl)/kick-founder.png"
-        badgeUrlCache[BadgeType.subGifter] = "\(Self.badgeBaseUrl)/kick-sub_gifter.png"
-    }
+    private var badgeUrlCache: [String: String] = [
+        BadgeType.verified: "\(KickBadges.badgeBaseUrl)/kick-verified.png",
+        BadgeType.staff: "\(KickBadges.badgeBaseUrl)/kick-staff.png",
+        BadgeType.moderator: "\(KickBadges.badgeBaseUrl)/kick-moderator.png",
+        BadgeType.og: "\(KickBadges.badgeBaseUrl)/kick-og.png",
+        BadgeType.vip: "\(KickBadges.badgeBaseUrl)/kick-vip.png",
+        BadgeType.bot: "\(KickBadges.badgeBaseUrl)/kick-bot.png",
+        BadgeType.broadcaster: "\(KickBadges.badgeBaseUrl)/kick-broadcaster.png",
+        BadgeType.founder: "\(KickBadges.badgeBaseUrl)/kick-founder.png",
+        BadgeType.subGifter: "\(KickBadges.badgeBaseUrl)/kick-sub_gifter.png",
+    ]
 
     func setBadges(_ badges: [SubscriberBadge]) {
         subscriberBadges = badges.sorted { $0.months < $1.months }
