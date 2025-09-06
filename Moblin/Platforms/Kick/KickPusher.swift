@@ -7,7 +7,6 @@ private struct Badge: Decodable {
 }
 
 private class KickBadges {
-    // Badge type constants to avoid magic strings
     enum BadgeType {
         static let verified = "verified"
         static let staff = "staff"
@@ -21,11 +20,9 @@ private class KickBadges {
         static let subGifter = "sub_gifter"
     }
 
-    // Constants
     private static let badgeBaseUrl = "https://raw.githubusercontent.com/id3adeye/kickicons/refs/heads/main"
 
     private var subscriberBadges: [SubscriberBadge] = []
-    // Cache for O(1) badge URL lookups
     private var badgeUrlCache: [String: String] = [
         BadgeType.verified: "\(KickBadges.badgeBaseUrl)/kick-verified.png",
         BadgeType.staff: "\(KickBadges.badgeBaseUrl)/kick-staff.png",
@@ -50,7 +47,6 @@ private class KickBadges {
     }
 
     func getBadgeUrl(for badgeType: String) -> String? {
-        // O(1) lookup from pre-computed cache
         return badgeUrlCache[badgeType]
     }
 

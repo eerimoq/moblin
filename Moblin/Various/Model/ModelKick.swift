@@ -42,7 +42,6 @@ extension Model {
         if isKickPusherConfigured(), !isChatRemoteControl(), let channelId = stream.kickChannelId {
             kickPusher = KickPusher(delegate: self, channelId: channelId, settings: stream.chat)
             kickPusher!.start()
-            // Apply stored badges to new KickPusher
             if !storedKickBadges.isEmpty {
                 kickPusher!.setSubscriberBadges(storedKickBadges)
             }
