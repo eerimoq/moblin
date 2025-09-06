@@ -235,6 +235,7 @@ protocol KickOusherDelegate: AnyObject {
     func kickPusherRewardRedeemed(event: RewardRedeemedEvent)
     func kickPusherStreamHost(event: StreamHostEvent)
     func kickPusherUserBanned(event: UserBannedEvent)
+    func kickPusherFetchSubscriberBadges(completion: @escaping ([SubscriberBadge]) -> Void)
 }
 
 final class KickPusher: NSObject {
@@ -259,6 +260,7 @@ final class KickPusher: NSObject {
         logger.debug("kick: Start")
         stopInternal()
         connect()
+        fetchSubscriberBadges()
     }
 
     private func connect() {
@@ -296,6 +298,12 @@ final class KickPusher: NSObject {
 
     func setSubscriberBadges(_ badgeList: [SubscriberBadge]) {
         badges.setBadges(badgeList)
+    }
+
+    private func fetchSubscriberBadges() {
+        delegate?.kickPusherFetchSubscriberBadges { [weak self] badges in
+            self?.setSubscriberBadges(badges)
+        }
     }
 
     private func handleError(title: String, subTitle: String) {
@@ -343,7 +351,6 @@ final class KickPusher: NSObject {
 
     private func handleChatMessageEvent(data: String) throws {
         let event = try decodeChatMessageEvent(data: data)
-
         var badgeUrls: [URL] = []
         for badge in event.sender.identity.badges {
             if badge.type == KickBadges.BadgeType.subscriber, let months = badge.count {

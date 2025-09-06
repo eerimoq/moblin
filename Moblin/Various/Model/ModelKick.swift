@@ -45,7 +45,6 @@ extension Model {
             if !storedKickBadges.isEmpty {
                 kickPusher!.setSubscriberBadges(storedKickBadges)
             }
-            fetchKickSubscriberBadges()
         }
         updateChatMoreThanOneChatConfigured()
     }
@@ -92,18 +91,6 @@ extension Model {
 
     func setKickStreamTitle(title: String, onComplete: @escaping (String) -> Void) {
         createKickApi()?.setStreamTitle(title: title, onComplete: onComplete)
-    }
-
-    private func fetchKickSubscriberBadges() {
-        guard !stream.kickChannelName.isEmpty else { return }
-
-        getKickChannelInfo(channelName: stream.kickChannelName) { channelInfo in
-            DispatchQueue.main.async {
-                if let channelInfo, let subscriberBadges = channelInfo.subscriber_badges {
-                    self.setKickSubscriberBadges(subscriberBadges)
-                }
-            }
-        }
     }
 
     private func appendKickChatAlertMessage(
@@ -265,6 +252,23 @@ extension Model: KickOusherDelegate {
                 color: .red,
                 image: "nosign"
             )
+        }
+    }
+
+    func kickPusherFetchSubscriberBadges(completion: @escaping ([SubscriberBadge]) -> Void) {
+        guard !stream.kickChannelName.isEmpty else {
+            completion([])
+            return
+        }
+        getKickChannelInfo(channelName: stream.kickChannelName) { channelInfo in
+            DispatchQueue.main.async {
+                if let channelInfo, let subscriberBadges = channelInfo.subscriber_badges {
+                    self.storedKickBadges = subscriberBadges
+                    completion(subscriberBadges)
+                } else {
+                    completion([])
+                }
+            }
         }
     }
 }
