@@ -23,16 +23,16 @@ private class KickBadges {
     private static let badgeBaseUrl = "https://raw.githubusercontent.com/id3adeye/kickicons/refs/heads/main"
 
     private var subscriberBadges: [SubscriberBadge] = []
-    private var badgeUrlCache: [String: String] = [
-        BadgeType.verified: "\(KickBadges.badgeBaseUrl)/kick-verified.png",
-        BadgeType.staff: "\(KickBadges.badgeBaseUrl)/kick-staff.png",
-        BadgeType.moderator: "\(KickBadges.badgeBaseUrl)/kick-moderator.png",
-        BadgeType.og: "\(KickBadges.badgeBaseUrl)/kick-og.png",
-        BadgeType.vip: "\(KickBadges.badgeBaseUrl)/kick-vip.png",
-        BadgeType.bot: "\(KickBadges.badgeBaseUrl)/kick-bot.png",
-        BadgeType.broadcaster: "\(KickBadges.badgeBaseUrl)/kick-broadcaster.png",
-        BadgeType.founder: "\(KickBadges.badgeBaseUrl)/kick-founder.png",
-        BadgeType.subGifter: "\(KickBadges.badgeBaseUrl)/kick-sub_gifter.png",
+    private var badgeUrlCache: [String: URL] = [
+        BadgeType.verified: URL(string: "\(KickBadges.badgeBaseUrl)/kick-verified.png")!,
+        BadgeType.staff: URL(string: "\(KickBadges.badgeBaseUrl)/kick-staff.png")!,
+        BadgeType.moderator: URL(string: "\(KickBadges.badgeBaseUrl)/kick-moderator.png")!,
+        BadgeType.og: URL(string: "\(KickBadges.badgeBaseUrl)/kick-og.png")!,
+        BadgeType.vip: URL(string: "\(KickBadges.badgeBaseUrl)/kick-vip.png")!,
+        BadgeType.bot: URL(string: "\(KickBadges.badgeBaseUrl)/kick-bot.png")!,
+        BadgeType.broadcaster: URL(string: "\(KickBadges.badgeBaseUrl)/kick-broadcaster.png")!,
+        BadgeType.founder: URL(string: "\(KickBadges.badgeBaseUrl)/kick-founder.png")!,
+        BadgeType.subGifter: URL(string: "\(KickBadges.badgeBaseUrl)/kick-sub_gifter.png")!,
     ]
 
     func setBadges(_ badges: [SubscriberBadge]) {
@@ -46,7 +46,7 @@ private class KickBadges {
             .badge_image.src
     }
 
-    func getBadgeUrl(for badgeType: String) -> String? {
+    func getBadgeUrl(for badgeType: String) -> URL? {
         return badgeUrlCache[badgeType]
     }
 }
@@ -365,10 +365,8 @@ final class KickPusher: NSObject {
                         badgeUrls.append(badgeUrl)
                     }
                 }
-            } else if let badgeUrlString = badges.getBadgeUrl(for: badge.type) {
-                if let badgeUrl = URL(string: badgeUrlString) {
-                    badgeUrls.append(badgeUrl)
-                }
+            } else if let badgeUrl = badges.getBadgeUrl(for: badge.type) {
+                badgeUrls.append(badgeUrl)
             } else {}
         }
 
