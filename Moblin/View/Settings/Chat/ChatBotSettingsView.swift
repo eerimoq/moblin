@@ -275,7 +275,7 @@ private struct AiPermissionsSettingsView: View {
                         TextEditBindingNavigationView(title: String(localized: "Base URL"), value: $ai.baseUrl) { _ in }
                         TextEditBindingNavigationView(title: String(localized: "API key"),
                                                       value: $ai.apiKey,
-                                                      onSubmit: {_ in},
+                                                      onSubmit: { _ in },
                                                       sensitive: true)
                         TextEditBindingNavigationView(title: String(localized: "Model"), value: $ai.model) { _ in }
                         TextEditBindingNavigationView(title: String(localized: "Role"), value: $ai.role) { _ in }
@@ -354,21 +354,21 @@ private struct ChatBotCommandsSettingsView: View {
 
     var body: some View {
         Form {
-            FixPermissionsSettingsView(permissions: permissions.fix)
+            AiPermissionsSettingsView(permissions: permissions.ai, ai: model.database.chat.botCommandAi)
             AlertPermissionsSettingsView(permissions: permissions.alert)
             FaxPermissionsSettingsView(permissions: permissions.fax)
-            SnapshotPermissionsSettingsView(permissions: permissions.snapshot)
-            ReactionPermissionsSettingsView(permissions: permissions.reaction)
             FilterPermissionsSettingsView(permissions: permissions.filter)
-            ScenePermissionsSettingsView(permissions: permissions.scene)
-            StreamPermissionsSettingsView(permissions: permissions.stream)
-            WidgetPermissionsSettingsView(permissions: permissions.widget)
+            FixPermissionsSettingsView(permissions: permissions.fix)
             LocationPermissionsSettingsView(permissions: permissions.location)
             MapPermissionsSettingsView(permissions: permissions.map)
-            TtsSayPermissionsSettingsView(permissions: permissions.tts)
-            AiPermissionsSettingsView(permissions: permissions.ai, ai: model.database.chat.botCommandAi)
             MuteUnmutePermissionsSettingsView(permissions: permissions.audio)
+            ReactionPermissionsSettingsView(permissions: permissions.reaction)
+            ScenePermissionsSettingsView(permissions: permissions.scene)
+            SnapshotPermissionsSettingsView(permissions: permissions.snapshot)
+            StreamPermissionsSettingsView(permissions: permissions.stream)
             TeslaPermissionsSettingsView(permissions: permissions.tesla)
+            TtsSayPermissionsSettingsView(permissions: permissions.tts)
+            WidgetPermissionsSettingsView(permissions: permissions.widget)
         }
         .navigationTitle("Commands")
     }
