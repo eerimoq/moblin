@@ -56,12 +56,26 @@ private struct RecordingsSettingsRecordingsView: View {
 struct RecordingsSettingsView: View {
     let model: Model
 
+    private func openInFilesApp() {
+        let recordingsDirectory = model.recordingsStorage.defaultStorageDirectry().path()
+        guard let sharedUrl = URL(string: "shareddocuments://\(recordingsDirectory)") else {
+            return
+        }
+        UIApplication.shared.open(sharedUrl)
+    }
+
     var body: some View {
-        VStack {
-            RecordingsSettingsSummaryView(database: model.recordingsStorage.database)
-            RecordingsSettingsRecordingsView(model: model,
-                                             recordingsStorage: model.recordingsStorage,
-                                             database: model.recordingsStorage.database)
+        Form {
+            Section {
+                Button {
+                    openInFilesApp()
+                } label: {
+                    HCenter {
+                        Image(systemName: "arrow.turn.up.right")
+                        Text("Show in Files app")
+                    }
+                }
+            }
         }
         .navigationTitle("Recordings")
     }

@@ -298,4 +298,8 @@ final class RecordingsStorage {
         recording.stopTime = Date()
         database.recordings.insert(recording, at: 0)
     }
+    
+    func defaultStorageDirectry() -> URL {
+        return getRecordingsDirectory()
+    }
 }
