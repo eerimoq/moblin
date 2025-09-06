@@ -235,11 +235,11 @@ protocol KickOusherDelegate: AnyObject {
     func kickPusherRewardRedeemed(event: RewardRedeemedEvent)
     func kickPusherStreamHost(event: StreamHostEvent)
     func kickPusherUserBanned(event: UserBannedEvent)
-    func kickPusherFetchSubscriberBadges(completion: @escaping ([SubscriberBadge]) -> Void)
 }
 
 final class KickPusher: NSObject {
     private var channelId: String
+    private var channelName: String
     private var webSocket: WebSocketClient
     private var emotes: Emotes
     private var badges: KickBadges
@@ -247,9 +247,10 @@ final class KickPusher: NSObject {
     private var gotInfo = false
     private weak var delegate: (any KickOusherDelegate)?
 
-    init(delegate: KickOusherDelegate, channelId: String, settings: SettingsStreamChat) {
+    init(delegate: KickOusherDelegate, channelId: String, channelName: String, settings: SettingsStreamChat) {
         self.delegate = delegate
         self.channelId = channelId
+        self.channelName = channelName
         self.settings = settings.clone()
         emotes = Emotes()
         badges = KickBadges()
@@ -301,8 +302,13 @@ final class KickPusher: NSObject {
     }
 
     private func fetchSubscriberBadges() {
-        delegate?.kickPusherFetchSubscriberBadges { [weak self] badges in
-            self?.setSubscriberBadges(badges)
+        guard !channelName.isEmpty else { return }
+        getKickChannelInfo(channelName: channelName) { [weak self] channelInfo in
+            DispatchQueue.main.async {
+                if let channelInfo, let subscriberBadges = channelInfo.subscriber_badges {
+                    self?.setSubscriberBadges(subscriberBadges)
+                }
+            }
         }
     }
 

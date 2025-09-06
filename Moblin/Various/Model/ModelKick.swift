@@ -40,7 +40,7 @@ extension Model {
         kickPusher = nil
         setTextToSpeechStreamerMentions()
         if isKickPusherConfigured(), !isChatRemoteControl(), let channelId = stream.kickChannelId {
-            kickPusher = KickPusher(delegate: self, channelId: channelId, settings: stream.chat)
+            kickPusher = KickPusher(delegate: self, channelId: channelId, channelName: stream.kickChannelName, settings: stream.chat)
             kickPusher!.start()
             if !storedKickBadges.isEmpty {
                 kickPusher!.setSubscriberBadges(storedKickBadges)
@@ -252,23 +252,6 @@ extension Model: KickOusherDelegate {
                 color: .red,
                 image: "nosign"
             )
-        }
-    }
-
-    func kickPusherFetchSubscriberBadges(completion: @escaping ([SubscriberBadge]) -> Void) {
-        guard !stream.kickChannelName.isEmpty else {
-            completion([])
-            return
-        }
-        getKickChannelInfo(channelName: stream.kickChannelName) { channelInfo in
-            DispatchQueue.main.async {
-                if let channelInfo, let subscriberBadges = channelInfo.subscriber_badges {
-                    self.storedKickBadges = subscriberBadges
-                    completion(subscriberBadges)
-                } else {
-                    completion([])
-                }
-            }
         }
     }
 }
