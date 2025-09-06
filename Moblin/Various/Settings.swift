@@ -269,13 +269,52 @@ class SettingsStreamSrtAdaptiveBitrate: Codable {
 
 class SettingsStreamSrt: Codable {
     var latency: Int32 = defaultSrtLatency
-    var maximumBandwidthFollowInput: Bool? = true
-    var overheadBandwidth: Int32? = 25
-    var adaptiveBitrateEnabled: Bool? = true
-    var adaptiveBitrate: SettingsStreamSrtAdaptiveBitrate? = .init()
-    var connectionPriorities: SettingsStreamSrtConnectionPriorities? = .init()
+    var maximumBandwidthFollowInput: Bool = true
+    var overheadBandwidth: Int32 = 25
+    var adaptiveBitrateEnabled: Bool = true
+    var adaptiveBitrate: SettingsStreamSrtAdaptiveBitrate = .init()
+    var connectionPriorities: SettingsStreamSrtConnectionPriorities = .init()
     var mpegtsPacketsPerPacket: Int = 7
-    var dnsLookupStrategy: SettingsDnsLookupStrategy? = .system
+    var dnsLookupStrategy: SettingsDnsLookupStrategy = .system
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case latency,
+             maximumBandwidthFollowInput,
+             overheadBandwidth,
+             adaptiveBitrateEnabled,
+             adaptiveBitrate,
+             connectionPriorities,
+             mpegtsPacketsPerPacket,
+             dnsLookupStrategy
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.latency, latency)
+        try container.encode(.maximumBandwidthFollowInput, maximumBandwidthFollowInput)
+        try container.encode(.overheadBandwidth, overheadBandwidth)
+        try container.encode(.adaptiveBitrateEnabled, adaptiveBitrateEnabled)
+        try container.encode(.adaptiveBitrate, adaptiveBitrate)
+        try container.encode(.connectionPriorities, connectionPriorities)
+        try container.encode(.mpegtsPacketsPerPacket, mpegtsPacketsPerPacket)
+        try container.encode(.dnsLookupStrategy, dnsLookupStrategy)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        latency = container.decode(.latency, Int32.self, defaultSrtLatency)
+        maximumBandwidthFollowInput = container.decode(.maximumBandwidthFollowInput, Bool.self, true)
+        overheadBandwidth = container.decode(.overheadBandwidth, Int32.self, 25)
+        adaptiveBitrateEnabled = container.decode(.adaptiveBitrateEnabled, Bool.self, true)
+        adaptiveBitrate = container.decode(.adaptiveBitrate, SettingsStreamSrtAdaptiveBitrate.self, .init())
+        connectionPriorities = container.decode(.connectionPriorities,
+                                                SettingsStreamSrtConnectionPriorities.self,
+                                                .init())
+        mpegtsPacketsPerPacket = container.decode(.mpegtsPacketsPerPacket, Int.self, 7)
+        dnsLookupStrategy = container.decode(.dnsLookupStrategy, SettingsDnsLookupStrategy.self, .system)
+    }
 
     func clone() -> SettingsStreamSrt {
         let new = SettingsStreamSrt()
@@ -283,8 +322,8 @@ class SettingsStreamSrt: Codable {
         new.overheadBandwidth = overheadBandwidth
         new.maximumBandwidthFollowInput = maximumBandwidthFollowInput
         new.adaptiveBitrateEnabled = adaptiveBitrateEnabled
-        new.adaptiveBitrate = adaptiveBitrate!.clone()
-        new.connectionPriorities = connectionPriorities!.clone()
+        new.adaptiveBitrate = adaptiveBitrate.clone()
+        new.connectionPriorities = connectionPriorities.clone()
         new.mpegtsPacketsPerPacket = mpegtsPacketsPerPacket
         new.dnsLookupStrategy = dnsLookupStrategy
         return new
@@ -956,7 +995,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
 
     func bitrateString() -> String {
         var bitrate = formatBytesPerSecond(speed: Int64(bitrate))
-        if getProtocol() == .srt && (srt.adaptiveBitrateEnabled ?? false) {
+        if getProtocol() == .srt && srt.adaptiveBitrateEnabled {
             bitrate = "<\(bitrate)"
         } else if getProtocol() == .rtmp && rtmp.adaptiveBitrateEnabled {
             bitrate = "<\(bitrate)"
@@ -8007,34 +8046,14 @@ final class Settings {
                 store()
             }
         }
-        for stream in realDatabase.streams where stream.srt.connectionPriorities == nil {
-            stream.srt.connectionPriorities = .init()
-            store()
-        }
-        for stream in realDatabase.streams where stream.srt.overheadBandwidth == nil {
-            stream.srt.overheadBandwidth = realDatabase.debug.srtOverheadBandwidth
-            store()
-        }
-        for stream in realDatabase.streams where stream.srt.maximumBandwidthFollowInput == nil {
-            stream.srt.maximumBandwidthFollowInput = realDatabase.debug.maximumBandwidthFollowInput
-            store()
-        }
-        for stream in realDatabase.streams where stream.srt.adaptiveBitrate == nil {
-            stream.srt.adaptiveBitrate = .init()
-            store()
-        }
         for stream in realDatabase.streams {
-            for priority in stream.srt.connectionPriorities!.priorities where priority.enabled == nil {
+            for priority in stream.srt.connectionPriorities.priorities where priority.enabled == nil {
                 priority.enabled = true
                 store()
             }
         }
-        for stream in database.streams where stream.srt.adaptiveBitrate!.fastIrlSettings == nil {
-            stream.srt.adaptiveBitrate!.fastIrlSettings = .init()
-            store()
-        }
-        for stream in database.streams where stream.srt.adaptiveBitrateEnabled == nil {
-            stream.srt.adaptiveBitrateEnabled = stream.adaptiveBitrate
+        for stream in database.streams where stream.srt.adaptiveBitrate.fastIrlSettings == nil {
+            stream.srt.adaptiveBitrate.fastIrlSettings = .init()
             store()
         }
         var videoEffectWidgets: [SettingsWidget] = []
@@ -8055,19 +8074,19 @@ final class Settings {
             store()
         }
         for stream in realDatabase.streams
-            where stream.srt.adaptiveBitrate!.customSettings.minimumBitrate == nil
+            where stream.srt.adaptiveBitrate.customSettings.minimumBitrate == nil
         {
-            stream.srt.adaptiveBitrate!.customSettings.minimumBitrate = 250
+            stream.srt.adaptiveBitrate.customSettings.minimumBitrate = 250
             store()
         }
         for stream in realDatabase.streams
-            where stream.srt.adaptiveBitrate!.fastIrlSettings!.minimumBitrate == nil
+            where stream.srt.adaptiveBitrate.fastIrlSettings!.minimumBitrate == nil
         {
-            stream.srt.adaptiveBitrate!.fastIrlSettings!.minimumBitrate = 250
+            stream.srt.adaptiveBitrate.fastIrlSettings!.minimumBitrate = 250
             store()
         }
-        for stream in realDatabase.streams where stream.srt.adaptiveBitrate!.belaboxSettings == nil {
-            stream.srt.adaptiveBitrate!.belaboxSettings = .init()
+        for stream in realDatabase.streams where stream.srt.adaptiveBitrate.belaboxSettings == nil {
+            stream.srt.adaptiveBitrate.belaboxSettings = .init()
             store()
         }
         for widget in realDatabase.widgets where widget.map.northUp == nil {
@@ -8181,10 +8200,6 @@ final class Settings {
         }
         for widget in realDatabase.widgets where widget.alerts.needsSubtitles == nil {
             widget.alerts.needsSubtitles = false
-            store()
-        }
-        for stream in realDatabase.streams where stream.srt.dnsLookupStrategy == nil {
-            stream.srt.dnsLookupStrategy = .system
             store()
         }
         for widget in realDatabase.widgets {

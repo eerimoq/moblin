@@ -5,12 +5,12 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
     let stream: SettingsStream
 
     private var adaptiveBitrate: SettingsStreamSrtAdaptiveBitrate {
-        stream.srt.adaptiveBitrate!
+        stream.srt.adaptiveBitrate
     }
 
     private func handleAlgorithmChange(value: SettingsStreamSrtAdaptiveBitrateAlgorithm) {
         adaptiveBitrate.algorithm = value
-        if stream.srt.adaptiveBitrateEnabled! {
+        if stream.srt.adaptiveBitrateEnabled {
             model.setAdaptiveBitrateSrtAlgorithm(stream: stream)
         }
         model.updateAdaptiveBitrateSrt(stream: stream)

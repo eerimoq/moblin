@@ -648,22 +648,22 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func setAdaptiveBitrateSrtAlgorithm(stream: SettingsStream) {
         media.srtSetAdaptiveBitrateAlgorithm(
             targetBitrate: stream.bitrate,
-            adaptiveBitrateAlgorithm: stream.srt.adaptiveBitrate!.algorithm
+            adaptiveBitrateAlgorithm: stream.srt.adaptiveBitrate.algorithm
         )
     }
 
     func updateAdaptiveBitrateSrt(stream: SettingsStream) {
-        switch stream.srt.adaptiveBitrate!.algorithm {
+        switch stream.srt.adaptiveBitrate.algorithm {
         case .fastIrl:
             var settings = adaptiveBitrateFastSettings
-            settings.packetsInFlight = Int64(stream.srt.adaptiveBitrate!.fastIrlSettings!.packetsInFlight)
+            settings.packetsInFlight = Int64(stream.srt.adaptiveBitrate.fastIrlSettings!.packetsInFlight)
             settings
-                .minimumBitrate = Int64(stream.srt.adaptiveBitrate!.fastIrlSettings!.minimumBitrate! * 1000)
+                .minimumBitrate = Int64(stream.srt.adaptiveBitrate.fastIrlSettings!.minimumBitrate! * 1000)
             media.setAdaptiveBitrateSettings(settings: settings)
         case .slowIrl:
             media.setAdaptiveBitrateSettings(settings: adaptiveBitrateSlowSettings)
         case .customIrl:
-            let customSettings = stream.srt.adaptiveBitrate!.customSettings
+            let customSettings = stream.srt.adaptiveBitrate.customSettings
             media.setAdaptiveBitrateSettings(settings: AdaptiveBitrateSettings(
                 packetsInFlight: Int64(customSettings.packetsInFlight),
                 rttDiffHighFactor: Double(customSettings.rttDiffHighDecreaseFactor),
@@ -675,7 +675,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         case .belabox:
             var settings = adaptiveBitrateBelaboxSettings
             settings
-                .minimumBitrate = Int64(stream.srt.adaptiveBitrate!.belaboxSettings!.minimumBitrate * 1000)
+                .minimumBitrate = Int64(stream.srt.adaptiveBitrate.belaboxSettings!.minimumBitrate * 1000)
             media.setAdaptiveBitrateSettings(settings: settings)
         }
     }
@@ -1277,9 +1277,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         statusOther.ipStatuses = statuses
         for status in statuses where status.interfaceType == .wiredEthernet {
             for stream in database.streams
-                where !stream.srt.connectionPriorities!.priorities.contains(where: { $0.name == status.name })
+                where !stream.srt.connectionPriorities.priorities.contains(where: { $0.name == status.name })
             {
-                stream.srt.connectionPriorities!.priorities
+                stream.srt.connectionPriorities.priorities
                     .append(SettingsStreamSrtConnectionPriority(name: status.name))
             }
             if !database.networkInterfaceNames.contains(where: { $0.interfaceName == status.name }) {

@@ -277,16 +277,16 @@ extension Model {
                 url: stream.url,
                 reconnectTime: 5,
                 targetBitrate: getBitrate(),
-                adaptiveBitrateAlgorithm: stream.srt.adaptiveBitrateEnabled!
-                    ? stream.srt.adaptiveBitrate!.algorithm
+                adaptiveBitrateAlgorithm: stream.srt.adaptiveBitrateEnabled
+                    ? stream.srt.adaptiveBitrate.algorithm
                     : nil,
                 latency: stream.srt.latency,
                 overheadBandwidth: database.debug.srtOverheadBandwidth,
                 maximumBandwidthFollowInput: database.debug.maximumBandwidthFollowInput,
                 mpegtsPacketsPerPacket: stream.srt.mpegtsPacketsPerPacket,
                 networkInterfaceNames: database.networkInterfaceNames,
-                connectionPriorities: stream.srt.connectionPriorities!,
-                dnsLookupStrategy: stream.srt.dnsLookupStrategy!
+                connectionPriorities: stream.srt.connectionPriorities,
+                dnsLookupStrategy: stream.srt.dnsLookupStrategy
             )
             updateAdaptiveBitrateSrt(stream: stream)
         case .rist:
@@ -664,7 +664,7 @@ extension Model {
     }
 
     func updateSrtlaPriorities() {
-        media.setConnectionPriorities(connectionPriorities: stream.srt.connectionPriorities!.clone())
+        media.setConnectionPriorities(connectionPriorities: stream.srt.connectionPriorities.clone())
     }
 
     private func checkLowBitrate(speed: Int64, now: ContinuousClock.Instant) {

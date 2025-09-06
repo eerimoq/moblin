@@ -48,7 +48,7 @@ struct StreamSrtSettingsView: View {
                     StreamSrtAdaptiveBitrateSettingsView(stream: stream)
                 } label: {
                     Toggle("Adaptive bitrate", isOn: Binding(get: {
-                        stream.srt.adaptiveBitrateEnabled!
+                        stream.srt.adaptiveBitrateEnabled
                     }, set: { value in
                         stream.srt.adaptiveBitrateEnabled = value
                         model.reloadStreamIfEnabled(stream: stream)
@@ -62,7 +62,7 @@ struct StreamSrtSettingsView: View {
                 }
                 if !debug.newSrt {
                     Toggle("Max bandwidth follows input", isOn: Binding(get: {
-                        stream.srt.maximumBandwidthFollowInput!
+                        stream.srt.maximumBandwidthFollowInput
                     }, set: { value in
                         stream.srt.maximumBandwidthFollowInput = value
                         model.reloadStreamIfEnabled(stream: stream)
@@ -70,7 +70,7 @@ struct StreamSrtSettingsView: View {
                     .disabled(stream.enabled && model.isLive)
                     TextEditNavigationView(
                         title: String(localized: "Overhead bandwidth"),
-                        value: String(stream.srt.overheadBandwidth!),
+                        value: String(stream.srt.overheadBandwidth),
                         onSubmit: submitOverheadBandwidth,
                         keyboardType: .numbersAndPunctuation,
                         valueFormat: { "\($0)%" }

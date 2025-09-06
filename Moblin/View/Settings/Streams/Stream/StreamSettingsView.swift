@@ -138,7 +138,7 @@ struct StreamSettingsView: View {
                             StreamSrtSettingsView(
                                 debug: database.debug,
                                 stream: stream,
-                                dnsLookupStrategy: stream.srt.dnsLookupStrategy!.rawValue
+                                dnsLookupStrategy: stream.srt.dnsLookupStrategy.rawValue
                             )
                         } label: {
                             Text("SRT(LA)")

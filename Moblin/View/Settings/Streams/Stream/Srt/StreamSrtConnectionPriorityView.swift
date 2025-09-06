@@ -59,9 +59,9 @@ struct StreamSrtConnectionPriorityView: View {
         Form {
             Section {
                 Toggle(isOn: Binding(get: {
-                    stream.srt.connectionPriorities!.enabled
+                    stream.srt.connectionPriorities.enabled
                 }, set: { value in
-                    stream.srt.connectionPriorities!.enabled = value
+                    stream.srt.connectionPriorities.enabled = value
                     model.updateSrtlaPriorities()
                     model.objectWillChange.send()
                 })) {
@@ -69,12 +69,12 @@ struct StreamSrtConnectionPriorityView: View {
                 }
             }
             Section {
-                ForEach(stream.srt.connectionPriorities!.priorities) { priority in
+                ForEach(stream.srt.connectionPriorities.priorities) { priority in
                     PriorityItemView(priority: priority, prio: Float(priority.priority))
                         .deleteDisabled(["Cellular", "WiFi"].contains(priority.name))
                 }
                 .onDelete { offsets in
-                    stream.srt.connectionPriorities!.priorities.remove(atOffsets: offsets)
+                    stream.srt.connectionPriorities.priorities.remove(atOffsets: offsets)
                     model.updateSrtlaPriorities()
                     model.objectWillChange.send()
                 }

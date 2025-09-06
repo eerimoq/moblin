@@ -176,7 +176,7 @@ extension Model {
 
 extension Model: MoblinkStreamerDelegate {
     func moblinkStreamerTunnelAdded(endpoint: Network.NWEndpoint, relayId: UUID, relayName: String) {
-        let connectionPriorities = stream.srt.connectionPriorities!
+        let connectionPriorities = stream.srt.connectionPriorities
         if let priority = connectionPriorities.priorities.first(where: { $0.relayId == relayId }) {
             priority.name = relayName
         } else {

@@ -518,7 +518,7 @@ extension Model: RemoteControlStreamerDelegate {
         let bitratePresets = database.bitratePresets.map {
             RemoteControlSettingsBitratePreset(id: $0.id, bitrate: $0.bitrate)
         }
-        let connectionPriorities = stream.srt.connectionPriorities!.priorities
+        let connectionPriorities = stream.srt.connectionPriorities.priorities
             .map {
                 RemoteControlSettingsSrtConnectionPriority(
                     id: $0.id,
@@ -527,7 +527,7 @@ extension Model: RemoteControlStreamerDelegate {
                     enabled: $0.enabled!
                 )
             }
-        let connectionPrioritiesEnabled = stream.srt.connectionPriorities!.enabled
+        let connectionPrioritiesEnabled = stream.srt.connectionPriorities.enabled
         return RemoteControlSettings(
             scenes: scenes,
             autoSceneSwitchers: autoSceneSwitchers,
@@ -604,7 +604,7 @@ extension Model: RemoteControlStreamerDelegate {
     }
 
     func remoteControlStreamerSetSrtConnectionPrioritiesEnabled(enabled: Bool) {
-        stream.srt.connectionPriorities!.enabled = enabled
+        stream.srt.connectionPriorities.enabled = enabled
         updateSrtlaPriorities()
     }
 
@@ -613,7 +613,7 @@ extension Model: RemoteControlStreamerDelegate {
         priority: Int,
         enabled: Bool
     ) {
-        if let entry = stream.srt.connectionPriorities!.priorities.first(where: { $0.id == id }) {
+        if let entry = stream.srt.connectionPriorities.priorities.first(where: { $0.id == id }) {
             entry.priority = clampConnectionPriority(value: priority)
             entry.enabled = enabled
             updateSrtlaPriorities()
