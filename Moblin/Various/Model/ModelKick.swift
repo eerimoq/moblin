@@ -42,16 +42,8 @@ extension Model {
         if isKickPusherConfigured(), !isChatRemoteControl(), let channelId = stream.kickChannelId {
             kickPusher = KickPusher(delegate: self, channelId: channelId, channelName: stream.kickChannelName, settings: stream.chat)
             kickPusher!.start()
-            if !storedKickBadges.isEmpty {
-                kickPusher!.setSubscriberBadges(storedKickBadges)
-            }
         }
         updateChatMoreThanOneChatConfigured()
-    }
-
-    func setKickSubscriberBadges(_ badges: [SubscriberBadge]) {
-        storedKickBadges = badges
-        kickPusher?.setSubscriberBadges(badges)
     }
 
     func kickChannelNameUpdated() {
