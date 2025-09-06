@@ -40,13 +40,18 @@ private struct PermissionsSettingsInnerView: View {
 }
 
 private struct PermissionsSettingsView: View {
-    var permissions: SettingsChatBotPermissionsCommand
+    let title: String
+    let permissions: SettingsChatBotPermissionsCommand
 
     var body: some View {
-        Form {
-            PermissionsSettingsInnerView(permissions: permissions)
+        NavigationLink {
+            Form {
+                PermissionsSettingsInnerView(permissions: permissions)
+            }
+            .navigationTitle(title)
+        } label: {
+            Text(title)
         }
-        .navigationTitle("Command")
     }
 }
 
@@ -66,7 +71,7 @@ private struct AiSettingsView: View {
             }
             PermissionsSettingsInnerView(permissions: permissions)
         }
-        .navigationTitle("Command")
+        .navigationTitle("!moblin ai ask <question>")
     }
 }
 
@@ -80,47 +85,42 @@ private struct ChatBotCommandsSettingsView: View {
     var body: some View {
         Form {
             Section {
-                NavigationLink {
-                    PermissionsSettingsView(permissions: permissions.fix)
-                } label: {
-                    Text("!moblin obs fix")
-                }
+                PermissionsSettingsView(
+                    title: "!moblin obs fix",
+                    permissions: permissions.fix
+                )
             } footer: {
                 Text("Fix OBS input.")
             }
             Section {
-                NavigationLink {
-                    PermissionsSettingsView(permissions: permissions.alert)
-                } label: {
-                    Text("!moblin alert <name>")
-                }
+                PermissionsSettingsView(
+                    title: String(localized: "!moblin alert <name>"),
+                    permissions: permissions.alert
+                )
             } footer: {
                 Text("Trigger alerts. Configure alert names in alert widgets.")
             }
             Section {
-                NavigationLink {
-                    PermissionsSettingsView(permissions: permissions.fax)
-                } label: {
-                    Text("!moblin fax <url>")
-                }
+                PermissionsSettingsView(
+                    title: String(localized: "!moblin fax <url>"),
+                    permissions: permissions.fax
+                )
             } footer: {
                 Text("Fax the streamer images.")
             }
             Section {
-                NavigationLink {
-                    PermissionsSettingsView(permissions: permissions.snapshot)
-                } label: {
-                    Text("!moblin snapshot <optional message>")
-                }
+                PermissionsSettingsView(
+                    title: String(localized: "!moblin snapshot <optional message>"),
+                    permissions: permissions.snapshot
+                )
             } footer: {
                 Text("Take snapshot.")
             }
             Section {
-                NavigationLink {
-                    PermissionsSettingsView(permissions: permissions.reaction)
-                } label: {
-                    Text("!moblin reaction <reaction>")
-                }
+                PermissionsSettingsView(
+                    title: String(localized: "!moblin reaction <reaction>"),
+                    permissions: permissions.reaction
+                )
             } footer: {
                 VStack(alignment: .leading) {
                     Text("Perform Apple reaction.")
@@ -129,11 +129,10 @@ private struct ChatBotCommandsSettingsView: View {
                 }
             }
             Section {
-                NavigationLink {
-                    PermissionsSettingsView(permissions: permissions.filter)
-                } label: {
-                    Text("!moblin filter <filter> <on/off>")
-                }
+                PermissionsSettingsView(
+                    title: String(localized: "!moblin filter <filter> <on/off>"),
+                    permissions: permissions.filter
+                )
             } footer: {
                 VStack(alignment: .leading) {
                     Text("Turn a filter on or off.")
@@ -144,20 +143,18 @@ private struct ChatBotCommandsSettingsView: View {
                 }
             }
             Section {
-                NavigationLink {
-                    PermissionsSettingsView(permissions: permissions.scene)
-                } label: {
-                    Text("!moblin scene <name>")
-                }
+                PermissionsSettingsView(
+                    title: String(localized: "!moblin scene <name>"),
+                    permissions: permissions.scene
+                )
             } footer: {
                 Text("Switch to given scene.")
             }
             Section {
-                NavigationLink {
-                    PermissionsSettingsView(permissions: permissions.stream)
-                } label: {
-                    Text("!moblin stream ...")
-                }
+                PermissionsSettingsView(
+                    title: "!moblin stream ...",
+                    permissions: permissions.stream
+                )
             } footer: {
                 VStack(alignment: .leading) {
                     Text("!moblin stream title <title>")
@@ -168,11 +165,10 @@ private struct ChatBotCommandsSettingsView: View {
                 }
             }
             Section {
-                NavigationLink {
-                    PermissionsSettingsView(permissions: permissions.widget)
-                } label: {
-                    Text("!moblin widget <name> ...")
-                }
+                PermissionsSettingsView(
+                    title: String(localized: "!moblin widget <name> timer <number> add <seconds>"),
+                    permissions: permissions.widget
+                )
             } footer: {
                 VStack(alignment: .leading) {
                     Text("!moblin widget <name> timer <number> add <seconds>")
@@ -180,29 +176,26 @@ private struct ChatBotCommandsSettingsView: View {
                 }
             }
             Section {
-                NavigationLink {
-                    PermissionsSettingsView(permissions: permissions.location)
-                } label: {
-                    Text(String("!moblin location data reset"))
-                }
+                PermissionsSettingsView(
+                    title: "moblin location data reset",
+                    permissions: permissions.location
+                )
             } footer: {
                 Text("Resets distance, average speed and slope.")
             }
             Section {
-                NavigationLink {
-                    PermissionsSettingsView(permissions: permissions.map)
-                } label: {
-                    Text("!moblin map zoom out")
-                }
+                PermissionsSettingsView(
+                    title: "moblin map zoom out",
+                    permissions: permissions.map
+                )
             } footer: {
                 Text("Zoom out map widget temporarily.")
             }
             Section {
-                NavigationLink {
-                    PermissionsSettingsView(permissions: permissions.tts)
-                } label: {
-                    Text("!moblin tts/say ...")
-                }
+                PermissionsSettingsView(
+                    title: "!moblin tts/say ...",
+                    permissions: permissions.tts
+                )
             } footer: {
                 VStack(alignment: .leading) {
                     Text("!moblin tts on")
@@ -217,7 +210,10 @@ private struct ChatBotCommandsSettingsView: View {
             }
             Section {
                 NavigationLink {
-                    AiSettingsView(ai: model.database.chat.botCommandAi, permissions: permissions.ai)
+                    AiSettingsView(
+                        ai: model.database.chat.botCommandAi,
+                        permissions: permissions.ai
+                    )
                 } label: {
                     Text("!moblin ai ask <question>")
                 }
@@ -225,11 +221,10 @@ private struct ChatBotCommandsSettingsView: View {
                 Text("Ask an AI a question.")
             }
             Section {
-                NavigationLink {
-                    PermissionsSettingsView(permissions: permissions.audio)
-                } label: {
-                    Text("!moblin mute/unmute")
-                }
+                PermissionsSettingsView(
+                    title: "!moblin mute/unmute",
+                    permissions: permissions.audio
+                )
             } footer: {
                 VStack(alignment: .leading) {
                     Text("!moblin mute")
@@ -240,11 +235,10 @@ private struct ChatBotCommandsSettingsView: View {
                 }
             }
             Section {
-                NavigationLink {
-                    PermissionsSettingsView(permissions: permissions.tesla)
-                } label: {
-                    Text("!moblin tesla ...")
-                }
+                PermissionsSettingsView(
+                    title: "!moblin tesla ...",
+                    permissions: permissions.tesla
+                )
             } footer: {
                 VStack(alignment: .leading) {
                     Text("!moblin tesla trunk open")
