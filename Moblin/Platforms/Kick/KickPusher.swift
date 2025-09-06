@@ -49,10 +49,6 @@ private class KickBadges {
     func getBadgeUrl(for badgeType: String) -> String? {
         return badgeUrlCache[badgeType]
     }
-
-    func hasBadges() -> Bool {
-        return !subscriberBadges.isEmpty
-    }
 }
 
 private struct Identity: Decodable {
@@ -300,10 +296,6 @@ final class KickPusher: NSObject {
 
     func setSubscriberBadges(_ badgeList: [SubscriberBadge]) {
         badges.setBadges(badgeList)
-    }
-
-    func hasBadges() -> Bool {
-        return badges.hasBadges()
     }
 
     private func handleError(title: String, subTitle: String) {
