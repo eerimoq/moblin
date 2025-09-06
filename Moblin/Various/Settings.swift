@@ -6091,7 +6091,7 @@ class SettingsKeyboardKey: Codable, Identifiable, ObservableObject {
     @Published var key: String = ""
     @Published var function: SettingsKeyboardKeyFunction = .unused
     @Published var sceneId: UUID = .init()
-    @Published var widgetId: UUID? = .init()
+    @Published var widgetId: UUID = .init()
 
     init() {}
 
@@ -8185,10 +8185,6 @@ final class Settings {
         }
         for stream in realDatabase.streams where stream.srt.dnsLookupStrategy == nil {
             stream.srt.dnsLookupStrategy = .system
-            store()
-        }
-        for key in realDatabase.keyboard.keys where key.widgetId == nil {
-            key.widgetId = .init()
             store()
         }
         for widget in realDatabase.widgets {
