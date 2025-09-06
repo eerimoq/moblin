@@ -2167,7 +2167,6 @@ class SettingsWidgetAlertsTwitch: Codable {
 
 enum SettingsWidgetAlertsChatBotCommandImageType: String, Codable, CaseIterable {
     case file = "File"
-    case imagePlayground = "Image Playground"
 
     init(from decoder: Decoder) throws {
         self = try SettingsWidgetAlertsChatBotCommandImageType(rawValue: decoder.singleValueContainer()
@@ -2179,8 +2178,6 @@ enum SettingsWidgetAlertsChatBotCommandImageType: String, Codable, CaseIterable 
         switch self {
         case .file:
             return String(localized: "File")
-        case .imagePlayground:
-            return String(localized: "Image Playground")
         }
     }
 }
@@ -2189,15 +2186,38 @@ class SettingsWidgetAlertsChatBotCommand: Codable, Identifiable, @unchecked Send
     var id: UUID = .init()
     var name: String = "myname"
     var alert: SettingsWidgetAlertsAlert = .init()
-    var imageType: SettingsWidgetAlertsChatBotCommandImageType? = .file
-    var imagePlaygroundImageId: UUID? = .init()
+    var imageType: SettingsWidgetAlertsChatBotCommandImageType = .file
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case id,
+             name,
+             alert,
+             imageType
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.name, name)
+        try container.encode(.alert, alert)
+        try container.encode(.imageType, imageType)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        name = container.decode(.name, String.self, "myname")
+        alert = container.decode(.alert, SettingsWidgetAlertsAlert.self, .init())
+        imageType = container.decode(.imageType, SettingsWidgetAlertsChatBotCommandImageType.self, .file)
+    }
 
     func clone() -> SettingsWidgetAlertsChatBotCommand {
         let new = SettingsWidgetAlertsChatBotCommand()
         new.name = name
         new.alert = alert.clone()
-        new.imageType = imageType!
-        new.imagePlaygroundImageId = imagePlaygroundImageId!
+        new.imageType = imageType
         return new
     }
 }
@@ -8281,16 +8301,6 @@ final class Settings {
         for widget in realDatabase.widgets where widget.videoSource.cropHeight > 1.0 {
             widget.videoSource.cropHeight = 1.0
             store()
-        }
-        for widget in realDatabase.widgets {
-            for command in widget.alerts.chatBot.commands where command.imageType == nil {
-                command.imageType = .file
-                store()
-            }
-            for command in widget.alerts.chatBot.commands where command.imagePlaygroundImageId == nil {
-                command.imagePlaygroundImageId = .init()
-                store()
-            }
         }
         for button in realDatabase.quickButtons where button.page == nil {
             button.page = 1

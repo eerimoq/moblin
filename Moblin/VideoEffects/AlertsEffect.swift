@@ -75,7 +75,7 @@ enum AlertsEffectAlert {
     case twitchResubscribe(TwitchEventSubNotificationChannelSubscriptionMessageEvent)
     case twitchRaid(TwitchEventSubChannelRaidEvent)
     case twitchCheer(TwitchEventSubChannelCheerEvent)
-    case chatBotCommand(String, String, String)
+    case chatBotCommand(String, String)
     case speechToTextString(UUID)
 }
 
@@ -313,8 +313,8 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
             playTwitchRaid(event: event)
         case let .twitchCheer(event):
             playTwitchCheer(event: event)
-        case let .chatBotCommand(command, name, prompt):
-            playChatBotCommand(command: command, name: name, prompt: prompt)
+        case let .chatBotCommand(command, name):
+            playChatBotCommand(command: command, name: name)
         case let .speechToTextString(id):
             playSpeechToTextString(id: id)
         }
@@ -418,7 +418,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
     }
 
     @MainActor
-    private func playChatBotCommand(command: String, name: String, prompt: String) {
+    private func playChatBotCommand(command: String, name: String) {
         guard let commandIndex = settings.chatBot.commands
             .firstIndex(where: { command == $0.name && $0.alert.enabled })
         else {
@@ -429,7 +429,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         }
         let medias = chatBotCommands[commandIndex]
         let settings = settings.chatBot.commands[commandIndex]
-        switch settings.imageType! {
+        switch settings.imageType {
         case .file:
             play(
                 medias: medias,
@@ -437,56 +437,6 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
                 message: command,
                 settings: settings.alert
             )
-        case .imagePlayground:
-            createImagePlaygroundImage(soundUrl: medias.soundUrl, settings: settings, name: name, prompt: prompt)
-        }
-    }
-
-    private func createImagePlaygroundImage(
-        soundUrl: URL?,
-        settings: SettingsWidgetAlertsChatBotCommand,
-        name: String,
-        prompt: String
-    ) {
-        guard #available(iOS 18.4, *) else {
-            return
-        }
-        let imageUrl = mediaStorage.makePath(id: settings.imagePlaygroundImageId!)
-        DispatchQueue.global().async {
-            Task {
-                do {
-                    let creator = try await ImageCreator()
-                    var concepts: [ImagePlaygroundConcept] = [.extracted(from: prompt, title: nil)]
-                    if (try? imageUrl.checkResourceIsReachable()) == true {
-                        if let image = ImagePlaygroundConcept.image(imageUrl) {
-                            concepts.append(image)
-                        }
-                    }
-                    for try await image in creator.images(for: concepts, style: .animation, limit: 1) {
-                        let medias = Medias()
-                        let factor = 0.35
-                        var image = CIImage(cgImage: image.cgImage).transformed(by: CGAffineTransform(
-                            scaleX: factor,
-                            y: factor
-                        ))
-                        if settings.alert.positionType == .face {
-                            image = makeCircle(image)
-                        }
-                        medias.updateImages(image: .image(image), loopCount: 10)
-                        medias.soundUrl = soundUrl
-                        DispatchQueue.main.async {
-                            self.play(
-                                medias: medias,
-                                username: name,
-                                message: String(localized: "created \(prompt)"),
-                                settings: settings.alert
-                            )
-                        }
-                    }
-                } catch {
-                    logger.info("alert: Image playground error: \(error.localizedDescription)")
-                }
-            }
         }
     }
 

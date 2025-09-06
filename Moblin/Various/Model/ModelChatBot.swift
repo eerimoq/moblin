@@ -495,9 +495,8 @@ extension Model {
             guard let alert = command.popFirst() else {
                 return
             }
-            let prompt = command.rest()
             DispatchQueue.main.async {
-                self.playAlert(alert: .chatBotCommand(alert, command.user() ?? "Unknown", prompt))
+                self.playAlert(alert: .chatBotCommand(alert, command.user() ?? "Unknown"))
             }
         }
     }

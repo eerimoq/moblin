@@ -5,7 +5,6 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 private let testNames = ["Mark", "Natasha", "Pedro", "Anna"]
-private let testPrompts = ["crown", "sunglasses", "fireworks"]
 
 struct AlertPickerView: UIViewControllerRepresentable {
     @EnvironmentObject var model: Model
@@ -723,11 +722,7 @@ private struct ChatBotCommandView: View {
                 AlertTextToSpeechView(alert: alert, ttsDelay: alert.textToSpeechDelay)
                 Section {
                     Button {
-                        model.testAlert(alert: .chatBotCommand(
-                            name,
-                            testNames.randomElement()!,
-                            testPrompts.randomElement()!
-                        ))
+                        model.testAlert(alert: .chatBotCommand(name, testNames.randomElement()!))
                     } label: {
                         HCenter {
                             Text("Test")

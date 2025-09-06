@@ -1732,12 +1732,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             if database.alertsMediaGallery.customSounds.contains(where: { $0.id == mediaId }) {
                 found = true
             }
-            for widget in database.widgets where widget.type == .alerts {
-                for command in widget.alerts.chatBot.commands where command.imagePlaygroundImageId! == mediaId {
-                    found = true
-                    break
-                }
-            }
             if !found {
                 alertMediaStorage.remove(id: mediaId)
             }
