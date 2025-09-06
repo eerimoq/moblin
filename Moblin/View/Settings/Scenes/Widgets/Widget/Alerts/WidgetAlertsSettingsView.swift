@@ -507,21 +507,21 @@ private struct TwitchCheerBitsView: View {
         Form {
             Section {
                 List {
-                    ForEach(twitch.cheerBits!) { cheerBit in
+                    ForEach(twitch.cheerBits) { cheerBit in
                         TwitchCheerBitsItemView(alert: cheerBit.alert, cheerBit: cheerBit)
                     }
                     .onMove { froms, to in
-                        twitch.cheerBits!.move(fromOffsets: froms, toOffset: to)
+                        twitch.cheerBits.move(fromOffsets: froms, toOffset: to)
                         model.updateAlertsSettings()
                     }
                     .onDelete { offsets in
-                        twitch.cheerBits!.remove(atOffsets: offsets)
+                        twitch.cheerBits.remove(atOffsets: offsets)
                         model.updateAlertsSettings()
                     }
                 }
                 CreateButtonView {
                     let cheerBits = SettingsWidgetAlertsCheerBitsAlert()
-                    twitch.cheerBits!.append(cheerBits)
+                    twitch.cheerBits.append(cheerBits)
                     model.updateAlertsSettings()
                     model.objectWillChange.send()
                 }
@@ -601,7 +601,7 @@ private struct WidgetAlertsSettingsTwitchView: View {
                     Text("Subscriptions")
                 }
                 NavigationLink {
-                    TwitchRaidsView(alert: twitch.raids!)
+                    TwitchRaidsView(alert: twitch.raids)
                 } label: {
                     Text("Raids")
                 }

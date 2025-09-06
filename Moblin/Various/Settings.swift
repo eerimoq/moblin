@@ -2122,17 +2122,45 @@ private func createDefaultCheerBits() -> [SettingsWidgetAlertsCheerBitsAlert] {
 class SettingsWidgetAlertsTwitch: Codable {
     var follows: SettingsWidgetAlertsAlert = .init()
     var subscriptions: SettingsWidgetAlertsAlert = .init()
-    var raids: SettingsWidgetAlertsAlert? = .init()
-    var cheers: SettingsWidgetAlertsAlert? = .init()
-    var cheerBits: [SettingsWidgetAlertsCheerBitsAlert]? = createDefaultCheerBits()
+    var raids: SettingsWidgetAlertsAlert = .init()
+    var cheers: SettingsWidgetAlertsAlert = .init()
+    var cheerBits: [SettingsWidgetAlertsCheerBitsAlert] = createDefaultCheerBits()
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case follows,
+             subscriptions,
+             raids,
+             cheers,
+             cheerBits
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.follows, follows)
+        try container.encode(.subscriptions, subscriptions)
+        try container.encode(.raids, raids)
+        try container.encode(.cheers, cheers)
+        try container.encode(.cheerBits, cheerBits)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        follows = container.decode(.follows, SettingsWidgetAlertsAlert.self, .init())
+        subscriptions = container.decode(.subscriptions, SettingsWidgetAlertsAlert.self, .init())
+        raids = container.decode(.raids, SettingsWidgetAlertsAlert.self, .init())
+        cheers = container.decode(.cheers, SettingsWidgetAlertsAlert.self, .init())
+        cheerBits = container.decode(.cheerBits, [SettingsWidgetAlertsCheerBitsAlert].self, createDefaultCheerBits())
+    }
 
     func clone() -> SettingsWidgetAlertsTwitch {
         let new = SettingsWidgetAlertsTwitch()
         new.follows = follows.clone()
         new.subscriptions = subscriptions.clone()
-        new.raids = raids!.clone()
-        new.cheers = cheers!.clone()
-        new.cheerBits = cheerBits!.map { $0.clone() }
+        new.raids = raids.clone()
+        new.cheers = cheers.clone()
+        new.cheerBits = cheerBits.map { $0.clone() }
         return new
     }
 }
@@ -8238,14 +8266,6 @@ final class Settings {
             realDatabase.quickButtons = newButtons
             store()
         }
-        for widget in database.widgets where widget.alerts.twitch.raids == nil {
-            widget.alerts.twitch.raids = .init()
-            store()
-        }
-        for widget in database.widgets where widget.alerts.twitch.cheers == nil {
-            widget.alerts.twitch.cheers = .init()
-            store()
-        }
         for widget in realDatabase.widgets where widget.videoSource.cropX > 1.0 {
             widget.videoSource.cropX = 0.0
             store()
@@ -8260,11 +8280,6 @@ final class Settings {
         }
         for widget in realDatabase.widgets where widget.videoSource.cropHeight > 1.0 {
             widget.videoSource.cropHeight = 1.0
-            store()
-        }
-        for widget in database.widgets where widget.alerts.twitch.cheerBits == nil {
-            widget.alerts.twitch.cheerBits = createDefaultCheerBits()
-            widget.alerts.twitch.cheerBits![0].alert = widget.alerts.twitch.cheers!.clone()
             store()
         }
         for widget in realDatabase.widgets {

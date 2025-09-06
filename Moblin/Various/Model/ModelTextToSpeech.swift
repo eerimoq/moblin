@@ -36,10 +36,10 @@ extension Model {
             if settings.twitch.subscriptions.isTextToSpeechEnabled() {
                 return true
             }
-            if settings.twitch.raids!.isTextToSpeechEnabled() {
+            if settings.twitch.raids.isTextToSpeechEnabled() {
                 return true
             }
-            if settings.twitch.cheers!.isTextToSpeechEnabled() {
+            if settings.twitch.cheers.isTextToSpeechEnabled() {
                 return true
             }
         }

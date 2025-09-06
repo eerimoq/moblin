@@ -241,11 +241,11 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         (image, imageLoopCount, sound) = getMediaItems(alert: twitch.subscriptions)
         twitchSubscribe.updateImages(image: image, loopCount: imageLoopCount)
         twitchSubscribe.updateSoundUrl(sound: sound)
-        (image, imageLoopCount, sound) = getMediaItems(alert: twitch.raids!)
+        (image, imageLoopCount, sound) = getMediaItems(alert: twitch.raids)
         twitchRaid.updateImages(image: image, loopCount: imageLoopCount)
         twitchRaid.updateSoundUrl(sound: sound)
         twitchCheers = []
-        for cheerBits in twitch.cheerBits! {
+        for cheerBits in twitch.cheerBits {
             (image, imageLoopCount, sound) = getMediaItems(alert: cheerBits.alert)
             let medias = Medias()
             medias.updateImages(image: image, loopCount: imageLoopCount)
@@ -379,20 +379,20 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
 
     @MainActor
     private func playTwitchRaid(event: TwitchEventSubChannelRaidEvent) {
-        guard settings.twitch.raids!.enabled else {
+        guard settings.twitch.raids.enabled else {
             return
         }
         play(
             medias: twitchRaid,
             username: event.from_broadcaster_user_name,
             message: String(localized: "raided with a party of \(event.viewers)!"),
-            settings: settings.twitch.raids!
+            settings: settings.twitch.raids
         )
     }
 
     @MainActor
     private func playTwitchCheer(event: TwitchEventSubChannelCheerEvent) {
-        for (index, cheerBit) in settings.twitch.cheerBits!.enumerated() where cheerBit.alert.enabled {
+        for (index, cheerBit) in settings.twitch.cheerBits.enumerated() where cheerBit.alert.enabled {
             switch cheerBit.comparisonOperator {
             case .equal:
                 guard event.bits == cheerBit.bits else {
