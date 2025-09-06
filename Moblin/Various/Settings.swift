@@ -253,16 +253,49 @@ class SettingsStreamSrtAdaptiveBitrateBelaboxSettings: Codable {
 
 class SettingsStreamSrtAdaptiveBitrate: Codable {
     var algorithm: SettingsStreamSrtAdaptiveBitrateAlgorithm = .belabox
-    var fastIrlSettings: SettingsStreamSrtAdaptiveBitrateFastIrlSettings? = .init()
+    var fastIrlSettings: SettingsStreamSrtAdaptiveBitrateFastIrlSettings = .init()
     var customSettings: SettingsStreamSrtAdaptiveBitrateCustomSettings = .init()
-    var belaboxSettings: SettingsStreamSrtAdaptiveBitrateBelaboxSettings? = .init()
+    var belaboxSettings: SettingsStreamSrtAdaptiveBitrateBelaboxSettings = .init()
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case algorithm,
+             fastIrlSettings,
+             customSettings,
+             belaboxSettings
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.algorithm, algorithm)
+        try container.encode(.fastIrlSettings, fastIrlSettings)
+        try container.encode(.customSettings, customSettings)
+        try container.encode(.belaboxSettings, belaboxSettings)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        algorithm = container.decode(.algorithm, SettingsStreamSrtAdaptiveBitrateAlgorithm.self, .belabox)
+        fastIrlSettings = container.decode(
+            .fastIrlSettings,
+            SettingsStreamSrtAdaptiveBitrateFastIrlSettings.self,
+            .init()
+        )
+        customSettings = container.decode(.customSettings, SettingsStreamSrtAdaptiveBitrateCustomSettings.self, .init())
+        belaboxSettings = container.decode(
+            .belaboxSettings,
+            SettingsStreamSrtAdaptiveBitrateBelaboxSettings.self,
+            .init()
+        )
+    }
 
     func clone() -> SettingsStreamSrtAdaptiveBitrate {
         let new = SettingsStreamSrtAdaptiveBitrate()
         new.algorithm = algorithm
-        new.fastIrlSettings = fastIrlSettings!.clone()
+        new.fastIrlSettings = fastIrlSettings.clone()
         new.customSettings = customSettings.clone()
-        new.belaboxSettings = belaboxSettings!.clone()
+        new.belaboxSettings = belaboxSettings.clone()
         return new
     }
 }
@@ -8052,10 +8085,6 @@ final class Settings {
                 store()
             }
         }
-        for stream in database.streams where stream.srt.adaptiveBitrate.fastIrlSettings == nil {
-            stream.srt.adaptiveBitrate.fastIrlSettings = .init()
-            store()
-        }
         var videoEffectWidgets: [SettingsWidget] = []
         for widget in realDatabase.widgets where widget.type == .videoEffect {
             videoEffectWidgets.append(widget)
@@ -8080,13 +8109,9 @@ final class Settings {
             store()
         }
         for stream in realDatabase.streams
-            where stream.srt.adaptiveBitrate.fastIrlSettings!.minimumBitrate == nil
+            where stream.srt.adaptiveBitrate.fastIrlSettings.minimumBitrate == nil
         {
-            stream.srt.adaptiveBitrate.fastIrlSettings!.minimumBitrate = 250
-            store()
-        }
-        for stream in realDatabase.streams where stream.srt.adaptiveBitrate.belaboxSettings == nil {
-            stream.srt.adaptiveBitrate.belaboxSettings = .init()
+            stream.srt.adaptiveBitrate.fastIrlSettings.minimumBitrate = 250
             store()
         }
         for widget in realDatabase.widgets where widget.map.northUp == nil {

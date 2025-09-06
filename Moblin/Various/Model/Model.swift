@@ -656,9 +656,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         switch stream.srt.adaptiveBitrate.algorithm {
         case .fastIrl:
             var settings = adaptiveBitrateFastSettings
-            settings.packetsInFlight = Int64(stream.srt.adaptiveBitrate.fastIrlSettings!.packetsInFlight)
+            settings.packetsInFlight = Int64(stream.srt.adaptiveBitrate.fastIrlSettings.packetsInFlight)
             settings
-                .minimumBitrate = Int64(stream.srt.adaptiveBitrate.fastIrlSettings!.minimumBitrate! * 1000)
+                .minimumBitrate = Int64(stream.srt.adaptiveBitrate.fastIrlSettings.minimumBitrate! * 1000)
             media.setAdaptiveBitrateSettings(settings: settings)
         case .slowIrl:
             media.setAdaptiveBitrateSettings(settings: adaptiveBitrateSlowSettings)
@@ -675,7 +675,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         case .belabox:
             var settings = adaptiveBitrateBelaboxSettings
             settings
-                .minimumBitrate = Int64(stream.srt.adaptiveBitrate.belaboxSettings!.minimumBitrate * 1000)
+                .minimumBitrate = Int64(stream.srt.adaptiveBitrate.belaboxSettings.minimumBitrate * 1000)
             media.setAdaptiveBitrateSettings(settings: settings)
         }
     }

@@ -18,12 +18,12 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
     }
 
     private func submitFastIrlPacketsInFlight(value: Float) {
-        adaptiveBitrate.fastIrlSettings!.packetsInFlight = Int32(value)
+        adaptiveBitrate.fastIrlSettings.packetsInFlight = Int32(value)
         model.updateAdaptiveBitrateSrt(stream: stream)
     }
 
     private func submitFastMinimumBitrate(value: Float) {
-        adaptiveBitrate.fastIrlSettings!.minimumBitrate = value / 1000
+        adaptiveBitrate.fastIrlSettings.minimumBitrate = value / 1000
         model.updateAdaptiveBitrateSrt(stream: stream)
     }
 
@@ -82,7 +82,7 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
     }
 
     private func submitBelaboxMinimumBitrate(value: Float) {
-        adaptiveBitrate.belaboxSettings!.minimumBitrate = value / 1000
+        adaptiveBitrate.belaboxSettings.minimumBitrate = value / 1000
         model.updateAdaptiveBitrateSrt(stream: stream)
     }
 
@@ -106,7 +106,7 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
             }
             if adaptiveBitrate.algorithm == .fastIrl {
                 Section {
-                    SliderView(value: Float(adaptiveBitrate.fastIrlSettings!.packetsInFlight),
+                    SliderView(value: Float(adaptiveBitrate.fastIrlSettings.packetsInFlight),
                                minimum: 200,
                                maximum: 700,
                                step: 10,
@@ -125,7 +125,7 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
                     }
                 }
                 Section {
-                    SliderView(value: 1000 * adaptiveBitrate.fastIrlSettings!.minimumBitrate!,
+                    SliderView(value: 1000 * adaptiveBitrate.fastIrlSettings.minimumBitrate!,
                                minimum: 50000,
                                maximum: 2_000_000,
                                step: 50000,
@@ -230,7 +230,7 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
                 }
             } else if adaptiveBitrate.algorithm == .belabox {
                 Section {
-                    SliderView(value: 1000 * adaptiveBitrate.belaboxSettings!.minimumBitrate,
+                    SliderView(value: 1000 * adaptiveBitrate.belaboxSettings.minimumBitrate,
                                minimum: 50000,
                                maximum: 2_000_000,
                                step: 50000,
