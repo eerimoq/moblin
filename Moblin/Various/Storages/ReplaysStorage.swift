@@ -126,4 +126,8 @@ final class ReplaysStorage {
     func isFull() -> Bool {
         return database.replays.count > 499
     }
+
+    func defaultStorageDirectry() -> URL {
+        return getReplaysDirectory()
+    }
 }
