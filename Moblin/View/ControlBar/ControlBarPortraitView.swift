@@ -121,6 +121,7 @@ private struct IconAndSettingsView: View {
                 model.toggleShowingPanel(type: nil, panel: .cosmetics)
             } label: {
                 Image("\(cosmetics.iconImage)NoBackground")
+                    .interpolation(.high)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .padding([.bottom], 4)

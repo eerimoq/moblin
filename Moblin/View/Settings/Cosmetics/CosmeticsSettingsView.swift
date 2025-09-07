@@ -46,6 +46,7 @@ private struct CosmeticsSettingsIconsInStoreView: View {
                     HStack {
                         Text("")
                         Image(icon.imageNoBackground())
+                            .interpolation(.high)
                             .resizable()
                             .aspectRatio(contentMode: .fit)
                             .frame(width: controlBarButtonSize, height: controlBarButtonSize)
@@ -110,6 +111,7 @@ private struct CosmeticsSettingsMyIconsView: View {
                     HStack {
                         Text("")
                         Image(icon.imageNoBackground())
+                            .interpolation(.high)
                             .resizable()
                             .aspectRatio(contentMode: .fit)
                             .frame(width: controlBarButtonSize, height: controlBarButtonSize)
