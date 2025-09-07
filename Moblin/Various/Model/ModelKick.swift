@@ -142,7 +142,7 @@ extension Model {
     }
 }
 
-extension Model: KickOusherDelegate {
+extension Model: KickPusherDelegate {
     func kickPusherMakeErrorToast(title: String, subTitle: String?) {
         makeErrorToast(title: title, subTitle: subTitle)
     }

@@ -222,7 +222,7 @@ private var url =
         string: "wss://ws-us2.pusher.com/app/32cbd69e4b950bf97679?protocol=7&client=js&version=7.6.0&flash=false"
     )!
 
-protocol KickOusherDelegate: AnyObject {
+protocol KickPusherDelegate: AnyObject {
     func kickPusherMakeErrorToast(title: String, subTitle: String?)
     func kickPusherAppendMessage(
         messageId: String?,
@@ -252,9 +252,9 @@ final class KickPusher: NSObject {
     private var badges: KickBadges
     private let settings: SettingsStreamChat
     private var gotInfo = false
-    private weak var delegate: (any KickOusherDelegate)?
+    private weak var delegate: (any KickPusherDelegate)?
 
-    init(delegate: KickOusherDelegate, channelName: String, channelId: String, settings: SettingsStreamChat) {
+    init(delegate: KickPusherDelegate, channelName: String, channelId: String, settings: SettingsStreamChat) {
         self.delegate = delegate
         self.channelName = channelName
         self.channelId = channelId
