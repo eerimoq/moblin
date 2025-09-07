@@ -250,10 +250,10 @@ private struct TtsSayPermissionsSettingsView: View {
             )
         } footer: {
             VStack(alignment: .leading) {
-                Text("!moblin tts on")
+                Text(String("!moblin tts on"))
                 Text("Turn on chat text to speech.")
                 Text("")
-                Text("!moblin tts off")
+                Text(String("!moblin tts off"))
                 Text("Turn off chat text to speech.")
                 Text("")
                 Text("!moblin say <message>")
@@ -305,10 +305,10 @@ private struct MuteUnmutePermissionsSettingsView: View {
             )
         } footer: {
             VStack(alignment: .leading) {
-                Text("!moblin mute")
+                Text(String("!moblin mute"))
                 Text("Mute audio.")
                 Text("")
-                Text("!moblin unmute")
+                Text(String("!moblin unmute"))
                 Text("Unmute audio.")
             }
         }
@@ -326,19 +326,19 @@ private struct TeslaPermissionsSettingsView: View {
             )
         } footer: {
             VStack(alignment: .leading) {
-                Text("!moblin tesla trunk open")
+                Text(String("!moblin tesla trunk open"))
                 Text("Open the trunk.")
                 Text("")
-                Text("!moblin tesla trunk close")
+                Text(String("!moblin tesla trunk close"))
                 Text("Close the trunk.")
                 Text("")
-                Text("!moblin tesla media next")
+                Text(String("!moblin tesla media next"))
                 Text("Next track.")
                 Text("")
-                Text("!moblin tesla media previous")
+                Text(String("!moblin tesla media previous"))
                 Text("Previous track.")
                 Text("")
-                Text("!moblin tesla media toggle-playback")
+                Text(String("!moblin tesla media toggle-playback"))
                 Text("Toggle playback.")
             }
         }
