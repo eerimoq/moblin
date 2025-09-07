@@ -773,9 +773,5 @@ func calcCameraAngle(gravity: CMAcceleration, portrait: Bool) -> Double {
 
 func makeRecordingPath(recordingPath: Data) -> URL? {
     var isStale = false
-    if let url = try? URL(resolvingBookmarkData: recordingPath, bookmarkDataIsStale: &isStale) {
-        return url
-    } else {
-        return nil
-    }
+    return try? URL(resolvingBookmarkData: recordingPath, bookmarkDataIsStale: &isStale)
 }
