@@ -213,7 +213,7 @@ struct CameraSettingsView: View {
                 Section {
                     TapScreenToFocusSettingsView(model: model, database: database)
                 } footer: {
-                    Text("⚠️ Cannot be used when interactive chat is enabled.")
+                    Text("⚠️ Does not work well when interactive chat is enabled.")
                 }
             }
             if database.showAllSettings {
