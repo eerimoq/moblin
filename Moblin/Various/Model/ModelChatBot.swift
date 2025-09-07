@@ -343,7 +343,7 @@ extension Model {
     }
 
     private func handleChatBotMessageAiAsk(command: ChatBotCommand) {
-        let question = command.rest()
+        var question = command.rest()
         let ai = database.chat.botCommandAi
         guard let baseUrl = URL(string: ai.baseUrl) else {
             return
@@ -361,6 +361,9 @@ extension Model {
                 let language = recognizer.dominantLanguage?.rawValue ?? Locale.current.language.languageCode?.identifier
                 guard let language else {
                     return
+                }
+                if question.last?.isPunctuation != true {
+                    question += ","
                 }
                 let message = "\(user) \(getAsked(language)): \(question) \(getAnswer(language)): \(answer)"
                 self.sendChatBotReply(message: "\(message)", platform: command.message.platform)
