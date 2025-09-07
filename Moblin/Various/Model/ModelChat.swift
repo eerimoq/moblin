@@ -356,7 +356,7 @@ extension Model {
         }
         if !messageSent {
             if stream.twitchSendMessagesTo, stream.kickSendMessagesTo {
-                makeErrorToast(title: String(localized: "Please login to a platform"))
+                makeErrorToast(title: String(localized: "Please login to a streaming platform"))
             } else if stream.twitchSendMessagesTo, !stream.twitchLoggedIn {
                 makeNotLoggedInToTwitchToast()
             } else if stream.kickSendMessagesTo, !stream.kickLoggedIn {
