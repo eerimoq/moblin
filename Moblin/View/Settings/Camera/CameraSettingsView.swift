@@ -204,11 +204,17 @@ struct CameraSettingsView: View {
                 }
                 VideoStabilizationSettingsView(mode: database.videoStabilizationMode)
                 if database.showAllSettings {
-                    TapScreenToFocusSettingsView(model: model, database: database)
                     FixedHorizonView(database: database)
                 }
                 MirrorFrontCameraOnStreamView(model: model, database: database)
                 SelfieStickDoesNotWorkView(database: database, selfieStick: database.selfieStick)
+            }
+            if database.showAllSettings {
+                Section {
+                    TapScreenToFocusSettingsView(model: model, database: database)
+                } footer: {
+                    Text("⚠️ Cannot be used when interactive chat is enabled.")
+                }
             }
             if database.showAllSettings {
                 Section {

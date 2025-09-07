@@ -7636,6 +7636,7 @@ private func addMissingQuickButtons(database: Database) {
 
     button = SettingsQuickButton(name: String(localized: "Interactive chat"))
     button.id = UUID()
+    button.isOn = true
     button.type = .interactiveChat
     button.imageType = "System name"
     button.systemImageNameOn = "arrow.up.message.fill"
