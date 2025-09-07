@@ -345,11 +345,23 @@ extension Model {
     }
 
     func sendChatMessage(message: String) {
-        if stream.twitchSendMessagesTo {
+        var messageSent = false
+        if stream.twitchSendMessagesTo, stream.twitchLoggedIn {
             sendTwitchChatMessage(message: message)
+            messageSent = true
         }
-        if stream.kickSendMessagesTo {
+        if stream.kickSendMessagesTo, stream.kickLoggedIn {
             sendKickChatMessage(message: message)
+            messageSent = true
+        }
+        if !messageSent {
+            if stream.twitchSendMessagesTo, stream.kickSendMessagesTo {
+                makeErrorToast(title: String(localized: "Please login to a streaming platform"))
+            } else if stream.twitchSendMessagesTo, !stream.twitchLoggedIn {
+                makeNotLoggedInToTwitchToast()
+            } else if stream.kickSendMessagesTo, !stream.kickLoggedIn {
+                makeNotLoggedInToKickToast()
+            }
         }
     }
 

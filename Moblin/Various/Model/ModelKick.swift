@@ -88,6 +88,13 @@ extension Model {
         return KickApi(channelId: channelId, slug: slug, accessToken: stream.kickAccessToken)
     }
 
+    func makeNotLoggedInToKickToast() {
+        makeErrorToast(
+            title: String(localized: "Not logged in to Kick"),
+            subTitle: String(localized: "Please login again")
+        )
+    }
+
     func sendKickChatMessage(message: String) {
         createKickApi()?.sendMessage(message: message)
     }
