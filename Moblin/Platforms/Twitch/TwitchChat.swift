@@ -676,7 +676,9 @@ final class TwitchChat {
             )
         }
         if startIndex < unicodeText.endIndex {
-            for word in String(unicodeText[startIndex...]).split(separator: " ") {
+            for word in String(unicodeText[startIndex...]).components(separatedBy: .whitespacesAndNewlines)
+                where !word.isEmpty
+            {
                 segments.append(ChatPostSegment(id: id, text: "\(word) "))
                 id += 1
             }

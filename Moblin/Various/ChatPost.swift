@@ -19,7 +19,7 @@ func makeChatPostTextSegments(text: String) -> [ChatPostSegment] {
 
 func makeChatPostTextSegments(text: String, id: inout Int) -> [ChatPostSegment] {
     var segments: [ChatPostSegment] = []
-    for word in text.split(separator: " ") {
+    for word in text.components(separatedBy: .whitespacesAndNewlines) where !word.isEmpty {
         segments.append(ChatPostSegment(id: id, text: "\(word) "))
         id += 1
     }
