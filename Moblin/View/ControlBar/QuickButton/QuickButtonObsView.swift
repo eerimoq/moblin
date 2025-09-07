@@ -129,8 +129,27 @@ private struct ObsStartStopRecordingView: View {
     }
 }
 
+private struct ObsSettingsView: View {
+    let model: Model
+    @ObservedObject var stream: SettingsStream
+
+    var body: some View {
+        Form {
+            Toggle("Enabled", isOn: $stream.obsWebSocketEnabled)
+                .onChange(of: stream.obsWebSocketEnabled) { _ in
+                    if stream.enabled {
+                        model.obsWebSocketEnabledUpdated()
+                    }
+                }
+            StreamObsRemoteControlSettingsInnerView(stream: stream)
+        }
+        .navigationTitle("OBS remote control")
+    }
+}
+
 struct QuickButtonObsView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var stream: SettingsStream
     @ObservedObject var obsQuickButton: QuickButtonObs
 
     private func submitAudioDelay(value: String) -> String {
@@ -143,7 +162,8 @@ struct QuickButtonObsView: View {
 
     var body: some View {
         Form {
-            if !model.isObsConnected() {
+            if !model.isObsRemoteControlConfigured() {
+            } else if !model.isObsConnected() {
                 Section {
                     Text("Unable to connect the OBS server. Retrying every 5 seconds.")
                 }
@@ -201,19 +221,19 @@ struct QuickButtonObsView: View {
                 } header: {
                     Text("Scene audio inputs")
                 }
-                if !model.stream.obsSourceName.isEmpty {
+                if !stream.obsSourceName.isEmpty {
                     if !obsQuickButton.fixOngoing {
                         Section {
                             HCenter {
                                 Button {
                                     model.obsFixStream()
                                 } label: {
-                                    Text("Fix \(model.stream.obsSourceName) source")
+                                    Text("Fix \(stream.obsSourceName) source")
                                 }
                             }
                         } footer: {
                             Text("""
-                            Restarts the \(model.stream.obsSourceName) source to hopefully fix \
+                            Restarts the \(stream.obsSourceName) source to hopefully fix \
                             audio and video issues.
                             """)
                         }
@@ -229,7 +249,7 @@ struct QuickButtonObsView: View {
                             .foregroundColor(.white)
                         } footer: {
                             Text("""
-                            Restarts the \(model.stream.obsSourceName) source to hopefully fix \
+                            Restarts the \(stream.obsSourceName) source to hopefully fix \
                             audio and video issues.
                             """)
                         }
@@ -247,7 +267,7 @@ struct QuickButtonObsView: View {
                             unit: "ms"
                         )
                     } header: {
-                        Text("\(model.stream.obsSourceName) source audio sync")
+                        Text("\(stream.obsSourceName) source audio sync")
                     }
                     Section {
                         if model.isLive {
@@ -260,15 +280,24 @@ struct QuickButtonObsView: View {
                             Text("Go live to see audio levels.")
                         }
                     } header: {
-                        Text("\(model.stream.obsSourceName) source audio levels")
+                        Text("\(stream.obsSourceName) source audio levels")
                     }
                 } else {
                     Text("""
                     Configure source name in \
-                    Settings → Streams → \(model.stream.name) → OBS remote control for \
+                    Settings → Streams → \(stream.name) → OBS remote control for \
                     Fix button and more.
                     """)
                 }
+            }
+            Section {
+                NavigationLink {
+                    ObsSettingsView(model: model, stream: stream)
+                } label: {
+                    Label("OBS remote control", systemImage: "dot.radiowaves.left.and.right")
+                }
+            } header: {
+                Text("Shortcut")
             }
         }
         .onAppear {
