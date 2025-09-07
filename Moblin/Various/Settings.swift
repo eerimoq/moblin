@@ -4786,7 +4786,6 @@ class SettingsDebug: Codable, ObservableObject {
     var tesla: SettingsTesla = .init()
     @Published var reliableChat: Bool = false
     var dnsLookupStrategy: SettingsDnsLookupStrategy = .system
-    var cameraControlsEnabled: Bool = true
     @Published var dataRateLimitFactor: Float = 2.0
     @Published var bitrateDropFix: Bool = false
     @Published var relaxedBitrate: Bool = false
@@ -4822,7 +4821,6 @@ class SettingsDebug: Codable, ObservableObject {
              timecodesEnabled,
              dnsLookupStrategy,
              srtlaBatchSend,
-             cameraControlsEnabled,
              dataRateLimitFactor,
              bitrateDropFix,
              relaxedBitrate,
@@ -4860,7 +4858,6 @@ class SettingsDebug: Codable, ObservableObject {
         try container.encode(.tesla, tesla)
         try container.encode(.reliableChat, reliableChat)
         try container.encode(.dnsLookupStrategy, dnsLookupStrategy)
-        try container.encode(.cameraControlsEnabled, cameraControlsEnabled)
         try container.encode(.dataRateLimitFactor, dataRateLimitFactor)
         try container.encode(.bitrateDropFix, bitrateDropFix)
         try container.encode(.relaxedBitrate, relaxedBitrate)
@@ -4900,7 +4897,6 @@ class SettingsDebug: Codable, ObservableObject {
         tesla = container.decode(.tesla, SettingsTesla.self, .init())
         reliableChat = container.decode(.reliableChat, Bool.self, false)
         dnsLookupStrategy = container.decode(.dnsLookupStrategy, SettingsDnsLookupStrategy.self, .system)
-        cameraControlsEnabled = container.decode(.cameraControlsEnabled, Bool.self, true)
         dataRateLimitFactor = container.decode(.dataRateLimitFactor, Float.self, 2.0)
         bitrateDropFix = container.decode(.bitrateDropFix, Bool.self, false)
         relaxedBitrate = container.decode(.relaxedBitrate, Bool.self, false)
@@ -7230,7 +7226,7 @@ class Database: Codable, ObservableObject {
     var moblink: SettingsMoblink = .init()
     @Published var sceneSwitchTransition: SettingsSceneSwitchTransition = .blur
     @Published var forceSceneSwitchTransition: Bool = false
-    @Published var cameraControlsEnabled: Bool = true
+    @Published var cameraControlsEnabled: Bool = false
     @Published var externalDisplayContent: SettingsExternalDisplayContent = .stream
     var cyclingPowerDevices: SettingsCyclingPowerDevices = .init()
     var heartRateDevices: SettingsHeartRateDevices = .init()
@@ -7467,7 +7463,7 @@ class Database: Codable, ObservableObject {
         moblink = container.decode(.moblink, SettingsMoblink.self, srtlaRelay)
         sceneSwitchTransition = container.decode(.sceneSwitchTransition, SettingsSceneSwitchTransition.self, .blur)
         forceSceneSwitchTransition = container.decode(.forceSceneSwitchTransition, Bool.self, false)
-        cameraControlsEnabled = container.decode(.cameraControlsEnabled, Bool.self, true)
+        cameraControlsEnabled = container.decode(.cameraControlsEnabled, Bool.self, false)
         externalDisplayContent = container.decode(.externalDisplayContent, SettingsExternalDisplayContent.self, .stream)
         cyclingPowerDevices = container.decode(.cyclingPowerDevices, SettingsCyclingPowerDevices.self, .init())
         heartRateDevices = container.decode(.heartRateDevices, SettingsHeartRateDevices.self, .init())
