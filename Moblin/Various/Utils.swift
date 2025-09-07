@@ -770,3 +770,12 @@ func calcCameraAngle(gravity: CMAcceleration, portrait: Bool) -> Double {
         return atan2(gravity.x, gravity.y) + .pi / 2
     }
 }
+
+func makeRecordingPath(recordingPath: Data) -> URL? {
+    var isStale = false
+    if let url = try? URL(resolvingBookmarkData: recordingPath, bookmarkDataIsStale: &isStale) {
+        return url
+    } else {
+        return nil
+    }
+}

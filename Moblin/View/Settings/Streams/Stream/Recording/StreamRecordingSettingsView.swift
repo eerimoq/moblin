@@ -31,12 +31,7 @@ private struct RecordingPathView: View {
     }
 
     private func getRecordingPath(recordingPath: Data) -> String {
-        var isStale = false
-        if let url = try? URL(resolvingBookmarkData: recordingPath, bookmarkDataIsStale: &isStale) {
-            return url.absoluteString
-        } else {
-            return String(localized: "Disk not connected?")
-        }
+        return makeRecordingPath(recordingPath: recordingPath)?.path() ?? String(localized: "Disk not connected?")
     }
 
     var body: some View {

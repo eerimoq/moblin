@@ -1,24 +1,57 @@
 import SwiftUI
 
 private struct RecordingsLocationView: View {
+    let model: Model
     let text: Text
     let path: URL
 
-    private func openInFilesApp(path: URL) {
+    private func makeSharedUrl(path: URL) -> URL? {
         guard let sharedUrl = URL(string: "shareddocuments://\(path.path())") else {
-            return
+            return nil
         }
+        if UIApplication.shared.canOpenURL(sharedUrl) {
+            return sharedUrl
+        } else {
+            return nil
+        }
+    }
+
+    private func openInFilesApp(sharedUrl: URL) {
         UIApplication.shared.open(sharedUrl)
+    }
+
+    private func copyPathToClipboard(path: URL) {
+        UIPasteboard.general.string = path.path()
+        let subTitle: String?
+        if isMac() {
+            subTitle = String(localized: "Open it in Finder app → Go → Go to Folder...")
+        } else {
+            subTitle = nil
+        }
+        model.makeToast(title: String(localized: "Directory copied to clipboard"), subTitle: subTitle)
     }
 
     var body: some View {
         Section {
-            Button {
-                openInFilesApp(path: path)
-            } label: {
-                HCenter {
-                    Image(systemName: "arrow.turn.up.right")
-                    text
+            HStack {
+                text
+                Spacer()
+                if let sharedUrl = makeSharedUrl(path: path) {
+                    Button {
+                        openInFilesApp(sharedUrl: sharedUrl)
+                    } label: {
+                        Image(systemName: "arrow.turn.up.right")
+                    }
+                    .buttonStyle(.plain)
+                    .foregroundColor(.blue)
+                } else {
+                    Button {
+                        copyPathToClipboard(path: path)
+                    } label: {
+                        Image(systemName: "document.on.document")
+                    }
+                    .buttonStyle(.plain)
+                    .foregroundColor(.blue)
                 }
             }
         }
@@ -30,10 +63,21 @@ struct RecordingsSettingsView: View {
 
     var body: some View {
         Form {
-            RecordingsLocationView(text: Text("Show recordings in Files app"),
-                                   path: model.recordingsStorage.defaultStorageDirectry())
-            RecordingsLocationView(text: Text("Show replays in Files app"),
-                                   path: model.replaysStorage.defaultStorageDirectry())
+            RecordingsLocationView(model: model,
+                                   text: Text("Default recordings directory"),
+                                   path: model.recordingsStorage.defaultStorageDirectory())
+            if let path = model.stream.recording.recordingPath {
+                if let path = makeRecordingPath(recordingPath: path) {
+                    RecordingsLocationView(model: model,
+                                           text: Text("Current recordings directory"),
+                                           path: path)
+                } else {
+                    Text("Current recordings directory unavailable")
+                }
+            }
+            RecordingsLocationView(model: model,
+                                   text: Text("Replays directory"),
+                                   path: model.replaysStorage.defaultStorageDirectory())
         }
         .navigationTitle("Recordings")
     }

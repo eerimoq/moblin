@@ -299,7 +299,7 @@ final class RecordingsStorage {
         database.recordings.insert(recording, at: 0)
     }
 
-    func defaultStorageDirectry() -> URL {
+    func defaultStorageDirectory() -> URL {
         return getRecordingsDirectory()
     }
 }
