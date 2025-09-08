@@ -91,7 +91,7 @@ struct QuickButtonsButtonSettingsView: View {
                     Picker(selection: $button.page) {
                         ForEach(1 ... controlBarPages, id: \.self) { page in
                             Text(String(page))
-                                .tag(page as Int?)
+                                .tag(page)
                         }
                     } label: {
                         Text("Page")

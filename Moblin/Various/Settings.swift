@@ -3367,7 +3367,7 @@ class SettingsQuickButton: Codable, Identifiable, Equatable, Hashable, Observabl
     @Published var enabled: Bool = true
     var backgroundColor: RgbColor = defaultQuickButtonColor
     @Published var color: Color = defaultQuickButtonColor.color()
-    @Published var page: Int? = 1
+    @Published var page: Int = 1
 
     init(name: String) {
         self.name = name
@@ -3418,7 +3418,7 @@ class SettingsQuickButton: Codable, Identifiable, Equatable, Hashable, Observabl
         enabled = container.decode(.enabled, Bool.self, true)
         backgroundColor = container.decode(.backgroundColor, RgbColor.self, defaultQuickButtonColor)
         color = backgroundColor.color()
-        page = try? container.decode(Int?.self, forKey: .page)
+        page = container.decode(.page, Int.self, 1)
     }
 }
 
@@ -8202,10 +8202,6 @@ final class Settings {
         }
         for widget in realDatabase.widgets where widget.videoSource.cropHeight > 1.0 {
             widget.videoSource.cropHeight = 1.0
-            store()
-        }
-        for button in realDatabase.quickButtons where button.page == nil {
-            button.page = 1
             store()
         }
     }
