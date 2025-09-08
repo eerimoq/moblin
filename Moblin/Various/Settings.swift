@@ -2673,7 +2673,6 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
     case qrCode = "QR code"
     case scoreboard = "Scoreboard"
     case crop = "Crop"
-    case videoEffect = "Video effect"
 
     init(from decoder: Decoder) throws {
         self = try SettingsWidgetType(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ?? .text
@@ -2707,13 +2706,11 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
             return String(localized: "Scoreboard")
         case .crop:
             return String(localized: "Crop")
-        case .videoEffect:
-            return String(localized: "Video effect")
         }
     }
 }
 
-let widgetTypes = SettingsWidgetType.allCases.filter { $0 != .videoEffect }
+let widgetTypes = SettingsWidgetType.allCases
 
 enum SettingsVideoEffectType: String, Codable, CaseIterable {
     case shape
@@ -8204,23 +8201,6 @@ final class Settings {
     }
 
     private func migrateFromOlderVersions() {
-        var videoEffectWidgets: [SettingsWidget] = []
-        for widget in realDatabase.widgets where widget.type == .videoEffect {
-            videoEffectWidgets.append(widget)
-        }
-        if !videoEffectWidgets.isEmpty {
-            realDatabase.widgets = realDatabase.widgets.filter { widget in
-                !videoEffectWidgets.contains(widget)
-            }
-            for scene in realDatabase.scenes {
-                scene.widgets = scene.widgets.filter { widget in
-                    !videoEffectWidgets.contains { videoEffectWidget in
-                        videoEffectWidget.id == widget.widgetId
-                    }
-                }
-            }
-            store()
-        }
         for widget in realDatabase.widgets where widget.map.northUp == nil {
             widget.map.northUp = false
             store()

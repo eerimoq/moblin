@@ -563,8 +563,6 @@ extension Model {
                 addSceneImageEffects(sceneWidget, widget, &effects)
             case .text:
                 addSceneTextEffects(sceneWidget, widget, &effects, &needsSpeechToText)
-            case .videoEffect:
-                break
             case .browser:
                 addSceneBrowserEffects(sceneWidget, widget, scene, &effects, &usedBrowserEffects)
             case .crop:

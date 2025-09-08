@@ -215,8 +215,6 @@ struct WidgetSettingsView: View {
             switch widget.type {
             case .image:
                 WidgetImageSettingsView(widget: widget)
-            case .videoEffect:
-                EmptyView()
             case .browser:
                 WidgetBrowserSettingsView(widget: widget, browser: widget.browser)
             case .text:

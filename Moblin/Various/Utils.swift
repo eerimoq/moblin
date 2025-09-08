@@ -45,8 +45,6 @@ func widgetImage(widget: SettingsWidget) -> String {
     switch widget.type {
     case .image:
         return "photo"
-    case .videoEffect:
-        return "camera.filters"
     case .browser:
         return "globe"
     case .text:

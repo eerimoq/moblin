@@ -152,8 +152,6 @@ struct RemoteControlRemoteSceneSettingsWidget: Codable {
             return nil
         case .text:
             type = .text(data: RemoteControlRemoteSceneSettingsWidgetTypeText(text: widget.text))
-        case .videoEffect:
-            return nil
         case .crop:
             return nil
         case .map:
