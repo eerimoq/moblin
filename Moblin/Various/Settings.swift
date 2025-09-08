@@ -140,11 +140,37 @@ class SettingsStreamSrtConnectionPriority: Codable, Identifiable {
     var id: UUID = .init()
     var name: String
     var priority: Int = 1
-    var enabled: Bool? = true
+    var enabled: Bool = true
     var relayId: UUID?
 
     init(name: String) {
         self.name = name
+    }
+
+    enum CodingKeys: CodingKey {
+        case id,
+             name,
+             priority,
+             enabled,
+             relayId
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.name, name)
+        try container.encode(.priority, priority)
+        try container.encode(.enabled, enabled)
+        try container.encode(.relayId, relayId)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        name = container.decode(.name, String.self, "")
+        priority = container.decode(.priority, Int.self, 1)
+        enabled = container.decode(.enabled, Bool.self, true)
+        relayId = container.decode(.relayId, UUID?.self, nil)
     }
 
     func clone() -> SettingsStreamSrtConnectionPriority {
@@ -8178,26 +8204,6 @@ final class Settings {
     }
 
     private func migrateFromOlderVersions() {
-        for button in realDatabase.quickButtons where button.type == .image {
-            if button.name != String(localized: "Camera") {
-                button.name = String(localized: "Camera")
-                store()
-            }
-            if button.systemImageNameOn != "camera.fill" {
-                button.systemImageNameOn = "camera.fill"
-                store()
-            }
-            if button.systemImageNameOff != "camera" {
-                button.systemImageNameOff = "camera"
-                store()
-            }
-        }
-        for stream in realDatabase.streams {
-            for priority in stream.srt.connectionPriorities.priorities where priority.enabled == nil {
-                priority.enabled = true
-                store()
-            }
-        }
         var videoEffectWidgets: [SettingsWidget] = []
         for widget in realDatabase.widgets where widget.type == .videoEffect {
             videoEffectWidgets.append(widget)

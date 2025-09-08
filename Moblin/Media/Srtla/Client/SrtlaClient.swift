@@ -259,7 +259,7 @@ class SrtlaClient: NSObject {
             return
         }
         guard let lowestPriority = connectionPriorities.priorities
-            .filter({ priority in priority.enabled! })
+            .filter({ priority in priority.enabled })
             .min(by: { first, second in
                 first.priority < second.priority
             })
@@ -280,7 +280,7 @@ class SrtlaClient: NSObject {
         }) else {
             return 1
         }
-        if priority.enabled! {
+        if priority.enabled {
             return Float(priority.priority)
         } else {
             return 0
@@ -293,7 +293,7 @@ class SrtlaClient: NSObject {
         }) else {
             return 1
         }
-        if priority.enabled! {
+        if priority.enabled {
             return Float(priority.priority)
         } else {
             return 0

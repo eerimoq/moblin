@@ -26,7 +26,7 @@ struct PriorityItemView: View {
 
     var body: some View {
         Toggle(isOn: Binding(get: {
-            priority.enabled!
+            priority.enabled
         }, set: { value in
             priority.enabled = value
             model.updateSrtlaPriorities()

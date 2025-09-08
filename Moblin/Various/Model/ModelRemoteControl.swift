@@ -524,7 +524,7 @@ extension Model: RemoteControlStreamerDelegate {
                     id: $0.id,
                     name: $0.name,
                     priority: $0.priority,
-                    enabled: $0.enabled!
+                    enabled: $0.enabled
                 )
             }
         let connectionPrioritiesEnabled = stream.srt.connectionPriorities.enabled
