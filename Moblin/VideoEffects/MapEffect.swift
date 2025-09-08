@@ -57,7 +57,7 @@ final class MapEffect: VideoEffect {
 
     private func nextNewLocation() -> CLLocation {
         let now = Date()
-        let delay = widget.delay!
+        let delay = widget.delay
         return newLocations.last(where: { $0.timestamp.advanced(by: delay) <= now }) ?? newLocations.first!
     }
 
@@ -101,7 +101,7 @@ final class MapEffect: VideoEffect {
             self.zoomOutFactor = nil
         }
         let camera = MKMapCamera()
-        if !widget.northUp! {
+        if !widget.northUp {
             camera.heading = newLocation.course
         }
         camera.centerCoordinate = newLocation.coordinate
@@ -109,7 +109,7 @@ final class MapEffect: VideoEffect {
         var dotOffsetRatio = 0.0
         if newLocation.speed > 4, zoomOutFactor == nil {
             camera.centerCoordinateDistance += 150 * (newLocation.speed - 4)
-            if !widget.northUp! {
+            if !widget.northUp {
                 let halfMapSideLength = tan(.pi / 12) * camera.centerCoordinateDistance
                 let maxDotOffsetFromCenter = halfMapSideLength / 2
                 let maxDotSpeed = 20.0

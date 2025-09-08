@@ -8,7 +8,7 @@ struct WidgetMapSettingsView: View {
     var body: some View {
         Section {
             Toggle(isOn: Binding(get: {
-                widget.map.northUp!
+                widget.map.northUp
             }, set: { value in
                 widget.map.northUp = value
                 model.resetSelectedScene(changeScene: false)

@@ -333,7 +333,7 @@ struct RemoteControlRemoteSceneSettingsWidgetTypeMap: Codable {
     var northUp: Bool
 
     init(map: SettingsWidgetMap) {
-        northUp = map.northUp!
+        northUp = map.northUp
     }
 
     func toSettings() -> SettingsWidgetMap {
