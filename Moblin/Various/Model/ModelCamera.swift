@@ -424,7 +424,7 @@ extension Model {
 
     func updateLutsButtonState() {
         var isOn = showingPanel == .luts
-        for lut in allLuts() where lut.enabled! {
+        for lut in allLuts() where lut.enabled {
             isOn = true
         }
         setGlobalButtonState(type: .luts, isOn: isOn)

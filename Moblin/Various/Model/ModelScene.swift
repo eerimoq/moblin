@@ -466,7 +466,7 @@ extension Model {
             effects.append(lutEffect)
         }
         for lut in allLuts() {
-            guard lut.enabled! else {
+            guard lut.enabled else {
                 continue
             }
             guard let lutEffect = lutEffects[lut.id] else {

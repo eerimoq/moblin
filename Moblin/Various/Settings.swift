@@ -3445,13 +3445,34 @@ class SettingsColorLut: Codable, Identifiable {
     var id: UUID = .init()
     var type: SettingsColorLutType = .bundled
     var name: String = ""
-    var enabled: Bool? = false
-    // Remove at some point.
-    var buttonId: UUID?
+    var enabled: Bool = false
 
     init(type: SettingsColorLutType, name: String) {
         self.type = type
         self.name = name
+    }
+
+    enum CodingKeys: CodingKey {
+        case id,
+             type,
+             name,
+             enabled
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.type, type)
+        try container.encode(.name, name)
+        try container.encode(.enabled, enabled)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        type = container.decode(.type, SettingsColorLutType.self, .bundled)
+        name = container.decode(.name, String.self, "")
+        enabled = container.decode(.enabled, Bool.self, false)
     }
 
     func clone() -> SettingsColorLut {
@@ -8213,15 +8234,6 @@ final class Settings {
 
     private func migrateFromOlderVersions() {
         updateBundledAlertsMediaGallery(database: realDatabase)
-        let allLuts = realDatabase.color.bundledLuts + realDatabase.color.diskLuts
-        for lut in allLuts where lut.enabled == nil {
-            if let button = realDatabase.quickButtons.first(where: { $0.id == lut.buttonId }) {
-                lut.enabled = button.isOn
-            } else {
-                lut.enabled = false
-            }
-            store()
-        }
         let newButtons = realDatabase.quickButtons.filter { $0.type != .lut }
         if realDatabase.quickButtons.count != newButtons.count {
             realDatabase.quickButtons = newButtons
