@@ -357,8 +357,8 @@ extension Model {
         setAudioStreamBitrate(stream: stream)
         setAudioStreamFormat(format: stream.audioCodec.toEncoder())
         setAudioChannelsMap(channelsMap: [
-            0: database.audio.audioOutputToInputChannelsMap!.channel1,
-            1: database.audio.audioOutputToInputChannelsMap!.channel2,
+            0: database.audio.audioOutputToInputChannelsMap.channel1,
+            1: database.audio.audioOutputToInputChannelsMap.channel2,
         ])
         startRecorderIfNeeded()
         reloadConnections()

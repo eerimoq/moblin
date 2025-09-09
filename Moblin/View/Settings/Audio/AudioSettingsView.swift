@@ -1,13 +1,13 @@
 import SwiftUI
 
 private struct MicView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var mics: SettingsMics
     @ObservedObject var mic: Mic
 
     var body: some View {
         NavigationLink {
-            QuickButtonMicView(mics: mics, modelMic: mic)
+            QuickButtonMicView(model: model, mics: mics, modelMic: mic)
         } label: {
             Label {
                 HStack {
@@ -24,15 +24,16 @@ private struct MicView: View {
 }
 
 struct AudioSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var database: Database
     @ObservedObject var mic: Mic
+    @ObservedObject var debug: SettingsDebug
 
     private func submitOutputChannel1(value: String) {
         guard let channel = Int(value) else {
             return
         }
-        database.audio.audioOutputToInputChannelsMap!.channel1 = max(channel - 1, -1)
+        database.audio.audioOutputToInputChannelsMap.channel1 = max(channel - 1, -1)
         model.reloadStream()
         model.sceneUpdated(updateRemoteScene: false)
     }
@@ -41,7 +42,7 @@ struct AudioSettingsView: View {
         guard let channel = Int(value) else {
             return
         }
-        database.audio.audioOutputToInputChannelsMap!.channel2 = max(channel - 1, -1)
+        database.audio.audioOutputToInputChannelsMap.channel2 = max(channel - 1, -1)
         model.reloadStream()
         model.sceneUpdated(updateRemoteScene: false)
     }
@@ -63,28 +64,24 @@ struct AudioSettingsView: View {
                 }
             }
             Section {
-                MicView(mics: database.mics, mic: model.mic)
+                MicView(model: model, mics: database.mics, mic: model.mic)
             }
             Section {
-                Toggle("Bluetooth output only", isOn: Binding(get: {
-                    database.debug.bluetoothOutputOnly
-                }, set: {
-                    database.debug.bluetoothOutputOnly = $0
-                    model.reloadAudioSession()
-                }))
+                Toggle("Bluetooth output only", isOn: $debug.bluetoothOutputOnly)
+                    .onChange(of: debug.bluetoothOutputOnly) { _ in
+                        model.reloadAudioSession()
+                    }
             } footer: {
                 Text("Makes most Bluetooth speakers work better.")
             }
             Section {
-                Toggle("Prefer stereo mic", isOn: Binding(get: {
-                    database.debug.preferStereoMic
-                }, set: {
-                    database.debug.preferStereoMic = $0
-                    if mic.current.isAudioSession() {
-                        model.reloadAudioSession()
-                        model.selectMicDefault(mic: mic.current)
+                Toggle("Prefer stereo mic", isOn: $debug.preferStereoMic)
+                    .onChange(of: debug.preferStereoMic) { _ in
+                        if mic.current.isAudioSession() {
+                            model.reloadAudioSession()
+                            model.selectMicDefault(mic: mic.current)
+                        }
                     }
-                }))
             } footer: {
                 VStack(alignment: .leading) {
                     Text("Only works when front or back mic is selected.")
@@ -95,13 +92,13 @@ struct AudioSettingsView: View {
             Section {
                 TextEditNavigationView(
                     title: String(localized: "Output channel 1"),
-                    value: String(database.audio.audioOutputToInputChannelsMap!.channel1 + 1),
+                    value: String(database.audio.audioOutputToInputChannelsMap.channel1 + 1),
                     onSubmit: submitOutputChannel1
                 )
                 .disabled(model.isLive || model.isRecording)
                 TextEditNavigationView(
                     title: String(localized: "Output channel 2"),
-                    value: String(database.audio.audioOutputToInputChannelsMap!.channel2 + 1),
+                    value: String(database.audio.audioOutputToInputChannelsMap.channel2 + 1),
                     onSubmit: submitOutputChannel2
                 )
                 .disabled(model.isLive || model.isRecording)

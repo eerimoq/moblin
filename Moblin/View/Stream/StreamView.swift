@@ -2,7 +2,7 @@ import AVFoundation
 import SwiftUI
 
 struct StreamPreviewView: UIViewRepresentable {
-    @EnvironmentObject var model: Model
+    let model: Model
 
     func makeUIView(context _: Context) -> PreviewView {
         return model.streamPreviewView
@@ -22,7 +22,7 @@ class CameraPreviewUiView: UIView {
 }
 
 struct CameraPreviewView: UIViewRepresentable {
-    @EnvironmentObject var model: Model
+    let model: Model
 
     func makeUIView(context _: Context) -> CameraPreviewUiView {
         return model.cameraPreviewView

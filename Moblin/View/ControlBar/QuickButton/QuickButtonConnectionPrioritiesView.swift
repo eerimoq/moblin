@@ -18,14 +18,14 @@ private struct NoConnectionPrioritiesView: View {
 }
 
 struct QuickButtonConnectionPrioritiesView: View {
-    @EnvironmentObject var model: Model
+    @ObservedObject var stream: SettingsStream
 
     var body: some View {
-        switch model.stream.getProtocol() {
+        switch stream.getProtocol() {
         case .srt:
-            StreamSrtConnectionPriorityView(stream: model.stream)
+            StreamSrtConnectionPriorityView(stream: stream)
         default:
-            NoConnectionPrioritiesView(protocolName: model.stream.protocolString())
+            NoConnectionPrioritiesView(protocolName: stream.protocolString())
         }
     }
 }

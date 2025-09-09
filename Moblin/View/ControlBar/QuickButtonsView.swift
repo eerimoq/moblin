@@ -58,7 +58,7 @@ private struct QuickButtonImage: View {
 }
 
 private struct InstantReplayView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var replay: ReplayProvider
     let state: ButtonState
     let size: CGFloat
@@ -779,7 +779,7 @@ struct QuickButtonsInnerView: View {
                     replayAction(state: state)
                 }
             case .instantReplay:
-                InstantReplayView(replay: model.replay, state: state, size: size)
+                InstantReplayView(model: model, replay: model.replay, state: state, size: size)
             case .connectionPriorities:
                 QuickButtonImage(model: model,
                                  quickButtonsSettings: quickButtonsSettings,

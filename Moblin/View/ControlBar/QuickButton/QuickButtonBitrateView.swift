@@ -10,7 +10,7 @@ private struct BitratePresetView: View {
 }
 
 struct QuickButtonBitrateView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var database: Database
     @ObservedObject var stream: SettingsStream
 

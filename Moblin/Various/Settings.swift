@@ -4822,7 +4822,7 @@ class SettingsDebug: Codable, ObservableObject {
     @Published var cameraSwitchRemoveBlackish: Float = 0.3
     var maximumBandwidthFollowInput: Bool = true
     var audioOutputToInputChannelsMap: SettingsDebugAudioOutputToInputChannelsMap = .init()
-    var bluetoothOutputOnly: Bool = true
+    @Published var bluetoothOutputOnly: Bool = true
     var maximumLogLines: Int = 500
     var pixelFormat: String = pixelFormats[1]
     @Published var beautyFilter: Bool = false
@@ -4830,7 +4830,7 @@ class SettingsDebug: Codable, ObservableObject {
     @Published var allowVideoRangePixelFormat: Bool = false
     var blurSceneSwitch: Bool = true
     @Published var metalPetalFilters: Bool = false
-    var preferStereoMic: Bool = false
+    @Published var preferStereoMic: Bool = false
     @Published var twitchRewards: Bool = false
     @Published var removeWindNoise: Bool = false
     var httpProxy: SettingsHttpProxy = .init()
@@ -6782,7 +6782,25 @@ class SettingsAudioOutputToInputChannelsMap: Codable {
 }
 
 class AudioSettings: Codable {
-    var audioOutputToInputChannelsMap: SettingsAudioOutputToInputChannelsMap? = .init()
+    var audioOutputToInputChannelsMap: SettingsAudioOutputToInputChannelsMap = .init()
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case audioOutputToInputChannelsMap
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.audioOutputToInputChannelsMap, audioOutputToInputChannelsMap)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        audioOutputToInputChannelsMap = container.decode(.audioOutputToInputChannelsMap,
+                                                         SettingsAudioOutputToInputChannelsMap.self,
+                                                         .init())
+    }
 }
 
 class WebBrowserBookmarkSettings: Identifiable, Codable, ObservableObject {

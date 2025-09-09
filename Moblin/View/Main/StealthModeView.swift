@@ -1,7 +1,7 @@
 import SwiftUI
 
 private struct ReturnButtonView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
 
     var body: some View {
         VStack {
@@ -45,7 +45,7 @@ private struct ChatButtonView: View {
 }
 
 struct StealthModeView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var quickButtons: SettingsQuickButtons
     @ObservedObject var chat: ChatProvider
     @ObservedObject var stealthMode: StealthMode
@@ -105,7 +105,7 @@ struct StealthModeView: View {
                     HStack {
                         ChatButtonView(quickButtons: quickButtons, showButtons: showButtons)
                         Spacer()
-                        ReturnButtonView()
+                        ReturnButtonView(model: model)
                     }
                     .padding([.horizontal], 50)
                     .frame(height: controlBarWidthDefault)
@@ -116,7 +116,7 @@ struct StealthModeView: View {
                     VStack {
                         ChatButtonView(quickButtons: quickButtons, showButtons: showButtons)
                         Spacer()
-                        ReturnButtonView()
+                        ReturnButtonView(model: model)
                     }
                     .padding([.top], 50)
                     .padding([.bottom], 25)

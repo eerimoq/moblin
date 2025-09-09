@@ -1,7 +1,7 @@
 import SwiftUI
 
 private struct DeviceView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var device: SettingsDjiDevice
 
     var body: some View {
@@ -26,7 +26,7 @@ private struct DeviceView: View {
 }
 
 struct QuickButtonDjiDevicesView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var djiDevices: SettingsDjiDevices
 
     var body: some View {
@@ -34,7 +34,7 @@ struct QuickButtonDjiDevicesView: View {
             Section {
                 List {
                     ForEach(djiDevices.devices) { device in
-                        DeviceView(device: device)
+                        DeviceView(model: model, device: device)
                     }
                 }
             }

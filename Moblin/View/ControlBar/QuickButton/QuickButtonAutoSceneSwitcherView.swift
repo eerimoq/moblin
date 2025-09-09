@@ -1,7 +1,6 @@
 import SwiftUI
 
 struct QuickButtonAutoSceneSwitcherView: View {
-    @EnvironmentObject var model: Model
     @ObservedObject var autoSceneSwitcher: AutoSceneSwitcherProvider
     @ObservedObject var autoSceneSwitchers: SettingsAutoSceneSwitchers
 

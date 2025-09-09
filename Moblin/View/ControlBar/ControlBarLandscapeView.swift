@@ -95,7 +95,7 @@ private struct QuickButtonsView: View {
 }
 
 private struct StatusView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var status: StatusOther
 
     var body: some View {
@@ -118,7 +118,7 @@ private struct StatusView: View {
 }
 
 private struct IconAndSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var cosmetics: Cosmetics
 
     var body: some View {
@@ -182,7 +182,7 @@ private struct MainPageView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            IconAndSettingsView(cosmetics: cosmetics)
+            IconAndSettingsView(model: model, cosmetics: cosmetics)
             PageView(model: model,
                      quickButtons: quickButtons,
                      quickButtonsSettings: quickButtonsSettings,
@@ -272,7 +272,7 @@ struct ControlBarLandscapeView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            StatusView(status: model.statusOther)
+            StatusView(model: model, status: model.statusOther)
             PagesView(model: model,
                       quickButtons: model.quickButtons,
                       quickButtonsSettings: model.database.quickButtonsGeneral,

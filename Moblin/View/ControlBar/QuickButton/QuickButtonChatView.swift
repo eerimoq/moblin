@@ -327,7 +327,7 @@ private struct ChatView: View {
 }
 
 private struct AlertsMessagesView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var chatSettings: SettingsChat
     @ObservedObject var chat: ChatProvider
     @ObservedObject var quickButtonChat: QuickButtonChat
@@ -413,13 +413,14 @@ private struct AlertsMessagesView: View {
 }
 
 private struct ChatAlertsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var quickButtonChat: QuickButtonChat
     @Binding var selectedPost: ChatPost?
 
     var body: some View {
         ZStack {
-            AlertsMessagesView(chatSettings: model.database.chat,
+            AlertsMessagesView(model: model,
+                               chatSettings: model.database.chat,
                                chat: model.quickButtonChat,
                                quickButtonChat: quickButtonChat,
                                selectedPost: $selectedPost)
@@ -521,11 +522,7 @@ private struct PredefinedMessageView: View {
                     DraggableItemPrefixView()
                 }
                 Text(predefinedMessage.tagsString())
-                if predefinedMessage.text.isEmpty {
-                    Text("Hello chat!")
-                } else {
-                    Text(predefinedMessage.text)
-                }
+                Text(predefinedMessage.text)
                 Spacer()
                 Button {
                     model.sendChatMessage(message: predefinedMessage.text)
@@ -745,7 +742,6 @@ private struct ControlMessagesButtonView: View {
 }
 
 private struct ControlAlertsButtonView: View {
-    @EnvironmentObject var model: Model
     @ObservedObject var quickButtonChat: QuickButtonChat
 
     var body: some View {
@@ -760,7 +756,7 @@ private struct ControlAlertsButtonView: View {
 }
 
 private struct ControlView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @Binding var message: String
 
     var body: some View {
@@ -784,7 +780,7 @@ private struct ControlView: View {
 }
 
 private struct AlertsControlView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var quickButtonChat: QuickButtonChat
     @State var message: String = ""
 
@@ -832,7 +828,7 @@ private struct ActionButtonView: View {
 }
 
 private struct ActionButtonsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @Binding var selectedPost: ChatPost?
     @State var isPresentingBanConfirm = false
     @State var isPresentingTimeoutConfirm = false
@@ -982,7 +978,7 @@ private struct ActionButtonsView: View {
 }
 
 struct QuickButtonChatView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var quickButtonChat: QuickButtonChat
     @State var message: String = ""
     @State var selectedPost: ChatPost?
@@ -993,20 +989,20 @@ struct QuickButtonChatView: View {
                 if quickButtonChat.showAllChatMessages {
                     ChatView(model: model, chat: model.quickButtonChat, selectedPost: $selectedPost)
                 } else {
-                    ChatAlertsView(quickButtonChat: quickButtonChat, selectedPost: $selectedPost)
+                    ChatAlertsView(model: model, quickButtonChat: quickButtonChat, selectedPost: $selectedPost)
                 }
                 HStack {
                     if quickButtonChat.showAllChatMessages {
-                        ControlView(message: $message)
+                        ControlView(model: model, message: $message)
                     } else {
-                        AlertsControlView(quickButtonChat: quickButtonChat)
+                        AlertsControlView(model: model, quickButtonChat: quickButtonChat)
                     }
                 }
                 .frame(height: 50)
                 .border(.gray)
                 .padding([.leading, .trailing], 5)
             }
-            ActionButtonsView(selectedPost: $selectedPost)
+            ActionButtonsView(model: model, selectedPost: $selectedPost)
         }
         .background(.black)
         .navigationTitle("Chat")

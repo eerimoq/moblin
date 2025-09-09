@@ -17,8 +17,8 @@ struct MoblinApp: App {
                 webBrowserController: model.webBrowserController,
                 streamView: StreamView(
                     show: model.show,
-                    cameraPreviewView: CameraPreviewView(),
-                    streamPreviewView: StreamPreviewView()
+                    cameraPreviewView: CameraPreviewView(model: model),
+                    streamPreviewView: StreamPreviewView(model: model)
                 ),
                 createStreamWizard: model.createStreamWizard,
                 toast: model.toast,

@@ -78,11 +78,11 @@ private struct MenuView: View {
             }
         case .bitrate:
             NavigationStack {
-                QuickButtonBitrateView(database: model.database, stream: model.stream)
+                QuickButtonBitrateView(model: model, database: model.database, stream: model.stream)
             }
         case .mic:
             NavigationStack {
-                QuickButtonMicView(mics: model.database.mics, modelMic: model.mic)
+                QuickButtonMicView(model: model, mics: model.database.mics, modelMic: model.mic)
             }
         case .streamSwitcher:
             NavigationStack {
@@ -90,7 +90,7 @@ private struct MenuView: View {
             }
         case .luts:
             NavigationStack {
-                QuickButtonLutsView()
+                QuickButtonLutsView(model: model)
             }
         case .obs:
             NavigationStack {
@@ -110,11 +110,11 @@ private struct MenuView: View {
             }
         case .chat:
             NavigationStack {
-                QuickButtonChatView(quickButtonChat: model.quickButtonChatState)
+                QuickButtonChatView(model: model, quickButtonChat: model.quickButtonChatState)
             }
         case .djiDevices:
             NavigationStack {
-                QuickButtonDjiDevicesView(djiDevices: model.database.djiDevices)
+                QuickButtonDjiDevicesView(model: model, djiDevices: model.database.djiDevices)
             }
         case .sceneSettings:
             NavigationStack {
@@ -123,11 +123,11 @@ private struct MenuView: View {
             .id(model.sceneSettingsPanelSceneId)
         case .goPro:
             NavigationStack {
-                QuickButtonGoProView()
+                QuickButtonGoProView(goProState: model.goPro, goPro: model.database.goPro)
             }
         case .connectionPriorities:
             NavigationStack {
-                QuickButtonConnectionPrioritiesView()
+                QuickButtonConnectionPrioritiesView(stream: model.stream)
             }
         case .autoSceneSwitcher:
             NavigationStack {
@@ -471,6 +471,7 @@ struct MainView: View {
                     .opacity(webBrowserController.showAlert ? 1 : 0)
                 if model.showStealthMode {
                     StealthModeView(
+                        model: model,
                         quickButtons: model.database.quickButtonsGeneral,
                         chat: model.chat,
                         stealthMode: model.stealthMode,
@@ -478,7 +479,7 @@ struct MainView: View {
                     )
                 }
                 if model.lockScreen {
-                    LockScreenView()
+                    LockScreenView(model: model)
                 }
                 if model.findFace {
                     FindFaceView()
