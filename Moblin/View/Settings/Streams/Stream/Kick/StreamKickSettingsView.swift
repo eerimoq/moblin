@@ -61,8 +61,36 @@ private struct AuthenticationView: View {
     private func handleAccessToken(accessToken: String) {
         stream.kickAccessToken = accessToken
         stream.kickLoggedIn = true
-        if stream.enabled {
-            model.kickAccessTokenUpdated()
+        
+        // Fetch user data to get the username and set it as channel name
+        getKickUserData(accessToken: accessToken) { userData in
+            DispatchQueue.main.async {
+                if let userData {
+                    // Set the channel name from the username
+                    self.stream.kickChannelName = userData.username
+                    // Clear channel ID and slug to force re-fetch with new channel name
+                    self.stream.kickChannelId = nil
+                    self.stream.kickSlug = nil
+                    
+                    // Fetch channel info for the new channel name
+                    getKickChannelInfo(channelName: userData.username) { channelInfo in
+                        DispatchQueue.main.async {
+                            if let channelInfo {
+                                self.stream.kickChannelId = String(channelInfo.chatroom.id)
+                                self.stream.kickSlug = channelInfo.slug
+                            }
+                            if self.stream.enabled {
+                                self.model.kickChannelNameUpdated()
+                            }
+                        }
+                    }
+                } else {
+                    // If user data fetch fails, still update the model
+                    if self.stream.enabled {
+                        self.model.kickAccessTokenUpdated()
+                    }
+                }
+            }
         }
     }
 }
@@ -173,6 +201,7 @@ struct StreamKickSettingsView: View {
                     value: stream.kickChannelName,
                     onSubmit: submitChannelName
                 )
+                .id(stream.kickChannelName) // Force view refresh when channel name changes
             } footer: {
                 if fetchChannelInfoFailed {
                     Text("Channel not found on kick.com.")
