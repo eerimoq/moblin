@@ -764,7 +764,8 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
     var chat: SettingsStreamChat = .init()
     var recording: SettingsStreamRecording = .init()
     @Published var realtimeIrlEnabled: Bool = false
-    var realtimeIrlPushKey: String = ""
+    @Published var realtimeIrlBaseUrl = "https://rtirl.com/api"
+    @Published var realtimeIrlPushKey: String = ""
     @Published var portrait: Bool = false
     @Published var backgroundStreaming: Bool = false
     @Published var estimatedViewerDelay: Float = 8.0
@@ -842,6 +843,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
              chat,
              recording,
              realtimeIrlEnabled,
+             realtimeIrlBaseUrl,
              realtimeIrlPushKey,
              portrait,
              backgroundStreaming,
@@ -912,6 +914,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         try container.encode(.chat, chat)
         try container.encode(.recording, recording)
         try container.encode(.realtimeIrlEnabled, realtimeIrlEnabled)
+        try container.encode(.realtimeIrlBaseUrl, realtimeIrlBaseUrl)
         try container.encode(.realtimeIrlPushKey, realtimeIrlPushKey)
         try container.encode(.portrait, portrait)
         try container.encode(.backgroundStreaming, backgroundStreaming)
@@ -982,6 +985,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         chat = container.decode(.chat, SettingsStreamChat.self, .init())
         recording = container.decode(.recording, SettingsStreamRecording.self, .init())
         realtimeIrlEnabled = container.decode(.realtimeIrlEnabled, Bool.self, false)
+        realtimeIrlBaseUrl = container.decode(.realtimeIrlBaseUrl, String.self, "https://rtirl.com/api")
         realtimeIrlPushKey = container.decode(.realtimeIrlPushKey, String.self, "")
         portrait = container.decode(.portrait, Bool.self, false)
         backgroundStreaming = container.decode(.backgroundStreaming, Bool.self, false)
@@ -1043,6 +1047,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         new.chat = chat.clone()
         new.recording = recording.clone()
         new.realtimeIrlEnabled = realtimeIrlEnabled
+        new.realtimeIrlBaseUrl = realtimeIrlBaseUrl
         new.realtimeIrlPushKey = realtimeIrlPushKey
         new.portrait = portrait
         new.backgroundStreaming = backgroundStreaming
