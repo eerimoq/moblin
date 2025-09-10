@@ -44,9 +44,6 @@ struct StreamSrtSettingsView: View {
         guard let overheadBandwidth = Int32(value) else {
             return
         }
-        guard overheadBandwidth >= 5, overheadBandwidth <= 100 else {
-            return
-        }
         stream.srt.overheadBandwidth = overheadBandwidth
     }
 
