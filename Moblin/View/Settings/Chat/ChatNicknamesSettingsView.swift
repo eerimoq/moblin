@@ -8,14 +8,19 @@ private struct NicknameView: View {
         NavigationLink {
             Form {
                 Section {
-                    TextEditNavigationView(title: "User", value: nickname.user) { value in
-                        nickname.user = value
-                        model.reloadChatMessages()
-                    }
-                    TextEditNavigationView(title: "Nickname", value: nickname.nickname) { value in
+                    TextEditNavigationView(title: "User",
+                                           value: nickname.user,
+                                           onChange: { _ in nil },
+                                           onSubmit: { value in
+                                               nickname.user = value
+                                               model.reloadChatMessages()
+                                           })
+                    TextEditNavigationView(title: "Nickname", value: nickname.nickname, onChange: { _ in
+                        nil
+                    }, onSubmit: { value in
                         nickname.nickname = value
                         model.reloadChatMessages()
-                    }
+                    })
                 }
                 Section {
                     Button {

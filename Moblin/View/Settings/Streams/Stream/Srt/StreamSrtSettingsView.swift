@@ -6,7 +6,17 @@ struct StreamSrtSettingsView: View {
     let stream: SettingsStream
     @State var dnsLookupStrategy: String
 
-    func submitLatency(value: String) {
+    private func changeLatency(value: String) -> String? {
+        guard let latency = Int32(value) else {
+            return String(localized: "Not a number")
+        }
+        guard latency >= 0 else {
+            return String(localized: "Too small")
+        }
+        return nil
+    }
+
+    private func submitLatency(value: String) {
         guard let latency = Int32(value) else {
             return
         }
@@ -17,7 +27,20 @@ struct StreamSrtSettingsView: View {
         model.reloadStreamIfEnabled(stream: stream)
     }
 
-    func submitOverheadBandwidth(value: String) {
+    private func changeOverheadBandwidth(value: String) -> String? {
+        guard let overheadBandwidth = Int32(value) else {
+            return String(localized: "Not a number")
+        }
+        guard overheadBandwidth >= 5 else {
+            return String(localized: "Too small")
+        }
+        guard overheadBandwidth <= 100 else {
+            return String(localized: "Too big")
+        }
+        return nil
+    }
+
+    private func submitOverheadBandwidth(value: String) {
         guard let overheadBandwidth = Int32(value) else {
             return
         }
@@ -33,6 +56,7 @@ struct StreamSrtSettingsView: View {
                 TextEditNavigationView(
                     title: String(localized: "Latency"),
                     value: String(stream.srt.latency),
+                    onChange: changeLatency,
                     onSubmit: submitLatency,
                     footers: [
                         String(localized: """
@@ -71,6 +95,7 @@ struct StreamSrtSettingsView: View {
                     TextEditNavigationView(
                         title: String(localized: "Overhead bandwidth"),
                         value: String(stream.srt.overheadBandwidth),
+                        onChange: changeOverheadBandwidth,
                         onSubmit: submitOverheadBandwidth,
                         keyboardType: .numbersAndPunctuation,
                         valueFormat: { "\($0)%" }

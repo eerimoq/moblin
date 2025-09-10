@@ -103,6 +103,7 @@ private struct RemoteControlSettingsStreamerView: View {
             TextEditNavigationView(
                 title: String(localized: "Assistant URL"),
                 value: streamer.url,
+                onChange: isValidWebSocketUrl,
                 onSubmit: submitStreamerUrl,
                 footers: [
                     String(
@@ -195,6 +196,16 @@ private struct StreamerView: View {
         model.reloadRemoteControlAssistant()
     }
 
+    private func changeAssistantPort(value: String) -> String? {
+        guard let port = UInt16(value.trim()) else {
+            return String(localized: "Not a number")
+        }
+        guard port > 0 else {
+            return String(localized: "Too small")
+        }
+        return nil
+    }
+
     private func submitAssistantPort(value: String) {
         guard let port = UInt16(value.trim()), port > 0 else {
             model.makePortErrorToast(port: value)
@@ -210,6 +221,13 @@ private struct StreamerView: View {
         }
         streamer.relay.baseUrl = value
         reloadIfEnabled()
+    }
+
+    private func changeAssistantRelayBridgeId(value: String) -> String? {
+        guard !value.isEmpty else {
+            return String(localized: "Empty")
+        }
+        return nil
     }
 
     private func submitAssistantRelayBridgeId(value: String) {
@@ -234,6 +252,7 @@ private struct StreamerView: View {
                     TextEditNavigationView(
                         title: String(localized: "Server port"),
                         value: String(streamer.port),
+                        onChange: changeAssistantPort,
                         onSubmit: submitAssistantPort,
                         keyboardType: .numbersAndPunctuation,
                         placeholder: "2345"
@@ -249,11 +268,13 @@ private struct StreamerView: View {
                     TextEditNavigationView(
                         title: String(localized: "Base URL"),
                         value: streamer.relay.baseUrl,
+                        onChange: isValidWebSocketUrl,
                         onSubmit: submitAssistantRelayUrl
                     )
                     TextEditNavigationView(
                         title: String(localized: "Bridge id"),
                         value: streamer.relay.bridgeId,
+                        onChange: changeAssistantRelayBridgeId,
                         onSubmit: submitAssistantRelayBridgeId,
                         sensitive: true
                     )

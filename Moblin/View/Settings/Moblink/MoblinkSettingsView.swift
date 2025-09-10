@@ -215,6 +215,16 @@ private struct StreamerView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var streamer: SettingsMoblinkStreamer
 
+    private func changePort(value: String) -> String? {
+        guard let port = UInt16(value.trim()) else {
+            return String(localized: "Not a number")
+        }
+        guard port > 0 else {
+            return String(localized: "Too small")
+        }
+        return nil
+    }
+
     private func submitPort(value: String) {
         guard let port = UInt16(value.trim()), port > 0 else {
             model.makePortErrorToast(port: value)
@@ -236,6 +246,7 @@ private struct StreamerView: View {
             TextEditNavigationView(
                 title: String(localized: "Server port"),
                 value: String(streamer.port),
+                onChange: changePort,
                 onSubmit: submitPort,
                 keyboardType: .numbersAndPunctuation,
                 placeholder: "7777"

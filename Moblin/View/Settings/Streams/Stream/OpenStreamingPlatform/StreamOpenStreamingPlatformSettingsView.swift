@@ -27,12 +27,14 @@ struct StreamOpenStreamingPlatformSettingsView: View {
                 TextEditNavigationView(
                     title: String(localized: "URL"),
                     value: stream.openStreamingPlatformUrl,
+                    onChange: isValidWebSocketUrl,
                     onSubmit: submitUrl,
                     placeholder: "ws://foo.org:5443/ws"
                 )
                 TextEditNavigationView(
                     title: String(localized: "Channel id"),
                     value: stream.openStreamingPlatformChannelId,
+                    onChange: { _ in nil },
                     onSubmit: submitRoom,
                     placeholder: "4e9f02fc-cee9-4d1c-b4b5-99b9496375c8"
                 )

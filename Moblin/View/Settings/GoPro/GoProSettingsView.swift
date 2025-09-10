@@ -237,6 +237,7 @@ private struct GoProRtmpUrlSettingsView: View {
                         TextEditNavigationView(
                             title: String(localized: "URL"),
                             value: rtmpUrl.customUrl,
+                            onChange: { _ in nil },
                             onSubmit: {
                                 rtmpUrl.customUrl = $0
                             }

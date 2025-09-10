@@ -4,6 +4,26 @@ struct WidgetCropSettingsView: View {
     @EnvironmentObject var model: Model
     let widget: SettingsWidget
 
+    private func changeXY(value: String) -> String? {
+        guard let x = Int(value) else {
+            return String(localized: "Not a number")
+        }
+        guard x >= 0 else {
+            return String(localized: "Too small")
+        }
+        return nil
+    }
+
+    private func changeWidthHeight(value: String) -> String? {
+        guard let x = Int(value) else {
+            return String(localized: "Not a number")
+        }
+        guard x > 0 else {
+            return String(localized: "Too small")
+        }
+        return nil
+    }
+
     private func submitX(value: String) {
         guard let x = Int(value) else {
             return
@@ -83,24 +103,28 @@ struct WidgetCropSettingsView: View {
             TextEditNavigationView(
                 title: String(localized: "X"),
                 value: String(widget.crop.x),
+                onChange: changeXY,
                 onSubmit: submitX,
                 keyboardType: .numbersAndPunctuation
             )
             TextEditNavigationView(
                 title: String(localized: "Y"),
                 value: String(widget.crop.y),
+                onChange: changeXY,
                 onSubmit: submitY,
                 keyboardType: .numbersAndPunctuation
             )
             TextEditNavigationView(
                 title: String(localized: "Width"),
                 value: String(widget.crop.width),
+                onChange: changeWidthHeight,
                 onSubmit: submitWidth,
                 keyboardType: .numbersAndPunctuation
             )
             TextEditNavigationView(
                 title: String(localized: "Height"),
                 value: String(widget.crop.height),
+                onChange: changeWidthHeight,
                 onSubmit: submitHeight,
                 keyboardType: .numbersAndPunctuation
             )

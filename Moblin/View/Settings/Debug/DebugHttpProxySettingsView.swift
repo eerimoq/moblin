@@ -15,23 +15,34 @@ struct DebugHttpProxySettingsView: View {
                 }))
                 TextEditNavigationView(
                     title: String(localized: "Host"),
-                    value: model.database.debug.httpProxy.host
-                ) {
-                    model.database.debug.httpProxy.host = $0.trim()
-                    model.createUrlSession()
-                    model.reloadConnections()
-                }
+                    value: model.database.debug.httpProxy.host,
+                    onChange: { _ in nil },
+                    onSubmit: {
+                        model.database.debug.httpProxy.host = $0.trim()
+                        model.createUrlSession()
+                        model.reloadConnections()
+                    }
+                )
                 TextEditNavigationView(
                     title: String(localized: "Port"),
-                    value: String(model.database.debug.httpProxy.port)
-                ) {
-                    guard let port = UInt16($0), port > 0 else {
-                        return
+                    value: String(model.database.debug.httpProxy.port),
+                    onChange: {
+                        guard let port = UInt16($0) else {
+                            return String(localized: "Not a number")
+                        }
+                        guard port > 0 else {
+                            return String(localized: "Too small")
+                        }
+                        return nil
+                    }, onSubmit: {
+                        guard let port = UInt16($0), port > 0 else {
+                            return
+                        }
+                        model.database.debug.httpProxy.port = port
+                        model.createUrlSession()
+                        model.reloadConnections()
                     }
-                    model.database.debug.httpProxy.port = port
-                    model.createUrlSession()
-                    model.reloadConnections()
-                }
+                )
             } footer: {
                 Text("Currently only used for Twitch websockets. Authentication may be added later.")
             }

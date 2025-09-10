@@ -18,6 +18,19 @@ struct WidgetBrowserSettingsView: View {
         model.resetSelectedScene(changeScene: false)
     }
 
+    private func changeWidthHeight(value: String) -> String? {
+        guard let width = Int(value) else {
+            return String(localized: "Not a number")
+        }
+        guard width > 0 else {
+            return String(localized: "Too small")
+        }
+        guard width < 4000 else {
+            return String(localized: "Too big")
+        }
+        return nil
+    }
+
     private func submitWidth(value: String) {
         guard let width = Int(value) else {
             return
@@ -51,7 +64,10 @@ struct WidgetBrowserSettingsView: View {
 
     var body: some View {
         Section {
-            TextEditNavigationView(title: "URL", value: browser.url, onSubmit: submitUrl)
+            TextEditNavigationView(title: "URL",
+                                   value: browser.url,
+                                   onChange: isValidHttpUrl,
+                                   onSubmit: submitUrl)
             MultiLineTextFieldNavigationView(
                 title: String(localized: "Style sheet"),
                 value: browser.styleSheet,
@@ -72,11 +88,13 @@ struct WidgetBrowserSettingsView: View {
                 TextEditNavigationView(
                     title: String(localized: "Width"),
                     value: String(browser.width),
+                    onChange: changeWidthHeight,
                     onSubmit: submitWidth,
                     keyboardType: .numbersAndPunctuation
                 )
                 TextEditNavigationView(title: String(localized: "Height"),
                                        value: String(browser.height),
+                                       onChange: changeWidthHeight,
                                        onSubmit: submitHeight,
                                        keyboardType: .numbersAndPunctuation)
                 Toggle("Scale to fit video width", isOn: $browser.scaleToFitVideo)

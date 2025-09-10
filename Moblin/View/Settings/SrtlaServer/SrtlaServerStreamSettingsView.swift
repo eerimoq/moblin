@@ -39,12 +39,23 @@ struct SrtlaServerStreamSettingsView: View {
     @ObservedObject var srtlaServer: SettingsSrtlaServer
     @ObservedObject var stream: SettingsSrtlaServerStream
 
+    private func changeStreamId(value: String) -> String? {
+        let streamId = value.trim()
+        guard streamId.wholeMatch(of: /[a-zA-Z0-9]*/) != nil else {
+            return String(localized: "Bad character")
+        }
+        guard model.getSrtlaStream(streamId: streamId) == nil else {
+            return String(localized: "Already in use")
+        }
+        return nil
+    }
+
     private func submitStreamId(value: String) {
         let streamId = value.trim()
         guard streamId.wholeMatch(of: /[a-zA-Z0-9]*/) != nil else {
             return
         }
-        if model.getSrtlaStream(streamId: streamId) != nil {
+        guard model.getSrtlaStream(streamId: streamId) == nil else {
             return
         }
         stream.streamId = streamId
@@ -59,6 +70,7 @@ struct SrtlaServerStreamSettingsView: View {
                     TextEditNavigationView(
                         title: String(localized: "Stream id"),
                         value: stream.streamId,
+                        onChange: changeStreamId,
                         onSubmit: submitStreamId,
                         footers: [String(localized: "May only contain lower case letters.")]
                     )

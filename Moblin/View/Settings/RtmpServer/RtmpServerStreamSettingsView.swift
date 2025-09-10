@@ -30,6 +30,13 @@ struct RtmpServerStreamSettingsView: View {
     @ObservedObject var rtmpServer: SettingsRtmpServer
     @ObservedObject var stream: SettingsRtmpServerStream
 
+    private func changeStreamKey(value: String) -> String? {
+        if model.getRtmpStream(streamKey: value.trim()) == nil {
+            return nil
+        }
+        return String(localized: "Already in use")
+    }
+
     private func submitStreamKey(value: String) {
         let streamKey = value.trim()
         if model.getRtmpStream(streamKey: streamKey) != nil {
@@ -38,7 +45,7 @@ struct RtmpServerStreamSettingsView: View {
         stream.streamKey = streamKey
     }
 
-    func submitLatency(value: String) {
+    private func submitLatency(value: String) {
         guard let latency = Int32(value) else {
             stream.latencyString = String(stream.latency)
             return
@@ -56,6 +63,7 @@ struct RtmpServerStreamSettingsView: View {
                     TextEditNavigationView(
                         title: String(localized: "Stream key"),
                         value: stream.streamKey,
+                        onChange: changeStreamKey,
                         onSubmit: submitStreamKey
                     )
                     .disabled(model.rtmpServerEnabled())

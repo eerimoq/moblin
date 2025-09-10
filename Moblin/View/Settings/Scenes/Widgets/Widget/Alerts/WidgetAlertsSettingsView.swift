@@ -412,6 +412,12 @@ private struct TwitchCheerView: View {
             }
             TextEditNavigationView(title: String(localized: "Bits"),
                                    value: String(bits),
+                                   onChange: { value in
+                                       guard let bits = Int(value) else {
+                                           return String(localized: "Not a number")
+                                       }
+                                       return nil
+                                   },
                                    onSubmit: { value in
                                        guard let bits = Int(value) else {
                                            return
@@ -656,7 +662,10 @@ private struct ChatBotCommandView: View {
                     }
                 }
                 Section {
-                    TextEditNavigationView(title: String(localized: "Name"), value: name, onSubmit: onSubmit)
+                    TextEditNavigationView(title: String(localized: "Name"),
+                                           value: name,
+                                           onChange: { _ in nil },
+                                           onSubmit: onSubmit)
                 } footer: {
                     Text("Trigger with chat message '!moblin alert \(name)'")
                 }
@@ -806,7 +815,10 @@ private struct SpeechToTextStringView: View {
                     }
                 }
                 Section {
-                    TextEditNavigationView(title: String(localized: "String"), value: text, onSubmit: onSubmit)
+                    TextEditNavigationView(title: String(localized: "String"),
+                                           value: text,
+                                           onChange: { _ in nil },
+                                           onSubmit: onSubmit)
                 } footer: {
                     Text("Trigger by saying '\(text)'.")
                 }

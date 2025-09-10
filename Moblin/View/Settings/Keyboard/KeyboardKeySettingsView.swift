@@ -30,9 +30,12 @@ struct KeyboardKeySettingsView: View {
         NavigationLink {
             Form {
                 Section {
-                    TextEditNavigationView(title: String(localized: "Key"), value: key.key) {
-                        key.key = $0
-                    }
+                    TextEditNavigationView(title: String(localized: "Key"),
+                                           value: key.key,
+                                           onChange: { _ in nil },
+                                           onSubmit: {
+                                               key.key = $0
+                                           })
                 }
                 Section {
                     NavigationLink {

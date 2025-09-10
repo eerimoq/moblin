@@ -112,7 +112,8 @@ func cleanUrl(url value: String) -> String {
     return components.string!
 }
 
-func isValidUrl(url value: String, allowedSchemes: [String]? = nil,
+func isValidUrl(url value: String,
+                allowedSchemes: [String]? = nil,
                 rtmpStreamKeyRequired: Bool = true) -> String?
 {
     guard let url = URL(string: value) else {
@@ -179,6 +180,32 @@ func isValidWebSocketUrl(url value: String) -> String? {
     case "ws":
         break
     case "wss":
+        break
+    case nil:
+        return String(localized: "Scheme missing")
+    default:
+        return String(localized: "Unsupported scheme \(url.scheme!)")
+    }
+    return nil
+}
+
+func isValidHttpUrl(url value: String) -> String? {
+    if value.isEmpty {
+        return nil
+    }
+    guard let url = URL(string: value) else {
+        return String(localized: "Malformed URL")
+    }
+    if url.host() == nil {
+        return String(localized: "Host missing")
+    }
+    guard URLComponents(url: url, resolvingAgainstBaseURL: false) != nil else {
+        return String(localized: "Malformed URL")
+    }
+    switch url.scheme {
+    case "http":
+        break
+    case "https":
         break
     case nil:
         return String(localized: "Scheme missing")

@@ -29,7 +29,7 @@ class RealtimeIrl {
         updateCount += 1
         var request = URLRequest(url: pushUrl)
         request.httpMethod = "POST"
-        request.httpBody = Data("""
+        request.httpBody = """
         {
           \"latitude\":\(location.coordinate.latitude),
           \"longitude\":\(location.coordinate.longitude),
@@ -37,7 +37,7 @@ class RealtimeIrl {
           \"altitude\":\(location.altitude),
           \"timestamp\":\(location.timestamp.timeIntervalSince1970)
         }
-        """.utf8)
+        """.utf8Data
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         URLSession.shared.dataTask(with: request) { _, _, _ in
         }

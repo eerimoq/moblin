@@ -709,6 +709,7 @@ class SettingsStreamMultiStreaming: Codable, ObservableObject {
 }
 
 class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named {
+    static let defaultRealtimeIrlBaseUrl = "https://rtirl.com/api"
     @Published var name: String
     var id: UUID = .init()
     var enabled: Bool = false
@@ -764,7 +765,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
     var chat: SettingsStreamChat = .init()
     var recording: SettingsStreamRecording = .init()
     @Published var realtimeIrlEnabled: Bool = false
-    @Published var realtimeIrlBaseUrl = "https://rtirl.com/api"
+    @Published var realtimeIrlBaseUrl = defaultRealtimeIrlBaseUrl
     @Published var realtimeIrlPushKey: String = ""
     @Published var portrait: Bool = false
     @Published var backgroundStreaming: Bool = false
@@ -985,7 +986,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         chat = container.decode(.chat, SettingsStreamChat.self, .init())
         recording = container.decode(.recording, SettingsStreamRecording.self, .init())
         realtimeIrlEnabled = container.decode(.realtimeIrlEnabled, Bool.self, false)
-        realtimeIrlBaseUrl = container.decode(.realtimeIrlBaseUrl, String.self, "https://rtirl.com/api")
+        realtimeIrlBaseUrl = container.decode(.realtimeIrlBaseUrl, String.self, Self.defaultRealtimeIrlBaseUrl)
         realtimeIrlPushKey = container.decode(.realtimeIrlPushKey, String.self, "")
         portrait = container.decode(.portrait, Bool.self, false)
         backgroundStreaming = container.decode(.backgroundStreaming, Bool.self, false)

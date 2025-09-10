@@ -5,6 +5,19 @@ struct DebugSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var debug: SettingsDebug
 
+    private func changeLogLines(value: String) -> String? {
+        guard let lines = Int(value) else {
+            return String(localized: "Not a number")
+        }
+        guard lines >= 1 else {
+            return String(localized: "Too small")
+        }
+        guard lines <= 100_000 else {
+            return String(localized: "Too big")
+        }
+        return nil
+    }
+
     private func submitLogLines(value: String) {
         guard let lines = Int(value) else {
             return
@@ -30,6 +43,7 @@ struct DebugSettingsView: View {
                 TextEditNavigationView(
                     title: "Maximum log lines",
                     value: String(debug.maximumLogLines),
+                    onChange: changeLogLines,
                     onSubmit: submitLogLines
                 )
                 Toggle("Debug overlay", isOn: $debug.debugOverlay)

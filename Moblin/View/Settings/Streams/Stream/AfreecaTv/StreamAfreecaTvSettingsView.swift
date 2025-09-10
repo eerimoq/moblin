@@ -24,12 +24,14 @@ struct StreamAfreecaTvSettingsView: View {
                 TextEditNavigationView(
                     title: String(localized: "Channel name"),
                     value: stream.afreecaTvChannelName,
+                    onChange: { _ in nil },
                     onSubmit: submitChannelName,
                     capitalize: true
                 )
                 TextEditNavigationView(
                     title: String(localized: "Video id"),
                     value: stream.afreecaTvStreamId,
+                    onChange: { _ in nil },
                     onSubmit: submitStreamId
                 )
             } footer: {

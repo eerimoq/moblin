@@ -33,6 +33,7 @@ private struct TeslaSettingsConfigurationView: View {
                 TextEditNavigationView(
                     title: String(localized: "VIN"),
                     value: database.tesla.vin,
+                    onChange: { _ in nil },
                     onSubmit: onSubmitVin
                 )
             } footer: {

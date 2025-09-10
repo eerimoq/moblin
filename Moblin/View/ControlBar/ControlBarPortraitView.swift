@@ -35,7 +35,6 @@ private struct QuickButtonsView: View {
                     VStack(alignment: .leading) {
                         if let second = pair.second {
                             QuickButtonsInnerView(
-                                model: model,
                                 quickButtons: quickButtons,
                                 quickButtonsSettings: quickButtonsSettings,
                                 orientation: model.orientation,
@@ -48,7 +47,6 @@ private struct QuickButtonsView: View {
                             QuickButtonPlaceholderImage(size: buttonSize())
                         }
                         QuickButtonsInnerView(
-                            model: model,
                             quickButtons: quickButtons,
                             quickButtonsSettings: quickButtonsSettings,
                             orientation: model.orientation,
@@ -61,7 +59,6 @@ private struct QuickButtonsView: View {
                 } else {
                     if let second = pair.second {
                         QuickButtonsInnerView(
-                            model: model,
                             quickButtons: quickButtons,
                             quickButtonsSettings: quickButtonsSettings,
                             orientation: model.orientation,
@@ -75,7 +72,6 @@ private struct QuickButtonsView: View {
                         EmptyView()
                     }
                     QuickButtonsInnerView(
-                        model: model,
                         quickButtons: quickButtons,
                         quickButtonsSettings: quickButtonsSettings,
                         orientation: model.orientation,

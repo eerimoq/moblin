@@ -26,6 +26,7 @@ private struct GoLiveNotificationDiscordSettingsView: View {
                 TextEditNavigationView(
                     title: String(localized: "Webhook URL"),
                     value: stream.goLiveNotificationDiscordWebhookUrl,
+                    onChange: { _ in nil },
                     onSubmit: {
                         stream.goLiveNotificationDiscordWebhookUrl = cleanUrl(url: $0)
                     },

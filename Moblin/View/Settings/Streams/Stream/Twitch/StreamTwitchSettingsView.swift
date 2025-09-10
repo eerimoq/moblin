@@ -58,6 +58,7 @@ struct StreamTwitchSettingsView: View {
                 TextEditNavigationView(
                     title: String(localized: "Channel name"),
                     value: stream.twitchChannelName,
+                    onChange: { _ in nil },
                     onSubmit: submitChannelName,
                     capitalize: true
                 )
@@ -68,6 +69,7 @@ struct StreamTwitchSettingsView: View {
                 TextEditNavigationView(
                     title: String(localized: "Channel id"),
                     value: stream.twitchChannelId,
+                    onChange: { _ in nil },
                     onSubmit: submitChannelId
                 )
             } footer: {

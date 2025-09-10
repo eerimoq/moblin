@@ -24,18 +24,25 @@ private struct MicView: View {
 }
 
 struct AudioSettingsView: View {
-    let model: Model
+    @EnvironmentObject var model: Model
     @ObservedObject var database: Database
     @ObservedObject var mic: Mic
     @ObservedObject var debug: SettingsDebug
+
+    private func changeOutputChannel(value: String) -> String? {
+        if Int(value) != nil {
+            return nil
+        } else {
+            return String(localized: "Not a number")
+        }
+    }
 
     private func submitOutputChannel1(value: String) {
         guard let channel = Int(value) else {
             return
         }
         database.audio.audioOutputToInputChannelsMap.channel1 = max(channel - 1, -1)
-        model.reloadStream()
-        model.sceneUpdated(updateRemoteScene: false)
+        model.reloadStreamIfEnabled(stream: model.stream)
     }
 
     private func submitOutputChannel2(value: String) {
@@ -43,8 +50,7 @@ struct AudioSettingsView: View {
             return
         }
         database.audio.audioOutputToInputChannelsMap.channel2 = max(channel - 1, -1)
-        model.reloadStream()
-        model.sceneUpdated(updateRemoteScene: false)
+        model.reloadStreamIfEnabled(stream: model.stream)
     }
 
     var body: some View {
@@ -93,12 +99,14 @@ struct AudioSettingsView: View {
                 TextEditNavigationView(
                     title: String(localized: "Output channel 1"),
                     value: String(database.audio.audioOutputToInputChannelsMap.channel1 + 1),
+                    onChange: changeOutputChannel,
                     onSubmit: submitOutputChannel1
                 )
                 .disabled(model.isLive || model.isRecording)
                 TextEditNavigationView(
                     title: String(localized: "Output channel 2"),
                     value: String(database.audio.audioOutputToInputChannelsMap.channel2 + 1),
+                    onChange: changeOutputChannel,
                     onSubmit: submitOutputChannel2
                 )
                 .disabled(model.isLive || model.isRecording)

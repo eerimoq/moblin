@@ -15,6 +15,7 @@ struct WidgetQrCodeSettingsView: View {
             TextEditNavigationView(
                 title: "Message",
                 value: widget.qrCode.message,
+                onChange: { _ in nil },
                 onSubmit: submitMessage
             )
         }

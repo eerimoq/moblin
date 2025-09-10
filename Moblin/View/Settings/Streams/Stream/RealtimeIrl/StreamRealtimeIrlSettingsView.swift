@@ -4,14 +4,14 @@ struct StreamRealtimeIrlSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var stream: SettingsStream
 
-    func submitBaseUrl(value: String) {
+    private func submitBaseUrl(value: String) {
         stream.realtimeIrlBaseUrl = value
         if stream.enabled {
             model.reloadLocation()
         }
     }
 
-    func submitPushKey(value: String) {
+    private func submitPushKey(value: String) {
         stream.realtimeIrlPushKey = value
         if stream.enabled {
             model.reloadLocation()
@@ -24,14 +24,17 @@ struct StreamRealtimeIrlSettingsView: View {
                 Text("Send your location to https://rtirl.com, to let your viewers know where you are.")
             }
             Section {
-                TextEditBindingNavigationView(
+                TextEditNavigationView(
                     title: String(localized: "Base URL"),
-                    value: $stream.realtimeIrlBaseUrl,
-                    onSubmit: submitBaseUrl
+                    value: stream.realtimeIrlBaseUrl,
+                    onChange: isValidHttpUrl,
+                    onSubmit: submitBaseUrl,
+                    placeholder: SettingsStream.defaultRealtimeIrlBaseUrl
                 )
-                TextEditBindingNavigationView(
+                TextEditNavigationView(
                     title: String(localized: "Push key"),
-                    value: $stream.realtimeIrlPushKey,
+                    value: stream.realtimeIrlPushKey,
+                    onChange: { _ in nil },
                     onSubmit: submitPushKey,
                     sensitive: true
                 )

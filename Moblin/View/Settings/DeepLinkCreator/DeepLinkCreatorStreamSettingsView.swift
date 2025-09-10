@@ -140,7 +140,15 @@ private struct DeepLinkCreatorStreamSrtView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var srt: DeepLinkCreatorStreamSrt
 
-    func submitLatency(value: String) {
+    private func changeLatency(value: String) -> String? {
+        if Int32(value) != nil {
+            return nil
+        } else {
+            return String(localized: "Not a number")
+        }
+    }
+
+    private func submitLatency(value: String) {
         guard let latency = Int32(value) else {
             return
         }
@@ -156,6 +164,7 @@ private struct DeepLinkCreatorStreamSrtView: View {
                 TextEditNavigationView(
                     title: String(localized: "Latency"),
                     value: String(srt.latency),
+                    onChange: changeLatency,
                     onSubmit: submitLatency,
                     footers: [
                         String(localized: """
@@ -185,7 +194,11 @@ private struct DeepLinkCreatorStreamObsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var obs: DeepLinkCreatorStreamObs
 
-    func submitWebSocketUrl(value: String) {
+    private func changeWebSocketUrl(value: String) -> String? {
+        return isValidWebSocketUrl(url: cleanUrl(url: value))
+    }
+
+    private func submitWebSocketUrl(value: String) {
         let url = cleanUrl(url: value)
         if let message = isValidWebSocketUrl(url: url) {
             model.makeErrorToast(title: message)
@@ -200,12 +213,14 @@ private struct DeepLinkCreatorStreamObsView: View {
                 TextEditNavigationView(
                     title: String(localized: "URL"),
                     value: obs.webSocketUrl,
+                    onChange: changeWebSocketUrl,
                     onSubmit: submitWebSocketUrl,
                     footers: [String(localized: "For example ws://232.32.45.332:4567.")]
                 )
                 TextEditNavigationView(
                     title: String(localized: "Password"),
                     value: obs.webSocketPassword,
+                    onChange: { _ in nil },
                     onSubmit: { obs.webSocketPassword = $0 },
                     sensitive: true
                 )
@@ -228,12 +243,14 @@ private struct DeepLinkCreatorStreamTwitchView: View {
                 TextEditNavigationView(
                     title: String(localized: "Channel name"),
                     value: twitch.channelName,
+                    onChange: { _ in nil },
                     onSubmit: { twitch.channelName = $0 },
                     capitalize: true
                 )
                 TextEditNavigationView(
                     title: String(localized: "Channel id"),
                     value: twitch.channelId,
+                    onChange: { _ in nil },
                     onSubmit: { twitch.channelId = $0 }
                 )
             }
@@ -251,6 +268,7 @@ private struct DeepLinkCreatorStreamKickView: View {
                 TextEditNavigationView(
                     title: String(localized: "Channel name"),
                     value: kick.channelName,
+                    onChange: { _ in nil },
                     onSubmit: { kick.channelName = $0 },
                     capitalize: true
                 )
@@ -272,6 +290,7 @@ struct DeepLinkCreatorStreamSettingsView: View {
                     NameEditView(name: $stream.name, existingNames: deepLinkCreator.streams)
                     TextEditNavigationView(title: String(localized: "URL"),
                                            value: stream.url,
+                                           onChange: { _ in nil },
                                            onSubmit: {
                                                stream.url = $0
                                            })
