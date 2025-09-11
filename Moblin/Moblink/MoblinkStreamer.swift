@@ -30,6 +30,7 @@ private class Relay {
     var relayId = UUID()
     var name = ""
     var batteryPercentage: Int?
+    var thermalState: MoblinkThermalState?
     private var pingTimer = SimpleTimer(queue: .main)
     var pongReceived = true
 
@@ -85,10 +86,11 @@ private class Relay {
 
     func updateStatus() {
         performRequest(data: .status) { response in
-            guard case let .status(batteryPercentage: batteryPercentage) = response else {
+            guard case let .status(batteryPercentage, thermalState) = response else {
                 return
             }
             self.batteryPercentage = batteryPercentage
+            self.thermalState = thermalState
         } onError: { error in
             logger.info("moblink-streamer: \(self.name): Status failed with \(error)")
         }
@@ -277,8 +279,10 @@ class MoblinkStreamer: NSObject {
         }
     }
 
-    func getStatuses() -> [(String, Int?)] {
-        return relays.sorted(by: { first, second in first.name < second.name }).map { ($0.name, $0.batteryPercentage) }
+    func getStatuses() -> [(String, Int?, MoblinkThermalState?)] {
+        return relays
+            .sorted(by: { first, second in first.name < second.name })
+            .map { ($0.name, $0.batteryPercentage, $0.thermalState) }
     }
 
     func updateStatus() {

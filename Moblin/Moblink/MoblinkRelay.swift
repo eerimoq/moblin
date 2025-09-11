@@ -24,7 +24,7 @@ private enum RelayState: String {
 
 protocol MoblinkRelayDelegate: AnyObject {
     func moblinkRelayNewState(state: MoblinkRelayState)
-    func moblinkRelayGetBatteryPercentage() -> Int
+    func moblinkRelayGetStatus() -> (Int?, MoblinkThermalState?)
 }
 
 private class Relay: NSObject {
@@ -215,10 +215,13 @@ private class Relay: NSObject {
 
     private func handleStatus(id: Int) {
         var batteryPercentage: Int?
-        if isMain {
-            batteryPercentage = delegate?.moblinkRelayGetBatteryPercentage()
+        var thermalState: MoblinkThermalState?
+        if isMain, let delegate {
+            (batteryPercentage, thermalState) = delegate.moblinkRelayGetStatus()
         }
-        send(message: .response(id: id, result: .ok, data: .status(batteryPercentage: batteryPercentage)))
+        send(message: .response(id: id,
+                                result: .ok,
+                                data: .status(batteryPercentage: batteryPercentage, thermalState: thermalState)))
     }
 
     private func stopTunnel() {

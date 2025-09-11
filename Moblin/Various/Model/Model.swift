@@ -1116,18 +1116,25 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    func formatDeviceStatus(name: String, batteryPercentage: Int?) -> (String, Bool) {
+    func formatDeviceStatus(name: String,
+                            batteryPercentage: Int?,
+                            thermalState: MoblinkThermalState?) -> (String, Bool)
+    {
         var ok = true
-        var status: String
+        var status = name
+        switch thermalState {
+        case .red:
+            status += "🔥"
+        default:
+            break
+        }
         if let batteryPercentage {
             if batteryPercentage <= 10 {
-                status = "\(name)🪫\(batteryPercentage)%"
+                status += "🪫\(batteryPercentage)%"
                 ok = false
             } else {
-                status = "\(name)🔋\(batteryPercentage)%"
+                status += "🔋\(batteryPercentage)%"
             }
-        } else {
-            status = name
         }
         return (status, ok)
     }
