@@ -164,7 +164,7 @@ private class Relay {
         ) {
             streamer?.removeRelay(relayId: relayId)
             self.relayId = relayId
-            self.name = name
+            self.name = String(name.prefix(while: { $0 != "\n" }).trim().prefix(30))
             identified = true
             send(message: .identified(result: .ok))
             startTunnelInternal()
