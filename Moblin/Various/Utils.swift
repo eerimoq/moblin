@@ -773,3 +773,13 @@ func makeRecordingPath(recordingPath: Data) -> URL? {
     var isStale = false
     return try? URL(resolvingBookmarkData: recordingPath, bookmarkDataIsStale: &isStale)
 }
+
+func isValidPort(value: String) -> String? {
+    guard let port = UInt16(value) else {
+        return String(localized: "Not a number")
+    }
+    guard port > 0 else {
+        return String(localized: "Too small")
+    }
+    return nil
+}

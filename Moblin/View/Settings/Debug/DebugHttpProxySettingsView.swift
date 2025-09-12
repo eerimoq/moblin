@@ -25,15 +25,8 @@ struct DebugHttpProxySettingsView: View {
                 TextEditNavigationView(
                     title: String(localized: "Port"),
                     value: String(model.database.debug.httpProxy.port),
-                    onChange: {
-                        guard let port = UInt16($0) else {
-                            return String(localized: "Not a number")
-                        }
-                        guard port > 0 else {
-                            return String(localized: "Too small")
-                        }
-                        return nil
-                    }, onSubmit: {
+                    onChange: isValidPort,
+                    onSubmit: {
                         guard let port = UInt16($0) else {
                             return
                         }

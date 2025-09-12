@@ -196,19 +196,8 @@ private struct StreamerView: View {
         model.reloadRemoteControlAssistant()
     }
 
-    private func changeAssistantPort(value: String) -> String? {
-        guard let port = UInt16(value.trim()) else {
-            return String(localized: "Not a number")
-        }
-        guard port > 0 else {
-            return String(localized: "Too small")
-        }
-        return nil
-    }
-
     private func submitAssistantPort(value: String) {
-        guard let port = UInt16(value.trim()) else {
-            model.makePortErrorToast(port: value)
+        guard let port = UInt16(value) else {
             return
         }
         streamer.port = port
@@ -216,9 +205,6 @@ private struct StreamerView: View {
     }
 
     private func submitAssistantRelayUrl(value: String) {
-        guard isValidWebSocketUrl(url: value) == nil else {
-            return
-        }
         streamer.relay.baseUrl = value
         reloadIfEnabled()
     }
@@ -231,9 +217,6 @@ private struct StreamerView: View {
     }
 
     private func submitAssistantRelayBridgeId(value: String) {
-        guard !value.isEmpty else {
-            return
-        }
         streamer.relay.bridgeId = value
         reloadIfEnabled()
     }
@@ -252,7 +235,7 @@ private struct StreamerView: View {
                     TextEditNavigationView(
                         title: String(localized: "Server port"),
                         value: String(streamer.port),
-                        onChange: changeAssistantPort,
+                        onChange: isValidPort,
                         onSubmit: submitAssistantPort,
                         keyboardType: .numbersAndPunctuation,
                         placeholder: "2345"

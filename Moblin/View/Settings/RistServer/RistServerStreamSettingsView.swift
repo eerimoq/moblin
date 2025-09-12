@@ -30,9 +30,7 @@ struct RistServerStreamSettingsView: View {
     @ObservedObject var stream: SettingsRistServerStream
 
     private func submitPort(value: String) {
-        guard let port = UInt16(value.trim()), port > 0 else {
-            stream.virtualDestinationPortString = String(stream.virtualDestinationPort)
-            model.makePortErrorToast(port: value)
+        guard let port = UInt16(value.trim()) else {
             return
         }
         stream.virtualDestinationPort = port
@@ -49,9 +47,10 @@ struct RistServerStreamSettingsView: View {
                     Text("The stream name is shown in the list of cameras in scene settings.")
                 }
                 Section {
-                    TextEditBindingNavigationView(
+                    TextEditNavigationView(
                         title: String(localized: "Virtual port"),
-                        value: $stream.virtualDestinationPortString,
+                        value: String(stream.virtualDestinationPort),
+                        onChange: isValidPort,
                         onSubmit: submitPort,
                         keyboardType: .numbersAndPunctuation
                     )

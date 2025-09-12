@@ -5,9 +5,7 @@ struct RtmpServerSettingsView: View {
     @ObservedObject var rtmpServer: SettingsRtmpServer
 
     private func submitPort(value: String) {
-        guard let port = UInt16(value.trim()), port > 0 else {
-            rtmpServer.portString = String(rtmpServer.port)
-            model.makePortErrorToast(port: value)
+        guard let port = UInt16(value) else {
             return
         }
         rtmpServer.port = port
@@ -38,9 +36,10 @@ struct RtmpServerSettingsView: View {
                 }
             }
             Section {
-                TextEditBindingNavigationView(
+                TextEditNavigationView(
                     title: String(localized: "Port"),
-                    value: $rtmpServer.portString,
+                    value: String(rtmpServer.port),
+                    onChange: isValidPort,
                     onSubmit: submitPort,
                     keyboardType: .numbersAndPunctuation
                 )

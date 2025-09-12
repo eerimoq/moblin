@@ -5,9 +5,7 @@ struct SrtlaServerSettingsView: View {
     @ObservedObject var srtlaServer: SettingsSrtlaServer
 
     private func submitSrtPort(value: String) {
-        guard let port = UInt16(value.trim()), port > 0 else {
-            srtlaServer.srtPortString = String(srtlaServer.srtPort)
-            model.makePortErrorToast(port: value)
+        guard let port = UInt16(value) else {
             return
         }
         srtlaServer.srtPort = port
@@ -15,9 +13,7 @@ struct SrtlaServerSettingsView: View {
     }
 
     private func submitSrtlaPort(value: String) {
-        guard let port = UInt16(value.trim()), port > 0 else {
-            srtlaServer.srtlaPortString = String(srtlaServer.srtlaPort)
-            model.makePortErrorToast(port: value)
+        guard let port = UInt16(value) else {
             return
         }
         srtlaServer.srtlaPort = port
@@ -42,9 +38,10 @@ struct SrtlaServerSettingsView: View {
                 }
             }
             Section {
-                TextEditBindingNavigationView(
+                TextEditNavigationView(
                     title: String(localized: "SRT port"),
-                    value: $srtlaServer.srtPortString,
+                    value: String(srtlaServer.srtPort),
+                    onChange: isValidPort,
                     onSubmit: submitSrtPort,
                     keyboardType: .numbersAndPunctuation
                 )
@@ -53,9 +50,10 @@ struct SrtlaServerSettingsView: View {
                 Text("The UDP port the SRT(LA) server listens for SRT publishers on.")
             }
             Section {
-                TextEditBindingNavigationView(
+                TextEditNavigationView(
                     title: String(localized: "SRTLA port"),
-                    value: $srtlaServer.srtlaPortString,
+                    value: String(srtlaServer.srtlaPort),
+                    onChange: isValidPort,
                     onSubmit: submitSrtlaPort,
                     keyboardType: .numbersAndPunctuation
                 )

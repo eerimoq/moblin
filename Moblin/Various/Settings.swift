@@ -4973,7 +4973,6 @@ class SettingsRtmpServerStream: Codable, Identifiable, ObservableObject, Named {
     @Published var name: String = baseName
     @Published var streamKey: String = ""
     @Published var latency: Int32 = defaultRtmpLatency
-    @Published var latencyString: String = .init(defaultRtmpLatency)
     var connected: Bool = false
 
     enum CodingKeys: CodingKey {
@@ -4999,7 +4998,6 @@ class SettingsRtmpServerStream: Codable, Identifiable, ObservableObject, Named {
         name = container.decode(.name, String.self, Self.baseName)
         streamKey = container.decode(.streamKey, String.self, "")
         latency = container.decode(.latency, Int32.self, defaultRtmpLatency)
-        latencyString = String(latency)
     }
 
     func camera() -> String {
@@ -5019,7 +5017,6 @@ class SettingsRtmpServerStream: Codable, Identifiable, ObservableObject, Named {
 class SettingsRtmpServer: Codable, ObservableObject {
     @Published var enabled: Bool = false
     @Published var port: UInt16 = 1935
-    @Published var portString: String = "1935"
     @Published var streams: [SettingsRtmpServerStream] = []
 
     enum CodingKeys: CodingKey {
@@ -5041,7 +5038,6 @@ class SettingsRtmpServer: Codable, ObservableObject {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         enabled = container.decode(.enabled, Bool.self, false)
         port = container.decode(.port, UInt16.self, 1935)
-        portString = String(port)
         streams = container.decode(.streams, [SettingsRtmpServerStream].self, [])
     }
 
@@ -5049,7 +5045,6 @@ class SettingsRtmpServer: Codable, ObservableObject {
         let new = SettingsRtmpServer()
         new.enabled = enabled
         new.port = port
-        new.portString = portString
         for stream in streams {
             new.streams.append(stream.clone())
         }
@@ -5101,9 +5096,7 @@ class SettingsSrtlaServerStream: Codable, Identifiable, ObservableObject, Named 
 class SettingsSrtlaServer: Codable, ObservableObject {
     @Published var enabled: Bool = false
     @Published var srtPort: UInt16 = 4000
-    @Published var srtPortString: String = "4000"
     @Published var srtlaPort: UInt16 = 5000
-    @Published var srtlaPortString: String = "5000"
     @Published var streams: [SettingsSrtlaServerStream] = []
 
     enum CodingKeys: CodingKey {
@@ -5127,9 +5120,7 @@ class SettingsSrtlaServer: Codable, ObservableObject {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         enabled = container.decode(.enabled, Bool.self, false)
         srtPort = container.decode(.srtPort, UInt16.self, 4000)
-        srtPortString = String(srtPort)
         srtlaPort = container.decode(.srtlaPort, UInt16.self, 5000)
-        srtlaPortString = String(srtlaPort)
         streams = container.decode(.streams, [SettingsSrtlaServerStream].self, [])
     }
 
@@ -5137,9 +5128,7 @@ class SettingsSrtlaServer: Codable, ObservableObject {
         let new = SettingsSrtlaServer()
         new.enabled = enabled
         new.srtPort = srtPort
-        new.srtPortString = srtPortString
         new.srtlaPort = srtlaPort
-        new.srtlaPortString = srtlaPortString
         for stream in streams {
             new.streams.append(stream.clone())
         }
@@ -5156,7 +5145,6 @@ class SettingsRistServerStream: Codable, Identifiable, ObservableObject, Named {
     var id: UUID = .init()
     @Published var name: String = baseName
     @Published var virtualDestinationPort: UInt16 = 1
-    @Published var virtualDestinationPortString: String = "1"
     var connected: Bool = false
 
     enum CodingKeys: CodingKey {
@@ -5179,7 +5167,6 @@ class SettingsRistServerStream: Codable, Identifiable, ObservableObject, Named {
         id = container.decode(.id, UUID.self, .init())
         name = container.decode(.name, String.self, Self.baseName)
         virtualDestinationPort = container.decode(.virtualDestinationPort, UInt16.self, 1)
-        virtualDestinationPortString = String(virtualDestinationPort)
     }
 
     func camera() -> String {
@@ -5190,7 +5177,6 @@ class SettingsRistServerStream: Codable, Identifiable, ObservableObject, Named {
 class SettingsRistServer: Codable, ObservableObject {
     @Published var enabled: Bool = false
     @Published var port: UInt16 = 6500
-    @Published var portString: String = "6500"
     @Published var streams: [SettingsRistServerStream] = []
 
     enum CodingKeys: CodingKey {
@@ -5212,7 +5198,6 @@ class SettingsRistServer: Codable, ObservableObject {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         enabled = container.decode(.enabled, Bool.self, false)
         port = container.decode(.port, UInt16.self, 6500)
-        portString = String(port)
         streams = container.decode(.streams, [SettingsRistServerStream].self, [])
     }
 
@@ -5232,7 +5217,6 @@ class SettingsRtspClientStream: Codable, Identifiable, ObservableObject, Named {
     @Published var url: String = ""
     @Published var enabled: Bool = false
     @Published var latency: Int32 = 2000
-    @Published var latencyString: String = "2000"
 
     enum CodingKeys: CodingKey {
         case id,
@@ -5264,7 +5248,6 @@ class SettingsRtspClientStream: Codable, Identifiable, ObservableObject, Named {
         url = container.decode(.url, String.self, "")
         enabled = container.decode(.enabled, Bool.self, false)
         latency = container.decode(.latency, Int32.self, 2000)
-        latencyString = String(latency)
     }
 
     func camera() -> String {

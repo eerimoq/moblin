@@ -5,9 +5,7 @@ struct RistServerSettingsView: View {
     @ObservedObject var ristServer: SettingsRistServer
 
     private func submitPort(value: String) {
-        guard let port = UInt16(value.trim()), port > 0 else {
-            ristServer.portString = String(ristServer.port)
-            model.makePortErrorToast(port: value)
+        guard let port = UInt16(value) else {
             return
         }
         ristServer.port = port
@@ -35,9 +33,10 @@ struct RistServerSettingsView: View {
                 }
             }
             Section {
-                TextEditBindingNavigationView(
+                TextEditNavigationView(
                     title: String(localized: "Port"),
-                    value: $ristServer.portString,
+                    value: String(ristServer.port),
+                    onChange: isValidPort,
                     onSubmit: submitPort,
                     keyboardType: .numbersAndPunctuation
                 )
@@ -69,7 +68,6 @@ struct RistServerSettingsView: View {
                     stream.name = makeUniqueName(name: SettingsRistServerStream.baseName,
                                                  existingNames: ristServer.streams)
                     stream.virtualDestinationPort = ristServer.makeUniqueVirtualDestinationPort()
-                    stream.virtualDestinationPortString = String(stream.virtualDestinationPort)
                     ristServer.streams.append(stream)
                     model.updateMicsListAsync()
                 }
