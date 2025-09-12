@@ -20,9 +20,6 @@ struct StreamSrtSettingsView: View {
         guard let latency = Int32(value) else {
             return
         }
-        guard latency >= 0 else {
-            return
-        }
         stream.srt.latency = latency
         model.reloadStreamIfEnabled(stream: stream)
     }

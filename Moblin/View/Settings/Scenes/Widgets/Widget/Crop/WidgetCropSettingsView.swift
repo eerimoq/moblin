@@ -28,9 +28,6 @@ struct WidgetCropSettingsView: View {
         guard let x = Int(value) else {
             return
         }
-        guard x >= 0 else {
-            return
-        }
         widget.crop.x = x
         model.resetSelectedScene(changeScene: false)
     }
@@ -39,18 +36,12 @@ struct WidgetCropSettingsView: View {
         guard let y = Int(value) else {
             return
         }
-        guard y >= 0 else {
-            return
-        }
         widget.crop.y = y
         model.resetSelectedScene(changeScene: false)
     }
 
     private func submitWidth(value: String) {
         guard let width = Int(value) else {
-            return
-        }
-        guard width > 0 else {
             return
         }
         widget.crop.width = width

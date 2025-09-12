@@ -35,18 +35,12 @@ struct WidgetBrowserSettingsView: View {
         guard let width = Int(value) else {
             return
         }
-        guard width > 0, width < 4000 else {
-            return
-        }
         browser.width = width
         model.resetSelectedScene(changeScene: false)
     }
 
     private func submitHeight(value: String) {
         guard let height = Int(value) else {
-            return
-        }
-        guard height > 0, height < 4000 else {
             return
         }
         browser.height = height

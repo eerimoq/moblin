@@ -226,7 +226,7 @@ private struct StreamerView: View {
     }
 
     private func submitPort(value: String) {
-        guard let port = UInt16(value.trim()), port > 0 else {
+        guard let port = UInt16(value.trim()) else {
             model.makePortErrorToast(port: value)
             return
         }

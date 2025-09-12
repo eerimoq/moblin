@@ -34,7 +34,7 @@ struct DebugHttpProxySettingsView: View {
                         }
                         return nil
                     }, onSubmit: {
-                        guard let port = UInt16($0), port > 0 else {
+                        guard let port = UInt16($0) else {
                             return
                         }
                         model.database.debug.httpProxy.port = port

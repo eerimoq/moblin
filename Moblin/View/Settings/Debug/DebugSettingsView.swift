@@ -22,7 +22,7 @@ struct DebugSettingsView: View {
         guard let lines = Int(value) else {
             return
         }
-        debug.maximumLogLines = min(max(1, lines), 100_000)
+        debug.maximumLogLines = lines
     }
 
     var body: some View {
