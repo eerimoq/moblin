@@ -413,7 +413,7 @@ private struct TwitchCheerView: View {
             TextEditNavigationView(title: String(localized: "Bits"),
                                    value: String(bits),
                                    onChange: { value in
-                                       guard let bits = Int(value) else {
+                                       guard Int(value) != nil else {
                                            return String(localized: "Not a number")
                                        }
                                        return nil
