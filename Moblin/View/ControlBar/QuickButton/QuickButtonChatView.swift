@@ -488,7 +488,6 @@ private struct PredefinedMessageView: View {
                 Section {
                     TextEditNavigationView(title: String(localized: "Text"),
                                            value: predefinedMessage.text,
-                                           onChange: { _ in nil },
                                            onSubmit: {
                                                predefinedMessage.text = $0
                                            },

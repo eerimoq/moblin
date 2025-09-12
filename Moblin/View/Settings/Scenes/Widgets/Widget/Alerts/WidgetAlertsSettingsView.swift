@@ -664,7 +664,6 @@ private struct ChatBotCommandView: View {
                 Section {
                     TextEditNavigationView(title: String(localized: "Name"),
                                            value: name,
-                                           onChange: { _ in nil },
                                            onSubmit: onSubmit)
                 } footer: {
                     Text("Trigger with chat message '!moblin alert \(name)'")
@@ -817,7 +816,6 @@ private struct SpeechToTextStringView: View {
                 Section {
                     TextEditNavigationView(title: String(localized: "String"),
                                            value: text,
-                                           onChange: { _ in nil },
                                            onSubmit: onSubmit)
                 } footer: {
                     Text("Trigger by saying '\(text)'.")

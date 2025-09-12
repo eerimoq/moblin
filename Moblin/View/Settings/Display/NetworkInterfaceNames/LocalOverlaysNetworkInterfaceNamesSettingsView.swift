@@ -19,7 +19,6 @@ struct LocalOverlaysNetworkInterfaceNamesSettingsView: View {
                             TextEditNavigationView(
                                 title: interface.interfaceName,
                                 value: interface.name,
-                                onChange: { _ in nil },
                                 onSubmit: { onSubmit(interface: interface, value: $0) },
                                 capitalize: true
                             )

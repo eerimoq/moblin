@@ -16,7 +16,6 @@ struct DebugHttpProxySettingsView: View {
                 TextEditNavigationView(
                     title: String(localized: "Host"),
                     value: model.database.debug.httpProxy.host,
-                    onChange: { _ in nil },
                     onSubmit: {
                         model.database.debug.httpProxy.host = $0.trim()
                         model.createUrlSession()

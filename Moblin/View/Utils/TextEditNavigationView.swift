@@ -82,7 +82,7 @@ struct TextEditNavigationView: View {
 
     init(title: String,
          value: String,
-         onChange: @escaping (String) -> String?,
+         onChange: (@escaping (String) -> String?) = { _ in nil },
          onSubmit: @escaping (String) -> Void,
          footers: [String] = [],
          capitalize: Bool = false,

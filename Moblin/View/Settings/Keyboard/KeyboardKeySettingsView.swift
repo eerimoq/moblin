@@ -32,7 +32,6 @@ struct KeyboardKeySettingsView: View {
                 Section {
                     TextEditNavigationView(title: String(localized: "Key"),
                                            value: key.key,
-                                           onChange: { _ in nil },
                                            onSubmit: {
                                                key.key = $0
                                            })

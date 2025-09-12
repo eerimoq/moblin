@@ -192,7 +192,6 @@ private struct DjiDeviceRtmpSettingsView: View {
                 TextEditNavigationView(
                     title: String(localized: "URL"),
                     value: device.customRtmpUrl,
-                    onChange: { _ in nil },
                     onSubmit: {
                         device.customRtmpUrl = $0
                     }

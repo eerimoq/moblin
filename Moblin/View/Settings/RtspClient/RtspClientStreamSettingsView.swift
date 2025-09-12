@@ -15,7 +15,6 @@ struct RtspClientStreamSettingsView: View {
                 Section {
                     TextEditNavigationView(title: String(localized: "URL"),
                                            value: stream.url,
-                                           onChange: { _ in nil },
                                            onSubmit: {
                                                stream.url = $0
                                                model.reloadRtspClient()

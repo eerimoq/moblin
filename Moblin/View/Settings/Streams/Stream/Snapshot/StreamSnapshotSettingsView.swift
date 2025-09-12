@@ -29,14 +29,12 @@ struct StreamSnapshotSettingsView: View {
                 TextEditNavigationView(
                     title: String(localized: "Webhook URL"),
                     value: stream.discordSnapshotWebhook,
-                    onChange: { _ in nil },
                     onSubmit: submitSnapshotWebhookUrl,
                     placeholder: "https://discord.com/api/webhooks/foobar"
                 )
                 TextEditNavigationView(
                     title: String(localized: "Chat bot webhook URL"),
                     value: stream.discordChatBotSnapshotWebhook,
-                    onChange: { _ in nil },
                     onSubmit: submitSnapshotChatBotWebhookUrl,
                     placeholder: "https://discord.com/api/webhooks/foobar"
                 )

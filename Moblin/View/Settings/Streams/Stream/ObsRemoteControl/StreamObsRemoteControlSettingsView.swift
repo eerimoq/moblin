@@ -47,7 +47,6 @@ struct StreamObsRemoteControlSettingsInnerView: View {
             TextEditNavigationView(
                 title: String(localized: "Password"),
                 value: stream.obsWebSocketPassword,
-                onChange: { _ in nil },
                 onSubmit: submitWebSocketPassword,
                 sensitive: true
             )
@@ -58,14 +57,12 @@ struct StreamObsRemoteControlSettingsInnerView: View {
             TextEditNavigationView(
                 title: String(localized: "Main scene"),
                 value: stream.obsMainScene,
-                onChange: { _ in nil },
                 onSubmit: submitMainScene,
                 capitalize: true
             )
             TextEditNavigationView(
                 title: String(localized: "BRB scene"),
                 value: stream.obsBrbScene,
-                onChange: { _ in nil },
                 onSubmit: submitBrbScene,
                 capitalize: true
             )
@@ -95,7 +92,6 @@ struct StreamObsRemoteControlSettingsInnerView: View {
             TextEditNavigationView(
                 title: String(localized: "Source name"),
                 value: stream.obsSourceName,
-                onChange: { _ in nil },
                 onSubmit: submitSourceName,
                 capitalize: true
             )

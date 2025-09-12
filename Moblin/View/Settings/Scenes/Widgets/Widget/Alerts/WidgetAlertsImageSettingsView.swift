@@ -44,7 +44,6 @@ private struct CustomImageView: View {
                 TextEditNavigationView(
                     title: String(localized: "Name"),
                     value: media.name,
-                    onChange: { _ in nil },
                     onSubmit: {
                         media.name = $0
                     }

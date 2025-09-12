@@ -13,7 +13,6 @@ struct DeepLinkCreatorWebBrowserSettingsView: View {
                 TextEditNavigationView(
                     title: String(localized: "Home"),
                     value: webBrowser.home,
-                    onChange: { _ in nil },
                     onSubmit: submitHome,
                     capitalize: false
                 )

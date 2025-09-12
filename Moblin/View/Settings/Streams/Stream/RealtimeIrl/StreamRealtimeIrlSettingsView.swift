@@ -34,7 +34,6 @@ struct StreamRealtimeIrlSettingsView: View {
                 TextEditNavigationView(
                     title: String(localized: "Push key"),
                     value: stream.realtimeIrlPushKey,
-                    onChange: { _ in nil },
                     onSubmit: submitPushKey,
                     sensitive: true
                 )

@@ -19,7 +19,6 @@ struct MediaPlayerFileSettingsView: View {
                     TextEditNavigationView(
                         title: String(localized: "Name"),
                         value: file.name,
-                        onChange: { _ in nil },
                         onSubmit: submitName,
                         capitalize: true
                     )
