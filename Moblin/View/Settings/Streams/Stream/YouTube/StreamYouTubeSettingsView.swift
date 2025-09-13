@@ -18,15 +18,15 @@ struct StreamYouTubeSettingsView: View {
     var body: some View {
         Form {
             Section {
-                TextEditBindingNavigationView(
+                TextEditNavigationView(
                     title: String(localized: "Channel handle"),
-                    value: $stream.youTubeHandle,
+                    value: String(stream.youTubeHandle),
                     onSubmit: submitHandle,
                     placeholder: "@erimo144"
                 )
-                TextEditBindingNavigationView(
+                TextEditNavigationView(
                     title: String(localized: "Video id"),
-                    value: $stream.youTubeVideoId,
+                    value: String(stream.youTubeVideoId),
                     onSubmit: submitVideoId,
                     placeholder: "FekKCUN5W8U"
                 )

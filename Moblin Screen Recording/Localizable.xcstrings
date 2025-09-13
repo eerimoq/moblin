@@ -444,6 +444,9 @@
         }
       }
     },
+    "Not a number" : {
+
+    },
     "RIST port number missing" : {
       "localizations" : {
         "de" : {
@@ -650,6 +653,9 @@
           }
         }
       }
+    },
+    "Too small" : {
+
     },
     "Unsupported scheme %@" : {
       "localizations" : {

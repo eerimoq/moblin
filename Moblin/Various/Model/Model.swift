@@ -1125,6 +1125,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         switch thermalState {
         case .red:
             status += "🔥"
+            ok = false
         default:
             break
         }

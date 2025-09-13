@@ -68,6 +68,7 @@ private struct TextEditNavigationViewInner: View {
 struct TextEditNavigationView: View {
     @Environment(\.dismiss) var dismiss
     private let title: String
+    private let initialValue: String
     @State private var value: String
     private let onSubmit: (String) -> Void
     private let onChange: (String) -> String?
@@ -92,6 +93,7 @@ struct TextEditNavigationView: View {
          valueFormat: ((String) -> String)? = nil)
     {
         self.title = title
+        initialValue = value
         self.value = value
         self.onChange = onChange
         self.onSubmit = onSubmit
@@ -121,37 +123,9 @@ struct TextEditNavigationView: View {
                          value: valueFormat?(submittedValue) ?? submittedValue,
                          sensitive: sensitive)
         }
-    }
-}
-
-struct TextEditBindingNavigationView: View {
-    var title: String
-    @Binding var value: String
-    var onSubmit: (String) -> Void
-    var footers: [String] = []
-    var capitalize: Bool = false
-    var keyboardType: UIKeyboardType = .default
-    var placeholder: String = ""
-    var sensitive: Bool = false
-    var color: Color = .gray
-    var valueFormat: ((String) -> String)?
-
-    var body: some View {
-        NavigationLink {
-            TextEditBindingView(
-                title: title,
-                value: $value,
-                footers: footers,
-                capitalize: capitalize,
-                keyboardType: keyboardType,
-                placeholder: placeholder,
-                onSubmit: onSubmit
-            )
-        } label: {
-            TextItemView(name: title,
-                         value: valueFormat?(value) ?? value,
-                         sensitive: sensitive,
-                         color: color)
+        .onChange(of: initialValue) {
+            value = $0
+            submittedValue = $0
         }
     }
 }

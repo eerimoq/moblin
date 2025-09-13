@@ -171,6 +171,7 @@ struct StreamKickSettingsView: View {
                 TextEditNavigationView(
                     title: String(localized: "Channel name"),
                     value: stream.kickChannelName,
+                    onChange: { _ in nil },
                     onSubmit: submitChannelName
                 )
             } footer: {
@@ -183,9 +184,9 @@ struct StreamKickSettingsView: View {
             }
             if stream.kickLoggedIn {
                 Section {
-                    TextEditBindingNavigationView(
+                    TextEditNavigationView(
                         title: String(localized: "Stream title"),
-                        value: $streamTitle,
+                        value: streamTitle,
                         onSubmit: submitStreamTitle
                     )
                 }

@@ -272,13 +272,20 @@ private struct AiPermissionsSettingsView: View {
             NavigationLink {
                 Form {
                     Section {
-                        TextEditBindingNavigationView(title: String(localized: "Base URL"), value: $ai.baseUrl) { _ in }
-                        TextEditBindingNavigationView(title: String(localized: "API key"),
-                                                      value: $ai.apiKey,
-                                                      onSubmit: { _ in },
-                                                      sensitive: true)
-                        TextEditBindingNavigationView(title: String(localized: "Model"), value: $ai.model) { _ in }
-                        TextEditBindingNavigationView(title: String(localized: "Role"), value: $ai.role) { _ in }
+                        TextEditNavigationView(title: String(localized: "Base URL"),
+                                               value: ai.baseUrl,
+                                               onChange: isValidHttpUrl,
+                                               onSubmit: { ai.baseUrl = $0 })
+                        TextEditNavigationView(title: String(localized: "API key"),
+                                               value: ai.apiKey,
+                                               onSubmit: { ai.apiKey = $0 },
+                                               sensitive: true)
+                        TextEditNavigationView(title: String(localized: "Model"),
+                                               value: ai.model,
+                                               onSubmit: { ai.model = $0 })
+                        TextEditNavigationView(title: String(localized: "Role"),
+                                               value: ai.role,
+                                               onSubmit: { ai.role = $0 })
                     } header: {
                         Text("OpenAI compatible service")
                     }

@@ -462,16 +462,6 @@ extension MTILayer {
     }
 }
 
-func isValidAudioBitrate(bitrate: Int) -> Bool {
-    guard bitrate >= 32000, bitrate <= 320_000 else {
-        return false
-    }
-    guard bitrate % 32000 == 0 else {
-        return false
-    }
-    return true
-}
-
 func currentPresentationTimeStamp() -> CMTime {
     return CMClockGetTime(CMClockGetHostTimeClock())
 }
@@ -772,14 +762,4 @@ func calcCameraAngle(gravity: CMAcceleration, portrait: Bool) -> Double {
 func makeRecordingPath(recordingPath: Data) -> URL? {
     var isStale = false
     return try? URL(resolvingBookmarkData: recordingPath, bookmarkDataIsStale: &isStale)
-}
-
-func isValidPort(value: String) -> String? {
-    guard let port = UInt16(value) else {
-        return String(localized: "Not a number")
-    }
-    guard port > 0 else {
-        return String(localized: "Too small")
-    }
-    return nil
 }
