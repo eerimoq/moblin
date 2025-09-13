@@ -721,7 +721,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
     var twitchLoggedIn: Bool = false
     var twitchRewards: [SettingsStreamTwitchReward] = []
     @Published var twitchSendMessagesTo: Bool = true
-    var kickChannelName: String = ""
+    @Published var kickChannelName: String = ""
     @Published var kickChannelId: String?
     @Published var kickSlug: String?
     var kickAccessToken: String = ""
