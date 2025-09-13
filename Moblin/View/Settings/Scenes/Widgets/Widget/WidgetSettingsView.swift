@@ -105,6 +105,14 @@ private struct ShapeView: View {
     }
 }
 
+private struct Dewarp360View: View {
+    var body: some View {
+        Section {
+            Text("Experimental")
+        }
+    }
+}
+
 private struct EffectView: View {
     @EnvironmentObject var model: Model
     let widgetId: UUID
@@ -138,6 +146,8 @@ private struct EffectView: View {
                         effectIndex: effectIndex,
                         shape: effect.shape
                     )
+                case .dewarp360:
+                    Dewarp360View()
                 default:
                     EmptyView()
                 }

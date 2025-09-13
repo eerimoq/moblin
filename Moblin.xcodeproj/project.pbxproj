@@ -873,6 +873,8 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 26.2009.0;
+				MTLLINKER_FLAGS = "-cikernel";
+				MTL_COMPILER_FLAGS = "-fcikernel";
 				MTL_HEADER_SEARCH_PATHS = "$(HEADER_SEARCH_PATHS)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -926,6 +928,8 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 26.2009.0;
+				MTLLINKER_FLAGS = "-cikernel";
+				MTL_COMPILER_FLAGS = "-fcikernel";
 				MTL_HEADER_SEARCH_PATHS = "$(HEADER_SEARCH_PATHS)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs;
 				PRODUCT_NAME = "$(TARGET_NAME)";

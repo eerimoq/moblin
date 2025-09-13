@@ -2736,6 +2736,7 @@ enum SettingsVideoEffectType: String, Codable, CaseIterable {
     case whirlpool
     case pinch
     case removeBackground
+    case dewarp360
 
     init(from decoder: Decoder) throws {
         do {
@@ -2760,6 +2761,8 @@ enum SettingsVideoEffectType: String, Codable, CaseIterable {
             return String(localized: "Pinch")
         case .removeBackground:
             return String(localized: "Remove background")
+        case .dewarp360:
+            return String(localized: "Dewarp 360")
         }
     }
 }
@@ -2893,6 +2896,8 @@ class SettingsVideoEffect: Codable, Identifiable, ObservableObject {
             let effect = ShapeEffect()
             effect.setSettings(settings: shape.toSettings())
             return effect
+        case .dewarp360:
+            return Dewarp360Effect()
         }
     }
 }
