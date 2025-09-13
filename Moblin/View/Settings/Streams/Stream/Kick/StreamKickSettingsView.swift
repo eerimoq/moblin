@@ -61,14 +61,14 @@ private struct AuthenticationView: View {
     private func handleAccessToken(accessToken: String) {
         stream.kickAccessToken = accessToken
         stream.kickLoggedIn = true
-        
+
         getKickUserData(accessToken: accessToken) { userData in
             DispatchQueue.main.async {
                 if let userData {
                     self.stream.kickChannelName = userData.username
                     self.stream.kickChannelId = nil
                     self.stream.kickSlug = nil
-                    
+
                     getKickChannelInfo(channelName: userData.username) { channelInfo in
                         DispatchQueue.main.async {
                             if let channelInfo {
@@ -120,7 +120,7 @@ private struct KickWebView: UIViewRepresentable {
             self.onAccessToken = onAccessToken
         }
 
-        func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        func webView(_ webView: WKWebView, didFinish _: WKNavigation!) {
             if !loginButtonClicked {
                 detectAndClickLoginButton(webView)
             }

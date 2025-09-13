@@ -70,7 +70,7 @@ func getKickUserData(accessToken: String, onComplete: @escaping (KickUserData?) 
     var request = URLRequest(url: url)
     request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
     request.setValue("application/json", forHTTPHeaderField: "Accept")
-    
+
     URLSession.shared.dataTask(with: request) { data, response, error in
         guard error == nil, let data, response?.http?.isSuccessful == true else {
             onComplete(nil)
