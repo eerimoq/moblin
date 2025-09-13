@@ -62,17 +62,13 @@ private struct AuthenticationView: View {
         stream.kickAccessToken = accessToken
         stream.kickLoggedIn = true
         
-        // Fetch user data to get the username and set it as channel name
         getKickUserData(accessToken: accessToken) { userData in
             DispatchQueue.main.async {
                 if let userData {
-                    // Set the channel name from the username
                     self.stream.kickChannelName = userData.username
-                    // Clear channel ID and slug to force re-fetch with new channel name
                     self.stream.kickChannelId = nil
                     self.stream.kickSlug = nil
                     
-                    // Fetch channel info for the new channel name
                     getKickChannelInfo(channelName: userData.username) { channelInfo in
                         DispatchQueue.main.async {
                             if let channelInfo {
@@ -85,7 +81,6 @@ private struct AuthenticationView: View {
                         }
                     }
                 } else {
-                    // If user data fetch fails, still update the model
                     if self.stream.enabled {
                         self.model.kickAccessTokenUpdated()
                     }
@@ -119,12 +114,17 @@ private struct KickWebView: UIViewRepresentable {
 
     class Coordinator: NSObject, WKNavigationDelegate {
         let onAccessToken: (String) -> Void
+        private var loginButtonClicked = false
 
         init(_ onAccessToken: @escaping (String) -> Void) {
             self.onAccessToken = onAccessToken
         }
 
-        func webView(_ webView: WKWebView, didFinish _: WKNavigation!) {
+        func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+            if !loginButtonClicked {
+                detectAndClickLoginButton(webView)
+            }
+
             guard let url = webView.url,
                   let host = url.host(),
                   !url.path().contains("/login"),
@@ -144,6 +144,40 @@ private struct KickWebView: UIViewRepresentable {
                 let accessToken = sessionTokenCookie.value
                 DispatchQueue.main.async {
                     self.onAccessToken(accessToken.removingPercentEncoding ?? accessToken)
+                }
+            }
+        }
+
+        private func detectAndClickLoginButton(_ webView: WKWebView) {
+            let jsScript = """
+            (async function() {
+                try {
+                    // wait for 0.2 second for the page to load
+                    await new Promise(resolve => setTimeout(resolve, 200));
+                    var loginButton = document.querySelector('[data-testid="login"]');
+                    if (loginButton) {
+                        console.log('Login button found with data-testid');
+                        loginButton.click();
+                        return true;
+                    }
+                } catch (error) {
+                    console.log('Error detecting login button:', error);
+                    return false;
+                }
+            })();
+            """
+
+            webView.evaluateJavaScript(jsScript) { result, error in
+                if let error = error {
+                    print("JavaScript error: \(error)")
+                    return
+                }
+
+                if let success = result as? Bool, success {
+                    print("Login button automatically clicked!")
+                    self.loginButtonClicked = true
+                } else {
+                    print("Login button not found or click failed")
                 }
             }
         }
@@ -201,7 +235,7 @@ struct StreamKickSettingsView: View {
                     value: stream.kickChannelName,
                     onSubmit: submitChannelName
                 )
-                .id(stream.kickChannelName) // Force view refresh when channel name changes
+                .id(stream.kickChannelName)
             } footer: {
                 if fetchChannelInfoFailed {
                     Text("Channel not found on kick.com.")
