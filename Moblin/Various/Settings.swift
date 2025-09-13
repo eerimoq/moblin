@@ -2843,19 +2843,55 @@ class SettingsVideoEffectShape: Codable, ObservableObject {
     }
 }
 
+class SettingsVideoEffectDewarp360: Codable, ObservableObject {
+    @Published var zoom: Float = 50
+    @Published var x: Float = 0
+    @Published var y: Float = 0
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case zoom,
+             x,
+             y
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.zoom, zoom)
+        try container.encode(.x, x)
+        try container.encode(.y, y)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        zoom = container.decode(.zoom, Float.self, 50)
+        x = container.decode(.x, Float.self, 0)
+        y = container.decode(.y, Float.self, 0)
+    }
+
+    func toSettings() -> Dewarp360EffectSettings {
+        return .init(fov: Float(toRadians(degrees: Double(140 - zoom))),
+                     phi: Float(toRadians(degrees: Double(y))),
+                     theta: Float(-toRadians(degrees: Double(x))))
+    }
+}
+
 class SettingsVideoEffect: Codable, Identifiable, ObservableObject {
     var id: UUID = .init()
     @Published var enabled: Bool = true
     @Published var type: SettingsVideoEffectType = .grayScale
     var removeBackground: SettingsVideoEffectRemoveBackground = .init()
     var shape: SettingsVideoEffectShape = .init()
+    var dewarp360: SettingsVideoEffectDewarp360 = .init()
 
     enum CodingKeys: CodingKey {
         case id,
              enabled,
              type,
              removeBackground,
-             shape
+             shape,
+             dewarp360
     }
 
     init() {}
@@ -2867,6 +2903,7 @@ class SettingsVideoEffect: Codable, Identifiable, ObservableObject {
         try container.encode(.type, type)
         try container.encode(.removeBackground, removeBackground)
         try container.encode(.shape, shape)
+        try container.encode(.dewarp360, dewarp360)
     }
 
     required init(from decoder: Decoder) throws {
@@ -2876,6 +2913,7 @@ class SettingsVideoEffect: Codable, Identifiable, ObservableObject {
         type = container.decode(.type, SettingsVideoEffectType.self, .grayScale)
         removeBackground = container.decode(.removeBackground, SettingsVideoEffectRemoveBackground.self, .init())
         shape = container.decode(.shape, SettingsVideoEffectShape.self, .init())
+        dewarp360 = container.decode(.dewarp360, SettingsVideoEffectDewarp360.self, .init())
     }
 
     func getEffect() -> VideoEffect {
@@ -2897,7 +2935,9 @@ class SettingsVideoEffect: Codable, Identifiable, ObservableObject {
             effect.setSettings(settings: shape.toSettings())
             return effect
         case .dewarp360:
-            return Dewarp360Effect()
+            let effect = Dewarp360Effect()
+            effect.setSettings(settings: dewarp360.toSettings())
+            return effect
         }
     }
 }
