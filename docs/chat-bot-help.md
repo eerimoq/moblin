@@ -11,6 +11,10 @@
 | !moblin tts on | Turn on chat text to speech. |
 | !moblin tts off | Turn off chat text to speech. |
 | !moblin say \<message> | Say given message. |
+| !moblin scene \<name> | Change scene. |
+| !moblin stream title \<title> | Set stream title. |
+| !moblin widget \<name> timer \<number> add \<seconds> | Add time to a timer. |
+| !moblin ai ask \<question> | Ask AI a question. |
 | !moblin mute | Mute audio. |
 | !moblin unmute | Unmute audio. |
 | !moblin tesla trunk open | Open the trunk. |
@@ -36,8 +40,6 @@
 | !moblin filter whirlpool off | Turn off the whirlpool filter. |
 | !moblin filter pinch on | Turn on the pinch filter. |
 | !moblin filter pinch off | Turn off the pinch filter. |
-| !moblin scene \<name> | Change scene. |
-| !moblin stream title \<title> | Set stream title. |
 | !moblin reaction fireworks | Trigger Apple fireworks reaction. |
 | !moblin reaction balloons | Trigger Apple balloons reaction. |
 | !moblin reaction heart | Trigger Apple heart reaction. |
