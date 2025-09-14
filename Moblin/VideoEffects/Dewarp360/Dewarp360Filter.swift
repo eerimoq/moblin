@@ -31,14 +31,25 @@ class Dewarp360Filter: CIFilter {
     }
 
     private func createArguments(inputImage: CIImage) -> [Any] {
-        let inputWidth = Float(inputImage.extent.width)
-        let inputHeight = Float(inputImage.extent.height)
         let outputWidth = Float(outputSize.width)
         let outputHeight = Float(outputSize.height)
         let fieldOfViewHorizontal = fieldOfView
         let fieldOfViewVertical = outputHeight / outputWidth * fieldOfViewHorizontal
         let fieldOfViewWidth = 2 * tan(fieldOfViewHorizontal / 2)
         let fieldOfViewHeight = 2 * tan(fieldOfViewVertical / 2)
+        let rotation = createRotationMatrix()
+        return [Float(inputImage.extent.width),
+                Float(inputImage.extent.height),
+                outputWidth,
+                outputHeight,
+                fieldOfViewWidth,
+                fieldOfViewHeight,
+                rotation[0].toCiVector(),
+                rotation[1].toCiVector(),
+                rotation[2].toCiVector()]
+    }
+
+    private func createRotationMatrix() -> float3x3 {
         let cosTheta = cos(xAngle)
         let sinTheta = sin(xAngle)
         let cosPhi = cos(-yAngle)
@@ -49,16 +60,7 @@ class Dewarp360Filter: CIFilter {
         let rotationZ = float3x3(rows: [.init(cosTheta, -sinTheta, 0),
                                         .init(sinTheta, cosTheta, 0),
                                         .init(0, 0, 1)])
-        let rotation = rotationY * rotationZ
-        return [inputWidth,
-                inputHeight,
-                outputWidth,
-                outputHeight,
-                fieldOfViewWidth,
-                fieldOfViewHeight,
-                rotation[0].toCiVector(),
-                rotation[1].toCiVector(),
-                rotation[2].toCiVector()]
+        return rotationY * rotationZ
     }
 }
 
