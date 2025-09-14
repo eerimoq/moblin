@@ -15,8 +15,8 @@ class Dewarp360Filter: CIFilter {
     var inputImage: CIImage?
     var outputSize: CGSize = .init(width: 1920, height: 1080)
     var fieldOfView: Float = .pi / 2
-    var xAngle: Float = 0
-    var yAngle: Float = 0
+    var pan: Float = 0
+    var tilt: Float = 0
 
     override var outputImage: CIImage? {
         guard let inputImage, let kernel else {
@@ -50,10 +50,10 @@ class Dewarp360Filter: CIFilter {
     }
 
     private func createRotationMatrix() -> float3x3 {
-        let cosTheta = cos(xAngle)
-        let sinTheta = sin(xAngle)
-        let cosPhi = cos(-yAngle)
-        let sinPhi = sin(-yAngle)
+        let cosTheta = cos(pan)
+        let sinTheta = sin(pan)
+        let cosPhi = cos(-tilt)
+        let sinPhi = sin(-tilt)
         let rotationY = float3x3(rows: [.init(cosPhi, 0, -sinPhi),
                                         .init(0, 1, 0),
                                         .init(sinPhi, 0, cosPhi)])
