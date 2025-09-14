@@ -77,7 +77,7 @@ struct StreamsSettingsView: View {
                     }
                 }
             } footer: {
-                SwipeLeftToDeleteHelpView(kind: String(localized: "a stream"))
+                Text("Swipe left on a stream to duplicate or delete it.")
             }
         }
         .navigationTitle("Streams")
