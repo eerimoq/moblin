@@ -676,6 +676,7 @@ class SettingsStreamMultiStreamingDestination: Codable, Identifiable, Observable
         let new = SettingsStreamMultiStreamingDestination()
         new.name = name
         new.url = url
+        new.enabled = enabled
         return new
     }
 }
@@ -1006,12 +1007,14 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         new.twitchChannelName = twitchChannelName
         new.twitchChannelId = twitchChannelId
         new.twitchShowFollows = twitchShowFollows
+        new.twitchRewards = twitchRewards
         new.twitchSendMessagesTo = twitchSendMessagesTo
         new.kickChannelName = kickChannelName
         new.kickChannelId = kickChannelId
         new.kickSlug = kickSlug
         new.kickAccessToken = kickAccessToken
         new.kickLoggedIn = kickLoggedIn
+        new.kickSendMessagesTo = kickSendMessagesTo
         new.youTubeApiKey = youTubeApiKey
         new.youTubeVideoId = youTubeVideoId
         new.youTubeHandle = youTubeHandle
@@ -1035,9 +1038,11 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         new.discordSnapshotWebhookOnlyWhenLive = discordSnapshotWebhookOnlyWhenLive
         new.resolution = resolution
         new.fps = fps
+        new.autoFps = autoFps
         new.bitrate = bitrate
         new.codec = codec
         new.bFrames = bFrames
+        new.adaptiveEncoderResolution = adaptiveEncoderResolution
         new.adaptiveBitrate = adaptiveBitrate
         new.srt = srt.clone()
         new.rtmp = rtmp.clone()
