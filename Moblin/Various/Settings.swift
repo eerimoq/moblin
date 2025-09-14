@@ -1399,6 +1399,8 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject, Named {
         new.frontCameraId = frontCameraId
         new.rtmpCameraId = rtmpCameraId
         new.srtlaCameraId = srtlaCameraId
+        new.ristCameraId = ristCameraId
+        new.rtspCameraId = rtspCameraId
         new.mediaPlayerCameraId = mediaPlayerCameraId
         new.externalCameraId = externalCameraId
         new.externalCameraName = externalCameraName
@@ -1406,6 +1408,9 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject, Named {
             new.widgets.append(widget.clone())
         }
         new.videoSourceRotation = videoSourceRotation
+        new.videoStabilizationMode = videoStabilizationMode
+        new.overrideVideoStabilizationMode = overrideVideoStabilizationMode
+        new.fillFrame = fillFrame
         new.overrideMic = overrideMic
         new.micId = micId
         return new
