@@ -130,7 +130,7 @@ private struct Dewarp360View: View {
                 Image(systemName: "minus.magnifyingglass")
                 Slider(
                     value: $dewarp360.zoom,
-                    in: 30 ... 120,
+                    in: 30 ... 170,
                     step: 1
                 )
                 .onChange(of: dewarp360.zoom) { _ in

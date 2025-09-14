@@ -2844,7 +2844,7 @@ class SettingsVideoEffectShape: Codable, ObservableObject {
 }
 
 class SettingsVideoEffectDewarp360: Codable, ObservableObject {
-    @Published var zoom: Float = 50
+    @Published var zoom: Float = 90
     @Published var x: Float = 0
     @Published var y: Float = 0
 
@@ -2865,13 +2865,13 @@ class SettingsVideoEffectDewarp360: Codable, ObservableObject {
 
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        zoom = container.decode(.zoom, Float.self, 50)
+        zoom = container.decode(.zoom, Float.self, 90)
         x = container.decode(.x, Float.self, 0)
         y = container.decode(.y, Float.self, 0)
     }
 
     func toSettings() -> Dewarp360EffectSettings {
-        return .init(fieldOfView: Float(toRadians(degrees: Double(140 - zoom))),
+        return .init(fieldOfView: Float(toRadians(degrees: Double(180 - zoom))),
                      xAngle: Float(-toRadians(degrees: Double(x))),
                      yAngle: Float(toRadians(degrees: Double(y))))
     }
