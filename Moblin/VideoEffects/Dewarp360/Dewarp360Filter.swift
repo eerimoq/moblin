@@ -14,9 +14,9 @@ private let kernel: CIWarpKernel? = {
 class Dewarp360Filter: CIFilter {
     var inputImage: CIImage?
     var outputSize: CGSize = .init(width: 1920, height: 1080)
-    var fov: Float = .pi / 2
-    var phi: Float = 0 // vertical
-    var theta: Float = 0 // horizontal
+    var fieldOfView: Float = .pi / 2
+    var xAngle: Float = 0
+    var yAngle: Float = 0
 
     override var outputImage: CIImage? {
         guard let inputImage, let kernel else {
@@ -35,14 +35,14 @@ class Dewarp360Filter: CIFilter {
         let inputHeight = Float(inputImage.extent.height)
         let outputWidth = Float(outputSize.width)
         let outputHeight = Float(outputSize.height)
-        let fovHorizontal = fov
-        let fovVertical = outputHeight / outputWidth * fovHorizontal
-        let fovWidth = 2 * tan(fovHorizontal / 2)
-        let fovHeight = 2 * tan(fovVertical / 2)
-        let cosPhi = cos(-phi)
-        let sinPhi = sin(-phi)
-        let cosTheta = cos(theta)
-        let sinTheta = sin(theta)
+        let fieldOfViewHorizontal = fieldOfView
+        let fieldOfViewVertical = outputHeight / outputWidth * fieldOfViewHorizontal
+        let fieldOfViewWidth = 2 * tan(fieldOfViewHorizontal / 2)
+        let fieldOfViewHeight = 2 * tan(fieldOfViewVertical / 2)
+        let cosTheta = cos(xAngle)
+        let sinTheta = sin(xAngle)
+        let cosPhi = cos(-yAngle)
+        let sinPhi = sin(-yAngle)
         let rotationY = float3x3(rows: [.init(cosPhi, 0, -sinPhi),
                                         .init(0, 1, 0),
                                         .init(sinPhi, 0, cosPhi)])
@@ -54,8 +54,8 @@ class Dewarp360Filter: CIFilter {
                 inputHeight,
                 outputWidth,
                 outputHeight,
-                fovWidth,
-                fovHeight,
+                fieldOfViewWidth,
+                fieldOfViewHeight,
                 rotation[0].toCiVector(),
                 rotation[1].toCiVector(),
                 rotation[2].toCiVector()]

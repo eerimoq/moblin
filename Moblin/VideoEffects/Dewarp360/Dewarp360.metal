@@ -9,16 +9,16 @@ extern "C" float2 dewarp360(
     float inputHeight,
     float outputWidth,
     float outputHeight,
-    float fovWidth,
-    float fovHeight,
+    float fieldOfViewWidth,
+    float fieldOfViewHeight,
     float3 rotationRow1,
     float3 rotationRow2,
     float3 rotationRow3,
     coreimage::destination dest)
 {
     float x = 1;
-    float y = (dest.coord().x / outputWidth - 0.5) * fovWidth;
-    float z = (dest.coord().y / outputHeight - 0.5) * fovHeight;
+    float y = (dest.coord().x / outputWidth - 0.5) * fieldOfViewWidth;
+    float z = (dest.coord().y / outputHeight - 0.5) * fieldOfViewHeight;
 
     float r = sqrt(x * x + y * y + z * z);
 

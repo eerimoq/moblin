@@ -1,9 +1,9 @@
 import CoreImage
 
 struct Dewarp360EffectSettings {
-    var fov: Float = .pi / 2
-    var phi: Float = 0
-    var theta: Float = 0
+    var fieldOfView: Float = .pi / 2
+    var xAngle: Float = 0
+    var yAngle: Float = 0
 }
 
 final class Dewarp360Effect: VideoEffect {
@@ -23,9 +23,9 @@ final class Dewarp360Effect: VideoEffect {
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
         filter.inputImage = image
         filter.outputSize = CGSize(width: 1920, height: 1080)
-        filter.fov = settings.fov
-        filter.phi = settings.phi
-        filter.theta = settings.theta
+        filter.fieldOfView = settings.fieldOfView
+        filter.xAngle = settings.xAngle
+        filter.yAngle = settings.yAngle
         return filter.outputImage ?? image
     }
 }

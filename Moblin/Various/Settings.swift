@@ -2871,9 +2871,9 @@ class SettingsVideoEffectDewarp360: Codable, ObservableObject {
     }
 
     func toSettings() -> Dewarp360EffectSettings {
-        return .init(fov: Float(toRadians(degrees: Double(140 - zoom))),
-                     phi: Float(toRadians(degrees: Double(y))),
-                     theta: Float(-toRadians(degrees: Double(x))))
+        return .init(fieldOfView: Float(toRadians(degrees: Double(140 - zoom))),
+                     xAngle: Float(-toRadians(degrees: Double(x))),
+                     yAngle: Float(toRadians(degrees: Double(y))))
     }
 }
 
