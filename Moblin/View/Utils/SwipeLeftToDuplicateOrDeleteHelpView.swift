@@ -5,6 +5,5 @@ struct SwipeLeftToDuplicateOrDeleteHelpView: View {
 
     var body: some View {
         Text("Swipe left on \(kind) to duplicate or delete it.")
-
     }
 }
