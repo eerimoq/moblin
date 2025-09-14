@@ -22,6 +22,7 @@ final class Dewarp360Effect: VideoEffect {
 
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
         filter.inputImage = image
+        filter.outputSize = CGSize(width: 1920, height: 1080)
         filter.fov = settings.fov
         filter.phi = settings.phi
         filter.theta = settings.theta

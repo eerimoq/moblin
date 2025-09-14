@@ -2,6 +2,8 @@
 
 using namespace metal;
 
+constant float PI = 3.14159265358979323846;
+
 extern "C" float2 dewarp360(
     float inputWidth,
     float inputHeight,
@@ -14,8 +16,6 @@ extern "C" float2 dewarp360(
     float3 rotationRow3,
     coreimage::destination dest)
 {
-    constexpr float PI = 3.141592653589793;
-
     float x = 1;
     float y = (dest.coord().x / outputWidth - 0.5) * fovWidth;
     float z = (dest.coord().y / outputHeight - 0.5) * fovHeight;
