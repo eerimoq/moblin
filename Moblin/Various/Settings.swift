@@ -2854,36 +2854,42 @@ class SettingsVideoEffectShape: Codable, ObservableObject {
 }
 
 class SettingsVideoEffectDewarp360: Codable, ObservableObject {
-    @Published var zoom: Float = 90
-    @Published var x: Float = 0
-    @Published var y: Float = 0
+    @Published var pan: Float = 0
+    @Published var tilt: Float = 0
+    var zoom: Float = 1
+    @Published var inverseFieldOfView: Float = 90
 
     init() {}
 
     enum CodingKeys: CodingKey {
-        case zoom,
-             x,
-             y
+        case pan,
+             tilt,
+             zoom
     }
 
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.pan, pan)
+        try container.encode(.tilt, tilt)
         try container.encode(.zoom, zoom)
-        try container.encode(.x, x)
-        try container.encode(.y, y)
     }
 
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        zoom = container.decode(.zoom, Float.self, 90)
-        x = container.decode(.x, Float.self, 0)
-        y = container.decode(.y, Float.self, 0)
+        pan = container.decode(.pan, Float.self, 0)
+        tilt = container.decode(.tilt, Float.self, 0)
+        zoom = container.decode(.zoom, Float.self, 1)
+        inverseFieldOfView = 180 - Float(zoomToFieldOfView(zoom: Double(zoom)))
+    }
+
+    func updateZoomFromInverseFieldOfView() {
+        zoom = Float(fieldOfViewToZoom(fieldOfView: Double(180 - inverseFieldOfView)))
     }
 
     func toSettings() -> Dewarp360EffectSettings {
-        return .init(fieldOfView: Float(toRadians(degrees: Double(180 - zoom))),
-                     xAngle: Float(-toRadians(degrees: Double(x))),
-                     yAngle: Float(toRadians(degrees: Double(y))))
+        return .init(fieldOfView: Float(toRadians(degrees: zoomToFieldOfView(zoom: Double(zoom)))),
+                     xAngle: Float(-toRadians(degrees: Double(pan))),
+                     yAngle: Float(toRadians(degrees: Double(tilt))))
     }
 }
 

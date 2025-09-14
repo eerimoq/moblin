@@ -763,3 +763,13 @@ func makeRecordingPath(recordingPath: Data) -> URL? {
     var isStale = false
     return try? URL(resolvingBookmarkData: recordingPath, bookmarkDataIsStale: &isStale)
 }
+
+func zoomToFieldOfView(zoom: Double, zoomOne: Double = 90) -> Double {
+    let zoomOne = toRadians(degrees: Double(zoomOne))
+    return radiansToDegrees(2 * atan(tan(zoomOne / 2) / zoom))
+}
+
+func fieldOfViewToZoom(fieldOfView: Double, zoomOne: Double = 90) -> Double {
+    let zoomOne = toRadians(degrees: Double(zoomOne))
+    return tan(zoomOne / 2) / tan(toRadians(degrees: fieldOfView) / 2)
+}
