@@ -66,7 +66,7 @@ private struct ScenesListView: View {
         } header: {
             Text("Scenes")
         } footer: {
-            SwipeLeftToDeleteHelpView(kind: String(localized: "a scene"))
+            Text("Swipe left on a scene to duplicate or delete it.")
         }
     }
 }
