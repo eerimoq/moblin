@@ -11,8 +11,10 @@ extension CIImage {
                           _ streamSize: CGSize,
                           _ mirror: Bool) -> CIImage
     {
-        var scaleX = toPixels(sceneWidget.width, streamSize.width) / extent.size.width
-        var scaleY = toPixels(sceneWidget.height, streamSize.height) / extent.size.height
+        let sceneWidgetWidth = toPixels(sceneWidget.width, streamSize.width)
+        let sceneWidgetHeight = toPixels(sceneWidget.height, streamSize.height)
+        var scaleX = sceneWidgetWidth / extent.size.width
+        var scaleY = sceneWidgetHeight / extent.size.height
         let scale = min(scaleX, scaleY)
         if mirror {
             scaleX = -1 * scale
@@ -20,11 +22,24 @@ extension CIImage {
             scaleX = scale
         }
         scaleY = scale
-        var x = toPixels(sceneWidget.x, streamSize.width)
-        if mirror {
-            x -= extent.width * scaleX
+        var x: Double
+        var y: Double
+        switch sceneWidget.horizontalAlignment {
+        case .leading:
+            x = toPixels(sceneWidget.x, streamSize.width)
+            if mirror {
+                x -= extent.width * scaleX
+            }
+        case .trailing:
+            x = streamSize.width - toPixels(sceneWidget.x, streamSize.width)
+            x -= sceneWidgetWidth
         }
-        let y = streamSize.height - toPixels(sceneWidget.y, streamSize.height) - extent.height * scaleY
+        switch sceneWidget.verticalAlignment {
+        case .top:
+            y = streamSize.height - toPixels(sceneWidget.y, streamSize.height) - extent.height * scaleY
+        case .bottom:
+            y = toPixels(sceneWidget.y, streamSize.height)
+        }
         return transformed(by: CGAffineTransform(scaleX: scaleX, y: scaleY))
             .transformed(by: CGAffineTransform(translationX: x, y: y))
     }

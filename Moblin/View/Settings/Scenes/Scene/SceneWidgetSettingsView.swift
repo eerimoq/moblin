@@ -17,30 +17,28 @@ struct SceneWidgetSettingsView: View {
         .image, .browser, .text, .crop, .map, .qrCode, .alerts, .videoSource, .vTuber, .pngTuber, .snapshot,
     ]
 
-    private func widgetHasPosition(id: UUID) -> Bool {
-        if let widget = model.findWidget(id: id) {
-            return widgetsWithPosition.contains(widget.type)
-        } else {
-            logger.error("Unable to find widget type")
-            return false
-        }
+    private func widgetHasPosition(widget: SettingsWidget) -> Bool {
+        return widgetsWithPosition.contains(widget.type)
     }
 
     private let widgetsWithSize: [SettingsWidgetType] = [
         .image, .qrCode, .map, .videoSource, .vTuber, .pngTuber, .snapshot,
     ]
 
-    private func widgetHasSize(id: UUID) -> Bool {
-        if let widget = model.findWidget(id: id) {
-            return widgetsWithSize.contains(widget.type)
-        } else {
-            logger.error("Unable to find widget type")
-            return false
-        }
+    private func widgetHasSize(widget: SettingsWidget) -> Bool {
+        return widgetsWithSize.contains(widget.type)
+    }
+
+    private let widgetsWithAlignment: [SettingsWidgetType] = [
+        .image, .vTuber, .pngTuber, .snapshot,
+    ]
+
+    private func widgetHasAlignment(widget: SettingsWidget) -> Bool {
+        return widgetsWithAlignment.contains(widget.type)
     }
 
     private func canWidgetExpand(widget: SettingsWidget) -> Bool {
-        return widgetHasPosition(id: widget.id) || widgetHasSize(id: widget.id)
+        return widgetHasPosition(widget: widget) || widgetHasSize(widget: widget)
     }
 
     private func exportToClipboard() {
@@ -79,7 +77,7 @@ struct SceneWidgetSettingsView: View {
 
     var body: some View {
         Form {
-            if widgetHasPosition(id: widget.id) {
+            if widgetHasPosition(widget: widget) {
                 Section {
                     PositionEditView(
                         number: $sceneWidget.x,
@@ -105,7 +103,7 @@ struct SceneWidgetSettingsView: View {
                     Text("Position")
                 }
             }
-            if widgetHasSize(id: widget.id) {
+            if widgetHasSize(widget: widget) {
                 Section {
                     SizeEditView(
                         number: $sceneWidget.width,
@@ -125,6 +123,38 @@ struct SceneWidgetSettingsView: View {
                     )
                 } header: {
                     Text("Size")
+                }
+            }
+            if widgetHasAlignment(widget: widget) {
+                Section {
+                    HStack {
+                        Text("Horizontal")
+                        Spacer()
+                        Picker("", selection: $sceneWidget.horizontalAlignment) {
+                            ForEach(SettingsHorizontalAlignment.allCases, id: \.self) {
+                                Text($0.toString())
+                                    .tag($0)
+                            }
+                        }
+                        .onChange(of: sceneWidget.horizontalAlignment) { _ in
+                            model.sceneUpdated()
+                        }
+                    }
+                    HStack {
+                        Text("Vertical")
+                        Spacer()
+                        Picker("", selection: $sceneWidget.verticalAlignment) {
+                            ForEach(SettingsVerticalAlignment.allCases, id: \.self) {
+                                Text($0.toString())
+                                    .tag($0)
+                            }
+                        }
+                        .onChange(of: sceneWidget.verticalAlignment) { _ in
+                            model.sceneUpdated()
+                        }
+                    }
+                } header: {
+                    Text("Alignment")
                 }
             }
             Section {

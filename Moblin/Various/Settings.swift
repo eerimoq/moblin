@@ -1172,6 +1172,8 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject {
     @Published var widthString: String = "100.0"
     @Published var height: Double = 100.0
     @Published var heightString: String = "100.0"
+    @Published var horizontalAlignment: SettingsHorizontalAlignment = .leading
+    @Published var verticalAlignment: SettingsVerticalAlignment = .top
 
     init(widgetId: UUID) {
         self.widgetId = widgetId
@@ -1184,7 +1186,9 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject {
              x,
              y,
              width,
-             height
+             height,
+             horizontalAlignment,
+             verticalAlignment
     }
 
     func encode(to encoder: Encoder) throws {
@@ -1196,6 +1200,8 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject {
         try container.encode(.y, y)
         try container.encode(.width, width)
         try container.encode(.height, height)
+        try container.encode(.horizontalAlignment, horizontalAlignment)
+        try container.encode(.verticalAlignment, verticalAlignment)
     }
 
     required init(from decoder: Decoder) throws {
@@ -1211,6 +1217,8 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject {
         widthString = String(width)
         height = container.decode(.height, Double.self, 100.0)
         heightString = String(height)
+        horizontalAlignment = container.decode(.horizontalAlignment, SettingsHorizontalAlignment.self, .leading)
+        verticalAlignment = container.decode(.verticalAlignment, SettingsVerticalAlignment.self, .top)
     }
 
     func clone() -> SettingsSceneWidget {
@@ -1224,6 +1232,8 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject {
         new.widthString = widthString
         new.height = height
         new.heightString = heightString
+        new.horizontalAlignment = horizontalAlignment
+        new.verticalAlignment = verticalAlignment
         return new
     }
 
