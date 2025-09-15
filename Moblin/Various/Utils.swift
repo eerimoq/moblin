@@ -7,6 +7,7 @@ import SwiftUI
 import WeatherKit
 
 let sliderValuePercentageWidth = 60.0
+let epsilon = 0.00001
 
 extension UIImage {
     func scalePreservingAspectRatio(targetSize: CGSize) -> UIImage {

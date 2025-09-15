@@ -27,7 +27,10 @@ class Dewarp360Filter: CIFilter {
             roiCallback: { _, rect in rect },
             image: inputImage,
             arguments: createArguments(inputImage: inputImage)
-        )
+        )?.cropped(to: CGRect(x: 0,
+                              y: 0,
+                              width: outputSize.width - epsilon,
+                              height: outputSize.height - epsilon))
     }
 
     private func createArguments(inputImage: CIImage) -> [Any] {
