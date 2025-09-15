@@ -118,7 +118,7 @@ final class MapEffect: VideoEffect {
                 if dotOffsetInMeters > maxDotOffsetFromCenter {
                     dotOffsetInMeters = maxDotOffsetFromCenter
                 }
-                let course = toRadians(degrees: max(newLocation.course, 0))
+                let course = max(newLocation.course, 0).toRadians()
                 let latitudeOffsetInMeters = cos(course) * dotOffsetInMeters
                 let longitudeOffsetInMeters = sin(course) * dotOffsetInMeters
                 camera.centerCoordinate = newLocation.coordinate.translateMeters(

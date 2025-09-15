@@ -252,12 +252,18 @@ func bitrateFromMbps(bitrate: Float) -> UInt32 {
     return UInt32(bitrate * 1_000_000)
 }
 
-func radiansToDegrees(_ number: Double) -> Double {
-    return number * 180 / .pi
+extension FloatingPoint {
+    func toRadians() -> Self {
+        return self * .pi / 180
+    }
+
+    func toDegrees() -> Self {
+        return self * 180 / .pi
+    }
 }
 
-func diffAngles(_ one: Double, _ two: Double) -> Int {
-    let diff = abs(Int(radiansToDegrees(one - two)))
+func diffAngles<T: FloatingPoint>(_ one: T, _ two: T) -> T {
+    let diff = abs((one - two).toDegrees())
     return min(diff, 360 - diff)
 }
 

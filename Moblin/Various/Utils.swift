@@ -333,15 +333,11 @@ func createThumbnail(path: URL, offset: Double = 0, onComplete: @escaping (UIIma
 
 extension SettingsPrivacyRegion {
     func contains(coordinate: CLLocationCoordinate2D) -> Bool {
-        cos(toRadians(degrees: latitude - coordinate.latitude)) >
-            cos(toRadians(degrees: latitudeDelta / 2.0)) &&
-            cos(toRadians(degrees: longitude - coordinate.longitude)) >
-            cos(toRadians(degrees: longitudeDelta / 2.0))
+        cos((latitude - coordinate.latitude).toRadians()) >
+            cos((latitudeDelta / 2.0).toRadians()) &&
+            cos((longitude - coordinate.longitude).toRadians()) >
+            cos((longitudeDelta / 2.0).toRadians())
     }
-}
-
-func toRadians(degrees: Double) -> Double {
-    return degrees * .pi / 180
 }
 
 func toLatitudeDeltaDegrees(meters: Double) -> Double {
@@ -349,7 +345,7 @@ func toLatitudeDeltaDegrees(meters: Double) -> Double {
 }
 
 func toLongitudeDeltaDegrees(meters: Double, latitudeDegrees: Double) -> Double {
-    return 360 * meters / (40_075_000 * cos(toRadians(degrees: latitudeDegrees)))
+    return 360 * meters / (40_075_000 * cos(latitudeDegrees.toRadians()))
 }
 
 extension CLLocationCoordinate2D {
@@ -764,12 +760,10 @@ func makeRecordingPath(recordingPath: Data) -> URL? {
     return try? URL(resolvingBookmarkData: recordingPath, bookmarkDataIsStale: &isStale)
 }
 
-func zoomToFieldOfView(zoom: Double, zoomOne: Double = 90) -> Double {
-    let zoomOne = toRadians(degrees: Double(zoomOne))
-    return radiansToDegrees(2 * atan(tan(zoomOne / 2) / zoom))
+func zoomToFieldOfView(zoom: Float, zoomOne: Float = .pi / 2) -> Float {
+    return 2 * atan(tan(zoomOne / 2) / zoom)
 }
 
-func fieldOfViewToZoom(fieldOfView: Double, zoomOne: Double = 90) -> Double {
-    let zoomOne = toRadians(degrees: Double(zoomOne))
-    return tan(zoomOne / 2) / tan(toRadians(degrees: fieldOfView) / 2)
+func fieldOfViewToZoom(fieldOfView: Float, zoomOne: Float = .pi / 2) -> Float {
+    return tan(zoomOne / 2) / tan(fieldOfView / 2)
 }

@@ -2879,17 +2879,17 @@ class SettingsVideoEffectDewarp360: Codable, ObservableObject {
         pan = container.decode(.pan, Float.self, 0)
         tilt = container.decode(.tilt, Float.self, 0)
         zoom = container.decode(.zoom, Float.self, 1)
-        inverseFieldOfView = 180 - Float(zoomToFieldOfView(zoom: Double(zoom)))
+        inverseFieldOfView = 180 - zoomToFieldOfView(zoom: zoom).toDegrees()
     }
 
     func updateZoomFromInverseFieldOfView() {
-        zoom = Float(fieldOfViewToZoom(fieldOfView: Double(180 - inverseFieldOfView)))
+        zoom = fieldOfViewToZoom(fieldOfView: (180 - inverseFieldOfView).toRadians())
     }
 
     func toSettings() -> Dewarp360EffectSettings {
-        return .direct(pan: Float(-toRadians(degrees: Double(pan))),
-                       tilt: Float(toRadians(degrees: Double(tilt))),
-                       fieldOfView: Float(toRadians(degrees: zoomToFieldOfView(zoom: Double(zoom)))))
+        return .direct(pan: -pan.toRadians(),
+                       tilt: tilt.toRadians(),
+                       fieldOfView: zoomToFieldOfView(zoom: zoom))
     }
 }
 
