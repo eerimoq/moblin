@@ -61,8 +61,31 @@ private struct AuthenticationView: View {
     private func handleAccessToken(accessToken: String) {
         stream.kickAccessToken = accessToken
         stream.kickLoggedIn = true
-        if stream.enabled {
-            model.kickAccessTokenUpdated()
+
+        getKickUserData(accessToken: accessToken) { userData in
+            DispatchQueue.main.async {
+                if let userData {
+                    self.stream.kickChannelName = userData.username
+                    self.stream.kickChannelId = nil
+                    self.stream.kickSlug = nil
+
+                    getKickChannelInfo(channelName: userData.username) { channelInfo in
+                        DispatchQueue.main.async {
+                            if let channelInfo {
+                                self.stream.kickChannelId = String(channelInfo.chatroom.id)
+                                self.stream.kickSlug = channelInfo.slug
+                            }
+                            if self.stream.enabled {
+                                self.model.kickChannelNameUpdated()
+                            }
+                        }
+                    }
+                } else {
+                    if self.stream.enabled {
+                        self.model.kickAccessTokenUpdated()
+                    }
+                }
+            }
         }
     }
 }
@@ -91,12 +114,17 @@ private struct KickWebView: UIViewRepresentable {
 
     class Coordinator: NSObject, WKNavigationDelegate {
         let onAccessToken: (String) -> Void
+        private var loginButtonClicked = false
 
         init(_ onAccessToken: @escaping (String) -> Void) {
             self.onAccessToken = onAccessToken
         }
 
         func webView(_ webView: WKWebView, didFinish _: WKNavigation!) {
+            if !loginButtonClicked {
+                detectAndClickLoginButton(webView)
+            }
+
             guard let url = webView.url,
                   let host = url.host(),
                   !url.path().contains("/login"),
@@ -116,6 +144,40 @@ private struct KickWebView: UIViewRepresentable {
                 let accessToken = sessionTokenCookie.value
                 DispatchQueue.main.async {
                     self.onAccessToken(accessToken.removingPercentEncoding ?? accessToken)
+                }
+            }
+        }
+
+        private func detectAndClickLoginButton(_ webView: WKWebView) {
+            let jsScript = """
+            (async function() {
+                try {
+                    // wait for 0.2 second for the page to load
+                    await new Promise(resolve => setTimeout(resolve, 200));
+                    var loginButton = document.querySelector('[data-testid="login"]');
+                    if (loginButton) {
+                        console.log('Login button found with data-testid');
+                        loginButton.click();
+                        return true;
+                    }
+                } catch (error) {
+                    console.log('Error detecting login button:', error);
+                    return false;
+                }
+            })();
+            """
+
+            webView.evaluateJavaScript(jsScript) { result, error in
+                if let error = error {
+                    print("JavaScript error: \(error)")
+                    return
+                }
+
+                if let success = result as? Bool, success {
+                    print("Login button automatically clicked!")
+                    self.loginButtonClicked = true
+                } else {
+                    print("Login button not found or click failed")
                 }
             }
         }
@@ -174,6 +236,7 @@ struct StreamKickSettingsView: View {
                     onChange: { _ in nil },
                     onSubmit: submitChannelName
                 )
+                .id(stream.kickChannelName)
             } footer: {
                 if fetchChannelInfoFailed {
                     Text("Channel not found on kick.com.")
