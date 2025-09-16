@@ -1186,7 +1186,7 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject {
              y,
              width,
              height,
-             positionReference
+             alignment
     }
 
     func encode(to encoder: Encoder) throws {
@@ -1198,7 +1198,7 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject {
         try container.encode(.y, y)
         try container.encode(.width, width)
         try container.encode(.height, height)
-        try container.encode(.positionReference, alignment)
+        try container.encode(.alignment, alignment)
     }
 
     required init(from decoder: Decoder) throws {
@@ -1214,7 +1214,7 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject {
         widthString = String(width)
         height = container.decode(.height, Double.self, 100.0)
         heightString = String(height)
-        alignment = container.decode(.positionReference, SettingsAlignment.self, .topLeft)
+        alignment = container.decode(.alignment, SettingsAlignment.self, .topLeft)
     }
 
     func clone() -> SettingsSceneWidget {
