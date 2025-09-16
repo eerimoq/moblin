@@ -151,6 +151,28 @@ struct StreamHostEvent: Decodable {
     var number_viewers: Int
 }
 
+struct KickSender: Decodable {
+    var id: Int
+    var username: String
+    var username_color: String
+}
+
+struct KickGift: Decodable {
+    var gift_id: String
+    var name: String
+    var amount: Int
+    var type: String
+    var tier: String
+    var character_limit: Int
+    var pinned_time: Int
+}
+
+struct KicksGiftedEvent: Decodable {
+    var message: String
+    var sender: KickSender
+    var gift: KickGift
+}
+
 private func decodeEvent(message: String) throws -> (String, String) {
     if let jsonData = message.data(using: String.Encoding.utf8) {
         let data = try JSONSerialization.jsonObject(
@@ -217,6 +239,13 @@ private func decodeStreamHostEvent(data: String) throws -> StreamHostEvent {
     )
 }
 
+private func decodeKicksGiftedEvent(data: String) throws -> KicksGiftedEvent {
+    return try JSONDecoder().decode(
+        KicksGiftedEvent.self,
+        from: data.data(using: String.Encoding.utf8)!
+    )
+}
+
 private var url =
     URL(
         string: "wss://ws-us2.pusher.com/app/32cbd69e4b950bf97679?protocol=7&client=js&version=7.6.0&flash=false"
@@ -242,11 +271,13 @@ protocol KickPusherDelegate: AnyObject {
     func kickPusherRewardRedeemed(event: RewardRedeemedEvent)
     func kickPusherStreamHost(event: StreamHostEvent)
     func kickPusherUserBanned(event: UserBannedEvent)
+    func kickPusherKicksGifted(event: KicksGiftedEvent)
 }
 
 final class KickPusher: NSObject {
     private var channelName: String
     private var channelId: String
+    private var chatroomChannelId: String?
     private var webSocket: WebSocketClient
     private var emotes: Emotes
     private var badges: KickBadges
@@ -254,10 +285,17 @@ final class KickPusher: NSObject {
     private var gotInfo = false
     private weak var delegate: (any KickPusherDelegate)?
 
-    init(delegate: KickPusherDelegate, channelName: String, channelId: String, settings: SettingsStreamChat) {
+    init(
+        delegate: KickPusherDelegate,
+        channelName: String,
+        channelId: String,
+        chatroomChannelId: String?,
+        settings: SettingsStreamChat
+    ) {
         self.delegate = delegate
         self.channelName = channelName
         self.channelId = channelId
+        self.chatroomChannelId = chatroomChannelId
         self.settings = settings.clone()
         emotes = Emotes()
         badges = KickBadges()
@@ -345,6 +383,8 @@ final class KickPusher: NSObject {
                 try handleRewardRedeemedEvent(data: data)
             case "App\\Events\\StreamHostEvent":
                 try handleStreamHostEvent(data: data)
+            case "KicksGifted":
+                try handleKicksGiftedEvent(data: data)
             default:
                 logger.debug("kick: pusher: \(channelId): Unsupported type: \(type)")
             }
@@ -413,6 +453,11 @@ final class KickPusher: NSObject {
         delegate?.kickPusherStreamHost(event: event)
     }
 
+    private func handleKicksGiftedEvent(data: String) throws {
+        let event = try decodeKicksGiftedEvent(data: data)
+        delegate?.kickPusherKicksGifted(event: event)
+    }
+
     private func makeChatPostSegments(content: String) -> [ChatPostSegment] {
         var segments: [ChatPostSegment] = []
         var id = 0
@@ -479,6 +524,9 @@ extension KickPusher: WebSocketClientDelegate {
         sendSubscribe(channel: "chatroom_\(channelId)")
         sendSubscribe(channel: "chatrooms.\(channelId)")
         sendSubscribe(channel: "predictions-channel-\(channelId)")
+        if let chatroomChannelId = chatroomChannelId {
+            sendSubscribe(channel: "channel_\(chatroomChannelId)")
+        }
     }
 
     func webSocketClientDisconnected(_: WebSocketClient) {

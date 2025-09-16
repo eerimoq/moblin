@@ -44,6 +44,7 @@ extension Model {
                 delegate: self,
                 channelName: stream.kickChannelName,
                 channelId: channelId,
+                chatroomChannelId: stream.kickChatroomChannelId,
                 settings: stream.chat
             )
             kickPusher!.start()
@@ -75,6 +76,7 @@ extension Model {
                 if let channelInfo {
                     self.stream.kickChannelId = String(channelInfo.chatroom.id)
                     self.stream.kickSlug = channelInfo.slug
+                    self.stream.kickChatroomChannelId = String(channelInfo.chatroom.channel_id)
                 }
                 self.kickChannelNameUpdated()
             }
@@ -273,6 +275,23 @@ extension Model: KickPusherDelegate {
                 title: title,
                 color: .red,
                 image: "nosign"
+            )
+        }
+    }
+
+    func kickPusherKicksGifted(event: KicksGiftedEvent) {
+        DispatchQueue.main.async {
+            let user = event.sender.username
+            let amount = countFormatter.format(event.gift.amount)
+            let text = "sent \(event.gift.name) 💎 \(amount)"
+            let message = event.message.isEmpty ? text : "\(text) \(event.message)"
+            self.makeToast(title: "\(user) \(message)")
+            self.appendKickChatAlertMessage(
+                user: user,
+                text: message,
+                title: String(localized: "Kicks"),
+                color: .green,
+                image: "suit.diamond"
             )
         }
     }

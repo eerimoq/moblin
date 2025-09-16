@@ -724,6 +724,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
     @Published var twitchSendMessagesTo: Bool = true
     var kickChannelName: String = ""
     @Published var kickChannelId: String?
+    @Published var kickChatroomChannelId: String?
     @Published var kickSlug: String?
     var kickAccessToken: String = ""
     @Published var kickLoggedIn: Bool = false
@@ -801,6 +802,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
              twitchSendMessagesTo,
              kickChannelName,
              kickChannelId,
+             kickChatroomChannelId,
              kickSlug,
              kickAccessToken,
              kickLoggedIn,
@@ -874,6 +876,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         try container.encode(.twitchSendMessagesTo, twitchSendMessagesTo)
         try container.encode(.kickChannelName, kickChannelName)
         try container.encode(.kickChannelId, kickChannelId)
+        try container.encode(.kickChatroomChannelId, kickChatroomChannelId)
         try container.encode(.kickSlug, kickSlug)
         try container.encode(.kickAccessToken, kickAccessToken)
         try container.encode(.kickLoggedIn, kickLoggedIn)
@@ -945,6 +948,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         twitchSendMessagesTo = container.decode(.twitchSendMessagesTo, Bool.self, true)
         kickChannelName = container.decode(.kickChannelName, String.self, "")
         kickChannelId = container.decode(.kickChannelId, String?.self, nil)
+        kickChatroomChannelId = container.decode(.kickChatroomChannelId, String?.self, nil)
         kickSlug = container.decode(.kickSlug, String?.self, nil)
         kickAccessToken = container.decode(.kickAccessToken, String.self, "")
         kickLoggedIn = container.decode(.kickLoggedIn, Bool.self, false)
@@ -1011,6 +1015,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         new.twitchSendMessagesTo = twitchSendMessagesTo
         new.kickChannelName = kickChannelName
         new.kickChannelId = kickChannelId
+        new.kickChatroomChannelId = kickChatroomChannelId
         new.kickSlug = kickSlug
         new.kickAccessToken = kickAccessToken
         new.kickLoggedIn = kickLoggedIn

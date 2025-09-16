@@ -21,6 +21,7 @@ struct KickLivestream: Codable {
 
 struct KickChatroom: Codable {
     let id: Int
+    let channel_id: Int
 }
 
 struct KickChannel: Codable {

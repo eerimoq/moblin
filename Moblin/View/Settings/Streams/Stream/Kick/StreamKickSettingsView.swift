@@ -139,6 +139,7 @@ struct StreamKickSettingsView: View {
                 if let channelInfo {
                     self.stream.kickChannelId = String(channelInfo.chatroom.id)
                     self.stream.kickSlug = channelInfo.slug
+                    self.stream.kickChatroomChannelId = String(channelInfo.chatroom.channel_id)
                 } else {
                     fetchChannelInfoFailed = true
                 }
