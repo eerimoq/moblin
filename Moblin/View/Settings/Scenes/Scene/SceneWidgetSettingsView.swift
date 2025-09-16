@@ -5,8 +5,7 @@ private struct SceneSettings: Codable {
     let y: Double
     let width: Double
     let height: Double
-    let horizontalAlignment: SettingsHorizontalAlignment
-    let verticalAlignment: SettingsVerticalAlignment
+    let alignment: SettingsAlignment
 }
 
 struct SceneWidgetSettingsView: View {
@@ -49,8 +48,7 @@ struct SceneWidgetSettingsView: View {
             y: sceneWidget.y,
             width: sceneWidget.width,
             height: sceneWidget.height,
-            horizontalAlignment: sceneWidget.horizontalAlignment,
-            verticalAlignment: sceneWidget.verticalAlignment
+            alignment: sceneWidget.alignment
         )
         if let data = try? String.fromUtf8(data: JSONEncoder().encode(settings)) {
             UIPasteboard.general.string = data
@@ -72,8 +70,7 @@ struct SceneWidgetSettingsView: View {
         sceneWidget.widthString = String(sceneWidget.width)
         sceneWidget.height = settings.height.clamped(to: 1 ... 100)
         sceneWidget.heightString = String(sceneWidget.height)
-        sceneWidget.horizontalAlignment = settings.horizontalAlignment
-        sceneWidget.verticalAlignment = settings.verticalAlignment
+        sceneWidget.alignment = settings.alignment
         model.sceneUpdated(imageEffectChanged: true)
     }
 
@@ -90,7 +87,7 @@ struct SceneWidgetSettingsView: View {
                         numericInput: $numericInput,
                         incrementImageName: "arrow.forward.circle",
                         decrementImageName: "arrow.backward.circle",
-                        mirror: sceneWidget.horizontalAlignment == .trailing
+                        mirror: sceneWidget.alignment == .topRight || sceneWidget.alignment == .bottomRight
                     )
                     PositionEditView(
                         number: $sceneWidget.y,
@@ -101,8 +98,23 @@ struct SceneWidgetSettingsView: View {
                         numericInput: $numericInput,
                         incrementImageName: "arrow.down.circle",
                         decrementImageName: "arrow.up.circle",
-                        mirror: sceneWidget.verticalAlignment == .bottom
+                        mirror: sceneWidget.alignment == .bottomLeft || sceneWidget.alignment == .bottomRight
                     )
+                    if widgetHasAlignment(widget: widget) {
+                        HStack {
+                            Text("Alignment")
+                            Spacer()
+                            Picker("", selection: $sceneWidget.alignment) {
+                                ForEach(SettingsAlignment.allCases, id: \.self) {
+                                    Text($0.toString())
+                                        .tag($0)
+                                }
+                            }
+                            .onChange(of: sceneWidget.alignment) { _ in
+                                model.sceneUpdated()
+                            }
+                        }
+                    }
                 } header: {
                     Text("Position")
                 }
@@ -127,38 +139,6 @@ struct SceneWidgetSettingsView: View {
                     )
                 } header: {
                     Text("Size")
-                }
-            }
-            if widgetHasAlignment(widget: widget) {
-                Section {
-                    HStack {
-                        Text("Horizontal")
-                        Spacer()
-                        Picker("", selection: $sceneWidget.horizontalAlignment) {
-                            ForEach(SettingsHorizontalAlignment.allCases, id: \.self) {
-                                Text($0.toString())
-                                    .tag($0)
-                            }
-                        }
-                        .onChange(of: sceneWidget.horizontalAlignment) { _ in
-                            model.sceneUpdated()
-                        }
-                    }
-                    HStack {
-                        Text("Vertical")
-                        Spacer()
-                        Picker("", selection: $sceneWidget.verticalAlignment) {
-                            ForEach(SettingsVerticalAlignment.allCases, id: \.self) {
-                                Text($0.toString())
-                                    .tag($0)
-                            }
-                        }
-                        .onChange(of: sceneWidget.verticalAlignment) { _ in
-                            model.sceneUpdated()
-                        }
-                    }
-                } header: {
-                    Text("Alignment")
                 }
             }
             Section {

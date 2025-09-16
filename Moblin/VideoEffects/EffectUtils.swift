@@ -22,20 +22,18 @@ extension CIImage {
         scaleY = scale
         var x: Double
         var y: Double
-        switch sceneWidget.horizontalAlignment {
-        case .leading:
+        if sceneWidget.alignment.isLeft() {
             x = toPixels(sceneWidget.x, streamSize.width)
             if mirror {
                 x -= extent.width * scaleX
             }
-        case .trailing:
+        } else {
             x = streamSize.width - toPixels(sceneWidget.x, streamSize.width)
             x -= extent.width * scaleX
         }
-        switch sceneWidget.verticalAlignment {
-        case .top:
+        if sceneWidget.alignment.isTop() {
             y = streamSize.height - toPixels(sceneWidget.y, streamSize.height) - extent.height * scaleY
-        case .bottom:
+        } else {
             y = toPixels(sceneWidget.y, streamSize.height)
         }
         return transformed(by: CGAffineTransform(scaleX: scaleX, y: scaleY))

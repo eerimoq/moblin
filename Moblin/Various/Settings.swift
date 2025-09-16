@@ -1172,8 +1172,7 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject {
     @Published var widthString: String = "100.0"
     @Published var height: Double = 100.0
     @Published var heightString: String = "100.0"
-    @Published var horizontalAlignment: SettingsHorizontalAlignment = .leading
-    @Published var verticalAlignment: SettingsVerticalAlignment = .top
+    @Published var alignment: SettingsAlignment = .topLeft
 
     init(widgetId: UUID) {
         self.widgetId = widgetId
@@ -1187,8 +1186,7 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject {
              y,
              width,
              height,
-             horizontalAlignment,
-             verticalAlignment
+             positionReference
     }
 
     func encode(to encoder: Encoder) throws {
@@ -1200,8 +1198,7 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject {
         try container.encode(.y, y)
         try container.encode(.width, width)
         try container.encode(.height, height)
-        try container.encode(.horizontalAlignment, horizontalAlignment)
-        try container.encode(.verticalAlignment, verticalAlignment)
+        try container.encode(.positionReference, alignment)
     }
 
     required init(from decoder: Decoder) throws {
@@ -1217,8 +1214,7 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject {
         widthString = String(width)
         height = container.decode(.height, Double.self, 100.0)
         heightString = String(height)
-        horizontalAlignment = container.decode(.horizontalAlignment, SettingsHorizontalAlignment.self, .leading)
-        verticalAlignment = container.decode(.verticalAlignment, SettingsVerticalAlignment.self, .top)
+        alignment = container.decode(.positionReference, SettingsAlignment.self, .topLeft)
     }
 
     func clone() -> SettingsSceneWidget {
@@ -1232,8 +1228,7 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject {
         new.widthString = widthString
         new.height = height
         new.heightString = heightString
-        new.horizontalAlignment = horizontalAlignment
-        new.verticalAlignment = verticalAlignment
+        new.alignment = alignment
         return new
     }
 
@@ -1710,6 +1705,38 @@ enum SettingsVerticalAlignment: String, Codable, CaseIterable {
             return .top
         case .bottom:
             return .bottom
+        }
+    }
+}
+
+enum SettingsAlignment: String, Codable, CaseIterable {
+    case topLeft = "TopLeft"
+    case topRight = "TopRight"
+    case bottomLeft = "BottomLeft"
+    case bottomRight = "BottomRight"
+
+    init(from decoder: Decoder) throws {
+        self = try SettingsAlignment(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ?? .topLeft
+    }
+
+    func isLeft() -> Bool {
+        return self == .topLeft || self == .bottomLeft
+    }
+
+    func isTop() -> Bool {
+        return self == .topLeft || self == .topRight
+    }
+
+    func toString() -> String {
+        switch self {
+        case .topLeft:
+            return String(localized: "Top left")
+        case .topRight:
+            return String(localized: "Top right")
+        case .bottomLeft:
+            return String(localized: "Bottom left")
+        case .bottomRight:
+            return String(localized: "Bottom right")
         }
     }
 }
