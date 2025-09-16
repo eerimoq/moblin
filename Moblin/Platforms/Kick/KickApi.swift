@@ -31,7 +31,7 @@ struct KickChannel: Codable {
     let subscriber_badges: [SubscriberBadge]?
 }
 
-struct KickUserData: Codable {
+struct KickUser: Codable {
     let username: String
 }
 
@@ -62,7 +62,7 @@ func getKickChannelInfo(channelName: String, onComplete: @escaping (KickChannel?
     .resume()
 }
 
-func getKickUserData(accessToken: String, onComplete: @escaping (KickUserData?) -> Void) {
+func getKickUser(accessToken: String, onComplete: @escaping (KickUser?) -> Void) {
     guard let url = URL(string: "https://kick.com/api/v1/user") else {
         onComplete(nil)
         return
@@ -70,13 +70,12 @@ func getKickUserData(accessToken: String, onComplete: @escaping (KickUserData?) 
     var request = URLRequest(url: url)
     request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
     request.setValue("application/json", forHTTPHeaderField: "Accept")
-
     URLSession.shared.dataTask(with: request) { data, response, error in
         guard error == nil, let data, response?.http?.isSuccessful == true else {
             onComplete(nil)
             return
         }
-        onComplete(try? JSONDecoder().decode(KickUserData.self, from: data))
+        onComplete(try? JSONDecoder().decode(KickUser.self, from: data))
     }
     .resume()
 }

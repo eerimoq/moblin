@@ -9,6 +9,7 @@ private struct AuthenticationView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var stream: SettingsStream
     @State private var showingWebView = false
+    let onLoggedIn: () -> Void
 
     var body: some View {
         Section {
@@ -61,32 +62,7 @@ private struct AuthenticationView: View {
     private func handleAccessToken(accessToken: String) {
         stream.kickAccessToken = accessToken
         stream.kickLoggedIn = true
-
-        getKickUserData(accessToken: accessToken) { userData in
-            DispatchQueue.main.async {
-                if let userData {
-                    self.stream.kickChannelName = userData.username
-                    self.stream.kickChannelId = nil
-                    self.stream.kickSlug = nil
-
-                    getKickChannelInfo(channelName: userData.username) { channelInfo in
-                        DispatchQueue.main.async {
-                            if let channelInfo {
-                                self.stream.kickChannelId = String(channelInfo.chatroom.id)
-                                self.stream.kickSlug = channelInfo.slug
-                            }
-                            if self.stream.enabled {
-                                self.model.kickChannelNameUpdated()
-                            }
-                        }
-                    }
-                } else {
-                    if self.stream.enabled {
-                        self.model.kickAccessTokenUpdated()
-                    }
-                }
-            }
-        }
+        onLoggedIn()
     }
 }
 
@@ -124,7 +100,6 @@ private struct KickWebView: UIViewRepresentable {
             if !loginButtonClicked {
                 detectAndClickLoginButton(webView)
             }
-
             guard let url = webView.url,
                   let host = url.host(),
                   !url.path().contains("/login"),
@@ -149,35 +124,27 @@ private struct KickWebView: UIViewRepresentable {
         }
 
         private func detectAndClickLoginButton(_ webView: WKWebView) {
-            let jsScript = """
+            let detectAndClickLoginButtonScript = """
             (async function() {
                 try {
                     // wait for 0.2 second for the page to load
                     await new Promise(resolve => setTimeout(resolve, 200));
                     var loginButton = document.querySelector('[data-testid="login"]');
                     if (loginButton) {
-                        console.log('Login button found with data-testid');
                         loginButton.click();
                         return true;
                     }
                 } catch (error) {
-                    console.log('Error detecting login button:', error);
                     return false;
                 }
             })();
             """
-
-            webView.evaluateJavaScript(jsScript) { result, error in
-                if let error = error {
-                    print("JavaScript error: \(error)")
+            webView.evaluateJavaScript(detectAndClickLoginButtonScript) { result, error in
+                if error != nil {
                     return
                 }
-
-                if let success = result as? Bool, success {
-                    print("Login button automatically clicked!")
+                if result as? Bool == true {
                     self.loginButtonClicked = true
-                } else {
-                    print("Login button not found or click failed")
                 }
             }
         }
@@ -204,9 +171,7 @@ struct StreamKickSettingsView: View {
                 } else {
                     fetchChannelInfoFailed = true
                 }
-                if self.stream.enabled {
-                    model.kickChannelNameUpdated()
-                }
+                reloadConnectionsIfEnabled()
             }
         }
     }
@@ -226,9 +191,34 @@ struct StreamKickSettingsView: View {
         }
     }
 
+    private func onLoggedIn() {
+        getKickUser(accessToken: stream.kickAccessToken) { data in
+            DispatchQueue.main.async {
+                self.handleUser(data: data)
+            }
+        }
+    }
+
+    private func handleUser(data: KickUser?) {
+        if let data {
+            stream.kickChannelName = data.username
+            stream.kickChannelId = nil
+            stream.kickSlug = nil
+            fetchChannelInfo()
+        } else {
+            reloadConnectionsIfEnabled()
+        }
+    }
+
+    private func reloadConnectionsIfEnabled() {
+        if stream.enabled {
+            model.kickAccessTokenUpdated()
+        }
+    }
+
     var body: some View {
         Form {
-            AuthenticationView(stream: stream)
+            AuthenticationView(stream: stream, onLoggedIn: onLoggedIn)
             Section {
                 TextEditNavigationView(
                     title: String(localized: "Channel name"),
