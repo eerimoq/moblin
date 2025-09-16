@@ -33,14 +33,14 @@ class OpenAi {
             Message(role: "user", content: content),
         ]
         let aiRequest = Request(model: model, messages: messages)
-        guard let body = try? String(bytes: JSONEncoder().encode(aiRequest), encoding: .utf8) else {
+        guard let body = try? JSONEncoder().encode(aiRequest) else {
             return
         }
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpBody = body.utf8Data
+        request.httpBody = body
         URLSession.shared.dataTask(with: request) { data, response, error in
             guard error == nil, let data, response?.http?.isSuccessful == true else {
                 onComplete(nil)

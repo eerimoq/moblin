@@ -36,6 +36,8 @@ struct KickUser: Codable {
     let username: String
 }
 
+private let userUrl = URL(string: "https://kick.com/api/v1/user")!
+
 func getKickChannelInfo(channelName: String) async throws -> KickChannel {
     guard let url = URL(string: "https://kick.com/api/v1/channels/\(channelName)") else {
         throw "Invalid URL"
@@ -64,11 +66,7 @@ func getKickChannelInfo(channelName: String, onComplete: @escaping (KickChannel?
 }
 
 func getKickUser(accessToken: String, onComplete: @escaping (KickUser?) -> Void) {
-    guard let url = URL(string: "https://kick.com/api/v1/user") else {
-        onComplete(nil)
-        return
-    }
-    var request = URLRequest(url: url)
+    var request = URLRequest(url: userUrl)
     request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
     request.setValue("application/json", forHTTPHeaderField: "Accept")
     URLSession.shared.dataTask(with: request) { data, response, error in
