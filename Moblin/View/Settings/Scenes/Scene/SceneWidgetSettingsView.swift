@@ -5,6 +5,8 @@ private struct SceneSettings: Codable {
     let y: Double
     let width: Double
     let height: Double
+    let horizontalAlignment: SettingsHorizontalAlignment
+    let verticalAlignment: SettingsVerticalAlignment
 }
 
 struct SceneWidgetSettingsView: View {
@@ -46,21 +48,20 @@ struct SceneWidgetSettingsView: View {
             x: sceneWidget.x,
             y: sceneWidget.y,
             width: sceneWidget.width,
-            height: sceneWidget.height
+            height: sceneWidget.height,
+            horizontalAlignment: sceneWidget.horizontalAlignment,
+            verticalAlignment: sceneWidget.verticalAlignment
         )
         if let data = try? String.fromUtf8(data: JSONEncoder().encode(settings)) {
             UIPasteboard.general.string = data
-            model.makeToast(title: "Settings exported")
         }
     }
 
     private func importFromClipboard() {
         guard let settings = UIPasteboard.general.string else {
-            model.makeErrorToast(title: String(localized: "Empty clipboard"))
             return
         }
         guard let settings = try? JSONDecoder().decode(SceneSettings.self, from: settings.data(using: .utf8)!) else {
-            model.makeErrorToast(title: String(localized: "Malformed settings"))
             return
         }
         sceneWidget.x = settings.x.clamped(to: 0 ... 100)
@@ -71,8 +72,9 @@ struct SceneWidgetSettingsView: View {
         sceneWidget.widthString = String(sceneWidget.width)
         sceneWidget.height = settings.height.clamped(to: 1 ... 100)
         sceneWidget.heightString = String(sceneWidget.height)
+        sceneWidget.horizontalAlignment = settings.horizontalAlignment
+        sceneWidget.verticalAlignment = settings.verticalAlignment
         model.sceneUpdated(imageEffectChanged: true)
-        model.makeToast(title: String(localized: "Settings imported"))
     }
 
     var body: some View {
@@ -87,7 +89,8 @@ struct SceneWidgetSettingsView: View {
                         },
                         numericInput: $numericInput,
                         incrementImageName: "arrow.forward.circle",
-                        decrementImageName: "arrow.backward.circle"
+                        decrementImageName: "arrow.backward.circle",
+                        mirror: sceneWidget.horizontalAlignment == .trailing
                     )
                     PositionEditView(
                         number: $sceneWidget.y,
@@ -97,7 +100,8 @@ struct SceneWidgetSettingsView: View {
                         },
                         numericInput: $numericInput,
                         incrementImageName: "arrow.down.circle",
-                        decrementImageName: "arrow.up.circle"
+                        decrementImageName: "arrow.up.circle",
+                        mirror: sceneWidget.verticalAlignment == .bottom
                     )
                 } header: {
                     Text("Position")

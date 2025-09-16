@@ -25,6 +25,7 @@ struct SizeEditView: View {
             numericInput: $numericInput,
             incrementImageName: "plus.circle",
             decrementImageName: "minus.circle",
+            mirror: false,
             increment: 0.125
         )
     }

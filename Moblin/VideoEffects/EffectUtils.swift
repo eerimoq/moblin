@@ -11,10 +11,8 @@ extension CIImage {
                           _ streamSize: CGSize,
                           _ mirror: Bool) -> CIImage
     {
-        let sceneWidgetWidth = toPixels(sceneWidget.width, streamSize.width)
-        let sceneWidgetHeight = toPixels(sceneWidget.height, streamSize.height)
-        var scaleX = sceneWidgetWidth / extent.size.width
-        var scaleY = sceneWidgetHeight / extent.size.height
+        var scaleX = toPixels(sceneWidget.width, streamSize.width) / extent.size.width
+        var scaleY = toPixels(sceneWidget.height, streamSize.height) / extent.size.height
         let scale = min(scaleX, scaleY)
         if mirror {
             scaleX = -1 * scale
@@ -32,7 +30,7 @@ extension CIImage {
             }
         case .trailing:
             x = streamSize.width - toPixels(sceneWidget.x, streamSize.width)
-            x -= sceneWidgetWidth
+            x -= extent.width * scaleX
         }
         switch sceneWidget.verticalAlignment {
         case .top:

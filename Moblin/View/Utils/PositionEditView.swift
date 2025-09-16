@@ -7,6 +7,7 @@ struct PositionEditView: View {
     @Binding var numericInput: Bool
     let incrementImageName: String
     let decrementImageName: String
+    let mirror: Bool
 
     func submit(value: String) -> String {
         if var value = Float(value) {
@@ -27,6 +28,7 @@ struct PositionEditView: View {
             numericInput: $numericInput,
             incrementImageName: incrementImageName,
             decrementImageName: decrementImageName,
+            mirror: mirror,
             increment: 0.125
         )
     }

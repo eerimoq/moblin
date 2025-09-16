@@ -83,6 +83,7 @@ struct ValueEditCompactView: View {
     @Binding var numericInput: Bool
     let incrementImageName: String
     let decrementImageName: String
+    let mirror: Bool
     var increment: Double = 1
 
     func add(offset: Double) {
@@ -112,12 +113,13 @@ struct ValueEditCompactView: View {
                     in: minimum ... maximum,
                     step: 1
                 )
+                .rotationEffect(.degrees(mirror ? 180 : 0))
                 .onChange(of: number) { number in
                     value = onSubmit("\(number)")
                 }
             }
             Button {
-                add(offset: -increment)
+                add(offset: mirror ? increment : -increment)
                 value = onSubmit(value.trim())
                 add(offset: 0)
             } label: {
@@ -125,7 +127,7 @@ struct ValueEditCompactView: View {
                     .font(.title)
             }
             Button {
-                add(offset: increment)
+                add(offset: mirror ? -increment : increment)
                 value = onSubmit(value.trim())
                 add(offset: 0)
             } label: {
