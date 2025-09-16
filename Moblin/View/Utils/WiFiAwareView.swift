@@ -11,9 +11,9 @@ struct WiFiAwarePublisherView: View {
 
     var body: some View {
         DevicePairingView(.wifiAware(.connecting(to: service, from: .selected([])))) {
-            Text("Wi-Fi Aware publish")
+            Text(String("Wi-Fi Aware publish"))
         } fallback: {
-            Text("Wi-Fi Aware unavailable")
+            Text(String("Wi-Fi Aware unavailable"))
         }
         .buttonStyle(.borderedProminent)
         .controlSize(.extraLarge)
@@ -28,9 +28,9 @@ struct WiFiAwareSubscriberView: View {
         DevicePicker(.wifiAware(.connecting(to: .selected([]), from: service))) { endpoint in
             logger.info("Paired Endpoint: \(endpoint)")
         } label: {
-            Text("Wi-Fi Aware subscribe")
+            Text(String("Wi-Fi Aware subscribe"))
         } fallback: {
-            Text("Wi-Fi Aware unavailable")
+            Text(String("Wi-Fi Aware unavailable"))
         }
         .buttonStyle(.borderedProminent)
         .controlSize(.extraLarge)
