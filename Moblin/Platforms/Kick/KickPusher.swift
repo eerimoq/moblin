@@ -191,59 +191,36 @@ private func decodeEvent(message: String) throws -> (String, String) {
 }
 
 private func decodeChatMessageEvent(data: String) throws -> ChatMessageEvent {
-    return try JSONDecoder().decode(
-        ChatMessageEvent.self,
-        from: data.data(using: String.Encoding.utf8)!
-    )
+    return try JSONDecoder().decode(ChatMessageEvent.self, from: data.utf8Data)
 }
 
 private func decodeMessageDeletedEvent(data: String) throws -> MessageDeletedEvent {
-    return try JSONDecoder().decode(
-        MessageDeletedEvent.self,
-        from: data.data(using: String.Encoding.utf8)!
-    )
+    data.utf8
+    return try JSONDecoder().decode(MessageDeletedEvent.self, from: data.utf8Data)
 }
 
 private func decodeUserBannedEvent(data: String) throws -> UserBannedEvent {
-    return try JSONDecoder().decode(
-        UserBannedEvent.self,
-        from: data.data(using: String.Encoding.utf8)!
-    )
+    return try JSONDecoder().decode(UserBannedEvent.self, from: data.utf8Data)
 }
 
 private func decodeSubscriptionEvent(data: String) throws -> SubscriptionEvent {
-    return try JSONDecoder().decode(
-        SubscriptionEvent.self,
-        from: data.data(using: String.Encoding.utf8)!
-    )
+    return try JSONDecoder().decode(SubscriptionEvent.self, from: data.utf8Data)
 }
 
 private func decodeGiftedSubscriptionsEvent(data: String) throws -> GiftedSubscriptionsEvent {
-    return try JSONDecoder().decode(
-        GiftedSubscriptionsEvent.self,
-        from: data.data(using: String.Encoding.utf8)!
-    )
+    return try JSONDecoder().decode(GiftedSubscriptionsEvent.self, from: data.utf8Data)
 }
 
 private func decodeRewardRedeemedEvent(data: String) throws -> RewardRedeemedEvent {
-    return try JSONDecoder().decode(
-        RewardRedeemedEvent.self,
-        from: data.data(using: String.Encoding.utf8)!
-    )
+    return try JSONDecoder().decode(RewardRedeemedEvent.self, from: data.utf8Data)
 }
 
 private func decodeStreamHostEvent(data: String) throws -> StreamHostEvent {
-    return try JSONDecoder().decode(
-        StreamHostEvent.self,
-        from: data.data(using: String.Encoding.utf8)!
-    )
+    return try JSONDecoder().decode(StreamHostEvent.self, from: data.utf8Data)
 }
 
 private func decodeKicksGiftedEvent(data: String) throws -> KicksGiftedEvent {
-    return try JSONDecoder().decode(
-        KicksGiftedEvent.self,
-        from: data.data(using: String.Encoding.utf8)!
-    )
+    return try JSONDecoder().decode(KicksGiftedEvent.self, from: data.utf8Data)
 }
 
 private var url =
