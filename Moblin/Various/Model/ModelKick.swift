@@ -39,12 +39,16 @@ extension Model {
         kickPusher?.stop()
         kickPusher = nil
         setTextToSpeechStreamerMentions()
-        if isKickPusherConfigured(), !isChatRemoteControl(), let channelId = stream.kickChannelId {
+        if isKickPusherConfigured(),
+           !isChatRemoteControl(),
+           let channelId = stream.kickChannelId,
+           let chatroomChannelId = stream.kickChatroomChannelId
+        {
             kickPusher = KickPusher(
                 delegate: self,
                 channelName: stream.kickChannelName,
                 channelId: channelId,
-                chatroomChannelId: stream.kickChatroomChannelId,
+                chatroomChannelId: chatroomChannelId,
                 settings: stream.chat
             )
             kickPusher!.start()
@@ -68,7 +72,7 @@ extension Model {
         guard !stream.kickChannelName.isEmpty else {
             return
         }
-        guard stream.kickChannelId == nil || stream.kickSlug == nil else {
+        guard stream.kickChannelId == nil || stream.kickSlug == nil || stream.kickChatroomChannelId == nil else {
             return
         }
         getKickChannelInfo(channelName: stream.kickChannelName) { channelInfo in
@@ -283,7 +287,7 @@ extension Model: KickPusherDelegate {
         DispatchQueue.main.async {
             let user = event.sender.username
             let amount = countFormatter.format(event.gift.amount)
-            let text = "sent \(event.gift.name) 💎 \(amount)"
+            let text = String(localized: "sent \(event.gift.name) 💎 \(amount)")
             let message = event.message.isEmpty ? text : "\(text) \(event.message)"
             self.makeToast(title: "\(user) \(message)")
             self.appendKickChatAlertMessage(

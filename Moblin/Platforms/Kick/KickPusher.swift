@@ -254,7 +254,7 @@ protocol KickPusherDelegate: AnyObject {
 final class KickPusher: NSObject {
     private var channelName: String
     private var channelId: String
-    private var chatroomChannelId: String?
+    private var chatroomChannelId: String
     private var webSocket: WebSocketClient
     private var emotes: Emotes
     private var badges: KickBadges
@@ -266,7 +266,7 @@ final class KickPusher: NSObject {
         delegate: KickPusherDelegate,
         channelName: String,
         channelId: String,
-        chatroomChannelId: String?,
+        chatroomChannelId: String,
         settings: SettingsStreamChat
     ) {
         self.delegate = delegate
@@ -501,9 +501,7 @@ extension KickPusher: WebSocketClientDelegate {
         sendSubscribe(channel: "chatroom_\(channelId)")
         sendSubscribe(channel: "chatrooms.\(channelId)")
         sendSubscribe(channel: "predictions-channel-\(channelId)")
-        if let chatroomChannelId = chatroomChannelId {
-            sendSubscribe(channel: "channel_\(chatroomChannelId)")
-        }
+        sendSubscribe(channel: "channel_\(chatroomChannelId)")
     }
 
     func webSocketClientDisconnected(_: WebSocketClient) {

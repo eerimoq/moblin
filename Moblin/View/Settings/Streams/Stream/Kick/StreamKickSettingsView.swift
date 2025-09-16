@@ -158,7 +158,8 @@ struct StreamKickSettingsView: View {
     @State var fetchChannelInfoFailed: Bool = false
 
     private func shouldFetchChannelInfo() -> Bool {
-        return !stream.kickChannelName.isEmpty && (stream.kickChannelId == nil || stream.kickSlug == nil)
+        return !stream.kickChannelName.isEmpty
+            && (stream.kickChannelId == nil || stream.kickSlug == nil || stream.kickChatroomChannelId == nil)
     }
 
     private func fetchChannelInfo() {
