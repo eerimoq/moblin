@@ -28,19 +28,15 @@ class OpenAi {
     }
 
     func ask(_ content: String, model: String, role: String, onComplete: @escaping (String?) -> Void) {
-        let messages = [
-            Message(role: "system", content: role),
-            Message(role: "user", content: content),
-        ]
-        let aiRequest = Request(model: model, messages: messages)
-        guard let body = try? JSONEncoder().encode(aiRequest) else {
-            return
-        }
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpBody = body
+        let messages = [
+            Message(role: "system", content: role),
+            Message(role: "user", content: content),
+        ]
+        request.httpBody = try? JSONEncoder().encode(Request(model: model, messages: messages))
         URLSession.shared.dataTask(with: request) { data, response, error in
             guard error == nil, let data, response?.http?.isSuccessful == true else {
                 onComplete(nil)
