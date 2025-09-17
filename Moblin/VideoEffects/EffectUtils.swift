@@ -11,8 +11,8 @@ extension CIImage {
                           _ streamSize: CGSize,
                           _ mirror: Bool) -> CIImage
     {
-        var scaleX = toPixels(sceneWidget.width, streamSize.width) / extent.size.width
-        var scaleY = toPixels(sceneWidget.height, streamSize.height) / extent.size.height
+        var scaleX = toPixels(sceneWidget.size, streamSize.width) / extent.size.width
+        var scaleY = toPixels(sceneWidget.size, streamSize.height) / extent.size.height
         let scale = min(scaleX, scaleY)
         if mirror {
             scaleX = -1 * scale

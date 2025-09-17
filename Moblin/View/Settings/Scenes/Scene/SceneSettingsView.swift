@@ -109,31 +109,23 @@ struct SceneSettingsView: View {
         let sceneWidget = SettingsSceneWidget(widgetId: widget.id)
         switch widget.type {
         case .text:
-            sceneWidget.x = 0
-            sceneWidget.y = 0
-            sceneWidget.width = 8
-            sceneWidget.height = 5
+            sceneWidget.size = 5
         case .image:
-            sceneWidget.width = 30
-            sceneWidget.height = 40
+            sceneWidget.size = 30
         case .map:
-            sceneWidget.width = 13
-            sceneWidget.height = 23
+            sceneWidget.size = 23
         case .videoSource:
             sceneWidget.x = 72
             sceneWidget.y = 72
-            sceneWidget.width = 28
-            sceneWidget.height = 28
+            sceneWidget.size = 28
         case .vTuber:
             sceneWidget.x = 80
             sceneWidget.y = 60
-            sceneWidget.width = 28
-            sceneWidget.height = 28
+            sceneWidget.size = 28
         case .pngTuber:
             sceneWidget.x = 85
             sceneWidget.y = 72
-            sceneWidget.width = 28
-            sceneWidget.height = 28
+            sceneWidget.size = 28
         default:
             break
         }

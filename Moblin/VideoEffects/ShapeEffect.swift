@@ -54,8 +54,8 @@ final class ShapeEffect: VideoEffect {
         _ size: CGSize,
         _ mirror: Bool
     ) -> (Double, Double) {
-        var scaleX = toPixels(sceneWidget.width, size.width) / videoSourceImage.extent.size.width
-        let scaleY = toPixels(sceneWidget.height, size.height) / videoSourceImage.extent.size.height
+        var scaleX = toPixels(sceneWidget.size, size.width) / videoSourceImage.extent.size.width
+        let scaleY = toPixels(sceneWidget.size, size.height) / videoSourceImage.extent.size.height
         let scale = min(scaleX, scaleY)
         if mirror {
             scaleX = -1 * scale

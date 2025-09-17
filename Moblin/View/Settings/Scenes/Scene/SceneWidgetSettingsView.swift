@@ -3,8 +3,7 @@ import SwiftUI
 private struct SceneSettings: Codable {
     let x: Double
     let y: Double
-    let width: Double
-    let height: Double
+    let size: Double
     let alignment: SettingsAlignment
 }
 
@@ -46,8 +45,7 @@ struct SceneWidgetSettingsView: View {
         let settings = SceneSettings(
             x: sceneWidget.x,
             y: sceneWidget.y,
-            width: sceneWidget.width,
-            height: sceneWidget.height,
+            size: sceneWidget.size,
             alignment: sceneWidget.alignment
         )
         if let data = try? String.fromUtf8(data: JSONEncoder().encode(settings)) {
@@ -66,40 +64,52 @@ struct SceneWidgetSettingsView: View {
         sceneWidget.xString = String(sceneWidget.x)
         sceneWidget.y = settings.y.clamped(to: 0 ... 100)
         sceneWidget.yString = String(sceneWidget.y)
-        sceneWidget.width = settings.width.clamped(to: 1 ... 100)
-        sceneWidget.widthString = String(sceneWidget.width)
-        sceneWidget.height = settings.height.clamped(to: 1 ... 100)
-        sceneWidget.heightString = String(sceneWidget.height)
+        sceneWidget.size = settings.size.clamped(to: 1 ... 100)
+        sceneWidget.sizeString = String(sceneWidget.size)
         sceneWidget.alignment = settings.alignment
         model.sceneUpdated(imageEffectChanged: true)
     }
 
     var body: some View {
         Form {
-            if widgetHasPosition(widget: widget) {
+            if widgetHasPosition(widget: widget) || widgetHasSize(widget: widget) ||
+                widgetHasAlignment(widget: widget)
+            {
                 Section {
-                    PositionEditView(
-                        number: $sceneWidget.x,
-                        value: $sceneWidget.xString,
-                        onSubmit: { _ in
-                            model.sceneUpdated()
-                        },
-                        numericInput: $numericInput,
-                        incrementImageName: "arrow.forward.circle",
-                        decrementImageName: "arrow.backward.circle",
-                        mirror: sceneWidget.alignment == .topRight || sceneWidget.alignment == .bottomRight
-                    )
-                    PositionEditView(
-                        number: $sceneWidget.y,
-                        value: $sceneWidget.yString,
-                        onSubmit: { _ in
-                            model.sceneUpdated()
-                        },
-                        numericInput: $numericInput,
-                        incrementImageName: "arrow.down.circle",
-                        decrementImageName: "arrow.up.circle",
-                        mirror: sceneWidget.alignment == .bottomLeft || sceneWidget.alignment == .bottomRight
-                    )
+                    if widgetHasPosition(widget: widget) {
+                        PositionEditView(
+                            number: $sceneWidget.x,
+                            value: $sceneWidget.xString,
+                            onSubmit: { _ in
+                                model.sceneUpdated()
+                            },
+                            numericInput: $numericInput,
+                            incrementImageName: "arrow.forward.circle",
+                            decrementImageName: "arrow.backward.circle",
+                            mirror: sceneWidget.alignment == .topRight || sceneWidget.alignment == .bottomRight
+                        )
+                        PositionEditView(
+                            number: $sceneWidget.y,
+                            value: $sceneWidget.yString,
+                            onSubmit: { _ in
+                                model.sceneUpdated()
+                            },
+                            numericInput: $numericInput,
+                            incrementImageName: "arrow.down.circle",
+                            decrementImageName: "arrow.up.circle",
+                            mirror: sceneWidget.alignment == .bottomLeft || sceneWidget.alignment == .bottomRight
+                        )
+                    }
+                    if widgetHasSize(widget: widget) {
+                        SizeEditView(
+                            number: $sceneWidget.size,
+                            value: $sceneWidget.sizeString,
+                            onSubmit: { _ in
+                                model.sceneUpdated()
+                            },
+                            numericInput: $numericInput
+                        )
+                    }
                     if widgetHasAlignment(widget: widget) {
                         HStack {
                             Text("Alignment")
@@ -116,29 +126,7 @@ struct SceneWidgetSettingsView: View {
                         }
                     }
                 } header: {
-                    Text("Position")
-                }
-            }
-            if widgetHasSize(widget: widget) {
-                Section {
-                    SizeEditView(
-                        number: $sceneWidget.width,
-                        value: $sceneWidget.widthString,
-                        onSubmit: { _ in
-                            model.sceneUpdated()
-                        },
-                        numericInput: $numericInput
-                    )
-                    SizeEditView(
-                        number: $sceneWidget.height,
-                        value: $sceneWidget.heightString,
-                        onSubmit: { _ in
-                            model.sceneUpdated()
-                        },
-                        numericInput: $numericInput
-                    )
-                } header: {
-                    Text("Size")
+                    Text("Geometry")
                 }
             }
             Section {

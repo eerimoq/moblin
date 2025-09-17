@@ -1173,10 +1173,12 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject {
     @Published var xString: String = "0.0"
     @Published var y: Double = 0.0
     @Published var yString: String = "0.0"
-    @Published var width: Double = 100.0
-    @Published var widthString: String = "100.0"
-    @Published var height: Double = 100.0
-    @Published var heightString: String = "100.0"
+    // To be removed.
+    @Published var width2: Double = 100.0
+    // To be removed.
+    @Published var height2: Double = 100.0
+    @Published var size: Double = 100.0
+    @Published var sizeString: String = "100.0"
     @Published var alignment: SettingsAlignment = .topLeft
 
     init(widgetId: UUID) {
@@ -1191,6 +1193,7 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject {
              y,
              width,
              height,
+             size,
              alignment
     }
 
@@ -1201,8 +1204,9 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject {
         try container.encode(.id, id)
         try container.encode(.x, x)
         try container.encode(.y, y)
-        try container.encode(.width, width)
-        try container.encode(.height, height)
+        try container.encode(.width, width2)
+        try container.encode(.height, height2)
+        try container.encode(.size, size)
         try container.encode(.alignment, alignment)
     }
 
@@ -1215,10 +1219,14 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject {
         xString = String(x)
         y = container.decode(.y, Double.self, 0.0)
         yString = String(y)
-        width = container.decode(.width, Double.self, 100.0)
-        widthString = String(width)
-        height = container.decode(.height, Double.self, 100.0)
-        heightString = String(height)
+        width2 = container.decode(.width, Double.self, 100.0)
+        height2 = container.decode(.height, Double.self, 100.0)
+        if let size = container.decode(.size, Double?.self, nil) {
+            self.size = size
+        } else {
+            size = container.decode(.size, Double.self, min(width2, height2))
+        }
+        sizeString = String(size)
         alignment = container.decode(.alignment, SettingsAlignment.self, .topLeft)
     }
 
@@ -1229,20 +1237,18 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject {
         new.xString = xString
         new.y = y
         new.yString = yString
-        new.width = width
-        new.widthString = widthString
-        new.height = height
-        new.heightString = heightString
+        new.size = size
+        new.sizeString = sizeString
         new.alignment = alignment
         return new
     }
 
     func isSamePositioning(other: SettingsSceneWidget) -> Bool {
-        return x == other.x && y == other.y && width == other.width && height == other.height
+        return x == other.x && y == other.y && size == other.size
     }
 
     func extent() -> CGRect {
-        return .init(x: x, y: y, width: width, height: height)
+        return .init(x: x, y: y, width: size, height: size)
     }
 }
 

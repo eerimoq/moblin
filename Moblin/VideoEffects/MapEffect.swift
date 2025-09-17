@@ -146,8 +146,8 @@ final class MapEffect: VideoEffect {
         guard let sceneWidget, let dot, let mapSnapshot else {
             return image
         }
-        let height = toPixels(sceneWidget.height, size.height)
-        let width = toPixels(sceneWidget.width, size.width)
+        let height = toPixels(sceneWidget.size, size.height)
+        let width = toPixels(sceneWidget.size, size.width)
         let side = max(40, min(height, width))
         let x = toPixels(sceneWidget.x, size.width)
         let y = size.height - toPixels(sceneWidget.y, size.height) - side
