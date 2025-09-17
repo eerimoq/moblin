@@ -52,7 +52,7 @@ extension Model {
                 if bluetoothOutputOnly {
                     bluetoothOption = .allowBluetoothA2DP
                 } else {
-                    bluetoothOption = .allowBluetooth
+                    bluetoothOption = .allowBluetoothHFP
                 }
                 try session.setCategory(
                     .playAndRecord,
