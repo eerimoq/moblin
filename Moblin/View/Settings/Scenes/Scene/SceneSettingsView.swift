@@ -114,6 +114,8 @@ struct SceneSettingsView: View {
             sceneWidget.size = 30
         case .map:
             sceneWidget.size = 23
+        case .qrCode:
+            sceneWidget.size = 23
         case .videoSource:
             sceneWidget.x = 72
             sceneWidget.y = 72

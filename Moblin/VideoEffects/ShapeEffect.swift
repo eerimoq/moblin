@@ -86,7 +86,8 @@ final class ShapeEffect: VideoEffect {
             return image
         } else {
             let (width, scaleX, scaleY) = settings.borderWidthAndScale(image.extent)
-            let borderImage = CIImage(color: settings.borderColor).cropped(to: image.extent)
+            let borderImage = CIImage(color: settings.borderColor)
+                .cropped(to: image.extent)
                 .transformed(by: CGAffineTransform(scaleX: scaleX, y: scaleY))
                 .transformed(by: CGAffineTransform(translationX: -1 * width, y: -width))
             return image.composited(over: borderImage)

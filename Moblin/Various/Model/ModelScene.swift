@@ -169,12 +169,20 @@ extension Model {
         return nil
     }
 
+    func getQrCodeEffect(id: UUID) -> QrCodeEffect? {
+        for (qrCodeEffectId, qrCodeEffect) in qrCodeEffects where id == qrCodeEffectId {
+            return qrCodeEffect
+        }
+        return nil
+    }
+
     func getEffectWithPossibleEffects(id: UUID) -> VideoEffect? {
         return getVideoSourceEffect(id: id)
             ?? getImageEffect(id: id)
             ?? getBrowserEffect(id: id)
             ?? getMapEffect(id: id)
             ?? getSnapshotEffect(id: id)
+            ?? getQrCodeEffect(id: id)
     }
 
     func getVideoSourceSettings(id: UUID) -> SettingsWidget? {
@@ -244,7 +252,9 @@ extension Model {
         }
         qrCodeEffects.removeAll()
         for widget in widgets where widget.type == .qrCode {
-            qrCodeEffects[widget.id] = QrCodeEffect(widget: widget.qrCode)
+            let qrCodeEffect = QrCodeEffect(widget: widget.qrCode)
+            qrCodeEffect.effects = widget.getEffects()
+            qrCodeEffects[widget.id] = qrCodeEffect
         }
         for videoSourceEffect in videoSourceEffects.values {
             media.unregisterEffect(videoSourceEffect)
