@@ -32,8 +32,8 @@ struct SceneWidgetSettingsView: View {
     private func widgetHasSize(widget: SettingsWidget) -> Bool {
         return [
             .image,
-            .qrCode,
             .map,
+            .qrCode,
             .videoSource,
             .vTuber,
             .pngTuber,
