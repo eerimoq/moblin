@@ -44,6 +44,7 @@ struct SceneWidgetSettingsView: View {
     private func widgetHasAlignment(widget: SettingsWidget) -> Bool {
         return [
             .image,
+            .map,
             .qrCode,
             .vTuber,
             .pngTuber,

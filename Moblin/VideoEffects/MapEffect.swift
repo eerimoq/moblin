@@ -55,6 +55,31 @@ final class MapEffect: VideoEffect {
         }
     }
 
+    override func execute(_ image: CIImage, _ info: VideoEffectInfo) -> CIImage {
+        let size = image.extent.size
+        update(size: size)
+        guard let sceneWidget, let dot, let mapSnapshot else {
+            return image
+        }
+        let height = toPixels(sceneWidget.size, size.height)
+        let width = toPixels(sceneWidget.size, size.width)
+        let side = CGFloat(max(40, min(height, width)))
+        let mapWithDotImage = dot
+            .transformed(by: CGAffineTransform(
+                translationX: (side - 30) / 2,
+                y: (side - 30) / 2 - CGFloat(dotOffsetRatio * side / 2)
+            ))
+            .composited(over: mapSnapshot
+                .transformed(by: CGAffineTransform(
+                    scaleX: side / CGFloat(mapSnapshot.extent.width),
+                    y: side / CGFloat(mapSnapshot.extent.width)
+                )))
+        return applyEffects(mapWithDotImage, info)
+            .resizeMoveMirror(sceneWidget, image.extent.size, false)
+            .cropped(to: image.extent)
+            .composited(over: image)
+    }
+
     private func nextNewLocation() -> CLLocation {
         let now = Date()
         let delay = widget.delay
@@ -138,31 +163,5 @@ final class MapEffect: VideoEffect {
         let options = MKMapSnapshotter.Options()
         options.camera = camera
         return (MKMapSnapshotter(options: options), dotOffsetRatio)
-    }
-
-    override func execute(_ image: CIImage, _ info: VideoEffectInfo) -> CIImage {
-        let size = image.extent.size
-        update(size: size)
-        guard let sceneWidget, let dot, let mapSnapshot else {
-            return image
-        }
-        let height = toPixels(sceneWidget.size, size.height)
-        let width = toPixels(sceneWidget.size, size.width)
-        let side = max(40, min(height, width))
-        let x = toPixels(sceneWidget.x, size.width)
-        let y = size.height - toPixels(sceneWidget.y, size.height) - side
-        return dot
-            .transformed(by: CGAffineTransform(
-                translationX: CGFloat(side - 30) / 2,
-                y: CGFloat(side - 30) / 2 - CGFloat(dotOffsetRatio * CGFloat(side) / 2)
-            ))
-            .composited(over: applyEffects(mapSnapshot, info)
-                .transformed(by: CGAffineTransform(
-                    scaleX: CGFloat(side) / CGFloat(mapSnapshot.extent.width),
-                    y: CGFloat(side) / CGFloat(mapSnapshot.extent.width)
-                )))
-            .transformed(by: CGAffineTransform(translationX: x, y: y))
-            .cropped(to: image.extent)
-            .composited(over: image)
     }
 }
