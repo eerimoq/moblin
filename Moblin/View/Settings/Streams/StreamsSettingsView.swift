@@ -6,7 +6,7 @@ private struct StreamItemView: View {
     @ObservedObject var stream: SettingsStream
 
     var body: some View {
-        let item = NavigationLink {
+        NavigationLink {
             StreamSettingsView(database: database, stream: stream)
         } label: {
             HStack {
@@ -20,32 +20,20 @@ private struct StreamItemView: View {
                 .disabled(stream.enabled || model.isLive || model.isRecording)
             }
         }
-        if stream.enabled {
-            item.swipeActions(edge: .trailing) {
-                Button {
-                    database.streams.append(stream.clone())
-                } label: {
-                    Text("Duplicate")
-                }
-                .tint(.blue)
-            }
-        } else {
-            item.swipeActions(edge: .trailing) {
-                Button {
+        .swipeActions(edge: .trailing) {
+            if !stream.enabled {
+                Button(role: .destructive) {
                     database.streams.removeAll { $0 == stream }
                 } label: {
-                    Text("Delete")
+                    Label("Delete", systemImage: "trash")
                 }
-                .tint(.red)
             }
-            .swipeActions(edge: .trailing) {
-                Button {
-                    database.streams.append(stream.clone())
-                } label: {
-                    Text("Duplicate")
-                }
-                .tint(.blue)
+            Button {
+                database.streams.append(stream.clone())
+            } label: {
+                Label("Duplicate", systemImage: "plus.square.on.square")
             }
+            .tint(.blue)
         }
     }
 }

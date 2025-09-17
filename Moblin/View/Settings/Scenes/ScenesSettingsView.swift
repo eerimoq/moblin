@@ -22,22 +22,19 @@ private struct SceneItemView: View {
             }
         }
         .swipeActions(edge: .trailing) {
-            Button {
+            Button(role: .destructive) {
                 let deletedCurrentScene = model.getSelectedScene() === scene
                 database.scenes.removeAll { $0 == scene }
                 if deletedCurrentScene {
                     model.resetSelectedScene()
                 }
             } label: {
-                Text("Delete")
+                Label("Delete", systemImage: "trash")
             }
-            .tint(.red)
-        }
-        .swipeActions(edge: .trailing) {
             Button {
                 database.scenes.append(scene.clone())
             } label: {
-                Text("Duplicate")
+                Label("Duplicate", systemImage: "plus.square.on.square")
             }
             .tint(.blue)
         }

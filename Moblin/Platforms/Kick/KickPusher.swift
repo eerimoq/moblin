@@ -195,7 +195,6 @@ private func decodeChatMessageEvent(data: String) throws -> ChatMessageEvent {
 }
 
 private func decodeMessageDeletedEvent(data: String) throws -> MessageDeletedEvent {
-    data.utf8
     return try JSONDecoder().decode(MessageDeletedEvent.self, from: data.utf8Data)
 }
 
