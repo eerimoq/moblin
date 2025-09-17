@@ -13,28 +13,41 @@ struct SceneWidgetSettingsView: View {
     @ObservedObject var widget: SettingsWidget
     @Binding var numericInput: Bool
 
-    private let widgetsWithPosition: [SettingsWidgetType] = [
-        .image, .browser, .text, .crop, .map, .qrCode, .alerts, .videoSource, .vTuber, .pngTuber, .snapshot,
-    ]
-
     private func widgetHasPosition(widget: SettingsWidget) -> Bool {
-        return widgetsWithPosition.contains(widget.type)
+        return [
+            .image,
+            .browser,
+            .text,
+            .crop,
+            .map,
+            .qrCode,
+            .alerts,
+            .videoSource,
+            .vTuber,
+            .pngTuber,
+            .snapshot,
+        ].contains(widget.type)
     }
-
-    private let widgetsWithSize: [SettingsWidgetType] = [
-        .image, .qrCode, .map, .videoSource, .vTuber, .pngTuber, .snapshot,
-    ]
 
     private func widgetHasSize(widget: SettingsWidget) -> Bool {
-        return widgetsWithSize.contains(widget.type)
+        return [
+            .image,
+            .qrCode,
+            .map,
+            .videoSource,
+            .vTuber,
+            .pngTuber,
+            .snapshot,
+        ].contains(widget.type)
     }
 
-    private let widgetsWithAlignment: [SettingsWidgetType] = [
-        .image, .vTuber, .pngTuber, .snapshot,
-    ]
-
     private func widgetHasAlignment(widget: SettingsWidget) -> Bool {
-        return widgetsWithAlignment.contains(widget.type)
+        return [
+            .image,
+            .vTuber,
+            .pngTuber,
+            .snapshot,
+        ].contains(widget.type)
     }
 
     private func canWidgetExpand(widget: SettingsWidget) -> Bool {
