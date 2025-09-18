@@ -85,21 +85,6 @@ final class VideoSourceEffect: VideoEffect {
         }
     }
 
-    private func interpolatePosition(_ current: Double?, _ target: Double?, _ timeElapsed: Double) -> Double {
-        if let current, let target {
-            let delta = target - current
-            if abs(delta) < 5 {
-                return current
-            } else {
-                return current + delta * 2 * timeElapsed
-            }
-        } else if let target {
-            return target
-        } else {
-            return 0
-        }
-    }
-
     private func shouldUseFace(_ boundingBox: CGRect,
                                _ biggestBoundingBox: CGRect,
                                _ videoSourceImageSize: CGSize) -> Bool
@@ -216,97 +201,6 @@ final class VideoSourceEffect: VideoEffect {
         }
     }
 
-    private func makeRoundedRectangleMask(
-        _ videoSourceImage: CIImage,
-        _ cornerRadius: Float
-    ) -> CIImage? {
-        let roundedRectangleGenerator = CIFilter.roundedRectangleGenerator()
-        roundedRectangleGenerator.color = .green
-        // Slightly smaller to remove ~1px black line around image.
-        var extent = videoSourceImage.extent
-        extent.origin.x += 1
-        extent.origin.y += 1
-        extent.size.width -= 2
-        extent.size.height -= 2
-        roundedRectangleGenerator.extent = extent
-        var radiusPixels = Float(min(videoSourceImage.extent.height, videoSourceImage.extent.width))
-        radiusPixels /= 2
-        radiusPixels *= cornerRadius
-        roundedRectangleGenerator.radius = radiusPixels
-        return roundedRectangleGenerator.outputImage
-    }
-
-    private func makeScale(
-        _ videoSourceImage: CIImage,
-        _ sceneWidget: SettingsSceneWidget,
-        _ size: CGSize,
-        _ mirror: Bool
-    ) -> (Double, Double) {
-        var scaleX = toPixels(sceneWidget.size, size.width) / videoSourceImage.extent.size.width
-        let scaleY = toPixels(sceneWidget.size, size.height) / videoSourceImage.extent.size.height
-        let scale = min(scaleX, scaleY)
-        if mirror {
-            scaleX = -1 * scale
-        } else {
-            scaleX = scale
-        }
-        return (scaleX, scale)
-    }
-
-    private func makeTranslation(
-        _ videoSourceImage: CIImage,
-        _ sceneWidget: SettingsSceneWidget,
-        _ size: CGSize,
-        _ scaleX: Double,
-        _ scaleY: Double,
-        _ mirror: Bool
-    ) -> CGAffineTransform {
-        var x = toPixels(sceneWidget.x, size.width)
-        if mirror {
-            x -= videoSourceImage.extent.width * scaleX
-        }
-        let y = size.height - toPixels(sceneWidget.y, size.height) - videoSourceImage.extent.height * scaleY
-        return CGAffineTransform(translationX: x, y: y)
-    }
-
-    private func makeSharpCornersImage(_ widgetImage: CIImage, _ settings: VideoSourceEffectSettings) -> CIImage {
-        if settings.borderWidth == 0 {
-            return widgetImage
-        } else {
-            let (width, scaleX, scaleY) = settings.borderWidthAndScale(widgetImage.extent)
-            let borderImage = CIImage(color: settings.borderColor).cropped(to: widgetImage.extent)
-                .transformed(by: CGAffineTransform(scaleX: scaleX, y: scaleY))
-                .transformed(by: CGAffineTransform(translationX: (settings.mirror ? 1 : -1) * width, y: -width))
-            return widgetImage.composited(over: borderImage)
-        }
-    }
-
-    private func makeRoundedCornersImage(_ widgetImage: CIImage, _ settings: VideoSourceEffectSettings) -> CIImage {
-        if settings.borderWidth == 0 {
-            let roundedCornersBlender = CIFilter.blendWithMask()
-            roundedCornersBlender.inputImage = widgetImage
-            roundedCornersBlender.maskImage = makeRoundedRectangleMask(widgetImage, settings.cornerRadius)
-            return roundedCornersBlender.outputImage ?? widgetImage
-        } else {
-            let (width, scaleX, scaleY) = settings.borderWidthAndScale(widgetImage.extent)
-            let borderImage = CIImage(color: settings.borderColor).cropped(to: widgetImage.extent)
-                .transformed(by: CGAffineTransform(scaleX: scaleX, y: scaleY))
-                .transformed(by: CGAffineTransform(translationX: (settings.mirror ? 1 : -1) * width, y: -width))
-            let roundedCornersBlender = CIFilter.blendWithMask()
-            roundedCornersBlender.inputImage = borderImage
-            roundedCornersBlender.maskImage = makeRoundedRectangleMask(borderImage, settings.cornerRadius)
-            guard let roundedBorderImage = roundedCornersBlender.outputImage else {
-                return widgetImage
-            }
-            roundedCornersBlender.inputImage = widgetImage
-            roundedCornersBlender.maskImage = makeRoundedRectangleMask(widgetImage, settings.cornerRadius)
-            guard let widgetImage = roundedCornersBlender.outputImage else {
-                return widgetImage
-            }
-            return widgetImage.composited(over: roundedBorderImage)
-        }
-    }
-
     override func execute(_ backgroundImage: CIImage, _ info: VideoEffectInfo) -> CIImage {
         guard let sceneWidget else {
             return backgroundImage
@@ -325,24 +219,9 @@ final class VideoSourceEffect: VideoEffect {
             widgetImage = crop(widgetImage, settings)
         }
         widgetImage = rotate(widgetImage, settings)
-        let size = backgroundImage.extent.size
-        let (scaleX, scaleY) = makeScale(widgetImage, sceneWidget, size, settings.mirror)
-        let translation = makeTranslation(widgetImage, sceneWidget, size, scaleX, scaleY, settings.mirror)
-        widgetImage = widgetImage
-            .transformed(by: CGAffineTransform(scaleX: scaleX, y: scaleY))
-        if settings.cornerRadius == 0 {
-            widgetImage = makeSharpCornersImage(widgetImage, settings)
-        } else {
-            widgetImage = makeRoundedCornersImage(widgetImage, settings)
-        }
-        let crop = CGRect(x: 0, y: 0, width: size.width, height: size.height)
         return applyEffects(widgetImage, info)
-            .transformed(by: translation)
-            .cropped(to: crop)
+            .resizeMoveMirror(sceneWidget, backgroundImage.extent.size, settings.mirror)
             .composited(over: backgroundImage)
-    }
-
-    override func executeMetalPetal(_ image: MTIImage?, _: VideoEffectInfo) -> MTIImage? {
-        return image
+            .cropped(to: backgroundImage.extent)
     }
 }

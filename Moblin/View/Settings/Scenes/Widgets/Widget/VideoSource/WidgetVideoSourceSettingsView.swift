@@ -256,22 +256,6 @@ struct WidgetVideoSourceSettingsView: View {
             }
         }
         Section {
-            HStack {
-                Slider(
-                    value: $videoSource.cornerRadius,
-                    in: 0 ... 1,
-                    step: 0.01
-                )
-                .onChange(of: videoSource.cornerRadius) { _ in
-                    setEffectSettings()
-                }
-                Text(String(Int(videoSource.cornerRadius * 100)))
-                    .frame(width: 35)
-            }
-        } header: {
-            Text("Corner radius")
-        }
-        Section {
             VideoSourceRotationView(selectedRotation: $videoSource.rotation)
                 .onChange(of: videoSource.rotation) { _ in
                     setEffectSettings()
@@ -284,29 +268,6 @@ struct WidgetVideoSourceSettingsView: View {
             })) {
                 Text("Mirror")
             }
-        }
-        Section {
-            HStack {
-                Text("Width")
-                Slider(
-                    value: $videoSource.borderWidth,
-                    in: 0 ... 1.0,
-                    step: 0.01
-                )
-                .onChange(of: videoSource.borderWidth) { _ in
-                    setEffectSettings()
-                }
-            }
-            ColorPicker("Color", selection: $videoSource.borderColorColor, supportsOpacity: false)
-                .onChange(of: videoSource.borderColorColor) { _ in
-                    guard let borderColor = videoSource.borderColorColor.toRgb() else {
-                        return
-                    }
-                    videoSource.borderColor = borderColor
-                    setEffectSettings()
-                }
-        } header: {
-            Text("Border")
         }
         Section {
             Toggle(isOn: Binding(get: {

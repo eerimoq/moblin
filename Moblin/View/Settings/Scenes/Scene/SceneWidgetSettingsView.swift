@@ -46,6 +46,7 @@ struct SceneWidgetSettingsView: View {
             .image,
             .map,
             .qrCode,
+            .videoSource,
             .vTuber,
             .pngTuber,
             .snapshot,

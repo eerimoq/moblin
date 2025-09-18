@@ -29,7 +29,9 @@ extension CIImage {
             }
         } else {
             x = streamSize.width - toPixels(sceneWidget.x, streamSize.width)
-            x -= extent.width * scaleX
+            if !mirror {
+                x -= extent.width * scaleX
+            }
         }
         if sceneWidget.alignment.isTop() {
             y = streamSize.height - toPixels(sceneWidget.y, streamSize.height) - extent.height * scaleY
