@@ -9,7 +9,8 @@ func toPixels(_ percentage: Double, _ total: Double) -> Double {
 extension CIImage {
     func resizeMoveMirror(_ sceneWidget: SettingsSceneWidget,
                           _ streamSize: CGSize,
-                          _ mirror: Bool) -> CIImage
+                          _ mirror: Bool,
+                          _ resize: Bool = true) -> CIImage
     {
         var scaleX = toPixels(sceneWidget.size, streamSize.width) / extent.size.width
         var scaleY = toPixels(sceneWidget.size, streamSize.height) / extent.size.height
@@ -20,6 +21,10 @@ extension CIImage {
             scaleX = scale
         }
         scaleY = scale
+        if !resize {
+            scaleX = 1
+            scaleY = 1
+        }
         var x: Double
         var y: Double
         if sceneWidget.alignment.isLeft() {

@@ -511,8 +511,6 @@ final class TextEffect: VideoEffect {
     private var fontMonospacedDigits: Bool
     private var horizontalAlignment: HorizontalAlignment
     private var verticalAlignment: VerticalAlignment
-    private var x: Double
-    private var y: Double
     private let settingName: String
     private var stats: Deque<TextEffectStats> = []
     private var overlay: CIImage?
@@ -529,6 +527,7 @@ final class TextEffect: VideoEffect {
     private var forceUpdate = true
     private var forceUpdateMetalPetal = true
     private let formatter = Formatter()
+    private var sceneWidget: SettingsSceneWidget
 
     init(
         format: String,
@@ -549,6 +548,7 @@ final class TextEffect: VideoEffect {
         lapTimes: [[Double]]
     ) {
         formatter.formatParts = loadTextFormat(format: format)
+        sceneWidget = SettingsSceneWidget(widgetId: .init())
         self.backgroundColor = backgroundColor
         self.foregroundColor = foregroundColor
         self.fontSize = fontSize
@@ -559,8 +559,6 @@ final class TextEffect: VideoEffect {
         self.verticalAlignment = verticalAlignment
         self.settingName = settingName
         self.delay = delay
-        x = 0
-        y = 0
         formatter.timersEndTime = timersEndTime
         formatter.stopwatches = stopwatches
         formatter.checkboxes = checkboxes
@@ -568,6 +566,16 @@ final class TextEffect: VideoEffect {
         formatter.lapTimes = lapTimes
         formatter.temperatureFormatter.numberFormatter.maximumFractionDigits = 0
         super.init()
+    }
+
+    func setSceneWidget(sceneWidget: SettingsSceneWidget) {
+        textQueue.sync {
+            self.sceneWidget = sceneWidget
+            forceUpdate = true
+            forceUpdateMetalPetal = true
+        }
+        previousLines = nil
+        previousLinesMetalPetal = nil
     }
 
     func forceImageUpdate() {
@@ -688,17 +696,6 @@ final class TextEffect: VideoEffect {
         forceImageUpdate()
     }
 
-    func setPosition(x: Double, y: Double) {
-        textQueue.sync {
-            self.x = x
-            self.y = y
-            forceUpdate = true
-            forceUpdateMetalPetal = true
-        }
-        previousLines = nil
-        previousLinesMetalPetal = nil
-    }
-
     func updateStats(stats: TextEffectStats) {
         self.stats.append(stats)
         if self.stats.count > 10 {
@@ -772,10 +769,10 @@ final class TextEffect: VideoEffect {
         return fontSize * (size.maximum() / 1920)
     }
 
-    private func updateOverlay(size: CGSize) {
+    private func updateOverlay(size: CGSize) -> SettingsSceneWidget {
         let now = ContinuousClock.now
         var newImage: UIImage?
-        let (x, y, horizontalAlignment, verticalAlignment, forceUpdate, newImagePresent) = textQueue.sync {
+        let (sceneWidget, horizontalAlignment, forceUpdate, newImagePresent) = textQueue.sync {
             if self.image != nil {
                 newImage = self.image
                 self.image = nil
@@ -785,44 +782,21 @@ final class TextEffect: VideoEffect {
                 self.newImagePresent = false
             }
             return (
-                self.x,
-                self.y,
+                self.sceneWidget,
                 self.horizontalAlignment,
-                self.verticalAlignment,
                 self.forceUpdate,
                 self.newImagePresent
             )
         }
         if newImagePresent {
             if let newImage {
-                var x = toPixels(x, size.width)
-                var y = toPixels(y, size.height)
-                if horizontalAlignment == .trailing {
-                    x -= newImage.size.width
-                }
-                y = size.height - y
-                if verticalAlignment == .top {
-                    y -= newImage.size.height
-                }
-                overlay = CIImage(image: newImage)?
-                    .transformed(by: CGAffineTransform(
-                        translationX: x,
-                        y: y
-                    ))
-                    // For some reason the background expands to screen edges without this
-                    // when used in combination with a remove background effect on another
-                    // widget on top of this.
-                    .cropped(to: CGRect(x: x,
-                                        y: y,
-                                        width: newImage.size.width,
-                                        height: newImage.size.height - 1))
-                    .cropped(to: CGRect(x: 0, y: 0, width: size.width, height: size.height))
+                overlay = CIImage(image: newImage)
             } else {
                 overlay = nil
             }
         }
         guard now >= nextUpdateTime || forceUpdate else {
-            return
+            return sceneWidget
         }
         if !forceUpdate {
             nextUpdateTime += .seconds(1)
@@ -888,12 +862,13 @@ final class TextEffect: VideoEffect {
                 self.newImagePresent = true
             }
         }
+        return sceneWidget
     }
 
     private func updateOverlayMetalPetal(size: CGSize) -> (Double, Double) {
         let now = ContinuousClock.now
         var newImage: UIImage?
-        let (x, y, forceUpdate, newImagePresent) = textQueue.sync {
+        let (sceneWidget, forceUpdate, newImagePresent) = textQueue.sync {
             if self.imageMetalPetal != nil {
                 newImage = self.imageMetalPetal
                 self.imageMetalPetal = nil
@@ -902,7 +877,7 @@ final class TextEffect: VideoEffect {
                 self.forceUpdateMetalPetal = false
                 self.newImageMetalPetalPresent = false
             }
-            return (self.x, self.y, self.forceUpdateMetalPetal, self.newImageMetalPetalPresent)
+            return (self.sceneWidget, self.forceUpdateMetalPetal, self.newImageMetalPetalPresent)
         }
         if newImagePresent {
             if let image = newImage?.cgImage {
@@ -912,7 +887,7 @@ final class TextEffect: VideoEffect {
             }
         }
         guard now >= nextUpdateTimeMetalPetal || forceUpdate else {
-            return (x, y)
+            return (sceneWidget.x, sceneWidget.y)
         }
         if !forceUpdate {
             nextUpdateTimeMetalPetal += .seconds(1)
@@ -972,14 +947,15 @@ final class TextEffect: VideoEffect {
                 self.newImageMetalPetalPresent = true
             }
         }
-        return (x, y)
+        return (sceneWidget.x, sceneWidget.y)
     }
 
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
-        updateOverlay(size: image.extent.size)
-        filter.inputImage = overlay
-        filter.backgroundImage = image
-        return filter.outputImage ?? image
+        let sceneWidget = updateOverlay(size: image.extent.size)
+        return overlay?
+            .resizeMoveMirror(sceneWidget, image.extent.size, false, false)
+            .cropped(to: image.extent)
+            .composited(over: image) ?? image
     }
 
     override func executeMetalPetal(_ image: MTIImage?, _: VideoEffectInfo) -> MTIImage? {

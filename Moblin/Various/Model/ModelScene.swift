@@ -624,7 +624,7 @@ extension Model {
         _ needsSpeechToText: inout Bool
     ) {
         if let textEffect = textEffects[widget.id] {
-            textEffect.setPosition(x: sceneWidget.x, y: sceneWidget.y)
+            textEffect.setSceneWidget(sceneWidget: sceneWidget.clone())
             effects.append(textEffect)
             if widget.text.needsSubtitles {
                 needsSpeechToText = true

@@ -620,7 +620,7 @@ struct WidgetTextSettingsView: View {
         }
         Section {
             HStack {
-                Text("Horizontal")
+                Text("Alignment")
                 Spacer()
                 Picker("", selection: $text.horizontalAlignment) {
                     ForEach(SettingsHorizontalAlignment.allCases, id: \.self) {
@@ -634,23 +634,6 @@ struct WidgetTextSettingsView: View {
                     model.remoteSceneSettingsUpdated()
                 }
             }
-            HStack {
-                Text("Vertical")
-                Spacer()
-                Picker("", selection: $text.verticalAlignment) {
-                    ForEach(SettingsVerticalAlignment.allCases, id: \.self) {
-                        Text($0.toString())
-                            .tag($0)
-                    }
-                }
-                .onChange(of: text.verticalAlignment) { _ in
-                    model.getTextEffect(id: widget.id)?
-                        .setVerticalAlignment(alignment: text.verticalAlignment.toSystem())
-                    model.remoteSceneSettingsUpdated()
-                }
-            }
-        } header: {
-            Text("Alignment")
         }
         Section {
             HStack {

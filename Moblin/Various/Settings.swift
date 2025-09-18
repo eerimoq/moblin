@@ -1180,6 +1180,7 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject {
     @Published var size: Double = 100.0
     @Published var sizeString: String = "100.0"
     @Published var alignment: SettingsAlignment = .topLeft
+    var migrated: Bool = true
 
     init(widgetId: UUID) {
         self.widgetId = widgetId
@@ -1194,7 +1195,8 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject {
              width,
              height,
              size,
-             alignment
+             alignment,
+             migrated
     }
 
     func encode(to encoder: Encoder) throws {
@@ -1208,6 +1210,7 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject {
         try container.encode(.height, height2)
         try container.encode(.size, size)
         try container.encode(.alignment, alignment)
+        try container.encode(.migrated, migrated)
     }
 
     required init(from decoder: Decoder) throws {
@@ -1228,6 +1231,7 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject {
         }
         sizeString = String(size)
         alignment = container.decode(.alignment, SettingsAlignment.self, .topLeft)
+        migrated = container.decode(.migrated, Bool.self, false)
     }
 
     func clone() -> SettingsSceneWidget {
@@ -1240,6 +1244,7 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject {
         new.size = size
         new.sizeString = sizeString
         new.alignment = alignment
+        new.migrated = migrated
         return new
     }
 
@@ -8319,6 +8324,33 @@ final class Settings {
         for widget in realDatabase.widgets where widget.videoSource.cropHeight > 1.0 {
             widget.videoSource.cropHeight = 1.0
             store()
+        }
+        for scene in realDatabase.scenes {
+            for sceneWidget in scene.widgets where !sceneWidget.migrated {
+                sceneWidget.migrated = true
+                store()
+                guard let widget = realDatabase.widgets.first(where: { $0.id == sceneWidget.widgetId }) else {
+                    continue
+                }
+                guard widget.type == .text else {
+                    continue
+                }
+                if widget.text.verticalAlignment == .bottom, widget.text.horizontalAlignment == .trailing {
+                    sceneWidget.alignment = .bottomRight
+                    sceneWidget.x = 100 - sceneWidget.x
+                    sceneWidget.xString = String(sceneWidget.x)
+                    sceneWidget.y = 100 - sceneWidget.y
+                    sceneWidget.yString = String(sceneWidget.y)
+                } else if widget.text.verticalAlignment == .top, widget.text.horizontalAlignment == .trailing {
+                    sceneWidget.alignment = .topRight
+                    sceneWidget.x = 100 - sceneWidget.x
+                    sceneWidget.xString = String(sceneWidget.x)
+                } else if widget.text.verticalAlignment == .bottom, widget.text.horizontalAlignment == .leading {
+                    sceneWidget.alignment = .bottomLeft
+                    sceneWidget.y = 100 - sceneWidget.y
+                    sceneWidget.yString = String(sceneWidget.y)
+                }
+            }
         }
     }
 }
