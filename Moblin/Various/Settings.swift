@@ -2799,9 +2799,9 @@ enum SettingsVideoEffectType: String, Codable, CaseIterable {
     init(from decoder: Decoder) throws {
         do {
             self = try SettingsVideoEffectType(rawValue: decoder.singleValueContainer()
-                .decode(RawValue.self)) ?? .grayScale
+                .decode(RawValue.self)) ?? .shape
         } catch {
-            self = .grayScale
+            self = .shape
         }
     }
 
@@ -2944,7 +2944,7 @@ class SettingsVideoEffectDewarp360: Codable, ObservableObject {
 class SettingsVideoEffect: Codable, Identifiable, ObservableObject {
     var id: UUID = .init()
     @Published var enabled: Bool = true
-    @Published var type: SettingsVideoEffectType = .grayScale
+    @Published var type: SettingsVideoEffectType = .shape
     var removeBackground: SettingsVideoEffectRemoveBackground = .init()
     var shape: SettingsVideoEffectShape = .init()
     var dewarp360: SettingsVideoEffectDewarp360 = .init()
@@ -2974,7 +2974,7 @@ class SettingsVideoEffect: Codable, Identifiable, ObservableObject {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
         enabled = container.decode(.enabled, Bool.self, true)
-        type = container.decode(.type, SettingsVideoEffectType.self, .grayScale)
+        type = container.decode(.type, SettingsVideoEffectType.self, .shape)
         removeBackground = container.decode(.removeBackground, SettingsVideoEffectRemoveBackground.self, .init())
         shape = container.decode(.shape, SettingsVideoEffectShape.self, .init())
         dewarp360 = container.decode(.dewarp360, SettingsVideoEffectDewarp360.self, .init())
