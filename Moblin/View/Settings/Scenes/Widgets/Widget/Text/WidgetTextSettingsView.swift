@@ -569,16 +569,13 @@ struct WidgetTextSettingsView: View {
                 Slider(
                     value: $text.fontSizeFloat,
                     in: 10 ... 200,
-                    step: 5,
-                    onEditingChanged: { begin in
-                        guard !begin else {
-                            return
-                        }
-                        text.fontSize = Int(text.fontSizeFloat)
-                        model.getTextEffect(id: widget.id)?.setFontSize(size: CGFloat(text.fontSizeFloat))
-                        model.remoteSceneSettingsUpdated()
-                    }
+                    step: 5
                 )
+                .onChange(of: text.fontSizeFloat) { _ in
+                    text.fontSize = Int(text.fontSizeFloat)
+                    model.getTextEffect(id: widget.id)?.setFontSize(size: CGFloat(text.fontSizeFloat))
+                    model.remoteSceneSettingsUpdated()
+                }
                 Text(String(Int(text.fontSizeFloat)))
                     .frame(width: 35)
             }
