@@ -42,6 +42,12 @@
             "state" : "translated",
             "value" : " %lld kHz"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : " %lld kHz"
+          }
         }
       }
     },
@@ -505,6 +511,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "RTMP Streamschlüssel fehlt"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RTMP stream key ontbreekt"
           }
         }
       }
