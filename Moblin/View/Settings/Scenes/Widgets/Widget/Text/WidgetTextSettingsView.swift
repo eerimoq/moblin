@@ -302,7 +302,7 @@ private struct TextSelectionView: View {
                     description: String(localized: "Show subtitles in app language"),
                     text: $value
                 )
-                FormatView(title: "{subtitles:language-identifier}",
+                FormatView(title: "{subtitles:<language-identifier>}",
                            description: String(localized: """
                            Show subtitles in given language. Download languages in \
                            iOS Settings → Apps → Translate → Languages. <language-identifier> is \
