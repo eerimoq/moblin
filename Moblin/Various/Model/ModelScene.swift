@@ -410,7 +410,6 @@ extension Model {
             return
         }
         widget.enabled.toggle()
-        reloadSpeechToText()
         sceneUpdated()
     }
 
@@ -433,6 +432,7 @@ extension Model {
             remoteSceneSettingsUpdated()
         }
         updateStatusCameraText()
+        updateSpeechToText()
     }
 
     func getSceneName(id: UUID) -> String {

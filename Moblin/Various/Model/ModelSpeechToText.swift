@@ -3,32 +3,49 @@ import Translation
 
 extension Model {
     func reloadSpeechToText() {
-        removeAllTranslators()
-        speechToText.stop()
+        stopSpeechToText()
+        if isSpeechToTextNeeded() {
+            startSpeechToText()
+        }
+    }
+
+    func startSpeechToText() {
         speechToText = SpeechToText()
-        speechToText.delegate = self
+        speechToText?.delegate = self
+        speechToText?.start { message in
+            self.makeErrorToast(title: message)
+        }
+        for widget in widgetsInCurrentScene(onlyEnabled: true) {
+            switch widget.widget.type {
+            case .text:
+                let languageIdentifiers = Set(widget.widget.text.subtitles.map { $0.identifier })
+                for languageIdentifier in languageIdentifiers {
+                    if let languageIdentifier {
+                        addTranslator(targetIdentifier: languageIdentifier)
+                    }
+                }
+            default:
+                break
+            }
+        }
+    }
+
+    func stopSpeechToText() {
+        removeAllTranslators()
+        speechToText?.stop()
+        speechToText = nil
         for textEffect in textEffects.values {
             textEffect.clearSubtitles()
         }
+    }
+
+    func updateSpeechToText() {
         if isSpeechToTextNeeded() {
-            speechToText.start { message in
-                self.makeErrorToast(title: message)
+            if speechToText == nil {
+                startSpeechToText()
             }
-            if true {
-                for widget in widgetsInCurrentScene(onlyEnabled: true) {
-                    switch widget.widget.type {
-                    case .text:
-                        let languageIdentifiers = Set(widget.widget.text.subtitles.map { $0.identifier })
-                        for languageIdentifier in languageIdentifiers {
-                            if let languageIdentifier {
-                                addTranslator(targetIdentifier: languageIdentifier)
-                            }
-                        }
-                    default:
-                        break
-                    }
-                }
-            }
+        } else if speechToText != nil {
+            stopSpeechToText()
         }
     }
 

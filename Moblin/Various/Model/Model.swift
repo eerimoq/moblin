@@ -497,7 +497,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         settings.database
     }
 
-    var speechToText = SpeechToText()
+    var speechToText: SpeechToText?
     var keepSpeakerAlivePlayer: AVAudioPlayer?
     var keepSpeakerAliveLatestPlayed: ContinuousClock.Instant = .now
     let twitchAuth = TwitchAuth()
@@ -1405,7 +1405,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         gForceManager?.stop()
         obsWebSocket?.stop()
         media.stopAllNetStreams()
-        speechToText.stop()
+        stopSpeechToText()
         stopWorkout(showToast: false)
         stopTeslaVehicle()
         stopNtpClient()
@@ -1531,7 +1531,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 self.relaxedBitrate = false
                 self.relaxedBitrateStartTime = nil
             }
-            self.speechToText.tick(now: monotonicNow)
+            self.speechToText?.tick(now: monotonicNow)
         }
         periodicTimer1s.startPeriodic(interval: 1) {
             let now = Date()

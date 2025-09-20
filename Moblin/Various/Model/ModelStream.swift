@@ -582,7 +582,7 @@ extension Model {
 
     private func handleAudioBuffer(sampleBuffer: CMSampleBuffer) {
         DispatchQueue.main.async {
-            self.speechToText.append(sampleBuffer: sampleBuffer)
+            self.speechToText?.append(sampleBuffer: sampleBuffer)
         }
     }
 
