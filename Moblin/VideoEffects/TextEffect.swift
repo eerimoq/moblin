@@ -712,7 +712,10 @@ final class TextEffect: VideoEffect {
     }
 
     // Something is wrong with subtitles.
-    func updateSubtitles(position: Int, text: String) {
+    func updateSubtitles(position: Int, text: String, languageIdentifier: String?) {
+        guard languageIdentifier == nil else {
+            return
+        }
         let endPosition = position + text.count
         let length = 50
         while lastLinePosition + length < endPosition {

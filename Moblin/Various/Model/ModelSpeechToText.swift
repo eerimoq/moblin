@@ -1,7 +1,9 @@
 import Foundation
+import Translation
 
 extension Model {
     func reloadSpeechToText() {
+        removeAllTranslators()
         speechToText.stop()
         speechToText = SpeechToText()
         speechToText.delegate = self
@@ -11,6 +13,11 @@ extension Model {
         if isSpeechToTextNeeded() {
             speechToText.start { message in
                 self.makeErrorToast(title: message)
+            }
+            if false {
+                for targetIdentifier in ["de"] {
+                    addTranslator(targetIdentifier: targetIdentifier)
+                }
             }
         }
     }
@@ -32,17 +39,38 @@ extension Model {
         }
         return false
     }
+
+    private func removeAllTranslators() {
+        guard #available(iOS 26.0, *) else {
+            return
+        }
+        translators.removeAll()
+    }
+
+    private func addTranslator(targetIdentifier: String) {
+        guard #available(iOS 26.0, *) else {
+            return
+        }
+        let translator = Translator(targetIdentifier: targetIdentifier)
+        translator.delegate = self
+        translators.append(translator)
+    }
 }
 
 extension Model: SpeechToTextDelegate {
     func speechToTextPartialResult(position: Int, text: String) {
-        speechToTextPartialResultTextWidgets(position: position, text: text)
+        if #available(iOS 26.0, *) {
+            for translator in translators {
+                translator.translate(text: text)
+            }
+        }
+        speechToTextPartialResultTextWidgets(position: position, text: text, languageIdentifier: nil)
         speechToTextPartialResultAlertsWidget(text: text)
     }
 
-    private func speechToTextPartialResultTextWidgets(position: Int, text: String) {
+    private func speechToTextPartialResultTextWidgets(position: Int, text: String, languageIdentifier: String?) {
         for textEffect in textEffects.values {
-            textEffect.updateSubtitles(position: position, text: text)
+            textEffect.updateSubtitles(position: position, text: text, languageIdentifier: languageIdentifier)
         }
     }
 
@@ -79,3 +107,53 @@ extension Model: SpeechToTextDelegate {
         speechToTextAlertMatchOffset = 0
     }
 }
+
+extension Model: TranslatorDelegate {
+    func translatorTranslated(languageIdentifier: String, text: String) {
+        logger.info("Translated to \(languageIdentifier): \(text)")
+        speechToTextPartialResultTextWidgets(position: 0, text: text, languageIdentifier: languageIdentifier)
+    }
+}
+
+private protocol TranslatorDelegate: AnyObject {
+    func translatorTranslated(languageIdentifier: String, text: String)
+}
+
+@available(iOS 26.0, *)
+private class Translator {
+    private let translationSession: TranslationSession
+    private var ready = true
+    private var latestText: String?
+    private let targetIdentifier: String
+    weak var delegate: TranslatorDelegate?
+
+    init(targetIdentifier: String) {
+        self.targetIdentifier = targetIdentifier
+        translationSession = TranslationSession(installedSource: Locale.current.language,
+                                                target: .init(identifier: targetIdentifier))
+    }
+
+    func translate(text: String) {
+        latestText = text
+        guard ready else {
+            return
+        }
+        ready = false
+        Task { @MainActor in
+            while let text = latestText {
+                latestText = nil
+                do {
+                    let response = try await translationSession.translate(text)
+                    delegate?.translatorTranslated(languageIdentifier: targetIdentifier,
+                                                   text: response.targetText)
+                } catch {
+                    logger.info("Translation error: \(error)")
+                }
+            }
+            ready = true
+        }
+    }
+}
+
+@available(iOS 26.0, *)
+private var translators: [Translator] = []
