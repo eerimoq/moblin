@@ -1,6 +1,6 @@
 import Foundation
 
-enum TextFormatPart {
+enum TextFormatPart: Equatable {
     case text(String)
     case newLine
     case clock
@@ -25,7 +25,7 @@ enum TextFormatPart {
     case city
     case checkbox
     case rating
-    case subtitles
+    case subtitles(String?)
     case muted
     case heartRate(String)
     case activeEnergyBurned
@@ -103,11 +103,10 @@ class TextFormatLoader {
                     loadItem(part: .checkbox, offsetBy: 10)
                 } else if formatFromIndex.hasPrefix("{rating}") {
                     loadItem(part: .rating, offsetBy: 8)
-                } else if formatFromIndex.hasPrefix("{subtitles}") {
-                    loadItem(part: .subtitles, offsetBy: 11)
                 } else if formatFromIndex.hasPrefix("{muted}") {
                     loadItem(part: .muted, offsetBy: 7)
                 } else if appendHeartRateIfPresent(formatFromIndex: formatFromIndex) {
+                } else if appendSubtitlesIfPresent(formatFromIndex: formatFromIndex) {
                 } else if isPhone(), formatFromIndex.hasPrefix("{activeenergyburned}") {
                     loadItem(part: .activeEnergyBurned, offsetBy: 20)
                 } else if isPhone(), formatFromIndex.hasPrefix("{power}") {
@@ -156,6 +155,19 @@ class TextFormatLoader {
         } else if let match = formatFromIndex.prefixMatch(of: /{heartrate:([^}]+)}/) {
             let deviceName = String(match.output.1)
             loadItem(part: .heartRate(deviceName), offsetBy: match.output.0.count)
+            return true
+        } else {
+            return false
+        }
+    }
+
+    private func appendSubtitlesIfPresent(formatFromIndex: String) -> Bool {
+        if formatFromIndex.hasPrefix("{subtitles}") {
+            loadItem(part: .subtitles(nil), offsetBy: 11)
+            return true
+        } else if let match = formatFromIndex.prefixMatch(of: /{subtitles:([^}]+)}/) {
+            let languageIdentifier = String(match.output.1)
+            loadItem(part: .subtitles(languageIdentifier), offsetBy: match.output.0.count)
             return true
         } else {
             return false

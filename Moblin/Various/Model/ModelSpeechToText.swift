@@ -14,9 +14,19 @@ extension Model {
             speechToText.start { message in
                 self.makeErrorToast(title: message)
             }
-            if false {
-                for targetIdentifier in ["de"] {
-                    addTranslator(targetIdentifier: targetIdentifier)
+            if true {
+                for widget in widgetsInCurrentScene(onlyEnabled: true) {
+                    switch widget.widget.type {
+                    case .text:
+                        let languageIdentifiers = Set(widget.widget.text.subtitles.map { $0.identifier })
+                        for languageIdentifier in languageIdentifiers {
+                            if let languageIdentifier {
+                                addTranslator(targetIdentifier: languageIdentifier)
+                            }
+                        }
+                    default:
+                        break
+                    }
                 }
             }
         }
@@ -44,7 +54,7 @@ extension Model {
         guard #available(iOS 26.0, *) else {
             return
         }
-        translators.removeAll()
+        Translator.translators.removeAll()
     }
 
     private func addTranslator(targetIdentifier: String) {
@@ -53,14 +63,14 @@ extension Model {
         }
         let translator = Translator(targetIdentifier: targetIdentifier)
         translator.delegate = self
-        translators.append(translator)
+        Translator.translators.append(translator)
     }
 }
 
 extension Model: SpeechToTextDelegate {
     func speechToTextPartialResult(position: Int, text: String) {
         if #available(iOS 26.0, *) {
-            for translator in translators {
+            for translator in Translator.translators {
                 translator.translate(text: text)
             }
         }
@@ -110,7 +120,7 @@ extension Model: SpeechToTextDelegate {
 
 extension Model: TranslatorDelegate {
     func translatorTranslated(languageIdentifier: String, text: String) {
-        logger.info("Translated to \(languageIdentifier): \(text)")
+        // logger.info("speech-to-text: Translated to \(languageIdentifier): \(text)")
         speechToTextPartialResultTextWidgets(position: 0, text: text, languageIdentifier: languageIdentifier)
     }
 }
@@ -121,7 +131,9 @@ private protocol TranslatorDelegate: AnyObject {
 
 @available(iOS 26.0, *)
 private class Translator {
-    private let translationSession: TranslationSession
+    static var translators: [Translator] = []
+
+    private let session: TranslationSession
     private var ready = true
     private var latestText: String?
     private let targetIdentifier: String
@@ -129,8 +141,8 @@ private class Translator {
 
     init(targetIdentifier: String) {
         self.targetIdentifier = targetIdentifier
-        translationSession = TranslationSession(installedSource: Locale.current.language,
-                                                target: .init(identifier: targetIdentifier))
+        session = TranslationSession(installedSource: Locale.current.language,
+                                     target: .init(identifier: targetIdentifier))
     }
 
     func translate(text: String) {
@@ -143,17 +155,14 @@ private class Translator {
             while let text = latestText {
                 latestText = nil
                 do {
-                    let response = try await translationSession.translate(text)
+                    let response = try await session.translate(text)
                     delegate?.translatorTranslated(languageIdentifier: targetIdentifier,
                                                    text: response.targetText)
                 } catch {
-                    logger.info("Translation error: \(error)")
+                    logger.info("speech-to-text: Translation error: \(error)")
                 }
             }
             ready = true
         }
     }
 }
-
-@available(iOS 26.0, *)
-private var translators: [Translator] = []

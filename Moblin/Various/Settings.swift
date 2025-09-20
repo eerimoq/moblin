@@ -1836,6 +1836,10 @@ class SettingsWidgetTextStopwatch: Codable, Identifiable, ObservableObject {
     }
 }
 
+class SettingsWidgetTextSubtitles: Codable {
+    var identifier: String?
+}
+
 class SettingsWidgetTextCheckbox: Codable, Identifiable {
     var id: UUID = .init()
     var checked: Bool = false
@@ -1874,6 +1878,7 @@ class SettingsWidgetText: Codable, ObservableObject {
     var needsWeather: Bool = false
     var needsGeography: Bool = false
     var needsSubtitles: Bool = false
+    var subtitles: [SettingsWidgetTextSubtitles] = []
     var checkboxes: [SettingsWidgetTextCheckbox] = []
     var ratings: [SettingsWidgetTextRating] = []
     var lapTimes: [SettingsWidgetTextLapTimes] = []
@@ -1898,6 +1903,7 @@ class SettingsWidgetText: Codable, ObservableObject {
              needsWeather,
              needsGeography,
              needsSubtitles,
+             subtitles,
              checkboxes,
              ratings,
              lapTimes,
@@ -1930,6 +1936,7 @@ class SettingsWidgetText: Codable, ObservableObject {
         try container.encode(.needsWeather, needsWeather)
         try container.encode(.needsGeography, needsGeography)
         try container.encode(.needsSubtitles, needsSubtitles)
+        try container.encode(.subtitles, subtitles)
         try container.encode(.checkboxes, checkboxes)
         try container.encode(.ratings, ratings)
         try container.encode(.lapTimes, lapTimes)
@@ -1963,6 +1970,7 @@ class SettingsWidgetText: Codable, ObservableObject {
         needsWeather = container.decode(.needsWeather, Bool.self, false)
         needsGeography = container.decode(.needsGeography, Bool.self, false)
         needsSubtitles = container.decode(.needsSubtitles, Bool.self, false)
+        subtitles = container.decode(.subtitles, [SettingsWidgetTextSubtitles].self, [])
         checkboxes = container.decode(.checkboxes, [SettingsWidgetTextCheckbox].self, [])
         ratings = container.decode(.ratings, [SettingsWidgetTextRating].self, [])
         lapTimes = container.decode(.lapTimes, [SettingsWidgetTextLapTimes].self, [])

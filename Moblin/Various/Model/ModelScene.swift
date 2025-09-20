@@ -336,7 +336,7 @@ extension Model {
         return database.fixedHorizon && scene.cameraPosition.isBuiltin()
     }
 
-    func resetSelectedScene(changeScene: Bool = true) {
+    func resetSelectedScene(changeScene: Bool = true, attachCamera: Bool = true) {
         if !enabledScenes.isEmpty, changeScene {
             setSceneId(id: enabledScenes[0].id)
             sceneSelector.sceneIndex = 0
@@ -359,7 +359,7 @@ extension Model {
             }
             lutEffects[lut.id] = lutEffect
         }
-        sceneUpdated(imageEffectChanged: true, attachCamera: true)
+        sceneUpdated(imageEffectChanged: true, attachCamera: attachCamera)
     }
 
     private func setSceneId(id: UUID) {

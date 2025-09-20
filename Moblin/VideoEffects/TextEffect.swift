@@ -69,6 +69,50 @@ private struct Line: Equatable, Identifiable {
     var parts: [Part]
 }
 
+private class Subtitles {
+    var lastLinePosition = 0
+    var lines: [String] = []
+
+    // Something is wrong with subtitles.
+    func updateSubtitles(position: Int, text: String) {
+        let endPosition = position + text.count
+        let length = 50
+        while lastLinePosition + length < endPosition {
+            lastLinePosition += length
+        }
+        while lastLinePosition >= endPosition {
+            lastLinePosition -= length
+            lastLinePosition = max(lastLinePosition, 0)
+        }
+        let firstLinePosition = lastLinePosition - length
+        let lastLineIndex = text.index(text.startIndex, offsetBy: lastLinePosition - position)
+        let spaceBeforeLastLineIndex = text[...lastLineIndex].lastIndex(of: " ")
+        let lastLine: Substring
+        if let spaceBeforeLastLineIndex {
+            lastLine = text[spaceBeforeLastLineIndex...]
+        } else {
+            lastLine = text[lastLineIndex...]
+        }
+        if firstLinePosition >= position {
+            let firstLineIndex = text.index(text.startIndex, offsetBy: firstLinePosition - position)
+            let spaceBeforeFirstLineIndex = text[...firstLineIndex].lastIndex(of: " ")
+            let firstLine: Substring
+            if let spaceBeforeLastLineIndex {
+                if let spaceBeforeFirstLineIndex {
+                    firstLine = text[spaceBeforeFirstLineIndex ..< spaceBeforeLastLineIndex]
+                } else {
+                    firstLine = text[firstLineIndex ..< spaceBeforeLastLineIndex]
+                }
+            } else {
+                firstLine = text[firstLineIndex ..< lastLineIndex]
+            }
+            lines = [firstLine.trim(), lastLine.trim()]
+        } else {
+            lines = [lastLine.trim()]
+        }
+    }
+}
+
 private class Formatter {
     var formatParts: [TextFormatPart] = []
     var timersEndTime: [ContinuousClock.Instant] = []
@@ -76,7 +120,7 @@ private class Formatter {
     var temperatureFormatter = MeasurementFormatter()
     var checkboxes: [Bool] = []
     var ratings: [Int] = []
-    var subtitlesLines: [String] = []
+    var subtitles: [String?: Subtitles] = [:]
     var lapTimes: [[Double]] = []
     var timerIndex = 0
     var stopwatchIndex = 0
@@ -148,8 +192,8 @@ private class Formatter {
                 formatCheckbox()
             case .rating:
                 formatRating()
-            case .subtitles:
-                formatSubtitles()
+            case let .subtitles(identifier):
+                formatSubtitles(identifier: identifier)
             case .muted:
                 formatMuted(stats: stats)
             case let .heartRate(deviceName):
@@ -343,8 +387,11 @@ private class Formatter {
         ratingIndex += 1
     }
 
-    private func formatSubtitles() {
-        for line in subtitlesLines {
+    private func formatSubtitles(identifier: String?) {
+        guard let subtitles = subtitles[identifier] else {
+            return
+        }
+        for line in subtitles.lines {
             if !parts.isEmpty {
                 lines.append(.init(id: lineId, parts: parts))
                 lineId += 1
@@ -703,53 +750,18 @@ final class TextEffect: VideoEffect {
         }
     }
 
-    private var lastLinePosition = 0
-
     func clearSubtitles() {
-        lastLinePosition = 0
-        formatter.subtitlesLines = []
+        formatter.subtitles.removeAll()
         forceImageUpdate()
     }
 
-    // Something is wrong with subtitles.
     func updateSubtitles(position: Int, text: String, languageIdentifier: String?) {
-        guard languageIdentifier == nil else {
-            return
-        }
-        let endPosition = position + text.count
-        let length = 50
-        while lastLinePosition + length < endPosition {
-            lastLinePosition += length
-        }
-        while lastLinePosition >= endPosition {
-            lastLinePosition -= length
-            lastLinePosition = max(lastLinePosition, 0)
-        }
-        let firstLinePosition = lastLinePosition - length
-        let lastLineIndex = text.index(text.startIndex, offsetBy: lastLinePosition - position)
-        let spaceBeforeLastLineIndex = text[...lastLineIndex].lastIndex(of: " ")
-        let lastLine: Substring
-        if let spaceBeforeLastLineIndex {
-            lastLine = text[spaceBeforeLastLineIndex...]
+        if let subtitles = formatter.subtitles[languageIdentifier] {
+            subtitles.updateSubtitles(position: position, text: text)
         } else {
-            lastLine = text[lastLineIndex...]
-        }
-        if firstLinePosition >= position {
-            let firstLineIndex = text.index(text.startIndex, offsetBy: firstLinePosition - position)
-            let spaceBeforeFirstLineIndex = text[...firstLineIndex].lastIndex(of: " ")
-            let firstLine: Substring
-            if let spaceBeforeLastLineIndex {
-                if let spaceBeforeFirstLineIndex {
-                    firstLine = text[spaceBeforeFirstLineIndex ..< spaceBeforeLastLineIndex]
-                } else {
-                    firstLine = text[firstLineIndex ..< spaceBeforeLastLineIndex]
-                }
-            } else {
-                firstLine = text[firstLineIndex ..< lastLineIndex]
-            }
-            formatter.subtitlesLines = [firstLine.trim(), lastLine.trim()]
-        } else {
-            formatter.subtitlesLines = [lastLine.trim()]
+            let subtitles = Subtitles()
+            subtitles.updateSubtitles(position: position, text: text)
+            formatter.subtitles[languageIdentifier] = subtitles
         }
         forceImageUpdate()
     }

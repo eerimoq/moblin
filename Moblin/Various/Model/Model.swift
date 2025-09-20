@@ -332,7 +332,6 @@ class CameraLevel: ObservableObject {
 
 final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @AppStorage("enterForegroundCount") var enterForegroundCount = 0
-    @Published var isPresentingWidgetWizard = false
     @Published var showingPanel: ShowingPanel = .none
     @Published var panelHidden = false
     @Published var showStealthMode = false
@@ -931,7 +930,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         setPixelFormat()
         setMetalPetalFilters()
         setupAudioSession()
-        reloadSpeechToText()
         if let cameraDevice = preferredCamera(position: .back) {
             (cameraZoomXMinimum, cameraZoomXMaximum) = cameraDevice
                 .getUIZoomRange(hasUltraWideCamera: hasUltraWideBackCamera())
@@ -1081,6 +1079,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         startGForceManager()
         loadStealthModeImage()
         updateKickChannelInfoIfNeeded()
+        reloadSpeechToText()
     }
 
     @objc func applicationDidChangeActive(notification: NSNotification) {

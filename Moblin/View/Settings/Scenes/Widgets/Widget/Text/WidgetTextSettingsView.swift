@@ -131,14 +131,7 @@ private struct TextSelectionView: View {
     @State var suggestion: Int = 0
 
     private func updateTimers(_ textEffect: TextEffect?, _ parts: [TextFormatPart]) {
-        let numberOfTimers = parts.filter { value in
-            switch value {
-            case .timer:
-                return true
-            default:
-                return false
-            }
-        }.count
+        let numberOfTimers = parts.filter { $0 == .timer }.count
         for index in 0 ..< numberOfTimers where index >= widget.text.timers.count {
             widget.text.timers.append(.init())
         }
@@ -151,14 +144,7 @@ private struct TextSelectionView: View {
     }
 
     private func updateStopwatches(_: TextEffect?, _ parts: [TextFormatPart]) {
-        let numberOfStopwatches = parts.filter { value in
-            switch value {
-            case .stopwatch:
-                return true
-            default:
-                return false
-            }
-        }.count
+        let numberOfStopwatches = parts.filter { $0 == .stopwatch }.count
         for index in 0 ..< numberOfStopwatches where index >= widget.text.stopwatches.count {
             widget.text.stopwatches.append(.init())
         }
@@ -171,14 +157,7 @@ private struct TextSelectionView: View {
     }
 
     private func updateCheckboxes(_ textEffect: TextEffect?, _ parts: [TextFormatPart]) {
-        let numberOfCheckboxes = parts.filter { value in
-            switch value {
-            case .checkbox:
-                return true
-            default:
-                return false
-            }
-        }.count
+        let numberOfCheckboxes = parts.filter { $0 == .checkbox }.count
         for index in 0 ..< numberOfCheckboxes where index >= widget.text.checkboxes.count {
             widget.text.checkboxes.append(.init())
         }
@@ -189,14 +168,7 @@ private struct TextSelectionView: View {
     }
 
     private func updateRatings(_ textEffect: TextEffect?, _ parts: [TextFormatPart]) {
-        let numberOfRatings = parts.filter { value in
-            switch value {
-            case .rating:
-                return true
-            default:
-                return false
-            }
-        }.count
+        let numberOfRatings = parts.filter { $0 == .rating }.count
         for index in 0 ..< numberOfRatings where index >= widget.text.ratings.count {
             widget.text.ratings.append(.init())
         }
@@ -207,14 +179,7 @@ private struct TextSelectionView: View {
     }
 
     private func updateLapTimes(_ textEffect: TextEffect?, _ parts: [TextFormatPart]) {
-        let numberOfLapTimes = parts.filter { value in
-            switch value {
-            case .lapTimes:
-                return true
-            default:
-                return false
-            }
-        }.count
+        let numberOfLapTimes = parts.filter { $0 == .lapTimes }.count
         for index in 0 ..< numberOfLapTimes where index >= widget.text.lapTimes.count {
             widget.text.lapTimes.append(.init())
         }
@@ -224,9 +189,25 @@ private struct TextSelectionView: View {
         textEffect?.setLapTimes(lapTimes: widget.text.lapTimes.map { $0.lapTimes })
     }
 
+    private func updateSubtitles(_: TextEffect?, _ parts: [TextFormatPart]) {
+        widget.text.subtitles.removeAll()
+        for part in parts {
+            switch part {
+            case let .subtitles(identifier):
+                let item = SettingsWidgetTextSubtitles()
+                item.identifier = identifier
+                widget.text.subtitles.append(item)
+            default:
+                break
+            }
+        }
+        widget.text.needsSubtitles = !widget.text.subtitles.isEmpty
+        model.reloadSpeechToText()
+    }
+
     private func updateNeedsWeather(_ parts: [TextFormatPart]) {
-        widget.text.needsWeather = !parts.filter { value in
-            switch value {
+        widget.text.needsWeather = !parts.filter {
+            switch $0 {
             case .conditions:
                 return true
             case .temperature:
@@ -239,8 +220,8 @@ private struct TextSelectionView: View {
     }
 
     private func updateNeedsGeography(_ parts: [TextFormatPart]) {
-        widget.text.needsGeography = !parts.filter { value in
-            switch value {
+        widget.text.needsGeography = !parts.filter {
+            switch $0 {
             case .country:
                 return true
             case .countryFlag:
@@ -257,8 +238,8 @@ private struct TextSelectionView: View {
     }
 
     private func updateNeedsGForce(_ parts: [TextFormatPart]) {
-        widget.text.needsGForce = !parts.filter { value in
-            switch value {
+        widget.text.needsGForce = !parts.filter {
+            switch $0 {
             case .gForce:
                 return true
             case .gForceRecentMax:
@@ -272,18 +253,6 @@ private struct TextSelectionView: View {
         model.startGForceManager()
     }
 
-    private func updateNeedsSubtitles(_ parts: [TextFormatPart]) {
-        widget.text.needsSubtitles = !parts.filter { value in
-            switch value {
-            case .subtitles:
-                return true
-            default:
-                return false
-            }
-        }.isEmpty
-        model.reloadSpeechToText()
-    }
-
     private func update() {
         widget.text.formatString = value
         let textEffect = model.getTextEffect(id: widget.id)
@@ -294,9 +263,9 @@ private struct TextSelectionView: View {
         updateCheckboxes(textEffect, parts)
         updateRatings(textEffect, parts)
         updateLapTimes(textEffect, parts)
+        updateSubtitles(textEffect, parts)
         updateNeedsWeather(parts)
         updateNeedsGeography(parts)
-        updateNeedsSubtitles(parts)
         updateNeedsGForce(parts)
         model.sceneUpdated()
     }
@@ -329,11 +298,16 @@ private struct TextSelectionView: View {
                 FormatView(title: "{checkbox}", description: String(localized: "Show a checkbox"), text: $value)
                 FormatView(title: "{rating}", description: String(localized: "Show a 0-5 rating"), text: $value)
                 FormatView(title: "{subtitles}", description: String(localized: "Show subtitles"), text: $value)
+                FormatView(title: "{subtitles:<language-identifier>}",
+                           description: String(localized: "Show subtitles in language"),
+                           text: $value)
                 FormatView(title: "{lapTimes}", description: String(localized: "Show lap times"), text: $value)
                 FormatView(title: "{muted}", description: String(localized: "Show muted"), text: $value)
                 FormatView(title: "{browserTitle}", description: String(localized: "Show browser title"), text: $value)
             } header: {
                 Text("General")
+            } footer: {
+                Text("Subtitles <language-identifier> is for example en, de, or zh-Hans.")
             }
             Section {
                 FormatView(title: "{country}", description: String(localized: "Show country"), text: $value)

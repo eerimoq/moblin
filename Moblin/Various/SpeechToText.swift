@@ -69,7 +69,7 @@ class SpeechToText: NSObject {
             running = false
             recognitionRequest.endAudio()
         }
-        if latestResultTime.duration(to: now) > .seconds(5) {
+        if latestResultTime.duration(to: now) > .seconds(7) {
             if !frozenText.isEmpty {
                 clearFrozenText()
                 delegate?.speechToTextClear()
