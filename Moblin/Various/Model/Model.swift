@@ -614,6 +614,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var onDocumentPickerUrl: ((URL) -> Void)?
     private var healthStore = HKHealthStore()
     private let resourceUsage = ResourceUsage()
+    var speechToTextLatestPosition: Int?
+    var speechToTextLatestText: String?
 
     weak var processor: Processor? {
         didSet {
@@ -1572,6 +1574,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             self.updateStatusChatText()
             self.updateAutoSceneSwitcher(now: monotonicNow)
             self.sendPeriodicRemoteControlStreamerStatus()
+            self.speechToTextProcess()
         }
         periodicTimer3s.startPeriodic(interval: 3) {
             self.teslaGetDriveState()

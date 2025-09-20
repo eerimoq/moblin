@@ -86,6 +86,16 @@ extension Model {
 
 extension Model: SpeechToTextDelegate {
     func speechToTextPartialResult(position: Int, text: String) {
+        speechToTextLatestPosition = position
+        speechToTextLatestText = text
+    }
+
+    func speechToTextProcess() {
+        guard let position = speechToTextLatestPosition, let text = speechToTextLatestText else {
+            return
+        }
+        speechToTextLatestPosition = nil
+        speechToTextLatestText = nil
         if #available(iOS 26.0, *) {
             for translator in Translator.translators {
                 translator.translate(text: text)
@@ -137,7 +147,6 @@ extension Model: SpeechToTextDelegate {
 
 extension Model: TranslatorDelegate {
     func translatorTranslated(languageIdentifier: String, text: String) {
-        // logger.info("speech-to-text: Translated to \(languageIdentifier): \(text)")
         speechToTextPartialResultTextWidgets(position: 0, text: text, languageIdentifier: languageIdentifier)
     }
 }
