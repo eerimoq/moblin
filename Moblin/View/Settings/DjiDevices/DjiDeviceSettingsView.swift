@@ -302,10 +302,6 @@ private struct DjiDeviceStartStopButtonSettingsView: View {
                     }
                 }
             }
-            .listRowBackground(RoundedRectangle(cornerRadius: 10)
-                .foregroundColor(Color(uiColor: .secondarySystemGroupedBackground))
-                .overlay(RoundedRectangle(cornerRadius: 10)
-                    .stroke(.blue, lineWidth: 2)))
             .disabled(!device.canStartLive())
         } else {
             Section {

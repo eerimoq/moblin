@@ -24,10 +24,6 @@ private struct ObsStartStopStreamingView: View {
                     }
                 }
             }
-            .listRowBackground(RoundedRectangle(cornerRadius: 10)
-                .foregroundColor(Color(uiColor: .secondarySystemGroupedBackground))
-                .overlay(RoundedRectangle(cornerRadius: 10)
-                    .stroke(.blue, lineWidth: 2)))
         case .starting:
             Section {
                 HCenter {
@@ -88,10 +84,6 @@ private struct ObsStartStopRecordingView: View {
                     }
                 }
             }
-            .listRowBackground(RoundedRectangle(cornerRadius: 10)
-                .foregroundColor(Color(uiColor: .secondarySystemGroupedBackground))
-                .overlay(RoundedRectangle(cornerRadius: 10)
-                    .stroke(.blue, lineWidth: 2)))
         case .starting:
             Section {
                 HCenter {
@@ -237,10 +229,6 @@ struct QuickButtonObsView: View {
                             audio and video issues.
                             """)
                         }
-                        .listRowBackground(RoundedRectangle(cornerRadius: 10)
-                            .foregroundColor(Color(uiColor: .secondarySystemGroupedBackground))
-                            .overlay(RoundedRectangle(cornerRadius: 10)
-                                .stroke(.blue, lineWidth: 2)))
                     } else {
                         Section {
                             HCenter {
