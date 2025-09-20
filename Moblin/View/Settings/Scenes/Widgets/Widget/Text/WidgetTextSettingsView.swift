@@ -297,17 +297,23 @@ private struct TextSelectionView: View {
                 FormatView(title: "{stopwatch}", description: String(localized: "Show a stopwatch"), text: $value)
                 FormatView(title: "{checkbox}", description: String(localized: "Show a checkbox"), text: $value)
                 FormatView(title: "{rating}", description: String(localized: "Show a 0-5 rating"), text: $value)
-                FormatView(title: "{subtitles}", description: String(localized: "Show subtitles"), text: $value)
-                FormatView(title: "{subtitles:<language-identifier>}",
-                           description: String(localized: "Show subtitles in language"),
+                FormatView(
+                    title: "{subtitles}",
+                    description: String(localized: "Show subtitles in app language"),
+                    text: $value
+                )
+                FormatView(title: "{subtitles:language-identifier}",
+                           description: String(localized: """
+                           Show subtitles in given language. Download languages in \
+                           iOS Settings → Apps → Translate → Languages. <language-identifier> is \
+                           en for English, de for German, zh-Hans for Chinese, ...
+                           """),
                            text: $value)
                 FormatView(title: "{lapTimes}", description: String(localized: "Show lap times"), text: $value)
                 FormatView(title: "{muted}", description: String(localized: "Show muted"), text: $value)
                 FormatView(title: "{browserTitle}", description: String(localized: "Show browser title"), text: $value)
             } header: {
                 Text("General")
-            } footer: {
-                Text("Subtitles <language-identifier> is for example en, de, or zh-Hans.")
             }
             Section {
                 FormatView(title: "{country}", description: String(localized: "Show country"), text: $value)
