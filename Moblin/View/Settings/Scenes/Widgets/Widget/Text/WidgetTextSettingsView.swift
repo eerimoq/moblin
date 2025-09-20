@@ -129,6 +129,7 @@ private struct TextSelectionView: View {
     let widget: SettingsWidget
     @State var value: String
     @State var suggestion: Int = 0
+    @FocusState var editingText: Bool
 
     private func updateTimers(_ textEffect: TextEffect?, _ parts: [TextFormatPart]) {
         let numberOfTimers = parts.filter { $0 == .timer }.count
@@ -276,7 +277,18 @@ private struct TextSelectionView: View {
                 MultiLineTextFieldView(value: $value)
                     .keyboardType(.default)
                     .textInputAutocapitalization(.never)
-                    .disableAutocorrection(true)
+                    .autocorrectionDisabled()
+                    .focused($editingText)
+            } footer: {
+                if isPhone() {
+                    HStack {
+                        Spacer()
+                        Button("Done") {
+                            editingText = false
+                        }
+                    }
+                    .disabled(!editingText)
+                }
             }
             Section {
                 NavigationLink {
