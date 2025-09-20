@@ -69,13 +69,13 @@ struct StreamOverlayRightZoomPresetSelctorView: View {
                 })) {
                     PickerItemView(preset: $0)
                         .frame(
-                            width: min(segmentWidth(), (width - 20) / CGFloat(presets.count)),
+                            width: min(segmentWidth(), max((width - 20) / CGFloat(presets.count), 1)),
                             height: height()
                         )
                 }
                 .background(pickerBackgroundColor)
                 .foregroundColor(.white)
-                .frame(width: min(segmentWidth() * Double(presets.count), width - 20))
+                .frame(width: min(segmentWidth() * Double(presets.count), max(width - 20, 1)))
                 .cornerRadius(7)
                 .overlay(
                     RoundedRectangle(cornerRadius: 7)
