@@ -176,7 +176,7 @@ private class Translator {
                     delegate?.translatorTranslated(languageIdentifier: targetIdentifier,
                                                    text: response.targetText)
                 } catch let error as TranslationError {
-                    let message = String(localized: "Error: \(error.failureReason ?? error.localizedDescription)")
+                    let message = error.failureReason ?? error.localizedDescription
                     delegate?.translatorTranslated(languageIdentifier: targetIdentifier, text: message)
                 } catch {
                     logger.info("speech-to-text: Translation error: \(error)")
