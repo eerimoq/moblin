@@ -98,7 +98,6 @@ class SpeechToText: NSObject {
         if !frozenText.isEmpty {
             frozenText += " "
         }
-        delegate?.speechToTextPartialStart(position: frozenTextPosition, frozenText: frozenText)
         hasResult = false
         running = true
         recognitionRequest = SFSpeechAudioBufferRecognitionRequest()
@@ -120,6 +119,10 @@ class SpeechToText: NSObject {
                 if result.isFinal {
                     self.startRecognition()
                 } else {
+                    if !self.hasResult {
+                        self.delegate?.speechToTextPartialStart(position: self.frozenTextPosition,
+                                                                frozenText: self.frozenText)
+                    }
                     self.delegate?.speechToTextPartialResult(partialText: text)
                     self.latestResultTime = .now
                     self.hasResult = true
