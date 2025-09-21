@@ -313,9 +313,7 @@ extension Model: TwitchEventSubDelegate {
             if self.stream.twitchShowSubscriptionGiftsToast {
                 self.makeToast(title: "\(user) \(text)")
             }
-
             self.playAlert(alert: .twitchSubscrptionGift(event))
-
             if self.stream.twitchShowSubscriptionGiftsChat {
                 self.appendTwitchChatAlertMessage(
                     user: user,
@@ -340,9 +338,7 @@ extension Model: TwitchEventSubDelegate {
             if self.stream.twitchShowResubscriptionsToast {
                 self.makeToast(title: "\(event.user_name) \(text)")
             }
-
             self.playAlert(alert: .twitchResubscribe(event))
-
             if self.stream.twitchShowResubscriptionsChat {
                 self.appendTwitchChatAlertMessage(
                     user: event.user_name,
@@ -364,7 +360,6 @@ extension Model: TwitchEventSubDelegate {
             if self.stream.twitchShowRewardsToast {
                 self.makeToast(title: "\(event.user_name) \(text)")
             }
-
             if self.stream.twitchShowRewardsChat {
                 self.appendTwitchChatAlertMessage(
                     user: event.user_name,
@@ -384,9 +379,7 @@ extension Model: TwitchEventSubDelegate {
             if self.stream.twitchShowRaidsToast {
                 self.makeToast(title: "\(event.from_broadcaster_user_name) \(text)")
             }
-
             self.playAlert(alert: .twitchRaid(event))
-
             if self.stream.twitchShowRaidsChat {
                 self.appendTwitchChatAlertMessage(
                     user: event.from_broadcaster_user_name,
@@ -408,9 +401,7 @@ extension Model: TwitchEventSubDelegate {
             if self.stream.twitchShowCheersToast, event.bits >= self.stream.twitchMinimumBitsAmountForToast {
                 self.makeToast(title: "\(user) \(text)", subTitle: event.message)
             }
-
             self.playAlert(alert: .twitchCheer(event))
-
             if self.stream.twitchShowCheersChat, event.bits >= self.stream.twitchMinimumBitsAmountForChat {
                 self.appendTwitchChatAlertMessage(
                     user: user,
