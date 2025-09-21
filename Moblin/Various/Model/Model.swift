@@ -616,6 +616,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private let resourceUsage = ResourceUsage()
     var speechToTextLatestPosition: Int?
     var speechToTextLatestText: String?
+    var latestSpeechToTextProcessTime = ContinuousClock.now
 
     weak var processor: Processor? {
         didSet {
@@ -1534,6 +1535,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 self.relaxedBitrateStartTime = nil
             }
             self.speechToText?.tick(now: monotonicNow)
+            if self.latestSpeechToTextProcessTime.duration(to: monotonicNow) > .milliseconds(500) {
+                self.speechToTextProcess()
+                self.latestSpeechToTextProcessTime = monotonicNow
+            }
         }
         periodicTimer1s.startPeriodic(interval: 1) {
             let now = Date()
@@ -1574,7 +1579,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             self.updateStatusChatText()
             self.updateAutoSceneSwitcher(now: monotonicNow)
             self.sendPeriodicRemoteControlStreamerStatus()
-            self.speechToTextProcess()
         }
         periodicTimer3s.startPeriodic(interval: 3) {
             self.teslaGetDriveState()
