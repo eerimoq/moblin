@@ -69,11 +69,10 @@ private struct Line: Equatable, Identifiable {
     var parts: [Part]
 }
 
-private class Subtitles {
+class Subtitles {
     var lastLinePosition = 0
     var lines: [String] = []
 
-    // Something is wrong with subtitles.
     func updateSubtitles(position: Int, text: String) {
         let endPosition = position + text.count
         let length = 50
