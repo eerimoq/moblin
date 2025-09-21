@@ -2,7 +2,7 @@ import SwiftUI
 
 struct StreamTwitchSettingsView: View {
     @EnvironmentObject var model: Model
-    let stream: SettingsStream
+    @ObservedObject var stream: SettingsStream
     @State var loggedIn: Bool
     @State var streamTitle: String?
 
@@ -83,15 +83,16 @@ struct StreamTwitchSettingsView: View {
                 }
             }
             Section {
-                Toggle(isOn: Binding(get: {
-                    stream.twitchShowFollows
-                }, set: { value in
-                    stream.twitchShowFollows = value
-                })) {
-                    Text("Show follows")
+                NavigationLink {
+                    TwitchToastNotificationsSettingsView(stream: stream)
+                } label: {
+                    Text("Toast Notifications")
                 }
-            } footer: {
-                Text("Show follows in chat, as toast and in alert widgets.")
+                NavigationLink {
+                    TwitchChatNotificationsSettingsView(stream: stream)
+                } label: {
+                    Text("Chat Notifications")
+                }
             }
             if false {
                 Section {

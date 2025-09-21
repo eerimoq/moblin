@@ -265,19 +265,20 @@ extension Model: TwitchEventSubDelegate {
 
     func twitchEventSubChannelFollow(event: TwitchEventSubNotificationChannelFollowEvent) {
         DispatchQueue.main.async {
-            guard self.stream.twitchShowFollows else {
-                return
-            }
             let text = String(localized: "just followed!")
-            self.makeToast(title: "\(event.user_name) \(text)")
+            if self.stream.twitchShowFollowsToast {
+                self.makeToast(title: "\(event.user_name) \(text)")
+            }
             self.playAlert(alert: .twitchFollow(event))
-            self.appendTwitchChatAlertMessage(
-                user: event.user_name,
-                text: text,
-                title: String(localized: "New follower"),
-                color: .pink,
-                kind: .newFollower
-            )
+            if self.stream.twitchShowFollowsChat {
+                self.appendTwitchChatAlertMessage(
+                    user: event.user_name,
+                    text: text,
+                    title: String(localized: "New follower"),
+                    color: .pink,
+                    kind: .newFollower
+                )
+            }
         }
     }
 
@@ -287,15 +288,19 @@ extension Model: TwitchEventSubDelegate {
         }
         DispatchQueue.main.async {
             let text = String(localized: "just subscribed tier \(event.tierAsNumber())!")
-            self.makeToast(title: "\(event.user_name) \(text)")
+            if self.stream.twitchShowSubscriptionsToast {
+                self.makeToast(title: "\(event.user_name) \(text)")
+            }
             self.playAlert(alert: .twitchSubscribe(event))
-            self.appendTwitchChatAlertMessage(
-                user: event.user_name,
-                text: text,
-                title: String(localized: "New subscriber"),
-                color: .cyan,
-                image: "party.popper"
-            )
+            if self.stream.twitchShowSubscriptionsChat {
+                self.appendTwitchChatAlertMessage(
+                    user: event.user_name,
+                    text: text,
+                    title: String(localized: "New subscriber"),
+                    color: .cyan,
+                    image: "party.popper"
+                )
+            }
         }
     }
 
@@ -304,15 +309,20 @@ extension Model: TwitchEventSubDelegate {
             let user = event.user_name ?? String(localized: "Anonymous")
             let text =
                 String(localized: "just gifted \(event.total) tier \(event.tierAsNumber()) subscriptions!")
-            self.makeToast(title: "\(user) \(text)")
+
+            if self.stream.twitchShowSubscriptionGiftsToast {
+                self.makeToast(title: "\(user) \(text)")
+            }
             self.playAlert(alert: .twitchSubscrptionGift(event))
-            self.appendTwitchChatAlertMessage(
-                user: user,
-                text: text,
-                title: String(localized: "Gift subscriptions"),
-                color: .cyan,
-                image: "gift"
-            )
+            if self.stream.twitchShowSubscriptionGiftsChat {
+                self.appendTwitchChatAlertMessage(
+                    user: user,
+                    text: text,
+                    title: String(localized: "Gift subscriptions"),
+                    color: .cyan,
+                    image: "gift"
+                )
+            }
         }
     }
 
@@ -324,44 +334,61 @@ extension Model: TwitchEventSubDelegate {
             just resubscribed tier \(event.tierAsNumber()) for \(event.cumulative_months) \
             months! \(event.message.text)
             """)
-            self.makeToast(title: "\(event.user_name) \(text)")
+
+            if self.stream.twitchShowResubscriptionsToast {
+                self.makeToast(title: "\(event.user_name) \(text)")
+            }
             self.playAlert(alert: .twitchResubscribe(event))
-            self.appendTwitchChatAlertMessage(
-                user: event.user_name,
-                text: text,
-                title: String(localized: "New resubscribe"),
-                color: .cyan,
-                image: "party.popper"
-            )
+            if self.stream.twitchShowResubscriptionsChat {
+                self.appendTwitchChatAlertMessage(
+                    user: event.user_name,
+                    text: text,
+                    title: String(localized: "New resubscribe"),
+                    color: .cyan,
+                    image: "party.popper"
+                )
+            }
         }
     }
 
     func twitchEventSubChannelPointsCustomRewardRedemptionAdd(
         event: TwitchEventSubNotificationChannelPointsCustomRewardRedemptionAddEvent
     ) {
-        let text = String(localized: "redeemed \(event.reward.title)!")
-        makeToast(title: "\(event.user_name) \(text)")
-        appendTwitchChatAlertMessage(
-            user: event.user_name,
-            text: text,
-            title: String(localized: "Reward redemption"),
-            color: .blue,
-            image: "medal.star"
-        )
+        DispatchQueue.main.async {
+            let text = String(localized: "redeemed \(event.reward.title)!")
+
+            if self.stream.twitchShowRewardsToast {
+                self.makeToast(title: "\(event.user_name) \(text)")
+            }
+            if self.stream.twitchShowRewardsChat {
+                self.appendTwitchChatAlertMessage(
+                    user: event.user_name,
+                    text: text,
+                    title: String(localized: "Reward redemption"),
+                    color: .blue,
+                    image: "medal.star"
+                )
+            }
+        }
     }
 
     func twitchEventSubChannelRaid(event: TwitchEventSubChannelRaidEvent) {
         DispatchQueue.main.async {
             let text = String(localized: "raided with a party of \(event.viewers)!")
-            self.makeToast(title: "\(event.from_broadcaster_user_name) \(text)")
+
+            if self.stream.twitchShowRaidsToast {
+                self.makeToast(title: "\(event.from_broadcaster_user_name) \(text)")
+            }
             self.playAlert(alert: .twitchRaid(event))
-            self.appendTwitchChatAlertMessage(
-                user: event.from_broadcaster_user_name,
-                text: text,
-                title: String(localized: "Raid"),
-                color: .pink,
-                image: "person.3"
-            )
+            if self.stream.twitchShowRaidsChat {
+                self.appendTwitchChatAlertMessage(
+                    user: event.from_broadcaster_user_name,
+                    text: text,
+                    title: String(localized: "Raid"),
+                    color: .pink,
+                    image: "person.3"
+                )
+            }
         }
     }
 
@@ -370,16 +397,21 @@ extension Model: TwitchEventSubDelegate {
             let user = event.user_name ?? String(localized: "Anonymous")
             let bits = countFormatter.format(event.bits)
             let text = String(localized: "cheered \(bits) bits!")
-            self.makeToast(title: "\(user) \(text)", subTitle: event.message)
+
+            if self.stream.twitchShowCheersToast, event.bits >= self.stream.twitchMinimumBitsAmountForToast {
+                self.makeToast(title: "\(user) \(text)", subTitle: event.message)
+            }
             self.playAlert(alert: .twitchCheer(event))
-            self.appendTwitchChatAlertMessage(
-                user: user,
-                text: "\(text) \(event.message)",
-                title: String(localized: "Cheer"),
-                color: .green,
-                image: "suit.diamond",
-                bits: ""
-            )
+            if self.stream.twitchShowCheersChat, event.bits >= self.stream.twitchMinimumBitsAmountForChat {
+                self.appendTwitchChatAlertMessage(
+                    user: user,
+                    text: "\(text) \(event.message)",
+                    title: String(localized: "Cheer"),
+                    color: .green,
+                    image: "suit.diamond",
+                    bits: ""
+                )
+            }
         }
     }
 
