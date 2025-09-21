@@ -193,6 +193,10 @@ private class Translator {
     }
 
     func partialStart() {
+        // Do this properly.
+        if frozenText.count > 500 {
+            frozenText = ""
+        }
         frozenText += latestPartialText
         latestPartialText = ""
     }
