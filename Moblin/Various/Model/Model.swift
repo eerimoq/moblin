@@ -330,6 +330,13 @@ class CameraLevel: ObservableObject {
     }
 }
 
+class SpeechToTextInfo {
+    var latestPosition: Int?
+    var latestFrozenText: String?
+    var latestPartialText: String?
+    var latestProcessTime = ContinuousClock.now
+}
+
 final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @AppStorage("enterForegroundCount") var enterForegroundCount = 0
     @Published var showingPanel: ShowingPanel = .none
@@ -614,10 +621,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var onDocumentPickerUrl: ((URL) -> Void)?
     private var healthStore = HKHealthStore()
     private let resourceUsage = ResourceUsage()
-    var speechToTextLatestPosition: Int?
-    var speechToTextLatestFrozenText: String?
-    var speechToTextLatestPartialText: String?
-    var latestSpeechToTextProcessTime = ContinuousClock.now
+    let speechToTextInfo = SpeechToTextInfo()
 
     weak var processor: Processor? {
         didSet {
@@ -1536,9 +1540,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 self.relaxedBitrateStartTime = nil
             }
             self.speechToText?.tick(now: monotonicNow)
-            if self.latestSpeechToTextProcessTime.duration(to: monotonicNow) > .milliseconds(500) {
+            if self.speechToTextInfo.latestProcessTime.duration(to: monotonicNow) > .milliseconds(500) {
                 self.speechToTextProcess()
-                self.latestSpeechToTextProcessTime = monotonicNow
+                self.speechToTextInfo.latestProcessTime = monotonicNow
             }
         }
         periodicTimer1s.startPeriodic(interval: 1) {

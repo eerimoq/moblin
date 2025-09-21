@@ -2,7 +2,8 @@ import AVKit
 import Speech
 
 protocol SpeechToTextDelegate: AnyObject {
-    func speechToTextPartialResult(position: Int, frozenText: String, partialText: String)
+    func speechToTextPartialStart(position: Int, frozenText: String)
+    func speechToTextPartialResult(partialText: String)
     func speechToTextClear()
 }
 
@@ -97,6 +98,7 @@ class SpeechToText: NSObject {
         if !frozenText.isEmpty {
             frozenText += " "
         }
+        delegate?.speechToTextPartialStart(position: frozenTextPosition, frozenText: frozenText)
         hasResult = false
         running = true
         recognitionRequest = SFSpeechAudioBufferRecognitionRequest()
@@ -118,11 +120,7 @@ class SpeechToText: NSObject {
                 if result.isFinal {
                     self.startRecognition()
                 } else {
-                    self.delegate?.speechToTextPartialResult(
-                        position: self.frozenTextPosition,
-                        frozenText: self.frozenText,
-                        partialText: text
-                    )
+                    self.delegate?.speechToTextPartialResult(partialText: text)
                     self.latestResultTime = .now
                     self.hasResult = true
                 }

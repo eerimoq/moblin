@@ -85,22 +85,23 @@ extension Model {
 }
 
 extension Model: SpeechToTextDelegate {
-    func speechToTextPartialResult(position: Int, frozenText: String, partialText: String) {
-        speechToTextLatestPosition = position
-        speechToTextLatestFrozenText = frozenText
-        speechToTextLatestPartialText = partialText
+    func speechToTextPartialStart(position: Int, frozenText: String) {
+        speechToTextInfo.latestPosition = position
+        speechToTextInfo.latestFrozenText = frozenText
+    }
+
+    func speechToTextPartialResult(partialText: String) {
+        speechToTextInfo.latestPartialText = partialText
     }
 
     func speechToTextProcess() {
-        guard let position = speechToTextLatestPosition,
-              let frozenText = speechToTextLatestFrozenText,
-              let partialText = speechToTextLatestPartialText
+        guard let position = speechToTextInfo.latestPosition,
+              let frozenText = speechToTextInfo.latestFrozenText,
+              let partialText = speechToTextInfo.latestPartialText
         else {
             return
         }
-        speechToTextLatestPosition = nil
-        speechToTextLatestFrozenText = nil
-        speechToTextLatestPartialText = nil
+        speechToTextInfo.latestPartialText = nil
         if #available(iOS 26.0, *) {
             for translator in Translator.translators {
                 translator.translate(frozenText: frozenText, partialText: partialText)
