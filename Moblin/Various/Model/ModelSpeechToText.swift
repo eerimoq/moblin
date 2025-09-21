@@ -90,7 +90,7 @@ extension Model: SpeechToTextDelegate {
         speechToTextInfo.latestFrozenText = frozenText
         if #available(iOS 26.0, *) {
             for translator in Translator.translators {
-                translator.partialStart(frozenText: frozenText)
+                translator.partialStart()
             }
         }
     }
@@ -181,8 +181,8 @@ private class Translator {
     private var latestText: String?
     private let targetIdentifier: String
     private var position = 0
-    private var latestFrozenText: String?
-    private var latestPartialText: String?
+    private var frozenText: String = ""
+    private var latestPartialText: String = ""
     weak var delegate: TranslatorDelegate?
 
     init(targetIdentifier: String) {
@@ -191,20 +191,17 @@ private class Translator {
                                      target: .init(identifier: targetIdentifier))
     }
 
-    func partialStart(frozenText: String) {
-        latestFrozenText = frozenText
+    func partialStart() {
+        frozenText += latestPartialText
+        latestPartialText = ""
     }
 
     func partialResult(partialText: String) {
         latestPartialText = partialText
+        latestText = frozenText + latestPartialText
     }
 
     func translate() {
-        guard let frozenText = latestFrozenText, let partialText = latestPartialText else {
-            return
-        }
-        latestPartialText = nil
-        latestText = frozenText + partialText
         guard ready else {
             return
         }
