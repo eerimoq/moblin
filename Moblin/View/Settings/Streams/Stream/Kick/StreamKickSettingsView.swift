@@ -2,6 +2,7 @@ import SwiftUI
 import WebKit
 
 private let kickDomain = "kick.com"
+
 private let loginUrl = URL(string: "https://kick.com/login")!
 private let sessionTokenCookieName = "session_token"
 
@@ -235,6 +236,13 @@ struct StreamKickSettingsView: View {
                         .foregroundColor(.red)
                 } else if shouldFetchChannelInfo() {
                     Text("Fetching channel info...")
+                }
+            }
+            Section {
+                NavigationLink {
+                    KickNotificationsSettingsView(stream: stream)
+                } label: {
+                    Text("Notifications")
                 }
             }
             if stream.kickLoggedIn {

@@ -717,7 +717,23 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
     @Published var url: String = defaultStreamUrl
     var twitchChannelName: String = ""
     var twitchChannelId: String = ""
-    var twitchShowFollows: Bool = true
+    @Published var twitchShowFollows: Bool = true
+    @Published var twitchShowFollowsToast: Bool = true
+    @Published var twitchShowFollowsChat: Bool = true
+    @Published var twitchShowSubscriptionsToast: Bool = true
+    @Published var twitchShowSubscriptionsChat: Bool = true
+    @Published var twitchShowSubscriptionGiftsToast: Bool = true
+    @Published var twitchShowSubscriptionGiftsChat: Bool = true
+    @Published var twitchShowResubscriptionsToast: Bool = true
+    @Published var twitchShowResubscriptionsChat: Bool = true
+    @Published var twitchShowRewardsToast: Bool = true
+    @Published var twitchShowRewardsChat: Bool = true
+    @Published var twitchShowRaidsToast: Bool = true
+    @Published var twitchShowRaidsChat: Bool = true
+    @Published var twitchShowCheersToast: Bool = true
+    @Published var twitchShowCheersChat: Bool = true
+    @Published var twitchMinimumBitsAmountForToast: Int = 0
+    @Published var twitchMinimumBitsAmountForChat: Int = 0
     var twitchAccessToken: String = ""
     var twitchLoggedIn: Bool = false
     var twitchRewards: [SettingsStreamTwitchReward] = []
@@ -729,6 +745,20 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
     var kickAccessToken: String = ""
     @Published var kickLoggedIn: Bool = false
     @Published var kickSendMessagesTo: Bool = true
+    @Published var kickShowSubscriptionsToast: Bool = true
+    @Published var kickShowSubscriptionsChat: Bool = true
+    @Published var kickShowGiftedSubscriptionsToast: Bool = true
+    @Published var kickShowGiftedSubscriptionsChat: Bool = true
+    @Published var kickShowRewardsToast: Bool = true
+    @Published var kickShowRewardsChat: Bool = true
+    @Published var kickShowHostsToast: Bool = true
+    @Published var kickShowHostsChat: Bool = true
+    @Published var kickShowBansToast: Bool = true
+    @Published var kickShowBansChat: Bool = true
+    @Published var kickShowKicksToast: Bool = true
+    @Published var kickShowKicksChat: Bool = true
+    @Published var kickMinimumKickAmountForToast: Int = 0
+    @Published var kickMinimumKickAmountForChat: Int = 0
     var youTubeApiKey: String = ""
     @Published var youTubeVideoId: String = ""
     @Published var youTubeHandle: String = ""
@@ -796,6 +826,22 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
              twitchChannelName,
              twitchChannelId,
              twitchShowFollows,
+             twitchShowFollowsToast,
+             twitchShowFollowsChat,
+             twitchShowSubscriptionsToast,
+             twitchShowSubscriptionsChat,
+             twitchShowSubscriptionGiftsToast,
+             twitchShowSubscriptionGiftsChat,
+             twitchShowResubscriptionsToast,
+             twitchShowResubscriptionsChat,
+             twitchShowRewardsToast,
+             twitchShowRewardsChat,
+             twitchShowRaidsToast,
+             twitchShowRaidsChat,
+             twitchShowCheersToast,
+             twitchShowCheersChat,
+             twitchMinimumBitsAmountForToast,
+             twitchMinimumBitsAmountForChat,
              twitchAccessToken,
              twitchLoggedIn,
              twitchRewards,
@@ -807,6 +853,20 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
              kickAccessToken,
              kickLoggedIn,
              kickSendMessagesTo,
+             kickShowSubscriptionsToast,
+             kickShowSubscriptionsChat,
+             kickShowGiftedSubscriptionsToast,
+             kickShowGiftedSubscriptionsChat,
+             kickShowRewardsToast,
+             kickShowRewardsChat,
+             kickShowHostsToast,
+             kickShowHostsChat,
+             kickShowBansToast,
+             kickShowBansChat,
+             kickShowKicksToast,
+             kickShowKicksChat,
+             kickMinimumKickAmountForToast,
+             kickMinimumKickAmountForChat,
              youTubeApiKey,
              youTubeVideoId,
              youTubeHandle,
@@ -870,6 +930,22 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         try container.encode(.twitchChannelName, twitchChannelName)
         try container.encode(.twitchChannelId, twitchChannelId)
         try container.encode(.twitchShowFollows, twitchShowFollows)
+        try container.encode(.twitchShowFollowsToast, twitchShowFollowsToast)
+        try container.encode(.twitchShowFollowsChat, twitchShowFollowsChat)
+        try container.encode(.twitchShowSubscriptionsToast, twitchShowSubscriptionsToast)
+        try container.encode(.twitchShowSubscriptionsChat, twitchShowSubscriptionsChat)
+        try container.encode(.twitchShowSubscriptionGiftsToast, twitchShowSubscriptionGiftsToast)
+        try container.encode(.twitchShowSubscriptionGiftsChat, twitchShowSubscriptionGiftsChat)
+        try container.encode(.twitchShowResubscriptionsToast, twitchShowResubscriptionsToast)
+        try container.encode(.twitchShowResubscriptionsChat, twitchShowResubscriptionsChat)
+        try container.encode(.twitchShowRewardsToast, twitchShowRewardsToast)
+        try container.encode(.twitchShowRewardsChat, twitchShowRewardsChat)
+        try container.encode(.twitchShowRaidsToast, twitchShowRaidsToast)
+        try container.encode(.twitchShowRaidsChat, twitchShowRaidsChat)
+        try container.encode(.twitchShowCheersToast, twitchShowCheersToast)
+        try container.encode(.twitchShowCheersChat, twitchShowCheersChat)
+        try container.encode(.twitchMinimumBitsAmountForToast, twitchMinimumBitsAmountForToast)
+        try container.encode(.twitchMinimumBitsAmountForChat, twitchMinimumBitsAmountForChat)
         try container.encode(.twitchAccessToken, twitchAccessToken)
         try container.encode(.twitchLoggedIn, twitchLoggedIn)
         try container.encode(.twitchRewards, twitchRewards)
@@ -881,6 +957,20 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         try container.encode(.kickAccessToken, kickAccessToken)
         try container.encode(.kickLoggedIn, kickLoggedIn)
         try container.encode(.kickSendMessagesTo, kickSendMessagesTo)
+        try container.encode(.kickShowSubscriptionsToast, kickShowSubscriptionsToast)
+        try container.encode(.kickShowSubscriptionsChat, kickShowSubscriptionsChat)
+        try container.encode(.kickShowGiftedSubscriptionsToast, kickShowGiftedSubscriptionsToast)
+        try container.encode(.kickShowGiftedSubscriptionsChat, kickShowGiftedSubscriptionsChat)
+        try container.encode(.kickShowRewardsToast, kickShowRewardsToast)
+        try container.encode(.kickShowRewardsChat, kickShowRewardsChat)
+        try container.encode(.kickShowHostsToast, kickShowHostsToast)
+        try container.encode(.kickShowHostsChat, kickShowHostsChat)
+        try container.encode(.kickShowBansToast, kickShowBansToast)
+        try container.encode(.kickShowBansChat, kickShowBansChat)
+        try container.encode(.kickShowKicksToast, kickShowKicksToast)
+        try container.encode(.kickShowKicksChat, kickShowKicksChat)
+        try container.encode(.kickMinimumKickAmountForToast, kickMinimumKickAmountForToast)
+        try container.encode(.kickMinimumKickAmountForChat, kickMinimumKickAmountForChat)
         try container.encode(.youTubeApiKey, youTubeApiKey)
         try container.encode(.youTubeVideoId, youTubeVideoId)
         try container.encode(.youTubeHandle, youTubeHandle)
@@ -942,6 +1032,22 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         twitchChannelName = container.decode(.twitchChannelName, String.self, "")
         twitchChannelId = container.decode(.twitchChannelId, String.self, "")
         twitchShowFollows = container.decode(.twitchShowFollows, Bool.self, true)
+        twitchShowFollowsToast = container.decode(.twitchShowFollowsToast, Bool.self, true)
+        twitchShowFollowsChat = container.decode(.twitchShowFollowsChat, Bool.self, true)
+        twitchShowSubscriptionsToast = container.decode(.twitchShowSubscriptionsToast, Bool.self, true)
+        twitchShowSubscriptionsChat = container.decode(.twitchShowSubscriptionsChat, Bool.self, true)
+        twitchShowSubscriptionGiftsToast = container.decode(.twitchShowSubscriptionGiftsToast, Bool.self, true)
+        twitchShowSubscriptionGiftsChat = container.decode(.twitchShowSubscriptionGiftsChat, Bool.self, true)
+        twitchShowResubscriptionsToast = container.decode(.twitchShowResubscriptionsToast, Bool.self, true)
+        twitchShowResubscriptionsChat = container.decode(.twitchShowResubscriptionsChat, Bool.self, true)
+        twitchShowRewardsToast = container.decode(.twitchShowRewardsToast, Bool.self, true)
+        twitchShowRewardsChat = container.decode(.twitchShowRewardsChat, Bool.self, true)
+        twitchShowRaidsToast = container.decode(.twitchShowRaidsToast, Bool.self, true)
+        twitchShowRaidsChat = container.decode(.twitchShowRaidsChat, Bool.self, true)
+        twitchShowCheersToast = container.decode(.twitchShowCheersToast, Bool.self, true)
+        twitchShowCheersChat = container.decode(.twitchShowCheersChat, Bool.self, true)
+        twitchMinimumBitsAmountForToast = container.decode(.twitchMinimumBitsAmountForToast, Int.self, 0)
+        twitchMinimumBitsAmountForChat = container.decode(.twitchMinimumBitsAmountForChat, Int.self, 0)
         twitchAccessToken = container.decode(.twitchAccessToken, String.self, "")
         twitchLoggedIn = container.decode(.twitchLoggedIn, Bool.self, false)
         twitchRewards = container.decode(.twitchRewards, [SettingsStreamTwitchReward].self, [])
@@ -953,6 +1059,20 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         kickAccessToken = container.decode(.kickAccessToken, String.self, "")
         kickLoggedIn = container.decode(.kickLoggedIn, Bool.self, false)
         kickSendMessagesTo = container.decode(.kickSendMessagesTo, Bool.self, true)
+        kickShowSubscriptionsToast = container.decode(.kickShowSubscriptionsToast, Bool.self, true)
+        kickShowSubscriptionsChat = container.decode(.kickShowSubscriptionsChat, Bool.self, true)
+        kickShowGiftedSubscriptionsToast = container.decode(.kickShowGiftedSubscriptionsToast, Bool.self, true)
+        kickShowGiftedSubscriptionsChat = container.decode(.kickShowGiftedSubscriptionsChat, Bool.self, true)
+        kickShowRewardsToast = container.decode(.kickShowRewardsToast, Bool.self, true)
+        kickShowRewardsChat = container.decode(.kickShowRewardsChat, Bool.self, true)
+        kickShowHostsToast = container.decode(.kickShowHostsToast, Bool.self, true)
+        kickShowHostsChat = container.decode(.kickShowHostsChat, Bool.self, true)
+        kickShowBansToast = container.decode(.kickShowBansToast, Bool.self, true)
+        kickShowBansChat = container.decode(.kickShowBansChat, Bool.self, true)
+        kickShowKicksToast = container.decode(.kickShowKicksToast, Bool.self, true)
+        kickShowKicksChat = container.decode(.kickShowKicksChat, Bool.self, true)
+        kickMinimumKickAmountForToast = container.decode(.kickMinimumKickAmountForToast, Int.self, 0)
+        kickMinimumKickAmountForChat = container.decode(.kickMinimumKickAmountForChat, Int.self, 0)
         youTubeApiKey = container.decode(.youTubeApiKey, String.self, "")
         youTubeVideoId = container.decode(.youTubeVideoId, String.self, "")
         youTubeHandle = container.decode(.youTubeHandle, String.self, "")
@@ -1011,6 +1131,22 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         new.twitchChannelName = twitchChannelName
         new.twitchChannelId = twitchChannelId
         new.twitchShowFollows = twitchShowFollows
+        new.twitchShowFollowsToast = twitchShowFollowsToast
+        new.twitchShowFollowsChat = twitchShowFollowsChat
+        new.twitchShowSubscriptionsToast = twitchShowSubscriptionsToast
+        new.twitchShowSubscriptionsChat = twitchShowSubscriptionsChat
+        new.twitchShowSubscriptionGiftsToast = twitchShowSubscriptionGiftsToast
+        new.twitchShowSubscriptionGiftsChat = twitchShowSubscriptionGiftsChat
+        new.twitchShowResubscriptionsToast = twitchShowResubscriptionsToast
+        new.twitchShowResubscriptionsChat = twitchShowResubscriptionsChat
+        new.twitchShowRewardsToast = twitchShowRewardsToast
+        new.twitchShowRewardsChat = twitchShowRewardsChat
+        new.twitchShowRaidsToast = twitchShowRaidsToast
+        new.twitchShowRaidsChat = twitchShowRaidsChat
+        new.twitchShowCheersToast = twitchShowCheersToast
+        new.twitchShowCheersChat = twitchShowCheersChat
+        new.twitchMinimumBitsAmountForToast = twitchMinimumBitsAmountForToast
+        new.twitchMinimumBitsAmountForChat = twitchMinimumBitsAmountForChat
         new.twitchRewards = twitchRewards
         new.twitchSendMessagesTo = twitchSendMessagesTo
         new.kickChannelName = kickChannelName
@@ -1020,6 +1156,20 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         new.kickAccessToken = kickAccessToken
         new.kickLoggedIn = kickLoggedIn
         new.kickSendMessagesTo = kickSendMessagesTo
+        new.kickShowSubscriptionsToast = kickShowSubscriptionsToast
+        new.kickShowSubscriptionsChat = kickShowSubscriptionsChat
+        new.kickShowGiftedSubscriptionsToast = kickShowGiftedSubscriptionsToast
+        new.kickShowGiftedSubscriptionsChat = kickShowGiftedSubscriptionsChat
+        new.kickShowRewardsToast = kickShowRewardsToast
+        new.kickShowRewardsChat = kickShowRewardsChat
+        new.kickShowHostsToast = kickShowHostsToast
+        new.kickShowHostsChat = kickShowHostsChat
+        new.kickShowBansToast = kickShowBansToast
+        new.kickShowBansChat = kickShowBansChat
+        new.kickShowKicksToast = kickShowKicksToast
+        new.kickShowKicksChat = kickShowKicksChat
+        new.kickMinimumKickAmountForToast = kickMinimumKickAmountForToast
+        new.kickMinimumKickAmountForChat = kickMinimumKickAmountForChat
         new.youTubeApiKey = youTubeApiKey
         new.youTubeVideoId = youTubeVideoId
         new.youTubeHandle = youTubeHandle
