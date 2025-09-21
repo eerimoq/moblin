@@ -717,7 +717,6 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
     @Published var url: String = defaultStreamUrl
     var twitchChannelName: String = ""
     var twitchChannelId: String = ""
-    @Published var twitchShowFollows: Bool = true
     @Published var twitchShowFollowsToast: Bool = true
     @Published var twitchShowFollowsChat: Bool = true
     @Published var twitchShowSubscriptionsToast: Bool = true
@@ -825,7 +824,6 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
              url,
              twitchChannelName,
              twitchChannelId,
-             twitchShowFollows,
              twitchShowFollowsToast,
              twitchShowFollowsChat,
              twitchShowSubscriptionsToast,
@@ -929,7 +927,6 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         try container.encode(.url, url)
         try container.encode(.twitchChannelName, twitchChannelName)
         try container.encode(.twitchChannelId, twitchChannelId)
-        try container.encode(.twitchShowFollows, twitchShowFollows)
         try container.encode(.twitchShowFollowsToast, twitchShowFollowsToast)
         try container.encode(.twitchShowFollowsChat, twitchShowFollowsChat)
         try container.encode(.twitchShowSubscriptionsToast, twitchShowSubscriptionsToast)
@@ -1031,7 +1028,6 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         url = container.decode(.url, String.self, defaultStreamUrl)
         twitchChannelName = container.decode(.twitchChannelName, String.self, "")
         twitchChannelId = container.decode(.twitchChannelId, String.self, "")
-        twitchShowFollows = container.decode(.twitchShowFollows, Bool.self, true)
         twitchShowFollowsToast = container.decode(.twitchShowFollowsToast, Bool.self, true)
         twitchShowFollowsChat = container.decode(.twitchShowFollowsChat, Bool.self, true)
         twitchShowSubscriptionsToast = container.decode(.twitchShowSubscriptionsToast, Bool.self, true)
@@ -1130,7 +1126,6 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         new.url = url
         new.twitchChannelName = twitchChannelName
         new.twitchChannelId = twitchChannelId
-        new.twitchShowFollows = twitchShowFollows
         new.twitchShowFollowsToast = twitchShowFollowsToast
         new.twitchShowFollowsChat = twitchShowFollowsChat
         new.twitchShowSubscriptionsToast = twitchShowSubscriptionsToast

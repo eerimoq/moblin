@@ -269,9 +269,7 @@ extension Model: TwitchEventSubDelegate {
             if self.stream.twitchShowFollowsToast {
                 self.makeToast(title: "\(event.user_name) \(text)")
             }
-            if self.stream.twitchShowFollows {
-                self.playAlert(alert: .twitchFollow(event))
-            }
+            self.playAlert(alert: .twitchFollow(event))
             if self.stream.twitchShowFollowsChat {
                 self.appendTwitchChatAlertMessage(
                     user: event.user_name,
