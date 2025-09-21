@@ -2,7 +2,7 @@ import AVKit
 import Speech
 
 protocol SpeechToTextDelegate: AnyObject {
-    func speechToTextPartialResult(position: Int, text: String)
+    func speechToTextPartialResult(position: Int, frozenText: String, partialText: String)
     func speechToTextClear()
 }
 
@@ -120,7 +120,8 @@ class SpeechToText: NSObject {
                 } else {
                     self.delegate?.speechToTextPartialResult(
                         position: self.frozenTextPosition,
-                        text: self.frozenText + text
+                        frozenText: self.frozenText,
+                        partialText: text
                     )
                     self.latestResultTime = .now
                     self.hasResult = true

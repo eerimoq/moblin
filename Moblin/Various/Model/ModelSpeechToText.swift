@@ -85,22 +85,28 @@ extension Model {
 }
 
 extension Model: SpeechToTextDelegate {
-    func speechToTextPartialResult(position: Int, text: String) {
+    func speechToTextPartialResult(position: Int, frozenText: String, partialText: String) {
         speechToTextLatestPosition = position
-        speechToTextLatestText = text
+        speechToTextLatestFrozenText = frozenText
+        speechToTextLatestPartialText = partialText
     }
 
     func speechToTextProcess() {
-        guard let position = speechToTextLatestPosition, let text = speechToTextLatestText else {
+        guard let position = speechToTextLatestPosition,
+              let frozenText = speechToTextLatestFrozenText,
+              let partialText = speechToTextLatestPartialText
+        else {
             return
         }
         speechToTextLatestPosition = nil
-        speechToTextLatestText = nil
+        speechToTextLatestFrozenText = nil
+        speechToTextLatestPartialText = nil
         if #available(iOS 26.0, *) {
             for translator in Translator.translators {
-                translator.translate(text: text)
+                translator.translate(frozenText: frozenText, partialText: partialText)
             }
         }
+        let text = frozenText + partialText
         speechToTextPartialResultTextWidgets(position: position, text: text, languageIdentifier: nil)
         speechToTextPartialResultAlertsWidget(text: text)
     }
@@ -146,13 +152,13 @@ extension Model: SpeechToTextDelegate {
 }
 
 extension Model: TranslatorDelegate {
-    func translatorTranslated(languageIdentifier: String, text: String) {
-        speechToTextPartialResultTextWidgets(position: 0, text: text, languageIdentifier: languageIdentifier)
+    func translatorTranslated(languageIdentifier: String, position: Int, text: String) {
+        speechToTextPartialResultTextWidgets(position: position, text: text, languageIdentifier: languageIdentifier)
     }
 }
 
 private protocol TranslatorDelegate: AnyObject {
-    func translatorTranslated(languageIdentifier: String, text: String)
+    func translatorTranslated(languageIdentifier: String, position: Int, text: String)
 }
 
 @available(iOS 26.0, *)
@@ -163,6 +169,7 @@ private class Translator {
     private var ready = true
     private var latestText: String?
     private let targetIdentifier: String
+    private var position = 0
     weak var delegate: TranslatorDelegate?
 
     init(targetIdentifier: String) {
@@ -171,8 +178,8 @@ private class Translator {
                                      target: .init(identifier: targetIdentifier))
     }
 
-    func translate(text: String) {
-        latestText = text
+    func translate(frozenText: String, partialText: String) {
+        latestText = frozenText + partialText
         guard ready else {
             return
         }
@@ -183,10 +190,13 @@ private class Translator {
                 do {
                     let response = try await session.translate(text)
                     delegate?.translatorTranslated(languageIdentifier: targetIdentifier,
+                                                   position: position,
                                                    text: response.targetText)
                 } catch let error as TranslationError {
                     let message = error.failureReason ?? error.localizedDescription
-                    delegate?.translatorTranslated(languageIdentifier: targetIdentifier, text: message)
+                    delegate?.translatorTranslated(languageIdentifier: targetIdentifier,
+                                                   position: position,
+                                                   text: message)
                 } catch {
                     logger.info("speech-to-text: Translation error: \(error)")
                 }

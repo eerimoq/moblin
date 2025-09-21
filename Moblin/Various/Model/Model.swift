@@ -615,7 +615,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var healthStore = HKHealthStore()
     private let resourceUsage = ResourceUsage()
     var speechToTextLatestPosition: Int?
-    var speechToTextLatestText: String?
+    var speechToTextLatestFrozenText: String?
+    var speechToTextLatestPartialText: String?
     var latestSpeechToTextProcessTime = ContinuousClock.now
 
     weak var processor: Processor? {
