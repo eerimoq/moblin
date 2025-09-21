@@ -70,7 +70,8 @@ private struct Line: Equatable, Identifiable {
 }
 
 class Subtitles {
-    var lastLinePosition = 0
+    private var lastLinePosition = 0
+    private var previousFirstLinePosition = -1
     var lines: [String] = []
 
     func updateSubtitles(position: Int, text: String) {
@@ -92,7 +93,8 @@ class Subtitles {
         } else {
             lastLine = text[lastLineIndex...]
         }
-        if firstLinePosition >= position {
+        if firstLinePosition >= position, firstLinePosition >= previousFirstLinePosition {
+            previousFirstLinePosition = firstLinePosition
             let firstLineIndex = text.index(text.startIndex, offsetBy: firstLinePosition - position)
             let spaceBeforeFirstLineIndex = text[...firstLineIndex].lastIndex(of: " ")
             let firstLine: Substring

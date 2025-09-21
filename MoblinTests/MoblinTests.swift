@@ -77,7 +77,29 @@ struct MoblinTests {
         subtitles.updateSubtitles(position: position, text: frozen + partial)
         #expect(subtitles.lines == [
             "switches Yes no maybe something is coming up or",
-            "is it"
+            "is it",
+        ])
+        partial = "Yes no maybe something did come up or is it"
+        subtitles.updateSubtitles(position: position, text: frozen + partial)
+        #expect(subtitles.lines == [
+            "switches Yes no maybe something did come up or is",
+            "it",
+        ])
+        partial = "Yes no maybe something did come up or is"
+        subtitles.updateSubtitles(position: position, text: frozen + partial)
+        #expect(subtitles.lines == [
+            "switches Yes no maybe something did come up or is",
+        ])
+        partial = "Yes no maybe something"
+        subtitles.updateSubtitles(position: position, text: frozen + partial)
+        #expect(subtitles.lines == [
+            "switches Yes no maybe something",
+        ])
+        partial = "Yes no maybe something did come up or is this just another"
+        subtitles.updateSubtitles(position: position, text: frozen + partial)
+        #expect(subtitles.lines == [
+            "switches Yes no maybe something did come up or is",
+            "this just another",
         ])
     }
 }
