@@ -88,13 +88,28 @@ extension Model: SpeechToTextDelegate {
     func speechToTextPartialStart(position: Int, frozenText: String) {
         speechToTextInfo.latestPosition = position
         speechToTextInfo.latestFrozenText = frozenText
+        if #available(iOS 26.0, *) {
+            for translator in Translator.translators {
+                translator.partialStart(frozenText: frozenText)
+            }
+        }
     }
 
     func speechToTextPartialResult(partialText: String) {
         speechToTextInfo.latestPartialText = partialText
+        if #available(iOS 26.0, *) {
+            for translator in Translator.translators {
+                translator.partialResult(partialText: partialText)
+            }
+        }
     }
 
     func speechToTextProcess() {
+        if #available(iOS 26.0, *) {
+            for translator in Translator.translators {
+                translator.translate()
+            }
+        }
         guard let position = speechToTextInfo.latestPosition,
               let frozenText = speechToTextInfo.latestFrozenText,
               let partialText = speechToTextInfo.latestPartialText
@@ -102,11 +117,6 @@ extension Model: SpeechToTextDelegate {
             return
         }
         speechToTextInfo.latestPartialText = nil
-        if #available(iOS 26.0, *) {
-            for translator in Translator.translators {
-                translator.translate(frozenText: frozenText, partialText: partialText)
-            }
-        }
         let text = frozenText + partialText
         speechToTextPartialResultTextWidgets(position: position, text: text, languageIdentifier: nil)
         speechToTextPartialResultAlertsWidget(text: text)
@@ -171,6 +181,8 @@ private class Translator {
     private var latestText: String?
     private let targetIdentifier: String
     private var position = 0
+    private var latestFrozenText: String?
+    private var latestPartialText: String?
     weak var delegate: TranslatorDelegate?
 
     init(targetIdentifier: String) {
@@ -179,7 +191,19 @@ private class Translator {
                                      target: .init(identifier: targetIdentifier))
     }
 
-    func translate(frozenText: String, partialText: String) {
+    func partialStart(frozenText: String) {
+        latestFrozenText = frozenText
+    }
+
+    func partialResult(partialText: String) {
+        latestPartialText = partialText
+    }
+
+    func translate() {
+        guard let frozenText = latestFrozenText, let partialText = latestPartialText else {
+            return
+        }
+        latestPartialText = nil
         latestText = frozenText + partialText
         guard ready else {
             return
