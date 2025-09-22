@@ -82,6 +82,9 @@ struct DebugSettingsView: View {
                         value: $debug.dataRateLimitFactor,
                         in: 1.2 ... 2.5,
                         step: 0.1,
+                        label: {
+                            EmptyView()
+                        },
                         onEditingChanged: { begin in
                             guard !begin else {
                                 return

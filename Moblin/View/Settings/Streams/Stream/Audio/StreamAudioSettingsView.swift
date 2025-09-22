@@ -32,6 +32,9 @@ struct StreamAudioSettingsView: View {
                         value: $bitrate,
                         in: 32 ... 320,
                         step: 32,
+                        label: {
+                            EmptyView()
+                        },
                         onEditingChanged: { begin in
                             guard !begin else {
                                 return

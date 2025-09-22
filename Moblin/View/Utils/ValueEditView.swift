@@ -66,7 +66,10 @@ struct ValueEditView: View {
         Slider(
             value: $number,
             in: minimum ... maximum,
-            step: increment
+            step: increment,
+            label: {
+                EmptyView()
+            }
         )
         .onChange(of: number) { number in
             value = onSubmit("\(number)")
@@ -111,7 +114,10 @@ struct ValueEditCompactView: View {
                 Slider(
                     value: $number,
                     in: minimum ... maximum,
-                    step: 1
+                    step: 1,
+                    label: {
+                        EmptyView()
+                    }
                 )
                 .rotationEffect(.degrees(mirror ? 180 : 0))
                 .onChange(of: number) { number in

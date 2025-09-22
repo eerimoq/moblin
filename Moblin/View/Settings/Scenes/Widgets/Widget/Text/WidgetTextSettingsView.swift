@@ -561,7 +561,10 @@ struct WidgetTextSettingsView: View {
                 Slider(
                     value: $text.fontSizeFloat,
                     in: 10 ... 200,
-                    step: 5
+                    step: 5,
+                    label: {
+                        EmptyView()
+                    }
                 )
                 .onChange(of: text.fontSizeFloat) { _ in
                     text.fontSize = Int(text.fontSizeFloat)
@@ -630,6 +633,9 @@ struct WidgetTextSettingsView: View {
                     value: $text.delay,
                     in: 0 ... 10,
                     step: 0.5,
+                    label: {
+                        EmptyView()
+                    },
                     onEditingChanged: { begin in
                         guard !begin else {
                             return

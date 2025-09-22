@@ -120,6 +120,9 @@ private struct DeepLinkCreatorStreamAudioView: View {
                         value: $audio.bitrateFloat,
                         in: 32 ... 320,
                         step: 32,
+                        label: {
+                            EmptyView()
+                        },
                         onEditingChanged: { begin in
                             guard !begin else {
                                 return

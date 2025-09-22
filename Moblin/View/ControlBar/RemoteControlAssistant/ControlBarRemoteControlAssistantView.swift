@@ -51,6 +51,9 @@ private struct RemoteControlSrtConnectionPriorityView: View {
                     value: $prio,
                     in: Float(minimumSrtConnectionPriority) ... Float(maximumSrtConnectionPriority),
                     step: 1,
+                    label: {
+                        EmptyView()
+                    },
                     onEditingChanged: { begin in
                         guard !begin else {
                             return

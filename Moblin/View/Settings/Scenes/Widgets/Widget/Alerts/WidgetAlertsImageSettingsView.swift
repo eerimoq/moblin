@@ -157,6 +157,9 @@ struct AlertImageSelectorView: View {
                         value: $loopCount,
                         in: 1 ... 10,
                         step: 1,
+                        label: {
+                            EmptyView()
+                        },
                         onEditingChanged: { begin in
                             guard !begin else {
                                 return

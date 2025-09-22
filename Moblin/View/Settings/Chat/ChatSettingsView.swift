@@ -41,6 +41,9 @@ struct ChatSettingsView: View {
                         value: $chat.fontSize,
                         in: 10 ... 30,
                         step: 1,
+                        label: {
+                            EmptyView()
+                        },
                         onEditingChanged: { begin in
                             guard !begin else {
                                 return

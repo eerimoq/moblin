@@ -16,7 +16,10 @@ struct AlertFontView: View {
                     Slider(
                         value: $fontSize,
                         in: 10 ... 80,
-                        step: 5
+                        step: 5,
+                        label: {
+                            EmptyView()
+                        }
                     )
                     .onChange(of: fontSize) { value in
                         alert.fontSize = Int(value)

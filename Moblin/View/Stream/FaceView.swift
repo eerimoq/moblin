@@ -39,6 +39,9 @@ private struct FaceViewSlider: View {
                 value: $value,
                 in: range,
                 step: step,
+                label: {
+                    EmptyView()
+                },
                 onEditingChanged: { begin in
                     guard !begin else {
                         return

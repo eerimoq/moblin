@@ -62,6 +62,9 @@ struct ChatTextToSpeechSettingsView: View {
                         value: $chat.textToSpeechPauseBetweenMessages,
                         in: 0.5 ... 15.0,
                         step: 0.5,
+                        label: {
+                            EmptyView()
+                        },
                         onEditingChanged: { begin in
                             guard !begin else {
                                 return

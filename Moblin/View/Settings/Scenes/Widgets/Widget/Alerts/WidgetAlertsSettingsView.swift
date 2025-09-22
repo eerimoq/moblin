@@ -49,7 +49,10 @@ private struct AlertTextToSpeechView: View {
                 Slider(
                     value: $ttsDelay,
                     in: 0 ... 5,
-                    step: 0.5
+                    step: 0.5,
+                    label: {
+                        EmptyView()
+                    }
                 )
                 .onChange(of: ttsDelay) { _ in
                     alert.textToSpeechDelay = ttsDelay

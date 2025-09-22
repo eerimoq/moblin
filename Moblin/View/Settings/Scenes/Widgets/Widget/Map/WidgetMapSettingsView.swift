@@ -35,6 +35,9 @@ struct WidgetMapSettingsView: View {
                     value: $delay,
                     in: 0 ... 10,
                     step: 0.5,
+                    label: {
+                        EmptyView()
+                    },
                     onEditingChanged: { begin in
                         guard !begin else {
                             return
