@@ -616,6 +616,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private let resourceUsage = ResourceUsage()
     var speechToTextLatestPosition: Int?
     var speechToTextLatestText: String?
+    var speechToTextTextAligners: [String?: TextAligner] = [:]
 
     weak var processor: Processor? {
         didSet {

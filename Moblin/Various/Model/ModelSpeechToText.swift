@@ -37,6 +37,7 @@ extension Model {
         for textEffect in textEffects.values {
             textEffect.clearSubtitles()
         }
+        speechToTextTextAligners.removeAll()
     }
 
     func updateSpeechToText() {
@@ -137,7 +138,7 @@ extension Model: SpeechToTextDelegate {
         speechToTextLatestText = nil
         if #available(iOS 26.0, *) {
             for translator in Translator.translators {
-                translator.translate(text: text)
+                translator.translate(text: String(text.suffix(150)))
             }
         }
         speechToTextPartialResultTextWidgets(position: position, text: text, languageIdentifier: nil)
@@ -147,6 +148,15 @@ extension Model: SpeechToTextDelegate {
 
 extension Model: TranslatorDelegate {
     func translatorTranslated(languageIdentifier: String, text: String) {
-        speechToTextPartialResultTextWidgets(position: 0, text: text, languageIdentifier: languageIdentifier)
+        let position: Int
+        if let textAligner = speechToTextTextAligners[languageIdentifier] {
+            textAligner.update(text: text)
+            position = textAligner.position
+        } else {
+            let textAligner = TextAligner(text: text)
+            speechToTextTextAligners[languageIdentifier] = textAligner
+            position = textAligner.position
+        }
+        speechToTextPartialResultTextWidgets(position: position, text: text, languageIdentifier: languageIdentifier)
     }
 }
