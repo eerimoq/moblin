@@ -67,6 +67,13 @@ extension Model {
         return false
     }
 
+    func speechToTextClear() {
+        for textEffect in textEffects.values {
+            textEffect.clearSubtitles()
+        }
+        speechToTextAlertMatchOffset = 0
+    }
+
     private func removeAllTranslators() {
         guard #available(iOS 26.0, *) else {
             return
@@ -81,28 +88,6 @@ extension Model {
         let translator = Translator(targetIdentifier: targetIdentifier)
         translator.delegate = self
         Translator.translators.append(translator)
-    }
-}
-
-extension Model: SpeechToTextDelegate {
-    func speechToTextPartialResult(position: Int, text: String) {
-        speechToTextLatestPosition = position
-        speechToTextLatestText = text
-    }
-
-    func speechToTextProcess() {
-        guard let position = speechToTextLatestPosition, let text = speechToTextLatestText else {
-            return
-        }
-        speechToTextLatestPosition = nil
-        speechToTextLatestText = nil
-        if #available(iOS 26.0, *) {
-            for translator in Translator.translators {
-                translator.translate(text: text)
-            }
-        }
-        speechToTextPartialResultTextWidgets(position: position, text: text, languageIdentifier: nil)
-        speechToTextPartialResultAlertsWidget(text: text)
     }
 
     private func speechToTextPartialResultTextWidgets(position: Int, text: String, languageIdentifier: String?) {
@@ -136,12 +121,27 @@ extension Model: SpeechToTextDelegate {
             }
         }
     }
+}
 
-    func speechToTextClear() {
-        for textEffect in textEffects.values {
-            textEffect.clearSubtitles()
+extension Model: SpeechToTextDelegate {
+    func speechToTextPartialResult(position: Int, text: String) {
+        speechToTextLatestPosition = position
+        speechToTextLatestText = text
+    }
+
+    func speechToTextProcess() {
+        guard let position = speechToTextLatestPosition, let text = speechToTextLatestText else {
+            return
         }
-        speechToTextAlertMatchOffset = 0
+        speechToTextLatestPosition = nil
+        speechToTextLatestText = nil
+        if #available(iOS 26.0, *) {
+            for translator in Translator.translators {
+                translator.translate(text: text)
+            }
+        }
+        speechToTextPartialResultTextWidgets(position: position, text: text, languageIdentifier: nil)
+        speechToTextPartialResultAlertsWidget(text: text)
     }
 }
 
