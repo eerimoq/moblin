@@ -84,9 +84,14 @@ struct StreamTwitchSettingsView: View {
             }
             Section {
                 NavigationLink {
-                    TwitchNotificationsSettingsView(stream: stream)
+                    TwitchToastNotificationsSettingsView(stream: stream)
                 } label: {
-                    Text("Notifications")
+                    Text("Toast Notifications")
+                }
+                NavigationLink {
+                    TwitchChatNotificationsSettingsView(stream: stream)
+                } label: {
+                    Text("Chat Notifications")
                 }
             }
             if false {

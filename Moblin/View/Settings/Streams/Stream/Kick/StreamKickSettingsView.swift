@@ -240,9 +240,14 @@ struct StreamKickSettingsView: View {
             }
             Section {
                 NavigationLink {
-                    KickNotificationsSettingsView(stream: stream)
+                    KickToastNotificationsSettingsView(stream: stream)
                 } label: {
-                    Text("Notifications")
+                    Text("Toast Notifications")
+                }
+                NavigationLink {
+                    KickChatNotificationsSettingsView(stream: stream)
+                } label: {
+                    Text("Chat Notifications")
                 }
             }
             if stream.kickLoggedIn {
