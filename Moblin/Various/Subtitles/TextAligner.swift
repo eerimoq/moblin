@@ -14,11 +14,11 @@ class TextAligner {
         }
         let newLength = newText.count
         let oldLength = oldText.count
-        if oldLength == 0 || newLength == 0 {
+        if oldLength == 0 || newLength == 0 || newLength < 70 {
             text = newText
             return
         }
-        let shiftLimit = 40
+        let shiftLimit = 25
         let minShift = max(-(newLength - 1), -shiftLimit)
         let maxShift = min(oldLength - 1, shiftLimit)
         var bestShift = 0

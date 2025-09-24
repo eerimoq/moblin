@@ -15,27 +15,11 @@ class Subtitles {
         }
         let firstLinePosition = lastLinePosition - length
         let lastLineIndex = text.index(text.startIndex, offsetBy: lastLinePosition - position)
-        let spaceBeforeLastLineIndex = text[...lastLineIndex].lastIndex(of: " ")
-        let lastLine: Substring
-        if let spaceBeforeLastLineIndex {
-            lastLine = text[spaceBeforeLastLineIndex...]
-        } else {
-            lastLine = text[lastLineIndex...]
-        }
+        let lastLine = text[lastLineIndex...]
         if firstLinePosition >= position, firstLinePosition >= previousFirstLinePosition {
             previousFirstLinePosition = firstLinePosition
             let firstLineIndex = text.index(text.startIndex, offsetBy: firstLinePosition - position)
-            let spaceBeforeFirstLineIndex = text[...firstLineIndex].lastIndex(of: " ")
-            let firstLine: Substring
-            if let spaceBeforeLastLineIndex {
-                if let spaceBeforeFirstLineIndex {
-                    firstLine = text[spaceBeforeFirstLineIndex ..< spaceBeforeLastLineIndex]
-                } else {
-                    firstLine = text[firstLineIndex ..< spaceBeforeLastLineIndex]
-                }
-            } else {
-                firstLine = text[firstLineIndex ..< lastLineIndex]
-            }
+            let firstLine = text[firstLineIndex ..< lastLineIndex]
             lines = [firstLine.trim(), lastLine.trim()]
         } else {
             lines = [lastLine.trim()]

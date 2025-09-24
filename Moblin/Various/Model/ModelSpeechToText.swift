@@ -72,6 +72,7 @@ extension Model {
         for textEffect in textEffects.values {
             textEffect.clearSubtitles()
         }
+        speechToTextTextAligners.removeAll()
         speechToTextAlertMatchOffset = 0
     }
 
