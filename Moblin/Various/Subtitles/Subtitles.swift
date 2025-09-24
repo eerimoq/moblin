@@ -2,10 +2,24 @@ class Subtitles {
     private var lastLinePosition = 0
     private var previousFirstLinePosition = -1
     var lines: [String] = []
+    private let length: Int
+
+    init(languageIdentifier: String?) {
+        if let languageIdentifier {
+            if languageIdentifier.hasPrefix("zh") {
+                length = 20
+            } else if languageIdentifier == "ja" {
+                length = 30
+            } else {
+                length = 50
+            }
+        } else {
+            length = 50
+        }
+    }
 
     func updateSubtitles(position: Int, text: String) {
         let endPosition = position + text.count
-        let length = 50
         while lastLinePosition + length < endPosition {
             lastLinePosition += length
         }

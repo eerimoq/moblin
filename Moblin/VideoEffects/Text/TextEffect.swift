@@ -715,7 +715,7 @@ final class TextEffect: VideoEffect {
         if let subtitles = formatter.subtitles[languageIdentifier] {
             subtitles.updateSubtitles(position: position, text: text)
         } else {
-            let subtitles = Subtitles()
+            let subtitles = Subtitles(languageIdentifier: languageIdentifier)
             subtitles.updateSubtitles(position: position, text: text)
             formatter.subtitles[languageIdentifier] = subtitles
         }
