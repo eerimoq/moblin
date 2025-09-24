@@ -4,7 +4,7 @@ import Testing
 
 struct SubtitlesSuite {
     @Test func speechToTextOutput() async throws {
-        let subtitles = Subtitles()
+        let subtitles = Subtitles(languageIdentifier: nil)
         var position = 0
         var frozen = ""
         var partial = "Hello"
@@ -25,8 +25,8 @@ struct SubtitlesSuite {
         """
         subtitles.updateSubtitles(position: position, text: frozen + partial)
         #expect(subtitles.lines == [
-            "no it just continues so the partial one can be",
-            "really really long",
+            "no it just continues so the partial one can be re",
+            "ally really long",
         ])
         position = 66
         frozen = """
@@ -36,8 +36,8 @@ struct SubtitlesSuite {
         partial = "Have to wait"
         subtitles.updateSubtitles(position: position, text: frozen + partial)
         #expect(subtitles.lines == [
-            "no it just continues so the partial one can be",
-            "really really long Have to wait",
+            "no it just continues so the partial one can be re",
+            "ally really long Have to wait",
 
         ])
         position = 109
@@ -48,20 +48,20 @@ struct SubtitlesSuite {
         partial = "Yes"
         subtitles.updateSubtitles(position: position, text: frozen + partial)
         #expect(subtitles.lines == [
-            "really really long Have to wait a while and maybe it",
+            "ally really long Have to wait a while and maybe it",
             "switches Yes",
         ])
         partial = "Yes no maybe something is coming up"
         subtitles.updateSubtitles(position: position, text: frozen + partial)
         #expect(subtitles.lines == [
-            "really really long Have to wait a while and maybe it",
+            "ally really long Have to wait a while and maybe it",
             "switches Yes no maybe something is coming up",
         ])
         partial = "Yes no maybe something is coming up or is it"
         subtitles.updateSubtitles(position: position, text: frozen + partial)
         #expect(subtitles.lines == [
-            "switches Yes no maybe something is coming up or",
-            "is it",
+            "switches Yes no maybe something is coming up or i",
+            "s it",
         ])
         partial = "Yes no maybe something did come up or is it"
         subtitles.updateSubtitles(position: position, text: frozen + partial)

@@ -14,7 +14,7 @@ class TextAligner {
         }
         let newLength = newText.count
         let oldLength = oldText.count
-        if oldLength == 0 || newLength == 0 || newLength < 70 {
+        if oldLength == 0 || newLength == 0 {
             text = newText
             return
         }
