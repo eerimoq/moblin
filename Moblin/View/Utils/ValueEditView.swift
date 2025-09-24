@@ -114,10 +114,7 @@ struct ValueEditCompactView: View {
                 Slider(
                     value: $number,
                     in: minimum ... maximum,
-                    step: 1,
-                    label: {
-                        EmptyView()
-                    }
+                    step: 1
                 )
                 .rotationEffect(.degrees(mirror ? 180 : 0))
                 .onChange(of: number) { number in
