@@ -122,7 +122,7 @@ extension Model {
             stream.twitchChannelId = createStreamWizard.twitchChannelId.trim()
             stream.twitchAccessToken = createStreamWizard.twitchAccessToken
             stream.twitchLoggedIn = createStreamWizard.twitchLoggedIn
-            if createStreamWizard.twitchLoggedIn && !createStreamWizard.twitchAccessToken.isEmpty {
+            if createStreamWizard.twitchLoggedIn, !createStreamWizard.twitchAccessToken.isEmpty {
                 storeTwitchAccessTokenInKeychain(streamId: stream.id, accessToken: createStreamWizard.twitchAccessToken)
             }
         case .kick:
