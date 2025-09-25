@@ -451,7 +451,14 @@
       }
     },
     "Not a number" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine Zahl"
+          }
+        }
+      }
     },
     "RIST port number missing" : {
       "localizations" : {
@@ -667,7 +674,14 @@
       }
     },
     "Too small" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zu klein"
+          }
+        }
+      }
     },
     "Unsupported scheme %@" : {
       "localizations" : {
