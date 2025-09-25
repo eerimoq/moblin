@@ -266,11 +266,11 @@ extension Model: TwitchEventSubDelegate {
     func twitchEventSubChannelFollow(event: TwitchEventSubNotificationChannelFollowEvent) {
         DispatchQueue.main.async {
             let text = String(localized: "just followed!")
-            if self.stream.twitchShowFollowsToast {
+            if self.stream.twitchToastAlerts.follows {
                 self.makeToast(title: "\(event.user_name) \(text)")
             }
             self.playAlert(alert: .twitchFollow(event))
-            if self.stream.twitchShowFollowsChat {
+            if self.stream.twitchChatAlerts.follows {
                 self.appendTwitchChatAlertMessage(
                     user: event.user_name,
                     text: text,
@@ -288,11 +288,11 @@ extension Model: TwitchEventSubDelegate {
         }
         DispatchQueue.main.async {
             let text = String(localized: "just subscribed tier \(event.tierAsNumber())!")
-            if self.stream.twitchShowSubscriptionsToast {
+            if self.stream.twitchToastAlerts.subscriptions {
                 self.makeToast(title: "\(event.user_name) \(text)")
             }
             self.playAlert(alert: .twitchSubscribe(event))
-            if self.stream.twitchShowSubscriptionsChat {
+            if self.stream.twitchChatAlerts.subscriptions {
                 self.appendTwitchChatAlertMessage(
                     user: event.user_name,
                     text: text,
@@ -309,12 +309,11 @@ extension Model: TwitchEventSubDelegate {
             let user = event.user_name ?? String(localized: "Anonymous")
             let text =
                 String(localized: "just gifted \(event.total) tier \(event.tierAsNumber()) subscriptions!")
-
-            if self.stream.twitchShowSubscriptionGiftsToast {
+            if self.stream.twitchToastAlerts.giftSubscriptions {
                 self.makeToast(title: "\(user) \(text)")
             }
             self.playAlert(alert: .twitchSubscrptionGift(event))
-            if self.stream.twitchShowSubscriptionGiftsChat {
+            if self.stream.twitchChatAlerts.giftSubscriptions {
                 self.appendTwitchChatAlertMessage(
                     user: user,
                     text: text,
@@ -334,12 +333,11 @@ extension Model: TwitchEventSubDelegate {
             just resubscribed tier \(event.tierAsNumber()) for \(event.cumulative_months) \
             months! \(event.message.text)
             """)
-
-            if self.stream.twitchShowResubscriptionsToast {
+            if self.stream.twitchToastAlerts.resubscriptions {
                 self.makeToast(title: "\(event.user_name) \(text)")
             }
             self.playAlert(alert: .twitchResubscribe(event))
-            if self.stream.twitchShowResubscriptionsChat {
+            if self.stream.twitchChatAlerts.resubscriptions {
                 self.appendTwitchChatAlertMessage(
                     user: event.user_name,
                     text: text,
@@ -356,11 +354,10 @@ extension Model: TwitchEventSubDelegate {
     ) {
         DispatchQueue.main.async {
             let text = String(localized: "redeemed \(event.reward.title)!")
-
-            if self.stream.twitchShowRewardsToast {
+            if self.stream.twitchToastAlerts.rewards {
                 self.makeToast(title: "\(event.user_name) \(text)")
             }
-            if self.stream.twitchShowRewardsChat {
+            if self.stream.twitchChatAlerts.rewards {
                 self.appendTwitchChatAlertMessage(
                     user: event.user_name,
                     text: text,
@@ -375,12 +372,11 @@ extension Model: TwitchEventSubDelegate {
     func twitchEventSubChannelRaid(event: TwitchEventSubChannelRaidEvent) {
         DispatchQueue.main.async {
             let text = String(localized: "raided with a party of \(event.viewers)!")
-
-            if self.stream.twitchShowRaidsToast {
+            if self.stream.twitchToastAlerts.raids {
                 self.makeToast(title: "\(event.from_broadcaster_user_name) \(text)")
             }
             self.playAlert(alert: .twitchRaid(event))
-            if self.stream.twitchShowRaidsChat {
+            if self.stream.twitchChatAlerts.raids {
                 self.appendTwitchChatAlertMessage(
                     user: event.from_broadcaster_user_name,
                     text: text,
@@ -397,12 +393,11 @@ extension Model: TwitchEventSubDelegate {
             let user = event.user_name ?? String(localized: "Anonymous")
             let bits = countFormatter.format(event.bits)
             let text = String(localized: "cheered \(bits) bits!")
-
-            if self.stream.twitchShowCheersToast, event.bits >= self.stream.twitchMinimumBitsAmountForToast {
+            if self.stream.twitchToastAlerts.isBitsEnabled(amount: event.bits) {
                 self.makeToast(title: "\(user) \(text)", subTitle: event.message)
             }
             self.playAlert(alert: .twitchCheer(event))
-            if self.stream.twitchShowCheersChat, event.bits >= self.stream.twitchMinimumBitsAmountForChat {
+            if self.stream.twitchChatAlerts.isBitsEnabled(amount: event.bits) {
                 self.appendTwitchChatAlertMessage(
                     user: user,
                     text: "\(text) \(event.message)",

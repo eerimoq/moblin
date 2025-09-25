@@ -1,8 +1,34 @@
 import SwiftUI
 
+private struct TwitchAlertsSettingsView: View {
+    @ObservedObject var alerts: SettingsTwitchAlerts
+
+    var body: some View {
+        Form {
+            Section {
+                Toggle("Follows", isOn: $alerts.follows)
+                Toggle("Subscriptions", isOn: $alerts.subscriptions)
+                Toggle("Gift subscriptions", isOn: $alerts.giftSubscriptions)
+                Toggle("Resubscriptions", isOn: $alerts.resubscriptions)
+                Toggle("Rewards", isOn: $alerts.rewards)
+                Toggle("Raids", isOn: $alerts.raids)
+                Toggle("Bits", isOn: $alerts.cheers)
+                TextEditNavigationView(
+                    title: String(localized: "Minimum bits"),
+                    value: String(alerts.minimumCheerBits),
+                    onSubmit: {
+                        alerts.minimumCheerBits = Int($0) ?? 0
+                    }
+                )
+            }
+        }
+        .navigationTitle("Alerts")
+    }
+}
+
 struct StreamTwitchSettingsView: View {
     @EnvironmentObject var model: Model
-    @ObservedObject var stream: SettingsStream
+    var stream: SettingsStream
     @State var loggedIn: Bool
     @State var streamTitle: String?
 
@@ -82,18 +108,6 @@ struct StreamTwitchSettingsView: View {
                     )
                 }
             }
-            Section {
-                NavigationLink {
-                    TwitchToastNotificationsSettingsView(stream: stream)
-                } label: {
-                    Text("Toast Notifications")
-                }
-                NavigationLink {
-                    TwitchChatNotificationsSettingsView(stream: stream)
-                } label: {
-                    Text("Chat Notifications")
-                }
-            }
             if false {
                 Section {
                     Toggle("Multi track", isOn: Binding(get: {
@@ -128,6 +142,20 @@ struct StreamTwitchSettingsView: View {
                         }
                     }
                 }
+            }
+            Section {
+                NavigationLink {
+                    TwitchAlertsSettingsView(alerts: stream.twitchChatAlerts)
+                } label: {
+                    Text("Chat")
+                }
+                NavigationLink {
+                    TwitchAlertsSettingsView(alerts: stream.twitchToastAlerts)
+                } label: {
+                    Text("Toasts")
+                }
+            } header: {
+                Text("Alerts")
             }
         }
         .onAppear {

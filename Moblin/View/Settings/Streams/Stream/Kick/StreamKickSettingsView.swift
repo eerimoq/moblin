@@ -2,7 +2,6 @@ import SwiftUI
 import WebKit
 
 private let kickDomain = "kick.com"
-
 private let loginUrl = URL(string: "https://kick.com/login")!
 private let sessionTokenCookieName = "session_token"
 
@@ -152,6 +151,31 @@ private struct KickWebView: UIViewRepresentable {
     }
 }
 
+private struct KickAlertsSettingsView: View {
+    @ObservedObject var alerts: SettingsKickAlerts
+
+    var body: some View {
+        Form {
+            Section {
+                Toggle("Subscriptions", isOn: $alerts.subscriptions)
+                Toggle("Gifted subscriptions", isOn: $alerts.giftedSubscriptions)
+                Toggle("Rewards", isOn: $alerts.rewards)
+                Toggle("Hosts", isOn: $alerts.hosts)
+                Toggle("Bans and timeouts", isOn: $alerts.bans)
+                Toggle("Kicks", isOn: $alerts.kicks)
+                TextEditNavigationView(
+                    title: String(localized: "Minimum Kicks"),
+                    value: String(alerts.minimumKicks),
+                    onSubmit: {
+                        alerts.minimumKicks = Int($0) ?? 0
+                    }
+                )
+            }
+        }
+        .navigationTitle("Alerts")
+    }
+}
+
 struct StreamKickSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var stream: SettingsStream
@@ -238,18 +262,6 @@ struct StreamKickSettingsView: View {
                     Text("Fetching channel info...")
                 }
             }
-            Section {
-                NavigationLink {
-                    KickToastNotificationsSettingsView(stream: stream)
-                } label: {
-                    Text("Toast Notifications")
-                }
-                NavigationLink {
-                    KickChatNotificationsSettingsView(stream: stream)
-                } label: {
-                    Text("Chat Notifications")
-                }
-            }
             if stream.kickLoggedIn {
                 Section {
                     TextEditNavigationView(
@@ -258,6 +270,20 @@ struct StreamKickSettingsView: View {
                         onSubmit: submitStreamTitle
                     )
                 }
+            }
+            Section {
+                NavigationLink {
+                    KickAlertsSettingsView(alerts: stream.kickChatAlerts)
+                } label: {
+                    Text("Chat")
+                }
+                NavigationLink {
+                    KickAlertsSettingsView(alerts: stream.kickToastAlerts)
+                } label: {
+                    Text("Toasts")
+                }
+            } header: {
+                Text("Alerts")
             }
         }
         .onAppear {

@@ -200,11 +200,10 @@ extension Model: KickPusherDelegate {
     func kickPusherSubscription(event: SubscriptionEvent) {
         DispatchQueue.main.async {
             let text = String(localized: "just subscribed! They've been subscribed for \(event.months) months!")
-
-            if self.stream.kickShowSubscriptionsToast {
+            if self.stream.kickToastAlerts.subscriptions {
                 self.makeToast(title: "🎉 \(event.username) \(text)")
             }
-            if self.stream.kickShowSubscriptionsChat {
+            if self.stream.kickChatAlerts.subscriptions {
                 self.appendKickChatAlertMessage(
                     user: event.username,
                     text: text,
@@ -224,11 +223,10 @@ extension Model: KickPusherDelegate {
                 just gifted \(event.gifted_usernames.count) subscription(s)! \
                 They've gifted \(event.gifter_total) in total!
                 """)
-
-            if self.stream.kickShowGiftedSubscriptionsToast {
+            if self.stream.kickChatAlerts.giftedSubscriptions {
                 self.makeToast(title: "🎁 \(user) \(text)")
             }
-            if self.stream.kickShowGiftedSubscriptionsChat {
+            if self.stream.kickChatAlerts.giftedSubscriptions {
                 self.appendKickChatAlertMessage(
                     user: user,
                     text: text,
@@ -245,11 +243,10 @@ extension Model: KickPusherDelegate {
             let user = event.username
             let baseText = String(localized: "redeemed \(event.reward_title)")
             let text = event.user_input.isEmpty ? baseText : "\(baseText): \(event.user_input)"
-
-            if self.stream.kickShowRewardsToast {
+            if self.stream.kickToastAlerts.rewards {
                 self.makeToast(title: "🎁 \(user) \(text)")
             }
-            if self.stream.kickShowRewardsChat {
+            if self.stream.kickChatAlerts.rewards {
                 self.appendKickChatAlertMessage(
                     user: user,
                     text: text,
@@ -265,11 +262,10 @@ extension Model: KickPusherDelegate {
         DispatchQueue.main.async {
             let user = event.host_username
             let text = String(localized: "is now hosting with \(event.number_viewers) viewers!")
-
-            if self.stream.kickShowHostsToast {
+            if self.stream.kickToastAlerts.hosts {
                 self.makeToast(title: "📺 \(user) \(text)")
             }
-            if self.stream.kickShowHostsChat {
+            if self.stream.kickChatAlerts.hosts {
                 self.appendKickChatAlertMessage(
                     user: user,
                     text: text,
@@ -292,11 +288,10 @@ extension Model: KickPusherDelegate {
                 text = String(localized: "was timed out from chat!")
                 title = String(localized: "User timed out")
             }
-
-            if self.stream.kickShowBansToast {
+            if self.stream.kickToastAlerts.bans {
                 self.makeToast(title: "🚫 \(event.user.username) \(text)")
             }
-            if self.stream.kickShowBansChat {
+            if self.stream.kickChatAlerts.bans {
                 self.appendKickChatAlertMessage(
                     user: event.user.username,
                     text: text,
@@ -314,11 +309,10 @@ extension Model: KickPusherDelegate {
             let amount = countFormatter.format(event.gift.amount)
             let text = String(localized: "sent \(event.gift.name) 💎 \(amount)")
             let message = event.message.isEmpty ? text : "\(text) \(event.message)"
-
-            if self.stream.kickShowKicksToast, event.gift.amount >= self.stream.kickMinimumKickAmountForToast {
+            if self.stream.kickToastAlerts.isKicksEnabled(amount: event.gift.amount) {
                 self.makeToast(title: "\(user) \(message)")
             }
-            if self.stream.kickShowKicksChat, event.gift.amount >= self.stream.kickMinimumKickAmountForChat {
+            if self.stream.kickChatAlerts.isKicksEnabled(amount: event.gift.amount) {
                 self.appendKickChatAlertMessage(
                     user: user,
                     text: message,
