@@ -158,13 +158,13 @@ private struct KickAlertsSettingsView: View {
         Form {
             Section {
                 Toggle("Subscriptions", isOn: $alerts.subscriptions)
-                Toggle("Gifted subscriptions", isOn: $alerts.giftedSubscriptions)
+                Toggle("Gift subscriptions", isOn: $alerts.giftedSubscriptions)
                 Toggle("Rewards", isOn: $alerts.rewards)
                 Toggle("Hosts", isOn: $alerts.hosts)
                 Toggle("Bans and timeouts", isOn: $alerts.bans)
                 Toggle("Kicks", isOn: $alerts.kicks)
                 TextEditNavigationView(
-                    title: String(localized: "Minimum Kicks"),
+                    title: String(localized: "Minimum bits"),
                     value: String(alerts.minimumKicks),
                     onSubmit: {
                         alerts.minimumKicks = Int($0) ?? 0
