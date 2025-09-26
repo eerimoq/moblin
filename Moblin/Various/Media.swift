@@ -812,7 +812,8 @@ final class Media: NSObject {
         externalDisplayPreview: Bool,
         cameraId: UUID,
         ignoreFramesAfterAttachSeconds: Double,
-        fillFrame: Bool
+        fillFrame: Bool,
+        isLandscapeStreamAndPortraitUi: Bool
     ) {
         let params = VideoUnitAttachParams(devices: devices,
                                            builtinDelay: builtinDelay,
@@ -823,7 +824,8 @@ final class Media: NSObject {
                                            preferredVideoStabilizationMode: .off,
                                            isVideoMirrored: false,
                                            ignoreFramesAfterAttachSeconds: ignoreFramesAfterAttachSeconds,
-                                           fillFrame: fillFrame)
+                                           fillFrame: fillFrame,
+                                           isLandscapeStreamAndPortraitUi: isLandscapeStreamAndPortraitUi)
         processor?.attachCamera(params: params)
     }
 
