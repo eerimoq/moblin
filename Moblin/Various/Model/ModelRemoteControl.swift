@@ -96,8 +96,8 @@ extension Model {
     }
 
     func isRemoteControlStreamerConfigured() -> Bool {
-        let server = database.remoteControl.streamer
-        return server.enabled && !server.url.isEmpty && !database.remoteControl.password.isEmpty
+        let streamer = database.remoteControl.streamer
+        return streamer.enabled && !streamer.url.isEmpty && !database.remoteControl.password.isEmpty
     }
 
     func isRemoteControlStreamerConnected() -> Bool {
@@ -146,8 +146,8 @@ extension Model {
     }
 
     func isRemoteControlAssistantConfigured() -> Bool {
-        let client = database.remoteControl.assistant
-        return client.enabled && client.port > 0 && !database.remoteControl.password.isEmpty
+        let assistant = database.remoteControl.assistant
+        return assistant.enabled && assistant.port > 0 && !database.remoteControl.password.isEmpty
     }
 
     func remoteControlAssistantSetRemoteSceneSettings() {
