@@ -164,7 +164,7 @@ private struct KickAlertsSettingsView: View {
                 Toggle("Bans and timeouts", isOn: $alerts.bans)
                 Toggle("Kicks", isOn: $alerts.kicks)
                 TextEditNavigationView(
-                    title: String(localized: "Minimum bits"),
+                    title: String(localized: "Minimum kicks"),
                     value: String(alerts.minimumKicks),
                     onSubmit: {
                         alerts.minimumKicks = Int($0) ?? 0
