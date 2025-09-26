@@ -541,6 +541,10 @@ extension CGSize {
     func maximum() -> CGFloat {
         return max(height, width)
     }
+
+    func isPortrait() -> Bool {
+        return height > width
+    }
 }
 
 class ResourceUsage {
