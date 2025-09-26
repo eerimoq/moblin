@@ -1,6 +1,225 @@
 import AVFoundation
 import SwiftUI
 
+enum SettingsVideoEffectType: String, Codable, CaseIterable {
+    case shape
+    case grayScale
+    case sepia
+    case whirlpool
+    case pinch
+    case removeBackground
+    case dewarp360
+
+    init(from decoder: Decoder) throws {
+        do {
+            self = try SettingsVideoEffectType(rawValue: decoder.singleValueContainer()
+                .decode(RawValue.self)) ?? .shape
+        } catch {
+            self = .shape
+        }
+    }
+
+    func toString() -> String {
+        switch self {
+        case .shape:
+            return String(localized: "Shape")
+        case .grayScale:
+            return String(localized: "Gray scale")
+        case .sepia:
+            return String(localized: "Sepia")
+        case .whirlpool:
+            return String(localized: "Whirlpool")
+        case .pinch:
+            return String(localized: "Pinch")
+        case .removeBackground:
+            return String(localized: "Remove background")
+        case .dewarp360:
+            return String(localized: "Dewarp 360")
+        }
+    }
+}
+
+private let defaultFromColor = RgbColor(red: 220, green: 235, blue: 92)
+private let defaultToColor = RgbColor(red: 82, green: 180, blue: 203)
+
+class SettingsVideoEffectRemoveBackground: Codable, ObservableObject {
+    var from: RgbColor = defaultFromColor
+    @Published var fromColor: Color
+    var to: RgbColor = defaultToColor
+    @Published var toColor: Color
+
+    enum CodingKeys: CodingKey {
+        case from,
+             to
+    }
+
+    init() {
+        fromColor = from.color()
+        toColor = to.color()
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.from, from)
+        try container.encode(.to, to)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        from = container.decode(.from, RgbColor.self, defaultFromColor)
+        fromColor = from.color()
+        to = container.decode(.to, RgbColor.self, defaultToColor)
+        toColor = to.color()
+    }
+}
+
+class SettingsVideoEffectShape: Codable, ObservableObject {
+    @Published var cornerRadius: Float = 0
+    @Published var borderWidth: Double = 0
+    var borderColor: RgbColor = .init(red: 0, green: 0, blue: 0)
+    @Published var borderColorColor: Color
+
+    enum CodingKeys: CodingKey {
+        case cornerRadius,
+             borderWidth,
+             borderColor
+    }
+
+    init() {
+        borderColorColor = borderColor.color()
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.cornerRadius, cornerRadius)
+        try container.encode(.borderWidth, borderWidth)
+        try container.encode(.borderColor, borderColor)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        cornerRadius = container.decode(.cornerRadius, Float.self, 0)
+        borderWidth = container.decode(.borderWidth, Double.self, 0)
+        borderColor = container.decode(.borderColor, RgbColor.self, .init(red: 0, green: 0, blue: 0))
+        borderColorColor = borderColor.color()
+    }
+
+    func toSettings() -> ShapeEffectSettings {
+        return .init(cornerRadius: cornerRadius,
+                     borderWidth: borderWidth,
+                     borderColor: CIColor(
+                         red: Double(borderColor.red) / 255,
+                         green: Double(borderColor.green) / 255,
+                         blue: Double(borderColor.blue) / 255
+                     ))
+    }
+}
+
+class SettingsVideoEffectDewarp360: Codable, ObservableObject {
+    @Published var pan: Float = 0
+    @Published var tilt: Float = 0
+    var zoom: Float = 1
+    @Published var inverseFieldOfView: Float = 90
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case pan,
+             tilt,
+             zoom
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.pan, pan)
+        try container.encode(.tilt, tilt)
+        try container.encode(.zoom, zoom)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        pan = container.decode(.pan, Float.self, 0)
+        tilt = container.decode(.tilt, Float.self, 0)
+        zoom = container.decode(.zoom, Float.self, 1)
+        inverseFieldOfView = 180 - zoomToFieldOfView(zoom: zoom).toDegrees()
+    }
+
+    func updateZoomFromInverseFieldOfView() {
+        zoom = fieldOfViewToZoom(fieldOfView: (180 - inverseFieldOfView).toRadians())
+    }
+
+    func toSettings() -> Dewarp360EffectSettings {
+        return .direct(pan: -pan.toRadians(),
+                       tilt: tilt.toRadians(),
+                       fieldOfView: zoomToFieldOfView(zoom: zoom))
+    }
+}
+
+class SettingsVideoEffect: Codable, Identifiable, ObservableObject {
+    var id: UUID = .init()
+    @Published var enabled: Bool = true
+    @Published var type: SettingsVideoEffectType = .shape
+    var removeBackground: SettingsVideoEffectRemoveBackground = .init()
+    var shape: SettingsVideoEffectShape = .init()
+    var dewarp360: SettingsVideoEffectDewarp360 = .init()
+
+    enum CodingKeys: CodingKey {
+        case id,
+             enabled,
+             type,
+             removeBackground,
+             shape,
+             dewarp360
+    }
+
+    init() {}
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.enabled, enabled)
+        try container.encode(.type, type)
+        try container.encode(.removeBackground, removeBackground)
+        try container.encode(.shape, shape)
+        try container.encode(.dewarp360, dewarp360)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        enabled = container.decode(.enabled, Bool.self, true)
+        type = container.decode(.type, SettingsVideoEffectType.self, .shape)
+        removeBackground = container.decode(.removeBackground, SettingsVideoEffectRemoveBackground.self, .init())
+        shape = container.decode(.shape, SettingsVideoEffectShape.self, .init())
+        dewarp360 = container.decode(.dewarp360, SettingsVideoEffectDewarp360.self, .init())
+    }
+
+    func getEffect() -> VideoEffect {
+        switch type {
+        case .grayScale:
+            return GrayScaleEffect()
+        case .sepia:
+            return SepiaEffect()
+        case .whirlpool:
+            return WhirlpoolEffect(angle: .pi / 2)
+        case .pinch:
+            return PinchEffect(scale: 0.5)
+        case .removeBackground:
+            let effect = RemoveBackgroundEffect()
+            effect.setColorRange(from: removeBackground.from, to: removeBackground.to)
+            return effect
+        case .shape:
+            let effect = ShapeEffect()
+            effect.setSettings(settings: shape.toSettings())
+            return effect
+        case .dewarp360:
+            let effect = Dewarp360Effect()
+            effect.setSettings(settings: dewarp360.toSettings())
+            return effect
+        }
+    }
+}
+
 enum SettingsFontDesign: String, Codable, CaseIterable {
     case `default` = "Default"
     case serif = "Serif"
