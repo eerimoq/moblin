@@ -1468,6 +1468,24 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named 
         snapshot = container.decode(.snapshot, SettingsWidgetSnapshot.self, .init())
         enabled = container.decode(.enabled, Bool.self, true)
         effects = container.decode(.effects, [SettingsVideoEffect].self, [])
+        migrateFromOlderVersions()
+    }
+
+    private func migrateFromOlderVersions() {
+        if type == .videoSource,
+           videoSource.cornerRadius != 0 || videoSource.borderWidth != 0,
+           !effects.contains(where: { $0.type == .shape })
+        {
+            let shape = SettingsVideoEffectShape()
+            shape.cornerRadius = videoSource.cornerRadius
+            shape.borderWidth = videoSource.borderWidth
+            shape.borderColor = videoSource.borderColor
+            shape.borderColorColor = videoSource.borderColorColor
+            let effect = SettingsVideoEffect()
+            effect.type = .shape
+            effect.shape = shape
+            effects.append(effect)
+        }
     }
 
     func getEffects() -> [VideoEffect] {
