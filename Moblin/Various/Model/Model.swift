@@ -643,6 +643,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         orientation.isPortrait = stream.portrait || database.portrait
     }
 
+    func isLandscapeStreamAndPortraitUi() -> Bool {
+        return !stream.portrait && database.portrait
+    }
+
     var enabledScenes: [SettingsScene] {
         database.scenes.filter { scene in scene.enabled }
     }
@@ -2466,7 +2470,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                                            preferredVideoStabilizationMode: .off,
                                            isVideoMirrored: false,
                                            ignoreFramesAfterAttachSeconds: 0.0,
-                                           fillFrame: false)
+                                           fillFrame: false,
+                                           isLandscapeStreamAndPortraitUi: isLandscapeStreamAndPortraitUi())
         media.attachCamera(params: params)
     }
 
@@ -2478,7 +2483,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func updateCameraPreviewRotation() {
-        if stream.portrait {
+        if #available(iOS 26, *),
+           isLandscapeStreamAndPortraitUi(), cameraDevice?.dynamicAspectRatio == .ratio9x16
+        {
+            cameraPreviewLayer?.connection?.videoOrientation = .portrait
+        } else if stream.portrait {
             cameraPreviewLayer?.connection?.videoOrientation = .portrait
         } else {
             switch UIDevice.current.orientation {
@@ -2630,7 +2639,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                                            preferredVideoStabilizationMode: getVideoStabilizationMode(scene: scene),
                                            isVideoMirrored: getVideoMirroredOnStream(),
                                            ignoreFramesAfterAttachSeconds: getIgnoreFramesAfterAttachSeconds(),
-                                           fillFrame: getFillFrame(scene: scene))
+                                           fillFrame: getFillFrame(scene: scene),
+                                           isLandscapeStreamAndPortraitUi: isLandscapeStreamAndPortraitUi())
         media.attachCamera(
             params: params,
             onSuccess: {
@@ -2680,7 +2690,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             externalDisplayPreview: externalDisplayPreview,
             cameraId: cameraId,
             ignoreFramesAfterAttachSeconds: getIgnoreFramesAfterAttachSecondsReplaceCamera(),
-            fillFrame: getFillFrame(scene: scene)
+            fillFrame: getFillFrame(scene: scene),
+            isLandscapeStreamAndPortraitUi: isLandscapeStreamAndPortraitUi()
         )
         media.usePendingAfterAttachEffects()
     }

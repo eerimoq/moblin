@@ -353,8 +353,7 @@ struct QuickButtonsInnerView: View {
 
     private func portraitAction() {
         model.setDisplayPortrait(portrait: !model.database.portrait)
-        // To update main view.
-        model.sceneSettingsPanelSceneId += 1
+        model.reattachCamera()
     }
 
     private func goProAction() {

@@ -24,6 +24,7 @@ struct VideoUnitAttachParams {
     let isVideoMirrored: Bool
     let ignoreFramesAfterAttachSeconds: Double
     let fillFrame: Bool
+    let isLandscapeStreamAndPortraitUi: Bool
 }
 
 enum SceneSwitchTransition {
@@ -50,11 +51,14 @@ private let lowFpsImageQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.V
 
 private func setOrientation(
     device: AVCaptureDevice?,
+    isLandscapeStreamAndPortraitUi: Bool,
     connection: AVCaptureConnection,
     orientation: AVCaptureVideoOrientation
 ) {
     if #available(iOS 17.0, *), device?.deviceType == .external {
         connection.videoOrientation = .landscapeRight
+    } else if #available(iOS 26, *), isLandscapeStreamAndPortraitUi, device?.dynamicAspectRatio == .ratio9x16 {
+        connection.videoOrientation = .portrait
     } else {
         connection.videoOrientation = orientation
     }
@@ -168,6 +172,7 @@ final class VideoUnit: NSObject {
     private var blackImage: CIImage?
     private var outputCounter: Int64 = -1
     private var startPresentationTimeStamp: CMTime = .zero
+    private var isLandscapeStreamAndPortraitUi = false
 
     var videoOrientation: AVCaptureVideoOrientation = .portrait {
         didSet {
@@ -177,7 +182,10 @@ final class VideoUnit: NSObject {
             session.beginConfiguration()
             for device in captureSessionDevices {
                 for connection in device.output.connections.filter({ $0.isVideoOrientationSupported }) {
-                    setOrientation(device: device.device, connection: connection, orientation: videoOrientation)
+                    setOrientation(device: device.device,
+                                   isLandscapeStreamAndPortraitUi: isLandscapeStreamAndPortraitUi,
+                                   connection: connection,
+                                   orientation: videoOrientation)
                 }
             }
             session.commitConfiguration()
@@ -428,6 +436,7 @@ final class VideoUnit: NSObject {
                 self.unregisterEffectInner(effect)
             }
         }
+        isLandscapeStreamAndPortraitUi = params.isLandscapeStreamAndPortraitUi
         for device in params.devices.devices {
             setDeviceFormat(
                 device: device.device,
@@ -458,7 +467,10 @@ final class VideoUnit: NSObject {
                     connection.isVideoMirrored = params.isVideoMirrored
                 }
                 if connection.isVideoOrientationSupported {
-                    setOrientation(device: device.device, connection: connection, orientation: videoOrientation)
+                    setOrientation(device: device.device,
+                                   isLandscapeStreamAndPortraitUi: isLandscapeStreamAndPortraitUi,
+                                   connection: connection,
+                                   orientation: videoOrientation)
                 }
                 if connection.isVideoStabilizationSupported {
                     connection.preferredVideoStabilizationMode = params.preferredVideoStabilizationMode
@@ -1572,8 +1584,9 @@ final class VideoUnit: NSObject {
         fps: Float64,
         preferAutoFrameRate: Bool,
         colorSpace: AVCaptureColorSpace
-    ) -> (AVCaptureDevice.Format?, Bool, String?) {
+    ) -> (AVCaptureDevice.Format?, Bool, Bool, String?) {
         var useAutoFrameRate = false
+        var useLandscapeInPortrait = false
         var formats = device.formats
         formats = formats.filter { $0.isFrameRateSupported(fps) }
         if #available(iOS 18, *), preferAutoFrameRate {
@@ -1584,14 +1597,29 @@ final class VideoUnit: NSObject {
             }
         }
         formats = formats.filter { $0.formatDescription.dimensions.width == width }
-        formats = formats.filter { $0.formatDescription.dimensions.height == height }
+        if #available(iOS 26, *), isLandscapeStreamAndPortraitUi {
+            let formatsWithRatio9x16 = formats.filter { $0.supportedDynamicAspectRatios.contains(.ratio9x16) }
+            if !formatsWithRatio9x16.isEmpty {
+                formats = formatsWithRatio9x16
+                useLandscapeInPortrait = true
+            } else {
+                formats = formats.filter { $0.formatDescription.dimensions.height == height }
+            }
+        } else {
+            formats = formats.filter { $0.formatDescription.dimensions.height == height }
+        }
         formats = formats.filter { $0.supportedColorSpaces.contains(colorSpace) }
         if formats.isEmpty {
-            return (nil, useAutoFrameRate, "No video format found matching \(height)p\(Int(fps)), \(colorSpace)")
+            return (
+                nil,
+                useAutoFrameRate,
+                useLandscapeInPortrait,
+                "No video format found matching \(height)p\(Int(fps)), \(colorSpace)"
+            )
         }
         formats = formats.filter { !$0.isVideoBinned }
         if formats.isEmpty {
-            return (nil, useAutoFrameRate, "No unbinned video format found")
+            return (nil, useAutoFrameRate, useLandscapeInPortrait, "No unbinned video format found")
         }
         // 420v does not work with OA4.
         formats = formats.filter {
@@ -1599,9 +1627,9 @@ final class VideoUnit: NSObject {
                 || allowVideoRangePixelFormat
         }
         if formats.isEmpty {
-            return (nil, useAutoFrameRate, "Unsupported video pixel format")
+            return (nil, useAutoFrameRate, useLandscapeInPortrait, "Unsupported video pixel format")
         }
-        return (formats.first, useAutoFrameRate, nil)
+        return (formats.first, useAutoFrameRate, useLandscapeInPortrait, nil)
     }
 
     private func reportFormatNotFound(_ device: AVCaptureDevice, _ error: String) {
@@ -1630,7 +1658,7 @@ final class VideoUnit: NSObject {
         guard let device else {
             return
         }
-        let (format, useAutoFrameRate, error) = findVideoFormat(
+        let (format, useAutoFrameRate, useLandscapeInPortrait, error) = findVideoFormat(
             device: device,
             width: Int32(captureSize.width),
             height: Int32(captureSize.height),
@@ -1658,6 +1686,11 @@ final class VideoUnit: NSObject {
             } else {
                 device.setFps(frameRate: fps)
                 processor?.delegate?.streamSelectedFps(fps: fps, auto: false)
+            }
+            if #available(iOS 26, *), useLandscapeInPortrait {
+                if format.supportedDynamicAspectRatios.contains(.ratio9x16) {
+                    device.setDynamicAspectRatio(.ratio9x16)
+                }
             }
             device.unlockForConfiguration()
         } catch {
