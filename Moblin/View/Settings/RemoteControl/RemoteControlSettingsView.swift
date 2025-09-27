@@ -362,6 +362,8 @@ struct RemoteControlStreamersView: View {
                 let streamer = SettingsRemoteControlAssistant()
                 streamer.name = makeUniqueName(name: SettingsRemoteControlAssistant.baseName,
                                                existingNames: remoteControlSettings.streamers)
+                streamer.enabled = true
+                streamer.port = 2345
                 remoteControlSettings.streamers.append(streamer)
             } label: {
                 HCenter {
