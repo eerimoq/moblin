@@ -10,14 +10,23 @@ struct CloseButtonView: View {
         Button {
             onClose()
         } label: {
-            Image(systemName: "xmark")
-                .frame(width: 30, height: 30)
-                .overlay(
-                    Circle()
-                        .stroke(.gray)
-                )
-                .foregroundColor(.gray)
-                .padding(7)
+            if #available(iOS 26, *) {
+                Image(systemName: "xmark")
+                    .foregroundColor(.primary)
+                    .frame(width: 12, height: 12)
+                    .padding()
+                    .glassEffect()
+                    .padding(2)
+            } else {
+                Image(systemName: "xmark")
+                    .frame(width: 30, height: 30)
+                    .overlay(
+                        Circle()
+                            .stroke(.gray)
+                    )
+                    .foregroundColor(.gray)
+                    .padding(7)
+            }
         }
     }
 }
@@ -29,14 +38,23 @@ private struct HideShowButtonPanelView: View {
         Button {
             model.panelHidden.toggle()
         } label: {
-            Image(systemName: model.panelHidden ? "eye" : "eye.slash")
-                .frame(width: 30, height: 30)
-                .overlay(
-                    Circle()
-                        .stroke(.gray)
-                )
-                .foregroundColor(.gray)
-                .padding(7)
+            if #available(iOS 26, *) {
+                Image(systemName: model.panelHidden ? "eye" : "eye.slash")
+                    .foregroundColor(.primary)
+                    .frame(width: 12, height: 12)
+                    .padding()
+                    .glassEffect()
+                    .padding(2)
+            } else {
+                Image(systemName: model.panelHidden ? "eye" : "eye.slash")
+                    .frame(width: 30, height: 30)
+                    .overlay(
+                        Circle()
+                            .stroke(.gray)
+                    )
+                    .foregroundColor(.gray)
+                    .padding(7)
+            }
         }
     }
 }
@@ -45,22 +63,35 @@ private struct PanelButtonsView: View {
     @EnvironmentObject var model: Model
     let backgroundColor: Color
 
+    private func onClose() {
+        model.toggleShowingPanel(type: nil, panel: .none)
+        model.updateLutsButtonState()
+        model.updateAutoSceneSwitcherButtonState()
+    }
+
     var body: some View {
         HStack {
             Spacer()
             VStack(alignment: .trailing) {
-                HStack(spacing: 0) {
-                    HideShowButtonPanelView()
-                    CloseButtonView {
-                        model.toggleShowingPanel(type: nil, panel: .none)
-                        model.updateLutsButtonState()
-                        model.updateAutoSceneSwitcherButtonState()
+                if #available(iOS 26, *) {
+                    HStack(spacing: 0) {
+                        HideShowButtonPanelView()
+                        CloseButtonView {
+                            onClose()
+                        }
                     }
+                } else {
+                    HStack(spacing: 0) {
+                        HideShowButtonPanelView()
+                        CloseButtonView {
+                            onClose()
+                        }
+                    }
+                    .padding(-3)
+                    .background(backgroundColor)
+                    .cornerRadius(7)
+                    .padding(3)
                 }
-                .padding(-3)
-                .background(backgroundColor)
-                .cornerRadius(7)
-                .padding(3)
                 Spacer()
             }
         }

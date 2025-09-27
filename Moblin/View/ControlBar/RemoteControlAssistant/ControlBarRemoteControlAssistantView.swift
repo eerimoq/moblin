@@ -628,14 +628,23 @@ private struct StreamerSelectionView: View {
         Button {
             remoteControl.assistantShowStreamers = true
         } label: {
-            Image(systemName: "person")
-                .frame(width: 30, height: 30)
-                .overlay(
-                    Circle()
-                        .stroke(.gray)
-                )
-                .foregroundColor(.gray)
-                .padding(7)
+            if #available(iOS 26, *) {
+                Image(systemName: "person")
+                    .foregroundColor(.primary)
+                    .frame(width: 12, height: 12)
+                    .padding()
+                    .glassEffect()
+                    .padding(2)
+            } else {
+                Image(systemName: "person")
+                    .frame(width: 30, height: 30)
+                    .overlay(
+                        Circle()
+                            .stroke(.gray)
+                    )
+                    .foregroundColor(.gray)
+                    .padding(7)
+            }
         }
     }
 }
