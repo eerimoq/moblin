@@ -219,11 +219,7 @@ private struct DjiDeviceRtmpSettingsView: View {
             }
         }
         Section {
-            NavigationLink {
-                RtmpServerSettingsView(rtmpServer: rtmpServer)
-            } label: {
-                Text("RTMP server")
-            }
+            RtmpServerSettingsView(rtmpServer: rtmpServer)
         } header: {
             Text("Shortcut")
         }

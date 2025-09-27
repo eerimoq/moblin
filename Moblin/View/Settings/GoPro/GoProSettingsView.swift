@@ -263,11 +263,7 @@ private struct GoProRtmpUrlSettingsView: View {
                     }
                 }
                 Section {
-                    NavigationLink {
-                        RtmpServerSettingsView(rtmpServer: model.database.rtmpServer)
-                    } label: {
-                        Text("RTMP server")
-                    }
+                    RtmpServerSettingsView(rtmpServer: model.database.rtmpServer)
                 } header: {
                     Text("Shortcut")
                 }
