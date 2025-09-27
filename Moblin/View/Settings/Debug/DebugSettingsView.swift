@@ -133,18 +133,6 @@ struct DebugSettingsView: View {
             } header: {
                 Text("Experimental")
             }
-            if #available(iOS 26.0, *) {
-                Section {
-                    HCenter {
-                        WiFiAwarePublisherView()
-                    }
-                }
-                Section {
-                    HCenter {
-                        WiFiAwareSubscriberView()
-                    }
-                }
-            }
         }
         .navigationTitle("Debug")
     }
