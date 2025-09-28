@@ -79,12 +79,10 @@ private struct BookmarksToolbar: ToolbarContent {
 
     var body: some ToolbarContent {
         ToolbarItem(placement: .navigationBarTrailing) {
-            HStack {
-                Button {
-                    showingBookmarks = false
-                } label: {
-                    Text("Close")
-                }
+            Button {
+                showingBookmarks = false
+            } label: {
+                Image(systemName: "xmark")
             }
         }
     }

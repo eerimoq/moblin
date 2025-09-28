@@ -675,12 +675,10 @@ private struct StreamersToolbar: ToolbarContent {
 
     var body: some ToolbarContent {
         ToolbarItem(placement: .navigationBarTrailing) {
-            HStack {
-                Button {
-                    remoteControl.assistantShowStreamers = false
-                } label: {
-                    Text("Close")
-                }
+            Button {
+                remoteControl.assistantShowStreamers = false
+            } label: {
+                Image(systemName: "xmark")
             }
         }
     }

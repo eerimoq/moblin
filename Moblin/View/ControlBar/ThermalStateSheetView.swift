@@ -5,12 +5,10 @@ private struct CloseToolbar: ToolbarContent {
 
     var body: some ToolbarContent {
         ToolbarItem(placement: .navigationBarTrailing) {
-            HStack {
-                Button {
-                    presenting = false
-                } label: {
-                    Text("Close")
-                }
+            Button {
+                presenting = false
+            } label: {
+                Image(systemName: "xmark")
             }
         }
     }

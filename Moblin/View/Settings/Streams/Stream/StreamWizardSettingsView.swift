@@ -23,13 +23,11 @@ struct CreateStreamWizardToolbar: ToolbarContent {
 
     var body: some ToolbarContent {
         ToolbarItem(placement: .navigationBarTrailing) {
-            HStack {
-                Button {
-                    createStreamWizard.isPresenting = false
-                    createStreamWizard.isPresentingSetup = false
-                } label: {
-                    Text("Close")
-                }
+            Button {
+                createStreamWizard.isPresenting = false
+                createStreamWizard.isPresentingSetup = false
+            } label: {
+                Image(systemName: "xmark")
             }
         }
     }
