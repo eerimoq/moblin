@@ -177,7 +177,7 @@ private struct MainPageView: View {
                     .padding([.leading, .trailing], 5)
             }
             .padding([.leading], 0)
-            .frame(width: height)
+            .frame(width: controlBarWidthDefault)
             .sheet(isPresented: $presentingThermalState) {
                 ThermalStateSheetView(presenting: $presentingThermalState)
             }
@@ -235,6 +235,7 @@ private struct PagesView: View {
 
 struct ControlBarPortraitView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var quickButtons: SettingsQuickButtons
 
     private func controlBarHeight() -> CGFloat {
         return controlBarWidthDefault
@@ -244,8 +245,8 @@ struct ControlBarPortraitView: View {
         PagesView(model: model,
                   quickButtons: model.quickButtons,
                   quickButtonsSettings: model.database.quickButtonsGeneral,
-                  height: controlBarHeight())
-            .frame(height: controlBarHeight())
+                  height: controlBarWidth(quickButtons: quickButtons))
+            .frame(height: controlBarWidth(quickButtons: quickButtons))
             .background(.black)
     }
 }

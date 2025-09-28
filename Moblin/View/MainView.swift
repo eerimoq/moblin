@@ -427,7 +427,7 @@ struct MainView: View {
                         model.commitZoomX(amount: Float(amount))
                     }
             )
-            ControlBarPortraitView()
+            ControlBarPortraitView(quickButtons: quickButtons)
         }
     }
 
@@ -507,7 +507,11 @@ struct MainView: View {
     private func edgesToIgnore() -> Edge.Set {
         if isPhone() {
             if orientation.isPortrait {
-                return []
+                if quickButtons.bigButtons && quickButtons.twoColumns {
+                    return [.bottom]
+                } else {
+                    return []
+                }
             } else if quickButtons.bigButtons && quickButtons.twoColumns {
                 return [.top, .trailing]
             } else {
@@ -533,7 +537,7 @@ struct MainView: View {
                 if model.showStealthMode {
                     StealthModeView(
                         model: model,
-                        quickButtons: model.database.quickButtonsGeneral,
+                        quickButtons: quickButtons,
                         chat: model.chat,
                         stealthMode: model.stealthMode,
                         orientation: orientation
