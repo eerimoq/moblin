@@ -3,7 +3,7 @@ import SwiftUI
 
 private struct Suggestion: Identifiable {
     let id: Int
-    let name: String
+    let name: LocalizedStringKey
     let text: String
 }
 
@@ -30,29 +30,29 @@ private let suggestions = createSuggestions()
 
 private func createSuggestions() -> [Suggestion] {
     var suggestions = [
-        Suggestion(id: 0, name: String(localized: "Travel"), text: suggestionTravel),
-        Suggestion(id: 1, name: String(localized: "Weather"), text: suggestionWeather),
-        Suggestion(id: 2, name: String(localized: "Time"), text: suggestionTime),
-        Suggestion(id: 3, name: String(localized: "Date"), text: suggestionDate),
-        Suggestion(id: 4, name: String(localized: "Full date"), text: suggestionFullDate),
-        Suggestion(id: 5, name: String(localized: "Timer"), text: suggestionTimer),
-        Suggestion(id: 6, name: String(localized: "Stopwatch"), text: suggestionStopwatch),
-        Suggestion(id: 7, name: String(localized: "City"), text: suggestionCity),
-        Suggestion(id: 8, name: String(localized: "Country"), text: suggestionCountry),
-        Suggestion(id: 9, name: String(localized: "Movement"), text: suggestionMovement),
+        Suggestion(id: 0, name: "Travel", text: suggestionTravel),
+        Suggestion(id: 1, name: "Weather", text: suggestionWeather),
+        Suggestion(id: 2, name: "Time", text: suggestionTime),
+        Suggestion(id: 3, name: "Date", text: suggestionDate),
+        Suggestion(id: 4, name: "Full date", text: suggestionFullDate),
+        Suggestion(id: 5, name: "Timer", text: suggestionTimer),
+        Suggestion(id: 6, name: "Stopwatch", text: suggestionStopwatch),
+        Suggestion(id: 7, name: "City", text: suggestionCity),
+        Suggestion(id: 8, name: "Country", text: suggestionCountry),
+        Suggestion(id: 9, name: "Movement", text: suggestionMovement),
     ]
     if isPhone() {
         suggestions += [
-            Suggestion(id: 10, name: String(localized: "Heart rate"), text: suggestionHeartRate),
+            Suggestion(id: 10, name: "Heart rate", text: suggestionHeartRate),
         ]
     }
     suggestions += [
-        Suggestion(id: 11, name: String(localized: "Subtitles"), text: suggestionSubtitles),
-        Suggestion(id: 12, name: String(localized: "Muted"), text: suggestionMuted),
-        Suggestion(id: 13, name: String(localized: "Debug"), text: suggestionDebug),
-        Suggestion(id: 14, name: String(localized: "Workout test"), text: suggestionWorkoutTest),
-        Suggestion(id: 15, name: String(localized: "Tesla"), text: suggestionTesla),
-        Suggestion(id: 16, name: String(localized: "Racing"), text: suggestionRacing),
+        Suggestion(id: 11, name: "Subtitles", text: suggestionSubtitles),
+        Suggestion(id: 12, name: "Muted", text: suggestionMuted),
+        Suggestion(id: 13, name: "Debug", text: suggestionDebug),
+        Suggestion(id: 14, name: "Workout test", text: suggestionWorkoutTest),
+        Suggestion(id: 15, name: "Tesla", text: suggestionTesla),
+        Suggestion(id: 16, name: "Racing", text: suggestionRacing),
     ]
     return suggestions
 }
