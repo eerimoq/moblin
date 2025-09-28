@@ -58,13 +58,13 @@ struct ThermalStateSheetView: View {
                 }
                 Section {
                     VStack(alignment: .leading) {
-                        BulletView(text: "Use single lens camera")
+                        BulletView(text: "Use single lens or low energy cameras")
                         BulletView(text: "Lower FPS")
                         BulletView(text: "Lower resolution")
                         BulletView(text: "Lower bitrate")
                         BulletView(text: "No widgets, LUTs or other image effects")
-                        BulletView(text: "More air flow")
                         BulletView(text: "No direct sunlight")
+                        BulletView(text: "More air flow")
                         BulletView(text: "Keep the battery fully charged")
                         BulletView(text: "Use a phone cooler")
                         BulletView(text: "Turn off cellular")
