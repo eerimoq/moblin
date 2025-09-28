@@ -370,9 +370,7 @@ struct MainView: View {
                     }
                     Spacer(minLength: 0)
                 }
-                .background(.black)
                 .ignoresSafeArea()
-                .edgesIgnoringSafeArea(.all)
                 GeometryReader { metrics in
                     StreamOverlayView(streamOverlay: model.streamOverlay,
                                       chatSettings: model.database.chat,
@@ -438,9 +436,7 @@ struct MainView: View {
                         Spacer(minLength: 0)
                     }
                 }
-                .background(.black)
                 .ignoresSafeArea()
-                .edgesIgnoringSafeArea(.all)
                 GeometryReader { metrics in
                     StreamOverlayView(streamOverlay: model.streamOverlay,
                                       chatSettings: model.database.chat,
@@ -487,6 +483,20 @@ struct MainView: View {
                 .frame(width: model.panelHidden ? 1 : settingsHalfWidth)
             }
             ControlBarLandscapeView(model: model)
+        }
+    }
+
+    private func edgesToIgnore() -> Edge.Set {
+        if isPhone() {
+            if orientation.isPortrait {
+                return []
+            } else {
+                return [.top]
+            }
+        } else if isMac() {
+            return [.top]
+        } else {
+            return []
         }
     }
 
@@ -606,5 +616,6 @@ struct MainView: View {
                 .foregroundColor(.black)
                 .frame(height: isMac() ? 10 : 0)
         }
+        .ignoresSafeArea(.all, edges: edgesToIgnore())
     }
 }
