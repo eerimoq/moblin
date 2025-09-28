@@ -6,6 +6,12 @@ import WrappingHStack
 let maximumNumberOfChatMessages = 50
 let maximumNumberOfInteractiveChatMessages = 100
 
+enum ChatPlatformSelection: CaseIterable {
+    case all
+    case twitch
+    case kick
+}
+
 class ChatProvider: ObservableObject {
     var newPosts: Deque<ChatPost> = []
     var pausedPosts: Deque<ChatPost> = []
