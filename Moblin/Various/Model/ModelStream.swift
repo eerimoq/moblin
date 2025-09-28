@@ -881,48 +881,6 @@ extension Model {
             pixelFormatType = type
         }
     }
-
-    func startLowPowerMode() {
-        guard database.debug.autoLowPowerMode else {
-            return
-        }
-        guard !statusTopRight.isLowPowerMode else {
-            return
-        }
-        statusTopRight.isLowPowerMode = true
-        logger.info("Starting low power mode")
-        switch stream.fps {
-        case 50, 100:
-            setStreamFps(fps: 25)
-        case 60, 120:
-            setStreamFps(fps: 30)
-        default:
-            break
-        }
-        switch stream.resolution {
-        case .r3840x2160, .r2560x1440, .r1920x1080:
-            setStreamResolution(resolution: .r1280x720)
-        default:
-            break
-        }
-        if stream.bitrate > lowPowerBitrate {
-            media.setVideoStreamBitrate(bitrate: lowPowerBitrate)
-        }
-    }
-
-    func stopLowPowerMode() {
-        guard database.debug.autoLowPowerMode else {
-            return
-        }
-        guard statusTopRight.isLowPowerMode else {
-            return
-        }
-        statusTopRight.isLowPowerMode = false
-        logger.info("Stopping low power mode")
-        setStreamFps()
-        setStreamResolution()
-        setBitrate(bitrate: stream.bitrate)
-    }
 }
 
 extension Model: MediaDelegate {

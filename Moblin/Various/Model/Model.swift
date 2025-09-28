@@ -2453,9 +2453,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         logger.info("Thermal state: \(state.string())")
         if statusOther.thermalState == .critical {
             makeFlameRedToast()
-            startLowPowerMode()
-        } else {
-            stopLowPowerMode()
         }
     }
 
