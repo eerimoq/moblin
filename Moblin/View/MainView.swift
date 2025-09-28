@@ -31,6 +31,21 @@ struct CloseButtonView: View {
     }
 }
 
+struct CloseButtonTopRightView: View {
+    let onClose: () -> Void
+
+    var body: some View {
+        HStack {
+            Spacer()
+            VStack {
+                CloseButtonView(onClose: onClose)
+                    .padding()
+                Spacer()
+            }
+        }
+    }
+}
+
 private struct HideShowButtonPanelView: View {
     @EnvironmentObject var model: Model
 
@@ -535,18 +550,13 @@ struct MainView: View {
                 model.setup()
             }
             .sheet(isPresented: $model.showTwitchAuth) {
-                VStack {
-                    HStack {
-                        Spacer()
-                        Button {
-                            model.showTwitchAuth = false
-                        } label: {
-                            Text("Close").padding()
-                        }
-                    }
+                ZStack {
                     ScrollView {
                         TwitchAuthView(twitchAuth: model.twitchAuth)
                             .frame(height: 2500)
+                    }
+                    CloseButtonTopRightView {
+                        model.showTwitchAuth = false
                     }
                 }
             }

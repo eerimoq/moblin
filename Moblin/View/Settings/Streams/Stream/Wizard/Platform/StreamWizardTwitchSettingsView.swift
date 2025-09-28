@@ -84,18 +84,13 @@ struct StreamWizardTwitchSettingsView: View {
             }
         }
         .sheet(isPresented: $createStreamWizard.showTwitchAuth) {
-            VStack {
-                HStack {
-                    Spacer()
-                    Button {
-                        createStreamWizard.showTwitchAuth = false
-                    } label: {
-                        Text("Close").padding()
-                    }
-                }
+            ZStack {
                 ScrollView {
                     TwitchAuthView(twitchAuth: model.twitchAuth)
                         .frame(height: 2500)
+                }
+                CloseButtonTopRightView {
+                    createStreamWizard.showTwitchAuth = false
                 }
             }
         }
