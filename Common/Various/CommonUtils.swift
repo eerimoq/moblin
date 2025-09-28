@@ -6,8 +6,8 @@ import SwiftUI
 
 let iconWidth = 32.0
 let controlBarButtonSize = 40.0
-let controlBarWidthAccessibility = 150.0
 let controlBarWidthDefault = 100.0
+let controlBarWidthBigQuickButtons = 150.0
 let controlBarQuickButtonNameSize = 10.0
 let controlBarQuickButtonNameSingleColumnSize = 12.0
 let controlBarQuickButtonSingleQuickButtonSize = 60.0

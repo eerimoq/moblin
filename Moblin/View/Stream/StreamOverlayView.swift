@@ -44,6 +44,7 @@ struct ChatOverlayView: View {
     @ObservedObject var chatSettings: SettingsChat
     @ObservedObject var chat: ChatProvider
     @ObservedObject var orientation: Orientation
+    @ObservedObject var quickButtons: SettingsQuickButtons
     let fullSize: Bool
 
     var body: some View {
@@ -94,7 +95,7 @@ struct ChatOverlayView: View {
                         .background(.gray)
                     Rectangle()
                         .foregroundColor(.clear)
-                        .frame(width: controlBarWidthDefault)
+                        .frame(width: controlBarWidth(quickButtons: quickButtons))
                 }
             }
             .allowsHitTesting(chat.interactiveChat)
@@ -177,6 +178,7 @@ struct StreamOverlayView: View {
                     ChatOverlayView(chatSettings: chatSettings,
                                     chat: model.chat,
                                     orientation: orientation,
+                                    quickButtons: model.database.quickButtonsGeneral,
                                     fullSize: false)
                         .opacity(chatSettings.enabled ? 1 : 0)
                 }

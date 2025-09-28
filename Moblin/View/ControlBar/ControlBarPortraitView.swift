@@ -235,15 +235,9 @@ private struct PagesView: View {
 
 struct ControlBarPortraitView: View {
     @EnvironmentObject var model: Model
-    @Environment(\.accessibilityShowButtonShapes)
-    private var accessibilityShowButtonShapes
 
     private func controlBarHeight() -> CGFloat {
-        if accessibilityShowButtonShapes {
-            return controlBarWidthAccessibility
-        } else {
-            return controlBarWidthDefault
-        }
+        return controlBarWidthDefault
     }
 
     var body: some View {

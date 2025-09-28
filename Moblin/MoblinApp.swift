@@ -22,7 +22,8 @@ struct MoblinApp: App {
                 ),
                 createStreamWizard: model.createStreamWizard,
                 toast: model.toast,
-                orientation: model.orientation
+                orientation: model.orientation,
+                quickButtons: model.database.quickButtonsGeneral
             )
             .background(.black)
             .environmentObject(model)

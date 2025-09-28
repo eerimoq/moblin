@@ -120,7 +120,7 @@ struct StealthModeView: View {
                     }
                     .padding([.top], 50)
                     .padding([.bottom], 25)
-                    .frame(width: controlBarWidthDefault)
+                    .frame(width: controlBarWidth(quickButtons: quickButtons))
                 }
             }
         }
@@ -128,6 +128,7 @@ struct StealthModeView: View {
             ChatOverlayView(chatSettings: model.database.chat,
                             chat: model.chat,
                             orientation: orientation,
+                            quickButtons: quickButtons,
                             fullSize: true)
         }
     }

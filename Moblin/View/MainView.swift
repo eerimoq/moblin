@@ -289,18 +289,21 @@ struct MainView: View {
     @ObservedObject var createStreamWizard: CreateStreamWizard
     @ObservedObject var toast: Toast
     @ObservedObject var orientation: Orientation
+    @ObservedObject var quickButtons: SettingsQuickButtons
 
     init(webBrowserController: WebBrowserController,
          streamView: StreamView,
          createStreamWizard: CreateStreamWizard,
          toast: Toast,
-         orientation: Orientation)
+         orientation: Orientation,
+         quickButtons: SettingsQuickButtons)
     {
         self.webBrowserController = webBrowserController
         self.streamView = streamView
         self.createStreamWizard = createStreamWizard
         self.toast = toast
         self.orientation = orientation
+        self.quickButtons = quickButtons
         UITextField.appearance().clearButtonMode = .always
     }
 
@@ -497,7 +500,7 @@ struct MainView: View {
                 }
                 .frame(width: model.panelHidden ? 1 : settingsHalfWidth)
             }
-            ControlBarLandscapeView(model: model)
+            ControlBarLandscapeView(model: model, quickButtons: quickButtons)
         }
     }
 
@@ -505,6 +508,8 @@ struct MainView: View {
         if isPhone() {
             if orientation.isPortrait {
                 return []
+            } else if quickButtons.bigButtons && quickButtons.twoColumns {
+                return [.top, .trailing]
             } else {
                 return [.top]
             }
