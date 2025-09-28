@@ -24,6 +24,7 @@ struct MoblinApp: App {
                 toast: model.toast,
                 orientation: model.orientation
             )
+            .background(.black)
             .environmentObject(model)
         }
     }
