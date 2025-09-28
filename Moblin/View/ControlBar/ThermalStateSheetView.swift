@@ -64,6 +64,7 @@ struct ThermalStateSheetView: View {
                         BulletView(text: "No direct sunlight")
                         BulletView(text: "More air flow")
                         BulletView(text: "Keep the battery fully charged")
+                        BulletView(text: "No wireless charging or fast charging")
                         BulletView(text: "Use a phone cooler")
                         BulletView(text: "Turn off cellular")
                         BulletView(text: "Turn off busy chats")
