@@ -93,6 +93,7 @@ private struct QuickButtonsView: View {
 private struct StatusView: View {
     let model: Model
     @ObservedObject var status: StatusOther
+    @State var presentingThermalState: Bool = false
 
     var body: some View {
         HStack(spacing: 0) {
@@ -100,7 +101,11 @@ private struct StatusView: View {
                 BatteryView(model: model, database: model.database, battery: model.battery)
             }
             Spacer(minLength: 0)
-            ThermalStateView(thermalState: status.thermalState)
+            Button {
+                presentingThermalState.toggle()
+            } label: {
+                ThermalStateView(thermalState: status.thermalState)
+            }
             Spacer(minLength: 0)
             if isPhone() {
                 Text(status.digitalClock)
@@ -110,6 +115,9 @@ private struct StatusView: View {
         }
         .padding([.leading, .bottom], 0)
         .padding([.trailing], 5)
+        .sheet(isPresented: $presentingThermalState) {
+            ThermalStateSheetView(presenting: $presentingThermalState)
+        }
     }
 }
 

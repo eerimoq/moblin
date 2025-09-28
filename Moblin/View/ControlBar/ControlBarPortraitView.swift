@@ -147,6 +147,7 @@ private struct MainPageView: View {
     let quickButtonsSettings: SettingsQuickButtons
     @ObservedObject var status: StatusOther
     var height: Double
+    @State var presentingThermalState: Bool = false
 
     var body: some View {
         HStack(spacing: 0) {
@@ -160,7 +161,11 @@ private struct MainPageView: View {
             VStack(spacing: 0) {
                 HStack(spacing: 0) {
                     Spacer(minLength: 0)
-                    ThermalStateView(thermalState: status.thermalState)
+                    Button {
+                        presentingThermalState.toggle()
+                    } label: {
+                        ThermalStateView(thermalState: status.thermalState)
+                    }
                     Spacer(minLength: 0)
                 }
                 .padding([.top], 3)
@@ -173,6 +178,9 @@ private struct MainPageView: View {
             }
             .padding([.leading], 0)
             .frame(width: height)
+            .sheet(isPresented: $presentingThermalState) {
+                ThermalStateSheetView(presenting: $presentingThermalState)
+            }
         }
     }
 }

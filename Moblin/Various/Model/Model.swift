@@ -97,6 +97,7 @@ class Browser: Identifiable {
 
 let fallbackStream = SettingsStream(name: "Fallback")
 let flameRedMessage = String(localized: "🔥 Flame is red 🔥")
+let flameRedSubMessage = String(localized: "Your device is hot and may overheat.")
 let unknownSad = String(localized: "Unknown 😢")
 
 func formatWarning(_ message: String) -> String {
@@ -747,7 +748,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         allowVideoRangePixelFormat = database.debug.allowVideoRangePixelFormat
     }
 
-    func makeToast(title: String, subTitle: String? = nil, onTapped: (() -> Void)? = nil) {
+    func makeToast(title: String, subTitle: String? = nil, vibrate: Bool = false, onTapped: (() -> Void)? = nil) {
         toast.toast = AlertToast(type: .regular,
                                  title: title,
                                  subTitle: subTitle,
@@ -755,6 +756,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         toast.onTapped = onTapped
         showToast()
         logger.debug("toast: Info: \(title): \(subTitle ?? "-")")
+        if vibrate {
+            UIDevice.vibrate()
+        }
     }
 
     func makeWarningToast(title: String, subTitle: String? = nil, vibrate: Bool = false) {
@@ -2765,7 +2769,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func makeFlameRedToast() {
-        makeWarningToast(title: flameRedMessage, vibrate: true)
+        makeToast(title: flameRedMessage, subTitle: flameRedSubMessage, vibrate: true)
     }
 
     func startMotionDetection() {
