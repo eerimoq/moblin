@@ -924,7 +924,7 @@ final class TextEffect: VideoEffect {
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
         let sceneWidget = updateOverlay(size: image.extent.size)
         return overlay?
-            .resizeMoveMirror(sceneWidget, image.extent.size, false, false)
+            .move(sceneWidget, image.extent.size, false, false)
             .cropped(to: image.extent)
             .composited(over: image) ?? image
     }

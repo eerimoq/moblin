@@ -218,9 +218,10 @@ final class VideoSourceEffect: VideoEffect {
         } else if settings.cropEnabled {
             widgetImage = crop(widgetImage, settings)
         }
-        widgetImage = rotate(widgetImage, settings)
-        return applyEffects(widgetImage, info)
-            .resizeMoveMirror(sceneWidget, backgroundImage.extent.size, settings.mirror)
+        let resizedImage = rotate(widgetImage, settings)
+            .resizeMirror(sceneWidget, backgroundImage.extent.size, settings.mirror)
+        return applyEffects(resizedImage, info)
+            .move(sceneWidget, backgroundImage.extent.size, settings.mirror)
             .composited(over: backgroundImage)
             .cropped(to: backgroundImage.extent)
     }

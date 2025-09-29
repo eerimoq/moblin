@@ -63,8 +63,9 @@ final class SnapshotEffect: VideoEffect {
         guard let currentSnapshot else {
             return image
         }
-        return applyEffects(currentSnapshot, info)
-            .resizeMoveMirror(sceneWidget, image.extent.size, false)
+        let resizedImage = currentSnapshot.resizeMirror(sceneWidget, image.extent.size, false)
+        return applyEffects(resizedImage, info)
+            .move(sceneWidget, image.extent.size, false)
             .cropped(to: image.extent)
             .composited(over: image)
     }

@@ -89,7 +89,8 @@ final class VTuberEffect: VideoEffect {
             return image
         }
         return renderedImage?
-            .resizeMoveMirror(sceneWidget, image.extent.size, mirror)
+            .resizeMirror(sceneWidget, image.extent.size, mirror)
+            .move(sceneWidget, image.extent.size, mirror)
             .cropped(to: image.extent)
             .composited(over: image) ?? image
     }

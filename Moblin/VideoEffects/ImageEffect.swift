@@ -55,8 +55,9 @@ final class ImageEffect: VideoEffect {
         guard let originalImage, let sceneWidget else {
             return image
         }
-        filter.inputImage = applyEffects(originalImage, info)
-            .resizeMoveMirror(sceneWidget, image.extent.size, false)
+        let resizedImage = originalImage.resizeMirror(sceneWidget, image.extent.size, false)
+        filter.inputImage = applyEffects(resizedImage, info)
+            .move(sceneWidget, image.extent.size, false)
             .cropped(to: image.extent)
         filter.backgroundImage = image
         return filter.outputImage ?? image

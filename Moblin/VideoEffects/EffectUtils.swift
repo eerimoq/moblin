@@ -7,10 +7,34 @@ func toPixels(_ percentage: Double, _ total: Double) -> Double {
 }
 
 extension CIImage {
-    func resizeMoveMirror(_ sceneWidget: SettingsSceneWidget,
-                          _ streamSize: CGSize,
-                          _ mirror: Bool,
-                          _ resize: Bool = true) -> CIImage
+    func resizeMirror(_ sceneWidget: SettingsSceneWidget,
+                      _ streamSize: CGSize,
+                      _ mirror: Bool,
+                      _ resize: Bool = true) -> CIImage
+    {
+        guard resize else {
+            return self
+        }
+        var scaleX = toPixels(sceneWidget.size, streamSize.width) / extent.size.width
+        var scaleY = toPixels(sceneWidget.size, streamSize.height) / extent.size.height
+        let scale = min(scaleX, scaleY)
+        if mirror {
+            scaleX = -1 * scale
+        } else {
+            scaleX = scale
+        }
+        scaleY = scale
+        if !resize {
+            scaleX = 1
+            scaleY = 1
+        }
+        return transformed(by: CGAffineTransform(scaleX: scaleX, y: scaleY))
+    }
+
+    func move(_ sceneWidget: SettingsSceneWidget,
+              _ streamSize: CGSize,
+              _ mirror: Bool,
+              _ resize: Bool = true) -> CIImage
     {
         var scaleX = toPixels(sceneWidget.size, streamSize.width) / extent.size.width
         var scaleY = toPixels(sceneWidget.size, streamSize.height) / extent.size.height
@@ -43,8 +67,7 @@ extension CIImage {
         } else {
             y = toPixels(sceneWidget.y, streamSize.height)
         }
-        return transformed(by: CGAffineTransform(scaleX: scaleX, y: scaleY))
-            .transformed(by: CGAffineTransform(translationX: x, y: y))
+        return transformed(by: CGAffineTransform(translationX: x, y: y))
     }
 }
 
