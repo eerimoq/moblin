@@ -102,7 +102,8 @@ final class ShapeEffect: VideoEffect {
             return roundedCornersBlender.outputImage ?? image
         } else {
             let (width, scaleX, scaleY) = settings.borderWidthAndScale(image.extent)
-            let borderImage = CIImage(color: settings.borderColor).cropped(to: image.extent)
+            let borderImage = CIImage(color: settings.borderColor)
+                .cropped(to: image.extent)
                 .transformed(by: CGAffineTransform(scaleX: scaleX, y: scaleY))
                 .transformed(by: CGAffineTransform(translationX: -1.0 * width, y: -width))
             let roundedCornersBlender = CIFilter.blendWithMask()
