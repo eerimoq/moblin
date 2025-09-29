@@ -286,11 +286,11 @@ struct ControlBarLandscapeView: View {
         VStack(spacing: 0) {
             HStack(spacing: 0) {
                 if !isPhone() {
-                    Spacer()
+                    Spacer(minLength: 0)
                 }
                 StatusView(model: model, status: model.statusOther)
                     .frame(width: controlBarWidthDefault)
-                Spacer()
+                Spacer(minLength: 0)
             }
             PagesView(model: model,
                       quickButtons: model.quickButtons,
