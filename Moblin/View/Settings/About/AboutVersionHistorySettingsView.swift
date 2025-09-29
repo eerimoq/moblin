@@ -8,6 +8,33 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "26.2010.0", date: "2025-09-29", changes: [
+        "• Make newly created text widgets render on video.",
+        "  • Previously required app restart pretty much.",
+        "• Initial support for live subtitles in multiple languages in text widget. 💡 iChrisIRL and others",
+        "  • {subtitles:<language-identifier>}, for example {subtitles:en}, {subtitles:ja}.",
+        "  • Download languages in iOS settings -> Apps -> Translate -> Languages.",
+        "• Make a few buttons looks better in iOS 26 by removing the blue border. 🐛 cliffcreates",
+        "• Text widget editing done button.",
+        "  • To hide the keyboard.",
+        "• Make some sliders respect step settings again. 🐛 djandrea.",
+        "  • Apple changed slider behavior.",
+        "• Toggles to enable/disable alert toasts and chat messages. 🧑‍🏭 iChrisIRL",
+        "  • For Twitch and Kick, in Stream settings.",
+        "• German translation updated. ✍️ MaurisonX",
+        "• Fix Twitch login info not saved when using Create stream wizard. 🧑‍🏭 iChrisIRL",
+        "• Try to migrate video source corner radius and border settings to new Shape effect. 💡 ThisisKurtIRL",
+        "• Do not show red status icon in top right with default settings.",
+        "• Landscape stream with phone in portrait.",
+        "  • Only works on new phones with ultra wide front camera.",
+        "• Hide/show, close and a few more buttons in Liquid Glass.",
+        "• Show numbers next to ingests to show which ones are enabled.",
+        "• Show thermal state help when tapping the flame. 💡 BalloonSciDan",
+        "• Remove gray line next to control bar on iPhone Air.",
+        "• Fix UI not using full landscape height after leaving portrait.",
+        "• Make big quick buttons tappable.",
+        "• Shortcut to LUTs settings from LUTs quick button page.",
+    ]),
     Version(version: "26.2009.0", date: "2025-09-19", changes: [
         "• Insert punctuation after AI question if missing.",
         "  • For better TTS.",
