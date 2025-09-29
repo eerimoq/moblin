@@ -120,7 +120,7 @@ private struct CameraSettingsPngLutsView: View {
     }
 }
 
-private struct CameraSettingsLutsView: View {
+struct CameraSettingsLutsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var color: SettingsColor
     @State var selectedImageItem: PhotosPickerItem?

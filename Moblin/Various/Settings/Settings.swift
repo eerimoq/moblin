@@ -39,11 +39,11 @@ enum SettingsColorLutType: String, Codable {
     }
 }
 
-class SettingsColorLut: Codable, Identifiable {
+class SettingsColorLut: Codable, Identifiable, ObservableObject {
     var id: UUID = .init()
-    var type: SettingsColorLutType = .bundled
-    var name: String = ""
-    var enabled: Bool = false
+    @Published var type: SettingsColorLutType = .bundled
+    @Published var name: String = ""
+    @Published var enabled: Bool = false
 
     init(type: SettingsColorLutType, name: String) {
         self.type = type

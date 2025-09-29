@@ -136,7 +136,7 @@ private struct MenuView: View {
             }
         case .luts:
             NavigationStack {
-                QuickButtonLutsView(model: model)
+                QuickButtonLutsView(model: model, color: model.database.color)
             }
         case .obs:
             NavigationStack {
