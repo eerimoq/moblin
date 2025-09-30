@@ -24,10 +24,6 @@ extension CIImage {
             scaleX = scale
         }
         scaleY = scale
-        if !resize {
-            scaleX = 1
-            scaleY = 1
-        }
         return transformed(by: CGAffineTransform(scaleX: scaleX, y: scaleY))
     }
 
