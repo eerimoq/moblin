@@ -1730,8 +1730,7 @@ class SettingsWidgetVideoSource: Codable, ObservableObject {
     }
 
     func toEffectSettings() -> VideoSourceEffectSettings {
-        return .init(cornerRadius: cornerRadius,
-                     cropEnabled: cropEnabled,
+        return .init(cropEnabled: cropEnabled,
                      cropX: cropX,
                      cropY: cropY,
                      cropWidth: cropWidth,
@@ -1739,13 +1738,7 @@ class SettingsWidgetVideoSource: Codable, ObservableObject {
                      rotation: rotation,
                      trackFaceEnabled: trackFaceEnabled,
                      trackFaceZoom: 1.5 + (1 - trackFaceZoom) * 4,
-                     mirror: mirror,
-                     borderWidth: borderWidth,
-                     borderColor: CIColor(
-                         red: Double(borderColor.red) / 255,
-                         green: Double(borderColor.green) / 255,
-                         blue: Double(borderColor.blue) / 255
-                     ))
+                     mirror: mirror)
     }
 
     func toCameraId() -> SettingsCameraId {

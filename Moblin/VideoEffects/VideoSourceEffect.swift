@@ -3,7 +3,6 @@ import MetalPetal
 import Vision
 
 struct VideoSourceEffectSettings {
-    var cornerRadius: Float = 0
     var cropEnabled: Bool = false
     var cropX: Double = 0
     var cropY: Double = 0
@@ -13,15 +12,6 @@ struct VideoSourceEffectSettings {
     var trackFaceEnabled: Bool = false
     var trackFaceZoom: Double = 2.2
     var mirror: Bool = false
-    var borderWidth: Double = 1.0
-    var borderColor: CIColor = .black
-
-    func borderWidthAndScale(_ image: CGRect) -> (Double, Double, Double) {
-        let borderWidth = 0.025 * borderWidth * min(image.height, image.width)
-        let scaleX = (image.width + 2 * borderWidth) / image.width
-        let scaleY = (image.height + 2 * borderWidth) / image.height
-        return (borderWidth, scaleX, scaleY)
-    }
 }
 
 class PositionInterpolator {
