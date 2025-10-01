@@ -304,7 +304,8 @@ final class BrowserEffect: VideoEffect {
             filter.inputImage = nil
         }
         filter.backgroundImage = image
-        return filter.outputImage ?? image
+        return filter.outputImage?
+            .cropped(to: image.extent) ?? image
     }
 
     override func executeMetalPetal(_ image: MTIImage?, _: VideoEffectInfo) -> MTIImage? {
