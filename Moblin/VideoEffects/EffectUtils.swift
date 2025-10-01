@@ -24,9 +24,9 @@ extension CIImage {
             scaleX = scale
         }
         scaleY = scale
-        let scaledImage = transformed(by: CGAffineTransform(scaleX: scaleX, y: scaleY))
+        let scaledImage = scaled(x: scaleX, y: scaleY)
         if mirror {
-            return scaledImage.transformed(by: CGAffineTransform(translationX: scaledImage.extent.width, y: 0))
+            return scaledImage.translated(x: scaledImage.extent.width, y: 0)
         } else {
             return scaledImage
         }
@@ -45,7 +45,15 @@ extension CIImage {
         } else {
             y = toPixels(sceneWidget.y, streamSize.height) - extent.minY
         }
+        return translated(x: x, y: y)
+    }
+
+    func translated(x: Double, y: Double) -> CIImage {
         return transformed(by: CGAffineTransform(translationX: x, y: y))
+    }
+
+    func scaled(x: Double, y: Double) -> CIImage {
+        return transformed(by: CGAffineTransform(scaleX: x, y: y))
     }
 }
 
