@@ -34,6 +34,8 @@ private let versions = [
         "• Fix UI not using full landscape height after leaving portrait.",
         "• Make big quick buttons tappable.",
         "• Shortcut to LUTs settings from LUTs quick button page.",
+        "• Make widget border less jagged.",
+        "• Various widget shape effect and mirror fixes.",
     ]),
     Version(version: "26.2009.0", date: "2025-09-19", changes: [
         "• Insert punctuation after AI question if missing.",
