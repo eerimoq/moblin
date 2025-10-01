@@ -76,7 +76,7 @@ final class MapEffect: VideoEffect {
                 )))
         let resizedImage = mapWithDotImage.resizeMirror(sceneWidget, image.extent.size, false)
         return applyEffects(resizedImage, info)
-            .move(sceneWidget, image.extent.size, false)
+            .move(sceneWidget, image.extent.size)
             .cropped(to: image.extent)
             .composited(over: image)
     }

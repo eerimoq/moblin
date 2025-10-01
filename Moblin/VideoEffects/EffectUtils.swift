@@ -19,49 +19,31 @@ extension CIImage {
         var scaleY = toPixels(sceneWidget.size, streamSize.height) / extent.size.height
         let scale = min(scaleX, scaleY)
         if mirror {
-            scaleX = -1 * scale
+            scaleX = -scale
         } else {
             scaleX = scale
         }
         scaleY = scale
-        return transformed(by: CGAffineTransform(scaleX: scaleX, y: scaleY))
+        let scaledImage = transformed(by: CGAffineTransform(scaleX: scaleX, y: scaleY))
+        if mirror {
+            return scaledImage.transformed(by: CGAffineTransform(translationX: scaledImage.extent.width, y: 0))
+        } else {
+            return scaledImage
+        }
     }
 
-    func move(_ sceneWidget: SettingsSceneWidget,
-              _ streamSize: CGSize,
-              _ mirror: Bool,
-              _ resize: Bool = true) -> CIImage
-    {
-        var scaleX = toPixels(sceneWidget.size, streamSize.width) / extent.size.width
-        var scaleY = toPixels(sceneWidget.size, streamSize.height) / extent.size.height
-        let scale = min(scaleX, scaleY)
-        if mirror {
-            scaleX = -1 * scale
-        } else {
-            scaleX = scale
-        }
-        scaleY = scale
-        if !resize {
-            scaleX = 1
-            scaleY = 1
-        }
-        var x: Double
-        var y: Double
+    func move(_ sceneWidget: SettingsSceneWidget, _ streamSize: CGSize) -> CIImage {
+        let x: Double
+        let y: Double
         if sceneWidget.alignment.isLeft() {
-            x = toPixels(sceneWidget.x, streamSize.width)
-            if mirror {
-                x -= extent.width * scaleX
-            }
+            x = toPixels(sceneWidget.x, streamSize.width) - extent.minX
         } else {
-            x = streamSize.width - toPixels(sceneWidget.x, streamSize.width)
-            if !mirror {
-                x -= extent.width * scaleX
-            }
+            x = streamSize.width - toPixels(sceneWidget.x, streamSize.width) - extent.width - extent.minX
         }
         if sceneWidget.alignment.isTop() {
-            y = streamSize.height - toPixels(sceneWidget.y, streamSize.height) - extent.height * scaleY
+            y = streamSize.height - toPixels(sceneWidget.y, streamSize.height) - extent.height - extent.minY
         } else {
-            y = toPixels(sceneWidget.y, streamSize.height)
+            y = toPixels(sceneWidget.y, streamSize.height) - extent.minY
         }
         return transformed(by: CGAffineTransform(translationX: x, y: y))
     }

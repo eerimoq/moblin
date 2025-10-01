@@ -34,7 +34,7 @@ final class QrCodeEffect: VideoEffect {
         }
         let resizedImage = qrCodeImage.resizeMirror(newSceneWidget, image.extent.size, false)
         return applyEffects(resizedImage, info)
-            .move(newSceneWidget, image.extent.size, false)
+            .move(newSceneWidget, image.extent.size)
             .cropped(to: image.extent)
             .composited(over: image)
     }
