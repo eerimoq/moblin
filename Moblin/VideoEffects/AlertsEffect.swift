@@ -684,17 +684,15 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
                 centerY = boundingBox.minY - landmarkSettings.centerY * boundingBox.height
             }
             let moblinImage = alertImage
-                .transformed(by: CGAffineTransform(
-                    scaleX: alertImageHeight / alertImage.extent.height,
-                    y: alertImageHeight / alertImage.extent.height
-                ))
+                .scaled(x: alertImageHeight / alertImage.extent.height,
+                        y: alertImageHeight / alertImage.extent.height)
             let centerPoint = rotatePoint(
                 point: .init(x: centerX - moblinImage.extent.midX, y: centerY - moblinImage.extent.midY),
                 alpha: rotationAngle
             )
             outputImage = moblinImage
                 .transformed(by: CGAffineTransform(rotationAngle: rotationAngle))
-                .transformed(by: CGAffineTransform(translationX: centerPoint.x, y: centerPoint.y))
+                .translated(x: centerPoint.x, y: centerPoint.y)
                 .composited(over: outputImage)
         }
         return outputImage.cropped(to: image.extent)
@@ -710,12 +708,10 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         let xPos = toPixels(x, image.extent.width)
         let yPos = image.extent.height - toPixels(y, image.extent.height) - alertImage.extent.height
         return messageImage
-            .transformed(by: CGAffineTransform(
-                translationX: -(messageImage.extent.width - alertImage.extent.width) / 2,
-                y: -messageImage.extent.height
-            ))
+            .translated(x: -(messageImage.extent.width - alertImage.extent.width) / 2,
+                        y: -messageImage.extent.height)
             .composited(over: alertImage)
-            .transformed(by: CGAffineTransform(translationX: xPos, y: yPos))
+            .translated(x: xPos, y: yPos)
             .composited(over: image)
             .cropped(to: image.extent)
     }

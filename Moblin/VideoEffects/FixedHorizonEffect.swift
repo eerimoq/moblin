@@ -89,10 +89,10 @@ final class FixedHorizonEffect: VideoEffect {
         )
         let scale = boundingSize.width / image.extent.width
         return image
-            .transformed(by: CGAffineTransform(translationX: -image.extent.width / 2, y: -image.extent.height / 2))
+            .translated(x: -image.extent.width / 2, y: -image.extent.height / 2)
             .transformed(by: CGAffineTransform(rotationAngle: currentAngle))
-            .transformed(by: CGAffineTransform(scaleX: scale, y: scale))
-            .transformed(by: CGAffineTransform(translationX: image.extent.width / 2, y: image.extent.height / 2))
+            .scaled(x: scale, y: scale)
+            .translated(x: image.extent.width / 2, y: image.extent.height / 2)
             .cropped(to: image.extent)
     }
 

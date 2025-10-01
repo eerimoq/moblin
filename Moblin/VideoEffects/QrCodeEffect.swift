@@ -53,6 +53,6 @@ final class QrCodeEffect: VideoEffect {
             return
         }
         let scale = 400 / image.extent.size.width
-        qrCodeImage = image.transformed(by: CGAffineTransform(scaleX: scale, y: scale))
+        qrCodeImage = image.scaled(x: scale, y: scale)
     }
 }

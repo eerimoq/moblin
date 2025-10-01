@@ -661,7 +661,7 @@ func generateQrCode(from string: String) -> UIImage? {
     guard let image = filter.outputImage else {
         return nil
     }
-    let output = image.transformed(by: CGAffineTransform(scaleX: 5, y: 5))
+    let output = image.scaled(x: 5, y: 5)
     let context = CIContext()
     guard let cgImage = context.createCGImage(output, from: output.extent) else {
         return nil

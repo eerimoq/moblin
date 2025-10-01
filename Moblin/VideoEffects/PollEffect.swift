@@ -56,10 +56,7 @@ final class PollEffect: VideoEffect {
     private func update(image: UIImage, size: CGSize) {
         let x = size.width - image.size.width
         overlay = CIImage(image: image)?
-            .transformed(by: CGAffineTransform(
-                translationX: x - 5,
-                y: size.height - image.size.height - 5
-            ))
+            .translated(x: x - 5, y: size.height - image.size.height - 5)
             .cropped(to: CGRect(x: 0, y: 0, width: size.width, height: size.height))
     }
 

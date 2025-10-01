@@ -228,10 +228,7 @@ final class BrowserEffect: VideoEffect {
         if scaleToFitVideo {
             return image
         }
-        return image.transformed(by: CGAffineTransform(
-            translationX: x,
-            y: videoSize.height - height - y
-        ))
+        return image.translated(x: x, y: videoSize.height - height - y)
     }
 
     private func getImage() -> CIImage? {
@@ -261,14 +258,8 @@ final class BrowserEffect: VideoEffect {
         }
         for (i, crop) in crops.enumerated() {
             var cropped = image.cropped(to: crop.crop)
-            cropped = cropped.transformed(by: CGAffineTransform(
-                translationX: -crop.crop.origin.x,
-                y: -crop.crop.origin.y
-            ))
-            cropped = cropped.transformed(by: CGAffineTransform(
-                translationX: crop.position.x,
-                y: videoSize.height - crop.crop.height - crop.position.y
-            ))
+            cropped = cropped.translated(x: -crop.crop.origin.x, y: -crop.crop.origin.y)
+            cropped = cropped.translated(x: crop.position.x, y: videoSize.height - crop.crop.height - crop.position.y)
             if i == 0, !defaultEnabled {
                 overlay = cropped
             } else {

@@ -155,7 +155,7 @@ private class Reader {
         }
         let x = Double(size.width) - image.size.width - 25 * scale
         let y = Double(size.height) - image.size.height - 20 * scale
-        return CIImage(image: image)?.transformed(by: CGAffineTransform(translationX: x, y: y))
+        return CIImage(image: image)?.translated(x: x, y: y)
     }
 }
 

@@ -20,14 +20,8 @@ final class TripleEffect: VideoEffect {
             width: width,
             height: height
         ))
-        let leftImage = centerImage.transformed(by: CGAffineTransform(
-            translationX: -width,
-            y: 0
-        ))
-        let rightImage = centerImage.transformed(by: CGAffineTransform(
-            translationX: width,
-            y: 0
-        ))
+        let leftImage = centerImage.translated(x: -width, y: 0)
+        let rightImage = centerImage.translated(x: width, y: 0)
         centerFilter.inputImage = centerImage
         centerFilter.backgroundImage = leftImage
         rightFilter.inputImage = rightImage

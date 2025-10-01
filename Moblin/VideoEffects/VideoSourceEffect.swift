@@ -154,10 +154,7 @@ final class VideoSourceEffect: VideoEffect {
                 width: cropSquareSize,
                 height: cropSquareSize
             ))
-            .transformed(by: CGAffineTransform(
-                translationX: -cropX,
-                y: -(videoSourceImageSize.height - cropY - cropSquareSize)
-            ))
+            .translated(x: -cropX, y: -(videoSourceImageSize.height - cropY - cropSquareSize))
     }
 
     private func crop(_ videoSourceImage: CIImage, _ settings: VideoSourceEffectSettings) -> CIImage {
@@ -172,10 +169,7 @@ final class VideoSourceEffect: VideoEffect {
                 width: cropWidth,
                 height: cropHeight
             ))
-            .transformed(by: CGAffineTransform(
-                translationX: -cropX,
-                y: -(videoSourceImage.extent.height - cropY - cropHeight)
-            ))
+            .translated(x: -cropX, y: -(videoSourceImage.extent.height - cropY - cropHeight))
     }
 
     private func rotate(_ videoSourceImage: CIImage, _ settings: VideoSourceEffectSettings) -> CIImage {

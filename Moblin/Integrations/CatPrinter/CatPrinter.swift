@@ -319,7 +319,7 @@ class CatPrinter: NSObject {
 
     private func scaleToPrinterWidth(image: CIImage) -> CIImage {
         let scale = CGFloat(catPrinterWidthPixels) / image.extent.width
-        return image.transformed(by: CGAffineTransform(scaleX: scale, y: scale))
+        return image.scaled(x: scale, y: scale)
     }
 
     private func convertToPixels(image: CIImage) throws -> [[UInt8]] {

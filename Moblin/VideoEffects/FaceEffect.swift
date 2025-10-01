@@ -174,13 +174,10 @@ final class FaceEffect: VideoEffect {
                 continue
             }
             let moblinImage = moblinImage
-                .transformed(by: CGAffineTransform(
-                    scaleX: diffX / moblinImage.extent.width,
-                    y: diffX / moblinImage.extent.width
-                ))
+                .scaled(x: diffX / moblinImage.extent.width, y: diffX / moblinImage.extent.width)
             let offsetY = minY + (diffY - moblinImage.extent.height) / 2
             outputImage = moblinImage
-                .transformed(by: CGAffineTransform(translationX: minX, y: offsetY))
+                .translated(x: minX, y: offsetY)
                 .composited(over: outputImage)
         }
         return outputImage.cropped(to: image.extent)
@@ -260,8 +257,8 @@ final class FaceEffect: VideoEffect {
             let smallOffsetY = (height - smallHeight) / 2
             outputImage = outputImage?
                 .cropped(to: CGRect(x: smallOffsetX, y: smallOffsetY, width: smallWidth, height: smallHeight))
-                .transformed(by: CGAffineTransform(translationX: -smallOffsetX, y: -smallOffsetY))
-                .transformed(by: CGAffineTransform(scaleX: scaleUpFactor, y: scaleUpFactor))
+                .translated(x: -smallOffsetX, y: -smallOffsetY)
+                .scaled(x: scaleUpFactor, y: scaleUpFactor)
                 .cropped(to: image.extent)
         }
         updateLastFaceDetectionsAfter(faceDetections)

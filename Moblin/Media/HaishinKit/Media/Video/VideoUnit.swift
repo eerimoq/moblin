@@ -894,8 +894,8 @@ final class VideoUnit: NSObject {
             y = 0
         }
         return image
-            .transformed(by: CGAffineTransform(scaleX: scaleFactor, y: scaleFactor))
-            .transformed(by: CGAffineTransform(translationX: x, y: y))
+            .scaled(x: scaleFactor, y: scaleFactor)
+            .translated(x: x, y: y)
             .cropped(to: CGRect(x: 0, y: 0, width: outputSize.width, height: outputSize.height))
             .composited(over: getBlackImage(
                 width: Double(outputSize.width),
@@ -1096,8 +1096,8 @@ final class VideoUnit: NSObject {
             let smallOffsetY = (height - smallHeight) / 2
             return filter.outputImage?
                 .cropped(to: CGRect(x: smallOffsetX, y: smallOffsetY, width: smallWidth, height: smallHeight))
-                .transformed(by: CGAffineTransform(translationX: -smallOffsetX, y: -smallOffsetY))
-                .transformed(by: CGAffineTransform(scaleX: scaleUpFactor, y: scaleUpFactor))
+                .translated(x: -smallOffsetX, y: -smallOffsetY)
+                .scaled(x: scaleUpFactor, y: scaleUpFactor)
                 .cropped(to: image.extent) ?? image
         }
     }
@@ -1374,7 +1374,7 @@ final class VideoUnit: NSObject {
     private func createLowFpsImage(imageBuffer: CVImageBuffer) {
         var ciImage = CIImage(cvPixelBuffer: imageBuffer)
         let scale = 400.0 / Double(imageBuffer.width)
-        ciImage = ciImage.transformed(by: CGAffineTransform(scaleX: scale, y: scale))
+        ciImage = ciImage.scaled(x: scale, y: scale)
         let cgImage = context.createCGImage(ciImage, from: ciImage.extent)!
         let image = UIImage(cgImage: cgImage)
         processor?.delegate?.streamVideo(

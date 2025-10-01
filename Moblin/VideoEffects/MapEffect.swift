@@ -65,15 +65,10 @@ final class MapEffect: VideoEffect {
         let width = toPixels(sceneWidget.size, size.width)
         let side = CGFloat(max(40, min(height, width)))
         let mapWithDotImage = dot
-            .transformed(by: CGAffineTransform(
-                translationX: (side - 30) / 2,
-                y: (side - 30) / 2 - CGFloat(dotOffsetRatio * side / 2)
-            ))
+            .translated(x: (side - 30) / 2, y: (side - 30) / 2 - CGFloat(dotOffsetRatio * side / 2))
             .composited(over: mapSnapshot
-                .transformed(by: CGAffineTransform(
-                    scaleX: side / CGFloat(mapSnapshot.extent.width),
-                    y: side / CGFloat(mapSnapshot.extent.width)
-                )))
+                .scaled(x: side / CGFloat(mapSnapshot.extent.width),
+                        y: side / CGFloat(mapSnapshot.extent.width)))
         let resizedImage = mapWithDotImage.resizeMirror(sceneWidget, image.extent.size, false)
         return applyEffects(resizedImage, info)
             .move(sceneWidget, image.extent.size)

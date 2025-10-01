@@ -121,13 +121,9 @@ final class PadelScoreboardEffect: VideoEffect {
             return image
         }
         let scale = image.extent.size.maximum() / 1920
-        scoreBoard = scoreBoard
-            .transformed(by: CGAffineTransform(scaleX: scale, y: scale))
+        scoreBoard = scoreBoard.scaled(x: scale, y: scale)
         return scoreBoard
-            .transformed(by: CGAffineTransform(
-                translationX: 10 * scale,
-                y: image.extent.height - scoreBoard.extent.height - 10 * scale
-            ))
+            .translated(x: 10 * scale, y: image.extent.height - scoreBoard.extent.height - 10 * scale)
             .composited(over: image)
     }
 
