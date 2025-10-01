@@ -1,5 +1,5 @@
-import SwiftUI
 import AVKit
+import SwiftUI
 import UIKit
 
 @available(iOS 26.0, *)
@@ -26,5 +26,5 @@ struct AudioInputPickerButton: UIViewRepresentable {
         return button
     }
 
-    func updateUIView(_ uiView: UIButton, context: Context) {}
+    func updateUIView(_: UIButton, context _: Context) {}
 }
