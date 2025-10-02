@@ -99,6 +99,10 @@ final class BrowserEffect: VideoEffect {
         server.webView = webView
     }
 
+    deinit {
+        stopTakeSnapshots()
+    }
+
     override func getName() -> String {
         return "\(settingName) browser widget"
     }
@@ -113,10 +117,6 @@ final class BrowserEffect: VideoEffect {
 
     var progress: Int {
         Int(100 * webView.estimatedProgress)
-    }
-
-    deinit {
-        stopTakeSnapshots()
     }
 
     func stop() {
@@ -180,6 +180,33 @@ final class BrowserEffect: VideoEffect {
         }
     }
 
+    override func execute(_ image: CIImage, _ info: VideoEffectInfo) -> CIImage {
+        updateOverlay()
+        guard let overlay else {
+            return image
+        }
+        return applyEffects(overlay, info)
+            .composited(over: image)
+            .cropped(to: image.extent)
+    }
+
+    override func executeMetalPetal(_ image: MTIImage?, _: VideoEffectInfo) -> MTIImage? {
+        updateOverlayMetalPetal()
+        guard let image, !layersMetalPetal.isEmpty else {
+            return image
+        }
+        let filter = MTIMultilayerCompositingFilter()
+        filter.inputBackgroundImage = image
+        filter.layers = layersMetalPetal
+        return filter.outputImage
+    }
+
+    private func setImage(image: UIImage) {
+        browserQueue.sync {
+            self.image = image
+        }
+    }
+
     private func startTakeSnapshots() {
         guard !stopped else {
             return
@@ -216,12 +243,6 @@ final class BrowserEffect: VideoEffect {
     private func stopTakeSnapshots() {
         stopped = true
         snapshotTimer.stop()
-    }
-
-    func setImage(image: UIImage) {
-        browserQueue.sync {
-            self.image = image
-        }
     }
 
     private func moveDefault(image: CIImage) -> CIImage {
@@ -294,28 +315,5 @@ final class BrowserEffect: VideoEffect {
             }
             layersMetalPetal.append(.init(content: cropped, position: crop.position))
         }
-    }
-
-    override func execute(_ image: CIImage, _ info: VideoEffectInfo) -> CIImage {
-        updateOverlay()
-        if let overlay {
-            filter.inputImage = applyEffects(overlay, info)
-        } else {
-            filter.inputImage = nil
-        }
-        filter.backgroundImage = image
-        return filter.outputImage?
-            .cropped(to: image.extent) ?? image
-    }
-
-    override func executeMetalPetal(_ image: MTIImage?, _: VideoEffectInfo) -> MTIImage? {
-        updateOverlayMetalPetal()
-        guard let image, !layersMetalPetal.isEmpty else {
-            return image
-        }
-        let filter = MTIMultilayerCompositingFilter()
-        filter.inputBackgroundImage = image
-        filter.layers = layersMetalPetal
-        return filter.outputImage
     }
 }
