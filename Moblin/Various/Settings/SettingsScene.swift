@@ -1500,7 +1500,6 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject {
 
     var id: UUID = .init()
     @Published var widgetId: UUID
-    @Published var enabled: Bool = true
     @Published var x: Double = 0.0
     @Published var xString: String = "0.0"
     @Published var y: Double = 0.0
@@ -1520,7 +1519,6 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject {
 
     enum CodingKeys: CodingKey {
         case widgetId,
-             enabled,
              id,
              x,
              y,
@@ -1534,7 +1532,6 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject {
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.widgetId, widgetId)
-        try container.encode(.enabled, enabled)
         try container.encode(.id, id)
         try container.encode(.x, x)
         try container.encode(.y, y)
@@ -1548,7 +1545,6 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject {
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         widgetId = container.decode(.widgetId, UUID.self, .init())
-        enabled = container.decode(.enabled, Bool.self, true)
         id = container.decode(.id, UUID.self, .init())
         x = container.decode(.x, Double.self, 0.0)
         xString = String(x)
@@ -1568,7 +1564,6 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject {
 
     func clone() -> SettingsSceneWidget {
         let new = SettingsSceneWidget(widgetId: widgetId)
-        new.enabled = enabled
         new.x = x
         new.xString = xString
         new.y = y

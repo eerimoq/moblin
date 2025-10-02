@@ -175,7 +175,7 @@ final class BrowserEffect: VideoEffect {
         if let sceneWidget {
             x = toPixels(sceneWidget.x, videoSize.width)
             y = toPixels(sceneWidget.y, videoSize.height)
-            defaultEnabled = sceneWidget.enabled
+            defaultEnabled = true
         } else {
             x = 0
             y = 0
@@ -298,16 +298,13 @@ final class BrowserEffect: VideoEffect {
             overlay = moveDefault(image: image)
         }
         for (i, crop) in crops.enumerated() {
-            var cropped = image.cropped(to: crop.crop)
-            cropped = cropped.translated(x: -crop.crop.origin.x, y: -crop.crop.origin.y)
-            cropped = cropped.translated(x: crop.position.x, y: videoSize.height - crop.crop.height - crop.position.y)
+            let cropped = image.cropped(to: crop.crop)
+                .translated(x: -crop.crop.origin.x, y: -crop.crop.origin.y)
+                .translated(x: crop.position.x, y: videoSize.height - crop.crop.height - crop.position.y)
             if i == 0, !defaultEnabled {
                 overlay = cropped
-            } else {
-                let filter = CIFilter.sourceOverCompositing()
-                filter.inputImage = cropped
-                filter.backgroundImage = overlay
-                overlay = filter.outputImage
+            } else if let overlay {
+                self.overlay = cropped.composited(over: overlay)
             }
         }
     }

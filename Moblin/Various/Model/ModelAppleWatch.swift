@@ -46,12 +46,14 @@ extension Model {
             sendIsMutedToWatch(isMuteOn: isMuteOn)
             sendViewerCountWatch()
             sendScoreboardPlayersToWatch()
-            let sceneWidgets = getSelectedScene()?.widgets ?? []
+            let sceneWidgets: [SettingsWidget]
+            if let scene = getSelectedScene() {
+                sceneWidgets = getSceneWidgets(scene: scene, onlyEnabled: true).map { $0.widget }
+            } else {
+                sceneWidgets = []
+            }
             for id in padelScoreboardEffects.keys {
-                if let sceneWidget = sceneWidgets.first(where: { $0.widgetId == id }),
-                   sceneWidget.enabled,
-                   let scoreboard = findWidget(id: id)?.scoreboard
-                {
+                if let scoreboard = sceneWidgets.first(where: { $0.id == id })?.scoreboard {
                     sendUpdatePadelScoreboardToWatch(id: id, scoreboard: scoreboard)
                 } else {
                     sendRemovePadelScoreboardToWatch(id: id)
