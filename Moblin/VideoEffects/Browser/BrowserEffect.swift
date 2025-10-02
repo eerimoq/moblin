@@ -298,7 +298,8 @@ final class BrowserEffect: VideoEffect {
             overlay = moveDefault(image: image)
         }
         for (i, crop) in crops.enumerated() {
-            let cropped = image.cropped(to: crop.crop)
+            let cropped = image
+                .cropped(to: crop.crop)
                 .translated(x: -crop.crop.origin.x, y: -crop.crop.origin.y)
                 .translated(x: crop.position.x, y: videoSize.height - crop.crop.height - crop.position.y)
             if i == 0, !defaultEnabled {
