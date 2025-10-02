@@ -128,6 +128,7 @@ final class BrowserEffect: VideoEffect {
     }
 
     func setSceneWidget(sceneWidget: SettingsSceneWidget?, crops: [WidgetCrop]) {
+        let sceneWidget = sceneWidget?.clone()
         stopTakeSnapshots()
         if sceneWidget != nil || !crops.isEmpty {
             setSceneWidgetEnabled(sceneWidget: sceneWidget, crops: crops)
@@ -158,6 +159,19 @@ final class BrowserEffect: VideoEffect {
     }
 
     private func setSceneWidgetEnabled(sceneWidget: SettingsSceneWidget?, crops: [WidgetCrop]) {
+        processorPipelineQueue.async {
+            self.updateParametersEnabled(sceneWidget: sceneWidget, crops: crops)
+        }
+        if !isLoaded {
+            startLoadingTime = .now
+            webView.load(URLRequest(url: url))
+            isLoaded = true
+        }
+        stopped = false
+        startTakeSnapshots()
+    }
+
+    private func updateParametersEnabled(sceneWidget: SettingsSceneWidget?, crops: [WidgetCrop]) {
         if let sceneWidget {
             x = toPixels(sceneWidget.x, videoSize.width)
             y = toPixels(sceneWidget.y, videoSize.height)
@@ -187,23 +201,24 @@ final class BrowserEffect: VideoEffect {
                 height: $0.crop.height
             )
         ) }
-        if !isLoaded {
-            startLoadingTime = .now
-            webView.load(URLRequest(url: url))
-            isLoaded = true
-        }
-        stopped = false
-        startTakeSnapshots()
     }
 
     private func setSceneWidgetLoaded() {
-        x = .nan
-        y = .nan
-        image = nil
-        overlay = nil
-        layersMetalPetal.removeAll()
+        processorPipelineQueue.async {
+            self.updateParametersLoaded()
+        }
+        browserQueue.sync {
+            self.image = nil
+        }
         webView.loadHTMLString("<html></html>", baseURL: nil)
         isLoaded = false
+    }
+
+    private func updateParametersLoaded() {
+        x = .nan
+        y = .nan
+        overlay = nil
+        layersMetalPetal.removeAll()
     }
 
     private func setImage(image: UIImage) {
