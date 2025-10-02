@@ -128,55 +128,11 @@ final class BrowserEffect: VideoEffect {
     }
 
     func setSceneWidget(sceneWidget: SettingsSceneWidget?, crops: [WidgetCrop]) {
-        let enabled = !(sceneWidget == nil && crops.isEmpty)
-        if enabled {
-            if let sceneWidget {
-                x = toPixels(sceneWidget.x, videoSize.width)
-                y = toPixels(sceneWidget.y, videoSize.height)
-                defaultEnabled = sceneWidget.enabled
-            } else {
-                x = 0
-                y = 0
-                defaultEnabled = false
-            }
-            self.crops = crops.map { WidgetCrop(
-                position: .init(x: toPixels($0.position.x, videoSize.width),
-                                y: toPixels($0.position.y, videoSize.height)),
-                crop: .init(
-                    x: $0.crop.origin.x,
-                    y: height - $0.crop.height - $0.crop.origin.y,
-                    width: $0.crop.width,
-                    height: $0.crop.height
-                )
-            ) }
-            cropsMetalPetal = crops.map { WidgetCrop(
-                position: .init(x: toPixels($0.position.x, videoSize.width) + $0.crop.width / 2,
-                                y: toPixels($0.position.y, videoSize.height) + $0.crop.height / 2),
-                crop: .init(
-                    x: $0.crop.minX,
-                    y: $0.crop.minY,
-                    width: $0.crop.width,
-                    height: $0.crop.height
-                )
-            ) }
-            if !isLoaded {
-                startLoadingTime = .now
-                webView.load(URLRequest(url: url))
-                isLoaded = true
-            }
-        } else if isLoaded {
-            x = .nan
-            y = .nan
-            image = nil
-            overlay = nil
-            layersMetalPetal.removeAll()
-            webView.loadHTMLString("<html></html>", baseURL: nil)
-            isLoaded = false
-        }
         stopTakeSnapshots()
-        if enabled {
-            stopped = false
-            startTakeSnapshots()
+        if sceneWidget != nil || !crops.isEmpty {
+            setSceneWidgetEnabled(sceneWidget: sceneWidget, crops: crops)
+        } else if isLoaded {
+            setSceneWidgetLoaded()
         }
     }
 
@@ -199,6 +155,55 @@ final class BrowserEffect: VideoEffect {
         filter.inputBackgroundImage = image
         filter.layers = layersMetalPetal
         return filter.outputImage
+    }
+
+    private func setSceneWidgetEnabled(sceneWidget: SettingsSceneWidget?, crops: [WidgetCrop]) {
+        if let sceneWidget {
+            x = toPixels(sceneWidget.x, videoSize.width)
+            y = toPixels(sceneWidget.y, videoSize.height)
+            defaultEnabled = sceneWidget.enabled
+        } else {
+            x = 0
+            y = 0
+            defaultEnabled = false
+        }
+        self.crops = crops.map { WidgetCrop(
+            position: .init(x: toPixels($0.position.x, videoSize.width),
+                            y: toPixels($0.position.y, videoSize.height)),
+            crop: .init(
+                x: $0.crop.origin.x,
+                y: height - $0.crop.height - $0.crop.origin.y,
+                width: $0.crop.width,
+                height: $0.crop.height
+            )
+        ) }
+        cropsMetalPetal = crops.map { WidgetCrop(
+            position: .init(x: toPixels($0.position.x, videoSize.width) + $0.crop.width / 2,
+                            y: toPixels($0.position.y, videoSize.height) + $0.crop.height / 2),
+            crop: .init(
+                x: $0.crop.minX,
+                y: $0.crop.minY,
+                width: $0.crop.width,
+                height: $0.crop.height
+            )
+        ) }
+        if !isLoaded {
+            startLoadingTime = .now
+            webView.load(URLRequest(url: url))
+            isLoaded = true
+        }
+        stopped = false
+        startTakeSnapshots()
+    }
+
+    private func setSceneWidgetLoaded() {
+        x = .nan
+        y = .nan
+        image = nil
+        overlay = nil
+        layersMetalPetal.removeAll()
+        webView.loadHTMLString("<html></html>", baseURL: nil)
+        isLoaded = false
     }
 
     private func setImage(image: UIImage) {
