@@ -133,6 +133,7 @@ extension Model {
         var id = 0
         appendChatMessage(platform: .kick,
                           messageId: nil,
+                          displayName: user,
                           user: user,
                           userId: nil,
                           userColor: nil,
@@ -173,6 +174,7 @@ extension Model: KickPusherDelegate {
     ) {
         appendChatMessage(platform: .kick,
                           messageId: messageId,
+                          displayName: user,
                           user: user,
                           userId: userId,
                           userColor: userColor,

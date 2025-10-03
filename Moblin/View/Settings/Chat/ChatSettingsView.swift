@@ -66,6 +66,11 @@ struct ChatSettingsView: View {
                         .onChange(of: chat.timestampColorEnabled) { _ in
                             model.reloadChatMessages()
                         }
+                    Picker("Display style", selection: $chat.displayStyle) {
+                        ForEach(SettingsChatDisplayStyle.allCases, id: \.self) { displayStyle in
+                            Text(displayStyle.toString())
+                        }
+                    }
                     Toggle("Bold username", isOn: $chat.boldUsername)
                         .onChange(of: chat.boldUsername) { _ in
                             model.reloadChatMessages()

@@ -32,7 +32,7 @@ private struct LineView: View {
                     .frame(height: CGFloat(chatSettings.fontSize * 1.3))
                 }
             }
-            Text(post.user)
+            Text(post.displayName)
                 .foregroundColor(post.userColor)
             if post.isRedemption() {
                 Text(" ")

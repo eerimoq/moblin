@@ -66,7 +66,7 @@ struct ChatPostHighlight {
 struct ChatPost: Identifiable {
     let id: Int
     let kind: ChatPostKind
-    let user: String
+    let displayName: String
     let userColor: Color
     let userBadges: [URL]
     let segments: [ChatPostSegment]
@@ -147,7 +147,7 @@ class Model: NSObject, ObservableObject {
         nextNonNormalChatLineId -= 1
         chat.posts.prepend(ChatPost(id: nextNonNormalChatLineId,
                                     kind: .info,
-                                    user: "",
+                                    displayName: "",
                                     userColor: .white,
                                     userBadges: [],
                                     segments: segments,
@@ -158,7 +158,7 @@ class Model: NSObject, ObservableObject {
         nextNonNormalChatLineId -= 1
         chat.posts.prepend(ChatPost(id: nextNonNormalChatLineId,
                                     kind: .redLine,
-                                    user: "",
+                                    displayName: "",
                                     userColor: .red,
                                     userBadges: [],
                                     segments: [],
@@ -203,7 +203,7 @@ class Model: NSObject, ObservableObject {
         chat.posts.prepend(
             ChatPost(id: message.id,
                      kind: .normal,
-                     user: message.user,
+                     displayName: message.displayName,
                      userColor: message.userColor.color(),
                      userBadges: message.userBadges,
                      segments: message.segments.map { ChatPostSegment(

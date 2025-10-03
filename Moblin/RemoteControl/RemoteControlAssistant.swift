@@ -630,7 +630,8 @@ extension RemoteControlAssistant: TwitchChatDelegate {
 
     func twitchChatAppendMessage(
         messageId: String?,
-        user: String?,
+        displayName: String,
+        user: String,
         userId: String?,
         userColor: RgbColor?,
         userBadges: [URL],
@@ -645,6 +646,7 @@ extension RemoteControlAssistant: TwitchChatDelegate {
         let message = RemoteControlChatMessage(id: getNextChatMessageId(),
                                                platform: .twitch,
                                                messageId: messageId,
+                                               displayName: displayName,
                                                user: user,
                                                userId: userId,
                                                userColor: userColor,

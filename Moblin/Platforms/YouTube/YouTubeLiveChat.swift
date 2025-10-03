@@ -332,6 +332,7 @@ final class YouTubeLiveChat: NSObject {
         await MainActor.run {
             model.appendChatMessage(platform: .youTube,
                                     messageId: nil,
+                                    displayName: chatDescription.authorName.simpleText,
                                     user: chatDescription.authorName.simpleText,
                                     userId: nil,
                                     userColor: nil,

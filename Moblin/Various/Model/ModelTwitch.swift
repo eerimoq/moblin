@@ -478,6 +478,7 @@ extension Model: TwitchEventSubDelegate {
         }
         appendChatMessage(platform: .twitch,
                           messageId: nil,
+                          displayName: user,
                           user: user,
                           userId: nil,
                           userColor: nil,
@@ -513,7 +514,8 @@ extension Model: TwitchChatDelegate {
 
     func twitchChatAppendMessage(
         messageId: String?,
-        user: String?,
+        displayName: String,
+        user: String,
         userId: String?,
         userColor: RgbColor?,
         userBadges: [URL],
@@ -526,6 +528,7 @@ extension Model: TwitchChatDelegate {
     ) {
         appendChatMessage(platform: .twitch,
                           messageId: messageId,
+                          displayName: displayName,
                           user: user,
                           userId: userId,
                           userColor: userColor,

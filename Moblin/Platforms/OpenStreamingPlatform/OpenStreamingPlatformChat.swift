@@ -219,9 +219,11 @@ class OpenStreamingPlatformChat {
     private func handleMessageMessage(message: Message) async throws {
         let segments = createSegments(message: message.body)
         await MainActor.run {
+            let user = message.user() ?? "unknown"
             model.appendChatMessage(platform: .openStreamingPlatform,
                                     messageId: nil,
-                                    user: message.user() ?? "unknown",
+                                    displayName: user,
+                                    user: user,
                                     userId: nil,
                                     userColor: nil,
                                     userBadges: [],

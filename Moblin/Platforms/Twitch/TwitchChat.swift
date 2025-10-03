@@ -79,7 +79,8 @@ private struct ChatMessage {
     let channel: String
     let emotes: [Emote2]
     let badges: [String]
-    let sender: String
+    let displayName: String
+    let user: String
     let userId: String?
     let senderColor: String?
     let text: String
@@ -96,7 +97,8 @@ private struct ChatMessage {
         guard message.parameters.count == 2,
               let channel = message.parameters.first,
               let text = message.parameters.last,
-              let sender = message.sender
+              let displayName = message.displayName,
+              let user = message.user
         else {
             return nil
         }
@@ -121,7 +123,8 @@ private struct ChatMessage {
         emotes = message.emotes
         badges = message.badges
         self.text = text
-        self.sender = sender
+        self.displayName = displayName
+        self.user = user
         userId = message.userId
         senderColor = message.color
         self.announcement = announcement
@@ -223,10 +226,12 @@ private struct Message {
         parameters = parseParameters(from: parts)
     }
 
-    var sender: String? {
-        if let displayName = tags["display-name"] {
-            return displayName
-        } else if let source = sourceString, let senderEndIndex = source.firstIndex(of: "!") {
+    var displayName: String? {
+        return tags["display-name"]
+    }
+
+    var user: String? {
+        if let source = sourceString, let senderEndIndex = source.firstIndex(of: "!") {
             return String(source.prefix(upTo: senderEndIndex))
         } else {
             return nil
@@ -444,7 +449,8 @@ protocol TwitchChatDelegate: AnyObject {
     func twitchChatMakeErrorToast(title: String, subTitle: String?)
     func twitchChatAppendMessage(
         messageId: String?,
-        user: String?,
+        displayName: String,
+        user: String,
         userId: String?,
         userColor: RgbColor?,
         userBadges: [URL],
@@ -565,7 +571,8 @@ final class TwitchChat {
         )
         delegate?.twitchChatAppendMessage(
             messageId: message.id,
-            user: message.sender,
+            displayName: message.displayName,
+            user: message.user,
             userId: message.userId,
             userColor: RgbColor.fromHex(string: message.senderColor ?? ""),
             userBadges: badgeUrls,

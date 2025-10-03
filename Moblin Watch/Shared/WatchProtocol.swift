@@ -110,7 +110,7 @@ struct WatchProtocolChatMessage: Codable {
     // Starts at 1 and incremented for each new message
     var id: Int
     var timestamp: String
-    var user: String
+    var displayName: String
     var userColor: WatchProtocolColor
     var userBadges: [URL]
     var segments: [WatchProtocolChatSegment]

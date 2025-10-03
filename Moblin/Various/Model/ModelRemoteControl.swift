@@ -636,6 +636,7 @@ extension Model: RemoteControlStreamerDelegate {
         for message in messages where message.id > remoteControlStreamerLatestReceivedChatMessageId {
             appendChatMessage(platform: message.platform,
                               messageId: message.messageId,
+                              displayName: message.displayName,
                               user: message.user,
                               userId: message.userId,
                               userColor: message.userColor,
