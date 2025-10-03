@@ -59,7 +59,7 @@ private class Relay {
     }
 
     func handleStringMessage(message: String) {
-        logger.debug("moblink-streamer: Received \(message)")
+        // logger.debug("moblink-streamer: Received \(message)")
         do {
             let message = try MoblinkMessageToStreamer.fromJson(data: message)
             switch message {
