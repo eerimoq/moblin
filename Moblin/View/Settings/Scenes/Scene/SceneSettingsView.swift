@@ -128,6 +128,13 @@ struct SceneSettingsView: View {
             sceneWidget.x = 85
             sceneWidget.y = 72
             sceneWidget.size = 28
+        case .browser:
+            let stream = model.stream
+            let resolution = stream.resolution.dimensions(portrait: stream.portrait)
+            let width = (100 * Double(widget.browser.width) / Double(resolution.width)).clamped(to: 1 ... 100)
+            let height = (100 * Double(widget.browser.height) / Double(resolution.height)).clamped(to: 1 ... 100)
+            sceneWidget.size = max(width, height)
+            sceneWidget.sizeString = String(sceneWidget.size)
         default:
             break
         }

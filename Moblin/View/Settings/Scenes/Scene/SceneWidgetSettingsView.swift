@@ -32,6 +32,8 @@ struct SceneWidgetSettingsView: View {
     private func widgetHasSize(widget: SettingsWidget) -> Bool {
         return [
             .image,
+            .browser,
+            .crop,
             .map,
             .qrCode,
             .videoSource,
@@ -44,7 +46,9 @@ struct SceneWidgetSettingsView: View {
     private func widgetHasAlignment(widget: SettingsWidget) -> Bool {
         return [
             .image,
+            .browser,
             .text,
+            .crop,
             .map,
             .qrCode,
             .videoSource,

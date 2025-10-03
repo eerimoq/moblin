@@ -606,6 +606,16 @@ class SettingsWidgetCrop: Codable {
     var y: Int = 0
     var width: Int = 200
     var height: Int = 200
+
+    func clone() -> SettingsWidgetCrop {
+        let new = SettingsWidgetCrop()
+        new.sourceWidgetId = sourceWidgetId
+        new.x = x
+        new.y = y
+        new.width = width
+        new.height = height
+        return new
+    }
 }
 
 class SettingsWidgetBrowser: Codable, ObservableObject {
@@ -1512,6 +1522,7 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject {
     @Published var sizeString: String = "100.0"
     @Published var alignment: SettingsAlignment = .topLeft
     var migrated: Bool = true
+    var migrated2: Bool = true
 
     init(widgetId: UUID) {
         self.widgetId = widgetId
@@ -1526,7 +1537,8 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject {
              height,
              size,
              alignment,
-             migrated
+             migrated,
+             migrated2
     }
 
     func encode(to encoder: Encoder) throws {
@@ -1540,6 +1552,7 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject {
         try container.encode(.size, size)
         try container.encode(.alignment, alignment)
         try container.encode(.migrated, migrated)
+        try container.encode(.migrated2, migrated2)
     }
 
     required init(from decoder: Decoder) throws {
@@ -1560,6 +1573,7 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject {
         sizeString = String(size)
         alignment = container.decode(.alignment, SettingsAlignment.self, .topLeft)
         migrated = container.decode(.migrated, Bool.self, false)
+        migrated2 = container.decode(.migrated2, Bool.self, false)
     }
 
     func clone() -> SettingsSceneWidget {
@@ -1572,6 +1586,7 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject {
         new.sizeString = sizeString
         new.alignment = alignment
         new.migrated = migrated
+        new.migrated2 = migrated2
         return new
     }
 

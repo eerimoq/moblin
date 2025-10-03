@@ -1,11 +1,15 @@
 import AVFoundation
-import MetalPetal
 import SwiftUI
 import UIKit
 import Vision
 import WebKit
 
 private let browserQueue = DispatchQueue(label: "com.eerimoq.widget.browser")
+
+struct WidgetCrop {
+    let crop: SettingsWidgetCrop
+    let sceneWidget: SettingsSceneWidget
+}
 
 private func createStyleSheetSource(styleSheet: String) -> String? {
     guard !styleSheet.isEmpty else {
@@ -26,12 +30,8 @@ private func createStyleSheetSource(styleSheet: String) -> String? {
 final class BrowserEffect: VideoEffect {
     private let filter = CIFilter.sourceOverCompositing()
     let webView: WKWebView
-    private var overlay: CIImage?
-    private var layersMetalPetal: [MTILayer] = []
-    private var image: UIImage?
+    private var snapshot: CIImage?
     private let videoSize: CGSize
-    private var x: Double
-    private var y: Double
     let width: Double
     let height: Double
     let url: URL
@@ -41,10 +41,9 @@ final class BrowserEffect: VideoEffect {
     private var scaleToFitVideo: Bool
     private let snapshotTimer = SimpleTimer(queue: .main)
     var startLoadingTime = ContinuousClock.now
-    private var scale = UIScreen().scale
-    private var defaultEnabled = true
+    private let scale: Double
+    private var sceneWidget: SettingsSceneWidget?
     private var crops: [WidgetCrop] = []
-    private var cropsMetalPetal: [WidgetCrop] = []
     private let settingName: String
     private let server: BrowserEffectServer
     private var stopped = false
@@ -57,14 +56,17 @@ final class BrowserEffect: VideoEffect {
         settingName: String,
         moblinAccess: Bool
     ) {
+        if isMac() {
+            scale = 2
+        } else {
+            scale = UIScreen().scale
+        }
         scaleToFitVideo = widget.scaleToFitVideo
         self.url = url
         self.videoSize = videoSize
         self.settingName = settingName
         fps = widget.fps
         isLoaded = false
-        x = .nan
-        y = .nan
         audioOnly = widget.audioOnly
         if audioOnly {
             width = 1
@@ -128,7 +130,6 @@ final class BrowserEffect: VideoEffect {
     }
 
     func setSceneWidget(sceneWidget: SettingsSceneWidget?, crops: [WidgetCrop]) {
-        let sceneWidget = sceneWidget?.clone()
         stopTakeSnapshots()
         if sceneWidget != nil || !crops.isEmpty {
             setSceneWidgetEnabled(sceneWidget: sceneWidget, crops: crops)
@@ -138,29 +139,37 @@ final class BrowserEffect: VideoEffect {
     }
 
     override func execute(_ image: CIImage, _ info: VideoEffectInfo) -> CIImage {
-        updateOverlay()
-        guard let overlay else {
+        guard let snapshot else {
             return image
         }
-        return applyEffects(overlay, info)
-            .composited(over: image)
-            .cropped(to: image.extent)
-    }
-
-    override func executeMetalPetal(_ image: MTIImage?, _: VideoEffectInfo) -> MTIImage? {
-        updateOverlayMetalPetal()
-        guard let image, !layersMetalPetal.isEmpty else {
-            return image
+        var image = image
+        if let sceneWidget {
+            let resizedImage = snapshot.resizeMirror(sceneWidget, image.extent.size, false)
+            image = applyEffects(resizedImage, info)
+                .move(sceneWidget, image.extent.size)
+                .cropped(to: image.extent)
+                .composited(over: image)
         }
-        let filter = MTIMultilayerCompositingFilter()
-        filter.inputBackgroundImage = image
-        filter.layers = layersMetalPetal
-        return filter.outputImage
+        for crop in crops {
+            let y = Int(snapshot.extent.height) - crop.crop.y - crop.crop.height
+            image = snapshot
+                .cropped(to: CGRect(x: crop.crop.x,
+                                    y: y,
+                                    width: crop.crop.width,
+                                    height: crop.crop.height))
+                .translated(x: -Double(crop.crop.x), y: Double(y))
+                .resizeMirror(crop.sceneWidget, image.extent.size, false)
+                .move(crop.sceneWidget, image.extent.size)
+                .cropped(to: image.extent)
+                .composited(over: image)
+        }
+        return image
     }
 
     private func setSceneWidgetEnabled(sceneWidget: SettingsSceneWidget?, crops: [WidgetCrop]) {
         processorPipelineQueue.async {
-            self.updateParametersEnabled(sceneWidget: sceneWidget, crops: crops)
+            self.sceneWidget = sceneWidget
+            self.crops = crops
         }
         if !isLoaded {
             startLoadingTime = .now
@@ -171,60 +180,9 @@ final class BrowserEffect: VideoEffect {
         startTakeSnapshots()
     }
 
-    private func updateParametersEnabled(sceneWidget: SettingsSceneWidget?, crops: [WidgetCrop]) {
-        if let sceneWidget {
-            x = toPixels(sceneWidget.x, videoSize.width)
-            y = toPixels(sceneWidget.y, videoSize.height)
-            defaultEnabled = true
-        } else {
-            x = 0
-            y = 0
-            defaultEnabled = false
-        }
-        self.crops = crops.map { WidgetCrop(
-            position: .init(x: toPixels($0.position.x, videoSize.width),
-                            y: toPixels($0.position.y, videoSize.height)),
-            crop: .init(
-                x: $0.crop.origin.x,
-                y: height - $0.crop.height - $0.crop.origin.y,
-                width: $0.crop.width,
-                height: $0.crop.height
-            )
-        ) }
-        cropsMetalPetal = crops.map { WidgetCrop(
-            position: .init(x: toPixels($0.position.x, videoSize.width) + $0.crop.width / 2,
-                            y: toPixels($0.position.y, videoSize.height) + $0.crop.height / 2),
-            crop: .init(
-                x: $0.crop.minX,
-                y: $0.crop.minY,
-                width: $0.crop.width,
-                height: $0.crop.height
-            )
-        ) }
-    }
-
     private func setSceneWidgetLoaded() {
-        processorPipelineQueue.async {
-            self.updateParametersLoaded()
-        }
-        browserQueue.sync {
-            self.image = nil
-        }
         webView.loadHTMLString("<html></html>", baseURL: nil)
         isLoaded = false
-    }
-
-    private func updateParametersLoaded() {
-        x = .nan
-        y = .nan
-        overlay = nil
-        layersMetalPetal.removeAll()
-    }
-
-    private func setImage(image: UIImage) {
-        browserQueue.sync {
-            self.image = image
-        }
     }
 
     private func startTakeSnapshots() {
@@ -252,7 +210,9 @@ final class BrowserEffect: VideoEffect {
                 if let error {
                     logger.warning("Browser snapshot error: \(error)")
                 } else if let image {
-                    self.setImage(image: image)
+                    processorPipelineQueue.async {
+                        self.snapshot = CIImage(image: image)
+                    }
                 } else {
                     logger.warning("No browser image")
                 }
@@ -263,75 +223,5 @@ final class BrowserEffect: VideoEffect {
     private func stopTakeSnapshots() {
         stopped = true
         snapshotTimer.stop()
-    }
-
-    private func moveDefault(image: CIImage) -> CIImage {
-        if scaleToFitVideo {
-            return image
-        }
-        return image.translated(x: x, y: videoSize.height - height - y)
-    }
-
-    private func getImage() -> CIImage? {
-        var newImage: UIImage?
-        browserQueue.sync {
-            if self.image != nil {
-                newImage = self.image
-                self.image = nil
-            }
-        }
-        guard let newImage else {
-            return nil
-        }
-        guard !x.isNaN, !y.isNaN else {
-            return nil
-        }
-        return CIImage(image: newImage)
-    }
-
-    private func updateOverlay() {
-        guard let image = getImage() else {
-            return
-        }
-        overlay = image
-        if defaultEnabled {
-            overlay = moveDefault(image: image)
-        }
-        for (i, crop) in crops.enumerated() {
-            let cropped = image
-                .cropped(to: crop.crop)
-                .translated(x: -crop.crop.origin.x, y: -crop.crop.origin.y)
-                .translated(x: crop.position.x, y: videoSize.height - crop.crop.height - crop.position.y)
-            if i == 0, !defaultEnabled {
-                overlay = cropped
-            } else if let overlay {
-                self.overlay = cropped.composited(over: overlay)
-            }
-        }
-    }
-
-    private func positionDefaultMetalPetal(image _: MTIImage) -> CGPoint {
-        if scaleToFitVideo {
-            return .init(x: videoSize.width / 2, y: videoSize.height / 2)
-        }
-        return .init(x: width / 2 + x, y: height / 2 + y)
-    }
-
-    private func updateOverlayMetalPetal() {
-        guard let newImage = getImage() else {
-            return
-        }
-        layersMetalPetal.removeAll()
-        let image = MTIImage(ciImage: newImage, isOpaque: true)
-        if defaultEnabled {
-            let position = positionDefaultMetalPetal(image: image)
-            layersMetalPetal.append(.init(content: image, position: position))
-        }
-        for crop in cropsMetalPetal {
-            guard let cropped = image.cropped(to: crop.crop) else {
-                continue
-            }
-            layersMetalPetal.append(.init(content: cropped, position: crop.position))
-        }
     }
 }

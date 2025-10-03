@@ -1976,5 +1976,25 @@ final class Settings {
                 }
             }
         }
+        for scene in realDatabase.scenes {
+            for sceneWidget in scene.widgets where !sceneWidget.migrated2 {
+                sceneWidget.migrated2 = true
+                store()
+                guard let widget = realDatabase.widgets.first(where: { $0.id == sceneWidget.widgetId }) else {
+                    continue
+                }
+                guard widget.type == .browser else {
+                    continue
+                }
+                guard let stream = database.streams.first(where: { $0.enabled }) else {
+                    continue
+                }
+                let resolution = stream.resolution.dimensions(portrait: stream.portrait)
+                let width = (100 * Double(widget.browser.width) / Double(resolution.width)).clamped(to: 1 ... 100)
+                let height = (100 * Double(widget.browser.height) / Double(resolution.height)).clamped(to: 1 ... 100)
+                sceneWidget.size = max(width, height)
+                sceneWidget.sizeString = String(sceneWidget.size)
+            }
+        }
     }
 }

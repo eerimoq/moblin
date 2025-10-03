@@ -641,7 +641,7 @@ extension Model {
     ) {
         if let browserEffect = browserEffects[widget.id], !usedBrowserEffects.contains(browserEffect) {
             browserEffect.setSceneWidget(
-                sceneWidget: sceneWidget,
+                sceneWidget: sceneWidget.clone(),
                 crops: findWidgetCrops(scene: scene, sourceWidgetId: widget.id)
             )
             if !browserEffect.audioOnly {
@@ -667,7 +667,7 @@ extension Model {
                 sceneWidget = nil
             }
             browserEffect.setSceneWidget(
-                sceneWidget: sceneWidget,
+                sceneWidget: sceneWidget?.clone(),
                 crops: findWidgetCrops(scene: scene, sourceWidgetId: widget.crop.sourceWidgetId)
             )
             if !browserEffect.audioOnly {
@@ -906,13 +906,7 @@ extension Model {
             guard crop.sourceWidgetId == sourceWidgetId else {
                 continue
             }
-            crops.append(WidgetCrop(position: .init(x: widget.sceneWidget.x, y: widget.sceneWidget.y),
-                                    crop: .init(
-                                        x: crop.x,
-                                        y: crop.y,
-                                        width: crop.width,
-                                        height: crop.height
-                                    )))
+            crops.append(WidgetCrop(crop: crop.clone(), sceneWidget: widget.sceneWidget.clone()))
         }
         return crops
     }

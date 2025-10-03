@@ -383,11 +383,6 @@ extension MKCoordinateRegion: @retroactive Equatable {
     }
 }
 
-struct WidgetCrop {
-    let position: CGPoint
-    let crop: CGRect
-}
-
 func hasAppleLog() -> Bool {
     if #available(iOS 17.0, *) {
         for format in getBestBackCameraDevice()?.formats ?? []
