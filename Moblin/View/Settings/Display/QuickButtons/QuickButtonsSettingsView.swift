@@ -1,6 +1,6 @@
 import SwiftUI
 
-private struct AppearenceSettingsView: View {
+private struct AppearanceSettingsView: View {
     let model: Model
     @ObservedObject var database: Database
     @ObservedObject var quickButtons: SettingsQuickButtons
@@ -26,7 +26,7 @@ private struct AppearenceSettingsView: View {
                     model.updateQuickButtonStates()
                 }
         } header: {
-            Text("Appearence")
+            Text("Appearance")
         } footer: {
             Text("Names are not shown in portrait mode.")
         }
@@ -100,7 +100,7 @@ struct QuickButtonsSettingsView: View {
 
     var body: some View {
         Form {
-            AppearenceSettingsView(model: model,
+            AppearanceSettingsView(model: model,
                                    database: model.database,
                                    quickButtons: model.database.quickButtonsGeneral)
             ButtonsSettingsView(model: model, database: model.database)
