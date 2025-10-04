@@ -41,6 +41,7 @@ private let versions = [
         "• Chat user display style. 💡 Landy and Kiko",
         "• Fix one subtitles crash. 🐛 Test Flight user",
         "• Make QR code widget work with more languages.",
+        "• Chat settings redesign. 🧑‍🏭 iChrisIRL",
     ]),
     Version(version: "26.2009.0", date: "2025-09-19", changes: [
         "• Insert punctuation after AI question if missing.",
