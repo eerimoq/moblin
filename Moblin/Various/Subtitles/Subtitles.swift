@@ -19,6 +19,9 @@ class Subtitles {
     }
 
     func updateSubtitles(position: Int, text: String) {
+        guard position >= 0, !text.isEmpty else {
+            return
+        }
         let endPosition = position + text.count
         while lastLinePosition + length < endPosition {
             lastLinePosition += length
@@ -28,11 +31,19 @@ class Subtitles {
             lastLinePosition = max(lastLinePosition, 0)
         }
         let firstLinePosition = lastLinePosition - length
-        let lastLineIndex = text.index(text.startIndex, offsetBy: lastLinePosition - position)
+        let offset = lastLinePosition - position
+        guard offset >= 0, offset < text.count else {
+            return
+        }
+        let lastLineIndex = text.index(text.startIndex, offsetBy: offset)
         let lastLine = text[lastLineIndex...]
         if firstLinePosition >= position, firstLinePosition >= previousFirstLinePosition {
             previousFirstLinePosition = firstLinePosition
-            let firstLineIndex = text.index(text.startIndex, offsetBy: firstLinePosition - position)
+            let offset = firstLinePosition - position
+            guard offset < text.count else {
+                return
+            }
+            let firstLineIndex = text.index(text.startIndex, offsetBy: offset)
             let firstLine = text[firstLineIndex ..< lastLineIndex]
             lines = [firstLine.trim(), lastLine.trim()]
         } else {
