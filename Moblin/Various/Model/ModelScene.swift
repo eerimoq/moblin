@@ -252,7 +252,7 @@ extension Model {
         }
         qrCodeEffects.removeAll()
         for widget in widgets where widget.type == .qrCode {
-            let qrCodeEffect = QrCodeEffect(widget: widget.qrCode)
+            let qrCodeEffect = QrCodeEffect(widget: widget.qrCode.clone())
             qrCodeEffect.effects = widget.getEffects()
             qrCodeEffects[widget.id] = qrCodeEffect
         }

@@ -43,9 +43,11 @@ final class QrCodeEffect: VideoEffect {
         guard newSceneWidget.extent() != sceneWidget?.extent() || size != self.size else {
             return
         }
-        let data = widget.message.data(using: String.Encoding.ascii)
+        guard let data = widget.message.data(using: .utf8) else {
+            return
+        }
         let filter = CIFilter.qrCodeGenerator()
-        filter.message = data!
+        filter.message = data
         filter.correctionLevel = "M"
         sceneWidget = newSceneWidget
         self.size = size

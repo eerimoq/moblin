@@ -703,6 +703,12 @@ class SettingsWidgetScene: Codable {
 
 class SettingsWidgetQrCode: Codable {
     var message = ""
+
+    func clone() -> SettingsWidgetQrCode {
+        let new = SettingsWidgetQrCode()
+        new.message = message
+        return new
+    }
 }
 
 enum SettingsWidgetAlertPositionType: String, Codable, CaseIterable {
