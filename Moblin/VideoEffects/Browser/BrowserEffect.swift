@@ -181,6 +181,9 @@ final class BrowserEffect: VideoEffect {
     }
 
     private func setSceneWidgetLoaded() {
+        processorPipelineQueue.async {
+            self.snapshot = nil
+        }
         webView.loadHTMLString("<html></html>", baseURL: nil)
         isLoaded = false
     }
@@ -204,6 +207,9 @@ final class BrowserEffect: VideoEffect {
             }
             self.webView.takeSnapshot(with: configuration) { [weak self] image, error in
                 guard let self else {
+                    return
+                }
+                guard !self.stopped else {
                     return
                 }
                 self.startTakeSnapshots()
