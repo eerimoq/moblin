@@ -36,6 +36,10 @@ private let versions = [
         "• Shortcut to LUTs settings from LUTs quick button page.",
         "• Make widget border less jagged.",
         "• Various widget shape effect and mirror fixes.",
+        "• Show parts of browser widget that fits on screen. 🐛 mikeful",
+        "• Do not show browser widget if disabled and crop enabled.",
+        "• Chat user display style. 💡 Landy and Kiko",
+        "• Fix one subtitles crash. 🐛 Test Flight user",
     ]),
     Version(version: "26.2009.0", date: "2025-09-19", changes: [
         "• Insert punctuation after AI question if missing.",
