@@ -22,7 +22,6 @@ struct StreamDLiveSettingsView: View {
             } footer: {
                 Text("Enter the DLive username of the channel you want to watch.")
             }
-
             Section {
                 Toggle("Enabled", isOn: $stream.dliveLoggedIn)
                     .onChange(of: stream.dliveLoggedIn) { _ in

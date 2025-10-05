@@ -90,12 +90,7 @@ final class WebSocketClient {
     private func stopInternal() {
         connected = false
         webSocket.disconnect()
-        let options = NWProtocolWebSocket.Options()
-        options.autoReplyPing = true
-        if let protocols {
-            options.setSubprotocols(protocols)
-        }
-        webSocket = .init(url: url, requiredInterfaceType: .cellular, options: options, proxyConfig: proxyConfig)
+        webSocket = .init(url: url, requiredInterfaceType: .cellular)
         stopConnectTimer()
         stopPingTimer()
     }
