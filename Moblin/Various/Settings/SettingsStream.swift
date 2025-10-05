@@ -831,6 +831,11 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
     @Published var kickSendMessagesTo: Bool = true
     var kickChatAlerts: SettingsKickAlerts = .init()
     var kickToastAlerts: SettingsKickAlerts = .init()
+    @Published var dliveStreamerUsername: String = ""
+    var dliveAppId: String = ""
+    var dliveAppSecret: String = ""
+    var dliveAccessToken: String = ""
+    @Published var dliveLoggedIn: Bool = false
     var youTubeApiKey: String = ""
     @Published var youTubeVideoId: String = ""
     @Published var youTubeHandle: String = ""

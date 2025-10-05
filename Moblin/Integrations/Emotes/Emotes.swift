@@ -5,6 +5,7 @@ enum EmotesPlatform {
     case twitch
     case kick
     case youtube
+    case dlive
 }
 
 class Emote {

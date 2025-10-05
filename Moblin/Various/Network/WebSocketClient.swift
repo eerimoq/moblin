@@ -23,8 +23,16 @@ final class WebSocketClient {
     private var connected = false
     private var connectDelayMs = shortestDelayMs
     private let proxyConfig: NWWebSocketProxyConfig?
+    private let protocols: [String]?
 
-    init(url: URL, httpProxy: HttpProxy? = nil, loopback: Bool = false, cellular: Bool = true) {
+    init(
+        url: URL,
+        httpProxy: HttpProxy? = nil,
+        loopback: Bool = false,
+        cellular: Bool = true,
+        protocols: [String]? = nil
+    ) {
+        self.protocols = protocols
         self.url = url
         self.loopback = loopback
         networkInterfaceTypeSelector = NetworkInterfaceTypeSelector(queue: .main, cellular: cellular)
@@ -61,7 +69,17 @@ final class WebSocketClient {
             if loopback {
                 interfaceType = .loopback
             }
-            webSocket = NWWebSocket(url: url, requiredInterfaceType: interfaceType, proxyConfig: proxyConfig)
+            let options = NWProtocolWebSocket.Options()
+            options.autoReplyPing = true
+            if let protocols {
+                options.setSubprotocols(protocols)
+            }
+            webSocket = NWWebSocket(
+                url: url,
+                requiredInterfaceType: interfaceType,
+                options: options,
+                proxyConfig: proxyConfig
+            )
             logger.debug("websocket: Connecting to \(url) over \(interfaceType)")
             webSocket.delegate = self
             webSocket.connect()
@@ -75,7 +93,12 @@ final class WebSocketClient {
     private func stopInternal() {
         connected = false
         webSocket.disconnect()
-        webSocket = .init(url: url, requiredInterfaceType: .cellular)
+        let options = NWProtocolWebSocket.Options()
+        options.autoReplyPing = true
+        if let protocols {
+            options.setSubprotocols(protocols)
+        }
+        webSocket = .init(url: url, requiredInterfaceType: .cellular, options: options, proxyConfig: proxyConfig)
         stopConnectTimer()
         stopPingTimer()
     }

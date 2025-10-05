@@ -10,6 +10,7 @@ enum ChatPlatformSelection: CaseIterable {
     case all
     case twitch
     case kick
+    case dlive
 }
 
 class ChatProvider: ObservableObject {
@@ -88,7 +89,9 @@ extension Model {
         var platforms: [ChatPlatformSelection] = []
         let hasTwitch = stream.twitchLoggedIn
         let hasKick = stream.kickLoggedIn
-        if hasTwitch, hasKick {
+        let hasDLive = stream.dliveLoggedIn
+        let multiplePlatforms = [hasTwitch, hasKick, hasDLive].filter { $0 }.count > 1
+        if multiplePlatforms {
             platforms.append(.all)
         }
         if hasTwitch {
@@ -96,6 +99,9 @@ extension Model {
         }
         if hasKick {
             platforms.append(.kick)
+        }
+        if hasDLive {
+            platforms.append(.dlive)
         }
         if !platforms.contains(selectedChatPlatform) {
             if platforms.contains(.all) {
@@ -278,6 +284,7 @@ extension Model {
     func reloadChats() {
         reloadTwitchChat()
         reloadKickPusher()
+        reloadDLiveChat()
         reloadYouTubeLiveChat()
         reloadAfreecaTvChat()
         reloadOpenStreamingPlatformChat()
@@ -298,6 +305,9 @@ extension Model {
         if isKickPusherConfigured() {
             numberOfChats += 1
         }
+        if isDLiveChatConfigured() {
+            numberOfChats += 1
+        }
         if isYouTubeLiveChatConfigured() {
             numberOfChats += 1
         }
@@ -312,8 +322,8 @@ extension Model {
 
     func isChatConfigured() -> Bool {
         return isTwitchChatConfigured() || isKickPusherConfigured() ||
-            isYouTubeLiveChatConfigured() || isAfreecaTvChatConfigured() ||
-            isOpenStreamingPlatformChatConfigured()
+            isDLiveChatConfigured() || isYouTubeLiveChatConfigured() ||
+            isAfreecaTvChatConfigured() || isOpenStreamingPlatformChatConfigured()
     }
 
     func isChatRemoteControl() -> Bool {
