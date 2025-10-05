@@ -144,11 +144,13 @@ struct ScenesSettingsView: View {
         Form {
             ScenesListView(database: model.database)
             WidgetsSettingsView(database: model.database)
-            AutoSwitchersSettingsView(autoSceneSwitchers: model.database.autoSceneSwitchers, showSelector: true)
-            DisconnectProtectionSettingsView(database: model.database,
-                                             disconnectProtection: model.database.disconnectProtection)
-            ScenesSwitchTransition(database: model.database)
-            RemoteSceneView(selectedSceneId: model.database.remoteSceneId)
+            if model.database.showAllSettings {
+                AutoSwitchersSettingsView(autoSceneSwitchers: model.database.autoSceneSwitchers, showSelector: true)
+                DisconnectProtectionSettingsView(database: model.database,
+                                                 disconnectProtection: model.database.disconnectProtection)
+                ScenesSwitchTransition(database: model.database)
+                RemoteSceneView(selectedSceneId: model.database.remoteSceneId)
+            }
             ReloadBrowserSources()
         }
         .navigationTitle("Scenes")

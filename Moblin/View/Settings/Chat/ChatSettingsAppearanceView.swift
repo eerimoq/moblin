@@ -67,30 +67,32 @@ struct ChatSettingsAppearanceView: View {
                     }
                 }
                 Section {
-                    ColorPicker("Timestamp", selection: $chat.timestampColorColor, supportsOpacity: false)
-                        .onChange(of: chat.timestampColorColor) { _ in
-                            guard let color = chat.timestampColorColor.toRgb() else {
-                                return
+                    if model.database.showAllSettings {
+                        ColorPicker("Timestamp", selection: $chat.timestampColorColor, supportsOpacity: false)
+                            .onChange(of: chat.timestampColorColor) { _ in
+                                guard let color = chat.timestampColorColor.toRgb() else {
+                                    return
+                                }
+                                chat.timestampColor = color
+                                model.reloadChatMessages()
                             }
-                            chat.timestampColor = color
-                            model.reloadChatMessages()
-                        }
-                    ColorPicker("Name", selection: $chat.usernameColorColor, supportsOpacity: false)
-                        .onChange(of: chat.usernameColorColor) { _ in
-                            guard let color = chat.usernameColorColor.toRgb() else {
-                                return
+                        ColorPicker("Name", selection: $chat.usernameColorColor, supportsOpacity: false)
+                            .onChange(of: chat.usernameColorColor) { _ in
+                                guard let color = chat.usernameColorColor.toRgb() else {
+                                    return
+                                }
+                                chat.usernameColor = color
+                                model.reloadChatMessages()
                             }
-                            chat.usernameColor = color
-                            model.reloadChatMessages()
-                        }
-                    ColorPicker("Message", selection: $chat.messageColorColor, supportsOpacity: false)
-                        .onChange(of: chat.messageColorColor) { _ in
-                            guard let color = chat.messageColorColor.toRgb() else {
-                                return
+                        ColorPicker("Message", selection: $chat.messageColorColor, supportsOpacity: false)
+                            .onChange(of: chat.messageColorColor) { _ in
+                                guard let color = chat.messageColorColor.toRgb() else {
+                                    return
+                                }
+                                chat.messageColor = color
+                                model.reloadChatMessages()
                             }
-                            chat.messageColor = color
-                            model.reloadChatMessages()
-                        }
+                    }
                     Toggle(isOn: $chat.backgroundColorEnabled) {
                         ColorPicker("Background", selection: $chat.backgroundColorColor, supportsOpacity: false)
                             .onChange(of: chat.backgroundColorColor) { _ in
@@ -117,12 +119,14 @@ struct ChatSettingsAppearanceView: View {
                     .onChange(of: chat.shadowColorEnabled) { _ in
                         model.reloadChatMessages()
                     }
-                    Toggle(isOn: Binding(get: {
-                        chat.meInUsernameColor
-                    }, set: { value in
-                        chat.meInUsernameColor = value
-                    })) {
-                        Text("Me in name color")
+                    if model.database.showAllSettings {
+                        Toggle(isOn: Binding(get: {
+                            chat.meInUsernameColor
+                        }, set: { value in
+                            chat.meInUsernameColor = value
+                        })) {
+                            Text("Me in name color")
+                        }
                     }
                 } header: {
                     Text("Colors")
