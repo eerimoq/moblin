@@ -112,16 +112,18 @@ struct StreamSettingsView: View {
                     } label: {
                         Text("Audio")
                     }
-                    NavigationLink {
-                        StreamRecordingSettingsView(stream: stream, recording: stream.recording)
-                    } label: {
-                        Text("Recording")
-                    }
-                    NavigationLink {
-                        StreamReplaySettingsView(stream: stream, replay: stream.replay)
-                    } label: {
-                        Text("Replay")
-                    }
+                }
+                NavigationLink {
+                    StreamRecordingSettingsView(stream: stream, recording: stream.recording)
+                } label: {
+                    Text("Recording")
+                }
+                NavigationLink {
+                    StreamReplaySettingsView(stream: stream, replay: stream.replay)
+                } label: {
+                    Text("Replay")
+                }
+                if database.showAllSettings {
                     NavigationLink {
                         StreamSnapshotSettingsView(stream: stream, recording: stream.recording)
                     } label: {
