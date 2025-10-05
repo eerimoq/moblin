@@ -177,6 +177,7 @@ class RtmpStream {
         switch code {
         case RtmpConnectionCode.connectSuccess.rawValue:
             setState(state: .initialized)
+            sendReleaseStream()
             sendFCPublish()
             connection.createStream(self)
         case RtmpStreamCode.publishStart.rawValue:
@@ -295,6 +296,10 @@ class RtmpStream {
 
     private func sendFCUnpublish() {
         connection.call("FCUnpublish", arguments: [info.resourceName])
+    }
+
+    private func sendReleaseStream() {
+        connection.call("releaseStream", arguments: [streamKey])
     }
 
     private func sendDeleteStream() {

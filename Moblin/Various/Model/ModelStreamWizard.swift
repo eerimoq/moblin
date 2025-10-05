@@ -64,10 +64,14 @@ extension Model {
                 }
             }
         case .rtmp:
-            let rtmpUrl = createStreamWizard.customRtmpUrl
+            guard var url = URLComponents(string: createStreamWizard.customRtmpUrl
                 .trim()
-                .trimmingCharacters(in: CharacterSet(charactersIn: "/"))
-            return "\(rtmpUrl)/\(createStreamWizard.customRtmpStreamKey.trim())"
+                .trimmingCharacters(in: CharacterSet(charactersIn: "/")))
+            else {
+                return nil
+            }
+            url.path += "/\(createStreamWizard.customRtmpStreamKey.trim())"
+            return url.url?.absoluteString
         case .rist:
             return createStreamWizard.customRistUrl.trim()
         }
