@@ -25,13 +25,12 @@ final class WebSocketClient {
     private let proxyConfig: NWWebSocketProxyConfig?
     private let protocols: [String]?
 
-    init(
-        url: URL,
-        httpProxy: HttpProxy? = nil,
-        loopback: Bool = false,
-        cellular: Bool = true,
-        protocols: [String]? = nil
-    ) {
+    init(url: URL,
+         httpProxy: HttpProxy? = nil,
+         loopback: Bool = false,
+         cellular: Bool = true,
+         protocols: [String]? = nil)
+    {
         self.protocols = protocols
         self.url = url
         self.loopback = loopback
@@ -74,12 +73,10 @@ final class WebSocketClient {
             if let protocols {
                 options.setSubprotocols(protocols)
             }
-            webSocket = NWWebSocket(
-                url: url,
-                requiredInterfaceType: interfaceType,
-                options: options,
-                proxyConfig: proxyConfig
-            )
+            webSocket = NWWebSocket(url: url,
+                                    requiredInterfaceType: interfaceType,
+                                    options: options,
+                                    proxyConfig: proxyConfig)
             logger.debug("websocket: Connecting to \(url) over \(interfaceType)")
             webSocket.delegate = self
             webSocket.connect()

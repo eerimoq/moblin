@@ -18,7 +18,6 @@ extension Model {
         logger.debug("dlive: reloadDLiveChat called")
         dliveChat?.stop()
         setTextToSpeechStreamerMentions()
-
         if isDLiveChatConfigured(), !isChatRemoteControl() {
             logger.debug("dlive: Starting DLive chat for streamer: \(stream.dliveStreamerUsername)")
             dliveChat?.start(streamerUsername: stream.dliveStreamerUsername)

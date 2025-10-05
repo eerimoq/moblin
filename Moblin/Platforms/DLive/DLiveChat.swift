@@ -130,14 +130,11 @@ final class DLiveChat {
             guard let data = message.data(using: .utf8) else {
                 return
             }
-
             let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
             guard let type = json?["type"] as? String else {
                 return
             }
-
             logger.debug("dlive: chat: Message type: \(type)")
-
             switch type {
             case "ka":
                 logger.debug("dlive: chat: Keep-alive received")
@@ -172,17 +169,13 @@ final class DLiveChat {
             }
             return
         }
-
         logger.debug("dlive: chat: Received \(streamMessageReceived.count) message(s)")
-
         for messageData in streamMessageReceived {
             guard let typename = messageData["__typename"] as? String else {
                 logger.debug("dlive: chat: Message missing __typename field")
                 continue
             }
-
             logger.debug("dlive: chat: Processing message type: \(typename)")
-
             switch typename {
             case "ChatText":
                 try handleChatTextMessage(messageData)
@@ -222,7 +215,6 @@ final class DLiveChat {
     private func handleChatTextMessage(_ messageData: [String: Any]) throws {
         let jsonData = try JSONSerialization.data(withJSONObject: messageData)
         let chatMessage = try JSONDecoder().decode(ChatTextMessage.self, from: jsonData)
-
         var dliveEmotes: [String: URL] = [:]
         if let emojis = messageData["emojis"] as? [Int], emojis.count % 2 == 0 {
             for i in stride(from: 0, to: emojis.count, by: 2) {
@@ -240,7 +232,6 @@ final class DLiveChat {
                 }
             }
         }
-
         if let regex = Self.customEmoteRegex {
             let matches = regex.matches(
                 in: chatMessage.content,
@@ -258,12 +249,10 @@ final class DLiveChat {
                 }
             }
         }
-
         var id = 0
         let segments = createSegments(text: chatMessage.content, dliveEmotes: dliveEmotes, id: &id)
         let isSubscriber = chatMessage.subscribing == true
         let isModerator = chatMessage.role == "Moderator" || chatMessage.roomRole == "Owner"
-
         delegate?.dliveChatAppendMessage(
             messageId: chatMessage.id,
             user: chatMessage.sender.username,
@@ -279,7 +268,6 @@ final class DLiveChat {
     private func createSegments(text: String, dliveEmotes: [String: URL], id: inout Int) -> [ChatPostSegment] {
         var segments: [ChatPostSegment] = []
         var parts: [String] = []
-
         for word in text.components(separatedBy: .whitespaces) {
             if let emoteUrl = dliveEmotes[word] {
                 if !parts.isEmpty {
@@ -293,12 +281,10 @@ final class DLiveChat {
                 parts.append(word)
             }
         }
-
         if !parts.isEmpty {
             segments.append(ChatPostSegment(id: id, text: parts.joined(separator: " ")))
             id += 1
         }
-
         return segments
     }
 
@@ -352,7 +338,6 @@ final class DLiveChat {
           }
         }
         """
-
         let subscribeMessage: [String: Any] = [
             "id": "1",
             "type": "start",
@@ -371,7 +356,6 @@ final class DLiveChat {
                 "query": subscriptionQuery,
             ],
         ]
-
         if let jsonData = try? JSONSerialization.data(withJSONObject: subscribeMessage),
            let jsonString = String(data: jsonData, encoding: .utf8)
         {
