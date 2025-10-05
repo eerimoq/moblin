@@ -69,7 +69,7 @@ final class DLiveChat {
     private static let nativeEmoteBaseURL = "https://images.prd.dlivecdn.com/emoji/"
     private static let customEmoteBaseURL = "https://images.prd.dlivecdn.com/emote/"
 
-    private var webSocket: DLiveWebSocketClient
+    private var webSocket: WebSocketClient
     private var streamerUsername: String
     private var streamerRoomId: String
     private weak var delegate: (any DLiveChatDelegate)?
@@ -79,7 +79,7 @@ final class DLiveChat {
         self.delegate = delegate
         streamerUsername = ""
         streamerRoomId = ""
-        webSocket = DLiveWebSocketClient(url: Self.webSocketURL)
+        webSocket = WebSocketClient(url: Self.webSocketURL, protocols: ["graphql-ws"])
         webSocket.delegate = self
     }
 
@@ -93,7 +93,7 @@ final class DLiveChat {
                 self.streamerUsername = userInfo.username
                 self.streamerRoomId = userInfo.id.replacingOccurrences(of: Self.userIDPrefix, with: "")
                 self.connectionAcknowledged = false
-                self.webSocket.connect()
+                self.webSocket.start()
             case .failure:
                 self.handleError(title: "DLive user not found", subTitle: "Check the username")
             }
@@ -106,12 +106,12 @@ final class DLiveChat {
     }
 
     func stopInternal() {
-        webSocket.disconnect()
+        webSocket.stop()
         connectionAcknowledged = false
     }
 
     func isConnected() -> Bool {
-        return webSocket.isSocketConnected()
+        return webSocket.isConnected()
     }
 
     func hasEmotes() -> Bool {
@@ -359,14 +359,14 @@ final class DLiveChat {
         if let jsonData = try? JSONSerialization.data(withJSONObject: subscribeMessage),
            let jsonString = String(data: jsonData, encoding: .utf8)
         {
-            webSocket.send(text: jsonString)
+            webSocket.send(string: jsonString)
             logger.debug("dlive: chat: Subscribed to room \(streamerRoomId)")
         }
     }
 }
 
-extension DLiveChat: DLiveWebSocketClientDelegate {
-    func dliveWebSocketDidConnect() {
+extension DLiveChat: WebSocketClientDelegate {
+    func webSocketClientConnected(_: WebSocketClient) {
         logger.debug("dlive: chat: WebSocket connected, sending connection_init")
         let initMessage: [String: Any] = [
             "type": "connection_init",
@@ -375,17 +375,17 @@ extension DLiveChat: DLiveWebSocketClientDelegate {
         if let jsonData = try? JSONSerialization.data(withJSONObject: initMessage),
            let jsonString = String(data: jsonData, encoding: .utf8)
         {
-            webSocket.send(text: jsonString)
+            webSocket.send(string: jsonString)
             logger.debug("dlive: chat: Sent connection_init")
         }
     }
 
-    func dliveWebSocketDidDisconnect() {
+    func webSocketClientDisconnected(_: WebSocketClient) {
         logger.debug("dlive: chat: WebSocket disconnected")
         connectionAcknowledged = false
     }
 
-    func dliveWebSocketDidReceiveMessage(text: String) {
-        handleMessage(message: text)
+    func webSocketClientReceiveMessage(_: WebSocketClient, string: String) {
+        handleMessage(message: string)
     }
 }
