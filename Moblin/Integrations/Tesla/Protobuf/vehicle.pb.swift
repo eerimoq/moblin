@@ -216,6 +216,15 @@ struct CarServer_VehicleData: @unchecked Sendable {
   /// Clears the value of `driveState`. Subsequent reads from it will return its default value.
   mutating func clearDriveState() {_uniqueStorage()._driveState = nil}
 
+  var locationState: CarServer_LocationState {
+    get {return _storage._locationState ?? CarServer_LocationState()}
+    set {_uniqueStorage()._locationState = newValue}
+  }
+  /// Returns true if `locationState` has been explicitly set.
+  var hasLocationState: Bool {return _storage._locationState != nil}
+  /// Clears the value of `locationState`. Subsequent reads from it will return its default value.
+  mutating func clearLocationState() {_uniqueStorage()._locationState = nil}
+
   var closuresState: CarServer_ClosuresState {
     get {return _storage._closuresState ?? CarServer_ClosuresState()}
     set {_uniqueStorage()._closuresState = newValue}
@@ -4053,6 +4062,406 @@ struct CarServer_ChargeOnSolarStateUserStopped: Sendable {
   init() {}
 }
 
+/// LocationState contains information about the vehicle's location. Typically
+/// clients will want to use native coordinates, which use either WGS
+/// (international) or GCJ (Chinese) coordinate systems depending on the
+/// vehicle's region. If the native fields are not provided, WGS clients should
+/// fall back to the plain latitude/longitude fields, and GCJ clients should
+/// fall back to corrected fields.
+///
+/// The geo fields contain raw WGS GPS coordinates. They are usually less
+/// accurate. However, they should be used if there is a large discrepancy
+/// between the raw and estimated location, as determined by the
+/// "estimated to raw distance" field. This scenario most frequently arises when
+/// the vehicle has recently been transported or towed.
+struct CarServer_LocationState: @unchecked Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var optionalLatitude: OneOf_OptionalLatitude? {
+    get {return _storage._optionalLatitude}
+    set {_uniqueStorage()._optionalLatitude = newValue}
+  }
+
+  var latitude: Float {
+    get {
+      if case .latitude(let v)? = _storage._optionalLatitude {return v}
+      return 0
+    }
+    set {_uniqueStorage()._optionalLatitude = .latitude(newValue)}
+  }
+
+  var optionalLongitude: OneOf_OptionalLongitude? {
+    get {return _storage._optionalLongitude}
+    set {_uniqueStorage()._optionalLongitude = newValue}
+  }
+
+  var longitude: Float {
+    get {
+      if case .longitude(let v)? = _storage._optionalLongitude {return v}
+      return 0
+    }
+    set {_uniqueStorage()._optionalLongitude = .longitude(newValue)}
+  }
+
+  var optionalHeading: OneOf_OptionalHeading? {
+    get {return _storage._optionalHeading}
+    set {_uniqueStorage()._optionalHeading = newValue}
+  }
+
+  var heading: UInt32 {
+    get {
+      if case .heading(let v)? = _storage._optionalHeading {return v}
+      return 0
+    }
+    set {_uniqueStorage()._optionalHeading = .heading(newValue)}
+  }
+
+  var optionalGpsAsOf: OneOf_OptionalGpsAsOf? {
+    get {return _storage._optionalGpsAsOf}
+    set {_uniqueStorage()._optionalGpsAsOf = newValue}
+  }
+
+  var gpsAsOf: UInt64 {
+    get {
+      if case .gpsAsOf(let v)? = _storage._optionalGpsAsOf {return v}
+      return 0
+    }
+    set {_uniqueStorage()._optionalGpsAsOf = .gpsAsOf(newValue)}
+  }
+
+  var optionalNativeLocationSupported: OneOf_OptionalNativeLocationSupported? {
+    get {return _storage._optionalNativeLocationSupported}
+    set {_uniqueStorage()._optionalNativeLocationSupported = newValue}
+  }
+
+  var nativeLocationSupported: Bool {
+    get {
+      if case .nativeLocationSupported(let v)? = _storage._optionalNativeLocationSupported {return v}
+      return false
+    }
+    set {_uniqueStorage()._optionalNativeLocationSupported = .nativeLocationSupported(newValue)}
+  }
+
+  var optionalNativeLatitude: OneOf_OptionalNativeLatitude? {
+    get {return _storage._optionalNativeLatitude}
+    set {_uniqueStorage()._optionalNativeLatitude = newValue}
+  }
+
+  var nativeLatitude: Float {
+    get {
+      if case .nativeLatitude(let v)? = _storage._optionalNativeLatitude {return v}
+      return 0
+    }
+    set {_uniqueStorage()._optionalNativeLatitude = .nativeLatitude(newValue)}
+  }
+
+  var optionalNativeLongitude: OneOf_OptionalNativeLongitude? {
+    get {return _storage._optionalNativeLongitude}
+    set {_uniqueStorage()._optionalNativeLongitude = newValue}
+  }
+
+  var nativeLongitude: Float {
+    get {
+      if case .nativeLongitude(let v)? = _storage._optionalNativeLongitude {return v}
+      return 0
+    }
+    set {_uniqueStorage()._optionalNativeLongitude = .nativeLongitude(newValue)}
+  }
+
+  var nativeType: CarServer_LocationState.GPSCoordinateType {
+    get {return _storage._nativeType ?? CarServer_LocationState.GPSCoordinateType()}
+    set {_uniqueStorage()._nativeType = newValue}
+  }
+  /// Returns true if `nativeType` has been explicitly set.
+  var hasNativeType: Bool {return _storage._nativeType != nil}
+  /// Clears the value of `nativeType`. Subsequent reads from it will return its default value.
+  mutating func clearNativeType() {_uniqueStorage()._nativeType = nil}
+
+  var optionalCorrectedLatitude: OneOf_OptionalCorrectedLatitude? {
+    get {return _storage._optionalCorrectedLatitude}
+    set {_uniqueStorage()._optionalCorrectedLatitude = newValue}
+  }
+
+  var correctedLatitude: Float {
+    get {
+      if case .correctedLatitude(let v)? = _storage._optionalCorrectedLatitude {return v}
+      return 0
+    }
+    set {_uniqueStorage()._optionalCorrectedLatitude = .correctedLatitude(newValue)}
+  }
+
+  var optionalCorrectedLongitude: OneOf_OptionalCorrectedLongitude? {
+    get {return _storage._optionalCorrectedLongitude}
+    set {_uniqueStorage()._optionalCorrectedLongitude = newValue}
+  }
+
+  var correctedLongitude: Float {
+    get {
+      if case .correctedLongitude(let v)? = _storage._optionalCorrectedLongitude {return v}
+      return 0
+    }
+    set {_uniqueStorage()._optionalCorrectedLongitude = .correctedLongitude(newValue)}
+  }
+
+  var timestamp: SwiftProtobuf.Google_Protobuf_Timestamp {
+    get {return _storage._timestamp ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
+    set {_uniqueStorage()._timestamp = newValue}
+  }
+  /// Returns true if `timestamp` has been explicitly set.
+  var hasTimestamp: Bool {return _storage._timestamp != nil}
+  /// Clears the value of `timestamp`. Subsequent reads from it will return its default value.
+  mutating func clearTimestamp() {_uniqueStorage()._timestamp = nil}
+
+  var optionalHomelinkNearby: OneOf_OptionalHomelinkNearby? {
+    get {return _storage._optionalHomelinkNearby}
+    set {_uniqueStorage()._optionalHomelinkNearby = newValue}
+  }
+
+  var homelinkNearby: Bool {
+    get {
+      if case .homelinkNearby(let v)? = _storage._optionalHomelinkNearby {return v}
+      return false
+    }
+    set {_uniqueStorage()._optionalHomelinkNearby = .homelinkNearby(newValue)}
+  }
+
+  var optionalLocationName: OneOf_OptionalLocationName? {
+    get {return _storage._optionalLocationName}
+    set {_uniqueStorage()._optionalLocationName = newValue}
+  }
+
+  var locationName: String {
+    get {
+      if case .locationName(let v)? = _storage._optionalLocationName {return v}
+      return String()
+    }
+    set {_uniqueStorage()._optionalLocationName = .locationName(newValue)}
+  }
+
+  var optionalGeoLatitude: OneOf_OptionalGeoLatitude? {
+    get {return _storage._optionalGeoLatitude}
+    set {_uniqueStorage()._optionalGeoLatitude = newValue}
+  }
+
+  var geoLatitude: Float {
+    get {
+      if case .geoLatitude(let v)? = _storage._optionalGeoLatitude {return v}
+      return 0
+    }
+    set {_uniqueStorage()._optionalGeoLatitude = .geoLatitude(newValue)}
+  }
+
+  var optionalGeoLongitude: OneOf_OptionalGeoLongitude? {
+    get {return _storage._optionalGeoLongitude}
+    set {_uniqueStorage()._optionalGeoLongitude = newValue}
+  }
+
+  var geoLongitude: Float {
+    get {
+      if case .geoLongitude(let v)? = _storage._optionalGeoLongitude {return v}
+      return 0
+    }
+    set {_uniqueStorage()._optionalGeoLongitude = .geoLongitude(newValue)}
+  }
+
+  var optionalGeoHeading: OneOf_OptionalGeoHeading? {
+    get {return _storage._optionalGeoHeading}
+    set {_uniqueStorage()._optionalGeoHeading = newValue}
+  }
+
+  var geoHeading: Float {
+    get {
+      if case .geoHeading(let v)? = _storage._optionalGeoHeading {return v}
+      return 0
+    }
+    set {_uniqueStorage()._optionalGeoHeading = .geoHeading(newValue)}
+  }
+
+  var optionalGeoElevation: OneOf_OptionalGeoElevation? {
+    get {return _storage._optionalGeoElevation}
+    set {_uniqueStorage()._optionalGeoElevation = newValue}
+  }
+
+  var geoElevation: Float {
+    get {
+      if case .geoElevation(let v)? = _storage._optionalGeoElevation {return v}
+      return 0
+    }
+    set {_uniqueStorage()._optionalGeoElevation = .geoElevation(newValue)}
+  }
+
+  var optionalGeoAccuracy: OneOf_OptionalGeoAccuracy? {
+    get {return _storage._optionalGeoAccuracy}
+    set {_uniqueStorage()._optionalGeoAccuracy = newValue}
+  }
+
+  var geoAccuracy: Float {
+    get {
+      if case .geoAccuracy(let v)? = _storage._optionalGeoAccuracy {return v}
+      return 0
+    }
+    set {_uniqueStorage()._optionalGeoAccuracy = .geoAccuracy(newValue)}
+  }
+
+  var optionalEstimatedGpsValid: OneOf_OptionalEstimatedGpsValid? {
+    get {return _storage._optionalEstimatedGpsValid}
+    set {_uniqueStorage()._optionalEstimatedGpsValid = newValue}
+  }
+
+  var estimatedGpsValid: Bool {
+    get {
+      if case .estimatedGpsValid(let v)? = _storage._optionalEstimatedGpsValid {return v}
+      return false
+    }
+    set {_uniqueStorage()._optionalEstimatedGpsValid = .estimatedGpsValid(newValue)}
+  }
+
+  var optionalEstimatedToRawDistance: OneOf_OptionalEstimatedToRawDistance? {
+    get {return _storage._optionalEstimatedToRawDistance}
+    set {_uniqueStorage()._optionalEstimatedToRawDistance = newValue}
+  }
+
+  var estimatedToRawDistance: Float {
+    get {
+      if case .estimatedToRawDistance(let v)? = _storage._optionalEstimatedToRawDistance {return v}
+      return 0
+    }
+    set {_uniqueStorage()._optionalEstimatedToRawDistance = .estimatedToRawDistance(newValue)}
+  }
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  enum OneOf_OptionalLatitude: Equatable, Sendable {
+    case latitude(Float)
+
+  }
+
+  enum OneOf_OptionalLongitude: Equatable, Sendable {
+    case longitude(Float)
+
+  }
+
+  enum OneOf_OptionalHeading: Equatable, Sendable {
+    case heading(UInt32)
+
+  }
+
+  enum OneOf_OptionalGpsAsOf: Equatable, Sendable {
+    case gpsAsOf(UInt64)
+
+  }
+
+  enum OneOf_OptionalNativeLocationSupported: Equatable, Sendable {
+    case nativeLocationSupported(Bool)
+
+  }
+
+  enum OneOf_OptionalNativeLatitude: Equatable, Sendable {
+    case nativeLatitude(Float)
+
+  }
+
+  enum OneOf_OptionalNativeLongitude: Equatable, Sendable {
+    case nativeLongitude(Float)
+
+  }
+
+  enum OneOf_OptionalCorrectedLatitude: Equatable, Sendable {
+    case correctedLatitude(Float)
+
+  }
+
+  enum OneOf_OptionalCorrectedLongitude: Equatable, Sendable {
+    case correctedLongitude(Float)
+
+  }
+
+  enum OneOf_OptionalHomelinkNearby: Equatable, Sendable {
+    case homelinkNearby(Bool)
+
+  }
+
+  enum OneOf_OptionalLocationName: Equatable, Sendable {
+    case locationName(String)
+
+  }
+
+  enum OneOf_OptionalGeoLatitude: Equatable, Sendable {
+    case geoLatitude(Float)
+
+  }
+
+  enum OneOf_OptionalGeoLongitude: Equatable, Sendable {
+    case geoLongitude(Float)
+
+  }
+
+  enum OneOf_OptionalGeoHeading: Equatable, Sendable {
+    case geoHeading(Float)
+
+  }
+
+  enum OneOf_OptionalGeoElevation: Equatable, Sendable {
+    case geoElevation(Float)
+
+  }
+
+  enum OneOf_OptionalGeoAccuracy: Equatable, Sendable {
+    case geoAccuracy(Float)
+
+  }
+
+  enum OneOf_OptionalEstimatedGpsValid: Equatable, Sendable {
+    case estimatedGpsValid(Bool)
+
+  }
+
+  enum OneOf_OptionalEstimatedToRawDistance: Equatable, Sendable {
+    case estimatedToRawDistance(Float)
+
+  }
+
+  struct GPSCoordinateType: Sendable {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    var type: CarServer_LocationState.GPSCoordinateType.OneOf_Type? = nil
+
+    var gcj: CarServer_Void {
+      get {
+        if case .gcj(let v)? = type {return v}
+        return CarServer_Void()
+      }
+      set {type = .gcj(newValue)}
+    }
+
+    var wgs: CarServer_Void {
+      get {
+        if case .wgs(let v)? = type {return v}
+        return CarServer_Void()
+      }
+      set {type = .wgs(newValue)}
+    }
+
+    var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    enum OneOf_Type: Equatable, Sendable {
+      case gcj(CarServer_Void)
+      case wgs(CarServer_Void)
+
+    }
+
+    init() {}
+  }
+
+  init() {}
+
+  fileprivate var _storage = _StorageClass.defaultInstance
+}
+
 struct CarServer_VehicleState: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -5894,63 +6303,18 @@ struct CarServer_ShiftState: Sendable {
 fileprivate let _protobuf_package = "CarServer"
 
 extension CarServer_MediaSourceType: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "MediaSourceType_None"),
-    1: .same(proto: "MediaSourceType_AM"),
-    2: .same(proto: "MediaSourceType_FM"),
-    3: .same(proto: "MediaSourceType_XM"),
-    5: .same(proto: "MediaSourceType_Slacker"),
-    6: .same(proto: "MediaSourceType_LocalFiles"),
-    7: .same(proto: "MediaSourceType_iPod"),
-    8: .same(proto: "MediaSourceType_Bluetooth"),
-    9: .same(proto: "MediaSourceType_AuxIn"),
-    10: .same(proto: "MediaSourceType_DAB"),
-    11: .same(proto: "MediaSourceType_Rdio"),
-    12: .same(proto: "MediaSourceType_Spotify"),
-    13: .same(proto: "MediaSourceType_USRadio"),
-    14: .same(proto: "MediaSourceType_EURadio"),
-    16: .same(proto: "MediaSourceType_MediaFile"),
-    17: .same(proto: "MediaSourceType_TuneIn"),
-    18: .same(proto: "MediaSourceType_Stingray"),
-    19: .same(proto: "MediaSourceType_SiriusXM"),
-    20: .same(proto: "MediaSourceType_Tidal"),
-    21: .same(proto: "MediaSourceType_QQMusic"),
-    22: .same(proto: "MediaSourceType_QQMusic2"),
-    23: .same(proto: "MediaSourceType_Ximalaya"),
-    24: .same(proto: "MediaSourceType_OnlineRadio"),
-    25: .same(proto: "MediaSourceType_OnlineRadio2"),
-    26: .same(proto: "MediaSourceType_NetEaseMusic"),
-    28: .same(proto: "MediaSourceType_Browser"),
-    29: .same(proto: "MediaSourceType_Theater"),
-    30: .same(proto: "MediaSourceType_Game"),
-    31: .same(proto: "MediaSourceType_Tutorial"),
-    32: .same(proto: "MediaSourceType_Toybox"),
-    33: .same(proto: "MediaSourceType_RecentsFavorites"),
-    34: .same(proto: "MediaSourceType_HomeApps"),
-    35: .same(proto: "MediaSourceType_Search"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0MediaSourceType_None\0\u{1}MediaSourceType_AM\0\u{1}MediaSourceType_FM\0\u{1}MediaSourceType_XM\0\u{2}\u{2}MediaSourceType_Slacker\0\u{1}MediaSourceType_LocalFiles\0\u{1}MediaSourceType_iPod\0\u{1}MediaSourceType_Bluetooth\0\u{1}MediaSourceType_AuxIn\0\u{1}MediaSourceType_DAB\0\u{1}MediaSourceType_Rdio\0\u{1}MediaSourceType_Spotify\0\u{1}MediaSourceType_USRadio\0\u{1}MediaSourceType_EURadio\0\u{2}\u{2}MediaSourceType_MediaFile\0\u{1}MediaSourceType_TuneIn\0\u{1}MediaSourceType_Stingray\0\u{1}MediaSourceType_SiriusXM\0\u{1}MediaSourceType_Tidal\0\u{1}MediaSourceType_QQMusic\0\u{1}MediaSourceType_QQMusic2\0\u{1}MediaSourceType_Ximalaya\0\u{1}MediaSourceType_OnlineRadio\0\u{1}MediaSourceType_OnlineRadio2\0\u{1}MediaSourceType_NetEaseMusic\0\u{2}\u{2}MediaSourceType_Browser\0\u{1}MediaSourceType_Theater\0\u{1}MediaSourceType_Game\0\u{1}MediaSourceType_Tutorial\0\u{1}MediaSourceType_Toybox\0\u{1}MediaSourceType_RecentsFavorites\0\u{1}MediaSourceType_HomeApps\0\u{1}MediaSourceType_Search\0")
 }
 
 extension CarServer_VehicleData: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".VehicleData"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    3: .standard(proto: "charge_state"),
-    4: .standard(proto: "climate_state"),
-    5: .standard(proto: "drive_state"),
-    9: .standard(proto: "closures_state"),
-    15: .standard(proto: "charge_schedule_state"),
-    16: .standard(proto: "preconditioning_schedule_state"),
-    19: .standard(proto: "tire_pressure_state"),
-    20: .standard(proto: "media_state"),
-    21: .standard(proto: "media_detail_state"),
-    23: .standard(proto: "software_update_state"),
-    24: .standard(proto: "parental_controls_state"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{4}\u{3}charge_state\0\u{3}climate_state\0\u{3}drive_state\0\u{4}\u{3}location_state\0\u{3}closures_state\0\u{4}\u{6}charge_schedule_state\0\u{3}preconditioning_schedule_state\0\u{4}\u{3}tire_pressure_state\0\u{3}media_state\0\u{3}media_detail_state\0\u{4}\u{2}software_update_state\0\u{3}parental_controls_state\0")
 
   fileprivate class _StorageClass {
     var _chargeState: CarServer_ChargeState? = nil
     var _climateState: CarServer_ClimateState? = nil
     var _driveState: CarServer_DriveState? = nil
+    var _locationState: CarServer_LocationState? = nil
     var _closuresState: CarServer_ClosuresState? = nil
     var _chargeScheduleState: CarServer_ChargeScheduleState? = nil
     var _preconditioningScheduleState: CarServer_PreconditioningScheduleState? = nil
@@ -5960,15 +6324,11 @@ extension CarServer_VehicleData: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
     var _softwareUpdateState: CarServer_SoftwareUpdateState? = nil
     var _parentalControlsState: CarServer_ParentalControlsState? = nil
 
-    #if swift(>=5.10)
       // This property is used as the initial default value for new instances of the type.
       // The type itself is protecting the reference to its storage via CoW semantics.
       // This will force a copy to be made of this reference when the first mutation occurs;
       // hence, it is safe to mark this as `nonisolated(unsafe)`.
       static nonisolated(unsafe) let defaultInstance = _StorageClass()
-    #else
-      static let defaultInstance = _StorageClass()
-    #endif
 
     private init() {}
 
@@ -5976,6 +6336,7 @@ extension CarServer_VehicleData: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
       _chargeState = source._chargeState
       _climateState = source._climateState
       _driveState = source._driveState
+      _locationState = source._locationState
       _closuresState = source._closuresState
       _chargeScheduleState = source._chargeScheduleState
       _preconditioningScheduleState = source._preconditioningScheduleState
@@ -6005,6 +6366,7 @@ extension CarServer_VehicleData: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
         case 3: try { try decoder.decodeSingularMessageField(value: &_storage._chargeState) }()
         case 4: try { try decoder.decodeSingularMessageField(value: &_storage._climateState) }()
         case 5: try { try decoder.decodeSingularMessageField(value: &_storage._driveState) }()
+        case 8: try { try decoder.decodeSingularMessageField(value: &_storage._locationState) }()
         case 9: try { try decoder.decodeSingularMessageField(value: &_storage._closuresState) }()
         case 15: try { try decoder.decodeSingularMessageField(value: &_storage._chargeScheduleState) }()
         case 16: try { try decoder.decodeSingularMessageField(value: &_storage._preconditioningScheduleState) }()
@@ -6033,6 +6395,9 @@ extension CarServer_VehicleData: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
       } }()
       try { if let v = _storage._driveState {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 5)
+      } }()
+      try { if let v = _storage._locationState {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 8)
       } }()
       try { if let v = _storage._closuresState {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 9)
@@ -6070,6 +6435,7 @@ extension CarServer_VehicleData: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
         if _storage._chargeState != rhs_storage._chargeState {return false}
         if _storage._climateState != rhs_storage._climateState {return false}
         if _storage._driveState != rhs_storage._driveState {return false}
+        if _storage._locationState != rhs_storage._locationState {return false}
         if _storage._closuresState != rhs_storage._closuresState {return false}
         if _storage._chargeScheduleState != rhs_storage._chargeScheduleState {return false}
         if _storage._preconditioningScheduleState != rhs_storage._preconditioningScheduleState {return false}
@@ -6089,33 +6455,7 @@ extension CarServer_VehicleData: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
 
 extension CarServer_ClosuresState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ClosuresState"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    101: .standard(proto: "door_open_driver_front"),
-    102: .standard(proto: "door_open_driver_rear"),
-    103: .standard(proto: "door_open_passenger_front"),
-    104: .standard(proto: "door_open_passenger_rear"),
-    105: .standard(proto: "door_open_trunk_front"),
-    106: .standard(proto: "door_open_trunk_rear"),
-    107: .standard(proto: "window_open_driver_front"),
-    108: .standard(proto: "window_open_passenger_front"),
-    109: .standard(proto: "window_open_driver_rear"),
-    110: .standard(proto: "window_open_passenger_rear"),
-    11: .standard(proto: "sun_roof_state"),
-    112: .standard(proto: "sun_roof_percent_open"),
-    113: .same(proto: "locked"),
-    114: .standard(proto: "is_user_present"),
-    15: .standard(proto: "center_display_state"),
-    116: .standard(proto: "remote_start"),
-    117: .standard(proto: "valet_mode"),
-    118: .standard(proto: "valet_pin_needed"),
-    19: .standard(proto: "sentry_mode_state"),
-    120: .standard(proto: "sentry_mode_available"),
-    22: .standard(proto: "speed_limit_mode"),
-    23: .standard(proto: "tonneau_state"),
-    24: .standard(proto: "tonneau_percent_open"),
-    25: .standard(proto: "tonneau_in_motion"),
-    2000: .same(proto: "timestamp"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{4}\u{b}sun_roof_state\0\u{4}\u{4}center_display_state\0\u{4}\u{4}sentry_mode_state\0\u{4}\u{3}speed_limit_mode\0\u{3}tonneau_state\0\u{3}tonneau_percent_open\0\u{3}tonneau_in_motion\0\u{4}L\u{1}door_open_driver_front\0\u{3}door_open_driver_rear\0\u{3}door_open_passenger_front\0\u{3}door_open_passenger_rear\0\u{3}door_open_trunk_front\0\u{3}door_open_trunk_rear\0\u{3}window_open_driver_front\0\u{3}window_open_passenger_front\0\u{3}window_open_driver_rear\0\u{3}window_open_passenger_rear\0\u{4}\u{2}sun_roof_percent_open\0\u{1}locked\0\u{3}is_user_present\0\u{4}\u{2}remote_start\0\u{3}valet_mode\0\u{3}valet_pin_needed\0\u{4}\u{2}sentry_mode_available\0\u{2}X\u{1d}timestamp\0")
 
   fileprivate class _StorageClass {
     var _optionalDoorOpenDriverFront: CarServer_ClosuresState.OneOf_OptionalDoorOpenDriverFront?
@@ -6144,15 +6484,11 @@ extension CarServer_ClosuresState: SwiftProtobuf.Message, SwiftProtobuf._Message
     var _optionalTonneauInMotion: CarServer_ClosuresState.OneOf_OptionalTonneauInMotion?
     var _timestamp: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
 
-    #if swift(>=5.10)
       // This property is used as the initial default value for new instances of the type.
       // The type itself is protecting the reference to its storage via CoW semantics.
       // This will force a copy to be made of this reference when the first mutation occurs;
       // hence, it is safe to mark this as `nonisolated(unsafe)`.
       static nonisolated(unsafe) let defaultInstance = _StorageClass()
-    #else
-      static let defaultInstance = _StorageClass()
-    #endif
 
     private init() {}
 
@@ -6497,14 +6833,7 @@ extension CarServer_ClosuresState: SwiftProtobuf.Message, SwiftProtobuf._Message
 
 extension CarServer_ClosuresState.SunRoofState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = CarServer_ClosuresState.protoMessageName + ".SunRoofState"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "Unknown"),
-    2: .same(proto: "Calibrating"),
-    3: .same(proto: "Closed"),
-    4: .same(proto: "Open"),
-    5: .same(proto: "Moving"),
-    6: .same(proto: "Vent"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Unknown\0\u{1}Calibrating\0\u{1}Closed\0\u{1}Open\0\u{1}Moving\0\u{1}Vent\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -6639,18 +6968,7 @@ extension CarServer_ClosuresState.SunRoofState: SwiftProtobuf.Message, SwiftProt
 
 extension CarServer_ClosuresState.DisplayState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = CarServer_ClosuresState.protoMessageName + ".DisplayState"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "Off"),
-    2: .same(proto: "Dim"),
-    3: .same(proto: "Accessory"),
-    4: .same(proto: "On"),
-    5: .same(proto: "Driving"),
-    6: .same(proto: "Charging"),
-    7: .same(proto: "Lock"),
-    8: .same(proto: "Sentry"),
-    9: .same(proto: "Dog"),
-    10: .same(proto: "Entertainment"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Off\0\u{1}Dim\0\u{1}Accessory\0\u{1}On\0\u{1}Driving\0\u{1}Charging\0\u{1}Lock\0\u{1}Sentry\0\u{1}Dog\0\u{1}Entertainment\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -6853,14 +7171,7 @@ extension CarServer_ClosuresState.DisplayState: SwiftProtobuf.Message, SwiftProt
 
 extension CarServer_ClosuresState.SentryModeState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = CarServer_ClosuresState.protoMessageName + ".SentryModeState"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "Off"),
-    2: .same(proto: "Idle"),
-    3: .same(proto: "Armed"),
-    4: .same(proto: "Aware"),
-    5: .same(proto: "Panic"),
-    6: .same(proto: "Quiet"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Off\0\u{1}Idle\0\u{1}Armed\0\u{1}Aware\0\u{1}Panic\0\u{1}Quiet\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -6995,15 +7306,7 @@ extension CarServer_ClosuresState.SentryModeState: SwiftProtobuf.Message, SwiftP
 
 extension CarServer_ChargeScheduleState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ChargeScheduleState"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .standard(proto: "charge_schedules"),
-    2: .standard(proto: "charge_schedule_window"),
-    3: .standard(proto: "charge_buffer"),
-    4: .standard(proto: "max_num_charge_schedules"),
-    5: .standard(proto: "next_schedule"),
-    6: .standard(proto: "show_schedule_complete_state"),
-    2000: .same(proto: "timestamp"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}charge_schedules\0\u{3}charge_schedule_window\0\u{3}charge_buffer\0\u{3}max_num_charge_schedules\0\u{3}next_schedule\0\u{3}show_schedule_complete_state\0\u{2}J\u{1f}timestamp\0")
 
   fileprivate class _StorageClass {
     var _chargeSchedules: [CarServer_ChargeSchedule] = []
@@ -7014,15 +7317,11 @@ extension CarServer_ChargeScheduleState: SwiftProtobuf.Message, SwiftProtobuf._M
     var _optionalShowScheduleCompleteState: CarServer_ChargeScheduleState.OneOf_OptionalShowScheduleCompleteState?
     var _timestamp: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
 
-    #if swift(>=5.10)
       // This property is used as the initial default value for new instances of the type.
       // The type itself is protecting the reference to its storage via CoW semantics.
       // This will force a copy to be made of this reference when the first mutation occurs;
       // hence, it is safe to mark this as `nonisolated(unsafe)`.
       static nonisolated(unsafe) let defaultInstance = _StorageClass()
-    #else
-      static let defaultInstance = _StorageClass()
-    #endif
 
     private init() {}
 
@@ -7159,13 +7458,7 @@ extension CarServer_ChargeScheduleState: SwiftProtobuf.Message, SwiftProtobuf._M
 
 extension CarServer_PreconditioningScheduleState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".PreconditioningScheduleState"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .standard(proto: "precondition_schedules"),
-    2: .standard(proto: "preconditioning_schedule_window"),
-    3: .standard(proto: "max_num_precondition_schedules"),
-    4: .standard(proto: "next_schedule"),
-    2000: .same(proto: "timestamp"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}precondition_schedules\0\u{3}preconditioning_schedule_window\0\u{3}max_num_precondition_schedules\0\u{3}next_schedule\0\u{2}L\u{1f}timestamp\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -7245,13 +7538,7 @@ extension CarServer_PreconditioningScheduleState: SwiftProtobuf.Message, SwiftPr
 
 extension CarServer_SpeedLimitMode: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".SpeedLimitMode"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    103: .same(proto: "active"),
-    104: .standard(proto: "pin_code_set"),
-    106: .standard(proto: "max_limit_mph"),
-    107: .standard(proto: "min_limit_mph"),
-    108: .standard(proto: "current_limit_mph"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}g\u{1}active\0\u{3}pin_code_set\0\u{4}\u{2}max_limit_mph\0\u{3}min_limit_mph\0\u{3}current_limit_mph\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -7340,17 +7627,7 @@ extension CarServer_SpeedLimitMode: SwiftProtobuf.Message, SwiftProtobuf._Messag
 
 extension CarServer_ParentalControlsSettings: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ParentalControlsSettings"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .standard(proto: "speed_limit_enabled"),
-    2: .standard(proto: "max_limit_mph"),
-    3: .standard(proto: "min_limit_mph"),
-    4: .standard(proto: "current_limit_mph"),
-    5: .standard(proto: "chill_acceleration_enabled"),
-    6: .standard(proto: "require_safety_settings_enabled"),
-    7: .standard(proto: "curfew_enabled"),
-    8: .standard(proto: "curfew_start_time"),
-    9: .standard(proto: "curfew_end_time"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}speed_limit_enabled\0\u{3}max_limit_mph\0\u{3}min_limit_mph\0\u{3}current_limit_mph\0\u{3}chill_acceleration_enabled\0\u{3}require_safety_settings_enabled\0\u{3}curfew_enabled\0\u{3}curfew_start_time\0\u{3}curfew_end_time\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -7487,12 +7764,7 @@ extension CarServer_ParentalControlsSettings: SwiftProtobuf.Message, SwiftProtob
 
 extension CarServer_ParentalControlsState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ParentalControlsState"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "timestamp"),
-    2: .standard(proto: "parental_controls_active"),
-    3: .standard(proto: "parental_controls_pin_set"),
-    4: .standard(proto: "parental_controls_settings"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}timestamp\0\u{3}parental_controls_active\0\u{3}parental_controls_pin_set\0\u{3}parental_controls_settings\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -7555,16 +7827,7 @@ extension CarServer_ParentalControlsState: SwiftProtobuf.Message, SwiftProtobuf.
 
 extension CarServer_SoftwareUpdateState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".SoftwareUpdateState"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "status"),
-    102: .standard(proto: "scheduled_time_ms"),
-    103: .standard(proto: "warning_time_remaining_ms"),
-    104: .standard(proto: "expected_duration_sec"),
-    105: .standard(proto: "download_perc"),
-    106: .standard(proto: "install_perc"),
-    107: .same(proto: "version"),
-    108: .same(proto: "timestamp"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}status\0\u{4}e\u{1}scheduled_time_ms\0\u{3}warning_time_remaining_ms\0\u{3}expected_duration_sec\0\u{3}download_perc\0\u{3}install_perc\0\u{1}version\0\u{1}timestamp\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -7675,14 +7938,7 @@ extension CarServer_SoftwareUpdateState: SwiftProtobuf.Message, SwiftProtobuf._M
 
 extension CarServer_SoftwareUpdateState.SoftwareUpdateStatus: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = CarServer_SoftwareUpdateState.protoMessageName + ".SoftwareUpdateStatus"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "Unknown"),
-    2: .same(proto: "Installing"),
-    3: .same(proto: "Scheduled"),
-    4: .same(proto: "Available"),
-    5: .same(proto: "DownloadingWifiWait"),
-    6: .same(proto: "Downloading"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Unknown\0\u{1}Installing\0\u{1}Scheduled\0\u{1}Available\0\u{1}DownloadingWifiWait\0\u{1}Downloading\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -7817,22 +8073,7 @@ extension CarServer_SoftwareUpdateState.SoftwareUpdateStatus: SwiftProtobuf.Mess
 
 extension CarServer_DriveState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".DriveState"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .standard(proto: "shift_state"),
-    102: .same(proto: "speed"),
-    103: .same(proto: "power"),
-    4: .same(proto: "timestamp"),
-    105: .standard(proto: "odometer_in_hundredths_of_a_mile"),
-    106: .standard(proto: "speed_float"),
-    7: .standard(proto: "active_route_destination"),
-    8: .standard(proto: "active_route_minutes_to_arrival"),
-    9: .standard(proto: "active_route_miles_to_arrival"),
-    10: .standard(proto: "active_route_traffic_minutes_delay"),
-    11: .standard(proto: "active_route_energy_at_arrival"),
-    14: .standard(proto: "last_route_update"),
-    15: .standard(proto: "last_traffic_update"),
-    12: .standard(proto: "active_route_coordinates"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}shift_state\0\u{2}\u{3}timestamp\0\u{4}\u{3}active_route_destination\0\u{3}active_route_minutes_to_arrival\0\u{3}active_route_miles_to_arrival\0\u{3}active_route_traffic_minutes_delay\0\u{3}active_route_energy_at_arrival\0\u{3}active_route_coordinates\0\u{4}\u{2}last_route_update\0\u{3}last_traffic_update\0\u{2}W\u{1}speed\0\u{1}power\0\u{4}\u{2}odometer_in_hundredths_of_a_mile\0\u{3}speed_float\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -8001,83 +8242,7 @@ extension CarServer_DriveState: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
 
 extension CarServer_ChargeState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ChargeState"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .standard(proto: "charging_state"),
-    2: .standard(proto: "fast_charger_type"),
-    3: .standard(proto: "fast_charger_brand"),
-    104: .standard(proto: "charge_limit_soc"),
-    105: .standard(proto: "charge_limit_soc_std"),
-    106: .standard(proto: "charge_limit_soc_min"),
-    107: .standard(proto: "charge_limit_soc_max"),
-    109: .standard(proto: "max_range_charge_counter"),
-    110: .standard(proto: "fast_charger_present"),
-    111: .standard(proto: "battery_range"),
-    112: .standard(proto: "est_battery_range"),
-    113: .standard(proto: "ideal_battery_range"),
-    114: .standard(proto: "battery_level"),
-    115: .standard(proto: "usable_battery_level"),
-    116: .standard(proto: "charge_energy_added"),
-    117: .standard(proto: "charge_miles_added_rated"),
-    118: .standard(proto: "charge_miles_added_ideal"),
-    119: .standard(proto: "charger_voltage"),
-    120: .standard(proto: "charger_pilot_current"),
-    121: .standard(proto: "charger_actual_current"),
-    122: .standard(proto: "charger_power"),
-    123: .standard(proto: "minutes_to_full_charge"),
-    142: .standard(proto: "minutes_to_charge_limit"),
-    125: .standard(proto: "trip_charging"),
-    126: .standard(proto: "charge_rate_mph"),
-    127: .standard(proto: "charge_port_door_open"),
-    28: .standard(proto: "conn_charge_cable"),
-    129: .standard(proto: "scheduled_charging_start_time"),
-    130: .standard(proto: "scheduled_charging_pending"),
-    31: .standard(proto: "scheduled_departure_time"),
-    132: .standard(proto: "user_charge_enable_request"),
-    133: .standard(proto: "charge_enable_request"),
-    134: .standard(proto: "charger_phases"),
-    35: .standard(proto: "charge_port_latch"),
-    136: .standard(proto: "charge_port_cold_weather_mode"),
-    137: .standard(proto: "charge_current_request"),
-    138: .standard(proto: "charge_current_request_max"),
-    139: .standard(proto: "managed_charging_active"),
-    140: .standard(proto: "managed_charging_user_canceled"),
-    141: .standard(proto: "managed_charging_start_time"),
-    44: .same(proto: "timestamp"),
-    45: .standard(proto: "preconditioning_times"),
-    46: .standard(proto: "off_peak_charging_times"),
-    147: .standard(proto: "off_peak_hours_end_time"),
-    148: .standard(proto: "scheduled_charging_mode"),
-    149: .standard(proto: "charging_amps"),
-    150: .standard(proto: "scheduled_charging_start_time_minutes"),
-    151: .standard(proto: "scheduled_departure_time_minutes"),
-    152: .standard(proto: "preconditioning_enabled"),
-    153: .standard(proto: "scheduled_charging_start_time_app"),
-    154: .standard(proto: "supercharger_session_trip_planner"),
-    155: .standard(proto: "charge_port_color"),
-    156: .standard(proto: "charge_rate_mph_float"),
-    157: .standard(proto: "charge_limit_reason"),
-    158: .standard(proto: "managed_charging_state"),
-    159: .standard(proto: "charge_cable_unlatched"),
-    160: .standard(proto: "outlet_state"),
-    161: .standard(proto: "power_feed_state"),
-    162: .standard(proto: "outlet_soc_limit"),
-    163: .standard(proto: "power_feed_soc_limit"),
-    164: .standard(proto: "outlet_time_remaining"),
-    165: .standard(proto: "power_feed_time_remaining"),
-    166: .standard(proto: "powershare_feature_allowed"),
-    167: .standard(proto: "powershare_feature_enabled"),
-    168: .standard(proto: "powershare_request"),
-    169: .standard(proto: "powershare_type"),
-    170: .standard(proto: "powershare_status"),
-    171: .standard(proto: "powershare_stop_reason"),
-    172: .standard(proto: "powershare_instantaneous_load_kw"),
-    173: .standard(proto: "powershare_vehicle_energy_left_hr"),
-    174: .standard(proto: "powershare_soc_limit"),
-    175: .standard(proto: "one_time_soc_limit"),
-    176: .standard(proto: "home_location"),
-    177: .standard(proto: "work_location"),
-    178: .standard(proto: "outlet_max_timer_minutes"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}charging_state\0\u{3}fast_charger_type\0\u{3}fast_charger_brand\0\u{4}\u{19}conn_charge_cable\0\u{4}\u{3}scheduled_departure_time\0\u{4}\u{4}charge_port_latch\0\u{2}\u{9}timestamp\0\u{3}preconditioning_times\0\u{3}off_peak_charging_times\0\u{4}:charge_limit_soc\0\u{3}charge_limit_soc_std\0\u{3}charge_limit_soc_min\0\u{3}charge_limit_soc_max\0\u{4}\u{2}max_range_charge_counter\0\u{3}fast_charger_present\0\u{3}battery_range\0\u{3}est_battery_range\0\u{3}ideal_battery_range\0\u{3}battery_level\0\u{3}usable_battery_level\0\u{3}charge_energy_added\0\u{3}charge_miles_added_rated\0\u{3}charge_miles_added_ideal\0\u{3}charger_voltage\0\u{3}charger_pilot_current\0\u{3}charger_actual_current\0\u{3}charger_power\0\u{3}minutes_to_full_charge\0\u{4}\u{2}trip_charging\0\u{3}charge_rate_mph\0\u{3}charge_port_door_open\0\u{4}\u{2}scheduled_charging_start_time\0\u{3}scheduled_charging_pending\0\u{4}\u{2}user_charge_enable_request\0\u{3}charge_enable_request\0\u{3}charger_phases\0\u{4}\u{2}charge_port_cold_weather_mode\0\u{3}charge_current_request\0\u{3}charge_current_request_max\0\u{3}managed_charging_active\0\u{3}managed_charging_user_canceled\0\u{3}managed_charging_start_time\0\u{3}minutes_to_charge_limit\0\u{4}\u{5}off_peak_hours_end_time\0\u{3}scheduled_charging_mode\0\u{3}charging_amps\0\u{3}scheduled_charging_start_time_minutes\0\u{3}scheduled_departure_time_minutes\0\u{3}preconditioning_enabled\0\u{3}scheduled_charging_start_time_app\0\u{3}supercharger_session_trip_planner\0\u{3}charge_port_color\0\u{3}charge_rate_mph_float\0\u{3}charge_limit_reason\0\u{3}managed_charging_state\0\u{3}charge_cable_unlatched\0\u{3}outlet_state\0\u{3}power_feed_state\0\u{3}outlet_soc_limit\0\u{3}power_feed_soc_limit\0\u{3}outlet_time_remaining\0\u{3}power_feed_time_remaining\0\u{3}powershare_feature_allowed\0\u{3}powershare_feature_enabled\0\u{3}powershare_request\0\u{3}powershare_type\0\u{3}powershare_status\0\u{3}powershare_stop_reason\0\u{3}powershare_instantaneous_load_kw\0\u{3}powershare_vehicle_energy_left_hr\0\u{3}powershare_soc_limit\0\u{3}one_time_soc_limit\0\u{3}home_location\0\u{3}work_location\0\u{3}outlet_max_timer_minutes\0\u{c}\u{8}\u{1}\u{c}*\u{1}\u{c}+\u{1}")
 
   fileprivate class _StorageClass {
     var _chargingState: CarServer_ChargeState.ChargingState? = nil
@@ -8156,15 +8321,11 @@ extension CarServer_ChargeState: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
     var _optionalWorkLocation: CarServer_ChargeState.OneOf_OptionalWorkLocation?
     var _optionalOutletMaxTimerMinutes: CarServer_ChargeState.OneOf_OptionalOutletMaxTimerMinutes?
 
-    #if swift(>=5.10)
       // This property is used as the initial default value for new instances of the type.
       // The type itself is protecting the reference to its storage via CoW semantics.
       // This will force a copy to be made of this reference when the first mutation occurs;
       // hence, it is safe to mark this as `nonisolated(unsafe)`.
       static nonisolated(unsafe) let defaultInstance = _StorageClass()
-    #else
-      static let defaultInstance = _StorageClass()
-    #endif
 
     private init() {}
 
@@ -9133,96 +9294,40 @@ extension CarServer_ChargeState: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
 }
 
 extension CarServer_ChargeState.ScheduledChargingMode: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "ScheduledChargingModeOff"),
-    1: .same(proto: "ScheduledChargingModeStartAt"),
-    2: .same(proto: "ScheduledChargingModeDepartBy"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0ScheduledChargingModeOff\0\u{1}ScheduledChargingModeStartAt\0\u{1}ScheduledChargingModeDepartBy\0")
 }
 
 extension CarServer_ChargeState.ChargePortColor_E: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "ChargePortColorOff"),
-    1: .same(proto: "ChargePortColorRed"),
-    2: .same(proto: "ChargePortColorGreen"),
-    3: .same(proto: "ChargePortColorBlue"),
-    4: .same(proto: "ChargePortColorWhite"),
-    5: .same(proto: "ChargePortColorFlashingGreen"),
-    6: .same(proto: "ChargePortColorFlashingAmber"),
-    7: .same(proto: "ChargePortColorAmber"),
-    8: .same(proto: "ChargePortColorRave"),
-    9: .same(proto: "ChargePortColorDebug"),
-    10: .same(proto: "ChargePortColorFlashingBlue"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0ChargePortColorOff\0\u{1}ChargePortColorRed\0\u{1}ChargePortColorGreen\0\u{1}ChargePortColorBlue\0\u{1}ChargePortColorWhite\0\u{1}ChargePortColorFlashingGreen\0\u{1}ChargePortColorFlashingAmber\0\u{1}ChargePortColorAmber\0\u{1}ChargePortColorRave\0\u{1}ChargePortColorDebug\0\u{1}ChargePortColorFlashingBlue\0")
 }
 
 extension CarServer_ChargeState.ChargeLimitReason: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "ChargeLimitReasonUnknown"),
-    1: .same(proto: "ChargeLimitReasonNone"),
-    2: .same(proto: "ChargeLimitReasonEvse"),
-    3: .same(proto: "ChargeLimitReasonBattTempLow"),
-    4: .same(proto: "ChargeLimitReasonHighSoc"),
-    5: .same(proto: "ChargeLimitReasonCabin"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0ChargeLimitReasonUnknown\0\u{1}ChargeLimitReasonNone\0\u{1}ChargeLimitReasonEvse\0\u{1}ChargeLimitReasonBattTempLow\0\u{1}ChargeLimitReasonHighSoc\0\u{1}ChargeLimitReasonCabin\0")
 }
 
 extension CarServer_ChargeState.OutletState: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "OutletStateOff"),
-    1: .same(proto: "OutletStateCabinAndBed"),
-    2: .same(proto: "OutletStateCabin"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0OutletStateOff\0\u{1}OutletStateCabinAndBed\0\u{1}OutletStateCabin\0")
 }
 
 extension CarServer_ChargeState.PowerFeedState: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "PowerFeedStateOff"),
-    1: .same(proto: "PowerFeedStateCabinAndBed"),
-    2: .same(proto: "PowerFeedStateCabin"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0PowerFeedStateOff\0\u{1}PowerFeedStateCabinAndBed\0\u{1}PowerFeedStateCabin\0")
 }
 
 extension CarServer_ChargeState.PowershareStatus: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "PowershareStatusInactive"),
-    1: .same(proto: "PowershareStatusInit"),
-    2: .same(proto: "PowershareStatusActive"),
-    3: .same(proto: "PowershareStatusStopped"),
-    4: .same(proto: "PowershareStatusHandshaking"),
-    5: .same(proto: "PowershareStatusActiveReconnectingSoon"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0PowershareStatusInactive\0\u{1}PowershareStatusInit\0\u{1}PowershareStatusActive\0\u{1}PowershareStatusStopped\0\u{1}PowershareStatusHandshaking\0\u{1}PowershareStatusActiveReconnectingSoon\0")
 }
 
 extension CarServer_ChargeState.PowershareType: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "PowershareTypeNone"),
-    1: .same(proto: "PowershareTypeLoad"),
-    2: .same(proto: "PowershareTypeHome"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0PowershareTypeNone\0\u{1}PowershareTypeLoad\0\u{1}PowershareTypeHome\0")
 }
 
 extension CarServer_ChargeState.PowershareStopReason: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "PowershareStopReasonNone"),
-    1: .same(proto: "PowershareStopReasonSOCTooLow"),
-    2: .same(proto: "PowershareStopReasonRetry"),
-    3: .same(proto: "PowershareStopReasonFault"),
-    4: .same(proto: "PowershareStopReasonUser"),
-    5: .same(proto: "PowershareStopReasonReconnecting"),
-    6: .same(proto: "PowershareStopReasonAuthentication"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0PowershareStopReasonNone\0\u{1}PowershareStopReasonSOCTooLow\0\u{1}PowershareStopReasonRetry\0\u{1}PowershareStopReasonFault\0\u{1}PowershareStopReasonUser\0\u{1}PowershareStopReasonReconnecting\0\u{1}PowershareStopReasonAuthentication\0")
 }
 
 extension CarServer_ChargeState.CableType: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = CarServer_ChargeState.protoMessageName + ".CableType"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "SNA"),
-    2: .same(proto: "IEC"),
-    3: .same(proto: "SAE"),
-    4: .standard(proto: "GB_AC"),
-    5: .standard(proto: "GB_DC"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}SNA\0\u{1}IEC\0\u{1}SAE\0\u{3}GB_AC\0\u{3}GB_DC\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -9340,17 +9445,7 @@ extension CarServer_ChargeState.CableType: SwiftProtobuf.Message, SwiftProtobuf.
 
 extension CarServer_ChargeState.ChargerType: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = CarServer_ChargeState.protoMessageName + ".ChargerType"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "SNA"),
-    2: .same(proto: "Supercharger"),
-    3: .same(proto: "Chademo"),
-    4: .same(proto: "Gb"),
-    5: .same(proto: "ACSingleWireCAN"),
-    6: .same(proto: "Combo"),
-    7: .same(proto: "MCSingleWireCAN"),
-    8: .same(proto: "Other"),
-    9: .same(proto: "Tesla"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}SNA\0\u{1}Supercharger\0\u{1}Chademo\0\u{1}Gb\0\u{1}ACSingleWireCAN\0\u{1}Combo\0\u{1}MCSingleWireCAN\0\u{1}Other\0\u{1}Tesla\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -9536,16 +9631,7 @@ extension CarServer_ChargeState.ChargerType: SwiftProtobuf.Message, SwiftProtobu
 
 extension CarServer_ChargeState.ChargingState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = CarServer_ChargeState.protoMessageName + ".ChargingState"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "Unknown"),
-    2: .same(proto: "Disconnected"),
-    3: .same(proto: "NoPower"),
-    4: .same(proto: "Starting"),
-    5: .same(proto: "Charging"),
-    6: .same(proto: "Complete"),
-    7: .same(proto: "Stopped"),
-    8: .same(proto: "Calibrating"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Unknown\0\u{1}Disconnected\0\u{1}NoPower\0\u{1}Starting\0\u{1}Charging\0\u{1}Complete\0\u{1}Stopped\0\u{1}Calibrating\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -9714,10 +9800,7 @@ extension CarServer_ChargeState.ChargingState: SwiftProtobuf.Message, SwiftProto
 
 extension CarServer_ChargeState.ChargerBrand: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = CarServer_ChargeState.protoMessageName + ".ChargerBrand"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "Tesla"),
-    2: .same(proto: "SNA"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Tesla\0\u{1}SNA\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -9784,12 +9867,7 @@ extension CarServer_ChargeState.ChargerBrand: SwiftProtobuf.Message, SwiftProtob
 
 extension CarServer_ManagedChargingState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ManagedChargingState"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .standard(proto: "charge_on_solar_state"),
-    2: .standard(proto: "charge_on_solar_gateway_din"),
-    3: .standard(proto: "tesla_electric_asset_id"),
-    4: .standard(proto: "minutes_to_lower_limit"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}charge_on_solar_state\0\u{3}charge_on_solar_gateway_din\0\u{3}tesla_electric_asset_id\0\u{3}minutes_to_lower_limit\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -9859,16 +9937,7 @@ extension CarServer_ManagedChargingState: SwiftProtobuf.Message, SwiftProtobuf._
 
 extension CarServer_ChargeOnSolarState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ChargeOnSolarState"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .standard(proto: "not_allowed"),
-    2: .standard(proto: "no_charge_recommended"),
-    3: .standard(proto: "charging_on_excess_solar"),
-    4: .standard(proto: "charging_on_anything"),
-    6: .standard(proto: "user_disabled"),
-    7: .standard(proto: "waiting_for_server"),
-    8: .same(proto: "error"),
-    9: .standard(proto: "user_stopped"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}not_allowed\0\u{3}no_charge_recommended\0\u{3}charging_on_excess_solar\0\u{3}charging_on_anything\0\u{4}\u{2}user_disabled\0\u{3}waiting_for_server\0\u{1}error\0\u{3}user_stopped\0\u{c}\u{5}\u{1}")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -10056,9 +10125,7 @@ extension CarServer_ChargeOnSolarStateNotAllowed: SwiftProtobuf.Message, SwiftPr
 
 extension CarServer_ChargeOnSolarStateNoChargeRecommended: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ChargeOnSolarStateNoChargeRecommended"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "reason"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}reason\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -10200,11 +10267,405 @@ extension CarServer_ChargeOnSolarStateUserStopped: SwiftProtobuf.Message, SwiftP
   }
 }
 
+extension CarServer_LocationState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".LocationState"
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{4}\u{8}native_type\0\u{2}\u{3}timestamp\0\u{2}Z\u{1}latitude\0\u{1}longitude\0\u{1}heading\0\u{3}gps_as_of\0\u{3}native_location_supported\0\u{3}native_latitude\0\u{3}native_longitude\0\u{4}\u{2}corrected_latitude\0\u{3}corrected_longitude\0\u{4}\u{2}homelink_nearby\0\u{3}location_name\0\u{3}geo_latitude\0\u{3}geo_longitude\0\u{3}geo_heading\0\u{3}geo_elevation\0\u{3}geo_accuracy\0\u{3}estimated_gps_valid\0\u{3}estimated_to_raw_distance\0\u{c}\u{c}\u{1}")
+
+  fileprivate class _StorageClass {
+    var _optionalLatitude: CarServer_LocationState.OneOf_OptionalLatitude?
+    var _optionalLongitude: CarServer_LocationState.OneOf_OptionalLongitude?
+    var _optionalHeading: CarServer_LocationState.OneOf_OptionalHeading?
+    var _optionalGpsAsOf: CarServer_LocationState.OneOf_OptionalGpsAsOf?
+    var _optionalNativeLocationSupported: CarServer_LocationState.OneOf_OptionalNativeLocationSupported?
+    var _optionalNativeLatitude: CarServer_LocationState.OneOf_OptionalNativeLatitude?
+    var _optionalNativeLongitude: CarServer_LocationState.OneOf_OptionalNativeLongitude?
+    var _nativeType: CarServer_LocationState.GPSCoordinateType? = nil
+    var _optionalCorrectedLatitude: CarServer_LocationState.OneOf_OptionalCorrectedLatitude?
+    var _optionalCorrectedLongitude: CarServer_LocationState.OneOf_OptionalCorrectedLongitude?
+    var _timestamp: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
+    var _optionalHomelinkNearby: CarServer_LocationState.OneOf_OptionalHomelinkNearby?
+    var _optionalLocationName: CarServer_LocationState.OneOf_OptionalLocationName?
+    var _optionalGeoLatitude: CarServer_LocationState.OneOf_OptionalGeoLatitude?
+    var _optionalGeoLongitude: CarServer_LocationState.OneOf_OptionalGeoLongitude?
+    var _optionalGeoHeading: CarServer_LocationState.OneOf_OptionalGeoHeading?
+    var _optionalGeoElevation: CarServer_LocationState.OneOf_OptionalGeoElevation?
+    var _optionalGeoAccuracy: CarServer_LocationState.OneOf_OptionalGeoAccuracy?
+    var _optionalEstimatedGpsValid: CarServer_LocationState.OneOf_OptionalEstimatedGpsValid?
+    var _optionalEstimatedToRawDistance: CarServer_LocationState.OneOf_OptionalEstimatedToRawDistance?
+
+      // This property is used as the initial default value for new instances of the type.
+      // The type itself is protecting the reference to its storage via CoW semantics.
+      // This will force a copy to be made of this reference when the first mutation occurs;
+      // hence, it is safe to mark this as `nonisolated(unsafe)`.
+      static nonisolated(unsafe) let defaultInstance = _StorageClass()
+
+    private init() {}
+
+    init(copying source: _StorageClass) {
+      _optionalLatitude = source._optionalLatitude
+      _optionalLongitude = source._optionalLongitude
+      _optionalHeading = source._optionalHeading
+      _optionalGpsAsOf = source._optionalGpsAsOf
+      _optionalNativeLocationSupported = source._optionalNativeLocationSupported
+      _optionalNativeLatitude = source._optionalNativeLatitude
+      _optionalNativeLongitude = source._optionalNativeLongitude
+      _nativeType = source._nativeType
+      _optionalCorrectedLatitude = source._optionalCorrectedLatitude
+      _optionalCorrectedLongitude = source._optionalCorrectedLongitude
+      _timestamp = source._timestamp
+      _optionalHomelinkNearby = source._optionalHomelinkNearby
+      _optionalLocationName = source._optionalLocationName
+      _optionalGeoLatitude = source._optionalGeoLatitude
+      _optionalGeoLongitude = source._optionalGeoLongitude
+      _optionalGeoHeading = source._optionalGeoHeading
+      _optionalGeoElevation = source._optionalGeoElevation
+      _optionalGeoAccuracy = source._optionalGeoAccuracy
+      _optionalEstimatedGpsValid = source._optionalEstimatedGpsValid
+      _optionalEstimatedToRawDistance = source._optionalEstimatedToRawDistance
+    }
+  }
+
+  fileprivate mutating func _uniqueStorage() -> _StorageClass {
+    if !isKnownUniquelyReferenced(&_storage) {
+      _storage = _StorageClass(copying: _storage)
+    }
+    return _storage
+  }
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    _ = _uniqueStorage()
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      while let fieldNumber = try decoder.nextFieldNumber() {
+        // The use of inline closures is to circumvent an issue where the compiler
+        // allocates stack space for every case branch when no optimizations are
+        // enabled. https://github.com/apple/swift-protobuf/issues/1034
+        switch fieldNumber {
+        case 8: try { try decoder.decodeSingularMessageField(value: &_storage._nativeType) }()
+        case 11: try { try decoder.decodeSingularMessageField(value: &_storage._timestamp) }()
+        case 101: try {
+          var v: Float?
+          try decoder.decodeSingularFloatField(value: &v)
+          if let v = v {
+            if _storage._optionalLatitude != nil {try decoder.handleConflictingOneOf()}
+            _storage._optionalLatitude = .latitude(v)
+          }
+        }()
+        case 102: try {
+          var v: Float?
+          try decoder.decodeSingularFloatField(value: &v)
+          if let v = v {
+            if _storage._optionalLongitude != nil {try decoder.handleConflictingOneOf()}
+            _storage._optionalLongitude = .longitude(v)
+          }
+        }()
+        case 103: try {
+          var v: UInt32?
+          try decoder.decodeSingularUInt32Field(value: &v)
+          if let v = v {
+            if _storage._optionalHeading != nil {try decoder.handleConflictingOneOf()}
+            _storage._optionalHeading = .heading(v)
+          }
+        }()
+        case 104: try {
+          var v: UInt64?
+          try decoder.decodeSingularUInt64Field(value: &v)
+          if let v = v {
+            if _storage._optionalGpsAsOf != nil {try decoder.handleConflictingOneOf()}
+            _storage._optionalGpsAsOf = .gpsAsOf(v)
+          }
+        }()
+        case 105: try {
+          var v: Bool?
+          try decoder.decodeSingularBoolField(value: &v)
+          if let v = v {
+            if _storage._optionalNativeLocationSupported != nil {try decoder.handleConflictingOneOf()}
+            _storage._optionalNativeLocationSupported = .nativeLocationSupported(v)
+          }
+        }()
+        case 106: try {
+          var v: Float?
+          try decoder.decodeSingularFloatField(value: &v)
+          if let v = v {
+            if _storage._optionalNativeLatitude != nil {try decoder.handleConflictingOneOf()}
+            _storage._optionalNativeLatitude = .nativeLatitude(v)
+          }
+        }()
+        case 107: try {
+          var v: Float?
+          try decoder.decodeSingularFloatField(value: &v)
+          if let v = v {
+            if _storage._optionalNativeLongitude != nil {try decoder.handleConflictingOneOf()}
+            _storage._optionalNativeLongitude = .nativeLongitude(v)
+          }
+        }()
+        case 109: try {
+          var v: Float?
+          try decoder.decodeSingularFloatField(value: &v)
+          if let v = v {
+            if _storage._optionalCorrectedLatitude != nil {try decoder.handleConflictingOneOf()}
+            _storage._optionalCorrectedLatitude = .correctedLatitude(v)
+          }
+        }()
+        case 110: try {
+          var v: Float?
+          try decoder.decodeSingularFloatField(value: &v)
+          if let v = v {
+            if _storage._optionalCorrectedLongitude != nil {try decoder.handleConflictingOneOf()}
+            _storage._optionalCorrectedLongitude = .correctedLongitude(v)
+          }
+        }()
+        case 112: try {
+          var v: Bool?
+          try decoder.decodeSingularBoolField(value: &v)
+          if let v = v {
+            if _storage._optionalHomelinkNearby != nil {try decoder.handleConflictingOneOf()}
+            _storage._optionalHomelinkNearby = .homelinkNearby(v)
+          }
+        }()
+        case 113: try {
+          var v: String?
+          try decoder.decodeSingularStringField(value: &v)
+          if let v = v {
+            if _storage._optionalLocationName != nil {try decoder.handleConflictingOneOf()}
+            _storage._optionalLocationName = .locationName(v)
+          }
+        }()
+        case 114: try {
+          var v: Float?
+          try decoder.decodeSingularFloatField(value: &v)
+          if let v = v {
+            if _storage._optionalGeoLatitude != nil {try decoder.handleConflictingOneOf()}
+            _storage._optionalGeoLatitude = .geoLatitude(v)
+          }
+        }()
+        case 115: try {
+          var v: Float?
+          try decoder.decodeSingularFloatField(value: &v)
+          if let v = v {
+            if _storage._optionalGeoLongitude != nil {try decoder.handleConflictingOneOf()}
+            _storage._optionalGeoLongitude = .geoLongitude(v)
+          }
+        }()
+        case 116: try {
+          var v: Float?
+          try decoder.decodeSingularFloatField(value: &v)
+          if let v = v {
+            if _storage._optionalGeoHeading != nil {try decoder.handleConflictingOneOf()}
+            _storage._optionalGeoHeading = .geoHeading(v)
+          }
+        }()
+        case 117: try {
+          var v: Float?
+          try decoder.decodeSingularFloatField(value: &v)
+          if let v = v {
+            if _storage._optionalGeoElevation != nil {try decoder.handleConflictingOneOf()}
+            _storage._optionalGeoElevation = .geoElevation(v)
+          }
+        }()
+        case 118: try {
+          var v: Float?
+          try decoder.decodeSingularFloatField(value: &v)
+          if let v = v {
+            if _storage._optionalGeoAccuracy != nil {try decoder.handleConflictingOneOf()}
+            _storage._optionalGeoAccuracy = .geoAccuracy(v)
+          }
+        }()
+        case 119: try {
+          var v: Bool?
+          try decoder.decodeSingularBoolField(value: &v)
+          if let v = v {
+            if _storage._optionalEstimatedGpsValid != nil {try decoder.handleConflictingOneOf()}
+            _storage._optionalEstimatedGpsValid = .estimatedGpsValid(v)
+          }
+        }()
+        case 120: try {
+          var v: Float?
+          try decoder.decodeSingularFloatField(value: &v)
+          if let v = v {
+            if _storage._optionalEstimatedToRawDistance != nil {try decoder.handleConflictingOneOf()}
+            _storage._optionalEstimatedToRawDistance = .estimatedToRawDistance(v)
+          }
+        }()
+        default: break
+        }
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every if/case branch local when no optimizations
+      // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+      // https://github.com/apple/swift-protobuf/issues/1182
+      try { if let v = _storage._nativeType {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 8)
+      } }()
+      try { if let v = _storage._timestamp {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 11)
+      } }()
+      try { if case .latitude(let v)? = _storage._optionalLatitude {
+        try visitor.visitSingularFloatField(value: v, fieldNumber: 101)
+      } }()
+      try { if case .longitude(let v)? = _storage._optionalLongitude {
+        try visitor.visitSingularFloatField(value: v, fieldNumber: 102)
+      } }()
+      try { if case .heading(let v)? = _storage._optionalHeading {
+        try visitor.visitSingularUInt32Field(value: v, fieldNumber: 103)
+      } }()
+      try { if case .gpsAsOf(let v)? = _storage._optionalGpsAsOf {
+        try visitor.visitSingularUInt64Field(value: v, fieldNumber: 104)
+      } }()
+      try { if case .nativeLocationSupported(let v)? = _storage._optionalNativeLocationSupported {
+        try visitor.visitSingularBoolField(value: v, fieldNumber: 105)
+      } }()
+      try { if case .nativeLatitude(let v)? = _storage._optionalNativeLatitude {
+        try visitor.visitSingularFloatField(value: v, fieldNumber: 106)
+      } }()
+      try { if case .nativeLongitude(let v)? = _storage._optionalNativeLongitude {
+        try visitor.visitSingularFloatField(value: v, fieldNumber: 107)
+      } }()
+      try { if case .correctedLatitude(let v)? = _storage._optionalCorrectedLatitude {
+        try visitor.visitSingularFloatField(value: v, fieldNumber: 109)
+      } }()
+      try { if case .correctedLongitude(let v)? = _storage._optionalCorrectedLongitude {
+        try visitor.visitSingularFloatField(value: v, fieldNumber: 110)
+      } }()
+      try { if case .homelinkNearby(let v)? = _storage._optionalHomelinkNearby {
+        try visitor.visitSingularBoolField(value: v, fieldNumber: 112)
+      } }()
+      try { if case .locationName(let v)? = _storage._optionalLocationName {
+        try visitor.visitSingularStringField(value: v, fieldNumber: 113)
+      } }()
+      try { if case .geoLatitude(let v)? = _storage._optionalGeoLatitude {
+        try visitor.visitSingularFloatField(value: v, fieldNumber: 114)
+      } }()
+      try { if case .geoLongitude(let v)? = _storage._optionalGeoLongitude {
+        try visitor.visitSingularFloatField(value: v, fieldNumber: 115)
+      } }()
+      try { if case .geoHeading(let v)? = _storage._optionalGeoHeading {
+        try visitor.visitSingularFloatField(value: v, fieldNumber: 116)
+      } }()
+      try { if case .geoElevation(let v)? = _storage._optionalGeoElevation {
+        try visitor.visitSingularFloatField(value: v, fieldNumber: 117)
+      } }()
+      try { if case .geoAccuracy(let v)? = _storage._optionalGeoAccuracy {
+        try visitor.visitSingularFloatField(value: v, fieldNumber: 118)
+      } }()
+      try { if case .estimatedGpsValid(let v)? = _storage._optionalEstimatedGpsValid {
+        try visitor.visitSingularBoolField(value: v, fieldNumber: 119)
+      } }()
+      try { if case .estimatedToRawDistance(let v)? = _storage._optionalEstimatedToRawDistance {
+        try visitor.visitSingularFloatField(value: v, fieldNumber: 120)
+      } }()
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: CarServer_LocationState, rhs: CarServer_LocationState) -> Bool {
+    if lhs._storage !== rhs._storage {
+      let storagesAreEqual: Bool = withExtendedLifetime((lhs._storage, rhs._storage)) { (_args: (_StorageClass, _StorageClass)) in
+        let _storage = _args.0
+        let rhs_storage = _args.1
+        if _storage._optionalLatitude != rhs_storage._optionalLatitude {return false}
+        if _storage._optionalLongitude != rhs_storage._optionalLongitude {return false}
+        if _storage._optionalHeading != rhs_storage._optionalHeading {return false}
+        if _storage._optionalGpsAsOf != rhs_storage._optionalGpsAsOf {return false}
+        if _storage._optionalNativeLocationSupported != rhs_storage._optionalNativeLocationSupported {return false}
+        if _storage._optionalNativeLatitude != rhs_storage._optionalNativeLatitude {return false}
+        if _storage._optionalNativeLongitude != rhs_storage._optionalNativeLongitude {return false}
+        if _storage._nativeType != rhs_storage._nativeType {return false}
+        if _storage._optionalCorrectedLatitude != rhs_storage._optionalCorrectedLatitude {return false}
+        if _storage._optionalCorrectedLongitude != rhs_storage._optionalCorrectedLongitude {return false}
+        if _storage._timestamp != rhs_storage._timestamp {return false}
+        if _storage._optionalHomelinkNearby != rhs_storage._optionalHomelinkNearby {return false}
+        if _storage._optionalLocationName != rhs_storage._optionalLocationName {return false}
+        if _storage._optionalGeoLatitude != rhs_storage._optionalGeoLatitude {return false}
+        if _storage._optionalGeoLongitude != rhs_storage._optionalGeoLongitude {return false}
+        if _storage._optionalGeoHeading != rhs_storage._optionalGeoHeading {return false}
+        if _storage._optionalGeoElevation != rhs_storage._optionalGeoElevation {return false}
+        if _storage._optionalGeoAccuracy != rhs_storage._optionalGeoAccuracy {return false}
+        if _storage._optionalEstimatedGpsValid != rhs_storage._optionalEstimatedGpsValid {return false}
+        if _storage._optionalEstimatedToRawDistance != rhs_storage._optionalEstimatedToRawDistance {return false}
+        return true
+      }
+      if !storagesAreEqual {return false}
+    }
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension CarServer_LocationState.GPSCoordinateType: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = CarServer_LocationState.protoMessageName + ".GPSCoordinateType"
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}GCJ\0\u{1}WGS\0")
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try {
+        var v: CarServer_Void?
+        var hadOneofValue = false
+        if let current = self.type {
+          hadOneofValue = true
+          if case .gcj(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.type = .gcj(v)
+        }
+      }()
+      case 2: try {
+        var v: CarServer_Void?
+        var hadOneofValue = false
+        if let current = self.type {
+          hadOneofValue = true
+          if case .wgs(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.type = .wgs(v)
+        }
+      }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    switch self.type {
+    case .gcj?: try {
+      guard case .gcj(let v)? = self.type else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    }()
+    case .wgs?: try {
+      guard case .wgs(let v)? = self.type else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
+    }()
+    case nil: break
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: CarServer_LocationState.GPSCoordinateType, rhs: CarServer_LocationState.GPSCoordinateType) -> Bool {
+    if lhs.type != rhs.type {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
 extension CarServer_VehicleState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".VehicleState"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    74: .same(proto: "guestMode"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}J\u{1}guestMode\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -10238,9 +10699,7 @@ extension CarServer_VehicleState: SwiftProtobuf.Message, SwiftProtobuf._MessageI
 
 extension CarServer_VehicleState.GuestMode: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = CarServer_VehicleState.protoMessageName + ".GuestMode"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "GuestModeActive"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}GuestModeActive\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -10270,54 +10729,7 @@ extension CarServer_VehicleState.GuestMode: SwiftProtobuf.Message, SwiftProtobuf
 
 extension CarServer_ClimateState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ClimateState"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    101: .standard(proto: "inside_temp_celsius"),
-    102: .standard(proto: "outside_temp_celsius"),
-    103: .standard(proto: "driver_temp_setting"),
-    104: .standard(proto: "passenger_temp_setting"),
-    105: .standard(proto: "left_temp_direction"),
-    106: .standard(proto: "right_temp_direction"),
-    107: .standard(proto: "is_front_defroster_on"),
-    108: .standard(proto: "is_rear_defroster_on"),
-    109: .standard(proto: "fan_status"),
-    110: .standard(proto: "is_climate_on"),
-    111: .standard(proto: "min_avail_temp_celsius"),
-    112: .standard(proto: "max_avail_temp_celsius"),
-    113: .standard(proto: "seat_heater_left"),
-    114: .standard(proto: "seat_heater_right"),
-    115: .standard(proto: "seat_heater_rear_left"),
-    116: .standard(proto: "seat_heater_rear_right"),
-    117: .standard(proto: "seat_heater_rear_center"),
-    118: .standard(proto: "seat_heater_rear_right_back"),
-    119: .standard(proto: "seat_heater_rear_left_back"),
-    120: .standard(proto: "seat_heater_third_row_right"),
-    121: .standard(proto: "seat_heater_third_row_left"),
-    122: .standard(proto: "battery_heater"),
-    123: .standard(proto: "battery_heater_no_power"),
-    125: .standard(proto: "steering_wheel_heater"),
-    126: .standard(proto: "wiper_blade_heater"),
-    127: .standard(proto: "side_mirror_heaters"),
-    128: .standard(proto: "is_preconditioning"),
-    129: .standard(proto: "remote_heater_control_enabled"),
-    30: .standard(proto: "climate_keeper_mode"),
-    33: .same(proto: "timestamp"),
-    134: .standard(proto: "bioweapon_mode_on"),
-    35: .standard(proto: "defrost_mode"),
-    136: .standard(proto: "is_auto_conditioning_on"),
-    137: .standard(proto: "auto_seat_climate_left"),
-    138: .standard(proto: "auto_seat_climate_right"),
-    139: .standard(proto: "seat_fan_front_left"),
-    140: .standard(proto: "seat_fan_front_right"),
-    141: .standard(proto: "allow_cabin_overheat_protection"),
-    142: .standard(proto: "supports_fan_only_cabin_overheat_protection"),
-    143: .standard(proto: "cabin_overheat_protection"),
-    144: .standard(proto: "cabin_overheat_protection_actively_cooling"),
-    146: .standard(proto: "cop_activation_temperature"),
-    147: .standard(proto: "auto_steering_wheel_heat"),
-    148: .standard(proto: "steering_wheel_heat_level"),
-    150: .standard(proto: "hvac_auto_request"),
-    151: .standard(proto: "cop_not_running_reason"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{4}\u{1e}climate_keeper_mode\0\u{2}\u{3}timestamp\0\u{4}\u{2}defrost_mode\0\u{4}B\u{1}inside_temp_celsius\0\u{3}outside_temp_celsius\0\u{3}driver_temp_setting\0\u{3}passenger_temp_setting\0\u{3}left_temp_direction\0\u{3}right_temp_direction\0\u{3}is_front_defroster_on\0\u{3}is_rear_defroster_on\0\u{3}fan_status\0\u{3}is_climate_on\0\u{3}min_avail_temp_celsius\0\u{3}max_avail_temp_celsius\0\u{3}seat_heater_left\0\u{3}seat_heater_right\0\u{3}seat_heater_rear_left\0\u{3}seat_heater_rear_right\0\u{3}seat_heater_rear_center\0\u{3}seat_heater_rear_right_back\0\u{3}seat_heater_rear_left_back\0\u{3}seat_heater_third_row_right\0\u{3}seat_heater_third_row_left\0\u{3}battery_heater\0\u{3}battery_heater_no_power\0\u{4}\u{2}steering_wheel_heater\0\u{3}wiper_blade_heater\0\u{3}side_mirror_heaters\0\u{3}is_preconditioning\0\u{3}remote_heater_control_enabled\0\u{4}\u{5}bioweapon_mode_on\0\u{4}\u{2}is_auto_conditioning_on\0\u{3}auto_seat_climate_left\0\u{3}auto_seat_climate_right\0\u{3}seat_fan_front_left\0\u{3}seat_fan_front_right\0\u{3}allow_cabin_overheat_protection\0\u{3}supports_fan_only_cabin_overheat_protection\0\u{3}cabin_overheat_protection\0\u{3}cabin_overheat_protection_actively_cooling\0\u{4}\u{2}cop_activation_temperature\0\u{3}auto_steering_wheel_heat\0\u{3}steering_wheel_heat_level\0\u{4}\u{2}hvac_auto_request\0\u{3}cop_not_running_reason\0\u{c}Q\u{2}\u{1}")
 
   fileprivate class _StorageClass {
     var _optionalInsideTempCelsius: CarServer_ClimateState.OneOf_OptionalInsideTempCelsius?
@@ -10367,15 +10779,11 @@ extension CarServer_ClimateState: SwiftProtobuf.Message, SwiftProtobuf._MessageI
     var _optionalHvacAutoRequest: CarServer_ClimateState.OneOf_OptionalHvacAutoRequest?
     var _optionalCopNotRunningReason: CarServer_ClimateState.OneOf_OptionalCopNotRunningReason?
 
-    #if swift(>=5.10)
       // This property is used as the initial default value for new instances of the type.
       // The type itself is protecting the reference to its storage via CoW semantics.
       // This will force a copy to be made of this reference when the first mutation occurs;
       // hence, it is safe to mark this as `nonisolated(unsafe)`.
       static nonisolated(unsafe) let defaultInstance = _StorageClass()
-    #else
-      static let defaultInstance = _StorageClass()
-    #endif
 
     private init() {}
 
@@ -11006,68 +11414,32 @@ extension CarServer_ClimateState: SwiftProtobuf.Message, SwiftProtobuf._MessageI
 }
 
 extension CarServer_ClimateState.HvacAutoRequest: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "HvacAutoRequestOn"),
-    1: .same(proto: "HvacAutoRequestOverride"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0HvacAutoRequestOn\0\u{1}HvacAutoRequestOverride\0")
 }
 
 extension CarServer_ClimateState.CabinOverheatProtection_E: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "CabinOverheatProtectionOff"),
-    1: .same(proto: "CabinOverheatProtectionOn"),
-    2: .same(proto: "CabinOverheatProtectionFanOnly"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0CabinOverheatProtectionOff\0\u{1}CabinOverheatProtectionOn\0\u{1}CabinOverheatProtectionFanOnly\0")
 }
 
 extension CarServer_ClimateState.SeatHeaterLevel_E: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "SeatHeaterLevelOff"),
-    1: .same(proto: "SeatHeaterLevelLow"),
-    2: .same(proto: "SeatHeaterLevelMed"),
-    3: .same(proto: "SeatHeaterLevelHigh"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0SeatHeaterLevelOff\0\u{1}SeatHeaterLevelLow\0\u{1}SeatHeaterLevelMed\0\u{1}SeatHeaterLevelHigh\0")
 }
 
 extension CarServer_ClimateState.SeatCoolingLevel_E: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "SeatCoolingLevelOff"),
-    1: .same(proto: "SeatCoolingLevelLow"),
-    2: .same(proto: "SeatCoolingLevelMed"),
-    3: .same(proto: "SeatCoolingLevelHigh"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0SeatCoolingLevelOff\0\u{1}SeatCoolingLevelLow\0\u{1}SeatCoolingLevelMed\0\u{1}SeatCoolingLevelHigh\0")
 }
 
 extension CarServer_ClimateState.CopActivationTemp: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "CopActivationTempUnspecified"),
-    1: .same(proto: "CopActivationTempLow"),
-    2: .same(proto: "CopActivationTempMedium"),
-    3: .same(proto: "CopActivationTempHigh"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0CopActivationTempUnspecified\0\u{1}CopActivationTempLow\0\u{1}CopActivationTempMedium\0\u{1}CopActivationTempHigh\0")
 }
 
 extension CarServer_ClimateState.COPNotRunningReason: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "COPNotRunningReasonNoReason"),
-    1: .same(proto: "COPNotRunningReasonUserInteraction"),
-    2: .same(proto: "COPNotRunningReasonEnergyConsumptionReached"),
-    3: .same(proto: "COPNotRunningReasonTimeout"),
-    4: .same(proto: "COPNotRunningReasonLowSolarLoad"),
-    5: .same(proto: "COPNotRunningReasonFault"),
-    6: .same(proto: "COPNotRunningReasonCabinBelowThreshold"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0COPNotRunningReasonNoReason\0\u{1}COPNotRunningReasonUserInteraction\0\u{1}COPNotRunningReasonEnergyConsumptionReached\0\u{1}COPNotRunningReasonTimeout\0\u{1}COPNotRunningReasonLowSolarLoad\0\u{1}COPNotRunningReasonFault\0\u{1}COPNotRunningReasonCabinBelowThreshold\0")
 }
 
 extension CarServer_ClimateState.ClimateKeeperMode: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = CarServer_ClimateState.protoMessageName + ".ClimateKeeperMode"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "Unknown"),
-    2: .same(proto: "Off"),
-    3: .same(proto: "On"),
-    4: .same(proto: "Dog"),
-    5: .same(proto: "Party"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Unknown\0\u{1}Off\0\u{1}On\0\u{1}Dog\0\u{1}Party\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -11185,11 +11557,7 @@ extension CarServer_ClimateState.ClimateKeeperMode: SwiftProtobuf.Message, Swift
 
 extension CarServer_ClimateState.DefrostMode: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = CarServer_ClimateState.protoMessageName + ".DefrostMode"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "Off"),
-    2: .same(proto: "Normal"),
-    3: .same(proto: "Max"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Off\0\u{1}Normal\0\u{1}Max\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -11273,27 +11641,7 @@ extension CarServer_ClimateState.DefrostMode: SwiftProtobuf.Message, SwiftProtob
 
 extension CarServer_TirePressureState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".TirePressureState"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "timestamp"),
-    2: .standard(proto: "tpms_pressure_fl"),
-    3: .standard(proto: "tpms_pressure_fr"),
-    4: .standard(proto: "tpms_pressure_rl"),
-    5: .standard(proto: "tpms_pressure_rr"),
-    6: .standard(proto: "tpms_last_seen_pressure_time_fl"),
-    7: .standard(proto: "tpms_last_seen_pressure_time_fr"),
-    8: .standard(proto: "tpms_last_seen_pressure_time_rl"),
-    9: .standard(proto: "tpms_last_seen_pressure_time_rr"),
-    10: .standard(proto: "tpms_hard_warning_fl"),
-    11: .standard(proto: "tpms_hard_warning_fr"),
-    12: .standard(proto: "tpms_hard_warning_rl"),
-    13: .standard(proto: "tpms_hard_warning_rr"),
-    14: .standard(proto: "tpms_soft_warning_fl"),
-    15: .standard(proto: "tpms_soft_warning_fr"),
-    16: .standard(proto: "tpms_soft_warning_rl"),
-    17: .standard(proto: "tpms_soft_warning_rr"),
-    18: .standard(proto: "tpms_rcp_front_value"),
-    19: .standard(proto: "tpms_rcp_rear_value"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}timestamp\0\u{3}tpms_pressure_fl\0\u{3}tpms_pressure_fr\0\u{3}tpms_pressure_rl\0\u{3}tpms_pressure_rr\0\u{3}tpms_last_seen_pressure_time_fl\0\u{3}tpms_last_seen_pressure_time_fr\0\u{3}tpms_last_seen_pressure_time_rl\0\u{3}tpms_last_seen_pressure_time_rr\0\u{3}tpms_hard_warning_fl\0\u{3}tpms_hard_warning_fr\0\u{3}tpms_hard_warning_rl\0\u{3}tpms_hard_warning_rr\0\u{3}tpms_soft_warning_fl\0\u{3}tpms_soft_warning_fr\0\u{3}tpms_soft_warning_rl\0\u{3}tpms_soft_warning_rr\0\u{3}tpms_rcp_front_value\0\u{3}tpms_rcp_rear_value\0")
 
   fileprivate class _StorageClass {
     var _timestamp: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
@@ -11316,15 +11664,11 @@ extension CarServer_TirePressureState: SwiftProtobuf.Message, SwiftProtobuf._Mes
     var _optionalTpmsRcpFrontValue: CarServer_TirePressureState.OneOf_OptionalTpmsRcpFrontValue?
     var _optionalTpmsRcpRearValue: CarServer_TirePressureState.OneOf_OptionalTpmsRcpRearValue?
 
-    #if swift(>=5.10)
       // This property is used as the initial default value for new instances of the type.
       // The type itself is protecting the reference to its storage via CoW semantics.
       // This will force a copy to be made of this reference when the first mutation occurs;
       // hence, it is safe to mark this as `nonisolated(unsafe)`.
       static nonisolated(unsafe) let defaultInstance = _StorageClass()
-    #else
-      static let defaultInstance = _StorageClass()
-    #endif
 
     private init() {}
 
@@ -11591,17 +11935,7 @@ extension CarServer_TirePressureState: SwiftProtobuf.Message, SwiftProtobuf._Mes
 
 extension CarServer_MediaState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".MediaState"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "timestamp"),
-    2: .standard(proto: "remote_control_enabled"),
-    3: .standard(proto: "now_playing_artist"),
-    4: .standard(proto: "now_playing_title"),
-    5: .standard(proto: "audio_volume"),
-    6: .standard(proto: "audio_volume_increment"),
-    7: .standard(proto: "audio_volume_max"),
-    8: .standard(proto: "now_playing_source"),
-    9: .standard(proto: "media_playback_status"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}timestamp\0\u{3}remote_control_enabled\0\u{3}now_playing_artist\0\u{3}now_playing_title\0\u{3}audio_volume\0\u{3}audio_volume_increment\0\u{3}audio_volume_max\0\u{3}now_playing_source\0\u{3}media_playback_status\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -11731,15 +12065,7 @@ extension CarServer_MediaState: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
 
 extension CarServer_MediaDetailState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".MediaDetailState"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "timestamp"),
-    2: .standard(proto: "now_playing_duration"),
-    3: .standard(proto: "now_playing_elapsed"),
-    4: .standard(proto: "now_playing_source_string"),
-    5: .standard(proto: "now_playing_album"),
-    6: .standard(proto: "now_playing_station"),
-    7: .standard(proto: "a2dp_source_name"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}timestamp\0\u{3}now_playing_duration\0\u{3}now_playing_elapsed\0\u{3}now_playing_source_string\0\u{3}now_playing_album\0\u{3}now_playing_station\0\u{3}a2dp_source_name\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -11845,14 +12171,7 @@ extension CarServer_MediaDetailState: SwiftProtobuf.Message, SwiftProtobuf._Mess
 
 extension CarServer_ShiftState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ShiftState"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "Invalid"),
-    2: .same(proto: "P"),
-    3: .same(proto: "R"),
-    4: .same(proto: "N"),
-    5: .same(proto: "D"),
-    6: .same(proto: "SNA"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Invalid\0\u{1}P\0\u{1}R\0\u{1}N\0\u{1}D\0\u{1}SNA\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {

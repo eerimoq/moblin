@@ -82,11 +82,5 @@ enum ManagedCharging_ChargeOnSolarNoChargeReason: SwiftProtobuf.Enum, Swift.Case
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
 extension ManagedCharging_ChargeOnSolarNoChargeReason: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "CHARGE_ON_SOLAR_NO_CHARGE_REASON_INVALID"),
-    1: .same(proto: "CHARGE_ON_SOLAR_NO_CHARGE_REASON_POWERWALL_CHARGE_PRIORITY"),
-    2: .same(proto: "CHARGE_ON_SOLAR_NO_CHARGE_REASON_INSUFFICIENT_SOLAR"),
-    3: .same(proto: "CHARGE_ON_SOLAR_NO_CHARGE_REASON_GRID_EXPORT_PRIORITY"),
-    4: .same(proto: "CHARGE_ON_SOLAR_NO_CHARGE_REASON_ALTERNATE_VEHICLE_CHARGE_PRIORITY"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0CHARGE_ON_SOLAR_NO_CHARGE_REASON_INVALID\0\u{1}CHARGE_ON_SOLAR_NO_CHARGE_REASON_POWERWALL_CHARGE_PRIORITY\0\u{1}CHARGE_ON_SOLAR_NO_CHARGE_REASON_INSUFFICIENT_SOLAR\0\u{1}CHARGE_ON_SOLAR_NO_CHARGE_REASON_GRID_EXPORT_PRIORITY\0\u{1}CHARGE_ON_SOLAR_NO_CHARGE_REASON_ALTERNATE_VEHICLE_CHARGE_PRIORITY\0")
 }

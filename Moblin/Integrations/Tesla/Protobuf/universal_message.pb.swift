@@ -171,6 +171,15 @@ enum UniversalMessage_MessageFault_E: SwiftProtobuf.Enum, Swift.CaseIterable {
 
   /// The command requires proof of Tesla account credentials but was not sent over a channel that provides this proof. Resend the command using Fleet API.
   case rrorCommandRequiresAccountCredentials // = 23
+
+  /// Client sent a request with a field that exceeds MTU
+  case rrorRequestMtuExceeded // = 24
+
+  /// Client's request was received, but response size exceeded MTU
+  case rrorResponseMtuExceeded // = 25
+  case rrorRepeatedCounter // = 26
+  case rrorInvalidKeyHandle // = 27
+  case rrorRequiresResponseEncryption // = 28
   case UNRECOGNIZED(Int)
 
   init() {
@@ -203,6 +212,11 @@ enum UniversalMessage_MessageFault_E: SwiftProtobuf.Enum, Swift.CaseIterable {
     case 21: self = .rrorRemoteAccessDisabled
     case 22: self = .rrorRemoteServiceAccessDisabled
     case 23: self = .rrorCommandRequiresAccountCredentials
+    case 24: self = .rrorRequestMtuExceeded
+    case 25: self = .rrorResponseMtuExceeded
+    case 26: self = .rrorRepeatedCounter
+    case 27: self = .rrorInvalidKeyHandle
+    case 28: self = .rrorRequiresResponseEncryption
     default: self = .UNRECOGNIZED(rawValue)
     }
   }
@@ -233,6 +247,11 @@ enum UniversalMessage_MessageFault_E: SwiftProtobuf.Enum, Swift.CaseIterable {
     case .rrorRemoteAccessDisabled: return 21
     case .rrorRemoteServiceAccessDisabled: return 22
     case .rrorCommandRequiresAccountCredentials: return 23
+    case .rrorRequestMtuExceeded: return 24
+    case .rrorResponseMtuExceeded: return 25
+    case .rrorRepeatedCounter: return 26
+    case .rrorInvalidKeyHandle: return 27
+    case .rrorRequiresResponseEncryption: return 28
     case .UNRECOGNIZED(let i): return i
     }
   }
@@ -263,6 +282,11 @@ enum UniversalMessage_MessageFault_E: SwiftProtobuf.Enum, Swift.CaseIterable {
     .rrorRemoteAccessDisabled,
     .rrorRemoteServiceAccessDisabled,
     .rrorCommandRequiresAccountCredentials,
+    .rrorRequestMtuExceeded,
+    .rrorResponseMtuExceeded,
+    .rrorRepeatedCounter,
+    .rrorInvalidKeyHandle,
+    .rrorRequiresResponseEncryption,
   ]
 
 }
@@ -301,7 +325,7 @@ enum UniversalMessage_Flags: SwiftProtobuf.Enum, Swift.CaseIterable {
 
 }
 
-struct UniversalMessage_Destination: @unchecked Sendable {
+struct UniversalMessage_Destination: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -326,7 +350,7 @@ struct UniversalMessage_Destination: @unchecked Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum OneOf_SubDestination: Equatable, @unchecked Sendable {
+  enum OneOf_SubDestination: Equatable, Sendable {
     case domain(UniversalMessage_Domain)
     case routingAddress(Data)
 
@@ -349,7 +373,7 @@ struct UniversalMessage_MessageStatus: Sendable {
   init() {}
 }
 
-struct UniversalMessage_SessionInfoRequest: @unchecked Sendable {
+struct UniversalMessage_SessionInfoRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -363,7 +387,7 @@ struct UniversalMessage_SessionInfoRequest: @unchecked Sendable {
   init() {}
 }
 
-struct UniversalMessage_RoutableMessage: @unchecked Sendable {
+struct UniversalMessage_RoutableMessage: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -439,7 +463,7 @@ struct UniversalMessage_RoutableMessage: @unchecked Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum OneOf_Payload: Equatable, @unchecked Sendable {
+  enum OneOf_Payload: Equatable, Sendable {
     case protobufMessageAsBytes(Data)
     case sessionInfoRequest(UniversalMessage_SessionInfoRequest)
     case sessionInfo(Data)
@@ -463,63 +487,24 @@ struct UniversalMessage_RoutableMessage: @unchecked Sendable {
 fileprivate let _protobuf_package = "UniversalMessage"
 
 extension UniversalMessage_Domain: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "DOMAIN_BROADCAST"),
-    2: .same(proto: "DOMAIN_VEHICLE_SECURITY"),
-    3: .same(proto: "DOMAIN_INFOTAINMENT"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0DOMAIN_BROADCAST\0\u{2}\u{2}DOMAIN_VEHICLE_SECURITY\0\u{1}DOMAIN_INFOTAINMENT\0")
 }
 
 extension UniversalMessage_OperationStatus_E: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "OPERATIONSTATUS_OK"),
-    1: .same(proto: "OPERATIONSTATUS_WAIT"),
-    2: .same(proto: "OPERATIONSTATUS_ERROR"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0OPERATIONSTATUS_OK\0\u{1}OPERATIONSTATUS_WAIT\0\u{1}OPERATIONSTATUS_ERROR\0")
 }
 
 extension UniversalMessage_MessageFault_E: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "MESSAGEFAULT_ERROR_NONE"),
-    1: .same(proto: "MESSAGEFAULT_ERROR_BUSY"),
-    2: .same(proto: "MESSAGEFAULT_ERROR_TIMEOUT"),
-    3: .same(proto: "MESSAGEFAULT_ERROR_UNKNOWN_KEY_ID"),
-    4: .same(proto: "MESSAGEFAULT_ERROR_INACTIVE_KEY"),
-    5: .same(proto: "MESSAGEFAULT_ERROR_INVALID_SIGNATURE"),
-    6: .same(proto: "MESSAGEFAULT_ERROR_INVALID_TOKEN_OR_COUNTER"),
-    7: .same(proto: "MESSAGEFAULT_ERROR_INSUFFICIENT_PRIVILEGES"),
-    8: .same(proto: "MESSAGEFAULT_ERROR_INVALID_DOMAINS"),
-    9: .same(proto: "MESSAGEFAULT_ERROR_INVALID_COMMAND"),
-    10: .same(proto: "MESSAGEFAULT_ERROR_DECODING"),
-    11: .same(proto: "MESSAGEFAULT_ERROR_INTERNAL"),
-    12: .same(proto: "MESSAGEFAULT_ERROR_WRONG_PERSONALIZATION"),
-    13: .same(proto: "MESSAGEFAULT_ERROR_BAD_PARAMETER"),
-    14: .same(proto: "MESSAGEFAULT_ERROR_KEYCHAIN_IS_FULL"),
-    15: .same(proto: "MESSAGEFAULT_ERROR_INCORRECT_EPOCH"),
-    16: .same(proto: "MESSAGEFAULT_ERROR_IV_INCORRECT_LENGTH"),
-    17: .same(proto: "MESSAGEFAULT_ERROR_TIME_EXPIRED"),
-    18: .same(proto: "MESSAGEFAULT_ERROR_NOT_PROVISIONED_WITH_IDENTITY"),
-    19: .same(proto: "MESSAGEFAULT_ERROR_COULD_NOT_HASH_METADATA"),
-    20: .same(proto: "MESSAGEFAULT_ERROR_TIME_TO_LIVE_TOO_LONG"),
-    21: .same(proto: "MESSAGEFAULT_ERROR_REMOTE_ACCESS_DISABLED"),
-    22: .same(proto: "MESSAGEFAULT_ERROR_REMOTE_SERVICE_ACCESS_DISABLED"),
-    23: .same(proto: "MESSAGEFAULT_ERROR_COMMAND_REQUIRES_ACCOUNT_CREDENTIALS"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0MESSAGEFAULT_ERROR_NONE\0\u{1}MESSAGEFAULT_ERROR_BUSY\0\u{1}MESSAGEFAULT_ERROR_TIMEOUT\0\u{1}MESSAGEFAULT_ERROR_UNKNOWN_KEY_ID\0\u{1}MESSAGEFAULT_ERROR_INACTIVE_KEY\0\u{1}MESSAGEFAULT_ERROR_INVALID_SIGNATURE\0\u{1}MESSAGEFAULT_ERROR_INVALID_TOKEN_OR_COUNTER\0\u{1}MESSAGEFAULT_ERROR_INSUFFICIENT_PRIVILEGES\0\u{1}MESSAGEFAULT_ERROR_INVALID_DOMAINS\0\u{1}MESSAGEFAULT_ERROR_INVALID_COMMAND\0\u{1}MESSAGEFAULT_ERROR_DECODING\0\u{1}MESSAGEFAULT_ERROR_INTERNAL\0\u{1}MESSAGEFAULT_ERROR_WRONG_PERSONALIZATION\0\u{1}MESSAGEFAULT_ERROR_BAD_PARAMETER\0\u{1}MESSAGEFAULT_ERROR_KEYCHAIN_IS_FULL\0\u{1}MESSAGEFAULT_ERROR_INCORRECT_EPOCH\0\u{1}MESSAGEFAULT_ERROR_IV_INCORRECT_LENGTH\0\u{1}MESSAGEFAULT_ERROR_TIME_EXPIRED\0\u{1}MESSAGEFAULT_ERROR_NOT_PROVISIONED_WITH_IDENTITY\0\u{1}MESSAGEFAULT_ERROR_COULD_NOT_HASH_METADATA\0\u{1}MESSAGEFAULT_ERROR_TIME_TO_LIVE_TOO_LONG\0\u{1}MESSAGEFAULT_ERROR_REMOTE_ACCESS_DISABLED\0\u{1}MESSAGEFAULT_ERROR_REMOTE_SERVICE_ACCESS_DISABLED\0\u{1}MESSAGEFAULT_ERROR_COMMAND_REQUIRES_ACCOUNT_CREDENTIALS\0\u{1}MESSAGEFAULT_ERROR_REQUEST_MTU_EXCEEDED\0\u{1}MESSAGEFAULT_ERROR_RESPONSE_MTU_EXCEEDED\0\u{1}MESSAGEFAULT_ERROR_REPEATED_COUNTER\0\u{1}MESSAGEFAULT_ERROR_INVALID_KEY_HANDLE\0\u{1}MESSAGEFAULT_ERROR_REQUIRES_RESPONSE_ENCRYPTION\0")
 }
 
 extension UniversalMessage_Flags: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "FLAG_USER_COMMAND"),
-    1: .same(proto: "FLAG_ENCRYPT_RESPONSE"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0FLAG_USER_COMMAND\0\u{1}FLAG_ENCRYPT_RESPONSE\0")
 }
 
 extension UniversalMessage_Destination: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".Destination"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "domain"),
-    2: .standard(proto: "routing_address"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}domain\0\u{3}routing_address\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -576,10 +561,7 @@ extension UniversalMessage_Destination: SwiftProtobuf.Message, SwiftProtobuf._Me
 
 extension UniversalMessage_MessageStatus: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".MessageStatus"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .standard(proto: "operation_status"),
-    2: .standard(proto: "signed_message_fault"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}operation_status\0\u{3}signed_message_fault\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -614,10 +596,7 @@ extension UniversalMessage_MessageStatus: SwiftProtobuf.Message, SwiftProtobuf._
 
 extension UniversalMessage_SessionInfoRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".SessionInfoRequest"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .standard(proto: "public_key"),
-    2: .same(proto: "challenge"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}public_key\0\u{1}challenge\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -652,18 +631,7 @@ extension UniversalMessage_SessionInfoRequest: SwiftProtobuf.Message, SwiftProto
 
 extension UniversalMessage_RoutableMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".RoutableMessage"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    6: .standard(proto: "to_destination"),
-    7: .standard(proto: "from_destination"),
-    10: .standard(proto: "protobuf_message_as_bytes"),
-    14: .standard(proto: "session_info_request"),
-    15: .standard(proto: "session_info"),
-    13: .standard(proto: "signature_data"),
-    12: .same(proto: "signedMessageStatus"),
-    50: .standard(proto: "request_uuid"),
-    51: .same(proto: "uuid"),
-    52: .same(proto: "flags"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{4}\u{6}to_destination\0\u{3}from_destination\0\u{4}\u{3}protobuf_message_as_bytes\0\u{2}\u{2}signedMessageStatus\0\u{3}signature_data\0\u{3}session_info_request\0\u{3}session_info\0\u{4}#request_uuid\0\u{1}uuid\0\u{1}flags\0\u{c}\u{1}\u{5}\u{c}\u{10}\u{19}\u{c}\u{b}\u{1}")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
