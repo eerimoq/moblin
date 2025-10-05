@@ -214,6 +214,7 @@ extension Model: KickPusherDelegate {
                     image: "party.popper"
                 )
             }
+            self.playAlert(alert: .kickSubscription(username: event.username, months: event.months))
         }
     }
 
@@ -237,6 +238,11 @@ extension Model: KickPusherDelegate {
                     image: "gift"
                 )
             }
+            self.playAlert(alert: .kickGiftedSubscriptions(
+                username: user,
+                count: event.gifted_usernames.count,
+                total: event.gifter_total
+            ))
         }
     }
 
@@ -257,6 +263,11 @@ extension Model: KickPusherDelegate {
                     image: "medal.star"
                 )
             }
+            self.playAlert(alert: .kickReward(
+                username: user,
+                rewardTitle: event.reward_title,
+                userInput: event.user_input
+            ))
         }
     }
 
@@ -276,6 +287,7 @@ extension Model: KickPusherDelegate {
                     image: "person.3"
                 )
             }
+            self.playAlert(alert: .kickHost(username: user, viewers: event.number_viewers))
         }
     }
 
@@ -323,6 +335,7 @@ extension Model: KickPusherDelegate {
                     image: "suit.diamond"
                 )
             }
+            self.playAlert(alert: .kickKicks(username: user, giftName: event.gift.name, amount: event.gift.amount))
         }
     }
 }

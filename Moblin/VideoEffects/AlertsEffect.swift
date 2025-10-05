@@ -75,6 +75,11 @@ enum AlertsEffectAlert {
     case twitchResubscribe(TwitchEventSubNotificationChannelSubscriptionMessageEvent)
     case twitchRaid(TwitchEventSubChannelRaidEvent)
     case twitchCheer(TwitchEventSubChannelCheerEvent)
+    case kickSubscription(username: String, months: Int)
+    case kickGiftedSubscriptions(username: String, count: Int, total: Int)
+    case kickHost(username: String, viewers: Int)
+    case kickReward(username: String, rewardTitle: String, userInput: String)
+    case kickKicks(username: String, giftName: String, amount: Int)
     case chatBotCommand(String, String)
     case speechToTextString(UUID)
 }
@@ -194,6 +199,11 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
     private var twitchSubscribe = Medias()
     private var twitchRaid = Medias()
     private var twitchCheers: [Medias] = []
+    private var kickSubscription = Medias()
+    private var kickGiftedSubscriptions = Medias()
+    private var kickHost = Medias()
+    private var kickReward = Medias()
+    private var kickGifts: [Medias] = []
     private var chatBotCommands: [Medias] = []
     private var speechToTextStrings: [Medias] = []
     private let bundledImages: [SettingsAlertsMediaGalleryItem]
@@ -251,6 +261,27 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
             medias.updateImages(image: image, loopCount: imageLoopCount)
             medias.updateSoundUrl(sound: sound)
             twitchCheers.append(medias)
+        }
+        let kick = settings.kick
+        (image, imageLoopCount, sound) = getMediaItems(alert: kick.subscriptions)
+        kickSubscription.updateImages(image: image, loopCount: imageLoopCount)
+        kickSubscription.updateSoundUrl(sound: sound)
+        (image, imageLoopCount, sound) = getMediaItems(alert: kick.giftedSubscriptions)
+        kickGiftedSubscriptions.updateImages(image: image, loopCount: imageLoopCount)
+        kickGiftedSubscriptions.updateSoundUrl(sound: sound)
+        (image, imageLoopCount, sound) = getMediaItems(alert: kick.hosts)
+        kickHost.updateImages(image: image, loopCount: imageLoopCount)
+        kickHost.updateSoundUrl(sound: sound)
+        (image, imageLoopCount, sound) = getMediaItems(alert: kick.rewards)
+        kickReward.updateImages(image: image, loopCount: imageLoopCount)
+        kickReward.updateSoundUrl(sound: sound)
+        kickGifts = []
+        for kickGift in kick.kickGifts {
+            (image, imageLoopCount, sound) = getMediaItems(alert: kickGift.alert)
+            let medias = Medias()
+            medias.updateImages(image: image, loopCount: imageLoopCount)
+            medias.updateSoundUrl(sound: sound)
+            kickGifts.append(medias)
         }
         chatBotCommands = []
         for command in settings.chatBot.commands {
@@ -313,6 +344,16 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
             playTwitchRaid(event: event)
         case let .twitchCheer(event):
             playTwitchCheer(event: event)
+        case let .kickSubscription(username, months):
+            playKickSubscription(username: username, months: months)
+        case let .kickGiftedSubscriptions(username, count, total):
+            playKickGiftedSubscriptions(username: username, count: count, total: total)
+        case let .kickHost(username, viewers):
+            playKickHost(username: username, viewers: viewers)
+        case let .kickReward(username, rewardTitle, userInput):
+            playKickReward(username: username, rewardTitle: rewardTitle, userInput: userInput)
+        case let .kickKicks(username, giftName, amount):
+            playKickKicks(username: username, giftName: giftName, amount: amount)
         case let .chatBotCommand(command, name):
             playChatBotCommand(command: command, name: name)
         case let .speechToTextString(id):
@@ -412,6 +453,87 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
                 username: event.user_name ?? "Anonymous",
                 message: String(localized: "cheered \(bits) bits! \(event.message)"),
                 settings: cheerBit.alert
+            )
+            break
+        }
+    }
+
+    @MainActor
+    private func playKickSubscription(username: String, months: Int) {
+        guard settings.kick.subscriptions.enabled else {
+            return
+        }
+        play(
+            medias: kickSubscription,
+            username: username,
+            message: String(localized: "just subscribed! They've been subscribed for \(months) months!"),
+            settings: settings.kick.subscriptions
+        )
+    }
+
+    @MainActor
+    private func playKickGiftedSubscriptions(username: String, count: Int, total: Int) {
+        guard settings.kick.giftedSubscriptions.enabled else {
+            return
+        }
+        play(
+            medias: kickGiftedSubscriptions,
+            username: username,
+            message: String(localized: "just gifted \(count) subscription(s)! They've gifted \(total) in total!"),
+            settings: settings.kick.giftedSubscriptions
+        )
+    }
+
+    @MainActor
+    private func playKickHost(username: String, viewers: Int) {
+        guard settings.kick.hosts.enabled else {
+            return
+        }
+        play(
+            medias: kickHost,
+            username: username,
+            message: String(localized: "is now hosting with \(viewers) viewers!"),
+            settings: settings.kick.hosts
+        )
+    }
+
+    @MainActor
+    private func playKickReward(username: String, rewardTitle: String, userInput: String) {
+        guard settings.kick.rewards.enabled else {
+            return
+        }
+        let baseMessage = String(localized: "redeemed \(rewardTitle)")
+        let message = userInput.isEmpty ? baseMessage : "\(baseMessage): \(userInput)"
+        play(
+            medias: kickReward,
+            username: username,
+            message: message,
+            settings: settings.kick.rewards
+        )
+    }
+
+    @MainActor
+    private func playKickKicks(username: String, giftName: String, amount: Int) {
+        for (index, kickGift) in settings.kick.kickGifts.enumerated() {
+            let matches: Bool
+            switch kickGift.comparisonOperator {
+            case .equal:
+                matches = amount == kickGift.amount
+            case .greaterEqual:
+                matches = amount >= kickGift.amount
+            }
+            guard matches, kickGift.alert.enabled else {
+                continue
+            }
+            guard index < kickGifts.count else {
+                return
+            }
+            let formattedAmount = countFormatter.format(amount)
+            play(
+                medias: kickGifts[index],
+                username: username,
+                message: String(localized: "sent \(giftName) \(formattedAmount) Kicks!"),
+                settings: kickGift.alert
             )
             break
         }
