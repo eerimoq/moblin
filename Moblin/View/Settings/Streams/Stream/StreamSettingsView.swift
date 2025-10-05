@@ -73,11 +73,6 @@ struct StreamPlatformsSettingsView: View {
         } label: {
             Text("Open Streaming Platform")
         }
-        NavigationLink {
-            StreamEmotesSettingsView(stream: stream)
-        } label: {
-            Text("Emotes")
-        }
     }
 }
 
@@ -208,6 +203,11 @@ struct StreamSettingsView: View {
                             }
                         }))
                     }
+                }
+                NavigationLink {
+                    StreamEmotesSettingsView(stream: stream)
+                } label: {
+                    Text("Emotes")
                 }
             }
             if database.showAllSettings {
