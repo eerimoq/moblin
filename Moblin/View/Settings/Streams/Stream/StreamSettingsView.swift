@@ -101,11 +101,11 @@ struct StreamSettingsView: View {
                     } label: {
                         Text("Audio")
                     }
-                }
-                NavigationLink {
-                    StreamRecordingSettingsView(stream: stream, recording: stream.recording)
-                } label: {
-                    Text("Recording")
+                    NavigationLink {
+                        StreamRecordingSettingsView(stream: stream, recording: stream.recording)
+                    } label: {
+                        Text("Recording")
+                    }
                 }
                 NavigationLink {
                     StreamReplaySettingsView(stream: stream, replay: stream.replay)

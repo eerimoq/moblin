@@ -14,7 +14,9 @@ struct StreamReplaySettingsView: View {
                             model.streamReplayEnabledUpdated()
                         }
                     }
-                Toggle("Fade transition", isOn: $replay.fade)
+                if model.database.showAllSettings {
+                    Toggle("Fade transition", isOn: $replay.fade)
+                }
             }
         }
         .navigationTitle("Replay")
