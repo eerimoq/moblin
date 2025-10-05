@@ -398,6 +398,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var youTubeLiveChat: YouTubeLiveChat?
     private var afreecaTvChat: AfreecaTvChat?
     private var openStreamingPlatformChat: OpenStreamingPlatformChat!
+    var dliveChat: DLiveChat?
     var youTubeFetchVideoIdStartTime: ContinuousClock.Instant?
     var obsWebSocket: ObsWebSocket?
     var chatPostId = 0

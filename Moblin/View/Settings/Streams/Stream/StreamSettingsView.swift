@@ -33,6 +33,12 @@ struct YouTubeLogoAndNameView: View {
     }
 }
 
+struct DLiveLogoAndNameView: View {
+    var body: some View {
+        PlatformLogoAndNameView(logo: "DLiveLogo", name: String(localized: "DLive"))
+    }
+}
+
 struct StreamPlatformsSettingsView: View {
     let stream: SettingsStream
 
@@ -51,6 +57,11 @@ struct StreamPlatformsSettingsView: View {
             StreamYouTubeSettingsView(stream: stream)
         } label: {
             YouTubeLogoAndNameView()
+        }
+        NavigationLink {
+            StreamDLiveSettingsView(stream: stream)
+        } label: {
+            DLiveLogoAndNameView()
         }
         NavigationLink {
             StreamAfreecaTvSettingsView(stream: stream)

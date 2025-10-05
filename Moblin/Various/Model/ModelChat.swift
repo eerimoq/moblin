@@ -278,6 +278,7 @@ extension Model {
     func reloadChats() {
         reloadTwitchChat()
         reloadKickPusher()
+        reloadDLiveChat()
         reloadYouTubeLiveChat()
         reloadAfreecaTvChat()
         reloadOpenStreamingPlatformChat()
@@ -298,6 +299,9 @@ extension Model {
         if isKickPusherConfigured() {
             numberOfChats += 1
         }
+        if isDLiveChatConfigured() {
+            numberOfChats += 1
+        }
         if isYouTubeLiveChatConfigured() {
             numberOfChats += 1
         }
@@ -313,7 +317,7 @@ extension Model {
     func isChatConfigured() -> Bool {
         return isTwitchChatConfigured() || isKickPusherConfigured() ||
             isYouTubeLiveChatConfigured() || isAfreecaTvChatConfigured() ||
-            isOpenStreamingPlatformChatConfigured()
+            isDLiveChatConfigured() || isOpenStreamingPlatformChatConfigured()
     }
 
     func isChatRemoteControl() -> Bool {
@@ -336,6 +340,9 @@ extension Model {
         if isOpenStreamingPlatformChatConfigured() && !isOpenStreamingPlatformChatConnected() {
             return false
         }
+        if isDLiveChatConfigured() && !isDLiveChatConnected() {
+            return false
+        }
         return true
     }
 
@@ -345,6 +352,7 @@ extension Model {
             || hasYouTubeLiveChatEmotes()
             || hasAfreecaTvChatEmotes()
             || hasOpenStreamingPlatformChatEmotes()
+            || hasDLiveChatEmotes()
     }
 
     func resetChat() {
