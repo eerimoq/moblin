@@ -22,16 +22,6 @@ struct StreamDLiveSettingsView: View {
             } footer: {
                 Text("Enter the DLive username of the channel you want to watch.")
             }
-            Section {
-                Toggle("Enabled", isOn: $stream.dliveLoggedIn)
-                    .onChange(of: stream.dliveLoggedIn) { _ in
-                        if stream.enabled {
-                            model.dliveEnabledUpdated()
-                        }
-                    }
-            } footer: {
-                Text("Enable to connect to DLive chat.")
-            }
         }
         .navigationTitle("DLive")
     }

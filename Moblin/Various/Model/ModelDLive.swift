@@ -3,7 +3,7 @@ import SwiftUI
 
 extension Model {
     func isDLiveChatConfigured() -> Bool {
-        return database.chat.enabled && stream.dliveStreamerUsername != "" && stream.dliveLoggedIn
+        return database.chat.enabled && stream.dliveStreamerUsername != ""
     }
 
     func isDLiveChatConnected() -> Bool {
@@ -26,12 +26,6 @@ extension Model {
     }
 
     func dliveStreamerUsernameUpdated() {
-        reloadDLiveChat()
-        resetChat()
-    }
-
-    func dliveEnabledUpdated() {
-        logger.debug("dlive: Enabled updated")
         reloadDLiveChat()
         resetChat()
     }

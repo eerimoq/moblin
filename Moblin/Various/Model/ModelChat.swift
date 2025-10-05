@@ -10,7 +10,6 @@ enum ChatPlatformSelection: CaseIterable {
     case all
     case twitch
     case kick
-    case dlive
 }
 
 class ChatProvider: ObservableObject {
@@ -89,8 +88,7 @@ extension Model {
         var platforms: [ChatPlatformSelection] = []
         let hasTwitch = stream.twitchLoggedIn
         let hasKick = stream.kickLoggedIn
-        let hasDLive = stream.dliveLoggedIn
-        let multiplePlatforms = [hasTwitch, hasKick, hasDLive].filter { $0 }.count > 1
+        let multiplePlatforms = [hasTwitch, hasKick].filter { $0 }.count > 1
         if multiplePlatforms {
             platforms.append(.all)
         }
@@ -99,9 +97,6 @@ extension Model {
         }
         if hasKick {
             platforms.append(.kick)
-        }
-        if hasDLive {
-            platforms.append(.dlive)
         }
         if !platforms.contains(selectedChatPlatform) {
             if platforms.contains(.all) {
