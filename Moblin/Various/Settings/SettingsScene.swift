@@ -860,6 +860,21 @@ class SettingsWidgetAlertsCheerBitsAlert: Codable, Identifiable {
     }
 }
 
+class SettingsWidgetAlertsKickGiftsAlert: Codable, Identifiable {
+    var id: UUID = .init()
+    var amount: Int = 1
+    var comparisonOperator: SettingsWidgetAlertsCheerBitsAlertOperator = .greaterEqual
+    var alert: SettingsWidgetAlertsAlert = .init()
+
+    func clone() -> SettingsWidgetAlertsKickGiftsAlert {
+        let new = SettingsWidgetAlertsKickGiftsAlert()
+        new.amount = amount
+        new.comparisonOperator = comparisonOperator
+        new.alert = alert
+        return new
+    }
+}
+
 private func createDefaultCheerBits() -> [SettingsWidgetAlertsCheerBitsAlert] {
     var cheerBits: [SettingsWidgetAlertsCheerBitsAlert] = []
     for (index, bits) in [1].enumerated() {
@@ -869,6 +884,17 @@ private func createDefaultCheerBits() -> [SettingsWidgetAlertsCheerBitsAlert] {
         cheerBits.append(cheer)
     }
     return cheerBits
+}
+
+private func createDefaultKickGifts() -> [SettingsWidgetAlertsKickGiftsAlert] {
+    var kickGifts: [SettingsWidgetAlertsKickGiftsAlert] = []
+    for (index, amount) in [1].enumerated() {
+        let gift = SettingsWidgetAlertsKickGiftsAlert()
+        gift.amount = amount
+        gift.alert.enabled = index == 0
+        kickGifts.append(gift)
+    }
+    return kickGifts
 }
 
 class SettingsWidgetAlertsTwitch: Codable {
@@ -913,6 +939,52 @@ class SettingsWidgetAlertsTwitch: Codable {
         new.raids = raids.clone()
         new.cheers = cheers.clone()
         new.cheerBits = cheerBits.map { $0.clone() }
+        return new
+    }
+}
+
+class SettingsWidgetAlertsKick: Codable {
+    var subscriptions: SettingsWidgetAlertsAlert = .init()
+    var giftedSubscriptions: SettingsWidgetAlertsAlert = .init()
+    var hosts: SettingsWidgetAlertsAlert = .init()
+    var rewards: SettingsWidgetAlertsAlert = .init()
+    var kickGifts: [SettingsWidgetAlertsKickGiftsAlert] = createDefaultKickGifts()
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case subscriptions,
+             giftedSubscriptions,
+             hosts,
+             rewards,
+             kickGifts
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.subscriptions, subscriptions)
+        try container.encode(.giftedSubscriptions, giftedSubscriptions)
+        try container.encode(.hosts, hosts)
+        try container.encode(.rewards, rewards)
+        try container.encode(.kickGifts, kickGifts)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        subscriptions = container.decode(.subscriptions, SettingsWidgetAlertsAlert.self, .init())
+        giftedSubscriptions = container.decode(.giftedSubscriptions, SettingsWidgetAlertsAlert.self, .init())
+        hosts = container.decode(.hosts, SettingsWidgetAlertsAlert.self, .init())
+        rewards = container.decode(.rewards, SettingsWidgetAlertsAlert.self, .init())
+        kickGifts = container.decode(.kickGifts, [SettingsWidgetAlertsKickGiftsAlert].self, createDefaultKickGifts())
+    }
+
+    func clone() -> SettingsWidgetAlertsKick {
+        let new = SettingsWidgetAlertsKick()
+        new.subscriptions = subscriptions.clone()
+        new.giftedSubscriptions = giftedSubscriptions.clone()
+        new.hosts = hosts.clone()
+        new.rewards = rewards.clone()
+        new.kickGifts = kickGifts.map { $0.clone() }
         return new
     }
 }
@@ -1014,6 +1086,7 @@ class SettingsWidgetAlertsSpeechToText: Codable {
 
 class SettingsWidgetAlerts: Codable {
     var twitch: SettingsWidgetAlertsTwitch = .init()
+    var kick: SettingsWidgetAlertsKick = .init()
     var chatBot: SettingsWidgetAlertsChatBot = .init()
     var speechToText: SettingsWidgetAlertsSpeechToText = .init()
     var needsSubtitles: Bool = false
@@ -1022,6 +1095,7 @@ class SettingsWidgetAlerts: Codable {
 
     enum CodingKeys: CodingKey {
         case twitch,
+             kick,
              chatBot,
              speechToText,
              needsSubtitles
@@ -1030,6 +1104,7 @@ class SettingsWidgetAlerts: Codable {
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.twitch, twitch)
+        try container.encode(.kick, kick)
         try container.encode(.chatBot, chatBot)
         try container.encode(.speechToText, speechToText)
         try container.encode(.needsSubtitles, needsSubtitles)
@@ -1038,6 +1113,7 @@ class SettingsWidgetAlerts: Codable {
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         twitch = container.decode(.twitch, SettingsWidgetAlertsTwitch.self, .init())
+        kick = container.decode(.kick, SettingsWidgetAlertsKick.self, .init())
         chatBot = container.decode(.chatBot, SettingsWidgetAlertsChatBot.self, .init())
         speechToText = container.decode(.speechToText, SettingsWidgetAlertsSpeechToText.self, .init())
         needsSubtitles = container.decode(.needsSubtitles, Bool.self, false)
@@ -1046,6 +1122,7 @@ class SettingsWidgetAlerts: Codable {
     func clone() -> SettingsWidgetAlerts {
         let new = SettingsWidgetAlerts()
         new.twitch = twitch.clone()
+        new.kick = kick.clone()
         new.chatBot = chatBot.clone()
         new.speechToText = speechToText.clone()
         new.needsSubtitles = needsSubtitles
