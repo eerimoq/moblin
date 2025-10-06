@@ -267,19 +267,13 @@ struct WidgetSettingsView: View {
         Form {
             Section {
                 NameEditView(name: $widget.name, existingNames: database.widgets)
-                NavigationLink {
-                    InlinePickerView(title: String(localized: "Type"),
-                                     onChange: { id in
-                                         widget.type = SettingsWidgetType(rawValue: id) ?? .browser
-                                         model.resetSelectedScene(changeScene: false)
-                                     },
-                                     items: widgetTypes.map { .init(id: $0.rawValue, text: $0.toString()) },
-                                     selectedId: widget.type.rawValue)
-                } label: {
-                    TextItemView(
-                        name: String(localized: "Type"),
-                        value: widget.type.toString()
-                    )
+                Picker("Type", selection: $widget.type) {
+                    ForEach(widgetTypes, id: \.self) { type in
+                        Text(type.toString())
+                    }
+                }
+                .onChange(of: widget.type) { _ in
+                    model.resetSelectedScene(changeScene: false)
                 }
             }
             switch widget.type {

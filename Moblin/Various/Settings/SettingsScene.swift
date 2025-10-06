@@ -1477,7 +1477,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named 
     static let baseName = String(localized: "My widget")
     @Published var name: String
     var id: UUID = .init()
-    var type: SettingsWidgetType = .text
+    @Published var type: SettingsWidgetType = .text
     var text: SettingsWidgetText = .init()
     var browser: SettingsWidgetBrowser = .init()
     var crop: SettingsWidgetCrop = .init()
