@@ -28,7 +28,7 @@ final class Dewarp360Effect: VideoEffect {
     override func execute(_ image: CIImage, _ info: VideoEffectInfo) -> CIImage {
         updateParameters(info: info)
         filter.inputImage = image
-        filter.outputSize = CGSize(width: 1920, height: 1080)
+        filter.outputSize = CGSize(width: image.extent.width, height: image.extent.width * 9 / 16)
         filter.pan = currentPan
         filter.tilt = currentTilt
         filter.fieldOfView = currentFieldOfView
