@@ -5,7 +5,6 @@ private struct Sender: Decodable {
     let username: String
     let displayname: String
     let avatar: String?
-    let partnerStatus: String?
     let badges: [String]?
 }
 
@@ -23,16 +22,14 @@ private struct ChatTextMessage: Decodable {
 
 protocol DLiveChatDelegate: AnyObject {
     func dliveChatMakeErrorToast(title: String, subTitle: String?)
-    func dliveChatAppendMessage(
-        messageId: String?,
-        user: String,
-        userId: String?,
-        userColor: RgbColor?,
-        userBadges: [URL],
-        segments: [ChatPostSegment],
-        isSubscriber: Bool,
-        isModerator: Bool
-    )
+    func dliveChatAppendMessage(messageId: String?,
+                                user: String,
+                                userId: String?,
+                                userColor: RgbColor?,
+                                userBadges: [URL],
+                                segments: [ChatPostSegment],
+                                isSubscriber: Bool,
+                                isModerator: Bool)
     func dliveChatDeleteMessage(messageId: String)
     func dliveChatDeleteUser(userId: String)
 }
@@ -95,13 +92,11 @@ private let customEmoteBaseUrl = "https://images.prd.dlivecdn.com/emote/"
 
 final class DLiveChat {
     private var webSocket: WebSocketClient
-    private var streamerUsername: String
     private var streamerRoomId: String
     private weak var delegate: (any DLiveChatDelegate)?
 
     init(delegate: DLiveChatDelegate) {
         self.delegate = delegate
-        streamerUsername = ""
         streamerRoomId = ""
         webSocket = WebSocketClient(url: webSocketUrl)
     }
@@ -115,7 +110,6 @@ final class DLiveChat {
                     return
                 }
                 if let userInfo {
-                    self.streamerUsername = userInfo.username
                     self.streamerRoomId = userInfo.id.replacingOccurrences(of: userIdPrefix, with: "")
                     self.webSocket = WebSocketClient(url: webSocketUrl, protocols: ["graphql-ws"])
                     self.webSocket.delegate = self
@@ -152,11 +146,13 @@ final class DLiveChat {
     private func handleMessage(message: String) {
         // logger.debug("dlive: chat: Received message: \(message)")
         do {
-            guard let data = message.data(using: .utf8) else {
+            guard let message = message.data(using: .utf8) else {
                 return
             }
-            let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
-            guard let type = json?["type"] as? String else {
+            guard let message = try JSONSerialization.jsonObject(with: message) as? [String: Any] else {
+                return
+            }
+            guard let type = message["type"] as? String else {
                 return
             }
             switch type {
@@ -165,7 +161,7 @@ final class DLiveChat {
             case "connection_ack":
                 handleConnectionAck()
             case "data":
-                try handleDataMessage(json: json)
+                try handleDataMessage(message: message)
             default:
                 break
             }
@@ -174,33 +170,33 @@ final class DLiveChat {
         }
     }
 
-    private func handleDataMessage(json: [String: Any]?) throws {
-        guard let payload = json?["payload"] as? [String: Any],
+    private func handleDataMessage(message: [String: Any]) throws {
+        guard let payload = message["payload"] as? [String: Any],
               let data = payload["data"] as? [String: Any],
               let streamMessageReceived = data["streamMessageReceived"] as? [[String: Any]]
         else {
             logger.debug("dlive: chat: Failed to parse data message structure")
             return
         }
-        for messageData in streamMessageReceived {
-            guard let typename = messageData["__typename"] as? String else {
+        for message in streamMessageReceived {
+            guard let typename = message["__typename"] as? String else {
                 continue
             }
             switch typename {
             case "ChatText":
-                try handleChatTextMessage(messageData)
+                try handleChatTextMessage(message)
             case "ChatDelete":
-                handleChatDelete(messageData)
+                handleChatDelete(message)
             case "ChatBan":
-                handleChatBan(messageData)
+                handleChatBan(message)
             default:
                 logger.debug("dlive: chat: Unhandled message type: \(typename)")
             }
         }
     }
 
-    private func handleChatDelete(_ messageData: [String: Any]) {
-        guard let ids = messageData["ids"] as? [String] else {
+    private func handleChatDelete(_ message: [String: Any]) {
+        guard let ids = message["ids"] as? [String] else {
             return
         }
         for id in ids {
@@ -208,8 +204,8 @@ final class DLiveChat {
         }
     }
 
-    private func handleChatBan(_ messageData: [String: Any]) {
-        guard let sender = messageData["sender"] as? [String: Any],
+    private func handleChatBan(_ message: [String: Any]) {
+        guard let sender = message["sender"] as? [String: Any],
               let userId = sender["id"] as? String
         else {
             return
@@ -217,11 +213,11 @@ final class DLiveChat {
         delegate?.dliveChatDeleteUser(userId: userId)
     }
 
-    private func handleChatTextMessage(_ messageData: [String: Any]) throws {
-        let jsonData = try JSONSerialization.data(withJSONObject: messageData)
+    private func handleChatTextMessage(_ message: [String: Any]) throws {
+        let jsonData = try JSONSerialization.data(withJSONObject: message)
         let chatMessage = try JSONDecoder().decode(ChatTextMessage.self, from: jsonData)
-        var dliveEmotes: [String: URL] = [:]
-        if let emojis = messageData["emojis"] as? [Int], emojis.count % 2 == 0 {
+        var dLiveEmotes: [String: URL] = [:]
+        if let emojis = message["emojis"] as? [Int], emojis.count % 2 == 0 {
             for i in stride(from: 0, to: emojis.count, by: 2) {
                 let startPos = emojis[i]
                 let endPos = emojis[i + 1]
@@ -233,7 +229,7 @@ final class DLiveChat {
                 let endIndex = content.index(content.startIndex, offsetBy: endPos)
                 let emoteName = String(content[startIndex ... endIndex])
                 if let url = URL(string: nativeEmoteBaseUrl + emoteName) {
-                    dliveEmotes[emoteName] = url
+                    dLiveEmotes[emoteName] = url
                 }
             }
         }
@@ -248,31 +244,28 @@ final class DLiveChat {
                 let fullEmote = String(chatMessage.content[range])
                 let emoteId = String(chatMessage.content[idRange])
                 if let url = URL(string: customEmoteBaseUrl + emoteId) {
-                    dliveEmotes[fullEmote] = url
+                    dLiveEmotes[fullEmote] = url
                 }
             }
         }
-        var id = 0
-        let segments = createSegments(text: chatMessage.content, dliveEmotes: dliveEmotes, id: &id)
-        let isSubscriber = chatMessage.subscribing == true
-        let isModerator = chatMessage.role == "Moderator" || chatMessage.roomRole == "Owner"
         delegate?.dliveChatAppendMessage(
             messageId: chatMessage.id,
             user: chatMessage.sender.username,
             userId: chatMessage.sender.id,
             userColor: nil,
             userBadges: [],
-            segments: segments,
-            isSubscriber: isSubscriber,
-            isModerator: isModerator
+            segments: createSegments(text: chatMessage.content, dLiveEmotes: dLiveEmotes),
+            isSubscriber: chatMessage.subscribing == true,
+            isModerator: chatMessage.role == "Moderator" || chatMessage.roomRole == "Owner"
         )
     }
 
-    private func createSegments(text: String, dliveEmotes: [String: URL], id: inout Int) -> [ChatPostSegment] {
+    private func createSegments(text: String, dLiveEmotes: [String: URL]) -> [ChatPostSegment] {
+        var id = 0
         var segments: [ChatPostSegment] = []
         var parts: [String] = []
         for word in text.components(separatedBy: .whitespaces) {
-            if let emoteUrl = dliveEmotes[word] {
+            if let emoteUrl = dLiveEmotes[word] {
                 if !parts.isEmpty {
                     segments.append(ChatPostSegment(id: id, text: parts.joined(separator: " ")))
                     id += 1
