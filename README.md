@@ -47,7 +47,7 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
     - Cheered bits in chat.
 - Kick integration.
   - Number of viewers.
-  - Subscribe and Host and Kicks alerts.
+  - Subscription, Host, and Kick Alerts
   - Chat.
     - Ban.
     - Timeout.
