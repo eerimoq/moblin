@@ -84,7 +84,6 @@ subscription StreamMessageSubscription($streamer: String!, $viewer: String) {
 }
 """
 
-private let customEmoteRegex = try! NSRegularExpression(pattern: ":emote/global/lino/([^:]+):")
 private let webSocketUrl = URL(string: "wss://graphigostream.prd.dlive.tv/")!
 private let userIdPrefix = "user:"
 private let nativeEmoteBaseUrl = "https://images.prd.dlivecdn.com/emoji/"
@@ -233,19 +232,11 @@ final class DLiveChat {
                 }
             }
         }
-        let matches = customEmoteRegex.matches(
-            in: chatMessage.content,
-            range: NSRange(chatMessage.content.startIndex..., in: chatMessage.content)
-        )
-        for match in matches {
-            if let range = Range(match.range(at: 0), in: chatMessage.content),
-               let idRange = Range(match.range(at: 1), in: chatMessage.content)
-            {
-                let fullEmote = String(chatMessage.content[range])
-                let emoteId = String(chatMessage.content[idRange])
-                if let url = URL(string: customEmoteBaseUrl + emoteId) {
-                    dLiveEmotes[fullEmote] = url
-                }
+        for match in chatMessage.content.matches(of: /:emote\/global\/lino\/([^:]+):/) {
+            let emoteId = String(match.1)
+            if let url = URL(string: customEmoteBaseUrl + emoteId) {
+                let fullEmote = String(match.0)
+                dLiveEmotes[fullEmote] = url
             }
         }
         delegate?.dliveChatAppendMessage(
