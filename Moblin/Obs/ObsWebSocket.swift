@@ -359,13 +359,10 @@ private func packMessage(op: OpCode, data: Data) -> String {
 }
 
 private func unpackMessage(message: String) throws -> (OpCode?, Data) {
-    guard let jsonData = message.data(using: String.Encoding.utf8) else {
+    guard let jsonData = message.data(using: .utf8) else {
         throw "JSON decode failed"
     }
-    let data = try JSONSerialization.jsonObject(
-        with: jsonData,
-        options: JSONSerialization.ReadingOptions.mutableContainers
-    )
+    let data = try JSONSerialization.jsonObject(with: jsonData, options: .mutableContainers)
     guard let jsonResult = data as? NSDictionary else {
         throw "Not a dictionary"
     }
