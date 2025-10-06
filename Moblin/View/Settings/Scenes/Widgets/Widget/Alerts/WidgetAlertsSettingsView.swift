@@ -488,12 +488,12 @@ struct WidgetAlertsSettingsView: View {
             NavigationLink {
                 WidgetAlertsSettingsTwitchView(twitch: widget.alerts.twitch)
             } label: {
-                Text("Twitch")
+                TwitchLogoAndNameView()
             }
             NavigationLink {
                 WidgetAlertsSettingsKickView(kick: widget.alerts.kick)
             } label: {
-                Text("Kick")
+                KickLogoAndNameView()
             }
             NavigationLink {
                 WidgetAlertsSettingsChatBotView(chatBot: widget.alerts.chatBot)
