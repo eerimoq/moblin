@@ -843,7 +843,7 @@ enum SettingsWidgetAlertsCheerBitsAlertOperator: String, Codable, CaseIterable {
     }
 }
 
-let twitchCheerBitsAlertOperators = SettingsWidgetAlertsCheerBitsAlertOperator.allCases.map { $0.rawValue }
+let cheerBitsAlertOperators = SettingsWidgetAlertsCheerBitsAlertOperator.allCases.map { $0.rawValue }
 
 class SettingsWidgetAlertsCheerBitsAlert: Codable, Identifiable {
     var id: UUID = .init()
