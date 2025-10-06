@@ -47,8 +47,13 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
     - Cheered bits in chat.
 - Kick integration.
   - Number of viewers.
+  - Subscribe and Host and Kicks alerts.
   - Chat.
-    - Show reply.
+    - Ban.
+    - Timeout.
+    - Delete message.
+    - Gray out or hide deleted messages.
+    - Show reply..
 - YouTube integration.
   - Chat.
 - AfreecaTv integration.
