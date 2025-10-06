@@ -234,12 +234,6 @@ struct WidgetVideoSourceSettingsView: View {
                 InlinePickerView(
                     title: String(localized: "Video source"),
                     onChange: onCameraChange,
-                    footers: [
-                        String(localized: """
-                        Limitation: At most one built-in or USB camera is \
-                        supported at a time in a scene.
-                        """),
-                    ],
                     items: model.listCameraPositions(excludeBuiltin: false).map { id, name in
                         InlinePickerItem(id: id, text: name)
                     },
