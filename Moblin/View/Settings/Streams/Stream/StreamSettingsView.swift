@@ -45,6 +45,12 @@ struct OpenStreamingPlatformLogoAndNameView: View {
     }
 }
 
+struct SoopLogoAndNameView: View {
+    var body: some View {
+        PlatformLogoAndNameView(logo: "SoopLogo", name: String(localized: "SOOP"))
+    }
+}
+
 struct StreamPlatformsSettingsView: View {
     let stream: SettingsStream
 
@@ -70,9 +76,9 @@ struct StreamPlatformsSettingsView: View {
             DLiveLogoAndNameView()
         }
         NavigationLink {
-            StreamAfreecaTvSettingsView(stream: stream)
+            StreamSoopSettingsView(stream: stream)
         } label: {
-            Text("AfreecaTV")
+            SoopLogoAndNameView()
         }
         NavigationLink {
             StreamOpenStreamingPlatformSettingsView(stream: stream)

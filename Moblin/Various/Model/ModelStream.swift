@@ -33,8 +33,8 @@ class CreateStreamWizard: ObservableObject {
     var kickAccessToken = ""
     var kickLoggedIn: Bool = false
     @Published var youTubeHandle = ""
-    @Published var afreecaTvChannelName = ""
-    @Published var afreecaTvStreamId = ""
+    @Published var soopChannelName = ""
+    @Published var soopStreamId = ""
     @Published var obsAddress = ""
     @Published var obsPort = ""
     @Published var obsRemoteControlEnabled = false

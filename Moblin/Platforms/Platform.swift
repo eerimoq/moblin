@@ -1,7 +1,7 @@
 import Foundation
 
 enum Platform: Codable {
-    case afreecaTv
+    case soop
     case kick
     case openStreamingPlatform
     case twitch
@@ -10,8 +10,8 @@ enum Platform: Codable {
 
     func imageName() -> String? {
         switch self {
-        case .afreecaTv:
-            return nil
+        case .soop:
+            return "SoopLogo"
         case .dlive:
             return "DLiveLogo"
         case .kick:

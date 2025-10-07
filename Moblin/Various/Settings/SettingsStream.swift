@@ -835,8 +835,8 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
     var youTubeApiKey: String = ""
     @Published var youTubeVideoId: String = ""
     @Published var youTubeHandle: String = ""
-    var afreecaTvChannelName: String = ""
-    var afreecaTvStreamId: String = ""
+    var soopChannelName: String = ""
+    var soopStreamId: String = ""
     var openStreamingPlatformUrl: String = ""
     var openStreamingPlatformChannelId: String = ""
     @Published var obsWebSocketEnabled: Bool = false
@@ -995,8 +995,8 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         try container.encode(.youTubeApiKey, youTubeApiKey)
         try container.encode(.youTubeVideoId, youTubeVideoId)
         try container.encode(.youTubeHandle, youTubeHandle)
-        try container.encode(.afreecaTvChannelName, afreecaTvChannelName)
-        try container.encode(.afreecaTvStreamId, afreecaTvStreamId)
+        try container.encode(.afreecaTvChannelName, soopChannelName)
+        try container.encode(.afreecaTvStreamId, soopStreamId)
         try container.encode(.openStreamingPlatformUrl, openStreamingPlatformUrl)
         try container.encode(.openStreamingPlatformChannelId, openStreamingPlatformChannelId)
         try container.encode(.obsWebSocketEnabled, obsWebSocketEnabled)
@@ -1076,8 +1076,8 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         youTubeApiKey = container.decode(.youTubeApiKey, String.self, "")
         youTubeVideoId = container.decode(.youTubeVideoId, String.self, "")
         youTubeHandle = container.decode(.youTubeHandle, String.self, "")
-        afreecaTvChannelName = container.decode(.afreecaTvChannelName, String.self, "")
-        afreecaTvStreamId = container.decode(.afreecaTvStreamId, String.self, "")
+        soopChannelName = container.decode(.afreecaTvChannelName, String.self, "")
+        soopStreamId = container.decode(.afreecaTvStreamId, String.self, "")
         openStreamingPlatformUrl = container.decode(.openStreamingPlatformUrl, String.self, "")
         openStreamingPlatformChannelId = container.decode(.openStreamingPlatformChannelId, String.self, "")
         obsWebSocketEnabled = container.decode(.obsWebSocketEnabled, Bool.self, false)
@@ -1147,8 +1147,8 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         new.youTubeApiKey = youTubeApiKey
         new.youTubeVideoId = youTubeVideoId
         new.youTubeHandle = youTubeHandle
-        new.afreecaTvChannelName = afreecaTvChannelName
-        new.afreecaTvStreamId = afreecaTvStreamId
+        new.soopChannelName = soopChannelName
+        new.soopStreamId = soopStreamId
         new.openStreamingPlatformUrl = openStreamingPlatformUrl
         new.openStreamingPlatformChannelId = openStreamingPlatformChannelId
         new.obsWebSocketEnabled = obsWebSocketEnabled

@@ -396,7 +396,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var kickPusher: KickPusher?
     var kickViewers: KickViewers?
     private var youTubeLiveChat: YouTubeLiveChat?
-    private var afreecaTvChat: AfreecaTvChat?
+    private var soopChat: SoopChat?
     private var openStreamingPlatformChat: OpenStreamingPlatformChat!
     var dliveChat: DLiveChat?
     var youTubeFetchVideoIdStartTime: ContinuousClock.Instant?
@@ -2012,16 +2012,16 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return youTubeLiveChat?.hasEmotes() ?? false
     }
 
-    func isAfreecaTvChatConfigured() -> Bool {
-        return database.chat.enabled && stream.afreecaTvChannelName != "" && stream.afreecaTvStreamId != ""
+    func isSoopChatConfigured() -> Bool {
+        return database.chat.enabled && stream.soopChannelName != "" && stream.soopStreamId != ""
     }
 
-    func isAfreecaTvChatConnected() -> Bool {
-        return afreecaTvChat?.isConnected() ?? false
+    func isSoopChatConnected() -> Bool {
+        return soopChat?.isConnected() ?? false
     }
 
-    func hasAfreecaTvChatEmotes() -> Bool {
-        return afreecaTvChat?.hasEmotes() ?? false
+    func hasSoopChatEmotes() -> Bool {
+        return soopChat?.hasEmotes() ?? false
     }
 
     func isOpenStreamingPlatformChatConfigured() -> Bool {
@@ -2055,17 +2055,17 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         updateChatMoreThanOneChatConfigured()
     }
 
-    func reloadAfreecaTvChat() {
-        afreecaTvChat?.stop()
-        afreecaTvChat = nil
+    func reloadSoopChat() {
+        soopChat?.stop()
+        soopChat = nil
         setTextToSpeechStreamerMentions()
-        if isAfreecaTvChatConfigured(), !isChatRemoteControl() {
-            afreecaTvChat = AfreecaTvChat(
+        if isSoopChatConfigured(), !isChatRemoteControl() {
+            soopChat = SoopChat(
                 model: self,
-                channelName: stream.afreecaTvChannelName,
-                streamId: stream.afreecaTvStreamId
+                channelName: stream.soopChannelName,
+                streamId: stream.soopStreamId
             )
-            afreecaTvChat!.start()
+            soopChat!.start()
         }
         updateChatMoreThanOneChatConfigured()
     }
@@ -2089,13 +2089,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         resetChat()
     }
 
-    func afreecaTvChannelNameUpdated() {
-        reloadAfreecaTvChat()
+    func soopChannelNameUpdated() {
+        reloadSoopChat()
         resetChat()
     }
 
-    func afreecaTvStreamIdUpdated() {
-        reloadAfreecaTvChat()
+    func soopStreamIdUpdated() {
+        reloadSoopChat()
         resetChat()
     }
 

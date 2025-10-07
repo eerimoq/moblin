@@ -280,7 +280,7 @@ extension Model {
         reloadKickPusher()
         reloadDLiveChat()
         reloadYouTubeLiveChat()
-        reloadAfreecaTvChat()
+        reloadSoopChat()
         reloadOpenStreamingPlatformChat()
     }
 
@@ -305,7 +305,7 @@ extension Model {
         if isYouTubeLiveChatConfigured() {
             numberOfChats += 1
         }
-        if isAfreecaTvChatConfigured() {
+        if isSoopChatConfigured() {
             numberOfChats += 1
         }
         if isOpenStreamingPlatformChatConfigured() {
@@ -316,7 +316,7 @@ extension Model {
 
     func isChatConfigured() -> Bool {
         return isTwitchChatConfigured() || isKickPusherConfigured() ||
-            isYouTubeLiveChatConfigured() || isAfreecaTvChatConfigured() ||
+            isYouTubeLiveChatConfigured() || isSoopChatConfigured() ||
             isDLiveChatConfigured() || isOpenStreamingPlatformChatConfigured()
     }
 
@@ -334,7 +334,7 @@ extension Model {
         if isYouTubeLiveChatConfigured() && !isYouTubeLiveChatConnected() {
             return false
         }
-        if isAfreecaTvChatConfigured() && !isAfreecaTvChatConnected() {
+        if isSoopChatConfigured() && !isSoopChatConnected() {
             return false
         }
         if isOpenStreamingPlatformChatConfigured() && !isOpenStreamingPlatformChatConnected() {
@@ -350,7 +350,7 @@ extension Model {
         return hasTwitchChatEmotes()
             || hasKickPusherEmotes()
             || hasYouTubeLiveChatEmotes()
-            || hasAfreecaTvChatEmotes()
+            || hasSoopChatEmotes()
             || hasOpenStreamingPlatformChatEmotes()
             || hasDLiveChatEmotes()
     }
