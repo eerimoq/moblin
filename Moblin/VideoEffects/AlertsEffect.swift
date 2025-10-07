@@ -75,11 +75,11 @@ enum AlertsEffectAlert {
     case twitchResubscribe(TwitchEventSubNotificationChannelSubscriptionMessageEvent)
     case twitchRaid(TwitchEventSubChannelRaidEvent)
     case twitchCheer(TwitchEventSubChannelCheerEvent)
-    case kickSubscription(username: String, months: Int)
-    case kickGiftedSubscriptions(username: String, count: Int, total: Int)
-    case kickHost(username: String, viewers: Int)
-    case kickReward(username: String, rewardTitle: String, userInput: String)
-    case kickKicks(username: String, giftName: String, amount: Int)
+    case kickSubscription(event: KickPusherSubscriptionEvent)
+    case kickGiftedSubscriptions(event: KickPusherGiftedSubscriptionsEvent)
+    case kickHost(event: KickPusherStreamHostEvent)
+    case kickReward(event: KickPusherRewardRedeemedEvent)
+    case kickKicks(event: KickPusherKicksGiftedEvent)
     case chatBotCommand(String, String)
     case speechToTextString(UUID)
 }
@@ -344,16 +344,16 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
             playTwitchRaid(event: event)
         case let .twitchCheer(event):
             playTwitchCheer(event: event)
-        case let .kickSubscription(username, months):
-            playKickSubscription(username: username, months: months)
-        case let .kickGiftedSubscriptions(username, count, total):
-            playKickGiftedSubscriptions(username: username, count: count, total: total)
-        case let .kickHost(username, viewers):
-            playKickHost(username: username, viewers: viewers)
-        case let .kickReward(username, rewardTitle, userInput):
-            playKickReward(username: username, rewardTitle: rewardTitle, userInput: userInput)
-        case let .kickKicks(username, giftName, amount):
-            playKickKicks(username: username, giftName: giftName, amount: amount)
+        case let .kickSubscription(event):
+            playKickSubscription(event: event)
+        case let .kickGiftedSubscriptions(event):
+            playKickGiftedSubscriptions(event: event)
+        case let .kickHost(event):
+            playKickHost(event: event)
+        case let .kickReward(event):
+            playKickReward(event: event)
+        case let .kickKicks(event):
+            playKickKicks(event: event)
         case let .chatBotCommand(command, name):
             playChatBotCommand(command: command, name: name)
         case let .speechToTextString(id):
@@ -459,68 +459,71 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
     }
 
     @MainActor
-    private func playKickSubscription(username: String, months: Int) {
+    private func playKickSubscription(event: KickPusherSubscriptionEvent) {
         guard settings.kick.subscriptions.enabled else {
             return
         }
         play(
             medias: kickSubscription,
-            username: username,
-            message: String(localized: "just subscribed! They've been subscribed for \(months) months!"),
+            username: event.username,
+            message: String(localized: "just subscribed! They've been subscribed for \(event.months) months!"),
             settings: settings.kick.subscriptions
         )
     }
 
     @MainActor
-    private func playKickGiftedSubscriptions(username: String, count: Int, total: Int) {
+    private func playKickGiftedSubscriptions(event: KickPusherGiftedSubscriptionsEvent) {
         guard settings.kick.giftedSubscriptions.enabled else {
             return
         }
         play(
             medias: kickGiftedSubscriptions,
-            username: username,
-            message: String(localized: "just gifted \(count) subscription(s)! They've gifted \(total) in total!"),
+            username: event.gifter_username,
+            message: String(localized: """
+            just gifted \(event.gifted_usernames.count) subscription(s)! They've \
+            gifted \(event.gifter_total) in total!
+            """),
             settings: settings.kick.giftedSubscriptions
         )
     }
 
     @MainActor
-    private func playKickHost(username: String, viewers: Int) {
+    private func playKickHost(event: KickPusherStreamHostEvent) {
         guard settings.kick.hosts.enabled else {
             return
         }
         play(
             medias: kickHost,
-            username: username,
-            message: String(localized: "is now hosting with \(viewers) viewers!"),
+            username: event.host_username,
+            message: String(localized: "is now hosting with \(event.number_viewers) viewers!"),
             settings: settings.kick.hosts
         )
     }
 
     @MainActor
-    private func playKickReward(username: String, rewardTitle: String, userInput: String) {
+    private func playKickReward(event: KickPusherRewardRedeemedEvent) {
         guard settings.kick.rewards.enabled else {
             return
         }
-        let baseMessage = String(localized: "redeemed \(rewardTitle)")
-        let message = userInput.isEmpty ? baseMessage : "\(baseMessage): \(userInput)"
+        let baseMessage = String(localized: "redeemed \(event.reward_title)")
+        let message = event.user_input.isEmpty ? baseMessage : "\(baseMessage): \(event.user_input)"
         play(
             medias: kickReward,
-            username: username,
+            username: event.username,
             message: message,
             settings: settings.kick.rewards
         )
     }
 
     @MainActor
-    private func playKickKicks(username: String, giftName: String, amount: Int) {
+    private func playKickKicks(event: KickPusherKicksGiftedEvent) {
         for (index, kickGift) in settings.kick.kickGifts.enumerated() {
             let matches: Bool
             switch kickGift.comparisonOperator {
             case .equal:
-                matches = amount == kickGift.amount
+                matches = event.gift.amount == kickGift.amount
             case .greaterEqual:
-                matches = amount >= kickGift.amount
+                matches = event.gift.amount >= kickGift.amount
             }
             guard matches, kickGift.alert.enabled else {
                 continue
@@ -528,11 +531,11 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
             guard index < kickGifts.count else {
                 return
             }
-            let formattedAmount = countFormatter.format(amount)
+            let formattedAmount = countFormatter.format(event.gift.amount)
             play(
                 medias: kickGifts[index],
-                username: username,
-                message: String(localized: "sent \(giftName) \(formattedAmount) Kicks!"),
+                username: event.sender.username,
+                message: String(localized: "sent \(event.gift.name) \(formattedAmount) Kicks!"),
                 settings: kickGift.alert
             )
             break

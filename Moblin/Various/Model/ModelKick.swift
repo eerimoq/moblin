@@ -199,7 +199,7 @@ extension Model: KickPusherDelegate {
         deleteChatUser(userId: userId)
     }
 
-    func kickPusherSubscription(event: SubscriptionEvent) {
+    func kickPusherSubscription(event: KickPusherSubscriptionEvent) {
         DispatchQueue.main.async {
             let text = String(localized: "just subscribed! They've been subscribed for \(event.months) months!")
             if self.stream.kickToastAlerts.subscriptions {
@@ -214,11 +214,11 @@ extension Model: KickPusherDelegate {
                     image: "party.popper"
                 )
             }
-            self.playAlert(alert: .kickSubscription(username: event.username, months: event.months))
+            self.playAlert(alert: .kickSubscription(event: event))
         }
     }
 
-    func kickPusherGiftedSubscription(event: GiftedSubscriptionsEvent) {
+    func kickPusherGiftedSubscription(event: KickPusherGiftedSubscriptionsEvent) {
         DispatchQueue.main.async {
             let user = event.gifter_username
             let text =
@@ -238,15 +238,11 @@ extension Model: KickPusherDelegate {
                     image: "gift"
                 )
             }
-            self.playAlert(alert: .kickGiftedSubscriptions(
-                username: user,
-                count: event.gifted_usernames.count,
-                total: event.gifter_total
-            ))
+            self.playAlert(alert: .kickGiftedSubscriptions(event: event))
         }
     }
 
-    func kickPusherRewardRedeemed(event: RewardRedeemedEvent) {
+    func kickPusherRewardRedeemed(event: KickPusherRewardRedeemedEvent) {
         DispatchQueue.main.async {
             let user = event.username
             let baseText = String(localized: "redeemed \(event.reward_title)")
@@ -263,15 +259,11 @@ extension Model: KickPusherDelegate {
                     image: "medal.star"
                 )
             }
-            self.playAlert(alert: .kickReward(
-                username: user,
-                rewardTitle: event.reward_title,
-                userInput: event.user_input
-            ))
+            self.playAlert(alert: .kickReward(event: event))
         }
     }
 
-    func kickPusherStreamHost(event: StreamHostEvent) {
+    func kickPusherStreamHost(event: KickPusherStreamHostEvent) {
         DispatchQueue.main.async {
             let user = event.host_username
             let text = String(localized: "is now hosting with \(event.number_viewers) viewers!")
@@ -287,11 +279,11 @@ extension Model: KickPusherDelegate {
                     image: "person.3"
                 )
             }
-            self.playAlert(alert: .kickHost(username: user, viewers: event.number_viewers))
+            self.playAlert(alert: .kickHost(event: event))
         }
     }
 
-    func kickPusherUserBanned(event: UserBannedEvent) {
+    func kickPusherUserBanned(event: KickPusherUserBannedEvent) {
         DispatchQueue.main.async {
             let text: String
             let title: String
@@ -317,7 +309,7 @@ extension Model: KickPusherDelegate {
         }
     }
 
-    func kickPusherKicksGifted(event: KicksGiftedEvent) {
+    func kickPusherKicksGifted(event: KickPusherKicksGiftedEvent) {
         DispatchQueue.main.async {
             let user = event.sender.username
             let amount = countFormatter.format(event.gift.amount)
@@ -335,7 +327,7 @@ extension Model: KickPusherDelegate {
                     image: "suit.diamond"
                 )
             }
-            self.playAlert(alert: .kickKicks(username: user, giftName: event.gift.name, amount: event.gift.amount))
+            self.playAlert(alert: .kickKicks(event: event))
         }
     }
 }

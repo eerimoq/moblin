@@ -51,7 +51,7 @@ struct SettingsView: View {
                     }
                 }
                 NavigationLink {
-                    LocationSettingsView(database: model.database, location: database.location, stream: $model.stream)
+                    LocationSettingsView(database: database, location: database.location, stream: $model.stream)
                 } label: {
                     Label("Location", systemImage: "location")
                 }
@@ -117,7 +117,7 @@ struct SettingsView: View {
                         Label("GoPro", systemImage: "appletvremote.gen1")
                     }
                     NavigationLink {
-                        CatPrintersSettingsView(catPrinters: model.database.catPrinters)
+                        CatPrintersSettingsView(catPrinters: database.catPrinters)
                     } label: {
                         Label("Cat printers", systemImage: "pawprint")
                     }
@@ -127,12 +127,12 @@ struct SettingsView: View {
                         Label("Tesla", systemImage: "car.side")
                     }
                     NavigationLink {
-                        CyclingPowerDevicesSettingsView(cyclingPowerDevices: model.database.cyclingPowerDevices)
+                        CyclingPowerDevicesSettingsView(cyclingPowerDevices: database.cyclingPowerDevices)
                     } label: {
                         Label("Cycling power devices", systemImage: "bicycle")
                     }
                     NavigationLink {
-                        HeartRateDevicesSettingsView(heartRateDevices: model.database.heartRateDevices)
+                        HeartRateDevicesSettingsView(heartRateDevices: database.heartRateDevices)
                     } label: {
                         Label("Heart rate devices", systemImage: "heart")
                     }
@@ -205,7 +205,7 @@ struct SettingsView: View {
                         Label("Import and export settings", systemImage: "gearshape")
                     }
                     NavigationLink {
-                        DeepLinkCreatorSettingsView(deepLinkCreator: model.database.deepLinkCreator)
+                        DeepLinkCreatorSettingsView(deepLinkCreator: database.deepLinkCreator)
                     } label: {
                         Label("Deep link creator", systemImage: "link.badge.plus")
                     }
