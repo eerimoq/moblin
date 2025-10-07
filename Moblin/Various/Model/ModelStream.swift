@@ -994,8 +994,5 @@ extension Model: MediaDelegate {
 }
 
 private func videoCaptureError() -> String {
-    return [
-        String(localized: "Try to use single or low-energy cameras."),
-        String(localized: "Try to lower stream FPS and resolution."),
-    ].joined(separator: "\n")
+    return String(localized: "Try to use single or low-energy cameras.")
 }
