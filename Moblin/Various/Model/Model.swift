@@ -67,6 +67,15 @@ let flameRedMessage = String(localized: "🔥 Flame is red 🔥")
 let flameRedSubMessage = String(localized: "Your device is hot and may overheat.")
 let unknownSad = String(localized: "Unknown 😢")
 
+private func randomBuyIconsTitle() -> String {
+    return [
+        String(localized: "👍 Buy Moblin icons if you like the app 👍"),
+        String(localized: "🍔 Buy Moblin icons to support the devs 🍔"),
+        String(localized: "🙈 Buy Moblin icons to hide this message 🙈"),
+        String(localized: "🙏 Buy Moblin icons please =) 🙏"),
+    ].randomElement()!
+}
+
 func formatWarning(_ message: String) -> String {
     return "⚠️ \(message) ⚠️"
 }
@@ -778,8 +787,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if enterForegroundCount < 500, (enterForegroundCount % 10) != 0 {
             return
         }
-        makeToast(title: String(localized: "💰 Buy Moblin icons to show some love ❤️"),
-                  subTitle: String(localized: "Tap this toast to open the shop."))
+        makeToast(title: randomBuyIconsTitle(),
+                  subTitle: String(localized: "Tap here to open the shop."))
         {
             self.toggleShowingPanel(type: nil, panel: .none)
             self.toggleShowingPanel(type: nil, panel: .cosmetics)
@@ -1343,7 +1352,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             autoStartHeartRateDevices()
             autoStartBlackSharkCoolerDevices()
             if showBackgroudStreamingDisabledToast {
-                makeStreamEndedToast(subTitle: String(localized: "Tap this toast to enable background streaming.")) {
+                makeStreamEndedToast(subTitle: String(localized: "Tap here to enable background streaming.")) {
                     self.stream.backgroundStreaming = true
                     self.makeToast(title: String(localized: "Background streaming enabled"))
                 }

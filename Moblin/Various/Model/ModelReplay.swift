@@ -87,7 +87,7 @@ extension Model {
     func makeReplayIsNotEnabledToast() {
         makeToast(
             title: String(localized: "Replay is not enabled"),
-            subTitle: String(localized: "Tap this toast to enable it.")
+            subTitle: String(localized: "Tap here to enable it.")
         ) {
             self.stream.replay.enabled = true
             self.streamReplayEnabledUpdated()
