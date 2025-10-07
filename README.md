@@ -53,7 +53,7 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
     - Timeout.
     - Delete message.
     - Gray out or hide deleted messages.
-    - Show reply..
+    - Show reply.
 - YouTube integration.
   - Chat.
 - AfreecaTv integration.
