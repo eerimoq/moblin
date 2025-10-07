@@ -123,6 +123,7 @@ struct SrtlaServerSettingsView: View {
                 Text("SRT(LA) server")
                 Spacer()
                 Text(status())
+                    .foregroundColor(.gray)
             }
         }
     }

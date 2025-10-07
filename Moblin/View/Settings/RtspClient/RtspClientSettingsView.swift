@@ -40,6 +40,7 @@ struct RtspClientSettingsView: View {
                 Text("RTSP client")
                 Spacer()
                 Text(status())
+                    .foregroundColor(.gray)
             }
         }
         .onAppear {
