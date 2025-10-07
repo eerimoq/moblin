@@ -47,7 +47,7 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
     - Cheered bits in chat.
 - Kick integration.
   - Number of viewers.
-  - Subscription, Host, and Kick Alerts.
+  - Subscription, host, and kicks.
   - Chat.
     - Ban.
     - Timeout.
@@ -56,7 +56,7 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
     - Show reply.
 - YouTube integration.
   - Chat.
-- AfreecaTv integration.
+- SOOP integration.
   - Scuffed chat.
 - Basic scenes.
   - Alerts widget.
