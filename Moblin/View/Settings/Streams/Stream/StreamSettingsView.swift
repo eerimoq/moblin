@@ -39,6 +39,12 @@ struct DLiveLogoAndNameView: View {
     }
 }
 
+struct OpenStreamingPlatformLogoAndNameView: View {
+    var body: some View {
+        PlatformLogoAndNameView(logo: "OpenStreamingPlatform", name: String(localized: "Open Streaming Platform"))
+    }
+}
+
 struct StreamPlatformsSettingsView: View {
     let stream: SettingsStream
 
@@ -71,7 +77,7 @@ struct StreamPlatformsSettingsView: View {
         NavigationLink {
             StreamOpenStreamingPlatformSettingsView(stream: stream)
         } label: {
-            Text("Open Streaming Platform")
+            OpenStreamingPlatformLogoAndNameView()
         }
     }
 }

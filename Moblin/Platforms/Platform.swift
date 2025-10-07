@@ -17,7 +17,7 @@ enum Platform: Codable {
         case .kick:
             return "KickLogo"
         case .openStreamingPlatform:
-            return nil
+            return "OpenStreamingPlatform"
         case .twitch:
             return "TwitchLogo"
         case .youTube:
