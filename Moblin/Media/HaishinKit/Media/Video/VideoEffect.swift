@@ -51,9 +51,26 @@ open class VideoEffect: NSObject {
         return false
     }
 
-    func applyEffects(_ image: CIImage, _ info: VideoEffectInfo) -> CIImage {
+    open func isEarly() -> Bool {
+        return false
+    }
+
+    func applyEffectsResizeMirrorMove(_ image: CIImage,
+                                      _ sceneWidget: SettingsSceneWidget,
+                                      _ mirror: Bool,
+                                      _ backgroundImageExtent: CGRect,
+                                      _ info: VideoEffectInfo) -> CIImage
+    {
+        let resizedImage = applyEffects(image, info, true)
+            .resizeMirror(sceneWidget, backgroundImageExtent.size, mirror)
+        return applyEffects(resizedImage, info, false)
+            .move(sceneWidget, backgroundImageExtent.size)
+            .cropped(to: backgroundImageExtent)
+    }
+
+    private func applyEffects(_ image: CIImage, _ info: VideoEffectInfo, _ early: Bool) -> CIImage {
         var image = image
-        for effect in effects {
+        for effect in effects where effect.isEarly() == early {
             image = effect.execute(image, info)
         }
         return image

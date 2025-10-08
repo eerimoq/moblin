@@ -35,6 +35,10 @@ final class Dewarp360Effect: VideoEffect {
         return filter.outputImage ?? image
     }
 
+    override func isEarly() -> Bool {
+        return true
+    }
+
     private func applySettings(settings: Dewarp360EffectSettings) {
         self.settings = settings
         switch settings {

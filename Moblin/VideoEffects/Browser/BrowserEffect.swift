@@ -144,10 +144,7 @@ final class BrowserEffect: VideoEffect {
         }
         var image = image
         if let sceneWidget {
-            let resizedImage = snapshot.resizeMirror(sceneWidget, image.extent.size, false)
-            image = applyEffects(resizedImage, info)
-                .move(sceneWidget, image.extent.size)
-                .cropped(to: image.extent)
+            image = applyEffectsResizeMirrorMove(snapshot, sceneWidget, false, image.extent, info)
                 .composited(over: image)
         }
         for crop in crops {
