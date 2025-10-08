@@ -497,18 +497,17 @@ func uploadImage(
     request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "content-type")
     var data = Data()
     if let message {
-        data.append("\r\n--\(boundary)\r\n".data(using: .utf8)!)
-        data.append("content-disposition: form-data; name=\"content\"\r\n\r\n".data(using: .utf8)!)
-        data.append(message.data(using: .utf8)!)
+        data.append("\r\n--\(boundary)\r\n".utf8Data)
+        data.append("content-disposition: form-data; name=\"content\"\r\n\r\n".utf8Data)
+        data.append(message.utf8Data)
     }
-    data.append("\r\n--\(boundary)\r\n".data(using: .utf8)!)
+    data.append("\r\n--\(boundary)\r\n".utf8Data)
     data.append(
-        "content-disposition: form-data; name=\"\(paramName)\"; filename=\"\(fileName)\"\r\n"
-            .data(using: .utf8)!
+        "content-disposition: form-data; name=\"\(paramName)\"; filename=\"\(fileName)\"\r\n".utf8Data
     )
-    data.append("content-type: image/jpeg\r\n\r\n".data(using: .utf8)!)
+    data.append("content-type: image/jpeg\r\n\r\n".utf8Data)
     data.append(image)
-    data.append("\r\n--\(boundary)--\r\n".data(using: .utf8)!)
+    data.append("\r\n--\(boundary)--\r\n".utf8Data)
     URLSession.shared.uploadTask(with: request, from: data, completionHandler: { _, response, _ in
         onCompleted(response?.http?.isSuccessful == true)
     }).resume()

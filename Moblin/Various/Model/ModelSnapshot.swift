@@ -93,7 +93,6 @@ extension Model {
         guard !stream.discordSnapshotWebhookOnlyWhenLive || isLive, let url = getDiscordWebhookUrl(isChatBot) else {
             return
         }
-        logger.debug("Uploading snapshot to Discord of \(image).")
         uploadImage(
             url: url,
             paramName: "snapshot",
