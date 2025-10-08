@@ -74,7 +74,7 @@ class SettingsVideoEffectRemoveBackground: Codable, ObservableObject {
 }
 
 class SettingsVideoEffectShape: Codable, ObservableObject {
-    @Published var cornerRadius: Float = 0
+    @Published var cornerRadius: Float = 0.1
     @Published var borderWidth: Double = 0
     var borderColor: RgbColor = .init(red: 0, green: 0, blue: 0)
     @Published var borderColorColor: Color
@@ -98,7 +98,7 @@ class SettingsVideoEffectShape: Codable, ObservableObject {
 
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        cornerRadius = container.decode(.cornerRadius, Float.self, 0)
+        cornerRadius = container.decode(.cornerRadius, Float.self, 0.1)
         borderWidth = container.decode(.borderWidth, Double.self, 0)
         borderColor = container.decode(.borderColor, RgbColor.self, .init(red: 0, green: 0, blue: 0))
         borderColorColor = borderColor.color()
