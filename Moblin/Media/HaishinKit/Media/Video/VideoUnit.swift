@@ -116,7 +116,7 @@ final class VideoUnit: NSObject {
     private var nextCompletedFaceDetectionsSequenceNumber: UInt64 = 0
     private var completedFaceDetections: [UInt64: FaceDetectionsCompletion] = [:]
     private var captureSize = CGSize(width: 1920, height: 1080)
-    private var outputSize = CGSize(width: 1920, height: 1080)
+    var outputSize = CGSize(width: 1920, height: 1080)
     private var fillFrame = true
     let session = makeCaptureSession()
     let encoder = VideoEncoder(lockQueue: processorPipelineQueue)
