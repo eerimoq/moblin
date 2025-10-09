@@ -8,6 +8,27 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "26.2011.0", date: "2025-10-09", changes: [
+        "• Make custom RTMP(S) in create stream wizard handle query parameters better. 🐛 kusayu612",
+        "• Always show recording and replay settings. 💡 Xenonnel",
+        "• Send releaseStream in RTMP client to make Oryx work. 💡 PoizenJam",
+        "• Tweak what is seen in basic settings mode.",
+        "• Show DLive chat. 🧑‍🏭 iChrisIRL",
+        "• Fix app sometimes hangs for a while after entering foreground on iOS 26.1?",
+        "  • Seems there is sometimes no audio after entering foreground...",
+        "• Kick support in Alerts widget. 🧑‍🏭 iChrisIRL",
+        "• Correct(?) dewarp 360 image size.",
+        "• Widget type picker showing on same page, not subpage.",
+        "• Do not mention try lower fps and resolution in video capture error message.",
+        "• Open Streaming Platform icon.",
+        "• Make ingests counters gray.",
+        "• Rename AfreecaTV to SOOP and add icon.",
+        "• Random \"Buy icons\" toast titles.",
+        "• Do not show toast if failing to setup Twitch alerts.",
+        "  • The icon in top left is red if not working.",
+        "• Rounded corners by default in shape effect.",
+        "• Show Apple weather attribution below Weather section in text widget.",
+    ]),
     Version(version: "26.2010.0", date: "2025-09-29", changes: [
         "• Make newly created text widgets render on video.",
         "  • Previously required app restart pretty much.",
