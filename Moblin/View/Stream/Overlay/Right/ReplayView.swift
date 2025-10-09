@@ -134,6 +134,7 @@ private struct ReplayControlsSaveButton: View {
 private struct ReplayControls: View {
     @EnvironmentObject var model: Model
     @ObservedObject var replay: ReplayProvider
+    @ObservedObject var orientation: Orientation
 
     private func portrait() -> some View {
         VStack(alignment: .trailing) {
@@ -178,7 +179,7 @@ private struct ReplayControls: View {
     }
 
     var body: some View {
-        if model.stream.portrait {
+        if orientation.isPortrait {
             portrait()
         } else {
             landscape()
@@ -264,11 +265,12 @@ private struct ReplayHistory: View {
 
 struct StreamOverlayRightReplayView: View {
     @ObservedObject var replay: ReplayProvider
+    let orientation: Orientation
 
     var body: some View {
         VStack(alignment: .trailing) {
             ReplayPreview(replay: replay)
-            ReplayControls(replay: replay)
+            ReplayControls(replay: replay, orientation: orientation)
             ReplayHistory(replay: replay)
         }
     }
