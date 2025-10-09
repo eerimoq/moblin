@@ -37,6 +37,10 @@ open class VideoEffect: NSObject {
         return (false, nil, nil)
     }
 
+    open func executeEarly(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
+        return image
+    }
+
     open func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
         return image
     }
@@ -51,26 +55,30 @@ open class VideoEffect: NSObject {
         return false
     }
 
-    open func isEarly() -> Bool {
-        return false
-    }
-
     func applyEffectsResizeMirrorMove(_ image: CIImage,
                                       _ sceneWidget: SettingsSceneWidget,
                                       _ mirror: Bool,
                                       _ backgroundImageExtent: CGRect,
                                       _ info: VideoEffectInfo) -> CIImage
     {
-        let resizedImage = applyEffects(image, info, true)
+        let resizedImage = applyEarlyEffects(image, info)
             .resizeMirror(sceneWidget, backgroundImageExtent.size, mirror)
-        return applyEffects(resizedImage, info, false)
+        return applyEffects(resizedImage, info)
             .move(sceneWidget, backgroundImageExtent.size)
             .cropped(to: backgroundImageExtent)
     }
 
-    private func applyEffects(_ image: CIImage, _ info: VideoEffectInfo, _ early: Bool) -> CIImage {
+    private func applyEarlyEffects(_ image: CIImage, _ info: VideoEffectInfo) -> CIImage {
         var image = image
-        for effect in effects where effect.isEarly() == early {
+        for effect in effects {
+            image = effect.executeEarly(image, info)
+        }
+        return image
+    }
+
+    private func applyEffects(_ image: CIImage, _ info: VideoEffectInfo) -> CIImage {
+        var image = image
+        for effect in effects {
             image = effect.execute(image, info)
         }
         return image

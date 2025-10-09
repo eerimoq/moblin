@@ -78,11 +78,21 @@ class SettingsVideoEffectShape: Codable, ObservableObject {
     @Published var borderWidth: Double = 0
     var borderColor: RgbColor = .init(red: 0, green: 0, blue: 0)
     @Published var borderColorColor: Color
+    @Published var cropEnabled: Bool = false
+    var cropX: Double = 0.25
+    var cropY: Double = 0.0
+    var cropWidth: Double = 0.5
+    var cropHeight: Double = 1.0
 
     enum CodingKeys: CodingKey {
         case cornerRadius,
              borderWidth,
-             borderColor
+             borderColor,
+             cropEnabled,
+             cropX,
+             cropY,
+             cropWidth,
+             cropHeight
     }
 
     init() {
@@ -94,6 +104,11 @@ class SettingsVideoEffectShape: Codable, ObservableObject {
         try container.encode(.cornerRadius, cornerRadius)
         try container.encode(.borderWidth, borderWidth)
         try container.encode(.borderColor, borderColor)
+        try container.encode(.cropEnabled, cropEnabled)
+        try container.encode(.cropX, cropX)
+        try container.encode(.cropY, cropY)
+        try container.encode(.cropWidth, cropWidth)
+        try container.encode(.cropHeight, cropHeight)
     }
 
     required init(from decoder: Decoder) throws {
@@ -102,6 +117,11 @@ class SettingsVideoEffectShape: Codable, ObservableObject {
         borderWidth = container.decode(.borderWidth, Double.self, 0)
         borderColor = container.decode(.borderColor, RgbColor.self, .init(red: 0, green: 0, blue: 0))
         borderColorColor = borderColor.color()
+        cropEnabled = container.decode(.cropEnabled, Bool.self, false)
+        cropX = container.decode(.cropX, Double.self, 0.25)
+        cropY = container.decode(.cropY, Double.self, 0.0)
+        cropWidth = container.decode(.cropWidth, Double.self, 0.5)
+        cropHeight = container.decode(.cropHeight, Double.self, 1.0)
     }
 
     func toSettings() -> ShapeEffectSettings {
@@ -111,7 +131,12 @@ class SettingsVideoEffectShape: Codable, ObservableObject {
                          red: Double(borderColor.red) / 255,
                          green: Double(borderColor.green) / 255,
                          blue: Double(borderColor.blue) / 255
-                     ))
+                     ),
+                     cropEnabled: cropEnabled,
+                     cropX: cropX,
+                     cropY: cropY,
+                     cropWidth: cropWidth,
+                     cropHeight: cropHeight)
     }
 }
 

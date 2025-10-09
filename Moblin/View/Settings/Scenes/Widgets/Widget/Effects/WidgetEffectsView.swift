@@ -21,21 +21,21 @@ private struct EffectView: View {
                     }
                 }
                 switch effect.type {
-                case .removeBackground:
-                    RemoveBackgroundView(
-                        widgetId: widgetId,
-                        effectIndex: effectIndex,
-                        removeBackground: effect.removeBackground
-                    )
                 case .shape:
-                    ShapeView(
+                    ShapeEffectView(
                         model: model,
                         widgetId: widgetId,
                         effectIndex: effectIndex,
                         shape: effect.shape
                     )
+                case .removeBackground:
+                    RemoveBackgroundEffectView(
+                        widgetId: widgetId,
+                        effectIndex: effectIndex,
+                        removeBackground: effect.removeBackground
+                    )
                 case .dewarp360:
-                    Dewarp360View(
+                    Dewarp360EffectView(
                         widgetId: widgetId,
                         effectIndex: effectIndex,
                         dewarp360: effect.dewarp360
