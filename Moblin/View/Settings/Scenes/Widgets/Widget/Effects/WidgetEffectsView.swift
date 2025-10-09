@@ -29,6 +29,7 @@ private struct EffectView: View {
                     )
                 case .shape:
                     ShapeView(
+                        model: model,
                         widgetId: widgetId,
                         effectIndex: effectIndex,
                         shape: effect.shape

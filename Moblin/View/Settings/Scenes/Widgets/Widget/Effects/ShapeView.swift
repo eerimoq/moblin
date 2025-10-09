@@ -1,23 +1,8 @@
 import SwiftUI
 
-struct ShapeView: View {
-    @EnvironmentObject var model: Model
-    let widgetId: UUID
-    let effectIndex: Int?
+private struct CornerRadiusView: View {
     @ObservedObject var shape: SettingsVideoEffectShape
-
-    private func updateWidget() {
-        guard let effectIndex, let effect = model.getEffectWithPossibleEffects(id: widgetId) else {
-            return
-        }
-        guard effectIndex < effect.effects.count else {
-            return
-        }
-        guard let effect = effect.effects[effectIndex] as? ShapeEffect else {
-            return
-        }
-        effect.setSettings(settings: shape.toSettings())
-    }
+    let updateWidget: () -> Void
 
     var body: some View {
         Section {
@@ -36,6 +21,14 @@ struct ShapeView: View {
         } header: {
             Text("Corner radius")
         }
+    }
+}
+
+private struct BorderView: View {
+    @ObservedObject var shape: SettingsVideoEffectShape
+    let updateWidget: () -> Void
+
+    var body: some View {
         Section {
             HStack {
                 Text("Width")
@@ -59,5 +52,30 @@ struct ShapeView: View {
         } header: {
             Text("Border")
         }
+    }
+}
+
+struct ShapeView: View {
+    let model: Model
+    let widgetId: UUID
+    let effectIndex: Int?
+    let shape: SettingsVideoEffectShape
+
+    private func updateWidget() {
+        guard let effectIndex, let effect = model.getEffectWithPossibleEffects(id: widgetId) else {
+            return
+        }
+        guard effectIndex < effect.effects.count else {
+            return
+        }
+        guard let effect = effect.effects[effectIndex] as? ShapeEffect else {
+            return
+        }
+        effect.setSettings(settings: shape.toSettings())
+    }
+
+    var body: some View {
+        CornerRadiusView(shape: shape, updateWidget: updateWidget)
+        BorderView(shape: shape, updateWidget: updateWidget)
     }
 }
