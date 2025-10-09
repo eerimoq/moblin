@@ -9,17 +9,13 @@ private struct RtmpHelpView: View {
             Text("Twitch")
                 .underline()
             HStack(spacing: 0) {
-                Text("Template: rtmp://")
-                Link(
-                    "nearby_ingest_endpoint",
-                    destination: URL(string: "https://help.twitch.tv/s/twitch-ingest-recommendation")!
-                )
-                .font(.footnote)
-                Text("/app/")
-                if !stream.twitchChannelName.isEmpty, let url =
-                    URL(
-                        string: "https://dashboard.twitch.tv/u/\(stream.twitchChannelName)/settings/stream"
-                    )
+                Text("""
+                Template: rtmp://\
+                [nearby_ingest_endpoint](https://help.twitch.tv/s/twitch-ingest-recommendation)\
+                /app/
+                """)
+                if !stream.twitchChannelName.isEmpty,
+                   let url = URL(string: "https://dashboard.twitch.tv/u/\(stream.twitchChannelName)/settings/stream")
                 {
                     Link("my_stream_key", destination: url)
                         .font(.footnote)
@@ -46,12 +42,11 @@ private struct RtmpHelpView: View {
             Text("Kick")
                 .underline()
             HStack(spacing: 0) {
-                Text("Template: rtmps://")
-                Link("stream_url", destination: URL(string: "https://kick.com/dashboard/settings/stream")!)
-                    .font(.footnote)
-                Text("/")
-                Link("my_stream_key", destination: URL(string: "https://kick.com/dashboard/settings/stream")!)
-                    .font(.footnote)
+                Text("""
+                Template: \
+                [Stream URL](https://dashboard.kick.com/channel/stream)/\
+                [Stream Key](https://dashboard.kick.com/channel/stream)
+                """)
             }
             Text(
                 """
@@ -80,23 +75,27 @@ private struct SrtHelpView: View {
         }
         Group {
             Group {
-                Text("BELABOX cloud SRTLA").underline()
+                Text("BELABOX cloud SRTLA")
+                    .underline()
                 Text("Example: srtla://uk.srt.belabox.net:5000?streamid=NtlPUqXGFV4Bcm448wgc4fUuLdvDB3")
                 Text("")
             }
             Group {
-                Text("BELABOX cloud SRT").underline()
+                Text("BELABOX cloud SRT")
+                    .underline()
                 Text("Example: srt://uk.srt.belabox.net:4000?streamid=NtlPUqXGFV4Bcm448wgc4fUuLdvDB3")
                 Text("")
             }
             Group {
-                Text("SRTLA server").underline()
+                Text("SRTLA server")
+                    .underline()
                 Text("Template: srtla://my_public_ip:my_public_port")
                 Text("Example:  srtla://foobar.org:4432")
                 Text("")
             }
             Group {
-                Text("SRT Live Server (SLS)").underline()
+                Text("SRT Live Server (SLS)")
+                    .underline()
                 Text("Template: srt://my_public_ip:my_public_port?streamid=publish/live/my_key")
                 Text("Example:  srt://120.12.32.12:4000?streamid=publish/live/feed")
                 Text("")
