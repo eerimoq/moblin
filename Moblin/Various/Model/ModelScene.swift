@@ -205,7 +205,6 @@ extension Model {
                 fontWeight: widget.text.fontWeight.toSystem(),
                 fontMonospacedDigits: widget.text.fontMonospacedDigits,
                 horizontalAlignment: widget.text.horizontalAlignment.toSystem(),
-                verticalAlignment: widget.text.verticalAlignment.toSystem(),
                 settingName: widget.name,
                 delay: widget.text.delay,
                 timersEndTime: widget.text.timers.map {

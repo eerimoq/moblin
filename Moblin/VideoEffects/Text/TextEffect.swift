@@ -513,7 +513,6 @@ final class TextEffect: VideoEffect {
     private var fontWeight: Font.Weight
     private var fontMonospacedDigits: Bool
     private var horizontalAlignment: HorizontalAlignment
-    private var verticalAlignment: VerticalAlignment
     private let settingName: String
     private var stats: Deque<TextEffectStats> = []
     private var overlay: CIImage?
@@ -541,7 +540,6 @@ final class TextEffect: VideoEffect {
         fontWeight: Font.Weight,
         fontMonospacedDigits: Bool,
         horizontalAlignment: HorizontalAlignment,
-        verticalAlignment: VerticalAlignment,
         settingName: String,
         delay: Double,
         timersEndTime: [ContinuousClock.Instant],
@@ -559,7 +557,6 @@ final class TextEffect: VideoEffect {
         self.fontWeight = fontWeight
         self.fontMonospacedDigits = fontMonospacedDigits
         self.horizontalAlignment = horizontalAlignment
-        self.verticalAlignment = verticalAlignment
         self.settingName = settingName
         self.delay = delay
         formatter.timersEndTime = timersEndTime
@@ -626,16 +623,7 @@ final class TextEffect: VideoEffect {
     }
 
     func setHorizontalAlignment(alignment: HorizontalAlignment) {
-        textQueue.sync {
-            self.horizontalAlignment = alignment
-        }
-        forceImageUpdate()
-    }
-
-    func setVerticalAlignment(alignment: VerticalAlignment) {
-        textQueue.sync {
-            self.verticalAlignment = alignment
-        }
+        horizontalAlignment = alignment
         forceImageUpdate()
     }
 
@@ -743,7 +731,7 @@ final class TextEffect: VideoEffect {
     private func updateOverlay(size: CGSize) -> SettingsSceneWidget {
         let now = ContinuousClock.now
         var newImage: UIImage?
-        let (sceneWidget, horizontalAlignment, forceUpdate, newImagePresent) = textQueue.sync {
+        let (sceneWidget, forceUpdate, newImagePresent) = textQueue.sync {
             if self.image != nil {
                 newImage = self.image
                 self.image = nil
@@ -754,7 +742,6 @@ final class TextEffect: VideoEffect {
             }
             return (
                 self.sceneWidget,
-                self.horizontalAlignment,
                 self.forceUpdate,
                 self.newImagePresent
             )
@@ -778,7 +765,7 @@ final class TextEffect: VideoEffect {
                 return
             }
             self.previousLines = lines
-            let text = VStack(alignment: horizontalAlignment, spacing: 2) {
+            let text = VStack(alignment: self.horizontalAlignment, spacing: 2) {
                 ForEach(lines) { line in
                     HStack(spacing: 0) {
                         ForEach(line.parts) { part in
