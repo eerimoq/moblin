@@ -352,6 +352,12 @@ private struct TextSelectionView: View {
                 FormatView(title: "{temperature}", description: String(localized: "Show temperature"), text: $value)
             } header: {
                 Text("Weather (if Settings -> Location is enabled)")
+            } footer: {
+                let image = Image(systemName: "apple.logo")
+                Text("""
+                Weather data is provided by \(image) Weather. \
+                [Legal information](https://weatherkit.apple.com/legal-attribution.html).
+                """)
             }
             Section {
                 if isPhone() {
