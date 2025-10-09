@@ -15,6 +15,7 @@ protocol SrtlaDelegate: AnyObject {
 private enum State {
     case idle
     case waitForRemoteSocketConnected
+    case waitForProbe
     case waitForGroupId
     case waitForRegistered
     case waitForLocalSocketListening
@@ -434,15 +435,23 @@ class SrtlaClient: NSObject {
 
 extension SrtlaClient: RemoteConnectionDelegate {
     func remoteConnectionOnSocketConnected(connection: RemoteConnection) {
-        guard state == .waitForRemoteSocketConnected else {
+        guard state == .waitForRemoteSocketConnected || state == .waitForProbe else {
             return
         }
         if passThrough {
             startListener()
         } else {
-            connection.sendSrtlaReg1()
-            state = .waitForGroupId
+            connection.probe()
+            state = .waitForProbe
         }
+    }
+
+    func remoteConnectionOnRegNgp(connection: RemoteConnection) {
+        guard state == .waitForProbe else {
+            return
+        }
+        connection.sendSrtlaReg1()
+        state = .waitForGroupId
     }
 
     func remoteConnectionOnReg2(groupId: Data) {
