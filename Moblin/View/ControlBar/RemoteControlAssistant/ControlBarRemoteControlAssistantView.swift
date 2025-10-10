@@ -1,3 +1,4 @@
+import Collections
 import SwiftUI
 
 private struct StatusItemView: View {
@@ -559,6 +560,8 @@ private struct DebugLoggingView: View {
 private struct ControlBarRemoteControlAssistantControlView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var remoteControl: RemoteControl
+    @State var presentingLog: Bool = false
+    @State var log: Deque<LogEntry> = []
 
     var body: some View {
         Section {
@@ -606,15 +609,21 @@ private struct ControlBarRemoteControlAssistantControlView: View {
             }
         }
         Section {
-            NavigationLink {
-                DebugLogSettingsView(
-                    log: model.remoteControlAssistantLog,
-                    clearLog: {
-                        model.clearRemoteControlAssistantLog()
-                    }
-                )
+            Button {
+                presentingLog = true
             } label: {
-                Text("Log")
+                HCenter {
+                    Text("Log")
+                }
+            }
+            .fullScreenCover(isPresented: $presentingLog) {
+                DebugLogSettingsView(model: model,
+                                     log: $log,
+                                     presentingLog: $presentingLog,
+                                     clearLog: { model.clearRemoteControlAssistantLog() })
+                    .task {
+                        log = model.remoteControlAssistantLog
+                    }
             }
         }
     }

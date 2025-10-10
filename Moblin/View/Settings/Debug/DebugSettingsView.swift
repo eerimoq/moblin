@@ -1,9 +1,12 @@
+import Collections
 import SwiftUI
 import WebKit
 
 struct DebugSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var debug: SettingsDebug
+    @State var presentingLog: Bool = false
+    @State var log: Deque<LogEntry> = []
 
     private func changeLogLines(value: String) -> String? {
         guard let lines = Int(value) else {
@@ -28,11 +31,24 @@ struct DebugSettingsView: View {
     var body: some View {
         Form {
             Section {
-                NavigationLink {
-                    DebugLogSettingsView(log: model.log, clearLog: { model.clearLog() })
+                Button {
+                    presentingLog = true
                 } label: {
-                    Text("Log")
+                    HCenter {
+                        Text("Log")
+                    }
                 }
+                .fullScreenCover(isPresented: $presentingLog) {
+                    DebugLogSettingsView(model: model,
+                                         log: $log,
+                                         presentingLog: $presentingLog,
+                                         clearLog: { model.clearLog() })
+                        .task {
+                            log = model.log
+                        }
+                }
+            }
+            Section {
                 Toggle(isOn: Binding(get: {
                     debug.logLevel == .debug
                 }, set: { value in
