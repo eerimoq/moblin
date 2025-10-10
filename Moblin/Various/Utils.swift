@@ -768,24 +768,7 @@ func fieldOfViewToZoom(fieldOfView: Float, zoomOne: Float = .pi / 2) -> Float {
 }
 
 extension Locale.Language {
-    func identifier() -> String? {
-        guard let languageCode else {
-            return nil
-        }
-        var identifier = "\(languageCode)"
-        if let script {
-            identifier += "-\(script)"
-        }
-        if let region {
-            identifier += "-\(region)"
-        }
-        return identifier
-    }
-
     func name() -> String {
-        guard let identifier = identifier() else {
-            return "Unknown"
-        }
-        return NSLocale.current.localizedString(forIdentifier: identifier) ?? "Unknown"
+        return NSLocale.current.localizedString(forIdentifier: minimalIdentifier) ?? "Unknown"
     }
 }

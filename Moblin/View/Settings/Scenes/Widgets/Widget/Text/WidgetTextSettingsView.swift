@@ -1,5 +1,6 @@
 import PhotosUI
 import SwiftUI
+import Translation
 
 private struct Suggestion: Identifiable {
     let id: Int
@@ -119,6 +120,99 @@ private struct FormatView: View {
                     .font(.title3)
             }
             Text(description)
+        }
+    }
+}
+
+@available(iOS 26, *)
+private struct Language: Identifiable {
+    var id: String {
+        identifier
+    }
+
+    var identifier: String
+    var name: String
+    var status: LanguageAvailability.Status
+}
+
+private struct SubtitlesWithLanguageToolbar: ToolbarContent {
+    @Binding var presentingLanguagePicker: Bool
+
+    var body: some ToolbarContent {
+        ToolbarItem(placement: .navigationBarTrailing) {
+            Button {
+                presentingLanguagePicker = false
+            } label: {
+                Image(systemName: "xmark")
+            }
+        }
+    }
+}
+
+@available(iOS 26, *)
+private struct SubtitlesWithLanguageView: View {
+    @EnvironmentObject var model: Model
+    @Binding var text: String
+    @State private var languages: [Language] = []
+    @State private var presentingLanguagePicker: Bool = false
+
+    var body: some View {
+        VStack(alignment: .leading) {
+            Button {
+                presentingLanguagePicker = true
+            } label: {
+                Text("{subtitles:<language-identifier>}")
+                    .font(.title3)
+            }
+            Text("Show subtitles in given language")
+        }
+        .sheet(isPresented: $presentingLanguagePicker) {
+            NavigationStack {
+                Form {
+                    Section {
+                        Text("Download languages in iOS Settings → Apps → Translate → Languages.")
+                    }
+                    Section {
+                        ForEach(languages) { language in
+                            switch language.status {
+                            case .installed:
+                                Button {
+                                    let value = "{subtitles:\(language.identifier)}"
+                                    text += value
+                                    model.makeToast(title: "Appended \(value) to widget text")
+                                    presentingLanguagePicker = false
+                                } label: {
+                                    Text(language.name)
+                                }
+                            case .supported:
+                                HStack {
+                                    Text(language.name)
+                                    Spacer()
+                                    Text("Not downloaded")
+                                }
+                            default:
+                                EmptyView()
+                            }
+                        }
+                    }
+                }
+                .navigationTitle("Subtitles language")
+                .toolbar {
+                    SubtitlesWithLanguageToolbar(presentingLanguagePicker: $presentingLanguagePicker)
+                }
+                .task {
+                    let availability = LanguageAvailability()
+                    let supportedLanguages = await availability.supportedLanguages
+                    languages = []
+                    for language in supportedLanguages {
+                        let status = await availability.status(from: Locale.current.language, to: language)
+                        languages.append(Language(identifier: language.minimalIdentifier,
+                                                  name: language.name(),
+                                                  status: status))
+                    }
+                    languages = languages.sorted(by: { $0.id < $1.id })
+                }
+            }
         }
     }
 }
@@ -314,13 +408,9 @@ private struct TextSelectionView: View {
                     description: String(localized: "Show subtitles in app language"),
                     text: $value
                 )
-                FormatView(title: "{subtitles:<language-identifier>}",
-                           description: String(localized: """
-                           Show subtitles in given language. Download languages in \
-                           iOS Settings → Apps → Translate → Languages. <language-identifier> is \
-                           en for English, de for German, zh-Hans for Chinese, ...
-                           """),
-                           text: $value)
+                if #available(iOS 26, *) {
+                    SubtitlesWithLanguageView(text: $value)
+                }
                 FormatView(title: "{lapTimes}", description: String(localized: "Show lap times"), text: $value)
                 FormatView(title: "{muted}", description: String(localized: "Show muted"), text: $value)
                 FormatView(title: "{browserTitle}", description: String(localized: "Show browser title"), text: $value)
