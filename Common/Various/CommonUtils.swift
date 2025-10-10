@@ -37,22 +37,11 @@ extension Substring {
 }
 
 func makeRtmpUri(url: String) -> String {
-    guard var url = URL(string: url) else {
+    let parts = url.split(separator: "/", omittingEmptySubsequences: false)
+    if parts.isEmpty {
         return ""
     }
-    var components = url.pathComponents
-    if components.count < 2 {
-        return ""
-    }
-    components.removeFirst()
-    components.removeLast()
-    var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)!
-    let path = components.joined(separator: "/")
-    urlComponents.path = "/\(path)"
-    urlComponents.query = nil
-    urlComponents.fragment = nil
-    url = urlComponents.url!
-    return "\(url)"
+    return parts[..<(parts.count - 1)].joined(separator: "/")
 }
 
 func makeRtmpStreamKey(url: String) -> String {

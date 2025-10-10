@@ -124,12 +124,12 @@ class RtmpStream {
 
     func setUrl(_ url: String) {
         streamKey = makeRtmpStreamKey(url: url)
-        self.url = url
+        self.url = makeRtmpUri(url: url)
     }
 
     func connect() {
         processorControlQueue.async {
-            self.connection.connect(makeRtmpUri(url: self.url))
+            self.connection.connect(self.url)
         }
     }
 
@@ -144,7 +144,7 @@ class RtmpStream {
             guard let self else {
                 return
             }
-            self.connection.connect(makeRtmpUri(url: self.url))
+            self.connection.connect(self.url)
         }
     }
 
