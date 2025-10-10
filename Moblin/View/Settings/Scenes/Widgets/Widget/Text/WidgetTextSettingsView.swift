@@ -223,35 +223,8 @@ private struct GeneralFormatSpecifierView: View {
     var body: some View {
         NavigationLink {
             Form {
-                FormatView(
-                    title: "{time}",
-                    description: String(localized: "Show time as HH:MM:SS"),
-                    text: $value
-                )
-                FormatView(
-                    title: "{shortTime}",
-                    description: String(localized: "Show time as HH:MM"),
-                    text: $value
-                )
-                FormatView(title: "{date}", description: String(localized: "Show date"), text: $value)
-                FormatView(title: "{fullDate}", description: String(localized: "Show full date"), text: $value)
-                FormatView(title: "{timer}", description: String(localized: "Show a timer"), text: $value)
-                FormatView(
-                    title: "{stopwatch}",
-                    description: String(localized: "Show a stopwatch"),
-                    text: $value
-                )
                 FormatView(title: "{checkbox}", description: String(localized: "Show a checkbox"), text: $value)
                 FormatView(title: "{rating}", description: String(localized: "Show a 0-5 rating"), text: $value)
-                FormatView(
-                    title: "{subtitles}",
-                    description: String(localized: "Show subtitles in app language"),
-                    text: $value
-                )
-                if #available(iOS 26, *) {
-                    SubtitlesWithLanguageView(text: $value)
-                }
-                FormatView(title: "{lapTimes}", description: String(localized: "Show lap times"), text: $value)
                 FormatView(title: "{muted}", description: String(localized: "Show muted"), text: $value)
                 FormatView(
                     title: "{browserTitle}",
@@ -273,6 +246,39 @@ private struct GeneralFormatSpecifierView: View {
             .navigationTitle("General")
         } label: {
             Text("General")
+        }
+    }
+}
+
+private struct TimeFormatSpecifierView: View {
+    @Binding var value: String
+
+    var body: some View {
+        NavigationLink {
+            Form {
+                FormatView(
+                    title: "{time}",
+                    description: String(localized: "Show time as HH:MM:SS"),
+                    text: $value
+                )
+                FormatView(
+                    title: "{shortTime}",
+                    description: String(localized: "Show time as HH:MM"),
+                    text: $value
+                )
+                FormatView(title: "{date}", description: String(localized: "Show date"), text: $value)
+                FormatView(title: "{fullDate}", description: String(localized: "Show full date"), text: $value)
+                FormatView(title: "{timer}", description: String(localized: "Show a timer"), text: $value)
+                FormatView(
+                    title: "{stopwatch}",
+                    description: String(localized: "Show a stopwatch"),
+                    text: $value
+                )
+                FormatView(title: "{lapTimes}", description: String(localized: "Show lap times"), text: $value)
+            }
+            .navigationTitle("Time")
+        } label: {
+            Text("Time")
         }
     }
 }
@@ -336,6 +342,28 @@ private struct WeatherFormatSpecifierView: View {
             .navigationTitle("Weather")
         } label: {
             Text("Weather")
+        }
+    }
+}
+
+private struct LanguageFormatSpecifierView: View {
+    @Binding var value: String
+
+    var body: some View {
+        NavigationLink {
+            Form {
+                FormatView(
+                    title: "{subtitles}",
+                    description: String(localized: "Show subtitles in app language"),
+                    text: $value
+                )
+                if #available(iOS 26, *) {
+                    SubtitlesWithLanguageView(text: $value)
+                }
+            }
+            .navigationTitle("Language")
+        } label: {
+            Text("Language")
         }
     }
 }
@@ -629,8 +657,10 @@ private struct TextSelectionView: View {
             }
             Section {
                 GeneralFormatSpecifierView(value: $value)
+                TimeFormatSpecifierView(value: $value)
                 LocationFormatSpecifierView(value: $value)
                 WeatherFormatSpecifierView(value: $value)
+                LanguageFormatSpecifierView(value: $value)
                 WorkoutFormatSpecifierView(model: model, value: $value)
                 TeslaFormatSpecifierView(value: $value)
                 CyclingFormatSpecifierView(value: $value)
