@@ -177,7 +177,7 @@ class MediaPlayer {
         } catch {
             logger.info("media-player: Failed to create reader with error: \(error)")
         }
-        assetDuration = max(asset.duration.seconds, 1)
+        assetDuration = max(asset.duration(), 1)
         asset.loadTracks(withMediaType: .video) { tracks, error in
             mediaPlayerQueue.async {
                 self.loadVideoTrackCompletion(tracks: tracks, error: error)
@@ -327,4 +327,17 @@ class MediaPlayer {
 
 private func outputPresentationTimeStamp() -> CMTime {
     return currentPresentationTimeStamp() + CMTime(seconds: mediaPlayerLatency)
+}
+
+extension AVAsset {
+    func duration() -> Double {
+        let semaphore = DispatchSemaphore(value: 0)
+        var duration: Double?
+        Task {
+            duration = try await load(.duration).seconds
+            semaphore.signal()
+        }
+        semaphore.wait()
+        return duration ?? 0
+    }
 }
