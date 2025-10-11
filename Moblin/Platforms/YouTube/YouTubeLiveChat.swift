@@ -163,7 +163,7 @@ final class YouTubeLiveChat: NSObject {
             onOk: handleOk,
             settings: settings
         )
-        task = Task.init {
+        task = Task {
             while true {
                 do {
                     try await getInitialContinuation()

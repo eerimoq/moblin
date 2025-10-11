@@ -115,7 +115,7 @@ class OpenStreamingPlatformChat {
     func start() {
         stop()
         logger.debug("open-streaming-platform: start")
-        task = Task.init {
+        task = Task {
             while true {
                 do {
                     try await setupConnection()

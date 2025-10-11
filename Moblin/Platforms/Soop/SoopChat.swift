@@ -136,7 +136,7 @@ final class SoopChat: NSObject {
     func start() {
         stop()
         logger.debug("soop: start")
-        task = Task.init {
+        task = Task {
             while true {
                 do {
                     let info = try await getChannelInfo()
@@ -189,7 +189,7 @@ final class SoopChat: NSObject {
     }
 
     private func setupKeepAlive() {
-        keepAliveTask = Task.init {
+        keepAliveTask = Task {
             let message = packMessage(kind: .null, parts: [])
             while !Task.isCancelled {
                 try await sleep(seconds: 60)
