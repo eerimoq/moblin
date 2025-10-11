@@ -62,10 +62,6 @@ class MediaPlayer {
         }
     }
 
-    func updateSettingsInner(settings: SettingsMediaPlayer) {
-        self.settings = settings
-    }
-
     func play() {
         mediaPlayerQueue.async {
             self.playing = true
@@ -103,6 +99,10 @@ class MediaPlayer {
         mediaPlayerQueue.async {
             self.seeking = on
         }
+    }
+
+    private func updateSettingsInner(settings: SettingsMediaPlayer) {
+        self.settings = settings
     }
 
     private func activateInner() {
