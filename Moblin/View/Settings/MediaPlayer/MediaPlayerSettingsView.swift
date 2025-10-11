@@ -62,21 +62,26 @@ struct MediaPlayerSettingsView: View {
                     }
                     PhotosPicker(selection: $selectedVideoItem, matching: .videos) {
                         HCenter {
-                            Text("Add")
+                            if selectedVideoItem != nil {
+                                ProgressView()
+                            } else {
+                                Text("Add")
+                            }
                         }
                     }
+                    .disabled(selectedVideoItem != nil)
                     .onChange(of: selectedVideoItem) { videoItem in
-                        selectedVideoItem = nil
                         videoItem?.loadTransferable(type: Video.self) { result in
-                            switch result {
-                            case let .success(video?):
-                                DispatchQueue.main.async {
+                            DispatchQueue.main.async {
+                                switch result {
+                                case let .success(video?):
                                     self.appendMedia(url: video.url)
+                                case .success(nil):
+                                    logger.error("media-player: Media is nil")
+                                case let .failure(error):
+                                    logger.error("media-player: Media error: \(error)")
                                 }
-                            case .success(nil):
-                                logger.error("media-player: Media is nil")
-                            case let .failure(error):
-                                logger.error("media-player: Media error: \(error)")
+                                selectedVideoItem = nil
                             }
                         }
                     }
