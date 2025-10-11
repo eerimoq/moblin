@@ -280,8 +280,8 @@ struct StreamVideoSettingsView: View {
             ResolutionSettingsView(stream: stream)
             FpsSettingsView(stream: stream)
             LowLightBoostSettingsView(stream: stream)
+            CodecSettingsView(stream: stream)
             if database.showAllSettings {
-                CodecSettingsView(stream: stream)
                 BitrateSettingsView(database: database, stream: stream)
                 KeyFrameIntervalSettingsView(stream: stream)
                 BFramesSettingsView(stream: stream)
