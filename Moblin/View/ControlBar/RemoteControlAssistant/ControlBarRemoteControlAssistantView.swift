@@ -629,7 +629,7 @@ private struct ControlBarRemoteControlAssistantControlView: View {
     }
 }
 
-private struct StreamerSelectionView: View {
+private struct StreamerSelectionButtonView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var remoteControl: RemoteControl
 
@@ -666,7 +666,7 @@ private struct ButtonsView: View {
             Spacer()
             VStack(alignment: .trailing) {
                 HStack(spacing: 0) {
-                    StreamerSelectionView(remoteControl: model.remoteControl)
+                    StreamerSelectionButtonView(remoteControl: model.remoteControl)
                     CloseButtonView {
                         model.showingRemoteControl = false
                         model.setGlobalButtonState(type: .remote, isOn: model.showingRemoteControl)
@@ -693,6 +693,18 @@ private struct StreamersToolbar: ToolbarContent {
     }
 }
 
+private struct StreamerNotConfiguredView: View {
+    var body: some View {
+        Text("No streamer selected.")
+    }
+}
+
+private struct WaitingForStreamerView: View {
+    var body: some View {
+        Text("Waiting for the remote control streamer to connect...")
+    }
+}
+
 private struct ControlBarRemoteControlAssistantInnerView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var remoteControlSettings: SettingsRemoteControl
@@ -702,16 +714,18 @@ private struct ControlBarRemoteControlAssistantInnerView: View {
 
     private func title() -> String {
         if let streamerName = remoteControlSettings.getSelectedStreamerName() {
-            return "Remote control assistant (\(streamerName))"
+            return String(localized: "Remote control assistant") + " (\(streamerName))"
         } else {
-            return "Remote control assistant"
+            return String(localized: "Remote control assistant")
         }
     }
 
     var body: some View {
         ZStack {
             if remoteControl.assistantShowPreviewFullScreen {
-                if model.isRemoteControlAssistantConnected() {
+                if !model.isRemoteControlAssistantConfigured() {
+                    StreamerNotConfiguredView()
+                } else if model.isRemoteControlAssistantConnected() {
                     if let preview = remoteControl.preview {
                         Image(uiImage: preview)
                             .resizable()
@@ -724,13 +738,17 @@ private struct ControlBarRemoteControlAssistantInnerView: View {
                         Text("No preview received yet.")
                     }
                 } else {
-                    Text("Waiting for the remote control streamer to connect...")
+                    WaitingForStreamerView()
                 }
             } else {
                 HStack(spacing: 0) {
-                    if !model.isRemoteControlAssistantConnected() {
+                    if !model.isRemoteControlAssistantConfigured() {
                         Form {
-                            Text("Waiting for the remote control streamer to connect...")
+                            StreamerNotConfiguredView()
+                        }
+                    } else if !model.isRemoteControlAssistantConnected() {
+                        Form {
+                            WaitingForStreamerView()
                         }
                     } else if orientation.isPortrait {
                         Form {
