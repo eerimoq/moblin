@@ -66,7 +66,6 @@ private struct TextEditNavigationViewInner: View {
 }
 
 struct TextEditNavigationView: View {
-    @Environment(\.dismiss) var dismiss
     private let title: String
     private let initialValue: String
     @State private var value: String
