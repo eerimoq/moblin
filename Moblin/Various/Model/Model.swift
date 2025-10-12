@@ -899,7 +899,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         setAllowVideoRangePixelFormat()
         setExternalDisplayContent()
         portraitVideoOffsetFromTop = database.portraitVideoOffsetFromTop
-        audioUnitRemoveWindNoise = database.debug.removeWindNoise
         quickButtonChatState.showFirstTimeChatterMessage = database.chat.showFirstTimeChatterMessage
         quickButtonChatState.showNewFollowerMessage = database.chat.showNewFollowerMessage
         autoSceneSwitcher.currentSwitcherId = database.autoSceneSwitchers.switcherId

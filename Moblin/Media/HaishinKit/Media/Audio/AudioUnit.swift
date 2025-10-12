@@ -1,8 +1,6 @@
 import AVFoundation
 import Collections
 
-var audioUnitRemoveWindNoise = false
-
 struct AudioUnitAttachParams {
     let device: AVCaptureDevice?
     let builtinDelay: Double
@@ -104,19 +102,6 @@ final class AudioUnit: NSObject {
             session.removeOutput(output)
         }
         input = try AVCaptureDeviceInput(device: device)
-        if audioUnitRemoveWindNoise {
-            if #available(iOS 18.0, *) {
-                if input!.isWindNoiseRemovalSupported {
-                    input!.multichannelAudioMode = .stereo
-                    input!.isWindNoiseRemovalEnabled = true
-                    logger.info("audio-unit: Wind noise removal enabled is \(input!.isWindNoiseRemovalEnabled)")
-                } else {
-                    logger.info("audio-unit: Wind noise removal is not supported on this device")
-                }
-            } else {
-                logger.info("audio-unit: Wind noise removal needs iOS 18+")
-            }
-        }
         if session.canAddInput(input!) {
             session.addInput(input!)
         }
