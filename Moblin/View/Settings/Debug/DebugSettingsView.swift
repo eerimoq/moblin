@@ -73,16 +73,6 @@ struct DebugSettingsView: View {
                 } label: {
                     Text("Video")
                 }
-                HStack {
-                    Text("Video blackish")
-                    Slider(
-                        value: $debug.cameraSwitchRemoveBlackish,
-                        in: 0.0 ... 1.0,
-                        step: 0.1
-                    )
-                    Text("\(formatOneDecimal(debug.cameraSwitchRemoveBlackish)) s")
-                        .frame(width: 40)
-                }
                 Toggle("Bitrate drop fix", isOn: $debug.bitrateDropFix)
                     .onChange(of: debug.bitrateDropFix) { _ in
                         model.setBitrateDropFix()

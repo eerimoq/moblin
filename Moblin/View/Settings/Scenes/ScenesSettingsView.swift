@@ -71,6 +71,7 @@ private struct ScenesListView: View {
 private struct ScenesSwitchTransition: View {
     @EnvironmentObject var model: Model
     @ObservedObject var database: Database
+    @ObservedObject var debug: SettingsDebug
 
     var body: some View {
         Section {
@@ -83,6 +84,16 @@ private struct ScenesSwitchTransition: View {
                 model.setSceneSwitchTransition()
             }
             Toggle("Force scene switch transition", isOn: $database.forceSceneSwitchTransition)
+            HStack {
+                Text("Video blackish")
+                Slider(
+                    value: $debug.cameraSwitchRemoveBlackish,
+                    in: 0.0 ... 1.0,
+                    step: 0.1
+                )
+                Text("\(formatOneDecimal(debug.cameraSwitchRemoveBlackish)) s")
+                    .frame(width: 40)
+            }
         } footer: {
             Text("""
             RTMP, SRT(LA), screen capture and media player video sources can instantly be switched \
@@ -148,7 +159,7 @@ struct ScenesSettingsView: View {
                 AutoSwitchersSettingsView(autoSceneSwitchers: model.database.autoSceneSwitchers, showSelector: true)
                 DisconnectProtectionSettingsView(database: model.database,
                                                  disconnectProtection: model.database.disconnectProtection)
-                ScenesSwitchTransition(database: model.database)
+                ScenesSwitchTransition(database: model.database, debug: model.database.debug)
                 RemoteSceneView(selectedSceneId: model.database.remoteSceneId)
             }
             ReloadBrowserSources()
