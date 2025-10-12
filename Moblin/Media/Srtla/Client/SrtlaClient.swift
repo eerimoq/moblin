@@ -305,7 +305,7 @@ class SrtlaClient: NSObject {
         var newRemoteConnections: [RemoteConnection] = []
         for connection in remoteConnections {
             if let interface = connection.interface {
-                if path.availableInterfaces.contains(interface) {
+                if path.uniqueAvailableInterfaces().contains(interface) {
                     newRemoteConnections.append(connection)
                 } else {
                     stopRemote(connection: connection)
@@ -315,7 +315,7 @@ class SrtlaClient: NSObject {
             }
         }
         let interfaceTypes: [NWInterface.InterfaceType] = [.cellular, .wifi, .wiredEthernet]
-        for interface in path.availableInterfaces where interfaceTypes.contains(interface.type) {
+        for interface in path.uniqueAvailableInterfaces() where interfaceTypes.contains(interface.type) {
             guard !newRemoteConnections.contains(where: { connection in
                 connection.interface == interface
             }) else {
