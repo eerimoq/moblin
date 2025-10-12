@@ -132,22 +132,6 @@ private struct RemoteSceneView: View {
     }
 }
 
-private struct ReloadBrowserSources: View {
-    @EnvironmentObject var model: Model
-
-    var body: some View {
-        Section {
-            Button {
-                model.reloadBrowserWidgets()
-            } label: {
-                HCenter {
-                    Text("Reload browser widgets")
-                }
-            }
-        }
-    }
-}
-
 struct ScenesSettingsView: View {
     @EnvironmentObject var model: Model
 
@@ -162,7 +146,6 @@ struct ScenesSettingsView: View {
                 ScenesSwitchTransition(database: model.database, debug: model.database.debug)
                 RemoteSceneView(selectedSceneId: model.database.remoteSceneId)
             }
-            ReloadBrowserSources()
         }
         .navigationTitle("Scenes")
     }
