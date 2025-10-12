@@ -732,27 +732,6 @@ extension Model {
         return CaptureDevice(device: device, id: getBuiltinCameraId(device.uniqueID))
     }
 
-    func setGlobalToneMapping(on: Bool) {
-        guard let cameraDevice else {
-            return
-        }
-        guard cameraDevice.activeFormat.isGlobalToneMappingSupported else {
-            logger.info("Global tone mapping is not supported")
-            return
-        }
-        do {
-            try cameraDevice.lockForConfiguration()
-            cameraDevice.isGlobalToneMappingEnabled = on
-            cameraDevice.unlockForConfiguration()
-        } catch {
-            logger.info("Failed to set global tone mapping")
-        }
-    }
-
-    func getGlobalToneMappingOn() -> Bool {
-        return cameraDevice?.isGlobalToneMappingEnabled ?? false
-    }
-
     private func statusCameraText() -> String {
         return getCameraPositionName(scene: findEnabledScene(id: sceneSelector.selectedSceneId))
     }

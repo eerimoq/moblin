@@ -107,11 +107,6 @@ struct DebugSettingsView: View {
                         .frame(width: 40)
                 }
                 Toggle("Relaxed bitrate decrement after scene switch", isOn: $debug.relaxedBitrate)
-                Toggle("Global tone mapping", isOn: Binding(get: {
-                    model.getGlobalToneMappingOn()
-                }, set: { value in
-                    model.setGlobalToneMapping(on: value)
-                }))
                 Toggle("MetalPetal filters", isOn: $debug.metalPetalFilters)
                     .onChange(of: debug.metalPetalFilters) { _ in
                         model.setMetalPetalFilters()
