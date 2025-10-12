@@ -68,37 +68,44 @@ private struct ScenesListView: View {
     }
 }
 
-private struct ScenesSwitchTransition: View {
+private struct SceneSwitching: View {
     @EnvironmentObject var model: Model
     @ObservedObject var database: Database
     @ObservedObject var debug: SettingsDebug
 
     var body: some View {
-        Section {
-            Picker("Scene switch transition", selection: $database.sceneSwitchTransition) {
-                ForEach(SettingsSceneSwitchTransition.allCases, id: \.self) {
-                    Text($0.toString())
+        NavigationLink {
+            Form {
+                Section {
+                    Picker("Transition", selection: $database.sceneSwitchTransition) {
+                        ForEach(SettingsSceneSwitchTransition.allCases, id: \.self) {
+                            Text($0.toString())
+                        }
+                    }
+                    .onChange(of: database.sceneSwitchTransition) { _ in
+                        model.setSceneSwitchTransition()
+                    }
+                    Toggle("Force transition", isOn: $database.forceSceneSwitchTransition)
+                    HStack {
+                        Text("Video blackish")
+                        Slider(
+                            value: $debug.cameraSwitchRemoveBlackish,
+                            in: 0.0 ... 1.0,
+                            step: 0.1
+                        )
+                        Text("\(formatOneDecimal(debug.cameraSwitchRemoveBlackish)) s")
+                            .frame(width: 40)
+                    }
+                } footer: {
+                    Text("""
+                    RTMP, SRT(LA), screen capture and media player video sources can instantly be switched \
+                    to, but if you want consistency you can force scene switch transitions to these as well.
+                    """)
                 }
             }
-            .onChange(of: database.sceneSwitchTransition) { _ in
-                model.setSceneSwitchTransition()
-            }
-            Toggle("Force scene switch transition", isOn: $database.forceSceneSwitchTransition)
-            HStack {
-                Text("Video blackish")
-                Slider(
-                    value: $debug.cameraSwitchRemoveBlackish,
-                    in: 0.0 ... 1.0,
-                    step: 0.1
-                )
-                Text("\(formatOneDecimal(debug.cameraSwitchRemoveBlackish)) s")
-                    .frame(width: 40)
-            }
-        } footer: {
-            Text("""
-            RTMP, SRT(LA), screen capture and media player video sources can instantly be switched \
-            to, but if you want consistency you can force scene switch transitions to these as well.
-            """)
+            .navigationTitle("Scene switching")
+        } label: {
+            Text("Scene switching")
         }
     }
 }
@@ -140,10 +147,10 @@ struct ScenesSettingsView: View {
             ScenesListView(database: model.database)
             WidgetsSettingsView(database: model.database)
             if model.database.showAllSettings {
+                SceneSwitching(database: model.database, debug: model.database.debug)
                 AutoSwitchersSettingsView(autoSceneSwitchers: model.database.autoSceneSwitchers, showSelector: true)
                 DisconnectProtectionSettingsView(database: model.database,
                                                  disconnectProtection: model.database.disconnectProtection)
-                ScenesSwitchTransition(database: model.database, debug: model.database.debug)
                 RemoteSceneView(selectedSceneId: model.database.remoteSceneId)
             }
         }
