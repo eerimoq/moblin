@@ -217,10 +217,14 @@ struct WidgetVideoSourceSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var widget: SettingsWidget
     @ObservedObject var videoSource: SettingsWidgetVideoSource
+    @State private var showingScreenCaptureAlert = false
 
     private func onCameraChange(cameraId: String) {
         videoSource.updateCameraId(settingsCameraId: model.cameraIdToSettingsCameraId(cameraId: cameraId))
         model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
+        if model.isScreenCaptureCamera(cameraId: cameraId) {
+            showingScreenCaptureAlert = true
+        }
     }
 
     private func setEffectSettings() {
@@ -246,6 +250,13 @@ struct WidgetVideoSourceSettingsView: View {
                     Text(model.getCameraPositionName(videoSourceWidget: videoSource))
                         .foregroundColor(.gray)
                         .lineLimit(1)
+                }
+            }
+            .alert("Start a screen capture by long-pressing the record button in iOS Control Center and select Moblin.",
+                   isPresented: $showingScreenCaptureAlert)
+            {
+                Button("Got it") {
+                    showingScreenCaptureAlert = false
                 }
             }
         }

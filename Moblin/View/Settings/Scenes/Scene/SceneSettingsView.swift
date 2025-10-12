@@ -100,6 +100,7 @@ struct SceneSettingsView: View {
     @ObservedObject var database: Database
     @ObservedObject var scene: SettingsScene
     @State private var showingAddWidget = false
+    @State private var showingScreenCaptureAlert = false
 
     var widgets: [SettingsWidget] {
         model.database.widgets
@@ -144,6 +145,9 @@ struct SceneSettingsView: View {
     private func onCameraChange(cameraId: String) {
         scene.updateCameraId(settingsCameraId: model.cameraIdToSettingsCameraId(cameraId: cameraId))
         model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
+        if model.isScreenCaptureCamera(cameraId: cameraId) {
+            showingScreenCaptureAlert = true
+        }
     }
 
     var body: some View {
@@ -185,6 +189,16 @@ struct SceneSettingsView: View {
                         }
                     } icon: {
                         Image(systemName: "camera")
+                    }
+                }
+                .alert(
+                    """
+                    Start a screen capture by long-pressing the record button in iOS Control Center and select Moblin.
+                    """,
+                    isPresented: $showingScreenCaptureAlert
+                ) {
+                    Button("Got it") {
+                        showingScreenCaptureAlert = false
                     }
                 }
                 if scene.cameraPosition != .none {
