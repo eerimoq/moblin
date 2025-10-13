@@ -202,48 +202,54 @@ struct SceneSettingsView: View {
                         showingScreenCaptureAlert = false
                     }
                 }
-                if scene.cameraPosition != .none {
-                    VideoSourceRotationView(selectedRotation: $scene.videoSourceRotation)
-                        .onChange(of: scene.videoSourceRotation) { _ in
-                            model.sceneUpdated(updateRemoteScene: false)
-                        }
-                }
-                Toggle("Override video stabilization", isOn: $scene.overrideVideoStabilizationMode)
-                    .onChange(of: scene.overrideVideoStabilizationMode) { _ in
-                        model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
+                if database.showAllSettings {
+                    if scene.cameraPosition != .none {
+                        VideoSourceRotationView(selectedRotation: $scene.videoSourceRotation)
+                            .onChange(of: scene.videoSourceRotation) { _ in
+                                model.sceneUpdated(updateRemoteScene: false)
+                            }
                     }
-                if scene.overrideVideoStabilizationMode {
-                    VideoStabilizationView(model: model, scene: scene)
-                }
-                if scene.cameraPosition != .none {
-                    Toggle("Fill frame", isOn: $scene.fillFrame)
-                        .onChange(of: scene.fillFrame) { _ in
+                    Toggle("Override video stabilization", isOn: $scene.overrideVideoStabilizationMode)
+                        .onChange(of: scene.overrideVideoStabilizationMode) { _ in
                             model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
                         }
+                    if scene.overrideVideoStabilizationMode {
+                        VideoStabilizationView(model: model, scene: scene)
+                    }
+                    if scene.cameraPosition != .none {
+                        Toggle("Fill frame", isOn: $scene.fillFrame)
+                            .onChange(of: scene.fillFrame) { _ in
+                                model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
+                            }
+                    }
                 }
             } header: {
                 Text("Video source")
             } footer: {
-                Text("""
-                Enable Override video stabilization to override Settings → Camera → Video \
-                stabilization in this scene.
-                """)
-            }
-            Section {
-                Toggle("Override", isOn: $scene.overrideMic)
-                    .onChange(of: scene.overrideMic) { _ in
-                        model.switchMicIfNeededAfterSceneSwitch()
-                    }
-                if scene.overrideMic {
-                    MicView(model: model, scene: scene, mic: model.mic)
+                if database.showAllSettings {
+                    Text("""
+                    Enable Override video stabilization to override Settings → Camera → Video \
+                    stabilization in this scene.
+                    """)
                 }
-            } header: {
-                Text("Mic")
-            } footer: {
-                Text("""
-                Enable Override to automatically switch to selected mic (if available) when \
-                switching to this scene.
-                """)
+            }
+            if database.showAllSettings {
+                Section {
+                    Toggle("Override", isOn: $scene.overrideMic)
+                        .onChange(of: scene.overrideMic) { _ in
+                            model.switchMicIfNeededAfterSceneSwitch()
+                        }
+                    if scene.overrideMic {
+                        MicView(model: model, scene: scene, mic: model.mic)
+                    }
+                } header: {
+                    Text("Mic")
+                } footer: {
+                    Text("""
+                    Enable Override to automatically switch to selected mic (if available) when \
+                    switching to this scene.
+                    """)
+                }
             }
             Section {
                 List {
