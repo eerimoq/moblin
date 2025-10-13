@@ -287,9 +287,10 @@ private struct WidgetView: View {
     var body: some View {
         NavigationLink {
             SceneWidgetSettingsView(
+                model: model,
+                database: database,
                 sceneWidget: sceneWidget,
-                widget: widget,
-                numericInput: $database.sceneNumericInput
+                widget: widget
             )
         } label: {
             Toggle(isOn: $widget.enabled) {

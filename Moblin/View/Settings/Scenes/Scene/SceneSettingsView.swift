@@ -69,9 +69,10 @@ private struct SceneWidgetView: View {
         if let widget = database.widgets.first(where: { $0.id == sceneWidget.widgetId }) {
             NavigationLink {
                 SceneWidgetSettingsView(
+                    model: model,
+                    database: database,
                     sceneWidget: sceneWidget,
-                    widget: widget,
-                    numericInput: $database.sceneNumericInput
+                    widget: widget
                 )
             } label: {
                 Toggle(isOn: Binding(get: {
