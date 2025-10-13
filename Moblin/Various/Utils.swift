@@ -229,6 +229,21 @@ func hasWideDualBackCamera() -> Bool {
     return AVCaptureDevice.default(.builtInDualWideCamera, for: .video, position: .back) != nil
 }
 
+func hasUltraWideFrontCamera() -> Bool {
+    return AVCaptureDevice.default(.builtInUltraWideCamera, for: .video, position: .front) != nil
+}
+
+func hasUltraWideCamera(position: AVCaptureDevice.Position) -> Bool {
+    switch position {
+    case .back:
+        return hasUltraWideBackCamera()
+    case .front:
+        return hasUltraWideFrontCamera()
+    default:
+        return false
+    }
+}
+
 func getBestBackCameraDevice() -> AVCaptureDevice? {
     var device = AVCaptureDevice.default(.builtInTripleCamera, for: .video, position: .back)
     if device == nil {
@@ -244,7 +259,11 @@ func getBestBackCameraDevice() -> AVCaptureDevice? {
 }
 
 func getBestFrontCameraDevice() -> AVCaptureDevice? {
-    return AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front)
+    var device = AVCaptureDevice.default(.builtInUltraWideCamera, for: .video, position: .front)
+    if device == nil {
+        device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front)
+    }
+    return device
 }
 
 func getBestBackCameraId() -> String {

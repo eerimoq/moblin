@@ -2576,9 +2576,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func attachCamera(scene: SettingsScene, position: AVCaptureDevice.Position) {
         cameraDevice = preferredCamera(position: position)
         setFocusAfterCameraAttach()
-        cameraZoomLevelToXScale = cameraDevice?.getZoomFactorScale(hasUltraWideCamera: hasUltraWideBackCamera()) ?? 1.0
+        cameraZoomLevelToXScale = cameraDevice?
+            .getZoomFactorScale(hasUltraWideCamera: hasUltraWideCamera(position: position)) ?? 1.0
         (cameraZoomXMinimum, cameraZoomXMaximum) = cameraDevice?
-            .getUIZoomRange(hasUltraWideCamera: hasUltraWideBackCamera()) ?? (1.0, 1.0)
+            .getUIZoomRange(hasUltraWideCamera: hasUltraWideCamera(position: position)) ?? (1.0, 1.0)
         cameraPosition = position
         switch position {
         case .back:
