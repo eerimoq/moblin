@@ -85,6 +85,9 @@
         }
       }
     },
+    "Bad port" : {
+
+    },
     "Host missing" : {
       "localizations" : {
         "de" : {
@@ -672,6 +675,9 @@
           }
         }
       }
+    },
+    "Too big" : {
+
     },
     "Too small" : {
       "localizations" : {

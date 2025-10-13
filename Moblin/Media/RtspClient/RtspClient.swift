@@ -638,7 +638,7 @@ class RtspClient {
         }
         logger.debug("rtsp-client: Connecting to \(host):\(port)")
         connection = NWConnection(
-            to: .hostPort(host: .init(host), port: .init(integerLiteral: NWEndpoint.Port.IntegerLiteralType(port))),
+            to: .hostPort(host: .init(host), port: .init(integer: port)),
             using: .init(tls: nil)
         )
         connection?.stateUpdateHandler = rtspConnectionStateDidChange

@@ -115,7 +115,7 @@ class SrtlaClient: NSObject {
             for connection in self.remoteConnections {
                 self.startRemote(connection: connection,
                                  host: NWEndpoint.Host(host),
-                                 port: NWEndpoint.Port(integerLiteral: UInt16(port)))
+                                 port: NWEndpoint.Port(integer: port))
             }
             logger.debug("srtla: Setting connect timer to \(timeout) seconds")
             self.connectTimer.startSingleShot(timeout: timeout) {
@@ -123,7 +123,7 @@ class SrtlaClient: NSObject {
                 self.onDisconnected(message: "connect timer expired")
             }
             self.state = .waitForRemoteSocketConnected
-            self.delegate?.moblinkStreamerDestinationAddress(address: host, port: UInt16(port))
+            self.delegate?.moblinkStreamerDestinationAddress(address: host, port: UInt16(clamping: port))
         }
     }
 
@@ -331,7 +331,7 @@ class SrtlaClient: NSObject {
             ))
             startRemote(connection: newRemoteConnections.last!,
                         host: NWEndpoint.Host(host),
-                        port: NWEndpoint.Port(integerLiteral: UInt16(port)))
+                        port: NWEndpoint.Port(integer: port))
             if let groupId {
                 newRemoteConnections.last!.register(groupId: groupId)
             }

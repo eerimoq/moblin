@@ -10,3 +10,9 @@ extension NWPath {
         return interfaces
     }
 }
+
+extension NWEndpoint.Port {
+    init(integer: Int) {
+        self.init(integerLiteral: UInt16(clamping: integer))
+    }
+}

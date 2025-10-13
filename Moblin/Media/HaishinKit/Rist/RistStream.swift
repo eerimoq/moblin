@@ -227,7 +227,7 @@ class RistStream {
         guard let url = URL(string: url), let host = url.host(), let port = url.port else {
             return
         }
-        ristDelegate?.ristStreamRelayDestinationAddress(address: host, port: UInt16(port))
+        ristDelegate?.ristStreamRelayDestinationAddress(address: host, port: UInt16(clamping: port))
     }
 
     private func stopInner() {
