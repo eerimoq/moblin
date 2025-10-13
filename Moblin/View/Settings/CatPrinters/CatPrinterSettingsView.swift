@@ -84,6 +84,31 @@ struct CatPrinterSettingsView: View {
                 }
             }
             Section {
+                Toggle(isOn: $device.printEvents) {
+                    Text("Print events")
+                }
+                if device.printEvents {
+                    Toggle(isOn: $device.printEventSubscriptions) {
+                        Text("Subscriptions")
+                    }
+                    Toggle(isOn: $device.printEventGiftedSubscriptions) {
+                        Text("Gifted subscriptions")
+                    }
+                    Toggle(isOn: $device.printEventResubscriptions) {
+                        Text("Resubscriptions")
+                    }
+                    Toggle(isOn: $device.printEventRaidsAndHosts) {
+                        Text("Raids & Hosts")
+                    }
+                    Toggle(isOn: $device.printEventRewards) {
+                        Text("Rewards")
+                    }
+                    Toggle(isOn: $device.printEventBitsAndKicks) {
+                        Text("Bits & Kicks")
+                    }
+                }
+            }
+            Section {
                 Toggle(isOn: $device.faxMeowSound) {
                     Text("Fax meow sound")
                 }

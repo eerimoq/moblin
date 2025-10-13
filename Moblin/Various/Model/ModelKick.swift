@@ -212,6 +212,7 @@ extension Model: KickPusherDelegate {
                     image: "party.popper"
                 )
             }
+            self.printEventCatPrinters(event.username, text, "kick", .subscription)
         }
     }
 
@@ -235,6 +236,7 @@ extension Model: KickPusherDelegate {
                     image: "gift"
                 )
             }
+            self.printEventCatPrinters(user, text, "kick", .giftedSubscription)
         }
     }
 
@@ -255,6 +257,7 @@ extension Model: KickPusherDelegate {
                     image: "medal.star"
                 )
             }
+            self.printEventCatPrinters(user, text, "kick", .reward)
         }
     }
 
@@ -274,6 +277,7 @@ extension Model: KickPusherDelegate {
                     image: "person.3"
                 )
             }
+            self.printEventCatPrinters(user, text, "kick", .host)
         }
     }
 
@@ -321,6 +325,7 @@ extension Model: KickPusherDelegate {
                     image: "suit.diamond"
                 )
             }
+            self.printEventCatPrinters(user, message, "kick", .bitsAndKicks)
         }
     }
 }

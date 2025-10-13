@@ -301,6 +301,7 @@ extension Model: TwitchEventSubDelegate {
                     image: "party.popper"
                 )
             }
+            self.printEventCatPrinters(event.user_name, text, "twitch", .subscription)
         }
     }
 
@@ -322,6 +323,7 @@ extension Model: TwitchEventSubDelegate {
                     image: "gift"
                 )
             }
+            self.printEventCatPrinters(user, text, "twitch", .giftedSubscription)
         }
     }
 
@@ -346,6 +348,7 @@ extension Model: TwitchEventSubDelegate {
                     image: "party.popper"
                 )
             }
+            self.printEventCatPrinters(event.user_name, text, "twitch", .resubscription)
         }
     }
 
@@ -366,6 +369,7 @@ extension Model: TwitchEventSubDelegate {
                     image: "medal.star"
                 )
             }
+            self.printEventCatPrinters(event.user_name, text, "twitch", .reward)
         }
     }
 
@@ -385,6 +389,7 @@ extension Model: TwitchEventSubDelegate {
                     image: "person.3"
                 )
             }
+            self.printEventCatPrinters(event.from_broadcaster_user_name, text, "twitch", .raid)
         }
     }
 
@@ -407,6 +412,8 @@ extension Model: TwitchEventSubDelegate {
                     bits: ""
                 )
             }
+            let message = event.message.isEmpty ? text : "\(text) \(event.message)"
+            self.printEventCatPrinters(user, message, "twitch", .bitsAndKicks)
         }
     }
 
