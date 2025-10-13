@@ -63,7 +63,7 @@ struct StreamWizardSettingsView: View {
                 NavigationLink {
                     StreamWizardObsSettingsView(createStreamWizard: createStreamWizard)
                 } label: {
-                    Text("OBS")
+                    ObsLogoAndNameView()
                 }
             } header: {
                 Text("Platform to stream to")

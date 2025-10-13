@@ -51,6 +51,12 @@ struct SoopLogoAndNameView: View {
     }
 }
 
+struct ObsLogoAndNameView: View {
+    var body: some View {
+        PlatformLogoAndNameView(logo: "ObsLogo", name: String(localized: "OBS"))
+    }
+}
+
 struct StreamPlatformsSettingsView: View {
     let stream: SettingsStream
 
