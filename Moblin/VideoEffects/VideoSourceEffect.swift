@@ -3,11 +3,6 @@ import MetalPetal
 import Vision
 
 struct VideoSourceEffectSettings {
-    var cropEnabled: Bool = false
-    var cropX: Double = 0
-    var cropY: Double = 0
-    var cropWidth: Double = 1
-    var cropHeight: Double = 1
     var rotation: Double = 0
     var trackFaceEnabled: Bool = false
     var trackFaceZoom: Double = 2.2
@@ -157,21 +152,6 @@ final class VideoSourceEffect: VideoEffect {
             .translated(x: -cropX, y: -(videoSourceImageSize.height - cropY - cropSquareSize))
     }
 
-    private func crop(_ videoSourceImage: CIImage, _ settings: VideoSourceEffectSettings) -> CIImage {
-        let cropX = toPixels(100 * settings.cropX, videoSourceImage.extent.width)
-        let cropY = toPixels(100 * settings.cropY, videoSourceImage.extent.height)
-        let cropWidth = toPixels(100 * settings.cropWidth, videoSourceImage.extent.width)
-        let cropHeight = toPixels(100 * settings.cropHeight, videoSourceImage.extent.height)
-        return videoSourceImage
-            .cropped(to: .init(
-                x: cropX,
-                y: videoSourceImage.extent.height - cropY - cropHeight,
-                width: cropWidth,
-                height: cropHeight
-            ))
-            .translated(x: -cropX, y: -(videoSourceImage.extent.height - cropY - cropHeight))
-    }
-
     private func rotate(_ videoSourceImage: CIImage, _ settings: VideoSourceEffectSettings) -> CIImage {
         switch settings.rotation {
         case 90:
@@ -199,8 +179,6 @@ final class VideoSourceEffect: VideoEffect {
                 info.presentationTimeStamp.seconds,
                 settings.trackFaceZoom
             )
-        } else if settings.cropEnabled {
-            widgetImage = crop(widgetImage, settings)
         }
         return applyEffectsResizeMirrorMove(widgetImage,
                                             sceneWidget,

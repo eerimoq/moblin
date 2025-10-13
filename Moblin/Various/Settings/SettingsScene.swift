@@ -1590,19 +1590,34 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named 
     }
 
     private func migrateFromOlderVersions() {
-        if type == .videoSource,
-           videoSource.cornerRadius != 0 || videoSource.borderWidth != 0,
-           !effects.contains(where: { $0.type == .shape })
-        {
+        if type == .videoSource, !effects.contains(where: { $0.type == .shape }) {
             let shape = SettingsVideoEffectShape()
-            shape.cornerRadius = videoSource.cornerRadius
-            shape.borderWidth = videoSource.borderWidth
-            shape.borderColor = videoSource.borderColor
-            shape.borderColorColor = videoSource.borderColorColor
-            let effect = SettingsVideoEffect()
-            effect.type = .shape
-            effect.shape = shape
-            effects.append(effect)
+            shape.cornerRadius = 0
+            var updated = false
+            if videoSource.cornerRadius != 0 || videoSource.borderWidth != 0 {
+                shape.cornerRadius = videoSource.cornerRadius
+                shape.borderWidth = videoSource.borderWidth
+                shape.borderColor = videoSource.borderColor
+                shape.borderColorColor = videoSource.borderColorColor
+                updated = true
+                videoSource.cornerRadius = 0
+                videoSource.borderWidth = 0
+            }
+            if videoSource.cropEnabled, !videoSource.trackFaceEnabled {
+                shape.cropEnabled = videoSource.cropEnabled
+                shape.cropX = videoSource.cropX
+                shape.cropY = videoSource.cropY
+                shape.cropWidth = videoSource.cropWidth
+                shape.cropHeight = videoSource.cropHeight
+                updated = true
+                videoSource.cropEnabled = false
+            }
+            if updated {
+                let effect = SettingsVideoEffect()
+                effect.type = .shape
+                effect.shape = shape
+                effects.append(effect)
+            }
         }
     }
 
@@ -1848,12 +1863,7 @@ class SettingsWidgetVideoSource: Codable, ObservableObject {
     }
 
     func toEffectSettings() -> VideoSourceEffectSettings {
-        return .init(cropEnabled: cropEnabled,
-                     cropX: cropX,
-                     cropY: cropY,
-                     cropWidth: cropWidth,
-                     cropHeight: cropHeight,
-                     rotation: rotation,
+        return .init(rotation: rotation,
                      trackFaceEnabled: trackFaceEnabled,
                      trackFaceZoom: 1.5 + (1 - trackFaceZoom) * 4,
                      mirror: mirror)

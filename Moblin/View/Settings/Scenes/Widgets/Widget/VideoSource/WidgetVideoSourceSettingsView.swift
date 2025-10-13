@@ -139,80 +139,6 @@ func calculatePositioningAnchorPoint(_ location: CGPoint,
     }
 }
 
-private struct CropView: View {
-    @EnvironmentObject var model: Model
-    let widgetId: UUID
-    let widget: SettingsWidgetVideoSource
-    @State private var position: CGPoint = .init(x: 100, y: 100)
-    @State private var positionOffset: CGSize = .init(width: 0, height: 0)
-    @State private var positionAnchorPoint: AnchorPoint?
-
-    private func updatePositionAnchorPoint(location: CGPoint, size: CGSize) {
-        if positionAnchorPoint == nil {
-            (positionAnchorPoint, positionOffset) = calculatePositioningAnchorPoint(
-                location,
-                size,
-                widget.cropX,
-                widget.cropY,
-                widget.cropWidth,
-                widget.cropHeight
-            )
-        }
-    }
-
-    private func createPositionPath(size: CGSize) -> Path {
-        let (xTopLeft, yTopLeft, xBottomRight, yBottomRight) = calculatePositioningRectangle(
-            positionAnchorPoint,
-            widget.cropX,
-            widget.cropY,
-            widget.cropWidth,
-            widget.cropHeight,
-            position,
-            size,
-            positionOffset
-        )
-        widget.cropX = xTopLeft
-        widget.cropY = yTopLeft
-        widget.cropWidth = xBottomRight - xTopLeft
-        widget.cropHeight = yBottomRight - yTopLeft
-        model.getVideoSourceEffect(id: widgetId)?.setSettings(settings: widget.toEffectSettings())
-        let xPoints = CGFloat(widget.cropX) * size.width
-        let yPoints = CGFloat(widget.cropY) * size.height
-        let widthPoints = CGFloat(widget.cropWidth) * size.width
-        let heightPoints = CGFloat(widget.cropHeight) * size.height
-        return drawPositioningRectangle(xPoints, yPoints, widthPoints, heightPoints)
-    }
-
-    var body: some View {
-        ZStack {
-            Image("GamlaLinkoping")
-                .resizable()
-                .aspectRatio(16 / 9, contentMode: .fit)
-            GeometryReader { reader in
-                Canvas { context, size in
-                    context.stroke(
-                        createPositionPath(size: size),
-                        with: .color(.black),
-                        lineWidth: 1.5
-                    )
-                }
-                .padding([.top, .bottom], 6)
-                .gesture(
-                    DragGesture()
-                        .onChanged { value in
-                            position = value.location
-                            let size = CGSize(width: reader.size.width, height: reader.size.height - 12)
-                            updatePositionAnchorPoint(location: position, size: size)
-                        }
-                        .onEnded { _ in
-                            positionAnchorPoint = nil
-                        }
-                )
-            }
-        }
-    }
-}
-
 struct WidgetVideoSourceSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var widget: SettingsWidget
@@ -297,23 +223,6 @@ struct WidgetVideoSourceSettingsView: View {
             }
         } header: {
             Text("Face tracking")
-        }
-        if !videoSource.trackFaceEnabled {
-            Section {
-                Toggle(isOn: Binding(get: {
-                    videoSource.cropEnabled
-                }, set: { value in
-                    videoSource.cropEnabled = value
-                    setEffectSettings()
-                })) {
-                    Text("Enabled")
-                }
-            } header: {
-                Text("Crop")
-            }
-            Section {
-                CropView(widgetId: widget.id, widget: videoSource)
-            }
         }
         WidgetEffectsView(widget: widget)
     }
