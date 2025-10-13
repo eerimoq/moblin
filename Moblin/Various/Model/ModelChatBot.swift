@@ -654,7 +654,7 @@ extension Model {
             if command.message.platform == .twitch {
                 if permissions.minimumSubscriberTier > 1 {
                     if let userId = command.message.userId {
-                        TwitchApi(stream.twitchAccessToken, urlSession).getBroadcasterSubscriptions(
+                        TwitchApi(stream.twitchAccessToken).getBroadcasterSubscriptions(
                             broadcasterId: stream.twitchChannelId,
                             userId: userId
                         ) { data in

@@ -457,7 +457,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var logId = 1
     private var serversSpeed: Int64 = 0
     var adsEndDate: Date?
-    var urlSession = URLSession.shared
     var heartRates: [String: Int?] = [:]
     var workoutActiveEnergyBurned: Int?
     var workoutDistance: Int?
@@ -892,7 +891,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         deleteTrash()
         cameraPreviewLayer = cameraPreviewView.previewLayer
         media.delegate = self
-        createUrlSession()
         setupAppIntents()
         faxReceiver.delegate = self
         fixAlertMedias()
@@ -1962,10 +1960,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         reloadNtpClient()
     }
 
-    func createUrlSession() {
-        urlSession = URLSession.create(httpProxy: httpProxy())
-    }
-
     func isTimecodesEnabled() -> Bool {
         return stream.timecodesEnabled && !stream.ntpPoolAddress.isEmpty
     }
@@ -2043,10 +2037,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func hasOpenStreamingPlatformChatEmotes() -> Bool {
         return openStreamingPlatformChat?.hasEmotes() ?? false
-    }
-
-    func httpProxy() -> HttpProxy? {
-        return settings.database.debug.httpProxy.toHttpProxy()
     }
 
     func reloadYouTubeLiveChat() {

@@ -35,9 +35,7 @@ extension Model {
                 channelName: stream.twitchChannelName,
                 channelId: stream.twitchChannelId,
                 settings: stream.chat,
-                accessToken: stream.twitchAccessToken,
-                httpProxy: httpProxy(),
-                urlSession: urlSession
+                accessToken: stream.twitchAccessToken
             )
         }
         updateChatMoreThanOneChatConfigured()
@@ -63,8 +61,6 @@ extension Model {
                 remoteControl: useRemoteControlForChatAndEvents,
                 userId: stream.twitchChannelId,
                 accessToken: stream.twitchAccessToken,
-                httpProxy: httpProxy(),
-                urlSession: urlSession,
                 delegate: self
             )
             twitchEventSub!.start()
@@ -72,7 +68,7 @@ extension Model {
     }
 
     func fetchTwitchRewards() {
-        TwitchApi(stream.twitchAccessToken, urlSession)
+        TwitchApi(stream.twitchAccessToken)
             .getChannelPointsCustomRewards(broadcasterId: stream.twitchChannelId) { rewards in
                 guard let rewards else {
                     logger.info("Failed to get Twitch rewards")
@@ -89,7 +85,7 @@ extension Model {
     }
 
     func fetchTwitchGameId(name: String, onComplete: @escaping (String?) -> Void) {
-        TwitchApi(stream.twitchAccessToken, urlSession)
+        TwitchApi(stream.twitchAccessToken)
             .getGames(names: [name]) {
                 onComplete($0?.data.first?.id)
             }
@@ -110,7 +106,7 @@ extension Model {
             makeNotLoggedInToTwitchToast()
             return
         }
-        TwitchApi(stream.twitchAccessToken, urlSession)
+        TwitchApi(stream.twitchAccessToken)
             .getChannelInformation(broadcasterId: stream.twitchChannelId) { channelInformation in
                 guard let channelInformation else {
                     return
@@ -124,7 +120,7 @@ extension Model {
             makeNotLoggedInToTwitchToast()
             return
         }
-        TwitchApi(stream.twitchAccessToken, urlSession)
+        TwitchApi(stream.twitchAccessToken)
             .modifyChannelInformation(broadcasterId: stream.twitchChannelId,
                                       categoryId: nil,
                                       title: title)
@@ -140,7 +136,7 @@ extension Model {
             makeNotLoggedInToTwitchToast()
             return
         }
-        TwitchApi(stream.twitchAccessToken, urlSession)
+        TwitchApi(stream.twitchAccessToken)
             .modifyChannelInformation(broadcasterId: stream.twitchChannelId,
                                       categoryId: categoryId,
                                       title: nil)
@@ -158,7 +154,7 @@ extension Model {
             stream.twitchAccessToken = accessToken
             self.showTwitchAuth = false
             self.createStreamWizard.showTwitchAuth = false
-            TwitchApi(accessToken, self.urlSession).getUserInfo { info in
+            TwitchApi(accessToken).getUserInfo { info in
                 guard let info else {
                     return
                 }
@@ -187,7 +183,7 @@ extension Model {
     }
 
     func createStreamMarker() {
-        TwitchApi(stream.twitchAccessToken, urlSession)
+        TwitchApi(stream.twitchAccessToken)
             .createStreamMarker(userId: stream.twitchChannelId) { data in
                 if data != nil {
                     self.makeToast(title: String(localized: "Stream marker created"))
@@ -198,7 +194,7 @@ extension Model {
     }
 
     private func getStream() {
-        TwitchApi(stream.twitchAccessToken, urlSession)
+        TwitchApi(stream.twitchAccessToken)
             .getStream(userId: stream.twitchChannelId) { data in
                 guard let data else {
                     self.numberOfTwitchViewers = nil
@@ -221,7 +217,7 @@ extension Model {
     }
 
     func sendTwitchChatMessage(message: String) {
-        TwitchApi(stream.twitchAccessToken, urlSession)
+        TwitchApi(stream.twitchAccessToken)
             .sendChatMessage(broadcasterId: stream.twitchChannelId, message: message) { ok in
                 if !ok {
                     DispatchQueue.main.async {
@@ -232,7 +228,7 @@ extension Model {
     }
 
     func startAds(seconds: Int) {
-        TwitchApi(stream.twitchAccessToken, urlSession)
+        TwitchApi(stream.twitchAccessToken)
             .startCommercial(broadcasterId: stream.twitchChannelId, length: seconds) { data in
                 if let data {
                     self.makeToast(title: data.message)
@@ -243,13 +239,13 @@ extension Model {
     }
 
     func banTwitchUser(user _: String, userId: String, duration: Int?) {
-        TwitchApi(stream.twitchAccessToken, urlSession)
+        TwitchApi(stream.twitchAccessToken)
             .banUser(broadcasterId: stream.twitchChannelId, userId: userId, duration: duration) { _ in
             }
     }
 
     func deleteTwitchChatMessage(messageId: String) {
-        TwitchApi(stream.twitchAccessToken, urlSession)
+        TwitchApi(stream.twitchAccessToken)
             .deleteChatMessage(broadcasterId: stream.twitchChannelId, messageId: messageId) { _ in
             }
     }

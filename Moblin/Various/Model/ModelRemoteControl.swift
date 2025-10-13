@@ -117,9 +117,7 @@ extension Model {
         remoteControlAssistant = RemoteControlAssistant(
             port: database.remoteControl.assistant.port,
             password: database.remoteControl.password,
-            delegate: self,
-            httpProxy: httpProxy(),
-            urlSession: urlSession
+            delegate: self
         )
         remoteControlAssistant!.start()
     }

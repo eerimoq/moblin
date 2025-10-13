@@ -526,11 +526,6 @@ func formatCommercialStartedDuration(seconds: Int) -> String {
     }
 }
 
-struct HttpProxy {
-    var host: String
-    var port: UInt16
-}
-
 extension CGSize {
     func maximum() -> CGFloat {
         return max(height, width)

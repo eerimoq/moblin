@@ -102,11 +102,6 @@ struct DebugSettingsView: View {
                         model.setMetalPetalFilters()
                     }
                 Toggle("Twitch rewards", isOn: $debug.twitchRewards)
-                NavigationLink {
-                    DebugHttpProxySettingsView()
-                } label: {
-                    Text("HTTP proxy")
-                }
                 Toggle("Reliable chat", isOn: $debug.reliableChat)
                 VStack(alignment: .leading) {
                     Text("Builtin audio and video delay")
