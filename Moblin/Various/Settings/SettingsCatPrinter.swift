@@ -10,6 +10,8 @@ class SettingsCatPrinter: Codable, Identifiable, ObservableObject, Named {
     @Published var printChat: Bool = true
     @Published var faxMeowSound: Bool = true
     @Published var printSnapshots: Bool = true
+    @Published var printTwitch: SettingsTwitchAlerts = .init()
+    @Published var printKick: SettingsKickAlerts = .init()
 
     init() {}
 
@@ -21,7 +23,9 @@ class SettingsCatPrinter: Codable, Identifiable, ObservableObject, Named {
              bluetoothPeripheralId,
              printChat,
              faxMeowSound,
-             printSnapshots
+             printSnapshots,
+             printTwitch,
+             printKick
     }
 
     func encode(to encoder: Encoder) throws {
@@ -34,6 +38,8 @@ class SettingsCatPrinter: Codable, Identifiable, ObservableObject, Named {
         try container.encode(.printChat, printChat)
         try container.encode(.faxMeowSound, faxMeowSound)
         try container.encode(.printSnapshots, printSnapshots)
+        try container.encode(.printTwitch, printTwitch)
+        try container.encode(.printKick, printKick)
     }
 
     required init(from decoder: Decoder) throws {
@@ -46,6 +52,8 @@ class SettingsCatPrinter: Codable, Identifiable, ObservableObject, Named {
         printChat = container.decode(.printChat, Bool.self, true)
         faxMeowSound = container.decode(.faxMeowSound, Bool.self, true)
         printSnapshots = container.decode(.printSnapshots, Bool.self, true)
+        printTwitch = container.decode(.printTwitch, SettingsTwitchAlerts.self, .init())
+        printKick = container.decode(.printKick, SettingsKickAlerts.self, .init())
     }
 }
 

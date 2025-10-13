@@ -215,6 +215,7 @@ extension Model: KickPusherDelegate {
                 )
             }
             self.playAlert(alert: .kickSubscription(event: event))
+            self.printEventCatPrinters(event: .kickSubscription, username: event.username, message: text)
         }
     }
 
@@ -239,6 +240,7 @@ extension Model: KickPusherDelegate {
                 )
             }
             self.playAlert(alert: .kickGiftedSubscriptions(event: event))
+            self.printEventCatPrinters(event: .kickGiftedSubscriptions, username: user, message: text)
         }
     }
 
@@ -260,6 +262,7 @@ extension Model: KickPusherDelegate {
                 )
             }
             self.playAlert(alert: .kickReward(event: event))
+            self.printEventCatPrinters(event: .kickReward, username: user, message: text)
         }
     }
 
@@ -280,6 +283,7 @@ extension Model: KickPusherDelegate {
                 )
             }
             self.playAlert(alert: .kickHost(event: event))
+            self.printEventCatPrinters(event: .kickHost, username: user, message: text)
         }
     }
 
@@ -328,6 +332,7 @@ extension Model: KickPusherDelegate {
                 )
             }
             self.playAlert(alert: .kickKicks(event: event))
+            self.printEventCatPrinters(event: .kickKicks(amount: event.gift.amount), username: user, message: message)
         }
     }
 }

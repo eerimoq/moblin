@@ -151,7 +151,7 @@ private struct KickWebView: UIViewRepresentable {
     }
 }
 
-private struct KickAlertsSettingsView: View {
+struct KickAlertsSettingsView: View {
     @ObservedObject var alerts: SettingsKickAlerts
 
     var body: some View {

@@ -77,10 +77,25 @@ struct CatPrinterSettingsView: View {
                 Toggle(isOn: $device.printChat) {
                     Text("Print chat")
                 }
-            }
-            Section {
                 Toggle(isOn: $device.printSnapshots) {
                     Text("Print snapshots")
+                }
+                NavigationLink {
+                    Form {
+                        NavigationLink {
+                            TwitchAlertsSettingsView(alerts: device.printTwitch)
+                        } label: {
+                            Text("Twitch")
+                        }
+                        NavigationLink {
+                            KickAlertsSettingsView(alerts: device.printKick)
+                        } label: {
+                            Text("Kick")
+                        }
+                    }
+                    .navigationTitle("Print alerts")
+                } label: {
+                    Text("Print alerts")
                 }
             }
             Section {

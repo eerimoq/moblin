@@ -1,6 +1,6 @@
 import SwiftUI
 
-private struct TwitchAlertsSettingsView: View {
+struct TwitchAlertsSettingsView: View {
     @ObservedObject var alerts: SettingsTwitchAlerts
 
     var body: some View {
