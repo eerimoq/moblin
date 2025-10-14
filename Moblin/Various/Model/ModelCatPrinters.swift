@@ -16,29 +16,6 @@ private struct CatPrinterKickUserResponse: Codable {
     let user: CatPrinterKickUser?
 }
 
-private actor ProfileImageCache {
-    private var cache: [String: (image: UIImage, timestamp: Date)] = [:]
-    private let maxAge: TimeInterval = 3600
-
-    func get(_ key: String) -> UIImage? {
-        guard let entry = cache[key] else { return nil }
-        if Date().timeIntervalSince(entry.timestamp) > maxAge {
-            cache.removeValue(forKey: key)
-            return nil
-        }
-        return entry.image
-    }
-
-    func set(_ key: String, image: UIImage) {
-        cache[key] = (image, Date())
-    }
-
-    func clear() {
-        cache.removeAll()
-    }
-}
-
-private let profileImageCache = ProfileImageCache()
 private let jsonDecoder = JSONDecoder()
 
 extension Model {
@@ -152,68 +129,62 @@ extension Model {
     }
 
     private func fetchProfilePicture(username: String, platform: String) async -> UIImage? {
-        let cacheKey = "\(platform):\(username)"
-        if let cachedImage = await profileImageCache.get(cacheKey) {
-            return cachedImage
-        }
-        let image: UIImage?
         switch platform.lowercased() {
         case "twitch":
-            image = await fetchTwitchProfilePicture(username: username)
+            return await fetchTwitchProfilePicture(username: username)
         case "kick":
-            image = await fetchKickProfilePicture(username: username)
+            return await fetchKickProfilePicture(username: username)
         default:
-            image = nil
+            return nil
         }
-        if let image = image {
-            await profileImageCache.set(cacheKey, image: image)
-        }
-        return image
     }
 
     private func fetchTwitchProfilePicture(username: String) async -> UIImage? {
         guard let url = URL(string: "https://decapi.me/twitch/avatar/\(username)") else {
             return nil
         }
-        do {
-            var request = URLRequest(url: url, timeoutInterval: 10)
-            request.cachePolicy = .returnCacheDataElseLoad
-            let (data, _) = try await URLSession.shared.data(for: request)
-            guard let imageUrlString = String(data: data, encoding: .utf8),
-                  let profileUrl = URL(string: imageUrlString.trimmingCharacters(in: .whitespacesAndNewlines))
-            else {
-                return nil
-            }
-            var imageRequest = URLRequest(url: profileUrl, timeoutInterval: 10)
-            imageRequest.cachePolicy = .returnCacheDataElseLoad
-            let (imageData, _) = try await URLSession.shared.data(for: imageRequest)
-            return UIImage(data: imageData)
-        } catch {
+        let request = URLRequest(url: url, timeoutInterval: 10)
+        guard let (data, _) = try? await URLSession.shared.data(for: request),
+              let imageUrlString = String(data: data, encoding: .utf8),
+              let profileUrl = URL(string: imageUrlString.trimmingCharacters(in: .whitespacesAndNewlines))
+        else {
             return nil
         }
+        let imageRequest = URLRequest(url: profileUrl, timeoutInterval: 10)
+        guard let (imageData, _) = try? await URLSession.shared.data(for: imageRequest) else {
+            return nil
+        }
+        return UIImage(data: imageData)
     }
 
     private func fetchKickProfilePicture(username: String) async -> UIImage? {
+        if let image = await fetchKickProfilePictureWithUsername(username) {
+            return image
+        }
+        if username.contains("_") {
+            let normalizedUsername = username.replacingOccurrences(of: "_", with: "-")
+            return await fetchKickProfilePictureWithUsername(normalizedUsername)
+        }
+        return nil
+    }
+
+    private func fetchKickProfilePictureWithUsername(_ username: String) async -> UIImage? {
         guard let url = URL(string: "https://kick.com/api/v1/channels/\(username)") else {
             return nil
         }
-        do {
-            var request = URLRequest(url: url, timeoutInterval: 10)
-            request.cachePolicy = .returnCacheDataElseLoad
-            let (data, _) = try await URLSession.shared.data(for: request)
-            let userResponse = try jsonDecoder.decode(CatPrinterKickUserResponse.self, from: data)
-            guard let profilePicUrl = userResponse.user?.profile_pic,
-                  let imageUrl = URL(string: profilePicUrl)
-            else {
-                return nil
-            }
-            var imageRequest = URLRequest(url: imageUrl, timeoutInterval: 10)
-            imageRequest.cachePolicy = .returnCacheDataElseLoad
-            let (imageData, _) = try await URLSession.shared.data(for: imageRequest)
-            return UIImage(data: imageData)
-        } catch {
+        let request = URLRequest(url: url, timeoutInterval: 10)
+        guard let (data, _) = try? await URLSession.shared.data(for: request),
+              let userResponse = try? jsonDecoder.decode(CatPrinterKickUserResponse.self, from: data),
+              let profilePicUrl = userResponse.user?.profile_pic,
+              let imageUrl = URL(string: profilePicUrl)
+        else {
             return nil
         }
+        let imageRequest = URLRequest(url: imageUrl, timeoutInterval: 10)
+        guard let (imageData, _) = try? await URLSession.shared.data(for: imageRequest) else {
+            return nil
+        }
+        return UIImage(data: imageData)
     }
 
     func printSnapshotCatPrinters(image: CIImage) {
