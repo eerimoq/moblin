@@ -112,7 +112,6 @@ private struct UrlSettingsView: View {
     let allowedSchemes: [String]?
     let showSrtHelp: Bool
     @State var value: String
-    @State var show: Bool = false
     @State var changed: Bool = false
     @State var submitted: Bool = false
     @State var error: String?
@@ -135,37 +134,21 @@ private struct UrlSettingsView: View {
     var body: some View {
         Form {
             Section {
-                ZStack(alignment: .leading) {
-                    MultiLineTextFieldView(value: $value)
-                        .textInputAutocapitalization(.never)
-                        .onSubmit {
+                MultiLineTextFieldView(value: $value)
+                    .textInputAutocapitalization(.never)
+                    .onSubmit {
+                        submitUrl()
+                    }
+                    .submitLabel(.done)
+                    .onChange(of: value) { _ in
+                        error = isValidUrl(url: value, allowedSchemes: allowedSchemes)
+                        changed = true
+                        if value.contains("\n") {
+                            value = value.replacingOccurrences(of: "\n", with: "")
                             submitUrl()
                         }
-                        .submitLabel(.done)
-                        .onChange(of: value) { _ in
-                            error = isValidUrl(url: value, allowedSchemes: allowedSchemes)
-                            changed = true
-                            if value.contains("\n") {
-                                value = value.replacingOccurrences(of: "\n", with: "")
-                                submitUrl()
-                            }
-                        }
-                        .disableAutocorrection(true)
-                        .opacity(show ? 1 : 0)
-                    Text(replaceSensitive(value: value, sensitive: true))
-                        .opacity(show ? 0 : 1)
-                }
-                HCenter {
-                    if show {
-                        Button("Hide sensitive URL") {
-                            show = false
-                        }
-                    } else {
-                        Button("Show sensitive URL", role: .destructive) {
-                            show = true
-                        }
                     }
-                }
+                    .disableAutocorrection(true)
             } footer: {
                 VStack(alignment: .leading) {
                     if let error {
