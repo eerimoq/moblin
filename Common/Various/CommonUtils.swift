@@ -77,7 +77,7 @@ func schemeAndAddress(url: String) -> String {
 
 func replaceSensitive(value: String, sensitive: Bool) -> String {
     if sensitive {
-        return value.replacing(/./, with: "*")
+        return value.replacing(/./, with: "•")
     } else {
         return value
     }
