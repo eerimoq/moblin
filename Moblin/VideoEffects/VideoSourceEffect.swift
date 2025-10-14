@@ -180,7 +180,7 @@ final class VideoSourceEffect: VideoEffect {
                 settings.trackFaceZoom
             )
         }
-        return applyEffectsResizeMirrorMove(widgetImage,
+        return applyEffectsResizeMirrorMove(rotate(widgetImage, settings),
                                             sceneWidget,
                                             settings.mirror,
                                             backgroundImage.extent,
