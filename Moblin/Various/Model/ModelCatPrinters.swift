@@ -80,12 +80,74 @@ extension Model {
     ) async -> CIImage? {
         let profileImage = await fetchProfilePicture(username: username, platform: platform)
         return await MainActor.run {
-            createEventImageWithPlatform(
-                username: username,
-                eventText: eventText,
-                platform: platform,
-                profileImage: profileImage
-            )
+            let eventCard = VStack(spacing: 16) {
+                Text(platform.uppercased())
+                    .font(.system(size: 36, weight: .bold))
+                    .foregroundColor(.black)
+
+                if let profileImage = profileImage {
+                    Image(uiImage: profileImage)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 120, height: 120)
+                        .clipShape(Circle())
+                } else if let appIcon = UIImage(named: "AppIconNoBackground") {
+                    Image(uiImage: appIcon)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 120, height: 120)
+                        .clipShape(Circle())
+                } else {
+                    ZStack {
+                        Circle()
+                            .fill(Color.gray.opacity(0.3))
+                            .frame(width: 120, height: 120)
+                        Text(String(username.prefix(1).uppercased()))
+                            .font(.system(size: 60, weight: .bold))
+                            .foregroundColor(.white)
+                    }
+                }
+
+                Text(username)
+                    .font(.system(size: 40, weight: .bold))
+                    .foregroundColor(.black)
+                    .lineLimit(nil)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                Rectangle()
+                    .fill(Color.black)
+                    .frame(height: 3)
+                    .padding(.horizontal, 20)
+
+                Text(eventText)
+                    .font(.system(size: 28, weight: .regular))
+                    .foregroundColor(.black)
+                    .lineLimit(nil)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                Rectangle()
+                    .fill(Color.black)
+                    .frame(height: 3)
+                    .padding(.horizontal, 20)
+
+                Text(eventTimestampFormatter.string(from: Date()))
+                    .font(.system(size: 24, weight: .regular, design: .monospaced))
+                    .foregroundColor(.black)
+            }
+            .padding(20)
+            .frame(width: 384)
+            .background(Color.white)
+
+            let renderer = ImageRenderer(content: eventCard)
+            guard let image = renderer.uiImage else {
+                return nil
+            }
+            guard let ciImage = CIImage(image: image) else {
+                return nil
+            }
+            return ciImage
         }
     }
 
@@ -152,125 +214,6 @@ extension Model {
         } catch {
             return nil
         }
-    }
-
-    private func drawDivider(at y: CGFloat, padding: CGFloat, width: CGFloat) {
-        let dividerPath = UIBezierPath()
-        dividerPath.move(to: CGPoint(x: padding, y: y))
-        dividerPath.addLine(to: CGPoint(x: width - padding, y: y))
-        UIColor.black.setStroke()
-        dividerPath.lineWidth = 3
-        dividerPath.stroke()
-    }
-
-    private func drawCircularImage(_ image: UIImage, in rect: CGRect, context: CGContext) {
-        context.saveGState()
-        let circlePath = UIBezierPath(ovalIn: rect)
-        circlePath.addClip()
-        image.draw(in: rect)
-        context.restoreGState()
-    }
-
-    private func createAttributedString(_ text: String, font: UIFont, color: UIColor = .black) -> NSAttributedString {
-        NSAttributedString(string: text, attributes: [
-            .font: font,
-            .foregroundColor: color,
-        ])
-    }
-
-    private func createEventImageWithPlatform(
-        username: String,
-        eventText: String,
-        platform: String,
-        profileImage: UIImage?
-    ) -> CIImage? {
-        let width: CGFloat = 384
-        let padding: CGFloat = 20
-        let lineSpacing: CGFloat = 8
-        var currentY: CGFloat = padding
-        let platformString = createAttributedString(
-            platform.uppercased(),
-            font: .systemFont(ofSize: 36, weight: .bold)
-        )
-        let platformSize = platformString.size()
-        currentY += platformSize.height + lineSpacing * 2
-        let avatarSize: CGFloat = 120
-        currentY += avatarSize + lineSpacing * 3
-        let usernameString = createAttributedString(username, font: .systemFont(ofSize: 40, weight: .bold))
-        let usernameSize = usernameString.boundingRect(
-            with: CGSize(width: width - 2 * padding, height: .greatestFiniteMagnitude),
-            options: [.usesLineFragmentOrigin],
-            context: nil
-        ).size
-        currentY += usernameSize.height + lineSpacing * 2
-        currentY += 2 + lineSpacing * 2
-        let contentString = createAttributedString(eventText, font: .systemFont(ofSize: 28, weight: .regular))
-        let contentSize = contentString.boundingRect(
-            with: CGSize(width: width - 2 * padding, height: .greatestFiniteMagnitude),
-            options: [.usesLineFragmentOrigin],
-            context: nil
-        ).size
-        currentY += contentSize.height + lineSpacing * 2
-        currentY += 2 + lineSpacing * 2
-        let timestamp = eventTimestampFormatter.string(from: Date())
-        let timestampString = createAttributedString(
-            timestamp,
-            font: .monospacedSystemFont(ofSize: 24, weight: .regular)
-        )
-        let timestampSize = timestampString.size()
-        currentY += timestampSize.height + padding
-        let rect = CGRect(origin: .zero, size: CGSize(width: width, height: currentY))
-        UIGraphicsBeginImageContextWithOptions(rect.size, false, 1.0)
-        guard let context = UIGraphicsGetCurrentContext() else {
-            UIGraphicsEndImageContext()
-            return nil
-        }
-        UIColor.white.setFill()
-        context.fill(rect)
-        currentY = padding
-        let platformX = (width - platformSize.width) / 2
-        platformString.draw(at: CGPoint(x: platformX, y: currentY))
-        currentY += platformSize.height + lineSpacing * 2
-        let avatarX = (width - avatarSize) / 2
-        let avatarRect = CGRect(x: avatarX, y: currentY, width: avatarSize, height: avatarSize)
-        if let profileImage = profileImage {
-            drawCircularImage(profileImage, in: avatarRect, context: context)
-        } else if let appIcon = UIImage(named: "AppIconNoBackground") {
-            drawCircularImage(appIcon, in: avatarRect, context: context)
-        } else {
-            let circlePath = UIBezierPath(ovalIn: avatarRect)
-            UIColor.lightGray.setFill()
-            circlePath.fill()
-            let initial = String(username.prefix(1).uppercased())
-            let initialString = createAttributedString(
-                initial,
-                font: .systemFont(ofSize: 60, weight: .bold),
-                color: .white
-            )
-            let initialSize = initialString.size()
-            let initialX = avatarX + (avatarSize - initialSize.width) / 2
-            let initialY = currentY + (avatarSize - initialSize.height) / 2
-            initialString.draw(at: CGPoint(x: initialX, y: initialY))
-        }
-        currentY += avatarSize + lineSpacing * 2
-        let usernameX = (width - usernameSize.width) / 2
-        usernameString.draw(at: CGPoint(x: usernameX, y: currentY))
-        currentY += usernameSize.height + lineSpacing * 2
-        drawDivider(at: currentY, padding: padding, width: width)
-        currentY += 2 + lineSpacing * 2
-        let contentX = (width - contentSize.width) / 2
-        contentString.draw(in: CGRect(x: contentX, y: currentY, width: contentSize.width, height: contentSize.height))
-        currentY += contentSize.height + lineSpacing * 2
-        drawDivider(at: currentY, padding: padding, width: width)
-        currentY += 2 + lineSpacing * 2
-        let timestampX = (width - timestampSize.width) / 2
-        timestampString.draw(at: CGPoint(x: timestampX, y: currentY))
-        let image = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        guard let cgImage = image?.cgImage else {
-            return nil
-        }
-        return CIImage(cgImage: cgImage)
     }
 
     func printSnapshotCatPrinters(image: CIImage) {
