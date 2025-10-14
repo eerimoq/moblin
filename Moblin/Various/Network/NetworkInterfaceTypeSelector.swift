@@ -17,16 +17,16 @@ class NetworkInterfaceTypeSelector {
                 return
             }
             interfaceTypes.removeAll()
-            if path.availableInterfaces.contains(where: { $0.type == .wifi }) {
+            if path.uniqueAvailableInterfaces().contains(where: { $0.type == .wifi }) {
                 interfaceTypes.append(.wifi)
             }
-            if self.cellular, path.availableInterfaces.contains(where: { $0.type == .cellular }) {
+            if self.cellular, path.uniqueAvailableInterfaces().contains(where: { $0.type == .cellular }) {
                 interfaceTypes.append(.cellular)
             }
-            if path.availableInterfaces.contains(where: { $0.type == .wiredEthernet }) {
+            if path.uniqueAvailableInterfaces().contains(where: { $0.type == .wiredEthernet }) {
                 interfaceTypes.append(.wiredEthernet)
             }
-            if path.availableInterfaces.contains(where: { $0.type == .other }) {
+            if path.uniqueAvailableInterfaces().contains(where: { $0.type == .other }) {
                 interfaceTypes.append(.other)
             }
         }

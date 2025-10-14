@@ -56,14 +56,14 @@ struct StreamWizardSettingsView: View {
                     YouTubeLogoAndNameView()
                 }
                 NavigationLink {
-                    StreamWizardAfreecaTvSettingsView(createStreamWizard: createStreamWizard)
+                    StreamWizardSoopSettingsView(createStreamWizard: createStreamWizard)
                 } label: {
-                    Text("AfreecaTV")
+                    SoopLogoAndNameView()
                 }
                 NavigationLink {
                     StreamWizardObsSettingsView(createStreamWizard: createStreamWizard)
                 } label: {
-                    Text("OBS")
+                    ObsLogoAndNameView()
                 }
             } header: {
                 Text("Platform to stream to")

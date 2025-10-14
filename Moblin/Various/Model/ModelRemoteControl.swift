@@ -117,9 +117,7 @@ extension Model {
         remoteControlAssistant = RemoteControlAssistant(
             port: database.remoteControl.assistant.port,
             password: database.remoteControl.password,
-            delegate: self,
-            httpProxy: httpProxy(),
-            urlSession: urlSession
+            delegate: self
         )
         remoteControlAssistant!.start()
     }
@@ -636,6 +634,7 @@ extension Model: RemoteControlStreamerDelegate {
         for message in messages where message.id > remoteControlStreamerLatestReceivedChatMessageId {
             appendChatMessage(platform: message.platform,
                               messageId: message.messageId,
+                              displayName: message.displayName,
                               user: message.user,
                               userId: message.userId,
                               userColor: message.userColor,

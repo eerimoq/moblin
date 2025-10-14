@@ -163,7 +163,7 @@ final class YouTubeLiveChat: NSObject {
             onOk: handleOk,
             settings: settings
         )
-        task = Task.init {
+        task = Task {
             while true {
                 do {
                     try await getInitialContinuation()
@@ -332,6 +332,7 @@ final class YouTubeLiveChat: NSObject {
         await MainActor.run {
             model.appendChatMessage(platform: .youTube,
                                     messageId: nil,
+                                    displayName: chatDescription.authorName.simpleText,
                                     user: chatDescription.authorName.simpleText,
                                     userId: nil,
                                     userColor: nil,

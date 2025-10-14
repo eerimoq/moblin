@@ -168,6 +168,7 @@ struct ChatPost: Identifiable, Equatable {
 
     var id: Int
     let messageId: String?
+    let displayName: String?
     let user: String?
     var userId: String?
     let userColor: RgbColor
@@ -192,23 +193,34 @@ struct ChatPost: Identifiable, Equatable {
         return user == nil
     }
 
-    func displayName(nicknames: SettingsChatNicknames) -> String {
-        guard let user else {
+    func displayName(nicknames: SettingsChatNicknames, displayStyle: SettingsChatDisplayStyle) -> String {
+        guard let displayName, let user else {
             return String(localized: "Unknown")
         }
         if let nickname = nicknames.getNickname(user: user) {
             return "\(nickname) @\(user)"
         }
-        return user
+        switch displayStyle {
+        case .internationalNameAndUsername:
+            if displayName.compare(user, options: .caseInsensitive) == .orderedSame {
+                return displayName
+            } else {
+                return "\(displayName) (\(user))"
+            }
+        case .internationalName:
+            return displayName
+        case .username:
+            return user
+        }
     }
 
     func shortDisplayName(nicknames: SettingsChatNicknames) -> String {
-        guard let user else {
+        guard let displayName, let user else {
             return String(localized: "Unknown")
         }
         if let nickname = nicknames.getNickname(user: user) {
             return nickname
         }
-        return user
+        return displayName
     }
 }

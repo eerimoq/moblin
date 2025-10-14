@@ -13,7 +13,7 @@ struct StreamWizardTwitchSettingsView: View {
         createStreamWizard.twitchChannelId = createStreamWizard.twitchStream.twitchChannelId
         createStreamWizard.twitchAccessToken = createStreamWizard.twitchStream.twitchAccessToken
         createStreamWizard.twitchLoggedIn = createStreamWizard.twitchStream.twitchLoggedIn
-        TwitchApi(createStreamWizard.twitchAccessToken, model.urlSession)
+        TwitchApi(createStreamWizard.twitchAccessToken)
             .getStreamKey(broadcasterId: createStreamWizard.twitchChannelId) { streamKey in
                 if let streamKey {
                     createStreamWizard.directStreamKey = streamKey

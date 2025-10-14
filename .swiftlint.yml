@@ -15,3 +15,4 @@ disabled_rules:
   - shorthand_operator
   - inclusive_language
   - blanket_disable_command
+  - force_try

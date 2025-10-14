@@ -47,14 +47,6 @@ struct WidgetImageSettingsView: View {
                     }
                 }
             }
-            if let image {
-                HStack {
-                    TextItemView(
-                        name: String(localized: "Dimensions"),
-                        value: "\(formatAsInt(image.size.width))x\(formatAsInt(image.size.height))"
-                    )
-                }
-            }
         }
         .onAppear {
             model.checkPhotoLibraryAuthorization()

@@ -69,9 +69,10 @@ private struct SceneWidgetView: View {
         if let widget = database.widgets.first(where: { $0.id == sceneWidget.widgetId }) {
             NavigationLink {
                 SceneWidgetSettingsView(
+                    model: model,
+                    database: database,
                     sceneWidget: sceneWidget,
-                    widget: widget,
-                    numericInput: $database.sceneNumericInput
+                    widget: widget
                 )
             } label: {
                 Toggle(isOn: Binding(get: {
@@ -100,6 +101,7 @@ struct SceneSettingsView: View {
     @ObservedObject var database: Database
     @ObservedObject var scene: SettingsScene
     @State private var showingAddWidget = false
+    @State private var showingScreenCaptureAlert = false
 
     var widgets: [SettingsWidget] {
         model.database.widgets
@@ -128,6 +130,13 @@ struct SceneSettingsView: View {
             sceneWidget.x = 85
             sceneWidget.y = 72
             sceneWidget.size = 28
+        case .browser:
+            let stream = model.stream
+            let resolution = stream.resolution.dimensions(portrait: stream.portrait)
+            let width = (100 * Double(widget.browser.width) / Double(resolution.width)).clamped(to: 1 ... 100)
+            let height = (100 * Double(widget.browser.height) / Double(resolution.height)).clamped(to: 1 ... 100)
+            sceneWidget.size = max(width, height)
+            sceneWidget.sizeString = String(sceneWidget.size)
         default:
             break
         }
@@ -137,6 +146,9 @@ struct SceneSettingsView: View {
     private func onCameraChange(cameraId: String) {
         scene.updateCameraId(settingsCameraId: model.cameraIdToSettingsCameraId(cameraId: cameraId))
         model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
+        if model.isScreenCaptureCamera(cameraId: cameraId) {
+            showingScreenCaptureAlert = true
+        }
     }
 
     var body: some View {
@@ -180,48 +192,64 @@ struct SceneSettingsView: View {
                         Image(systemName: "camera")
                     }
                 }
-                if scene.cameraPosition != .none {
-                    VideoSourceRotationView(selectedRotation: $scene.videoSourceRotation)
-                        .onChange(of: scene.videoSourceRotation) { _ in
-                            model.sceneUpdated(updateRemoteScene: false)
-                        }
-                }
-                Toggle("Override video stabilization", isOn: $scene.overrideVideoStabilizationMode)
-                    .onChange(of: scene.overrideVideoStabilizationMode) { _ in
-                        model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
+                .alert(
+                    """
+                    Start a screen capture by long-pressing the record button in iOS Control Center and select Moblin.
+                    """,
+                    isPresented: $showingScreenCaptureAlert
+                ) {
+                    Button("Got it") {
+                        showingScreenCaptureAlert = false
                     }
-                if scene.overrideVideoStabilizationMode {
-                    VideoStabilizationView(model: model, scene: scene)
                 }
-                if scene.cameraPosition != .none {
-                    Toggle("Fill frame", isOn: $scene.fillFrame)
-                        .onChange(of: scene.fillFrame) { _ in
+                if database.showAllSettings {
+                    if scene.cameraPosition != .none {
+                        VideoSourceRotationView(selectedRotation: $scene.videoSourceRotation)
+                            .onChange(of: scene.videoSourceRotation) { _ in
+                                model.sceneUpdated(updateRemoteScene: false)
+                            }
+                    }
+                    Toggle("Override video stabilization", isOn: $scene.overrideVideoStabilizationMode)
+                        .onChange(of: scene.overrideVideoStabilizationMode) { _ in
                             model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
                         }
+                    if scene.overrideVideoStabilizationMode {
+                        VideoStabilizationView(model: model, scene: scene)
+                    }
+                    if scene.cameraPosition != .none {
+                        Toggle("Fill frame", isOn: $scene.fillFrame)
+                            .onChange(of: scene.fillFrame) { _ in
+                                model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
+                            }
+                    }
                 }
             } header: {
                 Text("Video source")
             } footer: {
-                Text("""
-                Enable Override video stabilization to override Settings → Camera → Video \
-                stabilization in this scene.
-                """)
-            }
-            Section {
-                Toggle("Override", isOn: $scene.overrideMic)
-                    .onChange(of: scene.overrideMic) { _ in
-                        model.switchMicIfNeededAfterSceneSwitch()
-                    }
-                if scene.overrideMic {
-                    MicView(model: model, scene: scene, mic: model.mic)
+                if database.showAllSettings {
+                    Text("""
+                    Enable Override video stabilization to override Settings → Camera → Video \
+                    stabilization in this scene.
+                    """)
                 }
-            } header: {
-                Text("Mic")
-            } footer: {
-                Text("""
-                Enable Override to automatically switch to selected mic (if available) when \
-                switching to this scene.
-                """)
+            }
+            if database.showAllSettings {
+                Section {
+                    Toggle("Override", isOn: $scene.overrideMic)
+                        .onChange(of: scene.overrideMic) { _ in
+                            model.switchMicIfNeededAfterSceneSwitch()
+                        }
+                    if scene.overrideMic {
+                        MicView(model: model, scene: scene, mic: model.mic)
+                    }
+                } header: {
+                    Text("Mic")
+                } footer: {
+                    Text("""
+                    Enable Override to automatically switch to selected mic (if available) when \
+                    switching to this scene.
+                    """)
+                }
             }
             Section {
                 List {

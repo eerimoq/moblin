@@ -105,6 +105,7 @@ struct RtmpServerSettingsView: View {
                 Text("RTMP server")
                 Spacer()
                 Text(status())
+                    .foregroundColor(.gray)
             }
         }
     }

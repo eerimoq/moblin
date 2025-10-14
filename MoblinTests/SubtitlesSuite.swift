@@ -86,4 +86,24 @@ struct SubtitlesSuite {
             "this just another",
         ])
     }
+
+    @Test func speechToTextEmptyInput() async throws {
+        let subtitles = Subtitles(languageIdentifier: nil)
+        subtitles.updateSubtitles(position: 0, text: "")
+        #expect(subtitles.lines.isEmpty)
+    }
+
+    @Test func speechToTextJumping() async throws {
+        let subtitles = Subtitles(languageIdentifier: nil)
+        subtitles.updateSubtitles(position: 0, text: "")
+        #expect(subtitles.lines.isEmpty)
+        subtitles.updateSubtitles(position: -5, text: "123")
+        #expect(subtitles.lines.isEmpty)
+        subtitles.updateSubtitles(position: 0, text: "123")
+        #expect(subtitles.lines == ["123"])
+        subtitles.updateSubtitles(position: 100, text: "123")
+        #expect(subtitles.lines == ["123"])
+        subtitles.updateSubtitles(position: 10, text: "123")
+        #expect(subtitles.lines == ["123"])
+    }
 }

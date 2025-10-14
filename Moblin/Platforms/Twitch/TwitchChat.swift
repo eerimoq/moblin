@@ -79,7 +79,8 @@ private struct ChatMessage {
     let channel: String
     let emotes: [Emote2]
     let badges: [String]
-    let sender: String
+    let displayName: String
+    let user: String
     let userId: String?
     let senderColor: String?
     let text: String
@@ -96,7 +97,8 @@ private struct ChatMessage {
         guard message.parameters.count == 2,
               let channel = message.parameters.first,
               let text = message.parameters.last,
-              let sender = message.sender
+              let displayName = message.displayName,
+              let user = message.user
         else {
             return nil
         }
@@ -121,7 +123,8 @@ private struct ChatMessage {
         emotes = message.emotes
         badges = message.badges
         self.text = text
-        self.sender = sender
+        self.displayName = displayName
+        self.user = user
         userId = message.userId
         senderColor = message.color
         self.announcement = announcement
@@ -223,10 +226,12 @@ private struct Message {
         parameters = parseParameters(from: parts)
     }
 
-    var sender: String? {
-        if let displayName = tags["display-name"] {
-            return displayName
-        } else if let source = sourceString, let senderEndIndex = source.firstIndex(of: "!") {
+    var displayName: String? {
+        return tags["display-name"]
+    }
+
+    var user: String? {
+        if let source = sourceString, let senderEndIndex = source.firstIndex(of: "!") {
             return String(source.prefix(upTo: senderEndIndex))
         } else {
             return nil
@@ -307,14 +312,12 @@ private func getEmotes(from message: ChatMessage) -> [ChatMessageEmote] {
 private class Badges {
     private var channelId: String = ""
     private var accessToken: String = ""
-    private var urlSession = URLSession.shared
     private var badges: [String: TwitchApiChatBadgesVersion] = [:]
     private var tryFetchAgainTimer = SimpleTimer(queue: .main)
 
-    func start(channelId: String, accessToken: String, urlSession: URLSession) {
+    func start(channelId: String, accessToken: String) {
         self.channelId = channelId
         self.accessToken = accessToken
-        self.urlSession = urlSession
         guard !accessToken.isEmpty else {
             return
         }
@@ -331,13 +334,13 @@ private class Badges {
 
     func tryFetch() {
         startTryFetchAgainTimer()
-        TwitchApi(accessToken, urlSession).getGlobalChatBadges { data in
+        TwitchApi(accessToken).getGlobalChatBadges { data in
             guard let data else {
                 return
             }
             DispatchQueue.main.async {
                 self.addBadges(badges: data)
-                TwitchApi(self.accessToken, self.urlSession)
+                TwitchApi(self.accessToken)
                     .getChannelChatBadges(broadcasterId: self.channelId) { data in
                         guard let data else {
                             return
@@ -373,14 +376,12 @@ private class Badges {
 private class Cheermotes {
     private var channelId: String = ""
     private var accessToken: String = ""
-    private var urlSession: URLSession = .shared
     private var emotes: [String: [TwitchApiGetCheermotesDataTier]] = [:]
     private var tryFetchAgainTimer = SimpleTimer(queue: .main)
 
-    func start(channelId: String, accessToken: String, urlSession: URLSession) {
+    func start(channelId: String, accessToken: String) {
         self.channelId = channelId
         self.accessToken = accessToken
-        self.urlSession = urlSession
         guard !accessToken.isEmpty else {
             return
         }
@@ -393,7 +394,7 @@ private class Cheermotes {
 
     func tryFetch() {
         startTryFetchAgainTimer()
-        TwitchApi(accessToken, urlSession).getCheermotes(broadcasterId: channelId) { datas in
+        TwitchApi(accessToken).getCheermotes(broadcasterId: channelId) { datas in
             guard let datas else {
                 return
             }
@@ -444,7 +445,8 @@ protocol TwitchChatDelegate: AnyObject {
     func twitchChatMakeErrorToast(title: String, subTitle: String?)
     func twitchChatAppendMessage(
         messageId: String?,
-        user: String?,
+        displayName: String,
+        user: String,
         userId: String?,
         userColor: RgbColor?,
         userBadges: [URL],
@@ -480,9 +482,7 @@ final class TwitchChat {
         channelName: String,
         channelId: String,
         settings: SettingsStreamChat,
-        accessToken: String,
-        httpProxy: HttpProxy?,
-        urlSession: URLSession
+        accessToken: String
     ) {
         self.channelName = channelName
         logger.debug("twitch: chat: Start")
@@ -494,9 +494,9 @@ final class TwitchChat {
             onOk: handleOk,
             settings: settings
         )
-        badges.start(channelId: channelId, accessToken: accessToken, urlSession: urlSession)
-        cheermotes.start(channelId: channelId, accessToken: accessToken, urlSession: urlSession)
-        webSocket = .init(url: URL(string: "wss://irc-ws.chat.twitch.tv")!, httpProxy: httpProxy)
+        badges.start(channelId: channelId, accessToken: accessToken)
+        cheermotes.start(channelId: channelId, accessToken: accessToken)
+        webSocket = .init(url: URL(string: "wss://irc-ws.chat.twitch.tv")!)
         webSocket.delegate = self
         webSocket.start()
     }
@@ -565,7 +565,8 @@ final class TwitchChat {
         )
         delegate?.twitchChatAppendMessage(
             messageId: message.id,
-            user: message.sender,
+            displayName: message.displayName,
+            user: message.user,
             userId: message.userId,
             userColor: RgbColor.fromHex(string: message.senderColor ?? ""),
             userBadges: badgeUrls,

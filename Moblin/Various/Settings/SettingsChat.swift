@@ -428,6 +428,28 @@ class SettingsChatBotAi: Codable, ObservableObject {
     }
 }
 
+enum SettingsChatDisplayStyle: String, Codable, CaseIterable {
+    case internationalName
+    case internationalNameAndUsername
+    case username
+
+    init(from decoder: Decoder) throws {
+        self = try SettingsChatDisplayStyle(rawValue: decoder.singleValueContainer()
+            .decode(RawValue.self)) ?? .internationalName
+    }
+
+    func toString() -> String {
+        switch self {
+        case .internationalName:
+            return String(localized: "International name")
+        case .internationalNameAndUsername:
+            return String(localized: "International name (Username)")
+        case .username:
+            return String(localized: "Username")
+        }
+    }
+}
+
 class SettingsChat: Codable, ObservableObject {
     @Published var fontSize: Float = 19.0
     var usernameColor: RgbColor = .init(red: 255, green: 163, blue: 0)
@@ -480,6 +502,7 @@ class SettingsChat: Codable, ObservableObject {
     @Published var predefinedMessages: [SettingsChatPredefinedMessage] = []
     @Published var predefinedMessagesFilter: SettingsChatPredefinedMessagesFilter = .init()
     @Published var nicknames: SettingsChatNicknames = .init()
+    @Published var displayStyle: SettingsChatDisplayStyle = .internationalNameAndUsername
 
     enum CodingKeys: CodingKey {
         case fontSize,
@@ -528,7 +551,8 @@ class SettingsChat: Codable, ObservableObject {
              predefinedMessages,
              predefinedMessagesFilter,
              sendMessagesTo,
-             nicknames
+             nicknames,
+             displayStyle
     }
 
     func encode(to encoder: Encoder) throws {
@@ -579,6 +603,7 @@ class SettingsChat: Codable, ObservableObject {
         try container.encode(.predefinedMessages, predefinedMessages)
         try container.encode(.predefinedMessagesFilter, predefinedMessagesFilter)
         try container.encode(.nicknames, nicknames)
+        try container.encode(.displayStyle, displayStyle)
     }
 
     init() {}
@@ -643,6 +668,7 @@ class SettingsChat: Codable, ObservableObject {
             .init()
         )
         nicknames = container.decode(.nicknames, SettingsChatNicknames.self, .init())
+        displayStyle = container.decode(.displayStyle, SettingsChatDisplayStyle.self, .internationalName)
     }
 
     func getRotation() -> Double {

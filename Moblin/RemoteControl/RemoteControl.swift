@@ -58,6 +58,7 @@ struct RemoteControlChatMessage: Codable {
     var id: Int
     var platform: Platform
     var messageId: String?
+    var displayName: String?
     var user: String?
     var userId: String?
     var userColor: RgbColor?
@@ -244,7 +245,6 @@ struct RemoteControlRemoteSceneSettingsWidgetTypeText: Codable {
     var fontWeight: SettingsFontWeight
     var fontMonospacedDigits: Bool
     var horizontalAlignment: RemoteControlRemoteSceneSettingsHorizontalAlignment
-    var verticalAlignment: RemoteControlRemoteSceneSettingsVerticalAlignment
     var delay: Double
 
     init(text: SettingsWidgetText) {
@@ -258,7 +258,6 @@ struct RemoteControlRemoteSceneSettingsWidgetTypeText: Codable {
         fontWeight = text.fontWeight
         fontMonospacedDigits = text.fontMonospacedDigits
         horizontalAlignment = .init(alignment: text.horizontalAlignment)
-        verticalAlignment = .init(alignment: text.verticalAlignment)
         delay = text.delay
     }
 
@@ -274,7 +273,6 @@ struct RemoteControlRemoteSceneSettingsWidgetTypeText: Codable {
         text.fontWeight = fontWeight
         text.fontMonospacedDigits = fontMonospacedDigits
         text.horizontalAlignment = horizontalAlignment.toSettings()
-        text.verticalAlignment = verticalAlignment.toSettings()
         text.delay = delay
         return text
     }
@@ -299,29 +297,6 @@ enum RemoteControlRemoteSceneSettingsHorizontalAlignment: Codable {
             return .leading
         case .trailing:
             return .trailing
-        }
-    }
-}
-
-enum RemoteControlRemoteSceneSettingsVerticalAlignment: Codable {
-    case top
-    case bottom
-
-    init(alignment: SettingsVerticalAlignment) {
-        switch alignment {
-        case .top:
-            self = .top
-        case .bottom:
-            self = .bottom
-        }
-    }
-
-    func toSettings() -> SettingsVerticalAlignment {
-        switch self {
-        case .top:
-            return .top
-        case .bottom:
-            return .bottom
         }
     }
 }

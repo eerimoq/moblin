@@ -60,7 +60,8 @@ extension Model {
                 )
                 try session.setActive(true)
             } catch {
-                logger.error("app: Session error \(error)")
+                self.makeErrorToastMain(title: "Audio session setup failed",
+                                        subTitle: error.localizedDescription)
             }
             self.setAllowHapticsAndSystemSoundsDuringRecording()
         }

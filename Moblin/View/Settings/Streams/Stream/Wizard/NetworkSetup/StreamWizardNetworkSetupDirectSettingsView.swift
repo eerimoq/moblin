@@ -128,7 +128,7 @@ struct StreamWizardNetworkSetupDirectSettingsView: View {
                 } footer: {
                     Text("Copy from https://youtube.com (requires login).")
                 }
-            case .afreecaTv:
+            case .soop:
                 Section {
                     TextField(
                         "???",

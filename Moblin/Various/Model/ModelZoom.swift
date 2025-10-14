@@ -7,7 +7,7 @@ private let noFrontZoomPresetId = UUID()
 class Zoom: ObservableObject {
     var xPinch: Float = 1.0
     var backX: Float = 0.5
-    var frontX: Float = 1.0
+    var frontX: Float = 0.5
     @Published var backPresetId = UUID()
     @Published var frontPresetId = UUID()
     @Published var x: Float = 1.0

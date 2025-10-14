@@ -400,6 +400,12 @@ enum VCSEC_WhitelistOperation_information_E: SwiftProtobuf.Enum, Swift.CaseItera
   case whitelistoperationInformationAttemptingToAddKeyWithServiceRole // = 20
   case whitelistoperationInformationNonServiceKeyAttemptingToAddServiceTech // = 21
   case whitelistoperationInformationServiceKeyAttemptingToAddServiceTechOutsideServiceMode // = 22
+  case whitelistoperationInformationCouldNotStartLocalEntityAuth // = 23
+  case whitelistoperationInformationLocalEntityAuthFailedUiDenied // = 24
+  case whitelistoperationInformationLocalEntityAuthFailedTimedOutWaitingForTap // = 25
+  case whitelistoperationInformationLocalEntityAuthFailedTimedOutWaitingForUiAck // = 26
+  case whitelistoperationInformationLocalEntityAuthFailedValetMode // = 27
+  case whitelistoperationInformationLocalEntityAuthFailedCancelled // = 28
   case UNRECOGNIZED(Int)
 
   init() {
@@ -431,6 +437,12 @@ enum VCSEC_WhitelistOperation_information_E: SwiftProtobuf.Enum, Swift.CaseItera
     case 20: self = .whitelistoperationInformationAttemptingToAddKeyWithServiceRole
     case 21: self = .whitelistoperationInformationNonServiceKeyAttemptingToAddServiceTech
     case 22: self = .whitelistoperationInformationServiceKeyAttemptingToAddServiceTechOutsideServiceMode
+    case 23: self = .whitelistoperationInformationCouldNotStartLocalEntityAuth
+    case 24: self = .whitelistoperationInformationLocalEntityAuthFailedUiDenied
+    case 25: self = .whitelistoperationInformationLocalEntityAuthFailedTimedOutWaitingForTap
+    case 26: self = .whitelistoperationInformationLocalEntityAuthFailedTimedOutWaitingForUiAck
+    case 27: self = .whitelistoperationInformationLocalEntityAuthFailedValetMode
+    case 28: self = .whitelistoperationInformationLocalEntityAuthFailedCancelled
     default: self = .UNRECOGNIZED(rawValue)
     }
   }
@@ -460,6 +472,12 @@ enum VCSEC_WhitelistOperation_information_E: SwiftProtobuf.Enum, Swift.CaseItera
     case .whitelistoperationInformationAttemptingToAddKeyWithServiceRole: return 20
     case .whitelistoperationInformationNonServiceKeyAttemptingToAddServiceTech: return 21
     case .whitelistoperationInformationServiceKeyAttemptingToAddServiceTechOutsideServiceMode: return 22
+    case .whitelistoperationInformationCouldNotStartLocalEntityAuth: return 23
+    case .whitelistoperationInformationLocalEntityAuthFailedUiDenied: return 24
+    case .whitelistoperationInformationLocalEntityAuthFailedTimedOutWaitingForTap: return 25
+    case .whitelistoperationInformationLocalEntityAuthFailedTimedOutWaitingForUiAck: return 26
+    case .whitelistoperationInformationLocalEntityAuthFailedValetMode: return 27
+    case .whitelistoperationInformationLocalEntityAuthFailedCancelled: return 28
     case .UNRECOGNIZED(let i): return i
     }
   }
@@ -489,6 +507,12 @@ enum VCSEC_WhitelistOperation_information_E: SwiftProtobuf.Enum, Swift.CaseItera
     .whitelistoperationInformationAttemptingToAddKeyWithServiceRole,
     .whitelistoperationInformationNonServiceKeyAttemptingToAddServiceTech,
     .whitelistoperationInformationServiceKeyAttemptingToAddServiceTechOutsideServiceMode,
+    .whitelistoperationInformationCouldNotStartLocalEntityAuth,
+    .whitelistoperationInformationLocalEntityAuthFailedUiDenied,
+    .whitelistoperationInformationLocalEntityAuthFailedTimedOutWaitingForTap,
+    .whitelistoperationInformationLocalEntityAuthFailedTimedOutWaitingForUiAck,
+    .whitelistoperationInformationLocalEntityAuthFailedValetMode,
+    .whitelistoperationInformationLocalEntityAuthFailedCancelled,
   ]
 
 }
@@ -665,7 +689,7 @@ enum VCSEC_UserPresence_E: SwiftProtobuf.Enum, Swift.CaseIterable {
 
 }
 
-struct VCSEC_SignedMessage: @unchecked Sendable {
+struct VCSEC_SignedMessage: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -700,7 +724,7 @@ struct VCSEC_ToVCSECMessage: Sendable {
   fileprivate var _signedMessage: VCSEC_SignedMessage? = nil
 }
 
-struct VCSEC_KeyIdentifier: @unchecked Sendable {
+struct VCSEC_KeyIdentifier: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -724,7 +748,7 @@ struct VCSEC_KeyMetadata: Sendable {
   init() {}
 }
 
-struct VCSEC_PublicKey: @unchecked Sendable {
+struct VCSEC_PublicKey: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -797,7 +821,7 @@ struct VCSEC_WhitelistEntryInfo: Sendable {
   fileprivate var _metadataForKey: VCSEC_KeyMetadata? = nil
 }
 
-struct VCSEC_InformationRequest: @unchecked Sendable {
+struct VCSEC_InformationRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -832,7 +856,7 @@ struct VCSEC_InformationRequest: @unchecked Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum OneOf_Key: Equatable, @unchecked Sendable {
+  enum OneOf_Key: Equatable, Sendable {
     case keyID(VCSEC_KeyIdentifier)
     case publicKey(Data)
     case slot(UInt32)
@@ -1327,154 +1351,56 @@ struct VCSEC_FromVCSECMessage: Sendable {
 fileprivate let _protobuf_package = "VCSEC"
 
 extension VCSEC_SignatureType: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "SIGNATURE_TYPE_NONE"),
-    2: .same(proto: "SIGNATURE_TYPE_PRESENT_KEY"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0SIGNATURE_TYPE_NONE\0\u{2}\u{2}SIGNATURE_TYPE_PRESENT_KEY\0")
 }
 
 extension VCSEC_KeyFormFactor: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "KEY_FORM_FACTOR_UNKNOWN"),
-    1: .same(proto: "KEY_FORM_FACTOR_NFC_CARD"),
-    6: .same(proto: "KEY_FORM_FACTOR_IOS_DEVICE"),
-    7: .same(proto: "KEY_FORM_FACTOR_ANDROID_DEVICE"),
-    9: .same(proto: "KEY_FORM_FACTOR_CLOUD_KEY"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0KEY_FORM_FACTOR_UNKNOWN\0\u{1}KEY_FORM_FACTOR_NFC_CARD\0\u{2}\u{5}KEY_FORM_FACTOR_IOS_DEVICE\0\u{1}KEY_FORM_FACTOR_ANDROID_DEVICE\0\u{2}\u{2}KEY_FORM_FACTOR_CLOUD_KEY\0")
 }
 
 extension VCSEC_InformationRequestType: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "INFORMATION_REQUEST_TYPE_GET_STATUS"),
-    5: .same(proto: "INFORMATION_REQUEST_TYPE_GET_WHITELIST_INFO"),
-    6: .same(proto: "INFORMATION_REQUEST_TYPE_GET_WHITELIST_ENTRY_INFO"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0INFORMATION_REQUEST_TYPE_GET_STATUS\0\u{2}\u{5}INFORMATION_REQUEST_TYPE_GET_WHITELIST_INFO\0\u{1}INFORMATION_REQUEST_TYPE_GET_WHITELIST_ENTRY_INFO\0")
 }
 
 extension VCSEC_RKEAction_E: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "RKE_ACTION_UNLOCK"),
-    1: .same(proto: "RKE_ACTION_LOCK"),
-    20: .same(proto: "RKE_ACTION_REMOTE_DRIVE"),
-    29: .same(proto: "RKE_ACTION_AUTO_SECURE_VEHICLE"),
-    30: .same(proto: "RKE_ACTION_WAKE_VEHICLE"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0RKE_ACTION_UNLOCK\0\u{1}RKE_ACTION_LOCK\0\u{2}\u{13}RKE_ACTION_REMOTE_DRIVE\0\u{2}\u{9}RKE_ACTION_AUTO_SECURE_VEHICLE\0\u{1}RKE_ACTION_WAKE_VEHICLE\0")
 }
 
 extension VCSEC_ClosureMoveType_E: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "CLOSURE_MOVE_TYPE_NONE"),
-    1: .same(proto: "CLOSURE_MOVE_TYPE_MOVE"),
-    2: .same(proto: "CLOSURE_MOVE_TYPE_STOP"),
-    3: .same(proto: "CLOSURE_MOVE_TYPE_OPEN"),
-    4: .same(proto: "CLOSURE_MOVE_TYPE_CLOSE"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0CLOSURE_MOVE_TYPE_NONE\0\u{1}CLOSURE_MOVE_TYPE_MOVE\0\u{1}CLOSURE_MOVE_TYPE_STOP\0\u{1}CLOSURE_MOVE_TYPE_OPEN\0\u{1}CLOSURE_MOVE_TYPE_CLOSE\0")
 }
 
 extension VCSEC_OperationStatus_E: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "OPERATIONSTATUS_OK"),
-    1: .same(proto: "OPERATIONSTATUS_WAIT"),
-    2: .same(proto: "OPERATIONSTATUS_ERROR"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0OPERATIONSTATUS_OK\0\u{1}OPERATIONSTATUS_WAIT\0\u{1}OPERATIONSTATUS_ERROR\0")
 }
 
 extension VCSEC_SignedMessage_information_E: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "SIGNEDMESSAGE_INFORMATION_NONE"),
-    1: .same(proto: "SIGNEDMESSAGE_INFORMATION_FAULT_UNKNOWN"),
-    2: .same(proto: "SIGNEDMESSAGE_INFORMATION_FAULT_NOT_ON_WHITELIST"),
-    3: .same(proto: "SIGNEDMESSAGE_INFORMATION_FAULT_IV_SMALLER_THAN_EXPECTED"),
-    4: .same(proto: "SIGNEDMESSAGE_INFORMATION_FAULT_INVALID_TOKEN"),
-    5: .same(proto: "SIGNEDMESSAGE_INFORMATION_FAULT_TOKEN_AND_COUNTER_INVALID"),
-    6: .same(proto: "SIGNEDMESSAGE_INFORMATION_FAULT_AES_DECRYPT_AUTH"),
-    7: .same(proto: "SIGNEDMESSAGE_INFORMATION_FAULT_ECDSA_INPUT"),
-    8: .same(proto: "SIGNEDMESSAGE_INFORMATION_FAULT_ECDSA_SIGNATURE"),
-    9: .same(proto: "SIGNEDMESSAGE_INFORMATION_FAULT_LOCAL_ENTITY_START"),
-    10: .same(proto: "SIGNEDMESSAGE_INFORMATION_FAULT_LOCAL_ENTITY_RESULT"),
-    11: .same(proto: "SIGNEDMESSAGE_INFORMATION_FAULT_COULD_NOT_RETRIEVE_KEY"),
-    12: .same(proto: "SIGNEDMESSAGE_INFORMATION_FAULT_COULD_NOT_RETRIEVE_TOKEN"),
-    13: .same(proto: "SIGNEDMESSAGE_INFORMATION_FAULT_SIGNATURE_TOO_SHORT"),
-    14: .same(proto: "SIGNEDMESSAGE_INFORMATION_FAULT_TOKEN_IS_INCORRECT_LENGTH"),
-    15: .same(proto: "SIGNEDMESSAGE_INFORMATION_FAULT_INCORRECT_EPOCH"),
-    16: .same(proto: "SIGNEDMESSAGE_INFORMATION_FAULT_IV_INCORRECT_LENGTH"),
-    17: .same(proto: "SIGNEDMESSAGE_INFORMATION_FAULT_TIME_EXPIRED"),
-    18: .same(proto: "SIGNEDMESSAGE_INFORMATION_FAULT_NOT_PROVISIONED_WITH_IDENTITY"),
-    19: .same(proto: "SIGNEDMESSAGE_INFORMATION_FAULT_COULD_NOT_HASH_METADATA"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0SIGNEDMESSAGE_INFORMATION_NONE\0\u{1}SIGNEDMESSAGE_INFORMATION_FAULT_UNKNOWN\0\u{1}SIGNEDMESSAGE_INFORMATION_FAULT_NOT_ON_WHITELIST\0\u{1}SIGNEDMESSAGE_INFORMATION_FAULT_IV_SMALLER_THAN_EXPECTED\0\u{1}SIGNEDMESSAGE_INFORMATION_FAULT_INVALID_TOKEN\0\u{1}SIGNEDMESSAGE_INFORMATION_FAULT_TOKEN_AND_COUNTER_INVALID\0\u{1}SIGNEDMESSAGE_INFORMATION_FAULT_AES_DECRYPT_AUTH\0\u{1}SIGNEDMESSAGE_INFORMATION_FAULT_ECDSA_INPUT\0\u{1}SIGNEDMESSAGE_INFORMATION_FAULT_ECDSA_SIGNATURE\0\u{1}SIGNEDMESSAGE_INFORMATION_FAULT_LOCAL_ENTITY_START\0\u{1}SIGNEDMESSAGE_INFORMATION_FAULT_LOCAL_ENTITY_RESULT\0\u{1}SIGNEDMESSAGE_INFORMATION_FAULT_COULD_NOT_RETRIEVE_KEY\0\u{1}SIGNEDMESSAGE_INFORMATION_FAULT_COULD_NOT_RETRIEVE_TOKEN\0\u{1}SIGNEDMESSAGE_INFORMATION_FAULT_SIGNATURE_TOO_SHORT\0\u{1}SIGNEDMESSAGE_INFORMATION_FAULT_TOKEN_IS_INCORRECT_LENGTH\0\u{1}SIGNEDMESSAGE_INFORMATION_FAULT_INCORRECT_EPOCH\0\u{1}SIGNEDMESSAGE_INFORMATION_FAULT_IV_INCORRECT_LENGTH\0\u{1}SIGNEDMESSAGE_INFORMATION_FAULT_TIME_EXPIRED\0\u{1}SIGNEDMESSAGE_INFORMATION_FAULT_NOT_PROVISIONED_WITH_IDENTITY\0\u{1}SIGNEDMESSAGE_INFORMATION_FAULT_COULD_NOT_HASH_METADATA\0")
 }
 
 extension VCSEC_WhitelistOperation_information_E: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "WHITELISTOPERATION_INFORMATION_NONE"),
-    1: .same(proto: "WHITELISTOPERATION_INFORMATION_UNDOCUMENTED_ERROR"),
-    2: .same(proto: "WHITELISTOPERATION_INFORMATION_NO_PERMISSION_TO_REMOVE_ONESELF"),
-    3: .same(proto: "WHITELISTOPERATION_INFORMATION_KEYFOB_SLOTS_FULL"),
-    4: .same(proto: "WHITELISTOPERATION_INFORMATION_WHITELIST_FULL"),
-    5: .same(proto: "WHITELISTOPERATION_INFORMATION_NO_PERMISSION_TO_ADD"),
-    6: .same(proto: "WHITELISTOPERATION_INFORMATION_INVALID_PUBLIC_KEY"),
-    7: .same(proto: "WHITELISTOPERATION_INFORMATION_NO_PERMISSION_TO_REMOVE"),
-    8: .same(proto: "WHITELISTOPERATION_INFORMATION_NO_PERMISSION_TO_CHANGE_PERMISSIONS"),
-    9: .same(proto: "WHITELISTOPERATION_INFORMATION_ATTEMPTING_TO_ELEVATE_OTHER_ABOVE_ONESELF"),
-    10: .same(proto: "WHITELISTOPERATION_INFORMATION_ATTEMPTING_TO_DEMOTE_SUPERIOR_TO_ONESELF"),
-    11: .same(proto: "WHITELISTOPERATION_INFORMATION_ATTEMPTING_TO_REMOVE_OWN_PERMISSIONS"),
-    12: .same(proto: "WHITELISTOPERATION_INFORMATION_PUBLIC_KEY_NOT_ON_WHITELIST"),
-    13: .same(proto: "WHITELISTOPERATION_INFORMATION_ATTEMPTING_TO_ADD_KEY_THAT_IS_ALREADY_ON_THE_WHITELIST"),
-    14: .same(proto: "WHITELISTOPERATION_INFORMATION_NOT_ALLOWED_TO_ADD_UNLESS_ON_READER"),
-    15: .same(proto: "WHITELISTOPERATION_INFORMATION_FM_MODIFYING_OUTSIDE_OF_F_MODE"),
-    16: .same(proto: "WHITELISTOPERATION_INFORMATION_FM_ATTEMPTING_TO_ADD_PERMANENT_KEY"),
-    17: .same(proto: "WHITELISTOPERATION_INFORMATION_FM_ATTEMPTING_TO_REMOVE_PERMANENT_KEY"),
-    18: .same(proto: "WHITELISTOPERATION_INFORMATION_KEYCHAIN_WHILE_FS_FULL"),
-    19: .same(proto: "WHITELISTOPERATION_INFORMATION_ATTEMPTING_TO_ADD_KEY_WITHOUT_ROLE"),
-    20: .same(proto: "WHITELISTOPERATION_INFORMATION_ATTEMPTING_TO_ADD_KEY_WITH_SERVICE_ROLE"),
-    21: .same(proto: "WHITELISTOPERATION_INFORMATION_NON_SERVICE_KEY_ATTEMPTING_TO_ADD_SERVICE_TECH"),
-    22: .same(proto: "WHITELISTOPERATION_INFORMATION_SERVICE_KEY_ATTEMPTING_TO_ADD_SERVICE_TECH_OUTSIDE_SERVICE_MODE"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0WHITELISTOPERATION_INFORMATION_NONE\0\u{1}WHITELISTOPERATION_INFORMATION_UNDOCUMENTED_ERROR\0\u{1}WHITELISTOPERATION_INFORMATION_NO_PERMISSION_TO_REMOVE_ONESELF\0\u{1}WHITELISTOPERATION_INFORMATION_KEYFOB_SLOTS_FULL\0\u{1}WHITELISTOPERATION_INFORMATION_WHITELIST_FULL\0\u{1}WHITELISTOPERATION_INFORMATION_NO_PERMISSION_TO_ADD\0\u{1}WHITELISTOPERATION_INFORMATION_INVALID_PUBLIC_KEY\0\u{1}WHITELISTOPERATION_INFORMATION_NO_PERMISSION_TO_REMOVE\0\u{1}WHITELISTOPERATION_INFORMATION_NO_PERMISSION_TO_CHANGE_PERMISSIONS\0\u{1}WHITELISTOPERATION_INFORMATION_ATTEMPTING_TO_ELEVATE_OTHER_ABOVE_ONESELF\0\u{1}WHITELISTOPERATION_INFORMATION_ATTEMPTING_TO_DEMOTE_SUPERIOR_TO_ONESELF\0\u{1}WHITELISTOPERATION_INFORMATION_ATTEMPTING_TO_REMOVE_OWN_PERMISSIONS\0\u{1}WHITELISTOPERATION_INFORMATION_PUBLIC_KEY_NOT_ON_WHITELIST\0\u{1}WHITELISTOPERATION_INFORMATION_ATTEMPTING_TO_ADD_KEY_THAT_IS_ALREADY_ON_THE_WHITELIST\0\u{1}WHITELISTOPERATION_INFORMATION_NOT_ALLOWED_TO_ADD_UNLESS_ON_READER\0\u{1}WHITELISTOPERATION_INFORMATION_FM_MODIFYING_OUTSIDE_OF_F_MODE\0\u{1}WHITELISTOPERATION_INFORMATION_FM_ATTEMPTING_TO_ADD_PERMANENT_KEY\0\u{1}WHITELISTOPERATION_INFORMATION_FM_ATTEMPTING_TO_REMOVE_PERMANENT_KEY\0\u{1}WHITELISTOPERATION_INFORMATION_KEYCHAIN_WHILE_FS_FULL\0\u{1}WHITELISTOPERATION_INFORMATION_ATTEMPTING_TO_ADD_KEY_WITHOUT_ROLE\0\u{1}WHITELISTOPERATION_INFORMATION_ATTEMPTING_TO_ADD_KEY_WITH_SERVICE_ROLE\0\u{1}WHITELISTOPERATION_INFORMATION_NON_SERVICE_KEY_ATTEMPTING_TO_ADD_SERVICE_TECH\0\u{1}WHITELISTOPERATION_INFORMATION_SERVICE_KEY_ATTEMPTING_TO_ADD_SERVICE_TECH_OUTSIDE_SERVICE_MODE\0\u{1}WHITELISTOPERATION_INFORMATION_COULD_NOT_START_LOCAL_ENTITY_AUTH\0\u{1}WHITELISTOPERATION_INFORMATION_LOCAL_ENTITY_AUTH_FAILED_UI_DENIED\0\u{1}WHITELISTOPERATION_INFORMATION_LOCAL_ENTITY_AUTH_FAILED_TIMED_OUT_WAITING_FOR_TAP\0\u{1}WHITELISTOPERATION_INFORMATION_LOCAL_ENTITY_AUTH_FAILED_TIMED_OUT_WAITING_FOR_UI_ACK\0\u{1}WHITELISTOPERATION_INFORMATION_LOCAL_ENTITY_AUTH_FAILED_VALET_MODE\0\u{1}WHITELISTOPERATION_INFORMATION_LOCAL_ENTITY_AUTH_FAILED_CANCELLED\0")
 }
 
 extension VCSEC_ClosureState_E: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "CLOSURESTATE_CLOSED"),
-    1: .same(proto: "CLOSURESTATE_OPEN"),
-    2: .same(proto: "CLOSURESTATE_AJAR"),
-    3: .same(proto: "CLOSURESTATE_UNKNOWN"),
-    4: .same(proto: "CLOSURESTATE_FAILED_UNLATCH"),
-    5: .same(proto: "CLOSURESTATE_OPENING"),
-    6: .same(proto: "CLOSURESTATE_CLOSING"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0CLOSURESTATE_CLOSED\0\u{1}CLOSURESTATE_OPEN\0\u{1}CLOSURESTATE_AJAR\0\u{1}CLOSURESTATE_UNKNOWN\0\u{1}CLOSURESTATE_FAILED_UNLATCH\0\u{1}CLOSURESTATE_OPENING\0\u{1}CLOSURESTATE_CLOSING\0")
 }
 
 extension VCSEC_VehicleLockState_E: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "VEHICLELOCKSTATE_UNLOCKED"),
-    1: .same(proto: "VEHICLELOCKSTATE_LOCKED"),
-    2: .same(proto: "VEHICLELOCKSTATE_INTERNAL_LOCKED"),
-    3: .same(proto: "VEHICLELOCKSTATE_SELECTIVE_UNLOCKED"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0VEHICLELOCKSTATE_UNLOCKED\0\u{1}VEHICLELOCKSTATE_LOCKED\0\u{1}VEHICLELOCKSTATE_INTERNAL_LOCKED\0\u{1}VEHICLELOCKSTATE_SELECTIVE_UNLOCKED\0")
 }
 
 extension VCSEC_VehicleSleepStatus_E: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "VEHICLE_SLEEP_STATUS_UNKNOWN"),
-    1: .same(proto: "VEHICLE_SLEEP_STATUS_AWAKE"),
-    2: .same(proto: "VEHICLE_SLEEP_STATUS_ASLEEP"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0VEHICLE_SLEEP_STATUS_UNKNOWN\0\u{1}VEHICLE_SLEEP_STATUS_AWAKE\0\u{1}VEHICLE_SLEEP_STATUS_ASLEEP\0")
 }
 
 extension VCSEC_UserPresence_E: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "VEHICLE_USER_PRESENCE_UNKNOWN"),
-    1: .same(proto: "VEHICLE_USER_PRESENCE_NOT_PRESENT"),
-    2: .same(proto: "VEHICLE_USER_PRESENCE_PRESENT"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0VEHICLE_USER_PRESENCE_UNKNOWN\0\u{1}VEHICLE_USER_PRESENCE_NOT_PRESENT\0\u{1}VEHICLE_USER_PRESENCE_PRESENT\0")
 }
 
 extension VCSEC_SignedMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".SignedMessage"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    2: .same(proto: "protobufMessageAsBytes"),
-    3: .same(proto: "signatureType"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\u{2}protobufMessageAsBytes\0\u{1}signatureType\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -1509,9 +1435,7 @@ extension VCSEC_SignedMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
 
 extension VCSEC_ToVCSECMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ToVCSECMessage"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "signedMessage"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}signedMessage\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -1545,9 +1469,7 @@ extension VCSEC_ToVCSECMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
 
 extension VCSEC_KeyIdentifier: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".KeyIdentifier"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "publicKeySHA1"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}publicKeySHA1\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -1577,9 +1499,7 @@ extension VCSEC_KeyIdentifier: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
 
 extension VCSEC_KeyMetadata: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".KeyMetadata"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "keyFormFactor"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}keyFormFactor\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -1609,9 +1529,7 @@ extension VCSEC_KeyMetadata: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
 
 extension VCSEC_PublicKey: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".PublicKey"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "PublicKeyRaw"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}PublicKeyRaw\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -1641,11 +1559,7 @@ extension VCSEC_PublicKey: SwiftProtobuf.Message, SwiftProtobuf._MessageImplemen
 
 extension VCSEC_WhitelistInfo: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".WhitelistInfo"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "numberOfEntries"),
-    2: .same(proto: "whitelistEntries"),
-    3: .same(proto: "slotMask"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}numberOfEntries\0\u{1}whitelistEntries\0\u{1}slotMask\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -1685,13 +1599,7 @@ extension VCSEC_WhitelistInfo: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
 
 extension VCSEC_WhitelistEntryInfo: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".WhitelistEntryInfo"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "keyId"),
-    2: .same(proto: "publicKey"),
-    4: .same(proto: "metadataForKey"),
-    6: .same(proto: "slot"),
-    7: .same(proto: "keyRole"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}keyId\0\u{1}publicKey\0\u{2}\u{2}metadataForKey\0\u{2}\u{2}slot\0\u{1}keyRole\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -1745,12 +1653,7 @@ extension VCSEC_WhitelistEntryInfo: SwiftProtobuf.Message, SwiftProtobuf._Messag
 
 extension VCSEC_InformationRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".InformationRequest"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "informationRequestType"),
-    2: .same(proto: "keyId"),
-    3: .same(proto: "publicKey"),
-    4: .same(proto: "slot"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}informationRequestType\0\u{1}keyId\0\u{1}publicKey\0\u{1}slot\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -1829,16 +1732,7 @@ extension VCSEC_InformationRequest: SwiftProtobuf.Message, SwiftProtobuf._Messag
 
 extension VCSEC_ClosureMoveRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ClosureMoveRequest"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "frontDriverDoor"),
-    2: .same(proto: "frontPassengerDoor"),
-    3: .same(proto: "rearDriverDoor"),
-    4: .same(proto: "rearPassengerDoor"),
-    5: .same(proto: "rearTrunk"),
-    6: .same(proto: "frontTrunk"),
-    7: .same(proto: "chargePort"),
-    8: .same(proto: "tonneau"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}frontDriverDoor\0\u{1}frontPassengerDoor\0\u{1}rearDriverDoor\0\u{1}rearPassengerDoor\0\u{1}rearTrunk\0\u{1}frontTrunk\0\u{1}chargePort\0\u{1}tonneau\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -1903,11 +1797,7 @@ extension VCSEC_ClosureMoveRequest: SwiftProtobuf.Message, SwiftProtobuf._Messag
 
 extension VCSEC_PermissionChange: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".PermissionChange"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "key"),
-    3: .same(proto: "secondsToBeActive"),
-    4: .same(proto: "keyRole"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}key\0\u{2}\u{2}secondsToBeActive\0\u{1}keyRole\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -1951,13 +1841,7 @@ extension VCSEC_PermissionChange: SwiftProtobuf.Message, SwiftProtobuf._MessageI
 
 extension VCSEC_ReplaceKey: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ReplaceKey"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "publicKeyToReplace"),
-    2: .same(proto: "slotToReplace"),
-    3: .same(proto: "keyToAdd"),
-    4: .same(proto: "keyRole"),
-    5: .same(proto: "impermanent"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}publicKeyToReplace\0\u{1}slotToReplace\0\u{1}keyToAdd\0\u{1}keyRole\0\u{1}impermanent\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2034,19 +1918,7 @@ extension VCSEC_ReplaceKey: SwiftProtobuf.Message, SwiftProtobuf._MessageImpleme
 
 extension VCSEC_WhitelistOperation: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".WhitelistOperation"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "addPublicKeyToWhitelist"),
-    2: .same(proto: "removePublicKeyFromWhitelist"),
-    3: .same(proto: "addPermissionsToPublicKey"),
-    4: .same(proto: "removePermissionsFromPublicKey"),
-    5: .same(proto: "addKeyToWhitelistAndAddPermissions"),
-    7: .same(proto: "updateKeyAndPermissions"),
-    8: .same(proto: "addImpermanentKey"),
-    9: .same(proto: "addImpermanentKeyAndRemoveExisting"),
-    16: .same(proto: "removeAllImpermanentKeys"),
-    17: .same(proto: "replaceKey"),
-    6: .same(proto: "metadataForKey"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}addPublicKeyToWhitelist\0\u{1}removePublicKeyFromWhitelist\0\u{1}addPermissionsToPublicKey\0\u{1}removePermissionsFromPublicKey\0\u{1}addKeyToWhitelistAndAddPermissions\0\u{1}metadataForKey\0\u{1}updateKeyAndPermissions\0\u{1}addImpermanentKey\0\u{1}addImpermanentKeyAndRemoveExisting\0\u{2}\u{7}removeAllImpermanentKeys\0\u{1}replaceKey\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2252,11 +2124,7 @@ extension VCSEC_WhitelistOperation: SwiftProtobuf.Message, SwiftProtobuf._Messag
 
 extension VCSEC_WhitelistOperation_status: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".WhitelistOperation_status"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "whitelistOperationInformation"),
-    2: .same(proto: "signerOfOperation"),
-    3: .same(proto: "operationStatus"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}whitelistOperationInformation\0\u{1}signerOfOperation\0\u{1}operationStatus\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2300,10 +2168,7 @@ extension VCSEC_WhitelistOperation_status: SwiftProtobuf.Message, SwiftProtobuf.
 
 extension VCSEC_SignedMessage_status: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".SignedMessage_status"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "counter"),
-    2: .same(proto: "signedMessageInformation"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}counter\0\u{1}signedMessageInformation\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2338,11 +2203,7 @@ extension VCSEC_SignedMessage_status: SwiftProtobuf.Message, SwiftProtobuf._Mess
 
 extension VCSEC_CommandStatus: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".CommandStatus"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "operationStatus"),
-    2: .same(proto: "signedMessageStatus"),
-    3: .same(proto: "whitelistOperationStatus"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}operationStatus\0\u{1}signedMessageStatus\0\u{1}whitelistOperationStatus\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2414,12 +2275,7 @@ extension VCSEC_CommandStatus: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
 
 extension VCSEC_UnsignedMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".UnsignedMessage"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "InformationRequest"),
-    2: .same(proto: "RKEAction"),
-    4: .same(proto: "closureMoveRequest"),
-    16: .same(proto: "WhitelistOperation"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}InformationRequest\0\u{1}RKEAction\0\u{2}\u{2}closureMoveRequest\0\u{2}\u{c}WhitelistOperation\0\u{c}\u{6}\u{1}\u{c}\u{7}\u{1}\u{c}\u{a}\u{1}\u{c}\u{c}\u{1}\u{c}\u{d}\u{1}")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2515,16 +2371,7 @@ extension VCSEC_UnsignedMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
 
 extension VCSEC_ClosureStatuses: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ClosureStatuses"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "frontDriverDoor"),
-    2: .same(proto: "frontPassengerDoor"),
-    3: .same(proto: "rearDriverDoor"),
-    4: .same(proto: "rearPassengerDoor"),
-    5: .same(proto: "rearTrunk"),
-    6: .same(proto: "frontTrunk"),
-    7: .same(proto: "chargePort"),
-    8: .same(proto: "tonneau"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}frontDriverDoor\0\u{1}frontPassengerDoor\0\u{1}rearDriverDoor\0\u{1}rearPassengerDoor\0\u{1}rearTrunk\0\u{1}frontTrunk\0\u{1}chargePort\0\u{1}tonneau\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2589,9 +2436,7 @@ extension VCSEC_ClosureStatuses: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
 
 extension VCSEC_DetailedClosureStatus: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".DetailedClosureStatus"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "tonneauPercentOpen"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}tonneauPercentOpen\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2621,13 +2466,7 @@ extension VCSEC_DetailedClosureStatus: SwiftProtobuf.Message, SwiftProtobuf._Mes
 
 extension VCSEC_VehicleStatus: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".VehicleStatus"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "closureStatuses"),
-    2: .same(proto: "vehicleLockState"),
-    3: .same(proto: "vehicleSleepStatus"),
-    4: .same(proto: "userPresence"),
-    5: .same(proto: "detailedClosureStatus"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}closureStatuses\0\u{1}vehicleLockState\0\u{1}vehicleSleepStatus\0\u{1}userPresence\0\u{1}detailedClosureStatus\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2681,13 +2520,7 @@ extension VCSEC_VehicleStatus: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
 
 extension VCSEC_FromVCSECMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".FromVCSECMessage"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "vehicleStatus"),
-    4: .same(proto: "commandStatus"),
-    16: .same(proto: "whitelistInfo"),
-    17: .same(proto: "whitelistEntryInfo"),
-    46: .same(proto: "nominalError"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}vehicleStatus\0\u{2}\u{3}commandStatus\0\u{2}\u{c}whitelistInfo\0\u{1}whitelistEntryInfo\0\u{2}\u{1d}nominalError\0\u{c}\u{6}\u{5}")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {

@@ -205,7 +205,6 @@ extension Model {
                 fontWeight: widget.text.fontWeight.toSystem(),
                 fontMonospacedDigits: widget.text.fontMonospacedDigits,
                 horizontalAlignment: widget.text.horizontalAlignment.toSystem(),
-                verticalAlignment: widget.text.verticalAlignment.toSystem(),
                 settingName: widget.name,
                 delay: widget.text.delay,
                 timersEndTime: widget.text.timers.map {
@@ -252,7 +251,7 @@ extension Model {
         }
         qrCodeEffects.removeAll()
         for widget in widgets where widget.type == .qrCode {
-            let qrCodeEffect = QrCodeEffect(widget: widget.qrCode)
+            let qrCodeEffect = QrCodeEffect(widget: widget.qrCode.clone())
             qrCodeEffect.effects = widget.getEffects()
             qrCodeEffects[widget.id] = qrCodeEffect
         }
@@ -641,7 +640,7 @@ extension Model {
     ) {
         if let browserEffect = browserEffects[widget.id], !usedBrowserEffects.contains(browserEffect) {
             browserEffect.setSceneWidget(
-                sceneWidget: sceneWidget,
+                sceneWidget: sceneWidget.clone(),
                 crops: findWidgetCrops(scene: scene, sourceWidgetId: widget.id)
             )
             if !browserEffect.audioOnly {
@@ -660,8 +659,14 @@ extension Model {
         if let browserEffect = browserEffects[widget.crop.sourceWidgetId],
            !usedBrowserEffects.contains(browserEffect)
         {
+            let sceneWidget: SettingsSceneWidget?
+            if findWidget(id: widget.crop.sourceWidgetId)?.enabled == true {
+                sceneWidget = findSceneWidget(scene: scene, widgetId: widget.crop.sourceWidgetId)
+            } else {
+                sceneWidget = nil
+            }
             browserEffect.setSceneWidget(
-                sceneWidget: findSceneWidget(scene: scene, widgetId: widget.crop.sourceWidgetId),
+                sceneWidget: sceneWidget?.clone(),
                 crops: findWidgetCrops(scene: scene, sourceWidgetId: widget.crop.sourceWidgetId)
             )
             if !browserEffect.audioOnly {
@@ -892,25 +897,15 @@ extension Model {
 
     private func findWidgetCrops(scene: SettingsScene, sourceWidgetId: UUID) -> [WidgetCrop] {
         var crops: [WidgetCrop] = []
-        for sceneWidget in scene.widgets.filter({ $0.enabled }) {
-            guard let widget = findWidget(id: sceneWidget.widgetId) else {
-                logger.error("Widget not found")
+        for widget in getSceneWidgets(scene: scene, onlyEnabled: true) {
+            guard widget.widget.type == .crop else {
                 continue
             }
-            guard widget.type == .crop else {
-                continue
-            }
-            let crop = widget.crop
+            let crop = widget.widget.crop
             guard crop.sourceWidgetId == sourceWidgetId else {
                 continue
             }
-            crops.append(WidgetCrop(position: .init(x: sceneWidget.x, y: sceneWidget.y),
-                                    crop: .init(
-                                        x: crop.x,
-                                        y: crop.y,
-                                        width: crop.width,
-                                        height: crop.height
-                                    )))
+            crops.append(WidgetCrop(crop: crop.clone(), sceneWidget: widget.sceneWidget.clone()))
         }
         return crops
     }
@@ -1032,7 +1027,7 @@ extension Model {
         }
     }
 
-    private func getSceneWidgets(scene: SettingsScene, onlyEnabled: Bool) -> [WidgetInScene] {
+    func getSceneWidgets(scene: SettingsScene, onlyEnabled: Bool) -> [WidgetInScene] {
         var addedSceneIds: Set<UUID> = []
         return getSceneWidgetsInner(scene, onlyEnabled, &addedSceneIds)
     }

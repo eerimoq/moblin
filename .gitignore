@@ -93,3 +93,4 @@ Config.xcconfig
 
 # Make macOS happy
 .DS_Store
+__MACOSX

@@ -118,59 +118,49 @@ struct Moderator: Decodable {
     var username: String
 }
 
-struct UserBannedEvent: Decodable {
+struct KickPusherUserBannedEvent: Decodable {
     var id: String
     var user: User
     var banned_by: Moderator
     var permanent: Bool
 }
 
-struct SubscriptionEvent: Decodable {
-    var chatroom_id: Int
+struct KickPusherSubscriptionEvent: Decodable {
     var username: String
     var months: Int
 }
 
-struct GiftedSubscriptionsEvent: Decodable {
-    var chatroom_id: Int
+struct KickPusherGiftedSubscriptionsEvent: Decodable {
     var gifted_usernames: [String]
     var gifter_username: String
     var gifter_total: Int
 }
 
-struct RewardRedeemedEvent: Decodable {
+struct KickPusherRewardRedeemedEvent: Decodable {
     var reward_title: String
-    var user_id: Int
-    var channel_id: Int
     var username: String
     var user_input: String
 }
 
-struct StreamHostEvent: Decodable {
+struct KickPusherStreamHostEvent: Decodable {
     var host_username: String
     var number_viewers: Int
 }
 
-struct KickSender: Decodable {
+struct KickPusherKickSender: Decodable {
     var id: Int
     var username: String
-    var username_color: String
 }
 
-struct KickGift: Decodable {
-    var gift_id: String
+struct KickPusherKickGift: Decodable {
     var name: String
     var amount: Int
-    var type: String
-    var tier: String
-    var character_limit: Int
-    var pinned_time: Int
 }
 
-struct KicksGiftedEvent: Decodable {
+struct KickPusherKicksGiftedEvent: Decodable {
     var message: String
-    var sender: KickSender
-    var gift: KickGift
+    var sender: KickPusherKickSender
+    var gift: KickPusherKickGift
 }
 
 private func decodeEvent(message: String) throws -> (String, String) {
@@ -198,28 +188,28 @@ private func decodeMessageDeletedEvent(data: String) throws -> MessageDeletedEve
     return try JSONDecoder().decode(MessageDeletedEvent.self, from: data.utf8Data)
 }
 
-private func decodeUserBannedEvent(data: String) throws -> UserBannedEvent {
-    return try JSONDecoder().decode(UserBannedEvent.self, from: data.utf8Data)
+private func decodeUserBannedEvent(data: String) throws -> KickPusherUserBannedEvent {
+    return try JSONDecoder().decode(KickPusherUserBannedEvent.self, from: data.utf8Data)
 }
 
-private func decodeSubscriptionEvent(data: String) throws -> SubscriptionEvent {
-    return try JSONDecoder().decode(SubscriptionEvent.self, from: data.utf8Data)
+private func decodeSubscriptionEvent(data: String) throws -> KickPusherSubscriptionEvent {
+    return try JSONDecoder().decode(KickPusherSubscriptionEvent.self, from: data.utf8Data)
 }
 
-private func decodeGiftedSubscriptionsEvent(data: String) throws -> GiftedSubscriptionsEvent {
-    return try JSONDecoder().decode(GiftedSubscriptionsEvent.self, from: data.utf8Data)
+private func decodeGiftedSubscriptionsEvent(data: String) throws -> KickPusherGiftedSubscriptionsEvent {
+    return try JSONDecoder().decode(KickPusherGiftedSubscriptionsEvent.self, from: data.utf8Data)
 }
 
-private func decodeRewardRedeemedEvent(data: String) throws -> RewardRedeemedEvent {
-    return try JSONDecoder().decode(RewardRedeemedEvent.self, from: data.utf8Data)
+private func decodeRewardRedeemedEvent(data: String) throws -> KickPusherRewardRedeemedEvent {
+    return try JSONDecoder().decode(KickPusherRewardRedeemedEvent.self, from: data.utf8Data)
 }
 
-private func decodeStreamHostEvent(data: String) throws -> StreamHostEvent {
-    return try JSONDecoder().decode(StreamHostEvent.self, from: data.utf8Data)
+private func decodeStreamHostEvent(data: String) throws -> KickPusherStreamHostEvent {
+    return try JSONDecoder().decode(KickPusherStreamHostEvent.self, from: data.utf8Data)
 }
 
-private func decodeKicksGiftedEvent(data: String) throws -> KicksGiftedEvent {
-    return try JSONDecoder().decode(KicksGiftedEvent.self, from: data.utf8Data)
+private func decodeKicksGiftedEvent(data: String) throws -> KickPusherKicksGiftedEvent {
+    return try JSONDecoder().decode(KickPusherKicksGiftedEvent.self, from: data.utf8Data)
 }
 
 private var url =
@@ -242,12 +232,12 @@ protocol KickPusherDelegate: AnyObject {
     )
     func kickPusherDeleteMessage(messageId: String)
     func kickPusherDeleteUser(userId: String)
-    func kickPusherSubscription(event: SubscriptionEvent)
-    func kickPusherGiftedSubscription(event: GiftedSubscriptionsEvent)
-    func kickPusherRewardRedeemed(event: RewardRedeemedEvent)
-    func kickPusherStreamHost(event: StreamHostEvent)
-    func kickPusherUserBanned(event: UserBannedEvent)
-    func kickPusherKicksGifted(event: KicksGiftedEvent)
+    func kickPusherSubscription(event: KickPusherSubscriptionEvent)
+    func kickPusherGiftedSubscription(event: KickPusherGiftedSubscriptionsEvent)
+    func kickPusherRewardRedeemed(event: KickPusherRewardRedeemedEvent)
+    func kickPusherStreamHost(event: KickPusherStreamHostEvent)
+    func kickPusherUserBanned(event: KickPusherUserBannedEvent)
+    func kickPusherKicksGifted(event: KickPusherKicksGiftedEvent)
 }
 
 final class KickPusher: NSObject {

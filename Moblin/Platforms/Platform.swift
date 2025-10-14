@@ -1,20 +1,23 @@
 import Foundation
 
 enum Platform: Codable {
-    case afreecaTv
+    case soop
     case kick
     case openStreamingPlatform
     case twitch
     case youTube
+    case dlive
 
     func imageName() -> String? {
         switch self {
-        case .afreecaTv:
-            return nil
+        case .soop:
+            return "SoopLogo"
+        case .dlive:
+            return "DLiveLogo"
         case .kick:
             return "KickLogo"
         case .openStreamingPlatform:
-            return nil
+            return "OpenStreamingPlatform"
         case .twitch:
             return "TwitchLogo"
         case .youTube:

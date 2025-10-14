@@ -4,7 +4,7 @@ enum WizardPlatform {
     case twitch
     case kick
     case youTube
-    case afreecaTv
+    case soop
     case custom
     case obs
 }
@@ -64,10 +64,14 @@ extension Model {
                 }
             }
         case .rtmp:
-            let rtmpUrl = createStreamWizard.customRtmpUrl
+            guard var url = URLComponents(string: createStreamWizard.customRtmpUrl
                 .trim()
-                .trimmingCharacters(in: CharacterSet(charactersIn: "/"))
-            return "\(rtmpUrl)/\(createStreamWizard.customRtmpStreamKey.trim())"
+                .trimmingCharacters(in: CharacterSet(charactersIn: "/")))
+            else {
+                return nil
+            }
+            url.path += "/\(createStreamWizard.customRtmpStreamKey.trim())"
+            return url.url?.absoluteString
         case .rist:
             return createStreamWizard.customRistUrl.trim()
         }
@@ -129,10 +133,10 @@ extension Model {
             stream.kickChannelName = createStreamWizard.kickChannelName.trim()
         case .youTube:
             stream.youTubeHandle = createStreamWizard.youTubeHandle.trim()
-        case .afreecaTv:
-            if !createStreamWizard.afreecaTvChannelName.isEmpty, !createStreamWizard.afreecaTvStreamId.isEmpty {
-                stream.afreecaTvChannelName = createStreamWizard.afreecaTvChannelName.trim()
-                stream.afreecaTvStreamId = createStreamWizard.afreecaTvStreamId.trim()
+        case .soop:
+            if !createStreamWizard.soopChannelName.isEmpty, !createStreamWizard.soopStreamId.isEmpty {
+                stream.soopChannelName = createStreamWizard.soopChannelName.trim()
+                stream.soopStreamId = createStreamWizard.soopStreamId.trim()
             }
         case .obs:
             break
@@ -171,8 +175,8 @@ extension Model {
         createStreamWizard.twitchAccessToken = ""
         createStreamWizard.kickChannelName = ""
         createStreamWizard.youTubeHandle = ""
-        createStreamWizard.afreecaTvChannelName = ""
-        createStreamWizard.afreecaTvStreamId = ""
+        createStreamWizard.soopChannelName = ""
+        createStreamWizard.soopStreamId = ""
         createStreamWizard.obsAddress = ""
         createStreamWizard.obsPort = ""
         createStreamWizard.obsRemoteControlEnabled = false

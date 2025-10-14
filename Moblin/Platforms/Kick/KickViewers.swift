@@ -5,7 +5,7 @@ class KickViewers {
     var numberOfViewers: Int?
 
     func start(channelName: String) {
-        task = Task.init {
+        task = Task {
             var delay = 1
             while true {
                 do {

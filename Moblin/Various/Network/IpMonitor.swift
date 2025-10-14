@@ -31,7 +31,7 @@ class IPMonitor {
         monitor.pathUpdateHandler = { path in
             var statuses: [Status] = []
             var id = 0
-            for interface in path.availableInterfaces {
+            for interface in path.uniqueAvailableInterfaces() {
                 for (ip, type) in self.getIpAddresses(interfaceName: interface.name) {
                     statuses.append(Status(
                         id: id,

@@ -46,12 +46,14 @@ extension Model {
             sendIsMutedToWatch(isMuteOn: isMuteOn)
             sendViewerCountWatch()
             sendScoreboardPlayersToWatch()
-            let sceneWidgets = getSelectedScene()?.widgets ?? []
+            let sceneWidgets: [SettingsWidget]
+            if let scene = getSelectedScene() {
+                sceneWidgets = getSceneWidgets(scene: scene, onlyEnabled: true).map { $0.widget }
+            } else {
+                sceneWidgets = []
+            }
             for id in padelScoreboardEffects.keys {
-                if let sceneWidget = sceneWidgets.first(where: { $0.widgetId == id }),
-                   sceneWidget.enabled,
-                   let scoreboard = findWidget(id: id)?.scoreboard
-                {
+                if let scoreboard = sceneWidgets.first(where: { $0.id == id })?.scoreboard {
                     sendUpdatePadelScoreboardToWatch(id: id, scoreboard: scoreboard)
                 } else {
                     sendRemovePadelScoreboardToWatch(id: id)
@@ -184,9 +186,11 @@ extension Model {
         guard WCSession.default.isWatchAppInstalled else {
             return
         }
-        guard let user = post.user else {
+        guard !post.isRedLine() else {
             return
         }
+        let displayName = post.displayName(nicknames: database.chat.nicknames,
+                                           displayStyle: database.chat.displayStyle)
         let userColor = WatchProtocolColor(
             red: post.userColor.red,
             green: post.userColor.green,
@@ -195,7 +199,7 @@ extension Model {
         let post = WatchProtocolChatMessage(
             id: nextWatchChatPostId,
             timestamp: post.timestamp,
-            user: user,
+            displayName: displayName,
             userColor: userColor,
             userBadges: post.userBadges,
             segments: post.segments

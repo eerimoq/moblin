@@ -45,7 +45,7 @@ private func unpackMessage(message: Data) throws -> (MessageKind?, [String]) {
         throw "Bad kind"
     }
     guard let kind = MessageKind(rawValue: value) else {
-        logger.debug("afreecatv: Unknown kind \(value)")
+        logger.debug("soop: Unknown kind \(value)")
         return (nil, [])
     }
     startIndex = message.index(message.startIndex, offsetBy: 14)
@@ -79,7 +79,7 @@ struct PlayerLiveResponse: Codable {
     }
 }
 
-final class AfreecaTvChat: NSObject {
+final class SoopChat: NSObject {
     private var model: Model
     private var channelName: String
     private var streamId: String
@@ -135,8 +135,8 @@ final class AfreecaTvChat: NSObject {
 
     func start() {
         stop()
-        logger.debug("afreecatv: start")
-        task = Task.init {
+        logger.debug("soop: start")
+        task = Task {
             while true {
                 do {
                     let info = try await getChannelInfo()
@@ -144,23 +144,23 @@ final class AfreecaTvChat: NSObject {
                     setupKeepAlive()
                     try await receiveMessages(info: info)
                 } catch {
-                    logger.debug("afreecatv: error: \(error)")
+                    logger.debug("soop: error: \(error)")
                 }
                 if Task.isCancelled {
-                    logger.debug("afreecatv: Cancelled")
+                    logger.debug("soop: Cancelled")
                     connected = false
                     break
                 }
-                logger.debug("afreecatv: Disconnected")
+                logger.debug("soop: Disconnected")
                 connected = false
                 try await sleep(seconds: 5)
-                logger.debug("afreecatv: Reconnecting")
+                logger.debug("soop: Reconnecting")
             }
         }
     }
 
     func stop() {
-        logger.debug("afreecatv: stop")
+        logger.debug("soop: stop")
         keepAliveTask?.cancel()
         keepAliveTask = nil
         task?.cancel()
@@ -179,7 +179,7 @@ final class AfreecaTvChat: NSObject {
         guard let url = makeWebSocketUrl(chdomain: info.chdomain, chpt: info.chpt) else {
             throw "Faield to create URL"
         }
-        logger.debug("afreecatv: URL \(url)")
+        logger.debug("soop: URL \(url)")
         webSocket = URLSession.shared.webSocketTask(
             with: url,
             protocols: ["chat"]
@@ -189,11 +189,11 @@ final class AfreecaTvChat: NSObject {
     }
 
     private func setupKeepAlive() {
-        keepAliveTask = Task.init {
+        keepAliveTask = Task {
             let message = packMessage(kind: .null, parts: [])
             while !Task.isCancelled {
                 try await sleep(seconds: 60)
-                logger.debug("afreecatv: Sending keep alive")
+                logger.debug("soop: Sending keep alive")
                 try await webSocket.send(.data(message))
             }
         }
@@ -210,14 +210,14 @@ final class AfreecaTvChat: NSObject {
                 let (kind, parts) = try unpackMessage(message: message)
                 if let kind {
                     if kind != .join {
-                        logger.debug("afreecatv: Got \(kind) \(parts)")
+                        logger.debug("soop: Got \(kind) \(parts)")
                     }
                 } else {
-                    logger.debug("afreecatv: Got \(parts)")
+                    logger.debug("soop: Got \(parts)")
                 }
                 switch kind {
                 case .one:
-                    logger.debug("afreecatv: Connected?")
+                    logger.debug("soop: Connected?")
                     connected = true
                     try await sendTwo(chatno: info.chatno, ftk: info.ftk)
                 case .post:
@@ -226,24 +226,25 @@ final class AfreecaTvChat: NSObject {
                     break
                 }
             case let .string(message):
-                logger.debug("afreecatv: Got string \(message)")
+                logger.debug("soop: Got string \(message)")
             default:
-                logger.debug("afreecatv: ???")
+                logger.debug("soop: ???")
             }
         }
     }
 
     private func handlePostMessage(parts: [String]) async {
         guard parts.count > 5 else {
-            logger.error("afreecatv: Bad post length")
+            logger.error("soop: Bad post length")
             return
         }
         let user = parts[5]
         let segments = createSegments(message: parts[0])
         await MainActor.run {
             self.model.appendChatMessage(
-                platform: .afreecaTv,
+                platform: .soop,
                 messageId: nil,
+                displayName: user,
                 user: user,
                 userId: nil,
                 userColor: nil,

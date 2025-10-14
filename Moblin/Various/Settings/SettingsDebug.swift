@@ -90,20 +90,6 @@ class SettingsDebugBeautyFilter: Codable, ObservableObject {
     }
 }
 
-class SettingsHttpProxy: Codable {
-    var enabled: Bool = false
-    var host: String = ""
-    var port: UInt16 = 3128
-
-    func toHttpProxy() -> HttpProxy? {
-        if enabled {
-            return .init(host: host, port: port)
-        } else {
-            return nil
-        }
-    }
-}
-
 class SettingsDebug: Codable, ObservableObject {
     var logLevel: SettingsLogLevel = .error
     @Published var debugOverlay: Bool = false
@@ -121,8 +107,6 @@ class SettingsDebug: Codable, ObservableObject {
     @Published var metalPetalFilters: Bool = false
     @Published var preferStereoMic: Bool = false
     @Published var twitchRewards: Bool = false
-    @Published var removeWindNoise: Bool = false
-    var httpProxy: SettingsHttpProxy = .init()
     var tesla: SettingsTesla = .init()
     @Published var reliableChat: Bool = false
     var dnsLookupStrategy: SettingsDnsLookupStrategy = .system
@@ -154,7 +138,6 @@ class SettingsDebug: Codable, ObservableObject {
              preferStereoMic,
              twitchRewards,
              removeWindNoise,
-             httpProxy,
              tesla,
              reliableChat,
              timecodesEnabled,
@@ -192,8 +175,6 @@ class SettingsDebug: Codable, ObservableObject {
         try container.encode(.metalPetalFilters, metalPetalFilters)
         try container.encode(.preferStereoMic, preferStereoMic)
         try container.encode(.twitchRewards, twitchRewards)
-        try container.encode(.removeWindNoise, removeWindNoise)
-        try container.encode(.httpProxy, httpProxy)
         try container.encode(.tesla, tesla)
         try container.encode(.reliableChat, reliableChat)
         try container.encode(.dnsLookupStrategy, dnsLookupStrategy)
@@ -230,8 +211,6 @@ class SettingsDebug: Codable, ObservableObject {
         metalPetalFilters = container.decode(.metalPetalFilters, Bool.self, false)
         preferStereoMic = container.decode(.preferStereoMic, Bool.self, false)
         twitchRewards = container.decode(.twitchRewards, Bool.self, false)
-        removeWindNoise = container.decode(.removeWindNoise, Bool.self, false)
-        httpProxy = container.decode(.httpProxy, SettingsHttpProxy.self, .init())
         tesla = container.decode(.tesla, SettingsTesla.self, .init())
         reliableChat = container.decode(.reliableChat, Bool.self, false)
         dnsLookupStrategy = container.decode(.dnsLookupStrategy, SettingsDnsLookupStrategy.self, .system)

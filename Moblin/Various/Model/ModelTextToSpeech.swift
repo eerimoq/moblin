@@ -54,8 +54,8 @@ extension Model {
         if isKickPusherConfigured() {
             streamerMentions.append("@\(stream.kickChannelName)")
         }
-        if isAfreecaTvChatConfigured() {
-            streamerMentions.append("@\(stream.afreecaTvChannelName)")
+        if isSoopChatConfigured() {
+            streamerMentions.append("@\(stream.soopChannelName)")
         }
         chatTextToSpeech.setStreamerMentions(streamerMentions: streamerMentions)
     }

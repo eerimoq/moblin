@@ -67,6 +67,15 @@ let flameRedMessage = String(localized: "🔥 Flame is red 🔥")
 let flameRedSubMessage = String(localized: "Your device is hot and may overheat.")
 let unknownSad = String(localized: "Unknown 😢")
 
+private func randomBuyIconsTitle() -> String {
+    return [
+        String(localized: "👍 Buy Moblin icons if you like the app 👍"),
+        String(localized: "🍔 Buy Moblin icons to support the devs 🍔"),
+        String(localized: "🙈 Buy Moblin icons to hide this message 🙈"),
+        String(localized: "🙏 Buy Moblin icons please =) 🙏"),
+    ].randomElement()!
+}
+
 func formatWarning(_ message: String) -> String {
     return "⚠️ \(message) ⚠️"
 }
@@ -396,8 +405,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var kickPusher: KickPusher?
     var kickViewers: KickViewers?
     private var youTubeLiveChat: YouTubeLiveChat?
-    private var afreecaTvChat: AfreecaTvChat?
+    private var soopChat: SoopChat?
     private var openStreamingPlatformChat: OpenStreamingPlatformChat!
+    var dliveChat: DLiveChat?
     var youTubeFetchVideoIdStartTime: ContinuousClock.Instant?
     var obsWebSocket: ObsWebSocket?
     var chatPostId = 0
@@ -447,7 +457,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var logId = 1
     private var serversSpeed: Int64 = 0
     var adsEndDate: Date?
-    var urlSession = URLSession.shared
     var heartRates: [String: Int?] = [:]
     var workoutActiveEnergyBurned: Int?
     var workoutDistance: Int?
@@ -777,8 +786,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if enterForegroundCount < 500, (enterForegroundCount % 10) != 0 {
             return
         }
-        makeToast(title: String(localized: "💰 Buy Moblin icons to show some love ❤️"),
-                  subTitle: String(localized: "Tap this toast to open the shop."))
+        makeToast(title: randomBuyIconsTitle(),
+                  subTitle: String(localized: "Tap here to open the shop."))
         {
             self.toggleShowingPanel(type: nil, panel: .none)
             self.toggleShowingPanel(type: nil, panel: .cosmetics)
@@ -882,14 +891,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         deleteTrash()
         cameraPreviewLayer = cameraPreviewView.previewLayer
         media.delegate = self
-        createUrlSession()
         setupAppIntents()
         faxReceiver.delegate = self
         fixAlertMedias()
         setAllowVideoRangePixelFormat()
         setExternalDisplayContent()
         portraitVideoOffsetFromTop = database.portraitVideoOffsetFromTop
-        audioUnitRemoveWindNoise = database.debug.removeWindNoise
         quickButtonChatState.showFirstTimeChatterMessage = database.chat.showFirstTimeChatterMessage
         quickButtonChatState.showNewFollowerMessage = database.chat.showNewFollowerMessage
         autoSceneSwitcher.currentSwitcherId = database.autoSceneSwitchers.switcherId
@@ -1319,8 +1326,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             clearRemoteSceneSettingsAndData()
             reloadStream()
             sceneUpdated(attachCamera: true, updateRemoteScene: false)
-            setupAudioSession()
-            media.attachDefaultAudioDevice(builtinDelay: database.debug.builtinAudioAndVideoDelay)
+            reloadAudioSession()
             reloadRtmpServer()
             reloadDjiDevices()
             reloadSrtlaServer()
@@ -1343,7 +1349,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             autoStartHeartRateDevices()
             autoStartBlackSharkCoolerDevices()
             if showBackgroudStreamingDisabledToast {
-                makeStreamEndedToast(subTitle: String(localized: "Tap this toast to enable background streaming.")) {
+                makeStreamEndedToast(subTitle: String(localized: "Tap here to enable background streaming.")) {
                     self.stream.backgroundStreaming = true
                     self.makeToast(title: String(localized: "Background streaming enabled"))
                 }
@@ -1954,10 +1960,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         reloadNtpClient()
     }
 
-    func createUrlSession() {
-        urlSession = URLSession.create(httpProxy: httpProxy())
-    }
-
     func isTimecodesEnabled() -> Bool {
         return stream.timecodesEnabled && !stream.ntpPoolAddress.isEmpty
     }
@@ -2012,16 +2014,16 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return youTubeLiveChat?.hasEmotes() ?? false
     }
 
-    func isAfreecaTvChatConfigured() -> Bool {
-        return database.chat.enabled && stream.afreecaTvChannelName != "" && stream.afreecaTvStreamId != ""
+    func isSoopChatConfigured() -> Bool {
+        return database.chat.enabled && stream.soopChannelName != "" && stream.soopStreamId != ""
     }
 
-    func isAfreecaTvChatConnected() -> Bool {
-        return afreecaTvChat?.isConnected() ?? false
+    func isSoopChatConnected() -> Bool {
+        return soopChat?.isConnected() ?? false
     }
 
-    func hasAfreecaTvChatEmotes() -> Bool {
-        return afreecaTvChat?.hasEmotes() ?? false
+    func hasSoopChatEmotes() -> Bool {
+        return soopChat?.hasEmotes() ?? false
     }
 
     func isOpenStreamingPlatformChatConfigured() -> Bool {
@@ -2035,10 +2037,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func hasOpenStreamingPlatformChatEmotes() -> Bool {
         return openStreamingPlatformChat?.hasEmotes() ?? false
-    }
-
-    func httpProxy() -> HttpProxy? {
-        return settings.database.debug.httpProxy.toHttpProxy()
     }
 
     func reloadYouTubeLiveChat() {
@@ -2055,17 +2053,17 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         updateChatMoreThanOneChatConfigured()
     }
 
-    func reloadAfreecaTvChat() {
-        afreecaTvChat?.stop()
-        afreecaTvChat = nil
+    func reloadSoopChat() {
+        soopChat?.stop()
+        soopChat = nil
         setTextToSpeechStreamerMentions()
-        if isAfreecaTvChatConfigured(), !isChatRemoteControl() {
-            afreecaTvChat = AfreecaTvChat(
+        if isSoopChatConfigured(), !isChatRemoteControl() {
+            soopChat = SoopChat(
                 model: self,
-                channelName: stream.afreecaTvChannelName,
-                streamId: stream.afreecaTvStreamId
+                channelName: stream.soopChannelName,
+                streamId: stream.soopStreamId
             )
-            afreecaTvChat!.start()
+            soopChat!.start()
         }
         updateChatMoreThanOneChatConfigured()
     }
@@ -2089,13 +2087,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         resetChat()
     }
 
-    func afreecaTvChannelNameUpdated() {
-        reloadAfreecaTvChat()
+    func soopChannelNameUpdated() {
+        reloadSoopChat()
         resetChat()
     }
 
-    func afreecaTvStreamIdUpdated() {
-        reloadAfreecaTvChat()
+    func soopStreamIdUpdated() {
+        reloadSoopChat()
         resetChat()
     }
 
@@ -2578,9 +2576,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func attachCamera(scene: SettingsScene, position: AVCaptureDevice.Position) {
         cameraDevice = preferredCamera(position: position)
         setFocusAfterCameraAttach()
-        cameraZoomLevelToXScale = cameraDevice?.getZoomFactorScale(hasUltraWideCamera: hasUltraWideBackCamera()) ?? 1.0
+        cameraZoomLevelToXScale = cameraDevice?
+            .getZoomFactorScale(hasUltraWideCamera: hasUltraWideCamera(position: position)) ?? 1.0
         (cameraZoomXMinimum, cameraZoomXMaximum) = cameraDevice?
-            .getUIZoomRange(hasUltraWideCamera: hasUltraWideBackCamera()) ?? (1.0, 1.0)
+            .getUIZoomRange(hasUltraWideCamera: hasUltraWideCamera(position: position)) ?? (1.0, 1.0)
         cameraPosition = position
         switch position {
         case .back:

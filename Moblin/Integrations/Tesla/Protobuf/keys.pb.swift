@@ -77,13 +77,5 @@ enum Keys_Role: SwiftProtobuf.Enum, Swift.CaseIterable {
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
 extension Keys_Role: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "ROLE_NONE"),
-    1: .same(proto: "ROLE_SERVICE"),
-    2: .same(proto: "ROLE_OWNER"),
-    3: .same(proto: "ROLE_DRIVER"),
-    4: .same(proto: "ROLE_FM"),
-    5: .same(proto: "ROLE_VEHICLE_MONITOR"),
-    6: .same(proto: "ROLE_CHARGING_MANAGER"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0ROLE_NONE\0\u{1}ROLE_SERVICE\0\u{1}ROLE_OWNER\0\u{1}ROLE_DRIVER\0\u{1}ROLE_FM\0\u{1}ROLE_VEHICLE_MONITOR\0\u{1}ROLE_CHARGING_MANAGER\0")
 }

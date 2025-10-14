@@ -124,12 +124,12 @@ class RtmpStream {
 
     func setUrl(_ url: String) {
         streamKey = makeRtmpStreamKey(url: url)
-        self.url = url
+        self.url = makeRtmpUri(url: url)
     }
 
     func connect() {
         processorControlQueue.async {
-            self.connection.connect(makeRtmpUri(url: self.url))
+            self.connection.connect(self.url)
         }
     }
 
@@ -144,7 +144,7 @@ class RtmpStream {
             guard let self else {
                 return
             }
-            self.connection.connect(makeRtmpUri(url: self.url))
+            self.connection.connect(self.url)
         }
     }
 
@@ -177,6 +177,7 @@ class RtmpStream {
         switch code {
         case RtmpConnectionCode.connectSuccess.rawValue:
             setState(state: .initialized)
+            sendReleaseStream()
             sendFCPublish()
             connection.createStream(self)
         case RtmpStreamCode.publishStart.rawValue:
@@ -295,6 +296,10 @@ class RtmpStream {
 
     private func sendFCUnpublish() {
         connection.call("FCUnpublish", arguments: [info.resourceName])
+    }
+
+    private func sendReleaseStream() {
+        connection.call("releaseStream", arguments: [streamKey])
     }
 
     private func sendDeleteStream() {

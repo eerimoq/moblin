@@ -1,20 +1,20 @@
 import SwiftUI
 
-struct StreamAfreecaTvSettingsView: View {
+struct StreamSoopSettingsView: View {
     @EnvironmentObject var model: Model
     let stream: SettingsStream
 
     func submitChannelName(value: String) {
-        stream.afreecaTvChannelName = value
+        stream.soopChannelName = value
         if stream.enabled {
-            model.afreecaTvChannelNameUpdated()
+            model.soopChannelNameUpdated()
         }
     }
 
     func submitStreamId(value: String) {
-        stream.afreecaTvStreamId = value
+        stream.soopStreamId = value
         if stream.enabled {
-            model.afreecaTvStreamIdUpdated()
+            model.soopStreamIdUpdated()
         }
     }
 
@@ -23,13 +23,13 @@ struct StreamAfreecaTvSettingsView: View {
             Section {
                 TextEditNavigationView(
                     title: String(localized: "Channel name"),
-                    value: stream.afreecaTvChannelName,
+                    value: stream.soopChannelName,
                     onSubmit: submitChannelName,
                     capitalize: true
                 )
                 TextEditNavigationView(
                     title: String(localized: "Video id"),
-                    value: stream.afreecaTvStreamId,
+                    value: stream.soopStreamId,
                     onSubmit: submitStreamId
                 )
             } footer: {
@@ -39,10 +39,10 @@ struct StreamAfreecaTvSettingsView: View {
                     Text(
                         "Find your channel name (myChannelName) and video id (myVideoId) in your stream's URL."
                     )
-                    Text("Example URL: https://play.afreecatv.com/myChannelName/myVideoId")
+                    Text("Example URL: https://play.sooplive.co.kr/myChannelName/myVideoId")
                 }
             }
         }
-        .navigationTitle("AfreecaTV")
+        .navigationTitle("SOOP")
     }
 }

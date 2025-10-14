@@ -133,6 +133,7 @@ extension Model {
         var id = 0
         appendChatMessage(platform: .kick,
                           messageId: nil,
+                          displayName: user,
                           user: user,
                           userId: nil,
                           userColor: nil,
@@ -173,6 +174,7 @@ extension Model: KickPusherDelegate {
     ) {
         appendChatMessage(platform: .kick,
                           messageId: messageId,
+                          displayName: user,
                           user: user,
                           userId: userId,
                           userColor: userColor,
@@ -197,7 +199,7 @@ extension Model: KickPusherDelegate {
         deleteChatUser(userId: userId)
     }
 
-    func kickPusherSubscription(event: SubscriptionEvent) {
+    func kickPusherSubscription(event: KickPusherSubscriptionEvent) {
         DispatchQueue.main.async {
             let text = String(localized: "just subscribed! They've been subscribed for \(event.months) months!")
             if self.stream.kickToastAlerts.subscriptions {
@@ -213,10 +215,11 @@ extension Model: KickPusherDelegate {
                 )
             }
             self.printEventCatPrinters(event.username, text, "kick", .subscription)
+            self.playAlert(alert: .kickSubscription(event: event))
         }
     }
 
-    func kickPusherGiftedSubscription(event: GiftedSubscriptionsEvent) {
+    func kickPusherGiftedSubscription(event: KickPusherGiftedSubscriptionsEvent) {
         DispatchQueue.main.async {
             let user = event.gifter_username
             let text =
@@ -237,10 +240,11 @@ extension Model: KickPusherDelegate {
                 )
             }
             self.printEventCatPrinters(user, text, "kick", .giftedSubscription)
+            self.playAlert(alert: .kickGiftedSubscriptions(event: event))
         }
     }
 
-    func kickPusherRewardRedeemed(event: RewardRedeemedEvent) {
+    func kickPusherRewardRedeemed(event: KickPusherRewardRedeemedEvent) {
         DispatchQueue.main.async {
             let user = event.username
             let baseText = String(localized: "redeemed \(event.reward_title)")
@@ -258,10 +262,11 @@ extension Model: KickPusherDelegate {
                 )
             }
             self.printEventCatPrinters(user, text, "kick", .reward)
+            self.playAlert(alert: .kickReward(event: event))
         }
     }
 
-    func kickPusherStreamHost(event: StreamHostEvent) {
+    func kickPusherStreamHost(event: KickPusherStreamHostEvent) {
         DispatchQueue.main.async {
             let user = event.host_username
             let text = String(localized: "is now hosting with \(event.number_viewers) viewers!")
@@ -278,10 +283,11 @@ extension Model: KickPusherDelegate {
                 )
             }
             self.printEventCatPrinters(user, text, "kick", .host)
+            self.playAlert(alert: .kickHost(event: event))
         }
     }
 
-    func kickPusherUserBanned(event: UserBannedEvent) {
+    func kickPusherUserBanned(event: KickPusherUserBannedEvent) {
         DispatchQueue.main.async {
             let text: String
             let title: String
@@ -307,7 +313,7 @@ extension Model: KickPusherDelegate {
         }
     }
 
-    func kickPusherKicksGifted(event: KicksGiftedEvent) {
+    func kickPusherKicksGifted(event: KickPusherKicksGiftedEvent) {
         DispatchQueue.main.async {
             let user = event.sender.username
             let amount = countFormatter.format(event.gift.amount)
@@ -326,6 +332,7 @@ extension Model: KickPusherDelegate {
                 )
             }
             self.printEventCatPrinters(user, message, "kick", .bitsAndKicks)
+            self.playAlert(alert: .kickKicks(event: event))
         }
     }
 }

@@ -97,6 +97,7 @@ struct RistServerSettingsView: View {
                 Text("RIST server")
                 Spacer()
                 Text(status())
+                    .foregroundColor(.gray)
             }
         }
     }

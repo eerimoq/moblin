@@ -13,7 +13,7 @@ class WeatherManager {
         guard task == nil else {
             return
         }
-        task = Task.init { @MainActor in
+        task = Task { @MainActor in
             var delay = 5
             while true {
                 do {

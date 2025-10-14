@@ -33,8 +33,8 @@ class CreateStreamWizard: ObservableObject {
     var kickAccessToken = ""
     var kickLoggedIn: Bool = false
     @Published var youTubeHandle = ""
-    @Published var afreecaTvChannelName = ""
-    @Published var afreecaTvStreamId = ""
+    @Published var soopChannelName = ""
+    @Published var soopStreamId = ""
     @Published var obsAddress = ""
     @Published var obsPort = ""
     @Published var obsRemoteControlEnabled = false
@@ -994,8 +994,5 @@ extension Model: MediaDelegate {
 }
 
 private func videoCaptureError() -> String {
-    return [
-        String(localized: "Try to use single or low-energy cameras."),
-        String(localized: "Try to lower stream FPS and resolution."),
-    ].joined(separator: "\n")
+    return String(localized: "Try to use single or low-energy cameras.")
 }

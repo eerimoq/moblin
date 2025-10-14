@@ -229,6 +229,21 @@ func hasWideDualBackCamera() -> Bool {
     return AVCaptureDevice.default(.builtInDualWideCamera, for: .video, position: .back) != nil
 }
 
+func hasUltraWideFrontCamera() -> Bool {
+    return AVCaptureDevice.default(.builtInUltraWideCamera, for: .video, position: .front) != nil
+}
+
+func hasUltraWideCamera(position: AVCaptureDevice.Position) -> Bool {
+    switch position {
+    case .back:
+        return hasUltraWideBackCamera()
+    case .front:
+        return hasUltraWideFrontCamera()
+    default:
+        return false
+    }
+}
+
 func getBestBackCameraDevice() -> AVCaptureDevice? {
     var device = AVCaptureDevice.default(.builtInTripleCamera, for: .video, position: .back)
     if device == nil {
@@ -244,7 +259,11 @@ func getBestBackCameraDevice() -> AVCaptureDevice? {
 }
 
 func getBestFrontCameraDevice() -> AVCaptureDevice? {
-    return AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front)
+    var device = AVCaptureDevice.default(.builtInUltraWideCamera, for: .video, position: .front)
+    if device == nil {
+        device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front)
+    }
+    return device
 }
 
 func getBestBackCameraId() -> String {
@@ -383,11 +402,6 @@ extension MKCoordinateRegion: @retroactive Equatable {
     }
 }
 
-struct WidgetCrop {
-    let position: CGPoint
-    let crop: CGRect
-}
-
 func hasAppleLog() -> Bool {
     if #available(iOS 17.0, *) {
         for format in getBestBackCameraDevice()?.formats ?? []
@@ -502,18 +516,17 @@ func uploadImage(
     request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "content-type")
     var data = Data()
     if let message {
-        data.append("\r\n--\(boundary)\r\n".data(using: .utf8)!)
-        data.append("content-disposition: form-data; name=\"content\"\r\n\r\n".data(using: .utf8)!)
-        data.append(message.data(using: .utf8)!)
+        data.append("\r\n--\(boundary)\r\n".utf8Data)
+        data.append("content-disposition: form-data; name=\"content\"\r\n\r\n".utf8Data)
+        data.append(message.utf8Data)
     }
-    data.append("\r\n--\(boundary)\r\n".data(using: .utf8)!)
+    data.append("\r\n--\(boundary)\r\n".utf8Data)
     data.append(
-        "content-disposition: form-data; name=\"\(paramName)\"; filename=\"\(fileName)\"\r\n"
-            .data(using: .utf8)!
+        "content-disposition: form-data; name=\"\(paramName)\"; filename=\"\(fileName)\"\r\n".utf8Data
     )
-    data.append("content-type: image/jpeg\r\n\r\n".data(using: .utf8)!)
+    data.append("content-type: image/jpeg\r\n\r\n".utf8Data)
     data.append(image)
-    data.append("\r\n--\(boundary)--\r\n".data(using: .utf8)!)
+    data.append("\r\n--\(boundary)--\r\n".utf8Data)
     URLSession.shared.uploadTask(with: request, from: data, completionHandler: { _, response, _ in
         onCompleted(response?.http?.isSuccessful == true)
     }).resume()
@@ -530,11 +543,6 @@ func formatCommercialStartedDuration(seconds: Int) -> String {
     } else {
         return "\(seconds) seconds"
     }
-}
-
-struct HttpProxy {
-    var host: String
-    var port: UInt16
 }
 
 extension CGSize {
@@ -774,24 +782,7 @@ func fieldOfViewToZoom(fieldOfView: Float, zoomOne: Float = .pi / 2) -> Float {
 }
 
 extension Locale.Language {
-    func identifier() -> String? {
-        guard let languageCode else {
-            return nil
-        }
-        var identifier = "\(languageCode)"
-        if let script {
-            identifier += "-\(script)"
-        }
-        if let region {
-            identifier += "-\(region)"
-        }
-        return identifier
-    }
-
     func name() -> String {
-        guard let identifier = identifier() else {
-            return "Unknown"
-        }
-        return NSLocale.current.localizedString(forIdentifier: identifier) ?? "Unknown"
+        return NSLocale.current.localizedString(forIdentifier: minimalIdentifier) ?? "Unknown"
     }
 }

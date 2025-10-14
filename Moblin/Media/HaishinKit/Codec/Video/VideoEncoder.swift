@@ -49,6 +49,7 @@ class VideoEncoder {
             self.currentBitrate = 0
             self.formatDescription = formatDescription
             numberOfFailedEncodings = 0
+            logger.info("video-encoder: Starting with codec \(self.settings.value.format)")
         }
     }
 

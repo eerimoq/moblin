@@ -22,8 +22,6 @@ private struct RemoteControlRequestResponse {
 class RemoteControlAssistant: NSObject {
     private let port: UInt16
     private let password: String
-    private let httpProxy: HttpProxy?
-    private let urlSession: URLSession
     private var connected: Bool = false
     private var nextId: Int = 0
     private var requests: [Int: RemoteControlRequestResponse] = [:]
@@ -53,15 +51,11 @@ class RemoteControlAssistant: NSObject {
     init(
         port: UInt16,
         password: String,
-        delegate: RemoteControlAssistantDelegate,
-        httpProxy: HttpProxy?,
-        urlSession: URLSession
+        delegate: RemoteControlAssistantDelegate
     ) {
         self.port = port
         self.password = password
         self.delegate = delegate
-        self.httpProxy = httpProxy
-        self.urlSession = urlSession
         encryption = RemoteControlEncryption(password: password)
         super.init()
     }
@@ -398,9 +392,7 @@ class RemoteControlAssistant: NSObject {
                 try handleTwitchStart(
                     channelName: channelName,
                     channelId: channelId,
-                    accessToken: accessToken,
-                    httpProxy: httpProxy,
-                    urlSession: urlSession
+                    accessToken: accessToken
                 )
             case .ping:
                 handlePing()
@@ -477,9 +469,7 @@ class RemoteControlAssistant: NSObject {
     private func handleTwitchStart(
         channelName: String?,
         channelId: String,
-        accessToken: String,
-        httpProxy: HttpProxy?,
-        urlSession: URLSession
+        accessToken: String
     ) throws {
         guard streamerIdentified else {
             throw "Streamer not identified"
@@ -510,8 +500,6 @@ class RemoteControlAssistant: NSObject {
             remoteControl: false,
             userId: channelId,
             accessToken: accessToken,
-            httpProxy: httpProxy,
-            urlSession: urlSession,
             delegate: self
         )
         twitchEventSub?.start()
@@ -521,9 +509,7 @@ class RemoteControlAssistant: NSObject {
             twitchChat?.start(channelName: channelName,
                               channelId: channelId,
                               settings: SettingsStreamChat(),
-                              accessToken: accessToken,
-                              httpProxy: httpProxy,
-                              urlSession: urlSession)
+                              accessToken: accessToken)
         }
     }
 
@@ -630,7 +616,8 @@ extension RemoteControlAssistant: TwitchChatDelegate {
 
     func twitchChatAppendMessage(
         messageId: String?,
-        user: String?,
+        displayName: String,
+        user: String,
         userId: String?,
         userColor: RgbColor?,
         userBadges: [URL],
@@ -645,6 +632,7 @@ extension RemoteControlAssistant: TwitchChatDelegate {
         let message = RemoteControlChatMessage(id: getNextChatMessageId(),
                                                platform: .twitch,
                                                messageId: messageId,
+                                               displayName: displayName,
                                                user: user,
                                                userId: userId,
                                                userColor: userColor,

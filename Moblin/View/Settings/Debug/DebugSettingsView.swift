@@ -1,9 +1,12 @@
+import Collections
 import SwiftUI
 import WebKit
 
 struct DebugSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var debug: SettingsDebug
+    @State var presentingLog: Bool = false
+    @State var log: Deque<LogEntry> = []
 
     private func changeLogLines(value: String) -> String? {
         guard let lines = Int(value) else {
@@ -28,11 +31,24 @@ struct DebugSettingsView: View {
     var body: some View {
         Form {
             Section {
-                NavigationLink {
-                    DebugLogSettingsView(log: model.log, clearLog: { model.clearLog() })
+                Button {
+                    presentingLog = true
                 } label: {
-                    Text("Log")
+                    HCenter {
+                        Text("Log")
+                    }
                 }
+                .fullScreenCover(isPresented: $presentingLog) {
+                    DebugLogSettingsView(model: model,
+                                         log: $log,
+                                         presentingLog: $presentingLog,
+                                         clearLog: { model.clearLog() })
+                        .task {
+                            log = model.log
+                        }
+                }
+            }
+            Section {
                 Toggle(isOn: Binding(get: {
                     debug.logLevel == .debug
                 }, set: { value in
@@ -53,24 +69,9 @@ struct DebugSettingsView: View {
             }
             Section {
                 NavigationLink {
-                    DebugAudioSettingsView(debug: debug)
-                } label: {
-                    Text("Audio")
-                }
-                NavigationLink {
                     DebugVideoSettingsView(debug: debug)
                 } label: {
                     Text("Video")
-                }
-                HStack {
-                    Text("Video blackish")
-                    Slider(
-                        value: $debug.cameraSwitchRemoveBlackish,
-                        in: 0.0 ... 1.0,
-                        step: 0.1
-                    )
-                    Text("\(formatOneDecimal(debug.cameraSwitchRemoveBlackish)) s")
-                        .frame(width: 40)
                 }
                 Toggle("Bitrate drop fix", isOn: $debug.bitrateDropFix)
                     .onChange(of: debug.bitrateDropFix) { _ in
@@ -96,21 +97,11 @@ struct DebugSettingsView: View {
                         .frame(width: 40)
                 }
                 Toggle("Relaxed bitrate decrement after scene switch", isOn: $debug.relaxedBitrate)
-                Toggle("Global tone mapping", isOn: Binding(get: {
-                    model.getGlobalToneMappingOn()
-                }, set: { value in
-                    model.setGlobalToneMapping(on: value)
-                }))
                 Toggle("MetalPetal filters", isOn: $debug.metalPetalFilters)
                     .onChange(of: debug.metalPetalFilters) { _ in
                         model.setMetalPetalFilters()
                     }
                 Toggle("Twitch rewards", isOn: $debug.twitchRewards)
-                NavigationLink {
-                    DebugHttpProxySettingsView()
-                } label: {
-                    Text("HTTP proxy")
-                }
                 Toggle("Reliable chat", isOn: $debug.reliableChat)
                 VStack(alignment: .leading) {
                     Text("Builtin audio and video delay")

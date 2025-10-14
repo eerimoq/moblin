@@ -408,7 +408,7 @@ class MoblinkRelay: NSObject {
             return
         }
         var relays: [Relay] = []
-        for interface in path.availableInterfaces
+        for interface in path.uniqueAvailableInterfaces()
             where interface.type == .cellular || interface.type == .wiredEthernet
         {
             if let relay = self.relays.first(where: { $0.destinationInterface == interface }) {

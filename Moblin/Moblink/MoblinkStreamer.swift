@@ -59,7 +59,7 @@ private class Relay {
     }
 
     func handleStringMessage(message: String) {
-        // logger.info("moblink-streamer: Received \(message)")
+        // logger.debug("moblink-streamer: Received \(message)")
         do {
             let message = try MoblinkMessageToStreamer.fromJson(data: message)
             switch message {
@@ -340,7 +340,7 @@ class MoblinkStreamer: NSObject {
 
     func removeRelay(relayId: UUID) {
         if let relay = relays.first(where: { $0.relayId == relayId }) {
-            logger.debug("moblink-streamer: Replacing relay \(relay.name)")
+            logger.debug("moblink-streamer: Replacing relay \(relay.name) (id: \(relayId))")
             relay.stop()
         }
         relays.removeAll(where: { $0.relayId == relayId })

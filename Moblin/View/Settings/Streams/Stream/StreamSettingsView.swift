@@ -33,6 +33,30 @@ struct YouTubeLogoAndNameView: View {
     }
 }
 
+struct DLiveLogoAndNameView: View {
+    var body: some View {
+        PlatformLogoAndNameView(logo: "DLiveLogo", name: String(localized: "DLive"))
+    }
+}
+
+struct OpenStreamingPlatformLogoAndNameView: View {
+    var body: some View {
+        PlatformLogoAndNameView(logo: "OpenStreamingPlatform", name: String(localized: "Open Streaming Platform"))
+    }
+}
+
+struct SoopLogoAndNameView: View {
+    var body: some View {
+        PlatformLogoAndNameView(logo: "SoopLogo", name: String(localized: "SOOP"))
+    }
+}
+
+struct ObsLogoAndNameView: View {
+    var body: some View {
+        PlatformLogoAndNameView(logo: "ObsLogo", name: String(localized: "OBS"))
+    }
+}
+
 struct StreamPlatformsSettingsView: View {
     let stream: SettingsStream
 
@@ -53,19 +77,19 @@ struct StreamPlatformsSettingsView: View {
             YouTubeLogoAndNameView()
         }
         NavigationLink {
-            StreamAfreecaTvSettingsView(stream: stream)
+            StreamDLiveSettingsView(stream: stream)
         } label: {
-            Text("AfreecaTV")
+            DLiveLogoAndNameView()
+        }
+        NavigationLink {
+            StreamSoopSettingsView(stream: stream)
+        } label: {
+            SoopLogoAndNameView()
         }
         NavigationLink {
             StreamOpenStreamingPlatformSettingsView(stream: stream)
         } label: {
-            Text("Open Streaming Platform")
-        }
-        NavigationLink {
-            StreamEmotesSettingsView(stream: stream)
-        } label: {
-            Text("Emotes")
+            OpenStreamingPlatformLogoAndNameView()
         }
     }
 }
@@ -106,11 +130,13 @@ struct StreamSettingsView: View {
                     } label: {
                         Text("Recording")
                     }
-                    NavigationLink {
-                        StreamReplaySettingsView(stream: stream, replay: stream.replay)
-                    } label: {
-                        Text("Replay")
-                    }
+                }
+                NavigationLink {
+                    StreamReplaySettingsView(stream: stream, replay: stream.replay)
+                } label: {
+                    Text("Replay")
+                }
+                if database.showAllSettings {
                     NavigationLink {
                         StreamSnapshotSettingsView(stream: stream, recording: stream.recording)
                     } label: {
@@ -195,6 +221,11 @@ struct StreamSettingsView: View {
                             }
                         }))
                     }
+                }
+                NavigationLink {
+                    StreamEmotesSettingsView(stream: stream)
+                } label: {
+                    Text("Emotes")
                 }
             }
             if database.showAllSettings {

@@ -75,6 +75,11 @@ enum AlertsEffectAlert {
     case twitchResubscribe(TwitchEventSubNotificationChannelSubscriptionMessageEvent)
     case twitchRaid(TwitchEventSubChannelRaidEvent)
     case twitchCheer(TwitchEventSubChannelCheerEvent)
+    case kickSubscription(event: KickPusherSubscriptionEvent)
+    case kickGiftedSubscriptions(event: KickPusherGiftedSubscriptionsEvent)
+    case kickHost(event: KickPusherStreamHostEvent)
+    case kickReward(event: KickPusherRewardRedeemedEvent)
+    case kickKicks(event: KickPusherKicksGiftedEvent)
     case chatBotCommand(String, String)
     case speechToTextString(UUID)
 }
@@ -194,6 +199,11 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
     private var twitchSubscribe = Medias()
     private var twitchRaid = Medias()
     private var twitchCheers: [Medias] = []
+    private var kickSubscription = Medias()
+    private var kickGiftedSubscriptions = Medias()
+    private var kickHost = Medias()
+    private var kickReward = Medias()
+    private var kickGifts: [Medias] = []
     private var chatBotCommands: [Medias] = []
     private var speechToTextStrings: [Medias] = []
     private let bundledImages: [SettingsAlertsMediaGalleryItem]
@@ -234,41 +244,33 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
     }
 
     func setSettings(settings: SettingsWidgetAlerts) {
-        let twitch = settings.twitch
-        var (image, imageLoopCount, sound) = getMediaItems(alert: twitch.follows)
-        twitchFollow.updateImages(image: image, loopCount: imageLoopCount)
-        twitchFollow.updateSoundUrl(sound: sound)
-        (image, imageLoopCount, sound) = getMediaItems(alert: twitch.subscriptions)
-        twitchSubscribe.updateImages(image: image, loopCount: imageLoopCount)
-        twitchSubscribe.updateSoundUrl(sound: sound)
-        (image, imageLoopCount, sound) = getMediaItems(alert: twitch.raids)
-        twitchRaid.updateImages(image: image, loopCount: imageLoopCount)
-        twitchRaid.updateSoundUrl(sound: sound)
-        twitchCheers = []
-        for cheerBits in twitch.cheerBits {
-            (image, imageLoopCount, sound) = getMediaItems(alert: cheerBits.alert)
-            let medias = Medias()
-            medias.updateImages(image: image, loopCount: imageLoopCount)
-            medias.updateSoundUrl(sound: sound)
-            twitchCheers.append(medias)
-        }
+        setTwitchSettings(twitch: settings.twitch)
+        setKickSettings(kick: settings.kick)
+        setChatBotSettings(settings: settings)
+        setSpeechToTextSettings(settings: settings)
+        self.settings = settings
+    }
+
+    private func setChatBotSettings(settings: SettingsWidgetAlerts) {
         chatBotCommands = []
         for command in settings.chatBot.commands {
-            (image, imageLoopCount, sound) = getMediaItems(alert: command.alert)
+            let (image, imageLoopCount, sound) = getMediaItems(alert: command.alert)
             let medias = Medias()
             medias.updateImages(image: image, loopCount: imageLoopCount)
             medias.updateSoundUrl(sound: sound)
             chatBotCommands.append(medias)
         }
+    }
+
+    private func setSpeechToTextSettings(settings: SettingsWidgetAlerts) {
         speechToTextStrings = []
         for string in settings.speechToText.strings {
-            (image, imageLoopCount, sound) = getMediaItems(alert: string.alert)
+            let (image, imageLoopCount, sound) = getMediaItems(alert: string.alert)
             let medias = Medias()
             medias.updateImages(image: image, loopCount: imageLoopCount)
             medias.updateSoundUrl(sound: sound)
             speechToTextStrings.append(medias)
         }
-        self.settings = settings
     }
 
     func getSettings() -> SettingsWidgetAlerts {
@@ -313,107 +315,20 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
             playTwitchRaid(event: event)
         case let .twitchCheer(event):
             playTwitchCheer(event: event)
+        case let .kickSubscription(event):
+            playKickSubscription(event: event)
+        case let .kickGiftedSubscriptions(event):
+            playKickGiftedSubscriptions(event: event)
+        case let .kickHost(event):
+            playKickHost(event: event)
+        case let .kickReward(event):
+            playKickReward(event: event)
+        case let .kickKicks(event):
+            playKickKicks(event: event)
         case let .chatBotCommand(command, name):
             playChatBotCommand(command: command, name: name)
         case let .speechToTextString(id):
             playSpeechToTextString(id: id)
-        }
-    }
-
-    @MainActor
-    private func playTwitchFollow(event: TwitchEventSubNotificationChannelFollowEvent) {
-        guard settings.twitch.follows.enabled else {
-            return
-        }
-        play(
-            medias: twitchFollow,
-            username: event.user_name,
-            message: String(localized: "just followed!"),
-            settings: settings.twitch.follows
-        )
-    }
-
-    @MainActor
-    private func playTwitchSubscribe(event: TwitchEventSubNotificationChannelSubscribeEvent) {
-        guard settings.twitch.subscriptions.enabled else {
-            return
-        }
-        play(
-            medias: twitchSubscribe,
-            username: event.user_name,
-            message: String(localized: "just subscribed tier \(event.tierAsNumber())!"),
-            settings: settings.twitch.subscriptions
-        )
-    }
-
-    @MainActor
-    private func playTwitchSubscriptionGift(event: TwitchEventSubNotificationChannelSubscriptionGiftEvent) {
-        guard settings.twitch.subscriptions.enabled else {
-            return
-        }
-        play(
-            medias: twitchSubscribe,
-            username: event.user_name ?? "Anomymous",
-            message: String(
-                localized: "just gifted \(event.total) tier \(event.tierAsNumber()) subscriptions!"
-            ),
-            settings: settings.twitch.subscriptions
-        )
-    }
-
-    @MainActor
-    private func playTwitchResubscribe(event: TwitchEventSubNotificationChannelSubscriptionMessageEvent) {
-        guard settings.twitch.subscriptions.enabled else {
-            return
-        }
-        play(
-            medias: twitchSubscribe,
-            username: event.user_name,
-            message: String(localized: """
-            just resubscribed tier \(event.tierAsNumber()) for \(event.cumulative_months) \
-            months! \(event.message.text)
-            """),
-            settings: settings.twitch.subscriptions
-        )
-    }
-
-    @MainActor
-    private func playTwitchRaid(event: TwitchEventSubChannelRaidEvent) {
-        guard settings.twitch.raids.enabled else {
-            return
-        }
-        play(
-            medias: twitchRaid,
-            username: event.from_broadcaster_user_name,
-            message: String(localized: "raided with a party of \(event.viewers)!"),
-            settings: settings.twitch.raids
-        )
-    }
-
-    @MainActor
-    private func playTwitchCheer(event: TwitchEventSubChannelCheerEvent) {
-        for (index, cheerBit) in settings.twitch.cheerBits.enumerated() where cheerBit.alert.enabled {
-            switch cheerBit.comparisonOperator {
-            case .equal:
-                guard event.bits == cheerBit.bits else {
-                    continue
-                }
-            case .greaterEqual:
-                guard event.bits >= cheerBit.bits else {
-                    continue
-                }
-            }
-            guard index < twitchCheers.count else {
-                return
-            }
-            let bits = countFormatter.format(event.bits)
-            play(
-                medias: twitchCheers[index],
-                username: event.user_name ?? "Anonymous",
-                message: String(localized: "cheered \(bits) bits! \(event.message)"),
-                settings: cheerBit.alert
-            )
-            break
         }
     }
 
@@ -773,4 +688,232 @@ private func makeCircle(_ image: CIImage) -> CIImage {
     roundedCornersBlender.inputImage = image
     roundedCornersBlender.maskImage = makeRoundedRectangleMask(image)
     return roundedCornersBlender.outputImage ?? image
+}
+
+extension AlertsEffect {
+    private func setTwitchSettings(twitch: SettingsWidgetAlertsTwitch) {
+        var (image, imageLoopCount, sound) = getMediaItems(alert: twitch.follows)
+        twitchFollow.updateImages(image: image, loopCount: imageLoopCount)
+        twitchFollow.updateSoundUrl(sound: sound)
+        (image, imageLoopCount, sound) = getMediaItems(alert: twitch.subscriptions)
+        twitchSubscribe.updateImages(image: image, loopCount: imageLoopCount)
+        twitchSubscribe.updateSoundUrl(sound: sound)
+        (image, imageLoopCount, sound) = getMediaItems(alert: twitch.raids)
+        twitchRaid.updateImages(image: image, loopCount: imageLoopCount)
+        twitchRaid.updateSoundUrl(sound: sound)
+        twitchCheers = []
+        for cheerBits in twitch.cheerBits {
+            (image, imageLoopCount, sound) = getMediaItems(alert: cheerBits.alert)
+            let medias = Medias()
+            medias.updateImages(image: image, loopCount: imageLoopCount)
+            medias.updateSoundUrl(sound: sound)
+            twitchCheers.append(medias)
+        }
+    }
+
+    @MainActor
+    private func playTwitchFollow(event: TwitchEventSubNotificationChannelFollowEvent) {
+        guard settings.twitch.follows.enabled else {
+            return
+        }
+        play(
+            medias: twitchFollow,
+            username: event.user_name,
+            message: String(localized: "just followed!"),
+            settings: settings.twitch.follows
+        )
+    }
+
+    @MainActor
+    private func playTwitchSubscribe(event: TwitchEventSubNotificationChannelSubscribeEvent) {
+        guard settings.twitch.subscriptions.enabled else {
+            return
+        }
+        play(
+            medias: twitchSubscribe,
+            username: event.user_name,
+            message: String(localized: "just subscribed tier \(event.tierAsNumber())!"),
+            settings: settings.twitch.subscriptions
+        )
+    }
+
+    @MainActor
+    private func playTwitchSubscriptionGift(event: TwitchEventSubNotificationChannelSubscriptionGiftEvent) {
+        guard settings.twitch.subscriptions.enabled else {
+            return
+        }
+        play(
+            medias: twitchSubscribe,
+            username: event.user_name ?? "Anomymous",
+            message: String(
+                localized: "just gifted \(event.total) tier \(event.tierAsNumber()) subscriptions!"
+            ),
+            settings: settings.twitch.subscriptions
+        )
+    }
+
+    @MainActor
+    private func playTwitchResubscribe(event: TwitchEventSubNotificationChannelSubscriptionMessageEvent) {
+        guard settings.twitch.subscriptions.enabled else {
+            return
+        }
+        play(
+            medias: twitchSubscribe,
+            username: event.user_name,
+            message: String(localized: """
+            just resubscribed tier \(event.tierAsNumber()) for \(event.cumulative_months) \
+            months! \(event.message.text)
+            """),
+            settings: settings.twitch.subscriptions
+        )
+    }
+
+    @MainActor
+    private func playTwitchRaid(event: TwitchEventSubChannelRaidEvent) {
+        guard settings.twitch.raids.enabled else {
+            return
+        }
+        play(
+            medias: twitchRaid,
+            username: event.from_broadcaster_user_name,
+            message: String(localized: "raided with a party of \(event.viewers)!"),
+            settings: settings.twitch.raids
+        )
+    }
+
+    @MainActor
+    private func playTwitchCheer(event: TwitchEventSubChannelCheerEvent) {
+        for (index, cheerBit) in settings.twitch.cheerBits.enumerated() where cheerBit.alert.enabled {
+            switch cheerBit.comparisonOperator {
+            case .equal:
+                guard event.bits == cheerBit.bits else {
+                    continue
+                }
+            case .greaterEqual:
+                guard event.bits >= cheerBit.bits else {
+                    continue
+                }
+            }
+            guard index < twitchCheers.count else {
+                return
+            }
+            let bits = countFormatter.format(event.bits)
+            play(
+                medias: twitchCheers[index],
+                username: event.user_name ?? "Anonymous",
+                message: String(localized: "cheered \(bits) bits! \(event.message)"),
+                settings: cheerBit.alert
+            )
+            break
+        }
+    }
+}
+
+extension AlertsEffect {
+    private func setKickSettings(kick: SettingsWidgetAlertsKick) {
+        var (image, imageLoopCount, sound) = getMediaItems(alert: kick.subscriptions)
+        kickSubscription.updateImages(image: image, loopCount: imageLoopCount)
+        kickSubscription.updateSoundUrl(sound: sound)
+        (image, imageLoopCount, sound) = getMediaItems(alert: kick.giftedSubscriptions)
+        kickGiftedSubscriptions.updateImages(image: image, loopCount: imageLoopCount)
+        kickGiftedSubscriptions.updateSoundUrl(sound: sound)
+        (image, imageLoopCount, sound) = getMediaItems(alert: kick.hosts)
+        kickHost.updateImages(image: image, loopCount: imageLoopCount)
+        kickHost.updateSoundUrl(sound: sound)
+        (image, imageLoopCount, sound) = getMediaItems(alert: kick.rewards)
+        kickReward.updateImages(image: image, loopCount: imageLoopCount)
+        kickReward.updateSoundUrl(sound: sound)
+        kickGifts = []
+        for kickGift in kick.kickGifts {
+            (image, imageLoopCount, sound) = getMediaItems(alert: kickGift.alert)
+            let medias = Medias()
+            medias.updateImages(image: image, loopCount: imageLoopCount)
+            medias.updateSoundUrl(sound: sound)
+            kickGifts.append(medias)
+        }
+    }
+
+    @MainActor
+    private func playKickSubscription(event: KickPusherSubscriptionEvent) {
+        guard settings.kick.subscriptions.enabled else {
+            return
+        }
+        play(
+            medias: kickSubscription,
+            username: event.username,
+            message: String(localized: "just subscribed! They've been subscribed for \(event.months) months!"),
+            settings: settings.kick.subscriptions
+        )
+    }
+
+    @MainActor
+    private func playKickGiftedSubscriptions(event: KickPusherGiftedSubscriptionsEvent) {
+        guard settings.kick.giftedSubscriptions.enabled else {
+            return
+        }
+        play(
+            medias: kickGiftedSubscriptions,
+            username: event.gifter_username,
+            message: String(localized: """
+            just gifted \(event.gifted_usernames.count) subscription(s)! They've \
+            gifted \(event.gifter_total) in total!
+            """),
+            settings: settings.kick.giftedSubscriptions
+        )
+    }
+
+    @MainActor
+    private func playKickHost(event: KickPusherStreamHostEvent) {
+        guard settings.kick.hosts.enabled else {
+            return
+        }
+        play(
+            medias: kickHost,
+            username: event.host_username,
+            message: String(localized: "is now hosting with \(event.number_viewers) viewers!"),
+            settings: settings.kick.hosts
+        )
+    }
+
+    @MainActor
+    private func playKickReward(event: KickPusherRewardRedeemedEvent) {
+        guard settings.kick.rewards.enabled else {
+            return
+        }
+        let baseMessage = String(localized: "redeemed \(event.reward_title)")
+        let message = event.user_input.isEmpty ? baseMessage : "\(baseMessage): \(event.user_input)"
+        play(
+            medias: kickReward,
+            username: event.username,
+            message: message,
+            settings: settings.kick.rewards
+        )
+    }
+
+    @MainActor
+    private func playKickKicks(event: KickPusherKicksGiftedEvent) {
+        for (index, kickGift) in settings.kick.kickGifts.enumerated() {
+            let matches: Bool
+            switch kickGift.comparisonOperator {
+            case .equal:
+                matches = event.gift.amount == kickGift.amount
+            case .greaterEqual:
+                matches = event.gift.amount >= kickGift.amount
+            }
+            guard matches, kickGift.alert.enabled else {
+                continue
+            }
+            guard index < kickGifts.count else {
+                return
+            }
+            let formattedAmount = countFormatter.format(event.gift.amount)
+            play(
+                medias: kickGifts[index],
+                username: event.sender.username,
+                message: String(localized: "sent \(event.gift.name) \(formattedAmount) Kicks!"),
+                settings: kickGift.alert
+            )
+            break
+        }
+    }
 }

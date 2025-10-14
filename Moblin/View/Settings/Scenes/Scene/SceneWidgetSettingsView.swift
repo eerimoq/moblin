@@ -7,56 +7,126 @@ private struct SceneSettings: Codable {
     let alignment: SettingsAlignment
 }
 
-struct SceneWidgetSettingsView: View {
+private func widgetHasPosition(widget: SettingsWidget) -> Bool {
+    return [
+        .image,
+        .browser,
+        .text,
+        .crop,
+        .map,
+        .qrCode,
+        .alerts,
+        .videoSource,
+        .vTuber,
+        .pngTuber,
+        .snapshot,
+    ].contains(widget.type)
+}
+
+private func widgetHasSize(widget: SettingsWidget) -> Bool {
+    return [
+        .image,
+        .browser,
+        .crop,
+        .map,
+        .qrCode,
+        .videoSource,
+        .vTuber,
+        .pngTuber,
+        .snapshot,
+    ].contains(widget.type)
+}
+
+private func widgetHasAlignment(widget: SettingsWidget) -> Bool {
+    return [
+        .image,
+        .browser,
+        .text,
+        .crop,
+        .map,
+        .qrCode,
+        .videoSource,
+        .vTuber,
+        .pngTuber,
+        .snapshot,
+    ].contains(widget.type)
+}
+
+private func canWidgetExpand(widget: SettingsWidget) -> Bool {
+    return widgetHasPosition(widget: widget) || widgetHasSize(widget: widget)
+}
+
+private struct LayoutView: View {
     @EnvironmentObject private var model: Model
     @ObservedObject var sceneWidget: SettingsSceneWidget
     @ObservedObject var widget: SettingsWidget
     @Binding var numericInput: Bool
 
-    private func widgetHasPosition(widget: SettingsWidget) -> Bool {
-        return [
-            .image,
-            .browser,
-            .text,
-            .crop,
-            .map,
-            .qrCode,
-            .alerts,
-            .videoSource,
-            .vTuber,
-            .pngTuber,
-            .snapshot,
-        ].contains(widget.type)
+    var body: some View {
+        if widgetHasPosition(widget: widget) || widgetHasSize(widget: widget) ||
+            widgetHasAlignment(widget: widget)
+        {
+            Section {
+                if widgetHasPosition(widget: widget) {
+                    PositionEditView(
+                        number: $sceneWidget.x,
+                        value: $sceneWidget.xString,
+                        onSubmit: { _ in
+                            model.sceneUpdated()
+                        },
+                        numericInput: $numericInput,
+                        incrementImageName: "arrow.forward.circle",
+                        decrementImageName: "arrow.backward.circle",
+                        mirror: sceneWidget.alignment == .topRight || sceneWidget.alignment == .bottomRight
+                    )
+                    PositionEditView(
+                        number: $sceneWidget.y,
+                        value: $sceneWidget.yString,
+                        onSubmit: { _ in
+                            model.sceneUpdated()
+                        },
+                        numericInput: $numericInput,
+                        incrementImageName: "arrow.down.circle",
+                        decrementImageName: "arrow.up.circle",
+                        mirror: sceneWidget.alignment == .bottomLeft || sceneWidget.alignment == .bottomRight
+                    )
+                }
+                if widgetHasSize(widget: widget) {
+                    SizeEditView(
+                        number: $sceneWidget.size,
+                        value: $sceneWidget.sizeString,
+                        onSubmit: { _ in
+                            model.sceneUpdated()
+                        },
+                        numericInput: $numericInput
+                    )
+                }
+                if widgetHasAlignment(widget: widget) {
+                    HStack {
+                        Text("Alignment")
+                        Spacer()
+                        Picker("", selection: $sceneWidget.alignment) {
+                            ForEach(SettingsAlignment.allCases, id: \.self) {
+                                Text($0.toString())
+                                    .tag($0)
+                            }
+                        }
+                        .onChange(of: sceneWidget.alignment) { _ in
+                            model.sceneUpdated()
+                        }
+                    }
+                }
+            } header: {
+                Text("Layout")
+            }
+        }
     }
+}
 
-    private func widgetHasSize(widget: SettingsWidget) -> Bool {
-        return [
-            .image,
-            .map,
-            .qrCode,
-            .videoSource,
-            .vTuber,
-            .pngTuber,
-            .snapshot,
-        ].contains(widget.type)
-    }
-
-    private func widgetHasAlignment(widget: SettingsWidget) -> Bool {
-        return [
-            .image,
-            .text,
-            .map,
-            .qrCode,
-            .videoSource,
-            .vTuber,
-            .pngTuber,
-            .snapshot,
-        ].contains(widget.type)
-    }
-
-    private func canWidgetExpand(widget: SettingsWidget) -> Bool {
-        return widgetHasPosition(widget: widget) || widgetHasSize(widget: widget)
-    }
+private struct ExportImportView: View {
+    @EnvironmentObject private var model: Model
+    @ObservedObject var sceneWidget: SettingsSceneWidget
+    @ObservedObject var widget: SettingsWidget
 
     private func exportToClipboard() {
         let settings = SceneSettings(
@@ -88,64 +158,34 @@ struct SceneWidgetSettingsView: View {
     }
 
     var body: some View {
-        Form {
-            if widgetHasPosition(widget: widget) || widgetHasSize(widget: widget) ||
-                widgetHasAlignment(widget: widget)
-            {
-                Section {
-                    if widgetHasPosition(widget: widget) {
-                        PositionEditView(
-                            number: $sceneWidget.x,
-                            value: $sceneWidget.xString,
-                            onSubmit: { _ in
-                                model.sceneUpdated()
-                            },
-                            numericInput: $numericInput,
-                            incrementImageName: "arrow.forward.circle",
-                            decrementImageName: "arrow.backward.circle",
-                            mirror: sceneWidget.alignment == .topRight || sceneWidget.alignment == .bottomRight
-                        )
-                        PositionEditView(
-                            number: $sceneWidget.y,
-                            value: $sceneWidget.yString,
-                            onSubmit: { _ in
-                                model.sceneUpdated()
-                            },
-                            numericInput: $numericInput,
-                            incrementImageName: "arrow.down.circle",
-                            decrementImageName: "arrow.up.circle",
-                            mirror: sceneWidget.alignment == .bottomLeft || sceneWidget.alignment == .bottomRight
-                        )
+        if canWidgetExpand(widget: widget) {
+            Section {
+                HCenter {
+                    Button("Export to clipboard") {
+                        exportToClipboard()
                     }
-                    if widgetHasSize(widget: widget) {
-                        SizeEditView(
-                            number: $sceneWidget.size,
-                            value: $sceneWidget.sizeString,
-                            onSubmit: { _ in
-                                model.sceneUpdated()
-                            },
-                            numericInput: $numericInput
-                        )
-                    }
-                    if widgetHasAlignment(widget: widget) {
-                        HStack {
-                            Text("Alignment")
-                            Spacer()
-                            Picker("", selection: $sceneWidget.alignment) {
-                                ForEach(SettingsAlignment.allCases, id: \.self) {
-                                    Text($0.toString())
-                                        .tag($0)
-                                }
-                            }
-                            .onChange(of: sceneWidget.alignment) { _ in
-                                model.sceneUpdated()
-                            }
-                        }
-                    }
-                } header: {
-                    Text("Geometry")
                 }
             }
+            Section {
+                HCenter {
+                    Button("Import from clipboard") {
+                        importFromClipboard()
+                    }
+                }
+            }
+        }
+    }
+}
+
+struct SceneWidgetSettingsView: View {
+    let model: Model
+    @ObservedObject var database: Database
+    let sceneWidget: SettingsSceneWidget
+    let widget: SettingsWidget
+
+    var body: some View {
+        Form {
+            LayoutView(sceneWidget: sceneWidget, widget: widget, numericInput: $database.sceneNumericInput)
             Section {
                 NavigationLink {
                     WidgetSettingsView(database: model.database, widget: widget)
@@ -166,25 +206,9 @@ struct SceneWidgetSettingsView: View {
             }
             if canWidgetExpand(widget: widget) {
                 Section {
-                    Toggle("Numeric input", isOn: $numericInput)
-                        .onChange(of: numericInput) { value in
-                            model.database.sceneNumericInput = value
-                        }
+                    Toggle("Numeric input", isOn: $database.sceneNumericInput)
                 }
-                Section {
-                    HCenter {
-                        Button("Export to clipboard") {
-                            exportToClipboard()
-                        }
-                    }
-                }
-                Section {
-                    HCenter {
-                        Button("Import from clipboard") {
-                            importFromClipboard()
-                        }
-                    }
-                }
+                ExportImportView(sceneWidget: sceneWidget, widget: widget)
             }
         }
         .navigationTitle(widget.name)

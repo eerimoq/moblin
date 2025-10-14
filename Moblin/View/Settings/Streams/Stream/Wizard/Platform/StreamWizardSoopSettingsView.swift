@@ -1,19 +1,19 @@
 import SwiftUI
 
-struct StreamWizardAfreecaTvSettingsView: View {
+struct StreamWizardSoopSettingsView: View {
     @EnvironmentObject private var model: Model
     @ObservedObject var createStreamWizard: CreateStreamWizard
 
     var body: some View {
         Form {
             Section {
-                TextField("MyChannel", text: $createStreamWizard.afreecaTvChannelName)
+                TextField("MyChannel", text: $createStreamWizard.soopChannelName)
                     .disableAutocorrection(true)
             } header: {
                 Text("Channel name")
             }
             Section {
-                TextField("908123903", text: $createStreamWizard.afreecaTvStreamId)
+                TextField("908123903", text: $createStreamWizard.soopStreamId)
                     .textInputAutocapitalization(.never)
                     .disableAutocorrection(true)
             } header: {
@@ -23,7 +23,7 @@ struct StreamWizardAfreecaTvSettingsView: View {
                 NavigationLink {
                     StreamWizardNetworkSetupSettingsView(
                         createStreamWizard: createStreamWizard,
-                        platform: String(localized: "AfreecaTV")
+                        platform: String(localized: "SOOP")
                     )
                 } label: {
                     WizardNextButtonView()
@@ -31,12 +31,12 @@ struct StreamWizardAfreecaTvSettingsView: View {
             }
         }
         .onAppear {
-            createStreamWizard.platform = .afreecaTv
-            createStreamWizard.name = makeUniqueName(name: String(localized: "AfreecaTV"),
+            createStreamWizard.platform = .soop
+            createStreamWizard.name = makeUniqueName(name: String(localized: "SOOP"),
                                                      existingNames: model.database.streams)
             createStreamWizard.directIngest = ""
         }
-        .navigationTitle("AfreecaTV")
+        .navigationTitle("SOOP")
         .toolbar {
             CreateStreamWizardToolbar(createStreamWizard: createStreamWizard)
         }

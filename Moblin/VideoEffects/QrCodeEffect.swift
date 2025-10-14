@@ -32,10 +32,7 @@ final class QrCodeEffect: VideoEffect {
         guard let qrCodeImage else {
             return image
         }
-        let resizedImage = qrCodeImage.resizeMirror(newSceneWidget, image.extent.size, false)
-        return applyEffects(resizedImage, info)
-            .move(newSceneWidget, image.extent.size)
-            .cropped(to: image.extent)
+        return applyEffectsResizeMirrorMove(qrCodeImage, newSceneWidget, false, image.extent, info)
             .composited(over: image)
     }
 
@@ -43,9 +40,11 @@ final class QrCodeEffect: VideoEffect {
         guard newSceneWidget.extent() != sceneWidget?.extent() || size != self.size else {
             return
         }
-        let data = widget.message.data(using: String.Encoding.ascii)
+        guard let data = widget.message.data(using: .utf8) else {
+            return
+        }
         let filter = CIFilter.qrCodeGenerator()
-        filter.message = data!
+        filter.message = data
         filter.correctionLevel = "M"
         sceneWidget = newSceneWidget
         self.size = size

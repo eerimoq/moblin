@@ -778,7 +778,7 @@ struct RightOverlayBottomView: View {
             Spacer()
             if !(model.showDrawOnStream || model.showFace) {
                 if streamOverlay.showingReplay {
-                    StreamOverlayRightReplayView(replay: model.replay)
+                    StreamOverlayRightReplayView(replay: model.replay, orientation: model.orientation)
                 } else {
                     if streamOverlay.showMediaPlayerControls {
                         StreamOverlayRightMediaPlayerControlsView(mediaPlayer: model.mediaPlayerPlayer)

@@ -102,7 +102,7 @@ private struct LineView: View {
                     .opacity(imageOpacity())
                 }
             }
-            Text(post.displayName(nicknames: chat.nicknames))
+            Text(post.displayName(nicknames: chat.nicknames, displayStyle: chat.displayStyle))
                 .foregroundColor(postState.deleted ? .gray : usernameColor)
                 .strikethrough(postState.deleted)
                 .lineLimit(1)

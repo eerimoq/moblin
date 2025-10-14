@@ -28,15 +28,15 @@ private struct PlatformView: View {
             } header: {
                 Text("YouTube")
             }
-        case .afreecaTv:
+        case .soop:
             Section {
                 TextValueView(
                     name: String(localized: "Channel name"),
-                    value: createStreamWizard.afreecaTvChannelName
+                    value: createStreamWizard.soopChannelName
                 )
-                TextValueView(name: String(localized: "Video id"), value: createStreamWizard.afreecaTvStreamId)
+                TextValueView(name: String(localized: "Video id"), value: createStreamWizard.soopStreamId)
             } header: {
-                Text("AfreecaTV")
+                Text("SOOP")
             }
         case .custom:
             EmptyView()
@@ -73,7 +73,7 @@ private struct NetworkSetupDirectView: View {
                 name: String(localized: "Stream key"),
                 value: createStreamWizard.directStreamKey
             )
-        case .afreecaTv:
+        case .soop:
             TextValueView(name: String(localized: "Stream URL"), value: createStreamWizard.directIngest)
             TextValueView(
                 name: String(localized: "Stream key"),

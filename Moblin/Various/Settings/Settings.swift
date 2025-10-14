@@ -1513,13 +1513,6 @@ private func addMissingQuickButtons(database: Database) {
     button.systemImageNameOff = "autostartstop"
     updateQuickButton(database: database, button: button)
 
-    button = SettingsQuickButton(name: String(localized: "Draw"))
-    button.id = UUID()
-    button.type = .draw
-    button.systemImageNameOn = "pencil.line"
-    button.systemImageNameOff = "pencil.line"
-    updateQuickButton(database: database, button: button)
-
     button = SettingsQuickButton(name: String(localized: "Camera"))
     button.id = UUID()
     button.type = .image
@@ -1548,11 +1541,52 @@ private func addMissingQuickButtons(database: Database) {
     button.systemImageNameOff = "level"
     updateQuickButton(database: database, button: button)
 
+    button = SettingsQuickButton(name: String(localized: "Draw"))
+    button.id = UUID()
+    button.type = .draw
+    button.page = quickButtonPageTwo()
+    button.systemImageNameOn = "pencil.line"
+    button.systemImageNameOff = "pencil.line"
+    updateQuickButton(database: database, button: button)
+
     button = SettingsQuickButton(name: String(localized: "Face"))
     button.id = UUID()
     button.type = .face
+    button.page = quickButtonPageTwo()
     button.systemImageNameOn = "theatermask.and.paintbrush.fill"
     button.systemImageNameOff = "theatermask.and.paintbrush"
+    updateQuickButton(database: database, button: button)
+
+    button = SettingsQuickButton(name: String(localized: "LUTs"))
+    button.id = UUID()
+    button.type = .luts
+    button.page = quickButtonPageTwo()
+    button.systemImageNameOn = "camera.filters"
+    button.systemImageNameOff = "camera.filters"
+    updateQuickButton(database: database, button: button)
+
+    button = SettingsQuickButton(name: String(localized: "Pixellate"))
+    button.id = UUID()
+    button.type = .pixellate
+    button.page = quickButtonPageTwo()
+    button.systemImageNameOn = "squareshape.split.2x2"
+    button.systemImageNameOff = "squareshape.split.2x2"
+    updateQuickButton(database: database, button: button)
+
+    button = SettingsQuickButton(name: String(localized: "Whirlpool"))
+    button.id = UUID()
+    button.type = .whirlpool
+    button.page = quickButtonPageTwo()
+    button.systemImageNameOn = "tornado"
+    button.systemImageNameOff = "tornado"
+    updateQuickButton(database: database, button: button)
+
+    button = SettingsQuickButton(name: String(localized: "Pinch"))
+    button.id = UUID()
+    button.type = .pinch
+    button.page = quickButtonPageTwo()
+    button.systemImageNameOn = "hand.pinch.fill"
+    button.systemImageNameOff = "hand.pinch"
     updateQuickButton(database: database, button: button)
 
     button = SettingsQuickButton(name: String(localized: "Movie"))
@@ -1603,29 +1637,6 @@ private func addMissingQuickButtons(database: Database) {
     button.systemImageNameOff = "person.2"
     updateQuickButton(database: database, button: button)
 
-    button = SettingsQuickButton(name: String(localized: "Pixellate"))
-    button.id = UUID()
-    button.type = .pixellate
-    button.systemImageNameOn = "squareshape.split.2x2"
-    button.systemImageNameOff = "squareshape.split.2x2"
-    updateQuickButton(database: database, button: button)
-
-    button = SettingsQuickButton(name: String(localized: "Whirlpool"))
-    button.id = UUID()
-    button.type = .whirlpool
-    button.page = quickButtonPageTwo()
-    button.systemImageNameOn = "tornado"
-    button.systemImageNameOff = "tornado"
-    updateQuickButton(database: database, button: button)
-
-    button = SettingsQuickButton(name: String(localized: "Pinch"))
-    button.id = UUID()
-    button.type = .pinch
-    button.page = quickButtonPageTwo()
-    button.systemImageNameOn = "hand.pinch.fill"
-    button.systemImageNameOff = "hand.pinch"
-    updateQuickButton(database: database, button: button)
-
     button = SettingsQuickButton(name: String(localized: "Local overlays"))
     button.id = UUID()
     button.type = .localOverlays
@@ -1638,13 +1649,6 @@ private func addMissingQuickButtons(database: Database) {
     button.type = .poll
     button.systemImageNameOn = "chart.bar.xaxis"
     button.systemImageNameOff = "chart.bar.xaxis"
-    updateQuickButton(database: database, button: button)
-
-    button = SettingsQuickButton(name: String(localized: "LUTs"))
-    button.id = UUID()
-    button.type = .luts
-    button.systemImageNameOn = "camera.filters"
-    button.systemImageNameOff = "camera.filters"
     updateQuickButton(database: database, button: button)
 
     button = SettingsQuickButton(name: String(localized: "Workout"))
@@ -1974,6 +1978,26 @@ final class Settings {
                     sceneWidget.y = 100 - sceneWidget.y
                     sceneWidget.yString = String(sceneWidget.y)
                 }
+            }
+        }
+        for scene in realDatabase.scenes {
+            for sceneWidget in scene.widgets where !sceneWidget.migrated2 {
+                sceneWidget.migrated2 = true
+                store()
+                guard let widget = realDatabase.widgets.first(where: { $0.id == sceneWidget.widgetId }) else {
+                    continue
+                }
+                guard widget.type == .browser else {
+                    continue
+                }
+                guard let stream = database.streams.first(where: { $0.enabled }) else {
+                    continue
+                }
+                let resolution = stream.resolution.dimensions(portrait: stream.portrait)
+                let width = (100 * Double(widget.browser.width) / Double(resolution.width)).clamped(to: 1 ... 100)
+                let height = (100 * Double(widget.browser.height) / Double(resolution.height)).clamped(to: 1 ... 100)
+                sceneWidget.size = max(width, height)
+                sceneWidget.sizeString = String(sceneWidget.size)
             }
         }
     }

@@ -1,5 +1,6 @@
 import PhotosUI
 import SwiftUI
+import Translation
 
 private struct Suggestion: Identifiable {
     let id: Int
@@ -119,6 +120,363 @@ private struct FormatView: View {
                     .font(.title3)
             }
             Text(description)
+        }
+    }
+}
+
+@available(iOS 26, *)
+private struct Language: Identifiable {
+    var id: String {
+        identifier
+    }
+
+    var identifier: String
+    var name: String
+    var status: LanguageAvailability.Status
+}
+
+private struct SubtitlesWithLanguageToolbar: ToolbarContent {
+    @Binding var presentingLanguagePicker: Bool
+
+    var body: some ToolbarContent {
+        ToolbarItem(placement: .navigationBarTrailing) {
+            Button {
+                presentingLanguagePicker = false
+            } label: {
+                Image(systemName: "xmark")
+            }
+        }
+    }
+}
+
+@available(iOS 26, *)
+private struct SubtitlesWithLanguageView: View {
+    @EnvironmentObject var model: Model
+    @Binding var text: String
+    @State private var languages: [Language] = []
+    @State private var presentingLanguagePicker: Bool = false
+
+    var body: some View {
+        VStack(alignment: .leading) {
+            Button {
+                presentingLanguagePicker = true
+            } label: {
+                Text("{subtitles:<language-identifier>}")
+                    .font(.title3)
+            }
+            Text("Show subtitles in given language")
+        }
+        .sheet(isPresented: $presentingLanguagePicker) {
+            NavigationStack {
+                Form {
+                    Section {
+                        Text("Download languages in iOS Settings → Apps → Translate → Languages.")
+                    }
+                    Section {
+                        ForEach(languages) { language in
+                            switch language.status {
+                            case .installed:
+                                Button {
+                                    let value = "{subtitles:\(language.identifier)}"
+                                    text += value
+                                    model.makeToast(title: "Appended \(value) to widget text")
+                                    presentingLanguagePicker = false
+                                } label: {
+                                    Text(language.name)
+                                }
+                            case .supported:
+                                HStack {
+                                    Text(language.name)
+                                    Spacer()
+                                    Text("Not downloaded")
+                                }
+                            default:
+                                EmptyView()
+                            }
+                        }
+                    }
+                }
+                .navigationTitle("Subtitles language")
+                .toolbar {
+                    SubtitlesWithLanguageToolbar(presentingLanguagePicker: $presentingLanguagePicker)
+                }
+                .task {
+                    let availability = LanguageAvailability()
+                    let supportedLanguages = await availability.supportedLanguages
+                    languages = []
+                    for language in supportedLanguages {
+                        let status = await availability.status(from: Locale.current.language, to: language)
+                        languages.append(Language(identifier: language.minimalIdentifier,
+                                                  name: language.name(),
+                                                  status: status))
+                    }
+                    languages = languages.sorted(by: { $0.id < $1.id })
+                }
+            }
+        }
+    }
+}
+
+private struct GeneralFormatSpecifierView: View {
+    @Binding var value: String
+
+    var body: some View {
+        NavigationLink {
+            Form {
+                FormatView(title: "{checkbox}", description: String(localized: "Show a checkbox"), text: $value)
+                FormatView(title: "{rating}", description: String(localized: "Show a 0-5 rating"), text: $value)
+                FormatView(title: "{muted}", description: String(localized: "Show muted"), text: $value)
+                FormatView(
+                    title: "{browserTitle}",
+                    description: String(localized: "Show browser title"),
+                    text: $value
+                )
+                FormatView(title: "{gForce}", description: String(localized: "Show G-force"), text: $value)
+                FormatView(
+                    title: "{gForceRecentMax}",
+                    description: String(localized: "Show recent max G-force"),
+                    text: $value
+                )
+                FormatView(
+                    title: "{gForceMax}",
+                    description: String(localized: "Show max G-force"),
+                    text: $value
+                )
+            }
+            .navigationTitle("General")
+        } label: {
+            Text("General")
+        }
+    }
+}
+
+private struct TimeFormatSpecifierView: View {
+    @Binding var value: String
+
+    var body: some View {
+        NavigationLink {
+            Form {
+                FormatView(
+                    title: "{time}",
+                    description: String(localized: "Show time as HH:MM:SS"),
+                    text: $value
+                )
+                FormatView(
+                    title: "{shortTime}",
+                    description: String(localized: "Show time as HH:MM"),
+                    text: $value
+                )
+                FormatView(title: "{date}", description: String(localized: "Show date"), text: $value)
+                FormatView(title: "{fullDate}", description: String(localized: "Show full date"), text: $value)
+                FormatView(title: "{timer}", description: String(localized: "Show a timer"), text: $value)
+                FormatView(
+                    title: "{stopwatch}",
+                    description: String(localized: "Show a stopwatch"),
+                    text: $value
+                )
+                FormatView(title: "{lapTimes}", description: String(localized: "Show lap times"), text: $value)
+            }
+            .navigationTitle("Time")
+        } label: {
+            Text("Time")
+        }
+    }
+}
+
+private struct LocationFormatSpecifierView: View {
+    @Binding var value: String
+
+    var body: some View {
+        NavigationLink {
+            Form {
+                FormatView(title: "{country}", description: String(localized: "Show country"), text: $value)
+                FormatView(
+                    title: "{countryFlag}",
+                    description: String(localized: "Show country flag"),
+                    text: $value
+                )
+                FormatView(title: "{state}", description: String(localized: "Show state"), text: $value)
+                FormatView(title: "{city}", description: String(localized: "Show city"), text: $value)
+                FormatView(title: "{speed}", description: String(localized: "Show speed"), text: $value)
+                FormatView(
+                    title: "{averageSpeed}",
+                    description: String(localized: "Show average speed"),
+                    text: $value
+                )
+                FormatView(title: "{altitude}", description: String(localized: "Show altitude"), text: $value)
+                FormatView(title: "{distance}", description: String(localized: "Show distance"), text: $value)
+                FormatView(title: "{slope}", description: String(localized: "Show slope"), text: $value)
+            }
+            .navigationTitle("Location")
+        } label: {
+            Text("Location")
+        }
+    }
+}
+
+private struct WeatherFormatSpecifierView: View {
+    @Binding var value: String
+
+    var body: some View {
+        NavigationLink {
+            Form {
+                Section {
+                    FormatView(
+                        title: "{conditions}",
+                        description: String(localized: "Show conditions"),
+                        text: $value
+                    )
+                    FormatView(
+                        title: "{temperature}",
+                        description: String(localized: "Show temperature"),
+                        text: $value
+                    )
+                } footer: {
+                    let image = Image(systemName: "apple.logo")
+                    Text("""
+                    Weather data is provided by \(image) Weather. \
+                    [Legal information](https://weatherkit.apple.com/legal-attribution.html).
+                    """)
+                }
+            }
+            .navigationTitle("Weather")
+        } label: {
+            Text("Weather")
+        }
+    }
+}
+
+private struct LanguageFormatSpecifierView: View {
+    @Binding var value: String
+
+    var body: some View {
+        NavigationLink {
+            Form {
+                FormatView(
+                    title: "{subtitles}",
+                    description: String(localized: "Show subtitles in app language"),
+                    text: $value
+                )
+                if #available(iOS 26, *) {
+                    SubtitlesWithLanguageView(text: $value)
+                }
+            }
+            .navigationTitle("Language")
+        } label: {
+            Text("Language")
+        }
+    }
+}
+
+private struct WorkoutFormatSpecifierView: View {
+    let model: Model
+    @Binding var value: String
+
+    var body: some View {
+        NavigationLink {
+            Form {
+                if isPhone() {
+                    FormatView(
+                        title: "{heartRate}",
+                        description: String(localized: "Show Apple Watch heart rate"),
+                        text: $value
+                    )
+                }
+                ForEach(model.database.heartRateDevices.devices) { device in
+                    FormatView(
+                        title: "{heartRate:\(device.name)}",
+                        description: String(
+                            localized: "Show heart rate for heart rate device called \"\(device.name)\""
+                        ),
+                        text: $value
+                    )
+                }
+            }
+            .navigationTitle("Workout")
+        } label: {
+            Text("Workout")
+        }
+    }
+}
+
+private struct TeslaFormatSpecifierView: View {
+    @Binding var value: String
+
+    var body: some View {
+        NavigationLink {
+            Form {
+                FormatView(
+                    title: "{teslaBatteryLevel}",
+                    description: String(localized: "Show Tesla battery level"),
+                    text: $value
+                )
+                FormatView(
+                    title: "{teslaDrive}",
+                    description: String(localized: "Show Tesla drive information"),
+                    text: $value
+                )
+                FormatView(
+                    title: "{teslaMedia}",
+                    description: String(localized: "Show Tesla media information"),
+                    text: $value
+                )
+            }
+            .navigationTitle("Tesla")
+        } label: {
+            Text("Tesla")
+        }
+    }
+}
+
+private struct CyclingFormatSpecifierView: View {
+    @Binding var value: String
+
+    var body: some View {
+        NavigationLink {
+            Form {
+                FormatView(
+                    title: "{cyclingPower}",
+                    description: String(localized: "Show cycling power"),
+                    text: $value
+                )
+                FormatView(
+                    title: "{cyclingCadence}",
+                    description: String(localized: "Show cycling cadence"),
+                    text: $value
+                )
+            }
+            .navigationTitle("Cycling")
+        } label: {
+            Text("Cycling")
+        }
+    }
+}
+
+private struct DebugFormatSpecifierView: View {
+    @Binding var value: String
+
+    var body: some View {
+        NavigationLink {
+            Form {
+                FormatView(
+                    title: "{bitrate}",
+                    description: String(localized: "Show bitrate"),
+                    text: $value
+                )
+                FormatView(
+                    title: "{bitrateAndTotal}",
+                    description: String(localized: "Show bitrate and total number of bytes sent"),
+                    text: $value
+                )
+                FormatView(
+                    title: "{debugOverlay}",
+                    description: String(localized: "Show debug overlay (if enabled)"),
+                    text: $value
+                )
+            }
+            .navigationTitle("Debug")
+        } label: {
+            Text("Debug")
         }
     }
 }
@@ -298,128 +656,17 @@ private struct TextSelectionView: View {
                 }
             }
             Section {
-                Text("Tap on items below to append them to the widget text.")
-            }
-            Section {
-                FormatView(title: "{time}", description: String(localized: "Show time as HH:MM:SS"), text: $value)
-                FormatView(title: "{shortTime}", description: String(localized: "Show time as HH:MM"), text: $value)
-                FormatView(title: "{date}", description: String(localized: "Show date"), text: $value)
-                FormatView(title: "{fullDate}", description: String(localized: "Show full date"), text: $value)
-                FormatView(title: "{timer}", description: String(localized: "Show a timer"), text: $value)
-                FormatView(title: "{stopwatch}", description: String(localized: "Show a stopwatch"), text: $value)
-                FormatView(title: "{checkbox}", description: String(localized: "Show a checkbox"), text: $value)
-                FormatView(title: "{rating}", description: String(localized: "Show a 0-5 rating"), text: $value)
-                FormatView(
-                    title: "{subtitles}",
-                    description: String(localized: "Show subtitles in app language"),
-                    text: $value
-                )
-                FormatView(title: "{subtitles:<language-identifier>}",
-                           description: String(localized: """
-                           Show subtitles in given language. Download languages in \
-                           iOS Settings → Apps → Translate → Languages. <language-identifier> is \
-                           en for English, de for German, zh-Hans for Chinese, ...
-                           """),
-                           text: $value)
-                FormatView(title: "{lapTimes}", description: String(localized: "Show lap times"), text: $value)
-                FormatView(title: "{muted}", description: String(localized: "Show muted"), text: $value)
-                FormatView(title: "{browserTitle}", description: String(localized: "Show browser title"), text: $value)
+                GeneralFormatSpecifierView(value: $value)
+                TimeFormatSpecifierView(value: $value)
+                LocationFormatSpecifierView(value: $value)
+                WeatherFormatSpecifierView(value: $value)
+                LanguageFormatSpecifierView(value: $value)
+                WorkoutFormatSpecifierView(model: model, value: $value)
+                TeslaFormatSpecifierView(value: $value)
+                CyclingFormatSpecifierView(value: $value)
+                DebugFormatSpecifierView(value: $value)
             } header: {
-                Text("General")
-            }
-            Section {
-                FormatView(title: "{country}", description: String(localized: "Show country"), text: $value)
-                FormatView(title: "{countryFlag}", description: String(localized: "Show country flag"), text: $value)
-                FormatView(title: "{state}", description: String(localized: "Show state"), text: $value)
-                FormatView(title: "{city}", description: String(localized: "Show city"), text: $value)
-                FormatView(title: "{speed}", description: String(localized: "Show speed"), text: $value)
-                FormatView(title: "{averageSpeed}", description: String(localized: "Show average speed"), text: $value)
-                FormatView(title: "{altitude}", description: String(localized: "Show altitude"), text: $value)
-                FormatView(title: "{distance}", description: String(localized: "Show distance"), text: $value)
-                FormatView(title: "{slope}", description: String(localized: "Show slope"), text: $value)
-                FormatView(title: "{gForce}", description: String(localized: "Show G-force"), text: $value)
-                FormatView(
-                    title: "{gForceRecentMax}",
-                    description: String(localized: "Show recent max G-force"),
-                    text: $value
-                )
-                FormatView(title: "{gForceMax}", description: String(localized: "Show max G-force"), text: $value)
-            } header: {
-                Text("Location (if Settings -> Location is enabled)")
-            }
-            Section {
-                FormatView(title: "{conditions}", description: String(localized: "Show conditions"), text: $value)
-                FormatView(title: "{temperature}", description: String(localized: "Show temperature"), text: $value)
-            } header: {
-                Text("Weather (if Settings -> Location is enabled)")
-            }
-            Section {
-                if isPhone() {
-                    FormatView(
-                        title: "{heartRate}",
-                        description: String(localized: "Show Apple Watch heart rate"),
-                        text: $value
-                    )
-                }
-                ForEach(model.database.heartRateDevices.devices) { device in
-                    FormatView(
-                        title: "{heartRate:\(device.name)}",
-                        description: String(
-                            localized: "Show heart rate for heart rate device called \"\(device.name)\""
-                        ),
-                        text: $value
-                    )
-                }
-            } header: {
-                Text("Workout")
-            }
-            Section {
-                FormatView(
-                    title: "{teslaBatteryLevel}",
-                    description: String(localized: "Show Tesla battery level"),
-                    text: $value
-                )
-                FormatView(
-                    title: "{teslaDrive}",
-                    description: String(localized: "Show Tesla drive information"),
-                    text: $value
-                )
-                FormatView(
-                    title: "{teslaMedia}",
-                    description: String(localized: "Show Tesla media information"),
-                    text: $value
-                )
-            } header: {
-                Text("Tesla (requires a Tesla)")
-            }
-            Section {
-                FormatView(title: "{cyclingPower}", description: String(localized: "Show cycling power"), text: $value)
-                FormatView(
-                    title: "{cyclingCadence}",
-                    description: String(localized: "Show cycling cadence"),
-                    text: $value
-                )
-            } header: {
-                Text("Cycling (requires a compatible bike)")
-            }
-            Section {
-                FormatView(
-                    title: "{bitrate}",
-                    description: String(localized: "Show bitrate"),
-                    text: $value
-                )
-                FormatView(
-                    title: "{bitrateAndTotal}",
-                    description: String(localized: "Show bitrate and total number of bytes sent"),
-                    text: $value
-                )
-                FormatView(
-                    title: "{debugOverlay}",
-                    description: String(localized: "Show debug overlay (if enabled)"),
-                    text: $value
-                )
-            } header: {
-                Text("Debug")
+                Text("Format specifiers")
             }
         }
         .onChange(of: value) { _ in

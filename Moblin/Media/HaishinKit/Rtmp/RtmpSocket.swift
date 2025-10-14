@@ -59,7 +59,7 @@ final class RtmpSocket {
         totalBytesSent = 0
         inputBuffer.removeAll(keepingCapacity: false)
         connection = NWConnection(
-            to: .hostPort(host: .init(host), port: .init(integerLiteral: NWEndpoint.Port.IntegerLiteralType(port))),
+            to: .hostPort(host: .init(host), port: .init(integer: port)),
             using: .init(tls: tlsOptions)
         )
         if let connection {

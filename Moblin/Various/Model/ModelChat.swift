@@ -125,6 +125,7 @@ extension Model {
         return ChatPost(
             id: chatPostId,
             messageId: nil,
+            displayName: nil,
             user: nil,
             userColor: .init(red: 0, green: 0, blue: 0),
             userBadges: [],
@@ -277,8 +278,9 @@ extension Model {
     func reloadChats() {
         reloadTwitchChat()
         reloadKickPusher()
+        reloadDLiveChat()
         reloadYouTubeLiveChat()
-        reloadAfreecaTvChat()
+        reloadSoopChat()
         reloadOpenStreamingPlatformChat()
     }
 
@@ -297,10 +299,13 @@ extension Model {
         if isKickPusherConfigured() {
             numberOfChats += 1
         }
+        if isDLiveChatConfigured() {
+            numberOfChats += 1
+        }
         if isYouTubeLiveChatConfigured() {
             numberOfChats += 1
         }
-        if isAfreecaTvChatConfigured() {
+        if isSoopChatConfigured() {
             numberOfChats += 1
         }
         if isOpenStreamingPlatformChatConfigured() {
@@ -311,8 +316,8 @@ extension Model {
 
     func isChatConfigured() -> Bool {
         return isTwitchChatConfigured() || isKickPusherConfigured() ||
-            isYouTubeLiveChatConfigured() || isAfreecaTvChatConfigured() ||
-            isOpenStreamingPlatformChatConfigured()
+            isYouTubeLiveChatConfigured() || isSoopChatConfigured() ||
+            isDLiveChatConfigured() || isOpenStreamingPlatformChatConfigured()
     }
 
     func isChatRemoteControl() -> Bool {
@@ -329,10 +334,13 @@ extension Model {
         if isYouTubeLiveChatConfigured() && !isYouTubeLiveChatConnected() {
             return false
         }
-        if isAfreecaTvChatConfigured() && !isAfreecaTvChatConnected() {
+        if isSoopChatConfigured() && !isSoopChatConnected() {
             return false
         }
         if isOpenStreamingPlatformChatConfigured() && !isOpenStreamingPlatformChatConnected() {
+            return false
+        }
+        if isDLiveChatConfigured() && !isDLiveChatConnected() {
             return false
         }
         return true
@@ -342,8 +350,9 @@ extension Model {
         return hasTwitchChatEmotes()
             || hasKickPusherEmotes()
             || hasYouTubeLiveChatEmotes()
-            || hasAfreecaTvChatEmotes()
+            || hasSoopChatEmotes()
             || hasOpenStreamingPlatformChatEmotes()
+            || hasDLiveChatEmotes()
     }
 
     func resetChat() {
@@ -378,6 +387,7 @@ extension Model {
     func appendChatMessage(
         platform: Platform,
         messageId: String?,
+        displayName: String?,
         user: String?,
         userId: String?,
         userColor: RgbColor?,
@@ -415,6 +425,7 @@ extension Model {
         let post = ChatPost(
             id: chatPostId,
             messageId: messageId,
+            displayName: displayName,
             user: user,
             userId: userId,
             userColor: userColor?.makeReadableOnDarkBackground() ?? database.chat.usernameColor,
@@ -521,7 +532,8 @@ extension Model {
                     verticalSpacing: 0,
                     fitContentWidth: true
                 ) {
-                    Text(post.displayName(nicknames: self.database.chat.nicknames))
+                    let chat = self.database.chat
+                    Text(post.displayName(nicknames: chat.nicknames, displayStyle: chat.displayStyle))
                         .lineLimit(1)
                         .padding([.trailing], 0)
                     if post.isRedemption() {

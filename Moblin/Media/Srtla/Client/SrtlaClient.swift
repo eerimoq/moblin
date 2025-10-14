@@ -1,5 +1,5 @@
 // SRTLA is a bonding protocol on top of SRT.
-// Designed by rationalsa for the BELABOX projecct.
+// Designed by rationalsa for the BELABOX project.
 // https://github.com/BELABOX/srtla
 
 import Foundation
@@ -15,6 +15,7 @@ protocol SrtlaDelegate: AnyObject {
 private enum State {
     case idle
     case waitForRemoteSocketConnected
+    case waitForProbe
     case waitForGroupId
     case waitForRegistered
     case waitForLocalSocketListening
@@ -114,7 +115,7 @@ class SrtlaClient: NSObject {
             for connection in self.remoteConnections {
                 self.startRemote(connection: connection,
                                  host: NWEndpoint.Host(host),
-                                 port: NWEndpoint.Port(integerLiteral: UInt16(port)))
+                                 port: NWEndpoint.Port(integer: port))
             }
             logger.debug("srtla: Setting connect timer to \(timeout) seconds")
             self.connectTimer.startSingleShot(timeout: timeout) {
@@ -122,7 +123,7 @@ class SrtlaClient: NSObject {
                 self.onDisconnected(message: "connect timer expired")
             }
             self.state = .waitForRemoteSocketConnected
-            self.delegate?.moblinkStreamerDestinationAddress(address: host, port: UInt16(port))
+            self.delegate?.moblinkStreamerDestinationAddress(address: host, port: UInt16(clamping: port))
         }
     }
 
@@ -304,7 +305,7 @@ class SrtlaClient: NSObject {
         var newRemoteConnections: [RemoteConnection] = []
         for connection in remoteConnections {
             if let interface = connection.interface {
-                if path.availableInterfaces.contains(interface) {
+                if path.uniqueAvailableInterfaces().contains(interface) {
                     newRemoteConnections.append(connection)
                 } else {
                     stopRemote(connection: connection)
@@ -314,7 +315,7 @@ class SrtlaClient: NSObject {
             }
         }
         let interfaceTypes: [NWInterface.InterfaceType] = [.cellular, .wifi, .wiredEthernet]
-        for interface in path.availableInterfaces where interfaceTypes.contains(interface.type) {
+        for interface in path.uniqueAvailableInterfaces() where interfaceTypes.contains(interface.type) {
             guard !newRemoteConnections.contains(where: { connection in
                 connection.interface == interface
             }) else {
@@ -330,7 +331,7 @@ class SrtlaClient: NSObject {
             ))
             startRemote(connection: newRemoteConnections.last!,
                         host: NWEndpoint.Host(host),
-                        port: NWEndpoint.Port(integerLiteral: UInt16(port)))
+                        port: NWEndpoint.Port(integer: port))
             if let groupId {
                 newRemoteConnections.last!.register(groupId: groupId)
             }
@@ -434,15 +435,23 @@ class SrtlaClient: NSObject {
 
 extension SrtlaClient: RemoteConnectionDelegate {
     func remoteConnectionOnSocketConnected(connection: RemoteConnection) {
-        guard state == .waitForRemoteSocketConnected else {
+        guard state == .waitForRemoteSocketConnected || state == .waitForProbe else {
             return
         }
         if passThrough {
             startListener()
         } else {
-            connection.sendSrtlaReg1()
-            state = .waitForGroupId
+            connection.probe()
+            state = .waitForProbe
         }
+    }
+
+    func remoteConnectionOnRegNgp(connection: RemoteConnection) {
+        guard state == .waitForProbe else {
+            return
+        }
+        connection.sendSrtlaReg1()
+        state = .waitForGroupId
     }
 
     func remoteConnectionOnReg2(groupId: Data) {

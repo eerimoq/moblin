@@ -257,7 +257,6 @@ final class TwitchEventSub: NSObject {
     private var webSocket: WebSocketClient
     private var remoteControl: Bool
     private let userId: String
-    private let httpProxy: HttpProxy?
     private var sessionId: String = ""
     private var twitchApi: TwitchApi
     private let delegate: any TwitchEventSubDelegate
@@ -269,16 +268,13 @@ final class TwitchEventSub: NSObject {
         remoteControl: Bool,
         userId: String,
         accessToken: String,
-        httpProxy: HttpProxy?,
-        urlSession: URLSession,
         delegate: TwitchEventSubDelegate
     ) {
         self.remoteControl = remoteControl
         self.userId = userId
-        self.httpProxy = httpProxy
         self.delegate = delegate
-        twitchApi = TwitchApi(accessToken, urlSession)
-        webSocket = .init(url: url, httpProxy: httpProxy)
+        twitchApi = TwitchApi(accessToken)
+        webSocket = .init(url: url)
         super.init()
         twitchApi.delegate = self
     }
@@ -331,7 +327,7 @@ final class TwitchEventSub: NSObject {
 
     private func connect() {
         connected = false
-        webSocket = .init(url: url, httpProxy: httpProxy)
+        webSocket = .init(url: url)
         webSocket.delegate = self
         if !remoteControl {
             webSocket.start()
@@ -347,19 +343,6 @@ final class TwitchEventSub: NSObject {
         subscribeToChannelFollow()
     }
 
-    private func makeSubscribeErrorToastIfNotOk(ok: Bool, eventType: String) {
-        guard !ok else {
-            return
-        }
-        guard started else {
-            return
-        }
-        delegate
-            .twitchEventSubMakeErrorToast(
-                title: String(localized: "Failed to subscribe to Twitch \(eventType) event")
-            )
-    }
-
     private func subscribeToChannelFollow() {
         let body = createBody(
             type: subTypeChannelFollow,
@@ -367,7 +350,6 @@ final class TwitchEventSub: NSObject {
             condition: "{\"broadcaster_user_id\":\"\(userId)\",\"moderator_user_id\":\"\(userId)\"}"
         )
         twitchApi.createEventSubSubscription(body: body) { ok in
-            self.makeSubscribeErrorToastIfNotOk(ok: ok, eventType: "follow")
             guard ok else {
                 return
             }
@@ -376,31 +358,25 @@ final class TwitchEventSub: NSObject {
     }
 
     private func subscribeToChannelSubscribe() {
-        subscribeBroadcasterUserId(type: subTypeChannelSubscribe, eventType: "subscription") {
+        subscribeBroadcasterUserId(type: subTypeChannelSubscribe) {
             self.subscribeToChannelSubscriptionGift()
         }
     }
 
     private func subscribeToChannelSubscriptionGift() {
-        subscribeBroadcasterUserId(type: subTypeChannelSubscriptionGift, eventType: "subscription gift") {
+        subscribeBroadcasterUserId(type: subTypeChannelSubscriptionGift) {
             self.subscribeToChannelSubscriptionMessage()
         }
     }
 
     private func subscribeToChannelSubscriptionMessage() {
-        subscribeBroadcasterUserId(
-            type: subTypeChannelSubscriptionMessage,
-            eventType: "subscription message"
-        ) {
+        subscribeBroadcasterUserId(type: subTypeChannelSubscriptionMessage) {
             self.subscribeToChannelPointsCustomRewardRedemptionAdd()
         }
     }
 
     private func subscribeToChannelPointsCustomRewardRedemptionAdd() {
-        subscribeBroadcasterUserId(
-            type: subTypeChannelChannelPointsCustomRewardRedemptionAdd,
-            eventType: "reward redemption"
-        ) {
+        subscribeBroadcasterUserId(type: subTypeChannelChannelPointsCustomRewardRedemptionAdd) {
             self.subscribeToChannelRaid()
         }
     }
@@ -410,7 +386,6 @@ final class TwitchEventSub: NSObject {
                               version: 1,
                               condition: "{\"to_broadcaster_user_id\":\"\(userId)\"}")
         twitchApi.createEventSubSubscription(body: body) { ok in
-            self.makeSubscribeErrorToastIfNotOk(ok: ok, eventType: "raid")
             guard ok else {
                 return
             }
@@ -419,33 +394,31 @@ final class TwitchEventSub: NSObject {
     }
 
     private func subscribeToChannelCheer() {
-        subscribeBroadcasterUserId(type: subTypeChannelCheer, eventType: "cheer") {
+        subscribeBroadcasterUserId(type: subTypeChannelCheer) {
             self.subscribeToChannelHypeTrainBegin()
         }
     }
 
     private func subscribeToChannelHypeTrainBegin() {
-        subscribeBroadcasterUserId(type: subTypeChannelHypeTrainBegin, version: 2, eventType: "hype train begin") {
+        subscribeBroadcasterUserId(type: subTypeChannelHypeTrainBegin, version: 2) {
             self.subscribeToChannelHypeTrainProgress()
         }
     }
 
     private func subscribeToChannelHypeTrainProgress() {
-        subscribeBroadcasterUserId(type: subTypeChannelHypeTrainProgress, version: 2,
-                                   eventType: "hype train progress")
-        {
+        subscribeBroadcasterUserId(type: subTypeChannelHypeTrainProgress, version: 2) {
             self.subscribeToChannelHypeTrainEnd()
         }
     }
 
     private func subscribeToChannelHypeTrainEnd() {
-        subscribeBroadcasterUserId(type: subTypeChannelHypeTrainEnd, version: 2, eventType: "hype train end") {
+        subscribeBroadcasterUserId(type: subTypeChannelHypeTrainEnd, version: 2) {
             self.subscribeTochannelAdBreakBegin()
         }
     }
 
     private func subscribeTochannelAdBreakBegin() {
-        subscribeBroadcasterUserId(type: subTypeChannelAdBreakBegin, eventType: "ad break begin") {
+        subscribeBroadcasterUserId(type: subTypeChannelAdBreakBegin) {
             self.connected = true
         }
     }
@@ -453,12 +426,10 @@ final class TwitchEventSub: NSObject {
     private func subscribeBroadcasterUserId(
         type: String,
         version: Int = 1,
-        eventType: String,
         onSuccess: @escaping () -> Void
     ) {
         let body = createBroadcasterUserIdBody(type: type, version: version)
         twitchApi.createEventSubSubscription(body: body) { ok in
-            self.makeSubscribeErrorToastIfNotOk(ok: ok, eventType: eventType)
             guard ok else {
                 return
             }

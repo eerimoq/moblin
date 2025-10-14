@@ -172,13 +172,11 @@ protocol TwitchApiDelegate: AnyObject {
 class TwitchApi {
     private let clientId: String
     private let accessToken: String
-    private let urlSession: URLSession
     weak var delegate: (any TwitchApiDelegate)?
 
-    init(_ accessToken: String, _ urlSession: URLSession) {
+    init(_ accessToken: String) {
         clientId = twitchMoblinAppClientId
         self.accessToken = accessToken
-        self.urlSession = urlSession
     }
 
     func sendChatMessage(broadcasterId: String, message: String, onComplete: @escaping (Bool) -> Void) {
@@ -424,7 +422,7 @@ class TwitchApi {
             return
         }
         let request = createGetRequest(url: url)
-        urlSession.dataTask(with: request) { data, response, error in
+        URLSession.shared.dataTask(with: request) { data, response, error in
             DispatchQueue.main.async {
                 guard error == nil, let data, response?.http?.isSuccessful == true else {
                     if response?.http?.isUnauthorized == true {
@@ -445,7 +443,7 @@ class TwitchApi {
         }
         var request = createPostRequest(url: url)
         request.httpBody = body
-        urlSession.dataTask(with: request) { data, response, error in
+        URLSession.shared.dataTask(with: request) { data, response, error in
             DispatchQueue.main.async {
                 guard error == nil, let data, response?.http?.isSuccessful == true else {
                     if response?.http?.isUnauthorized == true {
@@ -469,7 +467,7 @@ class TwitchApi {
         }
         var request = createPatchRequest(url: url)
         request.httpBody = body
-        urlSession.dataTask(with: request) { data, response, error in
+        URLSession.shared.dataTask(with: request) { data, response, error in
             DispatchQueue.main.async {
                 guard error == nil, let data, response?.http?.isSuccessful == true else {
                     if response?.http?.isUnauthorized == true {
@@ -489,7 +487,7 @@ class TwitchApi {
             return
         }
         let request = createDeleteRequest(url: url)
-        urlSession.dataTask(with: request) { data, response, error in
+        URLSession.shared.dataTask(with: request) { data, response, error in
             DispatchQueue.main.async {
                 guard error == nil, let data, response?.http?.isSuccessful == true else {
                     if response?.http?.isUnauthorized == true {

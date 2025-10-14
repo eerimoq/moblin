@@ -1,11 +1,14 @@
 import Foundation
 
 func isValidPort(value: String) -> String? {
-    guard let port = UInt16(value) else {
+    guard let port = UInt(value) else {
         return String(localized: "Not a number")
     }
     guard port > 0 else {
         return String(localized: "Too small")
+    }
+    guard port <= UInt16.max else {
+        return String(localized: "Too big")
     }
     return nil
 }
@@ -69,6 +72,11 @@ func isValidUrl(url value: String,
     }
     if url.host() == nil {
         return String(localized: "Host missing")
+    }
+    if let port = url.port {
+        guard port > 0, port <= UInt16.max else {
+            return String(localized: "Bad port")
+        }
     }
     guard URLComponents(url: url, resolvingAgainstBaseURL: false) != nil else {
         return String(localized: "Malformed URL")

@@ -74,15 +74,25 @@ class SettingsVideoEffectRemoveBackground: Codable, ObservableObject {
 }
 
 class SettingsVideoEffectShape: Codable, ObservableObject {
-    @Published var cornerRadius: Float = 0
+    @Published var cornerRadius: Float = 0.1
     @Published var borderWidth: Double = 0
     var borderColor: RgbColor = .init(red: 0, green: 0, blue: 0)
     @Published var borderColorColor: Color
+    @Published var cropEnabled: Bool = false
+    var cropX: Double = 0.25
+    var cropY: Double = 0.0
+    var cropWidth: Double = 0.5
+    var cropHeight: Double = 1.0
 
     enum CodingKeys: CodingKey {
         case cornerRadius,
              borderWidth,
-             borderColor
+             borderColor,
+             cropEnabled,
+             cropX,
+             cropY,
+             cropWidth,
+             cropHeight
     }
 
     init() {
@@ -94,14 +104,24 @@ class SettingsVideoEffectShape: Codable, ObservableObject {
         try container.encode(.cornerRadius, cornerRadius)
         try container.encode(.borderWidth, borderWidth)
         try container.encode(.borderColor, borderColor)
+        try container.encode(.cropEnabled, cropEnabled)
+        try container.encode(.cropX, cropX)
+        try container.encode(.cropY, cropY)
+        try container.encode(.cropWidth, cropWidth)
+        try container.encode(.cropHeight, cropHeight)
     }
 
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        cornerRadius = container.decode(.cornerRadius, Float.self, 0)
+        cornerRadius = container.decode(.cornerRadius, Float.self, 0.1)
         borderWidth = container.decode(.borderWidth, Double.self, 0)
         borderColor = container.decode(.borderColor, RgbColor.self, .init(red: 0, green: 0, blue: 0))
         borderColorColor = borderColor.color()
+        cropEnabled = container.decode(.cropEnabled, Bool.self, false)
+        cropX = container.decode(.cropX, Double.self, 0.25)
+        cropY = container.decode(.cropY, Double.self, 0.0)
+        cropWidth = container.decode(.cropWidth, Double.self, 0.5)
+        cropHeight = container.decode(.cropHeight, Double.self, 1.0)
     }
 
     func toSettings() -> ShapeEffectSettings {
@@ -111,7 +131,12 @@ class SettingsVideoEffectShape: Codable, ObservableObject {
                          red: Double(borderColor.red) / 255,
                          green: Double(borderColor.green) / 255,
                          blue: Double(borderColor.blue) / 255
-                     ))
+                     ),
+                     cropEnabled: cropEnabled,
+                     cropX: cropX,
+                     cropY: cropY,
+                     cropWidth: cropWidth,
+                     cropHeight: cropHeight)
     }
 }
 
@@ -606,6 +631,16 @@ class SettingsWidgetCrop: Codable {
     var y: Int = 0
     var width: Int = 200
     var height: Int = 200
+
+    func clone() -> SettingsWidgetCrop {
+        let new = SettingsWidgetCrop()
+        new.sourceWidgetId = sourceWidgetId
+        new.x = x
+        new.y = y
+        new.width = width
+        new.height = height
+        return new
+    }
 }
 
 class SettingsWidgetBrowser: Codable, ObservableObject {
@@ -693,6 +728,12 @@ class SettingsWidgetScene: Codable {
 
 class SettingsWidgetQrCode: Codable {
     var message = ""
+
+    func clone() -> SettingsWidgetQrCode {
+        let new = SettingsWidgetQrCode()
+        new.message = message
+        return new
+    }
 }
 
 enum SettingsWidgetAlertPositionType: String, Codable, CaseIterable {
@@ -827,7 +868,7 @@ enum SettingsWidgetAlertsCheerBitsAlertOperator: String, Codable, CaseIterable {
     }
 }
 
-let twitchCheerBitsAlertOperators = SettingsWidgetAlertsCheerBitsAlertOperator.allCases.map { $0.rawValue }
+let cheerBitsAlertOperators = SettingsWidgetAlertsCheerBitsAlertOperator.allCases.map { $0.rawValue }
 
 class SettingsWidgetAlertsCheerBitsAlert: Codable, Identifiable {
     var id: UUID = .init()
@@ -844,6 +885,21 @@ class SettingsWidgetAlertsCheerBitsAlert: Codable, Identifiable {
     }
 }
 
+class SettingsWidgetAlertsKickGiftsAlert: Codable, Identifiable {
+    var id: UUID = .init()
+    var amount: Int = 1
+    var comparisonOperator: SettingsWidgetAlertsCheerBitsAlertOperator = .greaterEqual
+    var alert: SettingsWidgetAlertsAlert = .init()
+
+    func clone() -> SettingsWidgetAlertsKickGiftsAlert {
+        let new = SettingsWidgetAlertsKickGiftsAlert()
+        new.amount = amount
+        new.comparisonOperator = comparisonOperator
+        new.alert = alert
+        return new
+    }
+}
+
 private func createDefaultCheerBits() -> [SettingsWidgetAlertsCheerBitsAlert] {
     var cheerBits: [SettingsWidgetAlertsCheerBitsAlert] = []
     for (index, bits) in [1].enumerated() {
@@ -853,6 +909,17 @@ private func createDefaultCheerBits() -> [SettingsWidgetAlertsCheerBitsAlert] {
         cheerBits.append(cheer)
     }
     return cheerBits
+}
+
+private func createDefaultKickGifts() -> [SettingsWidgetAlertsKickGiftsAlert] {
+    var kickGifts: [SettingsWidgetAlertsKickGiftsAlert] = []
+    for (index, amount) in [1].enumerated() {
+        let gift = SettingsWidgetAlertsKickGiftsAlert()
+        gift.amount = amount
+        gift.alert.enabled = index == 0
+        kickGifts.append(gift)
+    }
+    return kickGifts
 }
 
 class SettingsWidgetAlertsTwitch: Codable {
@@ -897,6 +964,52 @@ class SettingsWidgetAlertsTwitch: Codable {
         new.raids = raids.clone()
         new.cheers = cheers.clone()
         new.cheerBits = cheerBits.map { $0.clone() }
+        return new
+    }
+}
+
+class SettingsWidgetAlertsKick: Codable {
+    var subscriptions: SettingsWidgetAlertsAlert = .init()
+    var giftedSubscriptions: SettingsWidgetAlertsAlert = .init()
+    var hosts: SettingsWidgetAlertsAlert = .init()
+    var rewards: SettingsWidgetAlertsAlert = .init()
+    var kickGifts: [SettingsWidgetAlertsKickGiftsAlert] = createDefaultKickGifts()
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case subscriptions,
+             giftedSubscriptions,
+             hosts,
+             rewards,
+             kickGifts
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.subscriptions, subscriptions)
+        try container.encode(.giftedSubscriptions, giftedSubscriptions)
+        try container.encode(.hosts, hosts)
+        try container.encode(.rewards, rewards)
+        try container.encode(.kickGifts, kickGifts)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        subscriptions = container.decode(.subscriptions, SettingsWidgetAlertsAlert.self, .init())
+        giftedSubscriptions = container.decode(.giftedSubscriptions, SettingsWidgetAlertsAlert.self, .init())
+        hosts = container.decode(.hosts, SettingsWidgetAlertsAlert.self, .init())
+        rewards = container.decode(.rewards, SettingsWidgetAlertsAlert.self, .init())
+        kickGifts = container.decode(.kickGifts, [SettingsWidgetAlertsKickGiftsAlert].self, createDefaultKickGifts())
+    }
+
+    func clone() -> SettingsWidgetAlertsKick {
+        let new = SettingsWidgetAlertsKick()
+        new.subscriptions = subscriptions.clone()
+        new.giftedSubscriptions = giftedSubscriptions.clone()
+        new.hosts = hosts.clone()
+        new.rewards = rewards.clone()
+        new.kickGifts = kickGifts.map { $0.clone() }
         return new
     }
 }
@@ -998,6 +1111,7 @@ class SettingsWidgetAlertsSpeechToText: Codable {
 
 class SettingsWidgetAlerts: Codable {
     var twitch: SettingsWidgetAlertsTwitch = .init()
+    var kick: SettingsWidgetAlertsKick = .init()
     var chatBot: SettingsWidgetAlertsChatBot = .init()
     var speechToText: SettingsWidgetAlertsSpeechToText = .init()
     var needsSubtitles: Bool = false
@@ -1006,6 +1120,7 @@ class SettingsWidgetAlerts: Codable {
 
     enum CodingKeys: CodingKey {
         case twitch,
+             kick,
              chatBot,
              speechToText,
              needsSubtitles
@@ -1014,6 +1129,7 @@ class SettingsWidgetAlerts: Codable {
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.twitch, twitch)
+        try container.encode(.kick, kick)
         try container.encode(.chatBot, chatBot)
         try container.encode(.speechToText, speechToText)
         try container.encode(.needsSubtitles, needsSubtitles)
@@ -1022,6 +1138,7 @@ class SettingsWidgetAlerts: Codable {
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         twitch = container.decode(.twitch, SettingsWidgetAlertsTwitch.self, .init())
+        kick = container.decode(.kick, SettingsWidgetAlertsKick.self, .init())
         chatBot = container.decode(.chatBot, SettingsWidgetAlertsChatBot.self, .init())
         speechToText = container.decode(.speechToText, SettingsWidgetAlertsSpeechToText.self, .init())
         needsSubtitles = container.decode(.needsSubtitles, Bool.self, false)
@@ -1030,6 +1147,7 @@ class SettingsWidgetAlerts: Codable {
     func clone() -> SettingsWidgetAlerts {
         let new = SettingsWidgetAlerts()
         new.twitch = twitch.clone()
+        new.kick = kick.clone()
         new.chatBot = chatBot.clone()
         new.speechToText = speechToText.clone()
         new.needsSubtitles = needsSubtitles
@@ -1384,7 +1502,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named 
     static let baseName = String(localized: "My widget")
     @Published var name: String
     var id: UUID = .init()
-    var type: SettingsWidgetType = .text
+    @Published var type: SettingsWidgetType = .text
     var text: SettingsWidgetText = .init()
     var browser: SettingsWidgetBrowser = .init()
     var crop: SettingsWidgetCrop = .init()
@@ -1472,19 +1590,34 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named 
     }
 
     private func migrateFromOlderVersions() {
-        if type == .videoSource,
-           videoSource.cornerRadius != 0 || videoSource.borderWidth != 0,
-           !effects.contains(where: { $0.type == .shape })
-        {
+        if type == .videoSource, !effects.contains(where: { $0.type == .shape }) {
             let shape = SettingsVideoEffectShape()
-            shape.cornerRadius = videoSource.cornerRadius
-            shape.borderWidth = videoSource.borderWidth
-            shape.borderColor = videoSource.borderColor
-            shape.borderColorColor = videoSource.borderColorColor
-            let effect = SettingsVideoEffect()
-            effect.type = .shape
-            effect.shape = shape
-            effects.append(effect)
+            shape.cornerRadius = 0
+            var updated = false
+            if videoSource.cornerRadius != 0 || videoSource.borderWidth != 0 {
+                shape.cornerRadius = videoSource.cornerRadius
+                shape.borderWidth = videoSource.borderWidth
+                shape.borderColor = videoSource.borderColor
+                shape.borderColorColor = videoSource.borderColorColor
+                updated = true
+                videoSource.cornerRadius = 0
+                videoSource.borderWidth = 0
+            }
+            if videoSource.cropEnabled, !videoSource.trackFaceEnabled {
+                shape.cropEnabled = videoSource.cropEnabled
+                shape.cropX = videoSource.cropX
+                shape.cropY = videoSource.cropY
+                shape.cropWidth = videoSource.cropWidth
+                shape.cropHeight = videoSource.cropHeight
+                updated = true
+                videoSource.cropEnabled = false
+            }
+            if updated {
+                let effect = SettingsVideoEffect()
+                effect.type = .shape
+                effect.shape = shape
+                effects.append(effect)
+            }
         }
     }
 
@@ -1500,7 +1633,6 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject {
 
     var id: UUID = .init()
     @Published var widgetId: UUID
-    @Published var enabled: Bool = true
     @Published var x: Double = 0.0
     @Published var xString: String = "0.0"
     @Published var y: Double = 0.0
@@ -1513,6 +1645,7 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject {
     @Published var sizeString: String = "100.0"
     @Published var alignment: SettingsAlignment = .topLeft
     var migrated: Bool = true
+    var migrated2: Bool = true
 
     init(widgetId: UUID) {
         self.widgetId = widgetId
@@ -1520,7 +1653,6 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject {
 
     enum CodingKeys: CodingKey {
         case widgetId,
-             enabled,
              id,
              x,
              y,
@@ -1528,13 +1660,13 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject {
              height,
              size,
              alignment,
-             migrated
+             migrated,
+             migrated2
     }
 
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.widgetId, widgetId)
-        try container.encode(.enabled, enabled)
         try container.encode(.id, id)
         try container.encode(.x, x)
         try container.encode(.y, y)
@@ -1543,12 +1675,12 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject {
         try container.encode(.size, size)
         try container.encode(.alignment, alignment)
         try container.encode(.migrated, migrated)
+        try container.encode(.migrated2, migrated2)
     }
 
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         widgetId = container.decode(.widgetId, UUID.self, .init())
-        enabled = container.decode(.enabled, Bool.self, true)
         id = container.decode(.id, UUID.self, .init())
         x = container.decode(.x, Double.self, 0.0)
         xString = String(x)
@@ -1564,11 +1696,11 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject {
         sizeString = String(size)
         alignment = container.decode(.alignment, SettingsAlignment.self, .topLeft)
         migrated = container.decode(.migrated, Bool.self, false)
+        migrated2 = container.decode(.migrated2, Bool.self, false)
     }
 
     func clone() -> SettingsSceneWidget {
         let new = SettingsSceneWidget(widgetId: widgetId)
-        new.enabled = enabled
         new.x = x
         new.xString = xString
         new.y = y
@@ -1577,6 +1709,7 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject {
         new.sizeString = sizeString
         new.alignment = alignment
         new.migrated = migrated
+        new.migrated2 = migrated2
         return new
     }
 
@@ -1730,12 +1863,7 @@ class SettingsWidgetVideoSource: Codable, ObservableObject {
     }
 
     func toEffectSettings() -> VideoSourceEffectSettings {
-        return .init(cropEnabled: cropEnabled,
-                     cropX: cropX,
-                     cropY: cropY,
-                     cropWidth: cropWidth,
-                     cropHeight: cropHeight,
-                     rotation: rotation,
+        return .init(rotation: rotation,
                      trackFaceEnabled: trackFaceEnabled,
                      trackFaceZoom: 1.5 + (1 - trackFaceZoom) * 4,
                      mirror: mirror)

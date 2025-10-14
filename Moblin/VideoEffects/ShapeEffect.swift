@@ -6,6 +6,11 @@ struct ShapeEffectSettings {
     var cornerRadius: Float = 0
     var borderWidth: Double = 1.0
     var borderColor: CIColor = .black
+    var cropEnabled: Bool = false
+    var cropX: Double = 0.25
+    var cropY: Double = 0.0
+    var cropWidth: Double = 0.5
+    var cropHeight: Double = 1.0
 
     func borderWidthAndScale(_ image: CGRect) -> (Double, Double, Double) {
         let borderWidth = 0.025 * borderWidth * min(image.height, image.width)
@@ -118,6 +123,29 @@ final class ShapeEffect: VideoEffect {
                 return image
             }
             return widgetImage.composited(over: roundedBorderImage)
+        }
+    }
+
+    private func crop(_ image: CIImage) -> CIImage {
+        let cropX = toPixels(100 * settings.cropX, image.extent.width)
+        let cropY = toPixels(100 * settings.cropY, image.extent.height)
+        let cropWidth = toPixels(100 * settings.cropWidth, image.extent.width)
+        let cropHeight = toPixels(100 * settings.cropHeight, image.extent.height)
+        return image
+            .cropped(to: .init(
+                x: cropX,
+                y: image.extent.height - cropY - cropHeight,
+                width: cropWidth,
+                height: cropHeight
+            ))
+            .translated(x: -cropX, y: -(image.extent.height - cropY - cropHeight))
+    }
+
+    override func executeEarly(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
+        if settings.cropEnabled {
+            return crop(image)
+        } else {
+            return image
         }
     }
 
