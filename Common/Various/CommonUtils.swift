@@ -211,10 +211,6 @@ func appVersion() -> String {
     return Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "-"
 }
 
-func formatAsInt(_ value: CGFloat) -> String {
-    return String(format: "%d", Int(value))
-}
-
 func formatOneDecimal(_ value: Float) -> String {
     return String(format: "%.01f", value)
 }
