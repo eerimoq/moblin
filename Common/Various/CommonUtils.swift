@@ -61,20 +61,6 @@ func cleanUrl(url value: String) -> String {
     return components.string!
 }
 
-func schemeAndAddress(url: String) -> String {
-    guard var url = URL(string: url) else {
-        return ""
-    }
-    guard var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)
-    else {
-        return ""
-    }
-    urlComponents.path = "/"
-    urlComponents.query = nil
-    url = urlComponents.url!
-    return "\(url)..."
-}
-
 func replaceSensitive(value: String, sensitive: Bool) -> String {
     if sensitive {
         return value.replacing(/./, with: "•")

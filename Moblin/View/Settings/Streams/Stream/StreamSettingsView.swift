@@ -108,9 +108,7 @@ struct StreamSettingsView: View {
                 NavigationLink {
                     StreamUrlSettingsView(stream: stream)
                 } label: {
-                    TextItemView(name: String(localized: "URL"),
-                                 value: schemeAndAddress(url: stream.url),
-                                 sensitive: true)
+                    TextItemView(name: String(localized: "URL"), value: stream.url, sensitive: true)
                 }
                 .disabled(stream.enabled && model.isLive)
                 NavigationLink {
