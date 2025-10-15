@@ -40,6 +40,12 @@ private struct EffectView: View {
                         effectIndex: effectIndex,
                         dewarp360: effect.dewarp360
                     )
+                case .anamorphicLens:
+                    AnamorphicLensEffectView(
+                        widgetId: widgetId,
+                        effectIndex: effectIndex,
+                        anamorphicLens: effect.anamorphicLens
+                    )
                 default:
                     EmptyView()
                 }

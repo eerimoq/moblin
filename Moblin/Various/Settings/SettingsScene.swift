@@ -9,6 +9,7 @@ enum SettingsVideoEffectType: String, Codable, CaseIterable {
     case pinch
     case removeBackground
     case dewarp360
+    case anamorphicLens
 
     init(from decoder: Decoder) throws {
         do {
@@ -35,6 +36,8 @@ enum SettingsVideoEffectType: String, Codable, CaseIterable {
             return String(localized: "Remove background")
         case .dewarp360:
             return String(localized: "Dewarp 360")
+        case .anamorphicLens:
+            return String(localized: "Anamorphic lens")
         }
     }
 }
@@ -180,6 +183,32 @@ class SettingsVideoEffectDewarp360: Codable, ObservableObject {
     }
 }
 
+class SettingsVideoEffectAnamorphicLens: Codable, ObservableObject {
+    @Published var scale: Double = 1.33
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case scale
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.scale, scale)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        scale = container.decode(.scale, Double.self, 1.33)
+    }
+
+    func clone() -> SettingsVideoEffectAnamorphicLens {
+        let new = SettingsVideoEffectAnamorphicLens()
+        new.scale = scale
+        return new
+    }
+}
+
 class SettingsVideoEffect: Codable, Identifiable, ObservableObject {
     var id: UUID = .init()
     @Published var enabled: Bool = true
@@ -187,6 +216,7 @@ class SettingsVideoEffect: Codable, Identifiable, ObservableObject {
     var removeBackground: SettingsVideoEffectRemoveBackground = .init()
     var shape: SettingsVideoEffectShape = .init()
     var dewarp360: SettingsVideoEffectDewarp360 = .init()
+    var anamorphicLens: SettingsVideoEffectAnamorphicLens = .init()
 
     enum CodingKeys: CodingKey {
         case id,
@@ -194,7 +224,8 @@ class SettingsVideoEffect: Codable, Identifiable, ObservableObject {
              type,
              removeBackground,
              shape,
-             dewarp360
+             dewarp360,
+             anamorphicLens
     }
 
     init() {}
@@ -207,6 +238,7 @@ class SettingsVideoEffect: Codable, Identifiable, ObservableObject {
         try container.encode(.removeBackground, removeBackground)
         try container.encode(.shape, shape)
         try container.encode(.dewarp360, dewarp360)
+        try container.encode(.anamorphicLens, anamorphicLens)
     }
 
     required init(from decoder: Decoder) throws {
@@ -217,6 +249,11 @@ class SettingsVideoEffect: Codable, Identifiable, ObservableObject {
         removeBackground = container.decode(.removeBackground, SettingsVideoEffectRemoveBackground.self, .init())
         shape = container.decode(.shape, SettingsVideoEffectShape.self, .init())
         dewarp360 = container.decode(.dewarp360, SettingsVideoEffectDewarp360.self, .init())
+        anamorphicLens = container.decode(
+            .anamorphicLens,
+            SettingsVideoEffectAnamorphicLens.self,
+            .init()
+        )
     }
 
     func getEffect() -> VideoEffect {
@@ -241,6 +278,8 @@ class SettingsVideoEffect: Codable, Identifiable, ObservableObject {
             let effect = Dewarp360Effect()
             effect.setSettings(settings: dewarp360.toSettings())
             return effect
+        case .anamorphicLens:
+            return AnamorphicLensEffect(settings: anamorphicLens.clone())
         }
     }
 }
