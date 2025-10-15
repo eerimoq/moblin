@@ -181,6 +181,12 @@ private struct StreamPermissionsSettingsView: View {
             )
         } footer: {
             VStack(alignment: .leading) {
+                Text(String("!moblin stream start"))
+                Text("Start the stream.")
+                Text("")
+                Text(String("!moblin stream stop"))
+                Text("Stop the stream.")
+                Text("")
                 Text("!moblin stream title <title>")
                 Text("Set stream title.")
                 Text("")

@@ -423,6 +423,10 @@ extension Model {
             command: command
         ) {
             switch command.popFirst() {
+            case "start":
+                self.handleChatBotMessageStreamStart()
+            case "stop":
+                self.handleChatBotMessageStreamStop()
             case "title":
                 self.handleChatBotMessageStreamTitle(command: command)
             case "category":
@@ -431,6 +435,14 @@ extension Model {
                 break
             }
         }
+    }
+
+    private func handleChatBotMessageStreamStart() {
+        startStream()
+    }
+
+    private func handleChatBotMessageStreamStop() {
+        _ = stopStream()
     }
 
     private func handleChatBotMessageStreamTitle(command: ChatBotCommand) {
