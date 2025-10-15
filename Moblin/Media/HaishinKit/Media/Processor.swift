@@ -72,9 +72,9 @@ final class Processor {
         }
     }
 
-    func setVideoSize(capture: CGSize, output: CGSize) {
+    func setVideoSize(capture: CGSize, canvas: CGSize) {
         processorControlQueue.async {
-            self.video.setSize(capture: capture, output: output)
+            self.video.setSize(capture: capture, canvas: canvas)
         }
     }
 

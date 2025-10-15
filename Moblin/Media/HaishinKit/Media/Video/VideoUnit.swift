@@ -116,7 +116,7 @@ final class VideoUnit: NSObject {
     private var nextCompletedFaceDetectionsSequenceNumber: UInt64 = 0
     private var completedFaceDetections: [UInt64: FaceDetectionsCompletion] = [:]
     private var captureSize = CGSize(width: 1920, height: 1080)
-    var outputSize = CGSize(width: 1920, height: 1080)
+    var canvasSize = CGSize(width: 1920, height: 1080)
     private var fillFrame = true
     let session = makeCaptureSession()
     let encoder = VideoEncoder(lockQueue: processorPipelineQueue)
@@ -379,9 +379,9 @@ final class VideoUnit: NSObject {
         encoder.delegate = nil
     }
 
-    func setSize(capture: CGSize, output: CGSize) {
+    func setSize(capture: CGSize, canvas: CGSize) {
         captureSize = capture
-        outputSize = output
+        canvasSize = canvas
         updateDevicesFormat()
         processorPipelineQueue.async {
             self.blackImage = nil
@@ -693,8 +693,8 @@ final class VideoUnit: NSObject {
             kCVPixelBufferPixelFormatTypeKey: NSNumber(value: pixelFormatType),
             kCVPixelBufferIOSurfacePropertiesKey: NSDictionary(),
             kCVPixelBufferMetalCompatibilityKey: kCFBooleanTrue,
-            kCVPixelBufferWidthKey: NSNumber(value: outputSize.width),
-            kCVPixelBufferHeightKey: NSNumber(value: outputSize.height),
+            kCVPixelBufferWidthKey: NSNumber(value: canvasSize.width),
+            kCVPixelBufferHeightKey: NSNumber(value: canvasSize.height),
         ]
         poolColorSpace = nil
         // This is not correct, I'm sure. Colors are not always correct. At least for Apple Log.
@@ -767,8 +767,8 @@ final class VideoUnit: NSObject {
         attributes[kCVPixelBufferPixelFormatTypeKey] = NSNumber(value: pixelFormatType)
         attributes[kCVPixelBufferIOSurfacePropertiesKey] = NSDictionary()
         attributes[kCVPixelBufferMetalCompatibilityKey] = kCFBooleanTrue
-        attributes[kCVPixelBufferWidthKey] = NSNumber(value: outputSize.width)
-        attributes[kCVPixelBufferHeightKey] = NSNumber(value: outputSize.height)
+        attributes[kCVPixelBufferWidthKey] = NSNumber(value: canvasSize.width)
+        attributes[kCVPixelBufferHeightKey] = NSNumber(value: canvasSize.height)
         bufferedPoolColorSpace = nil
         // This is not correct, I'm sure. Colors are not always correct. At least for Apple Log.
         if let formatDescriptionExtension = formatDescriptionExtension as Dictionary? {
@@ -880,26 +880,26 @@ final class VideoUnit: NSObject {
 
     private func scaleImage(_ image: CIImage) -> CIImage {
         let imageRatio = image.extent.height / image.extent.width
-        let outputRatio = outputSize.height / outputSize.width
+        let canvasRatio = canvasSize.height / canvasSize.width
         var scaleFactor: Double
         var x: Double
         var y: Double
-        if (fillFrame && (outputRatio < imageRatio)) || (!fillFrame && (outputRatio > imageRatio)) {
-            scaleFactor = Double(outputSize.width) / image.extent.width
+        if (fillFrame && (canvasRatio < imageRatio)) || (!fillFrame && (canvasRatio > imageRatio)) {
+            scaleFactor = Double(canvasSize.width) / image.extent.width
             x = 0
-            y = (Double(outputSize.height) - image.extent.height * scaleFactor) / 2
+            y = (Double(canvasSize.height) - image.extent.height * scaleFactor) / 2
         } else {
-            scaleFactor = Double(outputSize.height) / image.extent.height
-            x = (Double(outputSize.width) - image.extent.width * scaleFactor) / 2
+            scaleFactor = Double(canvasSize.height) / image.extent.height
+            x = (Double(canvasSize.width) - image.extent.width * scaleFactor) / 2
             y = 0
         }
         return image
             .scaled(x: scaleFactor, y: scaleFactor)
             .translated(x: x, y: y)
-            .cropped(to: CGRect(x: 0, y: 0, width: outputSize.width, height: outputSize.height))
+            .cropped(to: CGRect(x: 0, y: 0, width: canvasSize.width, height: canvasSize.height))
             .composited(over: getBlackImage(
-                width: Double(outputSize.width),
-                height: Double(outputSize.height)
+                width: Double(canvasSize.width),
+                height: Double(canvasSize.height)
             ))
     }
 
@@ -926,7 +926,7 @@ final class VideoUnit: NSObject {
             image = image.oriented(.left)
         }
         image = rotateCoreImage(image, rotation)
-        if image.extent.size != outputSize {
+        if image.extent.size != canvasSize {
             image = scaleImage(image)
         }
         let extent = image.extent
@@ -968,7 +968,7 @@ final class VideoUnit: NSObject {
 
     private func scaleImageMetalPetal(_ image: MTIImage?) -> MTIImage? {
         guard let image = image?.resized(
-            to: CGSize(width: Double(outputSize.width), height: Double(outputSize.height)),
+            to: CGSize(width: Double(canvasSize.width), height: Double(canvasSize.height)),
             resizingMode: .aspect
         ) else {
             return image
@@ -977,12 +977,12 @@ final class VideoUnit: NSObject {
         filter.inputBackgroundImage = MTIImage(
             color: .black,
             sRGB: false,
-            size: .init(width: CGFloat(outputSize.width), height: CGFloat(outputSize.height))
+            size: .init(width: CGFloat(canvasSize.width), height: CGFloat(canvasSize.height))
         )
         filter.layers = [
             .init(
                 content: image,
-                position: .init(x: CGFloat(outputSize.width / 2), y: CGFloat(outputSize.height / 2))
+                position: .init(x: CGFloat(canvasSize.width / 2), y: CGFloat(canvasSize.height / 2))
             ),
         ]
         return filter.outputImage
@@ -1031,7 +1031,7 @@ final class VideoUnit: NSObject {
         if imageBuffer.isPortrait() {
             image = image?.oriented(.left)
         }
-        if let imageToScale = image, imageToScale.size != outputSize {
+        if let imageToScale = image, imageToScale.size != canvasSize {
             image = scaleImageMetalPetal(image)
         }
         if isSceneSwitchTransition {
@@ -1170,8 +1170,8 @@ final class VideoUnit: NSObject {
         decodeTimeStamp: CMTime
     ) -> CMSampleBuffer? {
         if blackImageBuffer == nil || blackFormatDescription == nil {
-            let width = outputSize.width
-            let height = outputSize.height
+            let width = canvasSize.width
+            let height = canvasSize.height
             let pixelBufferAttributes: [NSString: AnyObject] = [
                 kCVPixelBufferPixelFormatTypeKey: NSNumber(value: pixelFormatType),
                 kCVPixelBufferIOSurfacePropertiesKey: NSDictionary(),
@@ -1313,7 +1313,7 @@ final class VideoUnit: NSObject {
         if isFirstAfterAttach {
             usePendingAfterAttachEffectsInner()
         }
-        if !effects.isEmpty || isSceneSwitchTransition || imageBuffer.size != outputSize || rotation != 0.0 {
+        if !effects.isEmpty || isSceneSwitchTransition || imageBuffer.size != canvasSize || rotation != 0.0 {
             (newImageBuffer, newSampleBuffer) = applyEffects(
                 imageBuffer,
                 sampleBuffer,

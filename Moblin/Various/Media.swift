@@ -655,11 +655,11 @@ final class Media: NSObject {
         processor?.setCleanExternalDisplay(enabled: enabled)
     }
 
-    func setVideoSize(capture: CGSize, output: CGSize) {
-        processor?.setVideoSize(capture: capture, output: output)
+    func setVideoSize(capture: CGSize, canvas: CGSize) {
+        processor?.setVideoSize(capture: capture, canvas: canvas)
         videoEncoderSettings.videoSize = .init(
-            width: Int32(output.width),
-            height: Int32(output.height)
+            width: Int32(canvas.width),
+            height: Int32(canvas.height)
         )
         commitVideoEncoderSettings()
     }

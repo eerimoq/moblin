@@ -412,41 +412,41 @@ extension Model {
 
     func setStreamResolution(resolution: SettingsStreamResolution? = nil) {
         var captureSize: CGSize
-        var outputSize: CGSize
+        var canvasSize: CGSize
         switch resolution ?? stream.resolution {
         case .r3840x2160:
             captureSize = .init(width: 3840, height: 2160)
-            outputSize = .init(width: 3840, height: 2160)
+            canvasSize = .init(width: 3840, height: 2160)
         case .r2560x1440:
             // Use 4K camera and downscale to 1440p.
             captureSize = .init(width: 3840, height: 2160)
-            outputSize = .init(width: 2560, height: 1440)
+            canvasSize = .init(width: 2560, height: 1440)
         case .r1920x1080:
             captureSize = .init(width: 1920, height: 1080)
-            outputSize = .init(width: 1920, height: 1080)
+            canvasSize = .init(width: 1920, height: 1080)
         case .r1280x720:
             captureSize = .init(width: 1280, height: 720)
-            outputSize = .init(width: 1280, height: 720)
+            canvasSize = .init(width: 1280, height: 720)
         case .r960x540:
             captureSize = .init(width: 960, height: 540)
-            outputSize = .init(width: 960, height: 540)
+            canvasSize = .init(width: 960, height: 540)
         case .r854x480:
             // Use 540p camera and downscale to 480p.
             captureSize = .init(width: 960, height: 540)
-            outputSize = .init(width: 854, height: 480)
+            canvasSize = .init(width: 854, height: 480)
         case .r640x360:
             // Use 540p camera and downscale to 360p.
             captureSize = .init(width: 960, height: 540)
-            outputSize = .init(width: 640, height: 360)
+            canvasSize = .init(width: 640, height: 360)
         case .r426x240:
             // Use 540p camera and downscale to 240p.
             captureSize = .init(width: 960, height: 540)
-            outputSize = .init(width: 426, height: 240)
+            canvasSize = .init(width: 426, height: 240)
         }
         if stream.portrait {
-            outputSize = .init(width: outputSize.height, height: outputSize.width)
+            canvasSize = .init(width: canvasSize.height, height: canvasSize.width)
         }
-        media.setVideoSize(capture: captureSize, output: outputSize)
+        media.setVideoSize(capture: captureSize, canvas: canvasSize)
     }
 
     private func setStreamCodec() {
