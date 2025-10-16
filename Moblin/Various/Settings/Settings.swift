@@ -1385,7 +1385,15 @@ private func quickButtonPageTwo() -> Int {
     }
 }
 
-private func addMissingQuickButtons(database: Database) {
+private func quickButtonPageThree() -> Int {
+    if #available(iOS 17, *) {
+        return 3
+    } else {
+        return 1
+    }
+}
+
+private func addMissingQuickButtonsPageOne(database: Database) {
     var button = SettingsQuickButton(name: String(localized: "Torch"))
     button.id = UUID()
     button.type = .torch
@@ -1414,54 +1422,11 @@ private func addMissingQuickButtons(database: Database) {
     button.systemImageNameOff = "music.mic"
     updateQuickButton(database: database, button: button)
 
-    button = SettingsQuickButton(name: String(localized: "Chat"))
-    button.id = UUID()
-    button.type = .chat
-    button.systemImageNameOn = "message.fill"
-    button.systemImageNameOff = "message"
-    updateQuickButton(database: database, button: button)
-
-    button = SettingsQuickButton(name: String(localized: "Interactive chat"))
-    button.id = UUID()
-    button.isOn = true
-    button.type = .interactiveChat
-    button.systemImageNameOn = "arrow.up.message.fill"
-    button.systemImageNameOff = "arrow.up.message"
-    updateQuickButton(database: database, button: button)
-
-    button = SettingsQuickButton(name: String(localized: "Stealth mode"))
-    button.id = UUID()
-    button.type = .blackScreen
-    button.systemImageNameOn = "sunset.fill"
-    button.systemImageNameOff = "sunset"
-    updateQuickButton(database: database, button: button)
-
-    button = SettingsQuickButton(name: String(localized: "Lock screen"))
-    button.id = UUID()
-    button.type = .lockScreen
-    button.systemImageNameOn = "lock.fill"
-    button.systemImageNameOff = "lock"
-    updateQuickButton(database: database, button: button)
-
     button = SettingsQuickButton(name: String(localized: "Record"))
     button.id = UUID()
     button.type = .record
     button.systemImageNameOn = "record.circle.fill"
     button.systemImageNameOff = "record.circle"
-    updateQuickButton(database: database, button: button)
-
-    button = SettingsQuickButton(name: String(localized: "Stream"))
-    button.id = UUID()
-    button.type = .stream
-    button.systemImageNameOn = "dot.radiowaves.left.and.right"
-    button.systemImageNameOff = "dot.radiowaves.left.and.right"
-    updateQuickButton(database: database, button: button)
-
-    button = SettingsQuickButton(name: String(localized: "Recordings"))
-    button.id = UUID()
-    button.type = .recordings
-    button.systemImageNameOn = "photo.on.rectangle.angled.fill"
-    button.systemImageNameOff = "photo.on.rectangle.angled"
     updateQuickButton(database: database, button: button)
 
     button = SettingsQuickButton(name: String(localized: "Snapshot"))
@@ -1471,18 +1436,18 @@ private func addMissingQuickButtons(database: Database) {
     button.systemImageNameOff = "camera.aperture"
     updateQuickButton(database: database, button: button)
 
-    button = SettingsQuickButton(name: String(localized: "Replay"))
+    button = SettingsQuickButton(name: String(localized: "Scene widgets"))
     button.id = UUID()
-    button.type = .replay
-    button.systemImageNameOn = "play.fill"
-    button.systemImageNameOff = "play"
+    button.type = .widgets
+    button.systemImageNameOn = "photo.on.rectangle.fill"
+    button.systemImageNameOff = "photo.on.rectangle"
     updateQuickButton(database: database, button: button)
 
-    button = SettingsQuickButton(name: String(localized: "Instant replay"))
+    button = SettingsQuickButton(name: String(localized: "Local overlays"))
     button.id = UUID()
-    button.type = .instantReplay
-    button.systemImageNameOn = "memories"
-    button.systemImageNameOff = "memories"
+    button.type = .localOverlays
+    button.systemImageNameOn = "square.stack.3d.up.slash.fill"
+    button.systemImageNameOff = "square.stack.3d.up.slash"
     updateQuickButton(database: database, button: button)
 
     button = SettingsQuickButton(name: String(localized: "OBS"))
@@ -1499,18 +1464,60 @@ private func addMissingQuickButtons(database: Database) {
     button.systemImageNameOff = "appletvremote.gen1"
     updateQuickButton(database: database, button: button)
 
-    button = SettingsQuickButton(name: String(localized: "Scene widgets"))
+    button = SettingsQuickButton(name: String(localized: "Stealth mode"))
     button.id = UUID()
-    button.type = .widgets
-    button.systemImageNameOn = "photo.on.rectangle.fill"
-    button.systemImageNameOff = "photo.on.rectangle"
+    button.type = .blackScreen
+    button.systemImageNameOn = "sunset.fill"
+    button.systemImageNameOff = "sunset"
     updateQuickButton(database: database, button: button)
 
-    button = SettingsQuickButton(name: String(localized: "Auto scene switcher"))
+    button = SettingsQuickButton(name: String(localized: "Lock screen"))
     button.id = UUID()
-    button.type = .autoSceneSwitcher
-    button.systemImageNameOn = "autostartstop"
-    button.systemImageNameOff = "autostartstop"
+    button.type = .lockScreen
+    button.systemImageNameOn = "lock.fill"
+    button.systemImageNameOff = "lock"
+    updateQuickButton(database: database, button: button)
+
+    button = SettingsQuickButton(name: String(localized: "Chat"))
+    button.id = UUID()
+    button.type = .chat
+    button.systemImageNameOn = "message.fill"
+    button.systemImageNameOff = "message"
+    updateQuickButton(database: database, button: button)
+
+    button = SettingsQuickButton(name: String(localized: "Poll"))
+    button.id = UUID()
+    button.type = .poll
+    button.systemImageNameOn = "chart.bar.xaxis"
+    button.systemImageNameOff = "chart.bar.xaxis"
+    updateQuickButton(database: database, button: button)
+
+    button = SettingsQuickButton(name: String(localized: "Replay"))
+    button.id = UUID()
+    button.type = .replay
+    button.systemImageNameOn = "play.fill"
+    button.systemImageNameOff = "play"
+    updateQuickButton(database: database, button: button)
+
+    button = SettingsQuickButton(name: String(localized: "Instant replay"))
+    button.id = UUID()
+    button.type = .instantReplay
+    button.systemImageNameOn = "memories"
+    button.systemImageNameOff = "memories"
+    updateQuickButton(database: database, button: button)
+
+    button = SettingsQuickButton(name: String(localized: "DJI devices"))
+    button.id = UUID()
+    button.type = .djiDevices
+    button.systemImageNameOn = "appletvremote.gen1.fill"
+    button.systemImageNameOff = "appletvremote.gen1"
+    updateQuickButton(database: database, button: button)
+
+    button = SettingsQuickButton(name: String(localized: "GoPro"))
+    button.id = UUID()
+    button.type = .goPro
+    button.systemImageNameOn = "appletvremote.gen1.fill"
+    button.systemImageNameOff = "appletvremote.gen1"
     updateQuickButton(database: database, button: button)
 
     button = SettingsQuickButton(name: String(localized: "Camera"))
@@ -1520,28 +1527,16 @@ private func addMissingQuickButtons(database: Database) {
     button.systemImageNameOff = "camera"
     updateQuickButton(database: database, button: button)
 
-    button = SettingsQuickButton(name: String(localized: "Browser"))
+    button = SettingsQuickButton(name: String(localized: "Camera preview"))
     button.id = UUID()
-    button.type = .browser
-    button.systemImageNameOn = "globe"
-    button.systemImageNameOff = "globe"
+    button.type = .cameraPreview
+    button.systemImageNameOn = "camera.rotate.fill"
+    button.systemImageNameOff = "camera.rotate"
     updateQuickButton(database: database, button: button)
+}
 
-    button = SettingsQuickButton(name: String(localized: "Grid"))
-    button.id = UUID()
-    button.type = .grid
-    button.systemImageNameOn = "grid"
-    button.systemImageNameOff = "grid"
-    updateQuickButton(database: database, button: button)
-
-    button = SettingsQuickButton(name: String(localized: "Camera level"))
-    button.id = UUID()
-    button.type = .cameraLevel
-    button.systemImageNameOn = "level.fill"
-    button.systemImageNameOff = "level"
-    updateQuickButton(database: database, button: button)
-
-    button = SettingsQuickButton(name: String(localized: "Draw"))
+private func addMissingQuickButtonsPageTwo(database: Database) {
+    var button = SettingsQuickButton(name: String(localized: "Draw"))
     button.id = UUID()
     button.type = .draw
     button.page = quickButtonPageTwo()
@@ -1636,24 +1631,70 @@ private func addMissingQuickButtons(database: Database) {
     button.systemImageNameOn = "person.2.fill"
     button.systemImageNameOff = "person.2"
     updateQuickButton(database: database, button: button)
+}
 
-    button = SettingsQuickButton(name: String(localized: "Local overlays"))
+private func addMissingQuickButtonsPageThree(database: Database) {
+    var button = SettingsQuickButton(name: String(localized: "Interactive chat"))
     button.id = UUID()
-    button.type = .localOverlays
-    button.systemImageNameOn = "square.stack.3d.up.slash.fill"
-    button.systemImageNameOff = "square.stack.3d.up.slash"
+    button.isOn = true
+    button.type = .interactiveChat
+    button.page = quickButtonPageThree()
+    button.systemImageNameOn = "arrow.up.message.fill"
+    button.systemImageNameOff = "arrow.up.message"
     updateQuickButton(database: database, button: button)
 
-    button = SettingsQuickButton(name: String(localized: "Poll"))
+    button = SettingsQuickButton(name: String(localized: "Auto scene switcher"))
     button.id = UUID()
-    button.type = .poll
-    button.systemImageNameOn = "chart.bar.xaxis"
-    button.systemImageNameOff = "chart.bar.xaxis"
+    button.type = .autoSceneSwitcher
+    button.page = quickButtonPageThree()
+    button.systemImageNameOn = "autostartstop"
+    button.systemImageNameOff = "autostartstop"
+    updateQuickButton(database: database, button: button)
+
+    button = SettingsQuickButton(name: String(localized: "Recordings"))
+    button.id = UUID()
+    button.type = .recordings
+    button.page = quickButtonPageThree()
+    button.systemImageNameOn = "photo.on.rectangle.angled.fill"
+    button.systemImageNameOff = "photo.on.rectangle.angled"
+    updateQuickButton(database: database, button: button)
+
+    button = SettingsQuickButton(name: String(localized: "Stream"))
+    button.id = UUID()
+    button.type = .stream
+    button.page = quickButtonPageThree()
+    button.systemImageNameOn = "dot.radiowaves.left.and.right"
+    button.systemImageNameOff = "dot.radiowaves.left.and.right"
+    updateQuickButton(database: database, button: button)
+
+    button = SettingsQuickButton(name: String(localized: "Grid"))
+    button.id = UUID()
+    button.type = .grid
+    button.page = quickButtonPageThree()
+    button.systemImageNameOn = "grid"
+    button.systemImageNameOff = "grid"
+    updateQuickButton(database: database, button: button)
+
+    button = SettingsQuickButton(name: String(localized: "Camera level"))
+    button.id = UUID()
+    button.type = .cameraLevel
+    button.page = quickButtonPageThree()
+    button.systemImageNameOn = "level.fill"
+    button.systemImageNameOff = "level"
+    updateQuickButton(database: database, button: button)
+
+    button = SettingsQuickButton(name: String(localized: "Browser"))
+    button.id = UUID()
+    button.type = .browser
+    button.page = quickButtonPageThree()
+    button.systemImageNameOn = "globe"
+    button.systemImageNameOff = "globe"
     updateQuickButton(database: database, button: button)
 
     button = SettingsQuickButton(name: String(localized: "Workout"))
     button.id = UUID()
     button.type = .workout
+    button.page = quickButtonPageThree()
     button.systemImageNameOn = "figure.run"
     button.systemImageNameOff = "figure.run"
     updateQuickButton(database: database, button: button)
@@ -1661,6 +1702,7 @@ private func addMissingQuickButtons(database: Database) {
     button = SettingsQuickButton(name: String(localized: "Skip current TTS"))
     button.id = UUID()
     button.type = .skipCurrentTts
+    button.page = quickButtonPageThree()
     button.systemImageNameOn = "waveform.slash"
     button.systemImageNameOff = "waveform.slash"
     updateQuickButton(database: database, button: button)
@@ -1668,6 +1710,7 @@ private func addMissingQuickButtons(database: Database) {
     button = SettingsQuickButton(name: String(localized: "Pause TTS"))
     button.id = UUID()
     button.type = .pauseTts
+    button.page = quickButtonPageThree()
     button.systemImageNameOn = "waveform.badge.xmark"
     button.systemImageNameOff = "waveform.badge.xmark"
     updateQuickButton(database: database, button: button)
@@ -1675,6 +1718,7 @@ private func addMissingQuickButtons(database: Database) {
     button = SettingsQuickButton(name: String(localized: "Ads"))
     button.id = UUID()
     button.type = .ads
+    button.page = quickButtonPageThree()
     button.systemImageNameOn = "cup.and.saucer.fill"
     button.systemImageNameOff = "cup.and.saucer"
     updateQuickButton(database: database, button: button)
@@ -1682,6 +1726,7 @@ private func addMissingQuickButtons(database: Database) {
     button = SettingsQuickButton(name: String(localized: "Stream marker"))
     button.id = UUID()
     button.type = .streamMarker
+    button.page = quickButtonPageThree()
     button.systemImageNameOn = "bookmark.fill"
     button.systemImageNameOff = "bookmark"
     updateQuickButton(database: database, button: button)
@@ -1689,34 +1734,15 @@ private func addMissingQuickButtons(database: Database) {
     button = SettingsQuickButton(name: String(localized: "Reload browser widgets"))
     button.id = UUID()
     button.type = .reloadBrowserWidgets
+    button.page = quickButtonPageThree()
     button.systemImageNameOn = "arrow.clockwise"
     button.systemImageNameOff = "arrow.clockwise"
-    updateQuickButton(database: database, button: button)
-
-    button = SettingsQuickButton(name: String(localized: "DJI devices"))
-    button.id = UUID()
-    button.type = .djiDevices
-    button.systemImageNameOn = "appletvremote.gen1.fill"
-    button.systemImageNameOff = "appletvremote.gen1"
-    updateQuickButton(database: database, button: button)
-
-    button = SettingsQuickButton(name: String(localized: "GoPro"))
-    button.id = UUID()
-    button.type = .goPro
-    button.systemImageNameOn = "appletvremote.gen1.fill"
-    button.systemImageNameOff = "appletvremote.gen1"
-    updateQuickButton(database: database, button: button)
-
-    button = SettingsQuickButton(name: String(localized: "Camera preview"))
-    button.id = UUID()
-    button.type = .cameraPreview
-    button.systemImageNameOn = "camera.rotate.fill"
-    button.systemImageNameOff = "camera.rotate"
     updateQuickButton(database: database, button: button)
 
     button = SettingsQuickButton(name: String(localized: "Portrait"))
     button.id = UUID()
     button.type = .portrait
+    button.page = quickButtonPageThree()
     button.systemImageNameOn = "rectangle.portrait.rotate"
     button.systemImageNameOff = "rectangle.portrait.rotate"
     updateQuickButton(database: database, button: button)
@@ -1724,10 +1750,16 @@ private func addMissingQuickButtons(database: Database) {
     button = SettingsQuickButton(name: String(localized: "Connection priorities"))
     button.id = UUID()
     button.type = .connectionPriorities
+    button.page = quickButtonPageThree()
     button.systemImageNameOn = "phone.connection.fill"
     button.systemImageNameOff = "phone.connection"
     updateQuickButton(database: database, button: button)
+}
 
+private func addMissingQuickButtons(database: Database) {
+    addMissingQuickButtonsPageOne(database: database)
+    addMissingQuickButtonsPageTwo(database: database)
+    addMissingQuickButtonsPageThree(database: database)
     database.quickButtons = database.quickButtons.filter { button in
         if button.type == .unknown {
             return false
