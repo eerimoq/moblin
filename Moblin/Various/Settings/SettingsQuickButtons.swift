@@ -62,28 +62,31 @@ enum SettingsQuickButtonType: String, Codable, CaseIterable {
     }
 }
 
-class SettingsQuickButton: Codable, Identifiable, Equatable, Hashable, ObservableObject {
-    var name: String
+class SettingsQuickButton: Codable, Identifiable, ObservableObject {
     var id: UUID = .init()
-    var type: SettingsQuickButtonType = .widget
-    var imageOn: String = ""
-    var imageOff: String = ""
-    var isOn: Bool = false
+    var name: String
+    var type: SettingsQuickButtonType
+    var imageOn: String
+    var imageOff: String
+    var isOn: Bool
     @Published var enabled: Bool = true
     var backgroundColor: RgbColor = defaultQuickButtonColor
     @Published var color: Color = defaultQuickButtonColor.color()
-    @Published var page: Int = 1
+    @Published var page: Int
 
-    init(name: String) {
+    init(name: String,
+         type: SettingsQuickButtonType,
+         imageOn: String,
+         imageOff: String? = nil,
+         isOn: Bool = false,
+         page: Int = 1)
+    {
         self.name = name
-    }
-
-    static func == (lhs: SettingsQuickButton, rhs: SettingsQuickButton) -> Bool {
-        return lhs.id == rhs.id
-    }
-
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
+        self.type = type
+        self.imageOn = imageOn
+        self.imageOff = imageOff ?? imageOn
+        self.isOn = isOn
+        self.page = page
     }
 
     enum CodingKeys: CodingKey {
