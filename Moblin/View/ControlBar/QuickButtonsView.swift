@@ -12,9 +12,9 @@ private struct QuickButtonImage: View {
 
     private func getImage(state: ButtonState) -> String {
         if state.isOn {
-            return state.button.systemImageNameOn
+            return state.button.imageOn
         } else {
-            return state.button.systemImageNameOff
+            return state.button.imageOff
         }
     }
 

@@ -10,7 +10,7 @@ private struct DeepLinkCreatorQuickButtonSettingsView: View {
                 DraggableItemPrefixView()
                 if let globalButton = model.getGlobalButton(type: button.type) {
                     IconAndTextView(
-                        image: globalButton.systemImageNameOff,
+                        image: globalButton.imageOff,
                         text: globalButton.name,
                         longDivider: true
                     )

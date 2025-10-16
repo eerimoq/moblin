@@ -1370,8 +1370,8 @@ private func updateQuickButton(database: Database, button: SettingsQuickButton) 
     })
     if let existingButton {
         existingButton.name = button.name
-        existingButton.systemImageNameOn = button.systemImageNameOn
-        existingButton.systemImageNameOff = button.systemImageNameOff
+        existingButton.imageOn = button.imageOn
+        existingButton.imageOff = button.imageOff
     } else {
         database.quickButtons.append(button)
     }
@@ -1395,364 +1395,319 @@ private func quickButtonPageThree() -> Int {
 
 private func addMissingQuickButtonsPageOne(database: Database) {
     var button = SettingsQuickButton(name: String(localized: "Torch"))
-    button.id = UUID()
     button.type = .torch
-    button.systemImageNameOn = "flashlight.on.fill"
-    button.systemImageNameOff = "flashlight.off.fill"
+    button.imageOn = "flashlight.on.fill"
+    button.imageOff = "flashlight.off.fill"
     updateQuickButton(database: database, button: button)
 
     button = SettingsQuickButton(name: String(localized: "Mute"))
-    button.id = UUID()
     button.type = .mute
-    button.systemImageNameOn = "mic.slash"
-    button.systemImageNameOff = "mic"
+    button.imageOn = "mic.slash"
+    button.imageOff = "mic"
     updateQuickButton(database: database, button: button)
 
     button = SettingsQuickButton(name: String(localized: "Bitrate"))
-    button.id = UUID()
     button.type = .bitrate
-    button.systemImageNameOn = "speedometer"
-    button.systemImageNameOff = "speedometer"
+    button.imageOn = "speedometer"
+    button.imageOff = "speedometer"
     updateQuickButton(database: database, button: button)
 
     button = SettingsQuickButton(name: String(localized: "Mic"))
-    button.id = UUID()
     button.type = .mic
-    button.systemImageNameOn = "music.mic"
-    button.systemImageNameOff = "music.mic"
+    button.imageOn = "music.mic"
+    button.imageOff = "music.mic"
     updateQuickButton(database: database, button: button)
 
     button = SettingsQuickButton(name: String(localized: "Record"))
-    button.id = UUID()
     button.type = .record
-    button.systemImageNameOn = "record.circle.fill"
-    button.systemImageNameOff = "record.circle"
+    button.imageOn = "record.circle.fill"
+    button.imageOff = "record.circle"
     updateQuickButton(database: database, button: button)
 
     button = SettingsQuickButton(name: String(localized: "Snapshot"))
-    button.id = UUID()
     button.type = .snapshot
-    button.systemImageNameOn = "camera.aperture"
-    button.systemImageNameOff = "camera.aperture"
+    button.imageOn = "camera.aperture"
+    button.imageOff = "camera.aperture"
     updateQuickButton(database: database, button: button)
 
     button = SettingsQuickButton(name: String(localized: "Scene widgets"))
-    button.id = UUID()
     button.type = .widgets
-    button.systemImageNameOn = "photo.on.rectangle.fill"
-    button.systemImageNameOff = "photo.on.rectangle"
+    button.imageOn = "photo.on.rectangle.fill"
+    button.imageOff = "photo.on.rectangle"
     updateQuickButton(database: database, button: button)
 
     button = SettingsQuickButton(name: String(localized: "Local overlays"))
-    button.id = UUID()
     button.type = .localOverlays
-    button.systemImageNameOn = "square.stack.3d.up.slash.fill"
-    button.systemImageNameOff = "square.stack.3d.up.slash"
+    button.imageOn = "square.stack.3d.up.slash.fill"
+    button.imageOff = "square.stack.3d.up.slash"
     updateQuickButton(database: database, button: button)
 
     button = SettingsQuickButton(name: String(localized: "OBS"))
-    button.id = UUID()
     button.type = .obs
-    button.systemImageNameOn = "xserve"
-    button.systemImageNameOff = "xserve"
+    button.imageOn = "xserve"
+    button.imageOff = "xserve"
     updateQuickButton(database: database, button: button)
 
     button = SettingsQuickButton(name: String(localized: "Remote"))
-    button.id = UUID()
     button.type = .remote
-    button.systemImageNameOn = "appletvremote.gen1.fill"
-    button.systemImageNameOff = "appletvremote.gen1"
+    button.imageOn = "appletvremote.gen1.fill"
+    button.imageOff = "appletvremote.gen1"
     updateQuickButton(database: database, button: button)
 
     button = SettingsQuickButton(name: String(localized: "Stealth mode"))
-    button.id = UUID()
     button.type = .blackScreen
-    button.systemImageNameOn = "sunset.fill"
-    button.systemImageNameOff = "sunset"
+    button.imageOn = "sunset.fill"
+    button.imageOff = "sunset"
     updateQuickButton(database: database, button: button)
 
     button = SettingsQuickButton(name: String(localized: "Lock screen"))
-    button.id = UUID()
     button.type = .lockScreen
-    button.systemImageNameOn = "lock.fill"
-    button.systemImageNameOff = "lock"
+    button.imageOn = "lock.fill"
+    button.imageOff = "lock"
     updateQuickButton(database: database, button: button)
 
     button = SettingsQuickButton(name: String(localized: "Chat"))
-    button.id = UUID()
     button.type = .chat
-    button.systemImageNameOn = "message.fill"
-    button.systemImageNameOff = "message"
+    button.imageOn = "message.fill"
+    button.imageOff = "message"
     updateQuickButton(database: database, button: button)
 
     button = SettingsQuickButton(name: String(localized: "Poll"))
-    button.id = UUID()
     button.type = .poll
-    button.systemImageNameOn = "chart.bar.xaxis"
-    button.systemImageNameOff = "chart.bar.xaxis"
+    button.imageOn = "chart.bar.xaxis"
+    button.imageOff = "chart.bar.xaxis"
     updateQuickButton(database: database, button: button)
 
     button = SettingsQuickButton(name: String(localized: "Replay"))
-    button.id = UUID()
     button.type = .replay
-    button.systemImageNameOn = "play.fill"
-    button.systemImageNameOff = "play"
+    button.imageOn = "play.fill"
+    button.imageOff = "play"
     updateQuickButton(database: database, button: button)
 
     button = SettingsQuickButton(name: String(localized: "Instant replay"))
-    button.id = UUID()
     button.type = .instantReplay
-    button.systemImageNameOn = "memories"
-    button.systemImageNameOff = "memories"
+    button.imageOn = "memories"
+    button.imageOff = "memories"
     updateQuickButton(database: database, button: button)
 
     button = SettingsQuickButton(name: String(localized: "DJI devices"))
-    button.id = UUID()
     button.type = .djiDevices
-    button.systemImageNameOn = "appletvremote.gen1.fill"
-    button.systemImageNameOff = "appletvremote.gen1"
+    button.imageOn = "appletvremote.gen1.fill"
+    button.imageOff = "appletvremote.gen1"
     updateQuickButton(database: database, button: button)
 
     button = SettingsQuickButton(name: String(localized: "GoPro"))
-    button.id = UUID()
     button.type = .goPro
-    button.systemImageNameOn = "appletvremote.gen1.fill"
-    button.systemImageNameOff = "appletvremote.gen1"
+    button.imageOn = "appletvremote.gen1.fill"
+    button.imageOff = "appletvremote.gen1"
     updateQuickButton(database: database, button: button)
 
     button = SettingsQuickButton(name: String(localized: "Camera"))
-    button.id = UUID()
     button.type = .image
-    button.systemImageNameOn = "camera.fill"
-    button.systemImageNameOff = "camera"
+    button.imageOn = "camera.fill"
+    button.imageOff = "camera"
     updateQuickButton(database: database, button: button)
 
     button = SettingsQuickButton(name: String(localized: "Camera preview"))
-    button.id = UUID()
     button.type = .cameraPreview
-    button.systemImageNameOn = "camera.rotate.fill"
-    button.systemImageNameOff = "camera.rotate"
+    button.imageOn = "camera.rotate.fill"
+    button.imageOff = "camera.rotate"
     updateQuickButton(database: database, button: button)
 }
 
 private func addMissingQuickButtonsPageTwo(database: Database) {
+    let page = quickButtonPageTwo()
     var button = SettingsQuickButton(name: String(localized: "Draw"))
-    button.id = UUID()
     button.type = .draw
-    button.page = quickButtonPageTwo()
-    button.systemImageNameOn = "pencil.line"
-    button.systemImageNameOff = "pencil.line"
+    button.page = page
+    button.imageOn = "pencil.line"
+    button.imageOff = "pencil.line"
     updateQuickButton(database: database, button: button)
 
     button = SettingsQuickButton(name: String(localized: "Face"))
-    button.id = UUID()
     button.type = .face
-    button.page = quickButtonPageTwo()
-    button.systemImageNameOn = "theatermask.and.paintbrush.fill"
-    button.systemImageNameOff = "theatermask.and.paintbrush"
+    button.page = page
+    button.imageOn = "theatermask.and.paintbrush.fill"
+    button.imageOff = "theatermask.and.paintbrush"
     updateQuickButton(database: database, button: button)
 
     button = SettingsQuickButton(name: String(localized: "LUTs"))
-    button.id = UUID()
     button.type = .luts
-    button.page = quickButtonPageTwo()
-    button.systemImageNameOn = "camera.filters"
-    button.systemImageNameOff = "camera.filters"
+    button.page = page
+    button.imageOn = "camera.filters"
+    button.imageOff = "camera.filters"
     updateQuickButton(database: database, button: button)
 
     button = SettingsQuickButton(name: String(localized: "Pixellate"))
-    button.id = UUID()
     button.type = .pixellate
-    button.page = quickButtonPageTwo()
-    button.systemImageNameOn = "squareshape.split.2x2"
-    button.systemImageNameOff = "squareshape.split.2x2"
+    button.page = page
+    button.imageOn = "squareshape.split.2x2"
+    button.imageOff = "squareshape.split.2x2"
     updateQuickButton(database: database, button: button)
 
     button = SettingsQuickButton(name: String(localized: "Whirlpool"))
-    button.id = UUID()
     button.type = .whirlpool
-    button.page = quickButtonPageTwo()
-    button.systemImageNameOn = "tornado"
-    button.systemImageNameOff = "tornado"
+    button.page = page
+    button.imageOn = "tornado"
+    button.imageOff = "tornado"
     updateQuickButton(database: database, button: button)
 
     button = SettingsQuickButton(name: String(localized: "Pinch"))
-    button.id = UUID()
     button.type = .pinch
-    button.page = quickButtonPageTwo()
-    button.systemImageNameOn = "hand.pinch.fill"
-    button.systemImageNameOff = "hand.pinch"
+    button.page = page
+    button.imageOn = "hand.pinch.fill"
+    button.imageOff = "hand.pinch"
     updateQuickButton(database: database, button: button)
 
     button = SettingsQuickButton(name: String(localized: "Movie"))
-    button.id = UUID()
     button.type = .movie
-    button.page = quickButtonPageTwo()
-    button.systemImageNameOn = "film.fill"
-    button.systemImageNameOff = "film"
+    button.page = page
+    button.imageOn = "film.fill"
+    button.imageOff = "film"
     updateQuickButton(database: database, button: button)
 
     button = SettingsQuickButton(name: String(localized: "4:3"))
-    button.id = UUID()
     button.type = .fourThree
-    button.page = quickButtonPageTwo()
-    button.systemImageNameOn = "square.fill"
-    button.systemImageNameOff = "square"
+    button.page = page
+    button.imageOn = "square.fill"
+    button.imageOff = "square"
     updateQuickButton(database: database, button: button)
 
     button = SettingsQuickButton(name: String(localized: "Gray scale"))
-    button.id = UUID()
     button.type = .grayScale
-    button.page = quickButtonPageTwo()
-    button.systemImageNameOn = "moon.fill"
-    button.systemImageNameOff = "moon"
+    button.page = page
+    button.imageOn = "moon.fill"
+    button.imageOff = "moon"
     updateQuickButton(database: database, button: button)
 
     button = SettingsQuickButton(name: String(localized: "Sepia"))
-    button.id = UUID()
     button.type = .sepia
-    button.page = quickButtonPageTwo()
-    button.systemImageNameOn = "moonphase.waxing.crescent.inverse"
-    button.systemImageNameOff = "moonphase.waning.crescent"
+    button.page = page
+    button.imageOn = "moonphase.waxing.crescent.inverse"
+    button.imageOff = "moonphase.waning.crescent"
     updateQuickButton(database: database, button: button)
 
     button = SettingsQuickButton(name: String(localized: "Triple"))
-    button.id = UUID()
     button.type = .triple
-    button.page = quickButtonPageTwo()
-    button.systemImageNameOn = "person.3.fill"
-    button.systemImageNameOff = "person.3"
+    button.page = page
+    button.imageOn = "person.3.fill"
+    button.imageOff = "person.3"
     updateQuickButton(database: database, button: button)
 
     button = SettingsQuickButton(name: String(localized: "Twin"))
-    button.id = UUID()
     button.type = .twin
-    button.page = quickButtonPageTwo()
-    button.systemImageNameOn = "person.2.fill"
-    button.systemImageNameOff = "person.2"
+    button.page = page
+    button.imageOn = "person.2.fill"
+    button.imageOff = "person.2"
     updateQuickButton(database: database, button: button)
 }
 
 private func addMissingQuickButtonsPageThree(database: Database) {
+    let page = quickButtonPageThree()
     var button = SettingsQuickButton(name: String(localized: "Interactive chat"))
-    button.id = UUID()
     button.isOn = true
     button.type = .interactiveChat
-    button.page = quickButtonPageThree()
-    button.systemImageNameOn = "arrow.up.message.fill"
-    button.systemImageNameOff = "arrow.up.message"
+    button.page = page
+    button.imageOn = "arrow.up.message.fill"
+    button.imageOff = "arrow.up.message"
     updateQuickButton(database: database, button: button)
 
     button = SettingsQuickButton(name: String(localized: "Auto scene switcher"))
-    button.id = UUID()
     button.type = .autoSceneSwitcher
-    button.page = quickButtonPageThree()
-    button.systemImageNameOn = "autostartstop"
-    button.systemImageNameOff = "autostartstop"
+    button.page = page
+    button.imageOn = "autostartstop"
+    button.imageOff = "autostartstop"
     updateQuickButton(database: database, button: button)
 
     button = SettingsQuickButton(name: String(localized: "Recordings"))
-    button.id = UUID()
     button.type = .recordings
-    button.page = quickButtonPageThree()
-    button.systemImageNameOn = "photo.on.rectangle.angled.fill"
-    button.systemImageNameOff = "photo.on.rectangle.angled"
+    button.page = page
+    button.imageOn = "photo.on.rectangle.angled.fill"
+    button.imageOff = "photo.on.rectangle.angled"
     updateQuickButton(database: database, button: button)
 
     button = SettingsQuickButton(name: String(localized: "Stream"))
-    button.id = UUID()
     button.type = .stream
-    button.page = quickButtonPageThree()
-    button.systemImageNameOn = "dot.radiowaves.left.and.right"
-    button.systemImageNameOff = "dot.radiowaves.left.and.right"
+    button.page = page
+    button.imageOn = "dot.radiowaves.left.and.right"
+    button.imageOff = "dot.radiowaves.left.and.right"
     updateQuickButton(database: database, button: button)
 
     button = SettingsQuickButton(name: String(localized: "Grid"))
-    button.id = UUID()
     button.type = .grid
-    button.page = quickButtonPageThree()
-    button.systemImageNameOn = "grid"
-    button.systemImageNameOff = "grid"
+    button.page = page
+    button.imageOn = "grid"
+    button.imageOff = "grid"
     updateQuickButton(database: database, button: button)
 
     button = SettingsQuickButton(name: String(localized: "Camera level"))
-    button.id = UUID()
     button.type = .cameraLevel
-    button.page = quickButtonPageThree()
-    button.systemImageNameOn = "level.fill"
-    button.systemImageNameOff = "level"
+    button.page = page
+    button.imageOn = "level.fill"
+    button.imageOff = "level"
     updateQuickButton(database: database, button: button)
 
     button = SettingsQuickButton(name: String(localized: "Browser"))
-    button.id = UUID()
     button.type = .browser
-    button.page = quickButtonPageThree()
-    button.systemImageNameOn = "globe"
-    button.systemImageNameOff = "globe"
+    button.page = page
+    button.imageOn = "globe"
+    button.imageOff = "globe"
     updateQuickButton(database: database, button: button)
 
     button = SettingsQuickButton(name: String(localized: "Workout"))
-    button.id = UUID()
     button.type = .workout
-    button.page = quickButtonPageThree()
-    button.systemImageNameOn = "figure.run"
-    button.systemImageNameOff = "figure.run"
+    button.page = page
+    button.imageOn = "figure.run"
+    button.imageOff = "figure.run"
     updateQuickButton(database: database, button: button)
 
     button = SettingsQuickButton(name: String(localized: "Skip current TTS"))
-    button.id = UUID()
     button.type = .skipCurrentTts
-    button.page = quickButtonPageThree()
-    button.systemImageNameOn = "waveform.slash"
-    button.systemImageNameOff = "waveform.slash"
+    button.page = page
+    button.imageOn = "waveform.slash"
+    button.imageOff = "waveform.slash"
     updateQuickButton(database: database, button: button)
 
     button = SettingsQuickButton(name: String(localized: "Pause TTS"))
-    button.id = UUID()
     button.type = .pauseTts
-    button.page = quickButtonPageThree()
-    button.systemImageNameOn = "waveform.badge.xmark"
-    button.systemImageNameOff = "waveform.badge.xmark"
+    button.page = page
+    button.imageOn = "waveform.badge.xmark"
+    button.imageOff = "waveform.badge.xmark"
     updateQuickButton(database: database, button: button)
 
     button = SettingsQuickButton(name: String(localized: "Ads"))
-    button.id = UUID()
     button.type = .ads
-    button.page = quickButtonPageThree()
-    button.systemImageNameOn = "cup.and.saucer.fill"
-    button.systemImageNameOff = "cup.and.saucer"
+    button.page = page
+    button.imageOn = "cup.and.saucer.fill"
+    button.imageOff = "cup.and.saucer"
     updateQuickButton(database: database, button: button)
 
     button = SettingsQuickButton(name: String(localized: "Stream marker"))
-    button.id = UUID()
     button.type = .streamMarker
-    button.page = quickButtonPageThree()
-    button.systemImageNameOn = "bookmark.fill"
-    button.systemImageNameOff = "bookmark"
+    button.page = page
+    button.imageOn = "bookmark.fill"
+    button.imageOff = "bookmark"
     updateQuickButton(database: database, button: button)
 
     button = SettingsQuickButton(name: String(localized: "Reload browser widgets"))
-    button.id = UUID()
     button.type = .reloadBrowserWidgets
-    button.page = quickButtonPageThree()
-    button.systemImageNameOn = "arrow.clockwise"
-    button.systemImageNameOff = "arrow.clockwise"
+    button.page = page
+    button.imageOn = "arrow.clockwise"
+    button.imageOff = "arrow.clockwise"
     updateQuickButton(database: database, button: button)
 
     button = SettingsQuickButton(name: String(localized: "Portrait"))
-    button.id = UUID()
     button.type = .portrait
-    button.page = quickButtonPageThree()
-    button.systemImageNameOn = "rectangle.portrait.rotate"
-    button.systemImageNameOff = "rectangle.portrait.rotate"
+    button.page = page
+    button.imageOn = "rectangle.portrait.rotate"
+    button.imageOff = "rectangle.portrait.rotate"
     updateQuickButton(database: database, button: button)
 
     button = SettingsQuickButton(name: String(localized: "Connection priorities"))
-    button.id = UUID()
     button.type = .connectionPriorities
-    button.page = quickButtonPageThree()
-    button.systemImageNameOn = "phone.connection.fill"
-    button.systemImageNameOff = "phone.connection"
+    button.page = page
+    button.imageOn = "phone.connection.fill"
+    button.imageOff = "phone.connection"
     updateQuickButton(database: database, button: button)
 }
 

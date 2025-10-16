@@ -66,8 +66,8 @@ class SettingsQuickButton: Codable, Identifiable, Equatable, Hashable, Observabl
     var name: String
     var id: UUID = .init()
     var type: SettingsQuickButtonType = .widget
-    var systemImageNameOn: String = "mic.slash"
-    var systemImageNameOff: String = "mic"
+    var imageOn: String = ""
+    var imageOff: String = ""
     var isOn: Bool = false
     @Published var enabled: Bool = true
     var backgroundColor: RgbColor = defaultQuickButtonColor
@@ -104,8 +104,8 @@ class SettingsQuickButton: Codable, Identifiable, Equatable, Hashable, Observabl
         try container.encode(.name, name)
         try container.encode(.id, id)
         try container.encode(.type, type)
-        try container.encode(.systemImageNameOn, systemImageNameOn)
-        try container.encode(.systemImageNameOff, systemImageNameOff)
+        try container.encode(.systemImageNameOn, imageOn)
+        try container.encode(.systemImageNameOff, imageOff)
         try container.encode(.isOn, isOn)
         try container.encode(.enabled, enabled)
         try container.encode(.backgroundColor, backgroundColor)
@@ -117,8 +117,8 @@ class SettingsQuickButton: Codable, Identifiable, Equatable, Hashable, Observabl
         name = container.decode(.name, String.self, "")
         id = container.decode(.id, UUID.self, .init())
         type = container.decode(.type, SettingsQuickButtonType.self, .widget)
-        systemImageNameOn = container.decode(.systemImageNameOn, String.self, "mic.slash")
-        systemImageNameOff = container.decode(.systemImageNameOff, String.self, "mic")
+        imageOn = container.decode(.systemImageNameOn, String.self, "")
+        imageOff = container.decode(.systemImageNameOff, String.self, "")
         isOn = container.decode(.isOn, Bool.self, false)
         enabled = container.decode(.enabled, Bool.self, true)
         backgroundColor = container.decode(.backgroundColor, RgbColor.self, defaultQuickButtonColor)

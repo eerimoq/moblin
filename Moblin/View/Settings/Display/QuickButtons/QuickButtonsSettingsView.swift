@@ -43,7 +43,7 @@ private struct ButtonSettingsView: View {
             HStack {
                 DraggableItemPrefixView()
                 IconAndTextView(
-                    image: button.systemImageNameOff,
+                    image: button.imageOff,
                     text: button.name,
                     longDivider: true
                 )
