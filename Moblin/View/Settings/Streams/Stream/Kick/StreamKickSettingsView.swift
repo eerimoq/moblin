@@ -152,6 +152,7 @@ private struct KickWebView: UIViewRepresentable {
 }
 
 struct KickAlertsSettingsView: View {
+    let title: String
     @ObservedObject var alerts: SettingsKickAlerts
 
     var body: some View {
@@ -172,7 +173,7 @@ struct KickAlertsSettingsView: View {
                 )
             }
         }
-        .navigationTitle("Alerts")
+        .navigationTitle(title)
     }
 }
 
@@ -273,12 +274,12 @@ struct StreamKickSettingsView: View {
             }
             Section {
                 NavigationLink {
-                    KickAlertsSettingsView(alerts: stream.kickChatAlerts)
+                    KickAlertsSettingsView(title: String(localized: "Chat"), alerts: stream.kickChatAlerts)
                 } label: {
                     Text("Chat")
                 }
                 NavigationLink {
-                    KickAlertsSettingsView(alerts: stream.kickToastAlerts)
+                    KickAlertsSettingsView(title: String(localized: "Toasts"), alerts: stream.kickToastAlerts)
                 } label: {
                     Text("Toasts")
                 }

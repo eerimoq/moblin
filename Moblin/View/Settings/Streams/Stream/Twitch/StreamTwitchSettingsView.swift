@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct TwitchAlertsSettingsView: View {
+    let title: String
     @ObservedObject var alerts: SettingsTwitchAlerts
 
     var body: some View {
@@ -22,7 +23,7 @@ struct TwitchAlertsSettingsView: View {
                 )
             }
         }
-        .navigationTitle("Alerts")
+        .navigationTitle(title)
     }
 }
 
@@ -145,12 +146,12 @@ struct StreamTwitchSettingsView: View {
             }
             Section {
                 NavigationLink {
-                    TwitchAlertsSettingsView(alerts: stream.twitchChatAlerts)
+                    TwitchAlertsSettingsView(title: String(localized: "Chat"), alerts: stream.twitchChatAlerts)
                 } label: {
                     Text("Chat")
                 }
                 NavigationLink {
-                    TwitchAlertsSettingsView(alerts: stream.twitchToastAlerts)
+                    TwitchAlertsSettingsView(title: String(localized: "Toasts"), alerts: stream.twitchToastAlerts)
                 } label: {
                     Text("Toasts")
                 }

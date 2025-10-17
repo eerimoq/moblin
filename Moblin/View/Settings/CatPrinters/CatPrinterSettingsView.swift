@@ -83,12 +83,12 @@ struct CatPrinterSettingsView: View {
                 NavigationLink {
                     Form {
                         NavigationLink {
-                            TwitchAlertsSettingsView(alerts: device.printTwitch)
+                            TwitchAlertsSettingsView(title: String(localized: "Twitch"), alerts: device.printTwitch)
                         } label: {
                             Text("Twitch")
                         }
                         NavigationLink {
-                            KickAlertsSettingsView(alerts: device.printKick)
+                            KickAlertsSettingsView(title: String(localized: "Kick"), alerts: device.printKick)
                         } label: {
                             Text("Kick")
                         }
