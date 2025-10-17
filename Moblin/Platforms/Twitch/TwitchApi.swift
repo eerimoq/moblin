@@ -82,6 +82,7 @@ struct TwitchApiStreams: Decodable {
 struct TwitchApiGameData: Decodable {
     let id: String
     let name: String
+    let box_art_url: String?
 }
 
 struct TwitchApiGames: Decodable {

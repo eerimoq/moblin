@@ -47,6 +47,8 @@ struct KickCategory: Codable {
     let category_id: Int
     let name: String
     let slug: String
+    let src: String?
+    let srcset: String?
 }
 
 struct KickCategorySearchHit: Codable {

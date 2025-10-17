@@ -5,6 +5,7 @@ private struct TwitchCategoryPickerView: View {
     @ObservedObject var stream: SettingsStream
     @Binding var streamCategory: String
     @State private var searchText: String = ""
+    @State private var quickCategories: [TwitchApiGameData] = []
     @Environment(\.dismiss) var dismiss
 
     private func setCategory(name: String) {
@@ -23,6 +24,52 @@ private struct TwitchCategoryPickerView: View {
         }
     }
 
+    private func loadQuickCategories() {
+        let categoryNames = ["IRL", "Just Chatting", "Food & Drink"]
+        model.fetchTwitchGames(names: categoryNames) { games in
+            DispatchQueue.main.async {
+                guard let games else {
+                    self.quickCategories = []
+                    return
+                }
+                let gamesDict = Dictionary(uniqueKeysWithValues: games.map { ($0.name, $0) })
+                self.quickCategories = categoryNames.compactMap { gamesDict[$0] }
+            }
+        }
+    }
+
+    private func twitchBoxArtUrl(_ url: String, width: Int = 40, height: Int = 50) -> String {
+        return url
+            .replacingOccurrences(of: "{width}", with: "\(width)")
+            .replacingOccurrences(of: "{height}", with: "\(height)")
+    }
+
+    private func categoryButton(game: TwitchApiGameData) -> some View {
+        Button {
+            model.setTwitchStreamCategory(stream: stream, categoryId: game.id)
+            streamCategory = game.name
+            dismiss()
+        } label: {
+            HStack {
+                if let boxArtUrl = game.box_art_url,
+                   let url = URL(string: twitchBoxArtUrl(boxArtUrl))
+                {
+                    AsyncImage(url: url) { image in
+                        image
+                            .resizable()
+                            .scaledToFill()
+                    } placeholder: {
+                        Color.gray.opacity(0.3)
+                    }
+                    .frame(width: 40, height: 50)
+                    .clipShape(RoundedRectangle(cornerRadius: 6))
+                }
+                Text(game.name)
+                    .foregroundColor(.primary)
+            }
+        }
+    }
+
     var body: some View {
         Form {
             Section {
@@ -34,51 +81,22 @@ private struct TwitchCategoryPickerView: View {
                     }
                 )
             }
-            Section {
-                Button {
-                    setCategory(name: "IRL")
-                } label: {
-                    HStack {
-                        Image("TwitchCategoryIrl")
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: 40, height: 50)
-                            .clipShape(RoundedRectangle(cornerRadius: 6))
-                        Text("IRL")
-                            .foregroundColor(.primary)
+            if !quickCategories.isEmpty {
+                Section {
+                    ForEach(quickCategories, id: \.id) { game in
+                        categoryButton(game: game)
                     }
+                } header: {
+                    Text("Quick categories")
                 }
-                Button {
-                    setCategory(name: "Just Chatting")
-                } label: {
-                    HStack {
-                        Image("TwitchCategoryJustChatting")
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: 40, height: 50)
-                            .clipShape(RoundedRectangle(cornerRadius: 6))
-                        Text("Just Chatting")
-                            .foregroundColor(.primary)
-                    }
-                }
-                Button {
-                    setCategory(name: "Food & Drink")
-                } label: {
-                    HStack {
-                        Image("TwitchCategoryFoodAndDrink")
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: 40, height: 50)
-                            .clipShape(RoundedRectangle(cornerRadius: 6))
-                        Text("Food & Drink")
-                            .foregroundColor(.primary)
-                    }
-                }
-            } header: {
-                Text("Quick categories")
             }
         }
         .navigationTitle("Category")
+        .onAppear {
+            if quickCategories.isEmpty {
+                loadQuickCategories()
+            }
+        }
     }
 }
 

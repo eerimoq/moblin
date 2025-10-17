@@ -91,6 +91,13 @@ extension Model {
             }
     }
 
+    func fetchTwitchGames(names: [String], onComplete: @escaping ([TwitchApiGameData]?) -> Void) {
+        TwitchApi(stream.twitchAccessToken)
+            .getGames(names: names) {
+                onComplete($0?.data)
+            }
+    }
+
     func makeNotLoggedInToTwitchToast() {
         makeErrorToast(
             title: String(localized: "Not logged in to Twitch"),

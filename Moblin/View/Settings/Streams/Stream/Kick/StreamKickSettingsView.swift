@@ -156,6 +156,7 @@ private struct KickCategoryPickerView: View {
     @ObservedObject var stream: SettingsStream
     @Binding var streamCategory: String
     @State private var searchText: String = ""
+    @State private var quickCategories: [KickCategory] = []
     @Environment(\.dismiss) var dismiss
 
     private func setCategory(name: String) {
@@ -180,6 +181,51 @@ private struct KickCategoryPickerView: View {
         }
     }
 
+    private func loadQuickCategories() {
+        let categoryNames = ["IRL", "Just Chatting", "Slots & Casino"]
+        var loadedDict: [String: KickCategory] = [:]
+        let group = DispatchGroup()
+
+        for categoryName in categoryNames {
+            group.enter()
+            model.searchKickCategories(query: categoryName) { result in
+                if let category = result?.first {
+                    loadedDict[categoryName] = category
+                }
+                group.leave()
+            }
+        }
+
+        group.notify(queue: .main) {
+            self.quickCategories = categoryNames.compactMap { loadedDict[$0] }
+        }
+    }
+
+    private func categoryButton(category: KickCategory) -> some View {
+        Button {
+            guard let categoryId = Int(category.id) else { return }
+            model.setKickStreamCategory(stream: stream, categoryId: categoryId)
+            streamCategory = category.name
+            dismiss()
+        } label: {
+            HStack {
+                if let imageUrl = category.src, let url = URL(string: imageUrl) {
+                    AsyncImage(url: url) { image in
+                        image
+                            .resizable()
+                            .scaledToFill()
+                    } placeholder: {
+                        Color.gray.opacity(0.3)
+                    }
+                    .frame(width: 40, height: 50)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                }
+                Text(category.name)
+                    .foregroundColor(.primary)
+            }
+        }
+    }
+
     var body: some View {
         Form {
             Section {
@@ -191,51 +237,22 @@ private struct KickCategoryPickerView: View {
                     }
                 )
             }
-            Section {
-                Button {
-                    setCategory(name: "IRL")
-                } label: {
-                    HStack {
-                        Image("KickCategoryIrl")
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: 40, height: 50)
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
-                        Text("IRL")
-                            .foregroundColor(.primary)
+            if !quickCategories.isEmpty {
+                Section {
+                    ForEach(quickCategories, id: \.id) { category in
+                        categoryButton(category: category)
                     }
+                } header: {
+                    Text("Quick categories")
                 }
-                Button {
-                    setCategory(name: "Just Chatting")
-                } label: {
-                    HStack {
-                        Image("KickCategoryJustChatting")
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: 40, height: 50)
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
-                        Text("Just Chatting")
-                            .foregroundColor(.primary)
-                    }
-                }
-                Button {
-                    setCategory(name: "Slots & Casino")
-                } label: {
-                    HStack {
-                        Image("KickCategorySlotsAndCasino")
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: 40, height: 50)
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
-                        Text("Slots & Casino")
-                            .foregroundColor(.primary)
-                    }
-                }
-            } header: {
-                Text("Quick categories")
             }
         }
         .navigationTitle("Category")
+        .onAppear {
+            if quickCategories.isEmpty {
+                loadQuickCategories()
+            }
+        }
     }
 }
 
