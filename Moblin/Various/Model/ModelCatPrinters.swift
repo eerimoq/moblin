@@ -36,9 +36,13 @@ extension Model {
 
     func printEventCatPrinters(username: String, eventText: String, platform: String, eventType: CatPrinterEventType) {
         for catPrinter in catPrinters.values {
-            guard let settings = getCatPrinterSettings(catPrinter: catPrinter),
-                  settings.printEvents,
-                  settings.isEventTypeEnabled(eventType)
+            guard let settings = getCatPrinterSettings(catPrinter: catPrinter) else {
+                continue
+            }
+            let platformEnabled = platform.lowercased() == "twitch" ? settings.printTwitchEvents : settings
+                .printKickEvents
+            guard platformEnabled,
+                  settings.isEventTypeEnabled(eventType, platform: platform)
             else {
                 continue
             }

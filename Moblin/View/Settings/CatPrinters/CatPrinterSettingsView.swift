@@ -84,27 +84,53 @@ struct CatPrinterSettingsView: View {
                 }
             }
             Section {
-                Toggle(isOn: $device.printEvents) {
-                    Text("Print events")
+                Toggle(isOn: $device.printTwitchEvents) {
+                    Text("Print Twitch events")
                 }
-                if device.printEvents {
-                    Toggle(isOn: $device.printEventSubscriptions) {
+            }
+            if device.printTwitchEvents {
+                Section {
+                    Toggle(isOn: $device.printEventTwitchSubscriptions) {
                         Text("Subscriptions")
                     }
-                    Toggle(isOn: $device.printEventGiftedSubscriptions) {
+                    Toggle(isOn: $device.printEventTwitchGiftedSubscriptions) {
                         Text("Gifted subscriptions")
                     }
-                    Toggle(isOn: $device.printEventResubscriptions) {
+                    Toggle(isOn: $device.printEventTwitchResubscriptions) {
                         Text("Resubscriptions")
                     }
-                    Toggle(isOn: $device.printEventRaidsAndHosts) {
+                    Toggle(isOn: $device.printEventTwitchRaidsAndHosts) {
                         Text("Raids & Hosts")
                     }
-                    Toggle(isOn: $device.printEventRewards) {
+                    Toggle(isOn: $device.printEventTwitchRewards) {
                         Text("Rewards")
                     }
-                    Toggle(isOn: $device.printEventBitsAndKicks) {
-                        Text("Bits & Kicks")
+                    Toggle(isOn: $device.printEventTwitchBits) {
+                        Text("Bits")
+                    }
+                }
+            }
+            Section {
+                Toggle(isOn: $device.printKickEvents) {
+                    Text("Print Kick events")
+                }
+            }
+            if device.printKickEvents {
+                Section {
+                    Toggle(isOn: $device.printEventKickSubscriptions) {
+                        Text("Subscriptions")
+                    }
+                    Toggle(isOn: $device.printEventKickGiftedSubscriptions) {
+                        Text("Gifted subscriptions")
+                    }
+                    Toggle(isOn: $device.printEventKickRaidsAndHosts) {
+                        Text("Raids & Hosts")
+                    }
+                    Toggle(isOn: $device.printEventKickRewards) {
+                        Text("Rewards")
+                    }
+                    Toggle(isOn: $device.printEventKickKicks) {
+                        Text("Kicks")
                     }
                 }
             }

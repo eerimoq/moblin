@@ -20,13 +20,19 @@ class SettingsCatPrinter: Codable, Identifiable, ObservableObject, Named {
     @Published var printChat: Bool = true
     @Published var faxMeowSound: Bool = true
     @Published var printSnapshots: Bool = true
-    @Published var printEvents: Bool = false
-    @Published var printEventSubscriptions: Bool = true
-    @Published var printEventGiftedSubscriptions: Bool = true
-    @Published var printEventResubscriptions: Bool = true
-    @Published var printEventRaidsAndHosts: Bool = true
-    @Published var printEventRewards: Bool = true
-    @Published var printEventBitsAndKicks: Bool = true
+    @Published var printTwitchEvents: Bool = false
+    @Published var printEventTwitchSubscriptions: Bool = true
+    @Published var printEventTwitchGiftedSubscriptions: Bool = true
+    @Published var printEventTwitchResubscriptions: Bool = true
+    @Published var printEventTwitchRaidsAndHosts: Bool = true
+    @Published var printEventTwitchRewards: Bool = true
+    @Published var printEventTwitchBits: Bool = true
+    @Published var printKickEvents: Bool = false
+    @Published var printEventKickSubscriptions: Bool = true
+    @Published var printEventKickGiftedSubscriptions: Bool = true
+    @Published var printEventKickRaidsAndHosts: Bool = true
+    @Published var printEventKickRewards: Bool = true
+    @Published var printEventKickKicks: Bool = true
 
     init() {}
 
@@ -39,13 +45,19 @@ class SettingsCatPrinter: Codable, Identifiable, ObservableObject, Named {
              printChat,
              faxMeowSound,
              printSnapshots,
-             printEvents,
-             printEventSubscriptions,
-             printEventGiftedSubscriptions,
-             printEventResubscriptions,
-             printEventRaidsAndHosts,
-             printEventRewards,
-             printEventBitsAndKicks
+             printTwitchEvents,
+             printEventTwitchSubscriptions,
+             printEventTwitchGiftedSubscriptions,
+             printEventTwitchResubscriptions,
+             printEventTwitchRaidsAndHosts,
+             printEventTwitchRewards,
+             printEventTwitchBits,
+             printKickEvents,
+             printEventKickSubscriptions,
+             printEventKickGiftedSubscriptions,
+             printEventKickRaidsAndHosts,
+             printEventKickRewards,
+             printEventKickKicks
     }
 
     func encode(to encoder: Encoder) throws {
@@ -58,13 +70,19 @@ class SettingsCatPrinter: Codable, Identifiable, ObservableObject, Named {
         try container.encode(.printChat, printChat)
         try container.encode(.faxMeowSound, faxMeowSound)
         try container.encode(.printSnapshots, printSnapshots)
-        try container.encode(.printEvents, printEvents)
-        try container.encode(.printEventSubscriptions, printEventSubscriptions)
-        try container.encode(.printEventGiftedSubscriptions, printEventGiftedSubscriptions)
-        try container.encode(.printEventResubscriptions, printEventResubscriptions)
-        try container.encode(.printEventRaidsAndHosts, printEventRaidsAndHosts)
-        try container.encode(.printEventRewards, printEventRewards)
-        try container.encode(.printEventBitsAndKicks, printEventBitsAndKicks)
+        try container.encode(.printTwitchEvents, printTwitchEvents)
+        try container.encode(.printEventTwitchSubscriptions, printEventTwitchSubscriptions)
+        try container.encode(.printEventTwitchGiftedSubscriptions, printEventTwitchGiftedSubscriptions)
+        try container.encode(.printEventTwitchResubscriptions, printEventTwitchResubscriptions)
+        try container.encode(.printEventTwitchRaidsAndHosts, printEventTwitchRaidsAndHosts)
+        try container.encode(.printEventTwitchRewards, printEventTwitchRewards)
+        try container.encode(.printEventTwitchBits, printEventTwitchBits)
+        try container.encode(.printKickEvents, printKickEvents)
+        try container.encode(.printEventKickSubscriptions, printEventKickSubscriptions)
+        try container.encode(.printEventKickGiftedSubscriptions, printEventKickGiftedSubscriptions)
+        try container.encode(.printEventKickRaidsAndHosts, printEventKickRaidsAndHosts)
+        try container.encode(.printEventKickRewards, printEventKickRewards)
+        try container.encode(.printEventKickKicks, printEventKickKicks)
     }
 
     required init(from decoder: Decoder) throws {
@@ -77,23 +95,36 @@ class SettingsCatPrinter: Codable, Identifiable, ObservableObject, Named {
         printChat = container.decode(.printChat, Bool.self, true)
         faxMeowSound = container.decode(.faxMeowSound, Bool.self, true)
         printSnapshots = container.decode(.printSnapshots, Bool.self, true)
-        printEvents = container.decode(.printEvents, Bool.self, false)
-        printEventSubscriptions = container.decode(.printEventSubscriptions, Bool.self, true)
-        printEventGiftedSubscriptions = container.decode(.printEventGiftedSubscriptions, Bool.self, true)
-        printEventResubscriptions = container.decode(.printEventResubscriptions, Bool.self, true)
-        printEventRaidsAndHosts = container.decode(.printEventRaidsAndHosts, Bool.self, true)
-        printEventRewards = container.decode(.printEventRewards, Bool.self, true)
-        printEventBitsAndKicks = container.decode(.printEventBitsAndKicks, Bool.self, true)
+        printTwitchEvents = container.decode(.printTwitchEvents, Bool.self, false)
+        printEventTwitchSubscriptions = container.decode(.printEventTwitchSubscriptions, Bool.self, true)
+        printEventTwitchGiftedSubscriptions = container.decode(.printEventTwitchGiftedSubscriptions, Bool.self, true)
+        printEventTwitchResubscriptions = container.decode(.printEventTwitchResubscriptions, Bool.self, true)
+        printEventTwitchRaidsAndHosts = container.decode(.printEventTwitchRaidsAndHosts, Bool.self, true)
+        printEventTwitchRewards = container.decode(.printEventTwitchRewards, Bool.self, true)
+        printEventTwitchBits = container.decode(.printEventTwitchBits, Bool.self, true)
+        printKickEvents = container.decode(.printKickEvents, Bool.self, false)
+        printEventKickSubscriptions = container.decode(.printEventKickSubscriptions, Bool.self, true)
+        printEventKickGiftedSubscriptions = container.decode(.printEventKickGiftedSubscriptions, Bool.self, true)
+        printEventKickRaidsAndHosts = container.decode(.printEventKickRaidsAndHosts, Bool.self, true)
+        printEventKickRewards = container.decode(.printEventKickRewards, Bool.self, true)
+        printEventKickKicks = container.decode(.printEventKickKicks, Bool.self, true)
     }
 
-    func isEventTypeEnabled(_ eventType: CatPrinterEventType) -> Bool {
+    func isEventTypeEnabled(_ eventType: CatPrinterEventType, platform: String) -> Bool {
+        let isTwitch = platform.lowercased() == "twitch"
         switch eventType {
-        case .subscription: printEventSubscriptions
-        case .giftedSubscription: printEventGiftedSubscriptions
-        case .resubscription: printEventResubscriptions
-        case .raid, .host: printEventRaidsAndHosts
-        case .reward: printEventRewards
-        case .bitsAndKicks: printEventBitsAndKicks
+        case .subscription:
+            return isTwitch ? printEventTwitchSubscriptions : printEventKickSubscriptions
+        case .giftedSubscription:
+            return isTwitch ? printEventTwitchGiftedSubscriptions : printEventKickGiftedSubscriptions
+        case .resubscription:
+            return isTwitch ? printEventTwitchResubscriptions : false
+        case .raid, .host:
+            return isTwitch ? printEventTwitchRaidsAndHosts : printEventKickRaidsAndHosts
+        case .reward:
+            return isTwitch ? printEventTwitchRewards : printEventKickRewards
+        case .bitsAndKicks:
+            return isTwitch ? printEventTwitchBits : printEventKickKicks
         }
     }
 }
