@@ -154,6 +154,7 @@ private struct KickWebView: UIViewRepresentable {
 struct KickAlertsSettingsView: View {
     let title: String
     @ObservedObject var alerts: SettingsKickAlerts
+    let showBans: Bool
 
     var body: some View {
         Form {
@@ -162,7 +163,9 @@ struct KickAlertsSettingsView: View {
                 Toggle("Gift subscriptions", isOn: $alerts.giftedSubscriptions)
                 Toggle("Rewards", isOn: $alerts.rewards)
                 Toggle("Hosts", isOn: $alerts.hosts)
-                Toggle("Bans and timeouts", isOn: $alerts.bans)
+                if showBans {
+                    Toggle("Bans and timeouts", isOn: $alerts.bans)
+                }
                 Toggle("Kicks", isOn: $alerts.kicks)
                 TextEditNavigationView(
                     title: String(localized: "Minimum kicks"),
@@ -274,12 +277,16 @@ struct StreamKickSettingsView: View {
             }
             Section {
                 NavigationLink {
-                    KickAlertsSettingsView(title: String(localized: "Chat"), alerts: stream.kickChatAlerts)
+                    KickAlertsSettingsView(title: String(localized: "Chat"),
+                                           alerts: stream.kickChatAlerts,
+                                           showBans: true)
                 } label: {
                     Text("Chat")
                 }
                 NavigationLink {
-                    KickAlertsSettingsView(title: String(localized: "Toasts"), alerts: stream.kickToastAlerts)
+                    KickAlertsSettingsView(title: String(localized: "Toasts"),
+                                           alerts: stream.kickToastAlerts,
+                                           showBans: false)
                 } label: {
                     Text("Toasts")
                 }

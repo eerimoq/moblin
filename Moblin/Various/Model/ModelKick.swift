@@ -298,9 +298,6 @@ extension Model: KickPusherDelegate {
                 text = String(localized: "was timed out from chat!")
                 title = String(localized: "User timed out")
             }
-            if self.stream.kickToastAlerts.bans {
-                self.makeToast(title: "🚫 \(event.user.username) \(text)")
-            }
             if self.stream.kickChatAlerts.bans {
                 self.appendKickChatAlertMessage(
                     user: event.user.username,

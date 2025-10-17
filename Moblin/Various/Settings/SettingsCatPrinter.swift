@@ -7,7 +7,7 @@ class SettingsCatPrinter: Codable, Identifiable, ObservableObject, Named {
     @Published var enabled: Bool = false
     @Published var bluetoothPeripheralName: String?
     @Published var bluetoothPeripheralId: UUID?
-    @Published var printChat: Bool = true
+    @Published var printChat: Bool = false
     @Published var faxMeowSound: Bool = true
     @Published var printSnapshots: Bool = true
     @Published var printTwitch: SettingsTwitchAlerts = .init()
@@ -49,7 +49,7 @@ class SettingsCatPrinter: Codable, Identifiable, ObservableObject, Named {
         enabled = container.decode(.enabled, Bool.self, false)
         bluetoothPeripheralName = try? container.decode(String.self, forKey: .bluetoothPeripheralName)
         bluetoothPeripheralId = try? container.decode(UUID.self, forKey: .bluetoothPeripheralId)
-        printChat = container.decode(.printChat, Bool.self, true)
+        printChat = container.decode(.printChat, Bool.self, false)
         faxMeowSound = container.decode(.faxMeowSound, Bool.self, true)
         printSnapshots = container.decode(.printSnapshots, Bool.self, true)
         printTwitch = container.decode(.printTwitch, SettingsTwitchAlerts.self, .init())

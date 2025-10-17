@@ -88,7 +88,9 @@ struct CatPrinterSettingsView: View {
                             Text("Twitch")
                         }
                         NavigationLink {
-                            KickAlertsSettingsView(title: String(localized: "Kick"), alerts: device.printKick)
+                            KickAlertsSettingsView(title: String(localized: "Kick"),
+                                                   alerts: device.printKick,
+                                                   showBans: false)
                         } label: {
                             Text("Kick")
                         }
