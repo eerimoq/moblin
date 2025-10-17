@@ -316,12 +316,12 @@ struct DeepLinkCreatorStreamSettingsView: View {
                     NavigationLink {
                         DeepLinkCreatorStreamTwitchView(twitch: stream.twitch)
                     } label: {
-                        Text("Twitch")
+                        TwitchLogoAndNameView()
                     }
                     NavigationLink {
                         DeepLinkCreatorStreamKickView(kick: stream.kick)
                     } label: {
-                        Text("Kick")
+                        KickLogoAndNameView()
                     }
                 } header: {
                     Text("Chat and viewers")

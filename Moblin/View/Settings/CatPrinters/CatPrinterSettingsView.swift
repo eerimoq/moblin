@@ -85,14 +85,14 @@ struct CatPrinterSettingsView: View {
                         NavigationLink {
                             TwitchAlertsSettingsView(title: String(localized: "Twitch"), alerts: device.printTwitch)
                         } label: {
-                            Text("Twitch")
+                            TwitchLogoAndNameView()
                         }
                         NavigationLink {
                             KickAlertsSettingsView(title: String(localized: "Kick"),
                                                    alerts: device.printKick,
                                                    showBans: false)
                         } label: {
-                            Text("Kick")
+                            KickLogoAndNameView()
                         }
                     }
                     .navigationTitle("Print alerts")
