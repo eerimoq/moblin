@@ -351,24 +351,40 @@ class TwitchApi {
         names: [String],
         onComplete: @escaping (TwitchApiGames?) -> Void
     ) {
-        var allowedCharacters = CharacterSet.urlQueryAllowed
-        allowedCharacters.remove(charactersIn: "&")
+        guard var components = URLComponents(string: "https://api.twitch.tv/helix/games") else {
+            onComplete(nil)
+            return
+        }
         let normalizedNames = names.map { name in
-            let normalized = name
+            name
                 .replacingOccurrences(of: "\u{2018}", with: "'")
                 .replacingOccurrences(of: "\u{2019}", with: "'")
                 .replacingOccurrences(of: "\u{201C}", with: "\"")
                 .replacingOccurrences(of: "\u{201D}", with: "\"")
-            return "name=\(normalized.addingPercentEncoding(withAllowedCharacters: allowedCharacters) ?? normalized)"
         }
-        let namesString = normalizedNames.joined(separator: "&")
-        doGet(subPath: "games?\(namesString)", onComplete: { data in
-            let message = try? JSONDecoder().decode(
-                TwitchApiGames.self,
-                from: data ?? Data()
-            )
-            onComplete(message)
-        })
+        components.queryItems = normalizedNames.map { URLQueryItem(name: "name", value: $0) }
+        guard let url = components.url else {
+            onComplete(nil)
+            return
+        }
+        let request = createGetRequest(url: url)
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            DispatchQueue.main.async {
+                guard error == nil, let data, response?.http?.isSuccessful == true else {
+                    if response?.http?.isUnauthorized == true {
+                        self.delegate?.twitchApiUnauthorized()
+                    }
+                    onComplete(nil)
+                    return
+                }
+                let message = try? JSONDecoder().decode(
+                    TwitchApiGames.self,
+                    from: data
+                )
+                onComplete(message)
+            }
+        }
+        .resume()
     }
 
     func modifyChannelInformation(broadcasterId: String,
