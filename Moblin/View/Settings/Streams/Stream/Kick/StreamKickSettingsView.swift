@@ -217,7 +217,7 @@ struct StreamKickSettingsView: View {
     }
 
     private func submitStreamTitle(value: String) {
-        model.setKickStreamTitle(title: value) {
+        model.setKickStreamTitle(stream: stream, title: value) {
             streamTitle = $0
         }
     }
@@ -296,7 +296,7 @@ struct StreamKickSettingsView: View {
         }
         .onAppear {
             if stream.kickLoggedIn && !stream.kickChannelName.isEmpty && streamTitle.isEmpty {
-                model.getKickStreamTitle {
+                model.getKickStreamTitle(stream: stream) {
                     streamTitle = $0
                 }
             }

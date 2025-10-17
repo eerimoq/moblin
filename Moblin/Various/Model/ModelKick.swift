@@ -87,13 +87,6 @@ extension Model {
         }
     }
 
-    private func createKickApi() -> KickApi? {
-        guard let channelId = stream.kickChannelId, let slug = stream.kickSlug else {
-            return nil
-        }
-        return KickApi(channelId: channelId, slug: slug, accessToken: stream.kickAccessToken)
-    }
-
     func makeNotLoggedInToKickToast() {
         makeErrorToast(
             title: String(localized: "Not logged in to Kick"),
@@ -102,23 +95,30 @@ extension Model {
     }
 
     func sendKickChatMessage(message: String) {
-        createKickApi()?.sendMessage(message: message)
+        createKickApi(stream: stream)?.sendMessage(message: message)
     }
 
     func banKickUser(user: String, duration: Int? = nil) {
-        createKickApi()?.banUser(user: user, duration: duration)
+        createKickApi(stream: stream)?.banUser(user: user, duration: duration)
     }
 
     func deleteKickMessage(messageId: String) {
-        createKickApi()?.deleteMessage(messageId: messageId)
+        createKickApi(stream: stream)?.deleteMessage(messageId: messageId)
     }
 
-    func getKickStreamTitle(onComplete: @escaping (String) -> Void) {
-        createKickApi()?.getStreamTitle(onComplete: onComplete)
+    func getKickStreamTitle(stream: SettingsStream, onComplete: @escaping (String) -> Void) {
+        createKickApi(stream: stream)?.getStreamTitle(onComplete: onComplete)
     }
 
-    func setKickStreamTitle(title: String, onComplete: @escaping (String) -> Void) {
-        createKickApi()?.setStreamTitle(title: title, onComplete: onComplete)
+    func setKickStreamTitle(stream: SettingsStream, title: String, onComplete: @escaping (String) -> Void) {
+        createKickApi(stream: stream)?.setStreamTitle(title: title, onComplete: onComplete)
+    }
+
+    private func createKickApi(stream: SettingsStream) -> KickApi? {
+        guard let channelId = stream.kickChannelId, let slug = stream.kickSlug else {
+            return nil
+        }
+        return KickApi(channelId: channelId, slug: slug, accessToken: stream.kickAccessToken)
     }
 
     private func appendKickChatAlertMessage(
