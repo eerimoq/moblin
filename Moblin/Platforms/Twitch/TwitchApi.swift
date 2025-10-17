@@ -46,6 +46,7 @@ struct TwitchApiChannelPointsCustomRewards: Decodable {
 
 struct TwitchApiChannelInformationData: Decodable {
     let title: String
+    let game_name: String
 }
 
 struct TwitchApiChannelInformation: Decodable {
@@ -349,8 +350,18 @@ class TwitchApi {
         names: [String],
         onComplete: @escaping (TwitchApiGames?) -> Void
     ) {
-        let names = names.map { "name=\($0)" }.joined(separator: "&")
-        doGet(subPath: "games?\(names)", onComplete: { data in
+        var allowedCharacters = CharacterSet.urlQueryAllowed
+        allowedCharacters.remove(charactersIn: "&")
+        let normalizedNames = names.map { name in
+            let normalized = name
+                .replacingOccurrences(of: "\u{2018}", with: "'")
+                .replacingOccurrences(of: "\u{2019}", with: "'")
+                .replacingOccurrences(of: "\u{201C}", with: "\"")
+                .replacingOccurrences(of: "\u{201D}", with: "\"")
+            return "name=\(normalized.addingPercentEncoding(withAllowedCharacters: allowedCharacters) ?? normalized)"
+        }
+        let namesString = normalizedNames.joined(separator: "&")
+        doGet(subPath: "games?\(namesString)", onComplete: { data in
             let message = try? JSONDecoder().decode(
                 TwitchApiGames.self,
                 from: data ?? Data()

@@ -42,6 +42,27 @@ struct KickUser: Codable {
     let username: String
 }
 
+struct KickCategory: Codable {
+    let id: String
+    let category_id: Int
+    let name: String
+    let slug: String
+}
+
+struct KickCategorySearchHit: Codable {
+    let document: KickCategory
+}
+
+struct KickCategorySearchResponse: Codable {
+    let found: Int
+    let hits: [KickCategorySearchHit]
+}
+
+struct KickStreamInfo {
+    let title: String
+    let categoryName: String?
+}
+
 private let userUrl = URL(string: "https://kick.com/api/v1/user")!
 
 func getKickChannelInfo(channelName: String) async throws -> KickChannel {
@@ -153,7 +174,7 @@ class KickApi {
         }
     }
 
-    func getStreamTitle(onComplete: @escaping (String) -> Void) {
+    func getStreamInfo(onComplete: @escaping (KickStreamInfo?) -> Void) {
         doRequest(method: "GET",
                   subPath: "channels/\(slug)/stream-info")
         { ok, data in
@@ -162,9 +183,14 @@ class KickApi {
                   let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
                   let title = json["stream_title"] as? String
             else {
+                onComplete(nil)
                 return
             }
-            onComplete(title)
+            var categoryName: String?
+            if let category = json["category"] as? [String: Any] {
+                categoryName = category["name"] as? String
+            }
+            onComplete(KickStreamInfo(title: title, categoryName: categoryName))
         }
     }
 
@@ -177,6 +203,50 @@ class KickApi {
                 onComplete(title)
             }
         }
+    }
+
+    func setStreamCategory(categoryId: Int, onComplete: @escaping (Bool) -> Void) {
+        doRequest(method: "PATCH",
+                  subPath: "channels/\(slug)/stream-info",
+                  body: ["category_id": categoryId])
+        { ok, _ in
+            onComplete(ok)
+        }
+    }
+
+    func searchCategories(query: String, onComplete: @escaping ([KickCategory]?) -> Void) {
+        guard var components =
+            URLComponents(string: "https://search.kick.com/collections/subcategory_index/documents/search")
+        else {
+            onComplete(nil)
+            return
+        }
+        components.queryItems = [
+            URLQueryItem(name: "q", value: query),
+            URLQueryItem(name: "query_by", value: "name"),
+        ]
+        guard let url = components.url else {
+            onComplete(nil)
+            return
+        }
+        var request = URLRequest(url: url)
+        request.setValue("application/json, text/plain, */*", forHTTPHeaderField: "Accept")
+        request.setValue("nXIMW0iEN6sMujFYjFuhdrSwVow3pDQu", forHTTPHeaderField: "X-Typesense-Api-Key")
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            DispatchQueue.main.async {
+                guard error == nil,
+                      let data,
+                      response?.http?.isSuccessful == true,
+                      let searchResponse = try? JSONDecoder().decode(KickCategorySearchResponse.self, from: data)
+                else {
+                    onComplete(nil)
+                    return
+                }
+                let categories = searchResponse.hits.map { $0.document }
+                onComplete(categories)
+            }
+        }
+        .resume()
     }
 
     private func doRequest(method: String,
