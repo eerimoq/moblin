@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 
 private func serialize(_ value: Any) -> Data {
     return (try? JSONSerialization.data(withJSONObject: value))!
@@ -167,6 +168,24 @@ struct TwitchApiChatBadges: Decodable {
 
 protocol TwitchApiDelegate: AnyObject {
     func twitchApiUnauthorized()
+}
+
+func fetchTwitchProfilePicture(username: String) async -> UIImage? {
+    guard let url = URL(string: "https://decapi.me/twitch/avatar/\(username)") else {
+        return nil
+    }
+    let request = URLRequest(url: url, timeoutInterval: 10)
+    guard let (data, _) = try? await URLSession.shared.data(for: request),
+          let imageUrlString = String(data: data, encoding: .utf8),
+          let profileUrl = URL(string: imageUrlString.trimmingCharacters(in: .whitespacesAndNewlines))
+    else {
+        return nil
+    }
+    let imageRequest = URLRequest(url: profileUrl, timeoutInterval: 10)
+    guard let (imageData, _) = try? await URLSession.shared.data(for: imageRequest) else {
+        return nil
+    }
+    return UIImage(data: imageData)
 }
 
 class TwitchApi {

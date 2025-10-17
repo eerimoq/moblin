@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 
 struct BadgeImage: Codable {
     let src: String
@@ -24,12 +25,17 @@ struct KickChatroom: Codable {
     let channel_id: Int
 }
 
+struct KickChannelUser: Codable {
+    let profile_pic: String?
+}
+
 struct KickChannel: Codable {
     // periphery:ignore
     let slug: String
     let chatroom: KickChatroom
     let livestream: KickLivestream?
     let subscriber_badges: [SubscriberBadge]?
+    let user: KickChannelUser?
 }
 
 struct KickUser: Codable {
@@ -77,6 +83,33 @@ func getKickUser(accessToken: String, onComplete: @escaping (KickUser?) -> Void)
         onComplete(try? JSONDecoder().decode(KickUser.self, from: data))
     }
     .resume()
+}
+
+func fetchKickProfilePicture(username: String) async -> UIImage? {
+    if let image = await fetchKickProfilePictureWithUsername(username) {
+        return image
+    }
+    if username.contains("_") {
+        let kebabUsername = username.replacingOccurrences(of: "_", with: "-")
+        return await fetchKickProfilePictureWithUsername(kebabUsername)
+    }
+    return nil
+}
+
+private func fetchKickProfilePictureWithUsername(_ username: String) async -> UIImage? {
+    guard let channelInfo = try? await getKickChannelInfo(channelName: username),
+          let profilePic = channelInfo.user?.profile_pic,
+          let imageUrl = URL(string: profilePic)
+    else {
+        return nil
+    }
+    guard let (data, response) = try? await httpGet(from: imageUrl) else {
+        return nil
+    }
+    if !response.isSuccessful {
+        return nil
+    }
+    return UIImage(data: data)
 }
 
 class KickApi {

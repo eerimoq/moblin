@@ -8,16 +8,6 @@ private let eventTimestampFormatter: DateFormatter = {
     return formatter
 }()
 
-private struct CatPrinterKickUser: Codable {
-    let profile_pic: String?
-}
-
-private struct CatPrinterKickUserResponse: Codable {
-    let user: CatPrinterKickUser?
-}
-
-private let jsonDecoder = JSONDecoder()
-
 enum CatPrinterEvent {
     case twitchFollow
     case twitchSubscribe
@@ -66,6 +56,14 @@ extension Model {
         }
     }
 
+    func printSnapshotCatPrinters(image: CIImage) {
+        for catPrinter in catPrinters.values where
+            getCatPrinterSettings(catPrinter: catPrinter)?.printSnapshots == true
+        {
+            catPrinter.print(image: image, feedPaperDelay: nil)
+        }
+    }
+
     func printEventCatPrinters(event: CatPrinterEvent, username: String, message: String) {
         Task { @MainActor in
             var image: CIImage?
@@ -86,6 +84,78 @@ extension Model {
                 }
             }
         }
+    }
+
+    func catPrinterPrintTestImage(device: SettingsCatPrinter) {
+        catPrinters[device.id]?.print(image: CIImage.black.cropped(to: .init(
+            origin: .zero,
+            size: .init(width: 100, height: 10)
+        )))
+    }
+
+    func isCatPrinterEnabled(device: SettingsCatPrinter) -> Bool {
+        device.enabled
+    }
+
+    func enableCatPrinter(device: SettingsCatPrinter) {
+        if !catPrinters.keys.contains(device.id) {
+            let catPrinter = CatPrinter()
+            catPrinter.delegate = self
+            catPrinters[device.id] = catPrinter
+        }
+        catPrinters[device.id]?.start(
+            deviceId: device.bluetoothPeripheralId,
+            meowSoundEnabled: device.faxMeowSound
+        )
+    }
+
+    func catPrinterSetFaxMeowSound(device: SettingsCatPrinter) {
+        catPrinters[device.id]?.setMeowSoundEnabled(meowSoundEnabled: device.faxMeowSound)
+    }
+
+    func disableCatPrinter(device: SettingsCatPrinter) {
+        catPrinters[device.id]?.stop()
+    }
+
+    func getCatPrinterSettings(catPrinter: CatPrinter) -> SettingsCatPrinter? {
+        database.catPrinters.devices.first(where: { catPrinters[$0.id] === catPrinter })
+    }
+
+    func setCurrentCatPrinter(device: SettingsCatPrinter) {
+        currentCatPrinterSettings = device
+        statusTopRight.catPrinterState = getCatPrinterState(device: device)
+    }
+
+    func getCatPrinterState(device: SettingsCatPrinter) -> CatPrinterState {
+        catPrinters[device.id]?.getState() ?? .disconnected
+    }
+
+    func autoStartCatPrinters() {
+        for device in database.catPrinters.devices where device.enabled {
+            enableCatPrinter(device: device)
+        }
+    }
+
+    func stopCatPrinters() {
+        for catPrinter in catPrinters.values {
+            catPrinter.stop()
+        }
+    }
+
+    func isAnyConnectedCatPrinterPrintingChat() -> Bool {
+        catPrinters.values.contains(where: {
+            $0.getState() == .connected && getCatPrinterSettings(catPrinter: $0)?.printChat == true
+        })
+    }
+
+    func isAnyCatPrinterConfigured() -> Bool {
+        database.catPrinters.devices.contains(where: { $0.enabled })
+    }
+
+    func areAllCatPrintersConnected() -> Bool {
+        !catPrinters.values.contains(where: {
+            getCatPrinterSettings(catPrinter: $0)?.enabled == true && $0.getState() != .connected
+        })
     }
 
     private func isCatPrinterEventEnabled(event: CatPrinterEvent, settings: SettingsCatPrinter) -> Bool {
@@ -169,134 +239,6 @@ extension Model {
         default:
             return nil
         }
-    }
-
-    private func fetchTwitchProfilePicture(username: String) async -> UIImage? {
-        guard let url = URL(string: "https://decapi.me/twitch/avatar/\(username)") else {
-            return nil
-        }
-        let request = URLRequest(url: url, timeoutInterval: 10)
-        guard let (data, _) = try? await URLSession.shared.data(for: request),
-              let imageUrlString = String(data: data, encoding: .utf8),
-              let profileUrl = URL(string: imageUrlString.trimmingCharacters(in: .whitespacesAndNewlines))
-        else {
-            return nil
-        }
-        let imageRequest = URLRequest(url: profileUrl, timeoutInterval: 10)
-        guard let (imageData, _) = try? await URLSession.shared.data(for: imageRequest) else {
-            return nil
-        }
-        return UIImage(data: imageData)
-    }
-
-    private func fetchKickProfilePicture(username: String) async -> UIImage? {
-        if let image = await fetchKickProfilePictureWithUsername(username) {
-            return image
-        }
-        if username.contains("_") {
-            let normalizedUsername = username.replacingOccurrences(of: "_", with: "-")
-            return await fetchKickProfilePictureWithUsername(normalizedUsername)
-        }
-        return nil
-    }
-
-    private func fetchKickProfilePictureWithUsername(_ username: String) async -> UIImage? {
-        guard let url = URL(string: "https://kick.com/api/v1/channels/\(username)") else {
-            return nil
-        }
-        let request = URLRequest(url: url, timeoutInterval: 10)
-        guard let (data, _) = try? await URLSession.shared.data(for: request),
-              let userResponse = try? jsonDecoder.decode(CatPrinterKickUserResponse.self, from: data),
-              let profilePicUrl = userResponse.user?.profile_pic,
-              let imageUrl = URL(string: profilePicUrl)
-        else {
-            return nil
-        }
-        let imageRequest = URLRequest(url: imageUrl, timeoutInterval: 10)
-        guard let (imageData, _) = try? await URLSession.shared.data(for: imageRequest) else {
-            return nil
-        }
-        return UIImage(data: imageData)
-    }
-
-    func printSnapshotCatPrinters(image: CIImage) {
-        for catPrinter in catPrinters.values where
-            getCatPrinterSettings(catPrinter: catPrinter)?.printSnapshots == true
-        {
-            catPrinter.print(image: image, feedPaperDelay: nil)
-        }
-    }
-
-    func catPrinterPrintTestImage(device: SettingsCatPrinter) {
-        catPrinters[device.id]?.print(image: CIImage.black.cropped(to: .init(
-            origin: .zero,
-            size: .init(width: 100, height: 10)
-        )))
-    }
-
-    func isCatPrinterEnabled(device: SettingsCatPrinter) -> Bool {
-        device.enabled
-    }
-
-    func enableCatPrinter(device: SettingsCatPrinter) {
-        if !catPrinters.keys.contains(device.id) {
-            let catPrinter = CatPrinter()
-            catPrinter.delegate = self
-            catPrinters[device.id] = catPrinter
-        }
-        catPrinters[device.id]?.start(
-            deviceId: device.bluetoothPeripheralId,
-            meowSoundEnabled: device.faxMeowSound
-        )
-    }
-
-    func catPrinterSetFaxMeowSound(device: SettingsCatPrinter) {
-        catPrinters[device.id]?.setMeowSoundEnabled(meowSoundEnabled: device.faxMeowSound)
-    }
-
-    func disableCatPrinter(device: SettingsCatPrinter) {
-        catPrinters[device.id]?.stop()
-    }
-
-    func getCatPrinterSettings(catPrinter: CatPrinter) -> SettingsCatPrinter? {
-        database.catPrinters.devices.first(where: { catPrinters[$0.id] === catPrinter })
-    }
-
-    func setCurrentCatPrinter(device: SettingsCatPrinter) {
-        currentCatPrinterSettings = device
-        statusTopRight.catPrinterState = getCatPrinterState(device: device)
-    }
-
-    func getCatPrinterState(device: SettingsCatPrinter) -> CatPrinterState {
-        catPrinters[device.id]?.getState() ?? .disconnected
-    }
-
-    func autoStartCatPrinters() {
-        for device in database.catPrinters.devices where device.enabled {
-            enableCatPrinter(device: device)
-        }
-    }
-
-    func stopCatPrinters() {
-        for catPrinter in catPrinters.values {
-            catPrinter.stop()
-        }
-    }
-
-    func isAnyConnectedCatPrinterPrintingChat() -> Bool {
-        catPrinters.values.contains(where: {
-            $0.getState() == .connected && getCatPrinterSettings(catPrinter: $0)?.printChat == true
-        })
-    }
-
-    func isAnyCatPrinterConfigured() -> Bool {
-        database.catPrinters.devices.contains(where: { $0.enabled })
-    }
-
-    func areAllCatPrintersConnected() -> Bool {
-        !catPrinters.values.contains(where: {
-            getCatPrinterSettings(catPrinter: $0)?.enabled == true && $0.getState() != .connected
-        })
     }
 }
 
