@@ -200,91 +200,83 @@ extension Model: KickPusherDelegate {
     }
 
     func kickPusherSubscription(event: KickPusherSubscriptionEvent) {
-        DispatchQueue.main.async {
-            let text = String(localized: "just subscribed! They've been subscribed for \(event.months) months!")
-            if self.stream.kickToastAlerts.subscriptions {
-                self.makeToast(title: "🎉 \(event.username) \(text)")
-            }
-            if self.stream.kickChatAlerts.subscriptions {
-                self.appendKickChatAlertMessage(
-                    user: event.username,
-                    text: text,
-                    title: String(localized: "New subscriber"),
-                    color: .cyan,
-                    image: "party.popper"
-                )
-            }
-            self.playAlert(alert: .kickSubscription(event: event))
-            self.printEventCatPrinters(event: .kickSubscription, username: event.username, message: text)
+        let text = String(localized: "just subscribed! They've been subscribed for \(event.months) months!")
+        if stream.kickToastAlerts.subscriptions {
+            makeToast(title: "🎉 \(event.username) \(text)")
         }
+        if stream.kickChatAlerts.subscriptions {
+            appendKickChatAlertMessage(
+                user: event.username,
+                text: text,
+                title: String(localized: "New subscriber"),
+                color: .cyan,
+                image: "party.popper"
+            )
+        }
+        playAlert(alert: .kickSubscription(event: event))
+        printEventCatPrinters(event: .kickSubscription, username: event.username, message: text)
     }
 
     func kickPusherGiftedSubscription(event: KickPusherGiftedSubscriptionsEvent) {
-        DispatchQueue.main.async {
-            let user = event.gifter_username
-            let text =
-                String(localized: """
-                just gifted \(event.gifted_usernames.count) subscription(s)! \
-                They've gifted \(event.gifter_total) in total!
-                """)
-            if self.stream.kickChatAlerts.giftedSubscriptions {
-                self.makeToast(title: "🎁 \(user) \(text)")
-            }
-            if self.stream.kickChatAlerts.giftedSubscriptions {
-                self.appendKickChatAlertMessage(
-                    user: user,
-                    text: text,
-                    title: String(localized: "Gift subscriptions"),
-                    color: .cyan,
-                    image: "gift"
-                )
-            }
-            self.playAlert(alert: .kickGiftedSubscriptions(event: event))
-            self.printEventCatPrinters(event: .kickGiftedSubscriptions, username: user, message: text)
+        let user = event.gifter_username
+        let text =
+            String(localized: """
+            just gifted \(event.gifted_usernames.count) subscription(s)! \
+            They've gifted \(event.gifter_total) in total!
+            """)
+        if stream.kickChatAlerts.giftedSubscriptions {
+            makeToast(title: "🎁 \(user) \(text)")
         }
+        if stream.kickChatAlerts.giftedSubscriptions {
+            appendKickChatAlertMessage(
+                user: user,
+                text: text,
+                title: String(localized: "Gift subscriptions"),
+                color: .cyan,
+                image: "gift"
+            )
+        }
+        playAlert(alert: .kickGiftedSubscriptions(event: event))
+        printEventCatPrinters(event: .kickGiftedSubscriptions, username: user, message: text)
     }
 
     func kickPusherRewardRedeemed(event: KickPusherRewardRedeemedEvent) {
-        DispatchQueue.main.async {
-            let user = event.username
-            let baseText = String(localized: "redeemed \(event.reward_title)")
-            let text = event.user_input.isEmpty ? baseText : "\(baseText): \(event.user_input)"
-            if self.stream.kickToastAlerts.rewards {
-                self.makeToast(title: "🎁 \(user) \(text)")
-            }
-            if self.stream.kickChatAlerts.rewards {
-                self.appendKickChatAlertMessage(
-                    user: user,
-                    text: text,
-                    title: String(localized: "Reward Redeemed"),
-                    color: .green,
-                    image: "medal.star"
-                )
-            }
-            self.playAlert(alert: .kickReward(event: event))
-            self.printEventCatPrinters(event: .kickReward, username: user, message: text)
+        let user = event.username
+        let baseText = String(localized: "redeemed \(event.reward_title)")
+        let text = event.user_input.isEmpty ? baseText : "\(baseText): \(event.user_input)"
+        if stream.kickToastAlerts.rewards {
+            makeToast(title: "🎁 \(user) \(text)")
         }
+        if stream.kickChatAlerts.rewards {
+            appendKickChatAlertMessage(
+                user: user,
+                text: text,
+                title: String(localized: "Reward Redeemed"),
+                color: .green,
+                image: "medal.star"
+            )
+        }
+        playAlert(alert: .kickReward(event: event))
+        printEventCatPrinters(event: .kickReward, username: user, message: text)
     }
 
     func kickPusherStreamHost(event: KickPusherStreamHostEvent) {
-        DispatchQueue.main.async {
-            let user = event.host_username
-            let text = String(localized: "is now hosting with \(event.number_viewers) viewers!")
-            if self.stream.kickToastAlerts.hosts {
-                self.makeToast(title: "📺 \(user) \(text)")
-            }
-            if self.stream.kickChatAlerts.hosts {
-                self.appendKickChatAlertMessage(
-                    user: user,
-                    text: text,
-                    title: String(localized: "Host"),
-                    color: .orange,
-                    image: "person.3"
-                )
-            }
-            self.playAlert(alert: .kickHost(event: event))
-            self.printEventCatPrinters(event: .kickHost, username: user, message: text)
+        let user = event.host_username
+        let text = String(localized: "is now hosting with \(event.number_viewers) viewers!")
+        if stream.kickToastAlerts.hosts {
+            makeToast(title: "📺 \(user) \(text)")
         }
+        if stream.kickChatAlerts.hosts {
+            appendKickChatAlertMessage(
+                user: user,
+                text: text,
+                title: String(localized: "Host"),
+                color: .orange,
+                image: "person.3"
+            )
+        }
+        playAlert(alert: .kickHost(event: event))
+        printEventCatPrinters(event: .kickHost, username: user, message: text)
     }
 
     func kickPusherUserBanned(event: KickPusherUserBannedEvent) {
@@ -311,25 +303,23 @@ extension Model: KickPusherDelegate {
     }
 
     func kickPusherKicksGifted(event: KickPusherKicksGiftedEvent) {
-        DispatchQueue.main.async {
-            let user = event.sender.username
-            let amount = countFormatter.format(event.gift.amount)
-            let text = String(localized: "sent \(event.gift.name) 💎 \(amount)")
-            let message = event.message.isEmpty ? text : "\(text) \(event.message)"
-            if self.stream.kickToastAlerts.isKicksEnabled(amount: event.gift.amount) {
-                self.makeToast(title: "\(user) \(message)")
-            }
-            if self.stream.kickChatAlerts.isKicksEnabled(amount: event.gift.amount) {
-                self.appendKickChatAlertMessage(
-                    user: user,
-                    text: message,
-                    title: String(localized: "Kicks"),
-                    color: .green,
-                    image: "suit.diamond"
-                )
-            }
-            self.playAlert(alert: .kickKicks(event: event))
-            self.printEventCatPrinters(event: .kickKicks(amount: event.gift.amount), username: user, message: message)
+        let user = event.sender.username
+        let amount = countFormatter.format(event.gift.amount)
+        let text = String(localized: "sent \(event.gift.name) 💎 \(amount)")
+        let message = event.message.isEmpty ? text : "\(text) \(event.message)"
+        if stream.kickToastAlerts.isKicksEnabled(amount: event.gift.amount) {
+            makeToast(title: "\(user) \(message)")
         }
+        if stream.kickChatAlerts.isKicksEnabled(amount: event.gift.amount) {
+            appendKickChatAlertMessage(
+                user: user,
+                text: message,
+                title: String(localized: "Kicks"),
+                color: .green,
+                image: "suit.diamond"
+            )
+        }
+        playAlert(alert: .kickKicks(event: event))
+        printEventCatPrinters(event: .kickKicks(amount: event.gift.amount), username: user, message: message)
     }
 }

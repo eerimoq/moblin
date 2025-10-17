@@ -117,9 +117,7 @@ extension Model {
                 if offset > speechToTextAlertMatchOffset {
                     speechToTextAlertMatchOffset = offset
                 }
-                DispatchQueue.main.async {
-                    self.playAlert(alert: .speechToTextString(string.id))
-                }
+                self.playAlert(alert: .speechToTextString(string.id))
             }
         }
     }

@@ -1815,14 +1815,14 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         bonding.statisticsFormatter.setNetworkInterfaceNames(database.networkInterfaceNames)
     }
 
-    @MainActor
     func playAlert(alert: AlertsEffectAlert) {
         for alertsEffect in enabledAlertsEffects {
-            alertsEffect.play(alert: alert)
+            DispatchQueue.main.async {
+                alertsEffect.play(alert: alert)
+            }
         }
     }
 
-    @MainActor
     func testAlert(alert: AlertsEffectAlert) {
         playAlert(alert: alert)
     }

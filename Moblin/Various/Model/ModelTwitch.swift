@@ -260,21 +260,19 @@ extension Model: TwitchEventSubDelegate {
     }
 
     func twitchEventSubChannelFollow(event: TwitchEventSubNotificationChannelFollowEvent) {
-        DispatchQueue.main.async {
-            let text = String(localized: "just followed!")
-            if self.stream.twitchToastAlerts.follows {
-                self.makeToast(title: "\(event.user_name) \(text)")
-            }
-            self.playAlert(alert: .twitchFollow(event))
-            if self.stream.twitchChatAlerts.follows {
-                self.appendTwitchChatAlertMessage(
-                    user: event.user_name,
-                    text: text,
-                    title: String(localized: "New follower"),
-                    color: .pink,
-                    kind: .newFollower
-                )
-            }
+        let text = String(localized: "just followed!")
+        if stream.twitchToastAlerts.follows {
+            makeToast(title: "\(event.user_name) \(text)")
+        }
+        playAlert(alert: .twitchFollow(event))
+        if stream.twitchChatAlerts.follows {
+            appendTwitchChatAlertMessage(
+                user: event.user_name,
+                text: text,
+                title: String(localized: "New follower"),
+                color: .pink,
+                kind: .newFollower
+            )
         }
     }
 
@@ -282,149 +280,122 @@ extension Model: TwitchEventSubDelegate {
         guard !event.is_gift else {
             return
         }
-        DispatchQueue.main.async {
-            let text = String(localized: "just subscribed tier \(event.tierAsNumber())!")
-            if self.stream.twitchToastAlerts.subscriptions {
-                self.makeToast(title: "\(event.user_name) \(text)")
-            }
-            self.playAlert(alert: .twitchSubscribe(event))
-            if self.stream.twitchChatAlerts.subscriptions {
-                self.appendTwitchChatAlertMessage(
-                    user: event.user_name,
-                    text: text,
-                    title: String(localized: "New subscriber"),
-                    color: .cyan,
-                    image: "party.popper"
-                )
-            }
-            self.printEventCatPrinters(event: .twitchSubscribe, username: event.user_name, message: text)
+        let text = String(localized: "just subscribed tier \(event.tierAsNumber())!")
+        if stream.twitchToastAlerts.subscriptions {
+            makeToast(title: "\(event.user_name) \(text)")
         }
+        playAlert(alert: .twitchSubscribe(event))
+        if stream.twitchChatAlerts.subscriptions {
+            appendTwitchChatAlertMessage(
+                user: event.user_name,
+                text: text,
+                title: String(localized: "New subscriber"),
+                color: .cyan,
+                image: "party.popper"
+            )
+        }
+        printEventCatPrinters(event: .twitchSubscribe, username: event.user_name, message: text)
     }
 
     func twitchEventSubChannelSubscriptionGift(event: TwitchEventSubNotificationChannelSubscriptionGiftEvent) {
-        DispatchQueue.main.async {
-            let user = event.user_name ?? String(localized: "Anonymous")
-            let text =
-                String(localized: "just gifted \(event.total) tier \(event.tierAsNumber()) subscriptions!")
-            if self.stream.twitchToastAlerts.giftSubscriptions {
-                self.makeToast(title: "\(user) \(text)")
-            }
-            self.playAlert(alert: .twitchSubscrptionGift(event))
-            if self.stream.twitchChatAlerts.giftSubscriptions {
-                self.appendTwitchChatAlertMessage(
-                    user: user,
-                    text: text,
-                    title: String(localized: "Gift subscriptions"),
-                    color: .cyan,
-                    image: "gift"
-                )
-            }
-            self.printEventCatPrinters(event: .twitchSubscrptionGift, username: user, message: text)
+        let user = event.user_name ?? String(localized: "Anonymous")
+        let text =
+            String(localized: "just gifted \(event.total) tier \(event.tierAsNumber()) subscriptions!")
+        if stream.twitchToastAlerts.giftSubscriptions {
+            makeToast(title: "\(user) \(text)")
         }
+        playAlert(alert: .twitchSubscrptionGift(event))
+        if stream.twitchChatAlerts.giftSubscriptions {
+            appendTwitchChatAlertMessage(
+                user: user,
+                text: text,
+                title: String(localized: "Gift subscriptions"),
+                color: .cyan,
+                image: "gift"
+            )
+        }
+        printEventCatPrinters(event: .twitchSubscrptionGift, username: user, message: text)
     }
 
     func twitchEventSubChannelSubscriptionMessage(
         event: TwitchEventSubNotificationChannelSubscriptionMessageEvent
     ) {
-        DispatchQueue.main.async {
-            let text = String(localized: """
-            just resubscribed tier \(event.tierAsNumber()) for \(event.cumulative_months) \
-            months! \(event.message.text)
-            """)
-            if self.stream.twitchToastAlerts.resubscriptions {
-                self.makeToast(title: "\(event.user_name) \(text)")
-            }
-            self.playAlert(alert: .twitchResubscribe(event))
-            if self.stream.twitchChatAlerts.resubscriptions {
-                self.appendTwitchChatAlertMessage(
-                    user: event.user_name,
-                    text: text,
-                    title: String(localized: "New resubscribe"),
-                    color: .cyan,
-                    image: "party.popper"
-                )
-            }
-            self.printEventCatPrinters(event: .twitchResubscribe, username: event.user_name, message: text)
+        let text = String(localized: """
+        just resubscribed tier \(event.tierAsNumber()) for \(event.cumulative_months) \
+        months! \(event.message.text)
+        """)
+        if stream.twitchToastAlerts.resubscriptions {
+            makeToast(title: "\(event.user_name) \(text)")
         }
+        playAlert(alert: .twitchResubscribe(event))
+        if stream.twitchChatAlerts.resubscriptions {
+            appendTwitchChatAlertMessage(
+                user: event.user_name,
+                text: text,
+                title: String(localized: "New resubscribe"),
+                color: .cyan,
+                image: "party.popper"
+            )
+        }
+        printEventCatPrinters(event: .twitchResubscribe, username: event.user_name, message: text)
     }
 
     func twitchEventSubChannelPointsCustomRewardRedemptionAdd(
         event: TwitchEventSubNotificationChannelPointsCustomRewardRedemptionAddEvent
     ) {
-        DispatchQueue.main.async {
-            let text = String(localized: "redeemed \(event.reward.title)!")
-            if self.stream.twitchToastAlerts.rewards {
-                self.makeToast(title: "\(event.user_name) \(text)")
-            }
-            if self.stream.twitchChatAlerts.rewards {
-                self.appendTwitchChatAlertMessage(
-                    user: event.user_name,
-                    text: text,
-                    title: String(localized: "Reward redemption"),
-                    color: .blue,
-                    image: "medal.star"
-                )
-            }
+        let text = String(localized: "redeemed \(event.reward.title)!")
+        if stream.twitchToastAlerts.rewards {
+            makeToast(title: "\(event.user_name) \(text)")
+        }
+        if stream.twitchChatAlerts.rewards {
+            appendTwitchChatAlertMessage(
+                user: event.user_name,
+                text: text,
+                title: String(localized: "Reward redemption"),
+                color: .blue,
+                image: "medal.star"
+            )
         }
     }
 
     func twitchEventSubChannelRaid(event: TwitchEventSubChannelRaidEvent) {
-        DispatchQueue.main.async {
-            let text = String(localized: "raided with a party of \(event.viewers)!")
-            if self.stream.twitchToastAlerts.raids {
-                self.makeToast(title: "\(event.from_broadcaster_user_name) \(text)")
-            }
-            self.playAlert(alert: .twitchRaid(event))
-            if self.stream.twitchChatAlerts.raids {
-                self.appendTwitchChatAlertMessage(
-                    user: event.from_broadcaster_user_name,
-                    text: text,
-                    title: String(localized: "Raid"),
-                    color: .pink,
-                    image: "person.3"
-                )
-            }
-            self.printEventCatPrinters(event: .twitchRaid, username: event.from_broadcaster_user_name, message: text)
+        let text = String(localized: "raided with a party of \(event.viewers)!")
+        if stream.twitchToastAlerts.raids {
+            makeToast(title: "\(event.from_broadcaster_user_name) \(text)")
         }
+        playAlert(alert: .twitchRaid(event))
+        if stream.twitchChatAlerts.raids {
+            appendTwitchChatAlertMessage(
+                user: event.from_broadcaster_user_name,
+                text: text,
+                title: String(localized: "Raid"),
+                color: .pink,
+                image: "person.3"
+            )
+        }
+        printEventCatPrinters(event: .twitchRaid, username: event.from_broadcaster_user_name, message: text)
     }
 
     func twitchEventSubChannelCheer(event: TwitchEventSubChannelCheerEvent) {
-        DispatchQueue.main.async {
-            let user = event.user_name ?? String(localized: "Anonymous")
-            let bits = countFormatter.format(event.bits)
-            let text = String(localized: "cheered \(bits) bits!")
-            if self.stream.twitchToastAlerts.isBitsEnabled(amount: event.bits) {
-                self.makeToast(title: "\(user) \(text)", subTitle: event.message)
-            }
-            self.playAlert(alert: .twitchCheer(event))
-            if self.stream.twitchChatAlerts.isBitsEnabled(amount: event.bits) {
-                self.appendTwitchChatAlertMessage(
-                    user: user,
-                    text: "\(text) \(event.message)",
-                    title: String(localized: "Cheer"),
-                    color: .green,
-                    image: "suit.diamond",
-                    bits: ""
-                )
-            }
-            let message = event.message.isEmpty ? text : "\(text) \(event.message)"
-            self.printEventCatPrinters(event: .twitchCheer(amount: event.bits), username: user, message: message)
+        let user = event.user_name ?? String(localized: "Anonymous")
+        let bits = countFormatter.format(event.bits)
+        let text = String(localized: "cheered \(bits) bits!")
+        if stream.twitchToastAlerts.isBitsEnabled(amount: event.bits) {
+            makeToast(title: "\(user) \(text)", subTitle: event.message)
         }
-    }
-
-    private func updateHypeTrainStatus(level: Int, progress: Int, goal: Int) {
-        let percentage = Int(100 * Float(progress) / Float(goal))
-        hypeTrain.status = "LVL \(level), \(percentage)%"
-    }
-
-    private func startHypeTrainTimer(timeout: Double) {
-        hypeTrain.timer.startSingleShot(timeout: timeout) { [weak self] in
-            self?.removeHypeTrain()
+        playAlert(alert: .twitchCheer(event))
+        if stream.twitchChatAlerts.isBitsEnabled(amount: event.bits) {
+            appendTwitchChatAlertMessage(
+                user: user,
+                text: "\(text) \(event.message)",
+                title: String(localized: "Cheer"),
+                color: .green,
+                image: "suit.diamond",
+                bits: ""
+            )
         }
-    }
-
-    private func stopHypeTrainTimer() {
-        hypeTrain.timer.stop()
+        let message = event.message.isEmpty ? text : "\(text) \(event.message)"
+        printEventCatPrinters(event: .twitchCheer(amount: event.bits), username: user, message: message)
     }
 
     func twitchEventSubChannelHypeTrainBegin(event: TwitchEventSubChannelHypeTrainBeginEvent) {
@@ -466,6 +437,27 @@ extension Model: TwitchEventSubDelegate {
         stopHypeTrainTimer()
     }
 
+    func twitchEventSubUnauthorized() {
+        twitchApiUnauthorized()
+    }
+
+    func twitchEventSubNotification(message _: String) {}
+
+    private func updateHypeTrainStatus(level: Int, progress: Int, goal: Int) {
+        let percentage = Int(100 * Float(progress) / Float(goal))
+        hypeTrain.status = "LVL \(level), \(percentage)%"
+    }
+
+    private func startHypeTrainTimer(timeout: Double) {
+        hypeTrain.timer.startSingleShot(timeout: timeout) { [weak self] in
+            self?.removeHypeTrain()
+        }
+    }
+
+    private func stopHypeTrainTimer() {
+        hypeTrain.timer.stop()
+    }
+
     private func appendTwitchChatAlertMessage(
         user: String,
         text: String,
@@ -501,12 +493,6 @@ extension Model: TwitchEventSubDelegate {
                           ),
                           live: true)
     }
-
-    func twitchEventSubUnauthorized() {
-        twitchApiUnauthorized()
-    }
-
-    func twitchEventSubNotification(message _: String) {}
 }
 
 extension Model: TwitchChatDelegate {
