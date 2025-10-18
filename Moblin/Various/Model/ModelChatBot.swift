@@ -450,7 +450,7 @@ extension Model {
     }
 
     private func handleChatBotMessageStreamCategory(command: ChatBotCommand) {
-        fetchTwitchGameId(name: command.rest()) { gameId in
+        fetchTwitchGameId(stream: stream, name: command.rest()) { gameId in
             guard let gameId else {
                 return
             }

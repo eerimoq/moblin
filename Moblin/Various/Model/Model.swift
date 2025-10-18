@@ -480,6 +480,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     let twitchAuth = TwitchAuth()
     var twitchAuthOnComplete: ((_ accessToken: String) -> Void)?
     var numberOfTwitchViewers: Int?
+    let twitchSearchCategoriesTimer = SimpleTimer(queue: .main)
     var drawOnStreamSize: CGSize = .zero
     var webBrowser: WKWebView?
     let webBrowserController = WebBrowserController()

@@ -84,17 +84,34 @@ extension Model {
             }
     }
 
-    func fetchTwitchGameId(name: String, onComplete: @escaping (String?) -> Void) {
+    func fetchTwitchGameId(stream: SettingsStream, name: String, onComplete: @escaping (String?) -> Void) {
         TwitchApi(stream.twitchAccessToken)
-            .searchCategories(query: name) {
-                onComplete($0?.data.first?.id)
+            .getGames(names: [name]) {
+                onComplete($0?.first?.id)
             }
     }
 
-    func fetchTwitchGames(names: [String], onComplete: @escaping ([TwitchApiGameData]?) -> Void) {
+    func searchTwitchCategories(
+        stream: SettingsStream,
+        filter: String,
+        onComplete: @escaping ([TwitchApiGameData]?) -> Void
+    ) {
+        twitchSearchCategoriesTimer.startSingleShot(timeout: 0.5) {
+            TwitchApi(stream.twitchAccessToken)
+                .searchCategories(query: filter) {
+                    onComplete($0)
+                }
+        }
+    }
+
+    func fetchTwitchGames(
+        stream: SettingsStream,
+        names: [String],
+        onComplete: @escaping ([TwitchApiGameData]?) -> Void
+    ) {
         TwitchApi(stream.twitchAccessToken)
             .getGames(names: names) {
-                onComplete($0?.data)
+                onComplete($0)
             }
     }
 
@@ -109,49 +126,27 @@ extension Model {
         stream: SettingsStream,
         onComplete: @escaping (TwitchApiChannelInformationData) -> Void
     ) {
-        guard stream.twitchLoggedIn else {
-            makeNotLoggedInToTwitchToast()
-            return
-        }
         TwitchApi(stream.twitchAccessToken)
-            .getChannelInformation(broadcasterId: stream.twitchChannelId) { channelInformation in
-                guard let channelInformation else {
+            .getChannelInformation(broadcasterId: stream.twitchChannelId) { info in
+                guard let info else {
                     return
                 }
-                onComplete(channelInformation)
+                onComplete(info)
             }
     }
 
     func setTwitchStreamTitle(stream: SettingsStream, title: String) {
-        guard stream.twitchLoggedIn else {
-            makeNotLoggedInToTwitchToast()
-            return
-        }
         TwitchApi(stream.twitchAccessToken)
             .modifyChannelInformation(broadcasterId: stream.twitchChannelId,
                                       categoryId: nil,
-                                      title: title)
-            { ok in
-                if !ok {
-                    self.makeErrorToast(title: "Failed to set stream title")
-                }
-            }
+                                      title: title) { _ in }
     }
 
     func setTwitchStreamCategory(stream: SettingsStream, categoryId: String) {
-        guard stream.twitchLoggedIn else {
-            makeNotLoggedInToTwitchToast()
-            return
-        }
         TwitchApi(stream.twitchAccessToken)
             .modifyChannelInformation(broadcasterId: stream.twitchChannelId,
                                       categoryId: categoryId,
-                                      title: nil)
-            { ok in
-                if !ok {
-                    self.makeErrorToast(title: "Failed to set stream category")
-                }
-            }
+                                      title: nil) { _ in }
     }
 
     func twitchLogin(stream: SettingsStream, onComplete: (() -> Void)? = nil) {
