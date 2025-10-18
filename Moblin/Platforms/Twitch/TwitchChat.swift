@@ -33,30 +33,20 @@ extension StringProtocol where Self: RangeReplaceableCollection {
 }
 
 private struct TwitchEmote {
-    private let identifier: String
-    let range: ClosedRange<Int>
-
-    var imageUrl: URL {
-        get throws {
-            guard let url = URL(string: "https://static-cdn.jtvnw.net/emoticons/v2/\(identifier)/default/dark/3.0")
-            else {
-                throw EmoteError.invalidImageURL
-            }
-            return url
-        }
-    }
-
-    static func emotes(from string: String) -> [TwitchEmote] {
+    static func emotes(from string: String) -> [ChatMessageEmote] {
         let emoteDefinitions = string.split(separator: "/")
         return emoteDefinitions.flatMap { emotes(fromDefinition: $0) }
     }
 
-    private static func emotes(fromDefinition definition: Substring) -> [TwitchEmote] {
+    private static func emotes(fromDefinition definition: Substring) -> [ChatMessageEmote] {
         let parts = definition.split(separator: ":")
-        guard parts.count == 2, let emoteId = parts.first, let emoteRangesString = parts.last else {
+        guard parts.count == 2,
+              let emoteId = parts.first,
+              let emoteRangesString = parts.last,
+              let url = URL(string: "https://static-cdn.jtvnw.net/emoticons/v2/\(emoteId)/default/dark/3.0") else {
             return []
         }
-        var emotes: [TwitchEmote] = []
+        var emotes: [ChatMessageEmote] = []
         for emoteRangeString in emoteRangesString.split(separator: ",") {
             let rangeIndexStrings = emoteRangeString.split(separator: "-")
             guard rangeIndexStrings.count == 2,
@@ -68,7 +58,7 @@ private struct TwitchEmote {
             else {
                 continue
             }
-            emotes.append(TwitchEmote(identifier: String(emoteId), range: rangeStartIndex ... rangeEndIndex))
+            emotes.append(ChatMessageEmote(url: url, range: rangeStartIndex ... rangeEndIndex))
         }
         return emotes
     }
@@ -81,7 +71,7 @@ private enum EmoteError: Error {
 private struct ChatMessage {
     let id: String?
     let channel: String
-    let emotes: [TwitchEmote]
+    let emotes: [ChatMessageEmote]
     let badges: [String]
     let displayName: String
     let user: String
@@ -250,7 +240,7 @@ private struct Message {
         tags["color"]
     }
 
-    var emotes: [TwitchEmote] {
+    var emotes: [ChatMessageEmote] {
         guard let emoteString = tags["emotes"] else {
             return []
         }
@@ -299,18 +289,6 @@ private struct Message {
     var replyText: String? {
         tags["reply-parent-msg-body"]
     }
-}
-
-private func getEmotes(from message: ChatMessage) -> [ChatMessageEmote] {
-    var emotes: [ChatMessageEmote] = []
-    for emote in message.emotes {
-        do {
-            try emotes.append(ChatMessageEmote(url: emote.imageUrl, range: emote.range))
-        } catch {
-            logger.warning("twitch: chat: Failed to get emote URL")
-        }
-    }
-    return emotes
 }
 
 private class Badges {
@@ -547,7 +525,6 @@ final class TwitchChat {
         guard let message = ChatMessage(message) else {
             return
         }
-        let emotes = getEmotes(from: message)
         var badgeUrls: [URL] = []
         for badge in message.badges {
             if let badgeUrl = badges.getUrl(badgeId: badge), let badgeUrl = URL(string: badgeUrl) {
@@ -563,7 +540,7 @@ final class TwitchChat {
         }
         let segments = createSegments(
             text: text,
-            emotes: emotes,
+            emotes: message.emotes,
             emotesManager: self.emotes,
             bits: message.bits
         )
