@@ -166,17 +166,6 @@ struct StreamTwitchSettingsView: View {
                     value: stream.twitchChannelId,
                     onSubmit: submitChannelId
                 )
-            } footer: {
-                VStack(alignment: .leading) {
-                    Text("Needed for channel chat emotes and number of viewers.")
-                    Text("")
-                    Text(
-                        """
-                        Use https://streamscharts.com/tools/convert-username to convert your \
-                        channel name to your channel id.
-                        """
-                    )
-                }
             }
             if false {
                 Section {

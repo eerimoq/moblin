@@ -59,17 +59,6 @@ struct StreamWizardTwitchSettingsView: View {
                     .disableAutocorrection(true)
             } header: {
                 Text("Channel id")
-            } footer: {
-                VStack(alignment: .leading) {
-                    Text("Needed for channel chat emotes and number of viewers.")
-                    Text("")
-                    Text(
-                        """
-                        Use https://streamscharts.com/tools/convert-username to convert your \
-                        channel name to your channel id.
-                        """
-                    )
-                }
             }
             Section {
                 NavigationLink {
