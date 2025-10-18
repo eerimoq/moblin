@@ -32,11 +32,11 @@ extension StringProtocol where Self: RangeReplaceableCollection {
     }
 }
 
-private struct Emote2 {
+private struct TwitchEmote {
     private let identifier: String
     let range: ClosedRange<Int>
 
-    var imageURL: URL {
+    var imageUrl: URL {
         get throws {
             guard let url = URL(string: "https://static-cdn.jtvnw.net/emoticons/v2/\(identifier)/default/dark/3.0")
             else {
@@ -46,17 +46,18 @@ private struct Emote2 {
         }
     }
 
-    static func emotes(from string: String) -> [Emote2] {
+    static func emotes(from string: String) -> [TwitchEmote] {
         let emoteDefinitions = string.split(separator: "/")
         return emoteDefinitions.flatMap { emotes(fromDefinition: $0) }
     }
 
-    private static func emotes(fromDefinition definition: Substring) -> [Emote2] {
+    private static func emotes(fromDefinition definition: Substring) -> [TwitchEmote] {
         let parts = definition.split(separator: ":")
-        guard parts.count == 2, let emoteID = parts.first, let emoteRangesString = parts.last else {
+        guard parts.count == 2, let emoteId = parts.first, let emoteRangesString = parts.last else {
             return []
         }
-        let emoteRanges = emoteRangesString.split(separator: ",").compactMap { emoteRangeString -> ClosedRange<Int>? in
+        var emotes: [TwitchEmote] = []
+        for emoteRangeString in emoteRangesString.split(separator: ",") {
             let rangeIndexStrings = emoteRangeString.split(separator: "-")
             guard rangeIndexStrings.count == 2,
                   let rangeStartIndexString = rangeIndexStrings.first,
@@ -65,11 +66,11 @@ private struct Emote2 {
                   let rangeEndIndex = Int(rangeEndIndexString),
                   rangeStartIndex <= rangeEndIndex
             else {
-                return nil
+                continue
             }
-            return rangeStartIndex ... rangeEndIndex
+            emotes.append(TwitchEmote(identifier: String(emoteId), range: rangeStartIndex ... rangeEndIndex))
         }
-        return emoteRanges.map { Emote2(identifier: String(emoteID), range: $0) }
+        return emotes
     }
 }
 
@@ -80,7 +81,7 @@ private enum EmoteError: Error {
 private struct ChatMessage {
     let id: String?
     let channel: String
-    let emotes: [Emote2]
+    let emotes: [TwitchEmote]
     let badges: [String]
     let displayName: String
     let user: String
@@ -249,11 +250,11 @@ private struct Message {
         tags["color"]
     }
 
-    var emotes: [Emote2] {
+    var emotes: [TwitchEmote] {
         guard let emoteString = tags["emotes"] else {
             return []
         }
-        return Emote2.emotes(from: emoteString)
+        return TwitchEmote.emotes(from: emoteString)
     }
 
     var badges: [String] {
@@ -304,7 +305,7 @@ private func getEmotes(from message: ChatMessage) -> [ChatMessageEmote] {
     var emotes: [ChatMessageEmote] = []
     for emote in message.emotes {
         do {
-            try emotes.append(ChatMessageEmote(url: emote.imageURL, range: emote.range))
+            try emotes.append(ChatMessageEmote(url: emote.imageUrl, range: emote.range))
         } catch {
             logger.warning("twitch: chat: Failed to get emote URL")
         }
