@@ -122,11 +122,11 @@ extension Model {
     }
 
     func searchKickCategories(query: String, onComplete: @escaping ([KickCategory]?) -> Void) {
-        createKickApi()?.searchCategories(query: query, onComplete: onComplete)
+        createKickApi(stream: stream)?.searchCategories(query: query, onComplete: onComplete)
     }
 
-    func setKickStreamCategory(stream _: SettingsStream, categoryId: Int) {
-        guard let kickApi = createKickApi() else {
+    func setKickStreamCategory(stream: SettingsStream, categoryId: Int) {
+        guard let kickApi = createKickApi(stream: stream) else {
             makeNotLoggedInToKickToast()
             return
         }
