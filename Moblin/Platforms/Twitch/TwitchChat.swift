@@ -32,7 +32,7 @@ extension StringProtocol where Self: RangeReplaceableCollection {
     }
 }
 
-private struct TwitchEmote {
+private enum TwitchEmote {
     static func emotes(from string: String) -> [ChatMessageEmote] {
         let emoteDefinitions = string.split(separator: "/")
         return emoteDefinitions.flatMap { emotes(fromDefinition: $0) }
@@ -43,7 +43,8 @@ private struct TwitchEmote {
         guard parts.count == 2,
               let emoteId = parts.first,
               let emoteRangesString = parts.last,
-              let url = URL(string: "https://static-cdn.jtvnw.net/emoticons/v2/\(emoteId)/default/dark/3.0") else {
+              let url = URL(string: "https://static-cdn.jtvnw.net/emoticons/v2/\(emoteId)/default/dark/3.0")
+        else {
             return []
         }
         var emotes: [ChatMessageEmote] = []
@@ -541,7 +542,7 @@ final class TwitchChat {
         let segments = createSegments(
             text: text,
             emotes: message.emotes,
-            emotesManager: self.emotes,
+            emotesManager: emotes,
             bits: message.bits
         )
         delegate?.twitchChatAppendMessage(
