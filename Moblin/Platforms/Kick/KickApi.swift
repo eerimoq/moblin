@@ -42,7 +42,7 @@ struct KickUser: Codable {
     let username: String
 }
 
-struct KickCategory: Codable {
+struct KickCategory: Codable, Identifiable {
     let id: String
     let category_id: Int
     let name: String

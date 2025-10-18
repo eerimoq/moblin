@@ -205,7 +205,7 @@ private struct KickCategoryPickerView: View {
                         guard !searchText.isEmpty else {
                             return
                         }
-                        model.searchKickCategories(query: searchText) { result in
+                        model.searchKickCategories(stream: stream, query: searchText) { result in
                             DispatchQueue.main.async {
                                 self.categories = result ?? []
                             }
@@ -213,7 +213,7 @@ private struct KickCategoryPickerView: View {
                     }
             }
             Section {
-                ForEach(categories, id: \.id) { category in
+                ForEach(categories) { category in
                     categoryButton(category: category)
                 }
             }
@@ -354,7 +354,7 @@ struct StreamKickSettingsView: View {
                         HStack {
                             Text("Category")
                             Spacer()
-                            Text(streamCategory.isEmpty ? "Not set" : streamCategory)
+                            Text(streamCategory)
                                 .foregroundColor(.gray)
                         }
                     }
