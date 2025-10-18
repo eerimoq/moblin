@@ -347,22 +347,15 @@ class TwitchApi {
         })
     }
 
-    func getGames(
-        names: [String],
+    func searchCategories(
+        query: String,
         onComplete: @escaping (TwitchApiGames?) -> Void
     ) {
-        guard var components = URLComponents(string: "https://api.twitch.tv/helix/games") else {
+        guard var components = URLComponents(string: "https://api.twitch.tv/helix/search/categories") else {
             onComplete(nil)
             return
         }
-        let normalizedNames = names.map { name in
-            name
-                .replacingOccurrences(of: "\u{2018}", with: "'")
-                .replacingOccurrences(of: "\u{2019}", with: "'")
-                .replacingOccurrences(of: "\u{201C}", with: "\"")
-                .replacingOccurrences(of: "\u{201D}", with: "\"")
-        }
-        components.queryItems = normalizedNames.map { URLQueryItem(name: "name", value: $0) }
+        components.queryItems = [URLQueryItem(name: "query", value: query)]
         guard let url = components.url else {
             onComplete(nil)
             return

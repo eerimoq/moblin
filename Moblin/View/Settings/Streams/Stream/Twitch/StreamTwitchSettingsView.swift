@@ -28,12 +28,7 @@ private struct TwitchCategoryPickerView: View {
         let categoryNames = ["IRL", "Just Chatting", "Food & Drink"]
         model.fetchTwitchGames(names: categoryNames) { games in
             DispatchQueue.main.async {
-                guard let games else {
-                    self.quickCategories = []
-                    return
-                }
-                let gamesDict = Dictionary(uniqueKeysWithValues: games.map { ($0.name, $0) })
-                self.quickCategories = categoryNames.compactMap { gamesDict[$0] }
+                self.quickCategories = games ?? []
             }
         }
     }
@@ -251,7 +246,7 @@ struct StreamTwitchSettingsView: View {
                             Text("Category")
                             Spacer()
                             Text(streamCategory.isEmpty ? "Not set" : streamCategory)
-                                .foregroundColor(.secondary)
+                                .foregroundColor(.gray)
                         }
                     }
                 }

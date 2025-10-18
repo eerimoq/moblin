@@ -86,16 +86,26 @@ extension Model {
 
     func fetchTwitchGameId(name: String, onComplete: @escaping (String?) -> Void) {
         TwitchApi(stream.twitchAccessToken)
-            .getGames(names: [name]) {
+            .searchCategories(query: name) {
                 onComplete($0?.data.first?.id)
             }
     }
 
     func fetchTwitchGames(names: [String], onComplete: @escaping ([TwitchApiGameData]?) -> Void) {
-        TwitchApi(stream.twitchAccessToken)
-            .getGames(names: names) {
-                onComplete($0?.data)
+        var games: [TwitchApiGameData] = []
+        var completed = 0
+        let api = TwitchApi(stream.twitchAccessToken)
+        for name in names {
+            api.searchCategories(query: name) { result in
+                if let game = result?.data.first {
+                    games.append(game)
+                }
+                completed += 1
+                if completed == names.count {
+                    onComplete(games.isEmpty ? nil : games)
+                }
             }
+        }
     }
 
     func makeNotLoggedInToTwitchToast() {

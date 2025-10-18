@@ -183,21 +183,12 @@ private struct KickCategoryPickerView: View {
 
     private func loadQuickCategories() {
         let categoryNames = ["IRL", "Just Chatting", "Slots & Casino"]
-        var loadedDict: [String: KickCategory] = [:]
-        let group = DispatchGroup()
-
         for categoryName in categoryNames {
-            group.enter()
             model.searchKickCategories(query: categoryName) { result in
                 if let category = result?.first {
-                    loadedDict[categoryName] = category
+                    self.quickCategories.append(category)
                 }
-                group.leave()
             }
-        }
-
-        group.notify(queue: .main) {
-            self.quickCategories = categoryNames.compactMap { loadedDict[$0] }
         }
     }
 
@@ -386,7 +377,7 @@ struct StreamKickSettingsView: View {
                             Text("Category")
                             Spacer()
                             Text(streamCategory.isEmpty ? "Not set" : streamCategory)
-                                .foregroundColor(.secondary)
+                                .foregroundColor(.gray)
                         }
                     }
                 }

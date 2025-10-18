@@ -126,11 +126,7 @@ extension Model {
     }
 
     func setKickStreamCategory(stream: SettingsStream, categoryId: Int) {
-        guard let kickApi = createKickApi(stream: stream) else {
-            makeNotLoggedInToKickToast()
-            return
-        }
-        kickApi.setStreamCategory(categoryId: categoryId) { ok in
+        createKickApi(stream: stream)?.setStreamCategory(categoryId: categoryId) { ok in
             if !ok {
                 self.makeErrorToast(title: "Failed to set stream category")
             }
