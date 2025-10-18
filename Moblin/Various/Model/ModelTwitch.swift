@@ -86,8 +86,15 @@ extension Model {
 
     func fetchTwitchGameId(name: String, onComplete: @escaping (String?) -> Void) {
         TwitchApi(stream.twitchAccessToken)
-            .getGames(names: [name]) {
+            .searchCategories(query: name) {
                 onComplete($0?.data.first?.id)
+            }
+    }
+
+    func fetchTwitchGames(names: [String], onComplete: @escaping ([TwitchApiGameData]?) -> Void) {
+        TwitchApi(stream.twitchAccessToken)
+            .getGames(names: names) {
+                onComplete($0?.data)
             }
     }
 

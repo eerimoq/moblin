@@ -1,5 +1,100 @@
 import SwiftUI
 
+private struct TwitchCategoryPickerView: View {
+    @EnvironmentObject var model: Model
+    @ObservedObject var stream: SettingsStream
+    @Binding var streamCategory: String
+    @State private var searchText: String = ""
+    @State private var quickCategories: [TwitchApiGameData] = []
+    @Environment(\.dismiss) var dismiss
+
+    private func setCategory(name: String) {
+        model.fetchTwitchGameId(name: name) { gameId in
+            guard let gameId else {
+                DispatchQueue.main.async {
+                    self.model.makeErrorToast(title: "Category not found")
+                }
+                return
+            }
+            self.model.setTwitchStreamCategory(stream: self.stream, categoryId: gameId)
+            DispatchQueue.main.async {
+                self.streamCategory = name
+                self.dismiss()
+            }
+        }
+    }
+
+    private func loadQuickCategories() {
+        let categoryNames = ["IRL", "Just Chatting", "Food & Drink"]
+        model.fetchTwitchGames(names: categoryNames) { games in
+            DispatchQueue.main.async {
+                self.quickCategories = games ?? []
+            }
+        }
+    }
+
+    private func twitchBoxArtUrl(_ url: String, width: Int = 40, height: Int = 50) -> String {
+        return url
+            .replacingOccurrences(of: "{width}", with: "\(width)")
+            .replacingOccurrences(of: "{height}", with: "\(height)")
+    }
+
+    private func categoryButton(game: TwitchApiGameData) -> some View {
+        Button {
+            model.setTwitchStreamCategory(stream: stream, categoryId: game.id)
+            streamCategory = game.name
+            dismiss()
+        } label: {
+            HStack {
+                if let boxArtUrl = game.box_art_url,
+                   let url = URL(string: twitchBoxArtUrl(boxArtUrl))
+                {
+                    AsyncImage(url: url) { image in
+                        image
+                            .resizable()
+                            .scaledToFill()
+                    } placeholder: {
+                        Color.gray.opacity(0.3)
+                    }
+                    .frame(width: 40, height: 50)
+                    .clipShape(RoundedRectangle(cornerRadius: 6))
+                }
+                Text(game.name)
+                    .foregroundColor(.primary)
+            }
+        }
+    }
+
+    var body: some View {
+        Form {
+            Section {
+                TextEditNavigationView(
+                    title: String(localized: "Search"),
+                    value: searchText,
+                    onSubmit: { value in
+                        setCategory(name: value)
+                    }
+                )
+            }
+            if !quickCategories.isEmpty {
+                Section {
+                    ForEach(quickCategories, id: \.id) { game in
+                        categoryButton(game: game)
+                    }
+                } header: {
+                    Text("Quick categories")
+                }
+            }
+        }
+        .navigationTitle("Category")
+        .onAppear {
+            if quickCategories.isEmpty {
+                loadQuickCategories()
+            }
+        }
+    }
+}
+
 struct TwitchAlertsSettingsView: View {
     let title: String
     @ObservedObject var alerts: SettingsTwitchAlerts
@@ -32,6 +127,7 @@ struct StreamTwitchSettingsView: View {
     var stream: SettingsStream
     @State var loggedIn: Bool
     @State var streamTitle: String?
+    @State var streamCategory: String = ""
 
     func submitChannelName(value: String) {
         stream.twitchChannelName = value
@@ -55,6 +151,7 @@ struct StreamTwitchSettingsView: View {
     private func getStreamTitle() {
         model.getTwitchChannelInformation(stream: stream) { channelInformation in
             streamTitle = channelInformation.title
+            streamCategory = channelInformation.game_name
         }
     }
 
@@ -140,6 +237,16 @@ struct StreamTwitchSettingsView: View {
                             } else {
                                 ProgressView()
                             }
+                        }
+                    }
+                    NavigationLink {
+                        TwitchCategoryPickerView(stream: stream, streamCategory: $streamCategory)
+                    } label: {
+                        HStack {
+                            Text("Category")
+                            Spacer()
+                            Text(streamCategory.isEmpty ? "Not set" : streamCategory)
+                                .foregroundColor(.gray)
                         }
                     }
                 }

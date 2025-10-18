@@ -151,6 +151,102 @@ private struct KickWebView: UIViewRepresentable {
     }
 }
 
+private struct KickCategoryPickerView: View {
+    @EnvironmentObject var model: Model
+    @ObservedObject var stream: SettingsStream
+    @Binding var streamCategory: String
+    @State private var searchText: String = ""
+    @State private var quickCategories: [KickCategory] = []
+    @Environment(\.dismiss) var dismiss
+
+    private func setCategory(name: String) {
+        model.searchKickCategories(query: name) { categories in
+            guard let categories, let firstCategory = categories.first else {
+                DispatchQueue.main.async {
+                    self.model.makeErrorToast(title: "Category not found")
+                }
+                return
+            }
+            guard let categoryId = Int(firstCategory.id) else {
+                DispatchQueue.main.async {
+                    self.model.makeErrorToast(title: "Invalid category ID")
+                }
+                return
+            }
+            self.model.setKickStreamCategory(stream: self.stream, categoryId: categoryId)
+            DispatchQueue.main.async {
+                self.streamCategory = firstCategory.name
+                self.dismiss()
+            }
+        }
+    }
+
+    private func loadQuickCategories() {
+        let categoryNames = ["IRL", "Just Chatting", "Slots & Casino"]
+        for categoryName in categoryNames {
+            model.searchKickCategories(query: categoryName) { result in
+                if let category = result?.first {
+                    self.quickCategories.append(category)
+                }
+            }
+        }
+    }
+
+    private func categoryButton(category: KickCategory) -> some View {
+        Button {
+            guard let categoryId = Int(category.id) else { return }
+            model.setKickStreamCategory(stream: stream, categoryId: categoryId)
+            streamCategory = category.name
+            dismiss()
+        } label: {
+            HStack {
+                if let imageUrl = category.src, let url = URL(string: imageUrl) {
+                    AsyncImage(url: url) { image in
+                        image
+                            .resizable()
+                            .scaledToFill()
+                    } placeholder: {
+                        Color.gray.opacity(0.3)
+                    }
+                    .frame(width: 40, height: 50)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                }
+                Text(category.name)
+                    .foregroundColor(.primary)
+            }
+        }
+    }
+
+    var body: some View {
+        Form {
+            Section {
+                TextEditNavigationView(
+                    title: String(localized: "Search"),
+                    value: searchText,
+                    onSubmit: { value in
+                        setCategory(name: value)
+                    }
+                )
+            }
+            if !quickCategories.isEmpty {
+                Section {
+                    ForEach(quickCategories, id: \.id) { category in
+                        categoryButton(category: category)
+                    }
+                } header: {
+                    Text("Quick categories")
+                }
+            }
+        }
+        .navigationTitle("Category")
+        .onAppear {
+            if quickCategories.isEmpty {
+                loadQuickCategories()
+            }
+        }
+    }
+}
+
 struct KickAlertsSettingsView: View {
     let title: String
     @ObservedObject var alerts: SettingsKickAlerts
@@ -184,6 +280,7 @@ struct StreamKickSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var stream: SettingsStream
     @State var streamTitle: String = ""
+    @State var streamCategory: String = ""
     @State var fetchChannelInfoFailed: Bool = false
 
     private func shouldFetchChannelInfo() -> Bool {
@@ -273,6 +370,16 @@ struct StreamKickSettingsView: View {
                         value: streamTitle,
                         onSubmit: submitStreamTitle
                     )
+                    NavigationLink {
+                        KickCategoryPickerView(stream: stream, streamCategory: $streamCategory)
+                    } label: {
+                        HStack {
+                            Text("Category")
+                            Spacer()
+                            Text(streamCategory.isEmpty ? "Not set" : streamCategory)
+                                .foregroundColor(.gray)
+                        }
+                    }
                 }
             }
             Section {
@@ -296,8 +403,11 @@ struct StreamKickSettingsView: View {
         }
         .onAppear {
             if stream.kickLoggedIn && !stream.kickChannelName.isEmpty && streamTitle.isEmpty {
-                model.getKickStreamTitle(stream: stream) {
-                    streamTitle = $0
+                model.getKickStreamInfo(stream: stream) { info in
+                    if let info {
+                        streamTitle = info.title
+                        streamCategory = info.categoryName ?? ""
+                    }
                 }
             }
             if shouldFetchChannelInfo() {

@@ -46,6 +46,7 @@ struct TwitchApiChannelPointsCustomRewards: Decodable {
 
 struct TwitchApiChannelInformationData: Decodable {
     let title: String
+    let game_name: String
 }
 
 struct TwitchApiChannelInformation: Decodable {
@@ -81,6 +82,7 @@ struct TwitchApiStreams: Decodable {
 struct TwitchApiGameData: Decodable {
     let id: String
     let name: String
+    let box_art_url: String?
 }
 
 struct TwitchApiGames: Decodable {
@@ -349,14 +351,46 @@ class TwitchApi {
         names: [String],
         onComplete: @escaping (TwitchApiGames?) -> Void
     ) {
-        let names = names.map { "name=\($0)" }.joined(separator: "&")
-        doGet(subPath: "games?\(names)", onComplete: { data in
-            let message = try? JSONDecoder().decode(
-                TwitchApiGames.self,
-                from: data ?? Data()
-            )
-            onComplete(message)
-        })
+        guard var components = URLComponents(string: "https://api.twitch.tv/helix/games") else {
+            onComplete(nil)
+            return
+        }
+        components.queryItems = names.map { URLQueryItem(name: "name", value: $0) }
+        guard let url = components.url else {
+            onComplete(nil)
+            return
+        }
+        doGet(subPath: url.absoluteString.replacingOccurrences(of: "https://api.twitch.tv/helix/", with: ""),
+              onComplete: { data in
+                  let message = try? JSONDecoder().decode(
+                      TwitchApiGames.self,
+                      from: data ?? Data()
+                  )
+                  onComplete(message)
+              })
+    }
+
+    func searchCategories(
+        query: String,
+        onComplete: @escaping (TwitchApiGames?) -> Void
+    ) {
+        guard var components = URLComponents(string: "https://api.twitch.tv/helix/search/categories") else {
+            onComplete(nil)
+            return
+        }
+        components.queryItems = [URLQueryItem(name: "query", value: query)]
+        guard let url = components.url else {
+            onComplete(nil)
+            return
+        }
+        doGet(subPath: url.absoluteString.replacingOccurrences(of: "https://api.twitch.tv/helix/", with: ""),
+              onComplete: { data in
+                  let message = try? JSONDecoder().decode(
+                      TwitchApiGames.self,
+                      from: data ?? Data()
+                  )
+                  onComplete(message)
+              })
     }
 
     func modifyChannelInformation(broadcasterId: String,

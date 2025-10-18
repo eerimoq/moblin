@@ -106,8 +106,8 @@ extension Model {
         createKickApi(stream: stream)?.deleteMessage(messageId: messageId)
     }
 
-    func getKickStreamTitle(stream: SettingsStream, onComplete: @escaping (String) -> Void) {
-        createKickApi(stream: stream)?.getStreamTitle(onComplete: onComplete)
+    func getKickStreamInfo(stream: SettingsStream, onComplete: @escaping (KickStreamInfo?) -> Void) {
+        createKickApi(stream: stream)?.getStreamInfo(onComplete: onComplete)
     }
 
     func setKickStreamTitle(stream: SettingsStream, title: String, onComplete: @escaping (String) -> Void) {
@@ -119,6 +119,18 @@ extension Model {
             return nil
         }
         return KickApi(channelId: channelId, slug: slug, accessToken: stream.kickAccessToken)
+    }
+
+    func searchKickCategories(query: String, onComplete: @escaping ([KickCategory]?) -> Void) {
+        createKickApi(stream: stream)?.searchCategories(query: query, onComplete: onComplete)
+    }
+
+    func setKickStreamCategory(stream: SettingsStream, categoryId: Int) {
+        createKickApi(stream: stream)?.setStreamCategory(categoryId: categoryId) { ok in
+            if !ok {
+                self.makeErrorToast(title: "Failed to set stream category")
+            }
+        }
     }
 
     private func appendKickChatAlertMessage(
