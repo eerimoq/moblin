@@ -156,37 +156,17 @@ private struct KickCategoryPickerView: View {
     @ObservedObject var stream: SettingsStream
     @Binding var streamCategory: String
     @State private var searchText: String = ""
-    @State private var quickCategories: [KickCategory] = []
+    @State private var categories: [KickCategory] = []
     @Environment(\.dismiss) var dismiss
 
-    private func setCategory(name: String) {
-        model.searchKickCategories(query: name) { categories in
-            guard let categories, let firstCategory = categories.first else {
-                DispatchQueue.main.async {
-                    self.model.makeErrorToast(title: "Category not found")
-                }
-                return
-            }
-            guard let categoryId = Int(firstCategory.id) else {
-                DispatchQueue.main.async {
-                    self.model.makeErrorToast(title: "Invalid category ID")
-                }
-                return
-            }
-            self.model.setKickStreamCategory(stream: self.stream, categoryId: categoryId)
-            DispatchQueue.main.async {
-                self.streamCategory = firstCategory.name
-                self.dismiss()
-            }
-        }
-    }
-
-    private func loadQuickCategories() {
+    private func fetchDefaultCategories() {
         let categoryNames = ["IRL", "Just Chatting", "Slots & Casino"]
         for categoryName in categoryNames {
-            model.searchKickCategories(query: categoryName) { result in
+            model.fetchKickCategories(query: categoryName) { result in
                 if let category = result?.first {
-                    self.quickCategories.append(category)
+                    DispatchQueue.main.async {
+                        self.categories.append(category)
+                    }
                 }
             }
         }
@@ -212,7 +192,6 @@ private struct KickCategoryPickerView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 8))
                 }
                 Text(category.name)
-                    .foregroundColor(.primary)
             }
         }
     }
@@ -220,29 +199,28 @@ private struct KickCategoryPickerView: View {
     var body: some View {
         Form {
             Section {
-                TextEditNavigationView(
-                    title: String(localized: "Search"),
-                    value: searchText,
-                    onSubmit: { value in
-                        setCategory(name: value)
+                TextField("Search", text: $searchText)
+                    .autocorrectionDisabled(true)
+                    .onChange(of: searchText) { _ in
+                        guard !searchText.isEmpty else {
+                            return
+                        }
+                        model.searchKickCategories(query: searchText) { result in
+                            DispatchQueue.main.async {
+                                self.categories = result ?? []
+                            }
+                        }
                     }
-                )
             }
-            if !quickCategories.isEmpty {
-                Section {
-                    ForEach(quickCategories, id: \.id) { category in
-                        categoryButton(category: category)
-                    }
-                } header: {
-                    Text("Quick categories")
+            Section {
+                ForEach(categories, id: \.id) { category in
+                    categoryButton(category: category)
                 }
             }
         }
         .navigationTitle("Category")
         .onAppear {
-            if quickCategories.isEmpty {
-                loadQuickCategories()
-            }
+            fetchDefaultCategories()
         }
     }
 }

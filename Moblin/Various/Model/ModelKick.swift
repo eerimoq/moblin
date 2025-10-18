@@ -122,6 +122,12 @@ extension Model {
     }
 
     func searchKickCategories(query: String, onComplete: @escaping ([KickCategory]?) -> Void) {
+        kickSearchCategoriesTimer.startSingleShot(timeout: 0.5) {
+            self.createKickApi(stream: self.stream)?.searchCategories(query: query, onComplete: onComplete)
+        }
+    }
+
+    func fetchKickCategories(query: String, onComplete: @escaping ([KickCategory]?) -> Void) {
         createKickApi(stream: stream)?.searchCategories(query: query, onComplete: onComplete)
     }
 
