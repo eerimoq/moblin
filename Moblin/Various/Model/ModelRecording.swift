@@ -8,12 +8,10 @@ class RecordingProvider: ObservableObject {
 extension Model {
     func startRecording() {
         setIsRecording(value: true)
-        var subTitle: String?
-        if recordingsStorage.database.isFull() {
-            subTitle = String(localized: "Too many recordings. Deleting oldest recording.")
-        }
         if resumeRecording() {
-            makeToast(title: String(localized: "Recording started"), subTitle: subTitle)
+            if recordingsStorage.database.isFull() {
+                makeToast(title: String(localized: "Too many recordings. Deleting oldest recording."))
+            }
         } else {
             if stream.recording.isDefaultRecordingPath() {
                 makeErrorToast(title: String(localized: "Failed to start recording"))
@@ -25,13 +23,13 @@ extension Model {
         }
     }
 
-    func stopRecording(showToast: Bool = true, toastTitle: String? = nil, toastSubTitle: String? = nil) {
+    func stopRecording(toastTitle: String? = nil, toastSubTitle: String? = nil) {
         guard isRecording else {
             return
         }
         setIsRecording(value: false)
-        if showToast {
-            makeToast(title: toastTitle ?? String(localized: "Recording stopped"), subTitle: toastSubTitle)
+        if let toastTitle {
+            makeToast(title: toastTitle, subTitle: toastSubTitle)
         }
         media.setRecordUrl(url: nil)
         suspendRecording()
