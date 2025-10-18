@@ -347,6 +347,29 @@ class TwitchApi {
         })
     }
 
+    func getGames(
+        names: [String],
+        onComplete: @escaping (TwitchApiGames?) -> Void
+    ) {
+        guard var components = URLComponents(string: "https://api.twitch.tv/helix/games") else {
+            onComplete(nil)
+            return
+        }
+        components.queryItems = names.map { URLQueryItem(name: "name", value: $0) }
+        guard let url = components.url else {
+            onComplete(nil)
+            return
+        }
+        doGet(subPath: url.absoluteString.replacingOccurrences(of: "https://api.twitch.tv/helix/", with: ""),
+              onComplete: { data in
+                  let message = try? JSONDecoder().decode(
+                      TwitchApiGames.self,
+                      from: data ?? Data()
+                  )
+                  onComplete(message)
+              })
+    }
+
     func searchCategories(
         query: String,
         onComplete: @escaping (TwitchApiGames?) -> Void
@@ -360,24 +383,14 @@ class TwitchApi {
             onComplete(nil)
             return
         }
-        let request = createGetRequest(url: url)
-        URLSession.shared.dataTask(with: request) { data, response, error in
-            DispatchQueue.main.async {
-                guard error == nil, let data, response?.http?.isSuccessful == true else {
-                    if response?.http?.isUnauthorized == true {
-                        self.delegate?.twitchApiUnauthorized()
-                    }
-                    onComplete(nil)
-                    return
-                }
-                let message = try? JSONDecoder().decode(
-                    TwitchApiGames.self,
-                    from: data
-                )
-                onComplete(message)
-            }
-        }
-        .resume()
+        doGet(subPath: url.absoluteString.replacingOccurrences(of: "https://api.twitch.tv/helix/", with: ""),
+              onComplete: { data in
+                  let message = try? JSONDecoder().decode(
+                      TwitchApiGames.self,
+                      from: data ?? Data()
+                  )
+                  onComplete(message)
+              })
     }
 
     func modifyChannelInformation(broadcasterId: String,
