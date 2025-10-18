@@ -109,14 +109,6 @@ struct QuickButtonPlaceholderImage: View {
     }
 }
 
-private func startStopText(button: ButtonState) -> String {
-    if button.isOn {
-        return String(localized: "Stop")
-    } else {
-        return String(localized: "Start")
-    }
-}
-
 private struct ButtonTextOverlayView: View {
     let text: String
 
@@ -466,7 +458,7 @@ struct QuickButtonsInnerView: View {
                     }
                 }
                 .confirmationDialog("", isPresented: $isPresentingRecordConfirm) {
-                    Button(startStopText(button: state)) {
+                    Button(state.isOn ? String(localized: "Stop recording") : String(localized: "Start recording")) {
                         recordAction()
                     }
                 }

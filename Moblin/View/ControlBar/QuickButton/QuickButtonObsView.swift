@@ -18,7 +18,7 @@ private struct ObsStartStopStreamingView: View {
                         Text("Start streaming")
                     }
                     .confirmationDialog("", isPresented: $isPresentingStartStreamingConfirm) {
-                        Button("Start") {
+                        Button("Start streaming") {
                             model.obsStartStream()
                         }
                     }
@@ -41,7 +41,7 @@ private struct ObsStartStopStreamingView: View {
                         Text("Stop streaming")
                     }
                     .confirmationDialog("", isPresented: $isPresentingStopStreamingConfirm) {
-                        Button("Stop") {
+                        Button("Stop streaming") {
                             model.obsStopStream()
                         }
                     }
@@ -78,7 +78,7 @@ private struct ObsStartStopRecordingView: View {
                         Text("Start recording")
                     }
                     .confirmationDialog("", isPresented: $isPresentingStartRecordingConfirm) {
-                        Button("Start") {
+                        Button("Start recording") {
                             model.obsStartRecording()
                         }
                     }
@@ -101,7 +101,7 @@ private struct ObsStartStopRecordingView: View {
                         Text("Stop recording")
                     }
                     .confirmationDialog("", isPresented: $isPresentingStopRecordingConfirm) {
-                        Button("Stop") {
+                        Button("Stop recording") {
                             model.obsStopRecording()
                         }
                     }

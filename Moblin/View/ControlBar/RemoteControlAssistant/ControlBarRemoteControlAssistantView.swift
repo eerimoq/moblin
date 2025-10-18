@@ -372,7 +372,7 @@ private struct RecordingView: View {
             Text("Recording")
         }
         .confirmationDialog("", isPresented: $isPresentingConfirm) {
-            Button(pendingValue ? String(localized: "Start") : String(localized: "Stop")) {
+            Button(pendingValue ? String(localized: "Start recording") : String(localized: "Stop recording")) {
                 model.remoteControlAssistantSetRecord(on: pendingValue)
             }
         }

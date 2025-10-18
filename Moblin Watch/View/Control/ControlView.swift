@@ -40,7 +40,7 @@ private struct ControlRecordingView: View {
             Text("Recording")
         }
         .confirmationDialog("", isPresented: $isPresentingConfirm) {
-            Button(pendingValue ? String(localized: "Start") : String(localized: "Stop")) {
+            Button(pendingValue ? String(localized: "Start recording") : String(localized: "Stop recording")) {
                 model.setIsRecording(value: pendingValue)
             }
             Button("Cancel") {}
