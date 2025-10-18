@@ -369,7 +369,7 @@ class TwitchApi {
         var components = URLComponents()
         components.queryItems = [
             URLQueryItem(name: "query", value: query),
-            URLQueryItem(name: "first", value: "3"),
+            URLQueryItem(name: "first", value: "10"),
         ]
         guard let query = components.percentEncodedQuery else {
             return
