@@ -53,14 +53,17 @@ private struct Emote2 {
 
     private static func emotes(fromDefinition definition: Substring) -> [Emote2] {
         let parts = definition.split(separator: ":")
-        guard parts.count == 2, let emoteID = parts.first, let emoteRangesString = parts.last else { return [] }
+        guard parts.count == 2, let emoteID = parts.first, let emoteRangesString = parts.last else {
+            return []
+        }
         let emoteRanges = emoteRangesString.split(separator: ",").compactMap { emoteRangeString -> ClosedRange<Int>? in
             let rangeIndexStrings = emoteRangeString.split(separator: "-")
             guard rangeIndexStrings.count == 2,
                   let rangeStartIndexString = rangeIndexStrings.first,
                   let rangeEndIndexString = rangeIndexStrings.last,
                   let rangeStartIndex = Int(rangeStartIndexString),
-                  let rangeEndIndex = Int(rangeEndIndexString)
+                  let rangeEndIndex = Int(rangeEndIndexString),
+                  rangeStartIndex <= rangeEndIndex
             else {
                 return nil
             }
