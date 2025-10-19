@@ -42,6 +42,7 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
     - Show reply.
   - Optional login.
     - Follow, subscribe and raid alerts.
+    - Set stream title and category.
     - Start ads.
     - Hype train.
     - Cheered bits in chat.
@@ -49,6 +50,7 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
   - Number of viewers.
   - Subscription, host, and kicks.
   - Chat.
+    - Set stream title and category.
     - Ban.
     - Timeout.
     - Delete message.
