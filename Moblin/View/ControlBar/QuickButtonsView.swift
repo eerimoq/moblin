@@ -359,6 +359,10 @@ struct QuickButtonsInnerView: View {
         model.updateQuickButtonStates()
     }
 
+    private func liveAction() {
+        model.toggleShowingPanel(type: .live, panel: .live)
+    }
+
     private func connectionPrioritiesAction() {
         model.toggleShowingPanel(type: .connectionPriorities, panel: .connectionPriorities)
     }
@@ -810,6 +814,14 @@ struct QuickButtonsInnerView: View {
                                  buttonSize: size)
                 {
                     pauseTtsAction()
+                }
+            case .live:
+                QuickButtonImage(model: model,
+                                 quickButtonsSettings: quickButtonsSettings,
+                                 state: state,
+                                 buttonSize: size)
+                {
+                    liveAction()
                 }
             }
             if quickButtonsSettings.showName && !orientation.isPortrait {

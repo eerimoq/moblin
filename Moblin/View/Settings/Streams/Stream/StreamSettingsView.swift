@@ -57,6 +57,12 @@ struct ObsLogoAndNameView: View {
     }
 }
 
+struct DiscordLogoAndNameView: View {
+    var body: some View {
+        PlatformLogoAndNameView(logo: "DiscordLogo", name: String(localized: "Discord"))
+    }
+}
+
 struct StreamPlatformsSettingsView: View {
     let stream: SettingsStream
 

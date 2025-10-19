@@ -43,6 +43,7 @@ enum ShowingPanel {
     case autoSceneSwitcher
     case quickButtonSettings
     case streamingButtonSettings
+    case live
 
     func buttonsBackgroundColor() -> Color {
         if self == .chat {
@@ -682,18 +683,19 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func isShowingPanelGlobalButton(type: SettingsQuickButtonType) -> Bool {
         return [
-            SettingsQuickButtonType.widgets,
-            SettingsQuickButtonType.luts,
-            SettingsQuickButtonType.chat,
-            SettingsQuickButtonType.mic,
-            SettingsQuickButtonType.bitrate,
-            SettingsQuickButtonType.recordings,
-            SettingsQuickButtonType.stream,
-            SettingsQuickButtonType.obs,
-            SettingsQuickButtonType.djiDevices,
-            SettingsQuickButtonType.goPro,
-            SettingsQuickButtonType.connectionPriorities,
-            SettingsQuickButtonType.autoSceneSwitcher,
+            .widgets,
+            .luts,
+            .chat,
+            .mic,
+            .bitrate,
+            .recordings,
+            .stream,
+            .obs,
+            .djiDevices,
+            .goPro,
+            .connectionPriorities,
+            .autoSceneSwitcher,
+            .live,
         ].contains(type)
     }
 

@@ -154,7 +154,6 @@ private struct KickWebView: UIViewRepresentable {
 private struct KickCategoryPickerView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var stream: SettingsStream
-    @Binding var streamCategory: String
     @State private var searchText: String = ""
     @State private var categories: [KickCategory] = []
     @Environment(\.dismiss) var dismiss
@@ -174,9 +173,10 @@ private struct KickCategoryPickerView: View {
 
     private func categoryButton(category: KickCategory) -> some View {
         Button {
-            guard let categoryId = Int(category.id) else { return }
+            guard let categoryId = Int(category.id) else {
+                return
+            }
             model.setKickStreamCategory(stream: stream, categoryId: categoryId)
-            streamCategory = category.name
             dismiss()
         } label: {
             HStack {
@@ -225,6 +225,62 @@ private struct KickCategoryPickerView: View {
     }
 }
 
+struct KickStreamLiveSettingsView: View {
+    let model: Model
+    @ObservedObject var stream: SettingsStream
+    @State private var streamTitle: String?
+    @State private var streamCategory: String?
+
+    private func submitStreamTitle(value: String) {
+        model.setKickStreamTitle(stream: stream, title: value) { _ in}
+    }
+
+    var body: some View {
+        NavigationLink {
+            TextEditView(
+                title: String(localized: "Title"),
+                value: streamTitle ?? "",
+                onSubmit: { value in
+                    model.setKickStreamTitle(stream: stream, title: value) { _ in}
+                }
+            )
+        } label: {
+            HStack {
+                Text("Title")
+                Spacer()
+                if let streamTitle {
+                    Text(streamTitle)
+                        .foregroundColor(.gray)
+                } else {
+                    ProgressView()
+                }
+            }
+        }
+        NavigationLink {
+            KickCategoryPickerView(stream: stream)
+        } label: {
+            if let streamCategory {
+                HStack {
+                    Text("Category")
+                    Spacer()
+                    Text(streamCategory)
+                        .foregroundColor(.gray)
+                }
+            } else {
+                ProgressView()
+            }
+        }
+        .onAppear {
+            model.getKickStreamInfo(stream: stream) { info in
+                if let info {
+                    streamTitle = info.title
+                    streamCategory = info.categoryName ?? ""
+                }
+            }
+        }
+    }
+}
+
 struct KickAlertsSettingsView: View {
     let title: String
     @ObservedObject var alerts: SettingsKickAlerts
@@ -257,8 +313,6 @@ struct KickAlertsSettingsView: View {
 struct StreamKickSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var stream: SettingsStream
-    @State var streamTitle: String = ""
-    @State var streamCategory: String = ""
     @State var fetchChannelInfoFailed: Bool = false
 
     private func shouldFetchChannelInfo() -> Bool {
@@ -288,12 +342,6 @@ struct StreamKickSettingsView: View {
         stream.kickSlug = nil
         if stream.enabled, stream.kickChannelName.isEmpty {
             model.kickChannelNameUpdated()
-        }
-    }
-
-    private func submitStreamTitle(value: String) {
-        model.setKickStreamTitle(stream: stream, title: value) {
-            streamTitle = $0
         }
     }
 
@@ -343,21 +391,7 @@ struct StreamKickSettingsView: View {
             }
             if stream.kickLoggedIn {
                 Section {
-                    TextEditNavigationView(
-                        title: String(localized: "Stream title"),
-                        value: streamTitle,
-                        onSubmit: submitStreamTitle
-                    )
-                    NavigationLink {
-                        KickCategoryPickerView(stream: stream, streamCategory: $streamCategory)
-                    } label: {
-                        HStack {
-                            Text("Category")
-                            Spacer()
-                            Text(streamCategory)
-                                .foregroundColor(.gray)
-                        }
-                    }
+                    KickStreamLiveSettingsView(model: model, stream: stream)
                 }
             }
             Section {
@@ -380,14 +414,6 @@ struct StreamKickSettingsView: View {
             }
         }
         .onAppear {
-            if stream.kickLoggedIn && !stream.kickChannelName.isEmpty && streamTitle.isEmpty {
-                model.getKickStreamInfo(stream: stream) { info in
-                    if let info {
-                        streamTitle = info.title
-                        streamCategory = info.categoryName ?? ""
-                    }
-                }
-            }
             if shouldFetchChannelInfo() {
                 fetchChannelInfo()
             }

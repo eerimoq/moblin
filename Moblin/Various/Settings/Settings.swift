@@ -1404,9 +1404,9 @@ private func addMissingQuickButtonsPageOne(database: Database) {
                                  imageOn: "mic.slash",
                                  imageOff: "mic")
     updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "Bitrate"),
-                                 type: .bitrate,
-                                 imageOn: "speedometer")
+    button = SettingsQuickButton(name: String(localized: "Stream"),
+                                 type: .live,
+                                 imageOn: "dot.radiowaves.left.and.right")
     updateQuickButton(database: database, button: button)
     button = SettingsQuickButton(name: String(localized: "Mic"),
                                  type: .mic,
@@ -1487,6 +1487,10 @@ private func addMissingQuickButtonsPageOne(database: Database) {
                                  type: .cameraPreview,
                                  imageOn: "camera.rotate.fill",
                                  imageOff: "camera.rotate")
+    updateQuickButton(database: database, button: button)
+    button = SettingsQuickButton(name: String(localized: "Bitrate"),
+                                 type: .bitrate,
+                                 imageOn: "speedometer")
     updateQuickButton(database: database, button: button)
 }
 
@@ -1582,9 +1586,9 @@ private func addMissingQuickButtonsPageThree(database: Database) {
                                  imageOff: "photo.on.rectangle.angled",
                                  page: page)
     updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "Stream"),
+    button = SettingsQuickButton(name: String(localized: "Switch stream"),
                                  type: .stream,
-                                 imageOn: "dot.radiowaves.left.and.right",
+                                 imageOn: "arrow.left.arrow.right",
                                  page: page)
     updateQuickButton(database: database, button: button)
     button = SettingsQuickButton(name: String(localized: "Grid"),

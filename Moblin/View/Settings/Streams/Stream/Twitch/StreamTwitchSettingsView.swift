@@ -1,5 +1,59 @@
 import SwiftUI
 
+struct TwitchStreamLiveSettingsView: View {
+    let model: Model
+    var stream: SettingsStream
+    @State private var streamTitle: String?
+    @State private var streamCategory: String?
+
+    private func getStreamInfo() {
+        model.getTwitchChannelInformation(stream: stream) { info in
+            streamTitle = info.title
+            streamCategory = info.game_name
+        }
+    }
+
+    var body: some View {
+        NavigationLink {
+            TextEditView(
+                title: String(localized: "Title"),
+                value: streamTitle ?? "",
+                onSubmit: { value in
+                    model.setTwitchStreamTitle(stream: stream, title: value)
+                }
+            )
+        } label: {
+            HStack {
+                Text("Title")
+                Spacer()
+                if let streamTitle {
+                    Text(streamTitle)
+                        .foregroundColor(.gray)
+                } else {
+                    ProgressView()
+                }
+            }
+        }
+        NavigationLink {
+            TwitchCategoryPickerView(stream: stream)
+        } label: {
+            HStack {
+                Text("Category")
+                Spacer()
+                if let streamCategory {
+                    Text(streamCategory)
+                        .foregroundColor(.gray)
+                } else {
+                    ProgressView()
+                }
+            }
+        }
+        .onAppear {
+            getStreamInfo()
+        }
+    }
+}
+
 private struct TwitchCategoryPickerView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var stream: SettingsStream
@@ -117,14 +171,6 @@ struct StreamTwitchSettingsView: View {
 
     func onLoggedIn() {
         loggedIn = true
-        getStreamInfo()
-    }
-
-    private func getStreamInfo() {
-        model.getTwitchChannelInformation(stream: stream) { info in
-            streamTitle = info.title
-            streamCategory = info.game_name
-        }
     }
 
     var body: some View {
@@ -178,41 +224,7 @@ struct StreamTwitchSettingsView: View {
             }
             if loggedIn {
                 Section {
-                    NavigationLink {
-                        TextEditView(
-                            title: String(localized: "Stream title"),
-                            value: streamTitle ?? "",
-                            onSubmit: { value in
-                                streamTitle = value
-                                model.setTwitchStreamTitle(stream: stream, title: value)
-                            }
-                        )
-                    } label: {
-                        HStack {
-                            Text("Stream title")
-                            Spacer()
-                            if let streamTitle {
-                                Text(streamTitle)
-                                    .foregroundColor(.gray)
-                            } else {
-                                ProgressView()
-                            }
-                        }
-                    }
-                    NavigationLink {
-                        TwitchCategoryPickerView(stream: stream)
-                    } label: {
-                        HStack {
-                            Text("Category")
-                            Spacer()
-                            if let streamCategory {
-                                Text(streamCategory)
-                                    .foregroundColor(.gray)
-                            } else {
-                                ProgressView()
-                            }
-                        }
-                    }
+                    TwitchStreamLiveSettingsView(model: model, stream: stream)
                 }
             }
             Section {
@@ -228,11 +240,6 @@ struct StreamTwitchSettingsView: View {
                 }
             } header: {
                 Text("Alerts")
-            }
-        }
-        .onAppear {
-            if loggedIn {
-                getStreamInfo()
             }
         }
         .navigationTitle("Twitch")

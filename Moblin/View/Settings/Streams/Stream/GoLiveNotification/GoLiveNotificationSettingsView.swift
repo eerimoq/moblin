@@ -1,15 +1,35 @@
 import SwiftUI
 
+struct GoLiveNotificationDiscordTextSettingsView: View {
+    @ObservedObject var stream: SettingsStream
+    @FocusState var editingText: Bool
+
+    var body: some View {
+        VStack {
+            MultiLineTextFieldView(value: $stream.goLiveNotificationDiscordMessage)
+                .keyboardType(.default)
+                .textInputAutocapitalization(.never)
+                .disableAutocorrection(true)
+                .focused($editingText)
+            HStack {
+                Text("")
+                Spacer()
+                Button("Done") {
+                    editingText = false
+                }
+                .disabled(!editingText)
+            }
+        }
+    }
+}
+
 private struct GoLiveNotificationDiscordSettingsView: View {
     @ObservedObject var stream: SettingsStream
 
     var body: some View {
         Form {
             Section {
-                MultiLineTextFieldView(value: $stream.goLiveNotificationDiscordMessage)
-                    .keyboardType(.default)
-                    .textInputAutocapitalization(.never)
-                    .disableAutocorrection(true)
+                GoLiveNotificationDiscordTextSettingsView(stream: stream)
             } header: {
                 Text("Message")
             } footer: {
@@ -45,7 +65,7 @@ struct GoLiveNotificationSettingsView: View {
             NavigationLink {
                 GoLiveNotificationDiscordSettingsView(stream: stream)
             } label: {
-                Text("Discord")
+                DiscordLogoAndNameView()
             }
         }
         .navigationTitle("Go live notification")
