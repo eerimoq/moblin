@@ -8,33 +8,6 @@ struct QuickButtonLiveView: View {
     @State private var kickTitle: String?
     @State private var kickCategory: String?
 
-    private func loadTwitchStreamInfo() {
-        twitchTitle = nil
-        twitchCategory = nil
-        guard stream.twitchLoggedIn else {
-            return
-        }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            model.getTwitchChannelInformation(stream: stream) { info in
-                twitchTitle = info.title
-                twitchCategory = info.game_name
-            }
-        }
-    }
-
-    private func loadKickStreamInfo() {
-        kickTitle = nil
-        kickCategory = nil
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            model.getKickStreamInfo(stream: stream) { info in
-                if let info {
-                    kickTitle = info.title
-                    kickCategory = info.categoryName ?? ""
-                }
-            }
-        }
-    }
-
     var body: some View {
         Form {
             if stream.twitchLoggedIn {
@@ -91,8 +64,14 @@ struct QuickButtonLiveView: View {
         }
         .navigationTitle("Stream")
         .onAppear {
-            loadTwitchStreamInfo()
-            loadKickStreamInfo()
+            loadTwitchStreamInfo(model: model, stream: stream, loggedIn: stream.twitchLoggedIn) {
+                twitchTitle = $0
+                twitchCategory = $1
+            }
+            loadKickStreamInfo(model: model, stream: stream, loggedIn: stream.kickLoggedIn) {
+                kickTitle = $0
+                kickCategory = $1
+            }
         }
     }
 }

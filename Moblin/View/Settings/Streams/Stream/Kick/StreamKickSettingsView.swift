@@ -302,6 +302,24 @@ struct KickAlertsSettingsView: View {
     }
 }
 
+func loadKickStreamInfo(model: Model,
+                        stream: SettingsStream,
+                        loggedIn: Bool,
+                        onChange: @escaping (String?, String?) -> Void)
+{
+    onChange(nil, nil)
+    guard loggedIn else {
+        return
+    }
+    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+        model.getKickStreamInfo(stream: stream) { info in
+            DispatchQueue.main.async {
+                onChange(info?.title, info?.categoryName)
+            }
+        }
+    }
+}
+
 struct StreamKickSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var stream: SettingsStream
@@ -322,6 +340,7 @@ struct StreamKickSettingsView: View {
                     self.stream.kickChannelId = String(channelInfo.chatroom.id)
                     self.stream.kickSlug = channelInfo.slug
                     self.stream.kickChatroomChannelId = String(channelInfo.chatroom.channel_id)
+                    self.loadStreamInfo()
                 } else {
                     fetchChannelInfoFailed = true
                 }
@@ -365,15 +384,9 @@ struct StreamKickSettingsView: View {
     }
 
     private func loadStreamInfo() {
-        title = nil
-        category = nil
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            model.getKickStreamInfo(stream: stream) { info in
-                if let info {
-                    title = info.title
-                    category = info.categoryName ?? ""
-                }
-            }
+        loadKickStreamInfo(model: model, stream: stream, loggedIn: stream.kickLoggedIn) {
+            title = $0
+            category = $1
         }
     }
 

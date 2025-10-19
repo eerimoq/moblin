@@ -138,6 +138,24 @@ struct TwitchAlertsSettingsView: View {
     }
 }
 
+func loadTwitchStreamInfo(model: Model,
+                          stream: SettingsStream,
+                          loggedIn: Bool,
+                          onChange: @escaping (String?, String?) -> Void)
+{
+    onChange(nil, nil)
+    guard loggedIn else {
+        return
+    }
+    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+        model.getTwitchChannelInformation(stream: stream) { info in
+            DispatchQueue.main.async {
+                onChange(info.title, info.game_name)
+            }
+        }
+    }
+}
+
 struct StreamTwitchSettingsView: View {
     @EnvironmentObject var model: Model
     var stream: SettingsStream
@@ -145,36 +163,29 @@ struct StreamTwitchSettingsView: View {
     @State private var title: String?
     @State private var category: String?
 
-    func submitChannelName(value: String) {
+    private func submitChannelName(value: String) {
         stream.twitchChannelName = value
         if stream.enabled {
             model.twitchChannelNameUpdated()
         }
     }
 
-    func submitChannelId(value: String) {
+    private func submitChannelId(value: String) {
         stream.twitchChannelId = value
         if stream.enabled {
             model.twitchChannelIdUpdated()
         }
     }
 
-    func onLoggedIn() {
+    private func onLoggedIn() {
         loggedIn = true
         loadStreamInfo()
     }
 
     private func loadStreamInfo() {
-        title = nil
-        category = nil
-        guard loggedIn else {
-            return
-        }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            model.getTwitchChannelInformation(stream: stream) { info in
-                title = info.title
-                category = info.game_name
-            }
+        loadTwitchStreamInfo(model: model, stream: stream, loggedIn: loggedIn) {
+            title = $0
+            category = $1
         }
     }
 
