@@ -3,21 +3,14 @@ import SwiftUI
 struct TwitchStreamLiveSettingsView: View {
     let model: Model
     var stream: SettingsStream
-    @State private var streamTitle: String?
-    @State private var streamCategory: String?
-
-    private func getStreamInfo() {
-        model.getTwitchChannelInformation(stream: stream) { info in
-            streamTitle = info.title
-            streamCategory = info.game_name
-        }
-    }
+    @State private var title: String?
+    @State private var category: String?
 
     var body: some View {
         NavigationLink {
             TextEditView(
                 title: String(localized: "Title"),
-                value: streamTitle ?? "",
+                value: title ?? "",
                 onSubmit: { value in
                     model.setTwitchStreamTitle(stream: stream, title: value)
                 }
@@ -26,8 +19,8 @@ struct TwitchStreamLiveSettingsView: View {
             HStack {
                 Text("Title")
                 Spacer()
-                if let streamTitle {
-                    Text(streamTitle)
+                if let title {
+                    Text(title)
                         .foregroundColor(.gray)
                 } else {
                     ProgressView()
@@ -40,8 +33,8 @@ struct TwitchStreamLiveSettingsView: View {
             HStack {
                 Text("Category")
                 Spacer()
-                if let streamCategory {
-                    Text(streamCategory)
+                if let category {
+                    Text(category)
                         .foregroundColor(.gray)
                 } else {
                     ProgressView()
@@ -49,7 +42,14 @@ struct TwitchStreamLiveSettingsView: View {
             }
         }
         .onAppear {
-            getStreamInfo()
+            title = nil
+            category = nil
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                model.getTwitchChannelInformation(stream: stream) { info in
+                    title = info.title
+                    category = info.game_name
+                }
+            }
         }
     }
 }

@@ -228,8 +228,8 @@ private struct KickCategoryPickerView: View {
 struct KickStreamLiveSettingsView: View {
     let model: Model
     @ObservedObject var stream: SettingsStream
-    @State private var streamTitle: String?
-    @State private var streamCategory: String?
+    @State private var title: String?
+    @State private var category: String?
 
     private func submitStreamTitle(value: String) {
         model.setKickStreamTitle(stream: stream, title: value) { _ in }
@@ -239,7 +239,7 @@ struct KickStreamLiveSettingsView: View {
         NavigationLink {
             TextEditView(
                 title: String(localized: "Title"),
-                value: streamTitle ?? "",
+                value: title ?? "",
                 onSubmit: { value in
                     model.setKickStreamTitle(stream: stream, title: value) { _ in }
                 }
@@ -248,8 +248,8 @@ struct KickStreamLiveSettingsView: View {
             HStack {
                 Text("Title")
                 Spacer()
-                if let streamTitle {
-                    Text(streamTitle)
+                if let title {
+                    Text(title)
                         .foregroundColor(.gray)
                 } else {
                     ProgressView()
@@ -259,22 +259,26 @@ struct KickStreamLiveSettingsView: View {
         NavigationLink {
             KickCategoryPickerView(stream: stream)
         } label: {
-            if let streamCategory {
-                HStack {
-                    Text("Category")
-                    Spacer()
-                    Text(streamCategory)
+            HStack {
+                Text("Category")
+                Spacer()
+                if let category {
+                    Text(category)
                         .foregroundColor(.gray)
+                } else {
+                    ProgressView()
                 }
-            } else {
-                ProgressView()
             }
         }
         .onAppear {
-            model.getKickStreamInfo(stream: stream) { info in
-                if let info {
-                    streamTitle = info.title
-                    streamCategory = info.categoryName ?? ""
+            title = nil
+            category = nil
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                model.getKickStreamInfo(stream: stream) { info in
+                    if let info {
+                        title = info.title
+                        category = info.categoryName ?? ""
+                    }
                 }
             }
         }
