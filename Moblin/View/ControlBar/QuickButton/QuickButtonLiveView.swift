@@ -13,7 +13,7 @@ struct QuickButtonLiveView: View {
             if stream.twitchLoggedIn {
                 Section {
                     TwitchStreamLiveSettingsView(model: model,
-                                                 stream: model.stream,
+                                                 stream: stream,
                                                  title: $twitchTitle,
                                                  category: $twitchCategory)
                 } header: {
@@ -22,10 +22,7 @@ struct QuickButtonLiveView: View {
             }
             if stream.kickLoggedIn {
                 Section {
-                    KickStreamLiveSettingsView(model: model,
-                                               stream: model.stream,
-                                               title: $kickTitle,
-                                               category: $kickCategory)
+                    KickStreamLiveSettingsView(model: model, stream: stream, title: $kickTitle, category: $kickCategory)
                 } header: {
                     KickLogoAndNameView(channel: stream.kickChannelName)
                 }

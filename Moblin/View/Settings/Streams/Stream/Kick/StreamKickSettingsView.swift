@@ -337,10 +337,11 @@ struct StreamKickSettingsView: View {
         getKickChannelInfo(channelName: stream.kickChannelName) { channelInfo in
             DispatchQueue.main.async {
                 if let channelInfo {
-                    self.stream.kickChannelId = String(channelInfo.chatroom.id)
-                    self.stream.kickSlug = channelInfo.slug
-                    self.stream.kickChatroomChannelId = String(channelInfo.chatroom.channel_id)
-                    self.loadStreamInfo()
+                    fetchChannelInfoFailed = false
+                    stream.kickChannelId = String(channelInfo.chatroom.id)
+                    stream.kickSlug = channelInfo.slug
+                    stream.kickChatroomChannelId = String(channelInfo.chatroom.channel_id)
+                    loadStreamInfo()
                 } else {
                     fetchChannelInfoFailed = true
                 }
@@ -353,6 +354,8 @@ struct StreamKickSettingsView: View {
         stream.kickChannelName = value
         stream.kickChannelId = nil
         stream.kickSlug = nil
+        stream.kickChatroomChannelId = nil
+        fetchChannelInfo()
         if stream.enabled, stream.kickChannelName.isEmpty {
             model.kickChannelNameUpdated()
         }
@@ -371,6 +374,7 @@ struct StreamKickSettingsView: View {
             stream.kickChannelName = data.username
             stream.kickChannelId = nil
             stream.kickSlug = nil
+            stream.kickChatroomChannelId = nil
             fetchChannelInfo()
         } else {
             reloadConnectionsIfEnabled()
@@ -400,7 +404,6 @@ struct StreamKickSettingsView: View {
                     onChange: { _ in nil },
                     onSubmit: submitChannelName
                 )
-                .id(stream.kickChannelName)
             } footer: {
                 if fetchChannelInfoFailed {
                     Text("Channel not found on kick.com.")
@@ -438,9 +441,6 @@ struct StreamKickSettingsView: View {
         }
         .onAppear {
             loadStreamInfo()
-            if shouldFetchChannelInfo() {
-                fetchChannelInfo()
-            }
         }
         .navigationTitle("Kick")
     }
