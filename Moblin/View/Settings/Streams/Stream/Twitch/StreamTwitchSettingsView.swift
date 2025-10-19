@@ -3,8 +3,8 @@ import SwiftUI
 struct TwitchStreamLiveSettingsView: View {
     let model: Model
     var stream: SettingsStream
-    @State private var title: String?
-    @State private var category: String?
+    @Binding var title: String?
+    @Binding var category: String?
 
     var body: some View {
         NavigationLink {
@@ -38,16 +38,6 @@ struct TwitchStreamLiveSettingsView: View {
                         .foregroundColor(.gray)
                 } else {
                     ProgressView()
-                }
-            }
-        }
-        .onAppear {
-            title = nil
-            category = nil
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                model.getTwitchChannelInformation(stream: stream) { info in
-                    title = info.title
-                    category = info.game_name
                 }
             }
         }
@@ -152,8 +142,8 @@ struct StreamTwitchSettingsView: View {
     @EnvironmentObject var model: Model
     var stream: SettingsStream
     @State var loggedIn: Bool
-    @State var streamTitle: String?
-    @State var streamCategory: String?
+    @State private var title: String?
+    @State private var category: String?
 
     func submitChannelName(value: String) {
         stream.twitchChannelName = value
@@ -171,6 +161,21 @@ struct StreamTwitchSettingsView: View {
 
     func onLoggedIn() {
         loggedIn = true
+        loadStreamInfo()
+    }
+
+    private func loadStreamInfo() {
+        title = nil
+        category = nil
+        guard loggedIn else {
+            return
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            model.getTwitchChannelInformation(stream: stream) { info in
+                title = info.title
+                category = info.game_name
+            }
+        }
     }
 
     var body: some View {
@@ -224,7 +229,10 @@ struct StreamTwitchSettingsView: View {
             }
             if loggedIn {
                 Section {
-                    TwitchStreamLiveSettingsView(model: model, stream: stream)
+                    TwitchStreamLiveSettingsView(model: model,
+                                                 stream: stream,
+                                                 title: $title,
+                                                 category: $category)
                 }
             }
             Section {
@@ -243,5 +251,8 @@ struct StreamTwitchSettingsView: View {
             }
         }
         .navigationTitle("Twitch")
+        .onAppear {
+            loadStreamInfo()
+        }
     }
 }

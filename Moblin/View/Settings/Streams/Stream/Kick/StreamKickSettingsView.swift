@@ -228,8 +228,8 @@ private struct KickCategoryPickerView: View {
 struct KickStreamLiveSettingsView: View {
     let model: Model
     @ObservedObject var stream: SettingsStream
-    @State private var title: String?
-    @State private var category: String?
+    @Binding var title: String?
+    @Binding var category: String?
 
     private func submitStreamTitle(value: String) {
         model.setKickStreamTitle(stream: stream, title: value) { _ in }
@@ -270,18 +270,6 @@ struct KickStreamLiveSettingsView: View {
                 }
             }
         }
-        .onAppear {
-            title = nil
-            category = nil
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                model.getKickStreamInfo(stream: stream) { info in
-                    if let info {
-                        title = info.title
-                        category = info.categoryName ?? ""
-                    }
-                }
-            }
-        }
     }
 }
 
@@ -318,6 +306,8 @@ struct StreamKickSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var stream: SettingsStream
     @State var fetchChannelInfoFailed: Bool = false
+    @State private var title: String?
+    @State private var category: String?
 
     private func shouldFetchChannelInfo() -> Bool {
         return !stream.kickChannelName.isEmpty
@@ -374,6 +364,19 @@ struct StreamKickSettingsView: View {
         }
     }
 
+    private func loadStreamInfo() {
+        title = nil
+        category = nil
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            model.getKickStreamInfo(stream: stream) { info in
+                if let info {
+                    title = info.title
+                    category = info.categoryName ?? ""
+                }
+            }
+        }
+    }
+
     var body: some View {
         Form {
             AuthenticationView(stream: stream, onLoggedIn: onLoggedIn)
@@ -395,7 +398,10 @@ struct StreamKickSettingsView: View {
             }
             if stream.kickLoggedIn {
                 Section {
-                    KickStreamLiveSettingsView(model: model, stream: stream)
+                    KickStreamLiveSettingsView(model: model,
+                                               stream: stream,
+                                               title: $title,
+                                               category: $category)
                 }
             }
             Section {
@@ -418,6 +424,7 @@ struct StreamKickSettingsView: View {
             }
         }
         .onAppear {
+            loadStreamInfo()
             if shouldFetchChannelInfo() {
                 fetchChannelInfo()
             }
