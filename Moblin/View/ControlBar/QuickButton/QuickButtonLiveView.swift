@@ -10,14 +10,14 @@ struct QuickButtonLiveView: View {
                 Section {
                     TwitchStreamLiveSettingsView(model: model, stream: model.stream)
                 } header: {
-                    TwitchLogoAndNameView()
+                    TwitchLogoAndNameView(channel: stream.twitchChannelName)
                 }
             }
             if stream.kickLoggedIn {
                 Section {
                     KickStreamLiveSettingsView(model: model, stream: model.stream)
                 } header: {
-                    KickLogoAndNameView()
+                    KickLogoAndNameView(channel: stream.kickChannelName)
                 }
             }
             if !stream.goLiveNotificationDiscordWebhookUrl.isEmpty {

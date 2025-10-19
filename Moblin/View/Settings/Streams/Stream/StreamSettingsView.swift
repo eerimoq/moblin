@@ -3,6 +3,7 @@ import SwiftUI
 struct PlatformLogoAndNameView: View {
     let logo: String
     let name: String
+    var channel: String = ""
 
     var body: some View {
         HStack {
@@ -10,32 +11,44 @@ struct PlatformLogoAndNameView: View {
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 30, height: 25)
-            Text(name)
+            if channel.isEmpty {
+                Text(name)
+            } else {
+                Text(String("\(name) (\(channel))"))
+            }
         }
     }
 }
 
 struct TwitchLogoAndNameView: View {
+    var channel: String = ""
+
     var body: some View {
-        PlatformLogoAndNameView(logo: "TwitchLogo", name: String(localized: "Twitch"))
+        PlatformLogoAndNameView(logo: "TwitchLogo", name: String(localized: "Twitch"), channel: channel)
     }
 }
 
 struct KickLogoAndNameView: View {
+    var channel: String = ""
+
     var body: some View {
-        PlatformLogoAndNameView(logo: "KickLogo", name: String(localized: "Kick"))
+        PlatformLogoAndNameView(logo: "KickLogo", name: String(localized: "Kick"), channel: channel)
     }
 }
 
 struct YouTubeLogoAndNameView: View {
+    var handle: String = ""
+
     var body: some View {
-        PlatformLogoAndNameView(logo: "YouTubeLogo", name: String(localized: "YouTube"))
+        PlatformLogoAndNameView(logo: "YouTubeLogo", name: String(localized: "YouTube"), channel: handle)
     }
 }
 
 struct DLiveLogoAndNameView: View {
+    var username: String = ""
+
     var body: some View {
-        PlatformLogoAndNameView(logo: "DLiveLogo", name: String(localized: "DLive"))
+        PlatformLogoAndNameView(logo: "DLiveLogo", name: String(localized: "DLive"), channel: username)
     }
 }
 
@@ -46,8 +59,10 @@ struct OpenStreamingPlatformLogoAndNameView: View {
 }
 
 struct SoopLogoAndNameView: View {
+    var channel: String = ""
+
     var body: some View {
-        PlatformLogoAndNameView(logo: "SoopLogo", name: String(localized: "SOOP"))
+        PlatformLogoAndNameView(logo: "SoopLogo", name: String(localized: "SOOP"), channel: channel)
     }
 }
 
@@ -64,33 +79,58 @@ struct DiscordLogoAndNameView: View {
 }
 
 struct StreamPlatformsSettingsView: View {
-    let stream: SettingsStream
+    @ObservedObject var stream: SettingsStream
 
     var body: some View {
         NavigationLink {
             StreamTwitchSettingsView(stream: stream, loggedIn: stream.twitchLoggedIn)
         } label: {
-            TwitchLogoAndNameView()
+            HStack {
+                TwitchLogoAndNameView()
+                Spacer()
+                Text(stream.twitchChannelName)
+                    .foregroundColor(.gray)
+            }
         }
         NavigationLink {
             StreamKickSettingsView(stream: stream)
         } label: {
-            KickLogoAndNameView()
+            HStack {
+                KickLogoAndNameView()
+                Spacer()
+                Text(stream.kickChannelName)
+                    .foregroundColor(.gray)
+            }
         }
         NavigationLink {
             StreamYouTubeSettingsView(stream: stream)
         } label: {
-            YouTubeLogoAndNameView()
+            HStack {
+                YouTubeLogoAndNameView()
+                Spacer()
+                Text(stream.youTubeHandle)
+                    .foregroundColor(.gray)
+            }
         }
         NavigationLink {
             StreamDLiveSettingsView(stream: stream)
         } label: {
-            DLiveLogoAndNameView()
+            HStack {
+                DLiveLogoAndNameView()
+                Spacer()
+                Text(stream.dLiveUsername)
+                    .foregroundColor(.gray)
+            }
         }
         NavigationLink {
             StreamSoopSettingsView(stream: stream)
         } label: {
-            SoopLogoAndNameView()
+            HStack {
+                SoopLogoAndNameView()
+                Spacer()
+                Text(stream.soopChannelName)
+                    .foregroundColor(.gray)
+            }
         }
         NavigationLink {
             StreamOpenStreamingPlatformSettingsView(stream: stream)

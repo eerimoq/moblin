@@ -813,7 +813,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
     var id: UUID = .init()
     var enabled: Bool = false
     @Published var url: String = defaultStreamUrl
-    var twitchChannelName: String = ""
+    @Published var twitchChannelName: String = ""
     var twitchChannelId: String = ""
     var twitchShowFollows: Bool?
     var twitchChatAlerts: SettingsTwitchAlerts = .init()
@@ -835,7 +835,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
     var youTubeApiKey: String = ""
     @Published var youTubeVideoId: String = ""
     @Published var youTubeHandle: String = ""
-    var soopChannelName: String = ""
+    @Published var soopChannelName: String = ""
     var soopStreamId: String = ""
     var openStreamingPlatformUrl: String = ""
     var openStreamingPlatformChannelId: String = ""
