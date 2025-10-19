@@ -232,7 +232,7 @@ struct KickStreamLiveSettingsView: View {
     @State private var streamCategory: String?
 
     private func submitStreamTitle(value: String) {
-        model.setKickStreamTitle(stream: stream, title: value) { _ in}
+        model.setKickStreamTitle(stream: stream, title: value) { _ in }
     }
 
     var body: some View {
@@ -241,7 +241,7 @@ struct KickStreamLiveSettingsView: View {
                 title: String(localized: "Title"),
                 value: streamTitle ?? "",
                 onSubmit: { value in
-                    model.setKickStreamTitle(stream: stream, title: value) { _ in}
+                    model.setKickStreamTitle(stream: stream, title: value) { _ in }
                 }
             )
         } label: {
