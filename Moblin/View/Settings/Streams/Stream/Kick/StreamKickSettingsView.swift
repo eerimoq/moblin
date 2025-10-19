@@ -348,11 +348,16 @@ struct StreamKickSettingsView: View {
         }
     }
 
-    private func submitChannelName(value: String) {
-        stream.kickChannelName = value
+    private func resetSettings() {
+        stream.kickChannelName = ""
         stream.kickChannelId = nil
         stream.kickSlug = nil
         stream.kickChatroomChannelId = nil
+    }
+
+    private func submitChannelName(value: String) {
+        resetSettings()
+        stream.kickChannelName = value
         fetchChannelInfo()
         if stream.enabled, stream.kickChannelName.isEmpty {
             model.kickChannelNameUpdated()
@@ -369,10 +374,8 @@ struct StreamKickSettingsView: View {
 
     private func handleUser(data: KickUser?) {
         if let data {
+            resetSettings()
             stream.kickChannelName = data.username
-            stream.kickChannelId = nil
-            stream.kickSlug = nil
-            stream.kickChatroomChannelId = nil
             fetchChannelInfo()
         } else {
             reloadConnectionsIfEnabled()
