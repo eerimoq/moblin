@@ -323,19 +323,17 @@ func loadKickStreamInfo(model: Model,
 struct StreamKickSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var stream: SettingsStream
-    @State var fetchChannelInfoFailed: Bool = false
+    @State private var fetchingChannelInfo: Bool = false
+    @State private var fetchChannelInfoFailed: Bool = false
     @State private var title: String?
     @State private var category: String?
 
-    private func shouldFetchChannelInfo() -> Bool {
-        return !stream.kickChannelName.isEmpty
-            && (stream.kickChannelId == nil || stream.kickSlug == nil || stream.kickChatroomChannelId == nil)
-    }
-
     private func fetchChannelInfo() {
+        fetchingChannelInfo = true
         fetchChannelInfoFailed = false
         getKickChannelInfo(channelName: stream.kickChannelName) { channelInfo in
             DispatchQueue.main.async {
+                fetchingChannelInfo = false
                 if let channelInfo {
                     fetchChannelInfoFailed = false
                     stream.kickChannelId = String(channelInfo.chatroom.id)
@@ -405,11 +403,11 @@ struct StreamKickSettingsView: View {
                     onSubmit: submitChannelName
                 )
             } footer: {
-                if fetchChannelInfoFailed {
+                if fetchingChannelInfo {
+                    Text("Fetching channel info...")
+                } else if fetchChannelInfoFailed {
                     Text("Channel not found on kick.com.")
                         .foregroundColor(.red)
-                } else if shouldFetchChannelInfo() {
-                    Text("Fetching channel info...")
                 }
             }
             if stream.kickLoggedIn {
