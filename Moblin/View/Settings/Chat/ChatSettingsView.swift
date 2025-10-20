@@ -76,6 +76,11 @@ struct ChatSettingsView: View {
                     }
             }
             Section {
+                ChatSettingsAppearanceView(chat: chat)
+                ChatSettingsLayoutView(chat: chat)
+                ChatSettingsGeneralView(chat: chat)
+            }
+            Section {
                 NavigationLink {
                     Form {
                         StreamPlatformsSettingsView(stream: model.stream)
@@ -84,13 +89,13 @@ struct ChatSettingsView: View {
                 } label: {
                     Label("Streaming platforms", systemImage: "dot.radiowaves.left.and.right")
                 }
+                NavigationLink {
+                    StreamEmotesSettingsView(stream: model.stream)
+                } label: {
+                    Label("Emotes", systemImage: "dot.radiowaves.left.and.right")
+                }
             } header: {
                 Text("Shortcut")
-            }
-            Section {
-                ChatSettingsAppearanceView(chat: chat)
-                ChatSettingsLayoutView(chat: chat)
-                ChatSettingsGeneralView(chat: chat)
             }
         }
         .navigationTitle("Chat")
