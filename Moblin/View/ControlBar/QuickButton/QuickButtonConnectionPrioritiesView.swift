@@ -21,8 +21,8 @@ struct QuickButtonConnectionPrioritiesView: View {
     @ObservedObject var stream: SettingsStream
 
     var body: some View {
-        switch stream.getProtocol() {
-        case .srt:
+        switch stream.getDetailedProtocol() {
+        case .srtla:
             StreamSrtConnectionPriorityView(stream: stream)
         default:
             NoConnectionPrioritiesView(protocolName: stream.protocolString())

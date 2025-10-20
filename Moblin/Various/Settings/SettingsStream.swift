@@ -127,6 +127,14 @@ enum SettingsStreamProtocol: String, Codable {
     }
 }
 
+enum SettingsStreamDetailedProtocol {
+    case rtmp
+    case rtmps
+    case srt
+    case srtla
+    case rist
+}
+
 class SettingsStreamSrtConnectionPriority: Codable, Identifiable {
     var id: UUID = .init()
     var name: String
@@ -1197,8 +1205,8 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         return new
     }
 
-    private func getScheme() -> String? {
-        return URL(string: url)!.scheme
+    func getScheme() -> String? {
+        return URL(string: url)?.scheme
     }
 
     func getProtocol() -> SettingsStreamProtocol {
@@ -1211,6 +1219,23 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
             return .srt
         case "srtla":
             return .srt
+        case "rist":
+            return .rist
+        default:
+            return .rtmp
+        }
+    }
+
+    func getDetailedProtocol() -> SettingsStreamDetailedProtocol {
+        switch getScheme() {
+        case "rtmp":
+            return .rtmp
+        case "rtmps":
+            return .rtmps
+        case "srt":
+            return .srt
+        case "srtla":
+            return .srtla
         case "rist":
             return .rist
         default:
