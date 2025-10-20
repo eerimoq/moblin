@@ -196,7 +196,7 @@ private struct MenuView: View {
             }
         case .live:
             NavigationStack {
-                QuickButtonLiveView(model: model, stream: model.stream)
+                QuickButtonLiveView(model: model, database: model.database, stream: model.stream)
             }
         case .none:
             EmptyView()
