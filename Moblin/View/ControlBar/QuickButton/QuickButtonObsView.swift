@@ -278,14 +278,16 @@ struct QuickButtonObsView: View {
                     """)
                 }
             }
-            Section {
-                NavigationLink {
-                    ObsSettingsView(model: model, stream: stream)
-                } label: {
-                    Label("OBS remote control", systemImage: "dot.radiowaves.left.and.right")
+            if stream !== fallbackStream {
+                Section {
+                    NavigationLink {
+                        ObsSettingsView(model: model, stream: stream)
+                    } label: {
+                        Label("OBS remote control", systemImage: "dot.radiowaves.left.and.right")
+                    }
+                } header: {
+                    Text("Shortcut")
                 }
-            } header: {
-                Text("Shortcut")
             }
         }
         .onAppear {

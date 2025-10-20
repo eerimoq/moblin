@@ -66,6 +66,7 @@ private struct ChatSettingsGeneralView: View {
 struct ChatSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var chat: SettingsChat
+    @ObservedObject var stream: SettingsStream
 
     var body: some View {
         Form {
@@ -80,22 +81,24 @@ struct ChatSettingsView: View {
                 ChatSettingsLayoutView(chat: chat)
                 ChatSettingsGeneralView(chat: chat)
             }
-            Section {
-                NavigationLink {
-                    Form {
-                        StreamPlatformsSettingsView(stream: model.stream)
+            if stream !== fallbackStream {
+                Section {
+                    NavigationLink {
+                        Form {
+                            StreamPlatformsSettingsView(stream: stream)
+                        }
+                        .navigationTitle("Streaming platforms")
+                    } label: {
+                        Label("Streaming platforms", systemImage: "dot.radiowaves.left.and.right")
                     }
-                    .navigationTitle("Streaming platforms")
-                } label: {
-                    Label("Streaming platforms", systemImage: "dot.radiowaves.left.and.right")
+                    NavigationLink {
+                        StreamEmotesSettingsView(stream: stream)
+                    } label: {
+                        Label("Emotes", systemImage: "dot.radiowaves.left.and.right")
+                    }
+                } header: {
+                    Text("Shortcut")
                 }
-                NavigationLink {
-                    StreamEmotesSettingsView(stream: model.stream)
-                } label: {
-                    Label("Emotes", systemImage: "dot.radiowaves.left.and.right")
-                }
-            } header: {
-                Text("Shortcut")
             }
         }
         .navigationTitle("Chat")

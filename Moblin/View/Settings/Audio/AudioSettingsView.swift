@@ -26,6 +26,7 @@ private struct MicView: View {
 struct AudioSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var database: Database
+    @ObservedObject var stream: SettingsStream
     @ObservedObject var mic: Mic
     @ObservedObject var debug: SettingsDebug
 
@@ -42,7 +43,7 @@ struct AudioSettingsView: View {
             return
         }
         database.audio.audioOutputToInputChannelsMap.channel1 = max(channel - 1, -1)
-        model.reloadStreamIfEnabled(stream: model.stream)
+        model.reloadStreamIfEnabled(stream: stream)
     }
 
     private func submitOutputChannel2(value: String) {
@@ -50,17 +51,17 @@ struct AudioSettingsView: View {
             return
         }
         database.audio.audioOutputToInputChannelsMap.channel2 = max(channel - 1, -1)
-        model.reloadStreamIfEnabled(stream: model.stream)
+        model.reloadStreamIfEnabled(stream: stream)
     }
 
     var body: some View {
         Form {
-            if database.showAllSettings {
+            if database.showAllSettings, stream !== fallbackStream {
                 Section {
                     NavigationLink {
                         StreamAudioSettingsView(
-                            stream: model.stream,
-                            bitrate: Float(model.stream.audioBitrate / 1000)
+                            stream: stream,
+                            bitrate: Float(stream.audioBitrate / 1000)
                         )
                     } label: {
                         Label("Audio", systemImage: "dot.radiowaves.left.and.right")

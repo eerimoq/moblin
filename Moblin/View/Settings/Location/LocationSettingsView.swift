@@ -69,10 +69,10 @@ struct LocationSettingsView: View {
             } footer: {
                 Text("Resets distance, average speed and slope.")
             }
-            if database.showAllSettings {
+            if database.showAllSettings, stream !== fallbackStream {
                 Section {
                     NavigationLink {
-                        StreamRealtimeIrlSettingsView(stream: model.stream)
+                        StreamRealtimeIrlSettingsView(stream: stream)
                     } label: {
                         Toggle(isOn: $stream.realtimeIrlEnabled) {
                             Label("RealtimeIRL", systemImage: "dot.radiowaves.left.and.right")

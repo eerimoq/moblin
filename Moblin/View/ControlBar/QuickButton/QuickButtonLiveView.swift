@@ -102,7 +102,7 @@ private struct ShortcutView: View {
         Section {
             NavigationLink {
                 Form {
-                    StreamPlatformsSettingsView(stream: model.stream)
+                    StreamPlatformsSettingsView(stream: stream)
                 }
                 .navigationTitle("Streaming platforms")
             } label: {
@@ -151,34 +151,36 @@ struct QuickButtonLiveView: View {
 
     var body: some View {
         Form {
-            if !anyStreamingPlatformConfigured() {
-                Text("No 'Streaming platform' is configured.")
-            }
-            if !stream.twitchChannelName.isEmpty {
-                TwitchView(model: model, stream: stream, title: $twitchTitle, category: $twitchCategory)
-            }
-            if !stream.kickChannelName.isEmpty {
-                KickView(model: model, stream: stream, title: $kickTitle, category: $kickCategory)
-            }
-            if !stream.youTubeHandle.isEmpty {
-                YouTubeView(stream: stream)
-            }
-            if !stream.dLiveUsername.isEmpty {
-                DLiveView(stream: stream)
-            }
-            if !stream.soopChannelName.isEmpty {
-                SoopView(stream: stream)
-            }
-            if database.showAllSettings {
-                if stream.goLiveNotificationDiscordWebhookUrl.isEmpty {
-                    Section {
-                        Text("No 'Go live notification' is configured.")
-                    }
-                } else {
-                    GoLiveNotificationView(model: model, database: database, stream: stream)
+            if stream !== fallbackStream {
+                if !anyStreamingPlatformConfigured() {
+                    Text("No 'Streaming platform' is configured.")
                 }
+                if !stream.twitchChannelName.isEmpty {
+                    TwitchView(model: model, stream: stream, title: $twitchTitle, category: $twitchCategory)
+                }
+                if !stream.kickChannelName.isEmpty {
+                    KickView(model: model, stream: stream, title: $kickTitle, category: $kickCategory)
+                }
+                if !stream.youTubeHandle.isEmpty {
+                    YouTubeView(stream: stream)
+                }
+                if !stream.dLiveUsername.isEmpty {
+                    DLiveView(stream: stream)
+                }
+                if !stream.soopChannelName.isEmpty {
+                    SoopView(stream: stream)
+                }
+                if database.showAllSettings {
+                    if stream.goLiveNotificationDiscordWebhookUrl.isEmpty {
+                        Section {
+                            Text("No 'Go live notification' is configured.")
+                        }
+                    } else {
+                        GoLiveNotificationView(model: model, database: database, stream: stream)
+                    }
+                }
+                ShortcutView(model: model, database: database, stream: stream)
             }
-            ShortcutView(model: model, database: database, stream: stream)
         }
         .navigationTitle("Stream")
         .onAppear {

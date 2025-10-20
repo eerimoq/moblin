@@ -29,7 +29,7 @@ struct SettingsView: View {
                     Label("Scenes", systemImage: "photo.on.rectangle")
                 }
                 NavigationLink {
-                    ChatSettingsView(chat: database.chat)
+                    ChatSettingsView(chat: database.chat, stream: model.stream)
                 } label: {
                     Label("Chat", systemImage: "message")
                 }
@@ -39,13 +39,16 @@ struct SettingsView: View {
                     Label("Display", systemImage: "rectangle.inset.topright.fill")
                 }
                 NavigationLink {
-                    CameraSettingsView(database: database, color: database.color)
+                    CameraSettingsView(database: database, stream: model.stream, color: database.color)
                 } label: {
                     Label("Camera", systemImage: "camera")
                 }
                 if database.showAllSettings {
                     NavigationLink {
-                        AudioSettingsView(database: database, mic: model.mic, debug: database.debug)
+                        AudioSettingsView(database: database,
+                                          stream: model.stream,
+                                          mic: model.mic,
+                                          debug: database.debug)
                     } label: {
                         Label("Audio", systemImage: "waveform")
                     }

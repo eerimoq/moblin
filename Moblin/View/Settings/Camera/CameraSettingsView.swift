@@ -181,18 +181,21 @@ private struct CameraSettingsAppleLogLutView: View {
 struct CameraSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var database: Database
+    @ObservedObject var stream: SettingsStream
     @ObservedObject var color: SettingsColor
 
     var body: some View {
         Form {
-            Section {
-                NavigationLink {
-                    StreamVideoSettingsView(database: database, stream: model.stream)
-                } label: {
-                    Label("Video", systemImage: "dot.radiowaves.left.and.right")
+            if stream !== fallbackStream {
+                Section {
+                    NavigationLink {
+                        StreamVideoSettingsView(database: database, stream: stream)
+                    } label: {
+                        Label("Video", systemImage: "dot.radiowaves.left.and.right")
+                    }
+                } header: {
+                    Text("Shortcut")
                 }
-            } header: {
-                Text("Shortcut")
             }
             Section {
                 if database.showAllSettings {
