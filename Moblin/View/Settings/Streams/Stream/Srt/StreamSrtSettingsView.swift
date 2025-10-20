@@ -73,12 +73,10 @@ struct StreamSrtSettingsView: View {
                     }))
                     .disabled(stream.enabled && model.isLive)
                 }
-                if stream.getDetailedProtocol() == .srtla {
-                    NavigationLink {
-                        StreamSrtConnectionPriorityView(stream: stream)
-                    } label: {
-                        Text("Connection priorities")
-                    }
+                NavigationLink {
+                    StreamSrtConnectionPriorityView(stream: stream)
+                } label: {
+                    Text("Connection priorities")
                 }
                 if !debug.newSrt {
                     Toggle("Max bandwidth follows input", isOn: Binding(get: {

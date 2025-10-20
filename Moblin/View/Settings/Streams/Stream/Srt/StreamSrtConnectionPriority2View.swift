@@ -7,7 +7,23 @@ func clampConnectionPriority(value: Int) -> Int {
     return value.clamped(to: minimumSrtConnectionPriority ... maximumSrtConnectionPriority)
 }
 
-struct PriorityItemView: View {
+private struct NoConnectionPrioritiesView: View {
+    let protocolName: String
+
+    var body: some View {
+        Form {
+            Section {
+                Text("""
+                Connection priorities are not supported by \(protocolName). Only SRTLA supports \
+                connection priorities.
+                """)
+            }
+        }
+        .navigationTitle("Connection priorities")
+    }
+}
+
+private struct PriorityItemView: View {
     @EnvironmentObject var model: Model
     let priority: SettingsStreamSrtConnectionPriority
     @State var prio: Float
@@ -54,7 +70,7 @@ struct PriorityItemView: View {
     }
 }
 
-struct StreamSrtConnectionPriorityView: View {
+private struct SrtlaConnectionPriorityView: View {
     @EnvironmentObject var model: Model
     let stream: SettingsStream
 
@@ -96,5 +112,18 @@ struct StreamSrtConnectionPriorityView: View {
             }
         }
         .navigationTitle("Connection priorities")
+    }
+}
+
+struct StreamSrtConnectionPriorityView: View {
+    @ObservedObject var stream: SettingsStream
+
+    var body: some View {
+        switch stream.getDetailedProtocol() {
+        case .srtla:
+            SrtlaConnectionPriorityView(stream: stream)
+        default:
+            NoConnectionPrioritiesView(protocolName: stream.protocolString())
+        }
     }
 }

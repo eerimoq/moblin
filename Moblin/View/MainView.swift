@@ -173,7 +173,7 @@ private struct MenuView: View {
             }
         case .connectionPriorities:
             NavigationStack {
-                QuickButtonConnectionPrioritiesView(stream: model.stream)
+                StreamSrtConnectionPriorityView(stream: model.stream)
             }
         case .autoSceneSwitcher:
             NavigationStack {
