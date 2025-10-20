@@ -6,7 +6,7 @@ private enum MessageError: Error {
     case missingCommand(String)
 }
 
-private enum Command: String {
+enum TwitchChatCommand: String {
     case ping = "PING"
     case privateMessage = "PRIVMSG"
     case userNotice = "USERNOTICE"
@@ -25,7 +25,7 @@ extension StringProtocol where Self: RangeReplaceableCollection {
     }
 
     mutating func append(_ value: Self?) {
-        guard let value = value else {
+        guard let value else {
             return
         }
         append(contentsOf: value)
@@ -71,7 +71,6 @@ private enum EmoteError: Error {
 
 private struct ChatMessage {
     let id: String?
-    let channel: String
     let emotes: [ChatMessageEmote]
     let badges: [String]
     let displayName: String
@@ -88,9 +87,8 @@ private struct ChatMessage {
     let replySender: String?
     let replyText: String?
 
-    init?(_ message: Message) {
+    init?(_ message: TwitchChatMessage) {
         guard message.parameters.count == 2,
-              let channel = message.parameters.first,
               let text = message.parameters.last,
               let displayName = message.displayName,
               let user = message.user
@@ -114,7 +112,6 @@ private struct ChatMessage {
             return nil
         }
         id = message.id
-        self.channel = channel
         emotes = message.emotes
         badges = message.badges
         self.text = text
@@ -138,22 +135,26 @@ private struct ChatMessage {
 }
 
 private func parseTags(from string: String) -> [String: String] {
-    let tagsString = string.removingPrefix("@")
-    let tagSpecifiers = tagsString.split(separator: ";")
-    let tagPairs = tagSpecifiers.compactMap { tagKeyAndValue(from: $0) }
-    return [String: String](tagPairs, uniquingKeysWith: { key, _ in key })
+    let tagsString = string[string.index(after: string.startIndex)...]
+    var tags: [String: String] = [:]
+    for tag in tagsString.split(separator: ";") {
+        if let (name, value) = tagNameAndValue(from: tag) {
+            tags[name] = value
+        }
+    }
+    return tags
 }
 
-private func tagKeyAndValue(from specifier: Substring) -> (String, String)? {
+private func tagNameAndValue(from specifier: Substring) -> (String, String)? {
     let parts = specifier.split(separator: "=")
-    guard parts.count == 2, let keyPart = parts.first, let valuePart = parts.last else {
+    guard parts.count == 2, let name = parts.first, let value = parts.last else {
         return nil
     }
-    guard valuePart.isEmpty == false else {
+    guard !value.isEmpty else {
         return nil
     }
     var unescapedValue = ""
-    let scanner = Scanner(string: String(valuePart))
+    let scanner = Scanner(string: String(value))
     while scanner.isAtEnd == false {
         unescapedValue.append(scanner.scanUpToString("\\"))
         _ = scanner.scanString("\\")
@@ -172,11 +173,11 @@ private func tagKeyAndValue(from specifier: Substring) -> (String, String)? {
             }
         }
     }
-    return (String(keyPart), unescapedValue)
+    return (String(name), unescapedValue)
 }
 
 private func parseParameters(from parts: [String]) -> [String] {
-    var parameters = [String]()
+    var parameters: [String] = []
     for index in parts.startIndex ..< parts.endIndex {
         let part = parts[index]
         guard part.hasPrefix(":") else {
@@ -189,10 +190,10 @@ private func parseParameters(from parts: [String]) -> [String] {
     return parameters
 }
 
-private struct Message {
+struct TwitchChatMessage {
     let tags: [String: String]
     let sourceString: String?
-    let command: Command
+    let command: TwitchChatCommand
     let parameters: [String]
 
     init(string: String) throws {
@@ -213,7 +214,7 @@ private struct Message {
             throw MessageError.missingCommand(string)
         }
         let commandString = String(commandPart)
-        guard let command = Command(rawValue: commandString) else {
+        guard let command = TwitchChatCommand(rawValue: commandString) else {
             throw MessageError.invalidCommand(commandString)
         }
         self.command = command
@@ -295,7 +296,7 @@ private struct Message {
 private class Badges {
     private var channelId: String = ""
     private var accessToken: String = ""
-    private var badges: [String: TwitchApiChatBadgesVersion] = [:]
+    private var badges: [String: URL] = [:]
     private var tryFetchAgainTimer = SimpleTimer(queue: .main)
 
     func start(channelId: String, accessToken: String) {
@@ -311,8 +312,8 @@ private class Badges {
         stopTryFetchAgainTimer()
     }
 
-    func getUrl(badgeId: String) -> String? {
-        return badges[badgeId]?.image_url_2x
+    func getUrl(badgeId: String) -> URL? {
+        return badges[badgeId]
     }
 
     func tryFetch() {
@@ -350,7 +351,9 @@ private class Badges {
     private func addBadges(badges: [TwitchApiChatBadgesData]) {
         for badge in badges {
             for version in badge.versions {
-                self.badges["\(badge.set_id)/\(version.id)"] = version
+                if let url = URL(string: version.image_url_2x) {
+                    self.badges["\(badge.set_id)/\(version.id)"] = url
+                }
             }
         }
     }
@@ -509,7 +512,7 @@ final class TwitchChat {
     }
 
     private func handleMessage(message: String) throws {
-        let message = try Message(string: message)
+        let message = try TwitchChatMessage(string: message)
         switch message.command {
         case .privateMessage, .userNotice:
             handleChatMessage(message: message)
@@ -522,13 +525,13 @@ final class TwitchChat {
         }
     }
 
-    private func handleChatMessage(message: Message) {
+    private func handleChatMessage(message: TwitchChatMessage) {
         guard let message = ChatMessage(message) else {
             return
         }
         var badgeUrls: [URL] = []
         for badge in message.badges {
-            if let badgeUrl = badges.getUrl(badgeId: badge), let badgeUrl = URL(string: badgeUrl) {
+            if let badgeUrl = badges.getUrl(badgeId: badge) {
                 badgeUrls.append(badgeUrl)
             }
         }
@@ -561,21 +564,21 @@ final class TwitchChat {
         )
     }
 
-    private func handleClearMessage(message: Message) {
+    private func handleClearMessage(message: TwitchChatMessage) {
         guard let targetMessageId = message.tags["target-msg-id"] else {
             return
         }
         delegate?.twitchChatDeleteMessage(messageId: targetMessageId)
     }
 
-    private func handleClearChat(message: Message) {
+    private func handleClearChat(message: TwitchChatMessage) {
         guard let targetUserId = message.tags["target-user-id"] else {
             return
         }
         delegate?.twitchChatDeleteUser(userId: targetUserId)
     }
 
-    private func handlePing(message: Message) {
+    private func handlePing(message: TwitchChatMessage) {
         webSocket.send(string: "PONG \(message.parameters.joined(separator: " "))")
     }
 
@@ -613,27 +616,11 @@ final class TwitchChat {
         var segments: [ChatPostSegment] = []
         let unicodeText = text.unicodeScalars
         var startIndex = unicodeText.startIndex
-        for emote in emotes.sorted(by: { lhs, rhs in
-            lhs.range.lowerBound < rhs.range.lowerBound
-        }) {
-            if !(emote.range.lowerBound < unicodeText.count) {
-                logger
-                    .warning(
-                        """
-                        twitch: chat: Emote lower bound \(emote.range.lowerBound) after \
-                        message end \(unicodeText.count) '\(unicodeText)'
-                        """
-                    )
+        for emote in emotes.sorted(by: { $0.range.lowerBound < $1.range.lowerBound }) {
+            guard emote.range.lowerBound < unicodeText.count else {
                 break
             }
-            if !(emote.range.upperBound < unicodeText.count) {
-                logger
-                    .warning(
-                        """
-                        twitch: chat: Emote upper bound \(emote.range.upperBound) after \
-                        message end \(unicodeText.count) '\(unicodeText)'
-                        """
-                    )
+            guard emote.range.upperBound < unicodeText.count else {
                 break
             }
             var text: String?

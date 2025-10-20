@@ -154,22 +154,16 @@ struct TwitchApiGetCheermotes: Decodable {
     let data: [TwitchApiGetCheermotesData]
 }
 
-// periphery:ignore
 struct TwitchApiChatBadgesVersion: Decodable {
     let id: String
-    let image_url_1x: String
     let image_url_2x: String
-    let image_url_4x: String
-    let title: String
 }
 
 struct TwitchApiChatBadgesData: Decodable {
-    // periphery:ignore
     let set_id: String
     let versions: [TwitchApiChatBadgesVersion]
 }
 
-// periphery:ignore
 struct TwitchApiChatBadges: Decodable {
     let data: [TwitchApiChatBadgesData]
 }
