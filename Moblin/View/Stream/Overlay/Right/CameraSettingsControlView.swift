@@ -65,6 +65,7 @@ private struct ExposureBiasView: View {
             value: $camera.bias,
             in: -2 ... 2,
             step: 0.1,
+            label: { EmptyView() },
             onEditingChanged: { begin in
                 guard !begin else {
                     return
@@ -98,31 +99,32 @@ private struct WhiteBalanceView: View {
         if model.isCameraSupportingManualWhiteBalance() {
             HStack {
                 Slider(
-                    value: $camera.manualWhiteBalance,
+                    value: $camera.lockedWhiteBalance,
                     in: 0 ... 1,
                     step: 0.01,
+                    label: { EmptyView() },
                     onEditingChanged: { begin in
-                        model.camera.editingManualWhiteBalance = begin
+                        model.camera.editingLockedWhiteBalance = begin
                         guard !begin else {
                             return
                         }
-                        model.setManualWhiteBalance(factor: camera.manualWhiteBalance)
+                        model.setManualWhiteBalance(factor: camera.lockedWhiteBalance)
                     }
                 )
-                .onChange(of: camera.manualWhiteBalance) { _ in
-                    if model.camera.editingManualWhiteBalance {
-                        model.setManualWhiteBalance(factor: camera.manualWhiteBalance)
+                .onChange(of: camera.lockedWhiteBalance) { _ in
+                    if model.camera.editingLockedWhiteBalance {
+                        model.setManualWhiteBalance(factor: camera.lockedWhiteBalance)
                     }
                 }
                 Button {
-                    if camera.manualWhiteBalanceEnabled {
+                    if camera.isWhiteBalanceLocked {
                         model.setAutoWhiteBalance()
                     } else {
-                        model.setManualWhiteBalance(factor: camera.manualWhiteBalance)
+                        model.setManualWhiteBalance(factor: camera.lockedWhiteBalance)
                     }
                     model.updateImageButtonState()
                 } label: {
-                    Image(systemName: lockImage(locked: camera.manualWhiteBalanceEnabled))
+                    Image(systemName: lockImage(locked: camera.isWhiteBalanceLocked))
                         .font(.title2)
                         .foregroundColor(.white)
                 }
@@ -148,34 +150,89 @@ private struct IsoView: View {
             .font(.footnote)
             .foregroundColor(.white)
             .padding([.trailing], 7)
-        if model.isCameraSupportingManualIso() {
+        if model.isCameraSupportingManualExposureAndIso() {
             HStack {
                 Slider(
-                    value: $camera.manualIso,
+                    value: $camera.lockedIso,
                     in: 0 ... 1,
                     step: 0.01,
+                    label: { EmptyView() },
                     onEditingChanged: { begin in
-                        camera.editingManualIso = begin
+                        camera.editingLockedIso = begin
                         guard !begin else {
                             return
                         }
-                        model.setManualIso(factor: camera.manualIso)
+                        model.setManualIso(factor: camera.lockedIso)
                     }
                 )
-                .onChange(of: camera.manualIso) { _ in
-                    if camera.editingManualIso {
-                        model.setManualIso(factor: camera.manualIso)
+                .onChange(of: camera.lockedIso) { _ in
+                    if camera.editingLockedIso {
+                        model.setManualIso(factor: camera.lockedIso)
                     }
                 }
                 Button {
-                    if camera.manualIsoEnabled {
-                        model.setAutoIso()
+                    if camera.isExposureAndIsoLocked {
+                        model.setAutoExposureAndIso()
                     } else {
-                        model.setManualIso(factor: camera.manualIso)
+                        model.setManualIso(factor: camera.lockedIso)
                     }
                     model.updateImageButtonState()
                 } label: {
-                    Image(systemName: lockImage(locked: camera.manualIsoEnabled))
+                    Image(systemName: lockImage(locked: camera.isExposureAndIsoLocked))
+                        .font(.title2)
+                        .foregroundColor(.white)
+                }
+            }
+            .padding([.top, .bottom], 5)
+            .padding([.leading, .trailing], 7)
+            .frame(width: sliderWidth, height: sliderHeight)
+            .background(backgroundColor)
+            .cornerRadius(7)
+            .padding([.bottom], 5)
+        } else {
+            NotSupportedForThisCameraView()
+        }
+    }
+}
+
+private struct ExposureView: View {
+    @EnvironmentObject var model: Model
+    @ObservedObject var camera: CameraState
+
+    var body: some View {
+        Text("EXPOSURE")
+            .font(.footnote)
+            .foregroundColor(.white)
+            .padding([.trailing], 7)
+        if model.isCameraSupportingManualExposureAndIso() {
+            HStack {
+                Slider(
+                    value: $camera.lockedExposure,
+                    in: 0 ... 1,
+                    step: 0.01,
+                    label: { EmptyView() },
+                    onEditingChanged: { begin in
+                        camera.editingLockedExposure = begin
+                        guard !begin else {
+                            return
+                        }
+                        model.setManualExposure(factor: camera.lockedExposure)
+                    }
+                )
+                .onChange(of: camera.lockedExposure) { _ in
+                    if camera.editingLockedExposure {
+                        model.setManualExposure(factor: camera.lockedExposure)
+                    }
+                }
+                Button {
+                    if camera.isExposureAndIsoLocked {
+                        model.setAutoExposureAndIso()
+                    } else {
+                        model.setManualExposure(factor: camera.lockedExposure)
+                    }
+                    model.updateImageButtonState()
+                } label: {
+                    Image(systemName: lockImage(locked: camera.isExposureAndIsoLocked))
                         .font(.title2)
                         .foregroundColor(.white)
                 }
@@ -204,31 +261,32 @@ struct FocusView: View {
         if model.isCameraSupportingManualFocus() {
             HStack {
                 Slider(
-                    value: $camera.manualFocus,
+                    value: $camera.lockedFocus,
                     in: 0 ... 1,
                     step: 0.01,
+                    label: { EmptyView() },
                     onEditingChanged: { begin in
-                        camera.editingManualFocus = begin
+                        camera.editingLockedFocus = begin
                         guard !begin else {
                             return
                         }
-                        model.setManualFocus(lensPosition: camera.manualFocus)
+                        model.setManualFocus(lensPosition: camera.lockedFocus)
                     }
                 )
-                .onChange(of: camera.manualFocus) { _ in
-                    if camera.editingManualFocus {
-                        model.setManualFocus(lensPosition: camera.manualFocus)
+                .onChange(of: camera.lockedFocus) { _ in
+                    if camera.editingLockedFocus {
+                        model.setManualFocus(lensPosition: camera.lockedFocus)
                     }
                 }
                 Button {
-                    if camera.manualFocusEnabled {
+                    if camera.isFocusLocked {
                         model.setAutoFocus()
                     } else {
-                        model.setManualFocus(lensPosition: camera.manualFocus)
+                        model.setManualFocus(lensPosition: camera.lockedFocus)
                     }
                     model.updateImageButtonState()
                 } label: {
-                    Image(systemName: lockImage(locked: camera.manualFocusEnabled))
+                    Image(systemName: lockImage(locked: camera.isFocusLocked))
                         .font(.title2)
                         .foregroundColor(.white)
                 }
@@ -261,18 +319,25 @@ private struct ButtonsView: View {
 
     private func formatWhiteBalance() -> String {
         return String(Int(minimumWhiteBalanceTemperature +
-                (maximumWhiteBalanceTemperature - minimumWhiteBalanceTemperature) * camera.manualWhiteBalance))
+                (maximumWhiteBalanceTemperature - minimumWhiteBalanceTemperature) * camera.lockedWhiteBalance))
     }
 
     private func formatIso() -> String {
         guard let device = model.cameraDevice else {
             return ""
         }
-        return String(Int(factorToIso(device: device, factor: camera.manualIso)))
+        return String(Int(factorToIso(device: device, factor: camera.lockedIso)))
+    }
+
+    private func formatExposure() -> String {
+        guard let device = model.cameraDevice else {
+            return ""
+        }
+        return String(Int(factorToExposure(device: device, factor: camera.lockedExposure).seconds * 1000))
     }
 
     private func formatFocus() -> String {
-        return String(Int(camera.manualFocus * 100))
+        return String(Int(camera.lockedFocus * 100))
     }
 
     private func height() -> Double {
@@ -290,6 +355,7 @@ private struct ButtonsView: View {
                 if show.cameraBias {
                     show.cameraWhiteBalance = false
                     show.cameraIso = false
+                    show.cameraExposure = false
                     show.cameraFocus = false
                 }
             } label: {
@@ -306,13 +372,14 @@ private struct ButtonsView: View {
                 if show.cameraWhiteBalance {
                     show.cameraBias = false
                     show.cameraIso = false
+                    show.cameraExposure = false
                     show.cameraFocus = false
                 }
             } label: {
                 CameraSettingButtonView(
                     title: String(localized: "WB"),
                     value: formatWhiteBalance(),
-                    locked: camera.manualWhiteBalanceEnabled,
+                    locked: camera.isWhiteBalanceLocked,
                     on: show.cameraWhiteBalance,
                     height: height()
                 )
@@ -321,6 +388,7 @@ private struct ButtonsView: View {
                 show.cameraIso.toggle()
                 if show.cameraIso {
                     show.cameraBias = false
+                    show.cameraExposure = false
                     show.cameraWhiteBalance = false
                     show.cameraFocus = false
                 }
@@ -328,8 +396,25 @@ private struct ButtonsView: View {
                 CameraSettingButtonView(
                     title: String(localized: "ISO"),
                     value: formatIso(),
-                    locked: camera.manualIsoEnabled,
+                    locked: camera.isExposureAndIsoLocked,
                     on: show.cameraIso,
+                    height: height()
+                )
+            }
+            Button {
+                show.cameraExposure.toggle()
+                if show.cameraExposure {
+                    show.cameraBias = false
+                    show.cameraIso = false
+                    show.cameraWhiteBalance = false
+                    show.cameraFocus = false
+                }
+            } label: {
+                CameraSettingButtonView(
+                    title: String(localized: "EXP"),
+                    value: formatExposure(),
+                    locked: camera.isExposureAndIsoLocked,
+                    on: show.cameraExposure,
                     height: height()
                 )
             }
@@ -339,12 +424,13 @@ private struct ButtonsView: View {
                     show.cameraBias = false
                     show.cameraWhiteBalance = false
                     show.cameraIso = false
+                    show.cameraExposure = false
                 }
             } label: {
                 CameraSettingButtonView(
                     title: String(localized: "FOC"),
                     value: formatFocus(),
-                    locked: camera.manualFocusEnabled,
+                    locked: camera.isFocusLocked,
                     on: show.cameraFocus,
                     height: height()
                 )
@@ -368,6 +454,9 @@ struct StreamOverlayRightCameraSettingsControlView: View {
             if show.cameraIso {
                 IsoView(camera: model.camera)
             }
+            if show.cameraExposure {
+                ExposureView(camera: model.camera)
+            }
             if show.cameraFocus {
                 FocusView(camera: model.camera)
             }
@@ -375,11 +464,13 @@ struct StreamOverlayRightCameraSettingsControlView: View {
                 .onAppear {
                     model.startObservingFocus()
                     model.startObservingIso()
+                    model.startObservingExposure()
                     model.startObservingWhiteBalance()
                 }
                 .onDisappear {
                     model.stopObservingFocus()
                     model.stopObservingIso()
+                    model.stopObservingExposure()
                     model.stopObservingWhiteBalance()
                 }
                 .padding([.bottom], 5)

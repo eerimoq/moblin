@@ -151,6 +151,7 @@ class Show: ObservableObject {
     @Published var cameraBias = false
     @Published var cameraWhiteBalance = false
     @Published var cameraIso = false
+    @Published var cameraExposure = false
     @Published var cameraFocus = false
     @Published var faceBeauty = false
     @Published var faceBeautyShape = false
@@ -1254,13 +1255,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if camera.bias != 0.0 {
             isOn = true
         }
-        if camera.manualWhiteBalanceEnabled {
+        if camera.isWhiteBalanceLocked {
             isOn = true
         }
-        if camera.manualIsoEnabled {
+        if camera.isExposureAndIsoLocked {
             isOn = true
         }
-        if camera.manualFocusEnabled {
+        if camera.isFocusLocked {
             isOn = true
         }
         if isOn != getGlobalButton(type: .image)?.isOn {
@@ -2621,7 +2622,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                     self.setZoomXWhenInRange(x: x)
                 }
                 if let device = self.cameraDevice {
-                    self.setIsoAfterCameraAttach(device: device)
+                    self.setExposureAndIsoAfterCameraAttach(device: device)
                     self.setWhiteBalanceAfterCameraAttach(device: device)
                     self.updateImageButtonState()
                 }
