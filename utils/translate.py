@@ -60,7 +60,7 @@ def main():
 
                     try:
                         translated = translator.translate(english)
-                    except:
+                    except Exception:
                         translated = english
 
                     localizations[xcode_language] = {
