@@ -28,7 +28,7 @@ private struct CameraSettingButtonView: View {
             .font(.footnote)
             .padding([.trailing], 7)
         }
-        .frame(width: cameraButtonWidth, height: height)
+        .frame(maxWidth: cameraButtonWidth, maxHeight: height)
         .background(pickerBackgroundColor)
         .foregroundColor(.white)
         .cornerRadius(7)
