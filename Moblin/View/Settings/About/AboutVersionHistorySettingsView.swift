@@ -8,6 +8,31 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "27.1.0", date: "2025-10-22", changes: [
+        "• Sensitive text as • instead of *.",
+        "• Stream URL page redesign.",
+        "• Anamorphic lens video effect. 💡 CashMeow, mikeful and others",
+        "  • Stream is still 16:9 (with black bars).",
+        "• Chat bot commands to start and stop stream. 💡 Deadllee",
+        "• Some quick buttons on third page by default.",
+        "• Korean translation updated. ✍️ 위인터",
+        "• Print subs, follows, etc, with cat printer. 🧑‍🏭 iChrisIRL",
+        "• Fix set/get Kick stream title in non-active stream.",
+        "• Better start/stop recording confirm text.",
+        "• Select a usable builtin video source if the selected builtin video source does not exist. 💡 dhudbjgfvjfc",
+        "  • Can happen if moving settings from one phone to another.",
+        "• Set Twitch and Kick stream category. 🧑‍🏭 iChrisIRL",
+        "• Remove twitch channel id help.",
+        "• Remove start/stop recording toasts.",
+        "• Quick button to set stream title and category.",
+        "• Show channel name in a few places.",
+        "• Twitch chat refactoring.",
+        "• Shortcut to emotes in chat settings.",
+        "• Only show connection priorities settings when SRTLA is configured.",
+        "• Hide stream shortcuts if no stream exists.",
+        "• Make camera settings buttons shrink if they do not fit.",
+        "• Control exposure with camera quick button. 💡 xiaochaosy-code",
+    ]),
     Version(version: "27.0.0", date: "2025-10-14", changes: [
         "• Fix video source widget rotation. 🐛 Zyiroh and SilleryBay",
         "• Fix replay portrait UI.",
