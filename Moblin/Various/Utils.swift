@@ -257,10 +257,7 @@ private func getBestFrontCameraDevice() -> AVCaptureDevice? {
 let bestFrontCameraDevice = getBestFrontCameraDevice()
 
 private func getBestBackCameraId() -> String {
-    guard let device = bestBackCameraDevice else {
-        return ""
-    }
-    return device.uniqueID
+    return bestBackCameraDevice?.uniqueID ?? ""
 }
 
 let bestBackCameraId = getBestBackCameraId()
@@ -280,21 +277,18 @@ private func getDefaultBackCameraPosition() -> SettingsSceneCameraPosition {
 let defaultBackCameraPosition = getDefaultBackCameraPosition()
 
 private func getBestFrontCameraId() -> String {
-    guard let device = bestFrontCameraDevice else {
-        return ""
-    }
-    return device.uniqueID
+    return bestFrontCameraDevice?.uniqueID ?? ""
 }
 
 let bestFrontCameraId = getBestFrontCameraId()
 
 func openUrl(url: String) {
-    UIApplication.shared.open(URL(string: url)!)
+    return UIApplication.shared.open(URL(string: url)!)
 }
 
 extension UIDevice {
     static func vibrate() {
-        AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
+        return AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
     }
 }
 
