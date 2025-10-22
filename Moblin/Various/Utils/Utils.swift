@@ -1,11 +1,5 @@
 import MetalPetal
 
-extension Data {
-    static func random(length: Int) -> Data {
-        return Data((0 ..< length).map { _ in UInt8.random(in: UInt8.min ... UInt8.max) })
-    }
-}
-
 func randomString() -> String {
     return Data.random(length: 64).base64EncodedString()
 }
@@ -219,6 +213,12 @@ func tryGetToastSubTitle(error: Error) -> String? {
 extension CMTime {
     init(seconds: Double) {
         self = CMTime(seconds: seconds, preferredTimescale: 1000)
+    }
+}
+
+extension Data {
+    static func random(length: Int) -> Data {
+        return Data((0 ..< length).map { _ in UInt8.random(in: UInt8.min ... UInt8.max) })
     }
 }
 
