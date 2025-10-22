@@ -1,6 +1,8 @@
 import CoreImage
 import simd
 
+private let epsilon = 0.00001
+
 private let kernel: CIWarpKernel? = {
     guard let url = Bundle.main.url(forResource: "default", withExtension: "metallib") else {
         return nil
