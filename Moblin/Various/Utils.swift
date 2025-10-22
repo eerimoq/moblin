@@ -424,8 +424,9 @@ func factorToIso(device: AVCaptureDevice, factor: Float) -> Float {
 }
 
 func factorFromIso(device: AVCaptureDevice, iso: Float) -> Float {
-    var factor = (iso - device.activeFormat.minISO) /
-        (device.activeFormat.maxISO - device.activeFormat.minISO)
+    let minIso = device.activeFormat.minISO
+    let maxIso = device.activeFormat.maxISO
+    var factor = (iso - minIso) / (maxIso - minIso)
     if !factor.isFinite {
         factor = 0
     }
@@ -436,28 +437,24 @@ private let minimumExposure: Double = 0.001
 private let maximumExposure: Double = 0.05
 
 func factorToExposure(device: AVCaptureDevice, factor: Float) -> CMTime {
-    let minExposureDuration = max(minimumExposure, device.activeFormat.minExposureDuration.seconds)
-    var maxExposureDuration = min(maximumExposure, device.activeFormat.maxExposureDuration.seconds)
-    maxExposureDuration = max(minExposureDuration, maxExposureDuration)
-    var exposure = CMTime(seconds: minExposureDuration + (maxExposureDuration - minExposureDuration) * Double(factor))
-    if exposure < device.activeFormat.minExposureDuration {
-        exposure = device.activeFormat.minExposureDuration
-    }
-    if exposure > device.activeFormat.maxExposureDuration {
-        exposure = device.activeFormat.maxExposureDuration
-    }
-    return exposure
+    let minExposureDuration = device.activeFormat.minExposureDuration
+    let maxExposureDuration = device.activeFormat.maxExposureDuration
+    let minExposure = max(minimumExposure, minExposureDuration.seconds)
+    var maxExposure = min(maximumExposure, maxExposureDuration.seconds)
+    maxExposure = max(minExposure, maxExposure)
+    let exposure = CMTime(seconds: minExposure + (maxExposure - minExposure) * Double(factor))
+    return exposure.clamped(to: minExposureDuration ... maxExposureDuration)
 }
 
 func factorFromExposure(device: AVCaptureDevice, exposure: CMTime) -> Float {
-    let minExposureDuration = max(minimumExposure, device.activeFormat.minExposureDuration.seconds)
-    var maxExposureDuration = min(maximumExposure, device.activeFormat.maxExposureDuration.seconds)
-    maxExposureDuration = max(minExposureDuration, maxExposureDuration)
-    var factor = (exposure.seconds - minExposureDuration) / (maxExposureDuration - minExposureDuration)
+    let minExposure = max(minimumExposure, device.activeFormat.minExposureDuration.seconds)
+    var maxExposure = min(maximumExposure, device.activeFormat.maxExposureDuration.seconds)
+    maxExposure = max(minExposure, maxExposure)
+    var factor = Float((exposure.seconds - minExposure) / (maxExposure - minExposure))
     if !factor.isFinite {
         factor = 0
     }
-    return Float(factor.clamped(to: 0 ... 1))
+    return factor.clamped(to: 0 ... 1)
 }
 
 let minimumWhiteBalanceTemperature: Float = 2200
