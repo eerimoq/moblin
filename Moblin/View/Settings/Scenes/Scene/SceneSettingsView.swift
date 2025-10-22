@@ -85,7 +85,7 @@ private struct SceneWidgetView: View {
                         DraggableItemPrefixView()
                         HStack {
                             Text("")
-                            Image(systemName: widgetImage(widget: widget))
+                            Image(systemName: widget.image())
                             Text(widget.name)
                         }
                         Spacer()
@@ -308,7 +308,7 @@ struct SceneSettingsView: View {
                                             showingAddWidget = false
                                         } label: {
                                             IconAndTextView(
-                                                image: widgetImage(widget: widget),
+                                                image: widget.image(),
                                                 text: widget.name,
                                                 longDivider: true
                                             )

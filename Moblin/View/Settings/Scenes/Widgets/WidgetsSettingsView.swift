@@ -35,7 +35,7 @@ private struct WidgetsSettingsItemView: View {
                 HStack {
                     DraggableItemPrefixView()
                     IconAndTextView(
-                        image: widgetImage(widget: widget),
+                        image: widget.image(),
                         text: widget.name,
                         longDivider: true
                     )

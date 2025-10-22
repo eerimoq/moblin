@@ -295,7 +295,7 @@ private struct WidgetView: View {
         } label: {
             Toggle(isOn: $widget.enabled) {
                 IconAndTextView(
-                    image: widgetImage(widget: widget),
+                    image: widget.image(),
                     text: widget.name,
                     longDivider: true
                 )

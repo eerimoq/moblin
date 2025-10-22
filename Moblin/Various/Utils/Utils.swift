@@ -1,36 +1,5 @@
 import MetalPetal
 
-func widgetImage(widget: SettingsWidget) -> String {
-    switch widget.type {
-    case .image:
-        return "photo"
-    case .browser:
-        return "globe"
-    case .text:
-        return "textformat"
-    case .crop:
-        return "crop"
-    case .map:
-        return "map"
-    case .scene:
-        return "photo.on.rectangle"
-    case .qrCode:
-        return "qrcode"
-    case .alerts:
-        return "megaphone"
-    case .videoSource:
-        return "video"
-    case .scoreboard:
-        return "rectangle.split.2x1"
-    case .vTuber:
-        return "person.crop.circle"
-    case .pngTuber:
-        return "person.crop.circle.dashed"
-    case .snapshot:
-        return "camera.aperture"
-    }
-}
-
 extension Data {
     static func random(length: Int) -> Data {
         return Data((0 ..< length).map { _ in UInt8.random(in: UInt8.min ... UInt8.max) })
