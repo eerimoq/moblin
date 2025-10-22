@@ -17,9 +17,9 @@ private func decodeCameraPosition<T>(_ container: KeyedDecodingContainer<T>,
                                      _ defaultValue: SettingsSceneCameraPosition) -> SettingsSceneCameraPosition
 {
     var position = container.decode(key, SettingsSceneCameraPosition.self, defaultValue)
-    if (position == .backTripleLowEnergy && !hasTripleBackCamera())
-        || (position == .backDualLowEnergy && !hasDualBackCamera())
-        || (position == .backWideDualLowEnergy && !hasWideDualBackCamera())
+    if (position == .backTripleLowEnergy && !hasTripleBackCamera)
+        || (position == .backDualLowEnergy && !hasDualBackCamera)
+        || (position == .backWideDualLowEnergy && !hasWideDualBackCamera)
     {
         position = defaultValue
     }
@@ -1255,8 +1255,8 @@ enum SettingsSceneSwitchTransition: String, Codable, CaseIterable {
 class SettingsWidgetVTuber: Codable, ObservableObject {
     var id: UUID = .init()
     @Published var cameraPosition: SettingsSceneCameraPosition = .screenCapture
-    @Published var backCameraId: String = getBestBackCameraId()
-    @Published var frontCameraId: String = getBestFrontCameraId()
+    @Published var backCameraId: String = bestBackCameraId
+    @Published var frontCameraId: String = bestFrontCameraId
     @Published var rtmpCameraId: UUID = .init()
     @Published var srtlaCameraId: UUID = .init()
     @Published var ristCameraId: UUID = .init()
@@ -1312,8 +1312,8 @@ class SettingsWidgetVTuber: Codable, ObservableObject {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
         cameraPosition = decodeCameraPosition(container, .cameraPosition, .screenCapture)
-        backCameraId = decodeCameraId(container, .backCameraId, getBestBackCameraId())
-        frontCameraId = decodeCameraId(container, .frontCameraId, getBestFrontCameraId())
+        backCameraId = decodeCameraId(container, .backCameraId, bestBackCameraId)
+        frontCameraId = decodeCameraId(container, .frontCameraId, bestFrontCameraId)
         rtmpCameraId = container.decode(.rtmpCameraId, UUID.self, .init())
         srtlaCameraId = container.decode(.srtlaCameraId, UUID.self, .init())
         ristCameraId = container.decode(.ristCameraId, UUID.self, .init())
@@ -1402,8 +1402,8 @@ class SettingsWidgetVTuber: Codable, ObservableObject {
 class SettingsWidgetPngTuber: Codable, ObservableObject {
     var id: UUID = .init()
     @Published var cameraPosition: SettingsSceneCameraPosition = .screenCapture
-    @Published var backCameraId: String = getBestBackCameraId()
-    @Published var frontCameraId: String = getBestFrontCameraId()
+    @Published var backCameraId: String = bestBackCameraId
+    @Published var frontCameraId: String = bestFrontCameraId
     @Published var rtmpCameraId: UUID = .init()
     @Published var srtlaCameraId: UUID = .init()
     @Published var ristCameraId: UUID = .init()
@@ -1453,8 +1453,8 @@ class SettingsWidgetPngTuber: Codable, ObservableObject {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
         cameraPosition = decodeCameraPosition(container, .cameraPosition, .screenCapture)
-        backCameraId = decodeCameraId(container, .backCameraId, getBestBackCameraId())
-        frontCameraId = decodeCameraId(container, .frontCameraId, getBestFrontCameraId())
+        backCameraId = decodeCameraId(container, .backCameraId, bestBackCameraId)
+        frontCameraId = decodeCameraId(container, .frontCameraId, bestFrontCameraId)
         rtmpCameraId = container.decode(.rtmpCameraId, UUID.self, .init())
         srtlaCameraId = container.decode(.srtlaCameraId, UUID.self, .init())
         ristCameraId = container.decode(.ristCameraId, UUID.self, .init())
@@ -1822,8 +1822,8 @@ private let builtinCameraPositions: [SettingsSceneCameraPosition] = [
 class SettingsWidgetVideoSource: Codable, ObservableObject {
     @Published var cornerRadius: Float = 0
     @Published var cameraPosition: SettingsSceneCameraPosition = .screenCapture
-    @Published var backCameraId: String = getBestBackCameraId()
-    @Published var frontCameraId: String = getBestFrontCameraId()
+    @Published var backCameraId: String = bestBackCameraId
+    @Published var frontCameraId: String = bestFrontCameraId
     @Published var rtmpCameraId: UUID = .init()
     @Published var srtlaCameraId: UUID = .init()
     @Published var ristCameraId: UUID = .init()
@@ -1903,8 +1903,8 @@ class SettingsWidgetVideoSource: Codable, ObservableObject {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         cornerRadius = container.decode(.cornerRadius, Float.self, 0)
         cameraPosition = decodeCameraPosition(container, .cameraPosition, .screenCapture)
-        backCameraId = decodeCameraId(container, .backCameraId, getBestBackCameraId())
-        frontCameraId = decodeCameraId(container, .frontCameraId, getBestFrontCameraId())
+        backCameraId = decodeCameraId(container, .backCameraId, bestBackCameraId)
+        frontCameraId = decodeCameraId(container, .frontCameraId, bestFrontCameraId)
         rtmpCameraId = container.decode(.rtmpCameraId, UUID.self, .init())
         srtlaCameraId = container.decode(.srtlaCameraId, UUID.self, .init())
         ristCameraId = container.decode(.ristCameraId, UUID.self, .init())
@@ -2197,9 +2197,9 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject, Named {
     @Published var name: String
     var id: UUID = .init()
     @Published var enabled: Bool = true
-    @Published var cameraPosition: SettingsSceneCameraPosition = getDefaultBackCameraPosition()
-    @Published var backCameraId: String = getBestBackCameraId()
-    @Published var frontCameraId: String = getBestFrontCameraId()
+    @Published var cameraPosition: SettingsSceneCameraPosition = defaultBackCameraPosition
+    @Published var backCameraId: String = bestBackCameraId
+    @Published var frontCameraId: String = bestFrontCameraId
     @Published var rtmpCameraId: UUID = .init()
     @Published var srtlaCameraId: UUID = .init()
     @Published var ristCameraId: UUID = .init()
@@ -2276,9 +2276,9 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject, Named {
         name = container.decode(.name, String.self, "")
         id = container.decode(.id, UUID.self, .init())
         enabled = container.decode(.enabled, Bool.self, true)
-        cameraPosition = decodeCameraPosition(container, .cameraPosition, getDefaultBackCameraPosition())
-        backCameraId = decodeCameraId(container, .backCameraId, getBestBackCameraId())
-        frontCameraId = decodeCameraId(container, .frontCameraId, getBestFrontCameraId())
+        cameraPosition = decodeCameraPosition(container, .cameraPosition, defaultBackCameraPosition)
+        backCameraId = decodeCameraId(container, .backCameraId, bestBackCameraId)
+        frontCameraId = decodeCameraId(container, .frontCameraId, bestFrontCameraId)
         rtmpCameraId = container.decode(.rtmpCameraId, UUID.self, .init())
         srtlaCameraId = container.decode(.srtlaCameraId, UUID.self, .init())
         ristCameraId = container.decode(.ristCameraId, UUID.self, .init())

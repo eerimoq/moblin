@@ -922,7 +922,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         setupAudioSession()
         if let cameraDevice = preferredCamera(position: .back) {
             (cameraZoomXMinimum, cameraZoomXMaximum) = cameraDevice
-                .getUIZoomRange(hasUltraWideCamera: hasUltraWideBackCamera())
+                .getUIZoomRange(hasUltraWideCamera: hasUltraWideBackCamera)
             if let preset = backZoomPresets().first {
                 zoom.backPresetId = preset.id
                 zoom.backX = preset.x
@@ -2495,7 +2495,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         else {
             return
         }
-        let scale = bestDevice.getZoomFactorScale(hasUltraWideCamera: hasUltraWideBackCamera())
+        let scale = bestDevice.getZoomFactorScale(hasUltraWideCamera: hasUltraWideBackCamera)
         let x = (Float(truncating: lastZoomFactor) * scale).rounded()
         var device: AVCaptureDevice?
         if zoom.backX < 1.0 {
@@ -2512,9 +2512,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             return
         }
         cameraDevice = device
-        cameraZoomLevelToXScale = device.getZoomFactorScale(hasUltraWideCamera: hasUltraWideBackCamera())
-        (cameraZoomXMinimum, cameraZoomXMaximum) = bestDevice
-            .getUIZoomRange(hasUltraWideCamera: hasUltraWideBackCamera())
+        cameraZoomLevelToXScale = device.getZoomFactorScale(hasUltraWideCamera: hasUltraWideBackCamera)
+        (cameraZoomXMinimum, cameraZoomXMaximum) = bestDevice.getUIZoomRange(hasUltraWideCamera: hasUltraWideBackCamera)
         attachCameraFinalize(scene: scene)
     }
 
@@ -2527,7 +2526,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         else {
             return
         }
-        let scale = bestDevice.getZoomFactorScale(hasUltraWideCamera: hasUltraWideBackCamera())
+        let scale = bestDevice.getZoomFactorScale(hasUltraWideCamera: hasUltraWideBackCamera)
         let x = (Float(truncating: lastZoomFactor) * scale).rounded()
         var device: AVCaptureDevice?
         if zoom.backX < x {
@@ -2542,9 +2541,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             return
         }
         cameraDevice = device
-        cameraZoomLevelToXScale = device.getZoomFactorScale(hasUltraWideCamera: hasUltraWideBackCamera())
-        (cameraZoomXMinimum, cameraZoomXMaximum) = bestDevice
-            .getUIZoomRange(hasUltraWideCamera: hasUltraWideBackCamera())
+        cameraZoomLevelToXScale = device.getZoomFactorScale(hasUltraWideCamera: hasUltraWideBackCamera)
+        (cameraZoomXMinimum, cameraZoomXMaximum) = bestDevice.getUIZoomRange(hasUltraWideCamera: hasUltraWideBackCamera)
         attachCameraFinalize(scene: scene)
     }
 
@@ -2557,7 +2555,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         else {
             return
         }
-        let scale = bestDevice.getZoomFactorScale(hasUltraWideCamera: hasUltraWideBackCamera())
+        let scale = bestDevice.getZoomFactorScale(hasUltraWideCamera: hasUltraWideBackCamera)
         let x = (Float(truncating: lastZoomFactor) * scale).rounded()
         var device: AVCaptureDevice?
         if zoom.backX < x {
@@ -2572,9 +2570,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             return
         }
         cameraDevice = device
-        cameraZoomLevelToXScale = device.getZoomFactorScale(hasUltraWideCamera: hasUltraWideBackCamera())
-        (cameraZoomXMinimum, cameraZoomXMaximum) = bestDevice
-            .getUIZoomRange(hasUltraWideCamera: hasUltraWideBackCamera())
+        cameraZoomLevelToXScale = device.getZoomFactorScale(hasUltraWideCamera: hasUltraWideBackCamera)
+        (cameraZoomXMinimum, cameraZoomXMaximum) = bestDevice.getUIZoomRange(hasUltraWideCamera: hasUltraWideBackCamera)
         attachCameraFinalize(scene: scene)
     }
 

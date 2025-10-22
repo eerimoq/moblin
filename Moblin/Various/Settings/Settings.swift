@@ -1283,13 +1283,13 @@ class Database: Codable, ObservableObject {
 
 private func addDefaultScenes(database: Database) {
     var scene = SettingsScene(name: String(localized: "Back"))
-    scene.cameraPosition = getDefaultBackCameraPosition()
-    scene.backCameraId = getBestBackCameraId()
+    scene.cameraPosition = defaultBackCameraPosition
+    scene.backCameraId = bestBackCameraId
     database.scenes.append(scene)
 
     scene = SettingsScene(name: String(localized: "Front"))
     scene.cameraPosition = .front
-    scene.frontCameraId = getBestFrontCameraId()
+    scene.frontCameraId = bestFrontCameraId
     database.scenes.append(scene)
 }
 
@@ -1300,8 +1300,8 @@ private func addDefaultZoomPresets(database: Database) {
 }
 
 private func addDefaultBackZoomPresets(database: Database) {
-    if let device = getBestBackCameraDevice() {
-        let hasUltraWideCamera = hasUltraWideBackCamera()
+    if let device = bestBackCameraDevice {
+        let hasUltraWideCamera = hasUltraWideBackCamera
         let scale = device.getZoomFactorScale(hasUltraWideCamera: hasUltraWideCamera)
         var xs: [Float] = []
         if hasUltraWideCamera {

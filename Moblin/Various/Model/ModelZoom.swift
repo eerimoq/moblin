@@ -174,7 +174,7 @@ extension Model {
     }
 
     private func factorToX(position: AVCaptureDevice.Position, factor: Float) -> Float {
-        if position == .back && hasUltraWideBackCamera() {
+        if position == .back && hasUltraWideBackCamera {
             return factor / 2
         }
         return factor

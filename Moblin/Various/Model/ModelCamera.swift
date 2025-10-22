@@ -517,13 +517,13 @@ extension Model {
     func listCameraPositions(excludeBuiltin: Bool = false) -> [(String, String)] {
         var cameras: [(String, String)] = []
         if !excludeBuiltin {
-            if hasTripleBackCamera() {
+            if hasTripleBackCamera {
                 cameras.append((backTripleLowEnergyCamera, backTripleLowEnergyCamera))
             }
-            if hasDualBackCamera() {
+            if hasDualBackCamera {
                 cameras.append((backDualLowEnergyCamera, backDualLowEnergyCamera))
             }
-            if hasWideDualBackCamera() {
+            if hasWideDualBackCamera {
                 cameras.append((backWideDualLowEnergyCamera, backWideDualLowEnergyCamera))
             }
             cameras += backCameras.map {

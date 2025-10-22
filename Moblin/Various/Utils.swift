@@ -213,38 +213,24 @@ func cameraName(device: AVCaptureDevice?) -> String {
     }
 }
 
-func hasUltraWideBackCamera() -> Bool {
-    return AVCaptureDevice.default(.builtInUltraWideCamera, for: .video, position: .back) != nil
-}
-
-func hasTripleBackCamera() -> Bool {
-    return AVCaptureDevice.default(.builtInTripleCamera, for: .video, position: .back) != nil
-}
-
-func hasDualBackCamera() -> Bool {
-    return AVCaptureDevice.default(.builtInDualCamera, for: .video, position: .back) != nil
-}
-
-func hasWideDualBackCamera() -> Bool {
-    return AVCaptureDevice.default(.builtInDualWideCamera, for: .video, position: .back) != nil
-}
-
-func hasUltraWideFrontCamera() -> Bool {
-    return AVCaptureDevice.default(.builtInUltraWideCamera, for: .video, position: .front) != nil
-}
+let hasUltraWideBackCamera = AVCaptureDevice.default(.builtInUltraWideCamera, for: .video, position: .back) != nil
+let hasTripleBackCamera = AVCaptureDevice.default(.builtInTripleCamera, for: .video, position: .back) != nil
+let hasDualBackCamera = AVCaptureDevice.default(.builtInDualCamera, for: .video, position: .back) != nil
+let hasWideDualBackCamera = AVCaptureDevice.default(.builtInDualWideCamera, for: .video, position: .back) != nil
+let hasUltraWideFrontCamera = AVCaptureDevice.default(.builtInUltraWideCamera, for: .video, position: .front) != nil
 
 func hasUltraWideCamera(position: AVCaptureDevice.Position) -> Bool {
     switch position {
     case .back:
-        return hasUltraWideBackCamera()
+        return hasUltraWideBackCamera
     case .front:
-        return hasUltraWideFrontCamera()
+        return hasUltraWideFrontCamera
     default:
         return false
     }
 }
 
-func getBestBackCameraDevice() -> AVCaptureDevice? {
+private func getBestBackCameraDevice() -> AVCaptureDevice? {
     var device = AVCaptureDevice.default(.builtInTripleCamera, for: .video, position: .back)
     if device == nil {
         device = AVCaptureDevice.default(.builtInDualWideCamera, for: .video, position: .back)
@@ -258,7 +244,9 @@ func getBestBackCameraDevice() -> AVCaptureDevice? {
     return device
 }
 
-func getBestFrontCameraDevice() -> AVCaptureDevice? {
+let bestBackCameraDevice = getBestBackCameraDevice()
+
+private func getBestFrontCameraDevice() -> AVCaptureDevice? {
     var device = AVCaptureDevice.default(.builtInUltraWideCamera, for: .video, position: .front)
     if device == nil {
         device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front)
@@ -266,31 +254,39 @@ func getBestFrontCameraDevice() -> AVCaptureDevice? {
     return device
 }
 
-func getBestBackCameraId() -> String {
-    guard let device = getBestBackCameraDevice() else {
+let bestFrontCameraDevice = getBestFrontCameraDevice()
+
+private func getBestBackCameraId() -> String {
+    guard let device = bestBackCameraDevice else {
         return ""
     }
     return device.uniqueID
 }
 
-func getDefaultBackCameraPosition() -> SettingsSceneCameraPosition {
-    if hasTripleBackCamera() {
+let bestBackCameraId = getBestBackCameraId()
+
+private func getDefaultBackCameraPosition() -> SettingsSceneCameraPosition {
+    if hasTripleBackCamera {
         return .backTripleLowEnergy
-    } else if hasWideDualBackCamera() {
+    } else if hasWideDualBackCamera {
         return .backWideDualLowEnergy
-    } else if hasDualBackCamera() {
+    } else if hasDualBackCamera {
         return .backDualLowEnergy
     } else {
         return .back
     }
 }
 
-func getBestFrontCameraId() -> String {
-    guard let device = getBestFrontCameraDevice() else {
+let defaultBackCameraPosition = getDefaultBackCameraPosition()
+
+private func getBestFrontCameraId() -> String {
+    guard let device = bestFrontCameraDevice else {
         return ""
     }
     return device.uniqueID
 }
+
+let bestFrontCameraId = getBestFrontCameraId()
 
 func openUrl(url: String) {
     UIApplication.shared.open(URL(string: url)!)
@@ -404,7 +400,7 @@ extension MKCoordinateRegion: @retroactive Equatable {
 
 func hasAppleLog() -> Bool {
     if #available(iOS 17.0, *) {
-        for format in getBestBackCameraDevice()?.formats ?? []
+        for format in bestBackCameraDevice?.formats ?? []
             where format.supportedColorSpaces.contains(.appleLog)
         {
             return true
