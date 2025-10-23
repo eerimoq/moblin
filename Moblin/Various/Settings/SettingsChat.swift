@@ -396,11 +396,16 @@ class SettingsChatNicknames: Codable, ObservableObject {
     }
 }
 
-class SettingsChatBotAi: Codable, ObservableObject {
+class SettingsOpenAi: Codable, ObservableObject {
+    private static let defaultRole = "You give fast and short answers."
     @Published var baseUrl: String = "https://generativelanguage.googleapis.com/v1beta/openai"
     @Published var apiKey: String = ""
     @Published var model: String = "gemini-2.0-flash"
-    @Published var role: String = "You give fast and short answers."
+    @Published var role: String
+
+    init(role: String? = nil) {
+        self.role = role ?? SettingsOpenAi.defaultRole
+    }
 
     enum CodingKeys: CodingKey {
         case baseUrl,
@@ -417,14 +422,21 @@ class SettingsChatBotAi: Codable, ObservableObject {
         try container.encode(.role, role)
     }
 
-    init() {}
-
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         baseUrl = container.decode(.baseUrl, String.self, "https://generativelanguage.googleapis.com/v1beta/openai")
         apiKey = container.decode(.apiKey, String.self, "")
         model = container.decode(.model, String.self, "gemini-2.0-flash")
-        role = container.decode(.role, String.self, "You give fast and short answers.")
+        role = container.decode(.role, String.self, SettingsOpenAi.defaultRole)
+    }
+
+    func clone() -> SettingsOpenAi {
+        let new = SettingsOpenAi()
+        new.baseUrl = baseUrl
+        new.apiKey = apiKey
+        new.model = model
+        new.role = role
+        return new
     }
 }
 
@@ -488,7 +500,7 @@ class SettingsChat: Codable, ObservableObject {
     @Published var botEnabled: Bool = false
     var botCommandPermissions: SettingsChatBotPermissions = .init()
     var botSendLowBatteryWarning: Bool = false
-    var botCommandAi: SettingsChatBotAi = .init()
+    var botCommandAi: SettingsOpenAi = .init()
     @Published var badges: Bool = true
     var showFirstTimeChatterMessage: Bool = true
     var showNewFollowerMessage: Bool = true
@@ -647,7 +659,7 @@ class SettingsChat: Codable, ObservableObject {
         botEnabled = container.decode(.botEnabled, Bool.self, false)
         botCommandPermissions = container.decode(.botCommandPermissions, SettingsChatBotPermissions.self, .init())
         botSendLowBatteryWarning = container.decode(.botSendLowBatteryWarning, Bool.self, false)
-        botCommandAi = container.decode(.botCommandAi, SettingsChatBotAi.self, .init())
+        botCommandAi = container.decode(.botCommandAi, SettingsOpenAi.self, .init())
         badges = container.decode(.badges, Bool.self, true)
         showFirstTimeChatterMessage = container.decode(.showFirstTimeChatterMessage, Bool.self, true)
         showNewFollowerMessage = container.decode(.showNewFollowerMessage, Bool.self, true)

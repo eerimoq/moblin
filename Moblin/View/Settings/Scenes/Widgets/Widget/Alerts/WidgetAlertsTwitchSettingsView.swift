@@ -357,7 +357,7 @@ private struct TwitchRewardsView: View {
     }
 }
 
-struct WidgetAlertsSettingsTwitchView: View {
+struct WidgetAlertsTwitchSettingsView: View {
     @EnvironmentObject var model: Model
     let twitch: SettingsWidgetAlertsTwitch
 

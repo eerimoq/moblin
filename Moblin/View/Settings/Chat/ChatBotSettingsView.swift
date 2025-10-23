@@ -271,30 +271,13 @@ private struct TtsSayPermissionsSettingsView: View {
 
 private struct AiPermissionsSettingsView: View {
     @ObservedObject var permissions: SettingsChatBotPermissionsCommand
-    @ObservedObject var ai: SettingsChatBotAi
+    let ai: SettingsOpenAi
 
     var body: some View {
         Section {
             NavigationLink {
                 Form {
-                    Section {
-                        TextEditNavigationView(title: String(localized: "Base URL"),
-                                               value: ai.baseUrl,
-                                               onChange: isValidHttpUrl,
-                                               onSubmit: { ai.baseUrl = $0 })
-                        TextEditNavigationView(title: String(localized: "API key"),
-                                               value: ai.apiKey,
-                                               onSubmit: { ai.apiKey = $0 },
-                                               sensitive: true)
-                        TextEditNavigationView(title: String(localized: "Model"),
-                                               value: ai.model,
-                                               onSubmit: { ai.model = $0 })
-                        TextEditNavigationView(title: String(localized: "Role"),
-                                               value: ai.role,
-                                               onSubmit: { ai.role = $0 })
-                    } header: {
-                        Text("OpenAI compatible service")
-                    }
+                    OpenAiSettingsView(ai: ai)
                     PermissionsSettingsInnerView(permissions: permissions)
                 }
                 .navigationTitle("!moblin ai ask <question>")

@@ -357,7 +357,7 @@ private struct KickGiftsView: View {
     }
 }
 
-struct WidgetAlertsSettingsKickView: View {
+struct WidgetAlertsKickSettingsView: View {
     @EnvironmentObject var model: Model
     let kick: SettingsWidgetAlertsKick
 

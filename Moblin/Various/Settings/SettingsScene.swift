@@ -1135,8 +1135,24 @@ class SettingsWidgetAlertsChatBotCommand: Codable, Identifiable, @unchecked Send
     }
 }
 
-class SettingsWidgetAlertsChatBot: Codable {
-    var commands: [SettingsWidgetAlertsChatBotCommand] = []
+class SettingsWidgetAlertsChatBot: Codable, ObservableObject {
+    @Published var commands: [SettingsWidgetAlertsChatBotCommand] = []
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case commands
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.commands, commands)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        commands = container.decode(.commands, [SettingsWidgetAlertsChatBotCommand].self, .init())
+    }
 
     func clone() -> SettingsWidgetAlertsChatBot {
         let new = SettingsWidgetAlertsChatBot()
@@ -1161,8 +1177,24 @@ class SettingsWidgetAlertsSpeechToTextString: Codable, Identifiable {
     }
 }
 
-class SettingsWidgetAlertsSpeechToText: Codable {
-    var strings: [SettingsWidgetAlertsSpeechToTextString] = []
+class SettingsWidgetAlertsSpeechToText: Codable, ObservableObject {
+    @Published var strings: [SettingsWidgetAlertsSpeechToTextString] = []
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case strings
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.strings, strings)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        strings = container.decode(.strings, [SettingsWidgetAlertsSpeechToTextString].self, .init())
+    }
 
     func clone() -> SettingsWidgetAlertsSpeechToText {
         let new = SettingsWidgetAlertsSpeechToText()
@@ -1174,11 +1206,13 @@ class SettingsWidgetAlertsSpeechToText: Codable {
 }
 
 class SettingsWidgetAlerts: Codable {
+    private static let aiRole = "You are rude and gives insulting answers. Answer in a few sentences."
     var twitch: SettingsWidgetAlertsTwitch = .init()
     var kick: SettingsWidgetAlertsKick = .init()
     var chatBot: SettingsWidgetAlertsChatBot = .init()
     var speechToText: SettingsWidgetAlertsSpeechToText = .init()
     var needsSubtitles: Bool = false
+    var ai: SettingsOpenAi = .init(role: aiRole)
 
     init() {}
 
@@ -1187,7 +1221,8 @@ class SettingsWidgetAlerts: Codable {
              kick,
              chatBot,
              speechToText,
-             needsSubtitles
+             needsSubtitles,
+             ai
     }
 
     func encode(to encoder: Encoder) throws {
@@ -1197,6 +1232,7 @@ class SettingsWidgetAlerts: Codable {
         try container.encode(.chatBot, chatBot)
         try container.encode(.speechToText, speechToText)
         try container.encode(.needsSubtitles, needsSubtitles)
+        try container.encode(.ai, ai)
     }
 
     required init(from decoder: Decoder) throws {
@@ -1206,6 +1242,7 @@ class SettingsWidgetAlerts: Codable {
         chatBot = container.decode(.chatBot, SettingsWidgetAlertsChatBot.self, .init())
         speechToText = container.decode(.speechToText, SettingsWidgetAlertsSpeechToText.self, .init())
         needsSubtitles = container.decode(.needsSubtitles, Bool.self, false)
+        ai = container.decode(.ai, SettingsOpenAi.self, .init(role: SettingsWidgetAlerts.aiRole))
     }
 
     func clone() -> SettingsWidgetAlerts {
@@ -1215,6 +1252,7 @@ class SettingsWidgetAlerts: Codable {
         new.chatBot = chatBot.clone()
         new.speechToText = speechToText.clone()
         new.needsSubtitles = needsSubtitles
+        new.ai = ai.clone()
         return new
     }
 }
