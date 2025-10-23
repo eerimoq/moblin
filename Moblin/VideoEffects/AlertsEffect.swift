@@ -207,6 +207,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
     private let bundledImages: [SettingsAlertsMediaGalleryItem]
     private let bundledSounds: [SettingsAlertsMediaGalleryItem]
     private var landmarkSettings: LandmarkSettings?
+    private var aiBaseUrl: URL?
 
     init(
         settings: SettingsWidgetAlerts,
@@ -225,20 +226,40 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         setSettings(settings: settings)
     }
 
-    private func getMediaItems(alert: SettingsWidgetAlertsAlert) -> (MediaItem, Int, MediaItem) {
-        let image: MediaItem
-        if let bundledImage = bundledImages.first(where: { $0.id == alert.imageId }) {
-            image = .bundledName(bundledImage.name)
-        } else {
-            image = .customUrl(mediaStorage.makePath(id: alert.imageId))
+    override func getName() -> String {
+        return "Alert widget"
+    }
+
+    override func needsFaceDetections(_: Double) -> (Bool, UUID?, Double?) {
+        return (landmarkSettings != nil, nil, nil)
+    }
+
+    override func execute(_ image: CIImage, _ info: VideoEffectInfo) -> CIImage {
+        let (alertImage, messageImage, x, y, landmarkSettings) = getNext(info.presentationTimeStamp.seconds)
+        guard let alertImage, let messageImage else {
+            return image
         }
-        let sound: MediaItem
-        if let bundledSound = bundledSounds.first(where: { $0.id == alert.soundId }) {
-            sound = .bundledName(bundledSound.name)
+        if let landmarkSettings {
+            return executePositionFace(image, info.sceneFaceDetections(), alertImage, landmarkSettings)
         } else {
-            sound = .customUrl(mediaStorage.makePath(id: alert.soundId))
+            return executePositionScene(image, alertImage, messageImage, x, y)
         }
-        return (image, alert.imageLoopCount, sound)
+    }
+
+    override func executeMetalPetal(_ image: MTIImage?, _: VideoEffectInfo) -> MTIImage? {
+        toBeRemoved = true
+        return image
+    }
+
+    override func shouldRemove() -> Bool {
+        return toBeRemoved
+    }
+
+    override func removed() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + delayAfterPlaying) {
+            self.isPlaying = false
+            self.tryPlayNextAlert()
+        }
     }
 
     func setSettings(settings: SettingsWidgetAlerts) {
@@ -246,6 +267,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         setKickSettings(kick: settings.kick)
         setChatBotSettings(settings: settings)
         setSpeechToTextSettings(settings: settings)
+        aiBaseUrl = URL(string: settings.ai.baseUrl)
         self.settings = settings
     }
 
@@ -257,17 +279,6 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
             medias.updateImages(image: image, loopCount: imageLoopCount)
             medias.updateSoundUrl(sound: sound)
             chatBotCommands.append(medias)
-        }
-    }
-
-    private func setSpeechToTextSettings(settings: SettingsWidgetAlerts) {
-        speechToTextStrings = []
-        for string in settings.speechToText.strings {
-            let (image, imageLoopCount, sound) = getMediaItems(alert: string.alert)
-            let medias = Medias()
-            medias.updateImages(image: image, loopCount: imageLoopCount)
-            medias.updateSoundUrl(sound: sound)
-            speechToTextStrings.append(medias)
         }
     }
 
@@ -286,6 +297,33 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
     func play(alert: AlertsEffectAlert) {
         alertsQueue.append(alert)
         tryPlayNextAlert()
+    }
+
+    private func getMediaItems(alert: SettingsWidgetAlertsAlert) -> (MediaItem, Int, MediaItem) {
+        let image: MediaItem
+        if let bundledImage = bundledImages.first(where: { $0.id == alert.imageId }) {
+            image = .bundledName(bundledImage.name)
+        } else {
+            image = .customUrl(mediaStorage.makePath(id: alert.imageId))
+        }
+        let sound: MediaItem
+        if let bundledSound = bundledSounds.first(where: { $0.id == alert.soundId }) {
+            sound = .bundledName(bundledSound.name)
+        } else {
+            sound = .customUrl(mediaStorage.makePath(id: alert.soundId))
+        }
+        return (image, alert.imageLoopCount, sound)
+    }
+
+    private func setSpeechToTextSettings(settings: SettingsWidgetAlerts) {
+        speechToTextStrings = []
+        for string in settings.speechToText.strings {
+            let (image, imageLoopCount, sound) = getMediaItems(alert: string.alert)
+            let medias = Medias()
+            medias.updateImages(image: image, loopCount: imageLoopCount)
+            medias.updateSoundUrl(sound: sound)
+            speechToTextStrings.append(medias)
+        }
     }
 
     @MainActor
@@ -379,15 +417,54 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         self.delayAfterPlaying = delayAfterPlaying
         let messageImage = renderMessage(username: username, message: message, settings: settings)
         let landmarkSettings = calculateLandmarkSettings(settings: settings)
+        let images = medias.images
+        let soundUrl = medias.soundUrl
+        let ai = self.settings.ai
+        if let aiBaseUrl, !ai.apiKey.isEmpty {
+            OpenAi(baseUrl: aiBaseUrl, apiKey: ai.apiKey)
+                .ask(message, model: ai.model, role: ai.role) { answer in
+                    var message = message
+                    if let answer {
+                        message += ". " + answer
+                    }
+                    DispatchQueue.main.async {
+                        self.play(images: images,
+                                  soundUrl: soundUrl,
+                                  username: username,
+                                  message: message,
+                                  messageImage: messageImage,
+                                  landmarkSettings: landmarkSettings,
+                                  settings: settings)
+                    }
+                }
+        } else {
+            play(images: images,
+                 soundUrl: soundUrl,
+                 username: username,
+                 message: message,
+                 messageImage: messageImage,
+                 landmarkSettings: landmarkSettings,
+                 settings: settings)
+        }
+    }
+
+    private func play(images: Deque<GifImage>,
+                      soundUrl: URL?,
+                      username: String,
+                      message: String,
+                      messageImage: CIImage?,
+                      landmarkSettings: LandmarkSettings?,
+                      settings: SettingsWidgetAlertsAlert)
+    {
         processorPipelineQueue.async {
-            self.images = medias.images
+            self.images = images
             self.basePresentationTimeStamp = nil
             self.messageImage = messageImage
             self.toBeRemoved = false
             self.landmarkSettings = landmarkSettings
         }
         delegate?.alertsPlayerRegisterVideoEffect(effect: self)
-        if let soundUrl = medias.soundUrl {
+        if let soundUrl {
             audioPlayer = try? AVAudioPlayer(contentsOf: soundUrl)
             audioPlayer?.play()
         }
@@ -499,14 +576,6 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         } else {
             return nil
         }
-    }
-
-    override func getName() -> String {
-        return "Alert widget"
-    }
-
-    override func needsFaceDetections(_: Double) -> (Bool, UUID?, Double?) {
-        return (landmarkSettings != nil, nil, nil)
     }
 
     private func getNext(_ presentationTimeStamp: Double) -> (CIImage?, CIImage?, Double, Double, LandmarkSettings?) {
@@ -623,34 +692,6 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
             .translated(x: xPos, y: yPos)
             .composited(over: image)
             .cropped(to: image.extent)
-    }
-
-    override func execute(_ image: CIImage, _ info: VideoEffectInfo) -> CIImage {
-        let (alertImage, messageImage, x, y, landmarkSettings) = getNext(info.presentationTimeStamp.seconds)
-        guard let alertImage, let messageImage else {
-            return image
-        }
-        if let landmarkSettings {
-            return executePositionFace(image, info.sceneFaceDetections(), alertImage, landmarkSettings)
-        } else {
-            return executePositionScene(image, alertImage, messageImage, x, y)
-        }
-    }
-
-    override func executeMetalPetal(_ image: MTIImage?, _: VideoEffectInfo) -> MTIImage? {
-        toBeRemoved = true
-        return image
-    }
-
-    override func shouldRemove() -> Bool {
-        return toBeRemoved
-    }
-
-    override func removed() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + delayAfterPlaying) {
-            self.isPlaying = false
-            self.tryPlayNextAlert()
-        }
     }
 }
 

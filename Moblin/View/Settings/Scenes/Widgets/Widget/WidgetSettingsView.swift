@@ -34,7 +34,7 @@ struct WidgetSettingsView: View {
             case .qrCode:
                 WidgetQrCodeSettingsView(widget: widget)
             case .alerts:
-                WidgetAlertsSettingsView(widget: widget)
+                WidgetAlertsSettingsView(model: model, widget: widget)
             case .videoSource:
                 WidgetVideoSourceSettingsView(widget: widget, videoSource: widget.videoSource)
             case .scoreboard:

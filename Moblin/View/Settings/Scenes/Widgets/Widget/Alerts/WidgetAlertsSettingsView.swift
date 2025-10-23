@@ -234,7 +234,29 @@ struct AlertPositionView: View {
     }
 }
 
+private struct AiView: View {
+    let model: Model
+    @ObservedObject var ai: SettingsOpenAi
+
+    var body: some View {
+        OpenAiSettingsView(ai: ai)
+            .onChange(of: ai.baseUrl) { _ in
+                model.updateAlertsSettings()
+            }
+            .onChange(of: ai.apiKey) { _ in
+                model.updateAlertsSettings()
+            }
+            .onChange(of: ai.model) { _ in
+                model.updateAlertsSettings()
+            }
+            .onChange(of: ai.role) { _ in
+                model.updateAlertsSettings()
+            }
+    }
+}
+
 struct WidgetAlertsSettingsView: View {
+    let model: Model
     let widget: SettingsWidget
 
     var body: some View {
@@ -260,8 +282,6 @@ struct WidgetAlertsSettingsView: View {
                 Text("Speech to text")
             }
         }
-        if false {
-            OpenAiSettingsView(ai: widget.alerts.ai)
-        }
+        AiView(model: model, ai: widget.alerts.ai)
     }
 }
