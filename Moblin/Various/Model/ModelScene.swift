@@ -591,7 +591,7 @@ extension Model {
             case .qrCode:
                 addSceneQrCodeEffects(sceneWidget, widget, &effects)
             case .alerts:
-                addSceneAlertsEffects(sceneWidget, widget, &effects, &enabledAlertsEffects, &needsSpeechToText)
+                addSceneAlertsEffects(sceneWidget, widget, &enabledAlertsEffects, &needsSpeechToText)
             case .videoSource:
                 addSceneVideoSourceEffects(sceneWidget, widget, &effects)
             case .scoreboard:
@@ -729,14 +729,10 @@ extension Model {
     private func addSceneAlertsEffects(
         _ sceneWidget: SettingsSceneWidget,
         _ widget: SettingsWidget,
-        _ effects: inout [VideoEffect],
         _ enabledAlertsEffects: inout [AlertsEffect],
         _ needsSpeechToText: inout Bool
     ) {
         if let alertsEffect = alertsEffects[widget.id] {
-            if alertsEffect.shouldRegisterEffect() {
-                effects.append(alertsEffect)
-            }
             alertsEffect.setPosition(x: sceneWidget.x, y: sceneWidget.y)
             enabledAlertsEffects.append(alertsEffect)
             if widget.alerts.needsSubtitles {

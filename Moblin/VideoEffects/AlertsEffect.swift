@@ -7,8 +7,6 @@ import SwiftUI
 import Vision
 import WrappingHStack
 
-private let lockQueue = DispatchQueue(label: "com.eerimoq.Moblin.Alerts")
-
 private let backgroundFaceImageWidth = 130.0
 private let backgroundFaceImageHeight = 160.0
 
@@ -131,7 +129,7 @@ private class Medias: @unchecked Sendable {
             case let .image(image):
                 images = self.loadImages(image: image, loopCount: loopCount)
             }
-            lockQueue.sync {
+            processorPipelineQueue.async {
                 self.images = images
             }
         }
@@ -278,7 +276,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
     }
 
     func setPosition(x: Double, y: Double) {
-        lockQueue.sync {
+        processorPipelineQueue.async {
             self.x = x
             self.y = y
         }
@@ -288,10 +286,6 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
     func play(alert: AlertsEffectAlert) {
         alertsQueue.append(alert)
         tryPlayNextAlert()
-    }
-
-    func shouldRegisterEffect() -> Bool {
-        return lockQueue.sync { !toBeRemoved }
     }
 
     @MainActor
@@ -385,11 +379,11 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         self.delayAfterPlaying = delayAfterPlaying
         let messageImage = renderMessage(username: username, message: message, settings: settings)
         let landmarkSettings = calculateLandmarkSettings(settings: settings)
-        lockQueue.sync {
+        processorPipelineQueue.async {
             self.images = medias.images
             self.basePresentationTimeStamp = nil
             self.messageImage = messageImage
-            toBeRemoved = false
+            self.toBeRemoved = false
             self.landmarkSettings = landmarkSettings
         }
         delegate?.alertsPlayerRegisterVideoEffect(effect: self)
@@ -632,9 +626,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
     }
 
     override func execute(_ image: CIImage, _ info: VideoEffectInfo) -> CIImage {
-        let (alertImage, messageImage, x, y, landmarkSettings) = lockQueue.sync {
-            getNext(info.presentationTimeStamp.seconds)
-        }
+        let (alertImage, messageImage, x, y, landmarkSettings) = getNext(info.presentationTimeStamp.seconds)
         guard let alertImage, let messageImage else {
             return image
         }
@@ -646,10 +638,8 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
     }
 
     override func executeMetalPetal(_ image: MTIImage?, _: VideoEffectInfo) -> MTIImage? {
-        return lockQueue.sync {
-            self.toBeRemoved = true
-            return image
-        }
+        toBeRemoved = true
+        return image
     }
 
     override func shouldRemove() -> Bool {
@@ -657,11 +647,9 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
     }
 
     override func removed() {
-        DispatchQueue.main.async {
-            DispatchQueue.main.asyncAfter(deadline: .now() + self.delayAfterPlaying) {
-                self.isPlaying = false
-                self.tryPlayNextAlert()
-            }
+        DispatchQueue.main.asyncAfter(deadline: .now() + delayAfterPlaying) {
+            self.isPlaying = false
+            self.tryPlayNextAlert()
         }
     }
 }
