@@ -1205,14 +1205,15 @@ class SettingsWidgetAlertsSpeechToText: Codable, ObservableObject {
     }
 }
 
-class SettingsWidgetAlerts: Codable {
-    private static let aiRole = "You are rude and gives insulting answers. Answer in a few sentences."
+class SettingsWidgetAlerts: Codable, ObservableObject {
+    private static let aiPersonality = "You are rude and gives insulting answers. Answer in a few sentences."
     var twitch: SettingsWidgetAlertsTwitch = .init()
     var kick: SettingsWidgetAlertsKick = .init()
     var chatBot: SettingsWidgetAlertsChatBot = .init()
     var speechToText: SettingsWidgetAlertsSpeechToText = .init()
     var needsSubtitles: Bool = false
-    var ai: SettingsOpenAi = .init(role: aiRole)
+    var ai: SettingsOpenAi = .init(personality: aiPersonality)
+    @Published var aiEnabled: Bool = false
 
     init() {}
 
@@ -1222,7 +1223,8 @@ class SettingsWidgetAlerts: Codable {
              chatBot,
              speechToText,
              needsSubtitles,
-             ai
+             ai,
+             aiEnabled
     }
 
     func encode(to encoder: Encoder) throws {
@@ -1233,6 +1235,7 @@ class SettingsWidgetAlerts: Codable {
         try container.encode(.speechToText, speechToText)
         try container.encode(.needsSubtitles, needsSubtitles)
         try container.encode(.ai, ai)
+        try container.encode(.aiEnabled, aiEnabled)
     }
 
     required init(from decoder: Decoder) throws {
@@ -1242,7 +1245,8 @@ class SettingsWidgetAlerts: Codable {
         chatBot = container.decode(.chatBot, SettingsWidgetAlertsChatBot.self, .init())
         speechToText = container.decode(.speechToText, SettingsWidgetAlertsSpeechToText.self, .init())
         needsSubtitles = container.decode(.needsSubtitles, Bool.self, false)
-        ai = container.decode(.ai, SettingsOpenAi.self, .init(role: SettingsWidgetAlerts.aiRole))
+        ai = container.decode(.ai, SettingsOpenAi.self, .init(personality: SettingsWidgetAlerts.aiPersonality))
+        aiEnabled = container.decode(.aiEnabled, Bool.self, false)
     }
 
     func clone() -> SettingsWidgetAlerts {
@@ -1253,6 +1257,7 @@ class SettingsWidgetAlerts: Codable {
         new.speechToText = speechToText.clone()
         new.needsSubtitles = needsSubtitles
         new.ai = ai.clone()
+        new.aiEnabled = aiEnabled
         return new
     }
 }

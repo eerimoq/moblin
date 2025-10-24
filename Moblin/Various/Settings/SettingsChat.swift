@@ -397,14 +397,14 @@ class SettingsChatNicknames: Codable, ObservableObject {
 }
 
 class SettingsOpenAi: Codable, ObservableObject {
-    private static let defaultRole = "You give fast and short answers."
+    private static let defaultPersonality = "You give fast and short answers."
     @Published var baseUrl: String = "https://generativelanguage.googleapis.com/v1beta/openai"
     @Published var apiKey: String = ""
     @Published var model: String = "gemini-2.0-flash"
-    @Published var role: String
+    @Published var personality: String
 
-    init(role: String? = nil) {
-        self.role = role ?? SettingsOpenAi.defaultRole
+    init(personality: String? = nil) {
+        self.personality = personality ?? SettingsOpenAi.defaultPersonality
     }
 
     enum CodingKeys: CodingKey {
@@ -419,7 +419,7 @@ class SettingsOpenAi: Codable, ObservableObject {
         try container.encode(.baseUrl, baseUrl)
         try container.encode(.apiKey, apiKey)
         try container.encode(.model, model)
-        try container.encode(.role, role)
+        try container.encode(.role, personality)
     }
 
     required init(from decoder: Decoder) throws {
@@ -427,7 +427,7 @@ class SettingsOpenAi: Codable, ObservableObject {
         baseUrl = container.decode(.baseUrl, String.self, "https://generativelanguage.googleapis.com/v1beta/openai")
         apiKey = container.decode(.apiKey, String.self, "")
         model = container.decode(.model, String.self, "gemini-2.0-flash")
-        role = container.decode(.role, String.self, SettingsOpenAi.defaultRole)
+        personality = container.decode(.role, String.self, SettingsOpenAi.defaultPersonality)
     }
 
     func clone() -> SettingsOpenAi {
@@ -435,8 +435,24 @@ class SettingsOpenAi: Codable, ObservableObject {
         new.baseUrl = baseUrl
         new.apiKey = apiKey
         new.model = model
-        new.role = role
+        new.personality = personality
         return new
+    }
+
+    func isConfigured() -> Bool {
+        if isValidHttpUrl(url: baseUrl) != nil {
+            return false
+        }
+        if apiKey.isEmpty {
+            return false
+        }
+        if model.isEmpty {
+            return false
+        }
+        if personality.isEmpty {
+            return false
+        }
+        return true
     }
 }
 

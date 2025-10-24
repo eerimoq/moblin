@@ -16,9 +16,9 @@ struct OpenAiSettingsView: View {
             TextEditNavigationView(title: String(localized: "Model"),
                                    value: ai.model,
                                    onSubmit: { ai.model = $0 })
-            MultiLineTextFieldNavigationView(title: String(localized: "Role"),
-                                             value: ai.role,
-                                             onSubmit: { ai.role = $0 })
+            MultiLineTextFieldNavigationView(title: String(localized: "Personality"),
+                                             value: ai.personality,
+                                             onSubmit: { ai.personality = $0 })
         } header: {
             Text("OpenAI compatible service")
         }

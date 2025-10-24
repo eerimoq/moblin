@@ -234,24 +234,36 @@ struct AlertPositionView: View {
     }
 }
 
-private struct AiView: View {
+private struct AiResponseView: View {
     let model: Model
+    @ObservedObject var alerts: SettingsWidgetAlerts
     @ObservedObject var ai: SettingsOpenAi
 
     var body: some View {
-        OpenAiSettingsView(ai: ai)
-            .onChange(of: ai.baseUrl) { _ in
-                model.updateAlertsSettings()
+        NavigationLink {
+            Form {
+                OpenAiSettingsView(ai: ai)
+                    .onChange(of: ai.baseUrl) { _ in
+                        model.updateAlertsSettings()
+                    }
+                    .onChange(of: ai.apiKey) { _ in
+                        model.updateAlertsSettings()
+                    }
+                    .onChange(of: ai.model) { _ in
+                        model.updateAlertsSettings()
+                    }
+                    .onChange(of: ai.personality) { _ in
+                        model.updateAlertsSettings()
+                    }
             }
-            .onChange(of: ai.apiKey) { _ in
-                model.updateAlertsSettings()
-            }
-            .onChange(of: ai.model) { _ in
-                model.updateAlertsSettings()
-            }
-            .onChange(of: ai.role) { _ in
-                model.updateAlertsSettings()
-            }
+            .navigationTitle("AI response")
+        } label: {
+            Toggle("AI response", isOn: $alerts.aiEnabled)
+                .disabled(!ai.isConfigured())
+                .onChange(of: alerts.aiEnabled) { _ in
+                    model.updateAlertsSettings()
+                }
+        }
     }
 }
 
@@ -282,6 +294,8 @@ struct WidgetAlertsSettingsView: View {
                 Text("Speech to text")
             }
         }
-        AiView(model: model, ai: widget.alerts.ai)
+        AiResponseView(model: model,
+                       alerts: widget.alerts,
+                       ai: widget.alerts.ai)
     }
 }

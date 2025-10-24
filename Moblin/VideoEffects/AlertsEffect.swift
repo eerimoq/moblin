@@ -84,6 +84,7 @@ enum AlertsEffectAlert {
 
 protocol AlertsEffectDelegate: AnyObject {
     func alertsPlayerRegisterVideoEffect(effect: VideoEffect)
+    func alertsMakeErrorToast(title: String)
 }
 
 private enum MediaItem {
@@ -221,7 +222,6 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         self.mediaStorage = mediaStorage
         self.bundledImages = bundledImages
         self.bundledSounds = bundledSounds
-        audioPlayer = nil
         super.init()
         setSettings(settings: settings)
     }
@@ -271,17 +271,6 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         self.settings = settings
     }
 
-    private func setChatBotSettings(settings: SettingsWidgetAlerts) {
-        chatBotCommands = []
-        for command in settings.chatBot.commands {
-            let (image, imageLoopCount, sound) = getMediaItems(alert: command.alert)
-            let medias = Medias()
-            medias.updateImages(image: image, loopCount: imageLoopCount)
-            medias.updateSoundUrl(sound: sound)
-            chatBotCommands.append(medias)
-        }
-    }
-
     func getSettings() -> SettingsWidgetAlerts {
         return settings
     }
@@ -297,6 +286,17 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
     func play(alert: AlertsEffectAlert) {
         alertsQueue.append(alert)
         tryPlayNextAlert()
+    }
+
+    private func setChatBotSettings(settings: SettingsWidgetAlerts) {
+        chatBotCommands = []
+        for command in settings.chatBot.commands {
+            let (image, imageLoopCount, sound) = getMediaItems(alert: command.alert)
+            let medias = Medias()
+            medias.updateImages(image: image, loopCount: imageLoopCount)
+            medias.updateSoundUrl(sound: sound)
+            chatBotCommands.append(medias)
+        }
     }
 
     private func getMediaItems(alert: SettingsWidgetAlertsAlert) -> (MediaItem, Int, MediaItem) {
@@ -420,14 +420,16 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         let images = medias.images
         let soundUrl = medias.soundUrl
         let ai = self.settings.ai
-        if let aiBaseUrl, !ai.apiKey.isEmpty {
+        if self.settings.aiEnabled, let aiBaseUrl, ai.isConfigured() {
             OpenAi(baseUrl: aiBaseUrl, apiKey: ai.apiKey)
-                .ask(message, model: ai.model, role: ai.role) { answer in
-                    var message = message
-                    if let answer {
-                        message += ". " + answer
-                    }
+                .ask(message, model: ai.model, role: ai.personality) { answer in
                     DispatchQueue.main.async {
+                        var message = message
+                        if let answer {
+                            message += ". " + answer
+                        } else {
+                            self.delegate?.alertsMakeErrorToast(title: String(localized: "Got no AI response"))
+                        }
                         self.play(images: images,
                                   soundUrl: soundUrl,
                                   username: username,

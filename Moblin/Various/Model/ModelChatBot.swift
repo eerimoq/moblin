@@ -349,7 +349,7 @@ extension Model {
             return
         }
         OpenAi(baseUrl: baseUrl, apiKey: ai.apiKey)
-            .ask(question, model: ai.model, role: ai.role) { answer in
+            .ask(question, model: ai.model, role: ai.personality) { answer in
                 guard let answer else {
                     return
                 }

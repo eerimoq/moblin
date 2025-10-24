@@ -3002,6 +3002,10 @@ extension Model: AlertsEffectDelegate {
     func alertsPlayerRegisterVideoEffect(effect: VideoEffect) {
         media.registerEffect(effect)
     }
+
+    func alertsMakeErrorToast(title: String) {
+        makeErrorToast(title: title)
+    }
 }
 
 extension Model: UIDocumentPickerDelegate {
