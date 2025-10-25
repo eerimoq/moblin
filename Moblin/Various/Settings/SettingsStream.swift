@@ -883,7 +883,6 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
     @Published var portrait: Bool = false
     @Published var backgroundStreaming: Bool = false
     @Published var estimatedViewerDelay: Float = 8.0
-    var twitchMultiTrackEnabled: Bool = false
     @Published var ntpPoolAddress: String = "time.apple.com"
     @Published var timecodesEnabled: Bool = false
     var replay: SettingsStreamReplay = .init()
@@ -967,7 +966,6 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
              portrait,
              backgroundStreaming,
              estimatedViewerDelay,
-             twitchMultiTrackEnabled,
              ntpPoolAddress,
              timecodesEnabled,
              replay,
@@ -1043,7 +1041,6 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         try container.encode(.portrait, portrait)
         try container.encode(.backgroundStreaming, backgroundStreaming)
         try container.encode(.estimatedViewerDelay, estimatedViewerDelay)
-        try container.encode(.twitchMultiTrackEnabled, twitchMultiTrackEnabled)
         try container.encode(.ntpPoolAddress, ntpPoolAddress)
         try container.encode(.timecodesEnabled, timecodesEnabled)
         try container.encode(.replay, replay)
@@ -1124,7 +1121,6 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         portrait = container.decode(.portrait, Bool.self, false)
         backgroundStreaming = container.decode(.backgroundStreaming, Bool.self, false)
         estimatedViewerDelay = container.decode(.estimatedViewerDelay, Float.self, 8.0)
-        twitchMultiTrackEnabled = container.decode(.twitchMultiTrackEnabled, Bool.self, false)
         ntpPoolAddress = container.decode(.ntpPoolAddress, String.self, "time.apple.com")
         timecodesEnabled = container.decode(.timecodesEnabled, Bool.self, false)
         replay = container.decode(.replay, SettingsStreamReplay.self, .init())
@@ -1195,7 +1191,6 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         new.portrait = portrait
         new.backgroundStreaming = backgroundStreaming
         new.estimatedViewerDelay = estimatedViewerDelay
-        new.twitchMultiTrackEnabled = twitchMultiTrackEnabled
         new.ntpPoolAddress = ntpPoolAddress
         new.timecodesEnabled = timecodesEnabled
         new.replay = replay.clone()

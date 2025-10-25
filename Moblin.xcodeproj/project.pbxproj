@@ -28,7 +28,6 @@
 		03B7DAB52BA640C100CEFC1B /* XMLCoder in Frameworks */ = {isa = PBXBuildFile; productRef = 03B7DAB42BA640C100CEFC1B /* XMLCoder */; };
 		03BC11672AE5654700C38FC4 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 03BC11662AE5654700C38FC4 /* SDWebImageSwiftUI */; };
 		03BC116B2AE56C2200C38FC4 /* SDWebImageWebPCoder in Frameworks */ = {isa = PBXBuildFile; productRef = 03BC116A2AE56C2200C38FC4 /* SDWebImageWebPCoder */; };
-		03C3572D2D0416CD00B8B29F /* AppleGPUInfo in Frameworks */ = {isa = PBXBuildFile; productRef = 03C3572C2D0416CD00B8B29F /* AppleGPUInfo */; };
 		03D151AF2BFA73C100D29D8E /* MetalPetal in Frameworks */ = {isa = PBXBuildFile; productRef = 03D151AE2BFA73C100D29D8E /* MetalPetal */; };
 		03ECDF532B8E4E6000BD920E /* Moblin.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 03ECDF462B8E4E5E00BD920E /* Moblin.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		03ECDF5D2B8E5F0B00BD920E /* WrappingHStack in Frameworks */ = {isa = PBXBuildFile; productRef = 03ECDF5C2B8E5F0B00BD920E /* WrappingHStack */; };
@@ -203,7 +202,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				03C3572D2D0416CD00B8B29F /* AppleGPUInfo in Frameworks */,
 				03B7DAB52BA640C100CEFC1B /* XMLCoder in Frameworks */,
 				033BEAC42C0FCC0B005F4E06 /* NWWebSocket in Frameworks */,
 				0307869A2AEC23FB0061FDE2 /* StoreKit.framework in Frameworks */,
@@ -349,7 +347,6 @@
 				033BEAC32C0FCC0B005F4E06 /* NWWebSocket */,
 				03F465EB2C441D1400630708 /* CrcSwift */,
 				0318D3692CF51D6900E12F3B /* SwiftProtobuf */,
-				03C3572C2D0416CD00B8B29F /* AppleGPUInfo */,
 				03AC6B942D17786700832A7E /* TrueTime */,
 				03B279822D45EB9C007DEDB2 /* SwiftCube */,
 				037723992DE35191007D040D /* VRMKit */,
@@ -503,7 +500,6 @@
 				033BEAC22C0FCC0B005F4E06 /* XCRemoteSwiftPackageReference "NWWebSocket" */,
 				03F465EA2C441D1400630708 /* XCRemoteSwiftPackageReference "CrcSwift" */,
 				0318D3682CF51D6900E12F3B /* XCRemoteSwiftPackageReference "swift-protobuf" */,
-				03C3572B2D0416CD00B8B29F /* XCRemoteSwiftPackageReference "applegpuinfo" */,
 				03AC6B932D17786700832A7E /* XCRemoteSwiftPackageReference "TrueTime" */,
 				03B279812D45EB9C007DEDB2 /* XCRemoteSwiftPackageReference "SwiftCube" */,
 				037723982DE35191007D040D /* XCRemoteSwiftPackageReference "VRMKit" */,
@@ -1308,14 +1304,6 @@
 				minimumVersion = 0.14.0;
 			};
 		};
-		03C3572B2D0416CD00B8B29F /* XCRemoteSwiftPackageReference "applegpuinfo" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/philipturner/applegpuinfo";
-			requirement = {
-				branch = main;
-				kind = branch;
-			};
-		};
 		03D151AD2BFA73C100D29D8E /* XCRemoteSwiftPackageReference "MetalPetal" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/eerimoq/MetalPetal";
@@ -1422,11 +1410,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 03BC11692AE56C2200C38FC4 /* XCRemoteSwiftPackageReference "SDWebImageWebPCoder" */;
 			productName = SDWebImageWebPCoder;
-		};
-		03C3572C2D0416CD00B8B29F /* AppleGPUInfo */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 03C3572B2D0416CD00B8B29F /* XCRemoteSwiftPackageReference "applegpuinfo" */;
-			productName = AppleGPUInfo;
 		};
 		03D151AE2BFA73C100D29D8E /* MetalPetal */ = {
 			isa = XCSwiftPackageProductDependency;
