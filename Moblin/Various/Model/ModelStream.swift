@@ -765,6 +765,13 @@ extension Model {
         }
     }
 
+    private func handleFps(fps: Int) {
+        DispatchQueue.main.async { [self] in
+            self.currentFps = fps
+            self.updateStatusStreamText()
+        }
+    }
+
     func toggleStream() {
         if isLive {
             _ = stopStream()
@@ -968,6 +975,10 @@ extension Model: MediaDelegate {
         handleNoTorch()
     }
 
+    func mediaOnFps(fps: Int) {
+        handleFps(fps: fps)
+    }
+
     func mediaStrlaRelayDestinationAddress(address: String, port: UInt16) {
         moblink.streamer?.startTunnels(address: address, port: port)
     }
@@ -980,9 +991,8 @@ extension Model: MediaDelegate {
         setExposureBias(bias: bias)
     }
 
-    func mediaSelectedFps(fps: Double, auto: Bool) {
+    func mediaSelectedFps(auto: Bool) {
         DispatchQueue.main.async {
-            self.selectedFps = Int(fps)
             self.autoFps = auto
             self.updateStatusStreamText()
         }

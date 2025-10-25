@@ -35,10 +35,11 @@ protocol MediaDelegate: AnyObject {
     func mediaOnRecorderDataSegment(segment: RecorderDataSegment)
     func mediaOnRecorderFinished()
     func mediaOnNoTorch()
+    func mediaOnFps(fps: Int)
     func mediaStrlaRelayDestinationAddress(address: String, port: UInt16)
     func mediaSetZoomX(x: Float)
     func mediaSetExposureBias(bias: Float)
-    func mediaSelectedFps(fps: Double, auto: Bool)
+    func mediaSelectedFps(auto: Bool)
     func mediaError(error: Error)
 }
 
@@ -1025,6 +1026,10 @@ extension Media: ProcessorDelegate {
         delegate?.mediaOnNoTorch()
     }
 
+    func streamVideoFps(fps: Int) {
+        delegate?.mediaOnFps(fps: fps)
+    }
+
     func streamSetZoomX(x: Float) {
         delegate?.mediaSetZoomX(x: x)
     }
@@ -1033,8 +1038,8 @@ extension Media: ProcessorDelegate {
         delegate?.mediaSetExposureBias(bias: bias)
     }
 
-    func streamSelectedFps(fps: Double, auto: Bool) {
-        delegate?.mediaSelectedFps(fps: fps, auto: auto)
+    func streamSelectedFps(auto: Bool) {
+        delegate?.mediaSelectedFps(auto: auto)
     }
 }
 

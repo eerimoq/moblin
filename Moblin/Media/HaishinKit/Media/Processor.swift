@@ -11,6 +11,7 @@ protocol ProcessorDelegate: AnyObject {
     func streamVideoCaptureSessionError(_ message: String)
     func streamVideoBufferedVideoReady(cameraId: UUID)
     func streamVideoBufferedVideoRemoved(cameraId: UUID)
+    func streamVideoFps(fps: Int)
     func streamRecorderInitSegment(data: Data)
     func streamRecorderDataSegment(segment: RecorderDataSegment)
     func streamRecorderFinished()
@@ -18,7 +19,7 @@ protocol ProcessorDelegate: AnyObject {
     func streamNoTorch()
     func streamSetZoomX(x: Float)
     func streamSetExposureBias(bias: Float)
-    func streamSelectedFps(fps: Double, auto: Bool)
+    func streamSelectedFps(auto: Bool)
 }
 
 let processorControlQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.Processor.Control")

@@ -386,7 +386,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     let ingests = Ingests()
     let bitrate = Bitrate()
     let bonding = Bonding()
-    var selectedFps: Int?
+    var currentFps: Int?
     var autoFps = false
     var showBackgroudStreamingDisabledToast = false
     private var manualFocusMotionAttitude: CMAttitude?
@@ -2811,9 +2811,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         let audioBitrate = stream.audioBitrateString()
         let fps: String
         if autoFps {
-            fps = "\(selectedFps ?? stream.fps) LLB"
+            fps = "\(currentFps ?? stream.fps) LLB"
         } else {
-            fps = String(selectedFps ?? stream.fps)
+            fps = String(currentFps ?? stream.fps)
         }
         return """
         \(stream.name) (\(resolution), \(fps), \(proto), \(codec) \(bitrate), \

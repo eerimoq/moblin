@@ -173,6 +173,8 @@ final class VideoUnit: NSObject {
     private var outputCounter: Int64 = -1
     private var startPresentationTimeStamp: CMTime = .zero
     private var isLandscapeStreamAndPortraitUi = false
+    private var framesCounter = 0
+    private var nextFpsReportTime: Double = 0.0
 
     var videoOrientation: AVCaptureVideoOrientation = .portrait {
         didSet {
@@ -1224,6 +1226,7 @@ final class VideoUnit: NSObject {
         }
         latestSampleBufferAppendTime = sampleBuffer.presentationTimeStamp
         let presentationTimeStamp = sampleBuffer.presentationTimeStamp.seconds
+        updateFps(presentationTimeStamp)
         processor?.delegate?.streamVideo(presentationTimestamp: presentationTimeStamp)
         let faceDetectionVideoSourceIds = needsFaceDetections(presentationTimeStamp)
         let faceDetectionJobs = prepareFaceDetectionJobs(
@@ -1277,6 +1280,23 @@ final class VideoUnit: NSObject {
             faceDetectionsComplete(completion)
         }
         return true
+    }
+
+    private func updateFps(_ presentationTimeStamp: Double) {
+        if nextFpsReportTime == 0 {
+            reportAndResetFps(fps: Int(fps), presentationTimeStamp)
+        } else {
+            framesCounter += 1
+            if presentationTimeStamp > nextFpsReportTime {
+                reportAndResetFps(fps: framesCounter / 5, presentationTimeStamp)
+            }
+        }
+    }
+
+    private func reportAndResetFps(fps: Int, _ presentationTimeStamp: Double) {
+        processor?.delegate?.streamVideoFps(fps: fps)
+        framesCounter = 0
+        nextFpsReportTime = presentationTimeStamp + 5
     }
 
     private func faceDetectionsComplete(_ completion: FaceDetectionsCompletion) {
@@ -1682,10 +1702,10 @@ final class VideoUnit: NSObject {
             device.activeColorSpace = colorSpace
             if useAutoFrameRate {
                 device.setAutoFps()
-                processor?.delegate?.streamSelectedFps(fps: fps, auto: true)
+                processor?.delegate?.streamSelectedFps(auto: true)
             } else {
                 device.setFps(frameRate: fps)
-                processor?.delegate?.streamSelectedFps(fps: fps, auto: false)
+                processor?.delegate?.streamSelectedFps(auto: false)
             }
             if #available(iOS 26, *), useLandscapeInPortrait {
                 if format.supportedDynamicAspectRatios.contains(.ratio9x16) {
