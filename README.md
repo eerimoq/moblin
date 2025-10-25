@@ -145,6 +145,7 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
     - Optionally subscribers only.
     - Many voices.
     - Detect language per message.
+    - Optionally use TTS.Monster.
   - Colors, background, border and bold.
   - Twitch, Kick, BTTV, FFZ and 7TV emotes.
   - Optionally animated emotes.
