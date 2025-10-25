@@ -1288,7 +1288,7 @@ final class VideoUnit: NSObject {
         } else {
             framesCounter += 1
             if presentationTimeStamp > nextFpsReportTime {
-                reportAndResetFps(fps: framesCounter / 5, presentationTimeStamp)
+                reportAndResetFps(fps: framesCounter / 2, presentationTimeStamp)
             }
         }
     }
@@ -1296,7 +1296,7 @@ final class VideoUnit: NSObject {
     private func reportAndResetFps(fps: Int, _ presentationTimeStamp: Double) {
         processor?.delegate?.streamVideoFps(fps: fps)
         framesCounter = 0
-        nextFpsReportTime = presentationTimeStamp + 5
+        nextFpsReportTime = presentationTimeStamp + 2
     }
 
     private func faceDetectionsComplete(_ completion: FaceDetectionsCompletion) {
