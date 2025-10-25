@@ -200,7 +200,7 @@ private struct LanguageView: View {
             voices.append(VoicePickerItem(flagEmoji: flagEmoji,
                                           voice: .apple(name: voice.name, identifier: voice.identifier)))
         }
-        for voice in ttsMonsterVoices?.voices ?? [] where voice.languageCode() == languageCode {
+        for voice in ttsMonsterVoices?.allVoices() ?? [] where voice.languageCode() == languageCode {
             let flagEmoji = emojiFlag(countryCode: voice.countryCode())
             voices.append(VoicePickerItem(flagEmoji: flagEmoji,
                                           voice: .ttsMonster(name: voice.name, voiceId: voice.voice_id)))

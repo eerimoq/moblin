@@ -17,16 +17,26 @@ struct TtsMonsterVoice: Codable {
     }
 
     func languageCode() -> String? {
-        guard let part = metadata?.split(separator: "|").first else {
+        if let language {
+            return Locale(identifier: language).language.languageCode?.identifier
+        } else if let metadata {
+            guard let part = metadata.split(separator: "|").first else {
+                return nil
+            }
+            return Locale(identifier: String(part)).language.languageCode?.identifier
+        } else {
             return nil
         }
-        return Locale(identifier: String(part)).language.languageCode?.identifier
     }
 }
 
 struct TtsMonsterVoicesResponse: Codable {
     var voices: [TtsMonsterVoice]
     var customVoices: [TtsMonsterVoice]
+
+    func allVoices() -> [TtsMonsterVoice] {
+        return customVoices + voices
+    }
 }
 
 struct TtsMonsterGenerateRequest: Codable {
