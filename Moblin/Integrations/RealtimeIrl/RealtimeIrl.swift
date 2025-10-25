@@ -38,7 +38,7 @@ class RealtimeIrl {
           \"timestamp\":\(location.timestamp.timeIntervalSince1970)
         }
         """.utf8Data
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setContentType("application/json")
         URLSession.shared.dataTask(with: request) { _, _, _ in
         }
         .resume()

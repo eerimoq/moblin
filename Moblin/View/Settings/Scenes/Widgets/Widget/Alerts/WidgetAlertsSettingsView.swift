@@ -29,7 +29,7 @@ struct AlertTextToSpeechView: View {
     @State var rate: Float = 0.4
     @State var volume: Float = 0.6
 
-    private func onVoiceChange(languageCode: String, voice: String) {
+    private func onVoiceChange(languageCode: String, voice: SettingsVoice) {
         alert.textToSpeechLanguageVoices[languageCode] = voice
         model.updateAlertsSettings()
     }
@@ -66,7 +66,8 @@ struct AlertTextToSpeechView: View {
                     textToSpeechLanguageVoices: $alert.textToSpeechLanguageVoices,
                     onVoiceChange: onVoiceChange,
                     rate: $rate,
-                    volume: $volume
+                    volume: $volume,
+                    ttsMonsterApiToken: ""
                 )
             } label: {
                 Text("Voices")
@@ -297,5 +298,6 @@ struct WidgetAlertsSettingsView: View {
         AiResponseView(model: model,
                        alerts: widget.alerts,
                        ai: widget.alerts.ai)
+        // TtsMonsterSettingsView(ttsMonster: widget.alerts.ttsMonster)
     }
 }

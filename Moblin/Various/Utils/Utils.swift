@@ -99,10 +99,13 @@ func utcTimeDeltaFromNow(to: Double) -> Double {
     return Date(timeIntervalSince1970: to).timeIntervalSinceNow
 }
 
-func emojiFlag(country: String) -> String {
+func emojiFlag(countryCode: String?) -> String {
+    guard let countryCode else {
+        return ""
+    }
     let base: UInt32 = 127_397
     var emote = ""
-    for ch in country.unicodeScalars {
+    for ch in countryCode.unicodeScalars {
         emote.unicodeScalars.append(UnicodeScalar(base + ch.value)!)
     }
     return emote
@@ -119,7 +122,7 @@ func uploadImage(
     let boundary = UUID().uuidString
     var request = URLRequest(url: url)
     request.httpMethod = "POST"
-    request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "content-type")
+    request.setContentType("multipart/form-data; boundary=\(boundary)")
     var data = Data()
     if let message {
         data.append("\r\n--\(boundary)\r\n".utf8Data)

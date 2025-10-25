@@ -1099,7 +1099,7 @@ extension Model {
                 conditions: weather?.currentWeather.symbolName,
                 temperature: weather?.currentWeather.temperature,
                 country: placemark?.country ?? "",
-                countryFlag: emojiFlag(country: placemark?.isoCountryCode ?? ""),
+                countryFlag: emojiFlag(countryCode: placemark?.isoCountryCode),
                 state: placemark?.administrativeArea,
                 city: placemark?.locality,
                 muted: isMuteOn,

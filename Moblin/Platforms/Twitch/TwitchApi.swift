@@ -543,7 +543,7 @@ class TwitchApi {
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.setValue(clientId, forHTTPHeaderField: "client-id")
-        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "authorization")
+        request.setAuthorization("Bearer \(accessToken)")
         return request
     }
 
@@ -551,8 +551,8 @@ class TwitchApi {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue(clientId, forHTTPHeaderField: "client-id")
-        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "authorization")
-        request.setValue("application/json", forHTTPHeaderField: "content-type")
+        request.setAuthorization("Bearer \(accessToken)")
+        request.setContentType("application/json")
         return request
     }
 
@@ -560,8 +560,8 @@ class TwitchApi {
         var request = URLRequest(url: url)
         request.httpMethod = "PATCH"
         request.setValue(clientId, forHTTPHeaderField: "client-id")
-        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "authorization")
-        request.setValue("application/json", forHTTPHeaderField: "content-type")
+        request.setAuthorization("Bearer \(accessToken)")
+        request.setContentType("application/json")
         return request
     }
 
@@ -569,7 +569,7 @@ class TwitchApi {
         var request = URLRequest(url: url)
         request.httpMethod = "DELETE"
         request.setValue(clientId, forHTTPHeaderField: "client-id")
-        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "authorization")
+        request.setAuthorization("Bearer \(accessToken)")
         return request
     }
 }

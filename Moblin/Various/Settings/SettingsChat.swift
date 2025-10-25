@@ -478,6 +478,31 @@ enum SettingsChatDisplayStyle: String, Codable, CaseIterable {
     }
 }
 
+enum SettingsVoiceType: String, Codable, CaseIterable {
+    case apple
+    case ttsMonster
+
+    init(from decoder: Decoder) throws {
+        self = try SettingsVoiceType(rawValue: decoder.singleValueContainer()
+            .decode(RawValue.self)) ?? .apple
+    }
+}
+
+class SettingsVoiceApple: Codable {
+    var voice: String = ""
+}
+
+class SettingsVoiceTtsMonster: Codable {
+    var name: String = ""
+    var voiceId: String = ""
+}
+
+class SettingsVoice: Codable {
+    var type: SettingsVoiceType = .apple
+    var apple: SettingsVoiceApple = .init()
+    var ttsMonster: SettingsVoiceTtsMonster = .init()
+}
+
 class SettingsChat: Codable, ObservableObject {
     @Published var fontSize: Float = 19.0
     var usernameColor: RgbColor = .init(red: 255, green: 163, blue: 0)
@@ -508,10 +533,11 @@ class SettingsChat: Codable, ObservableObject {
     @Published var textToSpeechSayUsername: Bool = true
     @Published var textToSpeechRate: Float = 0.4
     @Published var textToSpeechSayVolume: Float = 0.6
-    @Published var textToSpeechLanguageVoices: [String: String] = .init()
+    @Published var textToSpeechLanguageVoices: [String: SettingsVoice] = .init()
     @Published var textToSpeechSubscribersOnly: Bool = false
     @Published var textToSpeechFilter: Bool = true
     @Published var textToSpeechFilterMentions: Bool = true
+    @Published var ttsMonster: SettingsTtsMonster = .init()
     @Published var mirrored: Bool = false
     @Published var botEnabled: Bool = false
     var botCommandPermissions: SettingsChatBotPermissions = .init()
@@ -561,6 +587,7 @@ class SettingsChat: Codable, ObservableObject {
              textToSpeechSubscribersOnly,
              textToSpeechFilter,
              textToSpeechFilterMentions,
+             ttsMonster,
              mirrored,
              botEnabled,
              botCommandPermissions,
@@ -613,6 +640,7 @@ class SettingsChat: Codable, ObservableObject {
         try container.encode(.textToSpeechSubscribersOnly, textToSpeechSubscribersOnly)
         try container.encode(.textToSpeechFilter, textToSpeechFilter)
         try container.encode(.textToSpeechFilterMentions, textToSpeechFilterMentions)
+        try container.encode(.ttsMonster, ttsMonster)
         try container.encode(.mirrored, mirrored)
         try container.encode(.botEnabled, botEnabled)
         try container.encode(.botCommandPermissions, botCommandPermissions)
@@ -667,10 +695,18 @@ class SettingsChat: Codable, ObservableObject {
         textToSpeechSayUsername = container.decode(.textToSpeechSayUsername, Bool.self, true)
         textToSpeechRate = container.decode(.textToSpeechRate, Float.self, 0.4)
         textToSpeechSayVolume = container.decode(.textToSpeechSayVolume, Float.self, 0.6)
-        textToSpeechLanguageVoices = container.decode(.textToSpeechLanguageVoices, [String: String].self, .init())
+        textToSpeechLanguageVoices = container.decode(.textToSpeechLanguageVoices,
+                                                      [String: SettingsVoice].self,
+                                                      .init())
+        for (languageCode, voice) in container.decode(.textToSpeechLanguageVoices, [String: String].self, .init()) {
+            let settingsVoice = SettingsVoice()
+            settingsVoice.apple.voice = voice
+            textToSpeechLanguageVoices[languageCode] = settingsVoice
+        }
         textToSpeechSubscribersOnly = container.decode(.textToSpeechSubscribersOnly, Bool.self, false)
         textToSpeechFilter = container.decode(.textToSpeechFilter, Bool.self, true)
         textToSpeechFilterMentions = container.decode(.textToSpeechFilterMentions, Bool.self, true)
+        ttsMonster = container.decode(.ttsMonster, SettingsTtsMonster.self, .init())
         mirrored = container.decode(.mirrored, Bool.self, false)
         botEnabled = container.decode(.botEnabled, Bool.self, false)
         botCommandPermissions = container.decode(.botCommandPermissions, SettingsChatBotPermissions.self, .init())

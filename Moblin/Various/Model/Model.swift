@@ -1035,6 +1035,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         chatTextToSpeech.setFilter(value: database.chat.textToSpeechFilter)
         chatTextToSpeech.setFilterMentions(value: database.chat.textToSpeechFilterMentions)
         chatTextToSpeech.setPauseBetweenMessages(value: database.chat.textToSpeechPauseBetweenMessages)
+        chatTextToSpeech.setTtsMonsterApiToken(apiToken: database.chat.ttsMonster.apiToken)
         setTextToSpeechStreamerMentions()
         updateOrientationLock()
         updateFaceFilterSettings()

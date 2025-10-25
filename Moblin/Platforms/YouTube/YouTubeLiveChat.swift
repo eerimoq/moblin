@@ -401,7 +401,7 @@ final class YouTubeLiveChat: NSObject {
         var request = URLRequest(url: from)
         request.httpMethod = "POST"
         request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setContentType("application/json")
         let (data, response) = try await URLSession.shared.upload(for: request, from: data)
         if let response = response.http {
             return (data, response)

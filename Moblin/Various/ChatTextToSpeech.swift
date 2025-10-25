@@ -52,13 +52,18 @@ private let saysByLanguage = [
     "zh": "说",
 ]
 
+private enum Voice {
+    case apple(voice: AVSpeechSynthesisVoice?)
+    case ttsMonster(voiceId: String)
+}
+
 class ChatTextToSpeech: NSObject {
     private var rate: Float = 0.4
     private var volume: Float = 0.6
     private var sayUsername: Bool = false
     private var detectLanguagePerMessage: Bool = false
     private var pauseBetweenMessages: Double = 0.0
-    private var voices: [String: String] = [:]
+    private var voices: [String: SettingsVoice] = [:]
     private var messageQueue: Deque<TextToSpeechMessage> = .init()
     private var synthesizer = createSpeechSynthesizer()
     private var recognizer = NLLanguageRecognizer()
@@ -70,6 +75,9 @@ class ChatTextToSpeech: NSObject {
     private var running = true
     private var paused = false
     private var currentlyPlayingMessage: TextToSpeechMessage?
+    private var ttsMonster: TtsMonster?
+    private var audioPlayer: AVAudioPlayer?
+    private var isSpeaking: Bool = false
 
     func say(messageId: String?, user: String, userId: String?, message: String, isRedemption: Bool) {
         textToSpeechDispatchQueue.async {
@@ -135,7 +143,7 @@ class ChatTextToSpeech: NSObject {
         }
     }
 
-    func setVoices(voices: [String: String]) {
+    func setVoices(voices: [String: SettingsVoice]) {
         textToSpeechDispatchQueue.async {
             self.voices = voices
         }
@@ -174,6 +182,16 @@ class ChatTextToSpeech: NSObject {
     func setPauseBetweenMessages(value: Double) {
         textToSpeechDispatchQueue.async {
             self.pauseBetweenMessages = value
+        }
+    }
+
+    func setTtsMonsterApiToken(apiToken: String) {
+        textToSpeechDispatchQueue.async {
+            if apiToken.isEmpty {
+                self.ttsMonster = nil
+            } else {
+                self.ttsMonster = TtsMonster(apiToken: apiToken)
+            }
         }
     }
 
@@ -288,7 +306,7 @@ class ChatTextToSpeech: NSObject {
         return saysByLanguage[language] ?? ""
     }
 
-    private func getVoice(message: String) -> (AVSpeechSynthesisVoice?, String)? {
+    private func getVoice(message: String) -> (Voice?, String)? {
         recognizer.reset()
         recognizer.processString(message)
         guard !isFilteredOut(message: message) else {
@@ -301,12 +319,15 @@ class ChatTextToSpeech: NSObject {
         guard let language else {
             return nil
         }
-        if let voiceIdentifier = voices[language] {
-            return (AVSpeechSynthesisVoice(identifier: voiceIdentifier), getSays(language))
+        let voice = voices[language]
+        if voice?.type == .apple, let voiceIdentifier = voice?.apple.voice {
+            return (.apple(voice: AVSpeechSynthesisVoice(identifier: voiceIdentifier)), getSays(language))
+        } else if voice?.type == .ttsMonster, let voiceId = voice?.ttsMonster.voiceId {
+            return (.ttsMonster(voiceId: voiceId), getSays(language))
         } else if let voice = AVSpeechSynthesisVoice.speechVoices()
             .filter({ $0.language.starts(with: language) }).first
         {
-            return (AVSpeechSynthesisVoice(identifier: voice.identifier), getSays(language))
+            return (.apple(voice: AVSpeechSynthesisVoice(identifier: voice.identifier)), getSays(language))
         }
         return nil
     }
@@ -315,7 +336,7 @@ class ChatTextToSpeech: NSObject {
         guard !paused else {
             return
         }
-        guard !synthesizer.isSpeaking else {
+        guard !isSpeaking else {
             return
         }
         guard let message = messageQueue.popFirst() else {
@@ -337,13 +358,26 @@ class ChatTextToSpeech: NSObject {
         } else {
             text = message.message
         }
-        let utterance = AVSpeechUtterance(string: text)
-        utterance.rate = rate
-        utterance.pitchMultiplier = 0.8
-        utterance.preUtteranceDelay = pauseBetweenMessages
-        utterance.volume = volume
-        utterance.voice = voice
-        synthesizer.speak(utterance)
+        switch voice {
+        case let .apple(voice):
+            let utterance = AVSpeechUtterance(string: text)
+            utterance.rate = rate
+            utterance.pitchMultiplier = 0.8
+            utterance.preUtteranceDelay = pauseBetweenMessages
+            utterance.volume = volume
+            utterance.voice = voice
+            synthesizer.speak(utterance)
+        case let .ttsMonster(voiceId):
+            Task {
+                if let data = await ttsMonster?.generateTts(voiceId: voiceId, message: text) {
+                    audioPlayer = try? AVAudioPlayer(data: data)
+                    audioPlayer?.delegate = self
+                    audioPlayer?.play()
+                } else {
+                    sayFinished()
+                }
+            }
+        }
         latestUserThatSaidSomething = message.user
         sayLatestUserThatSaidSomethingAgain = now.advanced(by: .seconds(30))
     }
@@ -357,13 +391,24 @@ class ChatTextToSpeech: NSObject {
         }
         return false
     }
+
+    private func sayFinished() {
+        textToSpeechDispatchQueue.async {
+            self.isSpeaking = false
+            self.currentlyPlayingMessage = nil
+            self.trySayNextMessage()
+        }
+    }
 }
 
 extension ChatTextToSpeech: AVSpeechSynthesizerDelegate {
     func speechSynthesizer(_: AVSpeechSynthesizer, didFinish _: AVSpeechUtterance) {
-        textToSpeechDispatchQueue.async {
-            self.currentlyPlayingMessage = nil
-            self.trySayNextMessage()
-        }
+        sayFinished()
+    }
+}
+
+extension ChatTextToSpeech: AVAudioPlayerDelegate {
+    func audioPlayerDidFinishPlaying(_: AVAudioPlayer, successfully _: Bool) {
+        sayFinished()
     }
 }

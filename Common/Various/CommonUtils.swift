@@ -276,6 +276,16 @@ func httpGet(request: URLRequest) async throws -> (Data, HTTPURLResponse) {
     }
 }
 
+extension URLRequest {
+    mutating func setAuthorization(_ value: String) {
+        setValue(value, forHTTPHeaderField: "Authorization")
+    }
+
+    mutating func setContentType(_ value: String) {
+        setValue(value, forHTTPHeaderField: "Content-Type")
+    }
+}
+
 let smallFont = Font.system(size: 13)
 
 extension UInt64 {

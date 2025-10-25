@@ -838,7 +838,7 @@ class SettingsWidgetAlertsAlert: Codable, ObservableObject {
     var fontWeight: SettingsFontWeight = .bold
     var textToSpeechEnabled: Bool = true
     var textToSpeechDelay: Double = 1.5
-    @Published var textToSpeechLanguageVoices: [String: String] = .init()
+    @Published var textToSpeechLanguageVoices: [String: SettingsVoice] = .init()
     var positionType: SettingsWidgetAlertPositionType = .scene
     var facePosition: SettingsWidgetAlertFacePosition = .init()
 
@@ -892,7 +892,14 @@ class SettingsWidgetAlertsAlert: Codable, ObservableObject {
         fontWeight = container.decode(.fontWeight, SettingsFontWeight.self, .bold)
         textToSpeechEnabled = container.decode(.textToSpeechEnabled, Bool.self, true)
         textToSpeechDelay = container.decode(.textToSpeechDelay, Double.self, 1.5)
-        textToSpeechLanguageVoices = container.decode(.textToSpeechLanguageVoices, [String: String].self, .init())
+        textToSpeechLanguageVoices = container.decode(.textToSpeechLanguageVoices,
+                                                      [String: SettingsVoice].self,
+                                                      .init())
+        for (languageCode, voice) in container.decode(.textToSpeechLanguageVoices, [String: String].self, .init()) {
+            let settingsVoice = SettingsVoice()
+            settingsVoice.apple.voice = voice
+            textToSpeechLanguageVoices[languageCode] = settingsVoice
+        }
         positionType = container.decode(.positionType, SettingsWidgetAlertPositionType.self, .scene)
         facePosition = container.decode(.facePosition, SettingsWidgetAlertFacePosition.self, .init())
     }
@@ -1205,6 +1212,32 @@ class SettingsWidgetAlertsSpeechToText: Codable, ObservableObject {
     }
 }
 
+class SettingsTtsMonster: Codable, ObservableObject {
+    @Published var apiToken: String = ""
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case apiToken
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.apiToken, apiToken)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        apiToken = container.decode(.apiToken, String.self, "")
+    }
+
+    func clone() -> SettingsTtsMonster {
+        let new = SettingsTtsMonster()
+        new.apiToken = apiToken
+        return new
+    }
+}
+
 class SettingsWidgetAlerts: Codable, ObservableObject {
     private static let aiPersonality = "You are rude and gives insulting answers. Answer in a few sentences."
     var twitch: SettingsWidgetAlertsTwitch = .init()
@@ -1214,6 +1247,7 @@ class SettingsWidgetAlerts: Codable, ObservableObject {
     var needsSubtitles: Bool = false
     var ai: SettingsOpenAi = .init(personality: aiPersonality)
     @Published var aiEnabled: Bool = false
+    var ttsMonster: SettingsTtsMonster = .init()
 
     init() {}
 
@@ -1224,7 +1258,8 @@ class SettingsWidgetAlerts: Codable, ObservableObject {
              speechToText,
              needsSubtitles,
              ai,
-             aiEnabled
+             aiEnabled,
+             ttsMonster
     }
 
     func encode(to encoder: Encoder) throws {
@@ -1236,6 +1271,7 @@ class SettingsWidgetAlerts: Codable, ObservableObject {
         try container.encode(.needsSubtitles, needsSubtitles)
         try container.encode(.ai, ai)
         try container.encode(.aiEnabled, aiEnabled)
+        try container.encode(.ttsMonster, ttsMonster)
     }
 
     required init(from decoder: Decoder) throws {
@@ -1247,6 +1283,7 @@ class SettingsWidgetAlerts: Codable, ObservableObject {
         needsSubtitles = container.decode(.needsSubtitles, Bool.self, false)
         ai = container.decode(.ai, SettingsOpenAi.self, .init(personality: SettingsWidgetAlerts.aiPersonality))
         aiEnabled = container.decode(.aiEnabled, Bool.self, false)
+        ttsMonster = container.decode(.ttsMonster, SettingsTtsMonster.self, .init())
     }
 
     func clone() -> SettingsWidgetAlerts {
@@ -1258,6 +1295,7 @@ class SettingsWidgetAlerts: Codable, ObservableObject {
         new.needsSubtitles = needsSubtitles
         new.ai = ai.clone()
         new.aiEnabled = aiEnabled
+        new.ttsMonster = ttsMonster.clone()
         return new
     }
 }

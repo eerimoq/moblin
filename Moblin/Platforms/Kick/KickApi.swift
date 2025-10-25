@@ -96,7 +96,7 @@ func getKickChannelInfo(channelName: String, onComplete: @escaping (KickChannel?
 
 func getKickUser(accessToken: String, onComplete: @escaping (KickUser?) -> Void) {
     var request = URLRequest(url: userUrl)
-    request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+    request.setAuthorization("Bearer \(accessToken)")
     request.setValue("application/json", forHTTPHeaderField: "Accept")
     URLSession.shared.dataTask(with: request) { data, response, error in
         guard error == nil, let data, response?.http?.isSuccessful == true else {
@@ -261,8 +261,8 @@ class KickApi {
         }
         var request = URLRequest(url: url)
         request.httpMethod = method
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        request.setContentType("application/json")
+        request.setAuthorization("Bearer \(accessToken)")
         if let body {
             request.httpBody = try? JSONSerialization.data(withJSONObject: body)
         }

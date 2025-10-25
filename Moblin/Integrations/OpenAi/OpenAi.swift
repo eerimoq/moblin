@@ -30,8 +30,8 @@ class OpenAi {
     func ask(_ content: String, model: String, role: String, onComplete: @escaping (String?) -> Void) {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
-        request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setAuthorization("Bearer \(apiKey)")
+        request.setContentType("application/json")
         let messages = [
             Message(role: "system", content: role),
             Message(role: "user", content: content),

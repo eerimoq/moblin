@@ -28,7 +28,7 @@ final class NWConnectionWithId: Hashable, Equatable {
     }
 
     static func == (lhs: NWConnectionWithId, rhs: NWConnectionWithId) -> Bool {
-        lhs.id == rhs.id
+        return lhs.id == rhs.id
     }
 
     func hash(into hasher: inout Hasher) {

@@ -493,7 +493,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         guard let language = Locale.current.language.languageCode?.identifier else {
             return nil
         }
-        if let voiceIdentifier = settings.textToSpeechLanguageVoices[language] {
+        if let voiceIdentifier = settings.textToSpeechLanguageVoices[language]?.apple.voice {
             return AVSpeechSynthesisVoice(identifier: voiceIdentifier)
         } else if let voice = AVSpeechSynthesisVoice.speechVoices()
             .filter({ $0.language.starts(with: language) }).first

@@ -35,7 +35,7 @@ private let baseUrl = URL(string: "https://graphigo.prd.dlive.tv/")!
 func getDLiveUserInfo(displayName: String, completion: @escaping (DLiveUserInfo?) -> Void) {
     var request = URLRequest(url: baseUrl)
     request.httpMethod = "POST"
-    request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+    request.setContentType("application/json")
     let payload: [String: Any] = [
         "query": userInfoQuery,
         "variables": [

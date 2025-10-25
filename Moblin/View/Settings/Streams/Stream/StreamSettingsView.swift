@@ -78,6 +78,12 @@ struct DiscordLogoAndNameView: View {
     }
 }
 
+struct TtsMonsterLogoAndNameView: View {
+    var body: some View {
+        PlatformLogoAndNameView(logo: "TtsMonster", name: String(localized: "TTS.Monster"))
+    }
+}
+
 struct StreamPlatformsSettingsView: View {
     @ObservedObject var stream: SettingsStream
 
