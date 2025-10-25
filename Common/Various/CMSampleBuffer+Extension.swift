@@ -76,10 +76,10 @@ extension CMSampleBuffer {
     @inline(__always)
     private func getAttachmentValue(for key: CFString) -> Bool? {
         guard
-            let attachments = CMSampleBufferGetSampleAttachmentsArray(self,
-                                                                      createIfNecessary: false) as? [
-                [CFString: Any]
-            ],
+            let attachments = CMSampleBufferGetSampleAttachmentsArray(
+                self,
+                createIfNecessary: false
+            ) as? [[CFString: Any]],
             let value = attachments.first?[key] as? Bool
         else {
             return nil
