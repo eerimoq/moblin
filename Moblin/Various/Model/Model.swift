@@ -918,7 +918,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         updateCameraLists()
         updateBatteryLevel()
         setPixelFormat()
-        setMetalPetalFilters()
         setupAudioSession()
         if let cameraDevice = preferredCamera(position: .back) {
             (cameraZoomXMinimum, cameraZoomXMaximum) = cameraDevice
@@ -1185,10 +1184,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         {
             logsStorage.remove(id: logId)
         }
-    }
-
-    func setMetalPetalFilters() {
-        ioVideoUnitMetalPetal = database.debug.metalPetalFilters
     }
 
     func setExternalDisplayContent() {

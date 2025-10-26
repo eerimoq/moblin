@@ -1,6 +1,5 @@
 import AVFoundation
 import CoreMotion
-import MetalPetal
 import UIKit
 import Vision
 
@@ -94,9 +93,5 @@ final class FixedHorizonEffect: VideoEffect {
             .scaled(x: scale, y: scale)
             .translated(x: image.extent.width / 2, y: image.extent.height / 2)
             .cropped(to: image.extent)
-    }
-
-    override func executeMetalPetal(_ image: MTIImage?, _: VideoEffectInfo) -> MTIImage? {
-        return image
     }
 }

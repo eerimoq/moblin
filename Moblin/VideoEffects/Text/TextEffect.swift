@@ -1,6 +1,5 @@
 import AVFoundation
 import Collections
-import MetalPetal
 import SwiftUI
 import UIKit
 import Vision
@@ -516,18 +515,12 @@ final class TextEffect: VideoEffect {
     private let settingName: String
     private var stats: Deque<TextEffectStats> = []
     private var overlay: CIImage?
-    private var overlayMetalPetal: MTIImage?
     private var image: UIImage?
-    private var imageMetalPetal: UIImage?
     private var newImagePresent: Bool = false
-    private var newImageMetalPetalPresent: Bool = false
     private var nextUpdateTime = ContinuousClock.now
-    private var nextUpdateTimeMetalPetal = ContinuousClock.now
     private var previousLines: [Line]?
-    private var previousLinesMetalPetal: [Line]?
     private var delay: Double
     private var forceUpdate = true
-    private var forceUpdateMetalPetal = true
     private let formatter = Formatter()
     private var sceneWidget: SettingsSceneWidget
 
@@ -572,19 +565,15 @@ final class TextEffect: VideoEffect {
         textQueue.sync {
             self.sceneWidget = sceneWidget
             forceUpdate = true
-            forceUpdateMetalPetal = true
         }
         previousLines = nil
-        previousLinesMetalPetal = nil
     }
 
     func forceImageUpdate() {
         textQueue.sync {
             forceUpdate = true
-            forceUpdateMetalPetal = true
         }
         previousLines = nil
-        previousLinesMetalPetal = nil
     }
 
     func setFormat(format: String) {
@@ -823,114 +812,11 @@ final class TextEffect: VideoEffect {
         return sceneWidget
     }
 
-    private func updateOverlayMetalPetal(size: CGSize) -> (Double, Double) {
-        let now = ContinuousClock.now
-        var newImage: UIImage?
-        let (sceneWidget, forceUpdate, newImagePresent) = textQueue.sync {
-            if self.imageMetalPetal != nil {
-                newImage = self.imageMetalPetal
-                self.imageMetalPetal = nil
-            }
-            defer {
-                self.forceUpdateMetalPetal = false
-                self.newImageMetalPetalPresent = false
-            }
-            return (self.sceneWidget, self.forceUpdateMetalPetal, self.newImageMetalPetalPresent)
-        }
-        if newImagePresent {
-            if let image = newImage?.cgImage {
-                overlayMetalPetal = MTIImage(cgImage: image, isOpaque: true)
-            } else {
-                overlayMetalPetal = nil
-            }
-        }
-        guard now >= nextUpdateTimeMetalPetal || forceUpdate else {
-            return (sceneWidget.x, sceneWidget.y)
-        }
-        if !forceUpdate {
-            nextUpdateTimeMetalPetal += .seconds(1)
-        }
-        DispatchQueue.main.async {
-            let lines = self.formatted(now: now)
-            guard lines != self.previousLinesMetalPetal else {
-                return
-            }
-            self.previousLinesMetalPetal = lines
-            let text = VStack(alignment: .leading, spacing: 2) {
-                ForEach(lines) { line in
-                    HStack(spacing: 0) {
-                        ForEach(line.parts) { part in
-                            switch part.data {
-                            case let .text(text):
-                                Text(text)
-                                    .foregroundColor(self.foregroundColor?.color() ?? .clear)
-                            case let .imageSystemName(name):
-                                Image(systemName: name)
-                                    .foregroundColor(self.foregroundColor?.color() ?? .clear)
-                            case let .imageSystemNameTryFill(name):
-                                if UIImage(systemName: "\(name).fill") != nil {
-                                    Image(systemName: "\(name).fill")
-                                        .symbolRenderingMode(.multicolor)
-                                } else {
-                                    Image(systemName: name)
-                                        .foregroundColor(self.foregroundColor?.color() ?? .clear)
-                                }
-                            case let .rating(rating):
-                                ForEach(0 ..< 5) { index in
-                                    if index < rating {
-                                        Text("★")
-                                            .foregroundColor(.yellow)
-                                    } else {
-                                        Text("☆")
-                                            .foregroundColor(self.foregroundColor?.color() ?? .white)
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    .padding([.leading, .trailing], 7)
-                    .background(self.backgroundColor?.color() ?? .clear)
-                    .cornerRadius(10)
-                }
-            }
-            .font(.system(
-                size: self.scaledFontSize(size: size),
-                weight: self.fontWeight,
-                design: self.fontDesign
-            ))
-            let renderer = ImageRenderer(content: text)
-            let image = renderer.uiImage
-            textQueue.sync {
-                self.imageMetalPetal = image
-                self.newImageMetalPetalPresent = true
-            }
-        }
-        return (sceneWidget.x, sceneWidget.y)
-    }
-
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
         let sceneWidget = updateOverlay(size: image.extent.size)
         return overlay?
             .move(sceneWidget, image.extent.size)
             .cropped(to: image.extent)
             .composited(over: image) ?? image
-    }
-
-    override func executeMetalPetal(_ image: MTIImage?, _: VideoEffectInfo) -> MTIImage? {
-        guard let image else {
-            return image
-        }
-        var (x, y) = updateOverlayMetalPetal(size: image.size)
-        guard let overlayMetalPetal else {
-            return image
-        }
-        x = toPixels(x, image.size.width) + overlayMetalPetal.size.width / 2
-        y = toPixels(y, image.size.height) + overlayMetalPetal.size.height / 2
-        let filter = MTIMultilayerCompositingFilter()
-        filter.inputBackgroundImage = image
-        filter.layers = [
-            .init(content: overlayMetalPetal, position: .init(x: x, y: y)),
-        ]
-        return filter.outputImage ?? image
     }
 }

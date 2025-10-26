@@ -1,5 +1,4 @@
 import AVFoundation
-import MetalPetal
 import SwiftUI
 import UIKit
 import Vision
@@ -125,9 +124,5 @@ final class PadelScoreboardEffect: VideoEffect {
         return scoreBoard
             .translated(x: 10 * scale, y: image.extent.height - scoreBoard.extent.height - 10 * scale)
             .composited(over: image)
-    }
-
-    override func executeMetalPetal(_ image: MTIImage?, _: VideoEffectInfo) -> MTIImage? {
-        return image
     }
 }

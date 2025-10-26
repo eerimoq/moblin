@@ -1,4 +1,5 @@
-import MetalPetal
+import AVFoundation
+import SwiftUI
 
 func randomString() -> String {
     return Data.random(length: 64).base64EncodedString()
@@ -74,20 +75,6 @@ func createThumbnail(path: URL, offset: Double = 0, onComplete: @escaping (UIIma
         DispatchQueue.main.async {
             onComplete(image)
         }
-    }
-}
-
-extension MTILayer {
-    convenience init(content: MTIImage, position: CGPoint) {
-        self.init(
-            content: content,
-            layoutUnit: .pixel,
-            position: position,
-            size: content.size,
-            rotation: 0,
-            opacity: 1,
-            blendMode: .normal
-        )
     }
 }
 

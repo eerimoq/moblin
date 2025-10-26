@@ -1,7 +1,6 @@
 import AVFoundation
 import Collections
 import CoreImage
-import MetalPetal
 import UIKit
 import VideoToolbox
 import Vision
@@ -44,7 +43,6 @@ struct CaptureDevices {
 }
 
 var pixelFormatType = kCVPixelFormatType_420YpCbCr8BiPlanarFullRange
-var ioVideoUnitMetalPetal = false
 var allowVideoRangePixelFormat = false
 private let detectionsQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.Detections", attributes: .concurrent)
 private let lowFpsImageQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.VideoIOComponent.small")
@@ -109,7 +107,6 @@ final class VideoUnit: NSObject {
     private var device: AVCaptureDevice?
     private var captureSessionDevices: [CaptureSessionDevice] = []
     private let context = CIContext()
-    private let metalPetalContext: MTIContext?
     weak var drawable: PreviewView?
     weak var externalDisplayDrawable: PreviewView?
     private var nextFaceDetectionsSequenceNumber: UInt64 = 0
@@ -207,11 +204,6 @@ final class VideoUnit: NSObject {
     }
 
     override init() {
-        if let metalDevice = MTLCreateSystemDefaultDevice() {
-            metalPetalContext = try? MTIContext(device: metalDevice)
-        } else {
-            metalPetalContext = nil
-        }
         videoUnitBuiltinDevice = nil
         VTPixelTransferSessionCreate(allocator: nil, pixelTransferSessionOut: &pixelTransferSession)
         super.init()
@@ -846,13 +838,6 @@ final class VideoUnit: NSObject {
                 isSceneSwitchTransition,
                 info
             )
-        } else if ioVideoUnitMetalPetal {
-            return applyEffectsMetalPetal(
-                imageBuffer,
-                sampleBuffer,
-                isSceneSwitchTransition,
-                info
-            )
         } else {
             return applyEffectsCoreImage(
                 imageBuffer,
@@ -968,28 +953,6 @@ final class VideoUnit: NSObject {
         return (outputImageBuffer, outputSampleBuffer)
     }
 
-    private func scaleImageMetalPetal(_ image: MTIImage?) -> MTIImage? {
-        guard let image = image?.resized(
-            to: CGSize(width: Double(canvasSize.width), height: Double(canvasSize.height)),
-            resizingMode: .aspect
-        ) else {
-            return image
-        }
-        let filter = MTIMultilayerCompositingFilter()
-        filter.inputBackgroundImage = MTIImage(
-            color: .black,
-            sRGB: false,
-            size: .init(width: CGFloat(canvasSize.width), height: CGFloat(canvasSize.height))
-        )
-        filter.layers = [
-            .init(
-                content: image,
-                position: .init(x: CGFloat(canvasSize.width / 2), y: CGFloat(canvasSize.height / 2))
-            ),
-        ]
-        return filter.outputImage
-    }
-
     private func calcBlurRadius() -> Float {
         if let latestSampleBufferTime {
             let offset = ContinuousClock.now - latestSampleBufferTime
@@ -1010,69 +973,6 @@ final class VideoUnit: NSObject {
         } else {
             return 0.75
         }
-    }
-
-    private func applySceneSwitchTransitionMetalPetal(_ image: MTIImage?) -> MTIImage? {
-        guard let image else {
-            return nil
-        }
-        let filter = MTIMPSGaussianBlurFilter()
-        filter.inputImage = image
-        filter.radius = calcBlurRadius() * Float(image.extent.size.maximum() / 1920)
-        return filter.outputImage
-    }
-
-    private func applyEffectsMetalPetal(_ imageBuffer: CVImageBuffer,
-                                        _ sampleBuffer: CMSampleBuffer,
-                                        _ isSceneSwitchTransition: Bool,
-                                        _ info: VideoEffectInfo) -> (CVImageBuffer?, CMSampleBuffer?)
-    {
-        var image: MTIImage? = MTIImage(cvPixelBuffer: imageBuffer, alphaType: .alphaIsOne)
-        let originalImage = image
-        var failedEffect: String?
-        if imageBuffer.isPortrait() {
-            image = image?.oriented(.left)
-        }
-        if let imageToScale = image, imageToScale.size != canvasSize {
-            image = scaleImageMetalPetal(image)
-        }
-        if isSceneSwitchTransition {
-            image = applySceneSwitchTransitionMetalPetal(image)
-        }
-        for effect in effects {
-            let effectOutputImage = effect.executeMetalPetal(image, info)
-            if effectOutputImage != nil {
-                image = effectOutputImage
-            } else {
-                failedEffect = "\(effect.getName()) (wrong size)"
-            }
-        }
-        processor?.delegate?.streamVideo(failedEffect: failedEffect)
-        guard originalImage != image, let image else {
-            return (nil, nil)
-        }
-        guard let outputImageBuffer = createPixelBuffer(sampleBuffer: sampleBuffer) else {
-            return (nil, nil)
-        }
-        do {
-            try metalPetalContext?.render(image, to: outputImageBuffer)
-        } catch {
-            logger.info("Metal petal error: \(error)")
-            return (nil, nil)
-        }
-        guard let formatDescription = CMVideoFormatDescription.create(imageBuffer: outputImageBuffer)
-        else {
-            return (nil, nil)
-        }
-        guard let outputSampleBuffer = CMSampleBuffer.create(outputImageBuffer,
-                                                             formatDescription,
-                                                             sampleBuffer.duration,
-                                                             sampleBuffer.presentationTimeStamp,
-                                                             sampleBuffer.decodeTimeStamp)
-        else {
-            return (nil, nil)
-        }
-        return (outputImageBuffer, outputSampleBuffer)
     }
 
     private func applySceneSwitchTransition(_ image: CIImage) -> CIImage {

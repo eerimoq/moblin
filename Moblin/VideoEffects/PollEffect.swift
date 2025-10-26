@@ -1,5 +1,4 @@
 import AVFoundation
-import MetalPetal
 import SwiftUI
 import UIKit
 import Vision
@@ -7,7 +6,6 @@ import Vision
 final class PollEffect: VideoEffect {
     private let filter = CIFilter.sourceOverCompositing()
     private var overlay: CIImage?
-    private var overlayMetalPetal: MTIImage?
     private var image: UIImage?
     private var nextUpdateTime = ContinuousClock.now.advanced(by: .seconds(-5))
     private var text = "No votes yet"
@@ -50,7 +48,6 @@ final class PollEffect: VideoEffect {
         }
         image = nil
         update(image: newImage, size: size)
-        updateMetalPetal(image: newImage, size: size)
     }
 
     private func update(image: UIImage, size: CGSize) {
@@ -60,35 +57,10 @@ final class PollEffect: VideoEffect {
             .cropped(to: CGRect(x: 0, y: 0, width: size.width, height: size.height))
     }
 
-    private func updateMetalPetal(image: UIImage, size _: CGSize) {
-        guard let image = image.cgImage else {
-            return
-        }
-        overlayMetalPetal = MTIImage(cgImage: image, isOpaque: true)
-    }
-
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
         updateOverlay(size: image.extent.size)
         filter.inputImage = overlay
         filter.backgroundImage = image
-        return filter.outputImage ?? image
-    }
-
-    override func executeMetalPetal(_ image: MTIImage?, _: VideoEffectInfo) -> MTIImage? {
-        guard let image else {
-            return image
-        }
-        updateOverlay(size: image.size)
-        guard let overlayMetalPetal else {
-            return image
-        }
-        let x = image.size.width - overlayMetalPetal.size.width / 2 - 5
-        let y = overlayMetalPetal.size.height / 2 + 5
-        let filter = MTIMultilayerCompositingFilter()
-        filter.inputBackgroundImage = image
-        filter.layers = [
-            .init(content: overlayMetalPetal, position: .init(x: x, y: y)),
-        ]
         return filter.outputImage ?? image
     }
 }

@@ -1,5 +1,4 @@
 import AVFoundation
-import MetalPetal
 import SwiftUI
 import UIKit
 import Vision
@@ -43,7 +42,6 @@ private func transformPoint(
 final class DrawOnStreamEffect: VideoEffect {
     private let filter = CIFilter.sourceOverCompositing()
     private var overlay: CIImage?
-    private var overlayMetalPetal: MTIImage?
 
     override func getName() -> String {
         return "draw on stream"
@@ -98,13 +96,8 @@ final class DrawOnStreamEffect: VideoEffect {
                 return
             }
             let image = CIImage(image: uiImage)
-            guard let cgImage = uiImage.cgImage else {
-                return
-            }
-            let imageMetalPetal = MTIImage(cgImage: cgImage, isOpaque: true)
             processorPipelineQueue.async {
                 self.overlay = image
-                self.overlayMetalPetal = imageMetalPetal
             }
         }
     }
@@ -112,18 +105,6 @@ final class DrawOnStreamEffect: VideoEffect {
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
         filter.inputImage = overlay
         filter.backgroundImage = image
-        return filter.outputImage ?? image
-    }
-
-    override func executeMetalPetal(_ image: MTIImage?, _: VideoEffectInfo) -> MTIImage? {
-        guard let overlay = overlayMetalPetal else {
-            return image
-        }
-        let filter = MTIMultilayerCompositingFilter()
-        filter.inputBackgroundImage = image
-        filter.layers = [
-            .init(content: overlay, position: .init(x: overlay.size.width / 2, y: overlay.size.height / 2)),
-        ]
         return filter.outputImage ?? image
     }
 }

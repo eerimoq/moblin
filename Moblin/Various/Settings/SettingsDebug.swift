@@ -104,7 +104,6 @@ class SettingsDebug: Codable, ObservableObject {
     var beautyFilterSettings: SettingsDebugBeautyFilter = .init()
     @Published var allowVideoRangePixelFormat: Bool = false
     var blurSceneSwitch: Bool = true
-    @Published var metalPetalFilters: Bool = false
     @Published var preferStereoMic: Bool = false
     @Published var twitchRewards: Bool = false
     var tesla: SettingsTesla = .init()
@@ -134,7 +133,6 @@ class SettingsDebug: Codable, ObservableObject {
              beautyFilterSettings,
              allowVideoRangePixelFormat,
              blurSceneSwitch,
-             metalPetalFilters,
              preferStereoMic,
              twitchRewards,
              removeWindNoise,
@@ -172,7 +170,6 @@ class SettingsDebug: Codable, ObservableObject {
         try container.encode(.beautyFilterSettings, beautyFilterSettings)
         try container.encode(.allowVideoRangePixelFormat, allowVideoRangePixelFormat)
         try container.encode(.blurSceneSwitch, blurSceneSwitch)
-        try container.encode(.metalPetalFilters, metalPetalFilters)
         try container.encode(.preferStereoMic, preferStereoMic)
         try container.encode(.twitchRewards, twitchRewards)
         try container.encode(.tesla, tesla)
@@ -208,7 +205,6 @@ class SettingsDebug: Codable, ObservableObject {
         beautyFilterSettings = container.decode(.beautyFilterSettings, SettingsDebugBeautyFilter.self, .init())
         allowVideoRangePixelFormat = container.decode(.allowVideoRangePixelFormat, Bool.self, false)
         blurSceneSwitch = container.decode(.blurSceneSwitch, Bool.self, true)
-        metalPetalFilters = container.decode(.metalPetalFilters, Bool.self, false)
         preferStereoMic = container.decode(.preferStereoMic, Bool.self, false)
         twitchRewards = container.decode(.twitchRewards, Bool.self, false)
         tesla = container.decode(.tesla, SettingsTesla.self, .init())

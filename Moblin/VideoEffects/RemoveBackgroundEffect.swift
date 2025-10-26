@@ -1,6 +1,5 @@
 import AVFoundation
 import CoreImage
-import MetalPetal
 import Vision
 
 private func makeFilter(fromHue: CGFloat, toHue: CGFloat) -> CIColorCubeWithColorSpace {

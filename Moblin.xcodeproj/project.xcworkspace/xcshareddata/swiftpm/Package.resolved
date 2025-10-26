@@ -1,5 +1,5 @@
 {
-  "originHash" : "7a5215608ca212d84939e9c058e8446afdbd6dfde73b3214e6fb7ff4f8bdef35",
+  "originHash" : "6c4b0ed291011e41235c7a080a6098195bdb5ab100e153b777379c9255cbb8b7",
   "pins" : [
     {
       "identity" : "alerttoast",
@@ -44,15 +44,6 @@
       "state" : {
         "revision" : "56f1b5724138e4d9f60453b555edc80e43805503",
         "version" : "2.2.0"
-      }
-    },
-    {
-      "identity" : "metalpetal",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/eerimoq/MetalPetal",
-      "state" : {
-        "branch" : "master",
-        "revision" : "f9b78897bd4214bb097f352a1bde0a4f4a1e2ddb"
       }
     },
     {

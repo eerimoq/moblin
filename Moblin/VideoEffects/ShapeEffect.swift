@@ -1,5 +1,5 @@
 import AVFoundation
-import MetalPetal
+import CoreImage
 import Vision
 
 struct ShapeEffectSettings {

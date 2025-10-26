@@ -1,5 +1,5 @@
 import AVFoundation
-import MetalPetal
+import CoreImage
 import Vision
 
 final class TwinEffect: VideoEffect {
@@ -26,9 +26,5 @@ final class TwinEffect: VideoEffect {
         filter.inputImage = rightImage
         filter.backgroundImage = leftImage
         return filter.outputImage ?? image
-    }
-
-    override func executeMetalPetal(_ image: MTIImage?, _: VideoEffectInfo) -> MTIImage? {
-        return image
     }
 }

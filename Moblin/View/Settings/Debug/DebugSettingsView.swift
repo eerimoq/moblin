@@ -97,10 +97,6 @@ struct DebugSettingsView: View {
                         .frame(width: 40)
                 }
                 Toggle("Relaxed bitrate decrement after scene switch", isOn: $debug.relaxedBitrate)
-                Toggle("MetalPetal filters", isOn: $debug.metalPetalFilters)
-                    .onChange(of: debug.metalPetalFilters) { _ in
-                        model.setMetalPetalFilters()
-                    }
                 Toggle("Twitch rewards", isOn: $debug.twitchRewards)
                 Toggle("Reliable chat", isOn: $debug.reliableChat)
                 VStack(alignment: .leading) {

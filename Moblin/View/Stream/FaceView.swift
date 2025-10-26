@@ -150,7 +150,7 @@ private struct FaceViewBeautyButtons: View {
                                on: show.faceBeautyShape,
                                height: height)
             }
-            if model.database.color.space != .appleLog && model.database.debug.metalPetalFilters {
+            if false {
                 Button {
                     show.faceBeautyShape = false
                     show.faceBeautySmooth.toggle()
@@ -200,9 +200,7 @@ struct FaceView: View {
                 if show.faceBeauty {
                     if show.faceBeautyShape {
                         FaceViewBeautyShape()
-                    } else if show.faceBeautySmooth && model.database.color.space != .appleLog && model.database
-                        .debug.metalPetalFilters
-                    {
+                    } else if false {
                         FaceViewBeautySmooth()
                     }
                     FaceViewBeautyButtons(show: show, beauty: $settings.showBeauty, height: height())

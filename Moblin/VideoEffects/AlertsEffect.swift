@@ -1,7 +1,6 @@
 import AVFoundation
 import Collections
 import ImagePlayground
-import MetalPetal
 import SDWebImage
 import SwiftUI
 import Vision
@@ -244,11 +243,6 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         } else {
             return executePositionScene(image, alertImage, messageImage, x, y)
         }
-    }
-
-    override func executeMetalPetal(_ image: MTIImage?, _: VideoEffectInfo) -> MTIImage? {
-        toBeRemoved = true
-        return image
     }
 
     override func shouldRemove() -> Bool {

@@ -1,6 +1,5 @@
 import AVFoundation
 import Collections
-import MetalPetal
 import SwiftUI
 import UIKit
 import Vision

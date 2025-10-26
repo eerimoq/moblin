@@ -1,5 +1,4 @@
 import AVFoundation
-import MetalPetal
 import SwiftCube
 import UIKit
 import Vision
@@ -119,7 +118,6 @@ private func convertLut(image: UIImage) throws -> (Float, Data) {
 
 final class LutEffect: VideoEffect {
     private var filter = CIFilter.colorCubeWithColorSpace()
-    private var filterMetalPetal = MTIColorLookupFilter()
 
     override func getName() -> String {
         return "LUT"
@@ -210,22 +208,13 @@ final class LutEffect: VideoEffect {
         filter.cubeData = data
         filter.cubeDimension = dimension
         filter.colorSpace = CGColorSpaceCreateDeviceRGB()
-        let filterMetalPetal = MTIColorLookupFilter()
-        filterMetalPetal.inputColorLookupTable = MTIImage(cgImage: image.cgImage!, isOpaque: true)
         processorPipelineQueue.async {
             self.filter = filter
-            self.filterMetalPetal = filterMetalPetal
         }
     }
 
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
         filter.inputImage = image
         return filter.outputImage ?? image
-    }
-
-    override func executeMetalPetal(_ image: MTIImage?, _: VideoEffectInfo) -> MTIImage? {
-        filterMetalPetal.inputImage = image
-        filterMetalPetal.intensity = 1
-        return filterMetalPetal.outputImage
     }
 }
