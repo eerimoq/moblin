@@ -31,7 +31,7 @@ private struct MapSizeButtonView: View {
 }
 
 @available(iOS 26, *)
-struct SimpleNavigationView: View {
+struct StreamOverlayNavigationView: View {
     @ObservedObject var database: Database
     @State private var cameraPosition: MapCameraPosition = .automatic
     @State private var route: MKRoute?
