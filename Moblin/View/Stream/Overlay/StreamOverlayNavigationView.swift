@@ -12,7 +12,7 @@ private struct MapSizeButtonView: View {
     @State var searchText: String = ""
 
     private func search(text: String) {
-        guard let cameraRegion else {
+        guard let cameraRegion, !text.isEmpty else {
             return
         }
         let searchRequest = MKLocalSearch.Request()
@@ -42,7 +42,7 @@ private struct MapSizeButtonView: View {
                 Spacer()
                 if !isSmall {
                     TextField("What are you looking for?", text: $searchText)
-                        .frame(width: 300, height: 20)
+                        .frame(maxWidth: 300, maxHeight: 20)
                         .padding(12)
                         .glassEffect()
                         .onSubmit {
