@@ -35,18 +35,18 @@ struct SimpleNavigationView: View {
     @ObservedObject var database: Database
     @State private var cameraPosition: MapCameraPosition = .automatic
     @State private var route: MKRoute?
-    @State private var showing = true
+    @State private var isSmall = true
     @State private var destination: MKMapItem?
 
     private func offset() -> Double {
-        if showing {
-            return 0
-        } else {
+        if isSmall {
             if database.bigButtons {
                 return -(2 * segmentHeightBig + 10)
             } else {
                 return -(2 * segmentHeight + 10)
             }
+        } else {
+            return 0
         }
     }
 
@@ -94,8 +94,8 @@ struct SimpleNavigationView: View {
                                         .stroke(.blue, lineWidth: 5)
                                 }
                             }
-                            .frame(maxWidth: showing ? metrics.size.width - 10 : smallMapSide,
-                                   maxHeight: showing ? metrics.size.height - 10 : smallMapSide)
+                            .frame(maxWidth: isSmall ? smallMapSide : metrics.size.width - 10,
+                                   maxHeight: isSmall ? smallMapSide : metrics.size.height - 10)
                             .clipShape(RoundedRectangle(cornerRadius: 7))
                             .padding([.trailing], 3)
                             .onTapGesture {
@@ -120,7 +120,7 @@ struct SimpleNavigationView: View {
                         }
                     }
                 }
-                MapSizeButtonView(showing: $showing)
+                MapSizeButtonView(showing: $isSmall)
             }
             .offset(CGSize(width: 0, height: offset()))
         }
