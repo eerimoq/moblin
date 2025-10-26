@@ -6,7 +6,7 @@ private let smallMapSide = 200.0
 
 @available(iOS 26, *)
 private struct MapSizeButtonView: View {
-    @Binding var showing: Bool
+    @Binding var isSmall: Bool
 
     var body: some View {
         HStack {
@@ -14,10 +14,10 @@ private struct MapSizeButtonView: View {
             VStack {
                 Spacer()
                 Button {
-                    showing.toggle()
+                    isSmall.toggle()
                 } label: {
-                    Image(systemName: showing ? "arrow.down.right.and.arrow.up.left" :
-                        "arrow.up.left.and.arrow.down.right")
+                    Image(systemName: isSmall ? "arrow.up.left.and.arrow.down.right" :
+                        "arrow.down.right.and.arrow.up.left")
                         .foregroundColor(.primary)
                         .frame(width: 12, height: 12)
                         .padding()
@@ -120,7 +120,7 @@ struct SimpleNavigationView: View {
                         }
                     }
                 }
-                MapSizeButtonView(showing: $isSmall)
+                MapSizeButtonView(isSmall: $isSmall)
             }
             .offset(CGSize(width: 0, height: offset()))
         }
