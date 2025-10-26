@@ -326,6 +326,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var showFace = false
     @Published var showLocalOverlays = true
     @Published var showBrowser = false
+    @Published var showNavigation = false
     @Published var webBrowserUrl: String = ""
     @Published var quickButtonSettingsButton: SettingsQuickButton?
     @Published var selectedChatPlatform: ChatPlatformSelection = .all
@@ -2162,6 +2163,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func toggleBrowser() {
         showBrowser.toggle()
+    }
+
+    func toggleNavigation() {
+        showNavigation.toggle()
     }
 
     func toggleLockScreen() {

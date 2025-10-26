@@ -268,6 +268,13 @@ struct QuickButtonsInnerView: View {
         model.toggleBrowser()
     }
 
+    private func navigationAction() {
+        state.button.isOn.toggle()
+        model.setGlobalButtonState(type: .navigation, isOn: state.button.isOn)
+        model.updateQuickButtonStates()
+        model.toggleNavigation()
+    }
+
     private func cameraPreviewAction() {
         state.button.isOn.toggle()
         model.updateQuickButtonStates()
@@ -822,6 +829,14 @@ struct QuickButtonsInnerView: View {
                                  buttonSize: size)
                 {
                     liveAction()
+                }
+            case .navigation:
+                QuickButtonImage(model: model,
+                                 quickButtonsSettings: quickButtonsSettings,
+                                 state: state,
+                                 buttonSize: size)
+                {
+                    navigationAction()
                 }
             }
             if quickButtonsSettings.showName && !orientation.isPortrait {

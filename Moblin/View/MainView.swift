@@ -410,6 +410,11 @@ struct MainView: View {
                 if model.showBrowser {
                     WebBrowserView(orientation: orientation)
                 }
+                if model.showNavigation {
+                    if #available(iOS 26, *) {
+                        SimpleNavigationView(database: model.database)
+                    }
+                }
                 if model.showingRemoteControl {
                     ControlBarRemoteControlAssistantView()
                 }
@@ -475,6 +480,11 @@ struct MainView: View {
                 }
                 if model.showBrowser {
                     WebBrowserView(orientation: orientation)
+                }
+                if model.showNavigation {
+                    if #available(iOS 26, *) {
+                        SimpleNavigationView(database: model.database)
+                    }
                 }
                 if model.showingRemoteControl {
                     ControlBarRemoteControlAssistantView()

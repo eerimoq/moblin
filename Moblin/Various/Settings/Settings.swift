@@ -1634,6 +1634,11 @@ private func addMissingQuickButtonsPageThree(database: Database) {
                                  imageOff: "bookmark",
                                  page: page)
     updateQuickButton(database: database, button: button)
+    button = SettingsQuickButton(name: String(localized: "Navigation"),
+                                 type: .navigation,
+                                 imageOn: "arrow.trianglehead.turn.up.right.circle",
+                                 page: page)
+    updateQuickButton(database: database, button: button)
     button = SettingsQuickButton(name: String(localized: "Reload browser widgets"),
                                  type: .reloadBrowserWidgets,
                                  imageOn: "arrow.clockwise",
