@@ -831,21 +831,12 @@ final class VideoUnit: NSObject {
             presentationTimeStamp: sampleBuffer.presentationTimeStamp,
             videoUnit: self
         )
-        if #available(iOS 17.2, *), colorSpace == .appleLog {
-            return applyEffectsCoreImage(
-                imageBuffer,
-                sampleBuffer,
-                isSceneSwitchTransition,
-                info
-            )
-        } else {
-            return applyEffectsCoreImage(
-                imageBuffer,
-                sampleBuffer,
-                isSceneSwitchTransition,
-                info
-            )
-        }
+        return applyEffectsCoreImage(
+            imageBuffer,
+            sampleBuffer,
+            isSceneSwitchTransition,
+            info
+        )
     }
 
     private func removeEffects() {
