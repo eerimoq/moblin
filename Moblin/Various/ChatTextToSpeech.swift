@@ -199,6 +199,9 @@ class ChatTextToSpeech: NSObject {
         textToSpeechDispatchQueue.async {
             self.running = running
             self.synthesizer.stopSpeaking(at: .word)
+            self.audioPlayer?.stop()
+            self.isSpeaking = false
+            self.currentlyPlayingMessage = nil
             self.latestUserThatSaidSomething = nil
             self.messageQueue.removeAll()
             self.synthesizer = createSpeechSynthesizer()
@@ -230,6 +233,8 @@ class ChatTextToSpeech: NSObject {
         synthesizer.stopSpeaking(at: .word)
         synthesizer = createSpeechSynthesizer()
         synthesizer.delegate = self
+        audioPlayer?.stop()
+        isSpeaking = false
         currentlyPlayingMessage = nil
         trySayNextMessage()
     }
@@ -358,28 +363,39 @@ class ChatTextToSpeech: NSObject {
         } else {
             text = message.message
         }
+        isSpeaking = true
         switch voice {
         case let .apple(voice):
-            let utterance = AVSpeechUtterance(string: text)
-            utterance.rate = rate
-            utterance.pitchMultiplier = 0.8
-            utterance.preUtteranceDelay = pauseBetweenMessages
-            utterance.volume = volume
-            utterance.voice = voice
-            synthesizer.speak(utterance)
+            utterApple(voice: voice, text: text)
         case let .ttsMonster(voiceId):
-            Task {
-                if let data = await ttsMonster?.generateTts(voiceId: voiceId, message: text) {
-                    audioPlayer = try? AVAudioPlayer(data: data)
-                    audioPlayer?.delegate = self
-                    audioPlayer?.play()
-                } else {
-                    sayFinished()
-                }
-            }
+            utterTtsMonster(voiceId: voiceId, text: text)
         }
         latestUserThatSaidSomething = message.user
         sayLatestUserThatSaidSomethingAgain = now.advanced(by: .seconds(30))
+    }
+
+    private func utterApple(voice: AVSpeechSynthesisVoice?, text: String) {
+        let utterance = AVSpeechUtterance(string: text)
+        utterance.rate = rate
+        utterance.pitchMultiplier = 0.8
+        utterance.preUtteranceDelay = pauseBetweenMessages
+        utterance.volume = volume
+        utterance.voice = voice
+        synthesizer.speak(utterance)
+    }
+
+    private func utterTtsMonster(voiceId: String, text: String) {
+        Task {
+            if let data = await ttsMonster?.generateTts(voiceId: voiceId, message: text) {
+                textToSpeechDispatchQueue.async {
+                    self.audioPlayer = try? AVAudioPlayer(data: data)
+                    self.audioPlayer?.delegate = self
+                    self.audioPlayer?.play()
+                }
+            } else {
+                sayFinished()
+            }
+        }
     }
 
     private func shouldSayUser(user: String, now: ContinuousClock.Instant) -> Bool {
