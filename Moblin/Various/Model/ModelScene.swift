@@ -43,7 +43,7 @@ extension Model {
         media.unregisterEffect(whirlpoolEffect)
         media.unregisterEffect(pinchEffect)
         media.unregisterEffect(fixedHorizonEffect)
-        faceEffect = FaceEffect(fps: Float(stream.fps), onFindFaceChanged: handleFindFaceChanged(value:))
+        faceEffect = FaceEffect(fps: Float(stream.fps))
         updateFaceFilterSettings()
         movieEffect = MovieEffect()
         grayScaleEffect = GrayScaleEffect()
@@ -326,9 +326,8 @@ extension Model {
     }
 
     private func isFaceEnabled() -> Bool {
-        let settings = database.debug.beautyFilterSettings
-        return database.debug.beautyFilter || settings.showBlur || settings.showBlurBackground || settings
-            .showMoblin || settings.showBeauty
+        let settings = database.debug.face
+        return settings.showBlur || settings.showBlurBackground || settings.showMoblin
     }
 
     func isFixedHorizonEnabled(scene: SettingsScene) -> Bool {

@@ -22,35 +22,15 @@ let pixelFormatTypes = [
     kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange,
 ]
 
-class SettingsDebugBeautyFilter: Codable, ObservableObject {
+class SettingsDebugFace: Codable, ObservableObject {
     @Published var showBlur = false
     @Published var showBlurBackground: Bool = false
     @Published var showMoblin = false
-    @Published var showCute: Bool = false
-    var cuteRadius: Float = 0.5
-    var cuteScale: Float = 0.0
-    var cuteOffset: Float = 0.5
-    var showBeauty: Bool = false
-    var shapeRadius: Float = 0.5
-    var shapeScale: Float = 0.0
-    var shapeOffset: Float = 0.5
-    var smoothAmount: Float = 0.65
-    var smoothRadius: Float = 20.0
 
     enum CodingKeys: CodingKey {
         case showBlur,
              showBlurBackground,
-             showMoblin,
-             showCute,
-             cuteRadius,
-             cuteScale,
-             cuteOffset,
-             showBeauty,
-             shapeRadius,
-             shapeScale,
-             shapeOffset,
-             smoothAmount,
-             smoothRadius
+             showMoblin
     }
 
     func encode(to encoder: Encoder) throws {
@@ -58,16 +38,6 @@ class SettingsDebugBeautyFilter: Codable, ObservableObject {
         try container.encode(.showBlur, showBlur)
         try container.encode(.showBlurBackground, showBlurBackground)
         try container.encode(.showMoblin, showMoblin)
-        try container.encode(.showCute, showCute)
-        try container.encode(.cuteRadius, cuteRadius)
-        try container.encode(.cuteScale, cuteScale)
-        try container.encode(.cuteOffset, cuteOffset)
-        try container.encode(.showBeauty, showBeauty)
-        try container.encode(.shapeRadius, shapeRadius)
-        try container.encode(.shapeScale, shapeScale)
-        try container.encode(.shapeOffset, shapeOffset)
-        try container.encode(.smoothAmount, smoothAmount)
-        try container.encode(.smoothRadius, smoothRadius)
     }
 
     init() {}
@@ -77,16 +47,6 @@ class SettingsDebugBeautyFilter: Codable, ObservableObject {
         showBlur = container.decode(.showBlur, Bool.self, false)
         showBlurBackground = container.decode(.showBlurBackground, Bool.self, false)
         showMoblin = container.decode(.showMoblin, Bool.self, false)
-        showCute = container.decode(.showCute, Bool.self, false)
-        cuteRadius = container.decode(.cuteRadius, Float.self, 0.5)
-        cuteScale = container.decode(.cuteScale, Float.self, 0.0)
-        cuteOffset = container.decode(.cuteOffset, Float.self, 0.5)
-        showBeauty = container.decode(.showBeauty, Bool.self, false)
-        shapeRadius = container.decode(.shapeRadius, Float.self, 0.5)
-        shapeScale = container.decode(.shapeScale, Float.self, 0.0)
-        shapeOffset = container.decode(.shapeOffset, Float.self, 0.5)
-        smoothAmount = container.decode(.smoothAmount, Float.self, 0.65)
-        smoothRadius = container.decode(.smoothRadius, Float.self, 20.0)
     }
 }
 
@@ -100,8 +60,7 @@ class SettingsDebug: Codable, ObservableObject {
     @Published var bluetoothOutputOnly: Bool = true
     var maximumLogLines: Int = 500
     var pixelFormat: String = pixelFormats[1]
-    @Published var beautyFilter: Bool = false
-    var beautyFilterSettings: SettingsDebugBeautyFilter = .init()
+    var face: SettingsDebugFace = .init()
     @Published var allowVideoRangePixelFormat: Bool = false
     var blurSceneSwitch: Bool = true
     @Published var preferStereoMic: Bool = false
@@ -129,7 +88,6 @@ class SettingsDebug: Codable, ObservableObject {
              bluetoothOutputOnly,
              maximumLogLines,
              pixelFormat,
-             beautyFilter,
              beautyFilterSettings,
              allowVideoRangePixelFormat,
              blurSceneSwitch,
@@ -166,8 +124,7 @@ class SettingsDebug: Codable, ObservableObject {
         try container.encode(.bluetoothOutputOnly, bluetoothOutputOnly)
         try container.encode(.maximumLogLines, maximumLogLines)
         try container.encode(.pixelFormat, pixelFormat)
-        try container.encode(.beautyFilter, beautyFilter)
-        try container.encode(.beautyFilterSettings, beautyFilterSettings)
+        try container.encode(.beautyFilterSettings, face)
         try container.encode(.allowVideoRangePixelFormat, allowVideoRangePixelFormat)
         try container.encode(.blurSceneSwitch, blurSceneSwitch)
         try container.encode(.preferStereoMic, preferStereoMic)
@@ -201,8 +158,7 @@ class SettingsDebug: Codable, ObservableObject {
         bluetoothOutputOnly = container.decode(.bluetoothOutputOnly, Bool.self, true)
         maximumLogLines = container.decode(.maximumLogLines, Int.self, 500)
         pixelFormat = container.decode(.pixelFormat, String.self, pixelFormats[1])
-        beautyFilter = container.decode(.beautyFilter, Bool.self, false)
-        beautyFilterSettings = container.decode(.beautyFilterSettings, SettingsDebugBeautyFilter.self, .init())
+        face = container.decode(.beautyFilterSettings, SettingsDebugFace.self, .init())
         allowVideoRangePixelFormat = container.decode(.allowVideoRangePixelFormat, Bool.self, false)
         blurSceneSwitch = container.decode(.blurSceneSwitch, Bool.self, true)
         preferStereoMic = container.decode(.preferStereoMic, Bool.self, false)

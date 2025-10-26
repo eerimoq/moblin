@@ -345,7 +345,7 @@ struct MainView: View {
     private func face() -> some View {
         FaceView(database: model.database,
                  debug: model.database.debug,
-                 settings: model.database.debug.beautyFilterSettings,
+                 face: model.database.debug.face,
                  show: model.show)
     }
 

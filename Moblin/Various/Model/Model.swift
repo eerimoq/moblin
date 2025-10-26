@@ -153,9 +153,6 @@ class Show: ObservableObject {
     @Published var cameraIso = false
     @Published var cameraExposure = false
     @Published var cameraFocus = false
-    @Published var faceBeauty = false
-    @Published var faceBeautyShape = false
-    @Published var faceBeautySmooth = false
 }
 
 class Battery: ObservableObject {
@@ -1207,19 +1204,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func updateFaceFilterSettings() {
-        let settings = database.debug.beautyFilterSettings
-        faceEffect.safeSettings.mutate { $0 = FaceEffectSettings(
-            showCrop: database.debug.beautyFilter,
+        let settings = database.debug.face
+        faceEffect.setSettings(settings: FaceEffectSettings(
             showBlur: settings.showBlur,
             showBlurBackground: settings.showBlurBackground,
-            showMouth: settings.showMoblin,
-            showBeauty: settings.showBeauty,
-            shapeRadius: settings.shapeRadius,
-            shapeAmount: settings.shapeScale,
-            shapeOffset: settings.shapeOffset,
-            smoothAmount: settings.smoothAmount,
-            smoothRadius: settings.smoothRadius
-        ) }
+            showMouth: settings.showMoblin
+        ))
     }
 
     func updateFaceFilterButtonState() {
@@ -1227,19 +1217,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if showFace, !showDrawOnStream {
             isOn = true
         }
-        if database.debug.beautyFilter {
+        if database.debug.face.showBlur {
             isOn = true
         }
-        if database.debug.beautyFilterSettings.showBeauty {
+        if database.debug.face.showBlurBackground {
             isOn = true
         }
-        if database.debug.beautyFilterSettings.showBlur {
-            isOn = true
-        }
-        if database.debug.beautyFilterSettings.showBlurBackground {
-            isOn = true
-        }
-        if database.debug.beautyFilterSettings.showMoblin {
+        if database.debug.face.showMoblin {
             isOn = true
         }
         setGlobalButtonState(type: .face, isOn: isOn)
@@ -1682,17 +1666,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if newValue != statusTopLeft.numberOfViewers {
             statusTopLeft.numberOfViewers = newValue
             sendViewerCountWatch()
-        }
-    }
-
-    func handleFindFaceChanged(value: Bool) {
-        DispatchQueue.main.async {
-            self.findFace = value
-            self.findFaceTimer?.invalidate()
-            self.findFaceTimer = Timer
-                .scheduledTimer(withTimeInterval: 5, repeats: false) { _ in
-                    self.findFace = false
-                }
         }
     }
 
