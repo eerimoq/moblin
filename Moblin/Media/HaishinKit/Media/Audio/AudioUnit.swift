@@ -78,7 +78,6 @@ final class AudioUnit: NSObject {
 
     func stopEncoding() {
         encoder.stopRunning()
-        encoder.delegate = nil
         processorPipelineQueue.async {
             self.inputSourceFormat = nil
         }

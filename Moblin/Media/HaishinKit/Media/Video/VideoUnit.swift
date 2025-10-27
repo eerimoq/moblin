@@ -371,8 +371,6 @@ final class VideoUnit: NSObject {
 
     func stopEncoding() {
         encoder.stopRunning()
-        encoder.controlDelegate = nil
-        encoder.delegate = nil
         processor?.delegate?.streamVideoEncoderResolution(resolution: canvasSize)
     }
 
