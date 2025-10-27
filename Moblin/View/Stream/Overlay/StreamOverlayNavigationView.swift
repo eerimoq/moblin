@@ -84,9 +84,8 @@ struct StreamOverlayNavigationView: View {
         let placeDescriptor = PlaceDescriptor(representations: [.coordinate(coordinate)], commonName: nil)
         let request = MKMapItemRequest(placeDescriptor: placeDescriptor)
         Task {
-            let item = try? await request.mapItem
-            navigation.longPressLocation = item
-            navigation.destination = item
+            navigation.longPressLocation = try? await request.mapItem
+            navigation.destination = nil
         }
     }
 
@@ -128,6 +127,7 @@ struct StreamOverlayNavigationView: View {
                                 UserAnnotation()
                                 if let longPressLocation = navigation.longPressLocation {
                                     Marker(item: longPressLocation)
+                                        .tag(longPressLocation)
                                 }
                                 ForEach(navigation.searchResults, id: \.self) { searchResult in
                                     Marker(item: searchResult)
