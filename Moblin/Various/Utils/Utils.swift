@@ -142,6 +142,10 @@ func formatCommercialStartedDuration(seconds: Int) -> String {
 }
 
 extension CGSize {
+    func minimum() -> CGFloat {
+        return min(height, width)
+    }
+
     func maximum() -> CGFloat {
         return max(height, width)
     }

@@ -632,6 +632,16 @@ extension Model {
         makeErrorToastMain(title: message, subTitle: videoCaptureError())
     }
 
+    private func handleEncoderResolutionChanged(resolution: CGSize) {
+        let dimension = Int(resolution.minimum())
+        if dimension == 2160 {
+            currentResolutionString = "4K"
+        } else {
+            currentResolutionString = "\(dimension)p"
+        }
+        updateStatusStreamText()
+    }
+
     private func handleBufferedVideoReady(cameraId: UUID) {
         activeBufferedVideoIds.insert(cameraId)
         var isNetwork = false
@@ -879,6 +889,12 @@ extension Model: MediaDelegate {
     func mediaOnBufferedVideoRemoved(cameraId: UUID) {
         DispatchQueue.main.async {
             self.handleBufferedVideoRemoved(cameraId: cameraId)
+        }
+    }
+
+    func mediaOnEncoderResolutionChanged(resolution: CGSize) {
+        DispatchQueue.main.async {
+            self.handleEncoderResolutionChanged(resolution: resolution)
         }
     }
 

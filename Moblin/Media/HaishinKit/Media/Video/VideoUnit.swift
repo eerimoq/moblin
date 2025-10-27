@@ -365,12 +365,15 @@ final class VideoUnit: NSObject {
 
     func startEncoding(_ delegate: any VideoEncoderDelegate) {
         encoder.delegate = delegate
+        encoder.controlDelegate = self
         encoder.startRunning()
     }
 
     func stopEncoding() {
         encoder.stopRunning()
+        encoder.controlDelegate = nil
         encoder.delegate = nil
+        processor?.delegate?.streamVideoEncoderResolution(resolution: canvasSize)
     }
 
     func setSize(capture: CGSize, canvas: CGSize) {
@@ -1846,4 +1849,10 @@ extension VideoUnit: AVCaptureSessionControlsDelegate {
     func sessionControlsWillExitFullscreenAppearance(_: AVCaptureSession) {}
 
     func sessionControlsDidBecomeInactive(_: AVCaptureSession) {}
+}
+
+extension VideoUnit: VideoEncoderControlDelegate {
+    func videoEncoderControlResolutionChanged(_: VideoEncoder, resolution: CGSize) {
+        processor?.delegate?.streamVideoEncoderResolution(resolution: resolution)
+    }
 }

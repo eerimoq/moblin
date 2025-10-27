@@ -385,6 +385,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     let bitrate = Bitrate()
     let bonding = Bonding()
     var currentFps: Int?
+    var currentResolutionString: String?
     var autoFps = false
     var showBackgroudStreamingDisabledToast = false
     private var manualFocusMotionAttitude: CMAttitude?
@@ -2777,7 +2778,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func statusStreamText() -> String {
         let proto = stream.protocolString()
-        let resolution = stream.resolutionString()
+        let resolution = currentResolutionString ?? stream.resolutionString()
         let codec = stream.codecString()
         let bitrate = stream.bitrateString()
         let audioCodec = stream.audioCodecString()

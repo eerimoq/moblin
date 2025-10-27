@@ -12,6 +12,7 @@ protocol ProcessorDelegate: AnyObject {
     func streamVideoBufferedVideoReady(cameraId: UUID)
     func streamVideoBufferedVideoRemoved(cameraId: UUID)
     func streamVideoFps(fps: Int)
+    func streamVideoEncoderResolution(resolution: CGSize)
     func streamRecorderInitSegment(data: Data)
     func streamRecorderDataSegment(segment: RecorderDataSegment)
     func streamRecorderFinished()

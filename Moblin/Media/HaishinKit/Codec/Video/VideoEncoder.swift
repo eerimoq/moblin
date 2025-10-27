@@ -10,6 +10,10 @@ protocol VideoEncoderDelegate: AnyObject {
                                         _ decodeTimeStampOffset: CMTime)
 }
 
+protocol VideoEncoderControlDelegate: AnyObject {
+    func videoEncoderControlResolutionChanged(_ encoder: VideoEncoder, resolution: CGSize)
+}
+
 class VideoEncoder {
     var settings: Atomic<VideoEncoderSettings> = .init(.init()) {
         didSet {
@@ -27,6 +31,7 @@ class VideoEncoder {
     private var formatDescription: CMFormatDescription?
 
     weak var delegate: (any VideoEncoderDelegate)?
+    weak var controlDelegate: (any VideoEncoderControlDelegate)?
     private var session: VTCompressionSession? {
         didSet {
             oldValue?.invalidate()
@@ -72,6 +77,9 @@ class VideoEncoder {
         if newBitrateVideoSize != oldBitrateVideoSize {
             session = makeSession(settings: settings, videoSize: newBitrateVideoSize)
             oldBitrateVideoSize = newBitrateVideoSize
+            let resolution = CGSize(width: Double(newBitrateVideoSize.width),
+                                    height: Double(newBitrateVideoSize.height))
+            controlDelegate?.videoEncoderControlResolutionChanged(self, resolution: resolution)
         }
         if invalidateSession {
             session = makeSession(settings: settings)
