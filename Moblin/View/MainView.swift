@@ -412,7 +412,9 @@ struct MainView: View {
                 }
                 if model.showNavigation {
                     if #available(iOS 26, *) {
-                        StreamOverlayNavigationView(database: model.database)
+                        StreamOverlayNavigationView(model: model,
+                                                    database: model.database,
+                                                    navigation: model.navigation())
                     }
                 }
                 if model.showingRemoteControl {
@@ -483,7 +485,9 @@ struct MainView: View {
                 }
                 if model.showNavigation {
                     if #available(iOS 26, *) {
-                        StreamOverlayNavigationView(database: model.database)
+                        StreamOverlayNavigationView(model: model,
+                                                    database: model.database,
+                                                    navigation: model.navigation())
                     }
                 }
                 if model.showingRemoteControl {

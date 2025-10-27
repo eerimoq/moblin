@@ -5,14 +5,11 @@ import SwiftUI
 private let smallMapSide = 200.0
 
 @available(iOS 26, *)
-private struct MapSizeButtonView: View {
-    @Binding var isSmall: Bool
-    @Binding var cameraRegion: MKCoordinateRegion?
-    @Binding var searchResults: [MKMapItem]
-    @State var searchText: String = ""
+private struct ControlsView: View {
+    @ObservedObject var navigation: Navigation
 
     private func search(text: String) {
-        guard let cameraRegion, !text.isEmpty else {
+        guard let cameraRegion = navigation.cameraRegion, !text.isEmpty else {
             return
         }
         let searchRequest = MKLocalSearch.Request()
@@ -23,12 +20,12 @@ private struct MapSizeButtonView: View {
             guard let response else {
                 return
             }
-            searchResults = response.mapItems
+            navigation.searchResults = response.mapItems
         }
     }
 
     private func minMaxButtonIcon() -> String {
-        if isSmall {
+        if navigation.isSmall {
             return "arrow.up.left.and.arrow.down.right"
         } else {
             return "arrow.down.right.and.arrow.up.left"
@@ -40,22 +37,17 @@ private struct MapSizeButtonView: View {
             Spacer()
             HStack {
                 Spacer()
-                if !isSmall {
-                    TextField("What are you looking for?", text: $searchText)
+                if !navigation.isSmall {
+                    TextField("What are you looking for?", text: $navigation.searchText)
                         .frame(maxWidth: 300, maxHeight: 20)
                         .padding(12)
                         .glassEffect()
                         .onSubmit {
-                            search(text: searchText)
-                        }
-                        .onChange(of: searchText) { _ in
-                            if searchText.isEmpty {
-                                searchResults.removeAll()
-                            }
+                            search(text: navigation.searchText)
                         }
                 }
                 Button {
-                    isSmall.toggle()
+                    navigation.isSmall.toggle()
                 } label: {
                     Image(systemName: minMaxButtonIcon())
                         .foregroundColor(.primary)
@@ -72,17 +64,12 @@ private struct MapSizeButtonView: View {
 
 @available(iOS 26, *)
 struct StreamOverlayNavigationView: View {
+    let model: Model
     @ObservedObject var database: Database
-    @State private var cameraPosition: MapCameraPosition = .automatic
-    @State private var cameraRegion: MKCoordinateRegion?
-    @State private var route: MKRoute?
-    @State private var isSmall = true
-    @State private var destination: MKMapItem?
-    @State private var longPressLocation: MKMapItem?
-    @State private var searchResults: [MKMapItem] = []
+    @ObservedObject var navigation: Navigation
 
     private func offset() -> Double {
-        if isSmall {
+        if navigation.isSmall {
             if database.bigButtons {
                 return -(2 * segmentHeightBig + 10)
             } else {
@@ -97,13 +84,14 @@ struct StreamOverlayNavigationView: View {
         let placeDescriptor = PlaceDescriptor(representations: [.coordinate(coordinate)], commonName: nil)
         let request = MKMapItemRequest(placeDescriptor: placeDescriptor)
         Task {
-            longPressLocation = try? await request.mapItem
-            destination = longPressLocation
+            let item = try? await request.mapItem
+            navigation.longPressLocation = item
+            navigation.destination = item
         }
     }
 
     private func destinationChanged() {
-        if let destination {
+        if let destination = navigation.destination {
             let request = MKDirections.Request()
             request.source = .forCurrentLocation()
             request.destination = destination
@@ -113,10 +101,18 @@ struct StreamOverlayNavigationView: View {
                 guard let response else {
                     return
                 }
-                route = response.routes.first
+                navigation.route = response.routes.first
             }
         } else {
-            route = nil
+            navigation.route = nil
+        }
+    }
+
+    private func mapSide(bigSide: Double) -> Double {
+        if navigation.isSmall {
+            return smallMapSide
+        } else {
+            return bigSide - 10
         }
     }
 
@@ -128,24 +124,24 @@ struct StreamOverlayNavigationView: View {
                     VStack {
                         Spacer(minLength: 0)
                         MapReader { proxy in
-                            Map(position: $cameraPosition, selection: $destination) {
+                            Map(position: $navigation.cameraPosition, selection: $navigation.destination) {
                                 UserAnnotation()
-                                if let longPressLocation {
+                                if let longPressLocation = navigation.longPressLocation {
                                     Marker(item: longPressLocation)
                                 }
-                                ForEach(searchResults, id: \.self) { searchResult in
+                                ForEach(navigation.searchResults, id: \.self) { searchResult in
                                     Marker(item: searchResult)
                                 }
-                                if let route {
+                                if let route = navigation.route {
                                     MapPolyline(route)
                                         .stroke(.blue, lineWidth: 5)
                                 }
                             }
                             .onMapCameraChange { context in
-                                cameraRegion = context.region
+                                navigation.cameraRegion = context.region
                             }
-                            .frame(maxWidth: isSmall ? smallMapSide : metrics.size.width - 10,
-                                   maxHeight: isSmall ? smallMapSide : metrics.size.height - 10)
+                            .frame(maxWidth: mapSide(bigSide: metrics.size.width),
+                                   maxHeight: mapSide(bigSide: metrics.size.height))
                             .clipShape(RoundedRectangle(cornerRadius: 7))
                             .padding([.trailing], 3)
                             .gesture(
@@ -167,14 +163,23 @@ struct StreamOverlayNavigationView: View {
                         }
                     }
                 }
-                MapSizeButtonView(isSmall: $isSmall,
-                                  cameraRegion: $cameraRegion,
-                                  searchResults: $searchResults)
+                ControlsView(navigation: navigation)
             }
             .offset(CGSize(width: 0, height: offset()))
         }
-        .onChange(of: destination) { _ in
+        .onChange(of: navigation.destination) { _ in
             destinationChanged()
+        }
+        .onAppear {
+            if let cameraRegion = navigation.cameraRegion {
+                navigation.cameraPosition = .region(cameraRegion)
+            } else {
+                if let (latitude, longitude) = model.getLatestKnownLocation() {
+                    let center = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+                    let span = MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
+                    navigation.cameraPosition = .region(.init(center: center, span: span))
+                }
+            }
         }
     }
 }
