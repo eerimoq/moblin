@@ -337,6 +337,8 @@ struct RemoteControlRemoteSceneData: Codable {
 struct RemoteControlRemoteSceneDataTextStats: Codable {
     var bitrate: String
     var bitrateAndTotal: String
+    var resolution: String?
+    var fps: Int?
     var date: Date
     var debugOverlayLines: [String]
     var speed: String
@@ -367,6 +369,8 @@ struct RemoteControlRemoteSceneDataTextStats: Codable {
     init(stats: TextEffectStats) {
         bitrate = stats.bitrate
         bitrateAndTotal = stats.bitrateAndTotal
+        resolution = stats.resolution
+        fps = stats.fps
         date = stats.date
         debugOverlayLines = stats.debugOverlayLines
         speed = stats.speed
@@ -398,6 +402,8 @@ struct RemoteControlRemoteSceneDataTextStats: Codable {
         return TextEffectStats(timestamp: .now,
                                bitrate: bitrate,
                                bitrateAndTotal: bitrateAndTotal,
+                               resolution: resolution,
+                               fps: fps,
                                date: date,
                                debugOverlayLines: debugOverlayLines,
                                speed: speed,

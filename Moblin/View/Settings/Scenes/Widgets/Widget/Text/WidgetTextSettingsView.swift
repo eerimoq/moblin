@@ -469,6 +469,16 @@ private struct DebugFormatSpecifierView: View {
                     text: $value
                 )
                 FormatView(
+                    title: "{resolution}",
+                    description: String(localized: "Show resolution"),
+                    text: $value
+                )
+                FormatView(
+                    title: "{fps}",
+                    description: String(localized: "Show FPS"),
+                    text: $value
+                )
+                FormatView(
                     title: "{debugOverlay}",
                     description: String(localized: "Show debug overlay (if enabled)"),
                     text: $value

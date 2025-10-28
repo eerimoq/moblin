@@ -171,6 +171,7 @@ final class VideoUnit: NSObject {
     private var startPresentationTimeStamp: CMTime = .zero
     private var isLandscapeStreamAndPortraitUi = false
     private var framesCounter = 0
+    private var latestReportedFps = -1
     private var nextFpsReportTime: Double = 0.0
 
     var videoOrientation: AVCaptureVideoOrientation = .portrait {
@@ -383,6 +384,7 @@ final class VideoUnit: NSObject {
             self.pool = nil
             self.bufferedPool = nil
         }
+        processor?.delegate?.streamVideoEncoderResolution(resolution: canvasSize)
     }
 
     func getCiImage(_ videoSourceId: UUID, _ presentationTimeStamp: CMTime) -> CIImage? {
@@ -1186,7 +1188,10 @@ final class VideoUnit: NSObject {
     }
 
     private func reportAndResetFps(fps: Int, _ presentationTimeStamp: Double) {
-        processor?.delegate?.streamVideoFps(fps: fps)
+        if fps != latestReportedFps {
+            processor?.delegate?.streamVideoFps(fps: fps)
+            latestReportedFps = fps
+        }
         framesCounter = 0
         nextFpsReportTime = presentationTimeStamp + 2
     }

@@ -1088,6 +1088,8 @@ extension Model {
                 timestamp: timestamp,
                 bitrate: bitrate.speedMbpsOneDecimal,
                 bitrateAndTotal: bitrate.speedAndTotal,
+                resolution: currentResolution,
+                fps: currentFps,
                 date: now,
                 debugOverlayLines: debugOverlay.debugLines,
                 speed: format(speed: location?.speed ?? 0),

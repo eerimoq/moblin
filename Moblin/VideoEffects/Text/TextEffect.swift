@@ -23,6 +23,8 @@ struct TextEffectStats {
     let timestamp: ContinuousClock.Instant
     let bitrate: String
     let bitrateAndTotal: String
+    let resolution: String?
+    let fps: Int?
     let date: Date
     let debugOverlayLines: [String]
     let speed: String
@@ -115,6 +117,10 @@ private class Formatter {
                 formatBitrate(stats: stats)
             case .bitrateAndTotal:
                 formatBitrateAndTotal(stats: stats)
+            case .resolution:
+                formatResolution(stats: stats)
+            case .fps:
+                formatFps(stats: stats)
             case .debugOverlay:
                 formatDebugOverlay(stats: stats)
             case .speed:
@@ -235,6 +241,18 @@ private class Formatter {
 
     private func formatBitrateAndTotal(stats: TextEffectStats) {
         parts.append(.init(id: partId, data: .text(stats.bitrateAndTotal)))
+    }
+
+    private func formatResolution(stats: TextEffectStats) {
+        parts.append(.init(id: partId, data: .text(stats.resolution ?? "")))
+    }
+
+    private func formatFps(stats: TextEffectStats) {
+        if let fps = stats.fps {
+            parts.append(.init(id: partId, data: .text(String(fps))))
+        } else {
+            parts.append(.init(id: partId, data: .text("")))
+        }
     }
 
     private func formatDebugOverlay(stats: TextEffectStats) {

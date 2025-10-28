@@ -635,9 +635,9 @@ extension Model {
     private func handleEncoderResolutionChanged(resolution: CGSize) {
         let dimension = Int(resolution.minimum())
         if dimension == 2160 {
-            currentResolutionString = "4K"
+            currentResolution = "4K"
         } else {
-            currentResolutionString = "\(dimension)p"
+            currentResolution = "\(dimension)p"
         }
         updateStatusStreamText()
     }
