@@ -63,6 +63,24 @@ private struct ControlsView: View {
 }
 
 @available(iOS 26, *)
+private struct MarkerLabel: View {
+    @ObservedObject var navigation: Navigation
+    let item: MKMapItem
+
+    var body: some View {
+        if let name = item.name {
+            if let expectedTravelTime = navigation.route?.expectedTravelTime,
+               item == navigation.destination
+            {
+                Text("\(name) (\(Duration.seconds(expectedTravelTime).format()))")
+            } else {
+                Text(name)
+            }
+        }
+    }
+}
+
+@available(iOS 26, *)
 struct StreamOverlayNavigationView: View {
     let model: Model
     @ObservedObject var database: Database
@@ -90,20 +108,20 @@ struct StreamOverlayNavigationView: View {
     }
 
     private func destinationChanged() {
-        if let destination = navigation.destination {
-            let request = MKDirections.Request()
-            request.source = .forCurrentLocation()
-            request.destination = destination
-            request.transportType = .walking
-            let directions = MKDirections(request: request)
-            directions.calculate { response, _ in
-                guard let response else {
-                    return
-                }
-                navigation.route = response.routes.first
+        guard let destination = navigation.destination else {
+            return
+        }
+        navigation.route = nil
+        let request = MKDirections.Request()
+        request.source = .forCurrentLocation()
+        request.destination = destination
+        request.transportType = .walking
+        let directions = MKDirections(request: request)
+        directions.calculate { response, _ in
+            guard let response else {
+                return
             }
-        } else {
-            navigation.route = nil
+            navigation.route = response.routes.first
         }
     }
 
@@ -126,11 +144,15 @@ struct StreamOverlayNavigationView: View {
                             Map(position: $navigation.cameraPosition, selection: $navigation.destination) {
                                 UserAnnotation()
                                 if let longPressLocation = navigation.longPressLocation {
-                                    Marker(item: longPressLocation)
-                                        .tag(longPressLocation)
+                                    Marker(coordinate: longPressLocation.location.coordinate) {
+                                        MarkerLabel(navigation: navigation, item: longPressLocation)
+                                    }
+                                    .tag(longPressLocation)
                                 }
                                 ForEach(navigation.searchResults, id: \.self) { searchResult in
-                                    Marker(item: searchResult)
+                                    Marker(coordinate: searchResult.location.coordinate) {
+                                        MarkerLabel(navigation: navigation, item: searchResult)
+                                    }
                                 }
                                 if let route = navigation.route {
                                     MapPolyline(route)
