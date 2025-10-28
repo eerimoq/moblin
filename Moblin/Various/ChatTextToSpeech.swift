@@ -338,22 +338,13 @@ class ChatTextToSpeech: NSObject {
     }
 
     private func trySayNextMessage() {
-        guard !paused else {
+        guard !paused, !isSpeaking else {
             return
         }
-        guard !isSpeaking else {
-            return
-        }
-        guard let message = messageQueue.popFirst() else {
+        guard let (message, voice, says) = findNextMessageToSay() else {
             return
         }
         currentlyPlayingMessage = message
-        guard let (voice, says) = getVoice(message: message.message) else {
-            return
-        }
-        guard let voice else {
-            return
-        }
         let text: String
         let now = ContinuousClock.now
         if message.isRedemption {
@@ -372,6 +363,19 @@ class ChatTextToSpeech: NSObject {
         }
         latestUserThatSaidSomething = message.user
         sayLatestUserThatSaidSomethingAgain = now.advanced(by: .seconds(30))
+    }
+
+    private func findNextMessageToSay() -> (TextToSpeechMessage, Voice, String)? {
+        while let message = messageQueue.popFirst() {
+            guard let (voice, says) = getVoice(message: message.message) else {
+                continue
+            }
+            guard let voice else {
+                continue
+            }
+            return (message, voice, says)
+        }
+        return nil
     }
 
     private func utterApple(voice: AVSpeechSynthesisVoice?, text: String) {
