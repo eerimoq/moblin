@@ -86,7 +86,14 @@
       }
     },
     "Bad port" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schlechter Port"
+          }
+        }
+      }
     },
     "Host missing" : {
       "localizations" : {
@@ -677,7 +684,14 @@
       }
     },
     "Too big" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zu groß"
+          }
+        }
+      }
     },
     "Too small" : {
       "localizations" : {
