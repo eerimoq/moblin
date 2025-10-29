@@ -71,6 +71,11 @@ private struct ControlsView: View {
                         .onSubmit {
                             search(text: navigation.searchText)
                         }
+                        .onChange(of: navigation.searchText) { _ in
+                            if navigation.searchText.isEmpty {
+                                navigation.searchResults.removeAll()
+                            }
+                        }
                 }
                 Button {
                     if navigation.followUser, navigation.followHeading {
