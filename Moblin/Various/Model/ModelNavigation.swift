@@ -12,6 +12,9 @@ class Navigation: ObservableObject {
     @Published var longPressLocation: MKMapItem?
     @Published var searchText: String = ""
     @Published var searchResults: [MKMapItem] = []
+    @Published var followUser: Bool = false
+    @Published var followHeading: Bool = false
+    let timer = SimpleTimer(queue: .main)
 }
 
 extension Model {

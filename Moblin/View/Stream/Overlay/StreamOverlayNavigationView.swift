@@ -4,6 +4,32 @@ import SwiftUI
 
 private let smallMapSide = 200.0
 
+private struct ImageLocationView: View {
+    let slash: Bool
+
+    var body: some View {
+        Image(systemName: slash ? "location.slash" : "location")
+            .offset(CGSize(width: -8, height: 0))
+    }
+}
+
+private struct ImageConeView: View {
+    let slash: Bool
+
+    var body: some View {
+        ZStack {
+            Image(systemName: "cone")
+                .scaleEffect(0.9)
+                .rotationEffect(.degrees(180))
+            if slash {
+                Image(systemName: "line.diagonal")
+                    .rotationEffect(.degrees(90))
+            }
+        }
+        .offset(CGSize(width: 8, height: 0))
+    }
+}
+
 @available(iOS 26, *)
 private struct ControlsView: View {
     @ObservedObject var navigation: Navigation
@@ -47,6 +73,33 @@ private struct ControlsView: View {
                         }
                 }
                 Button {
+                    if navigation.followUser, navigation.followHeading {
+                        navigation.followUser = false
+                        navigation.followHeading = false
+                    } else if !navigation.followUser, !navigation.followHeading {
+                        navigation.followUser = true
+                    } else if navigation.followUser, !navigation.followHeading {
+                        navigation.followHeading = true
+                    }
+                } label: {
+                    ZStack {
+                        if navigation.followUser, navigation.followHeading {
+                            ImageLocationView(slash: false)
+                            ImageConeView(slash: false)
+                        } else if !navigation.followUser, !navigation.followHeading {
+                            ImageLocationView(slash: true)
+                            ImageConeView(slash: true)
+                        } else if navigation.followUser, !navigation.followHeading {
+                            ImageLocationView(slash: false)
+                            ImageConeView(slash: true)
+                        }
+                    }
+                    .foregroundColor(.primary)
+                    .frame(width: 12, height: 12)
+                    .padding()
+                    .glassEffect()
+                }
+                Button {
                     navigation.isSmall.toggle()
                 } label: {
                     Image(systemName: minMaxButtonIcon())
@@ -54,10 +107,10 @@ private struct ControlsView: View {
                         .frame(width: 12, height: 12)
                         .padding()
                         .glassEffect()
-                        .padding(2)
+                        .padding([.trailing], 10)
                 }
-                .padding(7)
             }
+            .padding([.bottom], 7)
         }
     }
 }
@@ -121,9 +174,21 @@ private struct MapView: View {
         }
     }
 
+    private func setCameraPosition(region: MKCoordinateRegion) {
+        if navigation.followUser {
+            navigation.cameraPosition = .userLocation(followsHeading: navigation.followHeading,
+                                                      fallback: .region(region))
+        } else {
+            navigation.cameraPosition = .region(region)
+        }
+    }
+
     var body: some View {
         MapReader { proxy in
-            Map(position: $navigation.cameraPosition, selection: $navigation.destination) {
+            Map(position: $navigation.cameraPosition,
+                interactionModes: [.pan, .rotate, .zoom],
+                selection: $navigation.destination)
+            {
                 UserAnnotation()
                 if let longPressLocation = navigation.longPressLocation {
                     Marker(coordinate: longPressLocation.location.coordinate) {
@@ -143,6 +208,9 @@ private struct MapView: View {
             }
             .onMapCameraChange { context in
                 navigation.cameraRegion = context.region
+                navigation.timer.startSingleShot(timeout: 7) {
+                    setCameraPosition(region: context.region)
+                }
             }
             .frame(maxWidth: mapSide(bigSide: metrics.size.width),
                    maxHeight: mapSide(bigSide: metrics.size.height))
@@ -168,14 +236,24 @@ private struct MapView: View {
         .onChange(of: navigation.destination) { _ in
             destinationChanged()
         }
+        .onChange(of: navigation.followUser) { _ in
+            if let cameraRegion = navigation.cameraRegion {
+                setCameraPosition(region: cameraRegion)
+            }
+        }
+        .onChange(of: navigation.followHeading) { _ in
+            if let cameraRegion = navigation.cameraRegion {
+                setCameraPosition(region: cameraRegion)
+            }
+        }
         .onAppear {
             if let cameraRegion = navigation.cameraRegion {
-                navigation.cameraPosition = .region(cameraRegion)
+                setCameraPosition(region: cameraRegion)
             } else {
                 if let (latitude, longitude) = model.getLatestKnownLocation() {
                     let center = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
                     let span = MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
-                    navigation.cameraPosition = .region(.init(center: center, span: span))
+                    setCameraPosition(region: .init(center: center, span: span))
                 }
             }
         }
