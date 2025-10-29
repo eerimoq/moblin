@@ -81,22 +81,10 @@ private struct MarkerLabel: View {
 }
 
 @available(iOS 26, *)
-struct StreamOverlayNavigationView: View {
+private struct MapView: View {
     let model: Model
-    @ObservedObject var database: Database
     @ObservedObject var navigation: Navigation
-
-    private func offset() -> Double {
-        if navigation.isSmall {
-            if database.bigButtons {
-                return -(2 * segmentHeightBig + 10)
-            } else {
-                return -(2 * segmentHeight + 10)
-            }
-        } else {
-            return 0
-        }
-    }
+    let metrics: GeometryProxy
 
     private func serLongPressLocation(coordinate: CLLocationCoordinate2D) {
         let placeDescriptor = PlaceDescriptor(representations: [.coordinate(coordinate)], commonName: nil)
@@ -134,60 +122,48 @@ struct StreamOverlayNavigationView: View {
     }
 
     var body: some View {
-        GeometryReader { metrics in
-            ZStack {
-                HStack {
-                    Spacer(minLength: 0)
-                    VStack {
-                        Spacer(minLength: 0)
-                        MapReader { proxy in
-                            Map(position: $navigation.cameraPosition, selection: $navigation.destination) {
-                                UserAnnotation()
-                                if let longPressLocation = navigation.longPressLocation {
-                                    Marker(coordinate: longPressLocation.location.coordinate) {
-                                        MarkerLabel(navigation: navigation, item: longPressLocation)
-                                    }
-                                    .tag(longPressLocation)
-                                }
-                                ForEach(navigation.searchResults, id: \.self) { searchResult in
-                                    Marker(coordinate: searchResult.location.coordinate) {
-                                        MarkerLabel(navigation: navigation, item: searchResult)
-                                    }
-                                }
-                                if let route = navigation.route {
-                                    MapPolyline(route)
-                                        .stroke(.blue, lineWidth: 5)
-                                }
-                            }
-                            .onMapCameraChange { context in
-                                navigation.cameraRegion = context.region
-                            }
-                            .frame(maxWidth: mapSide(bigSide: metrics.size.width),
-                                   maxHeight: mapSide(bigSide: metrics.size.height))
-                            .clipShape(RoundedRectangle(cornerRadius: 7))
-                            .padding([.trailing], 3)
-                            .gesture(
-                                LongPressGesture(minimumDuration: 0.5)
-                                    .sequenced(before: DragGesture(minimumDistance: 0))
-                                    .onEnded { value in
-                                        guard case .second(true, let drag) = value else {
-                                            return
-                                        }
-                                        guard let location = drag?.location else {
-                                            return
-                                        }
-                                        guard let coordinate = proxy.convert(location, from: .local) else {
-                                            return
-                                        }
-                                        serLongPressLocation(coordinate: coordinate)
-                                    }
-                            )
-                        }
+        MapReader { proxy in
+            Map(position: $navigation.cameraPosition, selection: $navigation.destination) {
+                UserAnnotation()
+                if let longPressLocation = navigation.longPressLocation {
+                    Marker(coordinate: longPressLocation.location.coordinate) {
+                        MarkerLabel(navigation: navigation, item: longPressLocation)
+                    }
+                    .tag(longPressLocation)
+                }
+                ForEach(navigation.searchResults, id: \.self) { searchResult in
+                    Marker(coordinate: searchResult.location.coordinate) {
+                        MarkerLabel(navigation: navigation, item: searchResult)
                     }
                 }
-                ControlsView(navigation: navigation)
+                if let route = navigation.route {
+                    MapPolyline(route)
+                        .stroke(.blue, lineWidth: 5)
+                }
             }
-            .offset(CGSize(width: 0, height: offset()))
+            .onMapCameraChange { context in
+                navigation.cameraRegion = context.region
+            }
+            .frame(maxWidth: mapSide(bigSide: metrics.size.width),
+                   maxHeight: mapSide(bigSide: metrics.size.height))
+            .clipShape(RoundedRectangle(cornerRadius: 7))
+            .padding([.trailing], 3)
+            .gesture(
+                LongPressGesture(minimumDuration: 0.5)
+                    .sequenced(before: DragGesture(minimumDistance: 0))
+                    .onEnded { value in
+                        guard case .second(true, let drag) = value else {
+                            return
+                        }
+                        guard let location = drag?.location else {
+                            return
+                        }
+                        guard let coordinate = proxy.convert(location, from: .local) else {
+                            return
+                        }
+                        serLongPressLocation(coordinate: coordinate)
+                    }
+            )
         }
         .onChange(of: navigation.destination) { _ in
             destinationChanged()
@@ -202,6 +178,41 @@ struct StreamOverlayNavigationView: View {
                     navigation.cameraPosition = .region(.init(center: center, span: span))
                 }
             }
+        }
+    }
+}
+
+@available(iOS 26, *)
+struct StreamOverlayNavigationView: View {
+    let model: Model
+    @ObservedObject var database: Database
+    @ObservedObject var navigation: Navigation
+
+    private func offset() -> Double {
+        if navigation.isSmall {
+            if database.bigButtons {
+                return -(2 * segmentHeightBig + 10)
+            } else {
+                return -(2 * segmentHeight + 10)
+            }
+        } else {
+            return 0
+        }
+    }
+
+    var body: some View {
+        GeometryReader { metrics in
+            ZStack {
+                HStack {
+                    Spacer(minLength: 0)
+                    VStack {
+                        Spacer(minLength: 0)
+                        MapView(model: model, navigation: navigation, metrics: metrics)
+                    }
+                }
+                ControlsView(navigation: navigation)
+            }
+            .offset(CGSize(width: 0, height: offset()))
         }
     }
 }
