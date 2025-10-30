@@ -3,6 +3,7 @@ import MapKit
 import SwiftUI
 
 private let smallMapSide = 200.0
+private let maximumBigMapSide = 600.0
 
 private struct ImageLocationView: View {
     let slash: Bool
@@ -171,12 +172,8 @@ private struct MapView: View {
         }
     }
 
-    private func mapSide(bigSide: Double) -> Double {
-        if navigation.isSmall {
-            return smallMapSide
-        } else {
-            return bigSide - 10
-        }
+    private func mapSide(maximum: Double) -> Double {
+        return min(maximum - 10, navigation.isSmall ? smallMapSide : maximumBigMapSide)
     }
 
     private func setCameraPosition(region: MKCoordinateRegion) {
@@ -217,8 +214,8 @@ private struct MapView: View {
                     setCameraPosition(region: context.region)
                 }
             }
-            .frame(maxWidth: mapSide(bigSide: metrics.size.width),
-                   maxHeight: mapSide(bigSide: metrics.size.height))
+            .frame(maxWidth: mapSide(maximum: metrics.size.width),
+                   maxHeight: mapSide(maximum: metrics.size.height))
             .clipShape(RoundedRectangle(cornerRadius: 7))
             .padding([.trailing], 3)
             .gesture(
@@ -271,13 +268,15 @@ struct StreamOverlayNavigationView: View {
     @ObservedObject var database: Database
     @ObservedObject var navigation: Navigation
 
-    private func offset() -> Double {
-        if navigation.isSmall {
-            if database.bigButtons {
-                return -(2 * segmentHeightBig + 10)
-            } else {
-                return -(2 * segmentHeight + 10)
-            }
+    private func offset(metrics: GeometryProxy) -> Double {
+        let offset: Double
+        if database.bigButtons {
+            offset = -(2 * segmentHeightBig + 10)
+        } else {
+            offset = -(2 * segmentHeight + 10)
+        }
+        if navigation.isSmall || metrics.size.height - offset > maximumBigMapSide {
+            return offset
         } else {
             return 0
         }
@@ -295,7 +294,7 @@ struct StreamOverlayNavigationView: View {
                 }
                 ControlsView(navigation: navigation)
             }
-            .offset(CGSize(width: 0, height: offset()))
+            .offset(CGSize(width: 0, height: offset(metrics: metrics)))
         }
     }
 }
