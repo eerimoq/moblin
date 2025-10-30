@@ -653,6 +653,6 @@ struct MainView: View {
                 .foregroundColor(.black)
                 .frame(height: isMac() ? 10 : 0)
         }
-        .ignoresSafeArea(.all, edges: edgesToIgnore())
+        .ignoresSafeArea(.container, edges: edgesToIgnore())
     }
 }
