@@ -1041,6 +1041,7 @@ class Database: Codable, ObservableObject {
     var ristServer: SettingsRistServer = .init()
     var disconnectProtection: SettingsDisconnectProtection = .init()
     var rtspClient: SettingsRtspClient = .init()
+    var navigation: SettingsNavigation = .init()
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -1136,7 +1137,8 @@ class Database: Codable, ObservableObject {
              bigButtons,
              ristServer,
              disconnectProtection,
-             rtspClient
+             rtspClient,
+             navigation
     }
 
     func encode(to encoder: Encoder) throws {
@@ -1206,6 +1208,7 @@ class Database: Codable, ObservableObject {
         try container.encode(.ristServer, ristServer)
         try container.encode(.disconnectProtection, disconnectProtection)
         try container.encode(.rtspClient, rtspClient)
+        try container.encode(.navigation, navigation)
     }
 
     init() {}
@@ -1278,6 +1281,7 @@ class Database: Codable, ObservableObject {
         ristServer = container.decode(.ristServer, SettingsRistServer.self, .init())
         disconnectProtection = container.decode(.disconnectProtection, SettingsDisconnectProtection.self, .init())
         rtspClient = container.decode(.rtspClient, SettingsRtspClient.self, .init())
+        navigation = container.decode(.navigation, SettingsNavigation.self, .init())
     }
 }
 

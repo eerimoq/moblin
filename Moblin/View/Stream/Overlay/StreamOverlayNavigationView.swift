@@ -84,6 +84,7 @@ private struct ControlSearchView: View {
 
 @available(iOS 26, *)
 private struct ControlsView: View {
+    @ObservedObject var navigationSettings: SettingsNavigation
     @ObservedObject var navigation: Navigation
     let metrics: GeometryProxy
 
@@ -115,23 +116,23 @@ private struct ControlsView: View {
                     ControlSearchView(navigation: navigation)
                 }
                 Button {
-                    if navigation.followUser, navigation.followHeading {
-                        navigation.followUser = false
-                        navigation.followHeading = false
-                    } else if !navigation.followUser, !navigation.followHeading {
-                        navigation.followUser = true
-                    } else if navigation.followUser, !navigation.followHeading {
-                        navigation.followHeading = true
+                    if navigationSettings.followUser, navigationSettings.followHeading {
+                        navigationSettings.followUser = false
+                        navigationSettings.followHeading = false
+                    } else if !navigationSettings.followUser, !navigationSettings.followHeading {
+                        navigationSettings.followUser = true
+                    } else if navigationSettings.followUser, !navigationSettings.followHeading {
+                        navigationSettings.followHeading = true
                     }
                 } label: {
                     ZStack {
-                        if navigation.followUser, navigation.followHeading {
+                        if navigationSettings.followUser, navigationSettings.followHeading {
                             ImageLocationView(slash: false)
                             ImageConeView(slash: false)
-                        } else if !navigation.followUser, !navigation.followHeading {
+                        } else if !navigationSettings.followUser, !navigationSettings.followHeading {
                             ImageLocationView(slash: true)
                             ImageConeView(slash: true)
-                        } else if navigation.followUser, !navigation.followHeading {
+                        } else if navigationSettings.followUser, !navigationSettings.followHeading {
                             ImageLocationView(slash: false)
                             ImageConeView(slash: true)
                         }
@@ -178,6 +179,7 @@ private struct MarkerLabel: View {
 @available(iOS 26, *)
 private struct MapView: View {
     let model: Model
+    @ObservedObject var navigationSettings: SettingsNavigation
     @ObservedObject var navigation: Navigation
     let metrics: GeometryProxy
 
@@ -219,9 +221,9 @@ private struct MapView: View {
             }
             .onMapCameraChange { context in
                 navigation.cameraRegion = context.region
-                if navigation.followUser {
+                if navigationSettings.followUser {
                     navigation.timer.startSingleShot(timeout: 5) {
-                        navigation.updateCameraPosition()
+                        navigation.updateCameraPosition(settings: navigationSettings)
                     }
                 }
             }
@@ -249,20 +251,21 @@ private struct MapView: View {
         .onChange(of: navigation.destination) { _ in
             navigation.updateDirections()
         }
-        .onChange(of: navigation.followUser) { _ in
-            navigation.updateCameraPosition()
+        .onChange(of: navigationSettings.followUser) { _ in
+            navigation.updateCameraPosition(settings: navigationSettings)
         }
-        .onChange(of: navigation.followHeading) { _ in
-            navigation.updateCameraPosition()
+        .onChange(of: navigationSettings.followHeading) { _ in
+            navigation.updateCameraPosition(settings: navigationSettings)
         }
         .onAppear {
             if navigation.cameraRegion != nil {
-                navigation.updateCameraPosition()
+                navigation.updateCameraPosition(settings: navigationSettings)
             } else {
                 if let (latitude, longitude) = model.getLatestKnownLocation() {
                     let center = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
                     let span = MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
-                    navigation.updateCameraPosition(region: .init(center: center, span: span))
+                    navigation.updateCameraPosition(settings: navigationSettings,
+                                                    region: .init(center: center, span: span))
                 }
             }
         }
@@ -296,10 +299,15 @@ struct StreamOverlayNavigationView: View {
                     Spacer(minLength: 0)
                     VStack {
                         Spacer(minLength: 0)
-                        MapView(model: model, navigation: navigation, metrics: metrics)
+                        MapView(model: model,
+                                navigationSettings: model.database.navigation,
+                                navigation: navigation,
+                                metrics: metrics)
                     }
                 }
-                ControlsView(navigation: navigation, metrics: metrics)
+                ControlsView(navigationSettings: model.database.navigation,
+                             navigation: navigation,
+                             metrics: metrics)
             }
             .offset(CGSize(width: 0, height: offset(metrics: metrics)))
         }

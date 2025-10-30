@@ -41,16 +41,14 @@ class Navigation: ObservableObject {
     @Published var longPressLocation: MKMapItem?
     @Published var searchText: String = ""
     @Published var searchResults: [MKMapItem] = []
-    @Published var followUser: Bool = false
-    @Published var followHeading: Bool = false
     let timer = SimpleTimer(queue: .main)
 
-    func updateCameraPosition(region: MKCoordinateRegion? = nil) {
+    func updateCameraPosition(settings: SettingsNavigation, region: MKCoordinateRegion? = nil) {
         guard let region = region ?? cameraRegion else {
             return
         }
-        if followUser {
-            cameraPosition = .userLocation(followsHeading: followHeading, fallback: .region(region))
+        if settings.followUser {
+            cameraPosition = .userLocation(followsHeading: settings.followHeading, fallback: .region(region))
         } else {
             cameraPosition = .region(region)
         }
