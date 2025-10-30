@@ -89,7 +89,7 @@ private struct ControlsView: View {
                     .padding()
                     .glassEffect()
                     .onChange(of: navigation.transportType) { _ in
-                        model.updateNavigationDirections()
+                        navigation.updateDirections()
                     }
                 }
                 Button {
@@ -172,15 +172,6 @@ private struct MapView: View {
         return min(maximum - 10, navigation.isSmall ? smallMapSide : maximumBigMapSide)
     }
 
-    private func setCameraPosition(region: MKCoordinateRegion) {
-        if navigation.followUser {
-            navigation.cameraPosition = .userLocation(followsHeading: navigation.followHeading,
-                                                      fallback: .region(region))
-        } else {
-            navigation.cameraPosition = .region(region)
-        }
-    }
-
     var body: some View {
         MapReader { proxy in
             Map(position: $navigation.cameraPosition,
@@ -206,8 +197,10 @@ private struct MapView: View {
             }
             .onMapCameraChange { context in
                 navigation.cameraRegion = context.region
-                navigation.timer.startSingleShot(timeout: 7) {
-                    setCameraPosition(region: context.region)
+                if navigation.followUser {
+                    navigation.timer.startSingleShot(timeout: 5) {
+                        navigation.updateCameraPosition()
+                    }
                 }
             }
             .frame(maxWidth: mapSide(maximum: metrics.size.width),
@@ -232,26 +225,22 @@ private struct MapView: View {
             )
         }
         .onChange(of: navigation.destination) { _ in
-            model.updateNavigationDirections()
+            navigation.updateDirections()
         }
         .onChange(of: navigation.followUser) { _ in
-            if let cameraRegion = navigation.cameraRegion {
-                setCameraPosition(region: cameraRegion)
-            }
+            navigation.updateCameraPosition()
         }
         .onChange(of: navigation.followHeading) { _ in
-            if let cameraRegion = navigation.cameraRegion {
-                setCameraPosition(region: cameraRegion)
-            }
+            navigation.updateCameraPosition()
         }
         .onAppear {
-            if let cameraRegion = navigation.cameraRegion {
-                setCameraPosition(region: cameraRegion)
+            if navigation.cameraRegion != nil {
+                navigation.updateCameraPosition()
             } else {
                 if let (latitude, longitude) = model.getLatestKnownLocation() {
                     let center = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
                     let span = MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
-                    setCameraPosition(region: .init(center: center, span: span))
+                    navigation.updateCameraPosition(region: .init(center: center, span: span))
                 }
             }
         }

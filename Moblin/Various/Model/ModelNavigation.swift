@@ -38,7 +38,7 @@ enum NavigationTransportType: CaseIterable {
 class Navigation: ObservableObject {
     static let shared = Navigation()
     @Published var cameraPosition: MapCameraPosition = .automatic
-    @Published var cameraRegion: MKCoordinateRegion?
+    var cameraRegion: MKCoordinateRegion?
     @Published var route: MKRoute?
     @Published var isSmall = true
     @Published var destination: MKMapItem?
@@ -49,30 +49,40 @@ class Navigation: ObservableObject {
     @Published var followUser: Bool = false
     @Published var followHeading: Bool = false
     let timer = SimpleTimer(queue: .main)
+
+    func updateCameraPosition(region: MKCoordinateRegion? = nil) {
+        guard let region = region ?? cameraRegion else {
+            return
+        }
+        if followUser {
+            cameraPosition = .userLocation(followsHeading: followHeading, fallback: .region(region))
+        } else {
+            cameraPosition = .region(region)
+        }
+    }
+
+    func updateDirections() {
+        guard let destination else {
+            return
+        }
+        route = nil
+        let request = MKDirections.Request()
+        request.source = .forCurrentLocation()
+        request.destination = destination
+        request.transportType = transportType.toSystem()
+        let directions = MKDirections(request: request)
+        directions.calculate { response, _ in
+            guard let response else {
+                return
+            }
+            self.route = response.routes.first
+        }
+    }
 }
 
 extension Model {
     @available(iOS 26, *)
     func navigation() -> Navigation {
         return Navigation.shared
-    }
-
-    @available(iOS 26, *)
-    func updateNavigationDirections() {
-        guard let destination = navigation().destination else {
-            return
-        }
-        navigation().route = nil
-        let request = MKDirections.Request()
-        request.source = .forCurrentLocation()
-        request.destination = destination
-        request.transportType = navigation().transportType.toSystem()
-        let directions = MKDirections(request: request)
-        directions.calculate { response, _ in
-            guard let response else {
-                return
-            }
-            self.navigation().route = response.routes.first
-        }
     }
 }
