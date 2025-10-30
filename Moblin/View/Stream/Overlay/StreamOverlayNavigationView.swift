@@ -32,8 +32,7 @@ private struct ImageConeView: View {
 }
 
 @available(iOS 26, *)
-private struct ControlsView: View {
-    let model: Model
+private struct ControlSearchView: View {
     @ObservedObject var navigation: Navigation
 
     private func search(text: String) {
@@ -52,6 +51,42 @@ private struct ControlsView: View {
         }
     }
 
+    var body: some View {
+        if !navigation.isSmall {
+            TextField("What are you looking for?", text: $navigation.searchText)
+                .frame(maxWidth: 300, maxHeight: 20)
+                .padding(12)
+                .glassEffect()
+                .onSubmit {
+                    search(text: navigation.searchText)
+                }
+                .onChange(of: navigation.searchText) { _ in
+                    if navigation.searchText.isEmpty {
+                        navigation.searchResults.removeAll()
+                    }
+                }
+            Picker("", selection: $navigation.transportType) {
+                ForEach(NavigationTransportType.allCases, id: \.self) { transportType in
+                    Image(systemName: transportType.image())
+                }
+            }
+            .pickerStyle(.menu)
+            .foregroundColor(.primary)
+            .frame(width: 35, height: 12)
+            .padding()
+            .glassEffect()
+            .onChange(of: navigation.transportType) { _ in
+                navigation.updateDirections()
+            }
+        }
+    }
+}
+
+@available(iOS 26, *)
+private struct ControlsView: View {
+    @ObservedObject var navigation: Navigation
+    let metrics: GeometryProxy
+
     private func minMaxButtonIcon() -> String {
         if navigation.isSmall {
             return "arrow.up.left.and.arrow.down.right"
@@ -60,37 +95,24 @@ private struct ControlsView: View {
         }
     }
 
+    private func shouldStackVertically() -> Bool {
+        return metrics.size.width < maximumBigMapSide
+    }
+
     var body: some View {
         VStack {
             Spacer()
             HStack {
                 Spacer()
-                if !navigation.isSmall {
-                    TextField("What are you looking for?", text: $navigation.searchText)
-                        .frame(maxWidth: 300, maxHeight: 20)
-                        .padding(12)
-                        .glassEffect()
-                        .onSubmit {
-                            search(text: navigation.searchText)
-                        }
-                        .onChange(of: navigation.searchText) { _ in
-                            if navigation.searchText.isEmpty {
-                                navigation.searchResults.removeAll()
-                            }
-                        }
-                    Picker("", selection: $navigation.transportType) {
-                        ForEach(NavigationTransportType.allCases, id: \.self) { transportType in
-                            Image(systemName: transportType.image())
-                        }
-                    }
-                    .pickerStyle(.menu)
-                    .foregroundColor(.primary)
-                    .frame(width: 35, height: 12)
-                    .padding()
-                    .glassEffect()
-                    .onChange(of: navigation.transportType) { _ in
-                        navigation.updateDirections()
-                    }
+                if shouldStackVertically() {
+                    ControlSearchView(navigation: navigation)
+                        .padding([.trailing], 10)
+                }
+            }
+            HStack {
+                Spacer()
+                if !shouldStackVertically() {
+                    ControlSearchView(navigation: navigation)
                 }
                 Button {
                     if navigation.followUser, navigation.followHeading {
@@ -277,7 +299,7 @@ struct StreamOverlayNavigationView: View {
                         MapView(model: model, navigation: navigation, metrics: metrics)
                     }
                 }
-                ControlsView(model: model, navigation: navigation)
+                ControlsView(navigation: navigation, metrics: metrics)
             }
             .offset(CGSize(width: 0, height: offset(metrics: metrics)))
         }
