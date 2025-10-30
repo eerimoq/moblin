@@ -33,6 +33,7 @@ private struct ImageConeView: View {
 
 @available(iOS 26, *)
 private struct ControlsView: View {
+    let model: Model
     @ObservedObject var navigation: Navigation
 
     private func search(text: String) {
@@ -77,6 +78,19 @@ private struct ControlsView: View {
                                 navigation.searchResults.removeAll()
                             }
                         }
+                    Picker("", selection: $navigation.transportType) {
+                        ForEach(NavigationTransportType.allCases, id: \.self) { transportType in
+                            Image(systemName: transportType.image())
+                        }
+                    }
+                    .pickerStyle(.menu)
+                    .foregroundColor(.primary)
+                    .frame(width: 35, height: 12)
+                    .padding()
+                    .glassEffect()
+                    .onChange(of: navigation.transportType) { _ in
+                        model.updateNavigationDirections()
+                    }
                 }
                 Button {
                     if navigation.followUser, navigation.followHeading {
@@ -154,24 +168,6 @@ private struct MapView: View {
         }
     }
 
-    private func destinationChanged() {
-        guard let destination = navigation.destination else {
-            return
-        }
-        navigation.route = nil
-        let request = MKDirections.Request()
-        request.source = .forCurrentLocation()
-        request.destination = destination
-        request.transportType = .walking
-        let directions = MKDirections(request: request)
-        directions.calculate { response, _ in
-            guard let response else {
-                return
-            }
-            navigation.route = response.routes.first
-        }
-    }
-
     private func mapSide(maximum: Double) -> Double {
         return min(maximum - 10, navigation.isSmall ? smallMapSide : maximumBigMapSide)
     }
@@ -236,7 +232,7 @@ private struct MapView: View {
             )
         }
         .onChange(of: navigation.destination) { _ in
-            destinationChanged()
+            model.updateNavigationDirections()
         }
         .onChange(of: navigation.followUser) { _ in
             if let cameraRegion = navigation.cameraRegion {
@@ -292,7 +288,7 @@ struct StreamOverlayNavigationView: View {
                         MapView(model: model, navigation: navigation, metrics: metrics)
                     }
                 }
-                ControlsView(navigation: navigation)
+                ControlsView(model: model, navigation: navigation)
             }
             .offset(CGSize(width: 0, height: offset(metrics: metrics)))
         }
