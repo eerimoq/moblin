@@ -5,7 +5,6 @@ enum NavigationTransportType: CaseIterable {
     case walking
     case cycling
     case automobile
-    case transit
 
     func toSystem() -> MKDirectionsTransportType {
         switch self {
@@ -15,8 +14,6 @@ enum NavigationTransportType: CaseIterable {
             return .cycling
         case .automobile:
             return .automobile
-        case .transit:
-            return .transit
         }
     }
 
@@ -28,8 +25,6 @@ enum NavigationTransportType: CaseIterable {
             return "bicycle"
         case .automobile:
             return "car.fill"
-        case .transit:
-            return "cablecar"
         }
     }
 }
