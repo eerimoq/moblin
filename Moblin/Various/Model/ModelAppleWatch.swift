@@ -52,7 +52,7 @@ extension Model {
             } else {
                 sceneWidgets = []
             }
-            for id in padelScoreboardEffects.keys {
+            for id in scoreboardEffects.keys {
                 if let scoreboard = sceneWidgets.first(where: { $0.id == id })?.scoreboard {
                     sendUpdatePadelScoreboardToWatch(id: id, scoreboard: scoreboard)
                 } else {
@@ -603,10 +603,10 @@ extension Model: WCSessionDelegate {
                 self.handleUpdatePadelScoreboardChangePlayers(scoreboard: widget.scoreboard.padel,
                                                               players: players)
             }
-            guard let padelScoreboardEffect = self.padelScoreboardEffects[action.id] else {
+            guard let padelScoreboardEffect = self.scoreboardEffects[action.id] else {
                 return
             }
-            padelScoreboardEffect.update(scoreboard: self.padelScoreboardSettingsToEffect(widget.scoreboard.padel))
+            padelScoreboardEffect.update(scoreboard: widget.scoreboard, players: self.database.scoreboardPlayers)
             self.sendUpdatePadelScoreboardToWatch(id: action.id, scoreboard: widget.scoreboard)
         }
     }

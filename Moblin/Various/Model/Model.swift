@@ -438,7 +438,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var enabledAlertsEffects: [AlertsEffect] = []
     var drawOnStreamEffect = DrawOnStreamEffect()
     var lutEffect = LutEffect()
-    var padelScoreboardEffects: [UUID: PadelScoreboardEffect] = [:]
+    var scoreboardEffects: [UUID: ScoreboardEffect] = [:]
     var vTuberEffects: [UUID: VTuberEffect] = [:]
     var pngTuberEffects: [UUID: PngTuberEffect] = [:]
     var snapshotEffects: [UUID: SnapshotEffect] = [:]
@@ -2202,23 +2202,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         healthStore.requestAuthorization(toShare: typesToShare, read: types) { _, _ in
             completion()
         }
-    }
-
-    func padelScoreboardSettingsToEffect(_ scoreboard: SettingsWidgetPadelScoreboard) -> PadelScoreboard {
-        var homePlayers = [createPadelPlayer(id: scoreboard.homePlayer1)]
-        var awayPlayers = [createPadelPlayer(id: scoreboard.awayPlayer1)]
-        if scoreboard.type == .doubles {
-            homePlayers.append(createPadelPlayer(id: scoreboard.homePlayer2))
-            awayPlayers.append(createPadelPlayer(id: scoreboard.awayPlayer2))
-        }
-        let home = PadelScoreboardTeam(players: homePlayers)
-        let away = PadelScoreboardTeam(players: awayPlayers)
-        let score = scoreboard.score.map { PadelScoreboardScore(home: $0.home, away: $0.away) }
-        return PadelScoreboard(home: home, away: away, score: score)
-    }
-
-    private func createPadelPlayer(id: UUID) -> PadelScoreboardPlayer {
-        return PadelScoreboardPlayer(name: findScoreboardPlayer(id: id))
     }
 
     func findScoreboardPlayer(id: UUID) -> String {

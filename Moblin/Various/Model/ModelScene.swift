@@ -264,12 +264,12 @@ extension Model {
             videoSourceEffect.effects = widget.getEffects()
             videoSourceEffects[widget.id] = videoSourceEffect
         }
-        for padelScoreboardEffect in padelScoreboardEffects.values {
-            media.unregisterEffect(padelScoreboardEffect)
+        for scoreboardEffect in scoreboardEffects.values {
+            media.unregisterEffect(scoreboardEffect)
         }
-        padelScoreboardEffects.removeAll()
+        scoreboardEffects.removeAll()
         for widget in widgets where widget.type == .scoreboard {
-            padelScoreboardEffects[widget.id] = PadelScoreboardEffect()
+            scoreboardEffects[widget.id] = ScoreboardEffect()
         }
         for alertsEffect in alertsEffects.values {
             media.unregisterEffect(alertsEffect)
@@ -459,8 +459,8 @@ extension Model {
         for lutEffect in lutEffects.values {
             media.unregisterEffect(lutEffect)
         }
-        for padelScoreboardEffect in padelScoreboardEffects.values {
-            media.unregisterEffect(padelScoreboardEffect)
+        for scoreboardEffect in scoreboardEffects.values {
+            media.unregisterEffect(scoreboardEffect)
         }
     }
 
@@ -485,7 +485,7 @@ extension Model {
         effects += registerGlobalVideoEffects(scene: scene)
         var usedBrowserEffects: [BrowserEffect] = []
         var usedMapEffects: [MapEffect] = []
-        var usedPadelScoreboardEffects: [PadelScoreboardEffect] = []
+        var usedScoreboardEffects: [ScoreboardEffect] = []
         var addedScenes: [SettingsScene] = []
         var needsSpeechToText = false
         enabledAlertsEffects = []
@@ -500,7 +500,7 @@ extension Model {
             &effects,
             &usedBrowserEffects,
             &usedMapEffects,
-            &usedPadelScoreboardEffects,
+            &usedScoreboardEffects,
             &addedScenes,
             &enabledAlertsEffects,
             &enabledSnapshotEffects,
@@ -520,8 +520,8 @@ extension Model {
         for snapshotEffect in snapshotEffects.values where !enabledSnapshotEffects.contains(snapshotEffect) {
             snapshotEffect.removeSnapshots()
         }
-        for (id, padelScoreboardEffect) in padelScoreboardEffects
-            where !usedPadelScoreboardEffects.contains(padelScoreboardEffect)
+        for (id, scoreboardEffect) in scoreboardEffects
+            where !usedScoreboardEffects.contains(scoreboardEffect)
         {
             if isWatchLocal() {
                 sendRemovePadelScoreboardToWatch(id: id)
@@ -549,7 +549,7 @@ extension Model {
         _ effects: inout [VideoEffect],
         _ usedBrowserEffects: inout [BrowserEffect],
         _ usedMapEffects: inout [MapEffect],
-        _ usedPadelScoreboardEffects: inout [PadelScoreboardEffect],
+        _ usedScoreboardEffects: inout [ScoreboardEffect],
         _ addedScenes: inout [SettingsScene],
         _ enabledAlertsEffects: inout [AlertsEffect],
         _ enabledSnapshotEffects: inout [SnapshotEffect],
@@ -582,7 +582,7 @@ extension Model {
                                      &effects,
                                      &usedBrowserEffects,
                                      &usedMapEffects,
-                                     &usedPadelScoreboardEffects,
+                                     &usedScoreboardEffects,
                                      &addedScenes,
                                      &enabledAlertsEffects,
                                      &enabledSnapshotEffects,
@@ -594,7 +594,7 @@ extension Model {
             case .videoSource:
                 addSceneVideoSourceEffects(sceneWidget, widget, &effects)
             case .scoreboard:
-                addSceneScoreboardEffects(sceneWidget, widget, &effects, &usedPadelScoreboardEffects)
+                addSceneScoreboardEffects(widget, &effects, &usedScoreboardEffects)
             case .vTuber:
                 addSceneVTuberEffects(sceneWidget, widget, &effects)
             case .pngTuber:
@@ -693,7 +693,7 @@ extension Model {
         _ effects: inout [VideoEffect],
         _ usedBrowserEffects: inout [BrowserEffect],
         _ usedMapEffects: inout [MapEffect],
-        _ usedPadelScoreboardEffects: inout [PadelScoreboardEffect],
+        _ usedScoreboardEffects: inout [ScoreboardEffect],
         _ addedScenes: inout [SettingsScene],
         _ enabledAlertsEffects: inout [AlertsEffect],
         _ enabledSnapshotEffects: inout [SnapshotEffect],
@@ -705,7 +705,7 @@ extension Model {
                 &effects,
                 &usedBrowserEffects,
                 &usedMapEffects,
-                &usedPadelScoreboardEffects,
+                &usedScoreboardEffects,
                 &addedScenes,
                 &enabledAlertsEffects,
                 &enabledSnapshotEffects,
@@ -756,21 +756,19 @@ extension Model {
     }
 
     private func addSceneScoreboardEffects(
-        _ sceneWidget: SettingsSceneWidget,
         _ widget: SettingsWidget,
         _ effects: inout [VideoEffect],
-        _ usedPadelScoreboardEffects: inout [PadelScoreboardEffect]
+        _ usedScoreboardEffects: inout [ScoreboardEffect]
     ) {
-        if let padelScoreboardEffect = padelScoreboardEffects[widget.id] {
-            padelScoreboardEffect.setSceneWidget(sceneWidget: sceneWidget.clone())
-            let scoreboard = widget.scoreboard
-            padelScoreboardEffect
-                .update(scoreboard: padelScoreboardSettingsToEffect(scoreboard.padel))
-            if isWatchLocal() {
-                sendUpdatePadelScoreboardToWatch(id: widget.id, scoreboard: scoreboard)
+        if let scoreboardEffect = scoreboardEffects[widget.id] {
+            DispatchQueue.main.async {
+                scoreboardEffect.update(scoreboard: widget.scoreboard, players: self.database.scoreboardPlayers)
             }
-            effects.append(padelScoreboardEffect)
-            usedPadelScoreboardEffects.append(padelScoreboardEffect)
+            if isWatchLocal() {
+                sendUpdatePadelScoreboardToWatch(id: widget.id, scoreboard: widget.scoreboard)
+            }
+            effects.append(scoreboardEffect)
+            usedScoreboardEffects.append(scoreboardEffect)
         }
     }
 

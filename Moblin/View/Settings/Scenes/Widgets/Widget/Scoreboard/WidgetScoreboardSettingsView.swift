@@ -1,161 +1,37 @@
 import SwiftUI
 
-private struct PlayersPlayerView: View {
-    let model: Model
-    @ObservedObject var database: Database
-    @ObservedObject var player: SettingsWidgetScoreboardPlayer
-
-    var body: some View {
-        NameEditView(name: $player.name, existingNames: database.scoreboardPlayers)
-            .onChange(of: player.name) { _ in
-                model.resetSelectedScene(changeScene: false)
-                model.sendScoreboardPlayersToWatch()
-            }
-    }
-}
-
-private struct PlayersView: View {
-    @EnvironmentObject var model: Model
-    @ObservedObject var database: Database
-
-    var body: some View {
-        Section {
-            List {
-                ForEach(database.scoreboardPlayers) { player in
-                    PlayersPlayerView(model: model, database: database, player: player)
-                }
-                .onMove { froms, to in
-                    database.scoreboardPlayers.move(fromOffsets: froms, toOffset: to)
-                    model.resetSelectedScene(changeScene: false)
-                    model.sendScoreboardPlayersToWatch()
-                }
-                .onDelete { offsets in
-                    database.scoreboardPlayers.remove(atOffsets: offsets)
-                    model.resetSelectedScene(changeScene: false)
-                    model.sendScoreboardPlayersToWatch()
-                }
-            }
-            CreateButtonView {
-                let player = SettingsWidgetScoreboardPlayer()
-                player.name = makeUniqueName(name: SettingsWidgetScoreboardPlayer.baseName,
-                                             existingNames: database.scoreboardPlayers)
-                database.scoreboardPlayers.append(player)
-                model.sendScoreboardPlayersToWatch()
-            }
-        } header: {
-            Text("Players")
-        } footer: {
-            SwipeLeftToDeleteHelpView(kind: String(localized: "a player"))
-        }
-    }
-}
-
-private struct PlayerView: View {
-    @EnvironmentObject var model: Model
-    @Binding var playerId: UUID
-
-    var body: some View {
-        NavigationLink {
-            InlinePickerView(title: String(localized: "Name"),
-                             onChange: {
-                                 playerId = UUID(uuidString: $0) ?? .init()
-                             },
-                             items: model.database.scoreboardPlayers.map { .init(
-                                 id: $0.id.uuidString, text: $0.name
-                             ) },
-                             selectedId: playerId.uuidString)
-        } label: {
-            Text(model.findScoreboardPlayer(id: playerId))
-        }
-    }
-}
-
 struct WidgetScoreboardSettingsView: View {
-    @EnvironmentObject var model: Model
-    private let widget: SettingsWidget
-    @State private var type: SettingsWidgetScoreboardType
-    @State private var gameType: SettingsWidgetPadelScoreboardGameType
-    @State private var homePlayer1: UUID
-    @State private var homePlayer2: UUID
-    @State private var awayPlayer1: UUID
-    @State private var awayPlayer2: UUID
-
-    init(widget: SettingsWidget, type: SettingsWidgetScoreboardType) {
-        self.widget = widget
-        self.type = type
-        let padel = widget.scoreboard.padel
-        gameType = padel.type
-        homePlayer1 = padel.homePlayer1
-        homePlayer2 = padel.homePlayer2
-        awayPlayer1 = padel.awayPlayer1
-        awayPlayer2 = padel.awayPlayer2
-    }
+    let model: Model
+    @ObservedObject var scoreboard: SettingsWidgetScoreboard
 
     var body: some View {
         Section {
             HStack {
                 Text("Type")
                 Spacer()
-                Picker("", selection: $type) {
-                    ForEach(SettingsWidgetScoreboardType.allCases, id: \.self) {
+                Picker("", selection: $scoreboard.type) {
+                    ForEach(SettingsWidgetScoreboardType.allCases.filter { $0 == .padel }, id: \.self) {
                         Text($0.toString())
-                            .tag($0)
                     }
                 }
-                .onChange(of: type) {
-                    widget.scoreboard.type = $0
+                .onChange(of: scoreboard.type) { _ in
                     model.resetSelectedScene(changeScene: false)
                 }
             }
-            HStack {
-                Text("Game type")
-                Spacer()
-                Picker("", selection: $gameType) {
-                    ForEach(SettingsWidgetPadelScoreboardGameType.allCases, id: \.self) {
-                        Text($0.toString())
-                            .tag($0)
-                    }
-                }
-                .onChange(of: gameType) {
-                    widget.scoreboard.padel.type = $0
-                    model.resetSelectedScene(changeScene: false)
-                }
+            switch scoreboard.type {
+            case .padel:
+                WidgetScoreboardPadelGeneralSettingsView(model: model, padel: scoreboard.padel)
+            case .generic:
+                WidgetScoreboardGenericGeneralSettingsView(model: model, generic: scoreboard.generic)
             }
         } header: {
             Text("General")
         }
-        Section {
-            PlayerView(playerId: $homePlayer1)
-                .onChange(of: homePlayer1) { _ in
-                    widget.scoreboard.padel.homePlayer1 = homePlayer1
-                    model.resetSelectedScene(changeScene: false)
-                }
-            if gameType == .doubles {
-                PlayerView(playerId: $homePlayer2)
-                    .onChange(of: homePlayer2) { _ in
-                        widget.scoreboard.padel.homePlayer2 = homePlayer2
-                        model.resetSelectedScene(changeScene: false)
-                    }
-            }
-        } header: {
-            Text("Home")
+        switch scoreboard.type {
+        case .padel:
+            WidgetScoreboardPadelSettingsView(model: model, padel: scoreboard.padel)
+        case .generic:
+            WidgetScoreboardGenericSettingsView(model: model, generic: scoreboard.generic)
         }
-        Section {
-            PlayerView(playerId: $awayPlayer1)
-                .onChange(of: awayPlayer1) { _ in
-                    widget.scoreboard.padel.awayPlayer1 = awayPlayer1
-                    model.resetSelectedScene(changeScene: false)
-                }
-            if gameType == .doubles {
-                PlayerView(playerId: $awayPlayer2)
-                    .onChange(of: awayPlayer2) { _ in
-                        widget.scoreboard.padel.awayPlayer2 = awayPlayer2
-                        model.resetSelectedScene(changeScene: false)
-                    }
-            }
-        } header: {
-            Text("Away")
-        }
-        PlayersView(database: model.database)
     }
 }

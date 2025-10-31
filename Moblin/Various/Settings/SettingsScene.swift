@@ -2119,6 +2119,7 @@ class SettingsWidgetVideoSource: Codable, ObservableObject {
 
 enum SettingsWidgetScoreboardType: String, Codable, CaseIterable {
     case padel = "Padel"
+    case generic = "Generic"
 
     init(from decoder: Decoder) throws {
         self = try SettingsWidgetScoreboardType(rawValue: decoder.singleValueContainer()
@@ -2130,6 +2131,8 @@ enum SettingsWidgetScoreboardType: String, Codable, CaseIterable {
         switch self {
         case .padel:
             return String(localized: "Padel")
+        case .generic:
+            return String(localized: "Generic")
         }
     }
 }
@@ -2190,11 +2193,11 @@ enum SettingsWidgetPadelScoreboardScoreIncrement {
 }
 
 class SettingsWidgetPadelScoreboard: Codable, ObservableObject {
-    var type: SettingsWidgetPadelScoreboardGameType = .doubles
-    var homePlayer1: UUID = .init()
-    var homePlayer2: UUID = .init()
-    var awayPlayer1: UUID = .init()
-    var awayPlayer2: UUID = .init()
+    @Published var type: SettingsWidgetPadelScoreboardGameType = .doubles
+    @Published var homePlayer1: UUID = .init()
+    @Published var homePlayer2: UUID = .init()
+    @Published var awayPlayer1: UUID = .init()
+    @Published var awayPlayer2: UUID = .init()
     var score: [SettingsWidgetScoreboardScore] = [.init()]
     var scoreChanges: [SettingsWidgetPadelScoreboardScoreIncrement] = []
 
@@ -2230,9 +2233,65 @@ class SettingsWidgetPadelScoreboard: Codable, ObservableObject {
     }
 }
 
-class SettingsWidgetScoreboard: Codable {
-    var type: SettingsWidgetScoreboardType = .padel
+class SettingsWidgetGenericScoreboard: Codable, ObservableObject {
+    @Published var home: String = ""
+    @Published var away: String = ""
+    @Published var title: String = "⚽️"
+    var score: SettingsWidgetScoreboardScore = .init()
+    var clock: String = "0:00"
+
+    enum CodingKeys: CodingKey {
+        case home,
+             away,
+             title,
+             score
+    }
+
+    init() {}
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.home, home)
+        try container.encode(.away, away)
+        try container.encode(.title, title)
+        try container.encode(.score, score)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        home = container.decode(.home, String.self, "")
+        away = container.decode(.away, String.self, "")
+        title = container.decode(.title, String.self, "⚽️")
+        score = container.decode(.score, SettingsWidgetScoreboardScore.self, .init())
+    }
+}
+
+class SettingsWidgetScoreboard: Codable, ObservableObject {
+    @Published var type: SettingsWidgetScoreboardType = .padel
     var padel: SettingsWidgetPadelScoreboard = .init()
+    var generic: SettingsWidgetGenericScoreboard = .init()
+
+    enum CodingKeys: CodingKey {
+        case type,
+             padel,
+             generic
+    }
+
+    init() {}
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.type, type)
+        try container.encode(.padel, padel)
+        try container.encode(.generic, generic)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        type = container.decode(.type, SettingsWidgetScoreboardType.self, .padel)
+        padel = container.decode(.padel, SettingsWidgetPadelScoreboard.self, .init())
+        generic = container.decode(.generic, SettingsWidgetGenericScoreboard.self, .init())
+    }
 }
 
 enum SettingsWidgetVideoEffectType: String, Codable, CaseIterable {
