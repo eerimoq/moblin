@@ -3,6 +3,7 @@ import Foundation
 enum Platform: Codable {
     case soop
     case kick
+    case kickAlt
     case openStreamingPlatform
     case twitch
     case youTube
@@ -16,6 +17,8 @@ enum Platform: Codable {
             return String(localized: "DLive")
         case .kick:
             return String(localized: "Kick")
+        case .kickAlt:
+            return String(localized: "Kick (Alt)")
         case .openStreamingPlatform:
             return String(localized: "Open Streaming Platform")
         case .twitch:
@@ -33,6 +36,8 @@ enum Platform: Codable {
             return "DLiveLogo"
         case .kick:
             return "KickLogo"
+        case .kickAlt:
+            return "KickLogoAlt"
         case .openStreamingPlatform:
             return "OpenStreamingPlatform"
         case .twitch:

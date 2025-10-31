@@ -49,6 +49,8 @@ extension Model {
                 channelName: stream.kickChannelName,
                 channelId: channelId,
                 chatroomChannelId: chatroomChannelId,
+                altChatroomId: stream.kickAltEnabled ? stream.kickAltChatroomId : nil,
+                altChatroomChannelId: stream.kickAltEnabled ? stream.kickAltChatroomChannelId : nil,
                 settings: stream.chat
             )
             kickPusher!.start()
@@ -83,6 +85,24 @@ extension Model {
                     self.stream.kickChatroomChannelId = String(channelInfo.chatroom.channel_id)
                 }
                 self.kickChannelNameUpdated()
+            }
+        }
+    }
+
+    func updateKickAltChannelInfoIfNeeded() {
+        guard stream.kickAltEnabled, !stream.kickAltChannelName.isEmpty else {
+            return
+        }
+        guard stream.kickAltChatroomId == nil || stream.kickAltChatroomChannelId == nil else {
+            return
+        }
+        getKickChannelInfo(channelName: stream.kickAltChannelName) { channelInfo in
+            DispatchQueue.main.async {
+                if let channelInfo {
+                    self.stream.kickAltChatroomId = String(channelInfo.chatroom.id)
+                    self.stream.kickAltChatroomChannelId = String(channelInfo.chatroom.channel_id)
+                    self.reloadKickPusher()
+                }
             }
         }
     }
@@ -180,6 +200,7 @@ extension Model: KickPusherDelegate {
     }
 
     func kickPusherAppendMessage(
+        platform: Platform,
         messageId: String?,
         user: String,
         userId: String?,
@@ -190,7 +211,7 @@ extension Model: KickPusherDelegate {
         isModerator: Bool,
         highlight: ChatHighlight?
     ) {
-        appendChatMessage(platform: .kick,
+        appendChatMessage(platform: platform,
                           messageId: messageId,
                           displayName: user,
                           user: user,

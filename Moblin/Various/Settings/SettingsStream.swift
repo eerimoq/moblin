@@ -839,6 +839,10 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
     @Published var kickSendMessagesTo: Bool = true
     var kickChatAlerts: SettingsKickAlerts = .init()
     var kickToastAlerts: SettingsKickAlerts = .init()
+    @Published var kickAltEnabled: Bool = false
+    @Published var kickAltChannelName: String = ""
+    @Published var kickAltChatroomId: String?
+    @Published var kickAltChatroomChannelId: String?
     @Published var dLiveUsername: String = ""
     var youTubeApiKey: String = ""
     @Published var youTubeVideoId: String = ""
@@ -921,6 +925,10 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
              kickSendMessagesTo,
              kickChatAlerts,
              kickToastAlerts,
+             kickAltEnabled,
+             kickAltChannelName,
+             kickAltChatroomId,
+             kickAltChatroomChannelId,
              youTubeApiKey,
              youTubeVideoId,
              youTubeHandle,
@@ -998,6 +1006,10 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         try container.encode(.kickSendMessagesTo, kickSendMessagesTo)
         try container.encode(.kickChatAlerts, kickChatAlerts)
         try container.encode(.kickToastAlerts, kickToastAlerts)
+        try container.encode(.kickAltEnabled, kickAltEnabled)
+        try container.encode(.kickAltChannelName, kickAltChannelName)
+        try container.encode(.kickAltChatroomId, kickAltChatroomId)
+        try container.encode(.kickAltChatroomChannelId, kickAltChatroomChannelId)
         try container.encode(.youTubeApiKey, youTubeApiKey)
         try container.encode(.youTubeVideoId, youTubeVideoId)
         try container.encode(.youTubeHandle, youTubeHandle)
@@ -1078,6 +1090,10 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         kickSendMessagesTo = container.decode(.kickSendMessagesTo, Bool.self, true)
         kickChatAlerts = container.decode(.kickChatAlerts, SettingsKickAlerts.self, .init())
         kickToastAlerts = container.decode(.kickToastAlerts, SettingsKickAlerts.self, .init())
+        kickAltEnabled = container.decode(.kickAltEnabled, Bool.self, false)
+        kickAltChannelName = container.decode(.kickAltChannelName, String.self, "")
+        kickAltChatroomId = container.decode(.kickAltChatroomId, String?.self, nil)
+        kickAltChatroomChannelId = container.decode(.kickAltChatroomChannelId, String?.self, nil)
         youTubeApiKey = container.decode(.youTubeApiKey, String.self, "")
         youTubeVideoId = container.decode(.youTubeVideoId, String.self, "")
         youTubeHandle = container.decode(.youTubeHandle, String.self, "")
@@ -1148,6 +1164,10 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         new.kickSendMessagesTo = kickSendMessagesTo
         new.kickChatAlerts = kickChatAlerts.clone()
         new.kickToastAlerts = kickToastAlerts.clone()
+        new.kickAltEnabled = kickAltEnabled
+        new.kickAltChannelName = kickAltChannelName
+        new.kickAltChatroomId = kickAltChatroomId
+        new.kickAltChatroomChannelId = kickAltChatroomChannelId
         new.youTubeApiKey = youTubeApiKey
         new.youTubeVideoId = youTubeVideoId
         new.youTubeHandle = youTubeHandle
