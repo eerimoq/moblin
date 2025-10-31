@@ -9,8 +9,8 @@ struct MainView: View {
             if !model.viaRemoteControl {
                 ChatView(chatSettings: model.settings.chat, chat: model.chat)
             }
-            if model.showPadelScoreBoard && !model.viaRemoteControl {
-                PadelScoreboardView(model: model, padel: model.padel)
+            if model.scoreboardType != nil && !model.viaRemoteControl {
+                ScoreboardView()
             }
             ControlView(preview: model.preview)
         }

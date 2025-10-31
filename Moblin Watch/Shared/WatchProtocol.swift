@@ -21,7 +21,8 @@ enum WatchMessageToWatch: String {
     case stopWorkout
     case viewerCount
     case padelScoreboard
-    case removePadelScoreboard
+    case genericScoreboard
+    case removeScoreboard
     case scoreboardPlayers
 
     static func pack(type: WatchMessageToWatch, data: Any) -> [String: Any] {
@@ -58,6 +59,7 @@ enum WatchMessageFromWatch: String {
     case setScene
     case updateWorkoutStats
     case updatePadelScoreboard
+    case updateGenericScoreboard
     case createStreamMarker
     case instantReplay
     case saveReplay
@@ -169,6 +171,10 @@ struct WatchProtocolPadelScoreboard: Codable {
     var score: [WatchProtocolPadelScoreboardScore]
 }
 
+struct WatchProtocolGenericScoreboard: Codable {
+    var id: UUID
+}
+
 struct WatchProtocolPadelScoreboardAction: Codable {
     let id: UUID
     let action: WatchProtocolPadelScoreboardActionType
@@ -185,6 +191,18 @@ enum WatchProtocolPadelScoreboardActionType: Codable {
     case incrementHome
     case incrementAway
     case players(WatchProtocolPadelScoreboardActionPlayers)
+}
+
+struct WatchProtocolGenericScoreboardAction: Codable {
+    let id: UUID
+    let action: WatchProtocolGenericScoreboardActionType
+}
+
+enum WatchProtocolGenericScoreboardActionType: Codable {
+    case reset
+    case undo
+    case incrementHome
+    case incrementAway
 }
 
 struct WatchProtocolScoreboardPlayer: Codable {

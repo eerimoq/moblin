@@ -83,7 +83,8 @@ class Model: NSObject, ObservableObject {
     let preview = Preview()
     let control = Control()
     let padel = Padel()
-    @Published var showPadelScoreBoard = false
+    @Published var scoreboardType: ScoreboardType?
+    private var scoreboardId: UUID?
     @Published var viaRemoteControl = false
     private var latestSpeedAndTotalTime = ContinuousClock.now
     private var latestRecordingLengthTime = ContinuousClock.now
@@ -405,6 +406,7 @@ class Model: NSObject, ObservableObject {
             return
         }
         let scoreboard = try JSONDecoder().decode(WatchProtocolPadelScoreboard.self, from: data)
+        scoreboardId = scoreboard.id
         padel.scoreboard.id = scoreboard.id
         padel.scoreboard.home = .init(players: scoreboard.home.map { .init(id: $0) })
         padel.scoreboard.away = .init(players: scoreboard.away.map { .init(id: $0) })
@@ -414,7 +416,16 @@ class Model: NSObject, ObservableObject {
         } else {
             padel.incrementTintColor = nil
         }
-        showPadelScoreBoard = true
+        scoreboardType = .padel
+    }
+
+    private func handleGenericScoreboard(_ data: Any) throws {
+        guard let data = data as? Data else {
+            return
+        }
+        let scoreboard = try JSONDecoder().decode(WatchProtocolGenericScoreboard.self, from: data)
+        scoreboardId = scoreboard.id
+        scoreboardType = .generic
     }
 
     private func isCurrentSetCompleted(scoreboard: WatchProtocolPadelScoreboard) -> Bool {
@@ -440,8 +451,14 @@ class Model: NSObject, ObservableObject {
         return padel.players.first(where: { $0.id == id })?.name ?? "🇸🇪 Moblin"
     }
 
-    private func handleRemovePadelScoreboard(_: Any) throws {
-        showPadelScoreBoard = false
+    private func handleRemoveScoreboard(_ data: Any) throws {
+        guard let idString = data as? String, let id = UUID(uuidString: idString) else {
+            return
+        }
+        guard scoreboardId == id else {
+            return
+        }
+        scoreboardType = nil
     }
 
     private func handleScoreboardPlayers(_ data: Any) throws {
@@ -570,6 +587,31 @@ class Model: NSObject, ObservableObject {
         WCSession.default.sendMessage(message, replyHandler: nil)
     }
 
+    func genericScoreboardIncrementHomeScore() {
+        sendUpdateGenericScoreboard(action: .incrementHome)
+    }
+
+    func genericScoreboardIncrementAwayScore() {
+        sendUpdateGenericScoreboard(action: .incrementAway)
+    }
+
+    func genericScoreboardUndoScore() {
+        sendUpdateGenericScoreboard(action: .undo)
+    }
+
+    func genericScoreBoardResetScore() {
+        sendUpdateGenericScoreboard(action: .reset)
+    }
+
+    private func sendUpdateGenericScoreboard(action: WatchProtocolGenericScoreboardActionType) {
+        let data = WatchProtocolGenericScoreboardAction(id: padel.scoreboard.id, action: action)
+        guard let data = try? JSONEncoder().encode(data) else {
+            return
+        }
+        let message = WatchMessageFromWatch.pack(type: .updateGenericScoreboard, data: data)
+        WCSession.default.sendMessage(message, replyHandler: nil)
+    }
+
     func createStreamMarker() {
         let message = WatchMessageFromWatch.pack(type: .createStreamMarker, data: true)
         WCSession.default.sendMessage(message, replyHandler: nil)
@@ -651,8 +693,10 @@ extension Model: WCSessionDelegate {
                     self.handleViewerCount(data)
                 case .padelScoreboard:
                     try self.handlePadelScoreboard(data)
-                case .removePadelScoreboard:
-                    try self.handleRemovePadelScoreboard(data)
+                case .genericScoreboard:
+                    try self.handleGenericScoreboard(data)
+                case .removeScoreboard:
+                    try self.handleRemoveScoreboard(data)
                 case .scoreboardPlayers:
                     try self.handleScoreboardPlayers(data)
                 }

@@ -520,11 +520,9 @@ extension Model {
         for snapshotEffect in snapshotEffects.values where !enabledSnapshotEffects.contains(snapshotEffect) {
             snapshotEffect.removeSnapshots()
         }
-        for (id, scoreboardEffect) in scoreboardEffects
-            where !usedScoreboardEffects.contains(scoreboardEffect)
-        {
+        for (id, scoreboardEffect) in scoreboardEffects where !usedScoreboardEffects.contains(scoreboardEffect) {
             if isWatchLocal() {
-                sendRemovePadelScoreboardToWatch(id: id)
+                sendRemoveScoreboardToWatch(id: id)
             }
         }
         media.setSpeechToText(enabled: needsSpeechToText)
@@ -765,7 +763,12 @@ extension Model {
                 scoreboardEffect.update(scoreboard: widget.scoreboard, players: self.database.scoreboardPlayers)
             }
             if isWatchLocal() {
-                sendUpdatePadelScoreboardToWatch(id: widget.id, scoreboard: widget.scoreboard)
+                switch widget.scoreboard.type {
+                case .padel:
+                    sendUpdatePadelScoreboardToWatch(id: widget.id, padel: widget.scoreboard.padel)
+                case .generic:
+                    sendUpdateGenericScoreboardToWatch(id: widget.id, generic: widget.scoreboard.generic)
+                }
             }
             effects.append(scoreboardEffect)
             usedScoreboardEffects.append(scoreboardEffect)
