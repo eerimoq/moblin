@@ -29,6 +29,12 @@
             "value" : "Moblin"
           }
         },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin"
+          }
+        },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
@@ -70,6 +76,12 @@
             "state" : "translated",
             "value" : "Moblin 螢幕錄製"
           }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin 正在錄製螢幕"
+          }
         }
       }
     },
@@ -105,6 +117,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "確定"
+          }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "是"
           }
         }
       }
@@ -154,6 +172,12 @@
             "state" : "translated",
             "value" : "確定"
           }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "是"
+          }
         }
       }
     },
@@ -190,6 +214,12 @@
             "state" : "translated",
             "value" : "確定"
           }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "是"
+          }
         }
       }
     },
@@ -225,6 +255,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "確定"
+          }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "是"
           }
         }
       }
