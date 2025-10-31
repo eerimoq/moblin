@@ -230,7 +230,7 @@ extension Model: KickPusherDelegate {
                           live: true)
     }
 
-    func kickPusherDeleteMessage(platform: Platform, messageId: String) {
+    func kickPusherDeleteMessage(platform _: Platform, messageId: String) {
         deleteChatMessage(messageId: messageId)
     }
 
