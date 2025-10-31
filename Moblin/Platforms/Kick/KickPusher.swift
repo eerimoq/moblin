@@ -232,7 +232,7 @@ protocol KickPusherDelegate: AnyObject {
         isModerator: Bool,
         highlight: ChatHighlight?
     )
-    func kickPusherDeleteMessage(messageId: String)
+    func kickPusherDeleteMessage(platform: Platform, messageId: String)
     func kickPusherDeleteUser(userId: String)
     func kickPusherSubscription(event: KickPusherSubscriptionEvent)
     func kickPusherGiftedSubscription(event: KickPusherGiftedSubscriptionsEvent)
@@ -341,14 +341,17 @@ final class KickPusher: NSObject {
     private func handleMessage(message: String) {
         do {
             let (type, data, channel) = try decodeEvent(message: message)
-            if determinePlatform(from: channel) == .kickAlt, type != "App\\Events\\ChatMessageEvent" {
+            if determinePlatform(from: channel) == .kickAlt,
+               type != "App\\Events\\ChatMessageEvent",
+               type != "App\\Events\\MessageDeletedEvent"
+            {
                 return
             }
             switch type {
             case "App\\Events\\ChatMessageEvent":
                 try handleChatMessageEvent(data: data, channel: channel)
             case "App\\Events\\MessageDeletedEvent":
-                try handleMessageDeletedEvent(data: data)
+                try handleMessageDeletedEvent(data: data, channel: channel)
             case "App\\Events\\UserBannedEvent":
                 try handleUserBannedEvent(data: data)
             case "App\\Events\\SubscriptionEvent":
@@ -399,9 +402,10 @@ final class KickPusher: NSObject {
         )
     }
 
-    private func handleMessageDeletedEvent(data: String) throws {
+    private func handleMessageDeletedEvent(data: String, channel: String?) throws {
         let event = try decodeMessageDeletedEvent(data: data)
-        delegate?.kickPusherDeleteMessage(messageId: event.message.id)
+        let platform = determinePlatform(from: channel)
+        delegate?.kickPusherDeleteMessage(platform: platform, messageId: event.message.id)
     }
 
     private func handleUserBannedEvent(data: String) throws {
