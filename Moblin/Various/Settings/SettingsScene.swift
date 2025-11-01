@@ -2336,24 +2336,40 @@ class SettingsWidgetGenericScoreboard: Codable, ObservableObject {
 }
 
 class SettingsWidgetScoreboard: Codable, ObservableObject {
+    static let baseTextColor = RgbColor.white
+    static let basePrimaryBackgroundColor = RgbColor(red: 0x0B, green: 0x10, blue: 0xAC)
+    static let baseSecondaryBackgroundColor = RgbColor(red: 0, green: 3, blue: 0x5B)
     @Published var type: SettingsWidgetScoreboardType = .generic
-    var textColor: Color = .white
-    var primaryBackgroundColor: Color = scoreboardBlueColor
-    var secondaryBackgroundColor: Color = scoreboardDarkBlueColor
+    var textColor = baseTextColor
+    @Published var textColorColor: Color
+    var primaryBackgroundColor = basePrimaryBackgroundColor
+    @Published var primaryBackgroundColorColor: Color
+    var secondaryBackgroundColor = baseSecondaryBackgroundColor
+    @Published var secondaryBackgroundColorColor: Color
     var padel: SettingsWidgetPadelScoreboard = .init()
     var generic: SettingsWidgetGenericScoreboard = .init()
 
     enum CodingKeys: CodingKey {
         case type,
              padel,
-             generic
+             generic,
+             textColor,
+             primaryBackgroundColor,
+             secondaryBackgroundColor
     }
 
-    init() {}
+    init() {
+        textColorColor = textColor.color()
+        primaryBackgroundColorColor = primaryBackgroundColor.color()
+        secondaryBackgroundColorColor = secondaryBackgroundColor.color()
+    }
 
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.type, type)
+        try container.encode(.textColor, textColor)
+        try container.encode(.primaryBackgroundColor, primaryBackgroundColor)
+        try container.encode(.secondaryBackgroundColor, secondaryBackgroundColor)
         try container.encode(.padel, padel)
         try container.encode(.generic, generic)
     }
@@ -2361,6 +2377,16 @@ class SettingsWidgetScoreboard: Codable, ObservableObject {
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         type = container.decode(.type, SettingsWidgetScoreboardType.self, .generic)
+        textColor = container.decode(.textColor, RgbColor.self, Self.baseTextColor)
+        textColorColor = textColor.color()
+        primaryBackgroundColor = container.decode(.primaryBackgroundColor,
+                                                  RgbColor.self,
+                                                  Self.basePrimaryBackgroundColor)
+        primaryBackgroundColorColor = primaryBackgroundColor.color()
+        secondaryBackgroundColor = container.decode(.secondaryBackgroundColor,
+                                                    RgbColor.self,
+                                                    Self.baseSecondaryBackgroundColor)
+        secondaryBackgroundColorColor = secondaryBackgroundColor.color()
         padel = container.decode(.padel, SettingsWidgetPadelScoreboard.self, .init())
         generic = container.decode(.generic, SettingsWidgetGenericScoreboard.self, .init())
     }

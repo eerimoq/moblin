@@ -569,6 +569,8 @@ class RgbColor: Codable, Equatable {
             .opacity
     }
 
+    static let white = RgbColor(red: 255, green: 255, blue: 255)
+
     var red: Int = 0
     var green: Int = 0
     var blue: Int = 0

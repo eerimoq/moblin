@@ -95,15 +95,15 @@ final class ScoreboardEffect: VideoEffect {
     func update(scoreboard: SettingsWidgetScoreboard, players: [SettingsWidgetScoreboardPlayer]) {
         switch scoreboard.type {
         case .padel:
-            updatePadel(textColor: scoreboard.textColor,
-                        primaryBackgroundColor: scoreboard.primaryBackgroundColor,
-                        secondaryBackgroundColor: scoreboard.secondaryBackgroundColor,
+            updatePadel(textColor: scoreboard.textColorColor,
+                        primaryBackgroundColor: scoreboard.primaryBackgroundColorColor,
+                        secondaryBackgroundColor: scoreboard.secondaryBackgroundColorColor,
                         padel: scoreboard.padel,
                         players: players)
         case .generic:
-            updateGeneric(textColor: scoreboard.textColor,
-                          primaryBackgroundColor: scoreboard.primaryBackgroundColor,
-                          secondaryBackgroundColor: scoreboard.secondaryBackgroundColor,
+            updateGeneric(textColor: scoreboard.textColorColor,
+                          primaryBackgroundColor: scoreboard.primaryBackgroundColorColor,
+                          secondaryBackgroundColor: scoreboard.secondaryBackgroundColorColor,
                           generic: scoreboard.generic)
         }
     }

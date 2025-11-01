@@ -38,7 +38,9 @@ struct WidgetSettingsView: View {
             case .videoSource:
                 WidgetVideoSourceSettingsView(widget: widget, videoSource: widget.videoSource)
             case .scoreboard:
-                WidgetScoreboardSettingsView(model: model, scoreboard: widget.scoreboard)
+                WidgetScoreboardSettingsView(model: model,
+                                             widget: widget,
+                                             scoreboard: widget.scoreboard)
             case .vTuber:
                 WidgetVTuberSettingsView(widget: widget, vTuber: widget.vTuber)
             case .pngTuber:

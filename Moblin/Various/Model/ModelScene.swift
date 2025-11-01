@@ -176,6 +176,13 @@ extension Model {
         return nil
     }
 
+    func getScoreboardEffect(id: UUID) -> ScoreboardEffect? {
+        for (scoreboardEffectId, scoreboardEffect) in scoreboardEffects where id == scoreboardEffectId {
+            return scoreboardEffect
+        }
+        return nil
+    }
+
     func getEffectWithPossibleEffects(id: UUID) -> VideoEffect? {
         return getVideoSourceEffect(id: id)
             ?? getImageEffect(id: id)
