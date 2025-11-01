@@ -155,6 +155,7 @@ final class ScoreboardEffect: VideoEffect {
             .background(scoreboardBlueColor)
             PoweredByMoblinView()
         }
+        .clipShape(RoundedRectangle(cornerRadius: 5))
         .foregroundColor(.white)
         let renderer = ImageRenderer(content: scoreBoard)
         guard let image = renderer.uiImage else {
