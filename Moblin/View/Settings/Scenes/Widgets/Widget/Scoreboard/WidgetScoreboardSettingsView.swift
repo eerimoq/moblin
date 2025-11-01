@@ -18,7 +18,7 @@ struct WidgetScoreboardSettingsView: View {
                 }
             }
             .onChange(of: scoreboard.type) { _ in
-                model.resetSelectedScene(changeScene: false)
+                model.resetSelectedScene(changeScene: false, attachCamera: false)
             }
             switch scoreboard.type {
             case .padel:

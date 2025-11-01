@@ -9,7 +9,7 @@ struct WidgetScoreboardGenericGeneralSettingsView: View {
             generic.title = title
         }
         .onChange(of: generic.title) { _ in
-            model.resetSelectedScene(changeScene: false)
+            model.resetSelectedScene(changeScene: false, attachCamera: false)
         }
     }
 }
@@ -51,13 +51,13 @@ struct WidgetScoreboardGenericSettingsView: View {
                 generic.home = home
             }
             .onChange(of: generic.home) { _ in
-                model.resetSelectedScene(changeScene: false)
+                model.resetSelectedScene(changeScene: false, attachCamera: false)
             }
             TextEditNavigationView(title: String(localized: "Away"), value: generic.away) { away in
                 generic.away = away
             }
             .onChange(of: generic.away) { _ in
-                model.resetSelectedScene(changeScene: false)
+                model.resetSelectedScene(changeScene: false, attachCamera: false)
             }
         } header: {
             Text("Teams")
@@ -70,7 +70,7 @@ struct WidgetScoreboardGenericSettingsView: View {
                                    valueFormat: formatMaximum)
                 .onChange(of: generic.clockMaximum) { _ in
                     generic.resetClock()
-                    model.resetSelectedScene(changeScene: false)
+                    model.resetSelectedScene(changeScene: false, attachCamera: false)
                 }
             Picker("Direction", selection: $generic.clockDirection) {
                 ForEach(SettingsWidgetGenericScoreboardClockDirection.allCases, id: \.self) { direction in
@@ -79,7 +79,7 @@ struct WidgetScoreboardGenericSettingsView: View {
             }
             .onChange(of: generic.clockDirection) { _ in
                 generic.resetClock()
-                model.resetSelectedScene(changeScene: false)
+                model.resetSelectedScene(changeScene: false, attachCamera: false)
             }
         } header: {
             Text("Clock")
