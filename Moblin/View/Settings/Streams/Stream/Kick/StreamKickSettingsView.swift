@@ -398,15 +398,18 @@ struct StreamKickSettingsView: View {
     }
 
     private func fetchAltChannelInfo() {
+        guard let altChannel = stream.kickAltChannels.first else {
+            return
+        }
         fetchingAltChannelInfo = true
         fetchAltChannelInfoFailed = false
-        getKickChannelInfo(channelName: stream.kickAltChannelName) { channelInfo in
+        getKickChannelInfo(channelName: altChannel.channelName) { channelInfo in
             DispatchQueue.main.async {
                 fetchingAltChannelInfo = false
                 if let channelInfo {
                     fetchAltChannelInfoFailed = false
-                    stream.kickAltChatroomId = String(channelInfo.chatroom.id)
-                    stream.kickAltChatroomChannelId = String(channelInfo.chatroom.channel_id)
+                    stream.kickAltChannels[0].chatroomId = String(channelInfo.chatroom.id)
+                    stream.kickAltChannels[0].chatroomChannelId = String(channelInfo.chatroom.channel_id)
                 } else {
                     fetchAltChannelInfoFailed = true
                 }
@@ -416,9 +419,12 @@ struct StreamKickSettingsView: View {
     }
 
     private func submitAltChannelName(value: String) {
-        stream.kickAltChannelName = value
-        stream.kickAltChatroomId = nil
-        stream.kickAltChatroomChannelId = nil
+        if stream.kickAltChannels.isEmpty {
+            stream.kickAltChannels.append(SettingsKickAltChannel())
+        }
+        stream.kickAltChannels[0].channelName = value
+        stream.kickAltChannels[0].chatroomId = nil
+        stream.kickAltChannels[0].chatroomChannelId = nil
         if !value.isEmpty {
             fetchAltChannelInfo()
         } else {
@@ -471,14 +477,22 @@ struct StreamKickSettingsView: View {
                 Text("Alerts")
             }
             Section {
-                Toggle("Enabled", isOn: $stream.kickAltEnabled)
-                    .onChange(of: stream.kickAltEnabled) { _ in
+                Toggle("Enabled", isOn: Binding(
+                    get: {
+                        stream.kickAltChannels.first?.enabled ?? false
+                    },
+                    set: { newValue in
+                        if stream.kickAltChannels.isEmpty {
+                            stream.kickAltChannels.append(SettingsKickAltChannel())
+                        }
+                        stream.kickAltChannels[0].enabled = newValue
                         reloadConnectionsIfEnabled()
                     }
-                if stream.kickAltEnabled {
+                ))
+                if stream.kickAltChannels.first?.enabled == true {
                     TextEditNavigationView(
                         title: String(localized: "Channel name"),
-                        value: stream.kickAltChannelName,
+                        value: stream.kickAltChannels.first?.channelName ?? "",
                         onChange: { _ in nil },
                         onSubmit: submitAltChannelName
                     )
@@ -486,7 +500,7 @@ struct StreamKickSettingsView: View {
             } header: {
                 Text("Alt channel")
             } footer: {
-                if stream.kickAltEnabled {
+                if stream.kickAltChannels.first?.enabled == true {
                     if fetchingAltChannelInfo {
                         Text("Fetching channel info...")
                     } else if fetchAltChannelInfoFailed {

@@ -44,13 +44,15 @@ extension Model {
            let channelId = stream.kickChannelId,
            let chatroomChannelId = stream.kickChatroomChannelId
         {
+            let altChannel = stream.kickAltChannels.first
+            let altEnabled = altChannel?.enabled ?? false
             kickPusher = KickPusher(
                 delegate: self,
                 channelName: stream.kickChannelName,
                 channelId: channelId,
                 chatroomChannelId: chatroomChannelId,
-                altChatroomId: stream.kickAltEnabled ? stream.kickAltChatroomId : nil,
-                altChatroomChannelId: stream.kickAltEnabled ? stream.kickAltChatroomChannelId : nil,
+                altChatroomId: altEnabled ? altChannel?.chatroomId : nil,
+                altChatroomChannelId: altEnabled ? altChannel?.chatroomChannelId : nil,
                 settings: stream.chat
             )
             kickPusher!.start()
@@ -90,17 +92,20 @@ extension Model {
     }
 
     func updateKickAltChannelInfoIfNeeded() {
-        guard stream.kickAltEnabled, !stream.kickAltChannelName.isEmpty else {
+        guard let altChannel = stream.kickAltChannels.first,
+              altChannel.enabled,
+              !altChannel.channelName.isEmpty
+        else {
             return
         }
-        guard stream.kickAltChatroomId == nil || stream.kickAltChatroomChannelId == nil else {
+        guard altChannel.chatroomId == nil || altChannel.chatroomChannelId == nil else {
             return
         }
-        getKickChannelInfo(channelName: stream.kickAltChannelName) { channelInfo in
+        getKickChannelInfo(channelName: altChannel.channelName) { channelInfo in
             DispatchQueue.main.async {
                 if let channelInfo {
-                    self.stream.kickAltChatroomId = String(channelInfo.chatroom.id)
-                    self.stream.kickAltChatroomChannelId = String(channelInfo.chatroom.channel_id)
+                    self.stream.kickAltChannels[0].chatroomId = String(channelInfo.chatroom.id)
+                    self.stream.kickAltChannels[0].chatroomChannelId = String(channelInfo.chatroom.channel_id)
                     self.reloadKickPusher()
                 }
             }

@@ -299,7 +299,11 @@ extension Model {
         if isKickPusherConfigured() {
             numberOfChats += 1
         }
-        if isKickPusherConfigured(), stream.kickAltEnabled, !stream.kickAltChannelName.isEmpty {
+        if isKickPusherConfigured(),
+           let altChannel = stream.kickAltChannels.first,
+           altChannel.enabled,
+           !altChannel.channelName.isEmpty
+        {
             numberOfChats += 1
         }
         if isDLiveChatConfigured() {
