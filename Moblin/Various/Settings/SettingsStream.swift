@@ -843,11 +843,11 @@ struct SettingsKickAltChannel: Codable, Identifiable, Equatable {
 
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        id = try container.decode(UUID.self, forKey: .id)
-        enabled = try container.decode(Bool.self, forKey: .enabled)
-        channelName = try container.decode(String.self, forKey: .channelName)
-        chatroomId = try container.decodeIfPresent(String.self, forKey: .chatroomId)
-        chatroomChannelId = try container.decodeIfPresent(String.self, forKey: .chatroomChannelId)
+        id = container.decode(.id, UUID.self, .init())
+        enabled = container.decode(.enabled, Bool.self, false)
+        channelName = container.decode(.channelName, String.self, "")
+        chatroomId = container.decode(.chatroomId, String?.self, nil)
+        chatroomChannelId = container.decode(.chatroomChannelId, String?.self, nil)
     }
 }
 
@@ -959,10 +959,6 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
              kickChatAlerts,
              kickToastAlerts,
              kickAltChannels,
-             kickAltEnabled,
-             kickAltChannelName,
-             kickAltChatroomId,
-             kickAltChatroomChannelId,
              youTubeApiKey,
              youTubeVideoId,
              youTubeHandle,
@@ -1122,20 +1118,6 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         kickChatAlerts = container.decode(.kickChatAlerts, SettingsKickAlerts.self, .init())
         kickToastAlerts = container.decode(.kickToastAlerts, SettingsKickAlerts.self, .init())
         kickAltChannels = container.decode(.kickAltChannels, [SettingsKickAltChannel].self, [])
-        if kickAltChannels.isEmpty {
-            let enabled = container.decode(.kickAltEnabled, Bool.self, false)
-            let channelName = container.decode(.kickAltChannelName, String.self, "")
-            let chatroomId = container.decode(.kickAltChatroomId, String?.self, nil)
-            let chatroomChannelId = container.decode(.kickAltChatroomChannelId, String?.self, nil)
-            if enabled || !channelName.isEmpty {
-                var altChannel = SettingsKickAltChannel()
-                altChannel.enabled = enabled
-                altChannel.channelName = channelName
-                altChannel.chatroomId = chatroomId
-                altChannel.chatroomChannelId = chatroomChannelId
-                kickAltChannels = [altChannel]
-            }
-        }
         youTubeApiKey = container.decode(.youTubeApiKey, String.self, "")
         youTubeVideoId = container.decode(.youTubeVideoId, String.self, "")
         youTubeHandle = container.decode(.youTubeHandle, String.self, "")
