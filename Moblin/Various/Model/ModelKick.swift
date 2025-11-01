@@ -44,15 +44,15 @@ extension Model {
            let channelId = stream.kickChannelId,
            let chatroomChannelId = stream.kickChatroomChannelId
         {
-            let altChannel = stream.kickAltChannels.first
-            let altEnabled = altChannel?.enabled ?? false
+            let kickAltChannel = stream.kickAltChannels.first
+            let altEnabled = kickAltChannel?.enabled ?? false
             kickPusher = KickPusher(
                 delegate: self,
                 channelName: stream.kickChannelName,
                 channelId: channelId,
                 chatroomChannelId: chatroomChannelId,
-                altChatroomId: altEnabled ? altChannel?.chatroomId : nil,
-                altChatroomChannelId: altEnabled ? altChannel?.chatroomChannelId : nil,
+                altChatroomId: altEnabled ? kickAltChannel?.chatroomId : nil,
+                altChatroomChannelId: altEnabled ? kickAltChannel?.chatroomChannelId : nil,
                 settings: stream.chat
             )
             kickPusher!.start()
@@ -92,16 +92,16 @@ extension Model {
     }
 
     func updateKickAltChannelInfoIfNeeded() {
-        guard let altChannel = stream.kickAltChannels.first,
-              altChannel.enabled,
-              !altChannel.channelName.isEmpty
+        guard let kickAltChannel = stream.kickAltChannels.first,
+              kickAltChannel.enabled,
+              !kickAltChannel.channelName.isEmpty
         else {
             return
         }
-        guard altChannel.chatroomId == nil || altChannel.chatroomChannelId == nil else {
+        guard kickAltChannel.chatroomId == nil || kickAltChannel.chatroomChannelId == nil else {
             return
         }
-        getKickChannelInfo(channelName: altChannel.channelName) { channelInfo in
+        getKickChannelInfo(channelName: kickAltChannel.channelName) { channelInfo in
             DispatchQueue.main.async {
                 if let channelInfo {
                     self.stream.kickAltChannels[0].chatroomId = String(channelInfo.chatroom.id)

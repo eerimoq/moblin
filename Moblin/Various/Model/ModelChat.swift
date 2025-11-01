@@ -300,9 +300,9 @@ extension Model {
             numberOfChats += 1
         }
         if isKickPusherConfigured(),
-           let altChannel = stream.kickAltChannels.first,
-           altChannel.enabled,
-           !altChannel.channelName.isEmpty
+           let kickAltChannel = stream.kickAltChannels.first,
+           kickAltChannel.enabled,
+           !kickAltChannel.channelName.isEmpty
         {
             numberOfChats += 1
         }

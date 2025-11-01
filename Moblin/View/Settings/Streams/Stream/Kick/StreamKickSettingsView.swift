@@ -398,12 +398,12 @@ struct StreamKickSettingsView: View {
     }
 
     private func fetchAltChannelInfo() {
-        guard let altChannel = stream.kickAltChannels.first else {
+        guard let kickAltChannel = stream.kickAltChannels.first else {
             return
         }
         fetchingAltChannelInfo = true
         fetchAltChannelInfoFailed = false
-        getKickChannelInfo(channelName: altChannel.channelName) { channelInfo in
+        getKickChannelInfo(channelName: kickAltChannel.channelName) { channelInfo in
             DispatchQueue.main.async {
                 fetchingAltChannelInfo = false
                 if let channelInfo {

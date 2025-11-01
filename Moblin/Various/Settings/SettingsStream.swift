@@ -1198,8 +1198,8 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         new.kickSendMessagesTo = kickSendMessagesTo
         new.kickChatAlerts = kickChatAlerts.clone()
         new.kickToastAlerts = kickToastAlerts.clone()
-        for altChannel in kickAltChannels {
-            new.kickAltChannels.append(altChannel.clone())
+        for kickAltChannel in kickAltChannels {
+            new.kickAltChannels.append(kickAltChannel.clone())
         }
         new.youTubeApiKey = youTubeApiKey
         new.youTubeVideoId = youTubeVideoId
