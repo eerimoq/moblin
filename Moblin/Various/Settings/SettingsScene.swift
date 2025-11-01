@@ -2118,8 +2118,8 @@ class SettingsWidgetVideoSource: Codable, ObservableObject {
 }
 
 enum SettingsWidgetScoreboardType: String, Codable, CaseIterable {
-    case padel = "Padel"
     case generic = "Generic"
+    case padel = "Padel"
 
     init(from decoder: Decoder) throws {
         self = try SettingsWidgetScoreboardType(rawValue: decoder.singleValueContainer()
@@ -2129,10 +2129,10 @@ enum SettingsWidgetScoreboardType: String, Codable, CaseIterable {
 
     func toString() -> String {
         switch self {
-        case .padel:
-            return String(localized: "Padel")
         case .generic:
             return String(localized: "Generic")
+        case .padel:
+            return String(localized: "Padel")
         }
     }
 }
