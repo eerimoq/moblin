@@ -608,7 +608,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         super.init()
         showLoadSettingsFailed = !settings.load()
         streamingHistory.load()
-        recordingsStorage.load()
         replaysStorage.load()
         setCurrentStream()
         updateIsPortrait()
@@ -1308,7 +1307,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             startPeriodicTimers()
         case .off:
             enterForegroundCount += 1
-            recordingsStorage.cleanup()
             makeBuyIconsToastIfNeeded()
             clearRemoteSceneSettingsAndData()
             reloadStream()

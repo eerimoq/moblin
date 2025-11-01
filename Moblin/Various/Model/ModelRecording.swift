@@ -8,11 +8,7 @@ class RecordingProvider: ObservableObject {
 extension Model {
     func startRecording() {
         setIsRecording(value: true)
-        if resumeRecording() {
-            if recordingsStorage.database.isFull() {
-                makeToast(title: String(localized: "Too many recordings. Deleting oldest recording."))
-            }
-        } else {
+        if !resumeRecording() {
             if stream.recording.isDefaultRecordingPath() {
                 makeErrorToast(title: String(localized: "Failed to start recording"))
             } else {
@@ -36,7 +32,7 @@ extension Model {
     }
 
     func resumeRecording() -> Bool {
-        currentRecording = recordingsStorage.createRecording(settings: stream.clone())
+        currentRecording = recordingsStorage.createRecording(recording: stream.recording.clone())
         if currentRecording == nil {
             return false
         }
@@ -47,10 +43,6 @@ extension Model {
 
     func suspendRecording() {
         stopRecorderIfNeeded()
-        if let currentRecording {
-            recordingsStorage.append(recording: currentRecording)
-            recordingsStorage.store()
-        }
         updateRecordingLength(now: Date())
         currentRecording = nil
     }
