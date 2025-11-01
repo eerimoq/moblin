@@ -93,20 +93,17 @@ final class ScoreboardEffect: VideoEffect {
 
     @MainActor
     func update(scoreboard: SettingsWidgetScoreboard, players: [SettingsWidgetScoreboardPlayer]) {
-        let textColor = Color.white
-        let primaryBackgroundColor = scoreboardBlueColor
-        let secondaryBackgroundColor = scoreboardDarkBlueColor
         switch scoreboard.type {
         case .padel:
-            updatePadel(textColor: textColor,
-                        primaryBackgroundColor: primaryBackgroundColor,
-                        secondaryBackgroundColor: secondaryBackgroundColor,
+            updatePadel(textColor: scoreboard.textColor,
+                        primaryBackgroundColor: scoreboard.primaryBackgroundColor,
+                        secondaryBackgroundColor: scoreboard.secondaryBackgroundColor,
                         padel: scoreboard.padel,
                         players: players)
         case .generic:
-            updateGeneric(textColor: textColor,
-                          primaryBackgroundColor: primaryBackgroundColor,
-                          secondaryBackgroundColor: secondaryBackgroundColor,
+            updateGeneric(textColor: scoreboard.textColor,
+                          primaryBackgroundColor: scoreboard.primaryBackgroundColor,
+                          secondaryBackgroundColor: scoreboard.secondaryBackgroundColor,
                           generic: scoreboard.generic)
         }
     }

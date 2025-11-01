@@ -2337,6 +2337,9 @@ class SettingsWidgetGenericScoreboard: Codable, ObservableObject {
 
 class SettingsWidgetScoreboard: Codable, ObservableObject {
     @Published var type: SettingsWidgetScoreboardType = .generic
+    var textColor: Color = .white
+    var primaryBackgroundColor: Color = scoreboardBlueColor
+    var secondaryBackgroundColor: Color = scoreboardDarkBlueColor
     var padel: SettingsWidgetPadelScoreboard = .init()
     var generic: SettingsWidgetGenericScoreboard = .init()
 
