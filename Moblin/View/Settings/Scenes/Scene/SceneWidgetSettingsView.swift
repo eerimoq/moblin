@@ -102,18 +102,14 @@ private struct LayoutView: View {
                     )
                 }
                 if widgetHasAlignment(widget: widget) {
-                    HStack {
-                        Text("Alignment")
-                        Spacer()
-                        Picker("", selection: $sceneWidget.alignment) {
-                            ForEach(SettingsAlignment.allCases, id: \.self) {
-                                Text($0.toString())
-                                    .tag($0)
-                            }
+                    Picker("Alignment", selection: $sceneWidget.alignment) {
+                        ForEach(SettingsAlignment.allCases, id: \.self) {
+                            Text($0.toString())
+                                .tag($0)
                         }
-                        .onChange(of: sceneWidget.alignment) { _ in
-                            model.sceneUpdated()
-                        }
+                    }
+                    .onChange(of: sceneWidget.alignment) { _ in
+                        model.sceneUpdated()
                     }
                 }
             } header: {

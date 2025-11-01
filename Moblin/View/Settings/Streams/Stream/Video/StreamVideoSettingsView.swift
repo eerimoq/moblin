@@ -6,13 +6,9 @@ private struct ResolutionSettingsView: View {
 
     var body: some View {
         Section {
-            HStack {
-                Text("Resolution")
-                Spacer()
-                Picker("", selection: $stream.resolution) {
-                    ForEach(resolutions, id: \.self) {
-                        Text($0.shortString())
-                    }
+            Picker("Resolution", selection: $stream.resolution) {
+                ForEach(resolutions, id: \.self) {
+                    Text($0.shortString())
                 }
             }
             .onChange(of: stream.resolution) { _ in
@@ -29,13 +25,9 @@ private struct FpsSettingsView: View {
 
     var body: some View {
         Section {
-            HStack {
-                Text("FPS")
-                Spacer()
-                Picker("", selection: $stream.fps) {
-                    ForEach(fpss, id: \.self) {
-                        Text(String($0))
-                    }
+            Picker("FPS", selection: $stream.fps) {
+                ForEach(fpss, id: \.self) {
+                    Text(String($0))
                 }
             }
             .onChange(of: stream.fps) { _ in
@@ -75,13 +67,9 @@ private struct CodecSettingsView: View {
 
     var body: some View {
         Section {
-            HStack {
-                Text("Codec")
-                Spacer()
-                Picker("", selection: $stream.codec) {
-                    ForEach(SettingsStreamCodec.allCases, id: \.self) {
-                        Text($0.rawValue)
-                    }
+            Picker("Codec", selection: $stream.codec) {
+                ForEach(SettingsStreamCodec.allCases, id: \.self) {
+                    Text($0.rawValue)
                 }
             }
             .onChange(of: stream.codec) { _ in
@@ -105,19 +93,15 @@ private struct BitrateSettingsView: View {
     var body: some View {
         Section {
             Label {
-                HStack {
-                    Text("Bitrate")
-                    Spacer()
-                    Picker("", selection: $stream.bitrate) {
-                        ForEach(database.bitratePresets) { preset in
-                            Text(formatBytesPerSecond(speed: Int64(preset.bitrate)))
-                                .tag(preset.bitrate)
-                        }
+                Picker("Bitrate", selection: $stream.bitrate) {
+                    ForEach(database.bitratePresets) { preset in
+                        Text(formatBytesPerSecond(speed: Int64(preset.bitrate)))
+                            .tag(preset.bitrate)
                     }
-                    .onChange(of: stream.bitrate) { _ in
-                        if stream.enabled {
-                            model.setStreamBitrate(stream: stream)
-                        }
+                }
+                .onChange(of: stream.bitrate) { _ in
+                    if stream.enabled {
+                        model.setStreamBitrate(stream: stream)
                     }
                 }
             } icon: {

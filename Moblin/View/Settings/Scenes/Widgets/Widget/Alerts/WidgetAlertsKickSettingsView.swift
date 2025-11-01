@@ -242,13 +242,9 @@ private struct KickGiftView: View {
                                        model.updateAlertsSettings()
                                    },
                                    keyboardType: .numbersAndPunctuation)
-            HStack {
-                Text("Comparison")
-                Spacer()
-                Picker("", selection: $comparisonOperator) {
-                    ForEach(cheerBitsAlertOperators, id: \.self) {
-                        Text($0)
-                    }
+            Picker("Comparison", selection: $comparisonOperator) {
+                ForEach(cheerBitsAlertOperators, id: \.self) {
+                    Text($0)
                 }
             }
             .onChange(of: comparisonOperator) { _ in

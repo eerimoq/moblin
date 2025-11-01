@@ -5,17 +5,13 @@ private struct ExternalDisplayContentView: View {
     @ObservedObject var database: Database
 
     var body: some View {
-        HStack {
-            Text("External monitor content")
-            Spacer()
-            Picker("", selection: $database.externalDisplayContent) {
-                ForEach(SettingsExternalDisplayContent.allCases, id: \.self) {
-                    Text($0.toString())
-                }
+        Picker("External monitor content", selection: $database.externalDisplayContent) {
+            ForEach(SettingsExternalDisplayContent.allCases, id: \.self) {
+                Text($0.toString())
             }
-            .onChange(of: database.externalDisplayContent) { _ in
-                model.setExternalDisplayContent()
-            }
+        }
+        .onChange(of: database.externalDisplayContent) { _ in
+            model.setExternalDisplayContent()
         }
     }
 }

@@ -6,17 +6,13 @@ struct WidgetScoreboardSettingsView: View {
 
     var body: some View {
         Section {
-            HStack {
-                Text("Type")
-                Spacer()
-                Picker("", selection: $scoreboard.type) {
-                    ForEach(SettingsWidgetScoreboardType.allCases.filter { $0 == .padel }, id: \.self) {
-                        Text($0.toString())
-                    }
+            Picker("Type", selection: $scoreboard.type) {
+                ForEach(SettingsWidgetScoreboardType.allCases.filter { $0 == .padel }, id: \.self) {
+                    Text($0.toString())
                 }
-                .onChange(of: scoreboard.type) { _ in
-                    model.resetSelectedScene(changeScene: false)
-                }
+            }
+            .onChange(of: scoreboard.type) { _ in
+                model.resetSelectedScene(changeScene: false)
             }
             switch scoreboard.type {
             case .padel:

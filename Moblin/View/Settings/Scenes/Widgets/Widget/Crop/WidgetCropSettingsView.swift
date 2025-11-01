@@ -65,30 +65,26 @@ struct WidgetCropSettingsView: View {
 
     var body: some View {
         Section {
-            HStack {
-                Text("Source widget")
-                Spacer()
-                Picker("", selection: Binding(get: {
-                    if sourceWidgetExists() {
-                        widget.crop.sourceWidgetId
-                    } else {
-                        nil as UUID?
-                    }
-                }, set: { value in
-                    guard let value else {
-                        return
-                    }
-                    widget.crop.sourceWidgetId = value
-                    model.resetSelectedScene(changeScene: false)
-                })) {
-                    if !sourceWidgetExists() {
-                        Text("")
-                            .tag(nil as UUID?)
-                    }
-                    ForEach(model.database.widgets.filter { $0.type == .browser }) {
-                        Text($0.name)
-                            .tag($0.id as UUID?)
-                    }
+            Picker("Source widget", selection: Binding(get: {
+                if sourceWidgetExists() {
+                    widget.crop.sourceWidgetId
+                } else {
+                    nil as UUID?
+                }
+            }, set: { value in
+                guard let value else {
+                    return
+                }
+                widget.crop.sourceWidgetId = value
+                model.resetSelectedScene(changeScene: false)
+            })) {
+                if !sourceWidgetExists() {
+                    Text("")
+                        .tag(nil as UUID?)
+                }
+                ForEach(model.database.widgets.filter { $0.type == .browser }) {
+                    Text($0.name)
+                        .tag($0.id as UUID?)
                 }
             }
             TextEditNavigationView(

@@ -831,33 +831,25 @@ struct WidgetTextSettingsView: View {
                 Text(String(Int(text.fontSizeFloat)))
                     .frame(width: 35)
             }
-            HStack {
-                Text("Design")
-                Spacer()
-                Picker("", selection: $text.fontDesign) {
-                    ForEach(SettingsFontDesign.allCases, id: \.self) {
-                        Text($0.toString())
-                            .tag($0)
-                    }
-                }
-                .onChange(of: text.fontDesign) { _ in
-                    model.getTextEffect(id: widget.id)?.setFontDesign(design: text.fontDesign.toSystem())
-                    model.remoteSceneSettingsUpdated()
+            Picker("Design", selection: $text.fontDesign) {
+                ForEach(SettingsFontDesign.allCases, id: \.self) {
+                    Text($0.toString())
+                        .tag($0)
                 }
             }
-            HStack {
-                Text("Weight")
-                Spacer()
-                Picker("", selection: $text.fontWeight) {
-                    ForEach(SettingsFontWeight.allCases, id: \.self) {
-                        Text($0.toString())
-                            .tag($0)
-                    }
+            .onChange(of: text.fontDesign) { _ in
+                model.getTextEffect(id: widget.id)?.setFontDesign(design: text.fontDesign.toSystem())
+                model.remoteSceneSettingsUpdated()
+            }
+            Picker("Weight", selection: $text.fontWeight) {
+                ForEach(SettingsFontWeight.allCases, id: \.self) {
+                    Text($0.toString())
+                        .tag($0)
                 }
-                .onChange(of: text.fontWeight) { _ in
-                    model.getTextEffect(id: widget.id)?.setFontWeight(weight: text.fontWeight.toSystem())
-                    model.remoteSceneSettingsUpdated()
-                }
+            }
+            .onChange(of: text.fontWeight) { _ in
+                model.getTextEffect(id: widget.id)?.setFontWeight(weight: text.fontWeight.toSystem())
+                model.remoteSceneSettingsUpdated()
             }
             Toggle("Monospaced digits", isOn: $text.fontMonospacedDigits)
                 .onChange(of: text.fontMonospacedDigits) { _ in
@@ -868,20 +860,16 @@ struct WidgetTextSettingsView: View {
             Text("Font")
         }
         Section {
-            HStack {
-                Text("Alignment")
-                Spacer()
-                Picker("", selection: $text.horizontalAlignment) {
-                    ForEach(SettingsHorizontalAlignment.allCases, id: \.self) {
-                        Text($0.toString())
-                            .tag($0)
-                    }
+            Picker("Alignment", selection: $text.horizontalAlignment) {
+                ForEach(SettingsHorizontalAlignment.allCases, id: \.self) {
+                    Text($0.toString())
+                        .tag($0)
                 }
-                .onChange(of: text.horizontalAlignment) { _ in
-                    model.getTextEffect(id: widget.id)?
-                        .setHorizontalAlignment(alignment: text.horizontalAlignment.toSystem())
-                    model.remoteSceneSettingsUpdated()
-                }
+            }
+            .onChange(of: text.horizontalAlignment) { _ in
+                model.getTextEffect(id: widget.id)?
+                    .setHorizontalAlignment(alignment: text.horizontalAlignment.toSystem())
+                model.remoteSceneSettingsUpdated()
             }
         }
         Section {

@@ -5,18 +5,14 @@ private struct VideoStabilizationView: View {
     @ObservedObject var scene: SettingsScene
 
     var body: some View {
-        HStack {
-            Text("Video stabilization")
-            Spacer()
-            Picker("", selection: $scene.videoStabilizationMode) {
-                ForEach(videoStabilizationModes, id: \.self) {
-                    Text($0.toString())
-                        .tag($0)
-                }
+        Picker("Video stabilization", selection: $scene.videoStabilizationMode) {
+            ForEach(videoStabilizationModes, id: \.self) {
+                Text($0.toString())
+                    .tag($0)
             }
-            .onChange(of: scene.videoStabilizationMode) { _ in
-                model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
-            }
+        }
+        .onChange(of: scene.videoStabilizationMode) { _ in
+            model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
         }
     }
 }

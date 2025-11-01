@@ -89,16 +89,12 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
     var body: some View {
         Form {
             Section {
-                HStack {
-                    Text("Algorithm")
-                    Spacer()
-                    Picker("", selection: Binding(get: {
-                        adaptiveBitrate.algorithm
-                    }, set: handleAlgorithmChange)) {
-                        ForEach(SettingsStreamSrtAdaptiveBitrateAlgorithm.allCases, id: \.self) {
-                            Text($0.toString())
-                                .tag($0)
-                        }
+                Picker("Algorithm", selection: Binding(get: {
+                    adaptiveBitrate.algorithm
+                }, set: handleAlgorithmChange)) {
+                    ForEach(SettingsStreamSrtAdaptiveBitrateAlgorithm.allCases, id: \.self) {
+                        Text($0.toString())
+                            .tag($0)
                     }
                 }
             } footer: {

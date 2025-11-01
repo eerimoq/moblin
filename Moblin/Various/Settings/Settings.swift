@@ -415,14 +415,13 @@ enum SettingsVideoStabilizationMode: String, Codable, CaseIterable {
     }
 }
 
-var videoStabilizationModes = SettingsVideoStabilizationMode.allCases
-    .filter {
-        if #available(iOS 18.0, *) {
-            return true
-        } else {
-            return $0 != .cinematicExtendedEnhanced
-        }
+var videoStabilizationModes = SettingsVideoStabilizationMode.allCases.filter {
+    if #available(iOS 18.0, *) {
+        return true
+    } else {
+        return $0 != .cinematicExtendedEnhanced
     }
+}
 
 class SettingsTesla: Codable {
     var vin: String = ""
