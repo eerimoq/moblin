@@ -2341,11 +2341,11 @@ class SettingsWidgetScoreboard: Codable, ObservableObject {
     static let baseSecondaryBackgroundColor = RgbColor(red: 0, green: 3, blue: 0x5B)
     @Published var type: SettingsWidgetScoreboardType = .generic
     var textColor = baseTextColor
-    @Published var textColorColor: Color
+    @Published var textColorColor: Color = .clear
     var primaryBackgroundColor = basePrimaryBackgroundColor
-    @Published var primaryBackgroundColorColor: Color
+    @Published var primaryBackgroundColorColor: Color = .clear
     var secondaryBackgroundColor = baseSecondaryBackgroundColor
-    @Published var secondaryBackgroundColorColor: Color
+    @Published var secondaryBackgroundColorColor: Color = .clear
     var padel: SettingsWidgetPadelScoreboard = .init()
     var generic: SettingsWidgetGenericScoreboard = .init()
 
@@ -2359,9 +2359,7 @@ class SettingsWidgetScoreboard: Codable, ObservableObject {
     }
 
     init() {
-        textColorColor = textColor.color()
-        primaryBackgroundColorColor = primaryBackgroundColor.color()
-        secondaryBackgroundColorColor = secondaryBackgroundColor.color()
+        loadColors()
     }
 
     func encode(to encoder: Encoder) throws {
@@ -2378,17 +2376,28 @@ class SettingsWidgetScoreboard: Codable, ObservableObject {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         type = container.decode(.type, SettingsWidgetScoreboardType.self, .generic)
         textColor = container.decode(.textColor, RgbColor.self, Self.baseTextColor)
-        textColorColor = textColor.color()
         primaryBackgroundColor = container.decode(.primaryBackgroundColor,
                                                   RgbColor.self,
                                                   Self.basePrimaryBackgroundColor)
-        primaryBackgroundColorColor = primaryBackgroundColor.color()
         secondaryBackgroundColor = container.decode(.secondaryBackgroundColor,
                                                     RgbColor.self,
                                                     Self.baseSecondaryBackgroundColor)
-        secondaryBackgroundColorColor = secondaryBackgroundColor.color()
         padel = container.decode(.padel, SettingsWidgetPadelScoreboard.self, .init())
         generic = container.decode(.generic, SettingsWidgetGenericScoreboard.self, .init())
+        loadColors()
+    }
+
+    func resetColors() {
+        textColor = Self.baseTextColor
+        primaryBackgroundColor = Self.basePrimaryBackgroundColor
+        secondaryBackgroundColor = Self.baseSecondaryBackgroundColor
+        loadColors()
+    }
+
+    private func loadColors() {
+        textColorColor = textColor.color()
+        primaryBackgroundColorColor = primaryBackgroundColor.color()
+        secondaryBackgroundColorColor = secondaryBackgroundColor.color()
     }
 }
 
