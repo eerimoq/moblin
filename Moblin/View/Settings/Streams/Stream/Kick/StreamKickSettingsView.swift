@@ -330,24 +330,40 @@ struct StreamKickSettingsView: View {
     @State private var title: String?
     @State private var category: String?
 
-    private func fetchChannelInfo() {
-        fetchingChannelInfo = true
-        fetchChannelInfoFailed = false
-        getKickChannelInfo(channelName: stream.kickChannelName) { channelInfo in
+    private func fetchKickChannel(
+        channelName: String,
+        setFetching: @escaping (Bool) -> Void,
+        setFailed: @escaping (Bool) -> Void,
+        onSuccess: @escaping (KickChannel) -> Void
+    ) {
+        setFetching(true)
+        setFailed(false)
+        getKickChannelInfo(channelName: channelName) { channelInfo in
             DispatchQueue.main.async {
-                fetchingChannelInfo = false
+                setFetching(false)
                 if let channelInfo {
-                    fetchChannelInfoFailed = false
-                    stream.kickChannelId = String(channelInfo.chatroom.id)
-                    stream.kickSlug = channelInfo.slug
-                    stream.kickChatroomChannelId = String(channelInfo.chatroom.channel_id)
-                    loadStreamInfo()
+                    setFailed(false)
+                    onSuccess(channelInfo)
                 } else {
-                    fetchChannelInfoFailed = true
+                    setFailed(true)
                 }
                 reloadConnectionsIfEnabled()
             }
         }
+    }
+
+    private func fetchChannelInfo() {
+        fetchKickChannel(
+            channelName: stream.kickChannelName,
+            setFetching: { self.fetchingChannelInfo = $0 },
+            setFailed: { self.fetchChannelInfoFailed = $0 },
+            onSuccess: { channelInfo in
+                self.stream.kickChannelId = String(channelInfo.chatroom.id)
+                self.stream.kickSlug = channelInfo.slug
+                self.stream.kickChatroomChannelId = String(channelInfo.chatroom.channel_id)
+                self.loadStreamInfo()
+            }
+        )
     }
 
     private func resetSettings() {
@@ -401,21 +417,15 @@ struct StreamKickSettingsView: View {
         guard let kickAltChannel = stream.kickAltChannels.first else {
             return
         }
-        fetchingAltChannelInfo = true
-        fetchAltChannelInfoFailed = false
-        getKickChannelInfo(channelName: kickAltChannel.channelName) { channelInfo in
-            DispatchQueue.main.async {
-                fetchingAltChannelInfo = false
-                if let channelInfo {
-                    fetchAltChannelInfoFailed = false
-                    stream.kickAltChannels[0].chatroomId = String(channelInfo.chatroom.id)
-                    stream.kickAltChannels[0].chatroomChannelId = String(channelInfo.chatroom.channel_id)
-                } else {
-                    fetchAltChannelInfoFailed = true
-                }
-                reloadConnectionsIfEnabled()
+        fetchKickChannel(
+            channelName: kickAltChannel.channelName,
+            setFetching: { self.fetchingAltChannelInfo = $0 },
+            setFailed: { self.fetchAltChannelInfoFailed = $0 },
+            onSuccess: { channelInfo in
+                self.stream.kickAltChannels[0].chatroomId = String(channelInfo.chatroom.id)
+                self.stream.kickAltChannels[0].chatroomChannelId = String(channelInfo.chatroom.channel_id)
             }
-        }
+        )
     }
 
     private func submitAltChannelName(value: String) {
