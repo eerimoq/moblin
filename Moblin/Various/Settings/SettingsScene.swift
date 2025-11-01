@@ -2248,9 +2248,11 @@ enum SettingsWidgetGenericScoreboardClockDirection: Codable, CaseIterable {
 }
 
 class SettingsWidgetGenericScoreboard: Codable, ObservableObject {
-    @Published var home: String = ""
-    @Published var away: String = ""
-    @Published var title: String = "⚽️"
+    static let baseName = String(localized: "🇸🇪 Moblin")
+    static let baseTitle = "⚽️"
+    @Published var home: String = baseName
+    @Published var away: String = baseName
+    @Published var title: String = baseTitle
     @Published var clockMaximum: Int = 45
     @Published var clockDirection: SettingsWidgetGenericScoreboardClockDirection = .up
     var score: SettingsWidgetScoreboardScore = .init()
@@ -2280,9 +2282,9 @@ class SettingsWidgetGenericScoreboard: Codable, ObservableObject {
 
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        home = container.decode(.home, String.self, "")
-        away = container.decode(.away, String.self, "")
-        title = container.decode(.title, String.self, "⚽️")
+        home = container.decode(.home, String.self, Self.baseName)
+        away = container.decode(.away, String.self, Self.baseName)
+        title = container.decode(.title, String.self, Self.baseTitle)
         clockMaximum = container.decode(.clockMaximum, Int.self, 45)
         clockDirection = container.decode(.clockDirection,
                                           SettingsWidgetGenericScoreboardClockDirection.self,
@@ -2334,7 +2336,7 @@ class SettingsWidgetGenericScoreboard: Codable, ObservableObject {
 }
 
 class SettingsWidgetScoreboard: Codable, ObservableObject {
-    @Published var type: SettingsWidgetScoreboardType = .padel
+    @Published var type: SettingsWidgetScoreboardType = .generic
     var padel: SettingsWidgetPadelScoreboard = .init()
     var generic: SettingsWidgetGenericScoreboard = .init()
 
@@ -2355,7 +2357,7 @@ class SettingsWidgetScoreboard: Codable, ObservableObject {
 
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        type = container.decode(.type, SettingsWidgetScoreboardType.self, .padel)
+        type = container.decode(.type, SettingsWidgetScoreboardType.self, .generic)
         padel = container.decode(.padel, SettingsWidgetPadelScoreboard.self, .init())
         generic = container.decode(.generic, SettingsWidgetGenericScoreboard.self, .init())
     }
