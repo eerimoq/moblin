@@ -2187,7 +2187,7 @@ enum SettingsWidgetPadelScoreboardGameType: String, Codable, CaseIterable {
     }
 }
 
-enum SettingsWidgetPadelScoreboardScoreIncrement {
+enum SettingsWidgetScoreboardScoreIncrement {
     case home
     case away
 }
@@ -2199,7 +2199,7 @@ class SettingsWidgetPadelScoreboard: Codable, ObservableObject {
     @Published var awayPlayer1: UUID = .init()
     @Published var awayPlayer2: UUID = .init()
     var score: [SettingsWidgetScoreboardScore] = [.init()]
-    var scoreChanges: [SettingsWidgetPadelScoreboardScoreIncrement] = []
+    var scoreChanges: [SettingsWidgetScoreboardScoreIncrement] = []
 
     enum CodingKeys: CodingKey {
         case type,
@@ -2238,13 +2238,15 @@ class SettingsWidgetGenericScoreboard: Codable, ObservableObject {
     @Published var away: String = ""
     @Published var title: String = "⚽️"
     var score: SettingsWidgetScoreboardScore = .init()
-    var clock: String = "0:00"
+    var scoreChanges: [SettingsWidgetScoreboardScoreIncrement] = []
+    var clockMinutes: Int = 0
+    var clockSeconds: Int = 0
+    var isClockStopped: Bool = false
 
     enum CodingKeys: CodingKey {
         case home,
              away,
-             title,
-             score
+             title
     }
 
     init() {}
@@ -2254,7 +2256,6 @@ class SettingsWidgetGenericScoreboard: Codable, ObservableObject {
         try container.encode(.home, home)
         try container.encode(.away, away)
         try container.encode(.title, title)
-        try container.encode(.score, score)
     }
 
     required init(from decoder: Decoder) throws {
@@ -2262,7 +2263,23 @@ class SettingsWidgetGenericScoreboard: Codable, ObservableObject {
         home = container.decode(.home, String.self, "")
         away = container.decode(.away, String.self, "")
         title = container.decode(.title, String.self, "⚽️")
-        score = container.decode(.score, SettingsWidgetScoreboardScore.self, .init())
+    }
+
+    func clock() -> String {
+        if clockSeconds < 10 {
+            return "\(clockMinutes):0\(clockSeconds)"
+        } else {
+            return "\(clockMinutes):\(clockSeconds)"
+        }
+    }
+
+    func tickClock() {
+        if clockSeconds == 59 {
+            clockSeconds = 0
+            clockMinutes += 1
+        } else {
+            clockSeconds += 1
+        }
     }
 }
 

@@ -7,7 +7,7 @@ struct WidgetScoreboardSettingsView: View {
     var body: some View {
         Section {
             Picker("Type", selection: $scoreboard.type) {
-                ForEach(SettingsWidgetScoreboardType.allCases.filter { $0 == .padel }, id: \.self) {
+                ForEach(SettingsWidgetScoreboardType.allCases, id: \.self) {
                     Text($0.toString())
                 }
             }

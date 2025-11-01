@@ -155,18 +155,25 @@ extension Model {
         sendMessageToWatch(type: .padelScoreboard, data: data)
     }
 
-    func sendUpdateGenericScoreboardToWatch(id: UUID, generic _: SettingsWidgetGenericScoreboard) {
+    func sendUpdateGenericScoreboardToWatch(id: UUID, generic: SettingsWidgetGenericScoreboard) {
         guard isWatchReachable() else {
             return
         }
         var data: Data
         do {
-            let message = WatchProtocolGenericScoreboard(id: id)
+            let message = WatchProtocolGenericScoreboard(id: id,
+                                                         homeTeam: generic.home,
+                                                         awayTeam: generic.away,
+                                                         homeScore: generic.score.home,
+                                                         awayScore: generic.score.away,
+                                                         clockMinutes: generic.clockMinutes,
+                                                         clockSeconds: generic.clockSeconds,
+                                                         isClockStopped: generic.isClockStopped,
+                                                         title: generic.title)
             data = try JSONEncoder().encode(message)
         } catch {
             return
         }
-        logger.info("xxx update \(id)")
         sendMessageToWatch(type: .genericScoreboard, data: data)
     }
 
@@ -174,7 +181,6 @@ extension Model {
         guard isWatchReachable() else {
             return
         }
-        logger.info("xxx remove \(id)")
         sendMessageToWatch(type: .removeScoreboard, data: id.uuidString)
     }
 
@@ -394,6 +400,34 @@ extension Model {
 
     func isWatchLocal() -> Bool {
         return !isWatchRemoteControl()
+    }
+
+    func updateScoreboardEffects() {
+        let sceneWidgets: [SettingsWidget]
+        if let scene = getSelectedScene() {
+            sceneWidgets = getSceneWidgets(scene: scene, onlyEnabled: true).map { $0.widget }
+        } else {
+            sceneWidgets = []
+        }
+        for (id, scoreboardEffect) in scoreboardEffects {
+            if let scoreboard = sceneWidgets.first(where: { $0.id == id })?.scoreboard {
+                switch scoreboard.type {
+                case .padel:
+                    break
+                case .generic:
+                    guard let widget = findWidget(id: id) else {
+                        continue
+                    }
+                    if !widget.scoreboard.generic.isClockStopped {
+                        widget.scoreboard.generic.tickClock()
+                    }
+                    DispatchQueue.main.async {
+                        scoreboardEffect.update(scoreboard: widget.scoreboard, players: self.database.scoreboardPlayers)
+                    }
+                    sendUpdateGenericScoreboardToWatch(id: id, generic: scoreboard.generic)
+                }
+            }
+        }
     }
 }
 
@@ -624,17 +658,17 @@ extension Model: WCSessionDelegate {
                 self.handleUpdatePadelScoreboardChangePlayers(scoreboard: widget.scoreboard.padel,
                                                               players: players)
             }
-            guard let padelScoreboardEffect = self.scoreboardEffects[action.id] else {
+            guard let scoreboardEffect = self.scoreboardEffects[action.id] else {
                 return
             }
-            padelScoreboardEffect.update(scoreboard: widget.scoreboard, players: self.database.scoreboardPlayers)
+            scoreboardEffect.update(scoreboard: widget.scoreboard, players: self.database.scoreboardPlayers)
             self.sendUpdatePadelScoreboardToWatch(id: action.id, padel: widget.scoreboard.padel)
         }
     }
 
     private func handleUpdatePadelScoreboardReset(scoreboard: SettingsWidgetPadelScoreboard) {
         scoreboard.score = [.init()]
-        scoreboard.scoreChanges = []
+        scoreboard.scoreChanges.removeAll()
     }
 
     private func handleUpdatePadelScoreboardUndo(scoreboard: SettingsWidgetPadelScoreboard) {
@@ -684,38 +718,6 @@ extension Model: WCSessionDelegate {
         }
     }
 
-    private func handleUpdateGenericScoreboard(_ data: Any) {
-        guard let data = data as? Data else {
-            return
-        }
-        guard let action = try? JSONDecoder().decode(WatchProtocolGenericScoreboardAction.self, from: data) else {
-            return
-        }
-        DispatchQueue.main.async {
-            guard self.isWatchLocal() else {
-                return
-            }
-            guard let widget = self.findWidget(id: action.id) else {
-                return
-            }
-            // switch action.action {
-            // case .reset:
-            //     self.handleUpdatePadelScoreboardReset(scoreboard: widget.scoreboard.padel)
-            // case .undo:
-            //     self.handleUpdatePadelScoreboardUndo(scoreboard: widget.scoreboard.padel)
-            // case .incrementHome:
-            //     self.handleUpdatePadelScoreboardIncrementHome(scoreboard: widget.scoreboard.padel)
-            // case .incrementAway:
-            //     self.handleUpdatePadelScoreboardIncrementAway(scoreboard: widget.scoreboard.padel)
-            // }
-            guard let scoreboardEffect = self.scoreboardEffects[action.id] else {
-                return
-            }
-            scoreboardEffect.update(scoreboard: widget.scoreboard, players: self.database.scoreboardPlayers)
-            self.sendUpdateGenericScoreboardToWatch(id: action.id, generic: widget.scoreboard.generic)
-        }
-    }
-
     private func handleUpdatePadelScoreboardChangePlayers(scoreboard: SettingsWidgetPadelScoreboard,
                                                           players: WatchProtocolPadelScoreboardActionPlayers)
     {
@@ -731,6 +733,99 @@ extension Model: WCSessionDelegate {
                 scoreboard.awayPlayer2 = players.away[1]
             }
         }
+    }
+
+    private func handleUpdateGenericScoreboard(_ data: Any) {
+        guard let data = data as? Data else {
+            return
+        }
+        guard let action = try? JSONDecoder().decode(WatchProtocolGenericScoreboardAction.self, from: data) else {
+            return
+        }
+        DispatchQueue.main.async {
+            guard self.isWatchLocal() else {
+                return
+            }
+            guard let widget = self.findWidget(id: action.id) else {
+                return
+            }
+            switch action.action {
+            case .reset:
+                self.handleUpdateGenericScoreboardReset(scoreboard: widget.scoreboard.generic)
+            case .undo:
+                self.handleUpdateGenericScoreboardUndo(scoreboard: widget.scoreboard.generic)
+            case .incrementHome:
+                self.handleUpdateGenericScoreboardIncrementHome(scoreboard: widget.scoreboard.generic)
+            case .incrementAway:
+                self.handleUpdateGenericScoreboardIncrementAway(scoreboard: widget.scoreboard.generic)
+            case let .setTitle(title):
+                self.handleUpdateGenericScoreboardSetTitle(scoreboard: widget.scoreboard.generic, title: title)
+            case let .setClock(minutes, seconds):
+                self.handleUpdateGenericScoreboardSetClock(scoreboard: widget.scoreboard.generic,
+                                                           minutes: minutes,
+                                                           seconds: seconds)
+            case let .setClockState(stopped: stopped):
+                self.handleUpdateGenericScoreboardSetClockState(scoreboard: widget.scoreboard.generic,
+                                                                stopped: stopped)
+            }
+            guard let scoreboardEffect = self.scoreboardEffects[action.id] else {
+                return
+            }
+            scoreboardEffect.update(scoreboard: widget.scoreboard, players: self.database.scoreboardPlayers)
+            self.sendUpdateGenericScoreboardToWatch(id: action.id, generic: widget.scoreboard.generic)
+        }
+    }
+
+    private func handleUpdateGenericScoreboardReset(scoreboard: SettingsWidgetGenericScoreboard) {
+        scoreboard.score.home = 0
+        scoreboard.score.away = 0
+        scoreboard.scoreChanges.removeAll()
+    }
+
+    private func handleUpdateGenericScoreboardUndo(scoreboard: SettingsWidgetGenericScoreboard) {
+        guard let team = scoreboard.scoreChanges.popLast() else {
+            return
+        }
+        switch team {
+        case .home:
+            if scoreboard.score.home > 0 {
+                scoreboard.score.home -= 1
+            }
+        case .away:
+            if scoreboard.score.away > 0 {
+                scoreboard.score.away -= 1
+            }
+        }
+    }
+
+    private func handleUpdateGenericScoreboardIncrementHome(scoreboard: SettingsWidgetGenericScoreboard) {
+        scoreboard.score.home += 1
+        scoreboard.scoreChanges.append(.home)
+    }
+
+    private func handleUpdateGenericScoreboardIncrementAway(scoreboard: SettingsWidgetGenericScoreboard) {
+        scoreboard.score.away += 1
+        scoreboard.scoreChanges.append(.away)
+    }
+
+    private func handleUpdateGenericScoreboardSetTitle(scoreboard: SettingsWidgetGenericScoreboard,
+                                                       title: String)
+    {
+        scoreboard.title = title
+    }
+
+    private func handleUpdateGenericScoreboardSetClock(scoreboard: SettingsWidgetGenericScoreboard,
+                                                       minutes: Int,
+                                                       seconds: Int)
+    {
+        scoreboard.clockMinutes = minutes
+        scoreboard.clockSeconds = seconds
+    }
+
+    private func handleUpdateGenericScoreboardSetClockState(scoreboard: SettingsWidgetGenericScoreboard,
+                                                            stopped: Bool)
+    {
+        scoreboard.isClockStopped = stopped
     }
 
     private func padelScoreboardUpdateSetCompleted(scoreboard: SettingsWidgetPadelScoreboard) {

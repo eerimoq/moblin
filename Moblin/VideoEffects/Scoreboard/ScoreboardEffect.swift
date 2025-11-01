@@ -169,7 +169,7 @@ final class ScoreboardEffect: VideoEffect {
             HStack {
                 Text(generic.title)
                 Spacer()
-                Text(generic.clock)
+                Text(generic.clock())
                     .monospacedDigit()
                     .font(.system(size: 25))
             }

@@ -1527,6 +1527,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             self.updateAverageSpeed(now: monotonicNow)
             self.updateTextEffects(now: now, timestamp: monotonicNow)
             self.updateMapEffects()
+            self.updateScoreboardEffects()
             self.updatePoll()
             self.updateObsSceneSwitcher(now: monotonicNow)
             self.weatherManager.setLocation(location: self.latestKnownLocation)

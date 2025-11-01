@@ -164,15 +164,21 @@ struct WatchProtocolPadelScoreboardScore: Codable {
 
 struct WatchProtocolPadelScoreboard: Codable {
     var id: UUID
-    // periphery:ignore
     var home: [UUID]
-    // periphery:ignore
     var away: [UUID]
     var score: [WatchProtocolPadelScoreboardScore]
 }
 
 struct WatchProtocolGenericScoreboard: Codable {
     var id: UUID
+    var homeTeam: String
+    var awayTeam: String
+    var homeScore: Int
+    var awayScore: Int
+    var clockMinutes: Int
+    var clockSeconds: Int
+    var isClockStopped: Bool
+    var title: String
 }
 
 struct WatchProtocolPadelScoreboardAction: Codable {
@@ -203,12 +209,13 @@ enum WatchProtocolGenericScoreboardActionType: Codable {
     case undo
     case incrementHome
     case incrementAway
+    case setTitle(title: String)
+    case setClock(minutes: Int, seconds: Int)
+    case setClockState(stopped: Bool)
 }
 
 struct WatchProtocolScoreboardPlayer: Codable {
-    // periphery:ignore
     var id: UUID
-    // periphery:ignore
     var name: String
 }
 
@@ -217,12 +224,10 @@ struct WatchProtocolInstantReplay: Codable {
 }
 
 extension WatchProtocolColor {
-    // periphery:ignore
     private func colorScale(_ color: Int) -> Double {
         return Double(color) / 255
     }
 
-    // periphery:ignore
     func color() -> Color {
         return Color(
             red: colorScale(red),
