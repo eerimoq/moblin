@@ -168,6 +168,7 @@ extension Model {
                                                          awayScore: generic.score.away,
                                                          clockMinutes: generic.clockMinutes,
                                                          clockSeconds: generic.clockSeconds,
+                                                         clockMaximum: generic.clockMaximum,
                                                          isClockStopped: generic.isClockStopped,
                                                          title: generic.title)
             data = try JSONEncoder().encode(message)
@@ -418,9 +419,10 @@ extension Model {
                     guard let widget = findWidget(id: id) else {
                         continue
                     }
-                    if !widget.scoreboard.generic.isClockStopped {
-                        widget.scoreboard.generic.tickClock()
+                    guard !widget.scoreboard.generic.isClockStopped else {
+                        continue
                     }
+                    widget.scoreboard.generic.tickClock()
                     DispatchQueue.main.async {
                         scoreboardEffect.update(scoreboard: widget.scoreboard, players: self.database.scoreboardPlayers)
                     }
@@ -818,8 +820,12 @@ extension Model: WCSessionDelegate {
                                                        minutes: Int,
                                                        seconds: Int)
     {
-        scoreboard.clockMinutes = minutes
-        scoreboard.clockSeconds = seconds
+        scoreboard.clockMinutes = minutes.clamped(to: 0 ... scoreboard.clockMaximum)
+        if scoreboard.clockMinutes == scoreboard.clockMaximum {
+            scoreboard.clockSeconds = 0
+        } else {
+            scoreboard.clockSeconds = seconds.clamped(to: 0 ... 59)
+        }
     }
 
     private func handleUpdateGenericScoreboardSetClockState(scoreboard: SettingsWidgetGenericScoreboard,

@@ -36,6 +36,7 @@ extension Model {
         generic.awayScore = scoreboard.awayScore
         generic.clockMinutes = scoreboard.clockMinutes
         generic.clockSeconds = scoreboard.clockSeconds
+        generic.clockMaximum = scoreboard.clockMaximum
         generic.isClockStopped = scoreboard.isClockStopped
         generic.title = scoreboard.title
         scoreboardType = .generic

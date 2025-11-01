@@ -11,6 +11,7 @@ class Generic: ObservableObject {
     @Published var awayScore: Int = 0
     @Published var clockMinutes: Int = 0
     @Published var clockSeconds: Int = 0
+    @Published var clockMaximum: Int = 45
     @Published var isClockStopped: Bool = false
     @Published var title: String = ""
 }
@@ -185,7 +186,7 @@ private struct ClockTabView: View {
                 HStack {
                     VStack {
                         Picker("", selection: $editingMinutes) {
-                            ForEach(0 ... 180, id: \.self) { value in
+                            ForEach(0 ... generic.clockMaximum, id: \.self) { value in
                                 Text(String(value))
                             }
                         }

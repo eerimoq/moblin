@@ -2233,20 +2233,38 @@ class SettingsWidgetPadelScoreboard: Codable, ObservableObject {
     }
 }
 
+enum SettingsWidgetGenericScoreboardClockDirection: Codable, CaseIterable {
+    case up
+    case down
+
+    func toString() -> String {
+        switch self {
+        case .up:
+            return String(localized: "Up")
+        case .down:
+            return String(localized: "Down")
+        }
+    }
+}
+
 class SettingsWidgetGenericScoreboard: Codable, ObservableObject {
     @Published var home: String = ""
     @Published var away: String = ""
     @Published var title: String = "⚽️"
+    @Published var clockMaximum: Int = 45
+    @Published var clockDirection: SettingsWidgetGenericScoreboardClockDirection = .up
     var score: SettingsWidgetScoreboardScore = .init()
     var scoreChanges: [SettingsWidgetScoreboardScoreIncrement] = []
     var clockMinutes: Int = 0
     var clockSeconds: Int = 0
-    var isClockStopped: Bool = false
+    var isClockStopped: Bool = true
 
     enum CodingKeys: CodingKey {
         case home,
              away,
-             title
+             title,
+             clockMaximum,
+             clockDirection
     }
 
     init() {}
@@ -2256,6 +2274,8 @@ class SettingsWidgetGenericScoreboard: Codable, ObservableObject {
         try container.encode(.home, home)
         try container.encode(.away, away)
         try container.encode(.title, title)
+        try container.encode(.clockMaximum, clockMaximum)
+        try container.encode(.clockDirection, clockDirection)
     }
 
     required init(from decoder: Decoder) throws {
@@ -2263,6 +2283,11 @@ class SettingsWidgetGenericScoreboard: Codable, ObservableObject {
         home = container.decode(.home, String.self, "")
         away = container.decode(.away, String.self, "")
         title = container.decode(.title, String.self, "⚽️")
+        clockMaximum = container.decode(.clockMaximum, Int.self, 45)
+        clockDirection = container.decode(.clockDirection,
+                                          SettingsWidgetGenericScoreboardClockDirection.self,
+                                          .up)
+        resetClock()
     }
 
     func clock() -> String {
@@ -2274,11 +2299,36 @@ class SettingsWidgetGenericScoreboard: Codable, ObservableObject {
     }
 
     func tickClock() {
-        if clockSeconds == 59 {
+        switch clockDirection {
+        case .up:
+            if clockMinutes != clockMaximum {
+                if clockSeconds == 59 {
+                    clockSeconds = 0
+                    clockMinutes += 1
+                } else {
+                    clockSeconds += 1
+                }
+            }
+        case .down:
+            if clockMinutes != 0 || clockSeconds != 0 {
+                if clockSeconds == 0 {
+                    clockSeconds = 59
+                    clockMinutes -= 1
+                } else {
+                    clockSeconds -= 1
+                }
+            }
+        }
+    }
+
+    func resetClock() {
+        switch clockDirection {
+        case .up:
+            clockMinutes = 0
             clockSeconds = 0
-            clockMinutes += 1
-        } else {
-            clockSeconds += 1
+        case .down:
+            clockMinutes = clockMaximum
+            clockSeconds = 0
         }
     }
 }

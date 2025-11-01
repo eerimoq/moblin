@@ -177,6 +177,7 @@ struct WatchProtocolGenericScoreboard: Codable {
     var awayScore: Int
     var clockMinutes: Int
     var clockSeconds: Int
+    var clockMaximum: Int
     var isClockStopped: Bool
     var title: String
 }
