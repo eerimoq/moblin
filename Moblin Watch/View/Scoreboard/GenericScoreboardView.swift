@@ -161,6 +161,39 @@ private struct ClockTabView: View {
     @State var isEditing: Bool = false
     @State var title: String = ""
 
+    private func clockEdit() -> some View {
+        VStack {
+            HStack {
+                VStack {
+                    Picker("", selection: $editingMinutes) {
+                        ForEach(0 ... generic.clockMaximum, id: \.self) { value in
+                            Text(String(value))
+                        }
+                    }
+                    .pickerStyle(.wheel)
+                    Spacer()
+                }
+                Text(String(":"))
+                VStack {
+                    Picker("", selection: $editingSeconds) {
+                        ForEach(0 ... 59, id: \.self) { value in
+                            Text(formatSeconds(value))
+                        }
+                    }
+                    .pickerStyle(.wheel)
+                    Spacer()
+                }
+            }
+            .font(clockFont)
+            Button {
+                isEditing = false
+                model.genericScoreboardSetClock(minutes: editingMinutes, seconds: editingSeconds)
+            } label: {
+                Text("Set clock")
+            }
+        }
+    }
+
     private func clockTime() -> some View {
         HStack {
             Spacer()
@@ -182,36 +215,7 @@ private struct ClockTabView: View {
         .background(scoreboardBlueColor)
         .foregroundColor(.white)
         .sheet(isPresented: $isEditing) {
-            VStack {
-                HStack {
-                    VStack {
-                        Picker("", selection: $editingMinutes) {
-                            ForEach(0 ... generic.clockMaximum, id: \.self) { value in
-                                Text(String(value))
-                            }
-                        }
-                        .pickerStyle(.wheel)
-                        Spacer()
-                    }
-                    Text(String(":"))
-                    VStack {
-                        Picker("", selection: $editingSeconds) {
-                            ForEach(0 ... 59, id: \.self) { value in
-                                Text(formatSeconds(value))
-                            }
-                        }
-                        .pickerStyle(.wheel)
-                        Spacer()
-                    }
-                }
-                .font(clockFont)
-                Button {
-                    isEditing = false
-                    model.genericScoreboardSetClock(minutes: editingMinutes, seconds: editingSeconds)
-                } label: {
-                    Text("Set clock")
-                }
-            }
+            clockEdit()
         }
     }
 
