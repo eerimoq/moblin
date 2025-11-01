@@ -14,21 +14,25 @@ private struct ColorsView: View {
         NavigationLink {
             Form {
                 Section {
-                    ColorPicker("Text", selection: $scoreboard.textColorColor)
+                    ColorPicker("Text", selection: $scoreboard.textColorColor, supportsOpacity: false)
                         .onChange(of: scoreboard.textColorColor) { _ in
                             if let color = scoreboard.textColorColor.toRgb() {
                                 scoreboard.textColor = color
                             }
                             updateEffect()
                         }
-                    ColorPicker("Primary background", selection: $scoreboard.primaryBackgroundColorColor)
+                    ColorPicker("Primary background",
+                                selection: $scoreboard.primaryBackgroundColorColor,
+                                supportsOpacity: false)
                         .onChange(of: scoreboard.primaryBackgroundColorColor) { _ in
                             if let color = scoreboard.primaryBackgroundColorColor.toRgb() {
                                 scoreboard.primaryBackgroundColor = color
                             }
                             updateEffect()
                         }
-                    ColorPicker("Secondary background", selection: $scoreboard.secondaryBackgroundColorColor)
+                    ColorPicker("Secondary background",
+                                selection: $scoreboard.secondaryBackgroundColorColor,
+                                supportsOpacity: false)
                         .onChange(of: scoreboard.secondaryBackgroundColorColor) { _ in
                             if let color = scoreboard.secondaryBackgroundColorColor.toRgb() {
                                 scoreboard.secondaryBackgroundColor = color
