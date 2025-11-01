@@ -325,27 +325,45 @@ struct StreamKickSettingsView: View {
     @ObservedObject var stream: SettingsStream
     @State private var fetchingChannelInfo: Bool = false
     @State private var fetchChannelInfoFailed: Bool = false
+    @State private var fetchingAltChannelInfo: Bool = false
+    @State private var fetchAltChannelInfoFailed: Bool = false
     @State private var title: String?
     @State private var category: String?
 
-    private func fetchChannelInfo() {
-        fetchingChannelInfo = true
-        fetchChannelInfoFailed = false
-        getKickChannelInfo(channelName: stream.kickChannelName) { channelInfo in
+    private func fetchKickChannel(
+        channelName: String,
+        setFetching: @escaping (Bool) -> Void,
+        setFailed: @escaping (Bool) -> Void,
+        onSuccess: @escaping (KickChannel) -> Void
+    ) {
+        setFetching(true)
+        setFailed(false)
+        getKickChannelInfo(channelName: channelName) { channelInfo in
             DispatchQueue.main.async {
-                fetchingChannelInfo = false
+                setFetching(false)
                 if let channelInfo {
-                    fetchChannelInfoFailed = false
-                    stream.kickChannelId = String(channelInfo.chatroom.id)
-                    stream.kickSlug = channelInfo.slug
-                    stream.kickChatroomChannelId = String(channelInfo.chatroom.channel_id)
-                    loadStreamInfo()
+                    setFailed(false)
+                    onSuccess(channelInfo)
                 } else {
-                    fetchChannelInfoFailed = true
+                    setFailed(true)
                 }
                 reloadConnectionsIfEnabled()
             }
         }
+    }
+
+    private func fetchChannelInfo() {
+        fetchKickChannel(
+            channelName: stream.kickChannelName,
+            setFetching: { self.fetchingChannelInfo = $0 },
+            setFailed: { self.fetchChannelInfoFailed = $0 },
+            onSuccess: { channelInfo in
+                self.stream.kickChannelId = String(channelInfo.chatroom.id)
+                self.stream.kickSlug = channelInfo.slug
+                self.stream.kickChatroomChannelId = String(channelInfo.chatroom.channel_id)
+                self.loadStreamInfo()
+            }
+        )
     }
 
     private func resetSettings() {
@@ -395,6 +413,35 @@ struct StreamKickSettingsView: View {
         }
     }
 
+    private func fetchAltChannelInfo() {
+        guard let kickAltChannel = stream.kickAltChannels.first else {
+            return
+        }
+        fetchKickChannel(
+            channelName: kickAltChannel.channelName,
+            setFetching: { self.fetchingAltChannelInfo = $0 },
+            setFailed: { self.fetchAltChannelInfoFailed = $0 },
+            onSuccess: { channelInfo in
+                self.stream.kickAltChannels[0].chatroomId = String(channelInfo.chatroom.id)
+                self.stream.kickAltChannels[0].chatroomChannelId = String(channelInfo.chatroom.channel_id)
+            }
+        )
+    }
+
+    private func submitAltChannelName(value: String) {
+        if stream.kickAltChannels.isEmpty {
+            stream.kickAltChannels.append(SettingsKickAltChannel())
+        }
+        stream.kickAltChannels[0].channelName = value
+        stream.kickAltChannels[0].chatroomId = nil
+        stream.kickAltChannels[0].chatroomChannelId = nil
+        if !value.isEmpty {
+            fetchAltChannelInfo()
+        } else {
+            reloadConnectionsIfEnabled()
+        }
+    }
+
     var body: some View {
         Form {
             AuthenticationView(stream: stream, onLoggedIn: onLoggedIn)
@@ -438,6 +485,41 @@ struct StreamKickSettingsView: View {
                 }
             } header: {
                 Text("Alerts")
+            }
+            Section {
+                Toggle("Enabled", isOn: Binding(
+                    get: {
+                        stream.kickAltChannels.first?.enabled ?? false
+                    },
+                    set: { newValue in
+                        if stream.kickAltChannels.isEmpty {
+                            stream.kickAltChannels.append(SettingsKickAltChannel())
+                        }
+                        stream.kickAltChannels[0].enabled = newValue
+                        reloadConnectionsIfEnabled()
+                    }
+                ))
+                if stream.kickAltChannels.first?.enabled == true {
+                    TextEditNavigationView(
+                        title: String(localized: "Channel name"),
+                        value: stream.kickAltChannels.first?.channelName ?? "",
+                        onChange: { _ in nil },
+                        onSubmit: submitAltChannelName
+                    )
+                }
+            } header: {
+                Text("Alt channel")
+            } footer: {
+                if stream.kickAltChannels.first?.enabled == true {
+                    if fetchingAltChannelInfo {
+                        Text("Fetching channel info...")
+                    } else if fetchAltChannelInfoFailed {
+                        Text("Channel not found on kick.com.")
+                            .foregroundColor(.red)
+                    } else {
+                        Text("Messages from this channel will appear with a white icon.")
+                    }
+                }
             }
         }
         .onAppear {

@@ -815,6 +815,52 @@ class SettingsKickAlerts: Codable, ObservableObject {
     }
 }
 
+class SettingsKickAltChannel: Codable, Identifiable, ObservableObject {
+    var id = UUID()
+    @Published var enabled: Bool = false
+    @Published var channelName: String = ""
+    var chatroomId: String?
+    var chatroomChannelId: String?
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case id,
+             enabled,
+             channelName,
+             chatroomId,
+             chatroomChannelId
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.enabled, enabled)
+        try container.encode(.channelName, channelName)
+        try container.encode(.chatroomId, chatroomId)
+        try container.encode(.chatroomChannelId, chatroomChannelId)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        enabled = container.decode(.enabled, Bool.self, false)
+        channelName = container.decode(.channelName, String.self, "")
+        chatroomId = container.decode(.chatroomId, String?.self, nil)
+        chatroomChannelId = container.decode(.chatroomChannelId, String?.self, nil)
+    }
+
+    func clone() -> SettingsKickAltChannel {
+        let new = SettingsKickAltChannel()
+        new.id = id
+        new.enabled = enabled
+        new.channelName = channelName
+        new.chatroomId = chatroomId
+        new.chatroomChannelId = chatroomChannelId
+        return new
+    }
+}
+
 class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named {
     static let defaultRealtimeIrlBaseUrl = "https://rtirl.com/api"
     @Published var name: String
@@ -839,6 +885,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
     @Published var kickSendMessagesTo: Bool = true
     var kickChatAlerts: SettingsKickAlerts = .init()
     var kickToastAlerts: SettingsKickAlerts = .init()
+    @Published var kickAltChannels: [SettingsKickAltChannel] = []
     @Published var dLiveUsername: String = ""
     var youTubeApiKey: String = ""
     @Published var youTubeVideoId: String = ""
@@ -921,6 +968,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
              kickSendMessagesTo,
              kickChatAlerts,
              kickToastAlerts,
+             kickAltChannels,
              youTubeApiKey,
              youTubeVideoId,
              youTubeHandle,
@@ -998,6 +1046,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         try container.encode(.kickSendMessagesTo, kickSendMessagesTo)
         try container.encode(.kickChatAlerts, kickChatAlerts)
         try container.encode(.kickToastAlerts, kickToastAlerts)
+        try container.encode(.kickAltChannels, kickAltChannels)
         try container.encode(.youTubeApiKey, youTubeApiKey)
         try container.encode(.youTubeVideoId, youTubeVideoId)
         try container.encode(.youTubeHandle, youTubeHandle)
@@ -1078,6 +1127,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         kickSendMessagesTo = container.decode(.kickSendMessagesTo, Bool.self, true)
         kickChatAlerts = container.decode(.kickChatAlerts, SettingsKickAlerts.self, .init())
         kickToastAlerts = container.decode(.kickToastAlerts, SettingsKickAlerts.self, .init())
+        kickAltChannels = container.decode(.kickAltChannels, [SettingsKickAltChannel].self, [])
         youTubeApiKey = container.decode(.youTubeApiKey, String.self, "")
         youTubeVideoId = container.decode(.youTubeVideoId, String.self, "")
         youTubeHandle = container.decode(.youTubeHandle, String.self, "")
@@ -1148,6 +1198,9 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         new.kickSendMessagesTo = kickSendMessagesTo
         new.kickChatAlerts = kickChatAlerts.clone()
         new.kickToastAlerts = kickToastAlerts.clone()
+        for kickAltChannel in kickAltChannels {
+            new.kickAltChannels.append(kickAltChannel.clone())
+        }
         new.youTubeApiKey = youTubeApiKey
         new.youTubeVideoId = youTubeVideoId
         new.youTubeHandle = youTubeHandle
