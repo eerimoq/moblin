@@ -1,5 +1,4 @@
 import Foundation
-import SwiftUI
 
 private func getRecordingsDirectory() -> URL {
     return createAndGetDirectory(name: "Recordings")
