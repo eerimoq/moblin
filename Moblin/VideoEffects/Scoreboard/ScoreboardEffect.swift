@@ -45,6 +45,8 @@ private struct TeamScoreView: View {
 }
 
 private struct PoweredByMoblinView: View {
+    let backgroundColor: Color
+
     var body: some View {
         HStack {
             Text("Powered by Moblin")
@@ -55,7 +57,7 @@ private struct PoweredByMoblinView: View {
         }
         .padding([.leading, .trailing], 3)
         .padding([.bottom], 3)
-        .background(scoreboardDarkBlueColor)
+        .background(backgroundColor)
     }
 }
 
@@ -91,11 +93,21 @@ final class ScoreboardEffect: VideoEffect {
 
     @MainActor
     func update(scoreboard: SettingsWidgetScoreboard, players: [SettingsWidgetScoreboardPlayer]) {
+        let textColor = Color.white
+        let primaryBackgroundColor = scoreboardBlueColor
+        let secondaryBackgroundColor = scoreboardDarkBlueColor
         switch scoreboard.type {
         case .padel:
-            updatePadel(padel: scoreboard.padel, players: players)
+            updatePadel(textColor: textColor,
+                        primaryBackgroundColor: primaryBackgroundColor,
+                        secondaryBackgroundColor: secondaryBackgroundColor,
+                        padel: scoreboard.padel,
+                        players: players)
         case .generic:
-            updateGeneric(generic: scoreboard.generic)
+            updateGeneric(textColor: textColor,
+                          primaryBackgroundColor: primaryBackgroundColor,
+                          secondaryBackgroundColor: secondaryBackgroundColor,
+                          generic: scoreboard.generic)
         }
     }
 
@@ -117,7 +129,11 @@ final class ScoreboardEffect: VideoEffect {
     }
 
     @MainActor
-    private func updatePadel(padel: SettingsWidgetPadelScoreboard, players: [SettingsWidgetScoreboardPlayer]) {
+    private func updatePadel(textColor: Color,
+                             primaryBackgroundColor: Color,
+                             secondaryBackgroundColor: Color,
+                             padel: SettingsWidgetPadelScoreboard, players: [SettingsWidgetScoreboardPlayer])
+    {
         let scoreboard = padelScoreboardSettingsToEffect(padel, players)
         let scoreBoard = VStack(alignment: .leading, spacing: 0) {
             HStack(alignment: .center, spacing: 18) {
@@ -152,11 +168,11 @@ final class ScoreboardEffect: VideoEffect {
             }
             .padding([.leading, .trailing], 3)
             .padding([.top], 3)
-            .background(scoreboardBlueColor)
-            PoweredByMoblinView()
+            .background(primaryBackgroundColor)
+            PoweredByMoblinView(backgroundColor: secondaryBackgroundColor)
         }
         .clipShape(RoundedRectangle(cornerRadius: 5))
-        .foregroundColor(.white)
+        .foregroundColor(textColor)
         let renderer = ImageRenderer(content: scoreBoard)
         guard let image = renderer.uiImage else {
             return
@@ -165,7 +181,11 @@ final class ScoreboardEffect: VideoEffect {
     }
 
     @MainActor
-    private func updateGeneric(generic: SettingsWidgetGenericScoreboard) {
+    private func updateGeneric(textColor: Color,
+                               primaryBackgroundColor: Color,
+                               secondaryBackgroundColor: Color,
+                               generic: SettingsWidgetGenericScoreboard)
+    {
         let scoreBoard = VStack(alignment: .leading, spacing: 0) {
             HStack {
                 Text(generic.title)
@@ -175,7 +195,7 @@ final class ScoreboardEffect: VideoEffect {
                     .font(.system(size: 25))
             }
             .padding(5)
-            .background(scoreboardDarkBlueColor)
+            .background(secondaryBackgroundColor)
             HStack(alignment: .center, spacing: 18) {
                 VStack(alignment: .leading) {
                     VStack(alignment: .leading) {
@@ -199,11 +219,11 @@ final class ScoreboardEffect: VideoEffect {
                 .font(.system(size: 45))
             }
             .padding([.leading, .trailing], 5)
-            .background(scoreboardBlueColor)
-            PoweredByMoblinView()
+            .background(primaryBackgroundColor)
+            PoweredByMoblinView(backgroundColor: secondaryBackgroundColor)
         }
         .clipShape(RoundedRectangle(cornerRadius: 5))
-        .foregroundColor(.white)
+        .foregroundColor(textColor)
         let renderer = ImageRenderer(content: scoreBoard)
         guard let image = renderer.uiImage else {
             return
