@@ -815,10 +815,10 @@ class SettingsKickAlerts: Codable, ObservableObject {
     }
 }
 
-struct SettingsKickAltChannel: Codable, Identifiable, Equatable {
+class SettingsKickAltChannel: Codable, Identifiable, ObservableObject {
     var id = UUID()
-    var enabled: Bool = false
-    var channelName: String = ""
+    @Published var enabled: Bool = false
+    @Published var channelName: String = ""
     var chatroomId: String?
     var chatroomChannelId: String?
 
@@ -834,20 +834,30 @@ struct SettingsKickAltChannel: Codable, Identifiable, Equatable {
 
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(id, forKey: .id)
-        try container.encode(enabled, forKey: .enabled)
-        try container.encode(channelName, forKey: .channelName)
-        try container.encode(chatroomId, forKey: .chatroomId)
-        try container.encode(chatroomChannelId, forKey: .chatroomChannelId)
+        try container.encode(.id, id)
+        try container.encode(.enabled, enabled)
+        try container.encode(.channelName, channelName)
+        try container.encode(.chatroomId, chatroomId)
+        try container.encode(.chatroomChannelId, chatroomChannelId)
     }
 
-    init(from decoder: Decoder) throws {
+    required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
         enabled = container.decode(.enabled, Bool.self, false)
         channelName = container.decode(.channelName, String.self, "")
         chatroomId = container.decode(.chatroomId, String?.self, nil)
         chatroomChannelId = container.decode(.chatroomChannelId, String?.self, nil)
+    }
+
+    func clone() -> SettingsKickAltChannel {
+        let new = SettingsKickAltChannel()
+        new.id = id
+        new.enabled = enabled
+        new.channelName = channelName
+        new.chatroomId = chatroomId
+        new.chatroomChannelId = chatroomChannelId
+        return new
     }
 }
 
@@ -1188,7 +1198,9 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         new.kickSendMessagesTo = kickSendMessagesTo
         new.kickChatAlerts = kickChatAlerts.clone()
         new.kickToastAlerts = kickToastAlerts.clone()
-        new.kickAltChannels = kickAltChannels
+        for altChannel in kickAltChannels {
+            new.kickAltChannels.append(altChannel.clone())
+        }
         new.youTubeApiKey = youTubeApiKey
         new.youTubeVideoId = youTubeVideoId
         new.youTubeHandle = youTubeHandle
