@@ -90,7 +90,7 @@ struct WidgetWizardSettingsView: View {
                     AddWidgetToSceneView(scene: scene)
                 }
             } header: {
-                Text("Scenes to add widget to")
+                Text("Scenes to add the widget to")
             }
             Section {
                 HCenter {
