@@ -2482,7 +2482,7 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
         case .image:
             return String(localized: "An image widget shows an image.")
         case .alerts:
-            return String(localized: "An alerts widget shows various alerts.")
+            return String(localized: "An alerts widget shows various alerts (subscriptions, raids, ...).")
         case .map:
             return String(localized: "A map widget shows a map with your location.")
         case .snapshot:
@@ -2490,13 +2490,13 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
         case .scene:
             return String(localized: "A scene widget shows a scene's widgets.")
         case .vTuber:
-            return String(localized: "An VTuber widget shows a VTuber model.")
+            return String(localized: "A VTuber widget shows a VTuber model that imitates your facial movements.")
         case .pngTuber:
-            return String(localized: "A PNGTuber widget shows a PNGTuber model.")
+            return String(localized: "A PNGTuber widget shows a PNGTuber model that imitates your facial movements.")
         case .qrCode:
-            return String(localized: "A QR code widget shows a QR code.")
+            return String(localized: "A QR code widget shows a QR code of any text.")
         case .scoreboard:
-            return String(localized: "A scoreboard widget shows a sports scoreboard.")
+            return String(localized: "A scoreboard widget shows a sports scoreboard, controlled with an Apple Watch.")
         case .crop:
             return String(localized: "A crop widget shows parts of a browser widget.")
         }
