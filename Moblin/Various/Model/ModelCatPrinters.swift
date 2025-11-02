@@ -15,6 +15,7 @@ enum CatPrinterEvent {
     case twitchResubscribe
     case twitchRaid
     case twitchCheer(amount: Int)
+    case twitchReward
     case kickSubscription
     case kickGiftedSubscriptions
     case kickHost
@@ -34,6 +35,8 @@ enum CatPrinterEvent {
         case .twitchRaid:
             return .twitch
         case .twitchCheer:
+            return .twitch
+        case .twitchReward:
             return .twitch
         case .kickSubscription:
             return .kick
@@ -172,6 +175,8 @@ extension Model {
             return settings.printTwitch.raids
         case let .twitchCheer(amount):
             return settings.printTwitch.isBitsEnabled(amount: amount)
+        case .twitchReward:
+            return settings.printTwitch.rewards
         case .kickSubscription:
             return settings.printKick.subscriptions
         case .kickGiftedSubscriptions:

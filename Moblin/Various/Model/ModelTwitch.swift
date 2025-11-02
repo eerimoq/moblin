@@ -358,6 +358,7 @@ extension Model: TwitchEventSubDelegate {
                 image: "medal.star"
             )
         }
+        printEventCatPrinters(event: .twitchReward, username: event.user_name, message: text)
     }
 
     func twitchEventSubChannelRaid(event: TwitchEventSubChannelRaidEvent) {
