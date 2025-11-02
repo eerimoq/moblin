@@ -1771,34 +1771,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named 
     }
 
     func image() -> String {
-        switch type {
-        case .image:
-            return "photo"
-        case .browser:
-            return "globe"
-        case .text:
-            return "textformat"
-        case .crop:
-            return "crop"
-        case .map:
-            return "map"
-        case .scene:
-            return "photo.on.rectangle"
-        case .qrCode:
-            return "qrcode"
-        case .alerts:
-            return "megaphone"
-        case .videoSource:
-            return "video"
-        case .scoreboard:
-            return "rectangle.split.2x1"
-        case .vTuber:
-            return "person.crop.circle"
-        case .pngTuber:
-            return "person.crop.circle.dashed"
-        case .snapshot:
-            return "camera.aperture"
-        }
+        return type.image()
     }
 }
 
@@ -2464,6 +2437,37 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
             return String(localized: "Scoreboard")
         case .crop:
             return String(localized: "Crop")
+        }
+    }
+
+    func image() -> String {
+        switch self {
+        case .image:
+            return "photo"
+        case .browser:
+            return "globe"
+        case .text:
+            return "textformat"
+        case .crop:
+            return "crop"
+        case .map:
+            return "map"
+        case .scene:
+            return "photo.on.rectangle"
+        case .qrCode:
+            return "qrcode"
+        case .alerts:
+            return "megaphone"
+        case .videoSource:
+            return "video"
+        case .scoreboard:
+            return "rectangle.split.2x1"
+        case .vTuber:
+            return "person.crop.circle"
+        case .pngTuber:
+            return "person.crop.circle.dashed"
+        case .snapshot:
+            return "camera.aperture"
         }
     }
 }
