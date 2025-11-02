@@ -33,6 +33,7 @@ private let versions = [
         "  • Do it yourself using the Files app.",
         "• Create widget wizard. 💡 mikeful",
         "  • Select scene(s) to add it to in the wizard. Current scene by default.",
+        "• Show version history in bigger window.",
     ]),
     Version(version: "27.1.0", date: "2025-10-22", changes: [
         "• Sensitive text as • instead of *.",
@@ -1271,11 +1272,9 @@ private let versions = [
         "• Make map widget show a bigger area. 💡 JohannesLiv",
         "• Text widget checkbox specifier `{checkbox}`.",
         "• Slightly smaller text widget font size by default.",
-        "  • 30 instead of 40.",
         "• Remove Settings → Scenes → My scene → Widgets visibility toggles.",
         "  • Control visibility with widget toggles (globally, across ass scenes).",
         "• Slightly smaller poll font size.",
-        "  • 30 instead of 40.",
         "• Make poll background transparent.",
     ]),
     Version(version: "0.350.0", date: "2024-07-27", changes: [

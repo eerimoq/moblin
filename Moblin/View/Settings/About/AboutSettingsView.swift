@@ -1,15 +1,12 @@
 import SwiftUI
 
 struct AboutSettingsView: View {
+    @State var presentingVersionHistory: Bool = false
+
     var body: some View {
         Form {
             Section {
                 TextItemView(name: String(localized: "Version"), value: appVersion())
-                NavigationLink {
-                    AboutVersionHistorySettingsView()
-                } label: {
-                    Text("Version history")
-                }
                 NavigationLink {
                     AboutLicensesSettingsView()
                 } label: {
@@ -19,6 +16,23 @@ struct AboutSettingsView: View {
                     AboutAttributionsSettingsView()
                 } label: {
                     Text("Attributions")
+                }
+            }
+            Section {
+                Button {
+                    presentingVersionHistory = true
+                } label: {
+                    HCenter {
+                        Text("Version history")
+                    }
+                }
+                .sheet(isPresented: $presentingVersionHistory) {
+                    ZStack {
+                        AboutVersionHistorySettingsView()
+                        CloseButtonTopRightView {
+                            presentingVersionHistory = false
+                        }
+                    }
                 }
             }
             Section {
