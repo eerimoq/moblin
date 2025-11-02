@@ -1364,13 +1364,11 @@ extension Model {
             sceneWidget.y = 72
             sceneWidget.size = 28
         case .vTuber:
-            sceneWidget.x = 80
-            sceneWidget.y = 60
             sceneWidget.size = 28
+            sceneWidget.alignment = .bottomRight
         case .pngTuber:
-            sceneWidget.x = 85
-            sceneWidget.y = 72
             sceneWidget.size = 28
+            sceneWidget.alignment = .bottomRight
         case .browser:
             let resolution = stream.resolution.dimensions(portrait: stream.portrait)
             let width = (100 * Double(widget.browser.width) / Double(resolution.width)).clamped(to: 1 ... 100)
