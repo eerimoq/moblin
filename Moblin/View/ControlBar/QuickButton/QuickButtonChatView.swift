@@ -645,6 +645,7 @@ private struct SendMessagesToView: View {
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 24, height: 24)
                 Text(name)
+                    .foregroundColor(.primary)
                 Spacer()
                 if enabled {
                     Image(systemName: "checkmark")

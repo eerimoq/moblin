@@ -31,6 +31,7 @@ private struct AddWidgetToSceneView: View {
                 }
             }
         }
+        .foregroundColor(.primary)
     }
 }
 
