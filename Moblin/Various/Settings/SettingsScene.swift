@@ -2470,6 +2470,37 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
             return "camera.aperture"
         }
     }
+
+    func description() -> String {
+        switch self {
+        case .text:
+            return String(localized: "A text widget shows text, weather, clock and much more.")
+        case .browser:
+            return String(localized: "A browser widget shows a webpage.")
+        case .videoSource:
+            return String(localized: "A video source widget shows another camera or screen capture.")
+        case .image:
+            return String(localized: "An image widget shows an image.")
+        case .alerts:
+            return String(localized: "An alerts widget shows various alerts.")
+        case .map:
+            return String(localized: "A map widget shows a map with your location.")
+        case .snapshot:
+            return String(localized: "A snapshot widget shows snapshots when taken.")
+        case .scene:
+            return String(localized: "A scene widget shows a scene's widgets.")
+        case .vTuber:
+            return String(localized: "An VTuber widget shows a VTuber model.")
+        case .pngTuber:
+            return String(localized: "A PNGTuber widget shows a PNGTuber model.")
+        case .qrCode:
+            return String(localized: "A QR code widget shows a QR code.")
+        case .scoreboard:
+            return String(localized: "A scoreboard widget shows a sports scoreboard.")
+        case .crop:
+            return String(localized: "A crop widget shows parts of a browser widget.")
+        }
+    }
 }
 
 let widgetTypes = SettingsWidgetType.allCases

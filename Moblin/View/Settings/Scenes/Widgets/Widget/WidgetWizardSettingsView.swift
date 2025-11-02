@@ -84,6 +84,8 @@ struct WidgetWizardSettingsView: View {
                         Text(type.toString())
                     }
                 }
+            } footer: {
+                Text(createWidgetWizard.type.description())
             }
             Section {
                 ForEach(scenesToAddWidgetTo) { scene in
