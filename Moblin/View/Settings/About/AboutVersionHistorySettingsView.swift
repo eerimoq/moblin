@@ -8,6 +8,32 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "27.2.0", date: "2025-11-02", changes: [
+        "• Optional AI responses in alerts widget.",
+        "  • For example, text to speech of \"erik just followed. <AI rant>\".",
+        "• Optionally use TTS.Monster for chat text to speech. 💡 Maz",
+        "• Show real FPS in top left. 💡 BoostedBen",
+        "  • Updates every 2 seconds.",
+        "• Remove MetalPetal (and its beauty filter).",
+        "  • Was not maintained.",
+        "• Basic navigation by showing a map with walking directions. 💡 Naginreed",
+        "  • Open/close with Navigation quick button.",
+        "  • Long press to set destination or search for destination.",
+        "• Added Chinese Traditional (Taiwan). 💡 ИƎØ_ΙΙØZ",
+        "• Encoder resolution in top left Stream status. 💡 NoIP",
+        "• Fix chat text to speech sometimes saying the message way too late. 🐛 Melkepakken",
+        "• German translation updated. ✍️ MaurisonX",
+        "• Chinese simplified translation updated. ✍️ iNove_i9",
+        "• Resolution and fps in text widget. 💡 NoIP",
+        "• Chinese Taiwan translation updated. ✍️ ИƎØ_ΙΙØZ",
+        "• Korean translation updated. ✍️ 위인터",
+        "• Generic scoreboard widget. 💡 MRHide",
+        "• Configurable scoreboard colors.",
+        "• Never delete recordings. 💡 Jordinho_reidelas",
+        "  • Do it yourself using the Files app.",
+        "• Create widget wizard. 💡 mikeful",
+        "  • Select scene(s) to add it to in the wizard. Current scene by default.",
+    ]),
     Version(version: "27.1.0", date: "2025-10-22", changes: [
         "• Sensitive text as • instead of *.",
         "• Stream URL page redesign.",
