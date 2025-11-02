@@ -103,42 +103,6 @@ struct SceneSettingsView: View {
         model.database.widgets
     }
 
-    private func createSceneWidget(widget: SettingsWidget) -> SettingsSceneWidget {
-        let sceneWidget = SettingsSceneWidget(widgetId: widget.id)
-        switch widget.type {
-        case .text:
-            sceneWidget.size = 5
-        case .image:
-            sceneWidget.size = 30
-        case .map:
-            sceneWidget.size = 23
-        case .qrCode:
-            sceneWidget.size = 23
-        case .videoSource:
-            sceneWidget.x = 72
-            sceneWidget.y = 72
-            sceneWidget.size = 28
-        case .vTuber:
-            sceneWidget.x = 80
-            sceneWidget.y = 60
-            sceneWidget.size = 28
-        case .pngTuber:
-            sceneWidget.x = 85
-            sceneWidget.y = 72
-            sceneWidget.size = 28
-        case .browser:
-            let stream = model.stream
-            let resolution = stream.resolution.dimensions(portrait: stream.portrait)
-            let width = (100 * Double(widget.browser.width) / Double(resolution.width)).clamped(to: 1 ... 100)
-            let height = (100 * Double(widget.browser.height) / Double(resolution.height)).clamped(to: 1 ... 100)
-            sceneWidget.size = max(width, height)
-            sceneWidget.sizeString = String(sceneWidget.size)
-        default:
-            break
-        }
-        return sceneWidget
-    }
-
     private func onCameraChange(cameraId: String) {
         scene.updateCameraId(settingsCameraId: model.cameraIdToSettingsCameraId(cameraId: cameraId))
         model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
@@ -295,12 +259,7 @@ struct SceneSettingsView: View {
                                 Section("Widget name") {
                                     ForEach(widgets) { widget in
                                         Button {
-                                            scene.widgets.append(createSceneWidget(widget: widget))
-                                            var attachCamera = false
-                                            if scene.id == model.getSelectedScene()?.id {
-                                                attachCamera = model.isCaptureDeviceWidget(widget: widget)
-                                            }
-                                            model.sceneUpdated(imageEffectChanged: true, attachCamera: attachCamera)
+                                            model.appendWidgetToScene(scene: scene, widget: widget)
                                             showingAddWidget = false
                                         } label: {
                                             IconAndTextView(

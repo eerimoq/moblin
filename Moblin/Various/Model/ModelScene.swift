@@ -2,6 +2,16 @@ import AVFoundation
 import CoreLocation
 import SwiftUI
 
+class CreateWidgetWizard: ObservableObject {
+    @Published var name: String = ""
+    @Published var type: SettingsWidgetType = .text
+
+    func reset() {
+        name = ""
+        type = .text
+    }
+}
+
 struct WidgetInScene: Identifiable {
     var id: UUID {
         widget.id
@@ -1336,5 +1346,52 @@ extension Model {
             return
         }
         selectScene(id: enabledScenes[nextSceneIndex].id)
+    }
+
+    private func createSceneWidget(widget: SettingsWidget) -> SettingsSceneWidget {
+        let sceneWidget = SettingsSceneWidget(widgetId: widget.id)
+        switch widget.type {
+        case .text:
+            sceneWidget.size = 5
+        case .image:
+            sceneWidget.size = 30
+        case .map:
+            sceneWidget.size = 23
+        case .qrCode:
+            sceneWidget.size = 23
+        case .videoSource:
+            sceneWidget.x = 72
+            sceneWidget.y = 72
+            sceneWidget.size = 28
+        case .vTuber:
+            sceneWidget.x = 80
+            sceneWidget.y = 60
+            sceneWidget.size = 28
+        case .pngTuber:
+            sceneWidget.x = 85
+            sceneWidget.y = 72
+            sceneWidget.size = 28
+        case .browser:
+            let resolution = stream.resolution.dimensions(portrait: stream.portrait)
+            let width = (100 * Double(widget.browser.width) / Double(resolution.width)).clamped(to: 1 ... 100)
+            let height = (100 * Double(widget.browser.height) / Double(resolution.height)).clamped(to: 1 ... 100)
+            sceneWidget.size = max(width, height)
+            sceneWidget.sizeString = String(sceneWidget.size)
+        case .snapshot:
+            sceneWidget.size = 40
+            sceneWidget.alignment = .topRight
+        default:
+            break
+        }
+        return sceneWidget
+    }
+
+    func appendWidgetToScene(scene: SettingsScene, widget: SettingsWidget) {
+        scene.widgets.append(createSceneWidget(widget: widget))
+        var attachCamera = false
+        if scene.id == getSelectedScene()?.id {
+            attachCamera = isCaptureDeviceWidget(widget: widget)
+        }
+        sceneUpdated(imageEffectChanged: true, attachCamera: attachCamera)
     }
 }

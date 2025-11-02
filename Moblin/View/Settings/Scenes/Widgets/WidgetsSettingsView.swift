@@ -52,6 +52,7 @@ private struct WidgetsSettingsItemView: View {
 struct WidgetsSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var database: Database
+    @State var presentingCreateWizard: Bool = false
 
     var body: some View {
         Section {
@@ -67,11 +68,16 @@ struct WidgetsSettingsView: View {
                 model.resetSelectedScene()
             }
             CreateButtonView {
-                let name = makeUniqueName(name: SettingsWidget.baseName, existingNames: database.widgets)
-                let widget = SettingsWidget(name: name)
-                database.widgets.append(widget)
-                model.fixAlertMedias()
-                model.resetSelectedScene(changeScene: false, attachCamera: false)
+                presentingCreateWizard = true
+                model.createWidgetWizard.reset()
+            }
+            .sheet(isPresented: $presentingCreateWizard) {
+                NavigationStack {
+                    WidgetWizardSettingsView(model: model,
+                                             database: database,
+                                             createWidgetWizard: model.createWidgetWizard,
+                                             presentingCreateWizard: $presentingCreateWizard)
+                }
             }
         } header: {
             Text("Widgets")

@@ -9,14 +9,6 @@ struct WidgetSettingsView: View {
         Form {
             Section {
                 NameEditView(name: $widget.name, existingNames: database.widgets)
-                Picker("Type", selection: $widget.type) {
-                    ForEach(widgetTypes, id: \.self) { type in
-                        Text(type.toString())
-                    }
-                }
-                .onChange(of: widget.type) { _ in
-                    model.resetSelectedScene(changeScene: false)
-                }
             }
             switch widget.type {
             case .image:
@@ -49,6 +41,6 @@ struct WidgetSettingsView: View {
                 WidgetSnapshotSettingsView(widget: widget, snapshot: widget.snapshot)
             }
         }
-        .navigationTitle("Widget")
+        .navigationTitle("\(widget.type.toString()) widget")
     }
 }

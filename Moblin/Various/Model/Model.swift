@@ -375,6 +375,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     let battery = Battery()
     let remoteControl = RemoteControl()
     let createStreamWizard = CreateStreamWizard()
+    let createWidgetWizard = CreateWidgetWizard()
     let zoom = Zoom()
     let camera = CameraState()
     let mediaPlayerPlayer = MediaPlayerPlayer()
