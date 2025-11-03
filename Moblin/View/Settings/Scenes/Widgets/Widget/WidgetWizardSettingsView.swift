@@ -46,23 +46,12 @@ private class SceneToAddWidgetTo: Identifiable, ObservableObject {
     }
 }
 
-struct WidgetWizardSettingsView: View {
+private struct SelectScenesView: View {
     let model: Model
     @ObservedObject var database: Database
     @ObservedObject var createWidgetWizard: CreateWidgetWizard
     @Binding var presentingCreateWizard: Bool
     @State private var scenesToAddWidgetTo: [SceneToAddWidgetTo] = []
-
-    private func canCreate() -> Bool {
-        return isValidName() == nil
-    }
-
-    private func isValidName() -> String? {
-        if database.widgets.contains(where: { $0.name == createWidgetWizard.name }) {
-            return String(localized: "The name '\(createWidgetWizard.name)' is already in use.")
-        }
-        return nil
-    }
 
     private func create() {
         presentingCreateWizard = false
@@ -85,12 +74,58 @@ struct WidgetWizardSettingsView: View {
     var body: some View {
         Form {
             Section {
+                ForEach(scenesToAddWidgetTo) { scene in
+                    AddWidgetToSceneView(scene: scene)
+                }
+            }
+            Section {
+                Button {
+                    create()
+                } label: {
+                    HCenter {
+                        Text("Create")
+                    }
+                }
+            }
+        }
+        .navigationTitle("Scenes to add the widget to")
+        .toolbar {
+            CreateWidgetWizardToolbar(presentingCreateWizard: $presentingCreateWizard)
+        }
+        .onAppear {
+            scenesToAddWidgetTo = database.scenes.map {
+                SceneToAddWidgetTo(scene: $0, enabled: $0 === model.getSelectedScene())
+            }
+        }
+    }
+}
+
+struct WidgetWizardSettingsView: View {
+    let model: Model
+    @ObservedObject var database: Database
+    @ObservedObject var createWidgetWizard: CreateWidgetWizard
+    @Binding var presentingCreateWizard: Bool
+
+    private func isValidName() -> String? {
+        if database.widgets.contains(where: { $0.name == createWidgetWizard.name }) {
+            return String(localized: "The name '\(createWidgetWizard.name)' is already in use.")
+        }
+        return nil
+    }
+
+    private func canGoNext() -> Bool {
+        return isValidName() == nil
+    }
+
+    var body: some View {
+        Form {
+            Section {
                 TextField("", text: $createWidgetWizard.name)
                     .disableAutocorrection(true)
             } header: {
                 Text("Name")
             } footer: {
-                if let message = isValidName(), presentingCreateWizard {
+                if let message = isValidName() {
                     Text(message)
                         .foregroundColor(.red)
                         .bold()
@@ -106,31 +141,20 @@ struct WidgetWizardSettingsView: View {
                 Text(createWidgetWizard.type.description())
             }
             Section {
-                ForEach(scenesToAddWidgetTo) { scene in
-                    AddWidgetToSceneView(scene: scene)
+                NavigationLink {
+                    SelectScenesView(model: model,
+                                     database: database,
+                                     createWidgetWizard: createWidgetWizard,
+                                     presentingCreateWizard: $presentingCreateWizard)
+                } label: {
+                    WizardNextButtonView()
                 }
-            } header: {
-                Text("Scenes to add the widget to")
-            }
-            Section {
-                HCenter {
-                    Button {
-                        create()
-                    } label: {
-                        Text("Create")
-                    }
-                    .disabled(!canCreate())
-                }
+                .disabled(!canGoNext())
             }
         }
         .navigationTitle("Create widget wizard")
         .toolbar {
             CreateWidgetWizardToolbar(presentingCreateWizard: $presentingCreateWizard)
-        }
-        .onAppear {
-            scenesToAddWidgetTo = database.scenes.map {
-                SceneToAddWidgetTo(scene: $0, enabled: $0 === model.getSelectedScene())
-            }
         }
     }
 }
