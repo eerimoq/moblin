@@ -64,6 +64,24 @@ struct WidgetWizardSettingsView: View {
         return nil
     }
 
+    private func create() {
+        presentingCreateWizard = false
+        let name: String
+        if createWidgetWizard.name.isEmpty {
+            name = makeUniqueName(name: SettingsWidget.baseName, existingNames: database.widgets)
+        } else {
+            name = createWidgetWizard.name
+        }
+        let widget = SettingsWidget(name: name)
+        widget.type = createWidgetWizard.type
+        database.widgets.append(widget)
+        model.fixAlertMedias()
+        model.resetSelectedScene(changeScene: false, attachCamera: false)
+        for sceneToAddWidgetTo in scenesToAddWidgetTo where sceneToAddWidgetTo.enabled {
+            model.appendWidgetToScene(scene: sceneToAddWidgetTo.scene, widget: widget)
+        }
+    }
+
     var body: some View {
         Form {
             Section {
@@ -97,21 +115,7 @@ struct WidgetWizardSettingsView: View {
             Section {
                 HCenter {
                     Button {
-                        presentingCreateWizard = false
-                        let name: String
-                        if createWidgetWizard.name.isEmpty {
-                            name = makeUniqueName(name: SettingsWidget.baseName, existingNames: database.widgets)
-                        } else {
-                            name = createWidgetWizard.name
-                        }
-                        let widget = SettingsWidget(name: name)
-                        widget.type = createWidgetWizard.type
-                        database.widgets.append(widget)
-                        model.fixAlertMedias()
-                        model.resetSelectedScene(changeScene: false, attachCamera: false)
-                        for sceneToAddWidgetTo in scenesToAddWidgetTo where sceneToAddWidgetTo.enabled {
-                            model.appendWidgetToScene(scene: sceneToAddWidgetTo.scene, widget: widget)
-                        }
+                        create()
                     } label: {
                         Text("Create")
                     }
