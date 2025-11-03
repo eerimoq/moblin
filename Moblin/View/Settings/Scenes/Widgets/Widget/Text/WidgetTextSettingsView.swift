@@ -491,6 +491,31 @@ private struct DebugFormatSpecifierView: View {
     }
 }
 
+struct TextWidgetTextView: View {
+    @Binding var value: String
+    @FocusState var editingText: Bool
+
+    var body: some View {
+        Section {
+            MultiLineTextFieldView(value: $value)
+                .keyboardType(.default)
+                .textInputAutocapitalization(.never)
+                .autocorrectionDisabled()
+                .focused($editingText)
+        } footer: {
+            if isPhone() {
+                HStack {
+                    Spacer()
+                    Button("Done") {
+                        editingText = false
+                    }
+                }
+                .disabled(!editingText)
+            }
+        }
+    }
+}
+
 private struct TextSelectionView: View {
     @EnvironmentObject var model: Model
     @Environment(\.dismiss) var dismiss
@@ -641,23 +666,7 @@ private struct TextSelectionView: View {
 
     var body: some View {
         Form {
-            Section {
-                MultiLineTextFieldView(value: $value)
-                    .keyboardType(.default)
-                    .textInputAutocapitalization(.never)
-                    .autocorrectionDisabled()
-                    .focused($editingText)
-            } footer: {
-                if isPhone() {
-                    HStack {
-                        Spacer()
-                        Button("Done") {
-                            editingText = false
-                        }
-                    }
-                    .disabled(!editingText)
-                }
-            }
+            TextWidgetTextView(value: $value)
             Section {
                 NavigationLink {
                     SuggestionsView(text: $value)
