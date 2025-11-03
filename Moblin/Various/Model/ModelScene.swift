@@ -5,10 +5,13 @@ import SwiftUI
 class CreateWidgetWizard: ObservableObject {
     @Published var name: String = ""
     @Published var type: SettingsWidgetType = .text
+    var widget: SettingsWidget = .init(name: "")
 
     func reset() {
         name = ""
         type = .text
+        widget = .init(name: "")
+        widget.text.formatString = ""
     }
 }
 

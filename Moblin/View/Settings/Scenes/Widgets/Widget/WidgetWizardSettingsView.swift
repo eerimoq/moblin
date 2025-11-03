@@ -46,6 +46,52 @@ private class SceneToAddWidgetTo: Identifiable, ObservableObject {
     }
 }
 
+private struct TextWidgetView: View {
+    let model: Model
+    @ObservedObject var database: Database
+    @ObservedObject var createWidgetWizard: CreateWidgetWizard
+    @ObservedObject var text: SettingsWidgetText
+    @Binding var presentingCreateWizard: Bool
+    @FocusState var editingText: Bool
+
+    var body: some View {
+        Form {
+            Section {
+                MultiLineTextFieldView(value: $text.formatString)
+                    .keyboardType(.default)
+                    .textInputAutocapitalization(.never)
+                    .autocorrectionDisabled()
+                    .focused($editingText)
+            } footer: {
+                if isPhone() {
+                    HStack {
+                        Spacer()
+                        Button("Done") {
+                            editingText = false
+                        }
+                    }
+                    .disabled(!editingText)
+                }
+            }
+            Section {
+                NavigationLink {
+                    SelectScenesView(model: model,
+                                     database: database,
+                                     createWidgetWizard: createWidgetWizard,
+                                     presentingCreateWizard: $presentingCreateWizard)
+                } label: {
+                    WizardNextButtonView()
+                }
+                .disabled(text.formatString.isEmpty)
+            }
+        }
+        .navigationTitle("\(createWidgetWizard.type.toString()) widget")
+        .toolbar {
+            CreateWidgetWizardToolbar(presentingCreateWizard: $presentingCreateWizard)
+        }
+    }
+}
+
 private struct SelectScenesView: View {
     let model: Model
     @ObservedObject var database: Database
@@ -61,8 +107,9 @@ private struct SelectScenesView: View {
         } else {
             name = createWidgetWizard.name
         }
-        let widget = SettingsWidget(name: name)
+        let widget = createWidgetWizard.widget
         widget.type = createWidgetWizard.type
+        widget.name = name
         database.widgets.append(widget)
         model.fixAlertMedias()
         model.resetSelectedScene(changeScene: false, attachCamera: false)
@@ -120,7 +167,7 @@ struct WidgetWizardSettingsView: View {
     var body: some View {
         Form {
             Section {
-                TextField("", text: $createWidgetWizard.name)
+                TextField("My widget", text: $createWidgetWizard.name)
                     .disableAutocorrection(true)
             } header: {
                 Text("Name")
@@ -142,10 +189,19 @@ struct WidgetWizardSettingsView: View {
             }
             Section {
                 NavigationLink {
-                    SelectScenesView(model: model,
-                                     database: database,
-                                     createWidgetWizard: createWidgetWizard,
-                                     presentingCreateWizard: $presentingCreateWizard)
+                    switch createWidgetWizard.type {
+                    case .text:
+                        TextWidgetView(model: model,
+                                       database: database,
+                                       createWidgetWizard: createWidgetWizard,
+                                       text: createWidgetWizard.widget.text,
+                                       presentingCreateWizard: $presentingCreateWizard)
+                    default:
+                        SelectScenesView(model: model,
+                                         database: database,
+                                         createWidgetWizard: createWidgetWizard,
+                                         presentingCreateWizard: $presentingCreateWizard)
+                    }
                 } label: {
                     WizardNextButtonView()
                 }

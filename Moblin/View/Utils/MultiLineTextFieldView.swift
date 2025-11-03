@@ -6,7 +6,7 @@ struct MultiLineTextFieldView: View {
 
     var body: some View {
         ZStack(alignment: .topTrailing) {
-            TextField("", text: $value, axis: .vertical)
+            TextField("My text", text: $value, axis: .vertical)
                 .padding(.trailing, 30)
                 .focused($focusedField, equals: true)
             if !value.isEmpty {
