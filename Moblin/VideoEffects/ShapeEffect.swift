@@ -59,8 +59,8 @@ final class ShapeEffect: VideoEffect {
         _ size: CGSize,
         _ mirror: Bool
     ) -> (Double, Double) {
-        var scaleX = toPixels(sceneWidget.size, size.width) / videoSourceImage.extent.size.width
-        let scaleY = toPixels(sceneWidget.size, size.height) / videoSourceImage.extent.size.height
+        var scaleX = toPixels(sceneWidget.layout.size, size.width) / videoSourceImage.extent.size.width
+        let scaleY = toPixels(sceneWidget.layout.size, size.height) / videoSourceImage.extent.size.height
         let scale = min(scaleX, scaleY)
         if mirror {
             scaleX = -1 * scale
@@ -78,11 +78,11 @@ final class ShapeEffect: VideoEffect {
         _ scaleY: Double,
         _ mirror: Bool
     ) -> CGAffineTransform {
-        var x = toPixels(sceneWidget.x, size.width)
+        var x = toPixels(sceneWidget.layout.x, size.width)
         if mirror {
             x -= videoSourceImage.extent.width * scaleX
         }
-        let y = size.height - toPixels(sceneWidget.y, size.height) - videoSourceImage.extent.height * scaleY
+        let y = size.height - toPixels(sceneWidget.layout.y, size.height) - videoSourceImage.extent.height * scaleY
         return CGAffineTransform(translationX: x, y: y)
     }
 

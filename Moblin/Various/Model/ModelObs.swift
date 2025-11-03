@@ -193,16 +193,16 @@ extension Model {
             }
         }
         if stream.obsBrbSceneVideoSourceBroken, let scene = getSelectedScene() {
-            switch scene.cameraPosition {
+            switch scene.videoSource.cameraPosition {
             case .srtla:
-                if let srtlaStream = getSrtlaStream(id: scene.srtlaCameraId) {
+                if let srtlaStream = getSrtlaStream(id: scene.videoSource.srtlaCameraId) {
                     if ingests.srtla?.isStreamConnected(streamId: srtlaStream.streamId) == false {
                         streamBecameBrokenTime = now
                         return true
                     }
                 }
             case .rtmp:
-                if let rtmpStream = getRtmpStream(id: scene.rtmpCameraId) {
+                if let rtmpStream = getRtmpStream(id: scene.videoSource.rtmpCameraId) {
                     if ingests.rtmp?.isStreamConnected(streamKey: rtmpStream.streamKey) == false {
                         streamBecameBrokenTime = now
                         return true

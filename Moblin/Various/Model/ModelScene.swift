@@ -348,7 +348,7 @@ extension Model {
     }
 
     func isFixedHorizonEnabled(scene: SettingsScene) -> Bool {
-        return database.fixedHorizon && scene.cameraPosition.isBuiltin()
+        return database.fixedHorizon && scene.videoSource.cameraPosition.isBuiltin()
     }
 
     func resetSelectedScene(changeScene: Bool = true, attachCamera: Bool = true) {
@@ -385,7 +385,7 @@ extension Model {
             sendZoomPresetsToWatch()
             sendZoomPresetToWatch()
         }
-        let showMediaPlayerControls = findEnabledScene(id: id)?.cameraPosition == .mediaPlayer
+        let showMediaPlayerControls = findEnabledScene(id: id)?.videoSource.cameraPosition == .mediaPlayer
         if showMediaPlayerControls != streamOverlay.showMediaPlayerControls {
             streamOverlay.showMediaPlayerControls = showMediaPlayerControls
         }
@@ -747,7 +747,7 @@ extension Model {
         _ needsSpeechToText: inout Bool
     ) {
         if let alertsEffect = alertsEffects[widget.id] {
-            alertsEffect.setPosition(x: sceneWidget.x, y: sceneWidget.y)
+            alertsEffect.setPosition(x: sceneWidget.layout.x, y: sceneWidget.layout.y)
             enabledAlertsEffects.append(alertsEffect)
             if widget.alerts.needsSubtitles {
                 needsSpeechToText = true
@@ -876,23 +876,23 @@ extension Model {
     func attachSingleLayout(scene: SettingsScene) {
         streamOverlay.isFrontCameraSelected = false
         deactivateAllMediaPlayers()
-        switch scene.cameraPosition {
+        switch scene.videoSource.cameraPosition {
         case .back:
             attachCamera(scene: scene, position: .back)
         case .front:
             attachCamera(scene: scene, position: .front)
             streamOverlay.isFrontCameraSelected = true
         case .rtmp:
-            attachBufferedCamera(cameraId: scene.rtmpCameraId, scene: scene)
+            attachBufferedCamera(cameraId: scene.videoSource.rtmpCameraId, scene: scene)
         case .srtla:
-            attachBufferedCamera(cameraId: scene.srtlaCameraId, scene: scene)
+            attachBufferedCamera(cameraId: scene.videoSource.srtlaCameraId, scene: scene)
         case .rist:
-            attachBufferedCamera(cameraId: scene.ristCameraId, scene: scene)
+            attachBufferedCamera(cameraId: scene.videoSource.ristCameraId, scene: scene)
         case .rtsp:
-            attachBufferedCamera(cameraId: scene.rtspCameraId, scene: scene)
+            attachBufferedCamera(cameraId: scene.videoSource.rtspCameraId, scene: scene)
         case .mediaPlayer:
-            mediaPlayers[scene.mediaPlayerCameraId]?.activate()
-            attachBufferedCamera(cameraId: scene.mediaPlayerCameraId, scene: scene)
+            mediaPlayers[scene.videoSource.mediaPlayerCameraId]?.activate()
+            attachBufferedCamera(cameraId: scene.videoSource.mediaPlayerCameraId, scene: scene)
         case .external:
             attachExternalCamera(scene: scene)
         case .screenCapture:
@@ -966,56 +966,11 @@ extension Model {
             }
             return false
         case .videoSource:
-            switch widget.videoSource.cameraPosition {
-            case .back:
-                return true
-            case .backWideDualLowEnergy:
-                return true
-            case .backDualLowEnergy:
-                return true
-            case .backTripleLowEnergy:
-                return true
-            case .front:
-                return true
-            case .external:
-                return true
-            default:
-                return false
-            }
+            return widget.videoSource.videoSource.isCaptureDevice()
         case .vTuber:
-            switch widget.vTuber.cameraPosition {
-            case .back:
-                return true
-            case .backWideDualLowEnergy:
-                return true
-            case .backDualLowEnergy:
-                return true
-            case .backTripleLowEnergy:
-                return true
-            case .front:
-                return true
-            case .external:
-                return true
-            default:
-                return false
-            }
+            return widget.vTuber.videoSource.isCaptureDevice()
         case .pngTuber:
-            switch widget.pngTuber.cameraPosition {
-            case .back:
-                return true
-            case .backWideDualLowEnergy:
-                return true
-            case .backDualLowEnergy:
-                return true
-            case .backTripleLowEnergy:
-                return true
-            case .front:
-                return true
-            case .external:
-                return true
-            default:
-                return false
-            }
+            return widget.pngTuber.videoSource.isCaptureDevice()
         default:
             return false
         }
@@ -1179,17 +1134,17 @@ extension Model {
     }
 
     func isSceneVideoSourceActive(scene: SettingsScene) -> Bool {
-        switch scene.cameraPosition {
+        switch scene.videoSource.cameraPosition {
         case .rtmp:
-            return activeBufferedVideoIds.contains(scene.rtmpCameraId)
+            return activeBufferedVideoIds.contains(scene.videoSource.rtmpCameraId)
         case .srtla:
-            return activeBufferedVideoIds.contains(scene.srtlaCameraId)
+            return activeBufferedVideoIds.contains(scene.videoSource.srtlaCameraId)
         case .rist:
-            return activeBufferedVideoIds.contains(scene.ristCameraId)
+            return activeBufferedVideoIds.contains(scene.videoSource.ristCameraId)
         case .rtsp:
-            return activeBufferedVideoIds.contains(scene.rtspCameraId)
+            return activeBufferedVideoIds.contains(scene.videoSource.rtspCameraId)
         case .external:
-            return isExternalCameraConnected(id: scene.externalCameraId)
+            return isExternalCameraConnected(id: scene.videoSource.externalCameraId)
         default:
             return true
         }
@@ -1199,18 +1154,7 @@ extension Model {
         guard let scene = getSelectedScene() else {
             return false
         }
-        switch scene.cameraPosition {
-        case .rtmp:
-            return cameraId == scene.rtmpCameraId
-        case .srtla:
-            return cameraId == scene.srtlaCameraId
-        case .rist:
-            return cameraId == scene.ristCameraId
-        case .rtsp:
-            return cameraId == scene.rtspCameraId
-        default:
-            return false
-        }
+        return scene.videoSource.isNetwork(cameraId: cameraId)
     }
 
     func isSceneVideoSourceActive(sceneId: UUID) -> Bool {
@@ -1267,17 +1211,7 @@ extension Model {
         videoSource: SettingsWidgetVideoSource,
         devices: inout [CaptureDevice]
     ) {
-        let cameraId: String?
-        switch videoSource.cameraPosition {
-        case .back:
-            cameraId = videoSource.backCameraId
-        case .front:
-            cameraId = videoSource.frontCameraId
-        case .external:
-            cameraId = videoSource.externalCameraId
-        default:
-            cameraId = nil
-        }
+        let cameraId = videoSource.videoSource.getCaptureDeviceCameraId()
         if let cameraId, let device = AVCaptureDevice(uniqueID: cameraId) {
             if !devices.contains(where: { $0.device == device }) {
                 devices.append(makeCaptureDevice(device: device))
@@ -1286,17 +1220,7 @@ extension Model {
     }
 
     private func getBuiltinCameraDevicesForVTuberWidget(vTuber: SettingsWidgetVTuber, devices: inout [CaptureDevice]) {
-        let cameraId: String?
-        switch vTuber.cameraPosition {
-        case .back:
-            cameraId = vTuber.backCameraId
-        case .front:
-            cameraId = vTuber.frontCameraId
-        case .external:
-            cameraId = vTuber.externalCameraId
-        default:
-            cameraId = nil
-        }
+        let cameraId = vTuber.videoSource.getCaptureDeviceCameraId()
         if let cameraId, let device = AVCaptureDevice(uniqueID: cameraId) {
             if !devices.contains(where: { $0.device == device }) {
                 devices.append(makeCaptureDevice(device: device))
@@ -1308,17 +1232,7 @@ extension Model {
         pngTuber: SettingsWidgetPngTuber,
         devices: inout [CaptureDevice]
     ) {
-        let cameraId: String?
-        switch pngTuber.cameraPosition {
-        case .back:
-            cameraId = pngTuber.backCameraId
-        case .front:
-            cameraId = pngTuber.frontCameraId
-        case .external:
-            cameraId = pngTuber.externalCameraId
-        default:
-            cameraId = nil
-        }
+        let cameraId = pngTuber.videoSource.getCaptureDeviceCameraId()
         if let cameraId, let device = AVCaptureDevice(uniqueID: cameraId) {
             if !devices.contains(where: { $0.device == device }) {
                 devices.append(makeCaptureDevice(device: device))
@@ -1352,32 +1266,23 @@ extension Model {
         let sceneWidget = SettingsSceneWidget(widgetId: widget.id)
         switch widget.type {
         case .text:
-            sceneWidget.size = 5
+            sceneWidget.layout.size = 5
         case .image:
-            sceneWidget.size = 30
-        case .map:
-            sceneWidget.size = 23
-        case .qrCode:
-            sceneWidget.size = 23
-        case .videoSource:
-            sceneWidget.x = 72
-            sceneWidget.y = 72
-            sceneWidget.size = 28
-        case .vTuber:
-            sceneWidget.size = 28
-            sceneWidget.alignment = .bottomRight
-        case .pngTuber:
-            sceneWidget.size = 28
-            sceneWidget.alignment = .bottomRight
+            sceneWidget.layout.size = 30
+        case .map, .qrCode:
+            sceneWidget.layout.size = 23
+        case .videoSource, .vTuber, .pngTuber:
+            sceneWidget.layout.size = 28
+            sceneWidget.layout.alignment = .bottomRight
         case .browser:
             let resolution = stream.resolution.dimensions(portrait: stream.portrait)
             let width = (100 * Double(widget.browser.width) / Double(resolution.width)).clamped(to: 1 ... 100)
             let height = (100 * Double(widget.browser.height) / Double(resolution.height)).clamped(to: 1 ... 100)
-            sceneWidget.size = max(width, height)
-            sceneWidget.sizeString = String(sceneWidget.size)
+            sceneWidget.layout.size = max(width, height)
+            sceneWidget.layout.updateSizeString()
         case .snapshot:
-            sceneWidget.size = 40
-            sceneWidget.alignment = .topRight
+            sceneWidget.layout.size = 40
+            sceneWidget.layout.alignment = .topRight
         default:
             break
         }

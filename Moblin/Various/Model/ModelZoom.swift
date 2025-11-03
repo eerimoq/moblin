@@ -31,7 +31,7 @@ extension Model {
         if let preset = findZoomPreset(id: id) {
             if setCameraZoomX(x: preset.x, rate: database.zoom.speed) != nil {
                 setZoomXWhenInRange(x: preset.x)
-                switch getSelectedScene()?.cameraPosition {
+                switch getSelectedScene()?.videoSource.cameraPosition {
                 case .backTripleLowEnergy:
                     attachBackTripleLowEnergyCamera(force: false)
                 case .backDualLowEnergy:

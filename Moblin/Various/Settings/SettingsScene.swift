@@ -1335,16 +1335,7 @@ enum SettingsSceneSwitchTransition: String, Codable, CaseIterable {
 
 class SettingsWidgetVTuber: Codable, ObservableObject {
     var id: UUID = .init()
-    @Published var cameraPosition: SettingsSceneCameraPosition = .screenCapture
-    @Published var backCameraId: String = bestBackCameraId
-    @Published var frontCameraId: String = bestFrontCameraId
-    @Published var rtmpCameraId: UUID = .init()
-    @Published var srtlaCameraId: UUID = .init()
-    @Published var ristCameraId: UUID = .init()
-    @Published var rtspCameraId: UUID = .init()
-    @Published var mediaPlayerCameraId: UUID = .init()
-    @Published var externalCameraId: String = ""
-    @Published var externalCameraName: String = ""
+    @Published var videoSource: SettingsVideoSource = .init()
     @Published var cameraPositionY: Double = 1.37
     @Published var cameraFieldOfView: Double = 18
     @Published var modelName: String = ""
@@ -1373,16 +1364,16 @@ class SettingsWidgetVTuber: Codable, ObservableObject {
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
-        try container.encode(.cameraPosition, cameraPosition)
-        try container.encode(.backCameraId, backCameraId)
-        try container.encode(.frontCameraId, frontCameraId)
-        try container.encode(.rtmpCameraId, rtmpCameraId)
-        try container.encode(.srtlaCameraId, srtlaCameraId)
-        try container.encode(.ristCameraId, ristCameraId)
-        try container.encode(.rtspCameraId, rtspCameraId)
-        try container.encode(.mediaPlayerCameraId, mediaPlayerCameraId)
-        try container.encode(.externalCameraId, externalCameraId)
-        try container.encode(.externalCameraName, externalCameraName)
+        try container.encode(.cameraPosition, videoSource.cameraPosition)
+        try container.encode(.backCameraId, videoSource.backCameraId)
+        try container.encode(.frontCameraId, videoSource.frontCameraId)
+        try container.encode(.rtmpCameraId, videoSource.rtmpCameraId)
+        try container.encode(.srtlaCameraId, videoSource.srtlaCameraId)
+        try container.encode(.ristCameraId, videoSource.ristCameraId)
+        try container.encode(.rtspCameraId, videoSource.rtspCameraId)
+        try container.encode(.mediaPlayerCameraId, videoSource.mediaPlayerCameraId)
+        try container.encode(.externalCameraId, videoSource.externalCameraId)
+        try container.encode(.externalCameraName, videoSource.externalCameraName)
         try container.encode(.cameraPositionY, cameraPositionY)
         try container.encode(.cameraFieldOfView, cameraFieldOfView)
         try container.encode(.modelName, modelName)
@@ -1392,16 +1383,16 @@ class SettingsWidgetVTuber: Codable, ObservableObject {
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
-        cameraPosition = decodeCameraPosition(container, .cameraPosition, .screenCapture)
-        backCameraId = decodeCameraId(container, .backCameraId, bestBackCameraId)
-        frontCameraId = decodeCameraId(container, .frontCameraId, bestFrontCameraId)
-        rtmpCameraId = container.decode(.rtmpCameraId, UUID.self, .init())
-        srtlaCameraId = container.decode(.srtlaCameraId, UUID.self, .init())
-        ristCameraId = container.decode(.ristCameraId, UUID.self, .init())
-        rtspCameraId = container.decode(.rtspCameraId, UUID.self, .init())
-        mediaPlayerCameraId = container.decode(.mediaPlayerCameraId, UUID.self, .init())
-        externalCameraId = container.decode(.externalCameraId, String.self, "")
-        externalCameraName = container.decode(.externalCameraName, String.self, "")
+        videoSource.cameraPosition = decodeCameraPosition(container, .cameraPosition, .screenCapture)
+        videoSource.backCameraId = decodeCameraId(container, .backCameraId, bestBackCameraId)
+        videoSource.frontCameraId = decodeCameraId(container, .frontCameraId, bestFrontCameraId)
+        videoSource.rtmpCameraId = container.decode(.rtmpCameraId, UUID.self, .init())
+        videoSource.srtlaCameraId = container.decode(.srtlaCameraId, UUID.self, .init())
+        videoSource.ristCameraId = container.decode(.ristCameraId, UUID.self, .init())
+        videoSource.rtspCameraId = container.decode(.rtspCameraId, UUID.self, .init())
+        videoSource.mediaPlayerCameraId = container.decode(.mediaPlayerCameraId, UUID.self, .init())
+        videoSource.externalCameraId = container.decode(.externalCameraId, String.self, "")
+        videoSource.externalCameraName = container.decode(.externalCameraName, String.self, "")
         cameraPositionY = container.decode(.cameraPositionY, Double.self, 1.37)
         cameraFieldOfView = container.decode(.cameraFieldOfView, Double.self, 18)
         modelName = container.decode(.modelName, String.self, "")
@@ -1409,89 +1400,17 @@ class SettingsWidgetVTuber: Codable, ObservableObject {
     }
 
     func toCameraId() -> SettingsCameraId {
-        switch cameraPosition {
-        case .back:
-            return .back(id: backCameraId)
-        case .front:
-            return .front(id: frontCameraId)
-        case .rtmp:
-            return .rtmp(id: rtmpCameraId)
-        case .external:
-            return .external(id: externalCameraId, name: externalCameraName)
-        case .srtla:
-            return .srtla(id: srtlaCameraId)
-        case .rist:
-            return .rist(id: ristCameraId)
-        case .rtsp:
-            return .rtsp(id: rtspCameraId)
-        case .mediaPlayer:
-            return .mediaPlayer(id: mediaPlayerCameraId)
-        case .screenCapture:
-            return .screenCapture
-        case .backTripleLowEnergy:
-            return .backTripleLowEnergy
-        case .backDualLowEnergy:
-            return .backDualLowEnergy
-        case .backWideDualLowEnergy:
-            return .backWideDualLowEnergy
-        case .none:
-            return .none
-        }
+        return videoSource.toCameraId()
     }
 
     func updateCameraId(settingsCameraId: SettingsCameraId) {
-        switch settingsCameraId {
-        case let .back(id: id):
-            cameraPosition = .back
-            backCameraId = id
-        case let .front(id: id):
-            cameraPosition = .front
-            frontCameraId = id
-        case let .rtmp(id: id):
-            cameraPosition = .rtmp
-            rtmpCameraId = id
-        case let .srtla(id: id):
-            cameraPosition = .srtla
-            srtlaCameraId = id
-        case let .rist(id: id):
-            cameraPosition = .rist
-            ristCameraId = id
-        case let .rtsp(id: id):
-            cameraPosition = .rtsp
-            rtspCameraId = id
-        case let .mediaPlayer(id: id):
-            cameraPosition = .mediaPlayer
-            mediaPlayerCameraId = id
-        case let .external(id: id, name: name):
-            cameraPosition = .external
-            externalCameraId = id
-            externalCameraName = name
-        case .screenCapture:
-            cameraPosition = .screenCapture
-        case .backTripleLowEnergy:
-            cameraPosition = .backTripleLowEnergy
-        case .backDualLowEnergy:
-            cameraPosition = .backDualLowEnergy
-        case .backWideDualLowEnergy:
-            cameraPosition = .backWideDualLowEnergy
-        case .none:
-            cameraPosition = .none
-        }
+        videoSource.updateCameraId(settingsCameraId: settingsCameraId)
     }
 }
 
 class SettingsWidgetPngTuber: Codable, ObservableObject {
     var id: UUID = .init()
-    @Published var cameraPosition: SettingsSceneCameraPosition = .screenCapture
-    @Published var backCameraId: String = bestBackCameraId
-    @Published var frontCameraId: String = bestFrontCameraId
-    @Published var rtmpCameraId: UUID = .init()
-    @Published var srtlaCameraId: UUID = .init()
-    @Published var ristCameraId: UUID = .init()
-    @Published var rtspCameraId: UUID = .init()
-    @Published var mediaPlayerCameraId: UUID = .init()
-    @Published var externalCameraId: String = ""
-    @Published var externalCameraName: String = ""
+    @Published var videoSource: SettingsVideoSource = .init()
     @Published var modelName: String = ""
     @Published var mirror: Bool = false
 
@@ -1516,16 +1435,16 @@ class SettingsWidgetPngTuber: Codable, ObservableObject {
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
-        try container.encode(.cameraPosition, cameraPosition)
-        try container.encode(.backCameraId, backCameraId)
-        try container.encode(.frontCameraId, frontCameraId)
-        try container.encode(.rtmpCameraId, rtmpCameraId)
-        try container.encode(.srtlaCameraId, srtlaCameraId)
-        try container.encode(.ristCameraId, ristCameraId)
-        try container.encode(.rtspCameraId, rtspCameraId)
-        try container.encode(.mediaPlayerCameraId, mediaPlayerCameraId)
-        try container.encode(.externalCameraId, externalCameraId)
-        try container.encode(.externalCameraName, externalCameraName)
+        try container.encode(.cameraPosition, videoSource.cameraPosition)
+        try container.encode(.backCameraId, videoSource.backCameraId)
+        try container.encode(.frontCameraId, videoSource.frontCameraId)
+        try container.encode(.rtmpCameraId, videoSource.rtmpCameraId)
+        try container.encode(.srtlaCameraId, videoSource.srtlaCameraId)
+        try container.encode(.ristCameraId, videoSource.ristCameraId)
+        try container.encode(.rtspCameraId, videoSource.rtspCameraId)
+        try container.encode(.mediaPlayerCameraId, videoSource.mediaPlayerCameraId)
+        try container.encode(.externalCameraId, videoSource.externalCameraId)
+        try container.encode(.externalCameraName, videoSource.externalCameraName)
         try container.encode(.modelName, modelName)
         try container.encode(.mirror, mirror)
     }
@@ -1533,89 +1452,26 @@ class SettingsWidgetPngTuber: Codable, ObservableObject {
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
-        cameraPosition = decodeCameraPosition(container, .cameraPosition, .screenCapture)
-        backCameraId = decodeCameraId(container, .backCameraId, bestBackCameraId)
-        frontCameraId = decodeCameraId(container, .frontCameraId, bestFrontCameraId)
-        rtmpCameraId = container.decode(.rtmpCameraId, UUID.self, .init())
-        srtlaCameraId = container.decode(.srtlaCameraId, UUID.self, .init())
-        ristCameraId = container.decode(.ristCameraId, UUID.self, .init())
-        rtspCameraId = container.decode(.rtspCameraId, UUID.self, .init())
-        mediaPlayerCameraId = container.decode(.mediaPlayerCameraId, UUID.self, .init())
-        externalCameraId = container.decode(.externalCameraId, String.self, "")
-        externalCameraName = container.decode(.externalCameraName, String.self, "")
+        videoSource.cameraPosition = decodeCameraPosition(container, .cameraPosition, .screenCapture)
+        videoSource.backCameraId = decodeCameraId(container, .backCameraId, bestBackCameraId)
+        videoSource.frontCameraId = decodeCameraId(container, .frontCameraId, bestFrontCameraId)
+        videoSource.rtmpCameraId = container.decode(.rtmpCameraId, UUID.self, .init())
+        videoSource.srtlaCameraId = container.decode(.srtlaCameraId, UUID.self, .init())
+        videoSource.ristCameraId = container.decode(.ristCameraId, UUID.self, .init())
+        videoSource.rtspCameraId = container.decode(.rtspCameraId, UUID.self, .init())
+        videoSource.mediaPlayerCameraId = container.decode(.mediaPlayerCameraId, UUID.self, .init())
+        videoSource.externalCameraId = container.decode(.externalCameraId, String.self, "")
+        videoSource.externalCameraName = container.decode(.externalCameraName, String.self, "")
         modelName = container.decode(.modelName, String.self, "")
         mirror = container.decode(.mirror, Bool.self, false)
     }
 
     func toCameraId() -> SettingsCameraId {
-        switch cameraPosition {
-        case .back:
-            return .back(id: backCameraId)
-        case .front:
-            return .front(id: frontCameraId)
-        case .rtmp:
-            return .rtmp(id: rtmpCameraId)
-        case .external:
-            return .external(id: externalCameraId, name: externalCameraName)
-        case .srtla:
-            return .srtla(id: srtlaCameraId)
-        case .rist:
-            return .rist(id: ristCameraId)
-        case .rtsp:
-            return .rtsp(id: rtspCameraId)
-        case .mediaPlayer:
-            return .mediaPlayer(id: mediaPlayerCameraId)
-        case .screenCapture:
-            return .screenCapture
-        case .backTripleLowEnergy:
-            return .backTripleLowEnergy
-        case .backDualLowEnergy:
-            return .backDualLowEnergy
-        case .backWideDualLowEnergy:
-            return .backWideDualLowEnergy
-        case .none:
-            return .none
-        }
+        return videoSource.toCameraId()
     }
 
     func updateCameraId(settingsCameraId: SettingsCameraId) {
-        switch settingsCameraId {
-        case let .back(id: id):
-            cameraPosition = .back
-            backCameraId = id
-        case let .front(id: id):
-            cameraPosition = .front
-            frontCameraId = id
-        case let .rtmp(id: id):
-            cameraPosition = .rtmp
-            rtmpCameraId = id
-        case let .srtla(id: id):
-            cameraPosition = .srtla
-            srtlaCameraId = id
-        case let .rist(id: id):
-            cameraPosition = .rist
-            ristCameraId = id
-        case let .rtsp(id: id):
-            cameraPosition = .rtsp
-            rtspCameraId = id
-        case let .mediaPlayer(id: id):
-            cameraPosition = .mediaPlayer
-            mediaPlayerCameraId = id
-        case let .external(id: id, name: name):
-            cameraPosition = .external
-            externalCameraId = id
-            externalCameraName = name
-        case .screenCapture:
-            cameraPosition = .screenCapture
-        case .backTripleLowEnergy:
-            cameraPosition = .backTripleLowEnergy
-        case .backDualLowEnergy:
-            cameraPosition = .backDualLowEnergy
-        case .backWideDualLowEnergy:
-            cameraPosition = .backWideDualLowEnergy
-        case .none:
-            cameraPosition = .none
-        }
+        videoSource.updateCameraId(settingsCameraId: settingsCameraId)
     }
 }
 
@@ -1773,6 +1629,81 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named 
     func image() -> String {
         return type.image()
     }
+
+    func hasPosition() -> Bool {
+        return [
+            .image,
+            .browser,
+            .text,
+            .crop,
+            .map,
+            .qrCode,
+            .alerts,
+            .videoSource,
+            .vTuber,
+            .pngTuber,
+            .snapshot,
+        ].contains(type)
+    }
+
+    func hasSize() -> Bool {
+        return [
+            .image,
+            .browser,
+            .crop,
+            .map,
+            .qrCode,
+            .videoSource,
+            .vTuber,
+            .pngTuber,
+            .snapshot,
+        ].contains(type)
+    }
+
+    func hasAlignment() -> Bool {
+        return [
+            .image,
+            .browser,
+            .text,
+            .crop,
+            .map,
+            .qrCode,
+            .videoSource,
+            .vTuber,
+            .pngTuber,
+            .snapshot,
+        ].contains(type)
+    }
+
+    func canExpand() -> Bool {
+        return hasPosition() || hasSize()
+    }
+}
+
+struct SettingsWidgetLayout {
+    var x: Double = 0.0
+    var xString: String = "0.0"
+    var y: Double = 0.0
+    var yString: String = "0.0"
+    var size: Double = 100.0
+    var sizeString: String = "100.0"
+    var alignment: SettingsAlignment = .topLeft
+
+    mutating func updateXString() {
+        xString = String(x)
+    }
+
+    mutating func updateYString() {
+        yString = String(y)
+    }
+
+    mutating func updateSizeString() {
+        sizeString = String(size)
+    }
+
+    func extent() -> CGRect {
+        return .init(x: x, y: y, width: size, height: size)
+    }
 }
 
 class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject {
@@ -1782,17 +1713,11 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject {
 
     var id: UUID = .init()
     @Published var widgetId: UUID
-    @Published var x: Double = 0.0
-    @Published var xString: String = "0.0"
-    @Published var y: Double = 0.0
-    @Published var yString: String = "0.0"
+    @Published var layout: SettingsWidgetLayout = .init()
     // To be removed.
     @Published var width2: Double = 100.0
     // To be removed.
     @Published var height2: Double = 100.0
-    @Published var size: Double = 100.0
-    @Published var sizeString: String = "100.0"
-    @Published var alignment: SettingsAlignment = .topLeft
     var migrated: Bool = true
     var migrated2: Bool = true
 
@@ -1817,12 +1742,12 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.widgetId, widgetId)
         try container.encode(.id, id)
-        try container.encode(.x, x)
-        try container.encode(.y, y)
+        try container.encode(.x, layout.x)
+        try container.encode(.y, layout.y)
         try container.encode(.width, width2)
         try container.encode(.height, height2)
-        try container.encode(.size, size)
-        try container.encode(.alignment, alignment)
+        try container.encode(.size, layout.size)
+        try container.encode(.alignment, layout.alignment)
         try container.encode(.migrated, migrated)
         try container.encode(.migrated2, migrated2)
     }
@@ -1831,43 +1756,29 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         widgetId = container.decode(.widgetId, UUID.self, .init())
         id = container.decode(.id, UUID.self, .init())
-        x = container.decode(.x, Double.self, 0.0)
-        xString = String(x)
-        y = container.decode(.y, Double.self, 0.0)
-        yString = String(y)
+        layout.x = container.decode(.x, Double.self, 0.0)
+        layout.updateXString()
+        layout.y = container.decode(.y, Double.self, 0.0)
+        layout.updateYString()
         width2 = container.decode(.width, Double.self, 100.0)
         height2 = container.decode(.height, Double.self, 100.0)
         if let size = container.decode(.size, Double?.self, nil) {
-            self.size = size
+            layout.size = size
         } else {
-            size = container.decode(.size, Double.self, min(width2, height2))
+            layout.size = container.decode(.size, Double.self, min(width2, height2))
         }
-        sizeString = String(size)
-        alignment = container.decode(.alignment, SettingsAlignment.self, .topLeft)
+        layout.updateSizeString()
+        layout.alignment = container.decode(.alignment, SettingsAlignment.self, .topLeft)
         migrated = container.decode(.migrated, Bool.self, false)
         migrated2 = container.decode(.migrated2, Bool.self, false)
     }
 
     func clone() -> SettingsSceneWidget {
         let new = SettingsSceneWidget(widgetId: widgetId)
-        new.x = x
-        new.xString = xString
-        new.y = y
-        new.yString = yString
-        new.size = size
-        new.sizeString = sizeString
-        new.alignment = alignment
+        new.layout = layout
         new.migrated = migrated
         new.migrated2 = migrated2
         return new
-    }
-
-    func isSamePositioning(other: SettingsSceneWidget) -> Bool {
-        return x == other.x && y == other.y && size == other.size
-    }
-
-    func extent() -> CGRect {
-        return .init(x: x, y: y, width: size, height: size)
     }
 }
 
@@ -1904,119 +1815,17 @@ private let builtinCameraPositions: [SettingsSceneCameraPosition] = [
     .backWideDualLowEnergy,
 ]
 
-class SettingsWidgetVideoSource: Codable, ObservableObject {
-    @Published var cornerRadius: Float = 0
-    @Published var cameraPosition: SettingsSceneCameraPosition = .screenCapture
-    @Published var backCameraId: String = bestBackCameraId
-    @Published var frontCameraId: String = bestFrontCameraId
-    @Published var rtmpCameraId: UUID = .init()
-    @Published var srtlaCameraId: UUID = .init()
-    @Published var ristCameraId: UUID = .init()
-    @Published var rtspCameraId: UUID = .init()
-    @Published var mediaPlayerCameraId: UUID = .init()
-    @Published var externalCameraId: String = ""
-    @Published var externalCameraName: String = ""
-    var cropEnabled: Bool = false
-    var cropX: Double = 0.25
-    var cropY: Double = 0.0
-    var cropWidth: Double = 0.5
-    var cropHeight: Double = 1.0
-    @Published var rotation: Double = 0.0
-    var trackFaceEnabled: Bool = false
-    @Published var trackFaceZoom: Double = 0.75
-    var mirror: Bool = false
-    @Published var borderWidth: Double = 0
-    var borderColor: RgbColor = .init(red: 0, green: 0, blue: 0)
-    @Published var borderColorColor: Color
-
-    enum CodingKeys: CodingKey {
-        case cornerRadius,
-             cameraPosition,
-             backCameraId,
-             frontCameraId,
-             rtmpCameraId,
-             srtlaCameraId,
-             ristCameraId,
-             rtspCameraId,
-             mediaPlayerCameraId,
-             externalCameraId,
-             externalCameraName,
-             cropEnabled,
-             cropX,
-             cropY,
-             cropWidth,
-             cropHeight,
-             rotation,
-             trackFaceEnabled,
-             trackFaceZoom,
-             mirror,
-             borderWidth,
-             borderColor
-    }
-
-    init() {
-        borderColorColor = borderColor.color()
-    }
-
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(.cornerRadius, cornerRadius)
-        try container.encode(.cameraPosition, cameraPosition)
-        try container.encode(.backCameraId, backCameraId)
-        try container.encode(.frontCameraId, frontCameraId)
-        try container.encode(.rtmpCameraId, rtmpCameraId)
-        try container.encode(.srtlaCameraId, srtlaCameraId)
-        try container.encode(.ristCameraId, ristCameraId)
-        try container.encode(.rtspCameraId, rtspCameraId)
-        try container.encode(.mediaPlayerCameraId, mediaPlayerCameraId)
-        try container.encode(.externalCameraId, externalCameraId)
-        try container.encode(.externalCameraName, externalCameraName)
-        try container.encode(.cropEnabled, cropEnabled)
-        try container.encode(.cropX, cropX)
-        try container.encode(.cropY, cropY)
-        try container.encode(.cropWidth, cropWidth)
-        try container.encode(.cropHeight, cropHeight)
-        try container.encode(.rotation, rotation)
-        try container.encode(.trackFaceEnabled, trackFaceEnabled)
-        try container.encode(.trackFaceZoom, trackFaceZoom)
-        try container.encode(.mirror, mirror)
-        try container.encode(.borderWidth, borderWidth)
-        try container.encode(.borderColor, borderColor)
-    }
-
-    required init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        cornerRadius = container.decode(.cornerRadius, Float.self, 0)
-        cameraPosition = decodeCameraPosition(container, .cameraPosition, .screenCapture)
-        backCameraId = decodeCameraId(container, .backCameraId, bestBackCameraId)
-        frontCameraId = decodeCameraId(container, .frontCameraId, bestFrontCameraId)
-        rtmpCameraId = container.decode(.rtmpCameraId, UUID.self, .init())
-        srtlaCameraId = container.decode(.srtlaCameraId, UUID.self, .init())
-        ristCameraId = container.decode(.ristCameraId, UUID.self, .init())
-        rtspCameraId = container.decode(.rtspCameraId, UUID.self, .init())
-        mediaPlayerCameraId = container.decode(.mediaPlayerCameraId, UUID.self, .init())
-        externalCameraId = container.decode(.externalCameraId, String.self, "")
-        externalCameraName = container.decode(.externalCameraName, String.self, "")
-        cropEnabled = container.decode(.cropEnabled, Bool.self, false)
-        cropX = container.decode(.cropX, Double.self, 0.25)
-        cropY = container.decode(.cropY, Double.self, 0.0)
-        cropWidth = container.decode(.cropWidth, Double.self, 0.5)
-        cropHeight = container.decode(.cropHeight, Double.self, 1.0)
-        rotation = container.decode(.rotation, Double.self, 0.0)
-        trackFaceEnabled = container.decode(.trackFaceEnabled, Bool.self, false)
-        trackFaceZoom = container.decode(.trackFaceZoom, Double.self, 0.75)
-        mirror = container.decode(.mirror, Bool.self, false)
-        borderWidth = container.decode(.borderWidth, Double.self, 0)
-        borderColor = container.decode(.borderColor, RgbColor.self, .init(red: 0, green: 0, blue: 0))
-        borderColorColor = borderColor.color()
-    }
-
-    func toEffectSettings() -> VideoSourceEffectSettings {
-        return .init(rotation: rotation,
-                     trackFaceEnabled: trackFaceEnabled,
-                     trackFaceZoom: 1.5 + (1 - trackFaceZoom) * 4,
-                     mirror: mirror)
-    }
+struct SettingsVideoSource {
+    var cameraPosition: SettingsSceneCameraPosition = .screenCapture
+    var backCameraId: String = bestBackCameraId
+    var frontCameraId: String = bestFrontCameraId
+    var rtmpCameraId: UUID = .init()
+    var srtlaCameraId: UUID = .init()
+    var ristCameraId: UUID = .init()
+    var rtspCameraId: UUID = .init()
+    var mediaPlayerCameraId: UUID = .init()
+    var externalCameraId: String = ""
+    var externalCameraName: String = ""
 
     func toCameraId() -> SettingsCameraId {
         switch cameraPosition {
@@ -2049,7 +1858,7 @@ class SettingsWidgetVideoSource: Codable, ObservableObject {
         }
     }
 
-    func updateCameraId(settingsCameraId: SettingsCameraId) {
+    mutating func updateCameraId(settingsCameraId: SettingsCameraId) {
         switch settingsCameraId {
         case let .back(id: id):
             cameraPosition = .back
@@ -2087,6 +1896,167 @@ class SettingsWidgetVideoSource: Codable, ObservableObject {
         case .none:
             cameraPosition = .none
         }
+    }
+
+    func isCaptureDevice() -> Bool {
+        switch cameraPosition {
+        case .back:
+            return true
+        case .backWideDualLowEnergy:
+            return true
+        case .backDualLowEnergy:
+            return true
+        case .backTripleLowEnergy:
+            return true
+        case .front:
+            return true
+        case .external:
+            return true
+        default:
+            return false
+        }
+    }
+
+    func getCaptureDeviceCameraId() -> String? {
+        switch cameraPosition {
+        case .back:
+            return backCameraId
+        case .front:
+            return frontCameraId
+        case .external:
+            return externalCameraId
+        default:
+            return nil
+        }
+    }
+
+    func isNetwork(cameraId: UUID) -> Bool {
+        switch cameraPosition {
+        case .rtmp:
+            return cameraId == rtmpCameraId
+        case .srtla:
+            return cameraId == srtlaCameraId
+        case .rist:
+            return cameraId == ristCameraId
+        case .rtsp:
+            return cameraId == rtspCameraId
+        default:
+            return false
+        }
+    }
+}
+
+class SettingsWidgetVideoSource: Codable, ObservableObject {
+    @Published var cornerRadius: Float = 0
+    @Published var videoSource: SettingsVideoSource = .init()
+    var cropEnabled: Bool = false
+    var cropX: Double = 0.25
+    var cropY: Double = 0.0
+    var cropWidth: Double = 0.5
+    var cropHeight: Double = 1.0
+    @Published var rotation: Double = 0.0
+    var trackFaceEnabled: Bool = false
+    @Published var trackFaceZoom: Double = 0.75
+    var mirror: Bool = false
+    @Published var borderWidth: Double = 0
+    var borderColor: RgbColor = .init(red: 0, green: 0, blue: 0)
+    @Published var borderColorColor: Color = .clear
+
+    enum CodingKeys: CodingKey {
+        case cornerRadius,
+             cameraPosition,
+             backCameraId,
+             frontCameraId,
+             rtmpCameraId,
+             srtlaCameraId,
+             ristCameraId,
+             rtspCameraId,
+             mediaPlayerCameraId,
+             externalCameraId,
+             externalCameraName,
+             cropEnabled,
+             cropX,
+             cropY,
+             cropWidth,
+             cropHeight,
+             rotation,
+             trackFaceEnabled,
+             trackFaceZoom,
+             mirror,
+             borderWidth,
+             borderColor
+    }
+
+    init() {
+        borderColorColor = borderColor.color()
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.cornerRadius, cornerRadius)
+        try container.encode(.cameraPosition, videoSource.cameraPosition)
+        try container.encode(.backCameraId, videoSource.backCameraId)
+        try container.encode(.frontCameraId, videoSource.frontCameraId)
+        try container.encode(.rtmpCameraId, videoSource.rtmpCameraId)
+        try container.encode(.srtlaCameraId, videoSource.srtlaCameraId)
+        try container.encode(.ristCameraId, videoSource.ristCameraId)
+        try container.encode(.rtspCameraId, videoSource.rtspCameraId)
+        try container.encode(.mediaPlayerCameraId, videoSource.mediaPlayerCameraId)
+        try container.encode(.externalCameraId, videoSource.externalCameraId)
+        try container.encode(.externalCameraName, videoSource.externalCameraName)
+        try container.encode(.cropEnabled, cropEnabled)
+        try container.encode(.cropX, cropX)
+        try container.encode(.cropY, cropY)
+        try container.encode(.cropWidth, cropWidth)
+        try container.encode(.cropHeight, cropHeight)
+        try container.encode(.rotation, rotation)
+        try container.encode(.trackFaceEnabled, trackFaceEnabled)
+        try container.encode(.trackFaceZoom, trackFaceZoom)
+        try container.encode(.mirror, mirror)
+        try container.encode(.borderWidth, borderWidth)
+        try container.encode(.borderColor, borderColor)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        cornerRadius = container.decode(.cornerRadius, Float.self, 0)
+        videoSource.cameraPosition = decodeCameraPosition(container, .cameraPosition, .screenCapture)
+        videoSource.backCameraId = decodeCameraId(container, .backCameraId, bestBackCameraId)
+        videoSource.frontCameraId = decodeCameraId(container, .frontCameraId, bestFrontCameraId)
+        videoSource.rtmpCameraId = container.decode(.rtmpCameraId, UUID.self, .init())
+        videoSource.srtlaCameraId = container.decode(.srtlaCameraId, UUID.self, .init())
+        videoSource.ristCameraId = container.decode(.ristCameraId, UUID.self, .init())
+        videoSource.rtspCameraId = container.decode(.rtspCameraId, UUID.self, .init())
+        videoSource.mediaPlayerCameraId = container.decode(.mediaPlayerCameraId, UUID.self, .init())
+        videoSource.externalCameraId = container.decode(.externalCameraId, String.self, "")
+        videoSource.externalCameraName = container.decode(.externalCameraName, String.self, "")
+        cropEnabled = container.decode(.cropEnabled, Bool.self, false)
+        cropX = container.decode(.cropX, Double.self, 0.25)
+        cropY = container.decode(.cropY, Double.self, 0.0)
+        cropWidth = container.decode(.cropWidth, Double.self, 0.5)
+        cropHeight = container.decode(.cropHeight, Double.self, 1.0)
+        rotation = container.decode(.rotation, Double.self, 0.0)
+        trackFaceEnabled = container.decode(.trackFaceEnabled, Bool.self, false)
+        trackFaceZoom = container.decode(.trackFaceZoom, Double.self, 0.75)
+        mirror = container.decode(.mirror, Bool.self, false)
+        borderWidth = container.decode(.borderWidth, Double.self, 0)
+        borderColor = container.decode(.borderColor, RgbColor.self, .init(red: 0, green: 0, blue: 0))
+        borderColorColor = borderColor.color()
+    }
+
+    func toEffectSettings() -> VideoSourceEffectSettings {
+        return .init(rotation: rotation,
+                     trackFaceEnabled: trackFaceEnabled,
+                     trackFaceZoom: 1.5 + (1 - trackFaceZoom) * 4,
+                     mirror: mirror)
+    }
+
+    func toCameraId() -> SettingsCameraId {
+        return videoSource.toCameraId()
+    }
+
+    func updateCameraId(settingsCameraId: SettingsCameraId) {
+        videoSource.updateCameraId(settingsCameraId: settingsCameraId)
     }
 }
 
@@ -2510,16 +2480,7 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject, Named {
     @Published var name: String
     var id: UUID = .init()
     @Published var enabled: Bool = true
-    @Published var cameraPosition: SettingsSceneCameraPosition = defaultBackCameraPosition
-    @Published var backCameraId: String = bestBackCameraId
-    @Published var frontCameraId: String = bestFrontCameraId
-    @Published var rtmpCameraId: UUID = .init()
-    @Published var srtlaCameraId: UUID = .init()
-    @Published var ristCameraId: UUID = .init()
-    @Published var rtspCameraId: UUID = .init()
-    @Published var mediaPlayerCameraId: UUID = .init()
-    @Published var externalCameraId: String = ""
-    var externalCameraName: String = ""
+    @Published var videoSource: SettingsVideoSource = .init()
     @Published var widgets: [SettingsSceneWidget] = []
     @Published var videoSourceRotation: Double = 0.0
     @Published var videoStabilizationMode: SettingsVideoStabilizationMode = .off
@@ -2565,16 +2526,16 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject, Named {
         try container.encode(.name, name)
         try container.encode(.id, id)
         try container.encode(.enabled, enabled)
-        try container.encode(.cameraPosition, cameraPosition)
-        try container.encode(.backCameraId, backCameraId)
-        try container.encode(.frontCameraId, frontCameraId)
-        try container.encode(.rtmpCameraId, rtmpCameraId)
-        try container.encode(.srtlaCameraId, srtlaCameraId)
-        try container.encode(.ristCameraId, ristCameraId)
-        try container.encode(.rtspCameraId, rtspCameraId)
-        try container.encode(.mediaPlayerCameraId, mediaPlayerCameraId)
-        try container.encode(.externalCameraId, externalCameraId)
-        try container.encode(.externalCameraName, externalCameraName)
+        try container.encode(.cameraPosition, videoSource.cameraPosition)
+        try container.encode(.backCameraId, videoSource.backCameraId)
+        try container.encode(.frontCameraId, videoSource.frontCameraId)
+        try container.encode(.rtmpCameraId, videoSource.rtmpCameraId)
+        try container.encode(.srtlaCameraId, videoSource.srtlaCameraId)
+        try container.encode(.ristCameraId, videoSource.ristCameraId)
+        try container.encode(.rtspCameraId, videoSource.rtspCameraId)
+        try container.encode(.mediaPlayerCameraId, videoSource.mediaPlayerCameraId)
+        try container.encode(.externalCameraId, videoSource.externalCameraId)
+        try container.encode(.externalCameraName, videoSource.externalCameraName)
         try container.encode(.widgets, widgets)
         try container.encode(.videoSourceRotation, videoSourceRotation)
         try container.encode(.videoStabilizationMode, videoStabilizationMode)
@@ -2589,16 +2550,16 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject, Named {
         name = container.decode(.name, String.self, "")
         id = container.decode(.id, UUID.self, .init())
         enabled = container.decode(.enabled, Bool.self, true)
-        cameraPosition = decodeCameraPosition(container, .cameraPosition, defaultBackCameraPosition)
-        backCameraId = decodeCameraId(container, .backCameraId, bestBackCameraId)
-        frontCameraId = decodeCameraId(container, .frontCameraId, bestFrontCameraId)
-        rtmpCameraId = container.decode(.rtmpCameraId, UUID.self, .init())
-        srtlaCameraId = container.decode(.srtlaCameraId, UUID.self, .init())
-        ristCameraId = container.decode(.ristCameraId, UUID.self, .init())
-        rtspCameraId = container.decode(.rtspCameraId, UUID.self, .init())
-        mediaPlayerCameraId = container.decode(.mediaPlayerCameraId, UUID.self, .init())
-        externalCameraId = container.decode(.externalCameraId, String.self, "")
-        externalCameraName = container.decode(.externalCameraName, String.self, "")
+        videoSource.cameraPosition = decodeCameraPosition(container, .cameraPosition, defaultBackCameraPosition)
+        videoSource.backCameraId = decodeCameraId(container, .backCameraId, bestBackCameraId)
+        videoSource.frontCameraId = decodeCameraId(container, .frontCameraId, bestFrontCameraId)
+        videoSource.rtmpCameraId = container.decode(.rtmpCameraId, UUID.self, .init())
+        videoSource.srtlaCameraId = container.decode(.srtlaCameraId, UUID.self, .init())
+        videoSource.ristCameraId = container.decode(.ristCameraId, UUID.self, .init())
+        videoSource.rtspCameraId = container.decode(.rtspCameraId, UUID.self, .init())
+        videoSource.mediaPlayerCameraId = container.decode(.mediaPlayerCameraId, UUID.self, .init())
+        videoSource.externalCameraId = container.decode(.externalCameraId, String.self, "")
+        videoSource.externalCameraName = container.decode(.externalCameraName, String.self, "")
         widgets = container.decode(.widgets, [SettingsSceneWidget].self, [])
         videoSourceRotation = container.decode(.videoSourceRotation, Double.self, 0.0)
         videoStabilizationMode = container.decode(.videoStabilizationMode, SettingsVideoStabilizationMode.self, .off)
@@ -2611,16 +2572,7 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject, Named {
     func clone() -> SettingsScene {
         let new = SettingsScene(name: name)
         new.enabled = enabled
-        new.cameraPosition = cameraPosition
-        new.backCameraId = backCameraId
-        new.frontCameraId = frontCameraId
-        new.rtmpCameraId = rtmpCameraId
-        new.srtlaCameraId = srtlaCameraId
-        new.ristCameraId = ristCameraId
-        new.rtspCameraId = rtspCameraId
-        new.mediaPlayerCameraId = mediaPlayerCameraId
-        new.externalCameraId = externalCameraId
-        new.externalCameraName = externalCameraName
+        new.videoSource = videoSource
         for widget in widgets {
             new.widgets.append(widget.clone())
         }
@@ -2634,74 +2586,11 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject, Named {
     }
 
     func toCameraId() -> SettingsCameraId {
-        switch cameraPosition {
-        case .back:
-            return .back(id: backCameraId)
-        case .front:
-            return .front(id: frontCameraId)
-        case .rtmp:
-            return .rtmp(id: rtmpCameraId)
-        case .external:
-            return .external(id: externalCameraId, name: externalCameraName)
-        case .srtla:
-            return .srtla(id: srtlaCameraId)
-        case .rist:
-            return .rist(id: ristCameraId)
-        case .rtsp:
-            return .rtsp(id: rtspCameraId)
-        case .mediaPlayer:
-            return .mediaPlayer(id: mediaPlayerCameraId)
-        case .screenCapture:
-            return .screenCapture
-        case .backTripleLowEnergy:
-            return .backTripleLowEnergy
-        case .backDualLowEnergy:
-            return .backDualLowEnergy
-        case .backWideDualLowEnergy:
-            return .backWideDualLowEnergy
-        case .none:
-            return .none
-        }
+        return videoSource.toCameraId()
     }
 
     func updateCameraId(settingsCameraId: SettingsCameraId) {
-        switch settingsCameraId {
-        case let .back(id: id):
-            cameraPosition = .back
-            backCameraId = id
-        case let .front(id: id):
-            cameraPosition = .front
-            frontCameraId = id
-        case let .rtmp(id: id):
-            cameraPosition = .rtmp
-            rtmpCameraId = id
-        case let .srtla(id: id):
-            cameraPosition = .srtla
-            srtlaCameraId = id
-        case let .rist(id: id):
-            cameraPosition = .rist
-            ristCameraId = id
-        case let .rtsp(id: id):
-            cameraPosition = .rtsp
-            rtspCameraId = id
-        case let .mediaPlayer(id: id):
-            cameraPosition = .mediaPlayer
-            mediaPlayerCameraId = id
-        case let .external(id: id, name: name):
-            cameraPosition = .external
-            externalCameraId = id
-            externalCameraName = name
-        case .screenCapture:
-            cameraPosition = .screenCapture
-        case .backTripleLowEnergy:
-            cameraPosition = .backTripleLowEnergy
-        case .backDualLowEnergy:
-            cameraPosition = .backDualLowEnergy
-        case .backWideDualLowEnergy:
-            cameraPosition = .backWideDualLowEnergy
-        case .none:
-            cameraPosition = .none
-        }
+        videoSource.updateCameraId(settingsCameraId: settingsCameraId)
     }
 }
 

@@ -7,7 +7,7 @@ func toPixels(_ percentage: Double, _ total: Double) -> Double {
 }
 
 extension CIImage {
-    func resizeMirror(_ sceneWidget: SettingsSceneWidget,
+    func resizeMirror(_ layout: SettingsWidgetLayout,
                       _ streamSize: CGSize,
                       _ mirror: Bool,
                       _ resize: Bool = true) -> CIImage
@@ -15,8 +15,8 @@ extension CIImage {
         guard resize else {
             return self
         }
-        var scaleX = toPixels(sceneWidget.size, streamSize.width) / extent.size.width
-        var scaleY = toPixels(sceneWidget.size, streamSize.height) / extent.size.height
+        var scaleX = toPixels(layout.size, streamSize.width) / extent.size.width
+        var scaleY = toPixels(layout.size, streamSize.height) / extent.size.height
         let scale = min(scaleX, scaleY)
         if mirror {
             scaleX = -scale
@@ -32,18 +32,18 @@ extension CIImage {
         }
     }
 
-    func move(_ sceneWidget: SettingsSceneWidget, _ streamSize: CGSize) -> CIImage {
+    func move(_ layout: SettingsWidgetLayout, _ streamSize: CGSize) -> CIImage {
         let x: Double
         let y: Double
-        if sceneWidget.alignment.isLeft() {
-            x = toPixels(sceneWidget.x, streamSize.width) - extent.minX
+        if layout.alignment.isLeft() {
+            x = toPixels(layout.x, streamSize.width) - extent.minX
         } else {
-            x = streamSize.width - toPixels(sceneWidget.x, streamSize.width) - extent.width - extent.minX
+            x = streamSize.width - toPixels(layout.x, streamSize.width) - extent.width - extent.minX
         }
-        if sceneWidget.alignment.isTop() {
-            y = streamSize.height - toPixels(sceneWidget.y, streamSize.height) - extent.height - extent.minY
+        if layout.alignment.isTop() {
+            y = streamSize.height - toPixels(layout.y, streamSize.height) - extent.height - extent.minY
         } else {
-            y = toPixels(sceneWidget.y, streamSize.height) - extent.minY
+            y = toPixels(layout.y, streamSize.height) - extent.minY
         }
         return translated(x: x, y: y)
     }

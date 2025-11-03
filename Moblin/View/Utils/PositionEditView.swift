@@ -3,7 +3,7 @@ import SwiftUI
 struct PositionEditView: View {
     @Binding var number: Double
     @Binding var value: String
-    let onSubmit: (Double) -> Void
+    let onSubmit: () -> Void
     @Binding var numericInput: Bool
     let incrementImageName: String
     let decrementImageName: String
@@ -12,7 +12,7 @@ struct PositionEditView: View {
     func submit(value: String) -> String {
         if var value = Float(value) {
             value = value.clamped(to: 0 ... 100)
-            onSubmit(Double(value))
+            onSubmit()
             return String(value)
         }
         return value

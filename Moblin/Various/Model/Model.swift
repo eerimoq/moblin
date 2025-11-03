@@ -2732,11 +2732,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func preferredCamera(position: AVCaptureDevice.Position) -> AVCaptureDevice? {
         if let scene = findEnabledScene(id: sceneSelector.selectedSceneId) {
             if position == .back {
-                return AVCaptureDevice(uniqueID: scene.backCameraId)
+                return AVCaptureDevice(uniqueID: scene.videoSource.backCameraId)
             } else if position == .front {
-                return AVCaptureDevice(uniqueID: scene.frontCameraId)
+                return AVCaptureDevice(uniqueID: scene.videoSource.frontCameraId)
             } else {
-                return AVCaptureDevice(uniqueID: scene.externalCameraId)
+                return AVCaptureDevice(uniqueID: scene.videoSource.externalCameraId)
             }
         } else {
             return nil

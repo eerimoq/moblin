@@ -61,8 +61,8 @@ final class MapEffect: VideoEffect {
         guard let sceneWidget, let dot, let mapSnapshot else {
             return image
         }
-        let height = toPixels(sceneWidget.size, size.height)
-        let width = toPixels(sceneWidget.size, size.width)
+        let height = toPixels(sceneWidget.layout.size, size.height)
+        let width = toPixels(sceneWidget.layout.size, size.width)
         let side = CGFloat(max(40, min(height, width)))
         let mapWithDotImage = dot
             .translated(x: (side - 30) / 2, y: (side - 30) / 2 - CGFloat(dotOffsetRatio * side / 2))

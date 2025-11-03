@@ -155,8 +155,8 @@ final class BrowserEffect: VideoEffect {
                                     width: crop.crop.width,
                                     height: crop.crop.height))
                 .translated(x: -Double(crop.crop.x), y: Double(y))
-                .resizeMirror(crop.sceneWidget, image.extent.size, false)
-                .move(crop.sceneWidget, image.extent.size)
+                .resizeMirror(crop.sceneWidget.layout, image.extent.size, false)
+                .move(crop.sceneWidget.layout, image.extent.size)
                 .cropped(to: image.extent)
                 .composited(over: image)
         }

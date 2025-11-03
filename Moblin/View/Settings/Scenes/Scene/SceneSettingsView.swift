@@ -163,7 +163,7 @@ struct SceneSettingsView: View {
                     }
                 }
                 if database.showAllSettings {
-                    if scene.cameraPosition != .none {
+                    if scene.videoSource.cameraPosition != .none {
                         VideoSourceRotationView(selectedRotation: $scene.videoSourceRotation)
                             .onChange(of: scene.videoSourceRotation) { _ in
                                 model.sceneUpdated(updateRemoteScene: false)
@@ -176,7 +176,7 @@ struct SceneSettingsView: View {
                     if scene.overrideVideoStabilizationMode {
                         VideoStabilizationView(model: model, scene: scene)
                     }
-                    if scene.cameraPosition != .none {
+                    if scene.videoSource.cameraPosition != .none {
                         Toggle("Fill frame", isOn: $scene.fillFrame)
                             .onChange(of: scene.fillFrame) { _ in
                                 model.sceneUpdated(attachCamera: true, updateRemoteScene: false)

@@ -833,7 +833,7 @@ final class TextEffect: VideoEffect {
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
         let sceneWidget = updateOverlay(size: image.extent.size)
         return overlay?
-            .move(sceneWidget, image.extent.size)
+            .move(sceneWidget.layout, image.extent.size)
             .cropped(to: image.extent)
             .composited(over: image) ?? image
     }

@@ -121,16 +121,16 @@ struct RemoteControlRemoteSceneSettingsSceneWidget: Codable {
 
     init(widget: SettingsSceneWidget) {
         id = widget.widgetId
-        x = widget.x
-        y = widget.y
-        size = widget.size
+        x = widget.layout.x
+        y = widget.layout.y
+        size = widget.layout.size
     }
 
     func toSettings() -> SettingsSceneWidget {
         let widget = SettingsSceneWidget(widgetId: id)
-        widget.x = x
-        widget.y = y
-        widget.size = size
+        widget.layout.x = x
+        widget.layout.y = y
+        widget.layout.size = size
         return widget
     }
 }

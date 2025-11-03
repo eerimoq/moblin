@@ -57,9 +57,9 @@ open class VideoEffect: NSObject {
                                       _ info: VideoEffectInfo) -> CIImage
     {
         let resizedImage = applyEarlyEffects(image, info)
-            .resizeMirror(sceneWidget, backgroundImageExtent.size, mirror)
+            .resizeMirror(sceneWidget.layout, backgroundImageExtent.size, mirror)
         return applyEffects(resizedImage, info)
-            .move(sceneWidget, backgroundImageExtent.size)
+            .move(sceneWidget.layout, backgroundImageExtent.size)
             .cropped(to: backgroundImageExtent)
     }
 

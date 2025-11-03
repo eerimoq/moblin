@@ -1286,13 +1286,12 @@ class Database: Codable, ObservableObject {
 
 private func addDefaultScenes(database: Database) {
     var scene = SettingsScene(name: String(localized: "Back"))
-    scene.cameraPosition = defaultBackCameraPosition
-    scene.backCameraId = bestBackCameraId
+    scene.videoSource.cameraPosition = defaultBackCameraPosition
+    scene.videoSource.backCameraId = bestBackCameraId
     database.scenes.append(scene)
-
     scene = SettingsScene(name: String(localized: "Front"))
-    scene.cameraPosition = .front
-    scene.frontCameraId = bestFrontCameraId
+    scene.videoSource.cameraPosition = .front
+    scene.videoSource.frontCameraId = bestFrontCameraId
     database.scenes.append(scene)
 }
 
@@ -1902,19 +1901,19 @@ final class Settings {
                     continue
                 }
                 if widget.text.verticalAlignment == .bottom, widget.text.horizontalAlignment == .trailing {
-                    sceneWidget.alignment = .bottomRight
-                    sceneWidget.x = 100 - sceneWidget.x
-                    sceneWidget.xString = String(sceneWidget.x)
-                    sceneWidget.y = 100 - sceneWidget.y
-                    sceneWidget.yString = String(sceneWidget.y)
+                    sceneWidget.layout.alignment = .bottomRight
+                    sceneWidget.layout.x = 100 - sceneWidget.layout.x
+                    sceneWidget.layout.updateXString()
+                    sceneWidget.layout.y = 100 - sceneWidget.layout.y
+                    sceneWidget.layout.updateYString()
                 } else if widget.text.verticalAlignment == .top, widget.text.horizontalAlignment == .trailing {
-                    sceneWidget.alignment = .topRight
-                    sceneWidget.x = 100 - sceneWidget.x
-                    sceneWidget.xString = String(sceneWidget.x)
+                    sceneWidget.layout.alignment = .topRight
+                    sceneWidget.layout.x = 100 - sceneWidget.layout.x
+                    sceneWidget.layout.updateXString()
                 } else if widget.text.verticalAlignment == .bottom, widget.text.horizontalAlignment == .leading {
-                    sceneWidget.alignment = .bottomLeft
-                    sceneWidget.y = 100 - sceneWidget.y
-                    sceneWidget.yString = String(sceneWidget.y)
+                    sceneWidget.layout.alignment = .bottomLeft
+                    sceneWidget.layout.y = 100 - sceneWidget.layout.y
+                    sceneWidget.layout.updateYString()
                 }
             }
         }
@@ -1934,8 +1933,8 @@ final class Settings {
                 let resolution = stream.resolution.dimensions(portrait: stream.portrait)
                 let width = (100 * Double(widget.browser.width) / Double(resolution.width)).clamped(to: 1 ... 100)
                 let height = (100 * Double(widget.browser.height) / Double(resolution.height)).clamped(to: 1 ... 100)
-                sceneWidget.size = max(width, height)
-                sceneWidget.sizeString = String(sceneWidget.size)
+                sceneWidget.layout.size = max(width, height)
+                sceneWidget.layout.updateSizeString()
             }
         }
     }
