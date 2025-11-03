@@ -170,6 +170,24 @@ struct WidgetWizardSettingsView: View {
                                                      createWidgetWizard: createWidgetWizard,
                                                      text: createWidgetWizard.widget.text,
                                                      presentingCreateWizard: $presentingCreateWizard)
+                    case .browser:
+                        WidgetWizardBrowserSettingsView(model: model,
+                                                        database: database,
+                                                        createWidgetWizard: createWidgetWizard,
+                                                        browser: createWidgetWizard.widget.browser,
+                                                        presentingCreateWizard: $presentingCreateWizard)
+                    case .videoSource:
+                        WidgetWizardVideoSourceSettingsView(model: model,
+                                                            database: database,
+                                                            createWidgetWizard: createWidgetWizard,
+                                                            videoSource: createWidgetWizard.widget.videoSource,
+                                                            presentingCreateWizard: $presentingCreateWizard)
+                    case .image:
+                        WidgetWizardImageSettingsView(model: model,
+                                                      database: database,
+                                                      widget: createWidgetWizard.widget,
+                                                      createWidgetWizard: createWidgetWizard,
+                                                      presentingCreateWizard: $presentingCreateWizard)
                     default:
                         SelectScenesView(model: model,
                                          database: database,
