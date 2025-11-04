@@ -449,6 +449,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var log: Deque<LogEntry> = []
     var remoteControlAssistantLog: Deque<LogEntry> = []
     var imageStorage = ImageStorage()
+    var replayTransitionsStorage = ReplayTransitionsStorage()
     var logsStorage = LogsStorage()
     var mediaStorage = MediaPlayerStorage()
     var alertMediaStorage = AlertMediaStorage()
