@@ -1,5 +1,9 @@
 import SwiftUI
 
+func basicWidgetSettingsTitle(_ createWidgetWizard: CreateWidgetWizard) -> String {
+    return String(localized: "Basic \(createWidgetWizard.type.toString()) widget settings")
+}
+
 struct CreateWidgetWizardToolbar: ToolbarContent {
     @Binding var presentingCreateWizard: Bool
 

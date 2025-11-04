@@ -29,7 +29,7 @@ struct WidgetWizardBrowserSettingsView: View {
                                                    presentingCreateWizard: $presentingCreateWizard)
                 .disabled(isValidHttpUrl(url: browser.url) != nil || browser.url.isEmpty)
         }
-        .navigationTitle("Basic \(createWidgetWizard.type.toString()) widget settings")
+        .navigationTitle(basicWidgetSettingsTitle(createWidgetWizard))
         .toolbar {
             CreateWidgetWizardToolbar(presentingCreateWizard: $presentingCreateWizard)
         }

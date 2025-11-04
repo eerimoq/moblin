@@ -16,7 +16,7 @@ struct WidgetWizardTextSettingsView: View {
                                                    presentingCreateWizard: $presentingCreateWizard)
                 .disabled(text.formatString.isEmpty)
         }
-        .navigationTitle("Basic \(createWidgetWizard.type.toString()) widget settings")
+        .navigationTitle(basicWidgetSettingsTitle(createWidgetWizard))
         .toolbar {
             CreateWidgetWizardToolbar(presentingCreateWizard: $presentingCreateWizard)
         }

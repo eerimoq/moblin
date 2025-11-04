@@ -49,7 +49,7 @@ struct WidgetWizardVideoSourceSettingsView: View {
                                                    createWidgetWizard: createWidgetWizard,
                                                    presentingCreateWizard: $presentingCreateWizard)
         }
-        .navigationTitle("Basic \(createWidgetWizard.type.toString()) widget settings")
+        .navigationTitle(basicWidgetSettingsTitle(createWidgetWizard))
         .toolbar {
             CreateWidgetWizardToolbar(presentingCreateWizard: $presentingCreateWizard)
         }
