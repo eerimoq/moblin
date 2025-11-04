@@ -8,7 +8,7 @@ class ReplayProvider: ObservableObject {
     @Published var startFromEnd = 10.0
     @Published var speed: SettingsReplaySpeed? = .one
     @Published var instantReplayCountdown = 0
-    @Published var timeLeft = 0
+    @Published var timeLeft = -1
 }
 
 extension Model {
@@ -110,12 +110,22 @@ extension Model {
         guard let replayVideo, let replaySettings else {
             return false
         }
+        let replay = stream.replay
         let transitionMode: ReplayEffectTransitionMode
-        if stream.replay.fade {
-            transitionMode = .fade
-        } else {
+        switch replay.transitionType {
+        case .none:
             transitionMode = .none
+        case .fade:
+            transitionMode = .fade
+        case .stingers:
+            let inPath = replayTransitionsStorage.makePath(filename: replay.inStinger.makeFilename() ?? "")
+            let outPath = replayTransitionsStorage.makePath(filename: replay.outStinger.makeFilename() ?? "")
+            transitionMode = .stingers(inPath: inPath,
+                                       inTransitionPoint: replay.inStinger.transitionPoint,
+                                       outPath: outPath,
+                                       outTransitionPoint: replay.outStinger.transitionPoint)
         }
+        self.replay.timeLeft = -1
         replayEffect = ReplayEffect(
             video: replayVideo,
             start: replaySettings.startFromVideoStart(),

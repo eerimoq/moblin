@@ -599,33 +599,87 @@ class SettingsStreamRecording: Codable, ObservableObject {
     }
 }
 
+enum SettingsStreamReplayTransitionType: String, Codable, CaseIterable {
+    case fade
+    case stingers
+    case none
+
+    init(from decoder: Decoder) throws {
+        self = try SettingsStreamReplayTransitionType(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
+            .fade
+    }
+
+    func toString() -> String {
+        switch self {
+        case .fade:
+            return String(localized: "Fade")
+        case .stingers:
+            return String(localized: "Stingers")
+        case .none:
+            return String(localized: "None")
+        }
+    }
+}
+
+struct SettingsStreamReplayStinger: Codable {
+    var id: UUID = .init()
+    var name: String = ""
+    var transitionPoint: Double = 0.5
+
+    func makeFilename() -> String? {
+        guard let fileExtension = URL(string: "file:///\(name)")?.pathExtension else {
+            return nil
+        }
+        return "\(id).\(fileExtension)"
+    }
+}
+
 class SettingsStreamReplay: Codable, ObservableObject {
     @Published var enabled: Bool = false
-    @Published var fade: Bool = true
+    @Published var transitionType: SettingsStreamReplayTransitionType = .fade
+    @Published var inStinger: SettingsStreamReplayStinger = .init()
+    @Published var outStinger: SettingsStreamReplayStinger = .init()
 
     init() {}
 
     enum CodingKeys: CodingKey {
         case enabled,
-             fade
+             fade,
+             transitionType,
+             inStinger,
+             outStinger
     }
 
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.enabled, enabled)
-        try container.encode(.fade, fade)
+        try container.encode(.transitionType, transitionType)
+        try container.encode(.inStinger, inStinger)
+        try container.encode(.outStinger, outStinger)
     }
 
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         enabled = container.decode(.enabled, Bool.self, false)
-        fade = container.decode(.fade, Bool.self, false)
+        if let fade = try? container.decode(Bool.self, forKey: .fade) {
+            if fade {
+                transitionType = .fade
+            } else {
+                transitionType = .none
+            }
+        } else {
+            transitionType = container.decode(.transitionType, SettingsStreamReplayTransitionType.self, .fade)
+        }
+        inStinger = container.decode(.inStinger, SettingsStreamReplayStinger.self, .init())
+        outStinger = container.decode(.outStinger, SettingsStreamReplayStinger.self, .init())
     }
 
     func clone() -> SettingsStreamReplay {
         let new = SettingsStreamReplay()
         new.enabled = enabled
-        new.fade = fade
+        new.transitionType = transitionType
+        new.inStinger = inStinger
+        new.outStinger = outStinger
         return new
     }
 }

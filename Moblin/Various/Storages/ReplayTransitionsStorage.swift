@@ -9,17 +9,17 @@ class ReplayTransitionsStorage {
         mediasUrl = createAndGetDirectory(name: "ReplayTransitions")
     }
 
-    func makePath(id: UUID) -> URL {
-        return mediasUrl.appendingPathComponent("\(id).mov")
+    func makePath(filename: String) -> URL {
+        return mediasUrl.appendingPathComponent(filename)
     }
 
-    func add(id: UUID, url: URL) {
-        try? fileManager.moveItem(at: url, to: makePath(id: id))
+    func add(filename: String, url: URL) {
+        try? fileManager.moveItem(at: url, to: makePath(filename: filename))
     }
 
-    func remove(id: UUID) {
+    func remove(filename: String) {
         do {
-            try fileManager.removeItem(at: makePath(id: id))
+            try fileManager.removeItem(at: makePath(filename: filename))
         } catch {
             logger.error("media-player-storage: Remove failed with error \(error)")
         }

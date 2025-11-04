@@ -3,8 +3,6 @@ import Collections
 import CoreImage
 import SwiftUI
 
-private let replayQueue = DispatchQueue(label: "com.eerimoq.replay-effect")
-
 struct ReplayImage {
     let image: CIImage?
     let offset: Double?
@@ -26,14 +24,14 @@ class ReplayEffectReplayReader {
         startTime = start
         DispatchQueue.main.async {
             self.overlay = self.createOverlay(size: size)
-            replayQueue.async {
+            replayEffectQueue.async {
                 let asset = AVAsset(url: video.url)
                 self.reader = try? AVAssetReader(asset: asset)
                 let startTime = CMTime(seconds: start)
                 let duration = CMTime(seconds: duration)
                 self.reader?.timeRange = CMTimeRange(start: startTime, duration: duration)
                 asset.loadTracks(withMediaType: .video) { [weak self] tracks, error in
-                    replayQueue.async {
+                    replayEffectQueue.async {
                         self?.loadVideoTrackCompletion(tracks: tracks, error: error)
                     }
                 }
@@ -90,7 +88,7 @@ class ReplayEffectReplayReader {
     }
 
     private func fill() {
-        replayQueue.async {
+        replayEffectQueue.async {
             self.fillInternal()
         }
     }

@@ -64,7 +64,7 @@ private struct InstantReplayView: View {
     let size: CGFloat
 
     var body: some View {
-        if replay.isPlaying {
+        if replay.isPlaying, replay.timeLeft != -1 {
             Text(String(replay.timeLeft))
                 .font(.system(size: 25))
                 .frame(width: size, height: size)
