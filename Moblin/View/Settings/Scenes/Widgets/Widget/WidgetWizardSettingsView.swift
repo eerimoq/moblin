@@ -192,6 +192,18 @@ struct WidgetWizardSettingsView: View {
                                                       widget: createWidgetWizard.widget,
                                                       createWidgetWizard: createWidgetWizard,
                                                       presentingCreateWizard: $presentingCreateWizard)
+                    case .vTuber:
+                        WidgetWizardVTuberSettingsView(model: model,
+                                                       database: database,
+                                                       vTuber: createWidgetWizard.widget.vTuber,
+                                                       createWidgetWizard: createWidgetWizard,
+                                                       presentingCreateWizard: $presentingCreateWizard)
+                    case .pngTuber:
+                        WidgetWizardPngTuberSettingsView(model: model,
+                                                         database: database,
+                                                         pngTuber: createWidgetWizard.widget.pngTuber,
+                                                         createWidgetWizard: createWidgetWizard,
+                                                         presentingCreateWizard: $presentingCreateWizard)
                     default:
                         SelectScenesView(model: model,
                                          database: database,

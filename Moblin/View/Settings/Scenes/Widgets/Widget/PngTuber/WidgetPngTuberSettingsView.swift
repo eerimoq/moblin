@@ -15,17 +15,43 @@ private struct PickerView: UIViewControllerRepresentable {
     func updateUIViewController(_: UIDocumentPickerViewController, context _: Context) {}
 }
 
-struct WidgetPngTuberSettingsView: View {
-    @EnvironmentObject var model: Model
-    let widget: SettingsWidget
+struct WidgetPngTuberPickerView: View {
+    let model: Model
     @ObservedObject var pngTuber: SettingsWidgetPngTuber
-    @State var showPicker = false
+    var onSelected: (() -> Void)?
+    @State private var showPicker = false
 
     private func onUrl(url: URL) {
         pngTuber.modelName = url.lastPathComponent
         model.pngTuberStorage.add(id: pngTuber.id, url: url)
-        model.resetSelectedScene(changeScene: false)
+        onSelected?()
     }
+
+    var body: some View {
+        Section {
+            Button {
+                showPicker = true
+                model.onDocumentPickerUrl = onUrl
+            } label: {
+                HCenter {
+                    Text(pngTuber.modelName.isEmpty ? String(localized: "Select model") : pngTuber.modelName)
+                }
+            }
+            .sheet(isPresented: $showPicker) {
+                PickerView()
+            }
+        } header: {
+            Text("Model")
+        } footer: {
+            Text("A .save-file from PNGTuberPlus.")
+        }
+    }
+}
+
+struct WidgetPngTuberSettingsView: View {
+    @EnvironmentObject var model: Model
+    let widget: SettingsWidget
+    @ObservedObject var pngTuber: SettingsWidgetPngTuber
 
     private func onCameraChange(cameraId: String) {
         pngTuber.updateCameraId(settingsCameraId: model.cameraIdToSettingsCameraId(cameraId: cameraId))
@@ -57,22 +83,8 @@ struct WidgetPngTuberSettingsView: View {
                 }
             }
         }
-        Section {
-            Button {
-                showPicker = true
-                model.onDocumentPickerUrl = onUrl
-            } label: {
-                HCenter {
-                    Text(pngTuber.modelName.isEmpty ? String(localized: "Select model") : pngTuber.modelName)
-                }
-            }
-            .sheet(isPresented: $showPicker) {
-                PickerView()
-            }
-        } header: {
-            Text("Model")
-        } footer: {
-            Text("A .save-file from PNGTuberPlus.")
+        WidgetPngTuberPickerView(model: model, pngTuber: pngTuber) {
+            model.resetSelectedScene(changeScene: false)
         }
         Section {
             Toggle(isOn: $pngTuber.mirror) {
