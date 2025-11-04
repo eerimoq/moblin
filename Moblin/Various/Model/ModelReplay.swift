@@ -110,13 +110,19 @@ extension Model {
         guard let replayVideo, let replaySettings else {
             return false
         }
+        let transitionMode: ReplayEffectTransitionMode
+        if stream.replay.fade {
+            transitionMode = .fade
+        } else {
+            transitionMode = .none
+        }
         replayEffect = ReplayEffect(
             video: replayVideo,
             start: replaySettings.startFromVideoStart(),
             stop: replaySettings.stopFromVideoStart(),
             speed: database.replay.speed.toNumber(),
             size: stream.dimensions(),
-            fade: stream.replay.fade,
+            transitionMode: transitionMode,
             delegate: self
         )
         media.registerEffectBack(replayEffect!)
