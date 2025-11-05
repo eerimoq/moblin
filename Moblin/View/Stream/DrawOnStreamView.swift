@@ -64,12 +64,10 @@ private struct DrawOnStreamCanvasView: View {
                             drawing = false
                         }
                 )
-                .aspectRatio(stream.portrait ? 9 / 16 : 16 / 9, contentMode: .fit)
+                .aspectRatio(stream.dimensions().aspectRatio(), contentMode: .fit)
                 Spacer(minLength: 0)
             }
-            if isPad(), stream.portrait {
-                Spacer(minLength: 0)
-            }
+            Spacer(minLength: 0)
         }
         .ignoresSafeArea()
         .edgesIgnoringSafeArea(.all)

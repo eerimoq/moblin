@@ -349,12 +349,8 @@ struct MainView: View {
                  show: model.show)
     }
 
-    private func portraitAspectRatio() -> CGFloat {
-        if model.stream.portrait {
-            return 9 / 16
-        } else {
-            return 16 / 9
-        }
+    private func streamAspectRatio() -> CGFloat {
+        return model.stream.dimensions().aspectRatio()
     }
 
     private func portraitVideoOffset() -> Double {
@@ -387,7 +383,7 @@ struct MainView: View {
                                 height: portraitVideoOffset() * metrics.size.height * 2
                             ))
                         }
-                        .aspectRatio(portraitAspectRatio(), contentMode: .fit)
+                        .aspectRatio(streamAspectRatio(), contentMode: .fit)
                         Spacer(minLength: 0)
                     }
                     Spacer(minLength: 0)
@@ -461,9 +457,10 @@ struct MainView: View {
                                 StreamOverlayTapGridView(camera: model.camera, size: metrics.size)
                             }
                         }
-                        .aspectRatio(16 / 9, contentMode: .fit)
+                        .aspectRatio(streamAspectRatio(), contentMode: .fit)
                         Spacer(minLength: 0)
                     }
+                    Spacer(minLength: 0)
                 }
                 .ignoresSafeArea()
                 GeometryReader { metrics in

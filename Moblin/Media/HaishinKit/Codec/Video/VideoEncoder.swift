@@ -150,51 +150,31 @@ class VideoEncoder {
         }
     }
 
-    private func getLandscapeVideoSize(settings: VideoEncoderSettings) -> CMVideoDimensions {
+    private func getVideoSize(settings: VideoEncoderSettings) -> CMVideoDimensions? {
         if settings.bitRate < 100_000 {
-            return .init(width: 284, height: 160)
+            return settings.videoSize.convertTo(dimension: 160)
         } else if settings.bitRate < 250_000 {
-            return .init(width: 640, height: 360)
+            return settings.videoSize.convertTo(dimension: 360)
         } else if settings.bitRate < 500_000 {
-            return .init(width: 854, height: 480)
+            return settings.videoSize.convertTo(dimension: 480)
         } else if settings.bitRate < 750_000 {
-            return .init(width: 1280, height: 720)
+            return settings.videoSize.convertTo(dimension: 720)
         } else if settings.bitRate < 1_500_000 {
-            return .init(width: 1920, height: 1080)
-        } else {
-            return settings.videoSize
-        }
-    }
-
-    private func getPortraitVideoSize(settings: VideoEncoderSettings) -> CMVideoDimensions {
-        if settings.bitRate < 100_000 {
-            return .init(width: 160, height: 284)
-        } else if settings.bitRate < 250_000 {
-            return .init(width: 360, height: 640)
-        } else if settings.bitRate < 500_000 {
-            return .init(width: 480, height: 854)
-        } else if settings.bitRate < 750_000 {
-            return .init(width: 720, height: 1280)
-        } else if settings.bitRate < 1_500_000 {
-            return .init(width: 1080, height: 1920)
+            return settings.videoSize.convertTo(dimension: 1080)
         } else {
             return settings.videoSize
         }
     }
 
     private func updateAdaptiveResolution(settings: VideoEncoderSettings) -> CMVideoDimensions {
-        var videoSize: CMVideoDimensions
+        var videoSize: CMVideoDimensions?
         if settings.adaptiveResolution {
-            if settings.videoSize.width > settings.videoSize.height {
-                videoSize = getLandscapeVideoSize(settings: settings)
-            } else {
-                videoSize = getPortraitVideoSize(settings: settings)
-            }
+            videoSize = getVideoSize(settings: settings)
         } else {
             videoSize = settings.videoSize
         }
-        if videoSize.height > settings.videoSize.height {
-            videoSize = settings.videoSize
+        guard let videoSize, videoSize.height <= settings.videoSize.height else {
+            return settings.videoSize
         }
         return videoSize
     }

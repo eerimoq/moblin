@@ -337,6 +337,9 @@ extension Model {
         var captureSize: CGSize
         var canvasSize: CGSize
         switch resolution ?? stream.resolution {
+        case .r4032x3024:
+            captureSize = .init(width: 4032, height: 3024)
+            canvasSize = .init(width: 4032, height: 3024)
         case .r3840x2160:
             captureSize = .init(width: 3840, height: 2160)
             canvasSize = .init(width: 3840, height: 2160)
@@ -344,9 +347,15 @@ extension Model {
             // Use 4K camera and downscale to 1440p.
             captureSize = .init(width: 3840, height: 2160)
             canvasSize = .init(width: 2560, height: 1440)
+        case .r1920x1440:
+            captureSize = .init(width: 1920, height: 1440)
+            canvasSize = .init(width: 1920, height: 1440)
         case .r1920x1080:
             captureSize = .init(width: 1920, height: 1080)
             canvasSize = .init(width: 1920, height: 1080)
+        case .r1024x768:
+            captureSize = .init(width: 1024, height: 768)
+            canvasSize = .init(width: 1024, height: 768)
         case .r1280x720:
             captureSize = .init(width: 1280, height: 720)
             canvasSize = .init(width: 1280, height: 720)

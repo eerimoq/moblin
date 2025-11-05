@@ -22,10 +22,13 @@ enum SettingsStreamCodec: String, Codable, CaseIterable {
 let codecs = SettingsStreamCodec.allCases.map { $0.rawValue }
 
 enum SettingsStreamResolution: String, Codable, CaseIterable {
+    case r4032x3024 = "4032x3024"
     case r3840x2160 = "3840x2160"
     case r2560x1440 = "2560x1440"
+    case r1920x1440 = "1920x1440"
     case r1920x1080 = "1920x1080"
     case r1280x720 = "1280x720"
+    case r1024x768 = "1024x768"
     case r960x540 = "960x540"
     case r854x480 = "854x480"
     case r640x360 = "640x360"
@@ -38,12 +41,18 @@ enum SettingsStreamResolution: String, Codable, CaseIterable {
 
     func shortString() -> String {
         switch self {
+        case .r4032x3024:
+            return "3024p (4:3)"
         case .r3840x2160:
             return "4K"
         case .r2560x1440:
             return "1440p"
+        case .r1920x1440:
+            return "1440p (4:3)"
         case .r1920x1080:
             return "1080p"
+        case .r1024x768:
+            return "768p (4:3)"
         case .r1280x720:
             return "720p"
         case .r960x540:
@@ -60,12 +69,18 @@ enum SettingsStreamResolution: String, Codable, CaseIterable {
     func dimensions(portrait: Bool) -> CMVideoDimensions {
         var size: CMVideoDimensions
         switch self {
+        case .r4032x3024:
+            size = .init(width: 4032, height: 3024)
         case .r3840x2160:
             size = .init(width: 3840, height: 2160)
         case .r2560x1440:
             size = .init(width: 2560, height: 1440)
+        case .r1920x1440:
+            size = .init(width: 1920, height: 1440)
         case .r1920x1080:
             size = .init(width: 1920, height: 1080)
+        case .r1024x768:
+            size = .init(width: 1024, height: 768)
         case .r1280x720:
             size = .init(width: 1280, height: 720)
         case .r960x540:
