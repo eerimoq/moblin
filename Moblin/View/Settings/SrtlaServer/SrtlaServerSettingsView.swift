@@ -41,7 +41,7 @@ struct SrtlaServerSettingsView: View {
                     Section {
                         HStack {
                             Image(systemName: "info.circle.fill")
-                                .foregroundColor(.blue)
+                                .foregroundStyle(.blue)
                             Text("Disable the SRT(LA) server to change its settings.")
                         }
                     }
@@ -123,7 +123,7 @@ struct SrtlaServerSettingsView: View {
                 Text("SRT(LA) server")
                 Spacer()
                 Text(status())
-                    .foregroundColor(.gray)
+                    .foregroundStyle(.gray)
             }
         }
     }

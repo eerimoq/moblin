@@ -21,7 +21,7 @@ struct TwitchStreamLiveSettingsView: View {
                 Spacer()
                 if let title {
                     Text(title)
-                        .foregroundColor(.gray)
+                        .foregroundStyle(.gray)
                 } else {
                     ProgressView()
                 }
@@ -35,7 +35,7 @@ struct TwitchStreamLiveSettingsView: View {
                 Spacer()
                 if let category {
                     Text(category)
-                        .foregroundColor(.gray)
+                        .foregroundStyle(.gray)
                 } else {
                     ProgressView()
                 }

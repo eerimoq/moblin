@@ -30,7 +30,7 @@ private struct ObsStartStopStreamingView: View {
                     Text("Starting...")
                 }
             }
-            .foregroundColor(.white)
+            .foregroundStyle(.white)
             .listRowBackground(Color.gray)
         case .started:
             Section {
@@ -47,7 +47,7 @@ private struct ObsStartStopStreamingView: View {
                     }
                 }
             }
-            .foregroundColor(.white)
+            .foregroundStyle(.white)
             .listRowBackground(Color.blue)
         case .stopping:
             Section {
@@ -55,7 +55,7 @@ private struct ObsStartStopStreamingView: View {
                     Text("Stopping...")
                 }
             }
-            .foregroundColor(.white)
+            .foregroundStyle(.white)
             .listRowBackground(Color.gray)
         }
     }
@@ -90,7 +90,7 @@ private struct ObsStartStopRecordingView: View {
                     Text("Starting...")
                 }
             }
-            .foregroundColor(.white)
+            .foregroundStyle(.white)
             .listRowBackground(Color.gray)
         case .started:
             Section {
@@ -107,7 +107,7 @@ private struct ObsStartStopRecordingView: View {
                     }
                 }
             }
-            .foregroundColor(.white)
+            .foregroundStyle(.white)
             .listRowBackground(Color.blue)
         case .stopping:
             Section {
@@ -115,7 +115,7 @@ private struct ObsStartStopRecordingView: View {
                     Text("Stopping...")
                 }
             }
-            .foregroundColor(.white)
+            .foregroundStyle(.white)
             .listRowBackground(Color.gray)
         }
     }
@@ -202,7 +202,7 @@ struct QuickButtonObsView: View {
                                 } label: {
                                     if muted {
                                         Image(systemName: "microphone.slash")
-                                            .foregroundColor(.red)
+                                            .foregroundStyle(.red)
                                     } else {
                                         Image(systemName: "microphone")
                                     }
@@ -234,7 +234,7 @@ struct QuickButtonObsView: View {
                             HCenter {
                                 Text("Fixing...")
                             }
-                            .foregroundColor(.white)
+                            .foregroundStyle(.white)
                         } footer: {
                             Text("""
                             Restarts the \(stream.obsSourceName) source to hopefully fix \

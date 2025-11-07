@@ -436,7 +436,7 @@ private struct ChatBotAliasSettingsView: View {
                 Spacer()
                 Text(alias.replacement)
                     .lineLimit(1)
-                    .foregroundColor(.gray)
+                    .foregroundStyle(.gray)
             }
         }
     }

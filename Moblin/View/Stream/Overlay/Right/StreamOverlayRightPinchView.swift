@@ -8,7 +8,7 @@ struct StreamOverlayRightPinchView: View {
         VStack(alignment: .trailing, spacing: 1) {
             Text("PINCH SCALE")
                 .font(.footnote)
-                .foregroundColor(.white)
+                .foregroundStyle(.white)
                 .padding([.trailing], 7)
             HStack {
                 Slider(

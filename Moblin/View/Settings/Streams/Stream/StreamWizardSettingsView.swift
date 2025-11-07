@@ -4,7 +4,7 @@ struct WizardNextButtonView: View {
     var body: some View {
         HCenter {
             Text("Next")
-                .foregroundColor(.accentColor)
+                .foregroundStyle(Color.accentColor)
         }
     }
 }
@@ -13,7 +13,7 @@ struct WizardSkipButtonView: View {
     var body: some View {
         HCenter {
             Text("Skip")
-                .foregroundColor(.accentColor)
+                .foregroundStyle(Color.accentColor)
         }
     }
 }

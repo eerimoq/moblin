@@ -10,7 +10,7 @@ private struct FaceButtonView: View {
             .font(.subheadline)
             .frame(width: cameraButtonWidth, height: height)
             .background(pickerBackgroundColor)
-            .foregroundColor(.white)
+            .foregroundStyle(.white)
             .cornerRadius(7)
             .overlay(
                 RoundedRectangle(cornerRadius: 7)

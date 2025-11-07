@@ -12,7 +12,7 @@ private struct ReturnButtonView: View {
                 .font(.body)
         }
         .frame(width: stealthModeButtonSize, height: stealthModeButtonSize)
-        .foregroundColor(.white)
+        .foregroundStyle(.white)
         .background(.black)
         .clipShape(Circle())
         .onTapGesture { _ in
@@ -34,7 +34,7 @@ private struct ChatButtonView: View {
                 .font(.body)
         }
         .frame(width: stealthModeButtonSize, height: stealthModeButtonSize)
-        .foregroundColor(.white)
+        .foregroundStyle(.white)
         .background(.black)
         .clipShape(Circle())
         .onTapGesture { _ in

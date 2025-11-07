@@ -71,7 +71,7 @@ private struct ControlSearchView: View {
                 }
             }
             .pickerStyle(.menu)
-            .foregroundColor(.primary)
+            .foregroundStyle(.primary)
             .frame(width: 35, height: 12)
             .padding()
             .glassEffect()
@@ -137,7 +137,7 @@ private struct ControlsView: View {
                             ImageConeView(slash: true)
                         }
                     }
-                    .foregroundColor(.primary)
+                    .foregroundStyle(.primary)
                     .frame(width: 12, height: 12)
                     .padding()
                     .glassEffect()
@@ -146,7 +146,7 @@ private struct ControlsView: View {
                     navigation.isSmall.toggle()
                 } label: {
                     Image(systemName: minMaxButtonIcon())
-                        .foregroundColor(.primary)
+                        .foregroundStyle(.primary)
                         .frame(width: 12, height: 12)
                         .padding()
                         .glassEffect()

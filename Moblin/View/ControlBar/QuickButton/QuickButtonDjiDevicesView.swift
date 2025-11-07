@@ -18,7 +18,7 @@ private struct DeviceView: View {
                 Text(device.name)
                 Spacer()
                 Text(formatDjiDeviceState(state: device.state))
-                    .foregroundColor(.gray)
+                    .foregroundStyle(.gray)
             }
         }
         .disabled(!device.canStartLive())

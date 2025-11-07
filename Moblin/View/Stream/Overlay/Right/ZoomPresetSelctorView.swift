@@ -50,7 +50,7 @@ struct StreamOverlayRightZoomPresetSelctorView: View {
                         )
                 }
                 .background(pickerBackgroundColor)
-                .foregroundColor(.white)
+                .foregroundStyle(.white)
                 .frame(width: min(segmentWidth() * Double(presets.count), width - 20))
                 .cornerRadius(7)
                 .overlay(
@@ -74,7 +74,7 @@ struct StreamOverlayRightZoomPresetSelctorView: View {
                         )
                 }
                 .background(pickerBackgroundColor)
-                .foregroundColor(.white)
+                .foregroundStyle(.white)
                 .frame(width: min(segmentWidth() * Double(presets.count), max(width - 20, 1)))
                 .cornerRadius(7)
                 .overlay(

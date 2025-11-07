@@ -74,7 +74,7 @@ private struct ScoreboardScoreboardView: View {
         .padding([.leading, .trailing], 2)
         .padding([.top], 2)
         .background(scoreboardBlueColor)
-        .foregroundColor(.white)
+        .foregroundStyle(.white)
     }
 }
 
@@ -213,7 +213,7 @@ private struct ClockTabView: View {
         .monospacedDigit()
         .font(clockFont)
         .background(scoreboardBlueColor)
-        .foregroundColor(.white)
+        .foregroundStyle(.white)
         .sheet(isPresented: $isEditing) {
             clockEdit()
         }

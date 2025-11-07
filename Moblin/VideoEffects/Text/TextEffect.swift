@@ -779,26 +779,26 @@ final class TextEffect: VideoEffect {
                             switch part.data {
                             case let .text(text):
                                 Text(text)
-                                    .foregroundColor(self.foregroundColor?.color() ?? .clear)
+                                    .foregroundStyle(self.foregroundColor?.color() ?? .clear)
                             case let .imageSystemName(name):
                                 Image(systemName: name)
-                                    .foregroundColor(self.foregroundColor?.color() ?? .clear)
+                                    .foregroundStyle(self.foregroundColor?.color() ?? .clear)
                             case let .imageSystemNameTryFill(name):
                                 if UIImage(systemName: "\(name).fill") != nil {
                                     Image(systemName: "\(name).fill")
                                         .symbolRenderingMode(.multicolor)
                                 } else {
                                     Image(systemName: name)
-                                        .foregroundColor(self.foregroundColor?.color() ?? .clear)
+                                        .foregroundStyle(self.foregroundColor?.color() ?? .clear)
                                 }
                             case let .rating(rating):
                                 ForEach(0 ..< 5) { index in
                                     if index < rating {
                                         Text("★")
-                                            .foregroundColor(.yellow)
+                                            .foregroundStyle(.yellow)
                                     } else {
                                         Text("☆")
-                                            .foregroundColor(self.foregroundColor?.color() ?? .white)
+                                            .foregroundStyle(self.foregroundColor?.color() ?? .white)
                                     }
                                 }
                             }

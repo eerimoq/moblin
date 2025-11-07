@@ -28,7 +28,7 @@ private struct HighlightMessageView: View {
             ForEach(highlight.titleSegments, id: \.id) { segment in
                 if let text = segment.text {
                     Text(text)
-                        .foregroundColor(highlight.messageColor())
+                        .foregroundStyle(highlight.messageColor())
                 }
                 if let url = segment.url {
                     if chat.animatedEmotes {
@@ -52,7 +52,7 @@ private struct HighlightMessageView: View {
                 }
             }
         }
-        .foregroundColor(highlight.messageColor())
+        .foregroundStyle(highlight.messageColor())
         .padding([.leading], 5)
     }
 }
@@ -78,7 +78,7 @@ private struct LineView: View {
         ) {
             if chat.timestampColorEnabled {
                 Text("\(post.timestamp) ")
-                    .foregroundColor(.gray)
+                    .foregroundStyle(.gray)
             }
             if chat.platform, platform, let image = post.platform?.imageName() {
                 Image(image)
@@ -103,7 +103,7 @@ private struct LineView: View {
                 }
             }
             Text(post.displayName(nicknames: chat.nicknames, displayStyle: chat.displayStyle))
-                .foregroundColor(postState.deleted ? .gray : usernameColor)
+                .foregroundStyle(postState.deleted ? .gray : usernameColor)
                 .strikethrough(postState.deleted)
                 .lineLimit(1)
                 .padding([.trailing], 0)
@@ -116,7 +116,7 @@ private struct LineView: View {
             ForEach(post.segments, id: \.id) { segment in
                 if let text = segment.text {
                     Text(text)
-                        .foregroundColor(postState.deleted ? .gray : .white)
+                        .foregroundStyle(postState.deleted ? .gray : .white)
                         .strikethrough(postState.deleted)
                         .italic(post.isAction)
                 }
@@ -167,7 +167,7 @@ private struct PostView: View {
                     HStack(spacing: 0) {
                         Rectangle()
                             .frame(width: 3)
-                            .foregroundColor(highlight.barColor)
+                            .foregroundStyle(highlight.barColor)
                         VStack(alignment: .leading, spacing: 1) {
                             HighlightMessageView(postState: post.state,
                                                  chat: chatSettings,
@@ -239,7 +239,7 @@ private struct MessagesView: View {
             }
             .frame(minHeight: metrics.size.height)
         }
-        .foregroundColor(.white)
+        .foregroundStyle(.white)
         .rotationEffect(Angle(degrees: rotation))
         .scaleEffect(x: scaleX * chatSettings.isMirrored(), y: 1.0, anchor: .center)
     }
@@ -252,7 +252,7 @@ private struct HypeTrainView: View {
     var body: some View {
         VStack(spacing: 0) {
             Rectangle()
-                .foregroundColor(.clear)
+                .foregroundStyle(.clear)
                 .background(.clear)
                 .frame(height: 1)
             VStack {
@@ -289,7 +289,7 @@ private struct HypeTrainView: View {
                                 .padding([.leading], 15)
                         }
                     }
-                    .foregroundColor(.white)
+                    .foregroundStyle(.white)
                     .padding(10)
                 }
                 if let progress = hypeTrain.progress, let goal = hypeTrain.goal {
@@ -367,7 +367,7 @@ private struct AlertsMessagesView: View {
                                     HStack(spacing: 0) {
                                         Rectangle()
                                             .frame(width: 3)
-                                            .foregroundColor(highlight.barColor)
+                                            .foregroundStyle(highlight.barColor)
                                         VStack(alignment: .leading, spacing: 1) {
                                             HighlightMessageView(postState: post.state,
                                                                  chat: chatSettings,
@@ -406,7 +406,7 @@ private struct AlertsMessagesView: View {
             }
             .frame(minHeight: metrics.size.height)
         }
-        .foregroundColor(.white)
+        .foregroundStyle(.white)
         .rotationEffect(Angle(degrees: rotation))
         .scaleEffect(x: scaleX * chatSettings.isMirrored(), y: 1.0, anchor: .center)
     }
@@ -515,7 +515,7 @@ private struct PredefinedMessageView: View {
             HStack {
                 if filter.isEnabled() {
                     DraggableItemPrefixView()
-                        .foregroundColor(.gray)
+                        .foregroundStyle(.gray)
                 } else {
                     DraggableItemPrefixView()
                 }
@@ -645,11 +645,11 @@ private struct SendMessagesToView: View {
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 24, height: 24)
                 Text(name)
-                    .foregroundColor(.primary)
+                    .foregroundStyle(.primary)
                 Spacer()
                 if enabled {
                     Image(systemName: "checkmark")
-                        .foregroundColor(.blue)
+                        .foregroundStyle(.blue)
                         .font(.title2)
                 }
             }
@@ -763,7 +763,7 @@ private struct ControlView: View {
     var body: some View {
         TextField(text: $message) {
             Text("Send message")
-                .foregroundColor(.gray)
+                .foregroundStyle(.gray)
         }
         .submitLabel(.send)
         .onSubmit {
@@ -773,7 +773,7 @@ private struct ControlView: View {
             message = ""
         }
         .padding(5)
-        .foregroundColor(.white)
+        .foregroundStyle(.white)
         SendMessagesToSelectorView(stream: model.stream)
         ControlMessagesButtonView(model: model)
         ControlAlertsButtonView(quickButtonChat: model.quickButtonChatState)
@@ -819,10 +819,10 @@ private struct ActionButtonView: View {
         } label: {
             VStack {
                 Image(systemName: image)
-                    .foregroundColor(foreground)
+                    .foregroundStyle(foreground)
                     .font(.title)
                 Text(text)
-                    .foregroundColor(.white)
+                    .foregroundStyle(.white)
             }
         }
     }
@@ -951,7 +951,7 @@ private struct ActionButtonsView: View {
                                  chat: model.database.chat,
                                  platform: model.chat.moreThanOneStreamingPlatform,
                                  selectedPost: $selectedPost)
-                            .foregroundColor(.white)
+                            .foregroundStyle(.white)
                     }
                     .frame(height: 100)
                     .padding([.top, .bottom], 5)

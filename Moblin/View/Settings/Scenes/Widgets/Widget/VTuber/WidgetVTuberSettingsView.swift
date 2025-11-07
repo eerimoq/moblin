@@ -83,7 +83,7 @@ struct WidgetVTuberSettingsView: View {
                     Text("Video source")
                     Spacer()
                     Text(model.getCameraPositionName(vTuberWidget: vTuber))
-                        .foregroundColor(.gray)
+                        .foregroundStyle(.gray)
                         .lineLimit(1)
                 }
             }

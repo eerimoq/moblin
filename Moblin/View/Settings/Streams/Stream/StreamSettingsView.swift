@@ -95,7 +95,7 @@ struct StreamPlatformsSettingsView: View {
                 TwitchLogoAndNameView()
                 Spacer()
                 Text(stream.twitchChannelName)
-                    .foregroundColor(.gray)
+                    .foregroundStyle(.gray)
             }
         }
         NavigationLink {
@@ -105,7 +105,7 @@ struct StreamPlatformsSettingsView: View {
                 KickLogoAndNameView()
                 Spacer()
                 Text(stream.kickChannelName)
-                    .foregroundColor(.gray)
+                    .foregroundStyle(.gray)
             }
         }
         NavigationLink {
@@ -115,7 +115,7 @@ struct StreamPlatformsSettingsView: View {
                 YouTubeLogoAndNameView()
                 Spacer()
                 Text(stream.youTubeHandle)
-                    .foregroundColor(.gray)
+                    .foregroundStyle(.gray)
             }
         }
         NavigationLink {
@@ -125,7 +125,7 @@ struct StreamPlatformsSettingsView: View {
                 DLiveLogoAndNameView()
                 Spacer()
                 Text(stream.dLiveUsername)
-                    .foregroundColor(.gray)
+                    .foregroundStyle(.gray)
             }
         }
         NavigationLink {
@@ -135,7 +135,7 @@ struct StreamPlatformsSettingsView: View {
                 SoopLogoAndNameView()
                 Spacer()
                 Text(stream.soopChannelName)
-                    .foregroundColor(.gray)
+                    .foregroundStyle(.gray)
             }
         }
         NavigationLink {

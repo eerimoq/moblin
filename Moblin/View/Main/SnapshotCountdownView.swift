@@ -12,7 +12,7 @@ struct SnapshotCountdownView: View {
                 Text(snapshotJob.message)
                     .multilineTextAlignment(.center)
             }
-            .foregroundColor(.white)
+            .foregroundStyle(.white)
             .fixedSize(horizontal: false, vertical: true)
             .frame(maxWidth: 300, alignment: .center)
             .padding(10)

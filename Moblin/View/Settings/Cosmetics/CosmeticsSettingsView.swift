@@ -24,7 +24,7 @@ private struct CosmeticsSettingsBoughtEverythingView: View {
             HStack {
                 Text("You already bought everything!")
                 Image(systemName: "heart.fill")
-                    .foregroundColor(.red)
+                    .foregroundStyle(.red)
             }
         } header: {
             Text("Icons in store")
@@ -146,7 +146,7 @@ struct CosmeticsSettingsView: View {
                 HStack {
                     Text("Support Moblin developers by buying icons.")
                     Image(systemName: "heart.fill")
-                        .foregroundColor(.red)
+                        .foregroundStyle(.red)
                 }
             }
             CosmeticsSettingsMyIconsView(cosmetics: cosmetics)

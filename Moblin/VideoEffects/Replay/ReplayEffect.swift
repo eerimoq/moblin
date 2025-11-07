@@ -239,13 +239,13 @@ extension ReplayEffect {
             return getReplayImage(presentationTimeStamp) ?? image
         }
     }
-    
+
     private func getReplayImage(_ presentationTimeStamp: Double) -> CIImage? {
         let offset = presentationTimeStamp - stingersInTransitionPointPresentationTimeStamp
         updateStatus(offset: offset)
         return reader.getImage(offset: offset * speed).image
     }
-    
+
     private func updateCancelled(_ presentationTimeStamp: Double) {
         guard cancelled, let stingersOutReader else {
             return
@@ -253,6 +253,6 @@ extension ReplayEffect {
         stingersState = .end
         stingersOutTransitionStartPresentationTimeStamp = presentationTimeStamp
         stingersOutTransitionPointPresentationTimeStamp = presentationTimeStamp
-        + stingersOutReader.duration * stingersOutTransitionPoint
+            + stingersOutReader.duration * stingersOutTransitionPoint
     }
 }

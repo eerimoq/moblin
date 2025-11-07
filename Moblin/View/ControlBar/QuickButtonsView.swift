@@ -34,7 +34,7 @@ private struct QuickButtonImage: View {
         let image = Image(systemName: getImage(state: state))
             .font(iconSize())
             .frame(width: buttonSize, height: buttonSize)
-            .foregroundColor(.white)
+            .foregroundStyle(.white)
             .background(backgroundColor)
             .clipShape(Circle())
         ZStack {
@@ -68,7 +68,7 @@ private struct InstantReplayView: View {
             Text(String(replay.timeLeft))
                 .font(.system(size: 25))
                 .frame(width: size, height: size)
-                .foregroundColor(.white)
+                .foregroundStyle(.white)
                 .background(state.button.backgroundColor.color())
                 .clipShape(Circle())
                 .onTapGesture {
@@ -103,7 +103,7 @@ struct QuickButtonPlaceholderImage: View {
     var body: some View {
         Image(systemName: "pawprint")
             .frame(width: size, height: size)
-            .foregroundColor(.black)
+            .foregroundStyle(.black)
             .opacity(0.0)
             .padding(0)
     }
@@ -117,7 +117,7 @@ private struct ButtonTextOverlayView: View {
             .rotationEffect(.degrees(-90))
             .offset(CGSize(width: 10, height: 0))
             .font(.system(size: 8))
-            .foregroundColor(.white)
+            .foregroundStyle(.white)
             .frame(width: controlBarButtonSize, height: controlBarButtonSize)
     }
 }
@@ -844,7 +844,7 @@ struct QuickButtonsInnerView: View {
                     .padding(0)
                     .multilineTextAlignment(.center)
                     .frame(width: nameWidth, alignment: .center)
-                    .foregroundColor(.white)
+                    .foregroundStyle(.white)
                     .lineLimit(2)
                     .minimumScaleFactor(0.5)
                     .font(.system(size: nameSize))

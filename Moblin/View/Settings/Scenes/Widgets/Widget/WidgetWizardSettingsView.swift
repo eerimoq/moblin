@@ -30,12 +30,12 @@ private struct AddWidgetToSceneView: View {
                 Spacer()
                 if scene.enabled {
                     Image(systemName: "checkmark")
-                        .foregroundColor(.blue)
+                        .foregroundStyle(.blue)
                         .font(.title2)
                 }
             }
         }
-        .foregroundColor(.primary)
+        .foregroundStyle(.primary)
     }
 }
 
@@ -152,7 +152,7 @@ struct WidgetWizardSettingsView: View {
             } footer: {
                 if let message = isValidName() {
                     Text(message)
-                        .foregroundColor(.red)
+                        .foregroundStyle(.red)
                         .bold()
                 }
             }

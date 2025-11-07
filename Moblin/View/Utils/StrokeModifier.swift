@@ -24,7 +24,7 @@ private struct StrokeModifier: ViewModifier {
             .padding(strokeSize * 2)
             .background(
                 Rectangle()
-                    .foregroundColor(strokeColor)
+                    .foregroundStyle(strokeColor)
                     .mask(alignment: .center) {
                         mask(content: content)
                     }

@@ -12,7 +12,7 @@ struct CloseButtonView: View {
         } label: {
             if #available(iOS 26, *) {
                 Image(systemName: "xmark")
-                    .foregroundColor(.primary)
+                    .foregroundStyle(.primary)
                     .frame(width: 12, height: 12)
                     .padding()
                     .glassEffect()
@@ -24,7 +24,7 @@ struct CloseButtonView: View {
                         Circle()
                             .stroke(.gray)
                     )
-                    .foregroundColor(.gray)
+                    .foregroundStyle(.gray)
                     .padding(7)
             }
         }
@@ -55,7 +55,7 @@ private struct HideShowButtonPanelView: View {
         } label: {
             if #available(iOS 26, *) {
                 Image(systemName: model.panelHidden ? "eye" : "eye.slash")
-                    .foregroundColor(.primary)
+                    .foregroundStyle(.primary)
                     .frame(width: 12, height: 12)
                     .padding()
                     .glassEffect()
@@ -67,7 +67,7 @@ private struct HideShowButtonPanelView: View {
                         Circle()
                             .stroke(.gray)
                     )
-                    .foregroundColor(.gray)
+                    .foregroundStyle(.gray)
                     .padding(7)
             }
         }
@@ -226,7 +226,7 @@ private struct InstantReplayCountdownView: View {
                 Text(String(replay.instantReplayCountdown))
                     .font(.title)
             }
-            .foregroundColor(.white)
+            .foregroundStyle(.white)
             .fixedSize(horizontal: false, vertical: true)
             .frame(maxWidth: 200, alignment: .center)
             .padding(10)
@@ -647,7 +647,7 @@ struct MainView: View {
                 all
             }
             Rectangle()
-                .foregroundColor(.black)
+                .foregroundStyle(.black)
                 .frame(height: isMac() ? 10 : 0)
         }
         .ignoresSafeArea(.container, edges: edgesToIgnore())

@@ -39,7 +39,7 @@ private struct NicknameView: View {
                 Text(nickname.user)
                 Spacer()
                 Text(nickname.nickname)
-                    .foregroundColor(.gray)
+                    .foregroundStyle(.gray)
             }
         }
     }
@@ -78,7 +78,7 @@ struct ChatNicknamesSettingsView: View {
                 Text("Nicknames")
                 Spacer()
                 Text(String(nicknames.nicknames.count))
-                    .foregroundColor(.gray)
+                    .foregroundStyle(.gray)
             }
         }
     }

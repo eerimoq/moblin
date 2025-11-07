@@ -17,7 +17,7 @@ struct CompactAudioLevelIconView: View {
             .font(smallFont)
             .padding([.leading, .trailing], 2)
             .padding([.bottom], 2)
-            .foregroundColor(foregroundColor)
+            .foregroundStyle(foregroundColor)
             .background(backgroundColor)
             .cornerRadius(5)
             .padding(20)

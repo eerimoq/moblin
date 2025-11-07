@@ -117,7 +117,7 @@ private struct StatusView: View {
             Spacer(minLength: 0)
             if isPhone() {
                 Text(status.digitalClock)
-                    .foregroundColor(.white)
+                    .foregroundStyle(.white)
                     .font(smallFont)
             }
         }
@@ -153,7 +153,7 @@ private struct IconAndSettingsView: View {
                         Circle()
                             .stroke(.secondary)
                     )
-                    .foregroundColor(.white)
+                    .foregroundStyle(.white)
             }
         }
     }

@@ -15,7 +15,7 @@ struct MultiLineTextFieldView: View {
                     focusedField = true
                 } label: {
                     Image(systemName: "xmark.circle.fill")
-                        .foregroundColor(Color(uiColor: .gray))
+                        .foregroundStyle(Color(uiColor: .gray))
                         .opacity(0.5)
                 }
                 .padding([.top], 1)

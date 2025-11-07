@@ -22,7 +22,7 @@ private struct FlameStateView: View {
         HStack {
             Image(systemName: "flame")
                 .padding(4)
-                .foregroundColor(color)
+                .foregroundStyle(color)
                 .background(.black)
                 .cornerRadius(5)
             Text(text)

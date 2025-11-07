@@ -19,7 +19,7 @@ struct WidgetWizardBrowserSettingsView: View {
             } footer: {
                 if let message = isValidHttpUrl(url: browser.url) {
                     Text(message)
-                        .foregroundColor(.red)
+                        .foregroundStyle(.red)
                         .bold()
                 }
             }

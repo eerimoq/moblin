@@ -54,7 +54,7 @@ struct StreamOverlayRightSceneSelectorView: View {
             model.selectScene(id: model.enabledScenes[tag].id)
         }
         .background(pickerBackgroundColor)
-        .foregroundColor(.white)
+        .foregroundStyle(.white)
         .frame(width: min(sceneSegmentWidth * Double(model.enabledScenes.count), max(width - 20, 1)))
         .cornerRadius(7)
         .overlay(

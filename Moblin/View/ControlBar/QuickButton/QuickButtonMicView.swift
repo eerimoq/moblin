@@ -14,7 +14,7 @@ private struct QuickButtonMicMicView: View {
                 .lineLimit(1)
             Spacer()
             Image(systemName: "checkmark")
-                .foregroundColor(mic == modelMic.current ? .blue : .clear)
+                .foregroundStyle(mic == modelMic.current ? .blue : .clear)
                 .bold()
         }
         .contentShape(Rectangle())

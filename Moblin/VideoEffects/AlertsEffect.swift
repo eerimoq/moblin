@@ -510,10 +510,10 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
             fitContentWidth: true
         ) {
             Text("\(username) ")
-                .foregroundColor(settings.accentColor.color())
+                .foregroundStyle(settings.accentColor.color())
             ForEach(words) { word in
                 Text("\(word.text) ")
-                    .foregroundColor(settings.textColor.color())
+                    .foregroundStyle(settings.textColor.color())
             }
         }
         .font(.system(

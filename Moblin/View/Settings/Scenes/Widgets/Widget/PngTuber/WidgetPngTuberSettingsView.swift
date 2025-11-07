@@ -78,7 +78,7 @@ struct WidgetPngTuberSettingsView: View {
                     Text("Video source")
                     Spacer()
                     Text(model.getCameraPositionName(pngTuberWidget: pngTuber))
-                        .foregroundColor(.gray)
+                        .foregroundStyle(.gray)
                         .lineLimit(1)
                 }
             }

@@ -89,7 +89,7 @@ private struct PasswordView: View {
             } footer: {
                 if let message {
                     Text(message)
-                        .foregroundColor(.red)
+                        .foregroundStyle(.red)
                         .bold()
                 }
             }

@@ -11,7 +11,7 @@ private struct CollapsedBondingView: View {
                 .frame(width: 17, height: 17)
                 .font(smallFont)
                 .padding([.leading, .trailing], 2)
-                .foregroundColor(color)
+                .foregroundStyle(color)
             if #available(iOS 17.0, *) {
                 if !bonding.pieChartPercentages.isEmpty {
                     Chart(bonding.pieChartPercentages.reversed()) { item in
@@ -94,7 +94,7 @@ private struct CollapsedHypeTrainView: View {
             let train = Image(systemName: "train.side.front.car")
                 .frame(width: 17, height: 17)
                 .padding([.leading, .trailing], 2)
-                .foregroundColor(color)
+                .foregroundStyle(color)
             if #available(iOS 18.0, *) {
                 train
                     .symbolEffect(
@@ -105,7 +105,7 @@ private struct CollapsedHypeTrainView: View {
                 train
             }
             Text(status)
-                .foregroundColor(.white)
+                .foregroundStyle(.white)
                 .padding([.leading, .trailing], 2)
         }
         .font(smallFont)
@@ -125,9 +125,9 @@ private struct CollapsedAdsRemainingTimerView: View {
             Image(systemName: "cup.and.saucer")
                 .frame(width: 17, height: 17)
                 .padding([.leading, .trailing], 2)
-                .foregroundColor(.white)
+                .foregroundStyle(.white)
             Text(status.adsRemainingTimerStatus)
-                .foregroundColor(.white)
+                .foregroundStyle(.white)
                 .padding([.leading, .trailing], 2)
         }
         .font(smallFont)
@@ -167,11 +167,11 @@ private struct CollapsedBitrateView: View {
             Image(systemName: "speedometer")
                 .frame(width: 17, height: 17)
                 .padding([.leading], 2)
-                .foregroundColor(bitrate.statusColor)
+                .foregroundStyle(bitrate.statusColor)
                 .background(bitrate.statusIconColor ?? .clear)
             if !bitrate.speedMbpsOneDecimal.isEmpty {
                 Text(bitrate.speedMbpsOneDecimal)
-                    .foregroundColor(.white)
+                    .foregroundStyle(.white)
                     .padding([.trailing], 2)
             }
         }
@@ -255,9 +255,9 @@ private struct CpuStatusView: View {
                     Image(systemName: "cpu")
                         .frame(width: 17, height: 17)
                         .padding([.leading], 2)
-                        .foregroundColor(.white)
+                        .foregroundStyle(.white)
                     Text(String(cpu.usage))
-                        .foregroundColor(.white)
+                        .foregroundStyle(.white)
                         .padding([.trailing], 2)
                 }
                 .font(smallFont)

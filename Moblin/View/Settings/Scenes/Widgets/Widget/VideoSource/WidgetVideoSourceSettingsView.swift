@@ -174,7 +174,7 @@ struct WidgetVideoSourceSettingsView: View {
                     Text("Video source")
                     Spacer()
                     Text(model.getCameraPositionName(videoSourceWidget: videoSource))
-                        .foregroundColor(.gray)
+                        .foregroundStyle(.gray)
                         .lineLimit(1)
                 }
             }

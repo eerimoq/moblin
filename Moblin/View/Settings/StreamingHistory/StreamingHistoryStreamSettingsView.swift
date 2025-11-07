@@ -25,7 +25,7 @@ private struct StreamingHistoryStreamSettingsGeneralView: View {
             HStack {
                 if stream.numberOfFffffs! != 0 {
                     Image(systemName: "exclamationmark.circle")
-                        .foregroundColor(.red)
+                        .foregroundStyle(.red)
                 }
                 TextValueView(name: String(localized: "FFFFF:s"), value: "\(stream.numberOfFffffs!)")
             }
@@ -50,7 +50,7 @@ private struct StreamingHistoryStreamSettingsDeviceHealthView: View {
                 Image(systemName: "flame")
                     .padding([.leading, .trailing], 4)
                     .padding([.top, .bottom], 2)
-                    .foregroundColor(stream.highestThermalState!.toProcessInfo().color())
+                    .foregroundStyle(stream.highestThermalState!.toProcessInfo().color())
                     .background(.black)
                     .cornerRadius(3)
                     .overlay(

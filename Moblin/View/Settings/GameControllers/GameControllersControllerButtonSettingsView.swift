@@ -66,7 +66,7 @@ struct GameControllersControllerButtonSettingsView: View {
                     Text(button.text)
                     Spacer()
                     Text(buttonText())
-                        .foregroundColor(buttonColor())
+                        .foregroundStyle(buttonColor())
                 }
             } icon: {
                 Image(systemName: button.name)

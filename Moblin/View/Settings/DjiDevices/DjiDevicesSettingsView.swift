@@ -14,7 +14,7 @@ private struct DjiDeviceSettingsWrapperView: View {
                 Text(device.name)
                 Spacer()
                 Text(formatDjiDeviceState(state: device.state))
-                    .foregroundColor(.gray)
+                    .foregroundStyle(.gray)
             }
         }
     }

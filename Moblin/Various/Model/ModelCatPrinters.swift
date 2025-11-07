@@ -224,7 +224,7 @@ extension Model {
             Text(eventTimestampFormatter.string(from: .now))
                 .font(.system(size: 24, weight: .regular, design: .monospaced))
         }
-        .foregroundColor(.black)
+        .foregroundStyle(.black)
         .padding(20)
         .frame(width: 384)
         .background(.white)

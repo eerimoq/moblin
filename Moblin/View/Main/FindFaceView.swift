@@ -10,7 +10,7 @@ struct FindFaceView: View {
                         .font(.system(size: 30))
                     Text("Find a face")
                 }
-                .foregroundColor(.white)
+                .foregroundStyle(.white)
                 .padding(5)
                 .background(backgroundColor)
                 .cornerRadius(5)

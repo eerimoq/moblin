@@ -10,10 +10,10 @@ private struct CollapsedViewersView: View {
             Image(systemName: "eye")
                 .frame(width: 17, height: 17)
                 .padding([.leading], 2)
-                .foregroundColor(color)
+                .foregroundStyle(color)
             if !status.numberOfViewers.isEmpty {
                 Text(status.numberOfViewers)
-                    .foregroundColor(.white)
+                    .foregroundStyle(.white)
                     .padding([.leading, .trailing], 2)
             }
         }

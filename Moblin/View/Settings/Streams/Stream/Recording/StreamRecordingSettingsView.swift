@@ -78,7 +78,7 @@ private struct RecordingPathView: View {
                     Text(getRecordingPath(recordingPath: recordingPath))
                         .lineLimit(1)
                         .truncationMode(.head)
-                        .foregroundColor(.gray)
+                        .foregroundStyle(.gray)
                 }
             }
         }

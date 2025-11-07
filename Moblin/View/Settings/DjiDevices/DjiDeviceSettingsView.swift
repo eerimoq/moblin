@@ -63,7 +63,7 @@ private struct DjiDeviceSelectDeviceSettingsView: View {
                 )
             } label: {
                 Text(device.bluetoothPeripheralName ?? String(localized: "Select device"))
-                    .foregroundColor(.gray)
+                    .foregroundStyle(.gray)
                     .lineLimit(1)
             }
             .disabled(device.isStarted)
@@ -309,7 +309,7 @@ private struct DjiDeviceStartStopButtonSettingsView: View {
                     }
                 }
             }
-            .foregroundColor(.white)
+            .foregroundStyle(.white)
             .listRowBackground(Color.blue)
         }
     }

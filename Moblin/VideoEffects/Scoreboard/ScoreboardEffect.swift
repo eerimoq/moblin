@@ -169,7 +169,7 @@ final class ScoreboardEffect: VideoEffect {
             PoweredByMoblinView(backgroundColor: secondaryBackgroundColor)
         }
         .clipShape(RoundedRectangle(cornerRadius: 5))
-        .foregroundColor(textColor)
+        .foregroundStyle(textColor)
         let renderer = ImageRenderer(content: scoreBoard)
         guard let image = renderer.uiImage else {
             return
@@ -220,7 +220,7 @@ final class ScoreboardEffect: VideoEffect {
             PoweredByMoblinView(backgroundColor: secondaryBackgroundColor)
         }
         .clipShape(RoundedRectangle(cornerRadius: 5))
-        .foregroundColor(textColor)
+        .foregroundStyle(textColor)
         let renderer = ImageRenderer(content: scoreBoard)
         guard let image = renderer.uiImage else {
             return

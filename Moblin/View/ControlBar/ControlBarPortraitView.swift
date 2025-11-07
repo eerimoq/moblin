@@ -133,7 +133,7 @@ private struct IconAndSettingsView: View {
                         Circle()
                             .stroke(.secondary)
                     )
-                    .foregroundColor(.white)
+                    .foregroundStyle(.white)
             }
             .padding([.leading], 10)
         }

@@ -560,7 +560,7 @@ extension Model {
                         }
                     }
                 }
-                .foregroundColor(.black)
+                .foregroundStyle(.black)
                 .font(.system(size: CGFloat(30), weight: .bold, design: .default))
                 Spacer()
             }

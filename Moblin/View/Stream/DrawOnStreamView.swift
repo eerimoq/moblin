@@ -97,7 +97,7 @@ private struct DrawOnStreamControlsView: View {
                     } label: {
                         Image(systemName: "trash.fill")
                             .font(.title)
-                            .foregroundColor(buttonColor())
+                            .foregroundStyle(buttonColor())
                     }
                     .disabled(drawOnStream.lines.isEmpty)
                     Button {
@@ -105,7 +105,7 @@ private struct DrawOnStreamControlsView: View {
                     } label: {
                         Image(systemName: "arrow.uturn.backward")
                             .font(.title)
-                            .foregroundColor(buttonColor())
+                            .foregroundStyle(buttonColor())
                     }
                     .disabled(drawOnStream.lines.isEmpty)
                     ColorPicker("Color", selection: $drawOnStream.selectedColor)

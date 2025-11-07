@@ -12,7 +12,7 @@ struct SettingsView: View {
                 Section {
                     HStack {
                         Image(systemName: "info.circle.fill")
-                            .foregroundColor(.blue)
+                            .foregroundStyle(.blue)
                         Text("Settings that would stop the stream are disabled when live.")
                     }
                 }
@@ -154,7 +154,7 @@ struct SettingsView: View {
                         Text("Cosmetics")
                     } icon: {
                         Image(systemName: "heart.fill")
-                            .foregroundColor(.red)
+                            .foregroundStyle(.red)
                     }
                 }
             }

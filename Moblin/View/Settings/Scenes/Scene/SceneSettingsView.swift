@@ -44,7 +44,7 @@ private struct MicView: View {
                 Text("Mic")
                 Spacer()
                 Text(model.getMicById(id: scene.micId)?.name ?? "Unknown 😢")
-                    .foregroundColor(.gray)
+                    .foregroundStyle(.gray)
                     .lineLimit(1)
             }
         }
@@ -145,7 +145,7 @@ struct SceneSettingsView: View {
                                 Image(systemName: "cable.connector.slash")
                             }
                             Text(model.getCameraPositionName(scene: scene))
-                                .foregroundColor(.gray)
+                                .foregroundStyle(.gray)
                                 .lineLimit(1)
                         }
                     } icon: {
@@ -246,7 +246,7 @@ struct SceneSettingsView: View {
                                 } label: {
                                     Text("Cancel")
                                         .padding(5)
-                                        .foregroundColor(.blue)
+                                        .foregroundStyle(.blue)
                                 }
                             }
                         }

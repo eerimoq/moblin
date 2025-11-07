@@ -19,7 +19,7 @@ private struct LineView: View {
         ) {
             if chatSettings.timestampEnabled {
                 Text(post.timestamp + " ")
-                    .foregroundColor(.gray)
+                    .foregroundStyle(.gray)
             }
             if chatSettings.badges {
                 ForEach(post.userBadges, id: \.self) { url in
@@ -33,7 +33,7 @@ private struct LineView: View {
                 }
             }
             Text(post.displayName)
-                .foregroundColor(post.userColor)
+                .foregroundStyle(post.userColor)
             if post.isRedemption() {
                 Text(" ")
             } else {
@@ -73,7 +73,7 @@ private struct HighlightView: View {
             Text(" ")
             Text(name)
         }
-        .foregroundColor(color)
+        .foregroundStyle(color)
     }
 }
 
@@ -94,7 +94,7 @@ private struct NormalView: View {
             HStack(spacing: 0) {
                 Rectangle()
                     .frame(width: 3)
-                    .foregroundColor(highlight.barColor)
+                    .foregroundStyle(highlight.barColor)
                     .padding([.trailing], 3)
                 VStack(alignment: .leading) {
                     HighlightView(image: highlight.image,

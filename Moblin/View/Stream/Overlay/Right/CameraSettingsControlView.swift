@@ -30,7 +30,7 @@ private struct CameraSettingButtonView: View {
         }
         .frame(maxWidth: cameraButtonWidth, maxHeight: height)
         .background(pickerBackgroundColor)
-        .foregroundColor(.white)
+        .foregroundStyle(.white)
         .cornerRadius(7)
         .overlay(
             RoundedRectangle(cornerRadius: 7)
@@ -42,7 +42,7 @@ private struct CameraSettingButtonView: View {
 private struct NotSupportedForThisCameraView: View {
     var body: some View {
         Text("Not supported for this camera")
-            .foregroundColor(.white)
+            .foregroundStyle(.white)
             .padding([.top, .bottom], 5)
             .padding([.leading, .trailing], 7)
             .frame(height: sliderHeight)
@@ -59,7 +59,7 @@ private struct ExposureBiasView: View {
     var body: some View {
         Text("EXPOSURE BIAS")
             .font(.footnote)
-            .foregroundColor(.white)
+            .foregroundStyle(.white)
             .padding([.trailing], 7)
         Slider(
             value: $camera.bias,
@@ -94,7 +94,7 @@ private struct WhiteBalanceView: View {
     var body: some View {
         Text("WHITE BALANCE")
             .font(.footnote)
-            .foregroundColor(.white)
+            .foregroundStyle(.white)
             .padding([.trailing], 7)
         if model.isCameraSupportingManualWhiteBalance() {
             HStack {
@@ -126,7 +126,7 @@ private struct WhiteBalanceView: View {
                 } label: {
                     Image(systemName: lockImage(locked: camera.isWhiteBalanceLocked))
                         .font(.title2)
-                        .foregroundColor(.white)
+                        .foregroundStyle(.white)
                 }
             }
             .padding([.top, .bottom], 5)
@@ -148,7 +148,7 @@ private struct IsoView: View {
     var body: some View {
         Text("ISO")
             .font(.footnote)
-            .foregroundColor(.white)
+            .foregroundStyle(.white)
             .padding([.trailing], 7)
         if model.isCameraSupportingManualExposureAndIso() {
             HStack {
@@ -180,7 +180,7 @@ private struct IsoView: View {
                 } label: {
                     Image(systemName: lockImage(locked: camera.isExposureAndIsoLocked))
                         .font(.title2)
-                        .foregroundColor(.white)
+                        .foregroundStyle(.white)
                 }
             }
             .padding([.top, .bottom], 5)
@@ -202,7 +202,7 @@ private struct ExposureView: View {
     var body: some View {
         Text("EXPOSURE")
             .font(.footnote)
-            .foregroundColor(.white)
+            .foregroundStyle(.white)
             .padding([.trailing], 7)
         if model.isCameraSupportingManualExposureAndIso() {
             HStack {
@@ -234,7 +234,7 @@ private struct ExposureView: View {
                 } label: {
                     Image(systemName: lockImage(locked: camera.isExposureAndIsoLocked))
                         .font(.title2)
-                        .foregroundColor(.white)
+                        .foregroundStyle(.white)
                 }
             }
             .padding([.top, .bottom], 5)
@@ -256,7 +256,7 @@ struct FocusView: View {
     var body: some View {
         Text("FOCUS")
             .font(.footnote)
-            .foregroundColor(.white)
+            .foregroundStyle(.white)
             .padding([.trailing], 7)
         if model.isCameraSupportingManualFocus() {
             HStack {
@@ -288,7 +288,7 @@ struct FocusView: View {
                 } label: {
                     Image(systemName: lockImage(locked: camera.isFocusLocked))
                         .font(.title2)
-                        .foregroundColor(.white)
+                        .foregroundStyle(.white)
                 }
             }
             .padding([.top, .bottom], 5)

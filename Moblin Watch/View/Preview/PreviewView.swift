@@ -32,7 +32,7 @@ private struct StatusesView: View {
                 .frame(width: 17, height: 17)
                 .font(smallFont)
                 .padding([.leading, .trailing], 2)
-                .foregroundColor(preview.thermalState.color())
+                .foregroundStyle(preview.thermalState.color())
                 .background(backgroundColor)
                 .cornerRadius(5)
         }
@@ -104,7 +104,7 @@ struct PreviewView: View {
                             Image(systemName: "cable.connector.slash")
                                 .font(.title)
                                 .padding(5)
-                                .foregroundColor(.white)
+                                .foregroundStyle(.white)
                                 .background(backgroundColor)
                                 .cornerRadius(5)
                             Spacer()

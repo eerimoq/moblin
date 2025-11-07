@@ -86,7 +86,7 @@ struct StreamMultiStreamingSettingsView: View {
                 Text("Multi streaming")
                 Spacer()
                 Text(numberOfEnabledDestinations())
-                    .foregroundColor(.gray)
+                    .foregroundStyle(.gray)
             }
         }
     }

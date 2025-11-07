@@ -44,7 +44,7 @@ private struct ReplayControlsInterval: View {
         Text("\(Int(replay.startFromEnd))s")
             .frame(width: 35)
             .font(.body)
-            .foregroundColor(.white)
+            .foregroundStyle(.white)
     }
 }
 
@@ -67,7 +67,7 @@ private struct ReplayControlsSpeedPicker: View {
         .onChange(of: replay.speed) { _ in
             model.replaySpeedChanged()
         }
-        .foregroundColor(.white)
+        .foregroundStyle(.white)
     }
 }
 
@@ -97,7 +97,7 @@ private struct ReplayControlsPlayPauseButton: View {
             let image = Image(systemName: playStopImage())
                 .frame(width: 30)
             if replay.selectedId != nil {
-                image.foregroundColor(.white)
+                image.foregroundStyle(.white)
             } else {
                 image
             }
@@ -125,7 +125,7 @@ private struct ReplayControlsSaveButton: View {
             } label: {
                 Image(systemName: "square.and.arrow.down")
                     .frame(width: 30)
-                    .foregroundColor(.white)
+                    .foregroundStyle(.white)
             }
         }
     }
@@ -248,7 +248,7 @@ private struct ReplayHistory: View {
                 if model.replaysStorage.database.replays.isEmpty {
                     Text("No replays saved")
                         .padding([.leading], 30)
-                        .foregroundColor(.white)
+                        .foregroundStyle(.white)
                 }
                 ForEach(model.replaysStorage.database.replays) {
                     ReplayHistoryItem(replay: replay, video: $0)

@@ -53,7 +53,7 @@ struct CatPrinterSettingsView: View {
                     )
                 } label: {
                     Text(device.bluetoothPeripheralName ?? String(localized: "Select device"))
-                        .foregroundColor(.gray)
+                        .foregroundStyle(.gray)
                         .lineLimit(1)
                 }
                 .disabled(model.isCatPrinterEnabled(device: device))

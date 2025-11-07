@@ -46,7 +46,7 @@ private struct HighlightMessageView: View {
             ForEach(highlight.titleSegments, id: \.id) { segment in
                 if let text = segment.text {
                     Text(text)
-                        .foregroundColor(highlight.messageColor(defaultColor: chat.messageColor.color()))
+                        .foregroundStyle(highlight.messageColor(defaultColor: chat.messageColor.color()))
                 }
                 if let url = segment.url {
                     if chat.animatedEmotes {
@@ -75,7 +75,7 @@ private struct HighlightMessageView: View {
         .padding([.leading], 5)
         .font(.system(size: CGFloat(chat.fontSize)))
         .background(backgroundColor())
-        .foregroundColor(.white)
+        .foregroundStyle(.white)
         .cornerRadius(5)
     }
 }
@@ -137,7 +137,7 @@ private struct LineView: View {
         ) {
             if chat.timestampColorEnabled {
                 Text("\(post.timestamp) ")
-                    .foregroundColor(chat.timestampColor.color())
+                    .foregroundStyle(chat.timestampColor.color())
             }
             if chat.platform, platform, let image = post.platform?.imageName() {
                 Image(image)
@@ -162,7 +162,7 @@ private struct LineView: View {
                 }
             }
             Text(post.displayName(nicknames: chat.nicknames, displayStyle: chat.displayStyle))
-                .foregroundColor(postState.deleted ? .gray : usernameColor)
+                .foregroundStyle(postState.deleted ? .gray : usernameColor)
                 .strikethrough(postState.deleted)
                 .lineLimit(1)
                 .padding([.trailing], 0)
@@ -175,7 +175,7 @@ private struct LineView: View {
             ForEach(post.segments, id: \.id) { segment in
                 if let text = segment.text {
                     Text(text)
-                        .foregroundColor(postState.deleted ? .gray : messageColor)
+                        .foregroundStyle(postState.deleted ? .gray : messageColor)
                         .strikethrough(postState.deleted)
                         .bold(chat.boldMessage)
                         .italic(post.isAction)
@@ -208,7 +208,7 @@ private struct LineView: View {
         .padding([.leading], 5)
         .font(.system(size: CGFloat(chat.fontSize)))
         .background(backgroundColor())
-        .foregroundColor(.white)
+        .foregroundStyle(.white)
         .cornerRadius(5)
     }
 }
@@ -231,7 +231,7 @@ private struct PostView: View {
                     HStack(spacing: 0) {
                         Rectangle()
                             .frame(width: 3)
-                            .foregroundColor(highlight.barColor)
+                            .foregroundStyle(highlight.barColor)
                         VStack(alignment: .leading, spacing: 1) {
                             HighlightMessageView(postState: post.state,
                                                  chat: chatSettings,
@@ -333,7 +333,7 @@ struct StreamOverlayChatView: View {
                             Spacer(minLength: 0)
                         }
                     }
-                    .foregroundColor(.white)
+                    .foregroundStyle(.white)
                     .rotationEffect(Angle(degrees: rotation))
                     .scaleEffect(x: scaleX * chatSettings.isMirrored(), y: 1.0, anchor: .center)
                     .frame(width: metrics.size.width * widthFactor(),

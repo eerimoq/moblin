@@ -36,7 +36,7 @@ struct RistServerSettingsView: View {
                     Section {
                         HStack {
                             Image(systemName: "info.circle.fill")
-                                .foregroundColor(.blue)
+                                .foregroundStyle(.blue)
                             Text("Disable the RIST server to change its settings.")
                         }
                     }
@@ -97,7 +97,7 @@ struct RistServerSettingsView: View {
                 Text("RIST server")
                 Spacer()
                 Text(status())
-                    .foregroundColor(.gray)
+                    .foregroundStyle(.gray)
             }
         }
     }

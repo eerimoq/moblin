@@ -86,7 +86,7 @@ struct KeyboardKeySettingsView: View {
                 Text(key.key)
                 Spacer()
                 Text(keyText())
-                    .foregroundColor(keyColor())
+                    .foregroundStyle(keyColor())
             }
         }
     }

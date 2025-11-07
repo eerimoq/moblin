@@ -14,7 +14,7 @@ private struct MicView: View {
                     Text("Mic")
                     Spacer()
                     Text(mic.current.name)
-                        .foregroundColor(.gray)
+                        .foregroundStyle(.gray)
                 }
             } icon: {
                 Image(systemName: "music.mic")

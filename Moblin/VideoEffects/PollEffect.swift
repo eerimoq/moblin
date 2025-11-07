@@ -34,7 +34,7 @@ final class PollEffect: VideoEffect {
             }
             .padding([.trailing], 7)
             .background(.black.opacity(0.75))
-            .foregroundColor(.white)
+            .foregroundStyle(.white)
             .font(.system(size: self.scaledFontSize(size: size)))
             .cornerRadius(10)
             let renderer = ImageRenderer(content: content)

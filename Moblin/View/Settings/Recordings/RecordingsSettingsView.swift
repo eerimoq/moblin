@@ -43,7 +43,7 @@ private struct RecordingsLocationView: View {
                         Image(systemName: "arrow.turn.up.right")
                     }
                     .buttonStyle(.plain)
-                    .foregroundColor(.blue)
+                    .foregroundStyle(.blue)
                 } else {
                     Button {
                         copyPathToClipboard(path: path)
@@ -51,7 +51,7 @@ private struct RecordingsLocationView: View {
                         Image(systemName: "document.on.document")
                     }
                     .buttonStyle(.plain)
-                    .foregroundColor(.blue)
+                    .foregroundStyle(.blue)
                 }
             }
         }

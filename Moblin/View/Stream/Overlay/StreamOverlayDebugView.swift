@@ -12,7 +12,7 @@ struct StreamOverlayDebugView: View {
                 }
             }
             .font(smallFont)
-            .foregroundColor(.white)
+            .foregroundStyle(.white)
             .padding([.leading, .trailing], 2)
             .background(Color(white: 0, opacity: 0.75))
             .cornerRadius(5)

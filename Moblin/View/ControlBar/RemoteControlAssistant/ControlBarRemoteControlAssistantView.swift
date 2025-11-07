@@ -9,7 +9,7 @@ private struct StatusItemView: View {
         if let status {
             HStack {
                 Image(systemName: icon)
-                    .foregroundColor(status.ok ? .primary : .red)
+                    .foregroundStyle(status.ok ? .primary : Color.red)
                     .frame(width: 20)
                 Text(status.message)
             }
@@ -171,14 +171,14 @@ private struct RemoteControlAudioLevelView: View {
                     HStack(spacing: 0) {
                         if isClipping() {
                             Text(clippingText())
-                                .foregroundColor(.red)
+                                .foregroundStyle(.red)
                         } else {
                             Text(redText())
-                                .foregroundColor(.red)
+                                .foregroundStyle(.red)
                             Text(yellowText())
-                                .foregroundColor(.yellow)
+                                .foregroundStyle(.yellow)
                             Text(greenText())
-                                .foregroundColor(.green)
+                                .foregroundStyle(.green)
                         }
                     }
                     .padding([.bottom], 3)
@@ -639,7 +639,7 @@ private struct StreamerSelectionButtonView: View {
         } label: {
             if #available(iOS 26, *) {
                 Image(systemName: "person")
-                    .foregroundColor(.primary)
+                    .foregroundStyle(.primary)
                     .frame(width: 12, height: 12)
                     .padding()
                     .glassEffect()
@@ -651,7 +651,7 @@ private struct StreamerSelectionButtonView: View {
                         Circle()
                             .stroke(.gray)
                     )
-                    .foregroundColor(.gray)
+                    .foregroundStyle(.gray)
                     .padding(7)
             }
         }

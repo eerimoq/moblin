@@ -250,7 +250,7 @@ struct KickStreamLiveSettingsView: View {
                 Spacer()
                 if let title {
                     Text(title)
-                        .foregroundColor(.gray)
+                        .foregroundStyle(.gray)
                 } else {
                     ProgressView()
                 }
@@ -264,7 +264,7 @@ struct KickStreamLiveSettingsView: View {
                 Spacer()
                 if let category {
                     Text(category)
-                        .foregroundColor(.gray)
+                        .foregroundStyle(.gray)
                 } else {
                     ProgressView()
                 }
@@ -410,7 +410,7 @@ struct StreamKickSettingsView: View {
                     Text("Fetching channel info...")
                 } else if fetchChannelInfoFailed {
                     Text("Channel not found on kick.com.")
-                        .foregroundColor(.red)
+                        .foregroundStyle(.red)
                 }
             }
             if stream.kickLoggedIn {

@@ -125,7 +125,7 @@ class ReplayEffectReplayReader {
         let text = HStack {
             ZStack {
                 Circle()
-                    .foregroundColor(.red)
+                    .foregroundStyle(.red)
                     .frame(width: 40 * scale, height: 40 * scale)
                 Image(systemName: "play.fill")
                     .font(.system(size: 25 * scale))
@@ -135,7 +135,7 @@ class ReplayEffectReplayReader {
                 .fontDesign(.monospaced)
         }
         .bold()
-        .foregroundColor(.white)
+        .foregroundStyle(.white)
         let renderer = ImageRenderer(content: text)
         guard let image = renderer.uiImage else {
             return nil
