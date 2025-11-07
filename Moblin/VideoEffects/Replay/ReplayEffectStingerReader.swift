@@ -8,8 +8,10 @@ class ReplayEffectStingerReader {
     private var trackOutput: AVAssetReaderTrackOutput?
     private(set) var duration: Double = 0
     private(set) var setupCompleted: Bool = false
+    private let size: CGSize
 
-    init(path: URL) {
+    init(path: URL, size: CMVideoDimensions) {
+        self.size = size.toSize()
         setup(path: path)
     }
 
@@ -49,6 +51,9 @@ class ReplayEffectStingerReader {
         for _ in 0 ... 10 {
             if let sampleBuffer = trackOutput.copyNextSampleBuffer(), let imageBuffer = sampleBuffer.imageBuffer {
                 let image = CIImage(cvImageBuffer: imageBuffer)
+                    .scaledTo(size: size)
+                    .centered(size: size)
+                    .composited(over: CIImage.clear.cropped(to: CGRect(origin: .zero, size: size)))
                 newImages.append(ReplayImage(image: image,
                                              offset: sampleBuffer.presentationTimeStamp.seconds,
                                              isLast: false))

@@ -55,6 +55,23 @@ extension CIImage {
     func scaled(x: Double, y: Double) -> CIImage {
         return transformed(by: CGAffineTransform(scaleX: x, y: y))
     }
+
+    func scaledTo(size: CGSize) -> CIImage {
+        let scaleX = size.width / extent.width
+        let scaleY = size.height / extent.height
+        let scale = min(scaleX, scaleY)
+        return scaled(x: scale, y: scale)
+    }
+
+    func centered(size: CGSize) -> CIImage {
+        let targetCenterX = size.width / 2
+        let targetCenterY = size.height / 2
+        let currentCenterX = extent.width / 2
+        let currentCenterY = extent.height / 2
+        let x = targetCenterX - currentCenterX
+        let y = targetCenterY - currentCenterY
+        return translated(x: x, y: y)
+    }
 }
 
 func addFaceLandmarks(image: CIImage?, detections: [VNFaceObservation]?) -> CIImage? {

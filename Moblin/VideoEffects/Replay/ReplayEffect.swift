@@ -65,9 +65,9 @@ final class ReplayEffect: VideoEffect {
         reader = ReplayEffectReplayReader(video: video, start: start, duration: duration, size: size)
         super.init()
         if case let .stingers(inPath, inTransitionPoint, outPath, outTransitionPoint) = transitionMode {
-            stingersInReader = ReplayEffectStingerReader(path: inPath)
+            stingersInReader = ReplayEffectStingerReader(path: inPath, size: size)
             stingersInTransitionPoint = inTransitionPoint
-            stingersOutReader = ReplayEffectStingerReader(path: outPath)
+            stingersOutReader = ReplayEffectStingerReader(path: outPath, size: size)
             stingersOutTransitionPoint = outTransitionPoint
         }
         updateStatus(offset: 0)
@@ -216,7 +216,7 @@ extension ReplayEffect {
         if presentationTimeStamp >= stingersOutTransitionStartPresentationTimeStamp {
             stingersState = .end
         }
-        return getReplayImage(presentationTimeStamp) ?? image
+        return getReplayImage(presentationTimeStamp, image) ?? image
     }
 
     private func executeStingersEnd(_ image: CIImage, _ presentationTimeStamp: Double) -> CIImage {
@@ -237,11 +237,11 @@ extension ReplayEffect {
             updateStatus(offset: duration / speed)
             return image
         } else {
-            return getReplayImage(presentationTimeStamp) ?? image
+            return getReplayImage(presentationTimeStamp, image) ?? image
         }
     }
 
-    private func getReplayImage(_ presentationTimeStamp: Double) -> CIImage? {
+    private func getReplayImage(_ presentationTimeStamp: Double, _: CIImage) -> CIImage? {
         let offset = presentationTimeStamp - stingersInTransitionPointPresentationTimeStamp
         updateStatus(offset: offset)
         return reader.getImage(offset: offset * speed).image

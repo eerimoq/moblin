@@ -18,9 +18,11 @@ class ReplayEffectReplayReader {
     private var images: Deque<ReplayImage> = []
     private var completed = false
     private var overlay: CIImage?
+    private let size: CGSize
 
     init(video: ReplayBufferFile, start: Double, duration: Double, size: CMVideoDimensions) {
         self.video = video
+        self.size = size.toSize()
         startTime = start
         DispatchQueue.main.async {
             self.overlay = self.createOverlay(size: size)
@@ -101,6 +103,9 @@ class ReplayEffectReplayReader {
         for _ in 0 ... 10 {
             if let sampleBuffer = trackOutput.copyNextSampleBuffer(), let imageBuffer = sampleBuffer.imageBuffer {
                 var image = CIImage(cvImageBuffer: imageBuffer)
+                    .scaledTo(size: size)
+                    .centered(size: size)
+                    .composited(over: CIImage.black.cropped(to: CGRect(origin: .zero, size: size)))
                 if let overlay {
                     image = overlay.composited(over: image)
                 }

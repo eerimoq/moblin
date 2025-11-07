@@ -920,7 +920,7 @@ final class VideoUnit: NSObject {
             if effectOutputImage.extent == extent {
                 image = effectOutputImage
             } else {
-                failedEffect = "\(effect.getName()) (wrong size)"
+                failedEffect = "\(effect.getName()) (wrong size \(effectOutputImage.extent)"
             }
         }
         processor?.delegate?.streamVideo(failedEffect: failedEffect)

@@ -28,4 +28,8 @@ extension CMVideoDimensions: @retroactive Equatable {
             return CMVideoDimensions(width: width, height: dimension)
         }
     }
+
+    func toSize() -> CGSize {
+        return CGSize(width: Double(width), height: Double(height))
+    }
 }
