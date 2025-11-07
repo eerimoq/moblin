@@ -18,6 +18,7 @@ enum ReplayEffectTransitionMode: Equatable {
 protocol ReplayEffectDelegate: AnyObject {
     func replayEffectStatus(timeLeft: Int)
     func replayEffectCompleted()
+    func replayEffectError(message: String)
 }
 
 private enum StingersState {
@@ -182,11 +183,10 @@ extension ReplayEffect {
     }
 
     private func executeStingersSetup(_ image: CIImage, _ presentationTimeStamp: Double) -> CIImage {
-        if let stingersInReader,
-           let stingersOutReader,
-           stingersInReader.setupCompleted,
-           stingersOutReader.setupCompleted
-        {
+        guard let stingersInReader, let stingersOutReader else {
+            return image
+        }
+        if case .ok = stingersInReader.setupState, case .ok = stingersOutReader.setupState {
             startPresentationTimeStamp = presentationTimeStamp
             stingersInTransitionPointPresentationTimeStamp = presentationTimeStamp
                 + stingersInReader.duration * stingersInTransitionPoint
@@ -195,6 +195,12 @@ extension ReplayEffect {
             stingersOutTransitionStartPresentationTimeStamp = stingersOutTransitionPointPresentationTimeStamp
                 - stingersOutReader.duration * stingersOutTransitionPoint
             stingersState = .begin
+        } else if case .failed = stingersInReader.setupState {
+            reportBadStingerVideo()
+            replayCompleted()
+        } else if case .failed = stingersOutReader.setupState {
+            reportBadStingerVideo()
+            replayCompleted()
         }
         return image
     }
@@ -255,5 +261,9 @@ extension ReplayEffect {
         stingersOutTransitionStartPresentationTimeStamp = presentationTimeStamp
         stingersOutTransitionPointPresentationTimeStamp = presentationTimeStamp
             + stingersOutReader.duration * stingersOutTransitionPoint
+    }
+
+    private func reportBadStingerVideo() {
+        delegate?.replayEffectError(message: String(localized: "Bad replay stinger video"))
     }
 }

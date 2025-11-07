@@ -21,7 +21,7 @@ class ReplayTransitionsStorage {
         do {
             try fileManager.removeItem(at: makePath(filename: filename))
         } catch {
-            logger.error("media-player-storage: Remove failed with error \(error)")
+            logger.debug("media-player-storage: Remove failed with error \(error)")
         }
     }
 }

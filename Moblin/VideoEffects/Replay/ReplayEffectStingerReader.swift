@@ -2,12 +2,18 @@ import AVFoundation
 import Collections
 import CoreImage
 
+enum ReplayEffectStingerReaderSetupState {
+    case working
+    case ok
+    case failed
+}
+
 class ReplayEffectStingerReader {
     private var images: Deque<ReplayImage> = []
     private var reader: AVAssetReader?
     private var trackOutput: AVAssetReaderTrackOutput?
     private(set) var duration: Double = 0
-    private(set) var setupCompleted: Bool = false
+    private(set) var setupState: ReplayEffectStingerReaderSetupState = .working
     private let size: CGSize
 
     init(path: URL, size: CMVideoDimensions) {
@@ -82,7 +88,7 @@ class ReplayEffectStingerReader {
 
     private func loadVideoTrackCompletion(track: AVAssetTrack?, error: (any Error)?) {
         guard error == nil, let track else {
-            setupComplete()
+            setupComplete(state: .failed)
             return
         }
         let videoOutputSettings: [String: Any] = [
@@ -92,18 +98,18 @@ class ReplayEffectStingerReader {
         ] as [String: Any]
         trackOutput = AVAssetReaderTrackOutput(track: track, outputSettings: videoOutputSettings)
         guard let trackOutput else {
-            setupComplete()
+            setupComplete(state: .failed)
             return
         }
         reader?.add(trackOutput)
         reader?.startReading()
         fillInternal()
-        setupComplete()
+        setupComplete(state: .ok)
     }
 
-    private func setupComplete() {
+    private func setupComplete(state: ReplayEffectStingerReaderSetupState) {
         processorPipelineQueue.async {
-            self.setupCompleted = true
+            self.setupState = state
         }
     }
 }

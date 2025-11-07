@@ -26,6 +26,7 @@ private struct StingerView: View {
     private func onUrl(url: URL) {
         stinger.name = url.lastPathComponent
         if let filename = stinger.makeFilename() {
+            model.replayTransitionsStorage.remove(filename: filename)
             model.replayTransitionsStorage.add(filename: filename, url: url)
         }
     }

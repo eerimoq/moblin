@@ -184,4 +184,8 @@ extension Model: ReplayEffectDelegate {
             self.replay.isPlaying = false
         }
     }
+
+    func replayEffectError(message: String) {
+        makeErrorToastMain(title: message)
+    }
 }
