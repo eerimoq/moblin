@@ -8,7 +8,7 @@ class ReplayProvider: ObservableObject {
     @Published var startFromEnd = 10.0
     @Published var speed: SettingsReplaySpeed? = .one
     @Published var instantReplayCountdown = 0
-    @Published var timeLeft = -1
+    @Published var timeLeft = 0
 }
 
 extension Model {
@@ -125,7 +125,6 @@ extension Model {
                                        outPath: outPath,
                                        outTransitionPoint: replay.outStinger.transitionPoint)
         }
-        self.replay.timeLeft = -1
         replayEffect = ReplayEffect(
             video: replayVideo,
             start: replaySettings.startFromVideoStart(),

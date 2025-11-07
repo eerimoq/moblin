@@ -70,6 +70,7 @@ final class ReplayEffect: VideoEffect {
             stingersOutReader = ReplayEffectStingerReader(path: outPath)
             stingersOutTransitionPoint = outTransitionPoint
         }
+        updateStatus(offset: 0)
     }
 
     func cancel() {
