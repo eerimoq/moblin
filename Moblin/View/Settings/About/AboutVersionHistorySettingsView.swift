@@ -34,6 +34,11 @@ private let versions = [
         "• Create widget wizard. 💡 mikeful",
         "  • Select scene(s) to add it to in the wizard. Current scene by default.",
         "• Show version history in bigger window.",
+        "• Print twitch redeem rewards with cat printer. 🐛 DrPlankton",
+        "• VTuber and PNGTube in bottom right by default.",
+        "• Stream in 4:3 aspect ratio. 💡 kyrzixoシ",
+        "• Stingers replay transition type.",
+        "  • Use your videos as in and out stingers.",
     ]),
     Version(version: "27.1.0", date: "2025-10-22", changes: [
         "• Sensitive text as • instead of *.",
