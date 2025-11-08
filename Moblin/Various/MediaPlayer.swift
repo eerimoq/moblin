@@ -328,16 +328,3 @@ class MediaPlayer {
 private func outputPresentationTimeStamp() -> CMTime {
     return currentPresentationTimeStamp() + CMTime(seconds: mediaPlayerLatency)
 }
-
-extension AVAsset {
-    func duration() -> Double {
-        let semaphore = DispatchSemaphore(value: 0)
-        var duration: Double?
-        Task {
-            duration = try? await load(.duration).seconds
-            semaphore.signal()
-        }
-        semaphore.wait()
-        return duration ?? 0
-    }
-}
