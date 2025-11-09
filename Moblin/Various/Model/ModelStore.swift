@@ -23,6 +23,7 @@ private let iconsProductIds = [
     "AppIconGoblin",
     "AppIconGoblina",
     "AppIconTetris",
+    "AppIconHappy",
     "AppIconMillionaire",
     "AppIconBillionaire",
     "AppIconTrillionaire",

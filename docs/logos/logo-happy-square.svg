@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 210 297"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.4 (e7c3feb1, 2024-10-09)"
+   sodipodi:docname="logo-happy-square.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#ffffff"
+     bordercolor="#999999"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="1.063092"
+     inkscape:cx="426.11552"
+     inkscape:cy="484.90629"
+     inkscape:window-width="1392"
+     inkscape:window-height="800"
+     inkscape:window-x="0"
+     inkscape:window-y="31"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs2">
+    <linearGradient
+       id="linearGradient13268"
+       inkscape:swatch="solid">
+      <stop
+         style="stop-color:#eaeaea;stop-opacity:1;"
+         offset="0"
+         id="stop13266" />
+    </linearGradient>
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       style="fill:#1e1f22;stroke:#1e1f22;stroke-width:0.535711;stroke-linejoin:bevel;stroke-miterlimit:3.4"
+       id="rect906"
+       width="129.46428"
+       height="129.46429"
+       x="40.409855"
+       y="64.128853"
+       inkscape:export-filename="../Docs/logo-square.png"
+       inkscape:export-xdpi="200.07385"
+       inkscape:export-ydpi="200.07385" />
+    <circle
+       style="fill:#3579f6;fill-opacity:1;stroke:#1e1a1a;stroke-width:0.6;stroke-linejoin:bevel;stroke-miterlimit:3.4;stroke-dasharray:none"
+       id="path577"
+       cx="105.14435"
+       cy="139.92929"
+       r="49.950783"
+       inkscape:export-filename="logo-happy.png"
+       inkscape:export-xdpi="126.36619"
+       inkscape:export-ydpi="126.36619" />
+    <ellipse
+       style="fill:#ffffff;stroke:#1e1a1a;stroke-width:0.6;stroke-linejoin:bevel;stroke-miterlimit:3.4;stroke-dasharray:none"
+       id="path789"
+       cx="130.62056"
+       cy="122.50254"
+       rx="11.302401"
+       ry="12.686368" />
+    <ellipse
+       style="fill:#ffffff;stroke:#1e1a1a;stroke-width:0.6;stroke-linejoin:bevel;stroke-miterlimit:3.4;stroke-dasharray:none"
+       id="path789-0"
+       cx="102.71056"
+       cy="125.03981"
+       rx="11.302401"
+       ry="12.686368" />
+    <path
+       style="fill:#901600;fill-opacity:1;stroke:#000000;stroke-width:0.6;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1"
+       d="m 132.20916,147.18574 c -5.93121,1.32573 -7.76848,3.50932 -14.98179,3.56185 -6.00073,0.0437 -7.90128,-0.98135 -13.69461,-3.01114 -7.603973,-2.66418 -10.990676,-3.9e-4 -10.912609,3.98135 0.06726,3.43055 2.381812,6.65022 7.358431,10.24085 4.793868,3.45877 11.264228,5.66453 16.676338,5.67454 6.07564,0.0112 11.48158,-2.27885 16.86065,-5.5402 4.63695,-3.18801 8.53421,-7.34817 8.1306,-11.10608 -0.14813,-3.12436 -3.86018,-6.45383 -9.43701,-3.80117 z"
+       id="path1369"
+       sodipodi:nodetypes="csssssccc" />
+    <ellipse
+       style="fill:#000000;fill-opacity:1;stroke:#1e1a1a;stroke-width:0.0927953;stroke-linejoin:bevel;stroke-miterlimit:3.4"
+       id="path2097"
+       cx="107.1292"
+       cy="126.57729"
+       rx="6.8085122"
+       ry="6.5738606" />
+    <ellipse
+       style="fill:#000000;fill-opacity:1;stroke:#1e1a1a;stroke-width:0.0927953;stroke-linejoin:bevel;stroke-miterlimit:3.4"
+       id="path2097-3"
+       cx="134.74454"
+       cy="125.16148"
+       rx="6.8085122"
+       ry="6.5738606" />
+    <path
+       style="fill:#3579f6;fill-opacity:1;stroke:#000000;stroke-width:0.623157;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1"
+       d="m 100.66851,91.793943 c -2.724048,-7.945 -4.548307,-11.14356 -8.636632,-15.17847 -4.851991,-4.7886 -8.05601,-5.5706 -17.157625,-7.98595 1.391845,7.29289 4.158537,11.10189 8.582666,15.10764 3.136677,2.84005 6.088521,4.98643 17.211591,8.05678 z"
+       id="path8291"
+       sodipodi:nodetypes="cscsc"
+       inkscape:export-filename="logo-happy-square.png"
+       inkscape:export-xdpi="200.07385"
+       inkscape:export-ydpi="200.07385" />
+  </g>
+</svg>
