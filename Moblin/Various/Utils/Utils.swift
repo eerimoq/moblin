@@ -123,9 +123,9 @@ func uploadImage(
     data.append("content-type: image/jpeg\r\n\r\n".utf8Data)
     data.append(image)
     data.append("\r\n--\(boundary)--\r\n".utf8Data)
-    URLSession.shared.uploadTask(with: request, from: data, completionHandler: { _, response, _ in
-        onCompleted(response?.http?.isSuccessful == true)
-    }).resume()
+    httpCall(request: request, body: data) { data in
+        onCompleted(data != nil)
+    }
 }
 
 func formatCommercialStartedDuration(seconds: Int) -> String {
