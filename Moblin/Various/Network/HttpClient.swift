@@ -3,13 +3,13 @@ import Network
 
 class HttpResponseParser {
     private var data = Data()
-    
+
     init() {}
-    
+
     func append(data: Data) {
         self.data += data
     }
-    
+
     func parse() -> (Bool, Data?) {
         var offset = 0
         guard let (statusLine, nextLineOffset) = getLine(data: data, offset: offset) else {
@@ -128,11 +128,11 @@ private class InterfaceTypeHttpClient {
         }
         connection?.start(queue: .main)
     }
-    
+
     private func isCurrentConnection(_ interfaceTypeIndex: Int) -> Bool {
         return self.interfaceTypeIndex == interfaceTypeIndex
     }
-    
+
     private func updateGlobalInterfaceTypesIfNeeded() {
         guard interfaceTypeIndex != 0 else {
             return
