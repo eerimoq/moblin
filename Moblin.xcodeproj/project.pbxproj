@@ -642,7 +642,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 27.3.0;
+				MARKETING_VERSION = 27.4.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.eerimoq.Mobs.Moblin-Capture";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -679,7 +679,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 27.3.0;
+				MARKETING_VERSION = 27.4.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.eerimoq.Mobs.Moblin-Capture";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -867,7 +867,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 27.3.0;
+				MARKETING_VERSION = 27.4.0;
 				MTLLINKER_FLAGS = "-fcikernel";
 				MTL_COMPILER_FLAGS = "-fcikernel";
 				MTL_HEADER_SEARCH_PATHS = "$(HEADER_SEARCH_PATHS)";
@@ -922,7 +922,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 27.3.0;
+				MARKETING_VERSION = 27.4.0;
 				MTLLINKER_FLAGS = "-fcikernel";
 				MTL_COMPILER_FLAGS = "-fcikernel";
 				MTL_HEADER_SEARCH_PATHS = "$(HEADER_SEARCH_PATHS)";
