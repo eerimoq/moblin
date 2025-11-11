@@ -384,7 +384,14 @@ extension Model {
     private func setStreamCodec() {
         switch stream.codec {
         case .h264avc:
-            media.setVideoProfile(profile: kVTProfileLevel_H264_Main_AutoLevel)
+            switch stream.h264Profile {
+            case .baseline:
+                media.setVideoProfile(profile: kVTProfileLevel_H264_Baseline_AutoLevel)
+            case .main:
+                media.setVideoProfile(profile: kVTProfileLevel_H264_Main_AutoLevel)
+            case .high:
+                media.setVideoProfile(profile: kVTProfileLevel_H264_High_AutoLevel)
+            }
         case .h265hevc:
             if database.color.space == .hlgBt2020 {
                 media.setVideoProfile(profile: kVTProfileLevel_HEVC_Main10_AutoLevel)

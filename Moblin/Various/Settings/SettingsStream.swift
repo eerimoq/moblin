@@ -21,6 +21,17 @@ enum SettingsStreamCodec: String, Codable, CaseIterable {
 
 let codecs = SettingsStreamCodec.allCases.map { $0.rawValue }
 
+enum SettingsStreamH264Profile: String, Codable, CaseIterable {
+    case baseline = "Baseline"
+    case main = "Main"
+    case high = "High"
+
+    init(from decoder: Decoder) throws {
+        self = try SettingsStreamH264Profile(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
+            .main
+    }
+}
+
 enum SettingsStreamResolution: String, Codable, CaseIterable {
     case r4032x3024 = "4032x3024"
     case r3840x2160 = "3840x2160"
@@ -935,6 +946,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
     @Published var autoFps: Bool = false
     @Published var bitrate: UInt32 = 5_000_000
     @Published var codec: SettingsStreamCodec = .h265hevc
+    @Published var h264Profile: SettingsStreamH264Profile = .main
     @Published var bFrames: Bool = false
     @Published var adaptiveEncoderResolution: Bool = false
     var adaptiveBitrate: Bool = true
@@ -1016,6 +1028,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
              autoFps,
              bitrate,
              codec,
+             h264Profile,
              bFrames,
              adaptiveEncoderResolution,
              adaptiveBitrate,
@@ -1093,6 +1106,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         try container.encode(.autoFps, autoFps)
         try container.encode(.bitrate, bitrate)
         try container.encode(.codec, codec)
+        try container.encode(.h264Profile, h264Profile)
         try container.encode(.bFrames, bFrames)
         try container.encode(.adaptiveEncoderResolution, adaptiveEncoderResolution)
         try container.encode(.adaptiveBitrate, adaptiveBitrate)
@@ -1173,6 +1187,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         autoFps = container.decode(.autoFps, Bool.self, false)
         bitrate = container.decode(.bitrate, UInt32.self, 5_000_000)
         codec = container.decode(.codec, SettingsStreamCodec.self, .h265hevc)
+        h264Profile = container.decode(.h264Profile, SettingsStreamH264Profile.self, .main)
         bFrames = container.decode(.bFrames, Bool.self, false)
         adaptiveEncoderResolution = container.decode(.adaptiveEncoderResolution, Bool.self, false)
         adaptiveBitrate = container.decode(.adaptiveBitrate, Bool.self, true)
@@ -1243,6 +1258,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         new.autoFps = autoFps
         new.bitrate = bitrate
         new.codec = codec
+        new.h264Profile = h264Profile
         new.bFrames = bFrames
         new.adaptiveEncoderResolution = adaptiveEncoderResolution
         new.adaptiveBitrate = adaptiveBitrate

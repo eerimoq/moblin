@@ -76,6 +76,17 @@ private struct CodecSettingsView: View {
                 model.reloadStreamIfEnabled(stream: stream)
             }
             .disabled(stream.enabled && model.isLive)
+            if stream.codec == .h264avc {
+                Picker("Profile", selection: $stream.h264Profile) {
+                    ForEach(SettingsStreamH264Profile.allCases, id: \.self) {
+                        Text($0.rawValue)
+                    }
+                }
+                .onChange(of: stream.h264Profile) { _ in
+                    model.reloadStreamIfEnabled(stream: stream)
+                }
+                .disabled(stream.enabled && model.isLive)
+            }
         } footer: {
             Text("""
             H.265/HEVC generally requires less bandwidth for same image quality. RTMP \
