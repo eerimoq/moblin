@@ -175,6 +175,7 @@ private struct RelayStreamerUrlView: View {
 private struct RelayView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var relay: SettingsMoblinkRelay
+    @State var relayId = ""
 
     var body: some View {
         Section {
@@ -200,13 +201,31 @@ private struct RelayView: View {
                     TextItemView(name: String(localized: "Streamer URL"), value: relay.url)
                 }
             }
+            Button {
+                moblinkRelayResetId()
+                model.reloadMoblinkRelay()
+                relayId = getMoblinkRelayId()
+            } label: {
+                HCenter {
+                    Text("Reset id")
+                }
+            }
         } header: {
             Text("Relay")
         } footer: {
-            Text("""
-            Enable this on the device you want to use as the extra bonding connection. The device \
-            must have cellular data enabled.
-            """)
+            VStack(alignment: .leading) {
+                Text("""
+                Enable this on the device you want to use as the extra bonding connection. The device \
+                must have cellular data enabled.
+                """)
+                Text("")
+                Text("ID: \(relayId)")
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.5)
+            }
+        }
+        .onAppear {
+            relayId = getMoblinkRelayId()
         }
     }
 }

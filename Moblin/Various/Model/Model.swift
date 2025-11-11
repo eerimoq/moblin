@@ -1065,6 +1065,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         updateLutsButtonState()
         updateAutoSceneSwitcherButtonState()
         reloadNtpClient()
+        moblinkRelayLoadRelayId()
         reloadMoblinkRelay()
         reloadMoblinkStreamer()
         setCameraControlsEnabled()

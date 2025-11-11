@@ -3,6 +3,24 @@ import Network
 import SwiftUI
 
 private let moblinkRelayQueue = DispatchQueue(label: "com.eerimoq.moblink-relay")
+private let relayIdKey = "srtlaRelayId"
+private var relayId: String = ""
+
+func moblinkRelayLoadRelayId() {
+    relayId = UserDefaults.standard.string(forKey: relayIdKey) ?? ""
+    if relayId.isEmpty {
+        moblinkRelayResetId()
+    }
+}
+
+func getMoblinkRelayId() -> String {
+    return relayId
+}
+
+func moblinkRelayResetId() {
+    relayId = UUID().uuidString
+    UserDefaults.standard.set(relayId, forKey: relayIdKey)
+}
 
 enum MoblinkRelayState: String {
     case waitingForStreamers = "Waiting for streamers"
@@ -336,17 +354,12 @@ class MoblinkRelay: NSObject {
     private var relays: [Relay] = []
     private let networkPathMonitor = NWPathMonitor()
     private var started = false
-    @AppStorage("srtlaRelayId") var id = ""
 
     init(name: String, streamerUrl: URL, password: String, delegate: MoblinkRelayDelegate) {
         self.name = name
         self.streamerUrl = streamerUrl
         self.password = password
         self.delegate = delegate
-        super.init()
-        if id.isEmpty {
-            id = UUID().uuidString
-        }
     }
 
     func start() {
@@ -389,10 +402,10 @@ class MoblinkRelay: NSObject {
     }
 
     private func makeRelayId(_ interface: NWInterface) -> String {
-        if let value = Int(id.suffix(6), radix: 16) {
-            return id.prefix(30) + String(format: "%06X", (value + interface.index) & 0xFFFFFF)
+        if let value = Int(relayId.suffix(6), radix: 16) {
+            return relayId.prefix(30) + String(format: "%06X", (value + interface.index) & 0xFFFFFF)
         }
-        return id
+        return relayId
     }
 
     private func makeRelayName(_ interface: NWInterface) -> String {
