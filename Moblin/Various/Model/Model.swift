@@ -176,8 +176,17 @@ class StatusTopLeft: ObservableObject {
     @Published var statusObsText = noValue
 }
 
-class Cpu: ObservableObject {
-    @Published var usage = 0
+class SystemMonitor: ObservableObject {
+    @Published var cpu = 0
+    @Published var ram = 0
+
+    func format() -> String {
+        return "\(cpu)% \(ram) MB"
+    }
+
+    func formatShort() -> String {
+        return String(cpu)
+    }
 }
 
 class StatusTopRight: ObservableObject {
@@ -370,7 +379,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     let toast = Toast()
     let statusOther = StatusOther()
     let statusTopLeft = StatusTopLeft()
-    let cpu = Cpu()
+    let systemMonitor = SystemMonitor()
     let statusTopRight = StatusTopRight()
     let battery = Battery()
     let remoteControl = RemoteControl()
@@ -1535,9 +1544,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             self.updateBitrateStatus()
             self.updateAdsRemainingTimer(now: now)
             self.keepSpeakerAlive(now: monotonicNow)
-            if self.database.show.cpu {
+            if self.database.show.systemMonitor {
                 self.resourceUsage.update(now: monotonicNow)
-                self.cpu.usage = Int(self.resourceUsage.getCpuUsage())
+                self.systemMonitor.cpu = self.resourceUsage.getCpuUsage()
+                self.systemMonitor.ram = self.resourceUsage.getMemoryUsage()
             }
             self.updateMoblinkStatus()
             self.updateStatusEventsText()
@@ -2901,7 +2911,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func isShowingStatusCpu() -> Bool {
-        return database.show.cpu
+        return database.show.systemMonitor
     }
 }
 

@@ -169,8 +169,22 @@ class ResourceUsage {
     private var previousTime: ContinuousClock.Instant?
     private var previousUsage: rusage?
     private var cpuUsage: Float = 0
+    private var memoryUsage: UInt64 = 0
 
     func update(now: ContinuousClock.Instant) {
+        updateCpuUsage(now: now)
+        updateMemoryUsage()
+    }
+
+    func getCpuUsage() -> Int {
+        return Int(cpuUsage)
+    }
+
+    func getMemoryUsage() -> Int {
+        return Int(memoryUsage)
+    }
+
+    private func updateCpuUsage(now: ContinuousClock.Instant) {
         var usage = rusage()
         guard getrusage(RUSAGE_SELF, &usage) == 0 else {
             return
@@ -185,8 +199,19 @@ class ResourceUsage {
         previousUsage = usage
     }
 
-    func getCpuUsage() -> Float {
-        return cpuUsage
+    private func updateMemoryUsage() {
+        var info = task_vm_info_data_t()
+        var count = mach_msg_type_number_t(MemoryLayout<task_vm_info_data_t>.size / MemoryLayout<integer_t>.size)
+        let kerr = withUnsafeMutablePointer(to: &info) {
+            $0.withMemoryRebound(to: integer_t.self, capacity: Int(count)) {
+                task_info(mach_task_self_, task_flavor_t(TASK_VM_INFO), $0, &count)
+            }
+        }
+        if kerr == KERN_SUCCESS {
+            memoryUsage = info.phys_footprint / 1024 / 1024
+        } else {
+            memoryUsage = 0
+        }
     }
 }
 

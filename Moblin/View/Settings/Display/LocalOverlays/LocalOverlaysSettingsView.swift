@@ -55,7 +55,7 @@ struct LocalOverlaysSettingsView: View {
                     Image(systemName: "waveform")
                 }
                 Label {
-                    Toggle("CPU usage", isOn: $show.cpu)
+                    Toggle("System monitor", isOn: $show.systemMonitor)
                 } icon: {
                     Image(systemName: "cpu")
                 }

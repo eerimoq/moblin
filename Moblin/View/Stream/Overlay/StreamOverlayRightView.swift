@@ -245,7 +245,7 @@ private struct StreamUptimeStatusView: View {
 private struct CpuStatusView: View {
     let model: Model
     @ObservedObject var show: SettingsShow
-    @ObservedObject var cpu: Cpu
+    @ObservedObject var systemMonitor: SystemMonitor
     let textPlacement: StreamOverlayIconAndTextPlacement
 
     var body: some View {
@@ -256,7 +256,7 @@ private struct CpuStatusView: View {
                         .frame(width: 17, height: 17)
                         .padding([.leading], 2)
                         .foregroundStyle(.white)
-                    Text(String(cpu.usage))
+                    Text(systemMonitor.formatShort())
                         .foregroundStyle(.white)
                         .padding([.trailing], 2)
                 }
@@ -269,7 +269,7 @@ private struct CpuStatusView: View {
             } else {
                 StreamOverlayIconAndTextView(
                     icon: "cpu",
-                    text: "\(cpu.usage)%",
+                    text: systemMonitor.format(),
                     textPlacement: textPlacement
                 )
             }
@@ -720,7 +720,7 @@ private struct StatusesView: View {
         )
         CpuStatusView(model: model,
                       show: model.database.show,
-                      cpu: model.cpu,
+                      systemMonitor: model.systemMonitor,
                       textPlacement: textPlacement)
         if show.audioLevel, textPlacement == .hide {
             CompactAudioBarView(level: model.audio.level)

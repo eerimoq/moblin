@@ -528,7 +528,7 @@ struct RemoteControlStatusTopRight: Codable {
     var browserWidgets: RemoteControlStatusItem?
     var moblink: RemoteControlStatusItem?
     var djiDevices: RemoteControlStatusItem?
-    var cpuUsage: RemoteControlStatusItem?
+    var systemMonitor: RemoteControlStatusItem?
 }
 
 struct RemoteControlSettingsScene: Codable, Identifiable {

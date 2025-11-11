@@ -309,7 +309,7 @@ private struct ControlBarRemoteControlAssistantStatusView: View {
                         // Backwards compatibility. Remove later.
                         StatusItemView(icon: "waveform", status: status.audioLevel)
                     }
-                    StatusItemView(icon: "cpu", status: status.cpuUsage)
+                    StatusItemView(icon: "cpu", status: status.systemMonitor)
                     StatusItemView(icon: "server.rack", status: status.rtmpServer)
                     StatusItemView(icon: "app.connected.to.app.below.fill", status: status.moblink)
                     StatusItemView(icon: "appletvremote.gen1", status: status.remoteControl)
