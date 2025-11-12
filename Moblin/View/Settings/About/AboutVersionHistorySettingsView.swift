@@ -8,6 +8,15 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "27.4.0", date: "2025-11-12", changes: [
+        "• Snapshot upload robustness experiment. 💡 Djandrea",
+        "  • Try cellular, wifi and one ethernet interface.",
+        "• Show CPU and RAM usage in top right, not only CPU.",
+        "  • RAM usage is interesting when buffering a lot of video.",
+        "• H.264/AVC profile setting (Baseline, Main and High). 💡 zeleznypa",
+        "• Show Moblink relay id and add a reset button. 💡 JohannesLiv",
+        "• Fix Kick login. 🐛 Markus Palmer",
+    ]),
     Version(version: "27.3.0", date: "2025-11-10", changes: [
         "• Happy icon in shop. 🧑‍🏭 JohannesLiv",
     ]),
