@@ -79,9 +79,11 @@ private struct KickWebView: UIViewRepresentable {
 
     func updateUIView(_ webView: WKWebView, context: Context) {
         webView.navigationDelegate = context.coordinator
-        if webView.url?.host()?.contains(kickDomain) != true {
-            webView.load(URLRequest(url: loginUrl))
+        guard webView.url?.host()?.contains(kickDomain) != true else {
+            return
         }
+        webView.load(URLRequest(url: loginUrl))
+        context.coordinator.periodicallyCheckForAccessTokenCookie(webView: webView)
     }
 
     func makeCoordinator() -> Coordinator {
@@ -91,6 +93,7 @@ private struct KickWebView: UIViewRepresentable {
     class Coordinator: NSObject, WKNavigationDelegate {
         let onAccessToken: (String) -> Void
         private var loginButtonClicked = false
+        private let timer = SimpleTimer(queue: .main)
 
         init(_ onAccessToken: @escaping (String) -> Void) {
             self.onAccessToken = onAccessToken
@@ -100,25 +103,22 @@ private struct KickWebView: UIViewRepresentable {
             if !loginButtonClicked {
                 detectAndClickLoginButton(webView)
             }
-            guard let url = webView.url,
-                  let host = url.host(),
-                  !url.path().contains("/login"),
-                  !url.path().contains("/register"),
-                  host.contains(kickDomain)
-            else {
-                return
-            }
-            webView.configuration.websiteDataStore.httpCookieStore.getAllCookies { cookies in
-                guard let sessionTokenCookie = cookies
-                    .filter({ $0.domain.contains(kickDomain) })
-                    .filter({ $0.name == sessionTokenCookieName })
-                    .first
-                else {
-                    return
-                }
-                let accessToken = sessionTokenCookie.value
-                DispatchQueue.main.async {
-                    self.onAccessToken(accessToken.removingPercentEncoding ?? accessToken)
+        }
+
+        func periodicallyCheckForAccessTokenCookie(webView: WKWebView) {
+            timer.startPeriodic(interval: 1) { [weak self] in
+                webView.configuration.websiteDataStore.httpCookieStore.getAllCookies { cookies in
+                    guard let sessionTokenCookie = cookies
+                        .filter({ $0.domain.contains(kickDomain) })
+                        .filter({ $0.name == sessionTokenCookieName })
+                        .first
+                    else {
+                        return
+                    }
+                    let accessToken = sessionTokenCookie.value
+                    DispatchQueue.main.async {
+                        self?.onAccessToken(accessToken.removingPercentEncoding ?? accessToken)
+                    }
                 }
             }
         }
@@ -140,12 +140,10 @@ private struct KickWebView: UIViewRepresentable {
             })();
             """
             webView.evaluateJavaScript(detectAndClickLoginButtonScript) { result, error in
-                if error != nil {
+                guard error == nil, result as? Bool == true else {
                     return
                 }
-                if result as? Bool == true {
-                    self.loginButtonClicked = true
-                }
+                self.loginButtonClicked = true
             }
         }
     }
