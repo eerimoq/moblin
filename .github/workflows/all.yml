@@ -20,8 +20,17 @@ jobs:
         run: |
           brew install swiftlint
           make lint
+      - name: Download platform: iOS
+        run: |
+          xcodebuild -downloadPlatform iOS
+      - name: Download component: MetalToolchain
+        run: |
+          xcodebuild -downloadComponent MetalToolchain
       - name: Build
         run: |
-          xcodebuild -list
-          xcodebuild -downloadComponent MetalToolchain
-          xcodebuild -scheme Moblin -skipPackagePluginValidation build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
+          xcodebuild \
+              -scheme Moblin \
+              -skipPackagePluginValidation \
+              build \
+              CODE_SIGN_IDENTITY="" \
+              CODE_SIGNING_REQUIRED=NO
