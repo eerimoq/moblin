@@ -1300,4 +1300,141 @@ extension Model {
         }
         sceneUpdated(imageEffectChanged: true, attachCamera: attachCamera)
     }
+
+    func textWidgetTextChanged(widget: SettingsWidget) {
+        let textEffect = getTextEffect(id: widget.id)
+        textEffect?.setFormat(format: widget.text.formatString)
+        let parts = loadTextFormat(format: widget.text.formatString)
+        updateTimers(widget.text, textEffect, parts)
+        updateStopwatches(widget.text, textEffect, parts)
+        updateCheckboxes(widget.text, textEffect, parts)
+        updateRatings(widget.text, textEffect, parts)
+        updateLapTimes(widget.text, textEffect, parts)
+        updateSubtitles(widget.text, textEffect, parts)
+        updateNeedsWeather(widget.text, parts)
+        updateNeedsGeography(widget.text, parts)
+        updateNeedsGForce(widget.text, parts)
+        sceneUpdated()
+    }
+
+    private func updateTimers(_ text: SettingsWidgetText, _ textEffect: TextEffect?, _ parts: [TextFormatPart]) {
+        let numberOfTimers = parts.filter { $0 == .timer }.count
+        while text.timers.count < numberOfTimers {
+            text.timers.append(.init())
+        }
+        while text.timers.count > numberOfTimers {
+            text.timers.removeLast()
+        }
+        textEffect?.setTimersEndTime(endTimes: text.timers.map {
+            .now.advanced(by: .seconds(utcTimeDeltaFromNow(to: $0.endTime)))
+        })
+    }
+
+    private func updateStopwatches(_ text: SettingsWidgetText, _ textEffect: TextEffect?, _ parts: [TextFormatPart]) {
+        let numberOfStopwatches = parts.filter { $0 == .stopwatch }.count
+        while text.stopwatches.count < numberOfStopwatches {
+            text.stopwatches.append(.init())
+        }
+        while text.stopwatches.count > numberOfStopwatches {
+            text.stopwatches.removeLast()
+        }
+        textEffect?.setStopwatches(stopwatches: text.stopwatches.map { $0.clone() })
+    }
+
+    private func updateCheckboxes(_ text: SettingsWidgetText, _ textEffect: TextEffect?, _ parts: [TextFormatPart]) {
+        let numberOfCheckboxes = parts.filter { $0 == .checkbox }.count
+        while text.checkboxes.count < numberOfCheckboxes {
+            text.checkboxes.append(.init())
+        }
+        while text.checkboxes.count > numberOfCheckboxes {
+            text.checkboxes.removeLast()
+        }
+        textEffect?.setCheckboxes(checkboxes: text.checkboxes.map { $0.checked })
+    }
+
+    private func updateRatings(_ text: SettingsWidgetText, _ textEffect: TextEffect?, _ parts: [TextFormatPart]) {
+        let numberOfRatings = parts.filter { $0 == .rating }.count
+        while text.ratings.count < numberOfRatings {
+            text.ratings.append(.init())
+        }
+        while text.ratings.count > numberOfRatings {
+            text.ratings.removeLast()
+        }
+        textEffect?.setRatings(ratings: text.ratings.map { $0.rating })
+    }
+
+    private func updateLapTimes(_ text: SettingsWidgetText, _ textEffect: TextEffect?, _ parts: [TextFormatPart]) {
+        let numberOfLapTimes = parts.filter { $0 == .lapTimes }.count
+        while text.lapTimes.count < numberOfLapTimes {
+            text.lapTimes.append(.init())
+        }
+        while text.lapTimes.count > numberOfLapTimes {
+            text.lapTimes.removeLast()
+        }
+        textEffect?.setLapTimes(lapTimes: text.lapTimes.map { $0.lapTimes })
+    }
+
+    private func updateSubtitles(_ text: SettingsWidgetText, _: TextEffect?, _ parts: [TextFormatPart]) {
+        text.subtitles.removeAll()
+        for part in parts {
+            switch part {
+            case let .subtitles(identifier):
+                let item = SettingsWidgetTextSubtitles()
+                item.identifier = identifier
+                text.subtitles.append(item)
+            default:
+                break
+            }
+        }
+        text.needsSubtitles = !text.subtitles.isEmpty
+        reloadSpeechToText()
+    }
+
+    private func updateNeedsWeather(_ text: SettingsWidgetText, _ parts: [TextFormatPart]) {
+        text.needsWeather = !parts.filter {
+            switch $0 {
+            case .conditions:
+                return true
+            case .temperature:
+                return true
+            default:
+                return false
+            }
+        }.isEmpty
+        startWeatherManager()
+    }
+
+    private func updateNeedsGeography(_ text: SettingsWidgetText, _ parts: [TextFormatPart]) {
+        text.needsGeography = !parts.filter {
+            switch $0 {
+            case .country:
+                return true
+            case .countryFlag:
+                return true
+            case .state:
+                return true
+            case .city:
+                return true
+            default:
+                return false
+            }
+        }.isEmpty
+        startGeographyManager()
+    }
+
+    private func updateNeedsGForce(_ text: SettingsWidgetText, _ parts: [TextFormatPart]) {
+        text.needsGForce = !parts.filter {
+            switch $0 {
+            case .gForce:
+                return true
+            case .gForceRecentMax:
+                return true
+            case .gForceMax:
+                return true
+            default:
+                return false
+            }
+        }.isEmpty
+        startGForceManager()
+    }
 }

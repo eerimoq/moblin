@@ -278,6 +278,68 @@ struct LapTimesWidgetView: View {
     }
 }
 
+private struct WidgetTextView: View {
+    let model: Model
+    @ObservedObject var widget: SettingsWidget
+    @ObservedObject var text: SettingsWidgetText
+
+    var body: some View {
+        if let textEffect = model.getTextEffect(id: widget.id) {
+            let textFormat = loadTextFormat(format: text.formatString)
+            ForEach(text.timers) { timer in
+                let index = text.timers.firstIndex(where: { $0 === timer }) ?? 0
+                TimerWidgetView(
+                    name: String(localized: "Timer \(index + 1)"),
+                    timer: timer,
+                    index: index,
+                    textEffect: textEffect,
+                    indented: true
+                )
+            }
+            ForEach(text.stopwatches) { stopwatch in
+                let index = text.stopwatches.firstIndex(where: { $0 === stopwatch }) ?? 0
+                StopwatchWidgetView(
+                    name: String(localized: "Stopwatch \(index + 1)"),
+                    stopwatch: stopwatch,
+                    index: index,
+                    textEffect: textEffect,
+                    indented: true
+                )
+            }
+            ForEach(text.checkboxes) { checkbox in
+                let index = text.checkboxes.firstIndex(where: { $0 === checkbox }) ?? 0
+                CheckboxWidgetView(
+                    name: textFormat.getCheckboxText(index: index),
+                    checkbox: checkbox,
+                    index: index,
+                    textEffect: textEffect,
+                    indented: true
+                )
+            }
+            ForEach(text.ratings) { rating in
+                let index = text.ratings.firstIndex(where: { $0 === rating }) ?? 0
+                RatingWidgetView(
+                    name: String(localized: "Rating \(index + 1)"),
+                    rating: rating,
+                    index: index,
+                    textEffect: textEffect,
+                    indented: true
+                )
+            }
+            ForEach(text.lapTimes) { lapTimes in
+                let index = text.lapTimes.firstIndex(where: { $0 === lapTimes }) ?? 0
+                LapTimesWidgetView(
+                    name: String(localized: "Lap times \(index + 1)"),
+                    lapTimes: lapTimes,
+                    index: index,
+                    textEffect: textEffect,
+                    indented: true
+                )
+            }
+        }
+    }
+}
+
 private struct WidgetView: View {
     let model: Model
     @ObservedObject var database: Database
@@ -306,59 +368,7 @@ private struct WidgetView: View {
             }
         }
         if widget.type == .text {
-            if let textEffect = model.getTextEffect(id: widget.id) {
-                let textFormat = loadTextFormat(format: widget.text.formatString)
-                ForEach(widget.text.timers) { timer in
-                    let index = widget.text.timers.firstIndex(where: { $0 === timer }) ?? 0
-                    TimerWidgetView(
-                        name: String(localized: "Timer \(index + 1)"),
-                        timer: timer,
-                        index: index,
-                        textEffect: textEffect,
-                        indented: true
-                    )
-                }
-                ForEach(widget.text.stopwatches) { stopwatch in
-                    let index = widget.text.stopwatches.firstIndex(where: { $0 === stopwatch }) ?? 0
-                    StopwatchWidgetView(
-                        name: String(localized: "Stopwatch \(index + 1)"),
-                        stopwatch: stopwatch,
-                        index: index,
-                        textEffect: textEffect,
-                        indented: true
-                    )
-                }
-                ForEach(widget.text.checkboxes) { checkbox in
-                    let index = widget.text.checkboxes.firstIndex(where: { $0 === checkbox }) ?? 0
-                    CheckboxWidgetView(
-                        name: textFormat.getCheckboxText(index: index),
-                        checkbox: checkbox,
-                        index: index,
-                        textEffect: textEffect,
-                        indented: true
-                    )
-                }
-                ForEach(widget.text.ratings) { rating in
-                    let index = widget.text.ratings.firstIndex(where: { $0 === rating }) ?? 0
-                    RatingWidgetView(
-                        name: String(localized: "Rating \(index + 1)"),
-                        rating: rating,
-                        index: index,
-                        textEffect: textEffect,
-                        indented: true
-                    )
-                }
-                ForEach(widget.text.lapTimes) { lapTimes in
-                    let index = widget.text.lapTimes.firstIndex(where: { $0 === lapTimes }) ?? 0
-                    LapTimesWidgetView(
-                        name: String(localized: "Lap times \(index + 1)"),
-                        lapTimes: lapTimes,
-                        index: index,
-                        textEffect: textEffect,
-                        indented: true
-                    )
-                }
-            }
+            WidgetTextView(model: model, widget: widget, text: widget.text)
         }
     }
 }

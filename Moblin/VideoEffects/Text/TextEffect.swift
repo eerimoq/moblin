@@ -647,6 +647,11 @@ final class TextEffect: VideoEffect {
         forceImageUpdate()
     }
 
+    func setStopwatches(stopwatches: [SettingsWidgetTextStopwatch]) {
+        formatter.stopwatches = stopwatches
+        forceImageUpdate()
+    }
+
     func setStopwatch(index: Int, stopwatch: SettingsWidgetTextStopwatch) {
         guard index < formatter.stopwatches.count else {
             return

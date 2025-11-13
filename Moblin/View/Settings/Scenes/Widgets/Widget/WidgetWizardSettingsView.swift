@@ -74,6 +74,9 @@ private struct SelectScenesView: View {
         for sceneToAddWidgetTo in scenesToAddWidgetTo where sceneToAddWidgetTo.enabled {
             model.appendWidgetToScene(scene: sceneToAddWidgetTo.scene, widget: widget)
         }
+        if widget.type == .text {
+            model.textWidgetTextChanged(widget: widget)
+        }
     }
 
     var body: some View {

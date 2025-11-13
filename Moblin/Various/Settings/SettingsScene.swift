@@ -584,15 +584,15 @@ class SettingsWidgetText: Codable, ObservableObject {
     @Published var horizontalAlignment: SettingsHorizontalAlignment = .leading
     @Published var verticalAlignment: SettingsVerticalAlignment = .top
     @Published var delay: Double = 0.0
-    var timers: [SettingsWidgetTextTimer] = []
-    var stopwatches: [SettingsWidgetTextStopwatch] = []
+    @Published var timers: [SettingsWidgetTextTimer] = []
+    @Published var stopwatches: [SettingsWidgetTextStopwatch] = []
     var needsWeather: Bool = false
     var needsGeography: Bool = false
     var needsSubtitles: Bool = false
     var subtitles: [SettingsWidgetTextSubtitles] = []
-    var checkboxes: [SettingsWidgetTextCheckbox] = []
-    var ratings: [SettingsWidgetTextRating] = []
-    var lapTimes: [SettingsWidgetTextLapTimes] = []
+    @Published var checkboxes: [SettingsWidgetTextCheckbox] = []
+    @Published var ratings: [SettingsWidgetTextRating] = []
+    @Published var lapTimes: [SettingsWidgetTextLapTimes] = []
     var needsGForce: Bool = false
 
     enum CodingKeys: CodingKey {

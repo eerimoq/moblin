@@ -524,146 +524,6 @@ private struct TextSelectionView: View {
     @State var suggestion: Int = 0
     @FocusState var editingText: Bool
 
-    private func updateTimers(_ textEffect: TextEffect?, _ parts: [TextFormatPart]) {
-        let numberOfTimers = parts.filter { $0 == .timer }.count
-        for index in 0 ..< numberOfTimers where index >= widget.text.timers.count {
-            widget.text.timers.append(.init())
-        }
-        while widget.text.timers.count > numberOfTimers {
-            widget.text.timers.removeLast()
-        }
-        textEffect?.setTimersEndTime(endTimes: widget.text.timers.map {
-            .now.advanced(by: .seconds(utcTimeDeltaFromNow(to: $0.endTime)))
-        })
-    }
-
-    private func updateStopwatches(_: TextEffect?, _ parts: [TextFormatPart]) {
-        let numberOfStopwatches = parts.filter { $0 == .stopwatch }.count
-        for index in 0 ..< numberOfStopwatches where index >= widget.text.stopwatches.count {
-            widget.text.stopwatches.append(.init())
-        }
-        while widget.text.stopwatches.count > numberOfStopwatches {
-            widget.text.stopwatches.removeLast()
-        }
-        // textEffect?.setTimersEndTime(endTimes: widget.text.timers.map {
-        //     .now.advanced(by: .seconds(utcTimeDeltaFromNow(to: $0.endTime)))
-        // })
-    }
-
-    private func updateCheckboxes(_ textEffect: TextEffect?, _ parts: [TextFormatPart]) {
-        let numberOfCheckboxes = parts.filter { $0 == .checkbox }.count
-        for index in 0 ..< numberOfCheckboxes where index >= widget.text.checkboxes.count {
-            widget.text.checkboxes.append(.init())
-        }
-        while widget.text.checkboxes.count > numberOfCheckboxes {
-            widget.text.checkboxes.removeLast()
-        }
-        textEffect?.setCheckboxes(checkboxes: widget.text.checkboxes.map { $0.checked })
-    }
-
-    private func updateRatings(_ textEffect: TextEffect?, _ parts: [TextFormatPart]) {
-        let numberOfRatings = parts.filter { $0 == .rating }.count
-        for index in 0 ..< numberOfRatings where index >= widget.text.ratings.count {
-            widget.text.ratings.append(.init())
-        }
-        while widget.text.ratings.count > numberOfRatings {
-            widget.text.ratings.removeLast()
-        }
-        textEffect?.setRatings(ratings: widget.text.ratings.map { $0.rating })
-    }
-
-    private func updateLapTimes(_ textEffect: TextEffect?, _ parts: [TextFormatPart]) {
-        let numberOfLapTimes = parts.filter { $0 == .lapTimes }.count
-        for index in 0 ..< numberOfLapTimes where index >= widget.text.lapTimes.count {
-            widget.text.lapTimes.append(.init())
-        }
-        while widget.text.lapTimes.count > numberOfLapTimes {
-            widget.text.lapTimes.removeLast()
-        }
-        textEffect?.setLapTimes(lapTimes: widget.text.lapTimes.map { $0.lapTimes })
-    }
-
-    private func updateSubtitles(_: TextEffect?, _ parts: [TextFormatPart]) {
-        widget.text.subtitles.removeAll()
-        for part in parts {
-            switch part {
-            case let .subtitles(identifier):
-                let item = SettingsWidgetTextSubtitles()
-                item.identifier = identifier
-                widget.text.subtitles.append(item)
-            default:
-                break
-            }
-        }
-        widget.text.needsSubtitles = !widget.text.subtitles.isEmpty
-        model.reloadSpeechToText()
-    }
-
-    private func updateNeedsWeather(_ parts: [TextFormatPart]) {
-        widget.text.needsWeather = !parts.filter {
-            switch $0 {
-            case .conditions:
-                return true
-            case .temperature:
-                return true
-            default:
-                return false
-            }
-        }.isEmpty
-        model.startWeatherManager()
-    }
-
-    private func updateNeedsGeography(_ parts: [TextFormatPart]) {
-        widget.text.needsGeography = !parts.filter {
-            switch $0 {
-            case .country:
-                return true
-            case .countryFlag:
-                return true
-            case .state:
-                return true
-            case .city:
-                return true
-            default:
-                return false
-            }
-        }.isEmpty
-        model.startGeographyManager()
-    }
-
-    private func updateNeedsGForce(_ parts: [TextFormatPart]) {
-        widget.text.needsGForce = !parts.filter {
-            switch $0 {
-            case .gForce:
-                return true
-            case .gForceRecentMax:
-                return true
-            case .gForceMax:
-                return true
-            default:
-                return false
-            }
-        }.isEmpty
-        model.startGForceManager()
-    }
-
-    private func update() {
-        widget.text.formatString = value
-        let textEffect = model.getTextEffect(id: widget.id)
-        textEffect?.setFormat(format: value)
-        let parts = loadTextFormat(format: value)
-        updateTimers(textEffect, parts)
-        updateStopwatches(textEffect, parts)
-        updateCheckboxes(textEffect, parts)
-        updateRatings(textEffect, parts)
-        updateLapTimes(textEffect, parts)
-        updateSubtitles(textEffect, parts)
-        updateNeedsWeather(parts)
-        updateNeedsGeography(parts)
-        updateNeedsGForce(parts)
-        model.sceneUpdated()
-    }
-
     var body: some View {
         Form {
             TextWidgetTextView(value: $value)
@@ -689,7 +549,8 @@ private struct TextSelectionView: View {
             }
         }
         .onChange(of: value) { _ in
-            update()
+            widget.text.formatString = value
+            model.textWidgetTextChanged(widget: widget)
         }
         .navigationTitle("Text")
     }
