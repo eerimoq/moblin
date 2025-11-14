@@ -1,22 +1,25 @@
 import AVFoundation
 import SwiftUI
 
-private struct ObsStartStopStreamingView: View {
-    let model: Model
-    @ObservedObject var obsQuickButton: QuickButtonObs
-    @State private var isPresentingStartStreamingConfirm = false
-    @State private var isPresentingStopStreamingConfirm = false
+private struct ObsStartStopButtonView: View {
+    @Binding var state: ObsOutputState
+    let startAction: () -> Void
+    let stopAction: () -> Void
+    let startText: LocalizedStringKey
+    let stopText: LocalizedStringKey
+    @State private var isPresentingStartConfirm = false
+    @State private var isPresentingStopConfirm = false
 
     var body: some View {
-        switch obsQuickButton.streamingState {
+        switch state {
         case .stopped:
             Section {
-                TextButtonView("Start streaming") {
-                    isPresentingStartStreamingConfirm = true
+                TextButtonView(startText) {
+                    isPresentingStartConfirm = true
                 }
-                .confirmationDialog("", isPresented: $isPresentingStartStreamingConfirm) {
-                    Button("Start streaming") {
-                        model.obsStartStream()
+                .confirmationDialog("", isPresented: $isPresentingStartConfirm) {
+                    Button(startText) {
+                        startAction()
                     }
                 }
             }
@@ -30,12 +33,12 @@ private struct ObsStartStopStreamingView: View {
             .listRowBackground(Color.gray)
         case .started:
             Section {
-                TextButtonView("Stop streaming") {
-                    isPresentingStopStreamingConfirm = true
+                TextButtonView(stopText) {
+                    isPresentingStopConfirm = true
                 }
-                .confirmationDialog("", isPresented: $isPresentingStopStreamingConfirm) {
-                    Button("Stop streaming") {
-                        model.obsStopStream()
+                .confirmationDialog("", isPresented: $isPresentingStopConfirm) {
+                    Button(stopText) {
+                        stopAction()
                     }
                 }
             }
@@ -53,55 +56,33 @@ private struct ObsStartStopStreamingView: View {
     }
 }
 
+private struct ObsStartStopStreamingView: View {
+    let model: Model
+    @ObservedObject var obsQuickButton: QuickButtonObs
+
+    var body: some View {
+        ObsStartStopButtonView(state: $obsQuickButton.streamingState,
+                               startAction: {
+                                   model.obsStartStream()
+                               }, stopAction: {
+                                   model.obsStopStream()
+                               }, startText: "Start streaming",
+                               stopText: "Stop streaming")
+    }
+}
+
 private struct ObsStartStopRecordingView: View {
     let model: Model
     @ObservedObject var obsQuickButton: QuickButtonObs
-    @State private var isPresentingStartRecordingConfirm: Bool = false
-    @State private var isPresentingStopRecordingConfirm: Bool = false
 
     var body: some View {
-        switch obsQuickButton.recordingState {
-        case .stopped:
-            Section {
-                TextButtonView("Start recording") {
-                    isPresentingStartRecordingConfirm = true
-                }
-                .confirmationDialog("", isPresented: $isPresentingStartRecordingConfirm) {
-                    Button("Start recording") {
-                        model.obsStartRecording()
-                    }
-                }
-            }
-        case .starting:
-            Section {
-                HCenter {
-                    Text("Starting...")
-                }
-            }
-            .foregroundStyle(.white)
-            .listRowBackground(Color.gray)
-        case .started:
-            Section {
-                TextButtonView("Stop recording") {
-                    isPresentingStopRecordingConfirm = true
-                }
-                .confirmationDialog("", isPresented: $isPresentingStopRecordingConfirm) {
-                    Button("Stop recording") {
-                        model.obsStopRecording()
-                    }
-                }
-            }
-            .foregroundStyle(.white)
-            .listRowBackground(Color.blue)
-        case .stopping:
-            Section {
-                HCenter {
-                    Text("Stopping...")
-                }
-            }
-            .foregroundStyle(.white)
-            .listRowBackground(Color.gray)
-        }
+        ObsStartStopButtonView(state: $obsQuickButton.recordingState,
+                               startAction: {
+                                   model.obsStartRecording()
+                               }, stopAction: {
+                                   model.obsStopRecording()
+                               }, startText: "Start recording",
+                               stopText: "Stop recording")
     }
 }
 
