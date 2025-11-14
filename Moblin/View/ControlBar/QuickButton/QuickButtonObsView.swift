@@ -11,16 +11,12 @@ private struct ObsStartStopStreamingView: View {
         switch obsQuickButton.streamingState {
         case .stopped:
             Section {
-                HCenter {
-                    Button {
-                        isPresentingStartStreamingConfirm = true
-                    } label: {
-                        Text("Start streaming")
-                    }
-                    .confirmationDialog("", isPresented: $isPresentingStartStreamingConfirm) {
-                        Button("Start streaming") {
-                            model.obsStartStream()
-                        }
+                TextButtonView("Start streaming") {
+                    isPresentingStartStreamingConfirm = true
+                }
+                .confirmationDialog("", isPresented: $isPresentingStartStreamingConfirm) {
+                    Button("Start streaming") {
+                        model.obsStartStream()
                     }
                 }
             }
@@ -34,16 +30,12 @@ private struct ObsStartStopStreamingView: View {
             .listRowBackground(Color.gray)
         case .started:
             Section {
-                HCenter {
-                    Button {
-                        isPresentingStopStreamingConfirm = true
-                    } label: {
-                        Text("Stop streaming")
-                    }
-                    .confirmationDialog("", isPresented: $isPresentingStopStreamingConfirm) {
-                        Button("Stop streaming") {
-                            model.obsStopStream()
-                        }
+                TextButtonView("Stop streaming") {
+                    isPresentingStopStreamingConfirm = true
+                }
+                .confirmationDialog("", isPresented: $isPresentingStopStreamingConfirm) {
+                    Button("Stop streaming") {
+                        model.obsStopStream()
                     }
                 }
             }
@@ -71,16 +63,12 @@ private struct ObsStartStopRecordingView: View {
         switch obsQuickButton.recordingState {
         case .stopped:
             Section {
-                HCenter {
-                    Button {
-                        isPresentingStartRecordingConfirm = true
-                    } label: {
-                        Text("Start recording")
-                    }
-                    .confirmationDialog("", isPresented: $isPresentingStartRecordingConfirm) {
-                        Button("Start recording") {
-                            model.obsStartRecording()
-                        }
+                TextButtonView("Start recording") {
+                    isPresentingStartRecordingConfirm = true
+                }
+                .confirmationDialog("", isPresented: $isPresentingStartRecordingConfirm) {
+                    Button("Start recording") {
+                        model.obsStartRecording()
                     }
                 }
             }
@@ -94,16 +82,12 @@ private struct ObsStartStopRecordingView: View {
             .listRowBackground(Color.gray)
         case .started:
             Section {
-                HCenter {
-                    Button {
-                        isPresentingStopRecordingConfirm = true
-                    } label: {
-                        Text("Stop recording")
-                    }
-                    .confirmationDialog("", isPresented: $isPresentingStopRecordingConfirm) {
-                        Button("Stop recording") {
-                            model.obsStopRecording()
-                        }
+                TextButtonView("Stop recording") {
+                    isPresentingStopRecordingConfirm = true
+                }
+                .confirmationDialog("", isPresented: $isPresentingStopRecordingConfirm) {
+                    Button("Stop recording") {
+                        model.obsStopRecording()
                     }
                 }
             }
@@ -216,12 +200,8 @@ struct QuickButtonObsView: View {
                 if !stream.obsSourceName.isEmpty {
                     if !obsQuickButton.fixOngoing {
                         Section {
-                            HCenter {
-                                Button {
-                                    model.obsFixStream()
-                                } label: {
-                                    Text("Fix \(stream.obsSourceName) source")
-                                }
+                            TextButtonView("Fix \(stream.obsSourceName) source") {
+                                model.obsFixStream()
                             }
                         } footer: {
                             Text("""

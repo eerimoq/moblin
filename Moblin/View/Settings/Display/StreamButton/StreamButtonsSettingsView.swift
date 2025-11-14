@@ -13,13 +13,9 @@ struct StreamButtonsSettingsView: View {
                         }
                         database.streamButtonColor = color
                     }
-                Button {
+                TextButtonView("Reset") {
                     database.streamButtonColor = defaultStreamButtonColor
                     database.streamButtonColorColor = database.streamButtonColor.color()
-                } label: {
-                    HCenter {
-                        Text("Reset")
-                    }
                 }
             } header: {
                 Text("Color")

@@ -158,12 +158,8 @@ private struct UrlSettingsView: View {
                     .bold()
             }
             Section {
-                HCenter {
-                    Button {
-                        presentingHelp = true
-                    } label: {
-                        Text("Help")
-                    }
+                TextButtonView("Help") {
+                    presentingHelp = true
                 }
                 .sheet(isPresented: $presentingHelp) {
                     NavigationView {

@@ -40,12 +40,8 @@ private struct CustomSoundView: View {
             }
             Section {
                 if let audioPlayer {
-                    Button {
+                    TextButtonView("Play") {
                         audioPlayer.play()
-                    } label: {
-                        HCenter {
-                            Text("Play")
-                        }
                     }
                 }
             }
@@ -96,14 +92,10 @@ private struct SoundGalleryView: View {
                         soundId = alert.soundId
                     }
                 }
-                Button {
+                TextButtonView("Add") {
                     let sound = SettingsAlertsMediaGalleryItem(name: "My sound")
                     model.database.alertsMediaGallery.customSounds.append(sound)
                     model.objectWillChange.send()
-                } label: {
-                    HCenter {
-                        Text("Add")
-                    }
                 }
             } footer: {
                 SwipeLeftToDeleteHelpView(kind: String(localized: "a sound"))

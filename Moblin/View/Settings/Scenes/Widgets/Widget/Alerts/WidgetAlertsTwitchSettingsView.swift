@@ -31,15 +31,11 @@ private struct TwitchFollowsView: View {
             )
             AlertTextToSpeechView(alert: alert, ttsDelay: alert.textToSpeechDelay)
             Section {
-                Button {
+                TextButtonView("Test") {
                     let event = TwitchEventSubNotificationChannelFollowEvent(
                         user_name: alertTestNames.randomElement()!
                     )
                     model.testAlert(alert: .twitchFollow(event))
-                } label: {
-                    HCenter {
-                        Text("Test")
-                    }
                 }
             }
         }
@@ -78,17 +74,13 @@ private struct TwitchSubscriptionsView: View {
             )
             AlertTextToSpeechView(alert: alert, ttsDelay: alert.textToSpeechDelay)
             Section {
-                Button {
+                TextButtonView("Test") {
                     let event = TwitchEventSubNotificationChannelSubscribeEvent(
                         user_name: alertTestNames.randomElement()!,
                         tier: "2000",
                         is_gift: false
                     )
                     model.testAlert(alert: .twitchSubscribe(event))
-                } label: {
-                    HCenter {
-                        Text("Test")
-                    }
                 }
             }
         }
@@ -127,16 +119,12 @@ private struct TwitchRaidsView: View {
             )
             AlertTextToSpeechView(alert: alert, ttsDelay: alert.textToSpeechDelay)
             Section {
-                Button {
+                TextButtonView("Test") {
                     let event = TwitchEventSubChannelRaidEvent(
                         from_broadcaster_user_name: alertTestNames.randomElement()!,
                         viewers: .random(in: 1 ..< 1000)
                     )
                     model.testAlert(alert: .twitchRaid(event))
-                } label: {
-                    HCenter {
-                        Text("Test")
-                    }
                 }
             }
         }
@@ -221,17 +209,13 @@ private struct TwitchCheerView: View {
             )
             AlertTextToSpeechView(alert: alert, ttsDelay: alert.textToSpeechDelay)
             Section {
-                Button {
+                TextButtonView("Test") {
                     let event = TwitchEventSubChannelCheerEvent(
                         user_name: alertTestNames.randomElement()!,
                         message: "A test message!",
                         bits: cheerBit.bits
                     )
                     model.testAlert(alert: .twitchCheer(event))
-                } label: {
-                    HCenter {
-                        Text("Test")
-                    }
                 }
             }
         }

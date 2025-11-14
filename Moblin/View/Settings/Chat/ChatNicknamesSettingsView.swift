@@ -22,12 +22,8 @@ private struct NicknameView: View {
                                            })
                 }
                 Section {
-                    Button {
+                    TextButtonView("Test") {
                         model.previewTextToSpeech(username: nickname.nickname, message: "This is a test message")
-                    } label: {
-                        HCenter {
-                            Text("Test")
-                        }
                     }
                     .disabled(nickname.nickname.isEmpty)
                 }

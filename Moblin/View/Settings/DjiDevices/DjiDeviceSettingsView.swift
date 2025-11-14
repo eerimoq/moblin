@@ -290,23 +290,15 @@ private struct DjiDeviceStartStopButtonSettingsView: View {
     var body: some View {
         if !device.isStarted {
             Section {
-                Button {
+                TextButtonView("Start live stream") {
                     model.startDjiDeviceLiveStream(device: device)
-                } label: {
-                    HCenter {
-                        Text("Start live stream")
-                    }
                 }
             }
             .disabled(!device.canStartLive())
         } else {
             Section {
-                HCenter {
-                    Button {
-                        model.stopDjiDeviceLiveStream(device: device)
-                    } label: {
-                        Text("Stop live stream")
-                    }
+                TextButtonView("Stop live stream") {
+                    model.stopDjiDeviceLiveStream(device: device)
                 }
             }
             .foregroundStyle(.white)

@@ -606,12 +606,8 @@ private struct PredefinedMessagesView: View {
                         }
                     }
                     Section {
-                        Button {
+                        TextButtonView("Create") {
                             chat.predefinedMessages.append(SettingsChatPredefinedMessage())
-                        } label: {
-                            HCenter {
-                                Text("Create")
-                            }
                         }
                     }
                 } footer: {

@@ -59,13 +59,9 @@ private struct PasswordView: View {
                 }
             }
             Section {
-                Button {
+                TextButtonView("Generate") {
                     value = randomGoodPassword()
                     submit()
-                } label: {
-                    HCenter {
-                        Text("Generate")
-                    }
                 }
             }
         }
@@ -358,17 +354,13 @@ struct RemoteControlStreamersView: View {
                     remoteControlSettings.streamers.move(fromOffsets: froms, toOffset: to)
                 }
             }
-            Button {
+            TextButtonView("Create") {
                 let streamer = SettingsRemoteControlAssistant()
                 streamer.name = makeUniqueName(name: SettingsRemoteControlAssistant.baseName,
                                                existingNames: remoteControlSettings.streamers)
                 streamer.enabled = true
                 streamer.port = 2345
                 remoteControlSettings.streamers.append(streamer)
-            } label: {
-                HCenter {
-                    Text("Create")
-                }
             }
         } footer: {
             SwipeLeftToDeleteHelpView(kind: String(localized: "a streamer"))

@@ -321,7 +321,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var panelHidden = false
     @Published var showStealthMode = false
     @Published var lockScreen = false
-    @Published var findFace = false
     @Published var isLive = false
     @Published var isRecording = false
     @Published var browsers: [Browser] = []

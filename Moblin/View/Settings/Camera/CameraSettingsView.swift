@@ -61,13 +61,9 @@ private struct CameraSettingsCubeLutsView: View {
                     model.removeLutCube(offsets: offsets)
                 }
             }
-            Button {
+            TextButtonView("Add") {
                 showPicker = true
                 model.onDocumentPickerUrl = onUrl
-            } label: {
-                HCenter {
-                    Text("Add")
-                }
             }
             .sheet(isPresented: $showPicker) {
                 AlertPickerView(type: .item)

@@ -19,12 +19,8 @@ struct AboutSettingsView: View {
                 }
             }
             Section {
-                Button {
+                TextButtonView("Version history") {
                     presentingVersionHistory = true
-                } label: {
-                    HCenter {
-                        Text("Version history")
-                    }
                 }
                 .sheet(isPresented: $presentingVersionHistory) {
                     ZStack {

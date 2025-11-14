@@ -43,17 +43,13 @@ private struct ExportImportView: View {
     var body: some View {
         if widget.canExpand() {
             Section {
-                HCenter {
-                    Button("Export to clipboard") {
-                        exportToClipboard()
-                    }
+                TextButtonView("Export to clipboard") {
+                    exportToClipboard()
                 }
             }
             Section {
-                HCenter {
-                    Button("Import from clipboard") {
-                        importFromClipboard()
-                    }
+                TextButtonView("Import from clipboard") {
+                    importFromClipboard()
                 }
             }
         }

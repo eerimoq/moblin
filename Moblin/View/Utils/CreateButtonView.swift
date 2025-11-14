@@ -4,12 +4,8 @@ struct CreateButtonView: View {
     let action: () -> Void
 
     var body: some View {
-        Button {
+        TextButtonView("Create") {
             action()
-        } label: {
-            HCenter {
-                Text("Create")
-            }
         }
     }
 }

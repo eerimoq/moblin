@@ -35,12 +35,8 @@ private struct SpeechToTextStringView: View {
                 AlertMediaView(alert: alert, imageId: alert.imageId, soundId: alert.soundId)
                 AlertPositionView(alert: alert, positionType: alert.positionType)
                 Section {
-                    Button {
+                    TextButtonView("Test") {
                         model.testAlert(alert: .speechToTextString(string.id))
-                    } label: {
-                        HCenter {
-                            Text("Test")
-                        }
                     }
                 }
             }

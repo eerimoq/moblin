@@ -930,7 +930,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
     @Published var obsWebSocketEnabled: Bool = false
     var obsWebSocketUrl: String = ""
     var obsWebSocketPassword: String = ""
-    var obsSourceName: String = ""
+    @Published var obsSourceName: String = ""
     var obsMainScene: String = ""
     var obsBrbScene: String = ""
     var obsBrbSceneVideoSourceBroken: Bool = false

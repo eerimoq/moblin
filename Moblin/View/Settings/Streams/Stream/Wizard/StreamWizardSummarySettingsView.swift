@@ -195,16 +195,12 @@ struct StreamWizardSummarySettingsView: View {
                     .disableAutocorrection(true)
             }
             Section {
-                HCenter {
-                    Button {
-                        model.createStreamFromWizard()
-                        createStreamWizard.isPresenting = false
-                        createStreamWizard.isPresentingSetup = false
-                    } label: {
-                        Text("Create")
-                    }
-                    .disabled(createStreamWizard.name.isEmpty)
+                TextButtonView("Create") {
+                    model.createStreamFromWizard()
+                    createStreamWizard.isPresenting = false
+                    createStreamWizard.isPresentingSetup = false
                 }
+                .disabled(createStreamWizard.name.isEmpty)
             }
         }
         .navigationTitle("Summary and stream name")

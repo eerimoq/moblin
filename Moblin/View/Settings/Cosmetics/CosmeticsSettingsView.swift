@@ -5,13 +5,9 @@ private struct CosmeticsSettingsRestoreView: View {
 
     var body: some View {
         Section {
-            Button {
+            TextButtonView("Restore purchases") {
                 Task {
                     await model.updateProductFromAppStore()
-                }
-            } label: {
-                HCenter {
-                    Text("Restore purchases")
                 }
             }
         }

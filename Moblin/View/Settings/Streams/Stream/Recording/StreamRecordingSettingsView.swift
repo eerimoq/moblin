@@ -59,14 +59,10 @@ private struct RecordingPathView: View {
                     Text("Folder")
                 }
                 Section {
-                    Button {
+                    TextButtonView("Reset") {
                         recording.recordingPath = nil
-                    } label: {
-                        HCenter {
-                            Text("Reset")
-                                .tint(.red)
-                        }
                     }
+                    .tint(.red)
                 }
             }
             .navigationTitle("Recording path")

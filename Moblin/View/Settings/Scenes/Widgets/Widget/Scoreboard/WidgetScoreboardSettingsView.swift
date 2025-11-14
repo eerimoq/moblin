@@ -41,11 +41,9 @@ private struct ColorsView: View {
                         }
                 }
                 Section {
-                    HCenter {
-                        Button("Reset") {
-                            scoreboard.resetColors()
-                            updateEffect()
-                        }
+                    TextButtonView("Reset") {
+                        scoreboard.resetColors()
+                        updateEffect()
                     }
                 }
             }

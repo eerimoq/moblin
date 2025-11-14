@@ -244,13 +244,9 @@ private struct ControlBarRemoteControlAssistantStatusView: View {
                     Text("No preview received yet.")
                 }
             } else {
-                Button {
+                TextButtonView("Show") {
                     model.remoteControlAssistantStartPreview(user: .panel)
                     remoteControl.assistantShowPreview = true
-                } label: {
-                    HCenter {
-                        Text("Show")
-                    }
                 }
             }
         } header: {
@@ -585,36 +581,14 @@ private struct ControlBarRemoteControlAssistantControlView: View {
             Text("Control")
         }
         Section {
-            Button {
+            TextButtonView("Reload browser widgets") {
                 model.remoteControlAssistantReloadBrowserWidgets()
-            } label: {
-                HStack {
-                    Text("")
-                    Spacer()
-                    Text("Reload browser widgets")
-                    Spacer()
-                }
             }
-            Section {
-                Button {
-                    model.updateRemoteControlAssistantStatus()
-                } label: {
-                    HStack {
-                        Text("")
-                        Spacer()
-                        Text("Refresh status")
-                        Spacer()
-                    }
-                }
+            TextButtonView("Refresh status") {
+                model.updateRemoteControlAssistantStatus()
             }
-        }
-        Section {
-            Button {
+            TextButtonView("Log") {
                 presentingLog = true
-            } label: {
-                HCenter {
-                    Text("Log")
-                }
             }
             .fullScreenCover(isPresented: $presentingLog) {
                 DebugLogSettingsView(model: model,

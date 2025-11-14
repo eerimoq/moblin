@@ -14,20 +14,12 @@ private struct AuthenticationView: View {
     var body: some View {
         Section {
             if !stream.kickLoggedIn {
-                Button {
+                TextButtonView("Login") {
                     showingWebView = true
-                } label: {
-                    HCenter {
-                        Text("Login")
-                    }
                 }
             } else {
-                Button {
+                TextButtonView("Logout") {
                     logout()
-                } label: {
-                    HCenter {
-                        Text("Logout")
-                    }
                 }
             }
         }

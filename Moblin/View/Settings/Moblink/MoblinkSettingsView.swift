@@ -94,13 +94,9 @@ private struct PasswordView: View {
                 }
             }
             Section {
-                Button {
+                TextButtonView("Reset to default") {
                     value = "1234"
                     submit()
-                } label: {
-                    HCenter {
-                        Text("Reset to default")
-                    }
                 }
                 .disabled(model.isLive)
             }
@@ -201,14 +197,10 @@ private struct RelayView: View {
                     TextItemView(name: String(localized: "Streamer URL"), value: relay.url)
                 }
             }
-            Button {
+            TextButtonView("Reset id") {
                 moblinkRelayResetId()
                 model.reloadMoblinkRelay()
                 relayId = getMoblinkRelayId()
-            } label: {
-                HCenter {
-                    Text("Reset id")
-                }
             }
         } header: {
             Text("Relay")

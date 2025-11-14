@@ -57,12 +57,8 @@ struct LocationSettingsView: View {
             }
             Section {
                 Toggle("Reset when going live", isOn: $location.resetWhenGoingLive)
-                Button {
+                TextButtonView("Reset") {
                     model.resetLocationData()
-                } label: {
-                    HCenter {
-                        Text("Reset")
-                    }
                 }
             } header: {
                 Text("Location data")

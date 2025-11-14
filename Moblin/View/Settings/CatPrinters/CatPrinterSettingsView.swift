@@ -115,12 +115,8 @@ struct CatPrinterSettingsView: View {
                     }
                 }
                 Section {
-                    Button {
+                    TextButtonView("Test") {
                         model.catPrinterPrintTestImage(device: device)
-                    } label: {
-                        HCenter {
-                            Text("Test")
-                        }
                     }
                 }
             }

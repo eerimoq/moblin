@@ -193,22 +193,14 @@ struct StreamTwitchSettingsView: View {
         Form {
             Section {
                 if !loggedIn {
-                    Button {
+                    TextButtonView("Login") {
                         model.showTwitchAuth = true
                         model.twitchLogin(stream: stream, onComplete: onLoggedIn)
-                    } label: {
-                        HCenter {
-                            Text("Login")
-                        }
                     }
                 } else {
-                    Button {
+                    TextButtonView("Logout") {
                         model.twitchLogout(stream: stream)
                         loggedIn = false
-                    } label: {
-                        HCenter {
-                            Text("Logout")
-                        }
                     }
                 }
             }

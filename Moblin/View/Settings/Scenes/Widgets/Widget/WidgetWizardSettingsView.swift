@@ -87,12 +87,8 @@ private struct SelectScenesView: View {
                 }
             }
             Section {
-                Button {
+                TextButtonView("Create") {
                     create()
-                } label: {
-                    HCenter {
-                        Text("Create")
-                    }
                 }
             }
         }

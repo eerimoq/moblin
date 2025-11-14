@@ -36,13 +36,9 @@ private struct QuickButtonStealthModeView: View {
                 }
             }
             if stealthMode.image != nil {
-                Button {
+                TextButtonView("Delete image") {
                     stealthMode.image = nil
                     model.deleteStealthModeImage()
-                } label: {
-                    HCenter {
-                        Text("Delete image")
-                    }
                 }
             }
         } footer: {
@@ -75,13 +71,9 @@ struct QuickButtonsButtonSettingsView: View {
                     .onChange(of: button.color) { _ in
                         onColorChange(color: button.color)
                     }
-                Button {
+                TextButtonView("Reset") {
                     button.color = defaultQuickButtonColor.color()
                     onColorChange(color: button.color)
-                } label: {
-                    HCenter {
-                        Text("Reset")
-                    }
                 }
             } header: {
                 Text("Color")

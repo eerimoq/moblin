@@ -31,12 +31,8 @@ struct DebugSettingsView: View {
     var body: some View {
         Form {
             Section {
-                Button {
+                TextButtonView("Log") {
                     presentingLog = true
-                } label: {
-                    HCenter {
-                        Text("Log")
-                    }
                 }
                 .fullScreenCover(isPresented: $presentingLog) {
                     DebugLogSettingsView(model: model,

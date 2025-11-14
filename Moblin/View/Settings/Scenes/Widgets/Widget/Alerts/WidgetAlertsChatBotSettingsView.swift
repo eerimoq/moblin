@@ -51,12 +51,8 @@ private struct ChatBotCommandView: View {
                 )
                 AlertTextToSpeechView(alert: alert, ttsDelay: alert.textToSpeechDelay)
                 Section {
-                    Button {
+                    TextButtonView("Test") {
                         model.testAlert(alert: .chatBotCommand(name, alertTestNames.randomElement()!))
-                    } label: {
-                        HCenter {
-                            Text("Test")
-                        }
                     }
                 }
             }

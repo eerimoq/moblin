@@ -561,9 +561,6 @@ struct MainView: View {
                 if model.lockScreen {
                     LockScreenView(model: model)
                 }
-                if model.findFace {
-                    FindFaceView()
-                }
                 SnapshotCountdownView(snapshot: model.snapshot)
                 InstantReplayCountdownView(replay: model.replay)
             }

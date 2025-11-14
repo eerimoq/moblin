@@ -31,16 +31,12 @@ private struct KickSubscriptionsView: View {
             )
             AlertTextToSpeechView(alert: alert, ttsDelay: alert.textToSpeechDelay)
             Section {
-                Button {
+                TextButtonView("Test") {
                     let event = KickPusherSubscriptionEvent(
                         username: alertTestNames.randomElement()!,
                         months: Int.random(in: 1 ... 12)
                     )
                     model.testAlert(alert: .kickSubscription(event: event))
-                } label: {
-                    HCenter {
-                        Text("Test")
-                    }
                 }
             }
         }
@@ -79,17 +75,13 @@ private struct KickGiftedSubscriptionsView: View {
             )
             AlertTextToSpeechView(alert: alert, ttsDelay: alert.textToSpeechDelay)
             Section {
-                Button {
+                TextButtonView("Test") {
                     let event = KickPusherGiftedSubscriptionsEvent(
                         gifted_usernames: ["1", "2"],
                         gifter_username: alertTestNames.randomElement()!,
                         gifter_total: Int.random(in: 1 ... 50)
                     )
                     model.testAlert(alert: .kickGiftedSubscriptions(event: event))
-                } label: {
-                    HCenter {
-                        Text("Test")
-                    }
                 }
             }
         }
@@ -128,16 +120,12 @@ private struct KickHostsView: View {
             )
             AlertTextToSpeechView(alert: alert, ttsDelay: alert.textToSpeechDelay)
             Section {
-                Button {
+                TextButtonView("Test") {
                     let event = KickPusherStreamHostEvent(
                         host_username: alertTestNames.randomElement()!,
                         number_viewers: Int.random(in: 1 ... 1000)
                     )
                     model.testAlert(alert: .kickHost(event: event))
-                } label: {
-                    HCenter {
-                        Text("Test")
-                    }
                 }
             }
         }
@@ -176,17 +164,13 @@ private struct KickRewardsView: View {
             )
             AlertTextToSpeechView(alert: alert, ttsDelay: alert.textToSpeechDelay)
             Section {
-                Button {
+                TextButtonView("Test") {
                     let event = KickPusherRewardRedeemedEvent(
                         reward_title: "Test Reward",
                         username: alertTestNames.randomElement()!,
                         user_input: ""
                     )
                     model.testAlert(alert: .kickReward(event: event))
-                } label: {
-                    HCenter {
-                        Text("Test")
-                    }
                 }
             }
         }
@@ -267,17 +251,13 @@ private struct KickGiftView: View {
             )
             AlertTextToSpeechView(alert: alert, ttsDelay: alert.textToSpeechDelay)
             Section {
-                Button {
+                TextButtonView("Test") {
                     let event = KickPusherKicksGiftedEvent(
                         message: "",
                         sender: KickPusherKickSender(id: 1, username: alertTestNames.randomElement()!),
                         gift: KickPusherKickGift(name: "Kicks", amount: kickGift.amount)
                     )
                     model.testAlert(alert: .kickKicks(event: event))
-                } label: {
-                    HCenter {
-                        Text("Test")
-                    }
                 }
             }
         }

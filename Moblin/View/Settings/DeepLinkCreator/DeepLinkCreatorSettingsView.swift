@@ -148,11 +148,9 @@ struct DeepLinkCreatorSettingsView: View {
                 }
                 if deepLink != defaultDeepLink {
                     Section {
-                        HCenter {
-                            Button("Copy to clipboard") {
-                                UIPasteboard.general.string = deepLink
-                                model.makeToast(title: String(localized: "Deep link copied to clipboard"))
-                            }
+                        TextButtonView("Copy to clipboard") {
+                            UIPasteboard.general.string = deepLink
+                            model.makeToast(title: String(localized: "Deep link copied to clipboard"))
                         }
                     }
                     Section {
