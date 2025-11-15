@@ -51,6 +51,7 @@ class SettingsDebugFace: Codable, ObservableObject {
 }
 
 class SettingsDebug: Codable, ObservableObject {
+    static let builtinAudioAndVideoDelayDefault: Double = 0.07
     var logLevel: SettingsLogLevel = .error
     @Published var debugOverlay: Bool = false
     var srtOverheadBandwidth: Int32 = 25
@@ -75,8 +76,9 @@ class SettingsDebug: Codable, ObservableObject {
     var videoSourceWidgetTrackFace: Bool = false
     var replay: Bool = false
     var recordSegmentLength: Double = 5.0
-    @Published var builtinAudioAndVideoDelay: Double = 0.0
+    @Published var builtinAudioAndVideoDelay: Double = builtinAudioAndVideoDelayDefault
     @Published var newSrt: Bool = false
+    var builtinAudioAndVideoDelay70msMigrated: Bool = false
 
     enum CodingKeys: CodingKey {
         case logLevel,
@@ -110,7 +112,8 @@ class SettingsDebug: Codable, ObservableObject {
              builtinAudioAndVideoDelay,
              overrideSceneMic,
              autoLowPowerMode,
-             newSrt
+             newSrt,
+             builtinAudioAndVideoDelay70msMigrated
     }
 
     func encode(to encoder: Encoder) throws {
@@ -141,6 +144,7 @@ class SettingsDebug: Codable, ObservableObject {
         try container.encode(.recordSegmentLength, recordSegmentLength)
         try container.encode(.builtinAudioAndVideoDelay, builtinAudioAndVideoDelay)
         try container.encode(.newSrt, newSrt)
+        try container.encode(.builtinAudioAndVideoDelay70msMigrated, builtinAudioAndVideoDelay70msMigrated)
     }
 
     init() {}
@@ -173,7 +177,16 @@ class SettingsDebug: Codable, ObservableObject {
         videoSourceWidgetTrackFace = container.decode(.videoSourceWidgetTrackFace, Bool.self, false)
         replay = container.decode(.replay, Bool.self, false)
         recordSegmentLength = container.decode(.recordSegmentLength, Double.self, 5.0)
-        builtinAudioAndVideoDelay = container.decode(.builtinAudioAndVideoDelay, Double.self, 0.0)
+        builtinAudioAndVideoDelay = container.decode(.builtinAudioAndVideoDelay,
+                                                     Double.self,
+                                                     Self.builtinAudioAndVideoDelayDefault)
         newSrt = container.decode(.newSrt, Bool.self, false)
+        builtinAudioAndVideoDelay70msMigrated = container.decode(.builtinAudioAndVideoDelay70msMigrated,
+                                                                 Bool.self,
+                                                                 false)
+        if !builtinAudioAndVideoDelay70msMigrated, builtinAudioAndVideoDelay == 0 {
+            builtinAudioAndVideoDelay = Self.builtinAudioAndVideoDelayDefault
+        }
+        builtinAudioAndVideoDelay70msMigrated = true
     }
 }

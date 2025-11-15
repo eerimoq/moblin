@@ -188,14 +188,17 @@ final class AudioUnit: NSObject {
     private func appendBufferedBuiltinAudio(_ sampleBuffer: CMSampleBuffer,
                                             _ presentationTimeStamp: CMTime) -> BufferedAudio?
     {
-        guard let bufferedBuiltinAudio,
-              bufferedBuiltinAudio.latency > 0,
-              let sampleBuffer = sampleBuffer.deepCopyAudioSampleBuffer()
-        else {
+        guard let bufferedBuiltinAudio, bufferedBuiltinAudio.latency > 0 else {
             return nil
         }
+        var sampleBufferCopy: CMSampleBuffer
+        if bufferedBuiltinAudio.latency > 0.07 || bufferedBuiltinAudio.numberOfBuffers() > 4 {
+            sampleBufferCopy = sampleBuffer.deepCopyAudioSampleBuffer() ?? sampleBuffer
+        } else {
+            sampleBufferCopy = sampleBuffer
+        }
         let presentationTimeStamp = presentationTimeStamp + CMTime(seconds: bufferedBuiltinAudio.latency)
-        guard let sampleBuffer = sampleBuffer.replacePresentationTimeStamp(presentationTimeStamp) else {
+        guard let sampleBuffer = sampleBufferCopy.replacePresentationTimeStamp(presentationTimeStamp) else {
             return nil
         }
         bufferedBuiltinAudio.appendSampleBuffer(sampleBuffer)
