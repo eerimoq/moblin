@@ -735,7 +735,7 @@ extension Model {
     }
 
     func setStreamFps(fps: Int? = nil) {
-        media.setStreamFps(fps: fps ?? stream.fps, preferAutoFps: stream.autoFps)
+        media.setFps(fps: fps ?? stream.fps, preferAutoFps: stream.autoFps)
     }
 
     func setStreamBitrate(stream: SettingsStream) {

@@ -669,7 +669,7 @@ final class Media: NSObject {
         return canvasSize
     }
 
-    func setStreamFps(fps: Int, preferAutoFps: Bool) {
+    func setFps(fps: Int, preferAutoFps: Bool) {
         processor?.setFps(value: Double(fps), preferAutoFps: preferAutoFps)
     }
 
@@ -693,13 +693,11 @@ final class Media: NSObject {
     }
 
     func getVideoStreamBitrate(bitrate: UInt32) -> UInt32 {
-        var bitRate: UInt32
         if let adaptiveBitrate {
-            bitRate = adaptiveBitrate.getCurrentBitrate()
+            return adaptiveBitrate.getCurrentBitrate()
         } else {
-            bitRate = bitrate
+            return bitrate
         }
-        return bitRate
     }
 
     func setVideoStreamBitrate(bitrate: UInt32) {
