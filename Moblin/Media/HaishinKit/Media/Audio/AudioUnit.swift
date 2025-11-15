@@ -211,6 +211,13 @@ final class AudioUnit: NSObject {
             return false
         }
     }
+
+    private func updateAudioLevel(sampleBuffer: CMSampleBuffer, audioLevel: Float, numberOfAudioChannels: Int) {
+        let sampleRate = sampleBuffer.formatDescription?.audioStreamBasicDescription?.mSampleRate ?? 0
+        processor?.delegate?.stream(audioLevel: audioLevel,
+                                    numberOfAudioChannels: numberOfAudioChannels,
+                                    sampleRate: sampleRate)
+    }
 }
 
 extension AudioUnit: AVCaptureAudioDataOutputSampleBufferDelegate {
@@ -240,10 +247,9 @@ extension AudioUnit: AVCaptureAudioDataOutputSampleBufferDelegate {
             } else {
                 audioLevel = 0.0
             }
-            let sampleRate = sampleBuffer.formatDescription?.audioStreamBasicDescription?.mSampleRate ?? 0
-            processor.delegate?.stream(audioLevel: audioLevel,
-                                       numberOfAudioChannels: connection.audioChannels.count,
-                                       sampleRate: sampleRate)
+            updateAudioLevel(sampleBuffer: sampleBuffer,
+                             audioLevel: audioLevel,
+                             numberOfAudioChannels: connection.audioChannels.count)
         }
         appendNewSampleBuffer(processor, sampleBuffer, presentationTimeStamp)
     }
@@ -256,10 +262,9 @@ extension AudioUnit: BufferedAudioSampleBufferDelegate {
         }
         if shouldUpdateAudioLevel(sampleBuffer) {
             let numberOfAudioChannels = Int(sampleBuffer.formatDescription?.numberOfAudioChannels() ?? 0)
-            let sampleRate = sampleBuffer.formatDescription?.audioStreamBasicDescription?.mSampleRate ?? 0
-            processor.delegate?.stream(audioLevel: .infinity,
-                                       numberOfAudioChannels: numberOfAudioChannels,
-                                       sampleRate: sampleRate)
+            updateAudioLevel(sampleBuffer: sampleBuffer,
+                             audioLevel: .infinity,
+                             numberOfAudioChannels: numberOfAudioChannels)
         }
         appendNewSampleBuffer(processor, sampleBuffer, sampleBuffer.presentationTimeStamp)
     }

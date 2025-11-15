@@ -40,6 +40,10 @@ class BufferedAudio {
         driftTracker = DriftTracker(media: "audio", name: name, targetFillLevel: latency)
     }
 
+    func numberOfBuffers() -> Int {
+        return sampleBuffers.count
+    }
+
     func setTargetLatency(latency: Double) {
         driftTracker.setTargetFillLevel(targetFillLevel: latency)
     }
