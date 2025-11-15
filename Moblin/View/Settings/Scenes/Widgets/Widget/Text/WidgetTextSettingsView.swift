@@ -104,7 +104,7 @@ private struct SuggestionsView: View {
     }
 }
 
-private struct FormatView: View {
+private struct VariableView: View {
     @EnvironmentObject var model: Model
     let title: String
     let description: String
@@ -217,27 +217,27 @@ private struct SubtitlesWithLanguageView: View {
     }
 }
 
-private struct GeneralFormatSpecifierView: View {
+private struct GeneralVariablesView: View {
     @Binding var value: String
 
     var body: some View {
         NavigationLink {
             Form {
-                FormatView(title: "{checkbox}", description: String(localized: "Show a checkbox"), text: $value)
-                FormatView(title: "{rating}", description: String(localized: "Show a 0-5 rating"), text: $value)
-                FormatView(title: "{muted}", description: String(localized: "Show muted"), text: $value)
-                FormatView(
+                VariableView(title: "{checkbox}", description: String(localized: "Show a checkbox"), text: $value)
+                VariableView(title: "{rating}", description: String(localized: "Show a 0-5 rating"), text: $value)
+                VariableView(title: "{muted}", description: String(localized: "Show muted"), text: $value)
+                VariableView(
                     title: "{browserTitle}",
                     description: String(localized: "Show browser title"),
                     text: $value
                 )
-                FormatView(title: "{gForce}", description: String(localized: "Show G-force"), text: $value)
-                FormatView(
+                VariableView(title: "{gForce}", description: String(localized: "Show G-force"), text: $value)
+                VariableView(
                     title: "{gForceRecentMax}",
                     description: String(localized: "Show recent max G-force"),
                     text: $value
                 )
-                FormatView(
+                VariableView(
                     title: "{gForceMax}",
                     description: String(localized: "Show max G-force"),
                     text: $value
@@ -250,31 +250,31 @@ private struct GeneralFormatSpecifierView: View {
     }
 }
 
-private struct TimeFormatSpecifierView: View {
+private struct TimeVariablesView: View {
     @Binding var value: String
 
     var body: some View {
         NavigationLink {
             Form {
-                FormatView(
+                VariableView(
                     title: "{time}",
                     description: String(localized: "Show time as HH:MM:SS"),
                     text: $value
                 )
-                FormatView(
+                VariableView(
                     title: "{shortTime}",
                     description: String(localized: "Show time as HH:MM"),
                     text: $value
                 )
-                FormatView(title: "{date}", description: String(localized: "Show date"), text: $value)
-                FormatView(title: "{fullDate}", description: String(localized: "Show full date"), text: $value)
-                FormatView(title: "{timer}", description: String(localized: "Show a timer"), text: $value)
-                FormatView(
+                VariableView(title: "{date}", description: String(localized: "Show date"), text: $value)
+                VariableView(title: "{fullDate}", description: String(localized: "Show full date"), text: $value)
+                VariableView(title: "{timer}", description: String(localized: "Show a timer"), text: $value)
+                VariableView(
                     title: "{stopwatch}",
                     description: String(localized: "Show a stopwatch"),
                     text: $value
                 )
-                FormatView(title: "{lapTimes}", description: String(localized: "Show lap times"), text: $value)
+                VariableView(title: "{lapTimes}", description: String(localized: "Show lap times"), text: $value)
             }
             .navigationTitle("Time")
         } label: {
@@ -283,29 +283,29 @@ private struct TimeFormatSpecifierView: View {
     }
 }
 
-private struct LocationFormatSpecifierView: View {
+private struct LocationVariablesView: View {
     @Binding var value: String
 
     var body: some View {
         NavigationLink {
             Form {
-                FormatView(title: "{country}", description: String(localized: "Show country"), text: $value)
-                FormatView(
+                VariableView(title: "{country}", description: String(localized: "Show country"), text: $value)
+                VariableView(
                     title: "{countryFlag}",
                     description: String(localized: "Show country flag"),
                     text: $value
                 )
-                FormatView(title: "{state}", description: String(localized: "Show state"), text: $value)
-                FormatView(title: "{city}", description: String(localized: "Show city"), text: $value)
-                FormatView(title: "{speed}", description: String(localized: "Show speed"), text: $value)
-                FormatView(
+                VariableView(title: "{state}", description: String(localized: "Show state"), text: $value)
+                VariableView(title: "{city}", description: String(localized: "Show city"), text: $value)
+                VariableView(title: "{speed}", description: String(localized: "Show speed"), text: $value)
+                VariableView(
                     title: "{averageSpeed}",
                     description: String(localized: "Show average speed"),
                     text: $value
                 )
-                FormatView(title: "{altitude}", description: String(localized: "Show altitude"), text: $value)
-                FormatView(title: "{distance}", description: String(localized: "Show distance"), text: $value)
-                FormatView(title: "{slope}", description: String(localized: "Show slope"), text: $value)
+                VariableView(title: "{altitude}", description: String(localized: "Show altitude"), text: $value)
+                VariableView(title: "{distance}", description: String(localized: "Show distance"), text: $value)
+                VariableView(title: "{slope}", description: String(localized: "Show slope"), text: $value)
             }
             .navigationTitle("Location")
         } label: {
@@ -314,19 +314,19 @@ private struct LocationFormatSpecifierView: View {
     }
 }
 
-private struct WeatherFormatSpecifierView: View {
+private struct WeatherVariablesView: View {
     @Binding var value: String
 
     var body: some View {
         NavigationLink {
             Form {
                 Section {
-                    FormatView(
+                    VariableView(
                         title: "{conditions}",
                         description: String(localized: "Show conditions"),
                         text: $value
                     )
-                    FormatView(
+                    VariableView(
                         title: "{temperature}",
                         description: String(localized: "Show temperature"),
                         text: $value
@@ -346,13 +346,13 @@ private struct WeatherFormatSpecifierView: View {
     }
 }
 
-private struct LanguageFormatSpecifierView: View {
+private struct LanguageVariablesView: View {
     @Binding var value: String
 
     var body: some View {
         NavigationLink {
             Form {
-                FormatView(
+                VariableView(
                     title: "{subtitles}",
                     description: String(localized: "Show subtitles in app language"),
                     text: $value
@@ -368,7 +368,7 @@ private struct LanguageFormatSpecifierView: View {
     }
 }
 
-private struct WorkoutFormatSpecifierView: View {
+private struct WorkoutVariablesView: View {
     let model: Model
     @Binding var value: String
 
@@ -376,14 +376,14 @@ private struct WorkoutFormatSpecifierView: View {
         NavigationLink {
             Form {
                 if isPhone() {
-                    FormatView(
+                    VariableView(
                         title: "{heartRate}",
                         description: String(localized: "Show Apple Watch heart rate"),
                         text: $value
                     )
                 }
                 ForEach(model.database.heartRateDevices.devices) { device in
-                    FormatView(
+                    VariableView(
                         title: "{heartRate:\(device.name)}",
                         description: String(
                             localized: "Show heart rate for heart rate device called \"\(device.name)\""
@@ -399,23 +399,23 @@ private struct WorkoutFormatSpecifierView: View {
     }
 }
 
-private struct TeslaFormatSpecifierView: View {
+private struct TeslaVariablesView: View {
     @Binding var value: String
 
     var body: some View {
         NavigationLink {
             Form {
-                FormatView(
+                VariableView(
                     title: "{teslaBatteryLevel}",
                     description: String(localized: "Show Tesla battery level"),
                     text: $value
                 )
-                FormatView(
+                VariableView(
                     title: "{teslaDrive}",
                     description: String(localized: "Show Tesla drive information"),
                     text: $value
                 )
-                FormatView(
+                VariableView(
                     title: "{teslaMedia}",
                     description: String(localized: "Show Tesla media information"),
                     text: $value
@@ -428,18 +428,18 @@ private struct TeslaFormatSpecifierView: View {
     }
 }
 
-private struct CyclingFormatSpecifierView: View {
+private struct CyclingVariablesView: View {
     @Binding var value: String
 
     var body: some View {
         NavigationLink {
             Form {
-                FormatView(
+                VariableView(
                     title: "{cyclingPower}",
                     description: String(localized: "Show cycling power"),
                     text: $value
                 )
-                FormatView(
+                VariableView(
                     title: "{cyclingCadence}",
                     description: String(localized: "Show cycling cadence"),
                     text: $value
@@ -452,33 +452,33 @@ private struct CyclingFormatSpecifierView: View {
     }
 }
 
-private struct DebugFormatSpecifierView: View {
+private struct DebugVariablesView: View {
     @Binding var value: String
 
     var body: some View {
         NavigationLink {
             Form {
-                FormatView(
+                VariableView(
                     title: "{bitrate}",
                     description: String(localized: "Show bitrate"),
                     text: $value
                 )
-                FormatView(
+                VariableView(
                     title: "{bitrateAndTotal}",
                     description: String(localized: "Show bitrate and total number of bytes sent"),
                     text: $value
                 )
-                FormatView(
+                VariableView(
                     title: "{resolution}",
                     description: String(localized: "Show resolution"),
                     text: $value
                 )
-                FormatView(
+                VariableView(
                     title: "{fps}",
                     description: String(localized: "Show FPS"),
                     text: $value
                 )
-                FormatView(
+                VariableView(
                     title: "{debugOverlay}",
                     description: String(localized: "Show debug overlay (if enabled)"),
                     text: $value
@@ -535,17 +535,17 @@ private struct TextSelectionView: View {
                 }
             }
             Section {
-                GeneralFormatSpecifierView(value: $value)
-                TimeFormatSpecifierView(value: $value)
-                LocationFormatSpecifierView(value: $value)
-                WeatherFormatSpecifierView(value: $value)
-                LanguageFormatSpecifierView(value: $value)
-                WorkoutFormatSpecifierView(model: model, value: $value)
-                TeslaFormatSpecifierView(value: $value)
-                CyclingFormatSpecifierView(value: $value)
-                DebugFormatSpecifierView(value: $value)
+                GeneralVariablesView(value: $value)
+                TimeVariablesView(value: $value)
+                LocationVariablesView(value: $value)
+                WeatherVariablesView(value: $value)
+                LanguageVariablesView(value: $value)
+                WorkoutVariablesView(model: model, value: $value)
+                TeslaVariablesView(value: $value)
+                CyclingVariablesView(value: $value)
+                DebugVariablesView(value: $value)
             } header: {
-                Text("Format specifiers")
+                Text("Variables")
             }
         }
         .onChange(of: value) { _ in
