@@ -658,18 +658,15 @@ final class Media: NSObject {
         processor?.setCleanExternalDisplay(enabled: enabled)
     }
 
-    func setVideoSize(capture: CGSize, canvas: CGSize, stream: CGSize) {
+    func setVideoSize(capture: CGSize, canvas: CGSize, stream: CMVideoDimensions) {
         processor?.setVideoSize(capture: capture, canvas: canvas)
-        videoEncoderSettings.videoSize = .init(
-            width: Int32(stream.width),
-            height: Int32(stream.height)
-        )
+        videoEncoderSettings.videoSize = stream
         canvasSize = canvas
         commitVideoEncoderSettings()
     }
 
     func getCanvasSize() -> CGSize {
-        return CGSize(width: CGFloat(canvasSize.width), height: CGFloat(canvasSize.height))
+        return canvasSize
     }
 
     func setStreamFps(fps: Int, preferAutoFps: Bool) {
