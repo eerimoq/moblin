@@ -104,22 +104,10 @@ private struct ObsSettingsView: View {
     }
 }
 
-private struct QuickButtonObsConnectedView: View {
-    @EnvironmentObject var model: Model
-    @ObservedObject var stream: SettingsStream
+private struct ObsSnapshotView: View {
     @ObservedObject var obsQuickButton: QuickButtonObs
 
-    private func submitAudioDelay(value: String) -> String {
-        let offsetDouble = Double(value) ?? 0
-        var offset = Int(offsetDouble)
-        offset = offset.clamped(to: obsMinimumAudioDelay ... obsMaximumAudioDelay)
-        model.setObsAudioDelay(offset: offset)
-        return String(offset)
-    }
-
     var body: some View {
-        ObsStartStopStreamingView(model: model, obsQuickButton: obsQuickButton)
-        ObsStartStopRecordingView(model: model, obsQuickButton: obsQuickButton)
         Section {
             if let image = obsQuickButton.screenshot {
                 Image(image, scale: 1, label: Text(""))
@@ -132,6 +120,14 @@ private struct QuickButtonObsConnectedView: View {
         } header: {
             Text("Current scene snapshot")
         }
+    }
+}
+
+private struct ObsScenesView: View {
+    let model: Model
+    @ObservedObject var obsQuickButton: QuickButtonObs
+
+    var body: some View {
         Section {
             Picker("", selection: $obsQuickButton.currentScenePicker) {
                 ForEach(obsQuickButton.scenes, id: \.self) { scene in
@@ -149,6 +145,14 @@ private struct QuickButtonObsConnectedView: View {
         } header: {
             Text("Scenes")
         }
+    }
+}
+
+private struct ObsSceneAudioInputsView: View {
+    let model: Model
+    @ObservedObject var obsQuickButton: QuickButtonObs
+
+    var body: some View {
         Section {
             ForEach(obsQuickButton.sceneInputs) { input in
                 if let muted = input.muted {
@@ -171,59 +175,111 @@ private struct QuickButtonObsConnectedView: View {
         } header: {
             Text("Scene audio inputs")
         }
-        if !stream.obsSourceName.isEmpty {
-            if !obsQuickButton.fixOngoing {
-                Section {
-                    TextButtonView("Fix \(stream.obsSourceName) source") {
-                        model.obsFixStream()
-                    }
-                } footer: {
-                    Text("""
-                    Restarts the \(stream.obsSourceName) source to hopefully fix \
-                    audio and video issues.
-                    """)
+    }
+}
+
+private struct ObsFixSourceView: View {
+    let model: Model
+    @ObservedObject var stream: SettingsStream
+    @ObservedObject var obsQuickButton: QuickButtonObs
+
+    var body: some View {
+        if !obsQuickButton.fixOngoing {
+            Section {
+                TextButtonView("Fix \(stream.obsSourceName) source") {
+                    model.obsFixStream()
+                }
+            } footer: {
+                Text("""
+                Restarts the \(stream.obsSourceName) source to hopefully fix \
+                audio and video issues.
+                """)
+            }
+        } else {
+            Section {
+                HCenter {
+                    Text("Fixing...")
+                }
+                .foregroundStyle(.white)
+            } footer: {
+                Text("""
+                Restarts the \(stream.obsSourceName) source to hopefully fix \
+                audio and video issues.
+                """)
+            }
+            .listRowBackground(Color.gray)
+        }
+    }
+}
+
+private struct ObsAudioSyncView: View {
+    let model: Model
+    @ObservedObject var stream: SettingsStream
+    @ObservedObject var obsQuickButton: QuickButtonObs
+
+    private func submitAudioDelay(value: String) -> String {
+        let offsetDouble = Double(value) ?? 0
+        var offset = Int(offsetDouble)
+        offset = offset.clamped(to: obsMinimumAudioDelay ... obsMaximumAudioDelay)
+        model.setObsAudioDelay(offset: offset)
+        return String(offset)
+    }
+
+    var body: some View {
+        Section {
+            ValueEditView(
+                title: "Delay",
+                number: Float(obsQuickButton.audioDelay),
+                value: "\(obsQuickButton.audioDelay)",
+                minimum: Float(obsMinimumAudioDelay),
+                maximum: Float(min(obsMaximumAudioDelay, 9999)),
+                onSubmit: submitAudioDelay,
+                increment: 10,
+                unit: "ms"
+            )
+        } header: {
+            Text("\(stream.obsSourceName) source audio sync")
+        }
+    }
+}
+
+private struct ObsAudioLevelsView: View {
+    @EnvironmentObject var model: Model
+    @ObservedObject var stream: SettingsStream
+    @ObservedObject var obsQuickButton: QuickButtonObs
+
+    var body: some View {
+        Section {
+            if model.isLive {
+                if !obsQuickButton.audioVolume.isEmpty {
+                    Text(obsQuickButton.audioVolume)
+                } else {
+                    Text("No audio levels received yet.")
                 }
             } else {
-                Section {
-                    HCenter {
-                        Text("Fixing...")
-                    }
-                    .foregroundStyle(.white)
-                } footer: {
-                    Text("""
-                    Restarts the \(stream.obsSourceName) source to hopefully fix \
-                    audio and video issues.
-                    """)
-                }
-                .listRowBackground(Color.gray)
+                Text("Go live to see audio levels.")
             }
-            Section {
-                ValueEditView(
-                    title: "Delay",
-                    number: Float(obsQuickButton.audioDelay),
-                    value: "\(obsQuickButton.audioDelay)",
-                    minimum: Float(obsMinimumAudioDelay),
-                    maximum: Float(min(obsMaximumAudioDelay, 9999)),
-                    onSubmit: submitAudioDelay,
-                    increment: 10,
-                    unit: "ms"
-                )
-            } header: {
-                Text("\(stream.obsSourceName) source audio sync")
-            }
-            Section {
-                if model.isLive {
-                    if !obsQuickButton.audioVolume.isEmpty {
-                        Text(obsQuickButton.audioVolume)
-                    } else {
-                        Text("No audio levels received yet.")
-                    }
-                } else {
-                    Text("Go live to see audio levels.")
-                }
-            } header: {
-                Text("\(stream.obsSourceName) source audio levels")
-            }
+        } header: {
+            Text("\(stream.obsSourceName) source audio levels")
+        }
+    }
+}
+
+private struct ObsConnectedView: View {
+    @EnvironmentObject var model: Model
+    @ObservedObject var stream: SettingsStream
+    @ObservedObject var obsQuickButton: QuickButtonObs
+
+    var body: some View {
+        ObsStartStopStreamingView(model: model, obsQuickButton: obsQuickButton)
+        ObsStartStopRecordingView(model: model, obsQuickButton: obsQuickButton)
+        ObsSnapshotView(obsQuickButton: obsQuickButton)
+        ObsScenesView(model: model, obsQuickButton: obsQuickButton)
+        ObsSceneAudioInputsView(model: model, obsQuickButton: obsQuickButton)
+        if !stream.obsSourceName.isEmpty {
+            ObsFixSourceView(model: model, stream: stream, obsQuickButton: obsQuickButton)
+            ObsAudioSyncView(model: model, stream: stream, obsQuickButton: obsQuickButton)
+            ObsAudioLevelsView(stream: stream, obsQuickButton: obsQuickButton)
         } else {
             Text("""
             Configure source name in \
@@ -247,7 +303,7 @@ struct QuickButtonObsView: View {
                     Text("Unable to connect the OBS server. Retrying every 5 seconds.")
                 }
             } else {
-                QuickButtonObsConnectedView(stream: stream, obsQuickButton: obsQuickButton)
+                ObsConnectedView(stream: stream, obsQuickButton: obsQuickButton)
             }
             if stream !== fallbackStream {
                 Section {
