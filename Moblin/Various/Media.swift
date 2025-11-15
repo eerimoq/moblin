@@ -76,6 +76,7 @@ final class Media: NSObject {
     private var belaLinesAndActions: ([String], [String])?
     private var srtConnected = false
     private var newSrt: Bool = false
+    private var canvasSize: CGSize = .init(width: 1920, height: 1080)
 
     func logStatistics() {
         srtlaClient?.logStatistics()
@@ -657,18 +658,18 @@ final class Media: NSObject {
         processor?.setCleanExternalDisplay(enabled: enabled)
     }
 
-    func setVideoSize(capture: CGSize, canvas: CGSize) {
+    func setVideoSize(capture: CGSize, canvas: CGSize, stream: CGSize) {
         processor?.setVideoSize(capture: capture, canvas: canvas)
         videoEncoderSettings.videoSize = .init(
-            width: Int32(canvas.width),
-            height: Int32(canvas.height)
+            width: Int32(stream.width),
+            height: Int32(stream.height)
         )
+        canvasSize = canvas
         commitVideoEncoderSettings()
     }
 
-    func getVideoSize() -> CGSize {
-        let size = videoEncoderSettings.videoSize
-        return CGSize(width: CGFloat(size.width), height: CGFloat(size.height))
+    func getCanvasSize() -> CGSize {
+        return CGSize(width: CGFloat(canvasSize.width), height: CGFloat(canvasSize.height))
     }
 
     func setStreamFps(fps: Int, preferAutoFps: Bool) {

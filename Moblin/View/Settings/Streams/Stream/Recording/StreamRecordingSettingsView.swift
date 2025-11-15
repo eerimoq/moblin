@@ -81,6 +81,42 @@ private struct RecordingPathView: View {
     }
 }
 
+private struct ResolutionSettingsView: View {
+    @EnvironmentObject var model: Model
+    @ObservedObject var stream: SettingsStream
+    @ObservedObject var recording: SettingsStreamRecording
+
+    var body: some View {
+        Picker("Resolution", selection: $recording.resolution) {
+            ForEach(resolutions, id: \.self) {
+                Text($0.shortString())
+            }
+        }
+        .disabled(!recording.overrideStream)
+        .onChange(of: recording.resolution) { _ in
+            model.reloadStreamIfEnabled(stream: stream)
+        }
+    }
+}
+
+private struct FpsSettingsView: View {
+    @EnvironmentObject var model: Model
+    @ObservedObject var stream: SettingsStream
+    @ObservedObject var recording: SettingsStreamRecording
+
+    var body: some View {
+        Picker("FPS", selection: $recording.fps) {
+            ForEach(fpss, id: \.self) {
+                Text(String($0))
+            }
+        }
+        .disabled(!recording.overrideStream)
+        .onChange(of: recording.fps) { _ in
+            model.reloadStreamIfEnabled(stream: stream)
+        }
+    }
+}
+
 struct StreamRecordingSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var stream: SettingsStream
@@ -107,6 +143,19 @@ struct StreamRecordingSettingsView: View {
 
     var body: some View {
         Form {
+            Section {
+                Toggle("Override", isOn: $recording.overrideStream)
+                    .onChange(of: recording.overrideStream) { _ in
+                        model.reloadStreamIfEnabled(stream: stream)
+                    }
+                    .disabled(stream.enabled && (model.isLive || model.isRecording))
+                ResolutionSettingsView(stream: stream, recording: recording)
+                if false {
+                    FpsSettingsView(stream: stream, recording: recording)
+                }
+            } footer: {
+                Text("Resolution and FPS are same as for live stream if not overridden.")
+            }
             Section {
                 Picker("Video codec", selection: $recording.videoCodec) {
                     ForEach(SettingsStreamCodec.allCases, id: \.self) {
@@ -160,8 +209,6 @@ struct StreamRecordingSettingsView: View {
                     )
                 }
                 .disabled(stream.enabled && model.isRecording)
-            } footer: {
-                Text("Resolution and FPS are same as for live stream.")
             }
             RecordingPathView(stream: stream, recording: recording)
             Section {

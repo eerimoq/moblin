@@ -2923,7 +2923,7 @@ extension Model {
 
     func drawOnStreamLineComplete() {
         drawOnStreamEffect.updateOverlay(
-            videoSize: media.getVideoSize(),
+            videoSize: media.getCanvasSize(),
             size: drawOnStreamSize,
             lines: drawOnStream.lines,
             mirror: streamOverlay.isFrontCameraSelected && !database.mirrorFrontCameraOnStream
@@ -2935,7 +2935,7 @@ extension Model {
     func drawOnStreamWipe() {
         drawOnStream.lines = []
         drawOnStreamEffect.updateOverlay(
-            videoSize: media.getVideoSize(),
+            videoSize: media.getCanvasSize(),
             size: drawOnStreamSize,
             lines: drawOnStream.lines,
             mirror: streamOverlay.isFrontCameraSelected && !database.mirrorFrontCameraOnStream
@@ -2950,7 +2950,7 @@ extension Model {
         }
         drawOnStream.lines.removeLast()
         drawOnStreamEffect.updateOverlay(
-            videoSize: media.getVideoSize(),
+            videoSize: media.getCanvasSize(),
             size: drawOnStreamSize,
             lines: drawOnStream.lines,
             mirror: streamOverlay.isFrontCameraSelected && !database.mirrorFrontCameraOnStream

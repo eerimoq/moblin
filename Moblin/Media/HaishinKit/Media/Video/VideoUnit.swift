@@ -1243,8 +1243,6 @@ final class VideoUnit: NSObject {
         }
         let modImageBuffer = newImageBuffer ?? imageBuffer
         let modSampleBuffer = newSampleBuffer ?? sampleBuffer
-        // Recordings seems to randomly fail if moved after live stream encoding. Maybe because the
-        // sample buffer is copied in appendVideo()
         if cleanRecordings {
             processor?.recorder.appendVideo(sampleBuffer)
         } else {

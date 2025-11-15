@@ -50,6 +50,10 @@ enum SettingsStreamResolution: String, Codable, CaseIterable {
             .r1920x1080
     }
 
+    static func > (lhs: SettingsStreamResolution, rhs: SettingsStreamResolution) -> Bool {
+        return lhs.dimensions(portrait: false).width > rhs.dimensions(portrait: false).width
+    }
+
     func shortString() -> String {
         switch self {
         case .r4032x3024:
@@ -517,6 +521,9 @@ class SettingsStreamChat: Codable {
 }
 
 class SettingsStreamRecording: Codable, ObservableObject {
+    @Published var overrideStream: Bool = false
+    @Published var resolution: SettingsStreamResolution = SettingsStream.defaultResolution
+    @Published var fps: Int = SettingsStream.defaultFps
     @Published var videoCodec: SettingsStreamCodec = .h265hevc
     @Published var videoBitrate: UInt32 = 0
     @Published var maxKeyFrameInterval: Int32 = 0
@@ -530,7 +537,10 @@ class SettingsStreamRecording: Codable, ObservableObject {
     init() {}
 
     enum CodingKeys: CodingKey {
-        case videoCodec,
+        case overrideStream,
+             resolution,
+             fps,
+             videoCodec,
              videoBitrate,
              maxKeyFrameInterval,
              audioBitrate,
@@ -543,6 +553,9 @@ class SettingsStreamRecording: Codable, ObservableObject {
 
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.overrideStream, overrideStream)
+        try container.encode(.resolution, resolution)
+        try container.encode(.fps, fps)
         try container.encode(.videoCodec, videoCodec)
         try container.encode(.videoBitrate, videoBitrate)
         try container.encode(.maxKeyFrameInterval, maxKeyFrameInterval)
@@ -556,6 +569,9 @@ class SettingsStreamRecording: Codable, ObservableObject {
 
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
+        overrideStream = container.decode(.overrideStream, Bool.self, false)
+        resolution = container.decode(.resolution, SettingsStreamResolution.self, SettingsStream.defaultResolution)
+        fps = container.decode(.fps, Int.self, SettingsStream.defaultFps)
         videoCodec = container.decode(.videoCodec, SettingsStreamCodec.self, .h265hevc)
         videoBitrate = container.decode(.videoBitrate, UInt32.self, 0)
         maxKeyFrameInterval = container.decode(.maxKeyFrameInterval, Int32.self, 0)
@@ -897,6 +913,8 @@ class SettingsKickAlerts: Codable, ObservableObject {
 
 class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named {
     static let defaultRealtimeIrlBaseUrl = "https://rtirl.com/api"
+    static let defaultResolution: SettingsStreamResolution = .r1920x1080
+    static let defaultFps: Int = 30
     @Published var name: String
     var id: UUID = .init()
     var enabled: Bool = false
@@ -941,8 +959,8 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
     var discordSnapshotWebhook: String = ""
     var discordChatBotSnapshotWebhook: String = ""
     @Published var discordSnapshotWebhookOnlyWhenLive: Bool = true
-    @Published var resolution: SettingsStreamResolution = .r1920x1080
-    @Published var fps: Int = 30
+    @Published var resolution: SettingsStreamResolution = SettingsStream.defaultResolution
+    @Published var fps: Int = SettingsStream.defaultFps
     @Published var autoFps: Bool = false
     @Published var bitrate: UInt32 = 5_000_000
     @Published var codec: SettingsStreamCodec = .h265hevc
@@ -1182,8 +1200,8 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         discordSnapshotWebhook = container.decode(.discordSnapshotWebhook, String.self, "")
         discordChatBotSnapshotWebhook = container.decode(.discordChatBotSnapshotWebhook, String.self, "")
         discordSnapshotWebhookOnlyWhenLive = container.decode(.discordSnapshotWebhookOnlyWhenLive, Bool.self, true)
-        resolution = container.decode(.resolution, SettingsStreamResolution.self, .r1920x1080)
-        fps = container.decode(.fps, Int.self, 30)
+        resolution = container.decode(.resolution, SettingsStreamResolution.self, Self.defaultResolution)
+        fps = container.decode(.fps, Int.self, Self.defaultFps)
         autoFps = container.decode(.autoFps, Bool.self, false)
         bitrate = container.decode(.bitrate, UInt32.self, 5_000_000)
         codec = container.decode(.codec, SettingsStreamCodec.self, .h265hevc)

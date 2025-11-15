@@ -242,7 +242,7 @@ extension Model {
         }
         browserEffects.removeAll()
         for widget in widgets where widget.type == .browser {
-            let videoSize = media.getVideoSize()
+            let videoSize = media.getCanvasSize()
             guard let url = URL(string: widget.browser.url) else {
                 continue
             }
@@ -361,7 +361,7 @@ extension Model {
         }
         resetVideoEffects(widgets: getLocalAndRemoteWidgets())
         drawOnStreamEffect.updateOverlay(
-            videoSize: media.getVideoSize(),
+            videoSize: media.getCanvasSize(),
             size: drawOnStreamSize,
             lines: drawOnStream.lines,
             mirror: streamOverlay.isFrontCameraSelected && !database.mirrorFrontCameraOnStream
@@ -554,7 +554,7 @@ extension Model {
         // To do: Should update on first frame in draw effect instead.
         if !drawOnStream.lines.isEmpty {
             drawOnStreamEffect.updateOverlay(
-                videoSize: media.getVideoSize(),
+                videoSize: media.getCanvasSize(),
                 size: drawOnStreamSize,
                 lines: drawOnStream.lines,
                 mirror: streamOverlay.isFrontCameraSelected && !database.mirrorFrontCameraOnStream

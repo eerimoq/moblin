@@ -1,8 +1,8 @@
 import Foundation
 
 class DeepLinkCreatorStreamVideo: Codable, ObservableObject {
-    @Published var resolution: SettingsStreamResolution = .r1920x1080
-    @Published var fps: Int = 30
+    @Published var resolution: SettingsStreamResolution = SettingsStream.defaultResolution
+    @Published var fps: Int = SettingsStream.defaultFps
     @Published var bitrate: UInt32 = 5_000_000
     @Published var codec: SettingsStreamCodec = .h265hevc
     @Published var bFrames: Bool = false
@@ -31,8 +31,8 @@ class DeepLinkCreatorStreamVideo: Codable, ObservableObject {
 
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        resolution = container.decode(.resolution, SettingsStreamResolution.self, .r1920x1080)
-        fps = container.decode(.fps, Int.self, 30)
+        resolution = container.decode(.resolution, SettingsStreamResolution.self, SettingsStream.defaultResolution)
+        fps = container.decode(.fps, Int.self, SettingsStream.defaultFps)
         bitrate = container.decode(.bitrate, UInt32.self, 5_000_000)
         codec = container.decode(.codec, SettingsStreamCodec.self, .h265hevc)
         bFrames = container.decode(.bFrames, Bool.self, false)
