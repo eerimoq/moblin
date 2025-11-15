@@ -661,8 +661,8 @@ final class Media: NSObject {
     func setVideoSize(capture: CGSize, canvas: CGSize, stream: CMVideoDimensions) {
         processor?.setVideoSize(capture: capture, canvas: canvas)
         videoEncoderSettings.videoSize = stream
-        canvasSize = canvas
         commitVideoEncoderSettings()
+        canvasSize = canvas
     }
 
     func getCanvasSize() -> CGSize {
