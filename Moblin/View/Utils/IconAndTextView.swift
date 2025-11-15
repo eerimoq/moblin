@@ -16,3 +16,22 @@ struct IconAndTextView: View {
         }
     }
 }
+
+struct IconAndTextSettingView: View {
+    let image: String
+    let text: LocalizedStringKey
+
+    var body: some View {
+        HStack(spacing: 0) {
+            Text("")
+            HStack(spacing: 0) {
+                Spacer(minLength: 0)
+                Image(systemName: image)
+                Spacer(minLength: 0)
+            }
+            .frame(width: 25)
+            Text(text)
+                .padding([.leading], 3)
+        }
+    }
+}

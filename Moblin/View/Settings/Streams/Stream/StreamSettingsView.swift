@@ -180,19 +180,19 @@ struct StreamSettingsView: View {
                     NavigationLink {
                         StreamRecordingSettingsView(stream: stream, recording: stream.recording)
                     } label: {
-                        Text("Recording")
+                        IconAndTextSettingView(image: "record.circle", text: "Recording")
                     }
                 }
                 NavigationLink {
                     StreamReplaySettingsView(stream: stream, replay: stream.replay)
                 } label: {
-                    Text("Replay")
+                    IconAndTextSettingView(image: "play", text: "Replay")
                 }
                 if database.showAllSettings {
                     NavigationLink {
                         StreamSnapshotSettingsView(stream: stream, recording: stream.recording)
                     } label: {
-                        Text("Snapshot")
+                        IconAndTextSettingView(image: "camera.aperture", text: "Snapshot")
                     }
                 }
                 if isPhone() || isPad() {
