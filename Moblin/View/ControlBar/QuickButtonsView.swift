@@ -469,7 +469,7 @@ struct QuickButtonsInnerView: View {
                     }
                 }
                 .confirmationDialog("", isPresented: $isPresentingRecordConfirm) {
-                    Button(state.isOn ? String(localized: "Stop recording") : String(localized: "Start recording")) {
+                    Button(state.isOn ? "Stop recording" : "Start recording") {
                         recordAction()
                     }
                 }

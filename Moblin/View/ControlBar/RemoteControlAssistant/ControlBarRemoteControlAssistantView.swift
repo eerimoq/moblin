@@ -345,7 +345,7 @@ private struct LiveView: View {
             Text("Live")
         }
         .confirmationDialog("", isPresented: $isPresentingConfirm) {
-            Button(pendingValue ? String(localized: "Go Live") : String(localized: "End")) {
+            Button(pendingValue ? "Go Live" : "End") {
                 model.remoteControlAssistantSetStream(on: pendingValue)
             }
         }
@@ -368,7 +368,7 @@ private struct RecordingView: View {
             Text("Recording")
         }
         .confirmationDialog("", isPresented: $isPresentingConfirm) {
-            Button(pendingValue ? String(localized: "Start recording") : String(localized: "Stop recording")) {
+            Button(pendingValue ? "Start recording" : "Stop recording") {
                 model.remoteControlAssistantSetRecord(on: pendingValue)
             }
         }
