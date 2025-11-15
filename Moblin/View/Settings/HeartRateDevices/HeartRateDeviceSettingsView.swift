@@ -21,7 +21,7 @@ struct HeartRateDeviceSettingsView: View {
     @ObservedObject var device: SettingsHeartRateDevice
     @ObservedObject var status: StatusTopRight
 
-    func state() -> String {
+    private func state() -> String {
         return formatHeartRateDeviceState(state: status.heartRateDeviceState)
     }
 

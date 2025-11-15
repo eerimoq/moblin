@@ -21,7 +21,7 @@ struct CyclingPowerDeviceSettingsView: View {
     @ObservedObject var status: StatusTopRight
     @ObservedObject private var scanner = cyclingPowerScanner
 
-    func state() -> String {
+    private func state() -> String {
         return formatCyclingPowerDeviceState(state: status.cyclingPowerDeviceState)
     }
 

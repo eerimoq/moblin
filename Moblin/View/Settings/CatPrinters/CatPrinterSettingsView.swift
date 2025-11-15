@@ -21,7 +21,7 @@ struct CatPrinterSettingsView: View {
     @ObservedObject var device: SettingsCatPrinter
     @ObservedObject var status: StatusTopRight
 
-    func state() -> String {
+    private func state() -> String {
         return formatCatPrinterState(state: status.catPrinterState)
     }
 

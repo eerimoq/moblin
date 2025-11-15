@@ -28,7 +28,7 @@ struct BlackSharkCoolerDeviceSettingsView: View {
     @ObservedObject var device: SettingsBlackSharkCoolerDevice
     @ObservedObject var status: StatusTopRight
 
-    func state() -> String {
+    private func state() -> String {
         return formatBlackSharkCoolerDeviceState(state: status.blackSharkCoolerDeviceState)
     }
 
