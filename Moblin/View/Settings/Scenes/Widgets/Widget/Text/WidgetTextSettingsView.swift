@@ -62,20 +62,28 @@ private struct SuggestionView: View {
     let suggestion: Suggestion
     @Binding var text: String
     let dismiss: () -> Void
-    @State var isPresentingConfirmation = false
+    @State private var isPresentingConfirmation = false
+
+    private func submit() {
+        text = suggestion.text
+        dismiss()
+    }
 
     var body: some View {
         VStack(alignment: .leading) {
             Button {
-                isPresentingConfirmation = true
+                if text.isEmpty {
+                    submit()
+                } else {
+                    isPresentingConfirmation = true
+                }
             } label: {
                 Text(suggestion.name)
                     .font(.title3)
             }
             .confirmationDialog("", isPresented: $isPresentingConfirmation) {
                 Button("Yes", role: .destructive) {
-                    text = suggestion.text
-                    dismiss()
+                    submit()
                 }
             } message: {
                 Text("Are you sure you want to replace the content of the current text widget?")
@@ -85,7 +93,7 @@ private struct SuggestionView: View {
     }
 }
 
-private struct SuggestionsView: View {
+private struct TextWidgetSuggestionsInnerView: View {
     @Environment(\.dismiss) var dismiss
     @Binding var text: String
 
@@ -101,6 +109,18 @@ private struct SuggestionsView: View {
             }
         }
         .navigationTitle("Suggestions")
+    }
+}
+
+struct TextWidgetSuggestionsView: View {
+    @Binding var text: String
+
+    var body: some View {
+        NavigationLink {
+            TextWidgetSuggestionsInnerView(text: $text)
+        } label: {
+            Text("Suggestions")
+        }
     }
 }
 
@@ -528,11 +548,7 @@ private struct TextSelectionView: View {
         Form {
             TextWidgetTextView(value: $value)
             Section {
-                NavigationLink {
-                    SuggestionsView(text: $value)
-                } label: {
-                    Text("Suggestions")
-                }
+                TextWidgetSuggestionsView(text: $value)
             }
             Section {
                 GeneralVariablesView(value: $value)

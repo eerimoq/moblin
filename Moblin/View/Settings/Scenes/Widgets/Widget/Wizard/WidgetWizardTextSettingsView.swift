@@ -10,6 +10,9 @@ struct WidgetWizardTextSettingsView: View {
     var body: some View {
         Form {
             TextWidgetTextView(value: $text.formatString)
+            Section {
+                TextWidgetSuggestionsView(text: $text.formatString)
+            }
             WidgetWizardSelectScenesNavigationView(model: model,
                                                    database: database,
                                                    createWidgetWizard: createWidgetWizard,
