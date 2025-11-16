@@ -1268,8 +1268,6 @@ extension Model {
     private func createSceneWidget(widget: SettingsWidget) -> SettingsSceneWidget {
         let sceneWidget = SettingsSceneWidget(widgetId: widget.id)
         switch widget.type {
-        case .text:
-            sceneWidget.layout.size = 5
         case .image:
             sceneWidget.layout.size = 30
         case .map, .qrCode:
@@ -1277,18 +1275,15 @@ extension Model {
         case .videoSource, .vTuber, .pngTuber:
             sceneWidget.layout.size = 28
             sceneWidget.layout.alignment = .bottomRight
-        case .browser:
-            let resolution = stream.resolution.dimensions(portrait: stream.portrait)
-            let width = (100 * Double(widget.browser.width) / Double(resolution.width)).clamped(to: 1 ... 100)
-            let height = (100 * Double(widget.browser.height) / Double(resolution.height)).clamped(to: 1 ... 100)
-            sceneWidget.layout.size = max(width, height)
-            sceneWidget.layout.updateSizeString()
         case .snapshot:
             sceneWidget.layout.size = 40
             sceneWidget.layout.alignment = .topRight
         default:
             break
         }
+        sceneWidget.layout.updateXString()
+        sceneWidget.layout.updateYString()
+        sceneWidget.layout.updateSizeString()
         return sceneWidget
     }
 
