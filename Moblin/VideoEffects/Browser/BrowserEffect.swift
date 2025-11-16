@@ -4,8 +4,6 @@ import UIKit
 import Vision
 import WebKit
 
-private let browserQueue = DispatchQueue(label: "com.eerimoq.widget.browser")
-
 struct WidgetCrop {
     let crop: SettingsWidgetCrop
     let sceneWidget: SettingsSceneWidget
@@ -38,7 +36,6 @@ final class BrowserEffect: VideoEffect {
     var isLoaded: Bool
     let audioOnly: Bool
     var fps: Float
-    private var scaleToFitVideo: Bool
     private let snapshotTimer = SimpleTimer(queue: .main)
     var startLoadingTime = ContinuousClock.now
     private let scale: Double
@@ -61,7 +58,6 @@ final class BrowserEffect: VideoEffect {
         } else {
             scale = UIScreen().scale
         }
-        scaleToFitVideo = widget.scaleToFitVideo
         self.url = url
         self.videoSize = videoSize
         self.settingName = settingName
@@ -197,11 +193,7 @@ final class BrowserEffect: VideoEffect {
                 return
             }
             let configuration = WKSnapshotConfiguration()
-            if self.scaleToFitVideo {
-                configuration.snapshotWidth = NSNumber(value: self.videoSize.width / self.scale)
-            } else {
-                configuration.snapshotWidth = NSNumber(value: self.width / self.scale)
-            }
+            configuration.snapshotWidth = NSNumber(value: self.width / self.scale)
             self.webView.takeSnapshot(with: configuration) { [weak self] image, error in
                 guard let self else {
                     return

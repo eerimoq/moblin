@@ -712,7 +712,6 @@ class SettingsWidgetBrowser: Codable, ObservableObject {
     @Published var width: Int = 500
     @Published var height: Int = 500
     @Published var audioOnly: Bool = false
-    @Published var scaleToFitVideo: Bool = false
     @Published var fps: Float = 5.0
     @Published var styleSheet: String = ""
     @Published var moblinAccess: Bool = false
@@ -724,7 +723,6 @@ class SettingsWidgetBrowser: Codable, ObservableObject {
              width,
              height,
              audioOnly,
-             scaleToFitVideo,
              fps,
              styleSheet,
              moblinAccess
@@ -736,7 +734,6 @@ class SettingsWidgetBrowser: Codable, ObservableObject {
         try container.encode(.width, width)
         try container.encode(.height, height)
         try container.encode(.audioOnly, audioOnly)
-        try container.encode(.scaleToFitVideo, scaleToFitVideo)
         try container.encode(.fps, fps)
         try container.encode(.styleSheet, styleSheet)
         try container.encode(.moblinAccess, moblinAccess)
@@ -748,7 +745,6 @@ class SettingsWidgetBrowser: Codable, ObservableObject {
         width = container.decode(.width, Int.self, 500)
         height = container.decode(.height, Int.self, 500)
         audioOnly = container.decode(.audioOnly, Bool.self, false)
-        scaleToFitVideo = container.decode(.scaleToFitVideo, Bool.self, false)
         fps = container.decode(.fps, Float.self, 5.0)
         styleSheet = container.decode(.styleSheet, String.self, "")
         moblinAccess = container.decode(.moblinAccess, Bool.self, false)

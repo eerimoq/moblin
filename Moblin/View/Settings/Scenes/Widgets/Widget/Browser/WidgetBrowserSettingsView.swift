@@ -91,10 +91,6 @@ struct WidgetBrowserSettingsView: View {
                                        onChange: changeWidthHeight,
                                        onSubmit: submitHeight,
                                        keyboardType: .numbersAndPunctuation)
-                Toggle("Scale to fit video width", isOn: $browser.scaleToFitVideo)
-                    .onChange(of: browser.scaleToFitVideo) { _ in
-                        model.resetSelectedScene(changeScene: false)
-                    }
                 HStack {
                     Text("FPS")
                     SliderView(
