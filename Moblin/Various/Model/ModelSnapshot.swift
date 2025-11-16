@@ -117,6 +117,6 @@ extension Model {
 
 extension Model: SnapshotEffectDelegate {
     func snapshotEffectRegisterVideoEffect(effect: VideoEffect) {
-        media.registerEffectBack(effect)
+        media.registerEffect(effect)
     }
 }
