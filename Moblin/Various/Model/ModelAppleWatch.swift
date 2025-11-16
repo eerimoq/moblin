@@ -279,9 +279,9 @@ extension Model {
         }
         let zoomPresets: [WatchProtocolZoomPreset]
         if cameraPosition == .front {
-            zoomPresets = frontZoomPresets().map { .init(id: $0.id, name: $0.name) }
+            zoomPresets = zoom.frontZoomPresets.map { .init(id: $0.id, name: $0.name) }
         } else {
-            zoomPresets = backZoomPresets().map { .init(id: $0.id, name: $0.name) }
+            zoomPresets = zoom.backZoomPresets.map { .init(id: $0.id, name: $0.name) }
         }
         do {
             let zoomPresets = try JSONEncoder().encode(zoomPresets)

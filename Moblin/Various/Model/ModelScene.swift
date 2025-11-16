@@ -385,8 +385,6 @@ extension Model {
         remoteControlStreamer?.stateChanged(state: RemoteControlState(scene: id))
         if isWatchLocal() {
             sendSceneToWatch(id: sceneSelector.selectedSceneId)
-            sendZoomPresetsToWatch()
-            sendZoomPresetToWatch()
         }
         let showMediaPlayerControls = findEnabledScene(id: id)?.videoSource.cameraPosition == .mediaPlayer
         if showMediaPlayerControls != streamOverlay.showMediaPlayerControls {

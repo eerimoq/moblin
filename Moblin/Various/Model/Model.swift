@@ -930,7 +930,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if let cameraDevice = preferredCamera(position: .back) {
             (cameraZoomXMinimum, cameraZoomXMaximum) = cameraDevice
                 .getUIZoomRange(hasUltraWideCamera: hasUltraWideBackCamera)
-            if let preset = backZoomPresets().first {
+            if let preset = zoom.backZoomPresets.first {
                 zoom.backPresetId = preset.id
                 zoom.backX = preset.x
             } else {
@@ -938,6 +938,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             }
             zoom.x = zoom.backX
         }
+        updateFrontZoomPresets()
+        updateBackZoomPresets()
         zoom.frontPresetId = database.zoom.front[0].id
         streamPreviewView.videoGravity = .resizeAspect
         externalDisplayStreamPreviewView.videoGravity = .resizeAspect
@@ -2600,6 +2602,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         )
         zoom.xPinch = zoom.x
         zoom.hasZoom = true
+        updateFrontZoomPresets()
+        updateBackZoomPresets()
+        if isWatchLocal() {
+            sendZoomPresetsToWatch()
+            sendZoomPresetToWatch()
+        }
     }
 
     private func getIgnoreFramesAfterAttachSeconds() -> Double {

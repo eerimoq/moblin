@@ -12,6 +12,8 @@ class Zoom: ObservableObject {
     @Published var frontPresetId = UUID()
     @Published var x: Float = 1.0
     @Published var hasZoom = true
+    @Published var backZoomPresets: [SettingsZoomPreset] = []
+    @Published var frontZoomPresets: [SettingsZoomPreset] = []
 
     func statusText() -> String {
         return String(format: "%.1f", x)
@@ -127,6 +129,7 @@ extension Model {
         }) {
             zoom.backPresetId = database.zoom.back[0].id
         }
+        updateBackZoomPresets()
         sceneUpdated(updateRemoteScene: false)
     }
 
@@ -136,6 +139,7 @@ extension Model {
         }) {
             zoom.frontPresetId = database.zoom.front[0].id
         }
+        updateFrontZoomPresets()
         sceneUpdated(updateRemoteScene: false)
     }
 
@@ -210,12 +214,12 @@ extension Model {
         return x >= cameraZoomXMinimum && x <= cameraZoomXMaximum
     }
 
-    func backZoomPresets() -> [SettingsZoomPreset] {
-        return database.zoom.back.filter { showPreset(preset: $0) }
+    func updateBackZoomPresets() {
+        zoom.backZoomPresets = database.zoom.back.filter { showPreset(preset: $0) }
     }
 
-    func frontZoomPresets() -> [SettingsZoomPreset] {
-        return database.zoom.front.filter { showPreset(preset: $0) }
+    func updateFrontZoomPresets() {
+        zoom.frontZoomPresets = database.zoom.front.filter { showPreset(preset: $0) }
     }
 
     func setCameraZoomX(x: Float, rate: Float? = nil) -> Float? {
