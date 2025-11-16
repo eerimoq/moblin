@@ -82,7 +82,6 @@ enum AlertsEffectAlert {
 }
 
 protocol AlertsEffectDelegate: AnyObject {
-    func alertsPlayerRegisterVideoEffect(effect: VideoEffect)
     func alertsMakeErrorToast(title: String)
 }
 
@@ -186,7 +185,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
     private var synthesizer = createSpeechSynthesizer()
     private var alertsQueue: Deque<AlertsEffectAlert> = .init()
     private weak var delegate: (any AlertsEffectDelegate)?
-    private var toBeRemoved: Bool = true
+    private var enabled: Bool = false
     private var isPlaying: Bool = false
     private var delayAfterPlaying = 3.0
     private var settings: SettingsWidgetAlerts
@@ -245,15 +244,8 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         }
     }
 
-    override func shouldRemove() -> Bool {
-        return toBeRemoved
-    }
-
-    override func removed() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + delayAfterPlaying) {
-            self.isPlaying = false
-            self.tryPlayNextAlert()
-        }
+    override func isEnabled() -> Bool {
+        return enabled
     }
 
     func setSettings(settings: SettingsWidgetAlerts) {
@@ -456,10 +448,9 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
             self.images = images
             self.basePresentationTimeStamp = nil
             self.messageImage = messageImage
-            self.toBeRemoved = false
+            self.enabled = true
             self.landmarkSettings = landmarkSettings
         }
-        delegate?.alertsPlayerRegisterVideoEffect(effect: self)
         if let soundUrl {
             audioPlayer = try? AVAudioPlayer(contentsOf: soundUrl)
             audioPlayer?.play()
@@ -576,7 +567,13 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
 
     private func getNext(_ presentationTimeStamp: Double) -> (CIImage?, CIImage?, Double, Double, LandmarkSettings?) {
         defer {
-            toBeRemoved = images.isEmpty
+            enabled = !images.isEmpty
+            if !enabled {
+                DispatchQueue.main.asyncAfter(deadline: .now() + delayAfterPlaying) {
+                    self.isPlaying = false
+                    self.tryPlayNextAlert()
+                }
+            }
         }
         if basePresentationTimeStamp == nil {
             basePresentationTimeStamp = presentationTimeStamp

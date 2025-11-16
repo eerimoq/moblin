@@ -1216,10 +1216,8 @@ final class VideoUnit: NSObject {
     }
 
     private func isAnyEffectEnabled() -> Bool {
-        for effect in effects {
-            if effect.isEnabled() {
-                return true
-            }
+        for effect in effects where effect.isEnabled() {
+            return true
         }
         return false
     }

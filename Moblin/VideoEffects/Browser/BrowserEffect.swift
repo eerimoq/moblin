@@ -105,6 +105,10 @@ final class BrowserEffect: VideoEffect {
         return "\(settingName) browser widget"
     }
 
+    override func isEnabled() -> Bool {
+        return !audioOnly
+    }
+
     func sendChatMessage(post: ChatPost) {
         server.sendChatMessage(post: post)
     }
