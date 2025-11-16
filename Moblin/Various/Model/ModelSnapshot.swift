@@ -114,9 +114,3 @@ extension Model {
         media.setCleanSnapshots(enabled: stream.recording.cleanSnapshots)
     }
 }
-
-extension Model: SnapshotEffectDelegate {
-    func snapshotEffectRegisterVideoEffect(effect: VideoEffect) {
-        media.registerEffect(effect)
-    }
-}

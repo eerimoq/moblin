@@ -36,6 +36,10 @@ open class VideoEffect: NSObject {
         return (false, nil, nil)
     }
 
+    open func isEnabled() -> Bool {
+        return true
+    }
+
     open func executeEarly(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
         return image
     }

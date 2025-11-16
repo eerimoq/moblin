@@ -915,7 +915,7 @@ final class VideoUnit: NSObject {
         if isSceneSwitchTransition {
             image = applySceneSwitchTransition(image)
         }
-        for effect in effects {
+        for effect in effects where effect.isEnabled() {
             let effectOutputImage = effect.execute(image, info)
             if effectOutputImage.extent == extent {
                 image = effectOutputImage
@@ -1215,6 +1215,15 @@ final class VideoUnit: NSObject {
         }
     }
 
+    private func isAnyEffectEnabled() -> Bool {
+        for effect in effects {
+            if effect.isEnabled() {
+                return true
+            }
+        }
+        return false
+    }
+
     private func appendSampleBufferWithFaceDetections(
         _ sampleBuffer: CMSampleBuffer,
         _ isFirstAfterAttach: Bool,
@@ -1230,7 +1239,11 @@ final class VideoUnit: NSObject {
         if isFirstAfterAttach {
             usePendingAfterAttachEffectsInner()
         }
-        if !effects.isEmpty || isSceneSwitchTransition || imageBuffer.size != canvasSize || rotation != 0.0 {
+        if isAnyEffectEnabled()
+            || isSceneSwitchTransition
+            || imageBuffer.size != canvasSize
+            || rotation != 0.0
+        {
             (newImageBuffer, newSampleBuffer) = applyEffects(
                 imageBuffer,
                 sampleBuffer,

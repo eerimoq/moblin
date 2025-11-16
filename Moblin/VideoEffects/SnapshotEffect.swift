@@ -3,21 +3,15 @@ import Collections
 import UIKit
 import Vision
 
-protocol SnapshotEffectDelegate: AnyObject {
-    func snapshotEffectRegisterVideoEffect(effect: VideoEffect)
-}
-
 final class SnapshotEffect: VideoEffect {
     private var snapshots: Deque<CIImage> = []
     private var sceneWidget: SettingsSceneWidget?
     private var currentSnapshot: CIImage?
     private var hideSnapshotTime: Double?
     private var showtime: Double
-    private weak var delegate: SnapshotEffectDelegate?
 
-    init(showtime: Int, delegate: SnapshotEffectDelegate) {
+    init(showtime: Int) {
         self.showtime = Double(showtime)
-        self.delegate = delegate
         super.init()
     }
 
@@ -67,8 +61,8 @@ final class SnapshotEffect: VideoEffect {
             .composited(over: image)
     }
 
-    override func shouldRemove() -> Bool {
-        return currentSnapshot == nil
+    override func isEnabled() -> Bool {
+        return currentSnapshot != nil
     }
 
     private func appendSnapshotInner(image: CIImage) {
@@ -78,7 +72,6 @@ final class SnapshotEffect: VideoEffect {
         }
         currentSnapshot = snapshots.popFirst()
         hideSnapshotTime = nil
-        delegate?.snapshotEffectRegisterVideoEffect(effect: self)
     }
 
     private func removeSnapshotsInner() {

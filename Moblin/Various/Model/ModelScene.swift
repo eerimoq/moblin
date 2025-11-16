@@ -330,7 +330,7 @@ extension Model {
         }
         snapshotEffects.removeAll()
         for widget in widgets where widget.type == .snapshot {
-            let snapshotEffect = SnapshotEffect(showtime: widget.snapshot.showtime, delegate: self)
+            let snapshotEffect = SnapshotEffect(showtime: widget.snapshot.showtime)
             snapshotEffect.effects = widget.getEffects()
             snapshotEffects[widget.id] = snapshotEffect
         }
