@@ -30,11 +30,11 @@ struct ZoomSettingsView: View {
                     }
                     .onMove { froms, to in
                         zoom.back.move(fromOffsets: froms, toOffset: to)
-                        model.backZoomUpdated()
+                        model.backZoomPresetSettingsUpdated()
                     }
                     .onDelete { offsets in
                         zoom.back.remove(atOffsets: offsets)
-                        model.backZoomUpdated()
+                        model.backZoomPresetSettingsUpdated()
                     }
                 }
                 CreateButtonView {
@@ -43,7 +43,7 @@ struct ZoomSettingsView: View {
                         name: "1x",
                         x: 1.0
                     ))
-                    model.backZoomUpdated()
+                    model.backZoomPresetSettingsUpdated()
                 }
             } header: {
                 Text("Back camera presets")
@@ -62,11 +62,11 @@ struct ZoomSettingsView: View {
                     }
                     .onMove { froms, to in
                         zoom.front.move(fromOffsets: froms, toOffset: to)
-                        model.frontZoomUpdated()
+                        model.frontZoomPresetSettingUpdated()
                     }
                     .onDelete { offsets in
                         zoom.front.remove(atOffsets: offsets)
-                        model.frontZoomUpdated()
+                        model.frontZoomPresetSettingUpdated()
                     }
                 }
                 CreateButtonView {
@@ -75,7 +75,7 @@ struct ZoomSettingsView: View {
                         name: "1x",
                         x: 1.0
                     ))
-                    model.frontZoomUpdated()
+                    model.frontZoomPresetSettingUpdated()
                 }
             } header: {
                 Text("Front camera presets")

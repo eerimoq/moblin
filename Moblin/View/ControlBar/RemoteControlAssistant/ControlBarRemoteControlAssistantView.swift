@@ -421,6 +421,18 @@ private struct ZoomView: View {
                     submitZoom(value: remoteControl.zoom)
                 }
         }
+        Picker("", selection: $remoteControl.zoomPreset) {
+            ForEach(remoteControl.zoomPresets) { preset in
+                Text(preset.name)
+            }
+            .onChange(of: remoteControl.zoomPreset) { _ in
+                guard remoteControl.zoomPreset != model.remoteControlState.zoomPreset else {
+                    return
+                }
+                model.remoteControlAssistantSetZoomPreset(id: remoteControl.zoomPreset)
+            }
+        }
+        .pickerStyle(.segmented)
     }
 }
 

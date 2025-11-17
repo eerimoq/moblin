@@ -14,6 +14,7 @@ enum RemoteControlRequest: Codable {
     case setRecord(on: Bool)
     case setStream(on: Bool)
     case setZoom(x: Float)
+    case setZoomPreset(id: UUID)
     case setMute(on: Bool)
     case setTorch(on: Bool)
     case setDebugLogging(on: Bool)
@@ -572,12 +573,19 @@ struct RemoteControlStateAutoSceneSwitcher: Codable {
     var id: UUID?
 }
 
+struct RemoteControlZoomPreset: Codable, Identifiable {
+    var id: UUID
+    var name: String
+}
+
 struct RemoteControlState: Codable {
     var scene: UUID?
     var autoSceneSwitcher: RemoteControlStateAutoSceneSwitcher?
     var mic: String?
     var bitrate: UUID?
     var zoom: Float?
+    var zoomPresets: [RemoteControlZoomPreset]?
+    var zoomPreset: UUID?
     var debugLogging: Bool?
     var streaming: Bool?
     var recording: Bool?

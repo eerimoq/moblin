@@ -17,8 +17,8 @@ struct ZoomPresetSettingsView: View {
         }
         preset.x = x
         preset.name = "\(formatOneDecimal(x))x".replacingOccurrences(of: ".0", with: "")
-        model.updateFrontZoomPresets()
-        model.updateBackZoomPresets()
+        model.frontZoomPresetSettingUpdated()
+        model.backZoomPresetSettingsUpdated()
     }
 
     private func formatX(x: Float) -> String {

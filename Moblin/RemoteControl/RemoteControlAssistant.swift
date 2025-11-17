@@ -133,6 +133,10 @@ class RemoteControlAssistant: NSObject {
         performRequestNoResponseData(data: .setZoom(x: x), onSuccess: onSuccess)
     }
 
+    func setZoomPreset(id: UUID, onSuccess: @escaping () -> Void) {
+        performRequestNoResponseData(data: .setZoomPreset(id: id), onSuccess: onSuccess)
+    }
+
     func setMute(on: Bool, onSuccess: @escaping () -> Void) {
         performRequestNoResponseData(data: .setMute(on: on), onSuccess: onSuccess)
     }

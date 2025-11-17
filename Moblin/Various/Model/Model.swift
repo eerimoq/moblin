@@ -2604,10 +2604,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         zoom.hasZoom = true
         updateFrontZoomPresets()
         updateBackZoomPresets()
-        if isWatchLocal() {
-            sendZoomPresetsToWatch()
-            sendZoomPresetToWatch()
-        }
     }
 
     private func getIgnoreFramesAfterAttachSeconds() -> Double {
