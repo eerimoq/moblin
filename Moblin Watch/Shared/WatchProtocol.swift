@@ -132,7 +132,6 @@ struct WatchProtocolScene: Codable, Identifiable {
     var name: String
 }
 
-// periphery:ignore
 struct WatchProtocolZoomPreset: Codable, Identifiable {
     var id: UUID
     var name: String
@@ -144,7 +143,6 @@ enum WatchProtocolWorkoutType: Codable {
     case cycling
 }
 
-// periphery:ignore
 struct WatchProtocolStartWorkout: Codable {
     var type: WatchProtocolWorkoutType
 }
