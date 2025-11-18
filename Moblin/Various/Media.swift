@@ -971,8 +971,6 @@ extension Media: ProcessorDelegate {
         }
     }
 
-    func streamVideo(presentationTimestamp _: Double) {}
-
     func streamVideo(failedEffect: String?) {
         DispatchQueue.main.async {
             self.failedVideoEffect = failedEffect

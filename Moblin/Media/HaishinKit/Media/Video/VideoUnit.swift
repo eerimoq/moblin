@@ -63,7 +63,6 @@ private func setOrientation(
 }
 
 private class FaceDetectionsCompletion {
-    // periphery:ignore
     let sequenceNumber: UInt64
     let sampleBuffer: CMSampleBuffer
     let isFirstAfterAttach: Bool
@@ -1121,7 +1120,6 @@ final class VideoUnit: NSObject {
         latestSampleBufferAppendTime = sampleBuffer.presentationTimeStamp
         let presentationTimeStamp = sampleBuffer.presentationTimeStamp.seconds
         updateFps(presentationTimeStamp)
-        processor?.delegate?.streamVideo(presentationTimestamp: presentationTimeStamp)
         let faceDetectionVideoSourceIds = needsFaceDetections(presentationTimeStamp)
         let faceDetectionJobs = prepareFaceDetectionJobs(
             faceDetectionVideoSourceIds,
@@ -1150,7 +1148,7 @@ final class VideoUnit: NSObject {
                             // Only use 5 biggest to limit processing.
                             if let results = (request as? VNDetectFaceLandmarksRequest)?
                                 .results?
-                                .sorted(by: { a, b in a.boundingBox.height > b.boundingBox.height })
+                                .sorted(by: { $0.boundingBox.height > $1.boundingBox.height })
                                 .prefix(5)
                             {
                                 completion.faceDetections[faceDetectionJob.videoSourceId] = Array(results)
@@ -1201,9 +1199,7 @@ final class VideoUnit: NSObject {
             return
         }
         completedFaceDetections[completion.sequenceNumber] = completion
-        while let completion = completedFaceDetections
-            .removeValue(forKey: nextCompletedFaceDetectionsSequenceNumber)
-        {
+        while let completion = completedFaceDetections.removeValue(forKey: nextCompletedFaceDetectionsSequenceNumber) {
             appendSampleBufferWithFaceDetections(
                 completion.sampleBuffer,
                 completion.isFirstAfterAttach,
