@@ -1788,7 +1788,7 @@ final class VideoUnit: NSObject {
             return nil
         }
         var sampleBufferCopy: CMSampleBuffer
-        if bufferedVideo.latency > 0.07 || bufferedVideo.numberOfBuffers() > 4 {
+        if bufferedVideo.numberOfBuffers() > 4 {
             sampleBufferCopy = makeCopy(sampleBuffer: sampleBuffer) ?? sampleBuffer
         } else {
             sampleBufferCopy = sampleBuffer
