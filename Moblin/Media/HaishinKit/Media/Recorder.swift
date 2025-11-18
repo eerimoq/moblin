@@ -76,14 +76,6 @@ class Recorder: NSObject {
     }
 
     func appendAudio(_ sampleBuffer: CMSampleBuffer, _ presentationTimeStamp: CMTime) {
-        appendAudioInner(sampleBuffer, presentationTimeStamp)
-    }
-
-    func appendVideo(_ sampleBuffer: CMSampleBuffer) {
-        appendVideoInner(sampleBuffer)
-    }
-
-    private func appendAudioInner(_ sampleBuffer: CMSampleBuffer, _ presentationTimeStamp: CMTime) {
         guard let writer,
               let sampleBuffer = convertAudio(sampleBuffer, presentationTimeStamp),
               let input = makeAudioWriterInput(sampleBuffer: sampleBuffer, presentationTimeStamp),
@@ -97,6 +89,25 @@ class Recorder: NSObject {
         if !input.append(sampleBuffer) {
             logger.info("""
             recorder: audio: Append failed with \(writer.error?.localizedDescription ?? "") \
+            (status: \(writer.status))
+            """)
+            stopRunningInner()
+        }
+    }
+
+    func appendVideo(_ sampleBuffer: CMSampleBuffer) {
+        guard let writer,
+              let input = makeVideoWriterInput(sampleBuffer: sampleBuffer),
+              isReadyForStartWriting(writer: writer),
+              input.isReadyForMoreMediaData,
+              let sampleBuffer = sampleBuffer
+              .replacePresentationTimeStamp(sampleBuffer.presentationTimeStamp - basePresentationTimeStamp)
+        else {
+            return
+        }
+        if !input.append(sampleBuffer) {
+            logger.info("""
+            recorder: video: Append failed with \(writer.error?.localizedDescription ?? "") \
             (status: \(writer.status))
             """)
             stopRunningInner()
@@ -139,25 +150,6 @@ class Recorder: NSObject {
                 return nil
             }
             return outputBuffer.makeSampleBuffer(presentationTimeStamp)
-        }
-    }
-
-    private func appendVideoInner(_ sampleBuffer: CMSampleBuffer) {
-        guard let writer,
-              let input = makeVideoWriterInput(sampleBuffer: sampleBuffer),
-              isReadyForStartWriting(writer: writer),
-              input.isReadyForMoreMediaData,
-              let sampleBuffer = sampleBuffer
-              .replacePresentationTimeStamp(sampleBuffer.presentationTimeStamp - basePresentationTimeStamp)
-        else {
-            return
-        }
-        if !input.append(sampleBuffer) {
-            logger.info("""
-            recorder: video: Append failed with \(writer.error?.localizedDescription ?? "") \
-            (status: \(writer.status))
-            """)
-            stopRunningInner()
         }
     }
 
