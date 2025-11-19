@@ -244,7 +244,7 @@ private struct DjiDeviceSettingsSettingsView: View {
                 }
             }
             .disabled(device.isStarted)
-            if device.model == .osmoAction4 || device.model == .osmoAction5Pro {
+            if device.model == .osmoAction4 || device.model == .osmoAction5Pro || device.model == .osmoAction6 {
                 Picker("Image stabilization", selection: $device.imageStabilization) {
                     ForEach(SettingsDjiDeviceImageStabilization.allCases, id: \.self) {
                         Text($0.toString())
