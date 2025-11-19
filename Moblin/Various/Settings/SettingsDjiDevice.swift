@@ -62,6 +62,7 @@ enum SettingsDjiDeviceModel: String, Codable {
     case osmoAction3
     case osmoAction4
     case osmoAction5Pro
+    case osmoAction6
     case osmoPocket3
     case unknown
 
