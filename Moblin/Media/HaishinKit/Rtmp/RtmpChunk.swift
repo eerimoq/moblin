@@ -42,7 +42,7 @@ final class RtmpChunk {
     }
 
     static let defaultSize = 128
-    static let maxTimestamp: UInt32 = 0xFFFFFF
+    private static let maxTimestamp: UInt32 = 0xFFFFFF
     private var size = 0
     private(set) var type: RtmpChunkType = .zero
     private(set) var chunkStreamId = RtmpChunk.ChunkStreamId.command.rawValue
@@ -209,7 +209,7 @@ final class RtmpChunk {
         return 3
     }
 
-    static func basicHeaderSize(_ byte: UInt8) -> Int {
+    fileprivate static func basicHeaderSize(_ byte: UInt8) -> Int {
         switch byte & 0b0011_1111 {
         case 0:
             return 2

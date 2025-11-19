@@ -44,7 +44,7 @@ class RtmpConnection {
     var callCompletions: [Int: ([Any?]) -> Void] = [:]
     var windowSizeFromServer: Int64 = 250_000 {
         didSet {
-            guard socket.connected == true else {
+            guard socket.connected else {
                 return
             }
             _ = socket.write(chunk: RtmpChunk(

@@ -300,8 +300,7 @@ class RtmpServerChunkStream {
             return
         }
         let control = messageBody[0]
-        guard let codec = FlvAudioCodec(rawValue: control >> 4)
-        else {
+        guard let codec = FlvAudioCodec(rawValue: control >> 4) else {
             client.stopInternal(reason: "Failed to parse audio settings \(control)")
             return
         }
