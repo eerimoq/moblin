@@ -244,15 +244,14 @@ class RtmpStream {
 
     private func handleStateChangeToOpen() {
         info.clear()
-        let message = RtmpCommandMessage(
+        _ = connection.socket.write(chunk: RtmpChunk(message: RtmpCommandMessage(
             streamId: id,
             transactionId: connection.getNextTransactionId(),
             commandType: .amf0Command,
             commandName: "publish",
             commandObject: nil,
             arguments: [streamKey, "live"]
-        )
-        _ = connection.socket.write(chunk: RtmpChunk(message: message))
+        )))
         startedAt = .init()
         baseTimeStamp = -1.0
         prevRebasedAudioTimeStamp = -1.0
