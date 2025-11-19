@@ -332,7 +332,7 @@ class RtmpStream {
         info.byteCount.mutate { $0 += Int64(length) }
     }
 
-    private func audioCodecOutputFormatInner(_ format: AVAudioFormat) {
+    private func audioEncoderOutputFormatInner(_ format: AVAudioFormat) {
         guard let audioStreamBasicDescription = format.formatDescription.audioStreamBasicDescription else {
             return
         }
@@ -356,7 +356,9 @@ class RtmpStream {
         handleEncodedAudioBuffer(writer.data, 0)
     }
 
-    private func audioCodecOutputBufferInner(_ audioBuffer: AVAudioCompressedBuffer, _ presentationTimeStamp: CMTime) {
+    private func audioEncoderOutputBufferInner(_ audioBuffer: AVAudioCompressedBuffer,
+                                               _ presentationTimeStamp: CMTime)
+    {
         guard let rebasedTimestamp = rebaseTimeStamp(timestamp: presentationTimeStamp.seconds) else {
             logger.info("rtmp: \(name): Dropping audio buffer. Failed to rebase timestamp.")
             return
@@ -384,7 +386,7 @@ class RtmpStream {
         audioTimeStampDelta += delta
     }
 
-    private func videoCodecOutputFormatInner(
+    private func videoEncoderOutputFormatInner(
         _ format: VideoEncoderSettings.Format,
         _ formatDescription: CMFormatDescription
     ) {
@@ -407,8 +409,8 @@ class RtmpStream {
         handleEncodedVideoBuffer(buffer, 0)
     }
 
-    private func videoCodecOutputSampleBufferInner(_ format: VideoEncoderSettings.Format,
-                                                   _ sampleBuffer: CMSampleBuffer)
+    private func videoEncoderOutputSampleBufferInner(_ format: VideoEncoderSettings.Format,
+                                                     _ sampleBuffer: CMSampleBuffer)
     {
         let decodeTimeStamp: Double
         if sampleBuffer.decodeTimeStamp.isValid {
@@ -461,13 +463,13 @@ class RtmpStream {
 extension RtmpStream: AudioEncoderDelegate {
     func audioEncoderOutputFormat(_ format: AVAudioFormat) {
         processorControlQueue.async {
-            self.audioCodecOutputFormatInner(format)
+            self.audioEncoderOutputFormatInner(format)
         }
     }
 
     func audioEncoderOutputBuffer(_ buffer: AVAudioCompressedBuffer, _ presentationTimeStamp: CMTime) {
         processorControlQueue.async {
-            self.audioCodecOutputBufferInner(buffer, presentationTimeStamp)
+            self.audioEncoderOutputBufferInner(buffer, presentationTimeStamp)
         }
     }
 }
@@ -476,7 +478,7 @@ extension RtmpStream: VideoEncoderDelegate {
     func videoEncoderOutputFormat(_ encoder: VideoEncoder, _ formatDescription: CMFormatDescription) {
         let format = encoder.settings.value.format
         processorControlQueue.async {
-            self.videoCodecOutputFormatInner(format, formatDescription)
+            self.videoEncoderOutputFormatInner(format, formatDescription)
         }
     }
 
@@ -486,7 +488,7 @@ extension RtmpStream: VideoEncoderDelegate {
     {
         let format = codec.settings.value.format
         processorControlQueue.async {
-            self.videoCodecOutputSampleBufferInner(format, sampleBuffer)
+            self.videoEncoderOutputSampleBufferInner(format, sampleBuffer)
         }
     }
 }
