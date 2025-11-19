@@ -271,13 +271,12 @@ class Recorder: NSObject {
            kLinearPCMFormatFlagIsBigEndian ==
            (basicDescription.mFormatFlags & kLinearPCMFormatFlagIsBigEndian)
         {
-            logger.info("recorder: Big endian?")
             // ReplayKit audioApp.
             guard basicDescription.mBitsPerChannel == 16 else {
                 return nil
             }
             if let layout = makeChannelLayout(basicDescription.mChannelsPerFrame) {
-                return .init(
+                return AVAudioFormat(
                     commonFormat: .pcmFormatInt16,
                     sampleRate: basicDescription.mSampleRate,
                     interleaved: true,
@@ -292,9 +291,9 @@ class Recorder: NSObject {
             )
         }
         if let layout = makeChannelLayout(basicDescription.mChannelsPerFrame) {
-            return .init(streamDescription: &basicDescription, channelLayout: layout)
+            return AVAudioFormat(streamDescription: &basicDescription, channelLayout: layout)
         }
-        return .init(streamDescription: &basicDescription)
+        return AVAudioFormat(streamDescription: &basicDescription)
     }
 
     private func startRunningInner(
