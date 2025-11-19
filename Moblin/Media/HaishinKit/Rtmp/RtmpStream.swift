@@ -76,8 +76,8 @@ class RtmpStream {
     private var baseTimeStamp = -1.0
     private var audioTimeStampDelta = 0.0
     private var videoTimeStampDelta = 0.0
-    private var prevRebasedAudioTimeStamp = -1.0
-    private var prevRebasedVideoTimeStamp = -1.0
+    private var prevRebasedAudioTimeStamp: Double?
+    private var prevRebasedVideoTimeStamp: Double?
     private let processor: Processor
     weak var delegate: RtmpStreamDelegate?
 
@@ -218,10 +218,6 @@ class RtmpStream {
     private func createOnMetaData() -> AsObject {
         let audioEncoder = processor.getAudioEncoder()
         let videoEncoder = processor.getVideoEncoder()
-        return createOnMetaDataLegacy(audioEncoder, videoEncoder)
-    }
-
-    private func createOnMetaDataLegacy(_ audioEncoder: AudioEncoder, _ videoEncoder: VideoEncoder) -> AsObject {
         var metadata: [String: Any] = [:]
         let settings = videoEncoder.settings.value
         metadata["width"] = settings.videoSize.width
@@ -254,8 +250,10 @@ class RtmpStream {
         )))
         startedAt = .init()
         baseTimeStamp = -1.0
-        prevRebasedAudioTimeStamp = -1.0
-        prevRebasedVideoTimeStamp = -1.0
+        audioTimeStampDelta = 0.0
+        videoTimeStampDelta = 0.0
+        prevRebasedAudioTimeStamp = nil
+        prevRebasedVideoTimeStamp = nil
         videoChunkType = .zero
         audioChunkType = .zero
         dataTimeStamps.removeAll()
@@ -364,7 +362,7 @@ class RtmpStream {
             return
         }
         var delta = 0.0
-        if prevRebasedAudioTimeStamp != -1.0 {
+        if let prevRebasedAudioTimeStamp {
             delta = (rebasedTimestamp - prevRebasedAudioTimeStamp) * 1000
         }
         guard delta >= 0 else {
@@ -423,7 +421,7 @@ class RtmpStream {
             return
         }
         var delta = 0.0
-        if prevRebasedVideoTimeStamp != -1.0 {
+        if let prevRebasedVideoTimeStamp {
             delta = (rebasedTimestamp - prevRebasedVideoTimeStamp) * 1000
         }
         guard let data = sampleBuffer.dataBuffer?.data, delta >= 0 else {
