@@ -72,7 +72,6 @@ extension CMSampleBuffer {
         return self
     }
 
-    @inline(__always)
     private func getAttachmentValue(for key: CFString) -> Bool? {
         guard
             let attachments = CMSampleBufferGetSampleAttachmentsArray(
@@ -90,7 +89,6 @@ extension CMSampleBuffer {
         setAttachmentValue(for: kCMSampleAttachmentKey_DisplayImmediately, value: true)
     }
 
-    @inline(__always)
     private func setAttachmentValue(for key: CFString, value: Bool) {
         guard
             let attachments = CMSampleBufferGetSampleAttachmentsArray(self, createIfNecessary: true),
