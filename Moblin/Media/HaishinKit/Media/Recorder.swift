@@ -115,13 +115,13 @@ class Recorder: NSObject {
     }
 
     private func convertAudio(_ sampleBuffer: CMSampleBuffer, _ presentationTimeStamp: CMTime) -> CMSampleBuffer? {
-        return tryConvertAudio(sampleBuffer, presentationTimeStamp)
+        return tryConvertAudio(sampleBuffer, presentationTimeStamp, makeConverter: false)
             ?? tryConvertAudio(sampleBuffer, presentationTimeStamp, makeConverter: true)
     }
 
     private func tryConvertAudio(_ sampleBuffer: CMSampleBuffer,
                                  _ presentationTimeStamp: CMTime,
-                                 makeConverter: Bool = false) -> CMSampleBuffer?
+                                 makeConverter: Bool) -> CMSampleBuffer?
     {
         if makeConverter {
             makeAudioConverter(sampleBuffer.formatDescription)
