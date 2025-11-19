@@ -451,7 +451,7 @@ class RtmpStream {
             return
         }
         var buffer: Data
-        let frameType = sampleBuffer.isSync ? FlvFrameType.key : FlvFrameType.inter
+        let frameType = sampleBuffer.getIsSync() ? FlvFrameType.key : FlvFrameType.inter
         switch format {
         case .h264:
             buffer = makeAvcVideoTagHeader(frameType, .nal)

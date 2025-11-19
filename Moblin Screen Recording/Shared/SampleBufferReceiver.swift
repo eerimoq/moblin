@@ -128,7 +128,7 @@ class SampleBufferReceiver {
         ) == noErr, let sampleBuffer else {
             return
         }
-        sampleBuffer.isSync = header.isSync
+        sampleBuffer.setIsSync(header.isSync)
         videoDecoder?.decodeSampleBuffer(sampleBuffer)
     }
 

@@ -45,13 +45,12 @@ extension CMSampleBuffer {
         return dataBuffer.makeSampleBuffer(presentationTimeStamp)
     }
 
-    var isSync: Bool {
-        get {
-            !(getAttachmentValue(for: kCMSampleAttachmentKey_NotSync) ?? false)
-        }
-        set {
-            setAttachmentValue(for: kCMSampleAttachmentKey_NotSync, value: !newValue)
-        }
+    func setIsSync(_ value: Bool) {
+        setAttachmentValue(for: kCMSampleAttachmentKey_NotSync, value: !value)
+    }
+
+    func getIsSync() -> Bool {
+        return !(getAttachmentValue(for: kCMSampleAttachmentKey_NotSync) ?? false)
     }
 
     func muted(_ muted: Bool) -> CMSampleBuffer? {

@@ -614,7 +614,7 @@ class RtmpServerChunkStream {
         ) == noErr else {
             return nil
         }
-        sampleBuffer?.isSync = isKeyFrame
+        sampleBuffer?.setIsSync(isKeyFrame)
         return sampleBuffer
     }
 

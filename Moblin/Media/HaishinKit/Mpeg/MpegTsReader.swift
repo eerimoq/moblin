@@ -326,7 +326,6 @@ class MpegTsReader {
         ) else {
             return nil
         }
-        sampleBuffer.isSync = true
         return (true, sampleBuffer)
     }
 
@@ -375,7 +374,6 @@ class MpegTsReader {
         ) else {
             return nil
         }
-        sampleBuffer.isSync = true
         return (true, sampleBuffer)
     }
 
@@ -404,7 +402,7 @@ class MpegTsReader {
         ) else {
             return nil
         }
-        sampleBuffer.isSync = units.contains { $0.header.type == .idr }
+        sampleBuffer.setIsSync(units.contains { $0.header.type == .idr })
         return (false, sampleBuffer)
     }
 
@@ -447,7 +445,7 @@ class MpegTsReader {
         ) else {
             return nil
         }
-        sampleBuffer.isSync = units.contains { $0.header.type == .sps }
+        sampleBuffer.setIsSync(units.contains { $0.header.type == .sps })
         return (false, sampleBuffer)
     }
 

@@ -431,7 +431,7 @@ extension MpegTsWriter: VideoEncoderDelegate {
             return
         }
         let decodeTimeStamp = CMTimeSubtract(sampleBuffer.decodeTimeStamp, decodeTimeStampOffset)
-        let randomAccessIndicator = sampleBuffer.isSync
+        let randomAccessIndicator = sampleBuffer.getIsSync()
         let bytes = UnsafeMutableRawPointer(buffer).bindMemory(to: UInt8.self, capacity: length)
         updateTimecodeReference()
         let timecode = makeTimecode(sampleBuffer.presentationTimeStamp, decodeTimeStamp)

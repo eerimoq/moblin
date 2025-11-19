@@ -145,7 +145,7 @@ extension SampleBufferSender: VideoEncoderDelegate {
             type: .videoBuffer,
             size: size,
             presentationTimeStamp: sampleBuffer.presentationTimeStamp.seconds,
-            isSync: sampleBuffer.isSync
+            isSync: sampleBuffer.getIsSync()
         )
         do {
             try sendHeader(header)
