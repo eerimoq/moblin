@@ -111,9 +111,3 @@ enum FlvAudioCodec: UInt8 {
         }
     }
 }
-
-enum FlvAvMultitrackType: UInt8 {
-    case oneTrack = 0
-    case manyTracks = 1
-    case manyTracksManyCodecs = 2
-}

@@ -13,34 +13,26 @@ private func calcVideoCompositionTime(_ sampleBuffer: CMSampleBuffer) -> Int32 {
 
 private func makeVideoHeader(_ frameType: FlvFrameType,
                              _ fourCc: FlvVideoFourCC,
-                             _ trackId: UInt8,
                              _ avcPacketType: FlvAvcPacketType, // Not part of FLV?
                              _ videoPacketType: FlvVideoPacketType) -> Data
 {
     let writer = ByteWriter()
-    if trackId == 0 {
-        if fourCc == .avc1 {
-            writer.writeUInt8((frameType.rawValue << 4) | FlvVideoCodec.avc.rawValue)
-            writer.writeUInt8(avcPacketType.rawValue)
-        } else {
-            writer.writeUInt8(extendedVideoHeader | (frameType.rawValue << 4) | videoPacketType.rawValue)
-            writer.writeUInt32(fourCc.rawValue)
-        }
+    if fourCc == .avc1 {
+        writer.writeUInt8((frameType.rawValue << 4) | FlvVideoCodec.avc.rawValue)
+        writer.writeUInt8(avcPacketType.rawValue)
     } else {
-        writer.writeUInt8(extendedVideoHeader | (frameType.rawValue << 4) | FlvVideoPacketType.multiTrack.rawValue)
-        writer.writeUInt8((FlvAvMultitrackType.oneTrack.rawValue << 4) | FlvVideoPacketType.codedFramesX.rawValue)
+        writer.writeUInt8(extendedVideoHeader | (frameType.rawValue << 4) | videoPacketType.rawValue)
         writer.writeUInt32(fourCc.rawValue)
-        writer.writeUInt8(trackId)
     }
     return writer.data
 }
 
 private func makeAvcVideoTagHeader(_ frameType: FlvFrameType, _ packetType: FlvAvcPacketType) -> Data {
-    return makeVideoHeader(frameType, .avc1, 0, packetType, .sequenceStart)
+    return makeVideoHeader(frameType, .avc1, packetType, .sequenceStart)
 }
 
 private func makeHevcExtendedTagHeader(_ frameType: FlvFrameType, _ packetType: FlvVideoPacketType) -> Data {
-    return makeVideoHeader(frameType, .hevc, 0, .nal, packetType)
+    return makeVideoHeader(frameType, .hevc, .nal, packetType)
 }
 
 protocol RtmpStreamDelegate: AnyObject {
