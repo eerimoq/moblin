@@ -52,7 +52,11 @@ extension Model {
                 if bluetoothOutputOnly {
                     bluetoothOption = .allowBluetoothA2DP
                 } else {
-                    bluetoothOption = .allowBluetoothHFP
+                    if #available(iOS 26, *) {
+                        bluetoothOption = [.allowBluetoothHFP, .bluetoothHighQualityRecording]
+                    } else {
+                        bluetoothOption = .allowBluetoothHFP
+                    }
                 }
                 try session.setCategory(
                     .playAndRecord,
