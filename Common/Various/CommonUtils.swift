@@ -420,10 +420,7 @@ extension Data {
                 dataLength: length,
                 flags: 0,
                 blockBufferOut: &blockBuffer
-            ) == noErr else {
-                return nil
-            }
-            guard let blockBuffer else {
+            ) == noErr, let blockBuffer else {
                 return nil
             }
             guard CMBlockBufferReplaceDataBytes(

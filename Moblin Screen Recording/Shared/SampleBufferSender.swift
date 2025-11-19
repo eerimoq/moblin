@@ -1,5 +1,3 @@
-import AVFoundation
-import CoreFoundation
 import ReplayKit
 import VideoToolbox
 
@@ -71,18 +69,11 @@ class SampleBufferSender: NSObject {
         guard let imageBuffer = sampleBuffer.imageBuffer else {
             return
         }
-        if videoEncoder == nil, let formatDescription = sampleBuffer.formatDescription {
-            videoEncoder = VideoEncoder(
-                width: formatDescription.dimensions.width,
-                height: formatDescription.dimensions.height
-            )
+        if videoEncoder == nil, let dimensions = sampleBuffer.formatDescription?.dimensions {
+            videoEncoder = VideoEncoder(width: dimensions.width, height: dimensions.height)
             videoEncoder?.delegate = self
         }
-        videoEncoder?.appendImageBuffer(
-            imageBuffer,
-            presentationTimeStamp: sampleBuffer.presentationTimeStamp,
-            duration: sampleBuffer.duration
-        )
+        videoEncoder?.appendImageBuffer(imageBuffer, sampleBuffer.presentationTimeStamp)
     }
 
     private func sendHeader(_ header: SampleBufferHeader) throws {
@@ -178,7 +169,7 @@ class VideoEncoder {
         session = makeCompressionSession(width: width, height: height)
     }
 
-    func appendImageBuffer(_ imageBuffer: CVImageBuffer, presentationTimeStamp: CMTime, duration _: CMTime) {
+    func appendImageBuffer(_ imageBuffer: CVImageBuffer, _ presentationTimeStamp: CMTime) {
         guard let session else {
             return
         }
