@@ -459,14 +459,14 @@ class RtmpStream {
     }
 }
 
-extension RtmpStream: AudioCodecDelegate {
-    func audioCodecOutputFormat(_ format: AVAudioFormat) {
+extension RtmpStream: AudioEncoderDelegate {
+    func audioEncoderOutputFormat(_ format: AVAudioFormat) {
         processorControlQueue.async {
             self.audioCodecOutputFormatInner(format)
         }
     }
 
-    func audioCodecOutputBuffer(_ buffer: AVAudioCompressedBuffer, _ presentationTimeStamp: CMTime) {
+    func audioEncoderOutputBuffer(_ buffer: AVAudioCompressedBuffer, _ presentationTimeStamp: CMTime) {
         processorControlQueue.async {
             self.audioCodecOutputBufferInner(buffer, presentationTimeStamp)
         }

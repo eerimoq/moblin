@@ -26,9 +26,9 @@ let processorControlQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.Proc
 let processorPipelineQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.Processor.Pipeline", qos: .userInteractive)
 
 private class Stream {
-    weak var delegate: (any AudioCodecDelegate & VideoEncoderDelegate)?
+    weak var delegate: (any AudioEncoderDelegate & VideoEncoderDelegate)?
 
-    init(delegate: (any AudioCodecDelegate & VideoEncoderDelegate)? = nil) {
+    init(delegate: (any AudioEncoderDelegate & VideoEncoderDelegate)? = nil) {
         self.delegate = delegate
     }
 }
@@ -245,14 +245,14 @@ final class Processor {
         }
     }
 
-    func startEncoding(_ delegate: any AudioCodecDelegate & VideoEncoderDelegate) {
+    func startEncoding(_ delegate: any AudioEncoderDelegate & VideoEncoderDelegate) {
         streams.append(Stream(delegate: delegate))
         logger.info("processor: Starting encoding")
         video.startEncoding(self)
         audio.startEncoding(self)
     }
 
-    func stopEncoding(_ delegate: any AudioCodecDelegate & VideoEncoderDelegate) {
+    func stopEncoding(_ delegate: any AudioEncoderDelegate & VideoEncoderDelegate) {
         streams.removeAll(where: { $0.delegate === delegate })
         if streams.isEmpty {
             logger.info("processor: Stopping encoding")
@@ -304,16 +304,16 @@ final class Processor {
     }
 }
 
-extension Processor: AudioCodecDelegate {
-    func audioCodecOutputFormat(_ format: AVAudioFormat) {
+extension Processor: AudioEncoderDelegate {
+    func audioEncoderOutputFormat(_ format: AVAudioFormat) {
         for stream in streams {
-            stream.delegate?.audioCodecOutputFormat(format)
+            stream.delegate?.audioEncoderOutputFormat(format)
         }
     }
 
-    func audioCodecOutputBuffer(_ buffer: AVAudioCompressedBuffer, _ presentationTimeStamp: CMTime) {
+    func audioEncoderOutputBuffer(_ buffer: AVAudioCompressedBuffer, _ presentationTimeStamp: CMTime) {
         for stream in streams {
-            stream.delegate?.audioCodecOutputBuffer(buffer, presentationTimeStamp)
+            stream.delegate?.audioEncoderOutputBuffer(buffer, presentationTimeStamp)
         }
     }
 }

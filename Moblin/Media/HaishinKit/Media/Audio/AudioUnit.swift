@@ -71,7 +71,7 @@ final class AudioUnit: NSObject {
         }
     }
 
-    func startEncoding(_ delegate: any AudioCodecDelegate) {
+    func startEncoding(_ delegate: any AudioEncoderDelegate) {
         encoder.delegate = delegate
         encoder.startRunning()
     }

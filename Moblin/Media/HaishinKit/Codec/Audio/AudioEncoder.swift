@@ -1,12 +1,12 @@
 import AVFoundation
 
-protocol AudioCodecDelegate: AnyObject {
-    func audioCodecOutputFormat(_ format: AVAudioFormat)
-    func audioCodecOutputBuffer(_ buffer: AVAudioCompressedBuffer, _ presentationTimeStamp: CMTime)
+protocol AudioEncoderDelegate: AnyObject {
+    func audioEncoderOutputFormat(_ format: AVAudioFormat)
+    func audioEncoderOutputBuffer(_ buffer: AVAudioCompressedBuffer, _ presentationTimeStamp: CMTime)
 }
 
 class AudioEncoder {
-    weak var delegate: (any AudioCodecDelegate)?
+    weak var delegate: (any AudioEncoderDelegate)?
     private var isRunning = false
     private let lockQueue: DispatchQueue
     private var ringBuffer: AudioEncoderRingBuffer?
@@ -87,7 +87,7 @@ class AudioEncoder {
 
     private func startRunningInternal() {
         if let audioConverter {
-            delegate?.audioCodecOutputFormat(audioConverter.outputFormat)
+            delegate?.audioEncoderOutputFormat(audioConverter.outputFormat)
         }
         isRunning = true
     }
@@ -120,7 +120,7 @@ class AudioEncoder {
         if let error {
             logger.info("audio-encoder: Failed to convert \(error)")
         } else {
-            delegate?.audioCodecOutputBuffer(outputBuffer, presentationTimeStamp)
+            delegate?.audioEncoderOutputBuffer(outputBuffer, presentationTimeStamp)
         }
     }
 
@@ -143,7 +143,7 @@ class AudioEncoder {
             outputToInputChannelsMap: settings.channelsMap
         )
         converter.setBitrate(to: settings.bitrate)
-        delegate?.audioCodecOutputFormat(outputFormat)
+        delegate?.audioEncoderOutputFormat(outputFormat)
         return converter
     }
 }
