@@ -21,32 +21,12 @@ final class RtmpSocket {
     var maximumChunkSizeToServer = RtmpChunk.defaultSize
     private var readyState: RtmpSocketReadyState = .uninitialized
     private var inputBuffer = Data()
-    weak var delegate: (any RtmpSocketDelegate)?
+    weak var delegate: RtmpSocketDelegate?
     private var totalBytesSent: Int64 = 0
-    private(set) var connected = false {
-        didSet {
-            if connected {
-                write(data: RtmpHandshake.createC0C1Packet())
-                setReadyState(state: .versionSent)
-            } else {
-                setReadyState(state: .closed)
-            }
-        }
-    }
-
-    private var connection: NWConnection? {
-        didSet {
-            oldValue?.viabilityUpdateHandler = nil
-            oldValue?.stateUpdateHandler = nil
-            oldValue?.forceCancel()
-            if connection == nil {
-                connected = false
-            }
-        }
-    }
-
-    private var timeoutHandler: DispatchWorkItem?
+    private let connectTimer = SimpleTimer(queue: processorControlQueue)
     private let name: String
+    private(set) var connected = false
+    private var connection: NWConnection?
 
     init(name: String) {
         self.name = name
@@ -68,29 +48,16 @@ final class RtmpSocket {
             connection.start(queue: processorControlQueue)
             receive(on: connection)
         }
-        timeoutHandler = DispatchWorkItem { [weak self] in
-            guard let self, self.timeoutHandler?.isCancelled == false else {
-                return
-            }
-            self.handleConnectTimeout()
-        }
-        processorControlQueue.asyncAfter(deadline: .now() + .seconds(10), execute: timeoutHandler!)
+        startConnectTimer()
     }
 
-    func close(isDisconnected: Bool = false) {
-        if let connection {
-            // To make sure all data (FCUnpublish, deleteStream and closeStream) has been written?
-            connection.send(
-                content: nil,
-                contentContext: .finalMessage,
-                isComplete: true,
-                completion: .contentProcessed { _ in
-                    self.connection = nil
-                }
-            )
-        } else {
-            connection = nil
-        }
+    func close(isDisconnected: Bool) {
+        connection?.viabilityUpdateHandler = nil
+        connection?.stateUpdateHandler = nil
+        connection?.cancel()
+        connection = nil
+        setReadyState(state: .closed)
+        connected = false
         if isDisconnected {
             let data: AsObject
             if readyState == .handshakeDone {
@@ -100,7 +67,7 @@ final class RtmpSocket {
             }
             delegate?.socketPost(data: data)
         }
-        timeoutHandler?.cancel()
+        stopConnectTimer()
     }
 
     func write(chunk: RtmpChunk) -> Int {
@@ -108,6 +75,16 @@ final class RtmpSocket {
             write(data: data)
         }
         return chunk.message!.length
+    }
+
+    private func startConnectTimer() {
+        connectTimer.startSingleShot(timeout: 10) { [weak self] in
+            self?.handleConnectTimeout()
+        }
+    }
+
+    private func stopConnectTimer() {
+        connectTimer.stop()
     }
 
     private func setReadyState(state: RtmpSocketReadyState) {
@@ -144,22 +121,18 @@ final class RtmpSocket {
         switch state {
         case .ready:
             logger.info("rtmp: \(name): Connection is ready.")
-            timeoutHandler?.cancel()
+            stopConnectTimer()
+            write(data: RtmpHandshake.createC0C1Packet())
+            setReadyState(state: .versionSent)
             connected = true
-        case let .waiting(error):
-            logger.info("rtmp: \(name): Connection waiting: \(error)")
-        case .setup:
-            logger.debug("rtmp: \(name): Connection is setting up.")
-        case .preparing:
-            logger.debug("rtmp: \(name): Connection is preparing.")
         case let .failed(error):
             logger.info("rtmp: \(name): Connection failed: \(error)")
             close(isDisconnected: true)
         case .cancelled:
             logger.info("rtmp: \(name): Connection cancelled.")
             close(isDisconnected: true)
-        @unknown default:
-            logger.error("rtmp: \(name): Unknown connection state.")
+        default:
+            break
         }
     }
 

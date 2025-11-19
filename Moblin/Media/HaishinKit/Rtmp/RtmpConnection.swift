@@ -89,7 +89,7 @@ class RtmpConnection {
     func disconnect() {
         timer.stop()
         stream?.closeInternal()
-        socket.close()
+        socket.close(isDisconnected: false)
         socket = RtmpSocket(name: name)
     }
 
@@ -192,7 +192,7 @@ class RtmpConnection {
         else {
             return
         }
-        socket.close()
+        socket.close(isDisconnected: false)
         switch true {
         case description.contains("reason=nosuchuser"):
             break
