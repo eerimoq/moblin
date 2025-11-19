@@ -357,7 +357,7 @@ extension DjiDevice: CBPeripheralDelegate {
             resolution: resolution,
             fps: fps,
             bitrateKbps: UInt16((bitrate / 1000) & 0xFFFF),
-            oa5: model == .osmoAction5Pro || .osmoAction6
+            oa5: model == .osmoAction5Pro ||  model == .osmoAction6
         )
         writeMessage(message: DjiMessage(target: startStreamingTarget,
                                          id: startStreamingTransactionId,
