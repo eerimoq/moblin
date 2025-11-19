@@ -490,10 +490,7 @@ class MpegTsReader {
             sampleSizeEntryCount: sampleSizes.count,
             sampleSizeArray: &sampleSizes,
             sampleBufferOut: &sampleBuffer
-        ) == noErr else {
-            return nil
-        }
-        guard let sampleBuffer else {
+        ) == noErr, let sampleBuffer else {
             return nil
         }
         self.firstReceivedPresentationTimeStamp = firstReceivedPresentationTimeStamp

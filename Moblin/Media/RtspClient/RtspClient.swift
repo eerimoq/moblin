@@ -386,10 +386,7 @@ private class RtpVideoProcessor: RtpProcessor {
             sampleSizeEntryCount: 1,
             sampleSizeArray: &sampleSize,
             sampleBufferOut: &sampleBuffer
-        ) == noErr else {
-            return
-        }
-        guard let sampleBuffer else {
+        ) == noErr, let sampleBuffer else {
             return
         }
         decoder.decodeSampleBuffer(sampleBuffer)
