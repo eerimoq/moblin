@@ -105,7 +105,7 @@ class SampleBufferReceiver {
             preferredTimescale: 1000
         )
         var timing = CMSampleTimingInfo(
-            duration: CMTimeMake(value: 30, timescale: 1000),
+            duration: .invalid,
             presentationTimeStamp: timestamp,
             decodeTimeStamp: timestamp
         )
