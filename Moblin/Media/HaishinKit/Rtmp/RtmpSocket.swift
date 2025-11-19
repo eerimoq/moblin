@@ -23,7 +23,6 @@ final class RtmpSocket {
     private var inputBuffer = Data()
     weak var delegate: RtmpSocketDelegate?
     private var totalBytesSent: Int64 = 0
-    private let connectTimer = SimpleTimer(queue: processorControlQueue)
     private let name: String
     private(set) var connected = false
     private var connection: NWConnection?
@@ -42,13 +41,10 @@ final class RtmpSocket {
             to: .hostPort(host: .init(host), port: .init(integer: port)),
             using: .init(tls: tlsOptions)
         )
-        if let connection {
-            connection.viabilityUpdateHandler = viabilityDidChange
-            connection.stateUpdateHandler = stateDidChange
-            connection.start(queue: processorControlQueue)
-            receive(on: connection)
-        }
-        startConnectTimer()
+        connection!.viabilityUpdateHandler = viabilityDidChange
+        connection!.stateUpdateHandler = stateDidChange
+        connection!.start(queue: processorControlQueue)
+        receive(on: connection!)
     }
 
     func close(isDisconnected: Bool) {
@@ -67,7 +63,6 @@ final class RtmpSocket {
             }
             delegate?.socketPost(data: data)
         }
-        stopConnectTimer()
     }
 
     func write(chunk: RtmpChunk) -> Int {
@@ -75,16 +70,6 @@ final class RtmpSocket {
             write(data: data)
         }
         return chunk.message!.length
-    }
-
-    private func startConnectTimer() {
-        connectTimer.startSingleShot(timeout: 10) { [weak self] in
-            self?.handleConnectTimeout()
-        }
-    }
-
-    private func stopConnectTimer() {
-        connectTimer.stop()
     }
 
     private func setReadyState(state: RtmpSocketReadyState) {
@@ -121,7 +106,6 @@ final class RtmpSocket {
         switch state {
         case .ready:
             logger.info("rtmp: \(name): Connection is ready.")
-            stopConnectTimer()
             write(data: RtmpHandshake.createC0C1Packet())
             setReadyState(state: .versionSent)
             connected = true
@@ -183,10 +167,5 @@ final class RtmpSocket {
             return
         }
         inputBuffer = delegate.socketDataReceived(self, data: inputBuffer)
-    }
-
-    private func handleConnectTimeout() {
-        logger.info("rtmp: \(name): Connect timeout")
-        close(isDisconnected: true)
     }
 }

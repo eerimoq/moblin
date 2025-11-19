@@ -564,17 +564,9 @@ final class Media: NSObject {
 
     func rtmpStopStream() {
         for rtmpStream in rtmpStreams {
-            rtmpStream.close()
             rtmpStream.disconnect()
         }
         adaptiveBitrate = nil
-    }
-
-    func rtmpMultiTrackStartStream(_ url: String, _ videoEncoderSettings: [VideoEncoderSettings]) {
-        logger.info("stream: Multi track URL \(url)")
-        for videoEncoderSetting in videoEncoderSettings {
-            logger.info("stream: Multi track video encoder config \(videoEncoderSetting)")
-        }
     }
 
     func ristStartStream(
@@ -1156,13 +1148,6 @@ extension Media: RtmpStreamDelegate {
     func rtmpStreamStatus(_ rtmpStream: RtmpStream, code: String) {
         DispatchQueue.main.async {
             switch RtmpConnectionCode(rawValue: code) {
-            case .connectSuccess:
-                rtmpStream.publish()
-                if rtmpStream === self.rtmpStream {
-                    self.delegate?.mediaOnRtmpConnected()
-                } else {
-                    self.delegate?.mediaOnRtmpDestinationConnected(rtmpStream.name)
-                }
             case .connectFailed, .connectClosed:
                 if rtmpStream === self.rtmpStream {
                     self.delegate?.mediaOnRtmpDisconnected("\(code)")
@@ -1172,6 +1157,16 @@ extension Media: RtmpStreamDelegate {
                 }
             default:
                 break
+            }
+        }
+    }
+
+    func rtmpStreamConnected(_ rtmpStream: RtmpStream) {
+        DispatchQueue.main.async {
+            if rtmpStream === self.rtmpStream {
+                self.delegate?.mediaOnRtmpConnected()
+            } else {
+                self.delegate?.mediaOnRtmpDestinationConnected(rtmpStream.name)
             }
         }
     }

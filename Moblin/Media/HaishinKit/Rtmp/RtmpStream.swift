@@ -37,6 +37,7 @@ private func makeHevcExtendedTagHeader(_ frameType: FlvFrameType, _ packetType: 
 
 protocol RtmpStreamDelegate: AnyObject {
     func rtmpStreamStatus(_ rtmpStream: RtmpStream, code: String)
+    func rtmpStreamConnected(_ rtmpStream: RtmpStream)
 }
 
 enum RtmpStreamCode: String {
@@ -55,14 +56,12 @@ class RtmpStream {
     enum State: UInt8 {
         case initialized
         case open
-        case publish
         case publishing
     }
 
     var info = RtmpStreamInfo()
     var id: UInt32 = 0
     private var state: State = .initialized
-    private var messages: [RtmpCommandMessage] = []
     private var startedAt = Date()
     private var audioChunkType: RtmpChunkType = .zero
     private var videoChunkType: RtmpChunkType = .zero
@@ -71,6 +70,7 @@ class RtmpStream {
     private var streamKey = ""
     private var url: String = ""
     let name: String
+    private let connectTimer = SimpleTimer(queue: processorControlQueue)
 
     // Outbound
     private var baseTimeStamp = -1.0
@@ -89,31 +89,6 @@ class RtmpStream {
         connection.stream = self
     }
 
-    func setState(state: State) {
-        guard self.state != state else {
-            return
-        }
-        let oldState = self.state
-        self.state = state
-        logger.info("rtmp: \(name): Stream state \(oldState) -> \(state)")
-        if oldState == .publishing {
-            sendFCUnpublish()
-            sendDeleteStream()
-            closeStream()
-            processor.stopEncoding(self)
-        }
-        switch state {
-        case .open:
-            handleStateChangeToOpen()
-        case .publish:
-            handleStateChangeToPublish()
-        case .publishing:
-            handleStateChangeToPublishing()
-        default:
-            break
-        }
-    }
-
     func setUrl(_ url: String) {
         streamKey = makeRtmpStreamKey(url: url)
         self.url = makeRtmpUri(url: url)
@@ -121,34 +96,19 @@ class RtmpStream {
 
     func connect() {
         processorControlQueue.async {
-            self.connection.connect(self.url)
+            self.connectInternal()
         }
     }
 
     func disconnect() {
         processorControlQueue.async {
-            self.connection.disconnect()
+            self.disconnectInternal()
         }
     }
 
     func reconnectSoon() {
         processorControlQueue.asyncAfter(deadline: .now() + 5) { [weak self] in
-            guard let self else {
-                return
-            }
-            self.connection.connect(self.url)
-        }
-    }
-
-    func publish() {
-        processorControlQueue.async {
-            self.publishInner()
-        }
-    }
-
-    func close() {
-        processorControlQueue.async {
-            self.closeInternal()
+            self?.connectInternal()
         }
     }
 
@@ -158,6 +118,7 @@ class RtmpStream {
 
     func closeInternal() {
         setState(state: .initialized)
+        stopConnectTimer()
         processor.stopEncoding(self)
     }
 
@@ -181,23 +142,53 @@ class RtmpStream {
         }
     }
 
-    private func publishInner() {
-        info.resourceName = streamKey
-        let message = RtmpCommandMessage(
-            streamId: id,
-            transactionId: connection.getNextTransactionId(),
-            commandType: .amf0Command,
-            commandName: "publish",
-            commandObject: nil,
-            arguments: [streamKey, "live"]
-        )
-        switch state {
-        case .initialized:
-            messages.append(message)
-        default:
-            setState(state: .publish)
-            _ = connection.socket.write(chunk: RtmpChunk(message: message))
+    func setState(state: State) {
+        guard self.state != state else {
+            return
         }
+        let oldState = self.state
+        self.state = state
+        logger.info("rtmp: \(name): Stream state \(oldState) -> \(state)")
+        if oldState == .publishing {
+            sendFCUnpublish()
+            sendDeleteStream()
+            closeStream()
+            processor.stopEncoding(self)
+        }
+        switch state {
+        case .open:
+            handleStateChangeToOpen()
+        case .publishing:
+            handleStateChangeToPublishing()
+        default:
+            break
+        }
+    }
+
+    private func connectInternal() {
+        startConnectTimer()
+        connection.connect(url)
+    }
+
+    private func disconnectInternal() {
+        setState(state: .initialized)
+        processor.stopEncoding(self)
+        stopConnectTimer()
+        connection.disconnect()
+    }
+
+    private func startConnectTimer() {
+        connectTimer.startSingleShot(timeout: 10) { [weak self] in
+            guard let self else {
+                return
+            }
+            logger.info("rtmp: \(name): Connect timeout")
+            connection.socket.close(isDisconnected: true)
+        }
+    }
+
+    private func stopConnectTimer() {
+        connectTimer.stop()
     }
 
     private func send(handlerName: String, arguments: Any?...) {
@@ -253,21 +244,15 @@ class RtmpStream {
 
     private func handleStateChangeToOpen() {
         info.clear()
-        for message in messages {
-            message.streamId = id
-            message.transactionId = connection.getNextTransactionId()
-            switch message.commandName {
-            case "publish":
-                setState(state: .publish)
-            default:
-                break
-            }
-            _ = connection.socket.write(chunk: RtmpChunk(message: message))
-        }
-        messages.removeAll()
-    }
-
-    private func handleStateChangeToPublish() {
+        let message = RtmpCommandMessage(
+            streamId: id,
+            transactionId: connection.getNextTransactionId(),
+            commandType: .amf0Command,
+            commandName: "publish",
+            commandObject: nil,
+            arguments: [streamKey, "live"]
+        )
+        _ = connection.socket.write(chunk: RtmpChunk(message: message))
         startedAt = .init()
         baseTimeStamp = -1.0
         prevRebasedAudioTimeStamp = -1.0
@@ -279,6 +264,8 @@ class RtmpStream {
 
     private func handleStateChangeToPublishing() {
         send(handlerName: "@setDataFrame", arguments: "onMetaData", createOnMetaData())
+        stopConnectTimer()
+        delegate?.rtmpStreamConnected(self)
         processor.startEncoding(self)
     }
 
@@ -287,7 +274,7 @@ class RtmpStream {
     }
 
     private func sendFCUnpublish() {
-        connection.call("FCUnpublish", arguments: [info.resourceName])
+        connection.call("FCUnpublish", arguments: [streamKey])
     }
 
     private func sendReleaseStream() {
