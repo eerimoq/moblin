@@ -93,7 +93,7 @@ class RtmpConnection {
         socket = RtmpSocket(name: name)
     }
 
-    func call(_ commandName: String, arguments: [Any?], onCompleted: (([Any?]) -> Void)? = nil) {
+    func call(_ commandName: RtmpCommandName, arguments: [Any?], onCompleted: (([Any?]) -> Void)? = nil) {
         guard connected else {
             return
         }
@@ -220,7 +220,7 @@ class RtmpConnection {
             streamId: 0,
             transactionId: getNextTransactionId(),
             commandType: .amf0Command,
-            commandName: "connect",
+            commandName: .connect,
             commandObject: [
                 "app": app,
                 "flashVer": "FMLE/3.0 (compatible; FMSc/1.0)",

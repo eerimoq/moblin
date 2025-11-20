@@ -244,7 +244,7 @@ class RtmpStream {
             streamId: streamId,
             transactionId: connection.getNextTransactionId(),
             commandType: .amf0Command,
-            commandName: "publish",
+            commandName: .publish,
             commandObject: nil,
             arguments: [streamKey, "live"]
         )))
@@ -267,7 +267,7 @@ class RtmpStream {
     }
 
     private func sendCreateStream() {
-        connection.call("createStream", arguments: []) { data in
+        connection.call(.createStream, arguments: []) { data in
             guard let id = data[0] as? Double, id >= 0, id <= Double(UInt32.max) else {
                 return
             }
@@ -277,15 +277,15 @@ class RtmpStream {
     }
 
     private func sendReleaseStream() {
-        connection.call("releaseStream", arguments: [streamKey])
+        connection.call(.releaseStream, arguments: [streamKey])
     }
 
     private func sendFCPublish() {
-        connection.call("FCPublish", arguments: [streamKey])
+        connection.call(.fcPublish, arguments: [streamKey])
     }
 
     private func sendFCUnpublish() {
-        connection.call("FCUnpublish", arguments: [streamKey])
+        connection.call(.fcUnpublish, arguments: [streamKey])
     }
 
     private func sendDeleteStream() {
@@ -293,7 +293,7 @@ class RtmpStream {
             streamId: streamId,
             transactionId: 0,
             commandType: .amf0Command,
-            commandName: "deleteStream",
+            commandName: .deleteStream,
             commandObject: nil,
             arguments: [streamId]
         )))
@@ -307,7 +307,7 @@ class RtmpStream {
                 streamId: 0,
                 transactionId: 0,
                 commandType: .amf0Command,
-                commandName: "closeStream",
+                commandName: .closeStream,
                 commandObject: nil,
                 arguments: [streamId]
             )

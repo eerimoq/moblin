@@ -178,7 +178,7 @@ class RtmpServerChunkStream {
                 streamId: messageStreamId,
                 transactionId: transactionId,
                 commandType: .amf0Command,
-                commandName: "_result",
+                commandName: .result,
                 commandObject: nil,
                 arguments: [[
                     "level": "status",
@@ -201,7 +201,7 @@ class RtmpServerChunkStream {
                 streamId: messageStreamId,
                 transactionId: transactionId,
                 commandType: .amf0Command,
-                commandName: "_result",
+                commandName: .result,
                 commandObject: nil,
                 arguments: [
                     1,
@@ -252,7 +252,7 @@ class RtmpServerChunkStream {
                 streamId: messageStreamId,
                 transactionId: transactionId,
                 commandType: .amf0Command,
-                commandName: "onStatus",
+                commandName: .onStatus,
                 commandObject: nil,
                 arguments: [
                     [

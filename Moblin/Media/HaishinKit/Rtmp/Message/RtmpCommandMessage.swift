@@ -1,7 +1,29 @@
 import Foundation
 
+enum RtmpCommandName: String {
+    case connect = "Connect"
+    case close
+    case result = "_result"
+    case error = "_error"
+    case publish
+    case createStream
+    case releaseStream
+    case fcPublish = "FCPublish"
+    case fcUnpublish = "FCUnpublish"
+    case deleteStream
+    case closeStream
+    case onStatus
+
+    init(value: String) throws {
+        guard let commandName = RtmpCommandName(rawValue: value) else {
+            throw "Bad command name"
+        }
+        self = commandName
+    }
+}
+
 final class RtmpCommandMessage: RtmpMessage {
-    private var commandName: String = ""
+    private var commandName: RtmpCommandName = .close
     private(set) var transactionId: Int = 0
     private var commandObject: AsObject?
     private var arguments: [Any?] = []
@@ -14,7 +36,7 @@ final class RtmpCommandMessage: RtmpMessage {
         streamId: UInt32,
         transactionId: Int,
         commandType: RtmpMessageType,
-        commandName: String,
+        commandName: RtmpCommandName,
         commandObject: AsObject?,
         arguments: [Any?]
     ) {
@@ -29,7 +51,7 @@ final class RtmpCommandMessage: RtmpMessage {
     override func execute(_ connection: RtmpConnection) {
         guard let responder = connection.callCompletions.removeValue(forKey: transactionId) else {
             switch commandName {
-            case "close":
+            case .close:
                 connection.disconnect()
             default:
                 if let data = arguments.first as? AsObject?, let data {
@@ -39,9 +61,9 @@ final class RtmpCommandMessage: RtmpMessage {
             return
         }
         switch commandName {
-        case "_result":
+        case .result:
             responder(arguments)
-        case "_error":
+        case .error:
             // Should probably do something.
             break
         default:
@@ -58,7 +80,7 @@ final class RtmpCommandMessage: RtmpMessage {
             if type == .amf3Command {
                 serializer.writeUInt8(0)
             }
-            serializer.serialize(commandName)
+            serializer.serialize(commandName.rawValue)
             serializer.serialize(transactionId)
             serializer.serialize(commandObject)
             for argument in arguments {
@@ -74,7 +96,7 @@ final class RtmpCommandMessage: RtmpMessage {
                     if type == .amf3Command {
                         deserializer.position = 1
                     }
-                    commandName = try deserializer.deserializeString()
+                    commandName = try RtmpCommandName(value: deserializer.deserializeString())
                     transactionId = try deserializer.deserializeInt()
                     commandObject = try deserializer.deserializeAsObject()
                     arguments.removeAll()
@@ -82,7 +104,7 @@ final class RtmpCommandMessage: RtmpMessage {
                         try arguments.append(deserializer.deserialize())
                     }
                 } catch {
-                    logger.error("\(deserializer)")
+                    logger.error("rtmp: \(deserializer)")
                 }
             }
             super.encoded = newValue
