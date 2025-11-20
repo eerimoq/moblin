@@ -188,7 +188,6 @@ final class Amf0Deserializer: ByteReader {
         case Amf0Type.longString.rawValue:
             return try deserializeUTF8(true)
         default:
-            assertionFailure()
             return ""
         }
     }
@@ -215,17 +214,17 @@ final class Amf0Deserializer: ByteReader {
     }
 
     func deserialize() throws -> AsArray {
-        switch try readUInt8() {
-        case Amf0Type.null.rawValue:
+        switch try Amf0Type(rawValue: readUInt8()) {
+        case .null:
             return AsArray()
-        case Amf0Type.ecmaArray.rawValue:
+        case .ecmaArray:
             break
         default:
             throw AmfSerializerError.deserialize
         }
         var result = try AsArray(count: Int(readUInt32()))
         while true {
-            let key: String = try deserializeUTF8(false)
+            let key = try deserializeUTF8(false)
             guard !key.isEmpty else {
                 position += 1
                 break
@@ -281,7 +280,7 @@ final class Amf0Deserializer: ByteReader {
     }
 
     private func deserializeUTF8(_ isLong: Bool) throws -> String {
-        let length: Int = try isLong ? Int(readUInt32()) : Int(readUInt16())
+        let length = try isLong ? Int(readUInt32()) : Int(readUInt16())
         return try readUTF8Bytes(length)
     }
 }
