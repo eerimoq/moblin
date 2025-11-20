@@ -72,9 +72,7 @@ final class RtmpChunk {
         }
         self.size = size
         self.type = type
-        do {
-            try decode(data: data)
-        } catch {}
+        try? decode(data: data)
     }
 
     func ready() -> Bool {
