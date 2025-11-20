@@ -312,7 +312,10 @@ struct StreamOverlayChatView: View {
                         LazyVStack(alignment: .leading, spacing: 1) {
                             Color.clear
                                 .onAppear {
-                                    tryUnpause()
+                                    // App hangs if not doing this async.
+                                    DispatchQueue.main.async {
+                                        tryUnpause()
+                                    }
                                 }
                                 .onDisappear {
                                     tryPause()
