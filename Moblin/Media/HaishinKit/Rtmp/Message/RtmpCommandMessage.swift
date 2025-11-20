@@ -1,10 +1,10 @@
 import Foundation
 
 final class RtmpCommandMessage: RtmpMessage {
-    var commandName: String = ""
-    var transactionId: Int = 0
-    var commandObject: AsObject?
-    var arguments: [Any?] = []
+    private var commandName: String = ""
+    private(set) var transactionId: Int = 0
+    private var commandObject: AsObject?
+    private var arguments: [Any?] = []
 
     init(commandType: RtmpMessageType) {
         super.init(type: commandType)
