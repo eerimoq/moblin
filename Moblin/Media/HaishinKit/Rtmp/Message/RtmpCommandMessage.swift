@@ -63,7 +63,6 @@ final class RtmpCommandMessage: RtmpMessage {
         switch commandName {
         case .result:
             responder(arguments)
-            break
         default:
             break
         }
