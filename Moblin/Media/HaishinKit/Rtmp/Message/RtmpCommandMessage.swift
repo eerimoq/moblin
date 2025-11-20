@@ -63,8 +63,6 @@ final class RtmpCommandMessage: RtmpMessage {
         switch commandName {
         case .result:
             responder(arguments)
-        case .error:
-            // Should probably do something.
             break
         default:
             break
