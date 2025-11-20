@@ -22,6 +22,7 @@ final class RtmpSocket {
     private var readyState: RtmpSocketReadyState = .uninitialized
     private var inputBuffer = Data()
     weak var delegate: RtmpSocketDelegate?
+    private var totalBytesSending: Int64 = 0
     private var totalBytesSent: Int64 = 0
     private let name: String
     private(set) var connected = false
@@ -35,6 +36,7 @@ final class RtmpSocket {
         setReadyState(state: .uninitialized)
         maximumChunkSizeToServer = RtmpChunk.defaultSize
         maximumChunkSizeFromServer = RtmpChunk.defaultSize
+        totalBytesSending = 0
         totalBytesSent = 0
         inputBuffer.removeAll(keepingCapacity: false)
         connection = NWConnection(
@@ -82,17 +84,29 @@ final class RtmpSocket {
     }
 
     private func write(data: Data) {
-        connection?.send(content: data, completion: .contentProcessed { error in
-            guard self.connected else {
+        let size = Int64(data.count)
+        totalBytesSending += size
+        connection?.send(content: data, completion: .contentProcessed { [weak self] error in
+            guard let self, connected else {
                 return
             }
             if error != nil {
-                self.close(isDisconnected: true)
+                close(isDisconnected: true)
                 return
             }
-            self.totalBytesSent += Int64(data.count)
-            self.delegate?.socketUpdateStats(totalBytesSent: self.totalBytesSent)
+            totalBytesSent += size
+            delegate?.socketUpdateStats(totalBytesSent: totalBytesSent)
         })
+        if hasTooMuchDataBuffered() {
+            logger.info("rtmp: \(name): Too much data buffered. Disconnecting.")
+            processorControlQueue.async {
+                self.close(isDisconnected: true)
+            }
+        }
+    }
+
+    private func hasTooMuchDataBuffered() -> Bool {
+        return totalBytesSending - totalBytesSent > 100_000_000
     }
 
     private func viabilityDidChange(to viability: Bool) {

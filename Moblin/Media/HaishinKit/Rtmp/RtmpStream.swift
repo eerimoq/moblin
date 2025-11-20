@@ -178,7 +178,7 @@ class RtmpStream {
     }
 
     private func startConnectTimer() {
-        connectTimer.startSingleShot(timeout: 10) { [weak self] in
+        connectTimer.startSingleShot(timeout: 20) { [weak self] in
             guard let self else {
                 return
             }
