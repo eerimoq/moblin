@@ -115,16 +115,6 @@ class RtmpConnection {
         on(data: data)
     }
 
-    func createStream(_ stream: RtmpStream) {
-        call("createStream", arguments: []) { data in
-            guard let id = data[0] as? Double else {
-                return
-            }
-            stream.id = UInt32(id)
-            stream.setState(state: .open)
-        }
-    }
-
     func getNextTransactionId() -> Int {
         nextTransactionId += 1
         return nextTransactionId

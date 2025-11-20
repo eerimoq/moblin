@@ -52,15 +52,15 @@ private let aac = FlvAudioCodec.aac.rawValue << 4
 private let opus = FlvAudioCodec.exHeader.rawValue << 4
     | FlvOpusPacketType.sequenceStart.rawValue
 
-class RtmpStream {
-    enum State: UInt8 {
-        case initialized
-        case open
-        case publishing
-    }
+private enum State {
+    case initialized
+    case open
+    case publishing
+}
 
-    var info = RtmpStreamInfo()
-    var id: UInt32 = 0
+class RtmpStream {
+    let info = RtmpStreamInfo()
+    var streamId: UInt32 = 0
     private var state: State = .initialized
     private var startedAt = Date()
     private var audioChunkType: RtmpChunkType = .zero
@@ -132,7 +132,7 @@ class RtmpStream {
             setState(state: .initialized)
             sendReleaseStream()
             sendFCPublish()
-            connection.createStream(self)
+            sendCreateStream()
         case RtmpStreamCode.publishStart.rawValue:
             if state != .initialized {
                 setState(state: .publishing)
@@ -142,7 +142,7 @@ class RtmpStream {
         }
     }
 
-    func setState(state: State) {
+    private func setState(state: State) {
         guard self.state != state else {
             return
         }
@@ -203,7 +203,7 @@ class RtmpStream {
             type: dataWasSent ? RtmpChunkType.one : RtmpChunkType.zero,
             chunkStreamId: RtmpChunk.ChunkStreamId.data.rawValue,
             message: RtmpDataMessage(
-                streamId: id,
+                streamId: streamId,
                 dataType: .amf0Data,
                 timestamp: timestmap,
                 handlerName: handlerName,
@@ -241,7 +241,7 @@ class RtmpStream {
     private func handleStateChangeToOpen() {
         info.clear()
         _ = connection.socket.write(chunk: RtmpChunk(message: RtmpCommandMessage(
-            streamId: id,
+            streamId: streamId,
             transactionId: connection.getNextTransactionId(),
             commandType: .amf0Command,
             commandName: "publish",
@@ -266,6 +266,20 @@ class RtmpStream {
         processor.startEncoding(self)
     }
 
+    private func sendCreateStream() {
+        connection.call("createStream", arguments: []) { data in
+            guard let id = data[0] as? Double, id >= 0, id <= Double(UInt32.max) else {
+                return
+            }
+            self.streamId = UInt32(id)
+            self.setState(state: .open)
+        }
+    }
+
+    private func sendReleaseStream() {
+        connection.call("releaseStream", arguments: [streamKey])
+    }
+
     private func sendFCPublish() {
         connection.call("FCPublish", arguments: [streamKey])
     }
@@ -274,18 +288,14 @@ class RtmpStream {
         connection.call("FCUnpublish", arguments: [streamKey])
     }
 
-    private func sendReleaseStream() {
-        connection.call("releaseStream", arguments: [streamKey])
-    }
-
     private func sendDeleteStream() {
         _ = connection.socket.write(chunk: RtmpChunk(message: RtmpCommandMessage(
-            streamId: id,
+            streamId: streamId,
             transactionId: 0,
             commandType: .amf0Command,
             commandName: "deleteStream",
             commandObject: nil,
-            arguments: [id]
+            arguments: [streamId]
         )))
     }
 
@@ -299,7 +309,7 @@ class RtmpStream {
                 commandType: .amf0Command,
                 commandName: "closeStream",
                 commandObject: nil,
-                arguments: [id]
+                arguments: [streamId]
             )
         ))
     }
@@ -311,7 +321,7 @@ class RtmpStream {
         let length = connection.socket.write(chunk: RtmpChunk(
             type: audioChunkType,
             chunkStreamId: FlvTagType.audio.streamId,
-            message: RtmpAudioMessage(streamId: id, timestamp: timestamp, payload: buffer)
+            message: RtmpAudioMessage(streamId: streamId, timestamp: timestamp, payload: buffer)
         ))
         audioChunkType = .one
         info.byteCount.mutate { $0 += Int64(length) }
@@ -324,7 +334,7 @@ class RtmpStream {
         let length = connection.socket.write(chunk: RtmpChunk(
             type: videoChunkType,
             chunkStreamId: FlvTagType.video.streamId,
-            message: RtmpVideoMessage(streamId: id, timestamp: timestamp, payload: buffer)
+            message: RtmpVideoMessage(streamId: streamId, timestamp: timestamp, payload: buffer)
         ))
         videoChunkType = .one
         info.byteCount.mutate { $0 += Int64(length) }
@@ -417,7 +427,6 @@ class RtmpStream {
             decodeTimeStamp = sampleBuffer.presentationTimeStamp.seconds
         }
         guard let rebasedTimestamp = rebaseTimeStamp(timestamp: decodeTimeStamp) else {
-            logger.info("rtmp: \(name): Dropping video buffer. Failed to rebase timestamp.")
             return
         }
         var delta = 0.0
