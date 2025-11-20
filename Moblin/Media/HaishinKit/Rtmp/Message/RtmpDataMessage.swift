@@ -52,7 +52,7 @@ final class RtmpDataMessage: RtmpMessage {
                     deserializer.position = 1
                 }
                 do {
-                    handlerName = try deserializer.deserialize()
+                    handlerName = try deserializer.deserializeString()
                     while deserializer.bytesAvailable > 0 {
                         try arguments.append(deserializer.deserialize())
                     }

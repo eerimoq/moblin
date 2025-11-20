@@ -107,9 +107,9 @@ class RtmpServerChunkStream {
         let commandObject: AsObject
         var arguments: [Any?]
         do {
-            commandName = try amf0.deserialize()
-            transactionId = try amf0.deserialize()
-            commandObject = try amf0.deserialize()
+            commandName = try amf0.deserializeString()
+            transactionId = try amf0.deserializeInt()
+            commandObject = try amf0.deserializeAsObject()
             arguments = []
             if amf0.bytesAvailable > 0 {
                 try arguments.append(amf0.deserialize())

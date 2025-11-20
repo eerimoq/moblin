@@ -74,9 +74,9 @@ final class RtmpCommandMessage: RtmpMessage {
                     if type == .amf3Command {
                         deserializer.position = 1
                     }
-                    commandName = try deserializer.deserialize()
-                    transactionId = try deserializer.deserialize()
-                    commandObject = try deserializer.deserialize()
+                    commandName = try deserializer.deserializeString()
+                    transactionId = try deserializer.deserializeInt()
+                    commandObject = try deserializer.deserializeAsObject()
                     arguments.removeAll()
                     if deserializer.bytesAvailable > 0 {
                         try arguments.append(deserializer.deserialize())
