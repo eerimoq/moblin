@@ -35,6 +35,26 @@ class RtmpStreamWeak {
     }
 }
 
+private func makeSanJoseAuthCommand(_ url: URL, description: String) -> String {
+    var command = url.absoluteString
+    guard let index = description.firstIndex(of: "?") else {
+        return command
+    }
+    let query = String(description[description.index(index, offsetBy: 1)...])
+    let challenge = String(format: "%08x", UInt32.random(in: 0 ... UInt32.max))
+    let dictionary = URL(string: "http://localhost?" + query)!.dictionaryFromQuery()
+    var response = MD5.base64("\(url.user!)\(dictionary["salt"]!)\(url.password!)")
+    if let opaque = dictionary["opaque"] {
+        command += "&opaque=\(opaque)"
+        response += opaque
+    } else if let challenge: String = dictionary["challenge"] {
+        response += challenge
+    }
+    response = MD5.base64("\(response)\(challenge)")
+    command += "&challenge=\(challenge)&response=\(response)"
+    return command
+}
+
 class RtmpConnection {
     private var uri: URL?
     private(set) var connected = false
@@ -120,26 +140,6 @@ class RtmpConnection {
         return nextTransactionId
     }
 
-    private static func makeSanJoseAuthCommand(_ url: URL, description: String) -> String {
-        var command = url.absoluteString
-        guard let index = description.firstIndex(of: "?") else {
-            return command
-        }
-        let query = String(description[description.index(index, offsetBy: 1)...])
-        let challenge = String(format: "%08x", UInt32.random(in: 0 ... UInt32.max))
-        let dictionary = URL(string: "http://localhost?" + query)!.dictionaryFromQuery()
-        var response = MD5.base64("\(url.user!)\(dictionary["salt"]!)\(url.password!)")
-        if let opaque = dictionary["opaque"] {
-            command += "&opaque=\(opaque)"
-            response += opaque
-        } else if let challenge: String = dictionary["challenge"] {
-            response += challenge
-        }
-        response = MD5.base64("\(response)\(challenge)")
-        command += "&challenge=\(challenge)&response=\(response)"
-        return command
-    }
-
     private func on(data: AsObject) {
         processorControlQueue.async {
             self.onInternal(data: data)
@@ -183,24 +183,18 @@ class RtmpConnection {
             return
         }
         socket.close(isDisconnected: false)
-        switch true {
-        case description.contains("reason=nosuchuser"):
-            break
-        case description.contains("reason=authfailed"):
-            break
-        case description.contains("reason=needauth"):
-            let command = Self.makeSanJoseAuthCommand(uri, description: description)
-            connect(command)
-        case description.contains("authmod=adobe"):
+        if description.contains("reason=nosuchuser") {
+        } else if description.contains("reason=authfailed") {
+        } else if description.contains("reason=needauth") {
+            connect(makeSanJoseAuthCommand(uri, description: description))
+        } else if description.contains("authmod=adobe") {
             if user.isEmpty || password.isEmpty {
                 disconnect()
-                break
+            } else {
+                let query = uri.query ?? ""
+                let command = uri.absoluteString + (query.isEmpty ? "?" : "&") + "authmod=adobe&user=\(user)"
+                connect(command)
             }
-            let query = uri.query ?? ""
-            let command = uri.absoluteString + (query.isEmpty ? "?" : "&") + "authmod=adobe&user=\(user)"
-            connect(command)
-        default:
-            break
         }
     }
 
