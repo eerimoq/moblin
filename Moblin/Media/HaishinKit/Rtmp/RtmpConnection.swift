@@ -1,7 +1,5 @@
 import AVFoundation
 
-private let supportedProtocols = ["rtmp", "rtmps", "rtmpt", "rtmpts"]
-
 private enum SupportVideo: UInt16 {
     case h264 = 0x0080
 }
@@ -74,17 +72,13 @@ class RtmpConnection {
     }
 
     func connect(_ url: String) {
-        guard let uri = URL(string: url),
-              let scheme = uri.scheme,
-              let host = uri.host,
-              supportedProtocols.contains(scheme)
-        else {
+        guard let uri = URL(string: url), let scheme = uri.scheme, let host = uri.host else {
             return
         }
         self.uri = uri
         socket = RtmpSocket(name: name)
         socket.delegate = self
-        if scheme.hasSuffix("s") {
+        if scheme == "rtmps" {
             socket.connect(host: host, port: uri.port ?? 443, tlsOptions: .init())
         } else {
             socket.connect(host: host, port: uri.port ?? 1935, tlsOptions: nil)
