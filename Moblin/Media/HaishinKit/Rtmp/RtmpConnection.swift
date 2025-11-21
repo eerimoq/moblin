@@ -116,14 +116,6 @@ class RtmpConnection {
         return nextTransactionId
     }
 
-    func handleWindowSizeFromServer() {
-        _ = socket.write(chunk: RtmpChunk(
-            type: .zero,
-            chunkStreamId: RtmpChunk.ChunkStreamId.control.rawValue,
-            message: RtmpWindowAcknowledgementSizeMessage(100_000)
-        ))
-    }
-
     private func on(data: AsObject) {
         processorControlQueue.async {
             self.onInternal(data: data)
@@ -237,6 +229,59 @@ class RtmpConnection {
         callCompletions.removeAll()
         fragmentedChunks.removeAll()
     }
+
+    private func processMessageSetChunkSize(message: RtmpSetChunkSizeMessage) {
+        socket.maximumChunkSizeFromServer = Int(message.size)
+    }
+
+    private func processMessageAcknowledgementMessage(message: RtmpAcknowledgementMessage) {
+        stream?.info.onAck(sequence: message.sequence)
+    }
+
+    func processMessageWindowAcknowledgementSize() {
+        _ = socket.write(chunk: RtmpChunk(
+            type: .zero,
+            chunkStreamId: RtmpChunk.ChunkStreamId.control.rawValue,
+            message: RtmpWindowAcknowledgementSizeMessage(100_000)
+        ))
+    }
+
+    private func processMessageUserControl(message: RtmpUserControlMessage) {
+        switch message.event {
+        case .ping:
+            _ = socket.write(chunk: RtmpChunk(
+                type: .zero,
+                chunkStreamId: RtmpChunk.ChunkStreamId.control.rawValue,
+                message: RtmpUserControlMessage(event: .pong, value: message.value)
+            ))
+        default:
+            break
+        }
+    }
+
+    private func processMessageCommand(message: RtmpCommandMessage) {
+        guard let responder = callCompletions.removeValue(forKey: message.transactionId) else {
+            switch message.commandName {
+            case .close:
+                disconnect()
+            default:
+                if let data = message.arguments.first as? AsObject?, let data {
+                    gotCommand(data: data)
+                }
+            }
+            return
+        }
+        switch message.commandName {
+        case .result:
+            responder(message.arguments)
+        default:
+            break
+        }
+    }
+
+    private func processMessageData(message: RtmpDataMessage) {
+        stream?.info.byteCount.mutate { $0 += Int64(message.encoded.count) }
+    }
 }
 
 extension RtmpConnection: RtmpSocketDelegate {
@@ -273,20 +318,32 @@ extension RtmpConnection: RtmpSocketDelegate {
         if chunk.type == .three && fragmentedChunks[chunk.chunkStreamId] == nil {
             offset = chunk.append(data: data, message: messages[chunk.chunkStreamId])
         }
-        if let message = chunk.message, chunk.ready() {
+        if chunk.ready() {
             switch chunk.type {
             case .zero:
-                chunkStreamIdToStreamId[chunk.chunkStreamId] = message.streamId
+                chunkStreamIdToStreamId[chunk.chunkStreamId] = chunk.message.streamId
             case .one:
                 if let streamId = chunkStreamIdToStreamId[chunk.chunkStreamId] {
-                    message.streamId = streamId
+                    chunk.message.streamId = streamId
                 }
             default:
                 break
             }
-            message.execute(self)
+            if let message = chunk.message as? RtmpSetChunkSizeMessage {
+                processMessageSetChunkSize(message: message)
+            } else if let message = chunk.message as? RtmpAcknowledgementMessage {
+                processMessageAcknowledgementMessage(message: message)
+            } else if let message = chunk.message as? RtmpUserControlMessage {
+                processMessageUserControl(message: message)
+            } else if chunk.message is RtmpWindowAcknowledgementSizeMessage {
+                processMessageWindowAcknowledgementSize()
+            } else if let message = chunk.message as? RtmpCommandMessage {
+                processMessageCommand(message: message)
+            } else if let message = chunk.message as? RtmpDataMessage {
+                processMessageData(message: message)
+            }
             currentChunk = nil
-            messages[chunk.chunkStreamId] = message
+            messages[chunk.chunkStreamId] = chunk.message
         } else {
             if chunk.fragmented {
                 fragmentedChunks[chunk.chunkStreamId] = chunk
