@@ -261,7 +261,7 @@ extension RtmpConnection: RtmpSocketDelegate {
         stream?.info.onWritten(sequence: totalBytesSent)
     }
 
-    func socketDataReceived(_ socket: RtmpSocket, data: Data) -> Data {
+    func socketDataReceived(data: Data) -> Data {
         guard let chunk = currentChunk ?? RtmpChunk(data: data, size: socket.maximumChunkSizeFromServer) else {
             return data
         }
@@ -303,7 +303,7 @@ extension RtmpConnection: RtmpSocketDelegate {
             }
         }
         if offset > 0 && offset < data.count {
-            return socketDataReceived(socket, data: data.advanced(by: offset))
+            return socketDataReceived(data: data.advanced(by: offset))
         }
         return Data()
     }

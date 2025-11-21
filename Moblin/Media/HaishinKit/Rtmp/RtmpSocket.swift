@@ -10,7 +10,7 @@ enum RtmpSocketReadyState {
 }
 
 protocol RtmpSocketDelegate: AnyObject {
-    func socketDataReceived(_ socket: RtmpSocket, data: Data) -> Data
+    func socketDataReceived(data: Data) -> Data
     func socketReadyStateChanged(readyState: RtmpSocketReadyState)
     func socketUpdateStats(totalBytesSent: Int64)
     func socketPost(data: AsObject)
@@ -177,6 +177,6 @@ final class RtmpSocket {
         guard !inputBuffer.isEmpty, let delegate else {
             return
         }
-        inputBuffer = delegate.socketDataReceived(self, data: inputBuffer)
+        inputBuffer = delegate.socketDataReceived(data: inputBuffer)
     }
 }
