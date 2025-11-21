@@ -480,8 +480,8 @@ final class Media: NSObject {
     }
 
     func streamSpeed() -> Int64 {
-        if rtmpStream != nil {
-            return Int64(8 * (rtmpStream?.info.currentBytesPerSecond ?? 0))
+        if let rtmpStream {
+            return Int64(8 * rtmpStream.info.currentBytesPerSecond.value)
         } else if isSrtStreamActive() {
             return 8 * srtSpeed
         } else if ristStream != nil {
