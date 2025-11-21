@@ -61,16 +61,6 @@ class RtmpConnection {
     weak var stream: RtmpStream?
     private var chunkStreamIdToStreamId: [UInt16: UInt32] = [:]
     var callCompletions: [Int: ([Any?]) -> Void] = [:]
-    var windowSizeFromServer: Int64 = 250_000 {
-        didSet {
-            _ = socket.write(chunk: RtmpChunk(
-                type: .zero,
-                chunkStreamId: RtmpChunk.ChunkStreamId.control.rawValue,
-                message: RtmpWindowAcknowledgementSizeMessage(100_000)
-            ))
-        }
-    }
-
     private var nextTransactionId = 0
     private var timer = SimpleTimer(queue: processorControlQueue)
     private var messages: [UInt16: RtmpMessage] = [:]
@@ -130,6 +120,14 @@ class RtmpConnection {
     func getNextTransactionId() -> Int {
         nextTransactionId += 1
         return nextTransactionId
+    }
+
+    func handleWindowSizeFromServer() {
+        _ = socket.write(chunk: RtmpChunk(
+            type: .zero,
+            chunkStreamId: RtmpChunk.ChunkStreamId.control.rawValue,
+            message: RtmpWindowAcknowledgementSizeMessage(100_000)
+        ))
     }
 
     private func on(data: AsObject) {

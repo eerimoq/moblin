@@ -13,7 +13,7 @@ final class RtmpWindowAcknowledgementSizeMessage: RtmpMessage {
     }
 
     override func execute(_ connection: RtmpConnection) {
-        connection.windowSizeFromServer = Int64(size)
+        connection.handleWindowSizeFromServer()
     }
 
     override var encoded: Data {
