@@ -1,7 +1,7 @@
 import Foundation
 
 enum RtmpCommandName: String {
-    case connect = "Connect"
+    case connect
     case close
     case result = "_result"
     case error = "_error"
@@ -13,13 +13,8 @@ enum RtmpCommandName: String {
     case deleteStream
     case closeStream
     case onStatus
-
-    init(value: String) throws {
-        guard let commandName = RtmpCommandName(rawValue: value) else {
-            throw "Bad command name"
-        }
-        self = commandName
-    }
+    case onFcPublish = "onFCPublish"
+    case unknown
 }
 
 final class RtmpCommandMessage: RtmpMessage {
@@ -93,7 +88,7 @@ final class RtmpCommandMessage: RtmpMessage {
                     if type == .amf3Command {
                         deserializer.position = 1
                     }
-                    commandName = try RtmpCommandName(value: deserializer.deserializeString())
+                    commandName = RtmpCommandName(rawValue: try deserializer.deserializeString()) ?? .unknown
                     transactionId = try deserializer.deserializeInt()
                     commandObject = try deserializer.deserializeAsObject()
                     arguments.removeAll()
@@ -101,7 +96,7 @@ final class RtmpCommandMessage: RtmpMessage {
                         try arguments.append(deserializer.deserialize())
                     }
                 } catch {
-                    logger.error("rtmp: \(deserializer)")
+                    logger.error("rtmp: \(error)")
                 }
             }
             super.encoded = newValue
