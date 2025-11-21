@@ -20,17 +20,10 @@ class RtmpStreamInfo {
     private var latestAckedSequenceLow: UInt32 = 0
     private var latestAckedSequenceHigh: Int64 = 0
 
-    func onTimeout() {
-        let byteCount = self.byteCount.value
-        let speed = byteCount - previousByteCount
-        currentBytesPerSecond.mutate { $0 = Int64(Double($0) * 0.7 + Double(speed) * 0.3) }
-        previousByteCount = byteCount
-    }
-
     func clear() {
         byteCount.mutate { $0 = 0 }
-        stats.mutate { $0 = RtmpStreamStats() }
         currentBytesPerSecond.mutate { $0 = 0 }
+        stats.mutate { $0 = RtmpStreamStats() }
         previousByteCount = 0
         sendTimings.removeAll()
         latestWrittenSequence = 0
@@ -38,40 +31,50 @@ class RtmpStreamInfo {
         latestAckedSequenceHigh = 0
     }
 
+    func onTimeout() {
+        let byteCount = self.byteCount.value
+        let speed = byteCount - previousByteCount
+        currentBytesPerSecond.mutate { $0 = Int64(Double($0) * 0.7 + Double(speed) * 0.3) }
+        previousByteCount = byteCount
+    }
+
     func onWritten(sequence: Int64) {
-        stats.mutate { stats in
-            latestWrittenSequence = sequence
-            // Just for safety
-            if sendTimings.count < 500 {
-                sendTimings.append(SendTiming(timestamp: .now, sequence: sequence))
-            }
-            stats.packetsInFlight = packetsInFlight()
+        latestWrittenSequence = sequence
+        // Just for safety
+        if sendTimings.count < 500 {
+            sendTimings.append(SendTiming(timestamp: .now, sequence: sequence))
+        }
+        let packetsInFlight = packetsInFlight()
+        stats.mutate {
+            $0.packetsInFlight = packetsInFlight
         }
     }
 
     func onAck(sequence: UInt32) {
-        stats.mutate { stats in
-            if sequence < latestAckedSequenceLow {
-                // Twitch rolls over at Int32.max. Bug?
-                if latestAckedSequenceLow <= Int32.max {
-                    latestAckedSequenceHigh += Int64(Int32.max)
-                } else {
-                    latestAckedSequenceHigh += Int64(UInt32.max)
-                }
+        if sequence < latestAckedSequenceLow {
+            // Twitch rolls over at Int32.max. Bug?
+            if latestAckedSequenceLow <= Int32.max {
+                latestAckedSequenceHigh += Int64(Int32.max)
+            } else {
+                latestAckedSequenceHigh += Int64(UInt32.max)
             }
-            latestAckedSequenceLow = sequence
-            var ackedSendTiming: SendTiming?
-            while let sendTiming = sendTimings.first {
-                if latestAckedSequence() > sendTiming.sequence {
-                    ackedSendTiming = sendTiming
-                    sendTimings.remove(at: 0)
-                } else {
-                    break
-                }
+        }
+        latestAckedSequenceLow = sequence
+        var ackedSendTiming: SendTiming?
+        while let sendTiming = sendTimings.first {
+            if latestAckedSequence() > sendTiming.sequence {
+                ackedSendTiming = sendTiming
+                sendTimings.remove(at: 0)
+            } else {
+                break
             }
-            if let ackedSendTiming {
-                stats.rttMs = Double(ackedSendTiming.timestamp.duration(to: .now).milliseconds)
-                stats.packetsInFlight = packetsInFlight()
+        }
+        if let ackedSendTiming {
+            let rttMs = Double(ackedSendTiming.timestamp.duration(to: .now).milliseconds)
+            let packetsInFlight = packetsInFlight()
+            stats.mutate {
+                $0.rttMs = rttMs
+                $0.packetsInFlight = packetsInFlight
             }
         }
     }
