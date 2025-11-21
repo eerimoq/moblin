@@ -102,12 +102,12 @@ class RtmpServerChunkStream {
             return
         }
         let amf0 = Amf0Deserializer(data: messageBody)
-        let commandName: String
+        let commandName: RtmpCommandName
         let transactionId: Int
         let commandObject: AsObject
         var arguments: [Any?]
         do {
-            commandName = try amf0.deserializeString()
+            commandName = RtmpCommandName(rawValue: try amf0.deserializeString()) ?? .unknown
             transactionId = try amf0.deserializeInt()
             commandObject = try amf0.deserializeAsObject()
             arguments = []
@@ -119,17 +119,17 @@ class RtmpServerChunkStream {
             return
         }
         switch commandName {
-        case "connect":
+        case .connect:
             processMessageAmf0CommandConnect(transactionId: transactionId, commandObject: commandObject)
-        case "FCPublish":
+        case .fcPublish:
             processMessageAmf0CommandFCPublish(transactionId: transactionId)
-        case "FCUnpublish":
+        case .fcUnpublish:
             processMessageAmf0CommandFCUnpublish(transactionId: transactionId)
-        case "createStream":
+        case .createStream:
             processMessageAmf0CommandCreateStream(transactionId: transactionId)
-        case "deleteStream":
+        case .deleteStream:
             processMessageAmf0CommandDeleteStream(transactionId: transactionId)
-        case "publish":
+        case .publish:
             processMessageAmf0CommandPublish(transactionId: transactionId, arguments: arguments)
         default:
             logger.info("rtmp-server: client: Unsupported command \(commandName)")
