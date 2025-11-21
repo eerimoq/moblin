@@ -69,8 +69,8 @@ final class RtmpChunk {
     static let defaultSize = 128
     private static let maxTimestamp: UInt32 = 0xFFFFFF
     private var size = 0
-    private(set) var type: RtmpChunkType = .zero
-    private(set) var chunkStreamId = RtmpChunk.ChunkStreamId.command.rawValue
+    let type: RtmpChunkType
+    let chunkStreamId: UInt16
     private(set) var message: RtmpMessage
     private(set) var fragmented = false
 
@@ -81,6 +81,8 @@ final class RtmpChunk {
     }
 
     init(message: RtmpMessage) {
+        type = .zero
+        chunkStreamId = RtmpChunk.ChunkStreamId.command.rawValue
         self.message = message
     }
 
@@ -96,14 +98,14 @@ final class RtmpChunk {
         self.type = type
         let reader = ByteReader(data: data)
         do {
-            chunkStreamId = try UInt16(reader.readUInt8() & 0b0011_1111)
+            let chunkStreamId = try UInt16(reader.readUInt8() & 0b0011_1111)
             switch chunkStreamId {
             case 0:
-                chunkStreamId = try UInt16(reader.readUInt8()) + 64
+                self.chunkStreamId = try UInt16(reader.readUInt8()) + 64
             case 1:
-                chunkStreamId = try reader.readUInt16() + 64
+                self.chunkStreamId = try reader.readUInt16() + 64
             default:
-                break
+                self.chunkStreamId = chunkStreamId
             }
             let timestamp = try reader.readUInt24()
             let length = try Int(reader.readUInt24())

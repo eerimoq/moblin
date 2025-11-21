@@ -314,8 +314,7 @@ extension RtmpConnection: RtmpSocketDelegate {
         }
         if chunk.type == .two {
             offset = chunk.append(data: data, message: messages[chunk.chunkStreamId])
-        }
-        if chunk.type == .three && fragmentedChunks[chunk.chunkStreamId] == nil {
+        } else if chunk.type == .three && fragmentedChunks[chunk.chunkStreamId] == nil {
             offset = chunk.append(data: data, message: messages[chunk.chunkStreamId])
         }
         if chunk.ready() {
