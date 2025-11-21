@@ -57,16 +57,12 @@ private func makeSanJoseAuthCommand(_ url: URL, description: String) -> String {
 
 class RtmpConnection {
     private var uri: URL?
-    private(set) var connected = false
     private(set) var socket: RtmpSocket
     weak var stream: RtmpStream?
     private var chunkStreamIdToStreamId: [UInt16: UInt32] = [:]
     var callCompletions: [Int: ([Any?]) -> Void] = [:]
     var windowSizeFromServer: Int64 = 250_000 {
         didSet {
-            guard socket.connected else {
-                return
-            }
             _ = socket.write(chunk: RtmpChunk(
                 type: .zero,
                 chunkStreamId: RtmpChunk.ChunkStreamId.control.rawValue,
@@ -91,7 +87,6 @@ class RtmpConnection {
         guard let uri = URL(string: url),
               let scheme = uri.scheme,
               let host = uri.host,
-              !connected,
               supportedProtocols.contains(scheme)
         else {
             return
@@ -114,9 +109,6 @@ class RtmpConnection {
     }
 
     func call(_ commandName: RtmpCommandName, arguments: [Any?], onCompleted: (([Any?]) -> Void)? = nil) {
-        guard connected else {
-            return
-        }
         let message = RtmpCommandMessage(
             streamId: 0,
             transactionId: getNextTransactionId(),
@@ -164,7 +156,6 @@ class RtmpConnection {
     }
 
     private func handleConnectSuccess() {
-        connected = true
         socket.maximumChunkSizeToServer = 1024 * 8
         _ = socket.write(chunk: RtmpChunk(
             type: .zero,
@@ -248,7 +239,6 @@ class RtmpConnection {
     }
 
     private func handleClosed() {
-        connected = false
         currentChunk = nil
         nextTransactionId = 0
         messages.removeAll()

@@ -25,7 +25,6 @@ final class RtmpSocket {
     private var totalBytesSending: Int64 = 0
     private var totalBytesSent: Int64 = 0
     private let name: String
-    private(set) var connected = false
     private var connection: NWConnection?
 
     init(name: String) {
@@ -55,7 +54,6 @@ final class RtmpSocket {
         connection?.cancel()
         connection = nil
         setReadyState(state: .closed)
-        connected = false
         if isDisconnected {
             let data: AsObject
             if readyState == .handshakeDone {
@@ -87,7 +85,7 @@ final class RtmpSocket {
         let size = Int64(data.count)
         totalBytesSending += size
         connection?.send(content: data, completion: .contentProcessed { [weak self] error in
-            guard let self, connected else {
+            guard let self else {
                 return
             }
             if error != nil {
@@ -122,7 +120,6 @@ final class RtmpSocket {
             logger.info("rtmp: \(name): Connection is ready.")
             write(data: RtmpHandshake.createC0C1Packet())
             setReadyState(state: .versionSent)
-            connected = true
         case let .failed(error):
             logger.info("rtmp: \(name): Connection failed: \(error)")
             close(isDisconnected: true)
@@ -136,7 +133,7 @@ final class RtmpSocket {
 
     private func receive(on connection: NWConnection) {
         connection.receive(minimumIncompleteLength: 0, maximumLength: 255) { [weak self] data, _, _, _ in
-            guard let self, let data, self.connected else {
+            guard let self, let data else {
                 return
             }
             self.inputBuffer.append(data)
