@@ -1,4 +1,4 @@
-import UIKit
+import CoreImage
 
 final class PinchEffect: VideoEffect {
     private var scale: Float
