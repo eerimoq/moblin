@@ -121,7 +121,6 @@ private struct LineView: View {
 }
 
 private struct PostView: View {
-    let model: Model
     @ObservedObject var chatSettings: SettingsChat
     @ObservedObject var chat: ChatProvider
     let post: ChatPost
@@ -182,8 +181,7 @@ private struct MessagesView: View {
                 VStack {
                     LazyVStack(alignment: .leading, spacing: 1) {
                         ForEach(chat.posts) { post in
-                            PostView(model: model,
-                                     chatSettings: chatSettings,
+                            PostView(chatSettings: chatSettings,
                                      chat: chat,
                                      post: post,
                                      state: post.state,

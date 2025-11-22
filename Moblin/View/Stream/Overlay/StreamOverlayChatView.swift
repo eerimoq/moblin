@@ -216,7 +216,6 @@ private struct LineView: View {
 private let startId = UUID()
 
 private struct PostView: View {
-    let model: Model
     @ObservedObject var chatSettings: SettingsChat
     @ObservedObject var chat: ChatProvider
     let fullSize: Bool
@@ -323,8 +322,7 @@ struct StreamOverlayChatView: View {
                                 .frame(height: 1)
                                 .id(startId)
                             ForEach(chat.posts) { post in
-                                PostView(model: model,
-                                         chatSettings: chatSettings,
+                                PostView(chatSettings: chatSettings,
                                          chat: chat,
                                          fullSize: fullSize,
                                          post: post,

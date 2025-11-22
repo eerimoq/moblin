@@ -22,6 +22,7 @@ class ChatProvider: ObservableObject {
     @Published var moreThanOneStreamingPlatform = false
     @Published var interactiveChat = false
     @Published var triggerScrollToBottom = false
+
     init(maximumNumberOfMessages: Int) {
         self.maximumNumberOfMessages = maximumNumberOfMessages
     }
