@@ -234,9 +234,12 @@ final class ChatEffect: VideoEffect {
         self.settings = settings
     }
 
-    func update(posts: Deque<ChatPost>) {
+    func update(posts: Deque<ChatPost>, moreThanOneStreamingPlatform: Bool) {
         DispatchQueue.main.async {
-            let renderer = ImageRenderer(content: ChatView(settings: self.settings, posts: posts))
+            let chat = ChatView(settings: self.settings,
+                                posts: posts,
+                                moreThanOneStreamingPlatform: moreThanOneStreamingPlatform)
+            let renderer = ImageRenderer(content: chat)
             guard let uiImage = renderer.uiImage else {
                 return
             }
