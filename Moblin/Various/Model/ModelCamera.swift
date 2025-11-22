@@ -719,9 +719,7 @@ extension Model {
     }
 
     func getExternalCameraName(cameraId: String) -> String {
-        if let camera = externalCameras.first(where: { camera in
-            camera.id == cameraId
-        }) {
+        if let camera = externalCameras.first(where: { $0.id == cameraId }) {
             return camera.name
         } else {
             return unknownSad

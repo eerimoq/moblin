@@ -276,9 +276,7 @@ class SrtlaClient: NSObject {
     }
 
     private func getConnectionPriority(name: String) -> Float {
-        guard let priority = connectionPriorities.first(where: { connection in
-            connection.name == name
-        }) else {
+        guard let priority = connectionPriorities.first(where: { $0.name == name }) else {
             return 1
         }
         if priority.enabled {
@@ -289,9 +287,7 @@ class SrtlaClient: NSObject {
     }
 
     private func getRelayConnectionPriority(relayId: UUID) -> Float {
-        guard let priority = connectionPriorities.first(where: { priority in
-            priority.relayId == relayId
-        }) else {
+        guard let priority = connectionPriorities.first(where: { $0.relayId == relayId }) else {
             return 1
         }
         if priority.enabled {
@@ -316,9 +312,7 @@ class SrtlaClient: NSObject {
         }
         let interfaceTypes: [NWInterface.InterfaceType] = [.cellular, .wifi, .wiredEthernet]
         for interface in path.uniqueAvailableInterfaces() where interfaceTypes.contains(interface.type) {
-            guard !newRemoteConnections.contains(where: { connection in
-                connection.interface == interface
-            }) else {
+            guard !newRemoteConnections.contains(where: { $0.interface == interface }) else {
                 continue
             }
             let name = interfaceName(type: interface.type, interface: interface)

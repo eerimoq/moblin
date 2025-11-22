@@ -33,9 +33,7 @@ extension Model {
         guard isKeyboardActive() else {
             return .ignored
         }
-        guard let key = database.keyboard.keys.first(where: {
-            $0.key == press.characters
-        }) else {
+        guard let key = database.keyboard.keys.first(where: { $0.key == press.characters }) else {
             return .ignored
         }
         switch key.function {

@@ -84,9 +84,8 @@ final class ReplaysStorage {
             return
         }
         for case let fileUrl as URL in enumerator
-            where !database.replays.contains(where: { recording in
-                fileUrl.resolvingSymlinksInPath() == recording.url().resolvingSymlinksInPath()
-            })
+            where !database.replays
+            .contains(where: { fileUrl.resolvingSymlinksInPath() == $0.url().resolvingSymlinksInPath() })
         {
             logger.debug("replays-storage: Removing unused file \(fileUrl)")
             fileUrl.remove()

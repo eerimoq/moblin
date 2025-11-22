@@ -42,9 +42,7 @@ private struct DjiDeviceSelectDeviceSettingsView: View {
         guard let deviceId = UUID(uuidString: value) else {
             return
         }
-        guard let djiDevice = djiScanner.discoveredDevices
-            .first(where: { $0.peripheral.identifier == deviceId })
-        else {
+        guard let djiDevice = djiScanner.discoveredDevices.first(where: { $0.peripheral.identifier == deviceId }) else {
             return
         }
         device.bluetoothPeripheralName = djiDevice.peripheral.name

@@ -1367,9 +1367,7 @@ private func addDefaultBitratePresets(database: Database) {
 }
 
 private func updateQuickButton(database: Database, button: SettingsQuickButton) {
-    let existingButton = database.quickButtons.first(where: { globalButton in
-        globalButton.type == button.type
-    })
+    let existingButton = database.quickButtons.first(where: { $0.type == button.type })
     if let existingButton {
         existingButton.name = button.name
         existingButton.imageOn = button.imageOn
@@ -1683,9 +1681,7 @@ private func addMissingDeepLinkQuickButtons(database: Database) {
     let quickButtons = database.deepLinkCreator.quickButtons
     for quickButton in database.quickButtons where quickButton.type != .lut {
         let button = DeepLinkCreatorQuickButton()
-        let buttonExists = quickButtons.buttons.contains(where: { button in
-            quickButton.type == button.type
-        })
+        let buttonExists = quickButtons.buttons.contains(where: { quickButton.type == $0.type })
         if !buttonExists {
             button.type = quickButton.type
             quickButtons.buttons.append(button)
@@ -1730,9 +1726,7 @@ private func updateBundledAlertsMediaGallery(database: Database) {
     database.alertsMediaGallery.bundledImages = bundledImages
     var bundledSounds: [SettingsAlertsMediaGalleryItem] = []
     for sound in allBundledAlertsMediaGallerySounds {
-        if let existingSound = database.alertsMediaGallery.bundledSounds
-            .first(where: { $0.name == sound.name })
-        {
+        if let existingSound = database.alertsMediaGallery.bundledSounds.first(where: { $0.name == sound.name }) {
             bundledSounds.append(existingSound)
         } else {
             bundledSounds.append(sound)

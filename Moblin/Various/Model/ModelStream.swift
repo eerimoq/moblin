@@ -744,9 +744,7 @@ extension Model {
     }
 
     func getBitratePresetByBitrate(bitrate: UInt32) -> SettingsBitratePreset? {
-        return database.bitratePresets.first(where: { preset in
-            preset.bitrate == bitrate
-        })
+        return database.bitratePresets.first(where: { $0.bitrate == bitrate })
     }
 
     func setBitrate(bitrate: UInt32) {

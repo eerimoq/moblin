@@ -443,9 +443,7 @@ extension Model: ObsWebsocketDelegate {
     }
 
     func obsWebsocketAudioVolume(volumes: [ObsAudioInputVolume]) {
-        guard let volume = volumes.first(where: { volume in
-            volume.name == self.stream.obsSourceName
-        }) else {
+        guard let volume = volumes.first(where: { $0.name == self.stream.obsSourceName }) else {
             obsQuickButton.audioVolumeLatest =
                 String(localized: "Source \(stream.obsSourceName) not found")
             return

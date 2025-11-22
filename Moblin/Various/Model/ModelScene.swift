@@ -350,9 +350,7 @@ extension Model {
     }
 
     private func isGlobalButtonOn(type: SettingsQuickButtonType) -> Bool {
-        return database.quickButtons.first(where: { button in
-            button.type == type
-        })?.isOn ?? false
+        return database.quickButtons.first(where: { $0.type == type })?.isOn ?? false
     }
 
     private func isFaceEnabled() -> Bool {

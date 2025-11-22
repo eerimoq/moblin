@@ -1645,10 +1645,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                     break
                 }
             }
-            if database.color.diskLutsPng.contains(where: { lut in lut.id == id }) {
+            if database.color.diskLutsPng.contains(where: { $0.id == id }) {
                 used = true
             }
-            if database.color.diskLutsCube.contains(where: { lut in lut.id == id }) {
+            if database.color.diskLutsCube.contains(where: { $0.id == id }) {
                 used = true
             }
             if !used {
