@@ -127,73 +127,43 @@ extension Model {
     }
 
     func getTextEffect(id: UUID) -> TextEffect? {
-        for (textEffectId, textEffect) in textEffects where id == textEffectId {
-            return textEffect
-        }
-        return nil
+        return textEffects.first(where: { $0.key == id })?.value
     }
 
     func getVideoSourceEffect(id: UUID) -> VideoSourceEffect? {
-        for (videoSourceEffectId, videoSourceEffect) in videoSourceEffects where id == videoSourceEffectId {
-            return videoSourceEffect
-        }
-        return nil
+        return videoSourceEffects.first(where: { $0.key == id })?.value
     }
 
     func getVTuberEffect(id: UUID) -> VTuberEffect? {
-        for (vTuberEffectId, vTuberEffect) in vTuberEffects where id == vTuberEffectId {
-            return vTuberEffect
-        }
-        return nil
+        return vTuberEffects.first(where: { $0.key == id })?.value
     }
 
     func getPngTuberEffect(id: UUID) -> PngTuberEffect? {
-        for (pngTuberEffectId, pngTuberEffect) in pngTuberEffects where id == pngTuberEffectId {
-            return pngTuberEffect
-        }
-        return nil
+        return pngTuberEffects.first(where: { $0.key == id })?.value
     }
 
     private func getImageEffect(id: UUID) -> ImageEffect? {
-        for (imageEffectId, imageEffect) in imageEffects where id == imageEffectId {
-            return imageEffect
-        }
-        return nil
+        return imageEffects.first(where: { $0.key == id })?.value
     }
 
     private func getBrowserEffect(id: UUID) -> BrowserEffect? {
-        for (browserEffectId, browserEffect) in browserEffects where id == browserEffectId {
-            return browserEffect
-        }
-        return nil
+        return browserEffects.first(where: { $0.key == id })?.value
     }
 
     private func getMapEffect(id: UUID) -> MapEffect? {
-        for (mapEffectId, mapEffect) in mapEffects where id == mapEffectId {
-            return mapEffect
-        }
-        return nil
+        return mapEffects.first(where: { $0.key == id })?.value
     }
 
     func getSnapshotEffect(id: UUID) -> SnapshotEffect? {
-        for (snapshotEffectId, snapshotEffect) in snapshotEffects where id == snapshotEffectId {
-            return snapshotEffect
-        }
-        return nil
+        return snapshotEffects.first(where: { $0.key == id })?.value
     }
 
     func getQrCodeEffect(id: UUID) -> QrCodeEffect? {
-        for (qrCodeEffectId, qrCodeEffect) in qrCodeEffects where id == qrCodeEffectId {
-            return qrCodeEffect
-        }
-        return nil
+        return qrCodeEffects.first(where: { $0.key == id })?.value
     }
 
     func getScoreboardEffect(id: UUID) -> ScoreboardEffect? {
-        for (scoreboardEffectId, scoreboardEffect) in scoreboardEffects where id == scoreboardEffectId {
-            return scoreboardEffect
-        }
-        return nil
+        return scoreboardEffects.first(where: { $0.key == id })?.value
     }
 
     func getEffectWithPossibleEffects(id: UUID) -> VideoEffect? {
@@ -211,8 +181,24 @@ extension Model {
 
     private func resetVideoEffects(widgets: [SettingsWidget]) {
         unregisterGlobalVideoEffects()
-        for textEffect in textEffects.values {
-            media.unregisterEffect(textEffect)
+        resetTextVideoEffects(widgets: widgets)
+        resetBrowserVideoEffects(widgets: widgets)
+        resetMapVideoEffects(widgets: widgets)
+        resetQrCodeVideoEffects(widgets: widgets)
+        resetVideoSourceVideoEffects(widgets: widgets)
+        resetScoreboardVideoEffects(widgets: widgets)
+        resetAlertsVideoEffects(widgets: widgets)
+        resetVTuberVideoEffects(widgets: widgets)
+        resetPngTuberVideoEffects(widgets: widgets)
+        resetSnapshotVideoEffects(widgets: widgets)
+        browsers = browserEffects.map { _, browser in
+            Browser(browserEffect: browser)
+        }
+    }
+
+    private func resetTextVideoEffects(widgets: [SettingsWidget]) {
+        for effect in textEffects.values {
+            media.unregisterEffect(effect)
         }
         textEffects.removeAll()
         for widget in widgets where widget.type == .text {
@@ -236,9 +222,12 @@ extension Model {
                 lapTimes: widget.text.lapTimes.map { $0.lapTimes }
             )
         }
-        for browserEffect in browserEffects.values {
-            media.unregisterEffect(browserEffect)
-            browserEffect.stop()
+    }
+
+    private func resetBrowserVideoEffects(widgets: [SettingsWidget]) {
+        for effect in browserEffects.values {
+            media.unregisterEffect(effect)
+            effect.stop()
         }
         browserEffects.removeAll()
         for widget in widgets where widget.type == .browser {
@@ -257,8 +246,11 @@ extension Model {
             browserEffect.effects = widget.getEffects()
             browserEffects[widget.id] = browserEffect
         }
-        for mapEffect in mapEffects.values {
-            media.unregisterEffect(mapEffect)
+    }
+
+    private func resetMapVideoEffects(widgets: [SettingsWidget]) {
+        for effect in mapEffects.values {
+            media.unregisterEffect(effect)
         }
         mapEffects.removeAll()
         for widget in widgets where widget.type == .map {
@@ -266,8 +258,11 @@ extension Model {
             mapEffect.effects = widget.getEffects()
             mapEffects[widget.id] = mapEffect
         }
-        for qrCodeEffect in qrCodeEffects.values {
-            media.unregisterEffect(qrCodeEffect)
+    }
+
+    private func resetQrCodeVideoEffects(widgets: [SettingsWidget]) {
+        for effect in qrCodeEffects.values {
+            media.unregisterEffect(effect)
         }
         qrCodeEffects.removeAll()
         for widget in widgets where widget.type == .qrCode {
@@ -275,8 +270,11 @@ extension Model {
             qrCodeEffect.effects = widget.getEffects()
             qrCodeEffects[widget.id] = qrCodeEffect
         }
-        for videoSourceEffect in videoSourceEffects.values {
-            media.unregisterEffect(videoSourceEffect)
+    }
+
+    private func resetVideoSourceVideoEffects(widgets: [SettingsWidget]) {
+        for effect in videoSourceEffects.values {
+            media.unregisterEffect(effect)
         }
         videoSourceEffects.removeAll()
         for widget in widgets where widget.type == .videoSource {
@@ -284,15 +282,21 @@ extension Model {
             videoSourceEffect.effects = widget.getEffects()
             videoSourceEffects[widget.id] = videoSourceEffect
         }
-        for scoreboardEffect in scoreboardEffects.values {
-            media.unregisterEffect(scoreboardEffect)
+    }
+
+    private func resetScoreboardVideoEffects(widgets: [SettingsWidget]) {
+        for effect in scoreboardEffects.values {
+            media.unregisterEffect(effect)
         }
         scoreboardEffects.removeAll()
         for widget in widgets where widget.type == .scoreboard {
             scoreboardEffects[widget.id] = ScoreboardEffect()
         }
-        for alertsEffect in alertsEffects.values {
-            media.unregisterEffect(alertsEffect)
+    }
+
+    private func resetAlertsVideoEffects(widgets: [SettingsWidget]) {
+        for effect in alertsEffects.values {
+            media.unregisterEffect(effect)
         }
         alertsEffects.removeAll()
         for widget in widgets where widget.type == .alerts {
@@ -304,8 +308,11 @@ extension Model {
                 bundledSounds: database.alertsMediaGallery.bundledSounds
             )
         }
-        for vTuberEffect in vTuberEffects.values {
-            media.unregisterEffect(vTuberEffect)
+    }
+
+    private func resetVTuberVideoEffects(widgets: [SettingsWidget]) {
+        for effect in vTuberEffects.values {
+            media.unregisterEffect(effect)
         }
         vTuberEffects.removeAll()
         for widget in widgets where widget.type == .vTuber {
@@ -315,8 +322,11 @@ extension Model {
                 cameraPositionY: widget.vTuber.cameraPositionY
             )
         }
-        for pngTuberEffect in pngTuberEffects.values {
-            media.unregisterEffect(pngTuberEffect)
+    }
+
+    private func resetPngTuberVideoEffects(widgets: [SettingsWidget]) {
+        for effect in pngTuberEffects.values {
+            media.unregisterEffect(effect)
         }
         pngTuberEffects.removeAll()
         for widget in widgets where widget.type == .pngTuber {
@@ -325,17 +335,17 @@ extension Model {
                 costume: 1
             )
         }
-        for snapshotEffect in snapshotEffects.values {
-            media.unregisterEffect(snapshotEffect)
+    }
+
+    private func resetSnapshotVideoEffects(widgets: [SettingsWidget]) {
+        for effect in snapshotEffects.values {
+            media.unregisterEffect(effect)
         }
         snapshotEffects.removeAll()
         for widget in widgets where widget.type == .snapshot {
-            let snapshotEffect = SnapshotEffect(showtime: widget.snapshot.showtime)
-            snapshotEffect.effects = widget.getEffects()
-            snapshotEffects[widget.id] = snapshotEffect
-        }
-        browsers = browserEffects.map { _, browser in
-            Browser(browserEffect: browser)
+            let effect = SnapshotEffect(showtime: widget.snapshot.showtime)
+            effect.effects = widget.getEffects()
+            snapshotEffects[widget.id] = effect
         }
     }
 
