@@ -6,12 +6,12 @@ import WrappingHStack
 private let borderWidth = 1.5
 
 private struct HighlightMessageView: View {
-    let settings: SettingsWidgetChat
+    @ObservedObject var settings: SettingsWidgetChat
     let highlight: ChatHighlight
 
     private func backgroundColor() -> Color {
         if settings.backgroundColorEnabled {
-            return settings.backgroundColor.color().opacity(0.6)
+            return settings.backgroundColorColor.opacity(0.6)
         } else {
             return .clear
         }
@@ -19,7 +19,7 @@ private struct HighlightMessageView: View {
 
     private func shadowColor() -> Color {
         if settings.shadowColorEnabled {
-            return settings.shadowColor.color()
+            return settings.shadowColorColor
         } else {
             return .clear
         }
@@ -41,7 +41,7 @@ private struct HighlightMessageView: View {
             ForEach(highlight.titleSegments, id: \.id) { segment in
                 if let text = segment.text {
                     Text(text)
-                        .foregroundStyle(highlight.messageColor(defaultColor: settings.messageColor.color()))
+                        .foregroundStyle(highlight.messageColor(defaultColor: settings.messageColorColor))
                 }
                 if let url = segment.url {
                     CacheAsyncImage(url: url) { image in
@@ -75,12 +75,12 @@ private struct LineView: View {
     }
 
     private func messageColor(usernameColor _: Color) -> Color {
-        return settings.messageColor.color()
+        return settings.messageColorColor
     }
 
     private func backgroundColor() -> Color {
         if settings.backgroundColorEnabled {
-            return settings.backgroundColor.color().opacity(0.6)
+            return settings.backgroundColorColor.opacity(0.6)
         } else {
             return .clear
         }
@@ -88,7 +88,7 @@ private struct LineView: View {
 
     private func shadowColor() -> Color {
         if settings.shadowColorEnabled {
-            return settings.shadowColor.color()
+            return settings.shadowColorColor
         } else {
             return .clear
         }

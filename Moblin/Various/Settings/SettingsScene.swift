@@ -1573,10 +1573,14 @@ class SettingsWidgetChat: Codable, ObservableObject {
 
     func update(other: SettingsWidgetChat) {
         fontSize = other.fontSize
+        usernameColor = other.usernameColor
         usernameColorColor = other.usernameColorColor
+        messageColor = other.messageColor
         messageColorColor = other.messageColorColor
+        backgroundColor = other.backgroundColor
         backgroundColorColor = other.backgroundColorColor
         backgroundColorEnabled = other.backgroundColorEnabled
+        shadowColor = other.shadowColor
         shadowColorColor = other.shadowColorColor
         shadowColorEnabled = other.shadowColorEnabled
         boldUsername = other.boldUsername
