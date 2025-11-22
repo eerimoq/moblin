@@ -158,6 +158,10 @@ extension Model {
         return snapshotEffects.first(where: { $0.key == id })?.value
     }
 
+    func getChatEffect(id: UUID) -> ChatEffect? {
+        return chatEffects.first(where: { $0.key == id })?.value
+    }
+
     func getQrCodeEffect(id: UUID) -> QrCodeEffect? {
         return qrCodeEffects.first(where: { $0.key == id })?.value
     }
@@ -191,6 +195,7 @@ extension Model {
         resetVTuberVideoEffects(widgets: widgets)
         resetPngTuberVideoEffects(widgets: widgets)
         resetSnapshotVideoEffects(widgets: widgets)
+        resetChatVideoEffects(widgets: widgets)
         browsers = browserEffects.map { _, browser in
             Browser(browserEffect: browser)
         }
@@ -346,6 +351,17 @@ extension Model {
             let effect = SnapshotEffect(showtime: widget.snapshot.showtime)
             effect.effects = widget.getEffects()
             snapshotEffects[widget.id] = effect
+        }
+    }
+
+    private func resetChatVideoEffects(widgets: [SettingsWidget]) {
+        for effect in chatEffects.values {
+            media.unregisterEffect(effect)
+        }
+        chatEffects.removeAll()
+        for widget in widgets where widget.type == .chat {
+            let effect = ChatEffect()
+            chatEffects[widget.id] = effect
         }
     }
 
@@ -596,6 +612,8 @@ extension Model {
                 addScenePngTuberEffects(sceneWidget, widget, &effects)
             case .snapshot:
                 addSceneSnapshotEffects(sceneWidget, widget, &effects)
+            case .chat:
+                addSceneChatEffects(sceneWidget, widget, &effects)
             }
         }
     }
@@ -800,6 +818,17 @@ extension Model {
         }
         effect.setSceneWidget(sceneWidget: sceneWidget.clone())
         enabledSnapshotEffects.append(effect)
+        effects.append(effect)
+    }
+
+    private func addSceneChatEffects(
+        _: SettingsSceneWidget,
+        _ widget: SettingsWidget,
+        _ effects: inout [VideoEffect]
+    ) {
+        guard let effect = chatEffects[widget.id], !effects.contains(effect) else {
+            return
+        }
         effects.append(effect)
     }
 

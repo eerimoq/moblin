@@ -100,6 +100,8 @@ struct WidgetSettingsView: View {
                 WidgetPngTuberSettingsView(widget: widget, pngTuber: widget.pngTuber)
             case .snapshot:
                 WidgetSnapshotSettingsView(widget: widget, snapshot: widget.snapshot)
+            case .chat:
+                WidgetChatSettingsView(widget: widget, chat: widget.chat)
             }
         }
         .navigationTitle("\(widget.type.toString()) widget")

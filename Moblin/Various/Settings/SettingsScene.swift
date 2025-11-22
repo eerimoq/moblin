@@ -1495,6 +1495,26 @@ class SettingsWidgetSnapshot: Codable, ObservableObject {
     }
 }
 
+class SettingsWidgetChat: Codable, ObservableObject {
+    var id: UUID = .init()
+
+    enum CodingKeys: CodingKey {
+        case id
+    }
+
+    init() {}
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+    }
+}
+
 class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named {
     static let baseName = String(localized: "My widget")
     @Published var name: String
@@ -1512,6 +1532,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named 
     var vTuber: SettingsWidgetVTuber = .init()
     var pngTuber: SettingsWidgetPngTuber = .init()
     var snapshot: SettingsWidgetSnapshot = .init()
+    var chat: SettingsWidgetChat = .init()
     @Published var enabled: Bool = true
     @Published var effects: [SettingsVideoEffect] = []
 
@@ -1539,6 +1560,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named 
              vTuber,
              pngTuber,
              snapshot,
+             chat,
              enabled,
              effects
     }
@@ -1560,6 +1582,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named 
         try container.encode(.vTuber, vTuber)
         try container.encode(.pngTuber, pngTuber)
         try container.encode(.snapshot, snapshot)
+        try container.encode(.chat, chat)
         try container.encode(.enabled, enabled)
         try container.encode(.effects, effects)
     }
@@ -1581,6 +1604,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named 
         vTuber = container.decode(.vTuber, SettingsWidgetVTuber.self, .init())
         pngTuber = container.decode(.pngTuber, SettingsWidgetPngTuber.self, .init())
         snapshot = container.decode(.snapshot, SettingsWidgetSnapshot.self, .init())
+        chat = container.decode(.chat, SettingsWidgetChat.self, .init())
         enabled = container.decode(.enabled, Bool.self, true)
         effects = container.decode(.effects, [SettingsVideoEffect].self, [])
         migrateFromOlderVersions()
@@ -1639,6 +1663,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named 
             .vTuber,
             .pngTuber,
             .snapshot,
+            .chat,
         ].contains(type)
     }
 
@@ -1653,6 +1678,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named 
             .vTuber,
             .pngTuber,
             .snapshot,
+            .chat,
         ].contains(type)
     }
 
@@ -1668,6 +1694,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named 
             .vTuber,
             .pngTuber,
             .snapshot,
+            .chat,
         ].contains(type)
     }
 
@@ -2364,6 +2391,7 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
     case alerts = "Alerts"
     case map = "Map"
     case snapshot = "Snapshot"
+    case chat = "Chat"
     case scene = "Scene"
     case vTuber = "VTuber"
     case pngTuber = "PNGTuber"
@@ -2391,6 +2419,8 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
             return String(localized: "Map")
         case .snapshot:
             return String(localized: "Snapshot")
+        case .chat:
+            return String(localized: "Chat")
         case .scene:
             return String(localized: "Scene")
         case .vTuber:
@@ -2418,6 +2448,10 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
             return "crop"
         case .map:
             return "map"
+        case .snapshot:
+            return "camera.aperture"
+        case .chat:
+            return "message"
         case .scene:
             return "photo.on.rectangle"
         case .qrCode:
@@ -2432,8 +2466,6 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
             return "person.crop.circle"
         case .pngTuber:
             return "person.crop.circle.dashed"
-        case .snapshot:
-            return "camera.aperture"
         }
     }
 
@@ -2453,6 +2485,8 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
             return String(localized: "A map widget shows a map with your location.")
         case .snapshot:
             return String(localized: "A snapshot widget shows snapshots when taken.")
+        case .chat:
+            return String(localized: "A chat widget shows your chat.")
         case .scene:
             return String(localized: "A scene widget shows a scene's widgets.")
         case .vTuber:
