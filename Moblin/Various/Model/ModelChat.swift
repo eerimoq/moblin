@@ -305,6 +305,13 @@ extension Model {
         if isKickPusherConfigured() {
             numberOfChats += 1
         }
+        if isKickPusherConfigured(),
+           let kickAltChannel = stream.kickAltChannels.first,
+           kickAltChannel.enabled,
+           !kickAltChannel.channelName.isEmpty
+        {
+            numberOfChats += 1
+        }
         if isDLiveChatConfigured() {
             numberOfChats += 1
         }
@@ -605,6 +612,8 @@ extension Model {
             banTwitchUser(user: user, userId: userId, duration: nil)
         case .kick:
             banKickUser(user: user, duration: nil)
+        case .kickAlt:
+            makeErrorToast(title: "Cannot ban users on alt channel")
         default:
             makeErrorToast(title: "Ban not supported for this platform")
         }
@@ -622,6 +631,8 @@ extension Model {
             banTwitchUser(user: user, userId: userId, duration: duration)
         case .kick:
             banKickUser(user: user, duration: duration)
+        case .kickAlt:
+            makeErrorToast(title: "Cannot timeout users on alt channel")
         default:
             makeErrorToast(title: "Timeout not supported for this platform")
         }
@@ -636,6 +647,8 @@ extension Model {
             deleteTwitchChatMessage(messageId: messageId)
         case .kick:
             deleteKickMessage(messageId: messageId)
+        case .kickAlt:
+            makeErrorToast(title: "Cannot delete messages on alt channel")
         default:
             makeErrorToast(title: "Delete message not supported for this platform")
         }

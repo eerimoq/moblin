@@ -1085,6 +1085,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         startGForceManager()
         loadStealthModeImage()
         updateKickChannelInfoIfNeeded()
+        updateKickAltChannelInfoIfNeeded()
         reloadSpeechToText()
     }
 
@@ -1360,6 +1361,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             }
             reloadCameraLevel()
             updateKickChannelInfoIfNeeded()
+            updateKickAltChannelInfoIfNeeded()
         }
     }
 
