@@ -1497,9 +1497,38 @@ class SettingsWidgetSnapshot: Codable, ObservableObject {
 
 class SettingsWidgetChat: Codable, ObservableObject {
     var id: UUID = .init()
+    @Published var fontSize: Float = 19.0
+    var usernameColor: RgbColor = .init(red: 255, green: 163, blue: 0)
+    @Published var usernameColorColor: Color = RgbColor(red: 255, green: 163, blue: 0).color()
+    var messageColor: RgbColor = .init(red: 255, green: 255, blue: 255)
+    @Published var messageColorColor: Color = RgbColor(red: 255, green: 255, blue: 255).color()
+    var backgroundColor: RgbColor = .init(red: 0, green: 0, blue: 0)
+    @Published var backgroundColorColor: Color = RgbColor(red: 0, green: 0, blue: 0).color()
+    @Published var backgroundColorEnabled: Bool = false
+    var shadowColor: RgbColor = .init(red: 0, green: 0, blue: 0)
+    @Published var shadowColorColor: Color = RgbColor(red: 0, green: 0, blue: 0).color()
+    @Published var shadowColorEnabled: Bool = true
+    @Published var boldUsername: Bool = true
+    @Published var boldMessage: Bool = true
+    @Published var badges: Bool = true
+    @Published var platform: Bool = true
+    let nicknames: SettingsChatNicknames = .init()
+    @Published var displayStyle: SettingsChatDisplayStyle = .internationalNameAndUsername
 
     enum CodingKeys: CodingKey {
-        case id
+        case id,
+             fontSize,
+             usernameColor,
+             messageColor,
+             backgroundColor,
+             backgroundColorEnabled,
+             shadowColor,
+             shadowColorEnabled,
+             boldUsername,
+             boldMessage,
+             badges,
+             platform,
+             displayStyle
     }
 
     init() {}
@@ -1507,11 +1536,39 @@ class SettingsWidgetChat: Codable, ObservableObject {
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
+        try container.encode(.fontSize, fontSize)
+        try container.encode(.usernameColor, usernameColor)
+        try container.encode(.messageColor, messageColor)
+        try container.encode(.backgroundColor, backgroundColor)
+        try container.encode(.backgroundColorEnabled, backgroundColorEnabled)
+        try container.encode(.shadowColor, shadowColor)
+        try container.encode(.shadowColorEnabled, shadowColorEnabled)
+        try container.encode(.boldUsername, boldUsername)
+        try container.encode(.boldMessage, boldMessage)
+        try container.encode(.badges, badges)
+        try container.encode(.platform, platform)
+        try container.encode(.displayStyle, displayStyle)
     }
 
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
+        fontSize = container.decode(.fontSize, Float.self, 19.0)
+        usernameColor = container.decode(.usernameColor, RgbColor.self, .init(red: 255, green: 163, blue: 0))
+        usernameColorColor = usernameColor.color()
+        messageColor = container.decode(.messageColor, RgbColor.self, .init(red: 255, green: 255, blue: 255))
+        messageColorColor = messageColor.color()
+        backgroundColor = container.decode(.backgroundColor, RgbColor.self, .init(red: 0, green: 0, blue: 0))
+        backgroundColorColor = backgroundColor.color()
+        backgroundColorEnabled = container.decode(.backgroundColorEnabled, Bool.self, false)
+        shadowColor = container.decode(.shadowColor, RgbColor.self, .init(red: 0, green: 0, blue: 0))
+        shadowColorColor = shadowColor.color()
+        shadowColorEnabled = container.decode(.shadowColorEnabled, Bool.self, true)
+        boldUsername = container.decode(.boldUsername, Bool.self, true)
+        boldMessage = container.decode(.boldMessage, Bool.self, true)
+        badges = container.decode(.badges, Bool.self, true)
+        platform = container.decode(.platform, Bool.self, true)
+        displayStyle = container.decode(.displayStyle, SettingsChatDisplayStyle.self, .internationalName)
     }
 }
 
@@ -1678,7 +1735,6 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named 
             .vTuber,
             .pngTuber,
             .snapshot,
-            .chat,
         ].contains(type)
     }
 

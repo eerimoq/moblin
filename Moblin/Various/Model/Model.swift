@@ -424,6 +424,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var chat = ChatProvider(maximumNumberOfMessages: maximumNumberOfChatMessages)
     var quickButtonChat = ChatProvider(maximumNumberOfMessages: maximumNumberOfInteractiveChatMessages)
     var externalDisplayChat = ChatProvider(maximumNumberOfMessages: 50)
+    var chatWidgetPosts: Deque<ChatPost> = []
+    var chatWidgetHasNewPosts: Bool = false
     private var externalDisplayWindow: UIWindow?
     var chatBotMessages: Deque<ChatBotMessage> = []
     var newQuickButtonChatAlertsPosts: Deque<ChatPost> = []
@@ -453,6 +455,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var snapshotEffects: [UUID: SnapshotEffect] = [:]
     var chatEffects: [UUID: ChatEffect] = [:]
     var enabledSnapshotEffects: [SnapshotEffect] = []
+    var enabledChatEffects: [ChatEffect] = []
     var speechToTextAlertMatchOffset = 0
     var isMuteOn = false
     var log: Deque<LogEntry> = []

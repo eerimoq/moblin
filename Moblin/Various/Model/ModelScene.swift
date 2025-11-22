@@ -361,8 +361,10 @@ extension Model {
         chatEffects.removeAll()
         for widget in widgets where widget.type == .chat {
             let effect = ChatEffect()
+            effect.setSettings(settings: widget.chat)
             chatEffects[widget.id] = effect
         }
+        chatWidgetHasNewPosts = true
     }
 
     private func isGlobalButtonOn(type: SettingsQuickButtonType) -> Bool {
@@ -529,6 +531,7 @@ extension Model {
         var needsSpeechToText = false
         enabledAlertsEffects.removeAll()
         enabledSnapshotEffects.removeAll()
+        enabledChatEffects.removeAll()
         var scene = scene
         if let remoteSceneWidget = remoteSceneWidgets.first {
             scene = scene.clone()
@@ -822,13 +825,15 @@ extension Model {
     }
 
     private func addSceneChatEffects(
-        _: SettingsSceneWidget,
+        _ sceneWidget: SettingsSceneWidget,
         _ widget: SettingsWidget,
         _ effects: inout [VideoEffect]
     ) {
         guard let effect = chatEffects[widget.id], !effects.contains(effect) else {
             return
         }
+        effect.setSceneWidget(sceneWidget: sceneWidget.clone())
+        enabledChatEffects.append(effect)
         effects.append(effect)
     }
 
@@ -1268,6 +1273,8 @@ extension Model {
         case .snapshot:
             sceneWidget.layout.size = 40
             sceneWidget.layout.alignment = .topRight
+        case .chat:
+            sceneWidget.layout.alignment = .bottomLeft
         default:
             break
         }

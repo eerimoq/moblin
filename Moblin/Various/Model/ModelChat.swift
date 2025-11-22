@@ -260,6 +260,12 @@ extension Model {
                 quickButtonChatState.chatAlertsPosts.prepend(post)
             }
         }
+        if chatWidgetHasNewPosts {
+            chatWidgetHasNewPosts = false
+            for effect in enabledChatEffects {
+                effect.update(posts: chatWidgetPosts)
+            }
+        }
     }
 
     func isAlertMessage(post: ChatPost) -> Bool {
@@ -475,6 +481,13 @@ extension Model {
                 } else {
                     newQuickButtonChatAlertsPosts.append(post)
                 }
+            }
+        }
+        if !enabledChatEffects.isEmpty {
+            chatWidgetPosts.append(post)
+            chatWidgetHasNewPosts = true
+            while chatWidgetPosts.count > 5 {
+                chatWidgetPosts.removeFirst()
             }
         }
     }
