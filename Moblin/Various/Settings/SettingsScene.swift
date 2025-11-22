@@ -1570,6 +1570,21 @@ class SettingsWidgetChat: Codable, ObservableObject {
         platform = container.decode(.platform, Bool.self, true)
         displayStyle = container.decode(.displayStyle, SettingsChatDisplayStyle.self, .internationalName)
     }
+
+    func update(other: SettingsWidgetChat) {
+        fontSize = other.fontSize
+        usernameColorColor = other.usernameColorColor
+        messageColorColor = other.messageColorColor
+        backgroundColorColor = other.backgroundColorColor
+        backgroundColorEnabled = other.backgroundColorEnabled
+        shadowColorColor = other.shadowColorColor
+        shadowColorEnabled = other.shadowColorEnabled
+        boldUsername = other.boldUsername
+        boldMessage = other.boldMessage
+        badges = other.badges
+        platform = other.platform
+        displayStyle = other.displayStyle
+    }
 }
 
 class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named {

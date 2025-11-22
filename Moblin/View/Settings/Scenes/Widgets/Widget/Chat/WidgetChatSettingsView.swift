@@ -7,7 +7,6 @@ struct WidgetChatSettingsView: View {
 
     private func setEffectSettings() {
         model.getChatEffect(id: widget.id)?.setSettings(settings: chat)
-        model.chatWidgetHasNewPosts = true
     }
 
     var body: some View {

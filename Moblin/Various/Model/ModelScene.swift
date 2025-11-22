@@ -364,7 +364,6 @@ extension Model {
             effect.setSettings(settings: widget.chat)
             chatEffects[widget.id] = effect
         }
-        chatWidgetHasNewPosts = true
     }
 
     private func isGlobalButtonOn(type: SettingsQuickButtonType) -> Bool {

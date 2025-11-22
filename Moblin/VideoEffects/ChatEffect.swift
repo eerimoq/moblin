@@ -67,7 +67,7 @@ private struct HighlightMessageView: View {
 
 private struct LineView: View {
     let post: ChatPost
-    let settings: SettingsWidgetChat
+    @ObservedObject var settings: SettingsWidgetChat
     let platform: Bool
 
     private func usernameColor() -> Color {
@@ -240,7 +240,7 @@ final class ChatEffect: VideoEffect, ObservableObject {
     }
 
     func setSettings(settings: SettingsWidgetChat) {
-        self.settings = settings
+        self.settings.update(other: settings)
     }
 
     func update(posts: Deque<ChatPost>, moreThanOneStreamingPlatform: Bool) {
