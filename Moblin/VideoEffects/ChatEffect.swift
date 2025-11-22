@@ -1,4 +1,5 @@
 import Collections
+import Combine
 import SwiftUI
 import WrappingHStack
 
@@ -140,7 +141,7 @@ private struct LineView: View {
             } else {
                 Text(": ")
             }
-            ForEach(post.segments, id: \.id) { segment in
+            ForEach(post.segments) { segment in
                 if let text = segment.text {
                     Text(text)
                         .foregroundStyle(messageColor)
@@ -193,19 +194,23 @@ private struct PostView: View {
     }
 }
 
+class ChatState: ObservableObject {
+    @Published var posts: Deque<ChatPost> = []
+    @Published var moreThanOneStreamingPlatform: Bool = false
+}
+
 private struct ChatView: View {
     let settings: SettingsWidgetChat
-    let posts: Deque<ChatPost>
-    let moreThanOneStreamingPlatform: Bool
+    @ObservedObject var state: ChatState
 
     var body: some View {
         VStack(alignment: .leading, spacing: 1) {
             Spacer()
-            ForEach(posts) { post in
+            ForEach(state.posts) { post in
                 HStack {
                     PostView(settings: settings,
                              post: post,
-                             moreThanOneStreamingPlatform: moreThanOneStreamingPlatform)
+                             moreThanOneStreamingPlatform: state.moreThanOneStreamingPlatform)
                     Spacer()
                 }
             }
@@ -215,10 +220,14 @@ private struct ChatView: View {
     }
 }
 
-final class ChatEffect: VideoEffect {
+final class ChatEffect: VideoEffect, ObservableObject {
     private var sceneWidget = SettingsSceneWidget(widgetId: .init())
-    private var settings = SettingsWidgetChat()
     private var chatImage: CIImage?
+    private var renderer: ImageRenderer<ChatView>?
+    private var settings = SettingsWidgetChat()
+    private var chat: ChatView?
+    private let state = ChatState()
+    private var cancellable: AnyCancellable?
 
     override func getName() -> String {
         return "chat"
@@ -236,15 +245,25 @@ final class ChatEffect: VideoEffect {
 
     func update(posts: Deque<ChatPost>, moreThanOneStreamingPlatform: Bool) {
         DispatchQueue.main.async {
-            let chat = ChatView(settings: self.settings,
-                                posts: posts,
-                                moreThanOneStreamingPlatform: moreThanOneStreamingPlatform)
-            let renderer = ImageRenderer(content: chat)
-            guard let uiImage = renderer.uiImage else {
+            self.updateInner(posts: posts, moreThanOneStreamingPlatform: moreThanOneStreamingPlatform)
+        }
+    }
+
+    @MainActor
+    private func updateInner(posts: Deque<ChatPost>, moreThanOneStreamingPlatform: Bool) {
+        state.posts = posts
+        state.moreThanOneStreamingPlatform = moreThanOneStreamingPlatform
+        guard renderer == nil else {
+            return
+        }
+        renderer = ImageRenderer(content: ChatView(settings: settings, state: state))
+        cancellable = renderer?.objectWillChange.sink { [weak self] in
+            guard let self else {
                 return
             }
-            self.setChatImage(image: CIImage(image: uiImage))
+            self.setChatImage(image: self.renderer?.ciImage())
         }
+        setChatImage(image: renderer?.ciImage())
     }
 
     private func setChatImage(image: CIImage?) {

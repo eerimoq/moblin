@@ -69,3 +69,13 @@ func isPad() -> Bool {
 func isMac() -> Bool {
     return ProcessInfo().isiOSAppOnMac
 }
+
+extension ImageRenderer {
+    @MainActor
+    func ciImage() -> CIImage? {
+        guard let image = cgImage else {
+            return nil
+        }
+        return CIImage(cgImage: image)
+    }
+}

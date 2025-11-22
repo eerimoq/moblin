@@ -86,7 +86,7 @@ private struct LineView: View {
             } else {
                 Text(": ")
             }
-            ForEach(post.segments, id: \.id) { segment in
+            ForEach(post.segments) { segment in
                 if let text = segment.text {
                     Text(text)
                         .foregroundStyle(postState.deleted ? .gray : .white)
