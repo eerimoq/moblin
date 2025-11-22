@@ -173,6 +173,7 @@ private struct LineView: View {
 private struct PostView: View {
     let settings: SettingsWidgetChat
     let post: ChatPost
+    let moreThanOneStreamingPlatform: Bool
 
     var body: some View {
         if let highlight = post.highlight {
@@ -182,11 +183,11 @@ private struct PostView: View {
                     .foregroundStyle(highlight.barColor)
                 VStack(alignment: .leading, spacing: 1) {
                     HighlightMessageView(settings: settings, highlight: highlight)
-                    LineView(post: post, settings: settings, platform: true)
+                    LineView(post: post, settings: settings, platform: moreThanOneStreamingPlatform)
                 }
             }
         } else {
-            LineView(post: post, settings: settings, platform: true)
+            LineView(post: post, settings: settings, platform: moreThanOneStreamingPlatform)
                 .padding([.leading], 3)
         }
     }
@@ -195,13 +196,16 @@ private struct PostView: View {
 private struct ChatView: View {
     let settings: SettingsWidgetChat
     let posts: Deque<ChatPost>
+    let moreThanOneStreamingPlatform: Bool
 
     var body: some View {
         VStack(alignment: .leading, spacing: 1) {
             Spacer()
             ForEach(posts) { post in
                 HStack {
-                    PostView(settings: settings, post: post)
+                    PostView(settings: settings,
+                             post: post,
+                             moreThanOneStreamingPlatform: moreThanOneStreamingPlatform)
                     Spacer()
                 }
             }

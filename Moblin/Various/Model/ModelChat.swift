@@ -263,7 +263,8 @@ extension Model {
         if chatWidgetHasNewPosts {
             chatWidgetHasNewPosts = false
             for effect in enabledChatEffects {
-                effect.update(posts: chatWidgetPosts)
+                effect.update(posts: chatWidgetPosts,
+                              moreThanOneStreamingPlatform: chatWidgetMoreThanOneStreamingPlatform)
             }
         }
     }
@@ -293,6 +294,7 @@ extension Model {
         chat.moreThanOneStreamingPlatform = moreThanOneStreamingPlatform
         quickButtonChat.moreThanOneStreamingPlatform = moreThanOneStreamingPlatform
         externalDisplayChat.moreThanOneStreamingPlatform = moreThanOneStreamingPlatform
+        chatWidgetMoreThanOneStreamingPlatform = moreThanOneStreamingPlatform
     }
 
     private func isMoreThanOneChatConfigured() -> Bool {

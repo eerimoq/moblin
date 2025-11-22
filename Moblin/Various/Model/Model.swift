@@ -426,6 +426,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var externalDisplayChat = ChatProvider(maximumNumberOfMessages: 50)
     var chatWidgetPosts: Deque<ChatPost> = []
     var chatWidgetHasNewPosts: Bool = false
+    var chatWidgetMoreThanOneStreamingPlatform: Bool = false
     private var externalDisplayWindow: UIWindow?
     var chatBotMessages: Deque<ChatBotMessage> = []
     var newQuickButtonChatAlertsPosts: Deque<ChatPost> = []
