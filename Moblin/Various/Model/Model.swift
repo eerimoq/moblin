@@ -585,7 +585,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var streamTotalChatMessages: Int = 0
     var streamLog: Deque<String> = []
     private var ipMonitor = IPMonitor()
-    var faceEffect = FaceEffect(fps: 30)
+    var faceEffect = FaceEffect()
     var movieEffect = MovieEffect()
     var whirlpoolEffect = WhirlpoolEffect(angle: .pi / 2)
     var pinchEffect = PinchEffect(scale: 0.5)

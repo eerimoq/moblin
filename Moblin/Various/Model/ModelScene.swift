@@ -56,7 +56,7 @@ extension Model {
         media.unregisterEffect(whirlpoolEffect)
         media.unregisterEffect(pinchEffect)
         media.unregisterEffect(fixedHorizonEffect)
-        faceEffect = FaceEffect(fps: Float(stream.fps))
+        faceEffect = FaceEffect()
         updateFaceFilterSettings()
         movieEffect = MovieEffect()
         grayScaleEffect = GrayScaleEffect()

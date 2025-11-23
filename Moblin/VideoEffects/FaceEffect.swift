@@ -12,13 +12,12 @@ final class FaceEffect: VideoEffect {
     private var settings = FaceEffectSettings()
     let moblinImage: CIImage?
 
-    init(fps _: Float) {
+    override init() {
         if let image = UIImage(named: "AppIconNoBackground"), let image = image.cgImage {
             moblinImage = CIImage(cgImage: image)
         } else {
             moblinImage = nil
         }
-        super.init()
     }
 
     override func getName() -> String {
