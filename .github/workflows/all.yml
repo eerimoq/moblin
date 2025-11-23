@@ -23,6 +23,9 @@ jobs:
       - name: Download platform iOS
         run: |
           xcodebuild -downloadPlatform iOS
+      - name: Download platform watchOS
+        run: |
+          xcodebuild -downloadPlatform watchOS
       - name: Download component MetalToolchain
         run: |
           xcodebuild -downloadComponent MetalToolchain
