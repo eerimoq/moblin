@@ -185,4 +185,36 @@ struct BufferedAudioSuite {
         #expect(bufferedAudio.getSampleBuffer(timestamp) === sampleBuffer26)
         #expect(bufferedAudio.numberOfBuffers() == 0)
     }
+    
+    @Test
+    func droppingAllTheFrames() async throws {
+        let bufferedAudio = BufferedAudio(cameraId: .init(),
+                                          name: "",
+                                          latency: 0.1,
+                                          processor: nil,
+                                          manualOutput: true)
+
+        let s1 = createSampleBuffer(presentationTimeStamp: 10.000)
+        let s2 = createSampleBuffer(presentationTimeStamp: 10.000)
+        let s3 = createSampleBuffer(presentationTimeStamp: 10.000)
+        let s4 = createSampleBuffer(presentationTimeStamp: 10.000)
+        let s5 = createSampleBuffer(presentationTimeStamp: 10.000)
+
+        bufferedAudio.appendSampleBuffer(s1)
+        bufferedAudio.appendSampleBuffer(s2)
+        bufferedAudio.appendSampleBuffer(s3)
+        bufferedAudio.appendSampleBuffer(s4)
+        bufferedAudio.appendSampleBuffer(s5)
+
+        #expect(bufferedAudio.numberOfBuffers() == 5)
+
+        let out1 = bufferedAudio.getSampleBuffer(10.000)
+        #expect(out1 === s1)
+
+        let out2 = bufferedAudio.getSampleBuffer(10.021)
+        #expect(out2 == s2)
+
+        // Buffer should not discard all the frames
+        #expect(bufferedAudio.numberOfBuffers() == 3)
+    }
 }
