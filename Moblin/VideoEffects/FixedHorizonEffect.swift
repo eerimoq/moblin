@@ -67,7 +67,7 @@ final class FixedHorizonEffect: VideoEffect {
     }
 
     override func getName() -> String {
-        return "fixed horizon"
+        return "Fixed horizon"
     }
 
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {

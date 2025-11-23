@@ -6,7 +6,7 @@ final class TwinEffect: VideoEffect {
     private let filter = CIFilter.sourceOverCompositing()
 
     override func getName() -> String {
-        return "twin filter"
+        return "Twin filter"
     }
 
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {

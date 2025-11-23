@@ -237,7 +237,7 @@ final class ChatEffect: VideoEffect, ObservableObject {
     }
 
     override func getName() -> String {
-        return "chat"
+        return "Chat"
     }
 
     func start() {

@@ -16,7 +16,7 @@ final class Dewarp360Effect: VideoEffect {
     private var latestPresentationTimeStamp: CMTime?
 
     override func getName() -> String {
-        return "dewarp 360 filter"
+        return "Dewarp 360 filter"
     }
 
     func setSettings(settings: Dewarp360EffectSettings) {

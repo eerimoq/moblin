@@ -6,7 +6,7 @@ final class GrayScaleEffect: VideoEffect {
     private let filter = CIFilter.colorMonochrome()
 
     override func getName() -> String {
-        return "gray scale filter"
+        return "Gray scale filter"
     }
 
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {

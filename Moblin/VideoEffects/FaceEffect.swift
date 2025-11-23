@@ -21,7 +21,7 @@ final class FaceEffect: VideoEffect {
     }
 
     override func getName() -> String {
-        return "face filter"
+        return "Face filter"
     }
 
     override func needsFaceDetections(_: Double) -> (Bool, UUID?, Double?) {

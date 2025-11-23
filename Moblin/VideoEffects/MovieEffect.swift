@@ -4,7 +4,7 @@ import Vision
 
 final class MovieEffect: VideoEffect {
     override func getName() -> String {
-        return "movie filter"
+        return "Movie filter"
     }
 
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {

@@ -28,7 +28,7 @@ final class MapEffect: VideoEffect {
     }
 
     override func getName() -> String {
-        return "map widget"
+        return "Map widget"
     }
 
     func zoomOutTemporarily() {

@@ -65,7 +65,7 @@ final class RemoveBackgroundEffect: VideoEffect {
     }
 
     override func getName() -> String {
-        return "remove background filter"
+        return "Remove background filter"
     }
 
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {

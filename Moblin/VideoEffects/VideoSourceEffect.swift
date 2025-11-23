@@ -41,7 +41,7 @@ final class VideoSourceEffect: VideoEffect {
     private var trackFaceNeedsDetectionsPresentationTimeStamp = 0.0
 
     override func getName() -> String {
-        return "video source"
+        return "Video source"
     }
 
     override func needsFaceDetections(_: Double) -> (Bool, UUID?, Double?) {

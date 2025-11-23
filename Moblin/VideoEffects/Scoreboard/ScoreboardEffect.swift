@@ -88,7 +88,7 @@ final class ScoreboardEffect: VideoEffect {
     private var scoreboardImage: CIImage?
 
     override func getName() -> String {
-        return "scoreboard"
+        return "Scoreboard"
     }
 
     @MainActor

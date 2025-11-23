@@ -14,7 +14,7 @@ final class AnamorphicLensEffect: VideoEffect {
     }
 
     override func getName() -> String {
-        return "anamorphic lens"
+        return "Anamorphic lens"
     }
 
     override func executeEarly(_ image: CIImage, _: VideoEffectInfo) -> CIImage {

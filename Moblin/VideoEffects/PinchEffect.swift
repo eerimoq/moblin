@@ -14,7 +14,7 @@ final class PinchEffect: VideoEffect {
     }
 
     override func getName() -> String {
-        return "pinch"
+        return "Pinch"
     }
 
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {

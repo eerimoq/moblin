@@ -17,7 +17,7 @@ final class PixellateEffect: VideoEffect {
     }
 
     override func getName() -> String {
-        return "pixellate filter"
+        return "Pixellate filter"
     }
 
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {

@@ -6,7 +6,7 @@ final class SepiaEffect: VideoEffect {
     private let filter = CIFilter.sepiaTone()
 
     override func getName() -> String {
-        return "sepia filter"
+        return "Sepia filter"
     }
 
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
