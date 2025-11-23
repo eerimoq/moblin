@@ -1,5 +1,5 @@
-import Foundation
 import Collections
+import Foundation
 
 class ChatProvider: ObservableObject {
     var newPosts: Deque<ChatPost> = []

@@ -83,7 +83,12 @@ struct KeyboardKeySettingsView: View {
             .navigationTitle("Keyboard key")
         } label: {
             HStack {
-                Text(key.key)
+                if key.key.isEmpty {
+                    Text("No key set")
+                        .foregroundStyle(.gray)
+                } else {
+                    Text(key.key)
+                }
                 Spacer()
                 Text(keyText())
                     .foregroundStyle(keyColor())
