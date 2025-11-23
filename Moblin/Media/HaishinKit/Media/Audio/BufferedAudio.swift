@@ -22,6 +22,7 @@ class BufferedAudio {
     private var startPresentationTimeStamp: CMTime = .zero
     private let driftTracker: DriftTracker
     private var isInitialBuffering = true
+    private var isSyncingWithOutput = true
     weak var delegate: BufferedAudioSampleBufferDelegate?
     private var hasBufferBeenAppended = false
     let latency: Double
@@ -65,9 +66,9 @@ class BufferedAudio {
         var sampleBuffer: CMSampleBuffer?
         var numberOfBuffersConsumed = 0
         let drift = driftTracker.getDrift()
-        while let inputSampleBuffer = sampleBuffers.first {
+        while let nextSampleBuffer = sampleBuffers.first {
             if latestSampleBuffer == nil {
-                latestSampleBuffer = inputSampleBuffer
+                latestSampleBuffer = nextSampleBuffer
             }
             if sampleBuffers.count > 300 {
                 logger.info(
@@ -76,18 +77,15 @@ class BufferedAudio {
                     oldest buffer.
                     """
                 )
-                sampleBuffer = inputSampleBuffer
+                sampleBuffer = nextSampleBuffer
                 sampleBuffers.removeFirst()
                 numberOfBuffersConsumed += 1
                 continue
             }
-            let inputPresentationTimeStamp = inputSampleBuffer.presentationTimeStamp.seconds + drift
-            let inputOutputDelta = inputPresentationTimeStamp - outputPresentationTimeStamp
-            // Break on first frame that is ahead in time.
-            if hasBestBuffer(inputOutputDelta, sampleBuffer) {
+            if hasBestBuffer(nextSampleBuffer, sampleBuffer, outputPresentationTimeStamp, drift) {
                 break
             }
-            sampleBuffer = inputSampleBuffer
+            sampleBuffer = nextSampleBuffer
             sampleBuffers.removeFirst()
             numberOfBuffersConsumed += 1
             isInitialBuffering = false
@@ -134,14 +132,33 @@ class BufferedAudio {
         driftTracker.setDrift(drift: drift)
     }
 
-    private func hasBestBuffer(_ inputOutputDelta: Double, _ sampleBuffer: CMSampleBuffer?) -> Bool {
-        guard inputOutputDelta > 0 else {
+    private func hasBestBuffer(_ nextSampleBuffer: CMSampleBuffer,
+                               _ candidateSampleBuffer: CMSampleBuffer?,
+                               _ outputPresentationTimeStamp: Double,
+                               _ drift: Double) -> Bool
+    {
+        if isSyncingWithOutput {
+            // Find the first frame that is ahead in time.
+            let nextPresentationTimeStamp = nextSampleBuffer.presentationTimeStamp.seconds + drift
+            let delta = nextPresentationTimeStamp - outputPresentationTimeStamp
+            guard delta > 0 else {
+                return false
+            }
+            if candidateSampleBuffer != nil {
+                isSyncingWithOutput = false
+            }
+            return true
+        } else if let candidateSampleBuffer {
+            // Do not skip any buffers unless very far apart.
+            let candidatePresentationTimeStamp = candidateSampleBuffer.presentationTimeStamp.seconds + drift
+            let delta = candidatePresentationTimeStamp - outputPresentationTimeStamp
+            if abs(delta) > 0.05 {
+                isSyncingWithOutput = true
+            }
+            return true
+        } else {
             return false
         }
-        if sampleBuffer != nil || abs(inputOutputDelta) > 0.015 {
-            return true
-        }
-        return false
     }
 
     private func initialize(sampleBuffer: CMSampleBuffer) {
