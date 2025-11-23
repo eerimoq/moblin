@@ -185,7 +185,7 @@ struct BufferedAudioSuite {
         #expect(bufferedAudio.getSampleBuffer(timestamp) === sampleBuffer26)
         #expect(bufferedAudio.numberOfBuffers() == 0)
     }
-    
+
     @Test
     func droppingAllTheFrames() async throws {
         let bufferedAudio = BufferedAudio(cameraId: .init(),
