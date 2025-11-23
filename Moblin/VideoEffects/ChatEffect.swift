@@ -198,8 +198,12 @@ private struct PostView: View {
 }
 
 private struct ChatView: View {
-    let settings: SettingsWidgetChat
+    @ObservedObject var settings: SettingsWidgetChat
     @ObservedObject var chat: ChatProvider
+
+    private func width() -> Double {
+        return 20 * Double(settings.fontSize)
+    }
 
     var body: some View {
         VStack(spacing: 1) {
@@ -214,7 +218,7 @@ private struct ChatView: View {
                 }
             }
         }
-        .frame(width: 400)
+        .frame(width: width())
         .foregroundStyle(.white)
     }
 }
