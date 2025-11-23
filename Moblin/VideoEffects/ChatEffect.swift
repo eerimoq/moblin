@@ -174,43 +174,42 @@ private struct LineView: View {
 private struct PostView: View {
     let settings: SettingsWidgetChat
     let post: ChatPost
+    @ObservedObject var state: ChatPostState
     let moreThanOneStreamingPlatform: Bool
 
     var body: some View {
-        if let highlight = post.highlight {
-            HStack(spacing: 0) {
-                Rectangle()
-                    .frame(width: 3)
-                    .foregroundStyle(highlight.barColor)
-                VStack(alignment: .leading, spacing: 1) {
-                    HighlightMessageView(settings: settings, highlight: highlight)
-                    LineView(post: post, settings: settings, platform: moreThanOneStreamingPlatform)
+        if !state.deleted {
+            if let highlight = post.highlight {
+                HStack(spacing: 0) {
+                    Rectangle()
+                        .frame(width: 3)
+                        .foregroundStyle(highlight.barColor)
+                    VStack(alignment: .leading, spacing: 1) {
+                        HighlightMessageView(settings: settings, highlight: highlight)
+                        LineView(post: post, settings: settings, platform: moreThanOneStreamingPlatform)
+                    }
                 }
+            } else {
+                LineView(post: post, settings: settings, platform: moreThanOneStreamingPlatform)
+                    .padding([.leading], 3)
             }
-        } else {
-            LineView(post: post, settings: settings, platform: moreThanOneStreamingPlatform)
-                .padding([.leading], 3)
         }
     }
 }
 
-class ChatState: ObservableObject {
-    @Published var posts: Deque<ChatPost> = []
-    @Published var moreThanOneStreamingPlatform: Bool = false
-}
-
 private struct ChatView: View {
     let settings: SettingsWidgetChat
-    @ObservedObject var state: ChatState
+    @ObservedObject var chat: ChatProvider
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 1) {
+        VStack(spacing: 1) {
             Spacer()
-            ForEach(state.posts) { post in
+            ForEach(chat.posts.reversed()) { post in
                 HStack {
                     PostView(settings: settings,
                              post: post,
-                             moreThanOneStreamingPlatform: state.moreThanOneStreamingPlatform)
+                             state: post.state,
+                             moreThanOneStreamingPlatform: chat.moreThanOneStreamingPlatform)
                     Spacer()
                 }
             }
@@ -225,12 +224,36 @@ final class ChatEffect: VideoEffect, ObservableObject {
     private var chatImage: CIImage?
     private var renderer: ImageRenderer<ChatView>?
     private var settings = SettingsWidgetChat()
-    private var chat: ChatView?
-    private let state = ChatState()
+    private let chat: ChatProvider
     private var cancellable: AnyCancellable?
+    private var started: Bool = false
+
+    init(chat: ChatProvider) {
+        self.chat = chat
+    }
 
     override func getName() -> String {
         return "chat"
+    }
+
+    func start() {
+        guard !started else {
+            return
+        }
+        started = true
+        DispatchQueue.main.async {
+            self.startInner()
+        }
+    }
+
+    func stop() {
+        guard started else {
+            return
+        }
+        started = false
+        DispatchQueue.main.async {
+            self.stopInner()
+        }
     }
 
     func setSceneWidget(sceneWidget: SettingsSceneWidget) {
@@ -243,20 +266,9 @@ final class ChatEffect: VideoEffect, ObservableObject {
         self.settings.update(other: settings)
     }
 
-    func update(posts: Deque<ChatPost>, moreThanOneStreamingPlatform: Bool) {
-        DispatchQueue.main.async {
-            self.updateInner(posts: posts, moreThanOneStreamingPlatform: moreThanOneStreamingPlatform)
-        }
-    }
-
     @MainActor
-    private func updateInner(posts: Deque<ChatPost>, moreThanOneStreamingPlatform: Bool) {
-        state.posts = posts
-        state.moreThanOneStreamingPlatform = moreThanOneStreamingPlatform
-        guard renderer == nil else {
-            return
-        }
-        renderer = ImageRenderer(content: ChatView(settings: settings, state: state))
+    private func startInner() {
+        renderer = ImageRenderer(content: ChatView(settings: settings, chat: chat))
         cancellable = renderer?.objectWillChange.sink { [weak self] in
             guard let self else {
                 return
@@ -264,6 +276,11 @@ final class ChatEffect: VideoEffect, ObservableObject {
             self.setChatImage(image: self.renderer?.ciImage())
         }
         setChatImage(image: renderer?.ciImage())
+    }
+
+    private func stopInner() {
+        renderer = nil
+        cancellable = nil
     }
 
     private func setChatImage(image: CIImage?) {

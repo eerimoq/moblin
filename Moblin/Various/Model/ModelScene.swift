@@ -360,7 +360,7 @@ extension Model {
         }
         chatEffects.removeAll()
         for widget in widgets where widget.type == .chat {
-            let effect = ChatEffect()
+            let effect = ChatEffect(chat: chatWidgetChat)
             effect.setSettings(settings: widget.chat)
             chatEffects[widget.id] = effect
         }
@@ -542,11 +542,14 @@ extension Model {
         }
         effects += registerGlobalVideoEffectsOnTop()
         media.setPendingAfterAttachEffects(effects: effects, rotation: scene.videoSourceRotation)
-        for browserEffect in browserEffects.values where !effects.contains(browserEffect) {
-            browserEffect.setSceneWidget(sceneWidget: nil, crops: [])
+        for effect in browserEffects.values where !effects.contains(effect) {
+            effect.setSceneWidget(sceneWidget: nil, crops: [])
         }
-        for mapEffect in mapEffects.values where !effects.contains(mapEffect) {
-            mapEffect.setSceneWidget(sceneWidget: nil)
+        for effect in mapEffects.values where !effects.contains(effect) {
+            effect.setSceneWidget(sceneWidget: nil)
+        }
+        for effect in chatEffects.values where !effects.contains(effect) {
+            effect.stop()
         }
         for (id, scoreboardEffect) in scoreboardEffects where !effects.contains(scoreboardEffect) {
             if isWatchLocal() {
@@ -832,6 +835,7 @@ extension Model {
             return
         }
         effect.setSceneWidget(sceneWidget: sceneWidget.clone())
+        effect.start()
         enabledChatEffects.append(effect)
         effects.append(effect)
     }

@@ -260,13 +260,7 @@ extension Model {
                 quickButtonChatState.chatAlertsPosts.prepend(post)
             }
         }
-        if chatWidgetHasNewPosts {
-            chatWidgetHasNewPosts = false
-            for effect in enabledChatEffects {
-                effect.update(posts: chatWidgetPosts,
-                              moreThanOneStreamingPlatform: chatWidgetMoreThanOneStreamingPlatform)
-            }
-        }
+        chatWidgetChat.update()
     }
 
     func isAlertMessage(post: ChatPost) -> Bool {
@@ -294,7 +288,7 @@ extension Model {
         chat.moreThanOneStreamingPlatform = moreThanOneStreamingPlatform
         quickButtonChat.moreThanOneStreamingPlatform = moreThanOneStreamingPlatform
         externalDisplayChat.moreThanOneStreamingPlatform = moreThanOneStreamingPlatform
-        chatWidgetMoreThanOneStreamingPlatform = moreThanOneStreamingPlatform
+        chatWidgetChat.moreThanOneStreamingPlatform = moreThanOneStreamingPlatform
     }
 
     private func isMoreThanOneChatConfigured() -> Bool {
@@ -486,11 +480,7 @@ extension Model {
             }
         }
         if !enabledChatEffects.isEmpty {
-            chatWidgetPosts.append(post)
-            chatWidgetHasNewPosts = true
-            while chatWidgetPosts.count > 5 {
-                chatWidgetPosts.removeFirst()
-            }
+            chatWidgetChat.appendMessage(post: post)
         }
     }
 
@@ -498,6 +488,7 @@ extension Model {
         chat.posts = newPostIds(posts: chat.posts)
         quickButtonChat.posts = newPostIds(posts: quickButtonChat.posts)
         externalDisplayChat.posts = newPostIds(posts: externalDisplayChat.posts)
+        chatWidgetChat.posts = newPostIds(posts: chatWidgetChat.posts)
         quickButtonChatState.chatAlertsPosts = newPostIds(posts: quickButtonChatState.chatAlertsPosts)
     }
 
@@ -650,6 +641,7 @@ extension Model {
         chat.deleteMessage(messageId: messageId)
         quickButtonChat.deleteMessage(messageId: messageId)
         externalDisplayChat.deleteMessage(messageId: messageId)
+        chatWidgetChat.deleteMessage(messageId: messageId)
         chatTextToSpeech.delete(messageId: messageId)
     }
 
@@ -657,6 +649,7 @@ extension Model {
         chat.deleteUser(userId: userId)
         quickButtonChat.deleteUser(userId: userId)
         externalDisplayChat.deleteUser(userId: userId)
+        chatWidgetChat.deleteUser(userId: userId)
         chatTextToSpeech.delete(userId: userId)
     }
 }
