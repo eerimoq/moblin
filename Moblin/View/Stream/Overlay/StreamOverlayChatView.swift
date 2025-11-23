@@ -12,7 +12,7 @@ private struct HighlightMessageView: View {
 
     private func backgroundColor() -> Color {
         if chat.backgroundColorEnabled {
-            return chat.backgroundColor.color().opacity(0.6)
+            return chat.backgroundColorColor.opacity(0.6)
         } else {
             return .clear
         }
@@ -20,7 +20,7 @@ private struct HighlightMessageView: View {
 
     private func shadowColor() -> Color {
         if chat.shadowColorEnabled {
-            return chat.shadowColor.color()
+            return chat.shadowColorColor
         } else {
             return .clear
         }
@@ -46,7 +46,7 @@ private struct HighlightMessageView: View {
             ForEach(highlight.titleSegments, id: \.id) { segment in
                 if let text = segment.text {
                     Text(text)
-                        .foregroundStyle(highlight.messageColor(defaultColor: chat.messageColor.color()))
+                        .foregroundStyle(highlight.messageColor(defaultColor: chat.messageColorColor))
                 }
                 if let url = segment.url {
                     if chat.animatedEmotes {
@@ -94,13 +94,13 @@ private struct LineView: View {
         if post.isAction && chat.meInUsernameColor {
             return usernameColor
         } else {
-            return chat.messageColor.color()
+            return chat.messageColorColor
         }
     }
 
     private func backgroundColor() -> Color {
         if chat.backgroundColorEnabled {
-            return chat.backgroundColor.color().opacity(0.6)
+            return chat.backgroundColorColor.opacity(0.6)
         } else {
             return .clear
         }
@@ -108,7 +108,7 @@ private struct LineView: View {
 
     private func shadowColor() -> Color {
         if chat.shadowColorEnabled {
-            return chat.shadowColor.color()
+            return chat.shadowColorColor
         } else {
             return .clear
         }
@@ -137,7 +137,7 @@ private struct LineView: View {
         ) {
             if chat.timestampColorEnabled {
                 Text("\(post.timestamp) ")
-                    .foregroundStyle(chat.timestampColor.color())
+                    .foregroundStyle(chat.timestampColorColor)
             }
             if chat.platform, platform, let image = post.platform?.imageName() {
                 Image(image)

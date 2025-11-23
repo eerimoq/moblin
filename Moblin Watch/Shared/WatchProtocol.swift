@@ -99,7 +99,6 @@ enum WatchProtocolChatHighlightKind: Codable {
     case other
 }
 
-// periphery:ignore
 struct WatchProtocolChatHighlight: Codable {
     let kind: WatchProtocolChatHighlightKind
     let barColor: WatchProtocolColor
@@ -107,7 +106,6 @@ struct WatchProtocolChatHighlight: Codable {
     let title: String
 }
 
-// periphery:ignore
 struct WatchProtocolChatMessage: Codable {
     // Starts at 1 and incremented for each new message
     var id: Int
@@ -119,14 +117,12 @@ struct WatchProtocolChatMessage: Codable {
     var highlight: WatchProtocolChatHighlight?
 }
 
-// periphery:ignore
 struct WatchProtocolColor: Codable {
     var red: Int
     var green: Int
     var blue: Int
 }
 
-// periphery:ignore
 struct WatchProtocolScene: Codable, Identifiable {
     var id: UUID
     var name: String
