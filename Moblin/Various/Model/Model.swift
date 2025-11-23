@@ -595,7 +595,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var tripleEffect = TripleEffect()
     var twinEffect = TwinEffect()
     var pixellateEffect = PixellateEffect(strength: 0.0)
-    var pollEffect = PollEffect()
+    var pollEffect: PollEffect?
     var fixedHorizonEffect = FixedHorizonEffect()
     var replayEffect: ReplayEffect?
     var locationManager = Location()
@@ -1766,7 +1766,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func togglePoll() {
         pollEnabled = !pollEnabled
         pollVotes = [0, 0, 0]
-        pollEffect = PollEffect()
+        if pollEnabled {
+            pollEffect = PollEffect(canvasSize: media.getCanvasSize())
+        } else {
+            pollEffect = nil
+        }
     }
 
     func handlePollVote(vote: String?) {
@@ -1795,7 +1799,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             let percentage = Int((Double(100 * pollVotes[index]) / totalVotes).rounded())
             votes.append("\(index + 1): \(percentage)%")
         }
-        pollEffect.updateText(text: votes.joined(separator: ", "))
+        pollEffect?.updateText(text: votes.joined(separator: ", "))
     }
 
     func store() {

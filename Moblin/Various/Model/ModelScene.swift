@@ -52,7 +52,9 @@ extension Model {
         media.unregisterEffect(tripleEffect)
         media.unregisterEffect(twinEffect)
         media.unregisterEffect(pixellateEffect)
-        media.unregisterEffect(pollEffect)
+        if let pollEffect {
+            media.unregisterEffect(pollEffect)
+        }
         media.unregisterEffect(whirlpoolEffect)
         media.unregisterEffect(pinchEffect)
         media.unregisterEffect(fixedHorizonEffect)
@@ -64,7 +66,7 @@ extension Model {
         tripleEffect = TripleEffect()
         twinEffect = TwinEffect()
         pixellateEffect = PixellateEffect(strength: database.pixellateStrength)
-        pollEffect = PollEffect()
+        pollEffect = nil
         whirlpoolEffect = WhirlpoolEffect(angle: database.whirlpoolAngle)
         pinchEffect = PinchEffect(scale: database.pinchScale)
         fixedHorizonEffect = FixedHorizonEffect()
@@ -121,7 +123,9 @@ extension Model {
     private func registerGlobalVideoEffectsOnTop() -> [VideoEffect] {
         var effects: [VideoEffect] = []
         if isGlobalButtonOn(type: .poll) {
-            effects.append(pollEffect)
+            if let pollEffect {
+                effects.append(pollEffect)
+            }
         }
         return effects
     }
