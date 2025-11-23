@@ -72,7 +72,8 @@ class BufferedAudio {
 
         // Keep track of the last effective input PTS we used during this call
         // Start from latestSampleBuffer (if any) so synthesized timestamps stay monotonic across calls.
-        var prevInputPresentationTimeStamp = (latestSampleBuffer?.presentationTimeStamp.seconds ?? -Double.greatestFiniteMagnitude) + drift
+        var prevInputPresentationTimeStamp = (latestSampleBuffer?.presentationTimeStamp.seconds ?? -Double
+            .greatestFiniteMagnitude) + drift
 
         while let inputSampleBuffer = sampleBuffers.first {
             if latestSampleBuffer == nil {
