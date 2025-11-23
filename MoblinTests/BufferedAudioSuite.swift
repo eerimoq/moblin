@@ -11,7 +11,8 @@ private func createSampleBuffer(presentationTimeStamp: Double) -> CMSampleBuffer
 }
 
 struct BufferedAudioSuite {
-    @Test func processSomeBuffers() async throws {
+    @Test
+    func processSomeBuffers() async throws {
         let bufferedAudio = BufferedAudio(cameraId: .init(),
                                           name: "",
                                           latency: 0.1,

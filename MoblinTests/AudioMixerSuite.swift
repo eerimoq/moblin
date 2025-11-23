@@ -5,7 +5,8 @@ import Testing
 private let processDelayMs = 100
 
 struct AudioMixerSuite {
-    @Test func oneMonoInputMonoOutput() async throws {
+    @Test
+    func oneMonoInputMonoOutput() async throws {
         let mixer = AudioMixer(outputSampleRate: 48000, outputChannels: 1, outputSamplesPerBuffer: 1024)
         let inputId = UUID()
         let format = AVAudioFormat(standardFormatWithSampleRate: 48000, channels: 1)!
@@ -34,7 +35,8 @@ struct AudioMixerSuite {
         #expect(mixer.numberOfInputs() == 0)
     }
 
-    @Test func oneMonoInput24khzMonoOutput48khz() async throws {
+    @Test
+    func oneMonoInput24khzMonoOutput48khz() async throws {
         let mixer = AudioMixer(outputSampleRate: 48000, outputChannels: 1, outputSamplesPerBuffer: 1024)
         let inputId = UUID()
         let format = AVAudioFormat(standardFormatWithSampleRate: 24000, channels: 1)!
@@ -79,7 +81,8 @@ struct AudioMixerSuite {
         #expect(mixer.numberOfInputs() == 0)
     }
 
-    @Test func oneMonoInputMonoOutputThreeBuffers() async throws {
+    @Test
+    func oneMonoInputMonoOutputThreeBuffers() async throws {
         let mixer = AudioMixer(outputSampleRate: 48000, outputChannels: 1, outputSamplesPerBuffer: 1024)
         let inputId = UUID()
         let format = AVAudioFormat(standardFormatWithSampleRate: 48000, channels: 1)!
@@ -134,7 +137,8 @@ struct AudioMixerSuite {
         #expect(mixer.numberOfInputs() == 0)
     }
 
-    @Test func twoMonoInputsMonoOutput() async throws {
+    @Test
+    func twoMonoInputsMonoOutput() async throws {
         let mixer = AudioMixer(outputSampleRate: 48000, outputChannels: 1, outputSamplesPerBuffer: 1024)
         let inputId1 = UUID()
         let inputId2 = UUID()
@@ -178,7 +182,8 @@ struct AudioMixerSuite {
         #expect(mixer.numberOfInputs() == 0)
     }
 
-    @Test func noInputStereoOutput() async throws {
+    @Test
+    func noInputStereoOutput() async throws {
         let mixer = AudioMixer(outputSampleRate: 48000, outputChannels: 2, outputSamplesPerBuffer: 1024)
         let outputBuffer = mixer.process()
         #expect(outputBuffer?.format.sampleRate == 48000)

@@ -3,7 +3,8 @@ import AVFoundation
 import Testing
 
 struct RtmpSuite {
-    @Test func twitchUrl() async throws {
+    @Test
+    func twitchUrl() async throws {
         let url = "rtmp://foo.com/app/live_asefwefwefwef"
         let streamUrl = makeRtmpUri(url: url)
         let streamKey = makeRtmpStreamKey(url: url)
@@ -11,7 +12,8 @@ struct RtmpSuite {
         #expect(streamKey == "live_asefwefwefwef")
     }
 
-    @Test func kickUrl() async throws {
+    @Test
+    func kickUrl() async throws {
         let url = "rtmp://foo.com/foobar"
         let streamUrl = makeRtmpUri(url: url)
         let streamKey = makeRtmpStreamKey(url: url)
@@ -19,7 +21,8 @@ struct RtmpSuite {
         #expect(streamKey == "foobar")
     }
 
-    @Test func bilibiliUrl() async throws {
+    @Test
+    func bilibiliUrl() async throws {
         let url = "rtmp://foo.com/live/?foo=bar&a=b"
         let streamUrl = makeRtmpUri(url: url)
         let streamKey = makeRtmpStreamKey(url: url)
@@ -27,7 +30,8 @@ struct RtmpSuite {
         #expect(streamKey == "?foo=bar&a=b")
     }
 
-    @Test func twitcastingUrl() async throws {
+    @Test
+    func twitcastingUrl() async throws {
         let url = "rtmp://foo.com/live/g:3234234?key=1234"
         let streamUrl = makeRtmpUri(url: url)
         let streamKey = makeRtmpStreamKey(url: url)

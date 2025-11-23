@@ -3,7 +3,8 @@ import AVFoundation
 import Testing
 
 struct SubtitlesSuite {
-    @Test func speechToTextOutput() async throws {
+    @Test
+    func speechToTextOutput() async throws {
         let subtitles = Subtitles(languageIdentifier: nil)
         var position = 0
         var frozen = ""
@@ -87,13 +88,15 @@ struct SubtitlesSuite {
         ])
     }
 
-    @Test func speechToTextEmptyInput() async throws {
+    @Test
+    func speechToTextEmptyInput() async throws {
         let subtitles = Subtitles(languageIdentifier: nil)
         subtitles.updateSubtitles(position: 0, text: "")
         #expect(subtitles.lines.isEmpty)
     }
 
-    @Test func speechToTextJumping() async throws {
+    @Test
+    func speechToTextJumping() async throws {
         let subtitles = Subtitles(languageIdentifier: nil)
         subtitles.updateSubtitles(position: 0, text: "")
         #expect(subtitles.lines.isEmpty)

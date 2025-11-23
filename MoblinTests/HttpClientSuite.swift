@@ -3,14 +3,16 @@ import AVFoundation
 import Testing
 
 struct HttpClientSuite {
-    @Test func responseParserNoData() async throws {
+    @Test
+    func responseParserNoData() async throws {
         let parser = HttpResponseParser()
         let (done, data) = parser.parse()
         #expect(!done)
         #expect(data == nil)
     }
 
-    @Test func responseParserEmptyBody() async throws {
+    @Test
+    func responseParserEmptyBody() async throws {
         let parser = HttpResponseParser()
         parser.append(data: "HTTP/1.1 200 OK\r\n\r\n".utf8Data)
         let (done, data) = parser.parse()
@@ -18,7 +20,8 @@ struct HttpClientSuite {
         #expect(data == Data())
     }
 
-    @Test func responseParserBody() async throws {
+    @Test
+    func responseParserBody() async throws {
         let parser = HttpResponseParser()
         let body = "1234567890".utf8Data
         parser.append(data: "HTTP/1.1 200 OK\r\nContent-Length: \(body.count)\r\n\r\n".utf8Data + body)
@@ -27,7 +30,8 @@ struct HttpClientSuite {
         #expect(data == body)
     }
 
-    @Test func responseParserHalfHeader() async throws {
+    @Test
+    func responseParserHalfHeader() async throws {
         let parser = HttpResponseParser()
         let body = "1234567890".utf8Data
         parser.append(data: "HTTP/1.1 200 OK\r\nContent-Le".utf8Data)
@@ -40,7 +44,8 @@ struct HttpClientSuite {
         #expect(data == body)
     }
 
-    @Test func responseParserHalfBody() async throws {
+    @Test
+    func responseParserHalfBody() async throws {
         let parser = HttpResponseParser()
         let body = "1234567890".utf8Data
         parser.append(data: "HTTP/1.1 200 OK\r\nContent-Length: \(body.count)\r\n\r\n".utf8Data + body[0 ..< 5])
@@ -53,7 +58,8 @@ struct HttpClientSuite {
         #expect(data == body)
     }
 
-    @Test func responseParserStatus400() async throws {
+    @Test
+    func responseParserStatus400() async throws {
         let parser = HttpResponseParser()
         parser.append(data: "HTTP/1.1 400 OK\r\n\r\n".utf8Data)
         let (done, data) = parser.parse()
