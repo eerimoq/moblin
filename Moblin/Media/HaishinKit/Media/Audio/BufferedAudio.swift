@@ -84,7 +84,7 @@ class BufferedAudio {
             let inputPresentationTimeStamp = inputSampleBuffer.presentationTimeStamp.seconds + drift
             let inputOutputDelta = inputPresentationTimeStamp - outputPresentationTimeStamp
             // Break on first frame that is ahead in time.
-            if inputOutputDelta > 0, sampleBuffer != nil || abs(inputOutputDelta) > 0.015 {
+            if hasBestBuffer(inputOutputDelta, sampleBuffer) {
                 break
             }
             sampleBuffer = inputSampleBuffer
@@ -132,6 +132,16 @@ class BufferedAudio {
 
     func setDrift(drift: Double) {
         driftTracker.setDrift(drift: drift)
+    }
+
+    private func hasBestBuffer(_ inputOutputDelta: Double, _ sampleBuffer: CMSampleBuffer?) -> Bool {
+        guard inputOutputDelta > 0 else {
+            return false
+        }
+        if sampleBuffer != nil || abs(inputOutputDelta) > 0.015 {
+            return true
+        }
+        return false
     }
 
     private func initialize(sampleBuffer: CMSampleBuffer) {
