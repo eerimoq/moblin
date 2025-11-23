@@ -33,7 +33,7 @@ struct BufferedAudioSuite {
         #expect(bufferedAudio.numberOfBuffers() == 0)
     }
 
-    @Test(.disabled())
+    @Test
     func oa6BadAudioTimestamps() async throws {
         let bufferedAudio = BufferedAudio(cameraId: .init(),
                                           name: "",

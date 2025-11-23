@@ -65,6 +65,15 @@ class BufferedAudio {
         var sampleBuffer: CMSampleBuffer?
         var numberOfBuffersConsumed = 0
         let drift = driftTracker.getDrift()
+
+        // Compute frame duration (seconds) from frameLength and sampleRate when available.
+        // Fall back to a sensible default if not initialized yet.
+        let frameDuration: Double = (frameLength > 0 && sampleRate > 0) ? (frameLength / sampleRate) : 0.021
+
+        // Keep track of the last effective input PTS we used during this call
+        // Start from latestSampleBuffer (if any) so synthesized timestamps stay monotonic across calls.
+        var prevInputPresentationTimeStamp = (latestSampleBuffer?.presentationTimeStamp.seconds ?? -Double.greatestFiniteMagnitude) + drift
+
         while let inputSampleBuffer = sampleBuffers.first {
             if latestSampleBuffer == nil {
                 latestSampleBuffer = inputSampleBuffer
@@ -79,9 +88,27 @@ class BufferedAudio {
                 sampleBuffer = inputSampleBuffer
                 sampleBuffers.removeFirst()
                 numberOfBuffersConsumed += 1
+                // update prevInputPresentationTimeStamp so subsequent ones are synthesized correctly
+                let rawPts = inputSampleBuffer.presentationTimeStamp.seconds + drift
+                prevInputPresentationTimeStamp = max(prevInputPresentationTimeStamp, rawPts)
                 continue
             }
-            let inputPresentationTimeStamp = inputSampleBuffer.presentationTimeStamp.seconds + drift
+
+            // Raw input PTS from buffer (apply drift)
+            let rawInputPresentationTimeStamp = inputSampleBuffer.presentationTimeStamp.seconds + drift
+
+            // If raw PTS is not strictly greater than previous effective PTS, synthesize a monotonic PTS
+            let inputPresentationTimeStamp: Double
+            if rawInputPresentationTimeStamp <= prevInputPresentationTimeStamp {
+                // synthesize by advancing one frameDuration from previous effective PTS
+                inputPresentationTimeStamp = prevInputPresentationTimeStamp + frameDuration
+            } else {
+                inputPresentationTimeStamp = rawInputPresentationTimeStamp
+            }
+
+            // Update prev for next iteration
+            prevInputPresentationTimeStamp = inputPresentationTimeStamp
+
             let inputOutputDelta = inputPresentationTimeStamp - outputPresentationTimeStamp
             // Break on first frame that is ahead in time.
             if hasBestBuffer(inputOutputDelta, sampleBuffer) {
@@ -138,7 +165,7 @@ class BufferedAudio {
         guard inputOutputDelta > 0 else {
             return false
         }
-        if sampleBuffer != nil || abs(inputOutputDelta) > 0.015 {
+        if sampleBuffer != nil || abs(inputOutputDelta) > deltaLimit {
             return true
         }
         return false
