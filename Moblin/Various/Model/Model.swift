@@ -2241,7 +2241,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             battery.level = level
         }
         streamingHistoryStream?.updateLowestBatteryLevel(level: battery.level)
-        if battery.level <= 0.07, !isBatteryCharging(), !isMac() {
+        if battery.level <= 0.07, !isBatteryCharging(), !isMac(), battery.level != -1 {
             battery.levelLowCounter += 1
             if (battery.levelLowCounter % 3) == 0 {
                 makeWarningToast(title: lowBatteryMessage, vibrate: true)
