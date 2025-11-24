@@ -91,25 +91,10 @@ class BufferedAudio {
             isInitialBuffering = false
         }
         if !isInitialBuffering {
-            if numberOfBuffersConsumed == 0 {
-                stats.incrementDuplicated()
-            } else if numberOfBuffersConsumed > 1 {
-                stats.incrementDropped(count: numberOfBuffersConsumed - 1)
-            }
-            if logger.debugEnabled, let (duplicated, dropped) = stats.getStats(outputPresentationTimeStamp) {
-                let lastPresentationTimeStamp = sampleBuffers.last?.presentationTimeStamp.seconds ?? 0.0
-                let firstPresentationTimeStamp = sampleBuffers.first?.presentationTimeStamp.seconds ?? 0.0
-                let fillLevel = lastPresentationTimeStamp - firstPresentationTimeStamp
-                logger.debug("""
-                buffered-audio: \(name): \(duplicated) duplicated and \(dropped) dropped buffers. \
-                Output \(formatThreeDecimals(outputPresentationTimeStamp)), \
-                Current \(formatThreeDecimals(sampleBuffer?.presentationTimeStamp.seconds ?? 0.0)), \
-                \(formatThreeDecimals(firstPresentationTimeStamp + drift))..\
-                \(formatThreeDecimals(lastPresentationTimeStamp + drift)) \
-                (\(formatThreeDecimals(fillLevel))), \
-                Buffers \(sampleBuffers.count)
-                """)
-            }
+            updateStatsAndLog(outputPresentationTimeStamp,
+                              sampleBuffer,
+                              drift,
+                              numberOfBuffersConsumed)
         }
         if sampleBuffer != nil {
             latestSampleBuffer = sampleBuffer
@@ -132,33 +117,79 @@ class BufferedAudio {
         driftTracker.setDrift(drift: drift)
     }
 
+    private func updateStatsAndLog(_ outputPresentationTimeStamp: Double,
+                                   _ sampleBuffer: CMSampleBuffer?,
+                                   _ drift: Double,
+                                   _ numberOfBuffersConsumed: Int)
+    {
+        if numberOfBuffersConsumed == 0 {
+            stats.incrementDuplicated()
+        } else if numberOfBuffersConsumed > 1 {
+            stats.incrementDropped(count: numberOfBuffersConsumed - 1)
+        }
+        if logger.debugEnabled, let (duplicated, dropped) = stats.getStats(outputPresentationTimeStamp) {
+            let lastPresentationTimeStamp = sampleBuffers.last?.presentationTimeStamp.seconds ?? 0.0
+            let firstPresentationTimeStamp = sampleBuffers.first?.presentationTimeStamp.seconds ?? 0.0
+            let fillLevel = lastPresentationTimeStamp - firstPresentationTimeStamp
+            logger.debug("""
+            buffered-audio: \(name): \(duplicated) duplicated and \(dropped) dropped buffers. \
+            Output \(formatThreeDecimals(outputPresentationTimeStamp)), \
+            Current \(formatThreeDecimals(sampleBuffer?.presentationTimeStamp.seconds ?? 0.0)), \
+            \(formatThreeDecimals(firstPresentationTimeStamp + drift))..\
+            \(formatThreeDecimals(lastPresentationTimeStamp + drift)) \
+            (\(formatThreeDecimals(fillLevel))), \
+            Buffers \(sampleBuffers.count)
+            """)
+        }
+    }
+
     private func hasBestBuffer(_ nextSampleBuffer: CMSampleBuffer,
                                _ candidateSampleBuffer: CMSampleBuffer?,
                                _ outputPresentationTimeStamp: Double,
                                _ drift: Double) -> Bool
     {
         if isSyncingWithOutput {
-            // Find the first frame that is ahead in time.
-            let nextPresentationTimeStamp = nextSampleBuffer.presentationTimeStamp.seconds + drift
-            let delta = nextPresentationTimeStamp - outputPresentationTimeStamp
-            guard delta > 0 else {
-                return false
-            }
-            if candidateSampleBuffer != nil {
-                isSyncingWithOutput = false
-            }
-            return true
+            return hasBestBufferSynching(nextSampleBuffer,
+                                         candidateSampleBuffer,
+                                         outputPresentationTimeStamp,
+                                         drift)
         } else if let candidateSampleBuffer {
-            // Do not skip any buffers unless very far apart.
-            let candidatePresentationTimeStamp = candidateSampleBuffer.presentationTimeStamp.seconds + drift
-            let delta = candidatePresentationTimeStamp - outputPresentationTimeStamp
-            if abs(delta) > 0.05 {
-                isSyncingWithOutput = true
-            }
-            return true
+            return hasBestBufferNormal(candidateSampleBuffer,
+                                       outputPresentationTimeStamp,
+                                       drift)
         } else {
             return false
         }
+    }
+
+    private func hasBestBufferSynching(_ nextSampleBuffer: CMSampleBuffer,
+                                       _ candidateSampleBuffer: CMSampleBuffer?,
+                                       _ outputPresentationTimeStamp: Double,
+                                       _ drift: Double) -> Bool
+    {
+        // Find the first frame that is ahead in time.
+        let nextPresentationTimeStamp = nextSampleBuffer.presentationTimeStamp.seconds + drift
+        let delta = nextPresentationTimeStamp - outputPresentationTimeStamp
+        guard delta > 0 else {
+            return false
+        }
+        if candidateSampleBuffer != nil {
+            isSyncingWithOutput = false
+        }
+        return true
+    }
+
+    private func hasBestBufferNormal(_ candidateSampleBuffer: CMSampleBuffer,
+                                     _ outputPresentationTimeStamp: Double,
+                                     _ drift: Double) -> Bool
+    {
+        // Do not skip any buffers unless very far apart.
+        let candidatePresentationTimeStamp = candidateSampleBuffer.presentationTimeStamp.seconds + drift
+        let delta = candidatePresentationTimeStamp - outputPresentationTimeStamp
+        if abs(delta) > 0.05 {
+            isSyncingWithOutput = true
+        }
+        return true
     }
 
     private func initialize(sampleBuffer: CMSampleBuffer) {
