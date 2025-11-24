@@ -26,41 +26,105 @@ struct BufferedAudioSuite {
     }
 
     @Test
-    func processGaps() async throws {
+    func processGap() async throws {
         let bufferedAudio = BufferedAudio(cameraId: .init(),
                                           name: "",
                                           latency: 0.1,
                                           processor: nil,
                                           manualOutput: true)
-        let sampleBuffer1 = createSampleBuffer(presentationTimeStamp: 1.000)
-        let sampleBuffer2 = createSampleBuffer(presentationTimeStamp: 1.021)
-        let sampleBuffer3 = createSampleBuffer(presentationTimeStamp: 1.210)
-        let sampleBuffer4 = createSampleBuffer(presentationTimeStamp: 1.231)
-        let sampleBuffer5 = createSampleBuffer(presentationTimeStamp: 1.252)
-        let sampleBuffer6 = createSampleBuffer(presentationTimeStamp: 1.273)
-        let sampleBuffer7 = createSampleBuffer(presentationTimeStamp: 1.294)
-        bufferedAudio.appendSampleBuffer(sampleBuffer1)
-        bufferedAudio.appendSampleBuffer(sampleBuffer2)
-        bufferedAudio.appendSampleBuffer(sampleBuffer3)
-        bufferedAudio.appendSampleBuffer(sampleBuffer4)
-        bufferedAudio.appendSampleBuffer(sampleBuffer5)
-        bufferedAudio.appendSampleBuffer(sampleBuffer6)
-        bufferedAudio.appendSampleBuffer(sampleBuffer7)
-        #expect(bufferedAudio.getSampleBuffer(1.000) === sampleBuffer1)
-        #expect(bufferedAudio.getSampleBuffer(1.021) === sampleBuffer2)
-        #expect(bufferedAudio.getSampleBuffer(1.042) === sampleBuffer3)
-        #expect(bufferedAudio.getSampleBuffer(1.063) === sampleBuffer3)
-        #expect(bufferedAudio.getSampleBuffer(1.084) === sampleBuffer3)
-        #expect(bufferedAudio.getSampleBuffer(1.105) === sampleBuffer3)
-        #expect(bufferedAudio.getSampleBuffer(1.126) === sampleBuffer3)
-        #expect(bufferedAudio.getSampleBuffer(1.147) === sampleBuffer3)
-        #expect(bufferedAudio.getSampleBuffer(1.168) === sampleBuffer3)
-        #expect(bufferedAudio.getSampleBuffer(1.189) === sampleBuffer3)
-        #expect(bufferedAudio.getSampleBuffer(1.210) === sampleBuffer3)
-        #expect(bufferedAudio.getSampleBuffer(1.231) === sampleBuffer4)
-        #expect(bufferedAudio.getSampleBuffer(1.252) === sampleBuffer5)
-        #expect(bufferedAudio.getSampleBuffer(1.273) === sampleBuffer6)
-        #expect(bufferedAudio.getSampleBuffer(1.294) === sampleBuffer7)
+        let sampleBuffers = [
+            createSampleBuffer(presentationTimeStamp: 1.000),
+            createSampleBuffer(presentationTimeStamp: 1.021),
+            createSampleBuffer(presentationTimeStamp: 1.210),
+            createSampleBuffer(presentationTimeStamp: 1.231),
+            createSampleBuffer(presentationTimeStamp: 1.252),
+            createSampleBuffer(presentationTimeStamp: 1.273),
+            createSampleBuffer(presentationTimeStamp: 1.294),
+        ]
+        appendSampleBuffers(bufferedAudio, sampleBuffers)
+        #expect(bufferedAudio.numberOfBuffers() == 7)
+        var timestamp = 1.000
+        for i in 0 ..< 2 {
+            #expect(bufferedAudio.getSampleBuffer(timestamp) === sampleBuffers[i])
+            timestamp += 0.021
+        }
+        for _ in 0 ..< 10 {
+            #expect(bufferedAudio.getSampleBuffer(timestamp) === sampleBuffers[2])
+            timestamp += 0.021
+        }
+        for i in 3 ..< 7 {
+            #expect(bufferedAudio.getSampleBuffer(timestamp) === sampleBuffers[i])
+            timestamp += 0.021
+        }
+        #expect(bufferedAudio.numberOfBuffers() == 0)
+    }
+
+    @Test
+    func processDriftChange() async throws {
+        let bufferedAudio = BufferedAudio(cameraId: .init(),
+                                          name: "",
+                                          latency: 0.1,
+                                          processor: nil,
+                                          manualOutput: true)
+        let sampleBuffers = [
+            createSampleBuffer(presentationTimeStamp: 1.000),
+            createSampleBuffer(presentationTimeStamp: 1.021),
+            createSampleBuffer(presentationTimeStamp: 1.042),
+            createSampleBuffer(presentationTimeStamp: 1.063),
+            createSampleBuffer(presentationTimeStamp: 1.084),
+            createSampleBuffer(presentationTimeStamp: 1.105),
+            createSampleBuffer(presentationTimeStamp: 1.126),
+            createSampleBuffer(presentationTimeStamp: 1.147),
+            createSampleBuffer(presentationTimeStamp: 1.168),
+            createSampleBuffer(presentationTimeStamp: 1.189),
+            createSampleBuffer(presentationTimeStamp: 1.210),
+            createSampleBuffer(presentationTimeStamp: 1.231),
+            createSampleBuffer(presentationTimeStamp: 1.252),
+            createSampleBuffer(presentationTimeStamp: 1.273),
+            createSampleBuffer(presentationTimeStamp: 1.294),
+        ]
+        appendSampleBuffers(bufferedAudio, sampleBuffers)
+        #expect(bufferedAudio.numberOfBuffers() == 15)
+        var timestamp = 1.000
+        for i in 0 ..< 2 {
+            #expect(bufferedAudio.getSampleBuffer(timestamp) === sampleBuffers[i])
+            timestamp += 0.021
+        }
+        bufferedAudio.setDrift(drift: 0.1)
+        #expect(bufferedAudio.getSampleBuffer(timestamp) === sampleBuffers[2])
+        timestamp += 0.021
+        #expect(bufferedAudio.getSampleBuffer(timestamp) === sampleBuffers[2])
+        timestamp += 0.021
+        #expect(bufferedAudio.getSampleBuffer(timestamp) === sampleBuffers[2])
+        timestamp += 0.021
+        #expect(bufferedAudio.getSampleBuffer(timestamp) === sampleBuffers[2])
+        timestamp += 0.021
+        #expect(bufferedAudio.getSampleBuffer(timestamp) === sampleBuffers[2])
+        timestamp += 0.021
+        #expect(bufferedAudio.getSampleBuffer(timestamp) === sampleBuffers[2])
+        timestamp += 0.021
+        #expect(bufferedAudio.getSampleBuffer(timestamp) === sampleBuffers[3])
+        timestamp += 0.021
+        #expect(bufferedAudio.getSampleBuffer(timestamp) === sampleBuffers[4])
+        timestamp += 0.021
+        #expect(bufferedAudio.getSampleBuffer(timestamp) === sampleBuffers[5])
+        timestamp += 0.021
+        #expect(bufferedAudio.getSampleBuffer(timestamp) === sampleBuffers[6])
+        timestamp += 0.021
+        bufferedAudio.setDrift(drift: 0)
+        #expect(bufferedAudio.getSampleBuffer(timestamp) === sampleBuffers[7])
+        timestamp += 0.021
+        #expect(bufferedAudio.getSampleBuffer(timestamp) === sampleBuffers[12])
+        timestamp += 0.021
+        #expect(bufferedAudio.getSampleBuffer(timestamp) === sampleBuffers[13])
+        timestamp += 0.021
+        #expect(bufferedAudio.getSampleBuffer(timestamp) === sampleBuffers[14])
+        timestamp += 0.021
+        #expect(bufferedAudio.getSampleBuffer(timestamp) === sampleBuffers[14])
+        timestamp += 0.021
+        #expect(bufferedAudio.getSampleBuffer(timestamp) === sampleBuffers[14])
+        timestamp += 0.021
+        #expect(bufferedAudio.numberOfBuffers() == 0)
     }
 
     @Test
