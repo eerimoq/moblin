@@ -521,10 +521,76 @@ private class Formatter {
     }
 }
 
+private struct TextView: View {
+    let fontSize: CGFloat
+    let fontDesign: Font.Design
+    let fontWeight: Font.Weight
+    let fontMonospacedDigits: Bool
+    let horizontalAlignment: HorizontalAlignment
+    let foregroundColor: Color
+    let backgroundColor: Color
+    let size: CGSize
+    let lines: [Line]
+
+    private func scaledFontSize(size: CGSize) -> CGFloat {
+        return fontSize * (size.maximum() / 1920)
+    }
+
+    var body: some View {
+        let stack = VStack(alignment: horizontalAlignment, spacing: 2) {
+            ForEach(lines) { line in
+                HStack(spacing: 0) {
+                    ForEach(line.parts) { part in
+                        switch part.data {
+                        case let .text(text):
+                            Text(text)
+                                .foregroundStyle(foregroundColor)
+                        case let .imageSystemName(name):
+                            Image(systemName: name)
+                                .foregroundStyle(foregroundColor)
+                        case let .imageSystemNameTryFill(name):
+                            if UIImage(systemName: "\(name).fill") != nil {
+                                Image(systemName: "\(name).fill")
+                                    .symbolRenderingMode(.multicolor)
+                            } else {
+                                Image(systemName: name)
+                                    .foregroundStyle(foregroundColor)
+                            }
+                        case let .rating(rating):
+                            ForEach(0 ..< 5) { index in
+                                if index < rating {
+                                    Text("★")
+                                        .foregroundStyle(.yellow)
+                                } else {
+                                    Text("☆")
+                                        .foregroundStyle(foregroundColor)
+                                }
+                            }
+                        }
+                    }
+                }
+                .padding([.leading, .trailing], 7)
+                .background(backgroundColor)
+                .cornerRadius(10)
+            }
+        }
+        .font(.system(
+            size: scaledFontSize(size: size),
+            weight: fontWeight,
+            design: fontDesign
+        ))
+        if fontMonospacedDigits {
+            stack.monospacedDigit()
+        } else {
+            stack
+        }
+    }
+}
+
 final class TextEffect: VideoEffect {
     private let filter = CIFilter.sourceOverCompositing()
-    private var backgroundColor: RgbColor?
-    private var foregroundColor: RgbColor?
+    private var backgroundColor: Color
+    private var foregroundColor: Color
     private var fontSize: CGFloat
     private var fontDesign: Font.Design
     private var fontWeight: Font.Weight
@@ -533,7 +599,7 @@ final class TextEffect: VideoEffect {
     private let settingName: String
     private var stats: Deque<TextEffectStats> = []
     private var overlay: CIImage?
-    private var image: UIImage?
+    private var image: CIImage?
     private var newImagePresent: Bool = false
     private var nextUpdateTime = ContinuousClock.now
     private var previousLines: [Line]?
@@ -561,8 +627,8 @@ final class TextEffect: VideoEffect {
     ) {
         formatter.formatParts = loadTextFormat(format: format)
         sceneWidget = SettingsSceneWidget(widgetId: .init())
-        self.backgroundColor = backgroundColor
-        self.foregroundColor = foregroundColor
+        self.backgroundColor = backgroundColor.color()
+        self.foregroundColor = foregroundColor.color()
         self.fontSize = fontSize
         self.fontDesign = fontDesign
         self.fontWeight = fontWeight
@@ -600,12 +666,12 @@ final class TextEffect: VideoEffect {
     }
 
     func setBackgroundColor(color: RgbColor) {
-        backgroundColor = color
+        backgroundColor = color.color()
         forceImageUpdate()
     }
 
     func setForegroundColor(color: RgbColor) {
-        foregroundColor = color
+        foregroundColor = color.color()
         forceImageUpdate()
     }
 
@@ -736,13 +802,9 @@ final class TextEffect: VideoEffect {
         return formatter.format(stats: stats, now: now)
     }
 
-    private func scaledFontSize(size: CGSize) -> CGFloat {
-        return fontSize * (size.maximum() / 1920)
-    }
-
     private func updateOverlay(size: CGSize) -> SettingsSceneWidget {
         let now = ContinuousClock.now
-        var newImage: UIImage?
+        var newImage: CIImage?
         let (sceneWidget, forceUpdate, newImagePresent) = textQueue.sync {
             if self.image != nil {
                 newImage = self.image
@@ -759,11 +821,7 @@ final class TextEffect: VideoEffect {
             )
         }
         if newImagePresent {
-            if let newImage {
-                overlay = CIImage(image: newImage)
-            } else {
-                overlay = nil
-            }
+            overlay = newImage
         }
         guard now >= nextUpdateTime || forceUpdate else {
             return sceneWidget
@@ -772,67 +830,32 @@ final class TextEffect: VideoEffect {
             nextUpdateTime += .seconds(1)
         }
         DispatchQueue.main.async {
-            let lines = self.formatted(now: now)
-            guard lines != self.previousLines else {
-                return
-            }
-            self.previousLines = lines
-            let text = VStack(alignment: self.horizontalAlignment, spacing: 2) {
-                ForEach(lines) { line in
-                    HStack(spacing: 0) {
-                        ForEach(line.parts) { part in
-                            switch part.data {
-                            case let .text(text):
-                                Text(text)
-                                    .foregroundStyle(self.foregroundColor?.color() ?? .clear)
-                            case let .imageSystemName(name):
-                                Image(systemName: name)
-                                    .foregroundStyle(self.foregroundColor?.color() ?? .clear)
-                            case let .imageSystemNameTryFill(name):
-                                if UIImage(systemName: "\(name).fill") != nil {
-                                    Image(systemName: "\(name).fill")
-                                        .symbolRenderingMode(.multicolor)
-                                } else {
-                                    Image(systemName: name)
-                                        .foregroundStyle(self.foregroundColor?.color() ?? .clear)
-                                }
-                            case let .rating(rating):
-                                ForEach(0 ..< 5) { index in
-                                    if index < rating {
-                                        Text("★")
-                                            .foregroundStyle(.yellow)
-                                    } else {
-                                        Text("☆")
-                                            .foregroundStyle(self.foregroundColor?.color() ?? .white)
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    .padding([.leading, .trailing], 7)
-                    .background(self.backgroundColor?.color() ?? .clear)
-                    .cornerRadius(10)
-                }
-            }
-            .font(.system(
-                size: self.scaledFontSize(size: size),
-                weight: self.fontWeight,
-                design: self.fontDesign
-            ))
-            let image: UIImage?
-            if self.fontMonospacedDigits {
-                let renderer = ImageRenderer(content: text.monospacedDigit())
-                image = renderer.uiImage
-            } else {
-                let renderer = ImageRenderer(content: text)
-                image = renderer.uiImage
-            }
-            textQueue.sync {
-                self.image = image
-                self.newImagePresent = true
-            }
+            self.updateOverlayInner(size: size, now: now)
         }
         return sceneWidget
+    }
+
+    @MainActor
+    private func updateOverlayInner(size: CGSize, now: ContinuousClock.Instant) {
+        let lines = formatted(now: now)
+        guard lines != previousLines else {
+            return
+        }
+        previousLines = lines
+        let text = TextView(fontSize: fontSize,
+                            fontDesign: fontDesign,
+                            fontWeight: fontWeight,
+                            fontMonospacedDigits: fontMonospacedDigits,
+                            horizontalAlignment: horizontalAlignment,
+                            foregroundColor: foregroundColor,
+                            backgroundColor: backgroundColor,
+                            size: size,
+                            lines: lines)
+        let image = ImageRenderer(content: text).ciImage()
+        textQueue.sync {
+            self.image = image
+            self.newImagePresent = true
+        }
     }
 
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
