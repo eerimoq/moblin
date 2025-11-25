@@ -5,11 +5,7 @@ import Testing
 struct BufferedAudioSuite {
     @Test
     func processNormal() async throws {
-        let bufferedAudio = BufferedAudio(cameraId: .init(),
-                                          name: "",
-                                          latency: 0.1,
-                                          processor: nil,
-                                          manualOutput: true)
+        let bufferedAudio = createBufferedAudio()
         let sampleBuffer1 = createSampleBuffer(presentationTimeStamp: 1.000)
         let sampleBuffer2 = createSampleBuffer(presentationTimeStamp: 1.021)
         let sampleBuffer3 = createSampleBuffer(presentationTimeStamp: 1.042)
@@ -27,11 +23,7 @@ struct BufferedAudioSuite {
 
     @Test
     func processGap() async throws {
-        let bufferedAudio = BufferedAudio(cameraId: .init(),
-                                          name: "",
-                                          latency: 0.1,
-                                          processor: nil,
-                                          manualOutput: true)
+        let bufferedAudio = createBufferedAudio()
         let sampleBuffers = [
             createSampleBuffer(presentationTimeStamp: 1.000),
             createSampleBuffer(presentationTimeStamp: 1.021),
@@ -55,11 +47,7 @@ struct BufferedAudioSuite {
 
     @Test
     func processDriftChange() async throws {
-        let bufferedAudio = BufferedAudio(cameraId: .init(),
-                                          name: "",
-                                          latency: 0.1,
-                                          processor: nil,
-                                          manualOutput: true)
+        let bufferedAudio = createBufferedAudio()
         let sampleBuffers = [
             createSampleBuffer(presentationTimeStamp: 1.000),
             createSampleBuffer(presentationTimeStamp: 1.021),
@@ -120,11 +108,7 @@ struct BufferedAudioSuite {
 
     @Test
     func oa6BadAudioTimestamps() async throws {
-        let bufferedAudio = BufferedAudio(cameraId: .init(),
-                                          name: "",
-                                          latency: 0.1,
-                                          processor: nil,
-                                          manualOutput: true)
+        let bufferedAudio = createBufferedAudio()
         let sampleBuffers = createOa6SampleBuffers()
         appendSampleBuffers(bufferedAudio, sampleBuffers)
         #expect(bufferedAudio.numberOfBuffers() == 26)
@@ -135,11 +119,7 @@ struct BufferedAudioSuite {
 
     @Test
     func oa6BadAudioTimestampsOffsetOutputTime() async throws {
-        let bufferedAudio = BufferedAudio(cameraId: .init(),
-                                          name: "",
-                                          latency: 0.1,
-                                          processor: nil,
-                                          manualOutput: true)
+        let bufferedAudio = createBufferedAudio()
         let sampleBuffers = createOa6SampleBuffers()
         appendSampleBuffers(bufferedAudio, sampleBuffers)
         #expect(bufferedAudio.numberOfBuffers() == 26)
@@ -152,11 +132,7 @@ struct BufferedAudioSuite {
 
     @Test
     func oa6BadAudioTimestampsOffsetOutputTime2() async throws {
-        let bufferedAudio = BufferedAudio(cameraId: .init(),
-                                          name: "",
-                                          latency: 0.1,
-                                          processor: nil,
-                                          manualOutput: true)
+        let bufferedAudio = createBufferedAudio()
         let sampleBuffers = createOa6SampleBuffers()
         appendSampleBuffers(bufferedAudio, sampleBuffers)
         #expect(bufferedAudio.numberOfBuffers() == 26)
@@ -167,11 +143,7 @@ struct BufferedAudioSuite {
 
     @Test
     func oa6BadAudioTimestampsBigOffsetOutputTime() async throws {
-        let bufferedAudio = BufferedAudio(cameraId: .init(),
-                                          name: "",
-                                          latency: 0.1,
-                                          processor: nil,
-                                          manualOutput: true)
+        let bufferedAudio = createBufferedAudio()
         let sampleBuffers = createOa6SampleBuffers()
         appendSampleBuffers(bufferedAudio, sampleBuffers)
         #expect(bufferedAudio.numberOfBuffers() == 26)
@@ -242,4 +214,12 @@ private func expectSequence(_ bufferedAudio: BufferedAudio,
                 "Failed at index \(i), timestamp \(timestamp).")
         timestamp += 0.021
     }
+}
+
+private func createBufferedAudio() -> BufferedAudio {
+    return BufferedAudio(cameraId: .init(),
+                         name: "",
+                         latency: 0.1,
+                         processor: nil,
+                         manualOutput: true)
 }
