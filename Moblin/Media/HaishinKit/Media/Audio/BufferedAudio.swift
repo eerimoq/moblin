@@ -78,16 +78,14 @@ class BufferedAudio {
                     """
                 )
                 sampleBuffer = nextSampleBuffer
-                sampleBuffers.removeFirst()
-                numberOfBuffersConsumed += 1
+                consumeBuffer(&numberOfBuffersConsumed)
                 continue
             }
             if hasBestBuffer(nextSampleBuffer, sampleBuffer, outputPresentationTimeStamp, drift) {
                 break
             }
             sampleBuffer = nextSampleBuffer
-            sampleBuffers.removeFirst()
-            numberOfBuffersConsumed += 1
+            consumeBuffer(&numberOfBuffersConsumed)
             isInitialBuffering = false
         }
         if !isInitialBuffering {
@@ -115,6 +113,11 @@ class BufferedAudio {
 
     func setDrift(drift: Double) {
         driftTracker.setDrift(drift: drift)
+    }
+
+    private func consumeBuffer(_ numberOfBuffersConsumed: inout Int) {
+        sampleBuffers.removeFirst()
+        numberOfBuffersConsumed += 1
     }
 
     private func updateStatsAndLog(_ outputPresentationTimeStamp: Double,
