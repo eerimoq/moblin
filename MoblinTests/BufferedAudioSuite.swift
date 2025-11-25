@@ -157,6 +157,14 @@ struct BufferedAudioSuite {
     }
 }
 
+private func createBufferedAudio() -> BufferedAudio {
+    return BufferedAudio(cameraId: .init(),
+                         name: "",
+                         latency: 0.1,
+                         processor: nil,
+                         manualOutput: true)
+}
+
 private func createSampleBuffer(presentationTimeStamp: Double) -> CMSampleBuffer {
     let format = AVAudioFormat(commonFormat: .pcmFormatInt16,
                                sampleRate: 48000,
@@ -214,12 +222,4 @@ private func expectSequence(_ bufferedAudio: BufferedAudio,
                 "Failed at index \(i), timestamp \(timestamp).")
         timestamp += 0.021
     }
-}
-
-private func createBufferedAudio() -> BufferedAudio {
-    return BufferedAudio(cameraId: .init(),
-                         name: "",
-                         latency: 0.1,
-                         processor: nil,
-                         manualOutput: true)
 }
