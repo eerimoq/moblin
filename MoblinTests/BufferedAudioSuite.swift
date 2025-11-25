@@ -44,18 +44,12 @@ struct BufferedAudioSuite {
         appendSampleBuffers(bufferedAudio, sampleBuffers)
         #expect(bufferedAudio.numberOfBuffers() == 7)
         var timestamp = 1.000
-        for i in 0 ..< 2 {
-            #expect(bufferedAudio.getSampleBuffer(timestamp) === sampleBuffers[i])
-            timestamp += 0.021
-        }
+        expectSequence(bufferedAudio, sampleBuffers, &timestamp, 0 ..< 2)
         for _ in 0 ..< 10 {
             #expect(bufferedAudio.getSampleBuffer(timestamp) === sampleBuffers[2])
             timestamp += 0.021
         }
-        for i in 3 ..< 7 {
-            #expect(bufferedAudio.getSampleBuffer(timestamp) === sampleBuffers[i])
-            timestamp += 0.021
-        }
+        expectSequence(bufferedAudio, sampleBuffers, &timestamp, 3 ..< 7)
         #expect(bufferedAudio.numberOfBuffers() == 0)
     }
 
@@ -86,10 +80,7 @@ struct BufferedAudioSuite {
         appendSampleBuffers(bufferedAudio, sampleBuffers)
         #expect(bufferedAudio.numberOfBuffers() == 15)
         var timestamp = 1.000
-        for i in 0 ..< 2 {
-            #expect(bufferedAudio.getSampleBuffer(timestamp) === sampleBuffers[i])
-            timestamp += 0.021
-        }
+        expectSequence(bufferedAudio, sampleBuffers, &timestamp, 0 ..< 2)
         bufferedAudio.setDrift(drift: 0.1)
         #expect(bufferedAudio.getSampleBuffer(timestamp) === sampleBuffers[2])
         timestamp += 0.021
@@ -138,10 +129,7 @@ struct BufferedAudioSuite {
         appendSampleBuffers(bufferedAudio, sampleBuffers)
         #expect(bufferedAudio.numberOfBuffers() == 26)
         var timestamp = 565.064
-        for i in 0 ..< 26 {
-            #expect(bufferedAudio.getSampleBuffer(timestamp) === sampleBuffers[i])
-            timestamp += 0.021
-        }
+        expectSequence(bufferedAudio, sampleBuffers, &timestamp, 0 ..< 26)
         #expect(bufferedAudio.numberOfBuffers() == 0)
     }
 
@@ -158,10 +146,7 @@ struct BufferedAudioSuite {
         var timestamp = 565.064 - 0.01
         #expect(bufferedAudio.getSampleBuffer(timestamp) === sampleBuffers[0])
         timestamp += 0.021
-        for i in 0 ..< 26 {
-            #expect(bufferedAudio.getSampleBuffer(timestamp) === sampleBuffers[i])
-            timestamp += 0.021
-        }
+        expectSequence(bufferedAudio, sampleBuffers, &timestamp, 0 ..< 26)
         #expect(bufferedAudio.numberOfBuffers() == 0)
     }
 
@@ -176,10 +161,7 @@ struct BufferedAudioSuite {
         appendSampleBuffers(bufferedAudio, sampleBuffers)
         #expect(bufferedAudio.numberOfBuffers() == 26)
         var timestamp = 565.064 + 0.01
-        for i in 0 ..< 26 {
-            #expect(bufferedAudio.getSampleBuffer(timestamp) === sampleBuffers[i])
-            timestamp += 0.021
-        }
+        expectSequence(bufferedAudio, sampleBuffers, &timestamp, 0 ..< 26)
         #expect(bufferedAudio.numberOfBuffers() == 0)
     }
 
@@ -198,10 +180,7 @@ struct BufferedAudioSuite {
             #expect(bufferedAudio.getSampleBuffer(timestamp) === sampleBuffers[0])
             timestamp += 0.021
         }
-        for i in 0 ..< 26 {
-            #expect(bufferedAudio.getSampleBuffer(timestamp) === sampleBuffers[i])
-            timestamp += 0.021
-        }
+        expectSequence(bufferedAudio, sampleBuffers, &timestamp, 0 ..< 26)
         #expect(bufferedAudio.numberOfBuffers() == 0)
     }
 }
@@ -250,5 +229,17 @@ private func appendSampleBuffers(_ bufferedAudio: BufferedAudio,
 {
     for sampleBuffer in sampleBuffers {
         bufferedAudio.appendSampleBuffer(sampleBuffer)
+    }
+}
+
+private func expectSequence(_ bufferedAudio: BufferedAudio,
+                            _ sampleBuffers: [CMSampleBuffer],
+                            _ timestamp: inout Double,
+                            _ range: Range<Int>)
+{
+    for i in range {
+        #expect(bufferedAudio.getSampleBuffer(timestamp) === sampleBuffers[i],
+                "Failed at index \(i), timestamp \(timestamp).")
+        timestamp += 0.021
     }
 }
