@@ -188,7 +188,19 @@ class SrtStreamOld {
     }
 
     private func makeSocketError() -> String {
-        return String(cString: srt_getlasterror_str())
+        guard let lastError = srt_getlasterror_str() else {
+            return "Last error not set"
+        }
+        var message = String(cString: lastError)
+        switch srt_getlasterror(nil) {
+        case SRT_ECONNREJ.rawValue:
+            if let rejectReason = srt_rejectreason_str(srt_getrejectreason(socket)) {
+                message += ": " + String(cString: rejectReason)
+            }
+        default:
+            break
+        }
+        return message
     }
 }
 

@@ -1061,10 +1061,10 @@ extension Media: SrtlaDelegate {
                         self.delegate?.mediaOnSrtConnected()
                     }
                 } catch {
+                    let error = "\(error)"
+                    let message = String(localized: "SRT connect failed with: \(error)")
                     DispatchQueue.main.async {
-                        self.delegate?.mediaOnSrtDisconnected(
-                            String(localized: "SRT connect failed with \(error.localizedDescription)")
-                        )
+                        self.delegate?.mediaOnSrtDisconnected(message)
                     }
                 }
             } else {
